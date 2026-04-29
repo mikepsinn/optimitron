@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { getReferendumSiteContent } from "@/content/referendum-sites";
+import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getSiteFromHost } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function CoalitionNotFoundPage() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
-  const content = getReferendumSiteContent(site.contentKey);
+  const content = requireReferendumSiteContent(site);
 
   return (
     <section className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center gap-6 px-4 py-24 text-center">

@@ -6,10 +6,10 @@ import { authOptions } from "@/lib/auth";
 import { backfillUserLocationFromHeaders } from "@/lib/geo/backfill-location.server";
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
 import { getTasksPageData } from "@/lib/tasks.server";
-import { getReferendumSiteContent } from "@/content/referendum-sites";
+import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
-import { ReferendumSiteDashboardClient } from "@/components/site/ReferendumSiteDashboardClient";
+import { HumanityManagementDashboardClient } from "@/components/site/HumanityManagementDashboardClient";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getSiteFromHost } from "@/lib/site";
@@ -21,8 +21,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = getSiteFromHost(hdrs.get("host"));
 
   if (site.contentKey) {
-    const content = getReferendumSiteContent(site.contentKey);
-    return getSiteMetadata(site, content.metadata.dashboard, "/dashboard");
+    const content = getOptionalReferendumSiteContent(site.contentKey);
+    if (content) {
+      return getSiteMetadata(site, content.metadata.dashboard, "/dashboard");
+    }
   }
 
   return getRouteMetadata(dashboardLink);
@@ -58,7 +60,11 @@ export default async function DashboardPage({
 
   void backfillUserLocationFromHeaders(userId, hdrs);
 
-  if (site.contentKey && site.primaryReferendumSlug) {
+  if (
+    site.pageVariants.dashboard === "humanityManagementDashboard" &&
+    site.contentKey &&
+    site.primaryReferendumSlug
+  ) {
     const person = await ensurePersonForUser(userId);
     const treatyTask = await ensureUserTreatyTask({
       personId: person.id,
@@ -74,7 +80,7 @@ export default async function DashboardPage({
     ) as TaskCardTask[];
 
     return (
-      <ReferendumSiteDashboardClient
+      <HumanityManagementDashboardClient
         nextTasks={nextTasks}
       />
     );

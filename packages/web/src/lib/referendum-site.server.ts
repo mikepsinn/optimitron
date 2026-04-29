@@ -102,7 +102,7 @@ export function buildApprovedOrganizationPositionWhere(
 export async function getReferendumSiteContext(
   site: SiteConfig,
 ): Promise<ReferendumSiteContext | null> {
-  if (!site.primaryReferendumSlug) {
+  if (!site.primaryReferendumSlug || !site.contentKey) {
     return null;
   }
 

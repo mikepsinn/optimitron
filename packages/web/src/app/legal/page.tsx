@@ -1,19 +1,19 @@
 import { headers } from "next/headers";
-import { getReferendumSiteContent } from "@/content/referendum-sites";
 import { getSiteMetadata } from "@/lib/metadata";
+import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getSiteFromHost } from "@/lib/site";
 
 export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
-  const content = getReferendumSiteContent(site.contentKey);
+  const content = requireReferendumSiteContent(site);
   return getSiteMetadata(site, content.metadata.legal, "/legal");
 }
 
 export default async function LegalPage() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
-  const content = getReferendumSiteContent(site.contentKey);
+  const content = requireReferendumSiteContent(site);
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-16 [font-family:var(--v0-font-source-serif-4)]">

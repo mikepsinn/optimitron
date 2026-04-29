@@ -15,19 +15,21 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "@/components/retroui/Input";
 import { Accordion } from "@/components/retroui/Accordion";
+import { getSiteVariantUiConfig, type SiteNavConfig } from "@/config/site-variant-ui";
 import {
   ROUTES,
   getSignInPath,
   isNavItemActive,
-  navSections,
   profileLink,
   searchLink,
 } from "@/lib/routes";
 
 function AvatarButton({
+  callbackUrl,
   user,
   isAuthenticated,
 }: {
+  callbackUrl: string;
   user: {
     name?: string | null;
     email?: string | null;
@@ -36,7 +38,7 @@ function AvatarButton({
   isAuthenticated: boolean;
 }) {
   const initial = user?.name?.charAt(0) ?? user?.email?.charAt(0) ?? null;
-  const href = isAuthenticated ? ROUTES.dashboard : getSignInPath();
+  const href = isAuthenticated ? ROUTES.dashboard : getSignInPath(callbackUrl);
 
   return (
     <Link
@@ -53,7 +55,13 @@ function AvatarButton({
   );
 }
 
-export default function Navbar() {
+interface NavbarProps {
+  config?: SiteNavConfig;
+}
+
+const defaultNavConfig = getSiteVariantUiConfig("optimitron").nav;
+
+export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -65,7 +73,7 @@ export default function Navbar() {
   const fullSearchHref = normalizedNavQuery
     ? `${searchLink.href}?q=${encodeURIComponent(navQuery.trim())}`
     : searchLink.href;
-  const filteredSections = navSections
+  const filteredSections = config.sections
     .map((section) => ({
       ...section,
       items: section.items.filter((item) => {
@@ -102,43 +110,50 @@ export default function Navbar() {
         <div className="flex h-[58px] items-center justify-between">
           {/* Logo */}
           <Link
-            href={ROUTES.home}
+            href={config.brandHref}
             className="text-lg font-black uppercase tracking-tight text-foreground transition-colors hover:text-muted-foreground"
           >
-            <span className="sm:hidden">Optimitron</span>
-            <span className="hidden sm:inline">⚡ Optimitron</span>
+            <span className="sm:hidden">{config.brandLabel}</span>
+            <span className="hidden sm:inline">{config.desktopBrandLabel}</span>
           </Link>
 
           {/* Right side: Avatar + Hamburger */}
           <div className="flex items-center gap-3">
-            <Link
-              href={searchLink.href}
-              className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-              title={searchLink.label}
-              aria-label={searchLink.label}
-            >
-              <Search className="h-4 w-4 stroke-[2.5px]" />
-            </Link>
-            <AvatarButton user={user} isAuthenticated={isAuthenticated} />
+            {config.searchEnabled ? (
+              <Link
+                href={searchLink.href}
+                className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                title={searchLink.label}
+                aria-label={searchLink.label}
+              >
+                <Search className="h-4 w-4 stroke-[2.5px]" />
+              </Link>
+            ) : null}
+            <AvatarButton
+              callbackUrl={config.signInCallbackUrl}
+              user={user}
+              isAuthenticated={isAuthenticated}
+            />
 
-            <Sheet
-              open={open}
-              onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                if (!nextOpen) {
-                  setNavQuery("");
-                }
-              }}
-            >
-              <SheetTrigger asChild>
-                <button
-                  type="button"
-                  className="inline-flex h-9 w-9 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors hover:bg-muted"
-                  aria-label="Open menu"
-                >
-                  <Menu className="h-4 w-4 stroke-[3px]" />
-                </button>
-              </SheetTrigger>
+            {config.menuEnabled ? (
+              <Sheet
+                open={open}
+                onOpenChange={(nextOpen) => {
+                  setOpen(nextOpen);
+                  if (!nextOpen) {
+                    setNavQuery("");
+                  }
+                }}
+              >
+                <SheetTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex h-9 w-9 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors hover:bg-muted"
+                    aria-label="Open menu"
+                  >
+                    <Menu className="h-4 w-4 stroke-[3px]" />
+                  </button>
+                </SheetTrigger>
 
               <SheetContent
                 side="right"
@@ -146,38 +161,40 @@ export default function Navbar() {
                 className="w-[min(calc(100vw-1.5rem),24rem)] overflow-y-auto sm:max-w-sm"
               >
                 <SheetTitle className="mb-4 border-b-2 border-foreground pb-3 text-lg font-black uppercase tracking-tight">
-                  Navigation
+                  {config.menuTitle}
                 </SheetTitle>
                 <SheetDescription className="sr-only">
                   Site navigation menu
                 </SheetDescription>
 
-                <form
-                  className="mb-4 space-y-3"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    setOpen(false);
-                    router.push(fullSearchHref);
-                  }}
-                >
-                  <div className="relative">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      aria-label="Filter navigation"
-                      className="h-10 border-2 border-foreground bg-background pl-10 text-sm font-bold shadow-none"
-                      onChange={(event) => setNavQuery(event.target.value)}
-                      placeholder="Filter or search"
-                      type="search"
-                      value={navQuery}
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full border-2 border-foreground bg-foreground px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-background transition-colors hover:bg-background hover:text-foreground"
+                {config.searchEnabled ? (
+                  <form
+                    className="mb-4 space-y-3"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      setOpen(false);
+                      router.push(fullSearchHref);
+                    }}
                   >
-                    {normalizedNavQuery ? `Search "${navQuery.trim()}"` : "Open Full Search"}
-                  </button>
-                </form>
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        aria-label="Filter navigation"
+                        className="h-10 border-2 border-foreground bg-background pl-10 text-sm font-bold shadow-none"
+                        onChange={(event) => setNavQuery(event.target.value)}
+                        placeholder="Filter or search"
+                        type="search"
+                        value={navQuery}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full border-2 border-foreground bg-foreground px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-background transition-colors hover:bg-background hover:text-foreground"
+                    >
+                      {normalizedNavQuery ? `Search "${navQuery.trim()}"` : "Open Full Search"}
+                    </button>
+                  </form>
+                ) : null}
 
                 {primarySections.length > 0 ? (
                   <div className="mb-3 flex flex-col border-b border-border pb-3">
@@ -303,7 +320,7 @@ export default function Navbar() {
                   ) : (
                     <SheetClose asChild>
                       <Link
-                        href={getSignInPath(ROUTES.wishocracy)}
+                        href={getSignInPath(config.signInCallbackUrl)}
                         className="block border-2 border-foreground bg-foreground px-3 py-2 text-center text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
                       >
                         Sign In
@@ -313,6 +330,7 @@ export default function Navbar() {
                 </div>
               </SheetContent>
             </Sheet>
+            ) : null}
           </div>
         </div>
       </div>

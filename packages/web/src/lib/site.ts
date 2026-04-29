@@ -10,8 +10,44 @@ export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
 
 export type SiteKey = "optimitron" | "onePercentTreaty";
 
+export type SiteChromeVariant = "platform" | "referendum";
+export type SiteHomeVariant = "optimitronLanding" | "onePercentTreatyLanding";
+export type SiteDashboardVariant =
+  | "optimitronDashboard"
+  | "humanityManagementDashboard";
+
+export interface SiteRootMetadata {
+  description: string;
+  keywords: string[];
+  openGraphDescription: string;
+  openGraphImage: {
+    alt: string;
+    height?: number;
+    url: string;
+    width?: number;
+  };
+  openGraphTitle: string;
+  title: string;
+  twitterDescription: string;
+  twitterImage: string;
+  twitterTitle: string;
+}
+
+export interface SiteRoutePolicy {
+  minimalChromePrefixes: readonly string[];
+  operationalPrefixes: readonly string[];
+  publicPrefixes: readonly string[];
+  restrictToAllowlist: boolean;
+}
+
+export interface SitePageVariants {
+  dashboard: SiteDashboardVariant;
+  home: SiteHomeVariant;
+}
+
 export interface SiteConfig {
   key: SiteKey;
+  chromeVariant: SiteChromeVariant;
   canonicalOrigin: string;
   name: string;
   shortName: string;
@@ -30,6 +66,9 @@ export interface SiteConfig {
   primaryReferendumSlug: string | null;
   /** Optional support for task/accountability surfaces on referendum microsites. */
   primaryTaskKey: string | null;
+  rootMetadata: SiteRootMetadata;
+  routePolicy: SiteRoutePolicy;
+  pageVariants: SitePageVariants;
 }
 
 const ORGANIZATION_NAME = "The Earth Optimization Commission";
@@ -41,12 +80,13 @@ const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 
 const OPTIMITRON_CONFIG: SiteConfig = {
   key: "optimitron",
+  chromeVariant: "platform",
   canonicalOrigin: OPTIMITRON_CANONICAL_ORIGIN,
   name: "Optimitron",
   shortName: "Optimitron",
   alternateSiteNames: ["The Earth Optimization Game"],
   description: "Earth Optimization Machine.",
-  ogImage: "/og/optimitron.png",
+  ogImage: "/og-image.jpg",
   analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: null,
   organizationName: ORGANIZATION_NAME,
@@ -57,10 +97,52 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   sameAs: ORGANIZATION_SAME_AS,
   primaryReferendumSlug: null,
   primaryTaskKey: null,
+  rootMetadata: {
+    title: "Optimitron — The Evidence-Based Earth Optimization Game",
+    description:
+      "Earth Optimization Game for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data.",
+    openGraphTitle:
+      "Optimitron — The Evidence-Based Earth Optimization Game",
+    openGraphDescription:
+      "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next.",
+    openGraphImage: {
+      url: "/og-image.jpg",
+      width: 1200,
+      height: 630,
+      alt: "Optimitron — The Evidence-Based Earth Optimization Game",
+    },
+    twitterTitle: "Optimitron — Earth Optimization Game",
+    twitterDescription:
+      "Planetary debugging software for budgets, policies, politicians, and public outcomes.",
+    twitterImage: "/twitter-image.jpg",
+    keywords: [
+      "Optimitron",
+      "The Earth Optimization Game",
+      "Earth Optimization Game",
+      "budget optimization",
+      "policy analysis",
+      "public outcomes",
+    ],
+  },
+  routePolicy: {
+    restrictToAllowlist: false,
+    publicPrefixes: [],
+    operationalPrefixes: [],
+    minimalChromePrefixes: [
+      "/vote",
+      "/questions",
+      "/humanity-management-training",
+    ],
+  },
+  pageVariants: {
+    home: "optimitronLanding",
+    dashboard: "optimitronDashboard",
+  },
 };
 
 const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   key: "onePercentTreaty",
+  chromeVariant: "referendum",
   canonicalOrigin: "https://1percenttreaty.org",
   name: "1% Treaty",
   shortName: "1% Treaty",
@@ -77,6 +159,63 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   sameAs: ORGANIZATION_SAME_AS,
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
+  rootMetadata: {
+    title: "1% Treaty",
+    description: "Redirect 1% of military spending to curing disease.",
+    openGraphTitle: "1% Treaty",
+    openGraphDescription:
+      "Redirect 1% of military spending to curing disease.",
+    openGraphImage: {
+      url: "/api/og/one-percent-treaty",
+      alt: "1% Treaty social image",
+    },
+    twitterTitle: "1% Treaty",
+    twitterDescription:
+      "Redirect 1% of military spending to curing disease.",
+    twitterImage: "/api/og/one-percent-treaty",
+    keywords: [
+      "1% Treaty",
+      "1 Percent Treaty",
+      "Earth Optimization Game",
+      "budget optimization",
+      "policy analysis",
+      "public outcomes",
+    ],
+  },
+  routePolicy: {
+    restrictToAllowlist: true,
+    publicPrefixes: [
+      "/treaty",
+      "/tasks",
+      "/people",
+      "/governments",
+      "/declaration",
+      "/endorse",
+      "/coalition",
+      "/why",
+      "/legal",
+      "/impact",
+      "/organizations",
+      "/reasoning",
+    ],
+    operationalPrefixes: [
+      "/r",
+      "/vote",
+      "/auth",
+      "/dashboard",
+      "/profile",
+      "/settings",
+      "/_coalition-404",
+    ],
+    minimalChromePrefixes: [
+      "/vote",
+      "/humanity-management-training",
+    ],
+  },
+  pageVariants: {
+    home: "onePercentTreatyLanding",
+    dashboard: "humanityManagementDashboard",
+  },
 };
 
 const SITE_CONFIGS: Record<SiteKey, SiteConfig> = {
@@ -92,6 +231,8 @@ const ONE_PERCENT_TREATY_HOSTS = new Set([
   "www.warondisease.org",
   "warondisease.local",
 ]);
+
+const PUBLIC_FILE_PATH_REGEX = /\.[^/]+$/;
 
 export function getSiteFromHost(host: string | null | undefined): SiteConfig {
   if (!host) return OPTIMITRON_CONFIG;
@@ -110,6 +251,33 @@ export function isOnePercentTreatyHost(host: string | null | undefined): boolean
   if (!host) return false;
   const cleanHost = host.split(":")[0]?.toLowerCase() ?? "";
   return ONE_PERCENT_TREATY_HOSTS.has(cleanHost);
+}
+
+function matchesPrefix(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
+export function isSiteRouteAllowed(site: SiteConfig, pathname: string): boolean {
+  if (!site.routePolicy.restrictToAllowlist) {
+    return true;
+  }
+
+  if (pathname === "/") {
+    return true;
+  }
+
+  if (PUBLIC_FILE_PATH_REGEX.test(pathname)) {
+    return true;
+  }
+
+  return (
+    site.routePolicy.publicPrefixes.some((prefix) =>
+      matchesPrefix(pathname, prefix),
+    ) ||
+    site.routePolicy.operationalPrefixes.some((prefix) =>
+      matchesPrefix(pathname, prefix),
+    )
+  );
 }
 
 function normalizeOrigin(origin: string) {

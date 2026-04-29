@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { getReferendumSiteContent } from "@/content/referendum-sites";
+import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { ReferendumStepperPage } from "@/components/referendum/ReferendumStepperPage";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { treatyLink } from "@/lib/routes";
@@ -12,8 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = getSiteFromHost(hdrs.get("host"));
 
   if (site.primaryReferendumSlug) {
-    const content = getReferendumSiteContent(site.contentKey);
-    return getSiteMetadata(site, content.metadata.treaty, "/treaty");
+    const content = getOptionalReferendumSiteContent(site.contentKey);
+    if (content) {
+      return getSiteMetadata(site, content.metadata.treaty, "/treaty");
+    }
   }
 
   return getRouteMetadata(treatyLink);

@@ -9,13 +9,13 @@ import { Button } from "@/components/retroui/Button";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 
-interface ReferendumSiteDashboardClientProps {
+interface HumanityManagementDashboardClientProps {
   nextTasks: TaskCardTask[];
 }
 
-export function ReferendumSiteDashboardClient({
+export function HumanityManagementDashboardClient({
   nextTasks,
-}: ReferendumSiteDashboardClientProps) {
+}: HumanityManagementDashboardClientProps) {
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-10">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">

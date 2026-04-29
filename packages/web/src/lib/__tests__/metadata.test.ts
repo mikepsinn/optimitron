@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
+import {
+  getRootSiteMetadata,
+  getSiteMetadata,
+  getRouteMetadata,
+} from "@/lib/metadata";
 import { aboutLink } from "@/lib/routes";
 import { getSiteConfig } from "@/lib/site";
 
@@ -26,6 +30,22 @@ describe("metadata helpers", () => {
     expect(metadata.metadataBase?.toString()).toBe("https://1percenttreaty.org/");
     expect(metadata.alternates?.canonical).toBe("/why");
     expect(metadata.openGraph?.siteName).toBe("1% Treaty");
+    expect(metadata.twitter?.images).toEqual(["/api/og/one-percent-treaty"]);
     expect(metadata.robots).toEqual({ index: true, follow: true });
+  });
+
+  it("builds root metadata from the selected site config", () => {
+    const treatyMetadata = getRootSiteMetadata(
+      getSiteConfig("onePercentTreaty"),
+    );
+    const optimitronMetadata = getRootSiteMetadata(getSiteConfig("optimitron"));
+
+    expect(treatyMetadata.title).toBe("1% Treaty");
+    expect(treatyMetadata.openGraph?.siteName).toBe("1% Treaty");
+    expect(treatyMetadata.twitter?.title).toBe("1% Treaty");
+    expect(optimitronMetadata.title).toContain("Optimitron");
+    expect(optimitronMetadata.openGraph?.images).toEqual([
+      expect.objectContaining({ url: "/og-image.jpg" }),
+    ]);
   });
 });

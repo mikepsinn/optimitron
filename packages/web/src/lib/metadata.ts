@@ -51,6 +51,7 @@ export function getSiteMetadata(
   const {
     alternates,
     openGraph,
+    twitter,
     ...restOverrides
   } = metadataOverrides ?? {};
 
@@ -69,6 +70,48 @@ export function getSiteMetadata(
       images: [site.ogImage],
       type: "website",
       ...openGraph,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: page.title,
+      description: page.description,
+      images: [site.rootMetadata.twitterImage],
+      ...twitter,
+    },
+    ...restOverrides,
+  };
+}
+
+export function getRootSiteMetadata(
+  site: SiteConfig,
+  pathname = "/",
+  overrides?: Partial<Metadata>,
+): Metadata {
+  const { alternates, openGraph, twitter, ...restOverrides } = overrides ?? {};
+  const root = site.rootMetadata;
+
+  return {
+    title: root.title,
+    description: root.description,
+    metadataBase: new URL(site.canonicalOrigin),
+    alternates: {
+      canonical: pathname,
+      ...alternates,
+    },
+    openGraph: {
+      title: root.openGraphTitle,
+      description: root.openGraphDescription,
+      siteName: site.name,
+      images: [root.openGraphImage],
+      type: "website",
+      ...openGraph,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: root.twitterTitle,
+      description: root.twitterDescription,
+      images: [root.twitterImage],
+      ...twitter,
     },
     ...restOverrides,
   };

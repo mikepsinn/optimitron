@@ -57,56 +57,28 @@ const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.v
 export async function generateMetadata(): Promise<Metadata> {
   const headerStore = await headers();
   const site = getSiteFromHost(headerStore.get("host"));
+  const metadata = site.rootMetadata;
 
   return {
     metadataBase: new URL(site.canonicalOrigin),
     applicationName: site.name,
     creator: site.organizationName,
     publisher: site.organizationName,
-    title:
-      site.key === "optimitron"
-        ? "Optimitron — The Evidence-Based Earth Optimization Game"
-        : site.name,
-    description:
-      site.key === "optimitron"
-        ? "Earth Optimization Game for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data."
-        : site.description,
-    keywords: [
-      site.name,
-      ...site.alternateSiteNames,
-      "Earth Optimization Game",
-      "budget optimization",
-      "policy analysis",
-      "public outcomes",
-    ],
+    title: metadata.title,
+    description: metadata.description,
+    keywords: metadata.keywords,
     openGraph: {
       siteName: site.name,
-      title:
-        site.key === "optimitron"
-          ? "Optimitron — The Evidence-Based Earth Optimization Game"
-          : site.name,
-      description:
-        site.key === "optimitron"
-          ? "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next."
-          : site.description,
+      title: metadata.openGraphTitle,
+      description: metadata.openGraphDescription,
       type: "website",
-      images: [
-        site.key === "optimitron"
-          ? { url: "/og-image.jpg", width: 1200, height: 630, alt: "Optimitron — The Evidence-Based Earth Optimization Game" }
-          : { url: site.ogImage, alt: `${site.name} social image` },
-      ],
+      images: [metadata.openGraphImage],
     },
     twitter: {
       card: "summary_large_image",
-      title:
-        site.key === "optimitron"
-          ? "Optimitron — Earth Optimization Game"
-          : site.name,
-      description:
-        site.key === "optimitron"
-          ? "Planetary debugging software for budgets, policies, politicians, and public outcomes."
-          : site.description,
-      images: [site.key === "optimitron" ? "/twitter-image.jpg" : site.ogImage],
+      title: metadata.twitterTitle,
+      description: metadata.twitterDescription,
+      images: [metadata.twitterImage],
     },
     icons: {
       icon: [

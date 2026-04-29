@@ -1,19 +1,19 @@
 import { headers } from "next/headers";
-import { getReferendumSiteContent } from "@/content/referendum-sites";
 import { getSiteMetadata } from "@/lib/metadata";
+import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getSiteFromHost } from "@/lib/site";
 
 export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
-  const content = getReferendumSiteContent(site.contentKey);
+  const content = requireReferendumSiteContent(site);
   return getSiteMetadata(site, content.metadata.why, "/why");
 }
 
 export default async function WhyPage() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
-  const content = getReferendumSiteContent(site.contentKey);
+  const content = requireReferendumSiteContent(site);
 
   return (
     <section className="mx-auto max-w-4xl px-4 py-16">

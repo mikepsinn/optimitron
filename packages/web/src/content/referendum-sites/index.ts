@@ -4,16 +4,20 @@ import type {
   ReferendumSiteContentKey,
 } from "./types";
 
-const DEFAULT_CONTENT_KEY: ReferendumSiteContentKey = "onePercentTreaty";
-
 const SITE_CONTENTS: Record<ReferendumSiteContentKey, ReferendumSiteContent> = {
   onePercentTreaty: onePercentTreatyContent,
 };
 
 export function getReferendumSiteContent(
-  key?: ReferendumSiteContentKey | null,
+  key: ReferendumSiteContentKey,
 ): ReferendumSiteContent {
-  return SITE_CONTENTS[key ?? DEFAULT_CONTENT_KEY];
+  return SITE_CONTENTS[key];
+}
+
+export function getOptionalReferendumSiteContent(
+  key?: ReferendumSiteContentKey | null,
+): ReferendumSiteContent | null {
+  return key ? SITE_CONTENTS[key] : null;
 }
 
 export type {

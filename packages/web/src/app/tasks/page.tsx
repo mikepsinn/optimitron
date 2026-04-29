@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
-import { getReferendumSiteContent } from "@/content/referendum-sites";
+import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { ProgramCard, ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
@@ -18,8 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = getSiteFromHost(hdrs.get("host"));
 
   if (site.primaryReferendumSlug) {
-    const content = getReferendumSiteContent(site.contentKey);
-    return getSiteMetadata(site, content.metadata.tasks, "/tasks");
+    const content = getOptionalReferendumSiteContent(site.contentKey);
+    if (content) {
+      return getSiteMetadata(site, content.metadata.tasks, "/tasks");
+    }
   }
 
   return getRouteMetadata(tasksLink);

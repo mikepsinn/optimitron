@@ -9,7 +9,7 @@ interface Props {
   data: ReferendumSiteHomeData;
 }
 
-export function ReferendumSiteHome({ data }: Props) {
+export function OnePercentTreatyLandingPage({ data }: Props) {
   const {
     content,
     lateEmployeeProgramTask,
