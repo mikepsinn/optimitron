@@ -137,14 +137,14 @@ function DetailsBlock({
 }) {
   return (
     <details
-      className="border-y border-[#23180d]/25 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left"
+      className="border-y border-[var(--treaty-ink)]/25 py-3 text-center text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] sm:text-left"
       onToggle={(event) => {
         if (event.currentTarget.open) {
           trackTreatyPostVoteDetailsExpanded({ detailId, flowVariant, screen });
         }
       }}
     >
-      <summary className="cursor-pointer font-black uppercase tracking-[0.12em] text-[#23180d]">{summary}</summary>
+      <summary className="cursor-pointer font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)]">{summary}</summary>
       <div className="mt-3 space-y-3">{children}</div>
     </details>
   );
@@ -168,7 +168,7 @@ function MessageModeToggle({
   return (
     <div
       aria-label="Message mode"
-      className="grid grid-cols-2 overflow-hidden border border-[#23180d]"
+      className="grid grid-cols-2 overflow-hidden border border-[var(--treaty-ink)]"
       role="group"
     >
       {options.map((option, index) => {
@@ -178,10 +178,10 @@ function MessageModeToggle({
             aria-pressed={selected}
             className={[
               "min-h-14 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.16em] transition-colors sm:text-sm",
-              index > 0 ? "border-l border-[#23180d]" : "",
+              index > 0 ? "border-l border-[var(--treaty-ink)]" : "",
               selected
-                ? "bg-[#23180d] text-[#fffaf0]"
-                : "bg-[#fbf7ee] text-[#23180d] hover:bg-[#efe4cf]",
+                ? "bg-[var(--treaty-ink)] text-[#fffaf0]"
+                : "bg-[var(--treaty-paper)] text-[var(--treaty-ink)] hover:bg-[#efe4cf]",
             ].join(" ")}
             key={option.value}
             onClick={() => onChange(option.value)}
@@ -307,23 +307,23 @@ function PromotionScreen({ onChoice }: { onChoice: (target: "friend" | "humanity
   return (
     <>
       <div className="space-y-5">
-        <p className="text-center text-2xl font-black uppercase tracking-[0.08em] text-[#23180d] sm:text-3xl">
+        <p className="text-center text-2xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
           🎉 Congratulations
         </p>
         <FlowParagraph>
           You have been promoted to <strong>Humanity Manager</strong> at Earth Optimization Services, LLC.
         </FlowParagraph>
-        <dl className="space-y-3 border-y border-[#23180d]/30 py-4 text-sm font-bold leading-7 text-[#2f2417] sm:text-base">
+        <dl className="space-y-3 border-y border-[var(--treaty-ink)]/30 py-4 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] sm:text-base">
           <div>
-            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[#5e513f]">Direct reports</dt>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink-muted)]">Direct reports</dt>
             <dd>~8 billion humans</dd>
           </div>
           <div>
-            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[#5e513f]">Primary KPI</dt>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink-muted)]">Primary KPI</dt>
             <dd>Hours of human suffering prevented per week</dd>
           </div>
           <div>
-            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[#5e513f]">Compensation</dt>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink-muted)]">Compensation</dt>
             <dd>~<ParameterValue param={TREATY_HALE_GAIN_YEAR_15} figures={3} /> extra years of healthy life + ~<ParameterValue param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA} figures={3} /> additional lifetime income. Vesting: treaty must pass. Forfeited on dismissal.</dd>
           </div>
         </dl>
@@ -348,14 +348,14 @@ function TreatyMathDialog({ onClose }: { onClose: () => void }) {
     <div
       aria-labelledby="treaty-math-dialog-title"
       aria-modal="true"
-      className="fixed inset-0 z-[90] overflow-y-auto bg-[#fbf7ee] px-4 py-6 text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:px-8 sm:py-10"
+      className="fixed inset-0 z-[90] overflow-y-auto bg-[var(--treaty-paper)] px-4 py-6 text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:px-8 sm:py-10"
       data-testid="treaty-math-dialog"
       role="dialog"
     >
       <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-4xl flex-col gap-6">
-        <div className="flex items-center justify-between gap-4 border-b border-[#23180d]/30 pb-4">
+        <div className="flex items-center justify-between gap-4 border-b border-[var(--treaty-ink)]/30 pb-4">
           <h2
-            className="text-xl font-black uppercase tracking-[0.16em] text-[#23180d] sm:text-2xl"
+            className="text-xl font-black uppercase tracking-[0.16em] text-[var(--treaty-ink)] sm:text-2xl"
             id="treaty-math-dialog-title"
           >
             Treaty Math
@@ -372,7 +372,7 @@ function TreatyMathDialog({ onClose }: { onClose: () => void }) {
 
         <TreatyMechanismExplainer detailMode="expanded" />
 
-        <div className="grid gap-3 border-t border-[#23180d]/30 pt-4 sm:grid-cols-2">
+        <div className="grid gap-3 border-t border-[var(--treaty-ink)]/30 pt-4 sm:grid-cols-2">
           <Button asChild className={dismissButtonClass}>
             <a href="https://manual.warondisease.org" rel="noreferrer" target="_blank">
               Open Manual
@@ -1041,8 +1041,8 @@ export function TreatyPostVoteShareFlow({
               const trimmedName = recipientName.trim();
               const isBroadcast = trimmedName.toLowerCase() === "humanity";
               return isBroadcast ? (
-                <div className="space-y-3 border-t-2 border-[#23180d]/30 pt-4">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#5e513f]">
+                <div className="space-y-3 border-t-2 border-[var(--treaty-ink)]/30 pt-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--treaty-ink-muted)]">
                     Assign one task to humanity
                   </p>
                   <ShareLinkButtons
@@ -1208,7 +1208,7 @@ export function TreatyPostVoteShareFlow({
         <div className="space-y-6 p-5">
           {renderScreen()}
           {error ? (
-            <p className="border border-[#23180d] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[#23180d]">
+            <p className="border border-[var(--treaty-ink)] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[var(--treaty-ink)]">
               {error}
             </p>
           ) : null}

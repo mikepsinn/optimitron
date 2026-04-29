@@ -91,8 +91,8 @@ function DetailsBlock({
 
   if (detailMode === "expanded") {
     return (
-      <section className="border-y border-[#23180d]/25 py-4 text-sm font-bold leading-7 text-[#2f2417]">
-        <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-[#23180d]">
+      <section className="border-y border-[var(--treaty-ink)]/25 py-4 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)]">
+        <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)]">
           {title ?? summary}
         </p>
         <div className="space-y-3">{children}</div>
@@ -102,14 +102,14 @@ function DetailsBlock({
 
   return (
     <details
-      className="border-y border-[#23180d]/25 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left"
+      className="border-y border-[var(--treaty-ink)]/25 py-3 text-center text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] sm:text-left"
       onToggle={(event) => {
         if (event.currentTarget.open) {
           onExpand?.(detailId);
         }
       }}
     >
-      <summary className="cursor-pointer font-black uppercase tracking-[0.12em] text-[#23180d]">{summary}</summary>
+      <summary className="cursor-pointer font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)]">{summary}</summary>
       <div className="mt-3 space-y-3">{children}</div>
     </details>
   );

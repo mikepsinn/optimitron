@@ -458,7 +458,7 @@ export function TreatyVoteFlow({
               {preVoteAlt ? (
                 <TreatyFlowParagraph>I don&apos;t have the ability to go to hell. Continuing.</TreatyFlowParagraph>
               ) : null}
-              <figure className="mx-auto aspect-[4/3] w-full max-w-sm overflow-hidden border border-[#23180d] bg-[#fffdf8]">
+              <figure className="mx-auto aspect-[4/3] w-full max-w-sm overflow-hidden border border-[var(--treaty-ink)] bg-[#fffdf8]">
                 <img
                   alt="Grandma Kay sitting on a bench"
                   className="h-full w-full object-cover object-[50%_15%] grayscale"
@@ -552,7 +552,7 @@ export function TreatyVoteFlow({
     return (
       <div
         className={cn(
-          "relative left-1/2 w-screen max-w-none -translate-x-1/2 bg-[#fbf7ee]",
+          "relative left-1/2 w-screen max-w-none -translate-x-1/2 bg-[var(--treaty-paper)]",
           className,
         )}
       >
@@ -569,10 +569,10 @@ export function TreatyVoteFlow({
           {isWaitingForAuth ? (
             <TreatyFlowShell contentClassName="max-w-2xl">
               <div className="space-y-4 text-center">
-                <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
+                <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
                   Vote counted.
                 </p>
-                <p className="text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+                <p className="text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
                   Saving your vote and opening Humanity Management Training.
                 </p>
               </div>
@@ -580,10 +580,10 @@ export function TreatyVoteFlow({
           ) : (
             <TreatyFlowShell contentClassName="max-w-2xl">
               <div className="space-y-4">
-                <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
+                <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
                   Vote counted.
                 </p>
-                <p className="text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+                <p className="text-center text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
                   Governments won&apos;t listen to bot votes. They barely
                   listen to human ones, but at least yours will be on file.
                   Verify you&apos;re a real human so yours counts in the final
@@ -612,7 +612,7 @@ export function TreatyVoteFlow({
   return (
     <div
       className={cn(
-        "relative left-1/2 w-screen max-w-none -translate-x-1/2 bg-[#fbf7ee]",
+        "relative left-1/2 w-screen max-w-none -translate-x-1/2 bg-[var(--treaty-paper)]",
         className,
       )}
     >
@@ -648,18 +648,18 @@ export function TreatyVoteFlow({
               <div className="space-y-8">
                 <div className="grid grid-cols-2 gap-4 sm:gap-12">
                   <div className="text-center">
-                    <div className="mb-2 text-5xl font-black text-[#23180d] sm:text-6xl">
+                    <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
                       {militaryAllocation}%
                     </div>
-                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[#5e513f] sm:text-sm">
+                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
                       Military &amp; Weapons
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="mb-2 text-5xl font-black text-[#23180d] sm:text-6xl">
+                    <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
                       {clinicalTrialsAllocation}%
                     </div>
-                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[#5e513f] sm:text-sm">
+                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
                       Clinical Trials
                     </div>
                   </div>
@@ -681,8 +681,8 @@ export function TreatyVoteFlow({
                             transform: "translateX(-50%)",
                           }}
                         >
-                          <div className="border border-[#23180d] bg-[#fffdf8] px-4 py-2">
-                            <p className="whitespace-nowrap text-xs font-black uppercase tracking-[0.22em] text-[#23180d]">
+                          <div className="border border-[var(--treaty-ink)] bg-[#fffdf8] px-4 py-2">
+                            <p className="whitespace-nowrap text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink)]">
                               Slide me
                             </p>
                           </div>
@@ -696,7 +696,7 @@ export function TreatyVoteFlow({
                             top: "16px",
                           }}
                         >
-                          <div className="h-8 w-px bg-[#23180d]" />
+                          <div className="h-8 w-px bg-[var(--treaty-ink)]" />
                         </motion.div>
                       </>
                     )}
@@ -710,10 +710,10 @@ export function TreatyVoteFlow({
                     onChange={(e) =>
                       handleSliderChange(100 - Number(e.target.value))
                     }
-                    className="h-3 w-full cursor-pointer appearance-none rounded-none border border-[#23180d] bg-[#fbf7ee] slider-treaty"
+                    className="h-3 w-full cursor-pointer appearance-none rounded-none border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] slider-treaty"
                     style={{
-                      background: `linear-gradient(to right, #23180d ${militaryAllocation}%, #d8c7a4 ${militaryAllocation}%)`,
-                      accentColor: "#23180d",
+                      background: `linear-gradient(to right, var(--treaty-ink) ${militaryAllocation}%, #d8c7a4 ${militaryAllocation}%)`,
+                      accentColor: "var(--treaty-ink)",
                     }}
                   />
                 </div>
@@ -767,7 +767,7 @@ export function TreatyVoteFlow({
                 <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
                   Your governments spend{" "}
                   <br className="hidden sm:block" />
-                  <span className="font-black text-[#23180d]">
+                  <span className="font-black text-[var(--treaty-ink)]">
                     $<ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} />
                   </span>{" "}
                   {VOTE_SECTION.realityCheck}
@@ -779,26 +779,26 @@ export function TreatyVoteFlow({
                 would increase clinical trial capacity by{" "}
                 <ParameterValue
                   param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-                  className="font-black text-[#23180d]"
+                  className="font-black text-[var(--treaty-ink)]"
                   display="withUnit"
                   figures={2}
                 />
                 , compressing disease eradication from{" "}
                 <ParameterValue
                   param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-                  className="font-black text-[#23180d]"
+                  className="font-black text-[var(--treaty-ink)]"
                   figures={3}
                 />{" "}
                 years to{" "}
                 <ParameterValue
                   param={DFDA_QUEUE_CLEARANCE_YEARS}
-                  className="font-black text-[#23180d]"
+                  className="font-black text-[var(--treaty-ink)]"
                   figures={2}
                 />
                 {" "}years.
               </TreatyFlowParagraph>
 
-              <div className="text-center text-xl font-black leading-tight text-[#23180d] sm:text-3xl md:text-4xl">
+              <div className="text-center text-xl font-black leading-tight text-[var(--treaty-ink)] sm:text-3xl md:text-4xl">
                 {copyMode === "neutral"
                   ? "Should governments redirect 1% of military spending to pragmatic clinical trials?"
                   : VOTE_SECTION.theQuestion}
@@ -845,7 +845,7 @@ export function TreatyVoteFlow({
               duration: 0.35,
               ease: [0.87, 0, 0.13, 1],
             }}
-            className="fixed inset-0 z-[150] overflow-y-auto bg-[#fbf7ee]"
+            className="fixed inset-0 z-[150] overflow-y-auto bg-[var(--treaty-paper)]"
           >
             {status === "authenticated" && postVoteCompletion === "share" ? (
               <TreatyPostVoteShareFlow
@@ -860,10 +860,10 @@ export function TreatyVoteFlow({
             ) : status === "authenticated" ? (
               <TreatyFlowShell contentClassName="max-w-2xl">
                 <div className="space-y-4 text-center">
-                  <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
+                  <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
                     Response saved.
                   </p>
-                  <p className="text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+                  <p className="text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
                     Your verified survey response has been recorded.
                   </p>
                 </div>
@@ -871,14 +871,14 @@ export function TreatyVoteFlow({
             ) : (
               <TreatyFlowShell contentClassName="max-w-2xl">
                 <div className="space-y-4">
-                  <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
+                  <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
                     {copyMode === "neutral"
                       ? "Save Your Response"
                       : isContextFirstVariant
                         ? "Vote counted."
                         : "Save Your Vote"}
                   </p>
-                  <p className="text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+                  <p className="text-center text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
                     {copyMode === "neutral" ? (
                       <>
                         Verify so your survey response counts in the final tally.
@@ -898,12 +898,12 @@ export function TreatyVoteFlow({
                         for saving{" "}
                         <ParameterValue
                           param={VOTER_LIVES_SAVED}
-                          className="font-black text-[#23180d]"
+                          className="font-black text-[var(--treaty-ink)]"
                         />{" "}
                         lives and preventing{" "}
                         <ParameterValue
                           param={VOTER_SUFFERING_HOURS_PREVENTED}
-                          className="font-black text-[#23180d]"
+                          className="font-black text-[var(--treaty-ink)]"
                         />{" "}
                         hours of suffering.
                       </>
@@ -934,7 +934,7 @@ export function TreatyVoteFlow({
       <style jsx global>{`
         input.slider-treaty {
           appearance: none;
-          accent-color: #23180d;
+          accent-color: var(--treaty-ink);
         }
 
         .slider-treaty::-webkit-slider-thumb {

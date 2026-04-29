@@ -41,10 +41,10 @@ export function SignatoriesLeaderboard({
     <section id="signatories" className="mt-16 border-t-2 border-foreground pt-12">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 space-y-4 text-center">
-          <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
+          <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
             The People Who Ended War and Disease
           </h2>
-          <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
+          <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
             War is a barbaric mass cruelty like slavery. It will be allowed to continue until enough people are brave enough to publicly state that it is morally wrong and incredibly stupid. These are those people.
           </p>
         </div>

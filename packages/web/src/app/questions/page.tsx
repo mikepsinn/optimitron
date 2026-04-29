@@ -7,8 +7,8 @@ export const metadata = getRouteMetadata(questionsLink);
 
 export default function QuestionsPage() {
   return (
-    <div className="min-h-screen bg-[#fbf7ee]">
-      <section id="vote" className="min-h-screen bg-[#fbf7ee]">
+    <div className="min-h-screen bg-[var(--treaty-paper)]">
+      <section id="vote" className="min-h-screen bg-[var(--treaty-paper)]">
         <TreatyVoteFlow
           authCallbackUrl={ROUTES.humanityManagementTraining}
           defaultFlowVariant={TREATY_FLOW_VARIANTS.contextFirstV2}

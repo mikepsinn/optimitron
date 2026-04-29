@@ -101,7 +101,7 @@ function MessageModeToggle({
   return (
     <div
       aria-label="Message mode"
-      className="grid grid-cols-2 overflow-hidden border border-[#23180d]"
+      className="grid grid-cols-2 overflow-hidden border border-[var(--treaty-ink)]"
       role="group"
     >
       {options.map((option, index) => {
@@ -111,10 +111,10 @@ function MessageModeToggle({
             aria-pressed={selected}
             className={[
               "min-h-14 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.16em] transition-colors sm:text-sm",
-              index > 0 ? "border-l border-[#23180d]" : "",
+              index > 0 ? "border-l border-[var(--treaty-ink)]" : "",
               selected
-                ? "bg-[#23180d] text-[#fffaf0]"
-                : "bg-[#fbf7ee] text-[#23180d] hover:bg-[#efe4cf]",
+                ? "bg-[var(--treaty-ink)] text-[#fffaf0]"
+                : "bg-[var(--treaty-paper)] text-[var(--treaty-ink)] hover:bg-[#efe4cf]",
             ].join(" ")}
             key={option.value}
             onClick={() => onChange(option.value)}
@@ -678,17 +678,17 @@ export function HumanityManagementTrainingFlow({
         return (
           <>
             <div className="space-y-6">
-              <p className="text-center text-xs font-black uppercase tracking-[0.24em] text-[#5e513f]">
+              <p className="text-center text-xs font-black uppercase tracking-[0.24em] text-[var(--treaty-ink-muted)]">
                 Humanity Management Training
               </p>
-              <h1 className="text-center text-3xl font-black uppercase leading-tight text-[#23180d] sm:text-5xl">
+              <h1 className="text-center text-3xl font-black uppercase leading-tight text-[var(--treaty-ink)] sm:text-5xl">
                 You are now a Humanity Manager
               </h1>
               <TreatyFlowParagraph>
                 Earth Optimization Services, LLC has assigned you one tiny
                 management task: get two humans to vote on the 1% Treaty.
               </TreatyFlowParagraph>
-              <div className="border-y border-[#23180d]/30 py-5 text-center text-lg font-black leading-8 text-[#23180d] sm:text-left">
+              <div className="border-y border-[var(--treaty-ink)]/30 py-5 text-center text-lg font-black leading-8 text-[var(--treaty-ink)] sm:text-left">
                 <p>
                   Your vote: <ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of suffering prevented.
                 </p>
@@ -715,14 +715,14 @@ export function HumanityManagementTrainingFlow({
         return (
           <>
             <div className="space-y-5">
-              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[#5e513f]">
+              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
                 First task: public signal
               </p>
               <TreatyFlowParagraph>
                 Share your referral URL first. It is the lowest-effort way to
                 start the lineage before you make two direct asks.
               </TreatyFlowParagraph>
-              <p className="break-all border border-[#23180d] bg-[#fffdf8] px-3 py-3 text-sm font-bold leading-6 text-[#23180d]">
+              <p className="break-all border border-[var(--treaty-ink)] bg-[#fffdf8] px-3 py-3 text-sm font-bold leading-6 text-[var(--treaty-ink)]">
                 {referralUrl}
               </p>
             </div>
@@ -787,7 +787,7 @@ export function HumanityManagementTrainingFlow({
               </Button>
             </TreatyFlowButtonRow>
             {shareCopyState === "error" ? (
-              <p className="border border-[#23180d] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[#23180d]">
+              <p className="border border-[var(--treaty-ink)] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[var(--treaty-ink)]">
                 Copy failed.
               </p>
             ) : null}
@@ -798,7 +798,7 @@ export function HumanityManagementTrainingFlow({
         return (
           <>
             <div className="space-y-5">
-              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[#5e513f]">
+              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
                 {formatCompletedCount(completedCount)} assigned. Goal: 2 voting tasks.
               </p>
               <TreatyFlowParagraph>
@@ -925,7 +925,7 @@ export function HumanityManagementTrainingFlow({
                   ? `Call ${displayName}. Use the message as your script if your brain politely blanks.`
                   : `Send it to ${displayName}, then come back here when it is actually sent.`}
               </TreatyFlowParagraph>
-              <p className="border-y border-[#23180d]/30 py-4 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left">
+              <p className="border-y border-[var(--treaty-ink)]/30 py-4 text-center text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] sm:text-left">
                 One completed assignment creates a private Earth optimization
                 task for this person and lets your dashboard track whether they vote.
               </p>
@@ -946,7 +946,7 @@ export function HumanityManagementTrainingFlow({
         return (
           <>
             <div className="space-y-4">
-              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[#5e513f]">
+              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
                 Training progress: {formatCompletedCount(completedCount)} assigned
               </p>
               <TreatyFlowParagraph>
@@ -972,7 +972,7 @@ export function HumanityManagementTrainingFlow({
         return (
           <>
             <div className="space-y-4">
-              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[#5e513f]">
+              <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
                 Humanity Management Training complete
               </p>
               <TreatyFlowParagraph>
@@ -1012,7 +1012,7 @@ export function HumanityManagementTrainingFlow({
       <div className="space-y-6 p-5">
         {renderScreen()}
         {error ? (
-          <p className="border border-[#23180d] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[#23180d]">
+          <p className="border border-[var(--treaty-ink)] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[var(--treaty-ink)]">
             {error}
           </p>
         ) : null}

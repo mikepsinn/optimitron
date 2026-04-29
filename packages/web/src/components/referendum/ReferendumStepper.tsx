@@ -228,29 +228,29 @@ const stepperMarkdownComponents = {
 
 const readerMarkdownComponents = {
   h1: ({ children }: { children?: ReactNode }) => (
-    <h1 className="text-center text-4xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
+    <h1 className="text-center text-4xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
       {children}
     </h1>
   ),
   h2: ({ children }: { children?: ReactNode }) => (
-    <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl">
+    <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl">
       {children}
     </h2>
   ),
   h3: ({ children }: { children?: ReactNode }) => (
-    <h3 className="text-center text-2xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
+    <h3 className="text-center text-2xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
       {children}
     </h3>
   ),
   p: ({ children }: { children?: ReactNode }) => (
-    <p className="mb-8 text-left text-lg leading-9 text-[#2f2417] drop-cap [font-family:var(--v0-font-libre-baskerville)] last:mb-0 sm:mb-10 sm:text-[1.35rem]">
+    <p className="mb-8 text-left text-lg leading-9 text-[var(--treaty-ink-soft)] drop-cap [font-family:var(--v0-font-libre-baskerville)] last:mb-0 sm:mb-10 sm:text-[1.35rem]">
       {children}
     </p>
   ),
   a: ({ href, children }: { href?: string; children?: ReactNode }) => {
     const target = href ?? "#";
     const linkClass =
-      "font-black text-[#5e2e1f] underline decoration-[#8e6b48]/60 decoration-2 underline-offset-4 transition-colors hover:text-[#2f2417] hover:decoration-[#2f2417]";
+      "font-black text-[#5e2e1f] underline decoration-[#8e6b48]/60 decoration-2 underline-offset-4 transition-colors hover:text-[var(--treaty-ink-soft)] hover:decoration-[var(--treaty-ink-soft)]";
     if (target.startsWith("http")) {
       return (
         <a href={target} target="_blank" rel="noreferrer" className={linkClass}>
@@ -566,7 +566,7 @@ export function ReferendumStepper({
           className={
             isStepperMode
               ? "text-center text-2xl leading-relaxed text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl"
-              : "text-center text-2xl leading-relaxed text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl"
+              : "text-center text-2xl leading-relaxed text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl"
           }
         >
           {introText}
@@ -685,7 +685,7 @@ export function ReferendumStepper({
           <div className="mx-auto w-full max-w-4xl">
             <div className="mx-auto mb-10 h-px w-24 bg-[#8e6b48]/40" />
             <div className="mx-auto w-full max-w-2xl space-y-10">
-              <p className="text-center text-2xl leading-relaxed text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
+              <p className="text-center text-2xl leading-relaxed text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
                 {introText}
               </p>
               {slides.map((slide, i) => (

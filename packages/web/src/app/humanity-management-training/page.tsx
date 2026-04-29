@@ -36,7 +36,7 @@ export default async function HumanityManagementTrainingPage() {
   ].filter((status) => status === TaskStatus.VERIFIED).length;
 
   return (
-    <div className="min-h-screen bg-[#fbf7ee]">
+    <div className="min-h-screen bg-[var(--treaty-paper)]">
       <HumanityManagementTrainingFlow
         initialCompletedContactCount={initialCompletedContactCount}
         initialShareCompleted={
