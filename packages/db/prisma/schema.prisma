@@ -3081,6 +3081,9 @@ model ReferendumVote {
   /// Who brought this voter in via referral link
   referredByUserId String?
 
+  /// Organization context for partner-hosted survey or embed attribution
+  organizationId String?
+
   /// When this record was created
   createdAt DateTime @default(now())
 
@@ -3094,12 +3097,14 @@ model ReferendumVote {
   user                        User                @relation("UserReferendumVotes", fields: [userId], references: [id], onDelete: Cascade)
   referendum                  Referendum          @relation(fields: [referendumId], references: [id])
   referrer                    User?               @relation("UserReferendumReferrals", fields: [referredByUserId], references: [id])
+  organization                Organization?       @relation("OrganizationReferendumVotes", fields: [organizationId], references: [id])
   convertedReferralInvitation ReferralInvitation? @relation("ReferralInvitationConvertedVote")
 
   @@unique([userId, referendumId])
   @@index([userId])
   @@index([referendumId])
   @@index([referredByUserId])
+  @@index([organizationId])
   @@index([createdAt])
 }
 
@@ -3426,6 +3431,8 @@ model Organization {
   authoredTaskComments       TaskComment[]                    @relation("TaskCommentAuthorOrganization")
   receivedTaskCommunications TaskCommunication[]              @relation("TaskCommunicationRecipientOrganization")
   referendumPositions        OrganizationReferendumPosition[]
+  referendumVotes            ReferendumVote[]                 @relation("OrganizationReferendumVotes")
+  surveyResponses            SurveyResponse[]                 @relation("OrganizationSurveyResponses")
 
   @@index([slug])
   @@index([type])
@@ -4827,6 +4834,9 @@ model SurveyResponse {
   /// The user who submitted the response
   userId String
 
+  /// Organization context for partner-hosted survey or embed attribution
+  organizationId String?
+
   /// Total score (for knowledge assessments)
   totalScore Float?
 
@@ -4840,13 +4850,15 @@ model SurveyResponse {
   updatedAt DateTime @updatedAt
 
   // -- Relations --
-  survey  Survey             @relation(fields: [surveyId], references: [id])
-  user    User               @relation("UserSurveyResponses", fields: [userId], references: [id], onDelete: Cascade)
-  answers QuestionResponse[]
+  survey       Survey             @relation(fields: [surveyId], references: [id])
+  user         User               @relation("UserSurveyResponses", fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization?      @relation("OrganizationSurveyResponses", fields: [organizationId], references: [id])
+  answers      QuestionResponse[]
 
   @@unique([surveyId, userId])
   @@index([surveyId])
   @@index([userId])
+  @@index([organizationId])
 }
 
 /// A single question answer within a survey response

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   activityCreate: vi.fn(),
   checkBadgesAfterWish: vi.fn(),
+  organizationFindUnique: vi.fn(),
   requireAuth: vi.fn(),
   findUnique: vi.fn(),
   grantWishes: vi.fn(),
@@ -13,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   convertReferralInvitationForVote: vi.fn(),
   ensurePersonForUser: vi.fn(),
   ensureUserTreatyTask: vi.fn(),
+  verifyOrgContextToken: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -22,6 +24,7 @@ vi.mock("@/lib/auth-utils", () => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     activity: { create: mocks.activityCreate },
+    organization: { findUnique: mocks.organizationFindUnique },
     referendum: { findUnique: mocks.findUnique },
     referendumVote: { upsert: mocks.upsert },
   },
@@ -46,6 +49,10 @@ vi.mock("@/lib/person.server", () => ({
 
 vi.mock("@/lib/tasks/user-treaty-task.server", () => ({
   ensureUserTreatyTask: mocks.ensureUserTreatyTask,
+}));
+
+vi.mock("@/lib/organization-context-token.server", () => ({
+  verifyOrgContextToken: mocks.verifyOrgContextToken,
 }));
 
 vi.mock("@/lib/wishes.server", () => ({
@@ -88,6 +95,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.activityCreate.mockResolvedValue({ id: "activity_1" });
     mocks.checkBadgesAfterWish.mockResolvedValue(undefined);
     mocks.grantWishes.mockResolvedValue(null);
+    mocks.organizationFindUnique.mockResolvedValue(null);
     mocks.syncReferralVoteTokenMintForVote.mockResolvedValue(null);
     mocks.resolveInvitationReferrer.mockResolvedValue(null);
     mocks.convertReferralInvitationForVote.mockResolvedValue(null);
@@ -102,6 +110,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
         shareReferralUrl: "task_share",
       },
     });
+    mocks.verifyOrgContextToken.mockReturnValue({ ok: false, reason: "no-token" });
   });
 
   it("returns 401 when unauthenticated", async () => {
@@ -567,5 +576,165 @@ describe("POST /api/referendums/[slug]/vote", () => {
       referrerUserId: "referrer_1",
       referendumId: "ref_1",
     });
+  });
+
+  it("stores verified organization attribution alongside personal referral credit", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.findUserByUsernameOrReferralCode.mockResolvedValue({ id: "referrer_1" });
+    mocks.verifyOrgContextToken.mockReturnValue({
+      ok: true,
+      organizationId: "org_1",
+      payload: {
+        organizationId: "org_1",
+        issuedAt: "2026-04-29T00:00:00.000Z",
+        expiresAt: "2026-05-06T00:00:00.000Z",
+        sessionSalt: "salt",
+      },
+    });
+    mocks.organizationFindUnique.mockResolvedValue({
+      id: "org_1",
+      status: "APPROVED",
+      deletedAt: null,
+    });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+      referredByUserId: "referrer_1",
+      organizationId: "org_1",
+    });
+
+    await POST(
+      makeRequest("test-ref", {
+        answer: "YES",
+        ref: "friend123",
+        orgContextToken: "signed-org-token",
+      }),
+      makeParams("test-ref"),
+    );
+
+    expect(mocks.verifyOrgContextToken).toHaveBeenCalledWith("signed-org-token");
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // Org attribution is first-org-wins: set on create, never on update.
+        update: expect.not.objectContaining({ organizationId: expect.anything() }),
+        create: expect.objectContaining({
+          referredByUserId: "referrer_1",
+          organizationId: "org_1",
+        }),
+      }),
+    );
+  });
+
+  it("does not overwrite existing organization attribution on a revote", async () => {
+    // The upsert.update branch must never carry organizationId — first org wins.
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.verifyOrgContextToken.mockReturnValue({
+      ok: true,
+      organizationId: "org_b",
+      payload: {
+        organizationId: "org_b",
+        issuedAt: "2026-04-29T00:00:00.000Z",
+        expiresAt: "2026-05-06T00:00:00.000Z",
+        sessionSalt: "salt",
+      },
+    });
+    mocks.organizationFindUnique.mockResolvedValue({
+      id: "org_b",
+      status: "APPROVED",
+      deletedAt: null,
+    });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_1",
+      answer: "NO",
+      userId: "user_1",
+      referendumId: "ref_1",
+    });
+
+    await POST(
+      makeRequest("test-ref", { answer: "NO", orgContextToken: "org-b-token" }),
+      makeParams("test-ref"),
+    );
+
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.not.objectContaining({ organizationId: expect.anything() }),
+        // create still carries the new org so a brand-new voter from Org B is attributed.
+        create: expect.objectContaining({ organizationId: "org_b" }),
+      }),
+    );
+  });
+
+  it("does not attribute an organization when the token signature is invalid", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.verifyOrgContextToken.mockReturnValue({ ok: false, reason: "bad-signature" });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+    });
+
+    await POST(
+      makeRequest("test-ref", { answer: "YES", orgContextToken: "tampered-token" }),
+      makeParams("test-ref"),
+    );
+
+    expect(mocks.organizationFindUnique).not.toHaveBeenCalled();
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.not.objectContaining({ organizationId: expect.anything() }),
+        create: expect.not.objectContaining({ organizationId: expect.anything() }),
+      }),
+    );
+  });
+
+  it("ignores signed organization attribution when the organization is no longer approved", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.verifyOrgContextToken.mockReturnValue({
+      ok: true,
+      organizationId: "org_1",
+      payload: {
+        organizationId: "org_1",
+        issuedAt: "2026-04-29T00:00:00.000Z",
+        expiresAt: "2026-05-06T00:00:00.000Z",
+        sessionSalt: "salt",
+      },
+    });
+    mocks.organizationFindUnique.mockResolvedValue({
+      id: "org_1",
+      status: "REJECTED",
+      deletedAt: null,
+    });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+    });
+
+    await POST(
+      makeRequest("test-ref", {
+        answer: "YES",
+        orgContextToken: "signed-org-token",
+      }),
+      makeParams("test-ref"),
+    );
+
+    expect(mocks.organizationFindUnique).toHaveBeenCalledWith({
+      where: { id: "org_1" },
+      select: { id: true, status: true, deletedAt: true },
+    });
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.not.objectContaining({ organizationId: "org_1" }),
+        create: expect.not.objectContaining({ organizationId: "org_1" }),
+      }),
+    );
   });
 });

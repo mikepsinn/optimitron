@@ -19,7 +19,7 @@ export function NeobrutalistLoader({ message = 'Loading...', size = 'md' }: Neob
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className={`${sizeClasses[size]} border-4 border-primary bg-brutal-pink rounded-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+            className={`${sizeClasses[size]} border-4 border-foreground bg-brutal-pink rounded-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
             style={{
               animation: `bounce 1.4s ease-in-out ${i * 0.16}s infinite`,
             }}
@@ -30,7 +30,7 @@ export function NeobrutalistLoader({ message = 'Loading...', size = 'md' }: Neob
       {/* Loading Message */}
       {message && (
         <div className="relative">
-          <div className="text-xl font-black uppercase tracking-wider border-4 border-primary bg-background px-6 py-3 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="text-xl font-black uppercase tracking-wider border-4 border-foreground bg-background px-6 py-3 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             {message}
           </div>
         </div>
@@ -67,7 +67,7 @@ export function NeobrutalistSpinner({ message, size = 'md' }: NeobrutalistLoader
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-6">
       <div
-        className={`${sizeClasses[size]} border-4 border-primary bg-brutal-cyan rounded-sm shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
+        className={`${sizeClasses[size]} border-4 border-foreground bg-brutal-cyan rounded-sm shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
         style={{
           animation: 'spin 1s ease-in-out infinite',
         }}
@@ -100,44 +100,44 @@ export function NeobrutalistCardLoader({ count = 3 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="border-4 border-primary bg-background rounded-lg shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+          className="border-4 border-foreground bg-background rounded-lg shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
         >
           {/* Header */}
-          <div className="p-6 border-b-4 border-primary bg-gradient-to-r from-gray-50 to-gray-100">
+          <div className="p-6 border-b-4 border-foreground bg-muted">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-full bg-gray-300 border-4 border-primary animate-pulse" />
-              <div className="h-6 bg-gray-300 border-4 border-primary rounded w-48 animate-pulse" />
+              <div className="w-8 h-8 rounded-full bg-muted border-2 border-foreground animate-pulse" />
+              <div className="h-6 bg-muted border-2 border-foreground rounded w-48 animate-pulse" />
             </div>
-            <div className="h-4 bg-gray-200 border-4 border-primary rounded w-64 animate-pulse" />
+            <div className="h-4 bg-muted border-2 border-foreground rounded w-64 animate-pulse" />
           </div>
 
           {/* Content */}
           <div className="p-6 space-y-4">
             {/* Progress bar */}
-            <div className="h-3 bg-gray-200 border-4 border-primary rounded-full overflow-hidden">
+            <div className="h-3 bg-muted border-2 border-foreground rounded-full overflow-hidden">
               <div
-                className="h-full bg-brutal-pink border-r-2 border-primary animate-pulse"
+                className="h-full bg-brutal-pink border-r-2 border-foreground animate-pulse"
                 style={{ width: '60%' }}
               />
             </div>
 
-            {/* Tags */}
+            {/* Side effects */}
             <div className="flex gap-2 flex-wrap">
               {[1, 2, 3].map((j) => (
                 <div
                   key={j}
-                  className="h-7 bg-yellow-100 border-4 border-primary rounded-full w-24 animate-pulse"
+                  className="h-7 bg-brutal-yellow border-2 border-foreground rounded-full w-24 animate-pulse"
                   style={{ animationDelay: `${j * 0.1}s` }}
                 />
               ))}
             </div>
 
-            {/* Badges */}
+            {/* Phases */}
             <div className="flex gap-2">
               {[1, 2].map((j) => (
                 <div
                   key={j}
-                  className="h-7 bg-blue-100 border-4 border-primary rounded-full w-20 animate-pulse"
+                  className="h-7 bg-brutal-cyan border-2 border-foreground rounded-full w-20 animate-pulse"
                   style={{ animationDelay: `${j * 0.15}s` }}
                 />
               ))}

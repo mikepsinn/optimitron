@@ -19,6 +19,19 @@
 
 Detailed docs live in `docs/`. Read the relevant ones before working:
 - `docs/TYPE_SYSTEM.md` — How types flow from Prisma → all packages
+- `docs/h2ewd.md` — Wishonia/H2EWD voice for public-facing persuasion copy
+
+## Public Copy Rules
+
+Before writing or editing any public-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, or partner copy, read `docs/h2ewd.md` and apply that voice.
+
+- Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
+- Speak directly to the specific human or organization that should do something.
+- Make the action obvious, then show the value to them for doing it.
+- Be funny when the surface allows it. Dry, concrete, slightly alien, and useful beats cute or verbose.
+- Do not leak implementation or planning terms into user copy: "site variant", "program graph", "initiative landing page", "approved organizations get", "route allowlist", etc.
+- Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.
+- For treaty/vote/referral copy, optimize for voting, sharing, embedding, and task completion, not explaining the whole system.
 
 
 ## Critical Architecture Rules

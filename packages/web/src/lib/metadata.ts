@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 
 import type { NavItem } from "./routes";
 import type { SiteConfig } from "./site";
+import {
+  getSiteIcons,
+  getSiteManifestPath,
+  getSiteSocialImage,
+  getSiteTwitterImage,
+} from "./site-assets";
 
 const SITE_NAME = "Optimitron";
 
@@ -67,7 +73,7 @@ export function getSiteMetadata(
       title: page.title,
       description: page.description,
       siteName: site.name,
-      images: [site.ogImage],
+      images: [getSiteSocialImage(site)],
       type: "website",
       ...openGraph,
     },
@@ -75,7 +81,7 @@ export function getSiteMetadata(
       card: "summary_large_image",
       title: page.title,
       description: page.description,
-      images: [site.rootMetadata.twitterImage],
+      images: [getSiteTwitterImage(site)],
       ...twitter,
     },
     ...restOverrides,
@@ -102,7 +108,7 @@ export function getRootSiteMetadata(
       title: root.openGraphTitle,
       description: root.openGraphDescription,
       siteName: site.name,
-      images: [root.openGraphImage],
+      images: [getSiteSocialImage(site)],
       type: "website",
       ...openGraph,
     },
@@ -110,9 +116,38 @@ export function getRootSiteMetadata(
       card: "summary_large_image",
       title: root.twitterTitle,
       description: root.twitterDescription,
-      images: [root.twitterImage],
+      images: [getSiteTwitterImage(site)],
       ...twitter,
     },
     ...restOverrides,
+  };
+}
+
+export function getRootLayoutMetadata(site: SiteConfig): Metadata {
+  const metadata = site.rootMetadata;
+
+  return {
+    metadataBase: new URL(site.canonicalOrigin),
+    applicationName: site.name,
+    creator: site.organizationName,
+    publisher: site.organizationName,
+    title: metadata.title,
+    description: metadata.description,
+    keywords: metadata.keywords,
+    openGraph: {
+      siteName: site.name,
+      title: metadata.openGraphTitle,
+      description: metadata.openGraphDescription,
+      type: "website",
+      images: [getSiteSocialImage(site)],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: metadata.twitterTitle,
+      description: metadata.twitterDescription,
+      images: [getSiteTwitterImage(site)],
+    },
+    icons: getSiteIcons(site),
+    manifest: getSiteManifestPath(site),
   };
 }

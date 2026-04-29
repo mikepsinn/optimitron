@@ -6,6 +6,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { SiteStructuredData } from "@/components/site/SiteStructuredData";
 import { SiteChrome } from "@/components/site/SiteChrome";
+import { getRootLayoutMetadata } from "@/lib/metadata";
 import { RequestSiteOriginProvider } from "@/lib/request-site-origin";
 import { getRequestSiteOrigin, getSiteFromHost } from "@/lib/site";
 import { DEFAULT_THEME } from "@/lib/theme";
@@ -57,39 +58,8 @@ const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.v
 export async function generateMetadata(): Promise<Metadata> {
   const headerStore = await headers();
   const site = getSiteFromHost(headerStore.get("host"));
-  const metadata = site.rootMetadata;
 
-  return {
-    metadataBase: new URL(site.canonicalOrigin),
-    applicationName: site.name,
-    creator: site.organizationName,
-    publisher: site.organizationName,
-    title: metadata.title,
-    description: metadata.description,
-    keywords: metadata.keywords,
-    openGraph: {
-      siteName: site.name,
-      title: metadata.openGraphTitle,
-      description: metadata.openGraphDescription,
-      type: "website",
-      images: [metadata.openGraphImage],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: metadata.twitterTitle,
-      description: metadata.twitterDescription,
-      images: [metadata.twitterImage],
-    },
-    icons: {
-      icon: [
-        { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
-        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      ],
-      apple: "/apple-touch-icon.png",
-      shortcut: "/favicon.ico",
-    },
-    manifest: "/manifest.json",
-  };
+  return getRootLayoutMetadata(site);
 }
 
 export default async function RootLayout({

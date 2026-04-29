@@ -117,10 +117,8 @@ export function ComparativeEffectivenessSection() {
                     </div>
                     <div className="flex flex-wrap gap-2 mt-4">
                       <a
-                        href={`https://dfda.earth/conditions/${selected.toLowerCase().replace(/\s+/g, '-')}/treatments/${intervention.name.toLowerCase().replace(/\s+/g, '-')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center rounded-full bg-brutal-cyan px-3 py-1 text-xs font-medium text-brutal-cyan-foreground border border-brutal-cyan hover:opacity-80 transition-colors"
+                        href={`/agencies/dfda/conditions/${selected.toLowerCase().replace(/\s+/g, '-')}/treatments/${intervention.name.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="inline-flex items-center rounded-full bg-brutal-cyan px-3 py-1 text-xs font-bold text-brutal-cyan-foreground border border-brutal-cyan hover:opacity-80 transition-colors"
                       >
                         More Details
                       </a>

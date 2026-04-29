@@ -127,6 +127,34 @@ describe("referendum vote sync", () => {
     });
   });
 
+  it("posts signed organization context with a pending treaty vote", async () => {
+    mocks.getPendingDeclarationVote.mockReturnValue(null);
+    mocks.getPendingTreatyVote.mockReturnValue({
+      answer: "YES",
+      referredBy: "ref-user",
+      timestamp: "2026-03-23T12:00:00.000Z",
+      organizationId: null,
+      orgContextToken: "signed-org-token",
+    });
+
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await syncPendingReferendumVotes({ user: { id: "u1" } } as never);
+
+    const voteRequest = fetchMock.mock.calls.find(
+      ([url]) => url === `/api/referendums/${TREATY_REFERENDUM_SLUG}/vote`,
+    );
+    expect(voteRequest).toBeDefined();
+    expect(JSON.parse(String(voteRequest?.[1]?.body))).toEqual(
+      expect.objectContaining({
+        answer: "YES",
+        ref: "ref-user",
+        orgContextToken: "signed-org-token",
+      }),
+    );
+  });
+
   it("syncs an allocation-only treaty entry without clearing storage", async () => {
     mocks.getPendingDeclarationVote.mockReturnValue(null);
     mocks.getPendingTreatyVote.mockReturnValue({

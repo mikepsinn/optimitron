@@ -27,6 +27,7 @@ export type PendingTreatyVoteState = {
   timestamp: string;
   wishocraticAllocation?: PendingWishocraticAllocation;
   organizationId: string | null;
+  orgContextToken?: string | null;
   inviteToken?: string | null;
 };
 

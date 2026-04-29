@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getRootLayoutMetadata,
   getRootSiteMetadata,
   getSiteMetadata,
   getRouteMetadata,
@@ -30,7 +31,9 @@ describe("metadata helpers", () => {
     expect(metadata.metadataBase?.toString()).toBe("https://1percenttreaty.org/");
     expect(metadata.alternates?.canonical).toBe("/why");
     expect(metadata.openGraph?.siteName).toBe("1% Treaty");
-    expect(metadata.twitter?.images).toEqual(["/api/og/one-percent-treaty"]);
+    expect(metadata.twitter?.images).toEqual([
+      "/site-assets/treaty/treaty-og-1200x630.png",
+    ]);
     expect(metadata.robots).toEqual({ index: true, follow: true });
   });
 
@@ -46,6 +49,32 @@ describe("metadata helpers", () => {
     expect(optimitronMetadata.title).toContain("Optimitron");
     expect(optimitronMetadata.openGraph?.images).toEqual([
       expect.objectContaining({ url: "/og-image.jpg" }),
+    ]);
+  });
+
+  it("builds root layout metadata with isolated manifest, icons, and social image", () => {
+    const metadata = getRootLayoutMetadata(
+      getSiteConfig("trialAbundanceSurvey"),
+    );
+
+    expect(metadata.manifest).toBe(
+      "/manifest.webmanifest?site=trialAbundanceSurvey",
+    );
+    expect(metadata.icons).toEqual(
+      expect.objectContaining({
+        shortcut:
+          "/site-assets/survey/favicon.ico",
+        apple:
+          "/site-assets/survey/apple-touch-icon.png",
+      }),
+    );
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({
+        url: "/site-assets/survey/survey-og-1200x630.png",
+      }),
+    ]);
+    expect(metadata.twitter?.images).toEqual([
+      "/site-assets/survey/survey-og-1200x630.png",
     ]);
   });
 });

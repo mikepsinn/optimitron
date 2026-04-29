@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { issueOrgContextToken } from "@/lib/reasoning/org-context.server";
+import { issueOrgContextToken } from "@/lib/organization-context-token.server";
 
 const schema = z.object({
   organizationId: z.string().min(1),

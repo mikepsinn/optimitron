@@ -38,6 +38,7 @@ async function postVote(
   answer: string,
   referredBy: string | null,
   inviteToken?: string | null,
+  orgContextToken?: string | null,
 ): Promise<boolean> {
   try {
     const res = await fetch(`/api/referendums/${slug}/vote`, {
@@ -47,6 +48,7 @@ async function postVote(
         answer,
         ref: referredBy ?? undefined,
         inviteToken: inviteToken ?? undefined,
+        orgContextToken: orgContextToken ?? undefined,
       }),
     });
     return res.ok;
@@ -184,6 +186,7 @@ const treatyConfig: ReferendumConfig = {
       inviteToken: null,
       timestamp: new Date().toISOString(),
       organizationId: null,
+      orgContextToken: null,
     }),
   clearPendingVote: () => storage.removePendingTreatyVote(),
   syncPending: async (session) => {
@@ -203,6 +206,7 @@ const treatyConfig: ReferendumConfig = {
           pending.answer,
           pending.referredBy,
           pending.inviteToken,
+          pending.orgContextToken,
         )
       : true;
 

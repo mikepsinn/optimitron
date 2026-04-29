@@ -22,6 +22,7 @@ export const ROUTES = {
   home: "/",
   // Optimized Governance
   agencies: "/agencies",
+  dfda: "/agencies/dfda",
   dcongress: "/agencies/dcongress",
   wishocracy: "/agencies/dcongress/wishocracy",
   referendum: "/agencies/dcongress/referendums",
@@ -39,6 +40,8 @@ export const ROUTES = {
   legislation: "/legislation",
   dgao: "/agencies/dgao",
   dih: "/agencies/dih",
+  conditions: "/agencies/dfda/conditions",
+  treatments: "/agencies/dfda/treatments",
   ddod: "/agencies/ddod",
   dcensus: "/agencies/dcensus",
   // discoveries route deleted — use dfdaLink (external) instead
@@ -159,23 +162,47 @@ export const obgLink: NavItem = {
 };
 
 export const dihLink: NavItem = {
-  href: "https://dih.earth",
+  href: ROUTES.dih,
   label: AGENCIES.dih.dName,
   emoji: "🧬",
-  description: AGENCIES.dih.description,
-  tagline: AGENCIES.dih.tagline,
-  external: true,
-  cta: "Visit dIH.earth",
+  description:
+    "Open the Optimitron agency for funding disease-focused institutes. The NIH, but pointed at measurable health instead of grant-page archaeology.",
+  tagline: "Fund institutes that turn disease queues into work queues",
+  matchPrefixes: [ROUTES.dih],
+  cta: "Open DIH",
 };
 
 export const dfdaLink: NavItem = {
-  href: "https://dfda.earth",
+  href: ROUTES.dfda,
   label: AGENCIES.dfda.dName,
   emoji: "💊",
-  description: AGENCIES.dfda.description,
-  tagline: AGENCIES.dfda.tagline,
-  external: true,
-  cta: "Visit dFDA.earth",
+  description:
+    "Open the Optimitron agency for conditions, treatments, trials, and outcome labels. Drug evidence, minus the ritual paperwork fog machine.",
+  tagline: "Compare treatments before the brochure wins",
+  matchPrefixes: [ROUTES.dfda],
+  cta: "Open DFDA",
+};
+
+export const conditionsLink: NavItem = {
+  href: ROUTES.conditions,
+  label: "Conditions",
+  emoji: "🩺",
+  description:
+    "Browse medical conditions and the evidence attached to treatments and clinical trials.",
+  tagline: "Browse conditions and treatment evidence",
+  matchPrefixes: [ROUTES.conditions, "/conditions"],
+  cta: "Browse Conditions",
+};
+
+export const treatmentsLink: NavItem = {
+  href: ROUTES.treatments,
+  label: "Treatments",
+  emoji: "💊",
+  description:
+    "Compare treatments across conditions by trials, participants, effectiveness, and safety.",
+  tagline: "Compare treatments across conditions",
+  matchPrefixes: [ROUTES.treatments, "/treatments"],
+  cta: "Browse Treatments",
 };
 
 export const dtreasuryLink: NavItem = {
@@ -658,6 +685,8 @@ export const navSections: NavSection[] = [
       departmentOfWarLink,
       dihLink,
       dfdaLink,
+      conditionsLink,
+      treatmentsLink,
       toolsLink,
       fundLink,
       wishocracyLink,
@@ -689,7 +718,7 @@ export const navSections: NavSection[] = [
 /** Sections for the /tools page — every tool grouped by purpose */
 export const toolSections: NavSection[] = [
   { id: "analysis", label: "Analysis", items: [opgLink, obgLink, governmentsLink, politicianLeaderboardLink, scoreboardLink] },
-  { id: "health", label: "Health", items: [dihLink, dfdaLink] },
+  { id: "health", label: "Health", items: [dihLink, dfdaLink, conditionsLink, treatmentsLink] },
   { id: "democracy", label: "Democracy", items: [wishocracyLink, alignmentLink, referendumLink] },
   { id: "finance", label: "Finance", items: [prizeLink, iabLink, dtreasuryLink, federalReserveLink, dirsLink, dssaLink] },
   { id: "transparency", label: "Transparency", items: [transparencyLink] },

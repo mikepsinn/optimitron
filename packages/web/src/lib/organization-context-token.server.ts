@@ -1,15 +1,16 @@
 /**
- * HMAC-signed cross-host org identity tokens.
+ * HMAC-signed cross-host organization identity tokens.
  *
- * `organizationId` is NEVER trusted from URL params — a malicious host could
- * spoof `?org=rival` to poison another org's posteriors. Instead:
- *   - Server-side resolution from hostname (primary path)
- *   - Signed tokens for trusted third-party handoffs (Slack shares, iframe embed)
+ * `organizationId` is never trusted from URL params. A malicious host could
+ * spoof `?org=rival` to poison another organization's attribution. Instead:
+ *   - Server-side resolution from hostname for first-party pages.
+ *   - Signed tokens for trusted third-party handoffs and iframe embeds.
  */
 
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
-const SIGNING_KEY = process.env.REASONING_ORG_CONTEXT_SECRET ?? "";
+const SIGNING_KEY =
+  process.env.ORG_CONTEXT_SECRET ?? process.env.REASONING_ORG_CONTEXT_SECRET ?? "";
 
 export const TOKEN_DEFAULT_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
@@ -32,7 +33,10 @@ export type OrgContextToken = {
 
 export type OrgContextVerification =
   | { ok: true; organizationId: string; payload: OrgContextPayload }
-  | { ok: false; reason: "no-token" | "bad-format" | "bad-signature" | "expired" | "no-secret" };
+  | {
+      ok: false;
+      reason: "no-token" | "bad-format" | "bad-signature" | "expired" | "no-secret";
+    };
 
 /**
  * Issue a signed token for the given organization. Caller is the origin
@@ -44,7 +48,7 @@ export function issueOrgContextToken(
 ): OrgContextToken {
   if (!SIGNING_KEY) {
     throw new Error(
-      "REASONING_ORG_CONTEXT_SECRET is not configured; cannot issue org-context tokens",
+      "ORG_CONTEXT_SECRET (or legacy REASONING_ORG_CONTEXT_SECRET) is not configured; cannot issue org-context tokens",
     );
   }
   const now = options.now ?? new Date();
@@ -66,8 +70,8 @@ export function issueOrgContextToken(
 
 /**
  * Verify a token and return the contained organizationId if valid.
- * Invalid tokens always fall back to "anonymous" org attribution — never
- * throws, never trusts. Returns a tagged result for the caller to handle.
+ * Invalid tokens always fall back to anonymous org attribution: never throws,
+ * never trusts.
  */
 export function verifyOrgContextToken(
   encoded: string | null | undefined,
@@ -145,9 +149,5 @@ function base64UrlDecode(input: string): string {
 }
 
 function randomHex(bytes: number): string {
-  const arr = new Uint8Array(bytes);
-  for (let i = 0; i < bytes; i++) {
-    arr[i] = Math.floor(Math.random() * 256);
-  }
-  return Array.from(arr, (b) => b.toString(16).padStart(2, "0")).join("");
+  return randomBytes(bytes).toString("hex");
 }

@@ -5,7 +5,7 @@
 import { headers } from "next/headers";
 import { resolveOrgFromHost } from "@/lib/reasoning/host-resolution.server";
 import { resolveLocale } from "@/lib/reasoning/locale.server";
-import { verifyOrgContextToken } from "@/lib/reasoning/org-context.server";
+import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
 import { prepareReasoningSession } from "@/lib/reasoning/session.server";
 import { ReasoningFlow } from "@/components/reasoning/ReasoningFlow";
 import { CALL_SCRIPT_TOPOLOGY, ENTRY_NODE_ID } from "@/lib/reasoning/call-script";

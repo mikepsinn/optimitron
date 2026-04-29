@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
+import * as siteRegistry from "@/lib/site";
 import {
+  buildTrialAbundanceSurveyUrl,
   getRequestSiteOrigin,
+  getSiteConfig,
   getSiteFromHost,
+  getSiteRouteDisposition,
   isSiteRouteAllowed,
 } from "@/lib/site";
+import { ROUTES } from "@/lib/routes";
 
-describe("getRequestSiteOrigin", () => {
+describe("site variant registry", () => {
   it("uses local http origins for .local hosts", () => {
     expect(
       getRequestSiteOrigin({
@@ -24,21 +29,152 @@ describe("getRequestSiteOrigin", () => {
     ).toBe("https://1percenttreaty.org");
   });
 
-  it("maps treaty hosts to the treaty variant", () => {
-    expect(getSiteFromHost("warondisease.org").key).toBe("onePercentTreaty");
+  it("maps public domains to their audience-specific site variants", () => {
+    expect(getSiteFromHost("warondisease.org").key).toBe("warOnDisease");
     expect(getSiteFromHost("1percenttreaty.org").key).toBe(
       "onePercentTreaty",
     );
+    expect(getSiteFromHost("trialabundancesurvey.org").key).toBe(
+      "trialAbundanceSurvey",
+    );
+    expect(getSiteFromHost("dfda.earth").key).toBe("dfda");
+    expect(getSiteFromHost("dih.earth").key).toBe("dih");
+    expect(getSiteFromHost("acceleratedmedicine.org").key).toBe("dih");
     expect(getSiteFromHost("optimitron.com").key).toBe("optimitron");
   });
 
+  it("uses the treaty home for War on Disease and the DIH home for Accelerated Medicine", () => {
+    expect(getSiteFromHost("warondisease.org").pageVariants.home).toBe(
+      "onePercentTreatyLanding",
+    );
+    expect(getSiteFromHost("acceleratedmedicine.org").pageVariants.home).toBe(
+      "initiativeLanding",
+    );
+  });
+
+  it("keeps site variant identity, UI, and initiative data in the site config", () => {
+    const treatySite = getSiteConfig("onePercentTreaty");
+    const surveySite = getSiteConfig("trialAbundanceSurvey");
+
+    expect(treatySite.domains).toEqual(
+      expect.arrayContaining(["1percenttreaty.org", "www.1percenttreaty.org"]),
+    );
+    expect(treatySite.initiative).toMatchObject({
+      key: "onePercentTreaty",
+      name: "1% Treaty",
+      primaryPath: "/treaty",
+      parentKey: "warOnDisease",
+    });
+    expect(treatySite.ui.nav.brandLabel).toBe("1% Treaty");
+    expect(surveySite.initiative).toMatchObject({
+      key: "trialAbundanceSurvey",
+      primaryPath: "/survey",
+    });
+  });
+
+  it("redirects known routes on the wrong host to their canonical site", () => {
+    const treatySite = getSiteFromHost("1percenttreaty.org");
+    const surveySite = getSiteFromHost("trialabundancesurvey.org");
+
+    expect(typeof siteRegistry.getSiteRouteRedirect).toBe("function");
+    expect(siteRegistry.getSiteRouteRedirect?.(treatySite, "/scoreboard")).toBe(
+      "https://optimitron.com/scoreboard",
+    );
+    expect(
+      siteRegistry.getSiteRouteRedirect?.(treatySite, "/conditions/asthma"),
+    ).toBe("https://dfda.earth/conditions/asthma");
+    expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/why")).toBe(
+      "https://1percenttreaty.org/why",
+    );
+    expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/not-real")).toBeNull();
+  });
+
+  it("treats unknown disallowed routes as ordinary 404s", () => {
+    const surveySite = getSiteFromHost("trialabundancesurvey.org");
+
+    expect(getSiteRouteDisposition(surveySite, "/not-real")).toEqual({
+      type: "notFound",
+    });
+  });
+
+  it("does not expose a custom coalition 404 route in site policies", () => {
+    for (const siteKey of [
+      "optimitron",
+      "dfda",
+      "dih",
+      "warOnDisease",
+      "onePercentTreaty",
+      "trialAbundanceSurvey",
+    ] as const) {
+      const site = getSiteConfig(siteKey);
+      expect(site.routePolicy.publicPrefixes).not.toContain("_coalition-404");
+      expect(site.routePolicy.operationalPrefixes).not.toContain(
+        "/_coalition-404",
+      );
+    }
+  });
+
   it("keeps the treaty host closed to unrelated Optimitron routes", () => {
-    const treatySite = getSiteFromHost("warondisease.org");
+    const treatySite = getSiteFromHost("1percenttreaty.org");
 
     expect(isSiteRouteAllowed(treatySite, "/")).toBe(true);
     expect(isSiteRouteAllowed(treatySite, "/dashboard")).toBe(true);
     expect(isSiteRouteAllowed(treatySite, "/tasks")).toBe(true);
     expect(isSiteRouteAllowed(treatySite, "/scoreboard")).toBe(false);
     expect(isSiteRouteAllowed(treatySite, "/search")).toBe(false);
+  });
+
+  it("limits neutral survey hosts to voting and survey routes", () => {
+    const surveySite = getSiteFromHost("trialabundancesurvey.org");
+
+    expect(isSiteRouteAllowed(surveySite, "/")).toBe(true);
+    expect(isSiteRouteAllowed(surveySite, "/survey/test-org")).toBe(true);
+    expect(isSiteRouteAllowed(surveySite, "/vote")).toBe(true);
+    expect(isSiteRouteAllowed(surveySite, "/why")).toBe(false);
+    expect(isSiteRouteAllowed(surveySite, "/governments")).toBe(false);
+  });
+
+  it("exposes medical pages on DFDA without exposing treaty campaign pages", () => {
+    const dfdaSite = getSiteFromHost("dfda.earth");
+
+    expect(isSiteRouteAllowed(dfdaSite, "/conditions")).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions")).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/conditions/asthma")).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions/asthma")).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/treatments/metformin")).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/treatments/metformin")).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/treaty")).toBe(false);
+  });
+
+  it("keeps Optimitron medical links canonical under DFDA", () => {
+    expect(ROUTES.conditions).toBe("/agencies/dfda/conditions");
+    expect(ROUTES.treatments).toBe("/agencies/dfda/treatments");
+  });
+
+  it("builds partner survey URLs on the Trial Abundance Survey domain", () => {
+    expect(buildTrialAbundanceSurveyUrl("trial-partner")).toBe(
+      "https://trialabundancesurvey.org/survey/trial-partner",
+    );
+  });
+
+  it("keeps Trial Abundance Survey partner copy direct", () => {
+    const surveySite = getSiteConfig("trialAbundanceSurvey");
+
+    expect(surveySite.ui.footer.bottomText).not.toContain(
+      "Approved organization",
+    );
+    expect(surveySite.ui.footer.bottomText).toContain("your organization");
+    expect(surveySite.ui.footer.bottomText).toContain("your audience");
+  });
+
+  it("keeps root metadata isolated per domain variant", () => {
+    expect(getSiteConfig("trialAbundanceSurvey").rootMetadata.title).toContain(
+      "Trial Abundance Survey",
+    );
+    expect(getSiteConfig("dfda").rootMetadata.title).toContain("DFDA");
+    expect(getSiteConfig("dih").rootMetadata.title).toContain("DIH");
+    expect(getSiteConfig("warOnDisease").rootMetadata.title).toContain(
+      "War on Disease",
+    );
   });
 });

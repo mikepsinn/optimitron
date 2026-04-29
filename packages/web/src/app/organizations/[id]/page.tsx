@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
+import { buildTrialAbundanceSurveyUrl } from "@/lib/site";
+import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +26,7 @@ export default async function OrganizationPage({
       include: {
         members: {
           include: {
-            user: { select: { id: true, name: true, email: true } },
+            user: { select: userDisplaySelect },
           },
           orderBy: { joinedAt: "asc" },
         },
@@ -58,13 +60,20 @@ export default async function OrganizationPage({
     );
   }
 
+  const surveyUrl = buildTrialAbundanceSurveyUrl(org.slug);
+  const iframeTitle = `${org.name} Trial Abundance Survey`.replaceAll(
+    "\"",
+    "&quot;",
+  );
+  const iframeCode = `<iframe src="${surveyUrl}" title="${iframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
+
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
       <header className="mb-10 border-b-2 border-foreground pb-6">
         <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
           Organization · {org.status.toLowerCase()}
         </p>
-        <h1 className="text-3xl font-black uppercase text-foreground sm:text-4xl [font-family:var(--v0-font-libre-baskerville)]">
+        <h1 className="text-3xl font-black uppercase text-foreground sm:text-4xl">
           {org.name}
         </h1>
         {org.website ? (
@@ -111,13 +120,51 @@ export default async function OrganizationPage({
                 key={m.id}
                 className="flex items-center justify-between border-2 border-foreground bg-background px-3 py-2 text-sm font-bold"
               >
-                <span>{m.user.name ?? m.user.email ?? m.user.id}</span>
+                <span>{getUserDisplayName(m.user)}</span>
                 <span className="text-xs uppercase text-muted-foreground">
                   {m.role}
                 </span>
               </li>
             ))}
           </ul>
+        </div>
+
+        <div>
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Trial Abundance Survey
+          </h2>
+          {org.status === "APPROVED" ? (
+            <div className="space-y-4">
+              <p className="text-sm font-bold text-muted-foreground">
+                Put this on your site. Your audience gets a clean survey;{" "}
+                {org.name} gets credited for moving humans toward the useful
+                button.
+              </p>
+              <div>
+                <p className="mb-1 text-sm font-bold text-muted-foreground">
+                  Direct link
+                </p>
+                <a href={surveyUrl} className="break-all text-sm font-bold underline">
+                  {surveyUrl}
+                </a>
+              </div>
+              <label className="block">
+                <span className="mb-1 block text-sm font-bold text-muted-foreground">
+                  Iframe code
+                </span>
+                <textarea
+                  readOnly
+                  className="min-h-28 w-full border-2 border-foreground bg-background p-3 font-mono text-xs"
+                  value={iframeCode}
+                />
+              </label>
+            </div>
+          ) : (
+            <p className="text-sm font-bold text-muted-foreground">
+              Approval unlocks your survey link and iframe. Until then, the
+              rectangle is supervised.
+            </p>
+          )}
         </div>
 
         <div>

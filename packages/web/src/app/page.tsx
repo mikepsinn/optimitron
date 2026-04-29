@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { OnePercentTreatyLandingPage } from "@/components/site/OnePercentTreatyLandingPage";
 import { OptimitronLandingPage } from "@/components/site/OptimitronLandingPage";
+import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage";
 import { authOptions } from "@/lib/auth";
 import { getRootSiteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
@@ -57,6 +58,10 @@ export default async function Home({
     }
 
     return <OnePercentTreatyLandingPage data={data} />;
+  }
+
+  if (site.pageVariants.home === "initiativeLanding") {
+    return <SiteVariantLandingPage site={site} />;
   }
 
   const treatyParentTask = await getTaskDetailData(TREATY_PARENT_TASK_ID, null);

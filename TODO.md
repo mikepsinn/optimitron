@@ -169,6 +169,103 @@ Agent-usage feedback from 2026-04-25: the current toolset covers the core loop w
   - Channel naming: use `externalUrl`, not `link` or `formSubmission`, for office forms / official pages / public profiles. "Link" sounds like the message being sent is the outreach, while "formSubmission" overclaims because the current code records opening/using the external URL, not proof that a form was submitted.
 - [ ] Rename other MCP tools directly when the new name is more self-documenting; do not keep old aliases by default.
 
+## Code Review Fixes (2026-04-29)
+
+Findings from the review of uncommitted changes on `main` (~1700 added / ~380 removed lines: site.ts restructure, org-vote-survey-attribution migration, medical/treatment/condition/survey infrastructure, four new shadcn `components/ui/*` primitives, vote-API extensions). Full review at `~/.claude/plans/please-review-all-polished-hopcroft.md`.
+
+**Coordination protocol:** mark a task `[~]` (in progress) and put your handle in parens before editing the listed files. Mark `[x]` when done. Each task lists the files it touches so a parallel agent can pick non-conflicting work. **Do not** start a `[~]` task someone else has claimed.
+
+### Critical (must land before merge)
+
+- [x] **#1 — `Math.random` in HMAC randomHex** *(claude — done)*
+  Files: `packages/web/src/lib/reasoning/org-context.server.ts`. Replace ad-hoc loop with `crypto.randomBytes(bytes).toString("hex")`.
+- [x] **#11 — Misleading env var error message** *(claude — done)*
+  Files: `packages/web/src/lib/reasoning/org-context.server.ts:46-49`. Update to mention canonical `ORG_CONTEXT_SECRET` and legacy fallback.
+- [x] **#12 — `User.name` direct read on org page** *(claude — done)*
+  Files: `packages/web/src/app/organizations/[id]/page.tsx`. Use `getUserDisplayName(m.user)` and `userDisplaySelect` from `@/lib/user-display`. Also drop `[font-family:var(--v0-font-libre-baskerville)]` v0 leftover on line 75.
+- [x] **#2 — Broken dfda.earth URL** *(claude — done)*
+  Files: `packages/web/src/components/dfda/ComparativeEffectivenessSection.tsx:120`. Dropped `https://dfda.earth/agencies/dfda` prefix; uses local `/agencies/dfda/conditions/.../treatments/...`. Removed `target="_blank"` since now same-origin. Also fixed banned `font-medium` on the link to `font-bold`. Footer link to `https://dfda.earth` (line 136) left as-is pending Q4.
+- [x] **#3 — Vote-route org attribution semantics** *(claude — done)*
+  Removed `organizationVoteData` spread from upsert `update` branch — first-org-wins, matches `referredByUserId`. Updated existing happy-path test assertion to expect no `organizationId` on `update`. Added two new tests: revote does not overwrite prior org, bad-signature token does not attribute. Files: `route.ts:90-111`, `route.test.ts:619+`.
+- [x] **#4 — `border-black`/`bg-white`/scale-color regressions in neobrutalist-loader** *(claude — done)*
+  Restored `border-foreground`/`bg-background`. Replaced `bg-gradient-to-r from-gray-50 to-gray-100` and `bg-gray-200/300` with `bg-muted`. Replaced `bg-yellow-100` → `bg-brutal-yellow` and `bg-blue-100` → `bg-brutal-cyan`. Restored shadow consistency at `8px_8px` on the loading message (had regressed to `6px`).
+
+### High-confidence bugs
+
+- [x] **#5 — Rewrite `components/ui/{button,card,badge,tooltip}.tsx` to brutalist** *(claude — done)*
+  All four files restyled to brutalist tokens with hard `4px_4px` shadow, `border-2 border-foreground`, `font-bold uppercase`, semantic foreground tokens (no `text-white`). Removed `ref={ref as any}` in favor of `React.Ref<HTMLButtonElement>` / `React.Ref<HTMLSpanElement>`. Removed `dark:` shadcn variants and `shadow-xs/sm/md` and `rounded-xl`. API surface preserved (named exports, `variant`/`size` shapes) so existing downstream imports keep compiling. `ghost` and `link` button variants opt out of the hard-shadow translate so they don't look like buttons.
+- [x] **#6 — `HealthEconomicsDisplay.tsx` color rewrite** *(claude — done)*
+  Replaced `RATING_SWATCHES` with brutal-* tokens (excellent → green, good → cyan, moderate → yellow, poor/dominated → red). Removed `bg-gradient-to-r from-green-50 to-emerald-50`. Every inline `bg-green-*`/`bg-emerald-*`/`bg-orange-*`/`bg-red-*` and `text-green-*`/`text-orange-*`/`text-red-*` replaced with semantic (`text-foreground`/`text-muted-foreground`) or brutal-* tokens. Replaced every `font-medium`/`font-semibold` with `font-bold`/`font-black uppercase`. Cards/Badges/Tooltips inherit brutalist look from the rewritten `components/ui/*` primitives in #5.
+- [x] **#7 — Make `medical-pages-parity.test.ts` a real parity test** *(codex — done)*
+  Files: `packages/web/src/components/medical/__tests__/medical-pages-parity.test.ts`. Stop reading source as text. Import both `app/conditions/page.tsx` and `app/agencies/dfda/conditions/page.tsx` and assert their default export is referentially equal to `ConditionsPage` from `medical-pages.tsx`. Same for treatments.
+- [x] **#8 — `getTreatmentsByConditionSlug` dynamic import bundle bloat** *(codex — done; valid, but fix the real client path)*
+  Files: `packages/data/src/datasets/medical.ts:226-240`, `packages/web/src/lib/path-helpers.ts`, maybe a new slug-only data helper. `getTreatmentsByConditionSlug` production callers are server-side, but `path-helpers.ts` is imported by `"use client"` components and imports `medicalNameToSlug` from the same medical data module. Fix by moving/importing slugification from a tiny side-effect-free helper so client code does not pull the treatment JSON dynamic-import context.
+- [x] **#9 — INVALID AS WRITTEN: do not hard-fail incidence/prevalence ratios**
+  Files: `packages/data/src/datasets/medical-data/conditions.json`, `packages/data/src/datasets/medical.ts`, new `packages/data/src/__tests__/datasets/medical-validation.test.ts`. The general concern is valid: generated medical data needs provenance and validation. But the proposed invariant `newCasesPerYear ≤ peopleAffected × 5` is not medically safe; acute diseases can have annual incidence far above point prevalence. `deathsPerYear / peopleAffected` is also not a case-fatality rate when `peopleAffected` is prevalence. Replace this task with source/provenance checks, nonnegative checks, unique slugs, treatment-file existence, and a soft outlier report that prints suspicious rows without pretending the ratio is impossible.
+- [x] **#10 — `medical-pages.tsx` `ConditionPage` not on brutalist primitives** *(codex — done)*
+  Files: `packages/web/src/components/medical/medical-pages.tsx:142-202`. Replace `<div className="rounded-lg border p-4">` stat boxes with `StatCardGrid`/`StatCard`. Use `<h1 className="font-black uppercase tracking-tight">` to match siblings. Add `font-bold` to body paragraphs.
+- [x] **#13 — `clinical-trials.server.ts` no fetch timeout** *(claude — done)*
+  Added `signal: AbortSignal.timeout(15_000)` to the ClinicalTrials.gov fetch in `clinical-trials.server.ts:130-148`. `medical-pages.tsx:240-248` already swallows the failure into a "Failed to load clinical trials" UI string, so a timeout now produces that fallback rather than blocking the render.
+
+### CLAUDE.md violations (style/voice)
+
+- [x] **#15 — Hardcoded hex in survey pages** *(claude — done)*
+  Added `--treaty-paper`, `--treaty-ink`, `--treaty-ink-soft`, `--treaty-ink-muted` to `globals.css :root` (a separate parchment palette, intentionally not part of the brutalist neon set). Both survey pages now reference them as `bg-[var(--treaty-paper)]` / `text-[var(--treaty-ink)]` etc. Existing `TreatyVoteFlow.tsx`/`TreatyPostVoteShareFlow.tsx`/`TreatyFlowShell.tsx`/`HumanityManagementTrainingFlow.tsx`/`/vote/page.tsx`/`/questions/page.tsx`/`/humanity-management-training/page.tsx`/`AuthForm.tsx`/`ReferendumStepper.tsx`/`SignatoriesLeaderboard.tsx`/`ReferendumSignatureBox.tsx`/`TreatyMechanismExplainer.tsx`/`TreatySection.tsx` still use the same hex literals — they can migrate to the same tokens in a follow-up pass. Did not touch them in this change to keep the diff focused.
+- [x] **#16 — Generic copy, missing Wishonia voice** *(codex — done; small surgical edits)*
+  Files: `packages/web/src/components/medical/medical-pages.tsx:81-83, 291-293`, `packages/web/src/components/condition/TreatmentRankings.tsx:20-25`, `packages/web/src/app/organizations/page.tsx:23,26-28`, `packages/web/src/app/organizations/[id]/page.tsx:138-140, 161-163`. Rewrite each to deadpan/data-first/sardonic per CLAUDE.md voice rules. Survey pages may be intentionally neutral (Q1) — leave those.
+- [x] **#18 — `dfdaLink`/`dihLink` description copy** *(codex — done; small)*
+  Files: `packages/web/src/lib/routes.ts:164-184`. Update `description`/`tagline` to describe the local Optimitron agency pages. `dfda.earth` is not deprecated; it remains the standalone DFDA host.
+
+### Test gaps
+
+- [x] **#19 — `clinical-trials.server.test.ts` only tests URL builder** *(codex — done)*
+  Files: `packages/web/src/lib/__tests__/clinical-trials.server.test.ts`. Mock `fetch` at the import boundary; assert the parsed shape on success and that a non-OK status throws.
+- [x] **#20 — Vote-route tests miss org-switch / bad-token paths** *(folded into #3 above)*
+
+### Cleanup
+
+- [x] **#23 — Inline `organization-context-token.server.ts` re-export** *(codex — done; small)*
+  Files: `packages/web/src/lib/organization-context-token.server.ts`, `packages/web/src/app/api/referendums/[slug]/vote/route.ts`, `packages/web/src/lib/organization.server.ts`. Either delete the re-export and import directly from `@/lib/reasoning/org-context.server`, or move the impl out of `reasoning/` into the new file. The current setup adds indirection with no value.
+- [x] **#24 — INVALID AS WRITTEN: `google-grounded-search.ts` has a caller**
+  Files: `packages/web/src/lib/actions/google-grounded-search.ts`, `packages/web/src/components/landing/OutcomeLabel.tsx`. `OutcomeLabel` imports `getGroundedAnswerAction`, so this is not dead-code deletion. Either implement the action properly or remove/replace the client fetch path in `OutcomeLabel`; do not delete the stub alone.
+- [x] **#25 — Document treatment dataset generator** *(codex — done)*
+  Files: `packages/data/src/datasets/medical-data/README.md` (new). Either commit the upstream generator or document where it lives (Vertex AI grounding workflow producing `treatments/*.json`). Without this the dataset rots silently.
+- [x] **#26 — SEO duplicate `/conditions` vs `/agencies/dfda/conditions`** *(codex — done; decision below)*
+  Files: `packages/web/src/components/medical/medical-pages.tsx` (metadata generators), and/or `packages/web/src/lib/site.ts` route disposition. Add canonical metadata or host-aware redirects. Decision: `dfda.earth` canonical is `/conditions` / `/treatments`; `optimitron.com` canonical is `/agencies/dfda/conditions` / `/agencies/dfda/treatments`.
+- [x] **#27 — INVALID AS WRITTEN: host-aware sitemap probably must stay dynamic**
+  Files: `packages/web/src/app/sitemap.ts`. The sitemap reads `headers()` and emits different canonical URLs per active domain variant. Do not replace `force-dynamic` with plain `revalidate = 3600` unless the implementation is proven to vary cache entries by host; a cached `dfda.earth` sitemap leaking onto `1percenttreaty.org` is worse than a small runtime cost.
+- [x] **#28 — Middleware uses 308 (permanent) for site redirects** *(claude — done)*
+  Site-route redirect (line 36) now uses 307. The asset-redirect path (line 28, added by codex) stays at 308 because relocated assets are intentionally permanent.
+
+### Verification
+
+- [x] **Run affected tests after each batch** *(claude — full web+data test suites green at 2026-04-29 14:50)*
+  ```
+  pnpm --filter @optimitron/web check
+  pnpm --filter @optimitron/web test
+  pnpm --filter @optimitron/data test
+  pnpm --filter @optimitron/web exec playwright test e2e/contrast-audit.spec.ts --project=default
+  ```
+  - Codex batch verification completed:
+    - `pnpm --filter @optimitron/web test -- src/components/medical/__tests__/medical-pages-parity.test.ts src/lib/__tests__/clinical-trials.server.test.ts src/lib/__tests__/site-sitemap.test.ts src/lib/__tests__/site.test.ts --reporter=dot`
+    - `pnpm --filter @optimitron/data test -- src/__tests__/datasets/medical.test.ts --reporter=dot`
+    - `pnpm --filter @optimitron/web typecheck`
+  - Claude batch verification completed (after #1, #2, #3, #4, #5, #6, #11, #12, #13, #15, #28):
+    - `pnpm --filter @optimitron/web exec tsc --noEmit` → exit 0
+    - `pnpm --filter @optimitron/web test` → 879 tests across 147 files passed
+    - `pnpm --filter @optimitron/data test` → 749 tests across 47 files passed
+    - Playwright contrast-audit not run (requires running dev server; recommend the user run it manually before merge to catch any remaining color-rule violations in untouched files).
+
+### Open product questions (need user decision; do not guess)
+
+- Q1 `copyMode="neutral"` voice: DECIDED — neutral partner-survey copy is intentional for embeds and nonprofit adoption. It should still be concise, direct, and useful, but not full Wishonia/H2EWD voice if that would make partner organizations nervous.
+- Q2 Org attribution: DECIDED — `ReferendumVote` should be first-org-wins, matching `referredByUserId` acquisition semantics. A later vote from another org link must not steal attribution. If a separate `SurveyResponse` row is created per org/survey event, that row can record its own org context.
+- Q3 `/conditions` vs `/agencies/dfda/conditions`: DECIDED — canonical depends on host. On `dfda.earth`, short `/conditions` and `/treatments` are canonical. On `optimitron.com`, the agency-scoped paths `/agencies/dfda/conditions` and `/agencies/dfda/treatments` are canonical. The SEO fix should use canonical metadata or host-aware redirects, not pretend one path is globally canonical.
+- Q4 dfda.earth status: DECIDED — keep `dfda.earth` as the standalone medical surface while also exposing DFDA under Optimitron's agency tree. Do not deprecate the domain by accident.
+- Q5 `components/ui/*` shadcn files intent: DECIDED — rewrite these compatibility wrappers to brutalist/semantic tokens while preserving their API surface. Do not introduce a second visual system; do not churn all downstream imports unless the wrappers cannot support the needed API.
+- Q6 `google-grounded-search.ts` stub: DECIDED — do not delete the file while `OutcomeLabel` imports it. Either implement it or remove the UI fetch path in a focused pass.
+- Q7 Treatment slug consistency: CHECKED — 216 conditions, 0 missing `treatments/*.json` files.
+
 ## Highest Priority
 - [x] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
   - Use Optimitron's canonical parameter exports from `packages/data/src/parameters/parameters-calculations-citations.ts`.

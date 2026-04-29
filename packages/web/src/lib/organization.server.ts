@@ -1,5 +1,6 @@
 import { OrgStatus, OrgType, type Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { issueOrgContextToken } from "@/lib/organization-context-token.server";
 import { slugify } from "@/lib/slugify";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
@@ -267,4 +268,40 @@ export async function getManageableOrganizationsForUser(userId: string) {
   });
 
   return memberships.map((membership) => membership.organization);
+}
+
+export async function getApprovedOrganizationForSurveySlug(slug: string) {
+  const organization = await prisma.organization.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      status: true,
+      deletedAt: true,
+      logo: true,
+      website: true,
+      description: true,
+    },
+  });
+
+  if (
+    !organization ||
+    organization.deletedAt ||
+    organization.status !== OrgStatus.APPROVED
+  ) {
+    return null;
+  }
+
+  return organization;
+}
+
+export async function getApprovedOrganizationSurveyContext(slug: string) {
+  const organization = await getApprovedOrganizationForSurveySlug(slug);
+  if (!organization) return null;
+
+  return {
+    organization,
+    orgContextToken: issueOrgContextToken(organization.id).encoded,
+  };
 }

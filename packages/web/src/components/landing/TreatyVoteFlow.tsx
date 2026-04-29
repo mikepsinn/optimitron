@@ -62,8 +62,11 @@ type PreVoteScreen = "apology" | "grandma" | "apocalypse" | "slider";
 interface TreatyVoteFlowProps {
   authCallbackUrl?: string;
   className?: string;
+  copyMode?: "campaign" | "neutral";
   defaultFlowVariant?: TreatyFlowVariant;
+  orgContextToken?: string | null;
   postVoteBehavior?: "overlay" | "redirect";
+  postVoteCompletion?: "share" | "message";
   postVoteRedirectUrl?: string;
   respectStoredFlowVariant?: boolean;
   surface?: string;
@@ -72,8 +75,11 @@ interface TreatyVoteFlowProps {
 export function TreatyVoteFlow({
   authCallbackUrl = ROUTES.dashboard,
   className,
+  copyMode = "campaign",
   defaultFlowVariant = DEFAULT_TREATY_FLOW_VARIANT,
+  orgContextToken = null,
   postVoteBehavior = "overlay",
+  postVoteCompletion = "share",
   postVoteRedirectUrl = ROUTES.dashboard,
   respectStoredFlowVariant = true,
   surface = "treaty_vote_flow",
@@ -317,6 +323,7 @@ export function TreatyVoteFlow({
       timestamp,
       wishocraticAllocation: buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
+      orgContextToken: existingVote?.orgContextToken ?? orgContextToken,
     });
     trackSliderSubmitted({
       flowVariant,
@@ -360,6 +367,7 @@ export function TreatyVoteFlow({
         getTreatyWishocraticAllocation(existingVote) ??
         buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
+      orgContextToken: existingVote?.orgContextToken ?? orgContextToken,
     });
 
     storage.clearVoteStatusCache();
@@ -630,7 +638,9 @@ export function TreatyVoteFlow({
                 dropCap
                 className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"
               >
-                {VOTE_SECTION.sliderPrompt}
+                {copyMode === "neutral"
+                  ? "Set the share of military spending you would prefer to redirect to pragmatic clinical trials."
+                  : VOTE_SECTION.sliderPrompt}
               </TreatyFlowParagraph>
               <TreatyFlowDivider />
 
@@ -748,14 +758,21 @@ export function TreatyVoteFlow({
               data-testid="treaty-vote-choice-card"
               contentClassName="max-w-4xl space-y-5 py-6 sm:space-y-8 sm:py-12"
             >
-              <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
-                Your governments spend{" "}
-                <br className="hidden sm:block" />
-                <span className="font-black text-[#23180d]">
-                  $<ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} />
-                </span>{" "}
-                {VOTE_SECTION.realityCheck}
-              </TreatyFlowParagraph>
+              {copyMode === "neutral" ? (
+                <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
+                  The proposal redirects 1% of military spending to pragmatic
+                  clinical trials.
+                </TreatyFlowParagraph>
+              ) : (
+                <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
+                  Your governments spend{" "}
+                  <br className="hidden sm:block" />
+                  <span className="font-black text-[#23180d]">
+                    $<ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} />
+                  </span>{" "}
+                  {VOTE_SECTION.realityCheck}
+                </TreatyFlowParagraph>
+              )}
 
               <TreatyFlowParagraph center className="text-sm leading-7 sm:text-lg sm:leading-8">
                 Moving 1% of military spending to pragmatic clinical trials
@@ -782,7 +799,9 @@ export function TreatyVoteFlow({
               </TreatyFlowParagraph>
 
               <div className="text-center text-xl font-black leading-tight text-[#23180d] sm:text-3xl md:text-4xl">
-                {VOTE_SECTION.theQuestion}
+                {copyMode === "neutral"
+                  ? "Should governments redirect 1% of military spending to pragmatic clinical trials?"
+                  : VOTE_SECTION.theQuestion}
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
@@ -828,7 +847,7 @@ export function TreatyVoteFlow({
             }}
             className="fixed inset-0 z-[150] overflow-y-auto bg-[#fbf7ee]"
           >
-            {status === "authenticated" ? (
+            {status === "authenticated" && postVoteCompletion === "share" ? (
               <TreatyPostVoteShareFlow
                 answer={answer}
                 flowVariant={flowVariant}
@@ -838,14 +857,35 @@ export function TreatyVoteFlow({
                 }
                 initialScreen={isContextFirstVariant ? "stakes" : "opening"}
               />
+            ) : status === "authenticated" ? (
+              <TreatyFlowShell contentClassName="max-w-2xl">
+                <div className="space-y-4 text-center">
+                  <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
+                    Response saved.
+                  </p>
+                  <p className="text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+                    Your verified survey response has been recorded.
+                  </p>
+                </div>
+              </TreatyFlowShell>
             ) : (
               <TreatyFlowShell contentClassName="max-w-2xl">
                 <div className="space-y-4">
                   <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
-                    {isContextFirstVariant ? "Vote counted." : "Save Your Vote"}
+                    {copyMode === "neutral"
+                      ? "Save Your Response"
+                      : isContextFirstVariant
+                        ? "Vote counted."
+                        : "Save Your Vote"}
                   </p>
                   <p className="text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
-                    {isContextFirstVariant ? (
+                    {copyMode === "neutral" ? (
+                      <>
+                        Verify so your survey response counts in the final tally.
+                        If you came from an organization link, your response will
+                        be credited to that organization.
+                      </>
+                    ) : isContextFirstVariant ? (
                       <>
                         Governments won&apos;t listen to bot votes. They barely
                         listen to human ones, but at least yours will be on
@@ -877,9 +917,9 @@ export function TreatyVoteFlow({
                   compact={true}
                   hideContainer
                   title={null}
-                  googleButtonLabel={isContextFirstVariant ? "Verify with Google" : "Save with Google"}
-                  emailButtonLabel={isContextFirstVariant ? "Verify by email" : "Email me a save link"}
-                  emailPendingButtonLabel={isContextFirstVariant ? "Sending verification link..." : "Sending save link..."}
+                  googleButtonLabel={copyMode === "neutral" || isContextFirstVariant ? "Verify with Google" : "Save with Google"}
+                  emailButtonLabel={copyMode === "neutral" || isContextFirstVariant ? "Verify by email" : "Email me a save link"}
+                  emailPendingButtonLabel={copyMode === "neutral" || isContextFirstVariant ? "Sending verification link..." : "Sending save link..."}
                   emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
                 />
               </TreatyFlowShell>

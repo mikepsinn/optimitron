@@ -1,7 +1,12 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import { ROUTES } from "@/lib/routes";
-import { getSiteFromHost, isSiteRouteAllowed } from "@/lib/site";
+import { getSiteStaticAssetRedirectPath } from "@/lib/site-assets";
+import {
+  getSiteFromHost,
+  getSiteRouteDisposition,
+  isSiteRouteAllowed,
+} from "@/lib/site";
 
 export function isMicrositeAllowed(pathname: string): boolean {
   return isSiteRouteAllowed(getSiteFromHost("1percenttreaty.org"), pathname);
@@ -11,10 +16,29 @@ export default withAuth(
   function middleware(req) {
     const host = req.headers.get("host");
     const site = getSiteFromHost(host);
-    if (!isSiteRouteAllowed(site, req.nextUrl.pathname)) {
+    const assetRedirectPath = getSiteStaticAssetRedirectPath(
+      site,
+      req.nextUrl.pathname,
+    );
+    if (assetRedirectPath) {
       const url = req.nextUrl.clone();
-      url.pathname = "/_coalition-404";
-      return NextResponse.rewrite(url);
+      const [pathname, search = ""] = assetRedirectPath.split("?");
+      url.pathname = pathname;
+      url.search = search ? `?${search}` : "";
+      return NextResponse.redirect(url, 308);
+    }
+
+    const disposition = getSiteRouteDisposition(site, req.nextUrl.pathname);
+    if (disposition.type !== "allow") {
+      if (disposition.type === "redirect") {
+        const url = new URL(disposition.url);
+        url.search = req.nextUrl.search;
+        // 307 keeps method semantics and avoids long-lived browser/CDN caching of
+        // host-routing rules that may flip when site config changes.
+        return NextResponse.redirect(url, 307);
+      }
+
+      return new NextResponse("Not found", { status: 404 });
     }
     return NextResponse.next();
   },
@@ -43,6 +67,6 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|manifest.json|icon|apple-icon|opengraph-image|twitter-image|_error).*)",
+    "/((?!api|_next/static|_next/image|sitemap.xml|robots.txt|icon|apple-icon|opengraph-image|_error).*)",
   ],
 };

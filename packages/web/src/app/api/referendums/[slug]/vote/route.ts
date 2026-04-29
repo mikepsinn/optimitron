@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { ActivityType, VotePosition } from "@optimitron/db";
+import { ActivityType, OrgStatus, VotePosition } from "@optimitron/db";
 import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
@@ -14,6 +14,7 @@ import { createLogger } from "@/lib/logger";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
+import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
 
 const log = createLogger("referendum-vote");
 
@@ -29,6 +30,7 @@ export async function POST(
       ref?: string;
       makePublic?: boolean;
       inviteToken?: string;
+      orgContextToken?: string;
     };
 
     const answer = body.answer?.toUpperCase();
@@ -72,6 +74,19 @@ export async function POST(
       }
     }
 
+    const orgContextVerification = verifyOrgContextToken(body.orgContextToken);
+    const verifiedOrganization = orgContextVerification.ok
+      ? await prisma.organization.findUnique({
+          where: { id: orgContextVerification.organizationId },
+          select: { id: true, status: true, deletedAt: true },
+        })
+      : null;
+    const organizationId =
+      verifiedOrganization &&
+      verifiedOrganization.status === OrgStatus.APPROVED &&
+      !verifiedOrganization.deletedAt
+        ? verifiedOrganization.id
+        : null;
     const vote = await prisma.referendumVote.upsert({
       where: {
         userId_referendumId: {
@@ -79,6 +94,8 @@ export async function POST(
           referendumId: referendum.id,
         },
       },
+      // Org attribution is first-org-wins, matching referredByUserId semantics:
+      // it is set on create only and never overwritten by later revotes.
       update: {
         answer: answer as VotePosition,
         deletedAt: null,
@@ -88,6 +105,7 @@ export async function POST(
         referendumId: referendum.id,
         answer: answer as VotePosition,
         referredByUserId,
+        ...(organizationId ? { organizationId } : {}),
       },
     });
 
@@ -132,6 +150,7 @@ export async function POST(
             answer,
             referendumId: referendum.id,
             referendumSlug: referendum.slug,
+            ...(organizationId ? { organizationId } : {}),
           }),
         },
       });

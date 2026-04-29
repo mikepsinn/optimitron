@@ -22,7 +22,10 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 - **Follow the design system.** See root `CLAUDE.md` for neobrutalist rules, color tokens, and component primitives.
 - **Use RetroUI + domain primitives.** Never inline card/section/header styles — use `BrutalCard`, `SectionContainer`, `SectionHeader`, etc.
 - **Metadata from routes.ts.** Use `getRouteMetadata()` — don't hardcode page titles.
-- **Wishonia's voice.** All user-facing copy is in Wishonia's voice (see CLAUDE.md).
+- **Wishonia's voice.** All user-facing copy is in Wishonia's voice. Read `docs/h2ewd.md` before writing or rewriting public copy.
+- **Conversion copy, not internal narration.** Speak directly to the audience, tell them what to do, and show the value of doing it. Keep it concise, funny where appropriate, and allergic to generic nonprofit/consultant language.
+- **No implementation leaks in copy.** Do not expose internal planning terms like "site variant", "program graph", "initiative landing page", "approved organizations get", route policy language, or admin labels unless the user explicitly wants that exact wording surfaced.
+- **Treat every empty state as an action surface.** If the user needs to invite humans, embed a survey, vote, assign Earth optimization tasks, or check status, show the useful control before explaining the absence of data.
 - **Contrast rules.** Every `bg-brutal-*` must pair with `text-brutal-*-foreground`.
 - **Prefer the Playwright wrapper.** For web verification, use `pnpm --filter @optimitron/web run e2e -- <mode>` instead of calling Playwright or `next build` directly.
 - **Treaty screenshots use the wrapper.** Use `pnpm --filter @optimitron/web run e2e -- treaty-screenshots --reporter=list` for the treaty vote/post-vote screenshot audit; do not call `pnpm exec playwright ...` directly for that spec.
