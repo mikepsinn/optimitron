@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   taskImpactEstimateSetCreate: vi.fn(),
   taskImpactFrameEstimateCreate: vi.fn(),
   transaction: vi.fn(),
+  userFindUnique: vi.fn(),
   upsertPrimaryTaskCommunicationEndpoint: vi.fn(),
   countUserCommentsInWindow: vi.fn(),
   postComment: vi.fn(),
@@ -93,6 +94,9 @@ vi.mock("../prisma", () => ({
     },
     taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
     taskImpactFrameEstimate: { create: mocks.taskImpactFrameEstimateCreate },
+    user: {
+      findUnique: mocks.userFindUnique,
+    },
   },
 }));
 
@@ -195,6 +199,8 @@ beforeEach(() => {
   }));
   mocks.taskEdgeCreateMany.mockResolvedValue({ count: 0 });
   mocks.taskEdgeUpdateMany.mockResolvedValue({ count: 0 });
+  mocks.taskEdgeFindMany.mockResolvedValue([]);
+  mocks.userFindUnique.mockResolvedValue({ personId: "person-1" });
   mocks.upsertPrimaryTaskCommunicationEndpoint.mockResolvedValue(null);
   mocks.countUserCommentsInWindow.mockResolvedValue(0);
   mocks.postComment.mockResolvedValue({ id: "comment-1", taskId: "task-1", message: "Comment" });
@@ -247,6 +253,96 @@ describe("MCP server tool dispatch", () => {
     expect(adminNames).toContain("addDependency");
     expect(adminNames).toContain("acquireLease");
     expect(adminNames).toContain("logAgentRun");
+  });
+
+  describe("task read tools", () => {
+    it("advertises and applies assignedToMe without requiring the caller to know their personId", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const tools = await client.listTools();
+      const listTasksTool = tools.tools.find((tool) => tool.name === "listTasks");
+      expect(listTasksTool?.inputSchema.properties).toMatchObject({
+        assignedToMe: expect.objectContaining({ type: "boolean" }),
+      });
+
+      mocks.listTasks.mockResolvedValue([
+        makeOwnedTask({
+          id: "assigned",
+          title: "Assigned to me",
+          assigneePersonId: "person-1",
+        }),
+      ]);
+
+      const result = await client.callTool({
+        name: "listTasks",
+        arguments: { assignedToMe: true, status: "ACTIVE", limit: 5 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.userFindUnique).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        select: { personId: true },
+      });
+      expect(mocks.listTasks).toHaveBeenCalledWith(
+        expect.objectContaining({
+          assigneePersonId: "person-1",
+          limit: 5,
+          status: TaskStatus.ACTIVE,
+          userId: "user-1",
+          visibility: "accessible",
+        }),
+      );
+      const body = parseToolBody(result) as unknown as Array<Record<string, unknown>>;
+      expect(body[0]).toMatchObject({ id: "assigned", title: "Assigned to me" });
+    });
+
+    it("enriches getTask output with executorType and markdown acceptance criteria when contextJson is missing them", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        taskCommunicationCount: 0,
+        task: makeOwnedTask({
+          id: "task-criteria",
+          description: [
+            "## Problem",
+            "",
+            "Do the work.",
+            "",
+            "## Acceptance criteria",
+            "",
+            "- [ ] First thing works",
+            "- Second thing works",
+          ].join("\n"),
+          contextJson: { executor_type: "AI Agent" },
+        }),
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getTask",
+        arguments: { taskId: "task-criteria" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      const task = body.task as Record<string, unknown>;
+      expect(task.executorType).toBe("AI Agent");
+      expect(task.contextJson).toMatchObject({
+        acceptanceCriteria: ["First thing works", "Second thing works"],
+        executor_type: "AI Agent",
+      });
+    });
+
+    it("getBlockers ignores soft-deleted dependency edges so it agrees with getTask visibility", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      await client.callTool({ name: "getBlockers", arguments: { taskId: "task-1" } });
+
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledTimes(2);
+      expect(mocks.taskEdgeFindMany.mock.calls[0]![0]).toMatchObject({
+        where: { deletedAt: null, toTaskId: "task-1" },
+      });
+      expect(mocks.taskEdgeFindMany.mock.calls[1]![0]).toMatchObject({
+        where: { deletedAt: null, fromTaskId: "task-1" },
+      });
+    });
   });
 
   describe("authentication", () => {
@@ -648,6 +744,54 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("createTask copies markdown acceptance criteria into contextJson when the agent puts them in the description", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({
+          id: "created-task",
+          contextJson: {
+            executor_type: "Self",
+            acceptanceCriteria: ["The page inventory tool is discoverable"],
+          },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 1,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Add site inventory tools",
+          description: [
+            "## Problem",
+            "",
+            "Agents need to see what pages exist.",
+            "",
+            "## Acceptance criteria",
+            "",
+            "- [ ] The page inventory tool is discoverable",
+            "- [ ] Page content comes back as clean markdown",
+          ].join("\n"),
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+        },
+      });
+
+      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      expect(data.contextJson).toMatchObject({
+        acceptanceCriteria: [
+          "The page inventory tool is discoverable",
+          "Page content comes back as clean markdown",
+        ],
+      });
+    });
+
     it("createTask omits null FK fields and sourceUrl from prisma.task.create — Prisma's checked TaskCreateInput rejects scalar FKs and the Task model has no sourceUrl column", async () => {
       // Regression for two production bugs found via the structured catch block:
       //   1. `parentTaskId: null` → "Unknown argument `parentTaskId`. Did you mean `parentTask`?"
@@ -734,7 +878,7 @@ describe("MCP server tool dispatch", () => {
       expect(data.assigneePersonId).toBe("person-1");
     });
 
-    it("updateTask replaces dependencies with depends_on", async () => {
+    it("updateTask replaces dependencies without losing retained soft-deleted edges", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({
           task: makeOwnedTask({
@@ -761,8 +905,20 @@ describe("MCP server tool dispatch", () => {
 
       expect(mocks.taskEdgeUpdateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ toTaskId: "task-1" }),
+          where: expect.objectContaining({
+            toTaskId: "task-1",
+            fromTaskId: { notIn: ["new-blocker"] },
+          }),
           data: expect.objectContaining({ deletedAt: expect.any(Date) }),
+        }),
+      );
+      expect(mocks.taskEdgeUpdateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            toTaskId: "task-1",
+            fromTaskId: { in: ["new-blocker"] },
+          }),
+          data: { deletedAt: null },
         }),
       );
       expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
@@ -838,6 +994,11 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
       expect(body.userId).toBe("user-1");
+      expect(body.personId).toBe("person-1");
+      expect(mocks.userFindUnique).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        select: { personId: true },
+      });
       expect(body.user).toMatchObject({ id: "user-1", email: "test@example.com" });
       expect(mocks.getProfileIdentityData).toHaveBeenCalledWith("user-1");
     });

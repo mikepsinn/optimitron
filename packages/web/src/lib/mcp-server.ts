@@ -744,6 +744,81 @@ function getTaskExecutorType(task: PersonalQueueTaskRecord | Record<string, unkn
   );
 }
 
+function normalizeAcceptanceCriteria(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => String(item ?? "").trim())
+    .filter(Boolean);
+}
+
+function extractAcceptanceCriteriaFromDescription(description: unknown): string[] {
+  if (typeof description !== "string" || !description.trim()) return [];
+
+  const lines = description.split(/\r?\n/);
+  const criteria: string[] = [];
+  let inAcceptanceSection = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (/^#{1,6}\s+acceptance criteria\b/i.test(trimmed)) {
+      inAcceptanceSection = true;
+      continue;
+    }
+    if (inAcceptanceSection && /^#{1,6}\s+/.test(trimmed)) {
+      break;
+    }
+    if (!inAcceptanceSection || !trimmed) {
+      continue;
+    }
+
+    const bulletMatch = trimmed.match(/^(?:[-*+]\s+(?:\[[ xX]\]\s*)?|\d+[.)]\s+)(.+)$/);
+    if (!bulletMatch?.[1]) {
+      continue;
+    }
+
+    const criterion = bulletMatch[1]
+      .replace(/\s+/g, " ")
+      .trim();
+    if (criterion) criteria.push(criterion);
+  }
+
+  return criteria;
+}
+
+function mergeAcceptanceCriteriaIntoContext(
+  context: Record<string, unknown>,
+  description: unknown,
+  explicitCriteria?: unknown,
+) {
+  const existingCriteria = normalizeAcceptanceCriteria(context.acceptanceCriteria);
+  if (existingCriteria.length > 0) {
+    return context;
+  }
+
+  const explicit = normalizeAcceptanceCriteria(explicitCriteria);
+  const criteria =
+    explicit.length > 0
+      ? explicit
+      : extractAcceptanceCriteriaFromDescription(description);
+
+  return criteria.length > 0
+    ? { ...context, acceptanceCriteria: criteria }
+    : context;
+}
+
+function enrichTaskForMcp(task: unknown) {
+  const record = { ...(task as Record<string, unknown>) };
+  const context = mergeAcceptanceCriteriaIntoContext(
+    { ...getTaskContext(record) },
+    record.description,
+  );
+  return {
+    ...record,
+    contextJson: context,
+    executorType: getTaskExecutorType({ ...record, contextJson: context }),
+  };
+}
+
 function isSelfExecutableTask(task: PersonalQueueTaskRecord) {
   return getTaskExecutorType(task) !== AI_EXECUTOR_TYPE;
 }
@@ -879,6 +954,7 @@ function resolveTaskEconomics(args: Record<string, unknown>, existing?: {
 
 function buildPersonalTaskContext(args: Record<string, unknown>, economics: ReturnType<typeof resolveTaskEconomics>, baseContextJson?: unknown) {
   const contextPatch: Record<string, unknown> = {};
+  const providedContext = asObject(args.contextJson) ?? {};
   if (args.executor_type !== undefined || args.executorType !== undefined || baseContextJson == null) {
     contextPatch.executor_type = normalizeExecutorType(args.executor_type ?? args.executorType);
   }
@@ -897,13 +973,18 @@ function buildPersonalTaskContext(args: Record<string, unknown>, economics: Retu
   if (args.deadline_rationale !== undefined || args.deadlineRationale !== undefined) {
     contextPatch.deadline_rationale = (args.deadline_rationale ?? args.deadlineRationale) as string;
   }
+  const contextWithCriteria = mergeAcceptanceCriteriaIntoContext(
+    {
+      ...providedContext,
+      ...contextPatch,
+    },
+    args.description,
+    args.acceptanceCriteria,
+  );
 
   return mergeTaskContextJson({
     baseContextJson,
-    patchContextJson: {
-      ...asObject(args.contextJson),
-      ...contextPatch,
-    },
+    patchContextJson: contextWithCriteria,
     sourceUrl: args.sourceUrl !== undefined ? ((args.sourceUrl as string) || null) : null,
   });
 }
@@ -1633,6 +1714,10 @@ const TASK_TOOL_DEFINITIONS = [
         status: { type: "string", enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"], description: "Filter by task status" },
         category: { type: "string", description: "Filter by task category" },
         assigneePersonId: { type: "string", description: "Filter by assignee person ID" },
+        assignedToMe: {
+          type: "boolean",
+          description: "Filter to tasks assigned to the authenticated user's canonical Person row.",
+        },
         parentTaskId: { type: "string", description: "Filter by parent task ID (get subtasks)" },
         limit: { type: "number", description: "Max results (default 20, max 50)" },
       },
@@ -1984,6 +2069,12 @@ const TASK_TOOL_DEFINITIONS = [
         ev_math: { type: "string", description: "Freeform rationale for value/probability/hour assumptions" },
         can_delegate: { type: "boolean", description: "Whether an agent or contractor can do this task" },
         best_route: { type: "string", description: "Best execution route, e.g. self, agent, contractor" },
+        acceptanceCriteria: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Structured acceptance criteria. If omitted, createTask also extracts checklist bullets under a markdown 'Acceptance criteria' heading in description.",
+        },
         isPublic: { type: "boolean", description: "Visible in public views (default false)" },
         contextJson: TASK_CONTEXT_JSON_SCHEMA,
         sortOrder: { type: "number", description: "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score." },
@@ -2150,6 +2241,12 @@ const TASK_TOOL_DEFINITIONS = [
         ev_math: { type: "string", description: "Freeform rationale for value/probability/hour assumptions" },
         can_delegate: { type: "boolean", description: "Whether an agent or contractor can do this task" },
         best_route: { type: "string", description: "Best execution route, e.g. self, agent, contractor" },
+        acceptanceCriteria: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Structured acceptance criteria. If omitted while description is updated, updateTask can extract checklist bullets under a markdown 'Acceptance criteria' heading.",
+        },
         sortOrder: { type: "number", description: "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score." },
       },
       required: ["taskId"],
@@ -2825,14 +2922,32 @@ export function createMcpServer(
 
         // ── listTasks ──────────────────────────────────────────
         case "listTasks": {
+          if (a.assignedToMe === true && !userId) {
+            return authRequired(
+              "listTasks",
+              "assignedToMe needs the authenticated user's canonical Person row.",
+            );
+          }
           const { tasks } = await getTaskFunctions();
           const status = a.status ? TaskStatus[a.status as keyof typeof TaskStatus] : null;
           const limit = Math.min(Number(a.limit) || 20, 50);
+          let assigneePersonId = (a.assigneePersonId as string) ?? null;
+          let visibility: "public" | "accessible" = "public";
+          if (a.assignedToMe === true && userId) {
+            const prisma = await getPrisma();
+            const user = await prisma.user.findUnique({
+              where: { id: userId },
+              select: { personId: true },
+            });
+            assigneePersonId = user?.personId ?? "__unreachable__";
+            visibility = "accessible";
+          }
           const list = await tasks.listTasks({
             status,
-            assigneePersonId: (a.assigneePersonId as string) ?? null,
+            assigneePersonId,
             limit,
-            visibility: "public",
+            userId: visibility === "accessible" ? userId : null,
+            visibility,
           });
           let filtered = list;
           if (a.parentTaskId) {
@@ -3095,7 +3210,7 @@ export function createMcpServer(
           const result = await tasks.getTaskDetailData(a.taskId as string, userId ?? null);
           if (!result) return err("Task not found");
           return ok({
-            task: result.task,
+            task: enrichTaskForMcp(result.task),
             taskCommunicationCount: result.taskCommunicationCount,
           });
         }
@@ -3320,10 +3435,17 @@ export function createMcpServer(
 
         case "getMe": {
           if (!userId) return authRequired(name, "This tool returns the authenticated user's profile.");
+          const prisma = await getPrisma();
           const { getProfileIdentityData } = await import("./profile-identity.server");
-          const profile = await getProfileIdentityData(userId);
+          const [profile, userIdentity] = await Promise.all([
+            getProfileIdentityData(userId),
+            prisma.user.findUnique({
+              where: { id: userId },
+              select: { personId: true },
+            }),
+          ]);
           if (!profile) return err("User not found");
-          return ok({ userId, ...profile });
+          return ok({ userId, personId: userIdentity?.personId ?? null, ...profile });
         }
 
         case "updateMyProfile": {
@@ -3759,6 +3881,7 @@ export function createMcpServer(
             a.canDelegate !== undefined ||
             a.best_route !== undefined ||
             a.bestRoute !== undefined ||
+            a.acceptanceCriteria !== undefined ||
             a.deadline_rationale !== undefined ||
             a.deadlineRationale !== undefined
           ) {
@@ -3774,11 +3897,15 @@ export function createMcpServer(
             });
             if (dependencyPatchProvided) {
               const { TaskEdgeType } = await import("@optimitron/db");
+              const dependencyEdgeTypes = [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON];
               await tx.taskEdge.updateMany({
                 where: {
                   deletedAt: null,
                   toTaskId: updated.id,
-                  edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
+                  edgeType: { in: dependencyEdgeTypes },
+                  ...(blockerTaskIds.length > 0
+                    ? { fromTaskId: { notIn: blockerTaskIds } }
+                    : {}),
                 },
                 data: { deletedAt: new Date() },
               });
@@ -3790,6 +3917,14 @@ export function createMcpServer(
                   edgeType: TaskEdgeType.BLOCKS,
                 }));
               if (incomingEdges.length > 0) {
+                await tx.taskEdge.updateMany({
+                  where: {
+                    toTaskId: updated.id,
+                    fromTaskId: { in: incomingEdges.map((edge) => edge.fromTaskId) },
+                    edgeType: { in: dependencyEdgeTypes },
+                  },
+                  data: { deletedAt: null },
+                });
                 await tx.taskEdge.createMany({ data: incomingEdges, skipDuplicates: true });
               }
             }
@@ -4049,6 +4184,14 @@ export function createMcpServer(
           if (!blockerTask.isPublic && blockerTask.ownerUserId !== userId) {
             return err("Forbidden: blocker task is not accessible to current user");
           }
+          await prisma.taskEdge.updateMany({
+            where: {
+              fromTaskId: a.blockerTaskId as string,
+              toTaskId: a.blockedTaskId as string,
+              edgeType: TaskEdgeType.BLOCKS,
+            },
+            data: { deletedAt: null },
+          });
           await prisma.taskEdge.createMany({
             data: [{
               fromTaskId: a.blockerTaskId as string,
@@ -4067,6 +4210,7 @@ export function createMcpServer(
           const [blockedBy, blocks] = await Promise.all([
             prisma.taskEdge.findMany({
               where: {
+                deletedAt: null,
                 toTaskId: a.taskId as string,
                 edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
               },
@@ -4074,6 +4218,7 @@ export function createMcpServer(
             }),
             prisma.taskEdge.findMany({
               where: {
+                deletedAt: null,
                 fromTaskId: a.taskId as string,
                 edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
               },
