@@ -83,16 +83,16 @@ describe("buildTaskCommentNotificationEmail", () => {
     expect(email.html).toContain("Mike Sinn");
     expect(email.html).toContain("Recently promoted to Humanity Manager");
     expect(email.html).toContain("Earth Optimization Services LLC");
-    expect(email.html).toContain("Yours in not dying,");
+    expect(email.html).toContain("Love,");
     expect(email.text).toContain("Mike Sinn");
     expect(email.text).toContain("Recently promoted to Humanity Manager");
-    expect(email.text).toContain("Yours in not dying,");
+    expect(email.text).toContain("Love,");
   });
 
   it("does not render a sender sign-off when senderSignature is omitted", () => {
     const email = buildTaskCommentNotificationEmail(baseInput);
-    expect(email.html).not.toContain("Yours in not dying,");
-    expect(email.text).not.toContain("Yours in not dying,");
+    expect(email.html).not.toContain("Love,");
+    expect(email.text).not.toContain("Love,");
   });
 
   it("emits a placeholder for the unsubscribe URL", () => {

@@ -149,9 +149,9 @@ describe("Wishonia signature module", () => {
   });
 
   describe("buildSenderSignatureText", () => {
-    it("renders 'Yours in not dying,' sign-off with name + default role + default org", () => {
+    it("renders 'Love,' sign-off with name + default role + default org", () => {
       const text = buildSenderSignatureText({ name: "Mike Sinn" });
-      expect(text).toContain("Yours in not dying,");
+      expect(text).toContain("Love,");
       expect(text).toContain("Mike Sinn");
       expect(text).toContain("Recently promoted to Humanity Manager");
       expect(text).toContain("Earth Optimization Services LLC");

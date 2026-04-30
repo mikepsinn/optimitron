@@ -176,7 +176,7 @@ const DEFAULT_SENDER_ORG = "Earth Optimization Services LLC";
 export function buildSenderSignatureText(signature: SenderSignature): string {
   const role = signature.role ?? DEFAULT_SENDER_ROLE;
   const org = signature.org ?? DEFAULT_SENDER_ORG;
-  return ["", "---", "", "Yours in not dying,", "", signature.name, role, org].join("\n");
+  return ["", "---", "", "Love,", "", signature.name, role, org].join("\n");
 }
 
 export function buildSenderSignatureHtml(signature: SenderSignature): string {
@@ -186,7 +186,7 @@ export function buildSenderSignatureHtml(signature: SenderSignature): string {
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px 0 0 0;border-collapse:collapse;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
   <tr>
     <td valign="top" style="border-left:3px solid #111827;padding:0 0 0 16px;">
-      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Yours in not dying,</div>
+      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Love,</div>
       <div style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">${escapeHtml(signature.name)}</div>
       <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(role)}</div>
       <div style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">${escapeHtml(org)}</div>
