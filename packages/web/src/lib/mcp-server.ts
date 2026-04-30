@@ -5075,6 +5075,24 @@ export function createMcpServer(
       const cause = error instanceof Error && error.cause instanceof Error ? error.cause.message : undefined;
       // Server-side: full stack ends up in Vercel/runtime logs.
       console.error(`[mcp] tool "${name}" threw:`, error);
+      // Sentry: send-fire-and-forget so we don't block the response. The
+      // outer try/catch already returned the JSON-RPC error to the client.
+      // We tag with the tool name + userId so the alert/filter UX is sane.
+      // Dynamic import keeps the bundle clean in test/CI environments where
+      // @sentry/nextjs may not be installed or initialized.
+      void import("@sentry/nextjs")
+        .then((Sentry) => {
+          Sentry.withScope((scope) => {
+            scope.setTag("mcp.tool", name);
+            scope.setTag("mcp.surface", "tool_dispatch");
+            if (userId) scope.setUser({ id: userId });
+            scope.setContext("mcpToolArgs", a as Record<string, unknown>);
+            Sentry.captureException(error);
+          });
+        })
+        .catch(() => {
+          // Sentry unavailable (CI / unit tests / startup race) — already logged above.
+        });
       // Wire-side: structured payload so the LLM (and humans reading the SSE
       // stream) get the actual failure, not a generic "execution error".
       return {

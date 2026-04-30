@@ -84,33 +84,91 @@ function unauthorized(req: Request, error: "missing_token" | "invalid_token"): R
   );
 }
 
+/// Capture an MCP-side error to Sentry without blocking the response.
+/// Caller has already logged via console.error / returned an HTTP response;
+/// this just enriches Sentry visibility so silent transport / auth failures
+/// stop being silent. Dynamic import — Sentry might not be initialized in
+/// dev or test runs.
+function captureMcpError(
+  error: unknown,
+  ctx: { surface: string; userId?: string | null; details?: Record<string, unknown> },
+) {
+  void import("@sentry/nextjs")
+    .then((Sentry) => {
+      Sentry.withScope((scope) => {
+        scope.setTag("mcp.surface", ctx.surface);
+        if (ctx.userId) scope.setUser({ id: ctx.userId });
+        if (ctx.details) scope.setContext("mcp", ctx.details);
+        Sentry.captureException(error);
+      });
+    })
+    .catch(() => {
+      // Sentry unavailable; already logged above.
+    });
+}
+
 async function handleMcpRequest(req: Request): Promise<Response> {
-  await logMcpRequest(req);
-
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return unauthorized(req, "missing_token");
-  }
-
-  let userId: string;
-  let scopes: McpScope[];
   try {
-    const result = await verifyMcpAccessToken(authHeader.slice(7));
-    userId = result.sub;
-    scopes = result.scopes;
-  } catch {
-    return unauthorized(req, "invalid_token");
+    await logMcpRequest(req);
+
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return unauthorized(req, "missing_token");
+    }
+
+    let userId: string;
+    let scopes: McpScope[];
+    try {
+      const result = await verifyMcpAccessToken(authHeader.slice(7));
+      userId = result.sub;
+      scopes = result.scopes;
+    } catch (error) {
+      // Token verification failed — log + Sentry so we can see the real
+      // reason (expired vs. tampered vs. unknown signing key) instead of
+      // just a generic 401 in Vercel logs.
+      console.error("[mcp] token verification failed:", error);
+      captureMcpError(error, {
+        surface: "auth_token_verification",
+        details: { method: req.method, url: req.url },
+      });
+      return unauthorized(req, "invalid_token");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isAdmin: true },
+    });
+
+    const transport = new WebStandardStreamableHTTPServerTransport();
+    const server = createMcpServer(userId, scopes, { isAdmin: user?.isAdmin === true });
+    await server.connect(transport);
+    return transport.handleRequest(req);
+  } catch (error) {
+    // Catch transport-level / unexpected failures that bypass the
+    // tool-dispatch try/catch in mcp-server.ts (e.g. server.connect or
+    // transport.handleRequest throwing). Without this, the request fails
+    // with a generic 500 and Sentry's `onRequestError` may or may not
+    // fire reliably for streamed responses.
+    console.error("[mcp] transport-level error:", error);
+    captureMcpError(error, {
+      surface: "transport",
+      details: { method: req.method, url: req.url },
+    });
+    const message = error instanceof Error ? error.message : String(error);
+    return new Response(
+      JSON.stringify({
+        error: "mcp_transport_error",
+        error_description: message,
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      },
+    );
   }
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true },
-  });
-
-  const transport = new WebStandardStreamableHTTPServerTransport();
-  const server = createMcpServer(userId, scopes, { isAdmin: user?.isAdmin === true });
-  await server.connect(transport);
-  return transport.handleRequest(req);
 }
 
 export async function GET(req: Request) {

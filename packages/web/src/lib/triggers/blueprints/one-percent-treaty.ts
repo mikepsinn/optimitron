@@ -44,9 +44,9 @@ const USER_TREATY_DESCRIPTION = [
 const PHONE_SCRIPT_DESCRIPTION = [
   "Your job is to manage 8 billion humans. You're busy. Outsource it.",
   "",
-  "The trick: call two friends you actually like. Read them the script below. They each call two friends. After 32 rounds of this, four billion humans are reached. Tom Sawyer painting the fence — you don't have to convince anyone of anything they don't already believe, you just have to ask them to make two calls.",
+  "The trick: call one human you love and don't want to watch suffer or die from horrible diseases. Read them the script below. They vote, then call two humans they love. After 32 rounds of this, four billion humans are reached. Tom Sawyer painting the fence — you don't have to convince anyone of anything they don't already believe, you just have to get one human to start delegating too.",
   "",
-  "Could be 30 minutes of nice phone calls with people who love you. If they actually do it.",
+  "Could be one nice phone call with someone who loves you. If they actually do it.",
   "",
   "---",
   "",
@@ -62,7 +62,7 @@ const PHONE_SCRIPT_DESCRIPTION = [
   "",
   "---",
   "",
-  "Mark this task done after you've made the call AND actually sent your referral URL. The receiving end finishes when those friends vote — that's tracked separately by the two assign-a-human subtasks below.",
+  "Mark this task done after you've made the call AND actually sent your referral URL. The receiving end finishes when assigned humans vote — that's tracked separately by the two assign-a-human subtasks below.",
 ].join("\n");
 
 const userOnboardingTreaty: CreateTaskTriggerInput = {
@@ -123,7 +123,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     {
       kind: "phoneScript",
       sortOrder: 20,
-      titleTemplate: "Make a phone call. Outsource humanity management.",
+      titleTemplate: "Make one phone call. Outsource humanity management.",
       descriptionTemplate: PHONE_SCRIPT_DESCRIPTION,
       category: "OTHER",
       difficulty: "TRIVIAL",
@@ -312,7 +312,7 @@ const hmtVerifyGate: CreateTaskTriggerInput = {
     inputScope: "siblings",
     subtaskKinds: ["signTreatyPersonally", "shareReferralUrl", "phoneScript", "assignFirstHuman", "assignSecondHuman"],
     evidenceTemplate:
-      "User publicly signed the treaty, shared their referral URL, made the phone calls, and gave two named humans their 1% Treaty voting tasks.",
+      "User publicly signed the treaty, shared their referral URL, made the phone call, and gave two named humans their 1% Treaty voting tasks.",
   },
   notes:
     "Auto-VERIFIES the user's completeTraining subtask when its siblings (sign + share + phoneScript + invite1 + invite2) are VERIFIED.",
