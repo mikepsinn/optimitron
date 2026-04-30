@@ -21,6 +21,7 @@ import type { TaskCardTask } from "@/components/tasks/task-card"
 import { QuestChecklistCard } from "@/components/dashboard/QuestChecklistCard"
 import { ImpactReceiptsCard } from "@/components/dashboard/ImpactReceiptsCard"
 import { useRequestSiteOrigin } from "@/lib/request-site-origin"
+import { DASHBOARD_INVITE_SECTION_ID } from "@/lib/routes"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
 export function EarthOptimizationDashboardClient({
@@ -58,7 +59,7 @@ export function EarthOptimizationDashboardClient({
           </div>
         </header>
 
-        <section className="mx-auto mb-10 max-w-2xl space-y-4" id="referral-invitations">
+        <section className="mx-auto mb-10 max-w-2xl space-y-4" id={DASHBOARD_INVITE_SECTION_ID}>
           <ReferralInvitationComposer />
           <ReferralInvitationStatusCard />
         </section>

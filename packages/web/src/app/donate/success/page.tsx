@@ -8,6 +8,7 @@ import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/retroui/Button";
+import { DASHBOARD_INVITE_HREF } from "@/lib/routes";
 
 interface SessionData {
   amount_total: number | null;
@@ -82,7 +83,7 @@ function DonateSuccessInner() {
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button asChild className="flex-1">
-                  <Link href="/send">Recruit one voter</Link>
+                  <Link href={DASHBOARD_INVITE_HREF}>Invite one voter</Link>
                 </Button>
                 <Button asChild variant="outline" className="flex-1">
                   <Link href="/dashboard">Open dashboard</Link>

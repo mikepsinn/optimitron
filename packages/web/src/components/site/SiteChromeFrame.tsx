@@ -13,13 +13,11 @@ function usesMinimalChrome(
 }
 
 export function SiteChromeFrame({
-  bottomBar,
   children,
   footer,
   minimalRoutePrefixes,
   navbar,
 }: {
-  bottomBar?: ReactNode;
   children: ReactNode;
   footer: ReactNode;
   minimalRoutePrefixes: readonly string[];
@@ -33,7 +31,6 @@ export function SiteChromeFrame({
       {minimal ? null : navbar}
       <main className="min-h-screen">{children}</main>
       {minimal ? null : footer}
-      {minimal ? null : bottomBar}
     </>
   );
 }

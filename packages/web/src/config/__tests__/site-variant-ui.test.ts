@@ -39,7 +39,6 @@ describe("site variant UI config", () => {
 
     expect(config.nav.brandLabel).toBe("Optimitron");
     expect(config.nav.searchEnabled).toBe(true);
-    expect(config.showGameScoreBar).toBe(true);
     expect(labelsFor("optimitron")).toEqual(
       expect.arrayContaining(["Prize", "Tasks", "Dashboard"]),
     );

@@ -44,7 +44,7 @@ import {
   GLOBAL_MILITARY_USD,
   getSignerDelayAttribution,
 } from "@/lib/tasks/delay-attribution";
-import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
+import { DASHBOARD_INVITE_HREF, getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
 import { getAssigneeTwitterHandle, readTaskContext } from "@/lib/tasks/task-context";
 import { getTaskAncestors, getTaskDetailData } from "@/lib/tasks.server";
@@ -130,9 +130,9 @@ function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardPr
         </div>
         <Link
           className="inline-flex h-11 items-center justify-center border-4 border-primary bg-background px-4 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-          href={ROUTES.send}
+          href={DASHBOARD_INVITE_HREF}
         >
-          Assign another
+          Invite another
         </Link>
       </div>
       <div className="mt-5 grid gap-3 text-xs font-black uppercase sm:grid-cols-3">

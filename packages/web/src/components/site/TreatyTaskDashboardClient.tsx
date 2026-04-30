@@ -10,6 +10,7 @@ import {
   treatyPrimaryButtonClass,
   treatySecondaryButtonClass,
 } from "@/components/landing/TreatyFlowShell";
+import { DASHBOARD_INVITE_SECTION_ID } from "@/lib/routes";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 
@@ -18,28 +19,11 @@ interface TreatyTaskDashboardClientProps {
   completedTasks?: TaskCardTask[];
 }
 
-/// Suffixes of the HMT subtasks where the composer (assign-a-human form)
-/// is the actual action. Showing it on other steps (sign-personally,
-/// share-referral, phone-call) makes the dashboard look like a giant
-/// data-entry form competing with the primary CTA. Gate it.
-const ASSIGN_HUMAN_TASK_KEY_SUFFIXES = [
-  ":assignFirstHuman",
-  ":assignSecondHuman",
-] as const;
-
-function isAssignHumanTask(task: TaskCardTask | undefined) {
-  if (!task?.taskKey) return false;
-  return ASSIGN_HUMAN_TASK_KEY_SUFFIXES.some((suffix) =>
-    task.taskKey?.endsWith(suffix),
-  );
-}
-
 export function TreatyTaskDashboardClient({
   nextTasks,
   completedTasks = [],
 }: TreatyTaskDashboardClientProps) {
   const [primaryTask, ...followUpTasks] = nextTasks;
-  const showComposer = isAssignHumanTask(primaryTask);
 
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
@@ -65,6 +49,19 @@ export function TreatyTaskDashboardClient({
         </Button>
       </div>
 
+      <section id={DASHBOARD_INVITE_SECTION_ID} className="mx-auto max-w-2xl space-y-4">
+        <div>
+          <h2 className="text-xl font-black uppercase tracking-tight sm:text-2xl">
+            Invite a Voter
+          </h2>
+          <p className="mt-2 text-sm font-bold text-[var(--treaty-ink-muted)]">
+            Give one human the voting task, then send or copy the message.
+          </p>
+        </div>
+        <ReferralInvitationComposer />
+        <ReferralInvitationStatusCard />
+      </section>
+
       {primaryTask ? (
         <section className="space-y-3">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--treaty-ink-muted)]">
@@ -84,21 +81,6 @@ export function TreatyTaskDashboardClient({
           </div>
         </section>
       )}
-
-      {showComposer ? (
-        <section className="mx-auto max-w-2xl space-y-4">
-          <div>
-            <h2 className="text-xl font-black uppercase tracking-tight sm:text-2xl">
-              Assign an Earth Optimization Task
-            </h2>
-            <p className="mt-2 text-sm font-bold text-[var(--treaty-ink-muted)]">
-              Give one human the task, then send or copy the message.
-            </p>
-          </div>
-          <ReferralInvitationComposer />
-          <ReferralInvitationStatusCard />
-        </section>
-      ) : null}
 
       {followUpTasks.length > 0 ? (
         <section className="space-y-3">
@@ -144,11 +126,11 @@ export function TreatyTaskDashboardClient({
   );
 }
 
-/// Trust-the-user attestation: when the user clicks through to publicly
-/// sign the 1% Treaty, fire the POST that marks their HMT subtask
-/// VERIFIED. We don't await it — the user's link click navigates away
-/// regardless. If the network call drops the signature isn't recorded,
-/// the user has the click-through evidence, and they can re-click later.
+// Trust-the-user attestation: when the user clicks through to publicly
+// sign the 1% Treaty, fire the POST that marks their HMT subtask
+// VERIFIED. We don't await it; the user's link click navigates away
+// regardless. If the network call drops the signature isn't recorded,
+// the user has the click-through evidence, and they can re-click later.
 async function postSignTreatyAttestation() {
   try {
     await fetch("/api/user-treaty-task/sign-personally", { method: "POST" });
@@ -160,15 +142,19 @@ async function postSignTreatyAttestation() {
 
 function PrimaryTaskCard({ task }: { task: TaskCardTask }) {
   const actionLink = task.communicationEndpoints?.find((endpoint) => endpoint.url) ?? null;
-  const ctaUrl = actionLink?.url ?? `/tasks/${task.id}`;
-  const ctaLabel = actionLink?.label ?? "Open the task";
-  /// Detect the signTreatyPersonally subtask by suffix on its taskKey.
-  /// When the user clicks the action-link we fire the attestation POST in
-  /// parallel — see `markUserTreatyPersonalSignComplete` for why we trust
-  /// the click.
+  // Detect the signTreatyPersonally subtask by suffix on its taskKey.
+  // When the user clicks the action-link we fire the attestation POST in
+  // parallel. See `markUserTreatyPersonalSignComplete` for why we trust
+  // the click.
   const isSignTreatyTask = Boolean(
     task.taskKey?.endsWith(":signTreatyPersonally"),
   );
+  const ctaUrl = actionLink?.url ?? `/tasks/${task.id}`;
+  const ctaLabel = actionLink?.label ?? "Open the task";
+  // External-link target only when the URL is to a genuinely different
+  // origin. The blueprint stores /treaty (relative); middleware redirects
+  // cross-domain when needed via getSiteRouteRedirect.
+  const ctaIsExternal = /^https?:\/\//i.test(ctaUrl);
 
   return (
     <div className="border border-[var(--treaty-ink)] bg-[#fffdf8] p-5 shadow-none">
@@ -187,7 +173,7 @@ function PrimaryTaskCard({ task }: { task: TaskCardTask }) {
         >
           <Link
             href={ctaUrl}
-            target={actionLink?.url ? "_blank" : undefined}
+            target={ctaIsExternal ? "_blank" : undefined}
             onClick={isSignTreatyTask ? () => void postSignTreatyAttestation() : undefined}
           >
             {ctaLabel}

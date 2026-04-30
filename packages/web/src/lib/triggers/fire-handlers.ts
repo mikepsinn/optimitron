@@ -133,6 +133,13 @@ export async function fireSpawnTasks(
       assigneePersonId,
       assigneeOrganizationId,
       parentTaskId: parentRes.parentTaskId,
+      // Persist the spec's sortOrder so dashboards can sort sibling tasks by
+      // intended order (e.g. signTreatyPersonally=0 -> completeTraining=50).
+      // Prior to 2026-04-30 this field was omitted, so every spawned task had
+      // sortOrder=null and the dashboard sort was a no-op; primary task fell
+      // back to updatedAt order, which surfaced assignSecondHuman (the
+      // second-to-last spawned) instead of signTreatyPersonally for fresh users.
+      sortOrder: spec.sortOrder,
     };
 
     const baseCreate = {

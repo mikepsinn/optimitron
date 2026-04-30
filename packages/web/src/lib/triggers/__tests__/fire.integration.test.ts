@@ -99,9 +99,11 @@ describe("triggers/fire integration", () => {
 
       const step1 = store.tasks.find((t) => t.taskKey === "demo:user:u_42:step1");
       expect(step1?.parentTaskId).toBe(root?.id);
+      expect(step1?.sortOrder).toBe(0);
 
       const step2 = store.tasks.find((t) => t.taskKey === "demo:user:u_42:step2");
       expect(step2?.parentTaskId).toBe(root?.id);
+      expect(step2?.sortOrder).toBe(1);
 
       // Fire log written
       expect(store.fires).toHaveLength(1);

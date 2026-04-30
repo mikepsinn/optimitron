@@ -10,6 +10,7 @@ import {
   exploreLinks,
   footerAppLinks,
   githubLink,
+  inviteVoterLink,
   navSections,
   paperLinks,
   tasksLink,
@@ -126,6 +127,7 @@ export interface SiteNavConfig {
   desktopBrandLabel: string;
   menuEnabled: boolean;
   menuTitle: string;
+  quickAction?: NavItem;
   searchEnabled: boolean;
   sections: NavSection[];
   signInCallbackUrl: string;
@@ -148,7 +150,6 @@ export interface SiteFooterConfig {
 export interface SiteVariantUiConfig {
   footer: SiteFooterConfig;
   nav: SiteNavConfig;
-  showGameScoreBar: boolean;
 }
 
 export interface SitePageVariants {
@@ -448,13 +449,13 @@ const dihNavSections: NavSection[] = [
 ];
 
 const OPTIMITRON_UI: SiteVariantUiConfig = {
-  showGameScoreBar: true,
   nav: {
     brandHref: ROUTES.home,
     brandLabel: "Optimitron",
     desktopBrandLabel: "⚡ Optimitron",
     menuEnabled: true,
     menuTitle: "Navigation",
+    quickAction: inviteVoterLink,
     searchEnabled: true,
     sections: navSections,
     signInCallbackUrl: ROUTES.wishocracy,
@@ -476,7 +477,6 @@ const OPTIMITRON_UI: SiteVariantUiConfig = {
 };
 
 const DFDA_UI: SiteVariantUiConfig = {
-  showGameScoreBar: false,
   nav: {
     brandHref: ROUTES.home,
     brandLabel: "DFDA",
@@ -501,7 +501,6 @@ const DFDA_UI: SiteVariantUiConfig = {
 };
 
 const DIH_UI: SiteVariantUiConfig = {
-  showGameScoreBar: false,
   nav: {
     brandHref: ROUTES.home,
     brandLabel: "DIH",
@@ -526,13 +525,13 @@ const DIH_UI: SiteVariantUiConfig = {
 };
 
 const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
-  showGameScoreBar: false,
   nav: {
     brandHref: ROUTES.home,
     brandLabel: "War on Disease",
     desktopBrandLabel: "War on Disease",
     menuEnabled: true,
     menuTitle: "War on Disease",
+    quickAction: inviteVoterLink,
     searchEnabled: false,
     sections: warOnDiseaseNavSections,
     signInCallbackUrl: ROUTES.dashboard,
@@ -562,13 +561,13 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
 };
 
 const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
-  showGameScoreBar: false,
   nav: {
     brandHref: ROUTES.home,
     brandLabel: "1% Treaty",
     desktopBrandLabel: "1% Treaty",
     menuEnabled: true,
     menuTitle: "1% Treaty",
+    quickAction: inviteVoterLink,
     searchEnabled: false,
     sections: onePercentNavSections,
     signInCallbackUrl: ROUTES.dashboard,
@@ -604,7 +603,6 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
 };
 
 const TRIAL_ABUNDANCE_SURVEY_UI: SiteVariantUiConfig = {
-  showGameScoreBar: false,
   nav: {
     brandHref: ROUTES.home,
     brandLabel: "Trial Abundance Survey",
@@ -1342,6 +1340,24 @@ function normalizeHost(host: string | null | undefined) {
 
 export function getCanonicalHostForSiteKey(key: SiteKey): string {
   return new URL(SITE_CONFIGS[key].canonicalOrigin).host;
+}
+
+const TREATY_SIGN_PATH = "/treaty";
+const TREATY_SIGN_FALLBACK_URL = "https://1percenttreaty.org/treaty";
+
+// Returns the URL where the user should publicly sign the 1% Treaty from the
+// given site. Stays on-domain when the site allows /treaty, falls through to
+// the canonical 1percenttreaty.org otherwise. Send the user across domains as
+// a last resort; most who leave do not come back.
+export function getTreatySignUrl(site: SiteConfig): string {
+  if (!site.routePolicy.restrictToAllowlist) return TREATY_SIGN_PATH;
+  const matches = (prefix: string) =>
+    prefix === TREATY_SIGN_PATH || prefix.startsWith(`${TREATY_SIGN_PATH}/`);
+  const allowed =
+    site.routePolicy.publicPrefixes.some(matches) ||
+    site.routePolicy.operationalPrefixes.some(matches) ||
+    site.routePolicy.canonicalPrefixes.some(matches);
+  return allowed ? TREATY_SIGN_PATH : TREATY_SIGN_FALLBACK_URL;
 }
 
 export function getSiteFromHost(host: string | null | undefined): SiteConfig {

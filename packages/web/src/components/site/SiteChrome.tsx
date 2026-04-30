@@ -4,7 +4,6 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { GameScoreBar } from "@/components/game/GameScoreBar";
 import { getSiteFromHeaders } from "@/lib/site";
 import { SiteChromeFrame } from "@/components/site/SiteChromeFrame";
 
@@ -37,7 +36,6 @@ export async function SiteChrome({
       <SiteChromeFrame
         navbar={<Navbar config={ui.nav} />}
         footer={<Footer siteKey={site.key} />}
-        bottomBar={ui.showGameScoreBar ? <GameScoreBar /> : undefined}
         minimalRoutePrefixes={site.routePolicy.minimalChromePrefixes}
       >
         {children}

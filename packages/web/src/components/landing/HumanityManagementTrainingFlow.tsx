@@ -163,10 +163,6 @@ function phoneHref(kind: "sms" | "tel", rawPhone: string, body?: string) {
   return `sms:${phone}${body ? `?&body=${encodeURIComponent(body)}` : ""}`;
 }
 
-function formatCompletedCount(value: number) {
-  return value === 1 ? "1 human" : `${value} humans`;
-}
-
 function formatNextHumanOrdinal(value: number) {
   if (value <= 0) return "your first";
   if (value === 1) return "your second";
@@ -826,7 +822,7 @@ export function HumanityManagementTrainingFlow({
           <>
             <div className="space-y-5">
               <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
-                {formatCompletedCount(completedCount)} of 2 humans assigned
+                {completedCount} of 2 humans assigned
               </p>
               <TreatyFlowParagraph>
                 Hand {formatNextHumanOrdinal(completedCount)} human the
@@ -976,7 +972,7 @@ export function HumanityManagementTrainingFlow({
           <>
             <div className="space-y-4">
               <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
-                {formatCompletedCount(completedCount)} of 2 humans assigned
+                {completedCount} of 2 humans assigned
               </p>
               <TreatyFlowParagraph>
                 {lastRecipientName || "That human"} added to your direct

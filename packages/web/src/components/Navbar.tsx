@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
-import { Menu, Search, User } from "lucide-react";
+import { Menu, Search, User, UserPlus } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -69,6 +69,12 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
   const [navQuery, setNavQuery] = useState("");
   const isAuthenticated = status === "authenticated";
   const user = session?.user ?? null;
+  const quickAction = config.quickAction ?? null;
+  const quickActionHref = quickAction
+    ? isAuthenticated
+      ? quickAction.href
+      : getSignInPath(quickAction.href)
+    : null;
   const normalizedNavQuery = navQuery.trim().toLowerCase();
   const fullSearchHref = normalizedNavQuery
     ? `${searchLink.href}?q=${encodeURIComponent(navQuery.trim())}`
@@ -127,6 +133,17 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                 aria-label={searchLink.label}
               >
                 <Search className="h-4 w-4 stroke-[2.5px]" />
+              </Link>
+            ) : null}
+            {quickAction && quickActionHref ? (
+              <Link
+                href={quickActionHref}
+                className="inline-flex h-9 items-center justify-center gap-2 border-2 border-foreground bg-foreground px-2.5 text-xs font-black uppercase tracking-[0.12em] text-background transition-colors hover:bg-background hover:text-foreground sm:px-3"
+                title={quickAction.label}
+                aria-label={quickAction.label}
+              >
+                <UserPlus className="h-4 w-4 stroke-[2.5px]" />
+                <span className="hidden sm:inline">{quickAction.cta}</span>
               </Link>
             ) : null}
             <AvatarButton

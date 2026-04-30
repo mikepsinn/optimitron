@@ -8,10 +8,11 @@ import {
   getSiteFromHeaders,
   getSiteFromHost,
   getSiteRouteDisposition,
+  getTreatySignUrl,
   isLocalHost,
   isSiteRouteAllowed,
 } from "@/lib/site";
-import { ROUTES } from "@/lib/routes";
+import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
 
 describe("site variant registry", () => {
   it("uses local http origins for .local hosts", () => {
@@ -78,6 +79,28 @@ describe("site variant registry", () => {
     );
   });
 
+  it("getTreatySignUrl returns relative /treaty for sites that allow the route, canonical fallback otherwise", () => {
+    // Sites with /treaty allowed: relative path so the browser stays on the
+    // user's current origin. Useful for in-app links where same-origin nav
+    // is the right behaviour.
+    expect(getTreatySignUrl(getSiteConfig("warOnDisease"))).toBe("/treaty");
+    expect(getTreatySignUrl(getSiteConfig("onePercentTreaty"))).toBe("/treaty");
+    // optimitron has restrictToAllowlist=false, so every route is allowed.
+    expect(getTreatySignUrl(getSiteConfig("optimitron"))).toBe("/treaty");
+    // Sites without /treaty fall back to the canonical 1percenttreaty.org
+    // origin so callers that need an absolute URL up-front (outbound emails,
+    // OG previews where middleware doesn't run) get the right destination.
+    expect(getTreatySignUrl(getSiteConfig("dfda"))).toBe(
+      "https://1percenttreaty.org/treaty",
+    );
+    expect(getTreatySignUrl(getSiteConfig("dih"))).toBe(
+      "https://1percenttreaty.org/treaty",
+    );
+    expect(getTreatySignUrl(getSiteConfig("trialAbundanceSurvey"))).toBe(
+      "https://1percenttreaty.org/treaty",
+    );
+  });
+
   it("keeps site variant identity, UI, and initiative data in the site config", () => {
     const treatySite = getSiteConfig("onePercentTreaty");
     const surveySite = getSiteConfig("trialAbundanceSurvey");
@@ -98,6 +121,30 @@ describe("site variant registry", () => {
     });
   });
 
+  it("keeps the voter invite action on campaign navs", () => {
+    expect(getSiteConfig("optimitron").ui.nav.quickAction?.href).toBe(
+      DASHBOARD_INVITE_HREF,
+    );
+    expect(getSiteConfig("warOnDisease").ui.nav.quickAction?.href).toBe(
+      DASHBOARD_INVITE_HREF,
+    );
+    expect(getSiteConfig("onePercentTreaty").ui.nav.quickAction?.href).toBe(
+      DASHBOARD_INVITE_HREF,
+    );
+    expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
+  });
+
+  it("keeps treaty signing on-domain when the current site allows it", () => {
+    expect(getTreatySignUrl(getSiteConfig("optimitron"))).toBe("/treaty");
+    expect(getTreatySignUrl(getSiteConfig("warOnDisease"))).toBe("/treaty");
+    expect(getTreatySignUrl(getSiteConfig("onePercentTreaty"))).toBe(
+      "/treaty",
+    );
+    expect(getTreatySignUrl(getSiteConfig("trialAbundanceSurvey"))).toBe(
+      "https://1percenttreaty.org/treaty",
+    );
+  });
+
   it("redirects known routes on the wrong host to their canonical site", () => {
     const treatySite = getSiteFromHost("1percenttreaty.org");
     const surveySite = getSiteFromHost("trialabundancesurvey.org");
@@ -111,6 +158,9 @@ describe("site variant registry", () => {
     ).toBe("https://dfda.earth/conditions/asthma");
     expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/why")).toBe(
       "https://1percenttreaty.org/why",
+    );
+    expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/treaty")).toBe(
+      "https://1percenttreaty.org/treaty",
     );
     expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/not-real")).toBeNull();
   });

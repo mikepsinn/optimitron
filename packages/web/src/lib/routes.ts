@@ -66,7 +66,6 @@ export const ROUTES = {
   census: "/census",
   checkIn: "/check-in",
   settings: "/settings",
-  send: "/send",
   transmit: "/transmit",
   // Futures
   wishonia: "/wishonia",
@@ -89,6 +88,8 @@ export const ROUTES = {
 
 /** Where users land after signing in (unless a specific callbackUrl overrides it) */
 export const DEFAULT_POST_LOGIN_ROUTE = ROUTES.dashboard;
+export const DASHBOARD_INVITE_SECTION_ID = "referral-invitations";
+export const DASHBOARD_INVITE_HREF = `${ROUTES.dashboard}#${DASHBOARD_INVITE_SECTION_ID}`;
 
 export interface NavItem {
   href: string;
@@ -415,13 +416,13 @@ export const settingsLink: NavItem = {
   cta: "Open Settings",
 };
 
-export const sendLink: NavItem = {
-  href: ROUTES.send,
-  label: "Assign One Task",
+export const inviteVoterLink: NavItem = {
+  href: DASHBOARD_INVITE_HREF,
+  label: "Invite a Voter",
   emoji: "📨",
   description: "Assign one human an Earth optimization task: vote on the 1% Treaty.",
   tagline: "Assign one Earth optimization task",
-  cta: "Assign Task",
+  cta: "Invite",
 };
 
 export const humanityManagementTrainingLink: NavItem = {

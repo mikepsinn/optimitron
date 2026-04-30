@@ -103,7 +103,10 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       ownerResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
-      actionLinkUrlTemplate: "https://1percenttreaty.org/treaty",
+      // Relative path. The middleware (getSiteRouteDisposition) redirects
+      // users on a variant without /treaty to the canonical onePercentTreaty
+      // origin automatically — see getSiteRouteRedirect in lib/site.ts.
+      actionLinkUrlTemplate: "/treaty",
       actionLinkLabelTemplate: "Sign the treaty",
       contributesToGate: true,
     },
@@ -346,7 +349,10 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
       isPublic: true,
       ownerResolver: "system",
       parentResolver: `fixed:${TREATY_PARENT_TASK_KEY}`,
-      actionLinkUrlTemplate: "https://1percenttreaty.org/treaty",
+      // Relative path. The middleware (getSiteRouteDisposition) redirects
+      // users on a variant without /treaty to the canonical onePercentTreaty
+      // origin automatically — see getSiteRouteRedirect in lib/site.ts.
+      actionLinkUrlTemplate: "/treaty",
       actionLinkLabelTemplate: "Sign the treaty",
     },
   ],
