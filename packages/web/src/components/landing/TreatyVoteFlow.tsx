@@ -112,6 +112,7 @@ export function TreatyVoteFlow({
   const { data: session, status } = useSession();
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
+  const choiceCardRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
   const initialVoteShellClassName = compactInitialScreen
@@ -124,6 +125,25 @@ export function TreatyVoteFlow({
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // When the slider submits, scroll the reality-check / yes-no card into
+  // view at the top of the viewport. Without this, the previous slider
+  // shell (min-h-screen) leaves the user scrolled mid-page when the new
+  // shell mounts, so the choice card lands in the bottom half of the
+  // viewport with empty whitespace above it. Momentum killer.
+  useEffect(() => {
+    if (!sliderSubmitted) return;
+    const node = choiceCardRef.current;
+    if (!node) return;
+    /// Two ticks: one for AnimatePresence to mount the new node, one for
+    /// the layout to settle so scrollIntoView positions correctly.
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        node.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [sliderSubmitted]);
 
   useEffect(() => {
     const requestedVariant =
@@ -756,6 +776,7 @@ export function TreatyVoteFlow({
       <AnimatePresence>
         {sliderSubmitted && (
           <motion.div
+            ref={choiceCardRef}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -763,7 +784,11 @@ export function TreatyVoteFlow({
             <TreatyFlowShell
               data-screen="choice"
               data-testid="treaty-vote-choice-card"
-              contentClassName="max-w-4xl space-y-5 py-6 sm:space-y-8 sm:py-12"
+              // justify-start beats the shell default (justify-center) via
+              // twMerge so the heading lands near the top of the viewport
+              // instead of centered, which previously left a half-empty
+              // viewport above the dropcap copy.
+              contentClassName="max-w-4xl justify-start space-y-5 pt-12 pb-6 sm:space-y-8 sm:pt-16 sm:pb-12"
             >
               {copyMode === "neutral" ? (
                 <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">

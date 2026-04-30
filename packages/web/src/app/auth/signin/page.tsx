@@ -32,7 +32,7 @@ export default async function SignInPage({
   const providers = getConfiguredProviders();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-brutal-yellow">
+    <main className="flex min-h-screen items-center justify-center bg-white px-4 py-12 text-neutral-950">
       <div className="w-full max-w-md">
         <AuthForm
           callbackUrl={callbackUrl}
@@ -42,6 +42,6 @@ export default async function SignInPage({
           providers={providers}
         />
       </div>
-    </div>
+    </main>
   );
 }

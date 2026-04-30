@@ -26,6 +26,7 @@ import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
   FLOW_VOTER_SUFFERING_HOURS_PREVENTED,
+  FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
 } from "@/lib/treaty-share-flow-parameters";
 
 interface ReferralInvitation {
@@ -239,11 +240,13 @@ export function ReferralInvitationComposer() {
     <section className="mb-6 overflow-hidden border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-0 text-[var(--treaty-ink)] shadow-none">
       <div className="border-b border-[var(--treaty-ink)]/30 px-5 py-4">
         <h3 className="text-lg font-black uppercase leading-tight tracking-tight sm:text-xl">
-          Assign One Earth Optimization Task
+          Assign one Earth Optimization Task
         </h3>
         <p className="mt-2 text-sm font-bold leading-6 text-[var(--treaty-ink-soft)]">
-          When {firstName || "they"} completes the Earth Optimization Task: +1 lifetime of
-          suffering prevented, +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
+          {firstName ? `When ${firstName} votes` : "When they vote"}:
+          {" "}+<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years
+          of suffering prevented,
+          {" "}+<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
         </p>
       </div>
 

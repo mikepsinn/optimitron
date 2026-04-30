@@ -18,11 +18,28 @@ interface TreatyTaskDashboardClientProps {
   completedTasks?: TaskCardTask[];
 }
 
+/// Suffixes of the HMT subtasks where the composer (assign-a-human form)
+/// is the actual action. Showing it on other steps (sign-personally,
+/// share-referral, phone-call) makes the dashboard look like a giant
+/// data-entry form competing with the primary CTA. Gate it.
+const ASSIGN_HUMAN_TASK_KEY_SUFFIXES = [
+  ":assignFirstHuman",
+  ":assignSecondHuman",
+] as const;
+
+function isAssignHumanTask(task: TaskCardTask | undefined) {
+  if (!task?.taskKey) return false;
+  return ASSIGN_HUMAN_TASK_KEY_SUFFIXES.some((suffix) =>
+    task.taskKey?.endsWith(suffix),
+  );
+}
+
 export function TreatyTaskDashboardClient({
   nextTasks,
   completedTasks = [],
 }: TreatyTaskDashboardClientProps) {
   const [primaryTask, ...followUpTasks] = nextTasks;
+  const showComposer = isAssignHumanTask(primaryTask);
 
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
@@ -68,18 +85,20 @@ export function TreatyTaskDashboardClient({
         </section>
       )}
 
-      <section className="mx-auto max-w-2xl space-y-4">
-        <div>
-          <h2 className="text-xl font-black uppercase tracking-tight sm:text-2xl">
-            Assign an Earth Optimization Task
-          </h2>
-          <p className="mt-2 text-sm font-bold text-[var(--treaty-ink-muted)]">
-            Give one human the task, then send or copy the message.
-          </p>
-        </div>
-        <ReferralInvitationComposer />
-        <ReferralInvitationStatusCard />
-      </section>
+      {showComposer ? (
+        <section className="mx-auto max-w-2xl space-y-4">
+          <div>
+            <h2 className="text-xl font-black uppercase tracking-tight sm:text-2xl">
+              Assign an Earth Optimization Task
+            </h2>
+            <p className="mt-2 text-sm font-bold text-[var(--treaty-ink-muted)]">
+              Give one human the task, then send or copy the message.
+            </p>
+          </div>
+          <ReferralInvitationComposer />
+          <ReferralInvitationStatusCard />
+        </section>
+      ) : null}
 
       {followUpTasks.length > 0 ? (
         <section className="space-y-3">

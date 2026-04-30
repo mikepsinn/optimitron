@@ -11,7 +11,6 @@ import { Label } from "@/components/retroui/Label";
 import { createLogger } from "@/lib/logger";
 import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
 import { storage } from "@/lib/storage";
-import { cn } from "@/lib/utils";
 
 const logger = createLogger("auth-form");
 
@@ -75,32 +74,35 @@ export function AuthForm({
     ? "w-full"
     : isDocument
     ? "w-full rounded-[24px] border border-[#8e6b48]/25 bg-[#f7f1e4]/88 p-5 shadow-[0_12px_24px_rgba(58,42,25,0.08)]"
-    : "w-full rounded-xl border-4 border-primary bg-background p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]";
+    : "w-full border border-neutral-950 bg-white p-6 shadow-none sm:p-7";
   const titleClassName = isDocument
     ? "text-2xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]"
-    : "text-xl font-black uppercase";
+    : "text-2xl font-semibold tracking-tight text-neutral-950";
   const subtitleClassName = isDocument
     ? "mt-2 text-sm font-bold text-[#6b5337] [font-family:var(--v0-font-libre-baskerville)]"
-    : "mt-2 text-sm font-bold text-muted-foreground";
+    : "mt-2 text-sm leading-6 text-neutral-600";
   const dividerClassName = isDocument
     ? "flex items-center gap-3 text-xs font-bold uppercase text-[#8e6b48]"
-    : "flex items-center gap-3 text-xs font-bold uppercase text-muted-foreground";
-  const dividerLineClassName = isDocument ? "h-px flex-1 bg-[#8e6b48]/30" : "h-px flex-1 bg-border";
+    : "flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500";
+  const dividerLineClassName = isDocument ? "h-px flex-1 bg-[#8e6b48]/30" : "h-px flex-1 bg-neutral-200";
   const referralClassName = isDocument
     ? "mb-4 text-center text-xs font-bold uppercase text-[#8e6b48]"
-    : "mb-4 text-center text-xs font-bold uppercase text-muted-foreground";
+    : "mb-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500";
   const labelClassName = isDocument
     ? "font-bold uppercase text-[#3a2a19]"
-    : "font-bold uppercase";
+    : "text-xs font-semibold uppercase tracking-[0.14em] text-neutral-700";
   const inputClassName = isDocument
     ? `${fieldClassName} border-[#8e6b48]/35 bg-[#fffaf0] text-[var(--treaty-ink)] placeholder:text-[#8e6b48]/55`
-    : fieldClassName;
+    : `${fieldClassName} !border !border-neutral-300 bg-white text-neutral-950 !shadow-none placeholder:text-neutral-400 focus:!border-neutral-950 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950`;
   const googleClassName = isDocument
     ? `w-full justify-center gap-3 border-[#d6d2cb] bg-[#fffaf0] font-black uppercase text-[#1f1f1f] shadow-[4px_4px_0px_0px_rgba(58,42,25,0.18)] hover:bg-[#f7f4ee] hover:text-[#1f1f1f] ${buttonClassName}`
-    : `w-full justify-center gap-3 border-[#d6d2cb] bg-white font-black uppercase text-[#1f1f1f] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.9)] hover:bg-[#f7f4ee] hover:text-[#1f1f1f] ${buttonClassName}`;
+    : `w-full justify-center gap-3 !border !border-neutral-300 !bg-white font-semibold !text-neutral-950 !shadow-none hover:!translate-x-0 hover:!translate-y-0 hover:!border-neutral-950 hover:!bg-neutral-50 hover:!text-neutral-950 active:!translate-x-0 active:!translate-y-0 ${buttonClassName}`;
   const emailButtonClassName = isDocument
     ? `w-full border-[#8e6b48]/35 bg-[var(--treaty-ink)] font-black uppercase text-[#f7f1e4] shadow-[4px_4px_0px_0px_rgba(58,42,25,0.18)] hover:bg-[#3a2a19] hover:text-[#fff9ef] ${buttonClassName}`
-    : `w-full font-black uppercase ${buttonClassName}`;
+    : `w-full justify-center !border !border-neutral-950 !bg-neutral-950 font-semibold !text-white !shadow-none hover:!translate-x-0 hover:!translate-y-0 hover:!bg-neutral-800 hover:!text-white active:!translate-x-0 active:!translate-y-0 ${buttonClassName}`;
+  const demoButtonClassName = isDocument
+    ? `w-full border-[#8e6b48]/35 bg-[#fffaf0] font-black uppercase text-[var(--treaty-ink)] shadow-[4px_4px_0px_0px_rgba(58,42,25,0.18)] hover:bg-[#f7f4ee] ${buttonClassName}`
+    : `w-full justify-center !border !border-neutral-950 !bg-white font-semibold !text-neutral-950 !shadow-none hover:!translate-x-0 hover:!translate-y-0 hover:!bg-neutral-50 active:!translate-x-0 active:!translate-y-0 ${buttonClassName}`;
 
   useEffect(() => {
     if (!initialError) {
@@ -220,12 +222,12 @@ export function AuthForm({
         </div>
       ) : null}
 
-      {error ? <AlertCard type="error" message={error} className="mb-4" /> : null}
+      {error ? <AlertCard type="error" message={error} className="mb-4" variant="minimal" /> : null}
       {infoMessage ? (
         <>
-          <AlertCard type="info" message={infoMessage} className="mb-4" />
+          <AlertCard type="info" message={infoMessage} className="mb-4" variant="minimal" />
           {emailSuccessFooter ? (
-            <p className="mb-4 text-center text-xs font-bold text-muted-foreground">
+            <p className="mb-4 text-center text-xs font-semibold text-neutral-500">
               {emailSuccessFooter}
             </p>
           ) : null}
@@ -244,7 +246,7 @@ export function AuthForm({
             <Button
               type="button"
               disabled={isLoading}
-              className={`w-full font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${buttonClassName}`}
+              className={demoButtonClassName}
               onClick={() => {
                 void handleDemoSignIn();
               }}
@@ -323,6 +325,7 @@ export function AuthForm({
           <AlertCard
             type="warning"
             message="No sign-in methods are enabled for this environment."
+            variant="minimal"
           />
         ) : null}
       </div>

@@ -53,6 +53,8 @@ import {
   type ShareableChannel,
 } from "@/lib/share-channels";
 import {
+  FLOW_DOUBLING_ROUNDS_TO_TARGET,
+  FLOW_MAJORITY_OF_HUMANS_ON_EARTH,
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
   FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
 } from "@/lib/treaty-share-flow-parameters";
@@ -699,8 +701,9 @@ export function HumanityManagementTrainingFlow({
                 You are now a Humanity Manager
               </h1>
               <TreatyFlowParagraph>
-                Earth Optimization Services, LLC has assigned you one tiny
-                management task: get two humans to vote on the 1% Treaty.
+                Earth Optimization Services LLC has assigned you 8 billion
+                direct reports. Don&apos;t panic. Your job: get two humans
+                to vote on the 1% Treaty.
               </TreatyFlowParagraph>
               <div className="border-y border-[var(--treaty-ink)]/30 py-5 text-center text-lg font-black leading-8 text-[var(--treaty-ink)] sm:text-left">
                 <p>
@@ -711,9 +714,15 @@ export function HumanityManagementTrainingFlow({
                 </p>
               </div>
               <TreatyFlowParagraph>
-                Training objective: share your referral URL, call one human,
-                then give two humans their voting tasks. Start with the
-                easiest yes.
+                The Tom Sawyer trick: hand the task to two humans, who each
+                hand it to two, and after {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} /> humans
+                have voted. You owe two conversations. The other
+                7,999,999,998 handle themselves.
+              </TreatyFlowParagraph>
+              <TreatyFlowParagraph>
+                Training: share your referral URL, call one human, hand two
+                humans the voting task. Start with whoever&apos;s most likely
+                to say yes.
               </TreatyFlowParagraph>
             </div>
             <Button
@@ -734,8 +743,9 @@ export function HumanityManagementTrainingFlow({
                 First task: public signal
               </p>
               <TreatyFlowParagraph>
-                Share your referral URL first. It is the lowest-effort way to
-                start the lineage before you make two direct asks.
+                Drop your referral URL where humans look — text thread, group
+                chat, social.
+                Easiest step. The two phone calls come next.
               </TreatyFlowParagraph>
               <p className="break-all border border-[var(--treaty-ink)] bg-[#fffdf8] px-3 py-3 text-sm font-bold leading-6 text-[var(--treaty-ink)]">
                 {referralUrl}
@@ -816,10 +826,12 @@ export function HumanityManagementTrainingFlow({
           <>
             <div className="space-y-5">
               <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
-                {formatCompletedCount(completedCount)} assigned. Goal: 2 voting tasks.
+                {formatCompletedCount(completedCount)} of 2 humans assigned
               </p>
               <TreatyFlowParagraph>
-                Give {formatNextHumanOrdinal(completedCount)} human their treaty voting task.
+                Hand {formatNextHumanOrdinal(completedCount)} human the
+                treaty voting task. Start with whoever&apos;s most likely to
+                say yes.
               </TreatyFlowParagraph>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="space-y-2">
@@ -964,11 +976,14 @@ export function HumanityManagementTrainingFlow({
           <>
             <div className="space-y-4">
               <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
-                Training progress: {formatCompletedCount(completedCount)} assigned
+                {formatCompletedCount(completedCount)} of 2 humans assigned
               </p>
               <TreatyFlowParagraph>
                 {lastRecipientName || "That human"} added to your direct
-                reports. When they vote: +<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of suffering prevented, +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
+                reports. Verified vote: +<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years
+                of suffering prevented, +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
+                {" "}They get your promotion next; the doubling continues
+                without you.
               </TreatyFlowParagraph>
             </div>
             <TreatyFlowButtonRow>
@@ -990,15 +1005,17 @@ export function HumanityManagementTrainingFlow({
           <>
             <div className="space-y-4">
               <p className="text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
-                Humanity Management Training complete
+                Two humans have the task
               </p>
               <TreatyFlowParagraph>
-                Two humans assigned. If they vote, they get the same pleasant
-                management surprise.
+                Two humans you love now have the math. Each verified vote:
+                +<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of suffering prevented,
+                +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved — for humans you will never meet, who have plans for next Tuesday.
               </TreatyFlowParagraph>
               <TreatyFlowParagraph>
-                Your dashboard tracks who voted, who is pending, and who needs
-                another nudge.
+                Watch the dashboard. Verified votes close their task. The
+                ones that don&apos;t are humans holding up someone they
+                don&apos;t know yet. Call those ones.
               </TreatyFlowParagraph>
             </div>
             <TreatyFlowButtonRow>
