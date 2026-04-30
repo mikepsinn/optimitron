@@ -427,8 +427,8 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("repository and site inventory tools", () => {
-    it("exposes GitHub repo tools and site inventory tools to authenticated MCP clients", async () => {
-      const client = await setup("user-1", ALL_SCOPES);
+    it("exposes GitHub repo tools (admin-only) and site inventory tools to authenticated MCP clients", async () => {
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
 
       const result = await client.listTools();
       const names = result.tools.map((tool) => tool.name);
@@ -438,10 +438,22 @@ describe("MCP server tool dispatch", () => {
           "searchRepo",
           "getFileContent",
           "listRepoFiles",
+          "githubApi",
           "listSitePages",
           "getPageContent",
         ]),
       );
+    });
+
+    it("hides GitHub repo tools from non-admin clients", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.listTools();
+      const names = result.tools.map((tool) => tool.name);
+
+      expect(names).not.toContain("searchRepo");
+      expect(names).not.toContain("getFileContent");
+      expect(names).not.toContain("listRepoFiles");
+      expect(names).not.toContain("githubApi");
     });
 
     it("searchRepo returns file matches without exposing the GitHub token", async () => {
@@ -466,7 +478,7 @@ describe("MCP server tool dispatch", () => {
       });
       vi.stubGlobal("fetch", fetchMock);
 
-      const client = await setup("user-1", ALL_SCOPES);
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
       const result = await client.callTool({
         name: "searchRepo",
         arguments: { query: "TASK_TOOL_DEFINITIONS", repo: "optimitron", fileType: "ts" },
@@ -524,7 +536,7 @@ describe("MCP server tool dispatch", () => {
       });
       vi.stubGlobal("fetch", fetchMock);
 
-      const client = await setup("user-1", ALL_SCOPES);
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
       const fileResult = await client.callTool({
         name: "getFileContent",
         arguments: {

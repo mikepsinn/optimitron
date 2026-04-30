@@ -18,6 +18,10 @@ const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
     title: "Run coordinated agents",
     detail: "Acquire leases and log multi-agent runs for public optimize-earth workflows.",
   },
+  [McpScope.GITHUB]: {
+    title: "GitHub repo access",
+    detail: "Read code from the configured Optimitron repos and call the GitHub API on the server's behalf (issues, PRs, discussions, commit statuses).",
+  },
 };
 
 export function McpConsentForm({
