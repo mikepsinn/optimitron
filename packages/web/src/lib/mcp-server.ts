@@ -80,9 +80,10 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getQueueAudit: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
-  searchRepo: [McpScope.TASKS_PERSONAL],
-  getFileContent: [McpScope.TASKS_PERSONAL],
-  listRepoFiles: [McpScope.TASKS_PERSONAL],
+  searchRepo: [McpScope.GITHUB],
+  getFileContent: [McpScope.GITHUB],
+  listRepoFiles: [McpScope.GITHUB],
+  githubApi: [McpScope.GITHUB],
   ...TASK_TRIGGER_TOOL_SCOPES,
 };
 
@@ -101,6 +102,10 @@ const ADMIN_ONLY_TOOLS = new Set([
   "acquireLease",
   "heartbeatLease",
   "releaseLease",
+  "searchRepo",
+  "getFileContent",
+  "listRepoFiles",
+  "githubApi",
   ...TASK_TRIGGER_ADMIN_TOOL_NAMES,
 ]);
 
@@ -2688,6 +2693,37 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "githubApi",
+    description:
+      "Admin-only generic pass-through to api.github.com using the server-side token. Use this for issues, PRs, discussions, commit statuses, workflow runs, agent tasks, etc. — anything the dedicated tools don't already cover. Repo-allowlist is enforced on /repos/<owner>/<repo>/* paths; non-repo paths (/user, /search/code, /octocat) rely on the token's fine-grained scopes for safety. Returns { status, ok, body }.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        method: {
+          type: "string",
+          enum: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+          description: "HTTP method. Default: GET.",
+        },
+        path: {
+          type: "string",
+          description:
+            "Path on api.github.com starting with '/', e.g. '/repos/mikepsinn/optimitron/issues' or '/search/code'.",
+        },
+        query: {
+          type: "object",
+          description:
+            "Optional query-string params, e.g. { per_page: 50, state: 'open' }.",
+          additionalProperties: true,
+        },
+        body: {
+          description:
+            "Optional request body for non-GET requests. Pass an object (auto-JSON.stringify'd) or a raw string.",
+        },
+      },
+      required: ["path"],
+    },
+  },
+  {
     name: "listSitePages",
     description:
       "Return a structured inventory of pages for configured Optimitron-owned domains. Agents should call this before creating a new page.",
@@ -4827,6 +4863,21 @@ export function createMcpServer(
               path: typeof a.path === "string" ? a.path : undefined,
               ref: typeof a.ref === "string" ? a.ref : undefined,
               repo: a.repo as string,
+            }),
+          );
+        }
+
+        case "githubApi": {
+          const { callGitHubApi } = await import("./github-repo-tools.server");
+          return ok(
+            await callGitHubApi({
+              body: a.body,
+              method: typeof a.method === "string" ? a.method : undefined,
+              path: a.path as string,
+              query:
+                a.query && typeof a.query === "object" && !Array.isArray(a.query)
+                  ? (a.query as Record<string, string | number | boolean | null | undefined>)
+                  : undefined,
             }),
           );
         }

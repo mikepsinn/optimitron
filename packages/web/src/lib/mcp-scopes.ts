@@ -18,6 +18,7 @@ export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
   [McpScope.TASKS_ADMIN]: "Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, dependencies, and milestones",
   [McpScope.TASKS_PERSONAL]: "Manage your private tasks, dependencies, comments, queues, and next-action recommendations",
   [McpScope.AGENT_RUN]: "Admin-only: run coordinated public-task agents with leases and run logs",
+  [McpScope.GITHUB]: "Admin-only: access the configured GitHub repos via the server-side PAT (search code, read files, list directories, generic API passthrough)",
 };
 
 export const DEFAULT_SCOPES: McpScope[] = [McpScope.TASKS_PERSONAL];
@@ -26,12 +27,14 @@ export const ALL_SCOPES: McpScope[] = [
   McpScope.TASKS_PERSONAL,
   McpScope.TASKS_ADMIN,
   McpScope.AGENT_RUN,
+  McpScope.GITHUB,
 ];
 
 export const ADMIN_MCP_SCOPES: readonly McpScope[] = [
   McpScope.TASKS_PERSONAL,
   McpScope.TASKS_ADMIN,
   McpScope.AGENT_RUN,
+  McpScope.GITHUB,
 ];
 
 export const NON_ADMIN_MCP_SCOPES: readonly McpScope[] = [
@@ -63,6 +66,7 @@ const ENUM_TO_WIRE: Record<McpScope, string> = {
   [McpScope.TASKS_PERSONAL]: "tasks:personal",
   [McpScope.TASKS_ADMIN]: "tasks:admin",
   [McpScope.AGENT_RUN]: "agent:run",
+  [McpScope.GITHUB]: "github",
 };
 
 const WIRE_TO_ENUM: Record<string, McpScope> = Object.fromEntries(

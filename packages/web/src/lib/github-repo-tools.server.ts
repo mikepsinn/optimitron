@@ -302,3 +302,98 @@ export async function searchRepo(input: SearchRepoInput) {
       typeof record.total_count === "number" ? record.total_count : items.length,
   };
 }
+
+const ALLOWED_METHODS = new Set(["GET", "POST", "PATCH", "PUT", "DELETE"]);
+
+export interface CallGitHubApiInput {
+  /// Optional JSON body for non-GET requests. Strings are sent verbatim
+  /// (raw markdown for issue/PR bodies); objects are JSON.stringify'd.
+  body?: unknown;
+  method?: string;
+  /// Path on api.github.com starting with `/`, e.g. `/repos/mikepsinn/optimitron/issues`.
+  path: string;
+  /// Optional query-string params. Keys with null/undefined values are dropped.
+  query?: Record<string, string | number | boolean | null | undefined>;
+}
+
+/**
+ * Generic pass-through to api.github.com using the server-side token.
+ * Admin-only at the MCP layer (see TOOL_SCOPES). Repo-allowlist enforced on
+ * any path that targets `/repos/<owner>/<repo>/...` so a stolen admin
+ * session can't escape to repos outside `GITHUB_REPO_ALLOWLIST`.
+ *
+ * Non-repo paths (e.g. `/user`, `/octocat`, `/search/code`) are allowed
+ * without further filtering — the token's fine-grained scopes are the
+ * authoritative gate. Configure the PAT with no `Administration`,
+ * `Webhooks`, `Workflows: Write`, or secrets permissions; see
+ * docs/MCP_SERVER.md for the recommended permission matrix.
+ */
+export async function callGitHubApi(input: CallGitHubApiInput) {
+  const method = (input.method ?? "GET").toUpperCase();
+  if (!ALLOWED_METHODS.has(method)) {
+    throw new Error(
+      `Unsupported HTTP method '${method}'. Use one of ${[...ALLOWED_METHODS].join(", ")}.`,
+    );
+  }
+
+  const path = input.path?.trim();
+  if (!path?.startsWith("/")) {
+    throw new Error("path must start with '/' (e.g. /repos/mikepsinn/optimitron/issues)");
+  }
+
+  const repoMatch = path.match(/^\/repos\/([^/]+)\/([^/?#]+)/);
+  if (repoMatch) {
+    const repo = `${repoMatch[1]!}/${repoMatch[2]!}`.toLowerCase();
+    assertRepoAllowed(repo);
+  }
+
+  const url = new URL(path, "https://api.github.com");
+  if (input.query) {
+    for (const [key, value] of Object.entries(input.query)) {
+      if (value === null || value === undefined) continue;
+      url.searchParams.set(key, String(value));
+    }
+  }
+
+  const token = getToken();
+  const headers: Record<string, string> = {
+    accept: "application/vnd.github+json",
+    "user-agent": "optimitron-mcp",
+    "x-github-api-version": "2022-11-28",
+  };
+  if (token) headers.authorization = `Bearer ${token}`;
+
+  let serializedBody: string | undefined;
+  if (input.body !== undefined && method !== "GET") {
+    if (typeof input.body === "string") {
+      serializedBody = input.body;
+    } else {
+      serializedBody = JSON.stringify(input.body);
+      headers["content-type"] = "application/json";
+    }
+  }
+
+  const response = await fetch(url.toString(), {
+    method,
+    headers,
+    ...(serializedBody !== undefined ? { body: serializedBody } : {}),
+  });
+
+  const text = await response.text();
+  let body: unknown = text;
+  if (text) {
+    try {
+      body = JSON.parse(text);
+    } catch {
+      // Non-JSON response (e.g. raw text, empty 204) — pass through as string.
+    }
+  }
+
+  return {
+    body,
+    method,
+    ok: response.ok,
+    status: response.status,
+    url: url.toString(),
+  };
+}

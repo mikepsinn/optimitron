@@ -589,6 +589,12 @@ enum McpScope {
   TASKS_ADMIN    @map("tasks:admin")
   TASKS_PERSONAL @map("tasks:personal")
   AGENT_RUN      @map("agent:run")
+  /// Server-side GitHub API access via the configured PAT. Covers the
+  /// repo-allowlist-gated read tools and the `githubApi` passthrough.
+  /// Distinct from TASKS_ADMIN because GitHub access is orthogonal to
+  /// task-platform admin — an integration could be granted GITHUB
+  /// without touching task admin operations.
+  GITHUB         @map("github")
 }
 
 /// Type of survey question
