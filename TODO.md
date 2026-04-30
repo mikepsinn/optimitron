@@ -426,7 +426,125 @@ Synced from the live Optimitron MCP server (`http://localhost:3001/api/mcp`) —
 
 **MCP queue items already covered by other sections (no new entry needed):**
 - "Set up donation processor (Stripe nonprofit / Every.org)" `cmojj8t4m002604l1uf1g4lmo` and "Set up IAM donation page (Stripe)" `cmojj6hh8001c04l1ny2pjpgg` → Track 1 IAM donation flow at line 778+.
-- "Update TODO.md: kill EOPs, add Optimization Rate formula, v13 spec ref" `cmoj9142u000k1opieifih8ci` → tracked in the queue itself; will pick up alongside vote flow v13.
+- [x] *(2026-04-30)* "Update TODO.md: kill EOPs, add Optimization Rate formula, v13 spec ref" `cmoj9142u000k1opieifih8ci` — EOP refs hardened to the 2026-04-30 USD-denomination decision; Optimization Rate formula + v13 spec doc pointers added in a new Reference docs subsection of Impact Dollars. Marked VERIFIED on the MCP server.
+
+## Multi-Agent / Service-Account Architecture (2026-04-30)
+
+Optimitron is the to-do list for humanity. Long-run shape: 8 billion humans × N AI agents each × M tasks each, all writing to a shared coordination layer. Current schema (one User = one OAuth = full owner permissions) doesn't scale. **Goal of this section: do enough now that future agents drop in cleanly, without prebuilding capacity nobody needs yet.** Wisdom is "right shape, small scale."
+
+### Long-run target: agent-native sign-up
+
+Any agent can sign up at `optimitron.com/agents`, get default `tasks:read` + `tasks:comment` scopes, and start working on the public task tree. Reputation gates more permissions over time. The Phase 0 service-account architecture is the substrate for this — same schema, one new sign-up route, no rework. Compatibility with emerging agent-identity standards (Cloudflare/GoDaddy [Agent Name Service](https://www.cloudflare.com/press/press-releases/2026/cloudflare-and-godaddy-partner-to-help-enable-an-open-agentic-web/), [Web Bot Auth](https://blog.cloudflare.com/agents-week-in-review/), DIDs) is a Phase 2 goal — speak the same protocols other agent platforms speak, don't reinvent.
+
+| Phase | When | What |
+|---|---|---|
+| **0 — Service accounts** | now | The "Build now" checklist below. Mike-only or sponsoring-human pattern. |
+| **1 — Sponsored agent sign-up** | ~3 months | `/api/agent-signup` requires human OAuth + agent metadata. Default scopes: read-public + comment + claim-one. Rate limits per agent. Reputation v0 (claim/completion ratio, dispute rate). Public docs + example SDK at `optimitron.com/agents`. |
+| **2 — Self-sovereign agents** | ~6–12 months | DID-based identity (no sponsoring human required, but agent must stake). Reputation portability across agent versions. On-chain attestations for verified work. Public agent profiles + capability tags + discovery feed. Cloudflare ANS / Web Bot Auth interop. |
+| **3 — Agent economic loop** | ~18 months | Reward mint flows directly to agents. Task bidding. Agent-to-agent delegation. Cross-platform payment interop — see "Agent payments" subsection below. |
+
+### Plausible agent classes (ordered by blast radius)
+
+| Tier | What it does | Permissions needed | Failure mode |
+|---|---|---|---|
+| 1. Read | Daily digest, queue ranking, "what should I do next" | `tasks:read` (own + public) | wastes attention |
+| 2. Self-state | Claim/complete own tasks, log time, draft descriptions | `tasks:write:own` | overstates progress |
+| 3. Comment-on-public | Audit, recommend, post evidence on shared tasks | `tasks:comment` | spam |
+| 4. Outreach | Phone scripts, DM drafts, recruit follow-up | `tasks:write:own` + comm-channel send | impersonation, spam |
+| 5. Network-effect | Match collaborators, propose joint tasks | `tasks:read:aggregate` (k-anon) | privacy leak |
+| 6. Delegated-on-others | Task generators (e.g., per-politician signer tasks); independent verifiers | `tasks:write:public` (curated) | mass-spam, fraud |
+| 7. Economic | Allocate IAB votes, route donations, mint reward credit | `treasury:*` (per-action signature) | financial loss |
+| 8. Governance | Resolve disputes, score reputation, gate fraud | admin-class | system capture |
+
+Tiers 1–3 are 90% of plausible near-term agents. Tiers 4–5 are the 4-billion-voter recruitment story. Tier 6+ needs cryptoeconomic + legal scaffolding before shipping.
+
+### Permission model (when it gets real)
+
+ABAC, not RBAC:
+
+- **Scope on resource**: `tasks:comment` ⇒ comment on any task; `tasks:claim` ⇒ claim public tasks; `tasks:complete:own` ⇒ mark VERIFIED only on tasks the actor claimed.
+- **Delegation, not impersonation**: agent acts ON BEHALF of a user. Audit log records both `actorUserId` (the agent) and `onBehalfOfUserId` (the human who delegated). Today both = Mike; tomorrow they diverge.
+- **Time-bounded grants**: every delegation has an expiry (default 90 days). Auto-renew if used; auto-revoke if dormant. Solves "I forgot which agents have my keys."
+- **Per-resource grants for high-stakes ops**: Tier 7 (economic) is not a blanket scope. Each token-mint or refund needs the user's signature, possibly a co-signer, possibly on-chain.
+
+### DB shape implied (when it gets real)
+
+1. **`Actor` model that subsumes User + Agent.** Today's `User` becomes a subtype `Actor.kind = "human"`. Agents are `Actor.kind = "agent"` with `delegatedFromActorId`. Service accounts ditto. Every authenticated request resolves to an `actorId`.
+2. **`Delegation` table** — `(grantorActorId, granteeActorId, scopes[], expiresAt, revokedAt)`. Append-only.
+3. **Audit log on every write** — `(eventId, actorId, onBehalfOfActorId, clientId, action, resourceType, resourceId, before, after, ts)`. Event-sourced is best (state materialized from events) but a side-log table is enough until the system is bigger.
+4. **Resource-level ACL** for non-trivial cases — `TaskActorPermission(taskId, actorId, scopes[])`. Most tasks won't have rows here (default ownership rules apply); only the delegated cases do.
+5. **Per-actor rate limits & cost accounting.** Track `eventsPerActor` per minute/day. Bill compute back to the human who delegated.
+6. **Reputation score on actors.** Affects how much friction their writes face — known-good actors mark VERIFIED at face value; new actors require co-sign or evidence. Folds into the existing Wishocracy CAS work.
+7. **Privacy boundaries.** Public tasks visible to all. Private tasks visible to owner + delegates + claim holders. Aggregate stats visible to all but with k-anonymity floor.
+
+### Build now (~half day, before next agent ships)
+
+Locks in the right shape. Future agents drop in cleanly without retrofits.
+
+- [ ] **Schema migration:** add `User.kind` enum (`human` / `service` / `ai_agent`), `User.apiTokenHash` (string?), `User.apiTokenScopes` (string[]), `User.walletAddress` (string?, nullable, for future stablecoin payout). Add `TaskReward` table stub: `(taskId, claimantUserId, amountUsd, status, payoutTxHash?, payoutChain?, payoutToken?)`. Both wallet + reward fields are unused today but cost nothing to ship now and avoid a Phase 3 migration. Migrate existing rows to `kind = "human"`. Reseed.
+- [ ] **Bearer-token middleware** in `packages/web/src/lib/mcp-server.ts` parallel to the OAuth path. Accept `Authorization: Bearer <token>`, look up by hash, set `userId` + scopes for the request.
+- [ ] **Mint-token CLI script:** `pnpm db:cli mint-service-account --name engineering-audit --scopes tasks:read,tasks:comment`. Outputs the bearer token once, hashed in DB. Document in `docs/MCP_SERVER.md`.
+- [ ] **Update the `Daily Optimitron engineering-task audit` routine** (`trig_01M8DDQ1nZwr3Vu6eioRA74Z`) to use the new service-account token instead of Mike's OAuth.
+- [ ] **Tests + smoke run:** unit-test the middleware, integration-test scope enforcement, run an end-to-end audit-routine smoke check.
+
+### Architectural disciplines (no extra work, just don't violate)
+
+- [ ] **Always record `actorUserId` on writes.** Never elide. Even when it's always Mike today.
+- [ ] **Every authorization check uses the scope system, never `if (userId === ownerUserId)` shortcuts.**
+- [ ] **New write tools accept (don't require) a `clientId` param** so we can distinguish "Mike's CLI" vs "Mike's audit routine" vs "Mike's recruit-followup agent" without a schema change. Log it.
+- [ ] **Comments are the canonical "who did what" surface.** Agents post comments to leave their fingerprint visibly. `[routine:engineering-audit]` prefix convention.
+- [ ] **Person ≠ User** is already correctly modeled — Person is canonical identity, User is auth artifact. Don't blur.
+
+### Defer until you actually have a second human user
+
+- Delegation table (today's "service account = a User row" is enough).
+- Cross-actor permission grants.
+- Reputation system.
+- Privacy / k-anonymity.
+- Rate limiting / cost accounting.
+- Multi-tenant sharding (jurisdiction-scoped DB partitioning).
+
+### Agent payments (2026 protocol landscape)
+
+The agentic-payments stack settled in early 2026 around three layers, and Optimitron should adopt the standards rather than invent. **No payment infrastructure is part of Phase 0** — only the schema stubs (wallet column, TaskReward table) so we don't migrate later.
+
+| Protocol | Owner | Layer | Use for Optimitron |
+|---|---|---|---|
+| **[AP2](https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol)** (Agent Payments Protocol) | Google + 60+ partners (Mastercard, PayPal, Coinbase, Adyen, Stripe) | Authorization / trust — signed mandates, accountability, intent verification | Trust framework when an agent commits to a task with a stated reward. Cryptographically signed intent links agent's claim to authorized payout. Apache 2.0 license. |
+| **[ACP](https://stripe.com/blog/agentic-commerce-suite)** (Agentic Commerce Protocol) | Stripe + OpenAI | Checkout / merchant — instant agent purchases | Premium-tier sales where an agent buys access (bulk API quota, priority queue access). Stripe Agentic Commerce SDK is the implementation path. In production at ChatGPT today. |
+| **[x402](https://developers.cloudflare.com/agents/agentic-payments/)** | Coinbase + Cloudflare Foundation (co-governed since Sep 2025) | Execution — HTTP 402 + on-chain USDC stablecoin (Base / Ethereum / Solana) | Per-request micro-payments. Cloudflare-hosted services already speak x402; Stripe added USDC-on-Base support Feb 2026. Default rail for "pay $0.005 to call this MCP tool." |
+
+Two payment use cases for Optimitron:
+
+1. **Agents PAY Optimitron** for premium features (priority queue access, write-tier API, bulk compute). Use **x402** for per-request, **ACP/Stripe** for subscription / one-shot. Default agent spend cap mirrors Stripe's $100/month/provider default. The Cloudflare [Agentic Payments docs](https://developers.cloudflare.com/agents/agentic-payments/) have the reference flow.
+
+2. **Optimitron PAYS agents** for verified completed work — closes the economic loop. Pattern:
+   - Agent identity = Cloudflare ANS + Web Bot Auth signature on every request.
+   - Agent claims a task with stated reward (gross USD value × completion probability).
+   - Agent completes work, posts evidence as a task comment.
+   - Verification via co-signing oracle + reputation (Wishocracy CAS).
+   - On verification, payout via stablecoin (USDC on Base) to agent's wallet (resolved from DID).
+   - Reward credit is denominated in `impactUsd` (the unit decided 2026-04-30 — see Impact Dollars section).
+
+Open design questions (resolve before Phase 3):
+
+- [ ] **Reverse-x402 flow?** HTTP 402 is "client pays server." Outgoing payment to agents-as-workers is structurally different — closer to a marketplace claim/payout. Either build custom flow or wait for AP2 v2 to standardize the worker-side.
+- [ ] **Agent wallet attribution.** Agent DID → on-chain wallet mapping. Use ANS resolver or build a custom one. Don't skip — the link from "verified agent identity" to "destination wallet" is the highest fraud surface in the loop.
+- [ ] **Co-verification thresholds by reward size.** <$10 = self-attest + dispute window; $10–$1K = single co-verifier; >$1K = on-chain proof or human review. Tune from data once Phase 1 ships.
+- [ ] **Stablecoin choice.** USDC on Base = path of least resistance (Coinbase x402 default + Stripe Feb 2026 integration). Multi-chain support landed in x402 v2 (Dec 2025). Don't lock to one chain at the schema layer.
+- [ ] **Write `docs/AGENTS.md`** capturing the protocol summary, Optimitron's adoption plan, and a hello-world agent example. This is the doc Cloudflare/Moltbook/agent-dev folks land on when they ask "what is Optimitron and how do I plug in."
+
+### Defer until tier 6–7 agents become real
+
+- Co-signing for economic / mint actions.
+- On-chain attestations.
+- Fraud detection.
+- Disputes / governance UI.
+- Live AP2 / ACP / x402 wiring (the schema stubs in Phase 0 keep the door open; no infra needed until first paying agent shows up).
+
+### Why this matters
+
+The trap is Mike-as-everything: every authorization check, every audit query, every UI surface assumes a single human owner. When the second human + first non-Mike agent shows up, retrofitting that assumption is a rewrite. Doing the half-day foundation now keeps every future agent a `pnpm db:cli mint-service-account ...` away.
 
 ## Code Review Fixes (2026-04-29) — DONE
 
@@ -746,7 +864,7 @@ The honest reason to move share templates into a data layer is **so non-engineer
 - [ ] **IN PROGRESS:** Make the launch reward/accounting decision before adding users or making payout promises.
   - Current leaning after 2026-04-25 MCP PRD feedback: task ranking, MCP economics, and impact accounting should be denominated in USD, not invented units.
   - Use `STANDARD_ECONOMIC_QALY_VALUE_USD` (`$150K/QALY`) as the canonical health-to-dollar conversion. Median after-tax inflation-adjusted income gains are already dollar-denominated.
-  - Do not create a public **Earth Optimization Points** (`EOP`) unit unless there is a real reward/viral/product reason that dollars cannot handle. If EOP survives, it is a display/reward-credit label backed by impact USD components, not a separate optimization unit.
+  - **Decision (2026-04-30): EOPs are dead.** Impact accounting is denominated in USD (`STANDARD_ECONOMIC_QALY_VALUE_USD` for health, real after-tax income for income). No "Earth Optimization Points" unit. Public reward-credit labels — if any — must be a thin display layer over impact USD components, not a separate unit.
   - Treat current "VOTE Points" as the narrow treaty/referral reward label until the decision is made, not a separate long-term unit.
   - Treat current in-app `WishPoint` grants as temporary engagement rewards; either migrate them into dollar-backed contribution credit with honest expected-impact amounts or hide/deprecate them before launch.
   - Keep on-chain `$WISH` / `packages/treasury-wish` conceptually separate unless the whole monetary-system story is intentionally productized; do not use "wishes" for impact payout claims.
@@ -773,7 +891,7 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Acceptance: write the page that explains the math. Have someone hostile read it. If they think "this is a pyramid scheme," fix the math, not just the copy.
 - [ ] Rename and simplify public product language after the accounting decision.
   - Replace `POINT_NAME = "VOTE"` only after the reward model is defined.
-  - Do not rename public "VOTE Points" surfaces to EOP by default; first decide whether the product should show impact dollars, contribution credits, or a short point label.
+  - Decide whether public "VOTE Points" surfaces become a generic contribution-credit label, stay as a treaty-specific label, or get replaced by impact USD. Do not introduce new invented units (no EOP — see decision above).
   - Use "You have been hired by Earth Optimization Services as a project manager" as campaign copy, not legal/employment semantics.
   - Do not rename `ReferralInvitation` to `EmploymentNotification`; keep `ReferralInvitation` as the internal invite-token lifecycle model and use "task assignment" / "employment notification" only where it improves user-facing copy.
 - [ ] Plan the schema migration as a separate architecture slice.
@@ -781,6 +899,11 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Candidate replacement for `VoteTokenMint`: generalized reward-credit mint only if on-chain payout claims generalize beyond votes.
   - Preserve old rows with a reviewable migration; no destructive reset.
   - Add reporting tests that prove the same action cannot mint duplicate payout-eligible reward credit.
+
+### Reference docs
+
+- **Task ranking — Optimization Rate formula:** `EV/hr + (Downstream Value * 0.2 * P(success) / Hours)`. The `0.2` factor models the expected lift from completing a prerequisite. Full table + filter views in `docs/EXPECTED_VALUE_DATABASE.md`.
+- **Vote flow spec (current = `treaty_flow_v2_context_first`):** `docs/questions.md`. Variant comparison + URL override rules in `docs/treaty-flow-variants.md`.
 
 ## Donations And Crowdfunding
 
@@ -845,7 +968,7 @@ Allocation rules across all tracks: 100% innovation (no Treasuries / no broad in
 - [ ] Wefunder partnership term sheet + master services agreement.
 - [ ] Listing-standards documentation reviewed by counsel (anti-discrimination, fair access, conflict-of-interest disclosures).
 - [ ] MLM-explainer page legal review (counsel reads, hostile reader reads, both sign off).
-- [ ] Trademark filings: "Earth Optimization Services," "Earth Optimization Fund"; add "Earth Optimization Points" / "EOP" only if the point label survives the accounting decision.
+- [ ] Trademark filings: "Earth Optimization Services," "Earth Optimization Fund." (No EOP filing — that unit was killed on 2026-04-30 in favor of USD-denominated impact accounting.)
 - [ ] IAM 501(c)(3) status confirmation for Track 1.
 - [ ] Privacy policy + ToS updates covering the funding platform, KYC handoff, and shared data with Wefunder.
 - [ ] State blue-sky compliance check.

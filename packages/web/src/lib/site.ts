@@ -44,7 +44,7 @@ export type SiteHomeVariant =
   | "initiativeLanding";
 export type SiteDashboardVariant =
   | "optimitronDashboard"
-  | "humanityManagementDashboard";
+  | "treatyTaskDashboard";
 export type SiteInitiativeKey = SiteKey | "optimizeEarth";
 
 export interface SiteInitiativeConfig {
@@ -832,6 +832,7 @@ const DFDA_CONFIG: SiteConfig = {
       "/find-trials",
       "/agencies/dfda",
       "/about",
+      "/donate",
     ],
     operationalPrefixes: ["/auth", "/dashboard", "/profile", "/settings"],
     minimalChromePrefixes: [],
@@ -948,6 +949,7 @@ const DIH_CONFIG: SiteConfig = {
       "/agencies/dfda/treatments",
       "/agencies/dcongress/wishocracy",
       "/about",
+      "/donate",
     ],
     operationalPrefixes: ["/auth", "/dashboard", "/profile", "/settings"],
     minimalChromePrefixes: [],
@@ -1053,6 +1055,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       "/agencies/dfda/conditions",
       "/agencies/dfda/treatments",
       "/reasoning",
+      "/donate",
     ],
     operationalPrefixes: [
       "/r",
@@ -1077,7 +1080,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   ui: WAR_ON_DISEASE_UI,
   pageVariants: {
     home: "onePercentTreatyLanding",
-    dashboard: "humanityManagementDashboard",
+    dashboard: "treatyTaskDashboard",
   },
 };
 
@@ -1184,6 +1187,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       "/impact",
       "/organizations",
       "/reasoning",
+      "/donate",
     ],
     operationalPrefixes: [
       "/r",
@@ -1207,7 +1211,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   ui: ONE_PERCENT_TREATY_UI,
   pageVariants: {
     home: "onePercentTreatyLanding",
-    dashboard: "humanityManagementDashboard",
+    dashboard: "treatyTaskDashboard",
   },
 };
 
@@ -1302,7 +1306,7 @@ const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
   ui: TRIAL_ABUNDANCE_SURVEY_UI,
   pageVariants: {
     home: "initiativeLanding",
-    dashboard: "humanityManagementDashboard",
+    dashboard: "treatyTaskDashboard",
   },
 };
 

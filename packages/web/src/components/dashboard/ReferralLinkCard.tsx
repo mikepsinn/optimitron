@@ -17,13 +17,13 @@ export function ReferralLinkCard({
 }: ReferralLinkCardProps) {
   return (
     <Card
-      className={`bg-background border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] ${className}`}
+      className={`border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-5 text-[var(--treaty-ink)] shadow-none ${className}`}
       id={id}
     >
-      <h3 className="text-2xl sm:text-3xl font-black uppercase text-center mb-3">
+      <h3 className="mb-3 text-lg font-black uppercase leading-tight tracking-tight sm:text-xl">
         Now Get All Your Friends to Play!
       </h3>
-      <p className="font-bold text-base sm:text-lg text-center mb-4">
+      <p className="mb-4 text-sm font-bold leading-6 text-[var(--treaty-ink-soft)]">
         {REFERRAL.earnOne}
       </p>
 

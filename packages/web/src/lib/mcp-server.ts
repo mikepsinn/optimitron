@@ -2286,6 +2286,11 @@ const TASK_TOOL_DEFINITIONS = [
         description: { type: "string" },
         completionEvidence: { type: "string", description: "Evidence that the task is done" },
         impactStatement: { type: "string" },
+        category: {
+          type: "string",
+          enum: ["ADVOCACY", "RESEARCH", "COMMUNICATION", "ENGINEERING", "ORGANIZING", "OUTREACH", "GOVERNANCE", "SCIENCE", "LEGAL", "CREATIVE", "OTHER"],
+          description: "Re-categorize the task. Affects category-filtered listTasks queries; not part of personal priority score.",
+        },
         difficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Optional metadata; not part of personal priority." },
         taskKey: { type: "string", description: "Stable dedup key" },
         assigneePersonId: { type: "string", description: "Person ID to assign (use empty string to clear)" },
@@ -4236,6 +4241,9 @@ export function createMcpServer(
           if (a.description) updates.description = a.description;
           if (a.completionEvidence) updates.completionEvidence = a.completionEvidence;
           if (a.impactStatement) updates.impactStatement = a.impactStatement;
+          if (typeof a.category === "string" && a.category in TaskCategory) {
+            updates.category = TaskCategory[a.category as keyof typeof TaskCategory];
+          }
           if (a.difficulty) updates.difficulty = TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty];
           if (a.taskKey) updates.taskKey = a.taskKey;
           if (a.roleTitle !== undefined) updates.roleTitle = (a.roleTitle as string) || null;

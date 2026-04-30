@@ -1,5 +1,4 @@
 import { Card } from "@/components/retroui/Card"
-import { Target } from "lucide-react"
 import type { DashboardStats } from "@/types/dashboard"
 import { GAME } from "@/lib/messaging"
 
@@ -9,52 +8,55 @@ interface ReferralGoalCardProps {
 
 export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
   return (
-    <Card className="border-4 border-primary mb-8 bg-brutal-pink">
+    <Card className="border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] text-[var(--treaty-ink)] shadow-none">
       <Card.Header>
-        <Card.Title className="text-2xl font-black uppercase flex items-center gap-2">
-          <Target className="h-6 w-6" />
+        <Card.Title className="text-lg font-black uppercase leading-tight tracking-tight sm:text-xl">
           YOUR REFERRAL GOAL
         </Card.Title>
-        <Card.Description className="text-foreground font-bold">
+        <Card.Description className="text-sm font-bold leading-6 text-[var(--treaty-ink-soft)]">
           QUEST: Get {GAME.referralGoal} friends to play. That&apos;s the reproductive number for ideas. Above 1.3 and this thing spreads on its own.
         </Card.Description>
       </Card.Header>
       <Card.Content>
         <div className="space-y-4">
           <div>
-            <div className="flex justify-between text-sm font-bold mb-2">
+            <div className="mb-2 flex justify-between text-sm font-bold">
               <span>{stats.referrals} referrals</span>
               <span>{stats.referrals >= GAME.referralGoal ? "✓ Goal Met!" : `${GAME.referralGoal - stats.referrals} more to goal`}</span>
             </div>
-            <div className="h-8 bg-background border-4 border-primary rounded-none overflow-hidden">
+            <div className="h-2 overflow-hidden bg-[var(--treaty-ink)]/15">
               <div
-                className={`h-full transition-all duration-500 ${stats.referrals >= 2 ? "bg-brutal-cyan" : "bg-primary"}`}
+                className="h-full bg-[var(--treaty-ink)] transition-all duration-500"
                 style={{ width: `${Math.min((stats.referrals / GAME.referralGoal) * 100, 100)}%` }}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {[
-              { milestone: 1, label: "FIRST RECRUIT", icon: "🎯" },
-              { milestone: GAME.referralGoal, label: "GOAL MET", icon: "✅" },
-              { milestone: 5, label: "POWER RECRUITER", icon: "💪" },
-              { milestone: 10, label: "SUPER SPREADER", icon: "🚀" },
-            ].map((item) => (
-              <div
-                key={item.milestone}
-                className={`p-3 border-4 border-primary text-center ${
-                  stats.referrals >= item.milestone ? "bg-brutal-cyan" : "bg-background opacity-50"
-                }`}
-              >
-                <div className="text-xl mb-1">{item.icon}</div>
-                <div className="font-black text-xs">{item.milestone === 10 ? "10+" : item.milestone}</div>
-                <div className="text-xs">{item.label}</div>
-              </div>
-            ))}
-          </div>
+          <details className="border-y border-[var(--treaty-ink)]/20 py-3">
+            <summary className="cursor-pointer text-xs font-black uppercase tracking-[0.16em] text-[var(--treaty-ink-muted)]">
+              Milestones
+            </summary>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+              {[
+                { milestone: 1, label: "FIRST RECRUIT" },
+                { milestone: GAME.referralGoal, label: "GOAL MET" },
+                { milestone: 5, label: "POWER RECRUITER" },
+                { milestone: 10, label: "SUPER SPREADER" },
+              ].map((item) => (
+                <div
+                  key={item.milestone}
+                  className={`border border-[var(--treaty-ink)]/30 p-2 text-center ${
+                    stats.referrals >= item.milestone ? "" : "opacity-50"
+                  }`}
+                >
+                  <div className="font-black">{item.milestone === 10 ? "10+" : item.milestone}</div>
+                  <div>{item.label}</div>
+                </div>
+              ))}
+            </div>
+          </details>
 
-          <p className="text-sm font-bold text-center">
+          <p className="text-center text-sm font-bold leading-6 text-[var(--treaty-ink-soft)]">
             {stats.referrals < GAME.referralGoal
               ? `Share your link — get ${GAME.referralGoal} friends to play!`
               : stats.referrals < 5

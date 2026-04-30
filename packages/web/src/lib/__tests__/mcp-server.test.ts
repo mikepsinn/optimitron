@@ -1026,6 +1026,223 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task writes", () => {
+    describe("createTask required-field validation", () => {
+      it("rejects when description is missing", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "no description",
+            category: "ENGINEERING",
+            acceptanceCriteria: ["x"],
+            impactStatement: "y",
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+          },
+        });
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).error).toContain("description is required");
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("rejects when category is missing or invalid", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "no category",
+            description: "x",
+            acceptanceCriteria: ["x"],
+            impactStatement: "y",
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+          },
+        });
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).error).toContain("category is required");
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("rejects when impactStatement is missing", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "no impact",
+            description: "x",
+            category: "ENGINEERING",
+            acceptanceCriteria: ["x"],
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+          },
+        });
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).error).toContain("impactStatement is required");
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("rejects when neither acceptanceCriteria array nor markdown checklist is present", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "no acceptance",
+            description: "Plain prose with no checklist bullets at all.",
+            category: "ENGINEERING",
+            impactStatement: "y",
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+          },
+        });
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).error).toContain("acceptanceCriteria is required");
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("rejects when hours, value, and p_success are all missing", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "no economics",
+            description: "x",
+            category: "ENGINEERING",
+            acceptanceCriteria: ["x"],
+            impactStatement: "y",
+          },
+        });
+        expect(result.isError).toBe(true);
+        const errMsg = parseToolBody(result).error;
+        expect(errMsg).toContain("Missing ranking-critical fields");
+        expect(errMsg).toContain("hours");
+        expect(errMsg).toContain("value");
+        expect(errMsg).toContain("p_success");
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("response includes missingFields[] for soft-recommended fields", async () => {
+        mocks.getTaskDetailData.mockResolvedValue({
+          task: makeOwnedTask({
+            id: "created-task",
+            contextJson: { executor_type: "Self", value: 100, p_success: 0.5, cash_cost: 0 },
+            selectedImpactFrame: {
+              expectedEconomicValueUsdBase: 50,
+              estimatedCashCostUsdBase: 0,
+              estimatedEffortHoursBase: 1,
+              successProbabilityBase: 0.5,
+            },
+          }),
+        });
+        mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "minimal-but-valid",
+            description: "x",
+            category: "ENGINEERING",
+            acceptanceCriteria: ["x"],
+            impactStatement: "y",
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+            // Skipped: cash_cost, executor_type, difficulty, timeToImpactStartDays, taskKey
+          },
+        });
+        const body = parseToolBody(result);
+        expect(body.missingFields).toEqual(
+          expect.arrayContaining([
+            "cash_cost",
+            "executor_type",
+            "difficulty",
+            "timeToImpactStartDays",
+            expect.stringContaining("taskKey"),
+          ]),
+        );
+        expect(body.recommendation).toContain("updateTask");
+      });
+
+      it("accepts markdown 'Acceptance criteria' section in lieu of explicit array", async () => {
+        // This is documented as the intended fallback in the createTask description.
+        mocks.getTaskDetailData.mockResolvedValue({
+          task: makeOwnedTask({
+            id: "created-task",
+            contextJson: {
+              executor_type: "Self",
+              acceptanceCriteria: ["bullet one", "bullet two"],
+            },
+            selectedImpactFrame: {
+              expectedEconomicValueUsdBase: 50,
+              estimatedCashCostUsdBase: 0,
+              estimatedEffortHoursBase: 1,
+              successProbabilityBase: 0.5,
+            },
+          }),
+        });
+        mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "markdown-only criteria",
+            description: "## Acceptance criteria\n- [ ] bullet one\n- [ ] bullet two\n",
+            category: "ENGINEERING",
+            impactStatement: "y",
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+          },
+        });
+        expect(result.isError).toBeFalsy();
+        expect(mocks.taskCreate).toHaveBeenCalledTimes(1);
+      });
+
+      it("explicit p_success round-trips into stored contextJson (no silent inflation)", async () => {
+        // Regression guard for the 2026-04-30 bug where the old default
+        // was 1.0 — a task without explicit p_success was treated as a
+        // guaranteed success, inflating EV. The default is now 0.5 (in
+        // resolveTaskEconomics); createTask additionally hard-requires
+        // p_success at the handler boundary so the default only matters
+        // for updateTask paths. This test confirms a passed value
+        // round-trips unchanged into the stored task contextJson.
+        mocks.getTaskDetailData.mockResolvedValue({
+          task: makeOwnedTask({
+            id: "created-task",
+            contextJson: { executor_type: "Self", value: 100, p_success: 0.42 },
+            selectedImpactFrame: {
+              expectedEconomicValueUsdBase: 42,
+              estimatedCashCostUsdBase: 0,
+              estimatedEffortHoursBase: 1,
+              successProbabilityBase: 0.42,
+            },
+          }),
+        });
+        mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 42 }));
+        const client = await setup("user-1", ALL_SCOPES);
+        await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "explicit p_success",
+            description: "x",
+            category: "ENGINEERING",
+            acceptanceCriteria: ["x"],
+            impactStatement: "y",
+            hours: 1,
+            value: 100,
+            p_success: 0.42,
+          },
+        });
+        const ctx = (mocks.taskCreate.mock.calls[0]![0] as {
+          data: { contextJson?: { p_success?: number } };
+        }).data.contextJson;
+        expect(ctx?.p_success).toBe(0.42);
+      });
+    });
+
     it("rejects public task creation for non-admin users even with tasks:admin", async () => {
       const client = await setup("user-1", [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN]);
 

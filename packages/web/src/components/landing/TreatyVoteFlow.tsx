@@ -37,7 +37,6 @@ import {
 import { cn } from "@/lib/utils";
 import {
   TreatyFlowButtonRow,
-  TreatyFlowDivider,
   TreatyFlowParagraph,
   TreatyFlowShell,
   treatyPrimaryButtonClass,
@@ -62,6 +61,7 @@ type PreVoteScreen = "apology" | "grandma" | "apocalypse" | "slider";
 interface TreatyVoteFlowProps {
   authCallbackUrl?: string;
   className?: string;
+  compactInitialScreen?: boolean;
   copyMode?: "campaign" | "neutral";
   defaultFlowVariant?: TreatyFlowVariant;
   orgContextToken?: string | null;
@@ -75,6 +75,7 @@ interface TreatyVoteFlowProps {
 export function TreatyVoteFlow({
   authCallbackUrl = ROUTES.dashboard,
   className,
+  compactInitialScreen = false,
   copyMode = "campaign",
   defaultFlowVariant = DEFAULT_TREATY_FLOW_VARIANT,
   orgContextToken = null,
@@ -113,6 +114,12 @@ export function TreatyVoteFlow({
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
+  const initialVoteShellClassName = compactInitialScreen
+    ? "min-h-0 overflow-visible px-0 py-0 sm:px-0 sm:py-0"
+    : undefined;
+  const initialVoteContentClassName = compactInitialScreen
+    ? "max-w-4xl flex-none justify-start py-0 sm:py-0"
+    : "max-w-4xl";
 
   useEffect(() => {
     setIsMounted(true);
@@ -632,7 +639,8 @@ export function TreatyVoteFlow({
             <TreatyFlowShell
               data-screen="slider"
               data-testid="treaty-vote-slider-card"
-              contentClassName="max-w-4xl"
+              className={initialVoteShellClassName}
+              contentClassName={initialVoteContentClassName}
             >
               <TreatyFlowParagraph
                 dropCap
@@ -642,7 +650,6 @@ export function TreatyVoteFlow({
                   ? "Set the share of military spending you would prefer to redirect to pragmatic clinical trials."
                   : VOTE_SECTION.sliderPrompt}
               </TreatyFlowParagraph>
-              <TreatyFlowDivider />
 
               {/* Allocation Display */}
               <div className="space-y-8">

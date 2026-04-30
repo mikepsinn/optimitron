@@ -8,8 +8,8 @@ import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
 import { getTasksPageData } from "@/lib/tasks.server";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import type { TaskCardTask } from "@/components/tasks/task-card";
-import { DashboardClient } from "@/components/dashboard/DashboardClient";
-import { HumanityManagementDashboardClient } from "@/components/site/HumanityManagementDashboardClient";
+import { EarthOptimizationDashboardClient } from "@/components/dashboard/EarthOptimizationDashboardClient";
+import { TreatyTaskDashboardClient } from "@/components/site/TreatyTaskDashboardClient";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getSiteFromHeaders } from "@/lib/site";
@@ -61,7 +61,7 @@ export default async function DashboardPage({
   void backfillUserLocationFromHeaders(userId, hdrs);
 
   if (
-    site.pageVariants.dashboard === "humanityManagementDashboard" &&
+    site.pageVariants.dashboard === "treatyTaskDashboard" &&
     site.contentKey &&
     site.primaryReferendumSlug
   ) {
@@ -91,7 +91,7 @@ export default async function DashboardPage({
       .sort(sortBySortOrder);
 
     return (
-      <HumanityManagementDashboardClient
+      <TreatyTaskDashboardClient
         nextTasks={nextTasks}
         completedTasks={completedTasks}
       />
@@ -109,7 +109,7 @@ export default async function DashboardPage({
   const topTasks = taskData.forYou.slice(0, 5);
 
   return (
-    <DashboardClient
+    <EarthOptimizationDashboardClient
       initialData={initialData}
       leaderboard={leaderboard}
       topTasks={topTasks}

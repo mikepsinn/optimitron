@@ -1,14 +1,19 @@
 "use client";
 
 import { nanoid } from "nanoid";
-import { Check, Clipboard, Mail, Send } from "lucide-react";
+import { Check, Clipboard, Mail } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
-import { Card } from "@/components/retroui/Card";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
+import {
+  treatyInputClass,
+  treatyPrimaryButtonClass,
+  treatySecondaryButtonClass,
+  treatyTextareaClass,
+} from "@/components/landing/TreatyFlowShell";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import {
@@ -231,20 +236,15 @@ export function ReferralInvitationComposer() {
   }, [createInvitation, invitation, message, recipientEmail]);
 
   return (
-    <Card className="mb-6 overflow-hidden border-4 border-primary bg-background p-0 text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-      <div className="border-b-4 border-primary bg-brutal-yellow px-5 py-4">
-        <div className="flex items-center gap-3">
-          <Send className="h-6 w-6 shrink-0" aria-hidden="true" />
-          <div>
-            <h3 className="text-xl font-black uppercase leading-tight">
-              Assign One Earth Optimization Task
-            </h3>
-            <p className="text-sm font-bold leading-snug">
-              When {firstName || "they"} completes the Earth Optimization Task: +1 lifetime of
-              suffering prevented, +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
-            </p>
-          </div>
-        </div>
+    <section className="mb-6 overflow-hidden border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-0 text-[var(--treaty-ink)] shadow-none">
+      <div className="border-b border-[var(--treaty-ink)]/30 px-5 py-4">
+        <h3 className="text-lg font-black uppercase leading-tight tracking-tight sm:text-xl">
+          Assign One Earth Optimization Task
+        </h3>
+        <p className="mt-2 text-sm font-bold leading-6 text-[var(--treaty-ink-soft)]">
+          When {firstName || "they"} completes the Earth Optimization Task: +1 lifetime of
+          suffering prevented, +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
+        </p>
       </div>
 
       <div className="space-y-5 p-5">
@@ -263,7 +263,7 @@ export function ReferralInvitationComposer() {
                 setSendState("idle");
               }}
               placeholder="Jake"
-              className="border-4 border-primary bg-background font-bold"
+              className={treatyInputClass}
             />
           </div>
 
@@ -282,12 +282,12 @@ export function ReferralInvitationComposer() {
                 setSendState("idle");
               }}
               placeholder="jake@example.com"
-              className="border-4 border-primary bg-background font-bold"
+              className={treatyInputClass}
             />
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid overflow-hidden border border-[var(--treaty-ink)] sm:grid-cols-2">
           <Button
             type="button"
             onClick={() => {
@@ -298,8 +298,8 @@ export function ReferralInvitationComposer() {
             }}
             className={
               messageFormat === "TASK_NOTIFICATION"
-                ? "justify-center border-4 border-primary bg-brutal-cyan px-4 py-3 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                : "justify-center border-4 border-primary bg-background px-4 py-3 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                ? "min-h-12 justify-center rounded-none border-0 bg-[var(--treaty-ink)] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#fffaf0] shadow-none hover:translate-x-0 hover:translate-y-0"
+                : "min-h-12 justify-center rounded-none border-0 bg-transparent px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[#efe4cf]"
             }
           >
             Assign the task
@@ -314,8 +314,8 @@ export function ReferralInvitationComposer() {
             }}
             className={
               messageFormat === "SINCERE"
-                ? "justify-center border-4 border-primary bg-brutal-cyan px-4 py-3 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                : "justify-center border-4 border-primary bg-background px-4 py-3 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                ? "min-h-12 justify-center rounded-none border-0 border-t border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#fffaf0] shadow-none hover:translate-x-0 hover:translate-y-0 sm:border-l sm:border-t-0"
+                : "min-h-12 justify-center rounded-none border-0 border-t border-[var(--treaty-ink)] bg-transparent px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[#efe4cf] sm:border-l sm:border-t-0"
             }
           >
             Send the nice one
@@ -331,16 +331,16 @@ export function ReferralInvitationComposer() {
               id="invite-message"
               value={message}
               onChange={(event) => setMessage(event.target.value)}
-              className="min-h-56 border-4 border-primary bg-background font-mono text-sm"
+              className={`${treatyTextareaClass} min-h-56 font-mono text-sm`}
             />
-            <p className="break-all text-xs font-bold text-muted-foreground">
+            <p className="break-all text-xs font-bold text-[var(--treaty-ink-muted)]">
               Invite link: {inviteUrl}
             </p>
           </div>
         ) : null}
 
         {error ? (
-          <p className="border-4 border-primary bg-brutal-pink px-3 py-2 text-sm font-black">
+          <p className="border border-[var(--treaty-ink)] bg-[#fffdf8] px-3 py-2 text-sm font-black">
             {error}
           </p>
         ) : null}
@@ -350,7 +350,7 @@ export function ReferralInvitationComposer() {
             type="button"
             onClick={() => void handleCopy()}
             disabled={isCreating}
-            className="h-12 flex-1 justify-center border-4 border-primary bg-brutal-cyan text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed"
+            className={`${treatyPrimaryButtonClass} flex-1`}
           >
             {copyState === "copied" ? (
               <Check className="mr-2 h-5 w-5" aria-hidden="true" />
@@ -371,7 +371,7 @@ export function ReferralInvitationComposer() {
               type="button"
               onClick={() => void handleEmailSend()}
               disabled={isCreating || sendState === "sending" || sendState === "sent"}
-              className="h-12 flex-1 justify-center border-4 border-primary bg-background text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed"
+              className={`${treatySecondaryButtonClass} flex-1`}
             >
               <Mail className="mr-2 h-5 w-5" aria-hidden="true" />
               <span className="min-w-0 truncate">
@@ -388,20 +388,20 @@ export function ReferralInvitationComposer() {
             <Button
               type="button"
               onClick={resetForNext}
-              className="h-12 justify-center border-4 border-primary bg-background text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className={treatySecondaryButtonClass}
             >
               One more
             </Button>
           ) : null}
         </div>
 
-        <p className="text-xs font-bold leading-snug text-muted-foreground">
+        <p className="border-t border-[var(--treaty-ink)]/20 pt-4 text-xs font-bold leading-5 text-[var(--treaty-ink-muted)]">
           Pending impact uses the current per-vote estimate:{" "}
           <ParameterValue param={FLOW_VOTER_SUFFERING_HOURS_PREVENTED} figures={4} /> hours of suffering
           prevented and <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved per
           completed Earth Optimization Task.
         </p>
       </div>
-    </Card>
+    </section>
   );
 }

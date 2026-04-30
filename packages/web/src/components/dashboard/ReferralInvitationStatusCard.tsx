@@ -59,34 +59,34 @@ function matchesFilter(
 function getStatusCopy(invitation: ReferralInvitationSummary) {
   if (invitation.status === "CONVERTED") {
     return {
-      bgClass: "bg-brutal-cyan text-brutal-cyan-foreground",
+      bgClass: "bg-transparent text-[var(--treaty-ink)]",
       icon: CheckCircle2,
       label: "Confirmed",
     };
   }
   if (invitation.status === "SENT") {
     return {
-      bgClass: "bg-brutal-yellow text-brutal-yellow-foreground",
+      bgClass: "bg-transparent text-[var(--treaty-ink)]",
       icon: Mail,
       label: "Email sent",
     };
   }
   if (invitation.status === "COPIED") {
     return {
-      bgClass: "bg-brutal-pink text-brutal-pink-foreground",
+      bgClass: "bg-transparent text-[var(--treaty-ink)]",
       icon: Clipboard,
       label: "Copied",
     };
   }
   if (invitation.status === "DECLINED" || invitation.status === "CANCELLED") {
     return {
-      bgClass: "bg-primary text-primary-foreground",
+      bgClass: "bg-transparent text-[var(--treaty-ink-muted)]",
       icon: XCircle,
       label: invitation.status === "DECLINED" ? "Declined" : "Cancelled",
     };
   }
   return {
-    bgClass: "bg-background text-foreground",
+    bgClass: "bg-transparent text-[var(--treaty-ink)]",
     icon: Send,
     label: "Pending",
   };
@@ -167,35 +167,35 @@ export function ReferralInvitationStatusCard() {
   );
 
   return (
-    <Card className="overflow-hidden border-4 border-primary bg-background p-0 text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-      <div className="border-b-4 border-primary bg-brutal-cyan px-5 py-4 text-brutal-cyan-foreground">
+    <Card className="overflow-hidden border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-0 text-[var(--treaty-ink)] shadow-none">
+      <div className="border-b border-[var(--treaty-ink)]/30 px-5 py-4">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="text-xl font-black uppercase leading-tight">
+            <h3 className="text-lg font-black uppercase leading-tight tracking-tight">
               Earth Optimization Tasks
             </h3>
-            <p className="text-sm font-bold leading-snug">
+            <p className="text-sm font-bold leading-6 text-[var(--treaty-ink-soft)]">
               {confirmedCount} confirmed. {pendingCount} pending.
               {closedCount > 0 ? ` ${closedCount} closed.` : ""}
             </p>
-            <p className="text-xs font-black uppercase leading-snug">
+            <p className="text-xs font-black uppercase leading-5 tracking-[0.12em] text-[var(--treaty-ink-muted)]">
               Inverse Kills Score: {confirmedLives} confirmed lives. {pendingLives} pending lives.
             </p>
           </div>
-          <Link className="text-sm font-black uppercase underline" href={ROUTES.tasks}>
+          <Link className="text-sm font-black uppercase underline underline-offset-4" href={ROUTES.tasks}>
             View tasks
           </Link>
         </div>
       </div>
 
-      <div className="border-b-4 border-primary bg-background px-5 py-3">
+      <div className="border-b border-[var(--treaty-ink)]/30 px-5 py-3">
         <div className="flex flex-wrap gap-2">
           {FILTERS.map((item) => (
             <button
               className={
                 item.key === filter
-                  ? "border-4 border-primary bg-brutal-yellow px-2 py-1 text-[10px] font-black uppercase"
-                  : "border-4 border-primary bg-background px-2 py-1 text-[10px] font-black uppercase"
+                  ? "border border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#fffaf0]"
+                  : "border border-[var(--treaty-ink)] bg-transparent px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)]"
               }
               key={item.key}
               onClick={() => setFilter(item.key)}
@@ -207,9 +207,9 @@ export function ReferralInvitationStatusCard() {
         </div>
       </div>
 
-      <div className="divide-y-4 divide-primary">
+      <div className="divide-y divide-[var(--treaty-ink)]/20">
         {visibleInvitations.length === 0 ? (
-          <p className="px-5 py-4 text-sm font-black uppercase text-muted-foreground">
+          <p className="px-5 py-4 text-sm font-black uppercase text-[var(--treaty-ink-muted)]">
             No Earth optimization tasks in this state.
           </p>
         ) : null}
@@ -231,12 +231,12 @@ export function ReferralInvitationStatusCard() {
                   <span className="truncate text-base font-black">
                     {invitation.recipientName}
                   </span>
-                  <span className={`inline-flex items-center gap-1 border-4 border-primary px-2 py-1 text-[10px] font-black uppercase ${statusCopy.bgClass}`}>
+                  <span className={`inline-flex items-center gap-1 border border-[var(--treaty-ink)]/40 px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] ${statusCopy.bgClass}`}>
                     <StatusIcon className="h-3 w-3 stroke-[3px]" aria-hidden="true" />
                     {statusCopy.label}
                   </span>
                 </div>
-                <p className="mt-1 text-xs font-bold uppercase text-muted-foreground">
+                <p className="mt-1 text-xs font-bold uppercase text-[var(--treaty-ink-muted)]">
                   {invitation.recipientEmail ?? "Copy invitation"}
                   {activityDate ? ` · ${activityDate}` : ""}
                 </p>
@@ -245,7 +245,7 @@ export function ReferralInvitationStatusCard() {
               {invitation.taskId ? (
                 <Button
                   asChild
-                  className="h-10 justify-center border-4 border-primary bg-background px-3 text-xs font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  className="h-10 justify-center border border-[var(--treaty-ink)] bg-transparent px-3 text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[#efe4cf]"
                 >
                   <Link href={`${ROUTES.tasks}/${invitation.taskId}`}>
                     Task
