@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   prisma: {
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
+    taskFindMany: vi.fn(),
     transaction: vi.fn(),
     userFindUniqueOrThrow: vi.fn(),
   },
@@ -32,6 +33,9 @@ vi.mock("@/lib/prisma", () => ({
       findUniqueOrThrow: mocks.prisma.taskClaimFindUniqueOrThrow,
       update: mocks.prisma.taskClaimUpdate,
     },
+    task: {
+      findMany: mocks.prisma.taskFindMany,
+    },
     user: {
       findUniqueOrThrow: mocks.prisma.userFindUniqueOrThrow,
     },
@@ -42,7 +46,7 @@ vi.mock("@/lib/wishes.server", () => ({
   grantWishes: mocks.grantWishes,
 }));
 
-import { completeTaskClaim, verifyTask } from "../tasks.server";
+import { completeTaskClaim, listTasks, searchTasks, verifyTask } from "../tasks.server";
 
 function createTransactionClient() {
   return {
@@ -67,9 +71,15 @@ function resetAllMocks() {
   }
 }
 
+function lastTaskFindManyArgs() {
+  const calls = mocks.prisma.taskFindMany.mock.calls as Array<[Record<string, unknown>]>;
+  return calls.at(-1)?.[0] ?? {};
+}
+
 describe("tasks server", () => {
   beforeEach(() => {
     resetAllMocks();
+    mocks.prisma.taskFindMany.mockResolvedValue([]);
     mocks.prisma.transaction.mockImplementation(
       async (callback: (tx: ReturnType<typeof createTransactionClient>) => unknown) =>
         callback(createTransactionClient()),
@@ -128,5 +138,58 @@ describe("tasks server", () => {
     expect(mocks.tx.taskClaimUpdate).not.toHaveBeenCalled();
     expect(mocks.tx.taskUpdate).not.toHaveBeenCalled();
     expect(mocks.grantWishes).not.toHaveBeenCalled();
+  });
+
+  it("listTasks defaults to public-only visibility", async () => {
+    await listTasks({ limit: 10, visibility: "public" });
+
+    const args = lastTaskFindManyArgs();
+    expect(args).toMatchObject({
+      where: expect.objectContaining({
+        deletedAt: null,
+        isPublic: true,
+      }),
+      take: 10,
+    });
+    expect(args.where).not.toHaveProperty("OR");
+  });
+
+  it("listTasks accessible visibility only includes public tasks plus the authenticated user's owned tasks", async () => {
+    await listTasks({ userId: "user-a", visibility: "accessible" });
+
+    expect(lastTaskFindManyArgs().where).toMatchObject({
+      deletedAt: null,
+      OR: [{ isPublic: true }, { ownerUserId: "user-a" }],
+    });
+  });
+
+  it("searchTasks without a user searches public tasks only", async () => {
+    await searchTasks("secret grant memo", { userId: null });
+
+    const args = lastTaskFindManyArgs();
+    expect(args.where).toMatchObject({
+      AND: [
+        expect.objectContaining({
+          deletedAt: null,
+          isPublic: true,
+        }),
+        expect.any(Object),
+      ],
+    });
+  });
+
+  it("searchTasks with a user searches public tasks plus that user's owned private tasks", async () => {
+    await searchTasks("secret grant memo", { userId: "user-a" });
+
+    const args = lastTaskFindManyArgs();
+    expect(args.where).toMatchObject({
+      AND: [
+        expect.objectContaining({
+          deletedAt: null,
+          OR: [{ isPublic: true }, { ownerUserId: "user-a" }],
+        }),
+        expect.any(Object),
+      ],
+    });
   });
 });

@@ -1,18 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  ReferralInvitationContactMethod,
+  ReferralInvitationMessageFormat,
+  ReferralInvitationStatus,
+} from "@optimitron/db/enums";
 
 const mocks = vi.hoisted(() => {
   const tx = {
-    referralInvitation: { update: vi.fn() },
+    person: { upsert: vi.fn() },
+    referralInvitation: { create: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
     task: { updateMany: vi.fn() },
     taskComment: { create: vi.fn() },
     user: { updateMany: vi.fn() },
   };
 
   return {
+    createReferralInvitationTask: vi.fn(),
+    ensureUserTreatyTask: vi.fn(),
+    fireTaskTriggersForEvent: vi.fn().mockResolvedValue([]),
+    markUserTreatyPhoneCallComplete: vi.fn(),
+    markNextHumanAssignmentSubtaskComplete: vi.fn(),
     notifyTaskCommentRecipients: vi.fn(),
     prisma: {
       $transaction: vi.fn(),
-      referralInvitation: { findFirst: vi.fn() },
+      referendum: { findFirst: vi.fn() },
+      referralInvitation: { count: vi.fn(), findFirst: vi.fn(), findUnique: vi.fn() },
+      task: { findFirst: vi.fn() },
+      user: { findUnique: vi.fn() },
     },
     tx,
   };
@@ -28,18 +42,151 @@ vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
 }));
 
 vi.mock("@/lib/tasks/user-treaty-task-progress.server", () => ({
-  markNextHumanAssignmentSubtaskComplete: vi.fn(),
+  markNextHumanAssignmentSubtaskComplete: mocks.markNextHumanAssignmentSubtaskComplete,
+  markUserTreatyPhoneCallComplete: mocks.markUserTreatyPhoneCallComplete,
 }));
 
 vi.mock("@/lib/tasks/user-treaty-task.server", () => ({
-  ensureUserTreatyTask: vi.fn(),
+  ensureUserTreatyTask: mocks.ensureUserTreatyTask,
 }));
+
+vi.mock("@/lib/referral-invitation-tasks.server", async (importOriginal) => {
+  const actual = await importOriginal() as typeof import("@/lib/referral-invitation-tasks.server");
+  return {
+    ...actual,
+    createReferralInvitationTask: mocks.createReferralInvitationTask,
+  };
+});
 
 vi.mock("@/lib/share-attempts.server", () => ({
   recordShareAttempt: vi.fn(),
 }));
 
-import { convertReferralInvitationForVote } from "../referral-invitations.server";
+// Trigger framework is fired alongside the existing path; not relevant
+// to these unit tests. Mock as no-op.
+vi.mock("@/lib/triggers", () => ({
+  fireTaskTrigger: vi.fn().mockResolvedValue({ result: "filteredOut", spawnedTaskIds: [], spawnedTaskKeys: [] }),
+  fireTaskTriggersForEvent: mocks.fireTaskTriggersForEvent,
+  buildTriggerContext: (extras: Record<string, unknown> = {}) => extras,
+  buildTriggerParams: () => ({}),
+}));
+
+import {
+  createReferralInvitation,
+  convertReferralInvitationForVote,
+  markReferralInvitationCopied,
+} from "../referral-invitations.server";
+
+describe("createReferralInvitation", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.prisma.$transaction.mockImplementation((callback) => callback(mocks.tx));
+    mocks.prisma.user.findUnique.mockResolvedValue({
+      id: "user_1",
+      email: "sender@example.com",
+      name: "Sender",
+      person: { displayName: "Sender Person" },
+      referralCode: "ref_sender",
+    });
+    mocks.prisma.referralInvitation.count.mockResolvedValue(0);
+    mocks.prisma.referralInvitation.findFirst.mockResolvedValue(null);
+    mocks.prisma.referralInvitation.findUnique.mockResolvedValue(null);
+    mocks.prisma.referendum.findFirst.mockResolvedValue({ id: "referendum_1" });
+    mocks.tx.person.upsert.mockResolvedValue({ id: "person_recipient" });
+    mocks.ensureUserTreatyTask.mockResolvedValue({ taskId: "training_root" });
+    mocks.createReferralInvitationTask.mockResolvedValue("referral_task_1");
+    mocks.tx.referralInvitation.create.mockResolvedValue({
+      id: "invite_1",
+      inviteToken: "invite_token",
+      recipientEmail: "recipient@example.com",
+      recipientName: "Recipient Human",
+      taskId: "referral_task_1",
+    });
+  });
+
+  it("creates the referral task inside the invitation transaction and does not re-fire referral.sent with partial context", async () => {
+    const result = await createReferralInvitation({
+      contactMethod: ReferralInvitationContactMethod.EMAIL,
+      messageFormat: ReferralInvitationMessageFormat.SINCERE,
+      recipientEmail: "recipient@example.com",
+      recipientName: "Recipient Human",
+      referrerUserId: "user_1",
+    });
+
+    expect(result.id).toBe("invite_1");
+    expect(mocks.ensureUserTreatyTask).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: "user_1" }),
+      mocks.tx,
+    );
+    expect(mocks.createReferralInvitationTask).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ownerUserId: "user_1",
+        parentTaskId: "training_root",
+        recipientPersonId: "person_recipient",
+      }),
+      mocks.tx,
+    );
+    expect(mocks.fireTaskTriggersForEvent).not.toHaveBeenCalledWith(
+      "referral.sent",
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+});
+
+describe("markReferralInvitationCopied", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.prisma.$transaction.mockImplementation((callback) => callback(mocks.tx));
+    mocks.prisma.referralInvitation.findFirst.mockResolvedValue({
+      contactMethod: ReferralInvitationContactMethod.OTHER,
+      id: "invite_call",
+      inviteToken: "token_call",
+      messageFormat: ReferralInvitationMessageFormat.SINCERE,
+      recipientName: "Call Recipient",
+      shareAttemptId: null,
+      status: ReferralInvitationStatus.PENDING,
+      taskId: "referral_task_call",
+      task: { parentTaskId: "training_root" },
+      referrer: {
+        email: "sender@example.com",
+        name: "Sender",
+        person: { displayName: "Sender Person" },
+        referralCode: "ref_sender",
+      },
+    });
+    mocks.tx.referralInvitation.findUnique.mockResolvedValue({ id: "invite_call" });
+    mocks.tx.referralInvitation.update.mockResolvedValue({ id: "invite_call" });
+    mocks.tx.taskComment.create.mockResolvedValue({ id: "comment_1" });
+    mocks.markNextHumanAssignmentSubtaskComplete.mockResolvedValue(true);
+    mocks.markUserTreatyPhoneCallComplete.mockResolvedValue(true);
+  });
+
+  it("verifies the phone-call training task when a call/manual outreach is confirmed", async () => {
+    await markReferralInvitationCopied({
+      contactConfirmed: true,
+      invitationId: "invite_call",
+      referrerUserId: "user_1",
+    });
+
+    expect(mocks.markNextHumanAssignmentSubtaskComplete).toHaveBeenCalledWith(
+      expect.objectContaining({
+        invitationId: "invite_call",
+        recipientName: "Call Recipient",
+        userId: "user_1",
+      }),
+      mocks.tx,
+    );
+    expect(mocks.markUserTreatyPhoneCallComplete).toHaveBeenCalledWith(
+      expect.objectContaining({
+        invitationId: "invite_call",
+        recipientName: "Call Recipient",
+        userId: "user_1",
+      }),
+      mocks.tx,
+    );
+  });
+});
 
 describe("convertReferralInvitationForVote", () => {
   beforeEach(() => {

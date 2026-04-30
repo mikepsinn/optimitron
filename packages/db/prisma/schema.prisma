@@ -2299,6 +2299,7 @@ model Jurisdiction {
   organizations   Organization[]
   surveys         Survey[]
   tasks           Task[]
+  taskTriggers    TaskTrigger[]     @relation("JurisdictionTaskTriggers")
 
   @@index([type])
   @@index([parentJurisdictionId])
@@ -4688,6 +4689,343 @@ model TaskCommunication {
   @@index([referralInvitationId])
   @@index([emailLogId])
   @@index([deletedAt])
+}
+
+// ============================================================================
+// TASK TRIGGER FRAMEWORK
+// ============================================================================
+// Generalized data-driven framework that subsumes hardcoded task-spawn,
+// task-verify, and task-communication patterns. A TaskTrigger row is the
+// blueprint; fireTaskTrigger(triggerKey, context) is the runtime entrypoint.
+// AI agents can author triggers over MCP without source-code commits.
+
+/// A configurable rule that fires on an event and either spawns tasks,
+/// verifies a task, or spawns a communication.
+///
+/// Usage: code/cron/MCP-tool fires `fireTaskTrigger(triggerKey, context)`.
+/// Runtime looks up this row, applies eventFilter, computes idempotencyKey
+/// via template substitution, checks TaskTriggerFire for a prior fire with
+/// that key, and either returns the prior result or executes spawnSpecs.
+model TaskTrigger {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Stable cross-deploy key. Examples:
+  ///   "user-onboarding:treaty"
+  ///   "treaty:signer-reminder"
+  ///   "referral:vote-invitation"
+  ///   "task:overdue-reminder"
+  triggerKey String @unique
+
+  /// Free-form event name. Convention: "<source>.<verb>" or "<source>.<verb>.<qualifier>".
+  /// Examples: "user.signup", "task.statusChanged.VERIFIED", "referral.sent",
+  /// "cron.<name>", "mcp.<toolName>", "manual", "dataset.recordChanged.<source>".
+  eventName String
+
+  /// Optional JSON filter applied to event context to narrow which instances
+  /// fire this trigger. Operators: equals, matches, and, or, not, exists.
+  /// Empty/null = no filter, fires for every event of eventName.
+  eventFilter Json?
+
+  /// What the trigger does when it fires. String, not enum, so future
+  /// kinds need no migration. Runtime maps the string to a handler.
+  ///   "spawnTasks"         — creates tasks per spawnSpecs
+  ///   "verifyTask"         — marks an existing task VERIFIED
+  ///   "spawnCommunication" — creates TaskComment/TaskCommunication
+  triggerKind String @default("spawnTasks")
+
+  /// Whether this trigger is currently active. Soft-pause without delete.
+  enabled Boolean @default(true)
+
+  /// Optional human-readable explanation if disabled.
+  disabledReason String?
+
+  /// Idempotency key TEMPLATE. Computed against event context with {{token}}
+  /// substitution. Result is the unique identifier for one fire of this
+  /// trigger — written to TaskTriggerFire.idempotencyKey, and (for spawnTasks)
+  /// also forms the base of the spawned task's taskKey.
+  idempotencyKeyTemplate String
+
+  /// Optional completion gate. When present and `triggerKind=spawnTasks`,
+  /// the spawned parent task auto-VERIFIES when the gate condition holds
+  /// against its child task statuses. Spec is JSON for forward compat:
+  ///   { "kind": "allOf",  "subtaskKinds": [...] }
+  ///   { "kind": "anyOf",  "subtaskKinds": [...] }
+  ///   { "kind": "count",  "minVerified": N, "scope": "children" }
+  ///   { "kind": "always", "evidenceTemplate": "..." }
+  completionGate Json?
+
+  /// Optional jurisdiction scope. NULL = global / cross-jurisdiction.
+  jurisdictionId String?
+
+  /// Optional cron schedule expression (e.g. "30 * * * *" for every hour at :30).
+  /// When set, the /api/cron/run-due-triggers handler fires this trigger
+  /// whenever the schedule is due since the last successful fire. NULL = the
+  /// trigger only fires via explicit event publication (post-signin, MCP,
+  /// referral.sent, etc.) and is not driven by cron.
+  schedule String?
+
+  /// Optional iteration-source resolver key. Tells the cron handler what
+  /// data to iterate over before firing the trigger per record. The
+  /// resolver runs and the trigger is fired once per yielded record with
+  /// the record injected as `context.<key>`. NULL or "none" = single fire,
+  /// no iteration. Recognized keys live in
+  /// packages/web/src/lib/triggers/iteration-sources.ts.
+  ///   "none"           — fire once, no records (good for fan-out tasks)
+  ///   "overdue-tasks"  — iterate Task rows past dueAt with status != VERIFIED
+  iterationSource String?
+
+  /// Free-form notes for human editors / AI agents.
+  notes String?
+
+  /// Forward-compat escape hatch: arbitrary metadata that doesn't justify
+  /// a first-class column. Use sparingly; prefer adding columns when a
+  /// pattern stabilizes.
+  metadata Json?
+
+  /// Audit: who created/last-edited.
+  createdByUserId String?
+  updatedByUserId String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete (preferred over hard delete to preserve fire-log foreign key)
+  deletedAt DateTime?
+
+  // -- Relations --
+  spawnSpecs              TaskSpawnSpec[]              @relation("TaskTriggerSpawnSpecs")
+  communicationSpawnSpecs TaskCommunicationSpawnSpec[] @relation("TaskTriggerCommunicationSpawnSpecs")
+  fires                   TaskTriggerFire[]            @relation("TaskTriggerFires")
+  jurisdiction            Jurisdiction?                @relation("JurisdictionTaskTriggers", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+
+  @@index([eventName, enabled])
+  @@index([jurisdictionId, eventName])
+  @@index([deletedAt])
+}
+
+/// One spawn spec = one task that gets created when a TaskTrigger fires.
+/// A trigger may have multiple specs to model parent + children together
+/// (e.g., onboarding tree spawns 1 parent + 5 subtasks in one fire).
+model TaskSpawnSpec {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Owning trigger
+  triggerId String
+
+  /// Suffix used in the spawned task's taskKey to distinguish siblings.
+  /// e.g. "shareReferralUrl", "phoneScript", "assignFirstHuman".
+  /// The full taskKey is `<trigger.idempotencyKey>:<kind>` (or just the
+  /// idempotencyKey for the parent spec).
+  kind String
+
+  /// Whether this is the parent task in the spawn group. At most one
+  /// per trigger. If absent, all specs are siblings (no parent created).
+  isParent Boolean @default(false)
+
+  /// Display order within the spawn group.
+  sortOrder Int @default(0)
+
+  // -- Templated content --
+  /// Title template. Supports {{path.to.field}} substitution.
+  titleTemplate String
+
+  /// Description template. Multi-line OK.
+  descriptionTemplate String
+
+  /// Optional impact statement template.
+  impactStatementTemplate String?
+
+  /// Role title template (e.g. "Humanity Manager", "Referred treaty voter").
+  roleTitleTemplate String?
+
+  // -- Static defaults --
+  category             TaskCategory   @default(OTHER)
+  difficulty           TaskDifficulty @default(TRIVIAL)
+  estimatedEffortHours Float?
+
+  /// Days from now until dueAt. NULL = no due date.
+  dueDays Float?
+
+  /// Days from now until availableAt (deferred start). NULL = available immediately.
+  availableInDays Float?
+
+  /// Deadline policy. String for forward-compat.
+  ///   "NONE" | "SOFT" | "EXPIRES" | "REQUIRED"
+  deadlinePolicy String?
+
+  claimPolicy TaskClaimPolicy @default(ASSIGNED_ONLY)
+
+  /// Whether the spawned task is publicly visible.
+  isPublic Boolean @default(false)
+
+  /// Skill / interest tags. Strings; templates run on each entry.
+  skillTagTemplates    String[]
+  interestTagTemplates String[]
+
+  // -- Action link template --
+  actionLinkUrlTemplate          String?
+  actionLinkLabelTemplate        String?
+  actionLinkInstructionsTemplate String?
+
+  // -- Resolvers (string keys → runtime registry) --
+  /// Who owns the spawned task.
+  ///   "actor" | "context.<path>" | "system"
+  ownerResolver String @default("actor")
+
+  /// Who is assigned (Person row).
+  ///   "actor" | "context.recipient" | "lookup.byEmail" | "lookup.byHandle" | "none"
+  assigneePersonResolver String @default("none")
+
+  /// Who is assigned (Organization).
+  ///   "context.organization" | "none"
+  assigneeOrganizationResolver String @default("none")
+
+  /// Parent task source.
+  ///   "trigger.parentSpec" | "context.parentTaskId" | "fixed:<taskKey>" | "none"
+  parentResolver String @default("trigger.parentSpec")
+
+  /// Whether this spec contributes to the trigger's completionGate.
+  contributesToGate Boolean @default(false)
+
+  /// Free-form bag.
+  metadata Json?
+
+  // -- Relations --
+  trigger TaskTrigger @relation("TaskTriggerSpawnSpecs", fields: [triggerId], references: [id], onDelete: Cascade)
+
+  @@unique([triggerId, kind])
+  @@index([triggerId, sortOrder])
+}
+
+/// One communication spawn spec = one TaskComment + TaskCommunication
+/// entity created when a TaskTrigger of kind="spawnCommunication" fires.
+/// Used for cron-driven outreach (overdue reminders), comment-on-event,
+/// and any "platform sends a message about a task" flow.
+model TaskCommunicationSpawnSpec {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Owning trigger
+  triggerId String
+
+  /// Suffix used in the dedupeKey for the spawned TaskCommunication.
+  /// e.g. "overdue-reminder", "delayed-day-7"
+  kind String
+
+  sortOrder Int @default(0)
+
+  // -- Templated content --
+  /// Email subject template.
+  subjectTemplate String
+
+  /// Plain-text body template.
+  bodyTextTemplate String
+
+  /// Optional HTML body template. If null, the runtime renders text-only.
+  bodyHtmlTemplate String?
+
+  /// Optional STATUS_UPDATE comment to attach alongside the communication.
+  commentTemplate String?
+
+  // -- Routing --
+  /// "EMAIL" | "IN_APP" | "PUSH" | future channels — string for forward-compat.
+  channel String @default("EMAIL")
+
+  /// "ASSIGNEE" | "OWNER" | "WATCHERS" | "context.recipientUserIds" — resolver key.
+  audienceResolver String @default("ASSIGNEE")
+
+  /// "REMINDER" | "ANNOUNCEMENT" | "STATUS_UPDATE" — string for forward-compat.
+  purpose String @default("REMINDER")
+
+  /// Email scope key (used to honor unsubscribes). e.g. "task-reminders".
+  emailScope String?
+
+  // -- Rate-limit / dedup --
+  /// Deduplication key template. Prevents the same communication from
+  /// being sent twice (e.g. "task-overdue-reminder:{{task.id}}:{{sendCount}}").
+  dedupeKeyTemplate String
+
+  /// Minimum hours between fires to the same recipient on this trigger.
+  /// 0 = no cooldown.
+  minHoursBetweenSends Float @default(0)
+
+  /// Maximum total sends across the lifetime of the addressed task.
+  /// 0 = unlimited.
+  maxSendsPerTask Int @default(0)
+
+  /// Inclusive lower bound on the prior-send count at which this spec is
+  /// active. Lets a single trigger carry escalating-tone variants — e.g.
+  /// kind="week-1" with minSendCount=0/maxSendCount=0, kind="week-2" with
+  /// minSendCount=1/maxSendCount=1, kind="week-3-final" with
+  /// minSendCount=2/maxSendCount=null (open-ended).
+  minSendCount Int @default(0)
+
+  /// Inclusive upper bound on the prior-send count at which this spec is
+  /// active. NULL = open-ended (this spec keeps firing once we've reached
+  /// minSendCount, until maxSendsPerTask runs out).
+  maxSendCount Int?
+
+  /// Free-form bag.
+  metadata Json?
+
+  // -- Relations --
+  trigger TaskTrigger @relation("TaskTriggerCommunicationSpawnSpecs", fields: [triggerId], references: [id], onDelete: Cascade)
+
+  @@unique([triggerId, kind])
+  @@index([triggerId, sortOrder])
+}
+
+/// Audit log of every TaskTrigger fire. Provides idempotency (don't
+/// double-fire), debugging, and analytics. Source of truth for "what
+/// happened, when, with what context."
+model TaskTriggerFire {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Owning trigger
+  triggerId String
+
+  /// Computed idempotency key for this fire.
+  idempotencyKey String
+
+  /// Who fired (when applicable). NULL for cron / system fires.
+  actorUserId String?
+
+  /// Snapshot of the context at fire time.
+  context Json
+
+  /// Result code. String, not enum, for forward compat.
+  ///   "spawned"      — created N tasks
+  ///   "alreadyFired" — found prior fire with same idempotencyKey, returned cached IDs
+  ///   "filteredOut"  — eventFilter rejected the event
+  ///   "verified"     — marked a task VERIFIED
+  ///   "communicated" — TaskComment/TaskCommunication created
+  ///   "rateLimited"  — communication path: cooldown or max-sends prevented send
+  ///   "failed"       — runtime error
+  result String
+
+  /// Error message when result=failed.
+  error String?
+
+  /// Tasks (or other entities) produced by this fire.
+  spawnedTaskKeys String[]
+  spawnedTaskIds  String[]
+
+  /// When this fire occurred.
+  firedAt DateTime @default(now())
+
+  // -- Relations --
+  trigger TaskTrigger @relation("TaskTriggerFires", fields: [triggerId], references: [id], onDelete: Cascade)
+
+  @@unique([triggerId, idempotencyKey])
+  @@index([triggerId, firedAt])
+  @@index([actorUserId, firedAt])
+  @@index([result, firedAt])
 }
 
 // ============================================================================

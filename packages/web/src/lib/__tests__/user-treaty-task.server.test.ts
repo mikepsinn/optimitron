@@ -1,7 +1,20 @@
-import { describe, expect, it, vi } from "vitest";
+import { TaskStatus } from "@optimitron/db";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const fireMocks = vi.hoisted(() => ({
+  fireTaskTrigger: vi.fn(),
+  fireTaskTriggersForEvent: vi.fn().mockResolvedValue([]),
+}));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {},
+}));
+
+vi.mock("@/lib/triggers", () => ({
+  fireTaskTrigger: fireMocks.fireTaskTrigger,
+  fireTaskTriggersForEvent: fireMocks.fireTaskTriggersForEvent,
+  buildTriggerContext: (extras: Record<string, unknown> = {}) => extras,
+  buildTriggerParams: () => ({}),
 }));
 
 import {
@@ -11,6 +24,7 @@ import {
 } from "@/lib/tasks/user-treaty-task.server";
 import {
   markNextHumanAssignmentSubtaskComplete,
+  markUserTreatyPhoneCallComplete,
   markUserTreatyReferralShareComplete,
 } from "@/lib/tasks/user-treaty-task-progress.server";
 
@@ -72,12 +86,7 @@ function matchesTask(task: FakeTask, where: Record<string, unknown>) {
       }
       continue;
     }
-    if (
-      key === "status" &&
-      typeof value === "object" &&
-      value &&
-      "not" in value
-    ) {
+    if (key === "status" && typeof value === "object" && value && "not" in value) {
       if (task.status === (value as { not: string }).not) return false;
       continue;
     }
@@ -88,9 +97,7 @@ function matchesTask(task: FakeTask, where: Record<string, unknown>) {
 
 function matchesComment(comment: FakeComment, where: Record<string, unknown>) {
   for (const [key, value] of Object.entries(where)) {
-    if (key === "deletedAt" && value === null && comment.deletedAt !== null) {
-      return false;
-    }
+    if (key === "deletedAt" && value === null && comment.deletedAt !== null) return false;
     if (
       key === "message" &&
       typeof value === "object" &&
@@ -127,14 +134,10 @@ function createFakeTaskDb() {
 
   const db = {
     task: {
-      create: vi.fn(async ({ data, select }) => {
-        const task = {
-          id: `task_${++nextTask}`,
-          deletedAt: null,
-          ...data,
-        } as FakeTask;
+      create: vi.fn(async ({ data }) => {
+        const task = { id: `task_${++nextTask}`, deletedAt: null, ...data } as FakeTask;
         tasks.push(task);
-        return pickSelected(task, select);
+        return task;
       }),
       findMany: vi.fn(async ({ where, select }) =>
         tasks
@@ -143,196 +146,315 @@ function createFakeTaskDb() {
       ),
       findUnique: vi.fn(async ({ where, select }) => {
         const task = where.id
-          ? tasks.find((candidate) => candidate.id === where.id)
-          : tasks.find((candidate) => candidate.taskKey === where.taskKey);
+          ? tasks.find((c) => c.id === where.id)
+          : tasks.find((c) => c.taskKey === where.taskKey);
         return task ? pickSelected(task, select) : null;
       }),
-      update: vi.fn(async ({ where, data, select }) => {
-        const task = tasks.find((candidate) => candidate.id === where.id);
+      update: vi.fn(async ({ where, data }) => {
+        const task = tasks.find((c) => c.id === where.id);
         if (!task) throw new Error("Task not found.");
         Object.assign(task, data);
-        return pickSelected(task, select);
+        return task;
       }),
       updateMany: vi.fn(async ({ where, data }) => {
         let count = 0;
-        for (const task of tasks) {
-          if (!matchesTask(task, where ?? {})) continue;
-          Object.assign(task, data);
-          count += 1;
+        for (const t of tasks) {
+          if (!matchesTask(t, where ?? {})) continue;
+          Object.assign(t, data);
+          count++;
         }
         return { count };
       }),
     },
     taskComment: {
       create: vi.fn(async ({ data }) => {
-        const comment = {
-          id: `comment_${++nextComment}`,
-          deletedAt: null,
-          ...data,
-        } as FakeComment;
+        const comment = { id: `comment_${++nextComment}`, deletedAt: null, ...data } as FakeComment;
         comments.push(comment);
         return { id: comment.id };
       }),
-      findFirst: vi.fn(async ({ where, select }) => {
-        const comment = comments.find((candidate) =>
-          matchesComment(candidate, where ?? {}),
-        );
-        return comment ? pickSelected(comment, select) : null;
+      findFirst: vi.fn(async ({ where }) => {
+        const comment = comments.find((c) => matchesComment(c, where ?? {}));
+        return comment ? { id: comment.id } : null;
       }),
     },
   };
-
   return { comments, db: db as never, tasks };
 }
 
-describe("user treaty task tree", () => {
-  it("creates the 4B objective and default subtasks idempotently", async () => {
-    const { db, tasks } = createFakeTaskDb();
-    const now = new Date("2026-04-28T12:00:00.000Z");
-
-    const first = await ensureUserTreatyTask(
-      { now, personId: "person_1", userId: "user_1" },
-      db,
-    );
-    const second = await ensureUserTreatyTask(
-      { now, personId: "person_1", userId: "user_1" },
-      db,
-    );
-
-    expect(first.created).toBe(true);
-    expect(second.created).toBe(false);
-    expect(tasks).toHaveLength(5);
-    expect(first.taskId).toBe(second.taskId);
-
-    const root = tasks.find(
-      (task) => task.taskKey === getUserTreatyTaskKey("user_1"),
-    );
-    expect(root).toMatchObject({
-      title: "Get 4 billion people to vote on the 1% Treaty",
-      ownerUserId: "user_1",
-      parentTaskId: null,
-    });
-
-    expect(first.subtaskIds.shareReferralUrl).toBeTruthy();
-    expect(first.subtaskIds.assignFirstHuman).toBeTruthy();
-    expect(first.subtaskIds.assignSecondHuman).toBeTruthy();
-    expect(first.subtaskIds.completeTraining).toBeTruthy();
-    expect(
-      tasks.filter((task) => task.parentTaskId === first.taskId).map((task) => task.title),
-    ).toEqual([
-      "Share your 1% Treaty referral URL",
-      "Give your first human the 1% Treaty voting task",
-      "Give your second human the 1% Treaty voting task",
-      "Complete Humanity Management Training",
-    ]);
+/**
+ * Pre-populate `tasks` with the synthetic tree the trigger would have
+ * produced and configure the fireTaskTrigger mock to return a matching
+ * FireResult. The actual trigger runtime is tested in
+ * `src/lib/triggers/__tests__/fire.integration.test.ts`.
+ */
+function seedSyntheticOnboardingTree(
+  tasks: FakeTask[],
+  userId: string,
+): {
+  rootId: string;
+  subtaskIds: Record<string, string>;
+} {
+  const rootId = `task_root_${userId}`;
+  const subtaskIds: Record<string, string> = {};
+  tasks.push({
+    id: rootId,
+    deletedAt: null,
+    taskKey: getUserTreatyTaskKey(userId),
+    ownerUserId: userId,
+    parentTaskId: null,
+    status: "ACTIVE",
+    title: "Get 4 billion people to vote on the 1% Treaty",
   });
-
-  it("gives downstream users their own separate local task tree", async () => {
-    const { db, tasks } = createFakeTaskDb();
-
-    const alice = await ensureUserTreatyTask(
-      { personId: "person_alice", userId: "alice" },
-      db,
-    );
-    const bob = await ensureUserTreatyTask(
-      { personId: "person_bob", userId: "bob" },
-      db,
-    );
-
-    expect(alice.taskId).not.toBe(bob.taskId);
-    expect(
-      tasks.find((task) => task.taskKey === getUserTreatyTaskKey("bob")),
-    ).toMatchObject({
-      ownerUserId: "bob",
-      parentTaskId: null,
+  const childKinds = [
+    "shareReferralUrl",
+    "phoneScript",
+    "assignFirstHuman",
+    "assignSecondHuman",
+    "completeTraining",
+  ] as const;
+  for (const kind of childKinds) {
+    const id = `task_${kind}_${userId}`;
+    subtaskIds[kind] = id;
+    tasks.push({
+      id,
+      deletedAt: null,
+      taskKey: getUserTreatySubtaskKey(userId, kind),
+      ownerUserId: userId,
+      parentTaskId: rootId,
+      status: "ACTIVE",
     });
-    expect(
-      tasks.some(
-        (task) => task.ownerUserId === "bob" && task.parentTaskId === alice.taskId,
+  }
+  return { rootId, subtaskIds };
+}
+
+function makeFireResult(
+  rootId: string,
+  subtaskIds: Record<string, string>,
+  userId: string,
+  parentWasCreated: boolean,
+) {
+  return {
+    result: "spawned" as const,
+    triggerKey: "user-onboarding:treaty",
+    triggerId: "trig-1",
+    idempotencyKey: getUserTreatyTaskKey(userId),
+    spawnedSpecs: [
+      {
+        kind: "root",
+        isParent: true,
+        taskId: rootId,
+        taskKey: getUserTreatyTaskKey(userId),
+        status: TaskStatus.ACTIVE,
+        wasCreated: parentWasCreated,
+      },
+      ...Object.entries(subtaskIds).map(([kind, taskId]) => ({
+        kind,
+        isParent: false,
+        taskId,
+        taskKey: getUserTreatySubtaskKey(userId, kind as never),
+        status: TaskStatus.ACTIVE,
+        wasCreated: parentWasCreated,
+      })),
+    ],
+    spawnedTaskIds: [rootId, ...Object.values(subtaskIds)],
+    spawnedTaskKeys: [
+      getUserTreatyTaskKey(userId),
+      ...Object.entries(subtaskIds).map(([kind]) =>
+        getUserTreatySubtaskKey(userId, kind as never),
       ),
-    ).toBe(false);
+    ],
+  };
+}
+
+describe("user treaty task tree", () => {
+  beforeEach(() => {
+    fireMocks.fireTaskTrigger.mockReset();
+    fireMocks.fireTaskTriggersForEvent.mockReset();
+    fireMocks.fireTaskTriggersForEvent.mockResolvedValue([]);
   });
 
-  it("completes training after share plus two unique human assignments", async () => {
-    const { db, tasks } = createFakeTaskDb();
-    const now = new Date("2026-04-28T12:00:00.000Z");
-    const treatyTask = await ensureUserTreatyTask(
-      { now, personId: "person_1", userId: "user_1" },
-      db,
+  it("ensureUserTreatyTask reconstructs legacy return shape from FireResult", async () => {
+    const { tasks } = createFakeTaskDb();
+    const seeded = seedSyntheticOnboardingTree(tasks, "user_1");
+    fireMocks.fireTaskTrigger.mockResolvedValue(
+      makeFireResult(seeded.rootId, seeded.subtaskIds, "user_1", true),
     );
 
-    await markUserTreatyReferralShareComplete(
+    const result = await ensureUserTreatyTask({ personId: "person_1", userId: "user_1" });
+
+    expect(result.created).toBe(true);
+    expect(result.taskId).toBe(seeded.rootId);
+    expect(result.subtaskIds.shareReferralUrl).toBe(seeded.subtaskIds.shareReferralUrl);
+    expect(result.subtaskIds.phoneScript).toBe(seeded.subtaskIds.phoneScript);
+    expect(result.subtaskIds.assignFirstHuman).toBe(seeded.subtaskIds.assignFirstHuman);
+    expect(result.subtaskIds.assignSecondHuman).toBe(seeded.subtaskIds.assignSecondHuman);
+    expect(result.subtaskIds.completeTraining).toBe(seeded.subtaskIds.completeTraining);
+    expect(result.subtaskStatuses.shareReferralUrl).toBe(TaskStatus.ACTIVE);
+  });
+
+  it("ensureUserTreatyTask reports created=false on subsequent fires", async () => {
+    const { tasks } = createFakeTaskDb();
+    const seeded = seedSyntheticOnboardingTree(tasks, "user_2");
+    fireMocks.fireTaskTrigger.mockResolvedValue(
+      makeFireResult(seeded.rootId, seeded.subtaskIds, "user_2", false),
+    );
+
+    const result = await ensureUserTreatyTask({ personId: "person_2", userId: "user_2" });
+    expect(result.created).toBe(false);
+  });
+
+  it("ensureUserTreatyTask throws when the trigger isn't seeded", async () => {
+    fireMocks.fireTaskTrigger.mockResolvedValue({
+      result: "filteredOut",
+      triggerKey: "user-onboarding:treaty",
+      reason: "trigger not found: user-onboarding:treaty",
+      spawnedSpecs: [],
+      spawnedTaskIds: [],
+      spawnedTaskKeys: [],
+    });
+
+    await expect(
+      ensureUserTreatyTask({ personId: "p", userId: "u" }),
+    ).rejects.toThrow(/trigger did not run/);
+  });
+
+  it("ensureUserTreatyTask throws when a required spec is missing", async () => {
+    fireMocks.fireTaskTrigger.mockResolvedValue({
+      result: "spawned",
+      triggerKey: "user-onboarding:treaty",
+      idempotencyKey: "x",
+      spawnedSpecs: [
+        {
+          kind: "root",
+          isParent: true,
+          taskId: "t-root",
+          taskKey: "x",
+          status: TaskStatus.ACTIVE,
+          wasCreated: true,
+        },
+        // missing all child specs
+      ],
+      spawnedTaskIds: ["t-root"],
+      spawnedTaskKeys: ["x"],
+    });
+
+    await expect(
+      ensureUserTreatyTask({ personId: "p", userId: "u" }),
+    ).rejects.toThrow(/missing required spec/);
+  });
+
+  it("markUserTreatyReferralShareComplete VERIFIES the share subtask and fires task.statusChanged.VERIFIED", async () => {
+    const { db, tasks, comments } = createFakeTaskDb();
+    const seeded = seedSyntheticOnboardingTree(tasks, "user_3");
+    fireMocks.fireTaskTrigger.mockResolvedValue(
+      makeFireResult(seeded.rootId, seeded.subtaskIds, "user_3", false),
+    );
+
+    const result = await markUserTreatyReferralShareComplete(
       {
         channel: "copy-link",
-        now,
-        personId: "person_1",
-        taskId: treatyTask.subtaskIds.shareReferralUrl,
-        userId: "user_1",
+        personId: "person_3",
+        taskId: seeded.subtaskIds.shareReferralUrl,
+        userId: "user_3",
       },
       db,
     );
-    await markNextHumanAssignmentSubtaskComplete(
+
+    expect(result).toBe(true);
+    const share = tasks.find(
+      (t) => t.taskKey === getUserTreatySubtaskKey("user_3", "shareReferralUrl"),
+    );
+    expect(share?.status).toBe("VERIFIED");
+
+    // Status update comment posted on the share task.
+    expect(
+      comments.some(
+        (c) => c.taskId === seeded.subtaskIds.shareReferralUrl && c.message.includes("Shared"),
+      ),
+    ).toBe(true);
+
+    // task.statusChanged.VERIFIED event fired so the HMT gate trigger can evaluate.
+    expect(fireMocks.fireTaskTriggersForEvent).toHaveBeenCalledWith(
+      "task.statusChanged.VERIFIED",
+      expect.objectContaining({
+        user: { id: "user_3" },
+        task: expect.objectContaining({
+          taskKey: getUserTreatySubtaskKey("user_3", "shareReferralUrl"),
+        }),
+      }),
+      expect.objectContaining({ actorUserId: "user_3", db }),
+    );
+  });
+
+  it("markUserTreatyPhoneCallComplete VERIFIES the phone task and fires the HMT gate in the same db context", async () => {
+    const { db, tasks } = createFakeTaskDb();
+    const seeded = seedSyntheticOnboardingTree(tasks, "user_phone");
+    fireMocks.fireTaskTrigger.mockResolvedValue(
+      makeFireResult(seeded.rootId, seeded.subtaskIds, "user_phone", false),
+    );
+
+    const result = await markUserTreatyPhoneCallComplete(
       {
-        invitationId: "invite_1",
-        now,
-        personId: "person_1",
-        recipientName: "Ada",
-        userId: "user_1",
+        invitationId: "invite_phone",
+        personId: "person_phone",
+        recipientName: "Grace",
+        userId: "user_phone",
       },
       db,
     );
+
+    expect(result).toBe(true);
+    expect(
+      tasks.find((t) => t.taskKey === getUserTreatySubtaskKey("user_phone", "phoneScript"))
+        ?.status,
+    ).toBe("VERIFIED");
+    expect(fireMocks.fireTaskTriggersForEvent).toHaveBeenCalledWith(
+      "task.statusChanged.VERIFIED",
+      expect.objectContaining({
+        user: { id: "user_phone" },
+        task: expect.objectContaining({
+          taskKey: getUserTreatySubtaskKey("user_phone", "phoneScript"),
+        }),
+      }),
+      expect.objectContaining({ actorUserId: "user_phone", db }),
+    );
+  });
+
+  it("markNextHumanAssignmentSubtaskComplete VERIFIES the next assignment and fires the right event", async () => {
+    const { db, tasks } = createFakeTaskDb();
+    const seeded = seedSyntheticOnboardingTree(tasks, "user_4");
+    fireMocks.fireTaskTrigger.mockResolvedValue(
+      makeFireResult(seeded.rootId, seeded.subtaskIds, "user_4", false),
+    );
+
     await markNextHumanAssignmentSubtaskComplete(
       {
         invitationId: "invite_1",
-        now,
-        personId: "person_1",
+        personId: "person_4",
         recipientName: "Ada",
-        userId: "user_1",
+        userId: "user_4",
       },
       db,
     );
 
     expect(
-      tasks.find(
-        (task) =>
-          task.taskKey === getUserTreatySubtaskKey("user_1", "assignFirstHuman"),
-      )?.status,
+      tasks.find((t) => t.taskKey === getUserTreatySubtaskKey("user_4", "assignFirstHuman"))
+        ?.status,
     ).toBe("VERIFIED");
     expect(
-      tasks.find(
-        (task) =>
-          task.taskKey === getUserTreatySubtaskKey("user_1", "assignSecondHuman"),
-      )?.status,
+      tasks.find((t) => t.taskKey === getUserTreatySubtaskKey("user_4", "assignSecondHuman"))
+        ?.status,
     ).toBe("ACTIVE");
 
-    await markNextHumanAssignmentSubtaskComplete(
-      {
-        invitationId: "invite_2",
-        now,
-        personId: "person_1",
-        recipientName: "Grace",
-        userId: "user_1",
-      },
-      db,
+    expect(fireMocks.fireTaskTriggersForEvent).toHaveBeenCalledWith(
+      "task.statusChanged.VERIFIED",
+      expect.objectContaining({
+        user: { id: "user_4" },
+        task: expect.objectContaining({
+          taskKey: getUserTreatySubtaskKey("user_4", "assignFirstHuman"),
+        }),
+      }),
+      expect.objectContaining({ actorUserId: "user_4", db }),
     );
-
-    expect(
-      tasks.find(
-        (task) =>
-          task.taskKey === getUserTreatySubtaskKey("user_1", "shareReferralUrl"),
-      )?.status,
-    ).toBe("VERIFIED");
-    expect(
-      tasks.find(
-        (task) =>
-          task.taskKey === getUserTreatySubtaskKey("user_1", "assignSecondHuman"),
-      )?.status,
-    ).toBe("VERIFIED");
-    expect(
-      tasks.find(
-        (task) =>
-          task.taskKey === getUserTreatySubtaskKey("user_1", "completeTraining"),
-      )?.status,
-    ).toBe("VERIFIED");
   });
 });

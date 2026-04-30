@@ -202,6 +202,13 @@ describe("treaty signer network", () => {
     expect(result.bundle.task.title).toBe("Sign the 1% Treaty");
     expect(result.bundle.task.dueAt?.toISOString()).toBe(TREATY_DUE_AT.toISOString());
     expect(result.bundle.task.description).toContain("United States Government");
+
+    // Parent signer task's actionLink: assignee (head of state) clicks
+    // through to sign the treaty. No third-person Wishonia template here —
+    // that template moves to the citizen-owned reminder subtask.
+    expect(result.bundle.task.contactUrl).toBe("https://1percenttreaty.org/treaty");
+    expect(result.bundle.task.contactLabel).toBe("Sign the treaty");
+    expect(result.bundle.task.contactTemplate).toBeNull();
     expect(frame?.expectedDalysAvertedBase).toBeCloseTo(5_000_000_000 * factor, 3);
     expect(frame?.delayEconomicValueUsdLostPerDayBase).toBeCloseTo(10_000_000 * factor, 3);
     expect(

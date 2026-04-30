@@ -1,73 +1,46 @@
-import {
-  TaskCategory,
-  TaskClaimPolicy,
-  TaskCommentKind,
-  TaskCommentSource,
-  TaskDifficulty,
-  TaskStatus,
-} from "@optimitron/db";
-import type { Prisma, PrismaClient } from "@optimitron/db";
-import { prisma } from "@/lib/prisma";
-import { ROUTES } from "@/lib/routes";
-import { TREATY_PARENT_TASK_KEY } from "@/lib/tasks/task-keys";
+/**
+ * Per-user 1% Treaty Humanity Management onboarding tree.
+ *
+ * The actual spawning is owned by the `user-onboarding:treaty` TaskTrigger
+ * blueprint (seeded by `scripts/seed-task-triggers.ts`). This file is a
+ * thin adapter that fires the trigger and reconstructs the legacy return
+ * shape (`{ created, taskId, subtaskIds, subtaskStatuses }`) so existing
+ * callers don't have to change.
+ *
+ * To change the onboarding tree (titles, descriptions, subtask kinds,
+ * action links, completion gate, etc.), edit `scripts/seed-task-triggers.ts`
+ * or update the trigger row over MCP via `updateTaskTrigger`. Don't add
+ * spawn logic here.
+ */
 
-const USER_TREATY_TASK_KEY_PREFIX = "program:one-percent-treaty:user";
-const USER_TREATY_TASK_DUE_DAYS = 7;
+import { TaskCommentKind, TaskCommentSource, TaskStatus } from "@optimitron/db";
+import type { Prisma } from "@optimitron/db";
+import { prisma } from "@/lib/prisma";
+import { buildTriggerContext, fireTaskTrigger } from "@/lib/triggers";
+
 export const USER_TREATY_TASK_TITLE =
   "Get 4 billion people to vote on the 1% Treaty";
 export const HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE =
   "Complete Humanity Management Training";
-const USER_TREATY_TASK_ROLE_TITLE =
-  "Humanity Manager, Earth Optimization Services, LLC";
+
+const USER_TREATY_TASK_KEY_PREFIX = "program:one-percent-treaty:user";
 
 export type UserTreatySubtaskKind =
   | "completeTraining"
   | "shareReferralUrl"
+  | "phoneScript"
   | "assignFirstHuman"
   | "assignSecondHuman";
 
 export type UserTreatySubtaskIds = Record<UserTreatySubtaskKind, string>;
 export type UserTreatySubtaskStatuses = Record<UserTreatySubtaskKind, TaskStatus>;
 
-const USER_TREATY_SUBTASKS: Array<{
-  kind: UserTreatySubtaskKind;
-  title: string;
-  description: string;
-  estimatedEffortHours: number;
-  sortOrder: number;
-}> = [
-  {
-    kind: "shareReferralUrl",
-    title: "Share your 1% Treaty referral URL",
-    description:
-      "Copy or post your referral URL so anyone who votes through it is attributed to your treaty-vote lineage.",
-    estimatedEffortHours: 0.02,
-    sortOrder: 0,
-  },
-  {
-    kind: "assignFirstHuman",
-    title: "Give your first human the 1% Treaty voting task",
-    description:
-      "Create one named invitation and actually contact that person with their voting task. If they vote, they get promoted too.",
-    estimatedEffortHours: 0.1,
-    sortOrder: 10,
-  },
-  {
-    kind: "assignSecondHuman",
-    title: "Give your second human the 1% Treaty voting task",
-    description:
-      "Create a second named invitation and actually contact that person with their voting task. If they vote, they get promoted too.",
-    estimatedEffortHours: 0.1,
-    sortOrder: 20,
-  },
-  {
-    kind: "completeTraining",
-    title: HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE,
-    description:
-      "Finish the launch sequence: share your referral URL, give two named humans their voting tasks, and let the referral graph trace what happens next.",
-    estimatedEffortHours: 0.25,
-    sortOrder: 30,
-  },
+const REQUIRED_SUBTASK_KINDS: readonly UserTreatySubtaskKind[] = [
+  "shareReferralUrl",
+  "phoneScript",
+  "assignFirstHuman",
+  "assignSecondHuman",
+  "completeTraining",
 ];
 
 const WISHONIA_WELCOME_COMMENT = [
@@ -93,225 +66,73 @@ export function getUserTreatySubtaskKey(
   return `${getUserTreatyTaskKey(userId)}:${kind}`;
 }
 
-function buildUserTreatyTaskDescription() {
-  return [
-    "Humanity Management objective for the 1% Treaty.",
-    "North star: get 4 billion people to vote on the treaty without turning the task tree into an infinite pyramid of confusion.",
-    "",
-    "This task owns your local next actions. The viral lineage is traced through referral, invitation, share-attempt, and vote records.",
-    "",
-    `Send invitations: ${ROUTES.send}`,
-    `See your dashboard: ${ROUTES.dashboard}`,
-  ].join("\n");
-}
-
-function buildUserTreatyTaskMaintenanceData(dueAt?: Date) {
-  return {
-    ...(dueAt ? { dueAt } : {}),
-    description: buildUserTreatyTaskDescription(),
-    roleTitle: USER_TREATY_TASK_ROLE_TITLE,
-    title: USER_TREATY_TASK_TITLE,
-  };
-}
-
-type UserTreatyTaskClient =
-  | Pick<PrismaClient, "task" | "taskComment">
-  | Pick<Prisma.TransactionClient, "task" | "taskComment">;
-
 export interface EnsureUserTreatyTaskResult {
+  /// True when the parent HMT root was newly created on this call (first
+  /// signup), false on subsequent idempotent calls. Mirrors legacy semantic.
   created: boolean;
   taskId: string;
   subtaskIds: UserTreatySubtaskIds;
   subtaskStatuses: UserTreatySubtaskStatuses;
 }
 
-async function ensureUserTreatySubtask(
-  db: UserTreatyTaskClient,
-  input: {
-    def: (typeof USER_TREATY_SUBTASKS)[number];
-    dueAt: Date;
-    parentTaskId: string;
-    personId: string | null;
-    userId: string;
-  },
-): Promise<{ id: string; status: TaskStatus }> {
-  const taskKey = getUserTreatySubtaskKey(input.userId, input.def.kind);
-  const existing = await db.task.findUnique({
-    where: { taskKey },
-    select: { deletedAt: true, id: true, status: true },
-  });
+/**
+ * Idempotent — fires the `user-onboarding:treaty` trigger which spawns or
+ * refreshes the per-user onboarding tree. Safe to call multiple times for
+ * the same user; spawn logic upserts by taskKey.
+ *
+ * Throws if the trigger blueprint hasn't been seeded (run `db:seed:triggers`).
+ */
+export async function ensureUserTreatyTask(input: {
+  now?: Date;
+  personId: string | null;
+  userId: string;
+},
+db: Prisma.TransactionClient | typeof prisma = prisma,
+): Promise<EnsureUserTreatyTaskResult> {
+  const result = await fireTaskTrigger(
+    "user-onboarding:treaty",
+    buildTriggerContext({
+      user: { id: input.userId, personId: input.personId ?? null },
+    }),
+    { actorUserId: input.userId, db },
+  );
 
-  const data = {
-    ...(input.personId ? { assigneePersonId: input.personId } : {}),
-    category: TaskCategory.OUTREACH,
-    claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
-    contextJson: {
-      kind: "user_treaty_subtask",
-      subtaskKind: input.def.kind,
-      userId: input.userId,
-    } satisfies Prisma.InputJsonObject,
-    description: input.def.description,
-    difficulty: TaskDifficulty.TRIVIAL,
-    dueAt: input.dueAt,
-    estimatedEffortHours: input.def.estimatedEffortHours,
-    interestTags: ["one-percent-treaty", "war-on-disease"],
-    isPublic: false,
-    ownerUserId: input.userId,
-    parentTaskId: input.parentTaskId,
-    roleTitle: USER_TREATY_TASK_ROLE_TITLE,
-    skillTags: ["voting", "outreach"],
-    sortOrder: input.def.sortOrder,
-    taskKey,
-    title: input.def.title,
-  };
-
-  if (existing && !existing.deletedAt) {
-    const updated = await db.task.update({
-      where: { id: existing.id },
-      data,
-      select: { id: true, status: true },
-    });
-    return updated;
+  if (result.result === "filteredOut" || result.result === "failed") {
+    throw new Error(
+      `user-onboarding:treaty trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did the seed run? Try: pnpm db:seed:triggers`,
+    );
   }
 
-  if (existing && existing.deletedAt) {
-    const restored = await db.task.update({
-      where: { id: existing.id },
-      data: {
-        ...data,
-        deletedAt: null,
-        status: TaskStatus.ACTIVE,
-      },
-      select: { id: true, status: true },
-    });
-    return restored;
+  const parent = result.spawnedSpecs.find((s) => s.isParent);
+  if (!parent) {
+    throw new Error(
+      "user-onboarding:treaty trigger has no parent spec. Re-run scripts/seed-task-triggers.ts.",
+    );
   }
 
-  const created = await db.task.create({
-    data: {
-      ...data,
-      assigneePersonId: input.personId,
-      status: TaskStatus.ACTIVE,
-    },
-    select: { id: true, status: true },
-  });
-  return created;
-}
+  const childByKind = new Map(
+    result.spawnedSpecs.filter((s) => !s.isParent).map((s) => [s.kind, s]),
+  );
 
-async function ensureUserTreatySubtasks(
-  db: UserTreatyTaskClient,
-  input: {
-    dueAt: Date;
-    parentTaskId: string;
-    personId: string | null;
-    userId: string;
-  },
-): Promise<Pick<EnsureUserTreatyTaskResult, "subtaskIds" | "subtaskStatuses">> {
-  const idEntries: Array<readonly [UserTreatySubtaskKind, string]> = [];
-  const statusEntries: Array<readonly [UserTreatySubtaskKind, TaskStatus]> = [];
-  for (const def of USER_TREATY_SUBTASKS) {
-    const subtask = await ensureUserTreatySubtask(db, { ...input, def });
-    idEntries.push([def.kind, subtask.id] as const);
-    statusEntries.push([def.kind, subtask.status] as const);
+  const subtaskIds = {} as UserTreatySubtaskIds;
+  const subtaskStatuses = {} as UserTreatySubtaskStatuses;
+  for (const kind of REQUIRED_SUBTASK_KINDS) {
+    const c = childByKind.get(kind);
+    if (!c) {
+      throw new Error(
+        `user-onboarding:treaty trigger missing required spec '${kind}'. Re-run scripts/seed-task-triggers.ts.`,
+      );
+    }
+    subtaskIds[kind] = c.taskId;
+    subtaskStatuses[kind] = c.status;
   }
 
   return {
-    subtaskIds: Object.fromEntries(idEntries) as UserTreatySubtaskIds,
-    subtaskStatuses: Object.fromEntries(statusEntries) as UserTreatySubtaskStatuses,
+    created: parent.wasCreated,
+    taskId: parent.taskId,
+    subtaskIds,
+    subtaskStatuses,
   };
-}
-
-export async function ensureUserTreatyTask(
-  input: {
-    now?: Date;
-    personId: string | null;
-    userId: string;
-  },
-  db: UserTreatyTaskClient = prisma,
-): Promise<EnsureUserTreatyTaskResult> {
-  const taskKey = getUserTreatyTaskKey(input.userId);
-  const now = input.now ?? new Date();
-  const dueAt = new Date(
-    now.getTime() + USER_TREATY_TASK_DUE_DAYS * 24 * 60 * 60 * 1000,
-  );
-  const existing = await db.task.findUnique({
-    where: { taskKey },
-    select: { deletedAt: true, id: true },
-  });
-
-  if (existing && !existing.deletedAt) {
-    await db.task.update({
-      where: { id: existing.id },
-      data: buildUserTreatyTaskMaintenanceData(),
-      select: { id: true },
-    });
-    const subtasks = await ensureUserTreatySubtasks(db, {
-      dueAt,
-      parentTaskId: existing.id,
-      personId: input.personId,
-      userId: input.userId,
-    });
-    return { created: false, taskId: existing.id, ...subtasks };
-  }
-
-  const parent = await db.task.findUnique({
-    where: { taskKey: TREATY_PARENT_TASK_KEY },
-    select: { id: true },
-  });
-
-  if (existing && existing.deletedAt) {
-    const restored = await db.task.update({
-      where: { id: existing.id },
-      data: {
-        ...buildUserTreatyTaskMaintenanceData(dueAt),
-        deletedAt: null,
-        status: TaskStatus.ACTIVE,
-      },
-      select: { id: true },
-    });
-    const subtasks = await ensureUserTreatySubtasks(db, {
-      dueAt,
-      parentTaskId: restored.id,
-      personId: input.personId,
-      userId: input.userId,
-    });
-    return { created: false, taskId: restored.id, ...subtasks };
-  }
-
-  const created = await db.task.create({
-    data: {
-      assigneePersonId: input.personId,
-      category: TaskCategory.OUTREACH,
-      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
-      contextJson: {
-        kind: "user_treaty",
-        userId: input.userId,
-      } satisfies Prisma.InputJsonObject,
-      description: buildUserTreatyTaskDescription(),
-      difficulty: TaskDifficulty.TRIVIAL,
-      dueAt,
-      estimatedEffortHours: 0.5,
-      interestTags: ["one-percent-treaty", "war-on-disease"],
-      isPublic: false,
-      ownerUserId: input.userId,
-      parentTaskId: parent?.id ?? null,
-      roleTitle: USER_TREATY_TASK_ROLE_TITLE,
-      skillTags: ["voting", "outreach"],
-      status: TaskStatus.ACTIVE,
-      taskKey,
-      title: USER_TREATY_TASK_TITLE,
-    },
-    select: { id: true },
-  });
-
-  const subtasks = await ensureUserTreatySubtasks(db, {
-    dueAt,
-    parentTaskId: created.id,
-    personId: input.personId,
-    userId: input.userId,
-  });
-
-  return { created: true, taskId: created.id, ...subtasks };
 }
 
 export const WISHONIA_AUTHOR_NAME = "Wishonia";

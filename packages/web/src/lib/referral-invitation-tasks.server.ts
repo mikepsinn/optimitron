@@ -1,14 +1,22 @@
-import {
-  TaskCategory,
-  TaskClaimPolicy,
-  TaskCommentKind,
-  TaskCommentSource,
-  TaskDifficulty,
-  TaskStatus,
-} from "@optimitron/db";
+/**
+ * Referral-invitation task — backed by the `referral:vote-invitation`
+ * TaskTrigger blueprint (seeded by `scripts/seed-task-triggers.ts`).
+ *
+ * `createReferralInvitationTask` is a thin wrapper that fires the trigger
+ * with the right context and patches the few task fields the trigger
+ * framework doesn't model first-class (`assigneeAffiliationSnapshot`,
+ * `contextJson`). To change task content (title, description, due date,
+ * action-link copy), edit the trigger row, not this file.
+ *
+ * `verifyReferralInvitationTask` stays here — it's the click-through-vote
+ * conversion path, not a spawn.
+ */
+
+import { TaskCommentKind, TaskCommentSource, TaskStatus } from "@optimitron/db";
 import type { Prisma, PrismaClient } from "@optimitron/db";
+import { prisma } from "@/lib/prisma";
+import { buildTriggerContext, fireTaskTrigger } from "@/lib/triggers";
 import { getReferralInvitationFirstName } from "@/lib/referral-invitation-copy";
-import { upsertPrimaryTaskCommunicationEndpoint } from "@/lib/tasks/task-communication-endpoints.server";
 
 const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
 
@@ -37,62 +45,67 @@ export function buildReferralInvitationTaskCompletionMessage(recipientName: stri
   return `${recipientName} voted on the 1% Treaty. This referral task is now verified.`;
 }
 
-const REFERRAL_INVITATION_DUE_DAYS = 3;
+export async function createReferralInvitationTask(input: {
+  endpoint: { instructions: string; url: string };
+  inviteToken: string;
+  ownerUserId: string;
+  parentTaskId?: string | null;
+  recipientName: string;
+  recipientPersonId?: string | null;
+  referendumSlug: string;
+},
+db: Prisma.TransactionClient | typeof prisma = prisma,
+): Promise<string> {
+  const firstName =
+    getReferralInvitationFirstName(input.recipientName) || input.recipientName;
 
-export async function createReferralInvitationTask(
-  client: ReferralInvitationTaskClient,
-  input: {
-    dueAt?: Date | null;
-    endpoint: { instructions: string; url: string };
-    inviteToken: string;
-    now?: Date;
-    ownerUserId: string;
-    parentTaskId?: string | null;
-    recipientName: string;
-    recipientPersonId?: string | null;
-    referendumSlug: string;
-  },
-) {
-  const now = input.now ?? new Date();
-  const dueAt =
-    input.dueAt ??
-    new Date(now.getTime() + REFERRAL_INVITATION_DUE_DAYS * 24 * 60 * 60 * 1000);
+  const result = await fireTaskTrigger(
+    "referral:vote-invitation",
+    buildTriggerContext({
+      user: { id: input.ownerUserId },
+      recipient: {
+        firstName,
+        displayName: input.recipientName,
+        personId: input.recipientPersonId ?? null,
+      },
+      inviteToken: input.inviteToken,
+      referendumSlug: input.referendumSlug,
+      parentTaskId: input.parentTaskId ?? null,
+      actionLink: {
+        url: input.endpoint.url,
+        instructions: input.endpoint.instructions,
+      },
+    }),
+    { actorUserId: input.ownerUserId, db },
+  );
 
-  const task = await client.task.create({
+  if (result.result === "filteredOut" || result.result === "failed") {
+    throw new Error(
+      `referral:vote-invitation trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did the seed run? Try: pnpm db:seed:triggers`,
+    );
+  }
+
+  const parent = result.spawnedSpecs.find((s) => s.isParent);
+  if (!parent) {
+    throw new Error(
+      "referral:vote-invitation trigger has no parent spec. Re-run scripts/seed-task-triggers.ts.",
+    );
+  }
+
+  // Patch the few fields the trigger framework doesn't model first-class.
+  await db.task.update({
+    where: { id: parent.taskId },
     data: {
       assigneeAffiliationSnapshot: input.recipientName,
-      assigneePersonId: input.recipientPersonId ?? null,
-      category: TaskCategory.OUTREACH,
-      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       contextJson: {
         inviteToken: input.inviteToken,
         kind: "referral_invitation",
         referendumSlug: input.referendumSlug,
       } satisfies Prisma.InputJsonObject,
-      description: buildReferralInvitationTaskDescription(input.recipientName),
-      difficulty: TaskDifficulty.TRIVIAL,
-      dueAt,
-      estimatedEffortHours: 0.01,
-      interestTags: ["one-percent-treaty", "war-on-disease"],
-      isPublic: false,
-      ownerUserId: input.ownerUserId,
-      parentTaskId: input.parentTaskId ?? null,
-      roleTitle: "Referred treaty voter",
-      skillTags: ["voting"],
-      status: TaskStatus.ACTIVE,
-      taskKey: buildReferralInvitationTaskKey(input.inviteToken),
-      title: buildReferralInvitationTaskTitle(input.recipientName),
     },
-    select: { id: true },
   });
 
-  await upsertPrimaryTaskCommunicationEndpoint(client, task.id, {
-    instructions: input.endpoint.instructions,
-    label: "Complete treaty vote",
-    url: input.endpoint.url,
-  });
-
-  return task.id;
+  return parent.taskId;
 }
 
 export async function verifyReferralInvitationTask(

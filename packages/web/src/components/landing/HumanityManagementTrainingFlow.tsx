@@ -191,6 +191,7 @@ function hasReferralIdentifier(
 
 export function HumanityManagementTrainingFlow({
   initialCompletedContactCount = 0,
+  initialPhoneCallCompleted = false,
   initialShareCompleted = false,
   initialTrainingCompleted = false,
   referralUrl: initialReferralUrl,
@@ -198,6 +199,7 @@ export function HumanityManagementTrainingFlow({
   shareReferralTaskId,
 }: {
   initialCompletedContactCount?: number;
+  initialPhoneCallCompleted?: boolean;
   initialShareCompleted?: boolean;
   initialTrainingCompleted?: boolean;
   referralUrl: string;
@@ -207,7 +209,7 @@ export function HumanityManagementTrainingFlow({
   const { data: session } = useSession();
   const startsComplete =
     initialTrainingCompleted ||
-    (initialShareCompleted && initialCompletedContactCount >= 2);
+    (initialShareCompleted && initialPhoneCallCompleted && initialCompletedContactCount >= 2);
   const [screen, setScreen] = useState<TrainingScreen>(
     startsComplete ? "complete" : "promotion",
   );
@@ -229,6 +231,8 @@ export function HumanityManagementTrainingFlow({
   const [lastRecipientName, setLastRecipientName] = useState("");
   const [hasSharedReferralUrl, setHasSharedReferralUrl] =
     useState(initialShareCompleted);
+  const [hasCompletedPhoneCall, setHasCompletedPhoneCall] =
+    useState(initialPhoneCallCompleted);
   const [shareCopyState, setShareCopyState] = useState<"idle" | "copied" | "error">("idle");
   const [isSharingReferralUrl, setIsSharingReferralUrl] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -479,12 +483,15 @@ export function HumanityManagementTrainingFlow({
       }
     }
 
+    const completedPhoneCall =
+      hasCompletedPhoneCall || pendingManualAction === "call";
     const nextCompletedCount = completedCount + 1;
     setCompletedInvitationIds((ids) => {
       const next = new Set(ids);
       next.add(activeInvitation.id);
       return next;
     });
+    if (pendingManualAction === "call") setHasCompletedPhoneCall(true);
     setLastRecipientName(getReferralInvitationFirstName(activeInvitation.recipientName));
     setCompletedCount(nextCompletedCount);
     trackHumanityTrainingContactAction({
@@ -498,11 +505,18 @@ export function HumanityManagementTrainingFlow({
       completedCount: nextCompletedCount,
       milestone: nextCompletedCount >= 2 ? "second_contact_completed" : "first_contact_completed",
     });
-    go(nextCompletedCount >= 2 ? (hasSharedReferralUrl ? "complete" : "share") : "impact");
+    go(
+      nextCompletedCount >= 2
+        ? hasSharedReferralUrl
+          ? (completedPhoneCall ? "complete" : "composer")
+          : "share"
+        : "impact",
+    );
   }, [
     completedCount,
     completedInvitationIds,
     go,
+    hasCompletedPhoneCall,
     hasSharedReferralUrl,
     invitation,
     message,
@@ -697,8 +711,9 @@ export function HumanityManagementTrainingFlow({
                 </p>
               </div>
               <TreatyFlowParagraph>
-                Training objective: share your referral URL, then give two
-                humans their voting tasks. Start with the easiest yes.
+                Training objective: share your referral URL, call one human,
+                then give two humans their voting tasks. Start with the
+                easiest yes.
               </TreatyFlowParagraph>
             </div>
             <Button
@@ -780,7 +795,9 @@ export function HumanityManagementTrainingFlow({
               <Button
                 className={primaryButtonClass}
                 disabled={!hasSharedReferralUrl}
-                onClick={() => go(completedCount >= 2 ? "complete" : "composer")}
+                onClick={() =>
+                  go(completedCount >= 2 && hasCompletedPhoneCall ? "complete" : "composer")
+                }
               >
                 Continue
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />

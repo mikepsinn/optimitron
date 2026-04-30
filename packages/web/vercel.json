@@ -7,6 +7,10 @@
   },
   "crons": [
     {
+      "path": "/api/cron/run-due-triggers",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/task-overdue-reminders",
       "schedule": "30 * * * *"
     },

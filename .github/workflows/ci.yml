@@ -234,6 +234,11 @@ jobs:
           PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
         run: pnpm db:deploy
 
+      - name: Seed task triggers (idempotent upsert)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm db:seed:triggers
+
       - name: Deploy production artifact
         id: deploy
         env:

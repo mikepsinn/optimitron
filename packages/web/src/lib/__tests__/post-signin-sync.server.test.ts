@@ -40,6 +40,13 @@ vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
   postTaskCommentAndNotify: mocks.postTaskCommentAndNotify,
 }));
 
+vi.mock("@/lib/triggers", () => ({
+  fireTaskTrigger: vi.fn().mockResolvedValue({ result: "filteredOut", spawnedTaskIds: [], spawnedTaskKeys: [] }),
+  fireTaskTriggersForEvent: vi.fn().mockResolvedValue([]),
+  buildTriggerContext: (extras: Record<string, unknown> = {}) => extras,
+  buildTriggerParams: () => ({}),
+}));
+
 import { applyPostSigninSync } from "../post-signin-sync.server";
 
 describe("post-signin sync", () => {
@@ -98,7 +105,7 @@ describe("post-signin sync", () => {
     expect(mocks.postTaskCommentAndNotify).not.toHaveBeenCalled();
   });
 
-  it("posts a Wishonia welcome comment when the treaty task is freshly created", async () => {
+  it("does not post a welcome comment — the HMT task description IS the welcome", async () => {
     mocks.findUnique.mockResolvedValue({
       name: "Existing User",
       newsletterSubscribed: true,
@@ -108,13 +115,11 @@ describe("post-signin sync", () => {
 
     await applyPostSigninSync({ userId: "user_1" });
 
-    expect(mocks.postTaskCommentAndNotify).toHaveBeenCalledWith(
-      expect.objectContaining({
-        authorNameOverride: "Wishonia",
-        taskId: "task_2",
-        message: expect.stringContaining("Wishonia"),
-      }),
-    );
+    // Welcome content lives in the parent task's description (the
+    // Promotion content seeded by user-onboarding:treaty), not in a
+    // separate comment + notification. See post-signin-sync.server.ts
+    // for the rationale.
+    expect(mocks.postTaskCommentAndNotify).not.toHaveBeenCalled();
   });
 
   it("leaves the user unchanged when nothing new is provided", async () => {

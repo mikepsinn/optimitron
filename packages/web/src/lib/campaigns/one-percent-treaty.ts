@@ -19,6 +19,16 @@ interface TreatyCopyInput {
   militaryBudgetShareRatio: number;
 }
 
+/**
+ * Canonical action-link target for treaty-signer tasks. A head of state
+ * clicking through lands on the public treaty page; the actual signing flow
+ * (when it lands) will be at `/treaty/sign?signer=<iso2>`. Citizens who claim
+ * a reminder subtask append `?ref=<their-referralCode>` so attribution flows
+ * back to them when the signer signs.
+ */
+export const TREATY_SIGN_URL = "https://1percenttreaty.org/treaty";
+export const TREATY_SIGN_LABEL = "Sign the treaty";
+
 export function buildTreatySignerContactTemplate() {
   return [
     "Your employee has not finished {{taskTitle}}. It is a thirty-second task. One signature. A wrist movement.",

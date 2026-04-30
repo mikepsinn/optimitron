@@ -39,6 +39,9 @@ export default async function HumanityManagementTrainingPage() {
     <div className="min-h-screen bg-[var(--treaty-paper)]">
       <HumanityManagementTrainingFlow
         initialCompletedContactCount={initialCompletedContactCount}
+        initialPhoneCallCompleted={
+          treatyTask.subtaskStatuses.phoneScript === TaskStatus.VERIFIED
+        }
         initialShareCompleted={
           treatyTask.subtaskStatuses.shareReferralUrl === TaskStatus.VERIFIED
         }

@@ -22,10 +22,21 @@
 import "./load-env";
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { resolveLocalMcpIdentity } from "../src/lib/mcp-local-identity.server";
 import { ALL_SCOPES, createMcpServer } from "../src/lib/mcp-server";
 
-// Stdio transport: caller has full local access (it's their own machine and DB).
-// Pass ALL_SCOPES explicitly — never rely on undefined-means-allow-everything.
-const server = createMcpServer(undefined, ALL_SCOPES, { isAdmin: true });
-const transport = new StdioServerTransport();
-void server.connect(transport);
+async function main() {
+  // Stdio transport: caller has full local access (it's their own machine and DB).
+  // Pass ALL_SCOPES explicitly — never rely on undefined-means-allow-everything.
+  const identity = await resolveLocalMcpIdentity();
+  const server = createMcpServer(identity.userId, ALL_SCOPES, {
+    isAdmin: identity.isAdmin,
+  });
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
+
+void main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

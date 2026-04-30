@@ -18,7 +18,10 @@ import {
   notifyTaskCommentRecipients,
   postTaskCommentAndNotify,
 } from "@/lib/tasks/task-comment-notifications.server";
-import { markNextHumanAssignmentSubtaskComplete } from "@/lib/tasks/user-treaty-task-progress.server";
+import {
+  markNextHumanAssignmentSubtaskComplete,
+  markUserTreatyPhoneCallComplete,
+} from "@/lib/tasks/user-treaty-task-progress.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import {
@@ -244,25 +247,27 @@ export async function createReferralInvitation(input: {
       : null;
 
     if (!linkedTaskId) {
-      const userTreatyTask = await ensureUserTreatyTask(
+      // Keep the onboarding tree, referral task, and ReferralInvitation row
+      // in this transaction so a failed invitation cannot leave orphan tasks.
+      const userTreatyTask = await ensureUserTreatyTask({
+        personId: referrer.person?.id ?? null,
+        userId: input.referrerUserId,
+      }, tx);
+      linkedTaskId = await createReferralInvitationTask(
         {
-          personId: referrer.person?.id ?? null,
-          userId: input.referrerUserId,
+          endpoint: {
+            instructions: taskContactTemplate,
+            url: inviteUrl,
+          },
+          inviteToken,
+          ownerUserId: input.referrerUserId,
+          parentTaskId: userTreatyTask.taskId,
+          recipientName,
+          recipientPersonId: recipientPerson?.id ?? null,
+          referendumSlug: input.referendumSlug || TREATY_REFERENDUM_SLUG,
         },
         tx,
       );
-      linkedTaskId = await createReferralInvitationTask(tx, {
-        endpoint: {
-          instructions: taskContactTemplate,
-          url: inviteUrl,
-        },
-        inviteToken,
-        ownerUserId: input.referrerUserId,
-        parentTaskId: userTreatyTask.taskId,
-        recipientName,
-        recipientPersonId: recipientPerson?.id ?? null,
-        referendumSlug: input.referendumSlug || TREATY_REFERENDUM_SLUG,
-      });
     }
 
     return tx.referralInvitation.create({
@@ -286,6 +291,7 @@ export async function createReferralInvitation(input: {
   // Callers that want to email the recipient must call
   // sendReferralInvitationMessage in a separate step, which only marks the
   // invitation SENT after the notification is actually dispatched.
+
   return invitation;
 }
 
@@ -562,6 +568,18 @@ export async function markReferralInvitationCopied(input: {
         },
         tx,
       );
+      if (invitation.contactMethod === ReferralInvitationContactMethod.OTHER) {
+        await markUserTreatyPhoneCallComplete(
+          {
+            invitationId: invitation.id,
+            now,
+            personId: invitation.referrer.person?.id ?? null,
+            recipientName: invitation.recipientName,
+            userId: input.referrerUserId,
+          },
+          tx,
+        );
+      }
     }
 
     await tx.referralInvitation.update({

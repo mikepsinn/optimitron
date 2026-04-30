@@ -17,6 +17,8 @@ import {
   buildTreatyImpactStatement,
   buildTreatySignerContactTemplate,
   buildTreatyTaskDescription,
+  TREATY_SIGN_LABEL,
+  TREATY_SIGN_URL,
 } from "@/lib/campaigns/one-percent-treaty";
 import type {
   ImportedImpactFrameDraft,
@@ -297,9 +299,15 @@ export function buildTreatySignerImportDraft(input: {
   cloned.bundle.task.assigneeOrganizationSourceRef = `organization:government:${slot.countryCode.toLowerCase()}`;
   cloned.bundle.task.assigneeOrganizationType = OrgType.GOVERNMENT;
   cloned.bundle.task.claimPolicy = TaskClaimPolicy.ASSIGNED_ONLY;
-  cloned.bundle.task.contactLabel = slot.contactLabel;
-  cloned.bundle.task.contactTemplate = buildTreatySignerContactTemplate();
-  cloned.bundle.task.contactUrl = slot.contactUrl;
+  // The parent signer task's action link is the assignee's *own* action target —
+  // a head of state clicks through to sign the treaty. Wishonia-voice nudge
+  // template (third-person about the signer) does NOT belong on this task; it
+  // moves to the citizen-owned reminder subtask in claimSignerReminder.
+  // The runtime fallback in task-communication-action.ts no longer fires for
+  // these tasks because contactUrl is now stored.
+  cloned.bundle.task.contactLabel = TREATY_SIGN_LABEL;
+  cloned.bundle.task.contactTemplate = null;
+  cloned.bundle.task.contactUrl = TREATY_SIGN_URL;
   cloned.bundle.task.description = buildTreatyTaskDescription({
     actorLabel: slot.leaderName ?? slot.decisionMakerLabel,
     annualRedirectAmountUsd: redirectAmountUsd,

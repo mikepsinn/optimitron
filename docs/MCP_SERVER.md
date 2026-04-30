@@ -10,6 +10,7 @@ It does that by pointing labor and money at the highest-value bottlenecks, makin
 
 - Choose work: audit the queue, inspect task economics, and ask for the best next action.
 - Understand context: search the manual, read task details, and inspect blockers before changing strategy.
+- Inspect code and sites: search allowlisted GitHub repos, read repo files, list site pages, and fetch clean page text before proposing changes.
 - Improve the queue: propose draft task bundles, set impact estimates, and add dependencies.
 - Coordinate execution: acquire leases, heartbeat long-running work, release abandoned work, and log agent runs.
 - Coordinate through comments: post task comments for status updates, questions, and agent notes. Comment posting handles comment notifications; low-level delivery envelopes are internal infrastructure.
@@ -23,6 +24,8 @@ It does that by pointing labor and money at the highest-value bottlenecks, makin
 - "Rank my feasible action options and explain why the selected one beats the next-best alternatives."
 - "Create a private task for a user, add a probability-weighted value estimate, and ask for the next best action."
 - "Look up the sourced parameter value behind this expected-value calculation once parameter tools are implemented."
+- "Inventory every public page on `1percenttreaty.org`, then fetch the page copy before editing route metadata."
+- "Search the Optimitron repo for the helper that owns a behavior before writing another one."
 
 ## Personal Task Engine Protocol
 
@@ -147,9 +150,92 @@ Example impact frame for a subjective but useful outreach task:
 - Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
 - Personal task management: `createTask`, `updateTask`, `deleteTask`.
 - Public Earth task management, admin-only: `proposeTaskBundle`, `setTaskImpact`, `addDependency`, `promoteTask`, `updateMilestone`, `recordTaskActuals`.
+- Referendums: `listReferendums` for public active referendum inventory; `createReferendum` for admin-created draft referendum rows.
 - Agent coordination: `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`.
 - Comments and comment notifications: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
-- Knowledge: `searchManual`, `askWishonia`.
+- Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
 - Funding and claims: `getFundingStats`, `claimTask`, `completeTaskClaim`, `recordTaskActuals`.
+- Task triggers (data-driven blueprints): `createTaskTrigger`, `updateTaskTrigger`, `disableTaskTrigger`, `listTaskTriggers`, `getTaskTrigger`, `fireTaskTrigger`. See "Task Trigger Framework" below.
 
 Detailed tool schemas are exposed at `/api/mcp/tools`.
+
+## Task Trigger Framework
+
+`TaskTrigger` is a data-driven blueprint that fires on a named event and either spawns tasks, verifies a task on a completion gate, or spawns a communication. AI agents author triggers over MCP — no source-code commit, no deploy.
+
+The schema is designed to absorb new patterns without migrations: `eventName`, `triggerKind`, and resolver keys are strings; `eventFilter`, `completionGate`, and `metadata` are JSON; templates use `{{path.to.field}}` substitution against the event context. Adding a new resolver kind or gate operator is a code change in `packages/web/src/lib/triggers/`, not a schema change.
+
+**Worked example — talking to Claude to add a new onboarding subtask.**
+
+> Mike: "Add a subtask under the Humanity Management Training that asks the user to write a one-paragraph elevator pitch."
+
+Claude:
+
+```json
+{
+  "tool": "updateTaskTrigger",
+  "args": {
+    "triggerKey": "user-onboarding:treaty",
+    "spawnSpecs": [
+      /* ... existing specs ... */,
+      {
+        "kind": "elevatorPitch",
+        "sortOrder": 25,
+        "titleTemplate": "Write your 1% Treaty elevator pitch",
+        "descriptionTemplate": "One paragraph. Why does the treaty matter? Who is harmed by inaction? Plain words.",
+        "category": "OTHER",
+        "difficulty": "TRIVIAL",
+        "estimatedEffortHours": 0.25,
+        "ownerResolver": "actor",
+        "assigneePersonResolver": "actor",
+        "parentResolver": "trigger.parentSpec"
+      }
+    ]
+  }
+}
+```
+
+Then `fireTaskTrigger` with `dryRun: true` to verify the rendered preview before any commit. Re-run without `dryRun` to actually update the user's onboarding tree on the next signup.
+
+**Triggers ship today:** `user-onboarding:treaty`, `referral:vote-invitation`, `treaty:signer-reminder`, `treaty:ratify`, `user-onboarding:treaty:hmt-gate`, `treaty:signer`, `task:overdue-reminder`. Run `listTaskTriggers` to see the live set in any deployment.
+
+**Implementation:** `packages/web/src/lib/triggers/{template,resolvers,event-filter,completion-gate,fire,admin,context}.ts`. The schema lives in `packages/db/prisma/schema.prisma` (`TaskTrigger`, `TaskSpawnSpec`, `TaskCommunicationSpawnSpec`, `TaskTriggerFire`).
+
+**Deploy requirement:** every production deploy MUST run `pnpm db:seed:triggers` AFTER `pnpm db:deploy` and BEFORE the new code goes live. The seed is idempotent (upsert on `triggerKey`) and is wired into `db:setup` for local development. CI's production-deploy step runs it automatically (see `.github/workflows/ci.yml`). If you add a new wired event source to the application code, ensure its corresponding trigger blueprint is seeded — otherwise `fireTaskTriggersForEvent` will return `filteredOut` (trigger not found) and the layered behavior won't run.
+
+**Parameter tokens:** every fired trigger context is augmented with `params.<slug>` values pre-resolved from `@optimitron/data/parameters`. The current set is in `packages/web/src/lib/triggers/context.ts` — extend that map when you need a new parameter in a template.
+
+## Claude Code Task Handoff
+
+Local Claude Code runs can use the stdio MCP server with a real Optimitron user identity:
+
+```json
+{
+  "mcpServers": {
+    "optimitron-tasks": {
+      "command": "pnpm",
+      "args": ["--filter", "@optimitron/web", "exec", "tsx", "scripts/mcp-task-server.ts"],
+      "cwd": "E:/code/optimitron",
+      "env": {
+        "MCP_USER_EMAIL": "you@example.com"
+      }
+    }
+  }
+}
+```
+
+For one-command AI-agent task pickup, run:
+
+```bash
+pnpm --filter @optimitron/web mcp:claude-task
+```
+
+That command reads `getAIQueue`, claims the top task, writes `.optimitron/claude-code-task-prompt.md`, and prints the finish command. Add `--execute` to launch the configured Claude CLI directly. `CLAUDE_CODE_COMMAND` defaults to `claude`; `CLAUDE_CODE_ARGS` defaults to `-p`.
+
+When work is complete:
+
+```bash
+pnpm --filter @optimitron/web mcp:claude-task -- finish --task-id <task-id> --summary "Implemented and tested." --pr-url <url>
+```
+
+The finish command posts a task comment and completes the task claim. Use `--create-pr` if the local `gh` CLI should open the pull request; the PR title includes the task ID.

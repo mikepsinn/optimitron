@@ -1,6 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { TaskClaimPolicy, TaskStatus } from "@optimitron/db/enums";
+import { ReferendumStatus, TaskClaimPolicy, TaskStatus } from "@optimitron/db/enums";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -19,6 +19,8 @@ const mocks = vi.hoisted(() => ({
   taskEdgeUpdateMany: vi.fn(),
   taskImpactEstimateSetCreate: vi.fn(),
   taskImpactFrameEstimateCreate: vi.fn(),
+  referendumCreate: vi.fn(),
+  referendumFindMany: vi.fn(),
   transaction: vi.fn(),
   userFindUnique: vi.fn(),
   upsertPrimaryTaskCommunicationEndpoint: vi.fn(),
@@ -28,6 +30,24 @@ const mocks = vi.hoisted(() => ({
   generateAndPostWishoniaReply: vi.fn(),
   getProfileIdentityData: vi.fn(),
   updateUserProfile: vi.fn(),
+  taskFindUnique: vi.fn(),
+  upsertSignerReminderTask: vi.fn(),
+  createTaskTrigger: vi.fn(),
+  updateTaskTrigger: vi.fn(),
+  disableTaskTrigger: vi.fn(),
+  listTaskTriggers: vi.fn(),
+  getTaskTrigger: vi.fn(),
+  fireTaskTrigger: vi.fn(),
+  fireTaskTriggersForEvent: vi.fn().mockResolvedValue([]),
+  listSitePages: vi.fn(),
+  getPageContent: vi.fn(),
+}));
+
+vi.mock("../triggers", () => ({
+  fireTaskTrigger: mocks.fireTaskTrigger,
+  fireTaskTriggersForEvent: vi.fn().mockResolvedValue([]),
+  buildTriggerContext: (extras: Record<string, unknown> = {}) => extras,
+  buildTriggerParams: () => ({}),
 }));
 
 vi.mock("../tasks.server", () => ({
@@ -78,6 +98,29 @@ vi.mock("../profile-identity.server", () => ({
   ProfileValidationError,
 }));
 
+vi.mock("../signer-reminder-tasks.server", () => ({
+  upsertSignerReminderTask: mocks.upsertSignerReminderTask,
+  buildSignerReminderTaskKey: (cc: string, uid: string) =>
+    `program:one-percent-treaty:reminder:${cc.toLowerCase()}:${uid}`,
+}));
+
+vi.mock("../triggers/admin", () => ({
+  createTaskTrigger: mocks.createTaskTrigger,
+  updateTaskTrigger: mocks.updateTaskTrigger,
+  disableTaskTrigger: mocks.disableTaskTrigger,
+  listTaskTriggers: mocks.listTaskTriggers,
+  getTaskTrigger: mocks.getTaskTrigger,
+}));
+
+vi.mock("../triggers/fire", () => ({
+  fireTaskTrigger: mocks.fireTaskTrigger,
+}));
+
+vi.mock("../site-inventory.server", () => ({
+  listSitePages: mocks.listSitePages,
+  getPageContent: mocks.getPageContent,
+}));
+
 vi.mock("../prisma", () => ({
   prisma: {
     $transaction: mocks.transaction,
@@ -85,6 +128,7 @@ vi.mock("../prisma", () => ({
       create: mocks.taskCreate,
       findFirst: mocks.taskFindFirst,
       findMany: mocks.taskFindMany,
+      findUnique: mocks.taskFindUnique,
       update: mocks.taskUpdate,
     },
     taskEdge: {
@@ -94,6 +138,10 @@ vi.mock("../prisma", () => ({
     },
     taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
     taskImpactFrameEstimate: { create: mocks.taskImpactFrameEstimateCreate },
+    referendum: {
+      create: mocks.referendumCreate,
+      findMany: mocks.referendumFindMany,
+    },
     user: {
       findUnique: mocks.userFindUnique,
     },
@@ -171,6 +219,11 @@ function makePriority(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   for (const fn of Object.values(mocks)) fn.mockReset();
+  vi.unstubAllGlobals();
+  delete process.env.GITHUB_PAT;
+  delete process.env.GITHUB_TOKEN;
+  delete process.env.GITHUB_REPO_ALLOWLIST;
+  delete process.env.GITHUB_DEFAULT_REPO;
   mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
     callback({
       task: {
@@ -187,6 +240,19 @@ beforeEach(() => {
   );
   mocks.taskImpactEstimateSetCreate.mockResolvedValue({ id: "estimate-set-1" });
   mocks.taskImpactFrameEstimateCreate.mockResolvedValue({ id: "frame-1" });
+  mocks.referendumCreate.mockResolvedValue({
+    id: "ref-new",
+    title: "Trial Abundance Referendum",
+    slug: "trial-abundance-referendum",
+    description: "Should we fund pragmatic trials?",
+    status: ReferendumStatus.DRAFT,
+    jurisdictionId: null,
+    createdByUserId: "user-1",
+    createdAt: new Date("2026-04-29T12:00:00.000Z"),
+    updatedAt: new Date("2026-04-29T12:00:00.000Z"),
+    _count: { votes: 0, surveys: 0, organizationPositions: 0 },
+  });
+  mocks.referendumFindMany.mockResolvedValue([]);
   mocks.taskUpdate.mockImplementation(async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => ({
     id: where.id,
     status: data.status ?? TaskStatus.ACTIVE,
@@ -207,6 +273,21 @@ beforeEach(() => {
   mocks.notifyTaskCommentRecipients.mockResolvedValue({ sentCount: 1 });
   mocks.generateAndPostWishoniaReply.mockResolvedValue(null);
 });
+
+function jsonResponse(body: unknown, init: { status?: number; headers?: Record<string, string> } = {}) {
+  const status = init.status ?? 200;
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    headers: {
+      get(name: string) {
+        return init.headers?.[name.toLowerCase()] ?? null;
+      },
+    },
+    json: async () => body,
+    text: async () => JSON.stringify(body),
+  } as Response;
+}
 
 describe("MCP server tool dispatch", () => {
   it("does not expose manual notification envelope tools", async () => {
@@ -341,6 +422,288 @@ describe("MCP server tool dispatch", () => {
       });
       expect(mocks.taskEdgeFindMany.mock.calls[1]![0]).toMatchObject({
         where: { deletedAt: null, fromTaskId: "task-1" },
+      });
+    });
+  });
+
+  describe("repository and site inventory tools", () => {
+    it("exposes GitHub repo tools and site inventory tools to authenticated MCP clients", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.listTools();
+      const names = result.tools.map((tool) => tool.name);
+
+      expect(names).toEqual(
+        expect.arrayContaining([
+          "searchRepo",
+          "getFileContent",
+          "listRepoFiles",
+          "listSitePages",
+          "getPageContent",
+        ]),
+      );
+    });
+
+    it("searchRepo returns file matches without exposing the GitHub token", async () => {
+      process.env.GITHUB_PAT = "ghp_secret";
+      const fetchMock = vi.fn(async (url: string) => {
+        expect(url).toContain("https://api.github.com/search/code");
+        expect(url).toContain("repo%3Amikepsinn%2Foptimitron");
+        return jsonResponse({
+          total_count: 1,
+          items: [
+            {
+              name: "mcp-server.ts",
+              path: "packages/web/src/lib/mcp-server.ts",
+              sha: "abc123",
+              html_url:
+                "https://github.com/mikepsinn/optimitron/blob/main/packages/web/src/lib/mcp-server.ts",
+              repository: { full_name: "mikepsinn/optimitron" },
+              text_matches: [{ fragment: "const TASK_TOOL_DEFINITIONS = []" }],
+            },
+          ],
+        });
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "searchRepo",
+        arguments: { query: "TASK_TOOL_DEFINITIONS", repo: "optimitron", fileType: "ts" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(body).toMatchObject({ totalCount: 1 });
+      expect((body.results as Array<Record<string, unknown>>)[0]).toMatchObject({
+        path: "packages/web/src/lib/mcp-server.ts",
+        repo: "mikepsinn/optimitron",
+      });
+      expect(JSON.stringify(body)).not.toContain("ghp_secret");
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            authorization: "Bearer ghp_secret",
+          }),
+        }),
+      );
+    });
+
+    it("getFileContent and listRepoFiles read through GitHub Contents API", async () => {
+      const source = "export const value = 42;\n";
+      const fetchMock = vi.fn(async (url: string) => {
+        if (url.includes("packages%2Fweb%2Fsrc%2Fvalue.ts")) {
+          return jsonResponse(
+            {
+              content: Buffer.from(source, "utf8").toString("base64"),
+              encoding: "base64",
+              html_url:
+                "https://github.com/mikepsinn/optimitron/blob/main/packages/web/src/value.ts",
+              name: "value.ts",
+              path: "packages/web/src/value.ts",
+              sha: "sha-file",
+              size: source.length,
+              type: "file",
+            },
+            { headers: { "last-modified": "Wed, 29 Apr 2026 12:00:00 GMT" } },
+          );
+        }
+
+        return jsonResponse([
+          {
+            html_url:
+              "https://github.com/mikepsinn/optimitron/tree/main/packages/web/src",
+            name: "lib",
+            path: "packages/web/src/lib",
+            sha: "sha-dir",
+            size: 0,
+            type: "dir",
+          },
+        ]);
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const fileResult = await client.callTool({
+        name: "getFileContent",
+        arguments: {
+          repo: "mikepsinn/optimitron",
+          path: "packages/web/src/value.ts",
+        },
+      });
+      const listResult = await client.callTool({
+        name: "listRepoFiles",
+        arguments: { repo: "optimitron", path: "packages/web/src" },
+      });
+
+      expect(fileResult.isError).toBeFalsy();
+      expect(parseToolBody(fileResult)).toMatchObject({
+        content: source,
+        lastModified: "Wed, 29 Apr 2026 12:00:00 GMT",
+        path: "packages/web/src/value.ts",
+        repo: "mikepsinn/optimitron",
+      });
+      expect(listResult.isError).toBeFalsy();
+      expect(parseToolBody(listResult).entries).toEqual([
+        expect.objectContaining({ path: "packages/web/src/lib", type: "dir" }),
+      ]);
+    });
+
+    it("listSitePages filters to one configured domain", async () => {
+      mocks.listSitePages.mockResolvedValue({
+        count: 2,
+        pages: [
+          {
+            description: "Vote on the 1% Treaty.",
+            lastModified: "2026-04-29T12:00:00.000Z",
+            path: "/vote",
+            site: "warondisease.org",
+            title: "Vote",
+            url: "https://warondisease.org/vote",
+          },
+          {
+            description: "Read the treaty.",
+            lastModified: "2026-04-29T12:00:00.000Z",
+            path: "/treaty",
+            site: "warondisease.org",
+            title: "Read the Treaty",
+            url: "https://warondisease.org/treaty",
+          },
+        ],
+      });
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "listSitePages",
+        arguments: { site: "warondisease.org" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.listSitePages).toHaveBeenCalledWith({ site: "warondisease.org" });
+      const body = parseToolBody(result);
+      const pages = body.pages as Array<Record<string, unknown>>;
+      expect(pages.length).toBeGreaterThan(0);
+      expect(pages.every((page) => String(page.url).startsWith("https://warondisease.org/"))).toBe(
+        true,
+      );
+      expect(pages.some((page) => page.url === "https://warondisease.org/vote")).toBe(true);
+    }, 15_000);
+
+    it("getPageContent returns markdown for an allowed Optimitron property URL", async () => {
+      mocks.getPageContent.mockResolvedValue({
+        content: "# Vote\n\nNo HTML soup.\n\n- One task",
+        lastModified: "Wed, 29 Apr 2026 12:00:00 GMT",
+        sections: ["Vote"],
+        title: "Vote",
+        url: "https://warondisease.org/vote",
+      });
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "getPageContent",
+        arguments: { url: "https://warondisease.org/vote" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.getPageContent).toHaveBeenCalledWith({
+        url: "https://warondisease.org/vote",
+      });
+      const body = parseToolBody(result);
+      expect(body).toMatchObject({
+        title: "Vote",
+        url: "https://warondisease.org/vote",
+        lastModified: "Wed, 29 Apr 2026 12:00:00 GMT",
+      });
+      expect(body.content).toContain("# Vote");
+      expect(body.content).toContain("- One task");
+      expect(body.content).not.toContain("<main");
+      expect(body.sections).toEqual(["Vote"]);
+    }, 15_000);
+  });
+
+  describe("referendum tools", () => {
+    it("exposes listReferendums publicly and createReferendum only to admins", async () => {
+      const publicClient = await setup(undefined, []);
+      const adminClient = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const publicNames = (await publicClient.listTools()).tools.map((tool) => tool.name);
+      const adminNames = (await adminClient.listTools()).tools.map((tool) => tool.name);
+
+      expect(publicNames).toContain("listReferendums");
+      expect(publicNames).not.toContain("createReferendum");
+      expect(adminNames).toContain("listReferendums");
+      expect(adminNames).toContain("createReferendum");
+    });
+
+    it("listReferendums returns active referendums with vote counts by default", async () => {
+      mocks.referendumFindMany.mockResolvedValue([
+        {
+          id: "ref-1",
+          title: "1% Treaty",
+          slug: "one-percent-treaty",
+          description: "Redirect 1% of military spending to pragmatic trials.",
+          status: ReferendumStatus.ACTIVE,
+          jurisdictionId: null,
+          createdByUserId: "seed",
+          createdAt: new Date("2026-04-20T12:00:00.000Z"),
+          updatedAt: new Date("2026-04-21T12:00:00.000Z"),
+          _count: { votes: 42, surveys: 3, organizationPositions: 2 },
+        },
+      ]);
+
+      const client = await setup(undefined, []);
+      const result = await client.callTool({
+        name: "listReferendums",
+        arguments: { limit: 5 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.referendumFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { deletedAt: null, status: ReferendumStatus.ACTIVE },
+          take: 5,
+        }),
+      );
+      const body = parseToolBody(result);
+      expect(body.referendums).toEqual([
+        expect.objectContaining({
+          id: "ref-1",
+          slug: "one-percent-treaty",
+          status: ReferendumStatus.ACTIVE,
+          voteCount: 42,
+          path: "/agencies/dcongress/referendums/one-percent-treaty",
+        }),
+      ]);
+    });
+
+    it("createReferendum creates a draft referendum by default and attributes the creator", async () => {
+      const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "createReferendum",
+        arguments: {
+          title: "Trial Abundance Referendum",
+          description: "Should we fund pragmatic trials?",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.referendumCreate).toHaveBeenCalledWith({
+        data: {
+          title: "Trial Abundance Referendum",
+          slug: "trial-abundance-referendum",
+          description: "Should we fund pragmatic trials?",
+          status: ReferendumStatus.DRAFT,
+          createdByUserId: "user-1",
+        },
+        select: expect.any(Object),
+      });
+      const body = parseToolBody(result);
+      expect(body.referendum).toMatchObject({
+        id: "ref-new",
+        slug: "trial-abundance-referendum",
+        status: ReferendumStatus.DRAFT,
+        voteCount: 0,
       });
     });
   });
@@ -928,6 +1291,64 @@ describe("MCP server tool dispatch", () => {
         }),
       );
     });
+
+    it("addDependency stores downstream lift metadata on the edge", async () => {
+      mocks.taskFindMany.mockResolvedValue([
+        { id: "blocked-task", isPublic: false, ownerUserId: "user-1" },
+        { id: "blocker-task", isPublic: false, ownerUserId: "user-1" },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "addDependency",
+        arguments: {
+          blockedTaskId: "blocked-task",
+          blockerTaskId: "blocker-task",
+          increases_p_success: 0.35,
+          time_delta_days: 14,
+          assumptions: ["Drafting the evidence memo raises grant odds from 20% to 55%."],
+          label: "Raises grant odds",
+          calculationVersion: "edge-lift-v1",
+        },
+      });
+
+      const body = parseToolBody(result);
+      expect(body).toMatchObject({
+        blockedTaskId: "blocked-task",
+        blockerTaskId: "blocker-task",
+        probabilityDeltaBase: 0.35,
+        timeDeltaDaysBase: 14,
+        notes: "Raises grant odds",
+      });
+      expect(mocks.taskEdgeUpdateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            deletedAt: null,
+            probabilityDeltaBase: 0.35,
+            timeDeltaDaysBase: 14,
+            assumptionsJson: {
+              assumptions: ["Drafting the evidence memo raises grant odds from 20% to 55%."],
+            },
+            calculationVersion: "edge-lift-v1",
+            notes: "Raises grant odds",
+          }),
+        }),
+      );
+      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: [
+            expect.objectContaining({
+              fromTaskId: "blocker-task",
+              toTaskId: "blocked-task",
+              probabilityDeltaBase: 0.35,
+              timeDeltaDaysBase: 14,
+              notes: "Raises grant odds",
+            }),
+          ],
+          skipDuplicates: true,
+        }),
+      );
+    });
   });
 
   describe("task comments", () => {
@@ -1071,6 +1492,526 @@ describe("MCP server tool dispatch", () => {
       const body = parseToolBody(result);
       expect(body.error).toBe("tool_execution_failed");
       expect(body.message).toBe("DB unreachable");
+    });
+  });
+
+  describe("claimSignerReminder", () => {
+    function mockSignerTaskExists() {
+      mocks.taskFindUnique.mockResolvedValue({
+        id: "1-pct-treaty-signer-va",
+        taskKey: "program:one-percent-treaty:signer:va",
+        roleTitle: "Head of Government",
+        assigneePerson: { displayName: "Raffaella Petrini" },
+        assigneeOrganization: { name: "Government of Holy See (Vatican City)" },
+      });
+    }
+
+    function mockUserHasReferralCode() {
+      mocks.userFindUnique.mockResolvedValue({
+        id: "user-1",
+        personId: "person-1",
+        referralCode: "MIKE-CFCFHP5W",
+      });
+    }
+
+    it("requires authentication", async () => {
+      const client = await setup(undefined, ALL_SCOPES);
+      const result = await client.callTool({
+        name: "claimSignerReminder",
+        arguments: { signerTaskId: "1-pct-treaty-signer-va" },
+      });
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toBe("authentication_required");
+      expect(body.tool).toBe("claimSignerReminder");
+    });
+
+    it("rejects non-signer task IDs (taskKey doesn't match the signer pattern)", async () => {
+      mocks.taskFindUnique.mockResolvedValue({
+        id: "some-other-task",
+        taskKey: "owned:1",
+        roleTitle: null,
+        assigneePerson: null,
+        assigneeOrganization: null,
+      });
+      mockUserHasReferralCode();
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "claimSignerReminder",
+        arguments: { signerTaskId: "some-other-task" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("not a 1% Treaty signer task");
+    });
+
+    it("rejects when caller is missing a referralCode", async () => {
+      mockSignerTaskExists();
+      mocks.userFindUnique.mockResolvedValue({
+        id: "user-1",
+        personId: "person-1",
+        referralCode: null,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "claimSignerReminder",
+        arguments: { signerTaskId: "1-pct-treaty-signer-va" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("referralCode");
+    });
+
+    it("happy path: passes signer + caller info to upsertSignerReminderTask, returns the new subtask", async () => {
+      mockSignerTaskExists();
+      mockUserHasReferralCode();
+      mocks.upsertSignerReminderTask.mockResolvedValue({
+        alreadyExisted: false,
+        taskId: "reminder-task-1",
+        taskKey: "program:one-percent-treaty:reminder:va:user-1",
+      });
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({
+          id: "reminder-task-1",
+          title: "Remind Raffaella Petrini to sign the 1% Treaty",
+          ownerUserId: "user-1",
+          parentTaskId: "1-pct-treaty-signer-va",
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 999 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "claimSignerReminder",
+        arguments: { signerTaskId: "1-pct-treaty-signer-va" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(body).toMatchObject({
+        alreadyExisted: false,
+        countryCode: "va",
+        parentSignerTaskId: "1-pct-treaty-signer-va",
+        taskId: "reminder-task-1",
+        taskKey: "program:one-percent-treaty:reminder:va:user-1",
+      });
+
+      // Verify the helper was called with the citizen's identity + signer details.
+      expect(mocks.upsertSignerReminderTask).toHaveBeenCalledTimes(1);
+      const helperCall = mocks.upsertSignerReminderTask.mock.calls[0]![0];
+      expect(helperCall).toMatchObject({
+        ownerPersonId: "person-1",
+        ownerUserId: "user-1",
+        referralCode: "MIKE-CFCFHP5W",
+        signer: {
+          countryCode: "va",
+          governmentName: "Government of Holy See (Vatican City)",
+          id: "1-pct-treaty-signer-va",
+          leaderName: "Raffaella Petrini",
+          roleTitle: "Head of Government",
+        },
+      });
+    });
+
+    it("idempotent: when helper reports alreadyExisted=true, the response surfaces it", async () => {
+      mockSignerTaskExists();
+      mockUserHasReferralCode();
+      mocks.upsertSignerReminderTask.mockResolvedValue({
+        alreadyExisted: true,
+        taskId: "reminder-task-1",
+        taskKey: "program:one-percent-treaty:reminder:va:user-1",
+      });
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({ id: "reminder-task-1", ownerUserId: "user-1" }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "claimSignerReminder",
+        arguments: { signerTaskId: "1-pct-treaty-signer-va" },
+      });
+
+      const body = parseToolBody(result);
+      expect(body.alreadyExisted).toBe(true);
+    });
+
+    it("missing signerTaskId arg surfaces a clean error", async () => {
+      mockUserHasReferralCode();
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "claimSignerReminder",
+        arguments: {},
+      });
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("signerTaskId is required");
+    });
+
+    it("non-existent signer task returns a not-found error", async () => {
+      mocks.taskFindUnique.mockResolvedValue(null);
+      mockUserHasReferralCode();
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "claimSignerReminder",
+        arguments: { signerTaskId: "ghost-task" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("Signer task not found");
+    });
+  });
+
+  describe("dashboard lifecycle (fresh-user onboarding queue)", () => {
+    // The system auto-spawns 4 tasks at signup (ensureUserTreatyTask in
+    // user-treaty-task.server.ts):
+    //   - parent: "Get 4 billion people to vote on the 1% Treaty"
+    //   - subtask: "Share your 1% Treaty referral URL"             (sortOrder 0)
+    //   - subtask: "Give your first human the 1% Treaty voting task"   (sortOrder 10)
+    //   - subtask: "Give your second human the 1% Treaty voting task"  (sortOrder 20)
+    //   - subtask: "Humanity Management Training"                  (sortOrder 30, auto-VERIFIED when 1+2+3 done)
+    //
+    // These tests pin the shape of getMyQueue for a user who has just signed
+    // up and not yet sent any invitations. They replace "log in to a fresh
+    // demo user and eyeball the queue" manual checks.
+
+    function makeAutoSpawnedTasks(userId: string) {
+      const parentKey = `program:one-percent-treaty:user:${userId}`;
+      return [
+        // Parent (huge realEv → always sorts first)
+        makeOwnedTask({
+          id: `parent-${userId}`,
+          title: "Get 4 billion people to vote on the 1% Treaty",
+          taskKey: parentKey,
+          ownerUserId: userId,
+          parentTaskId: "1-pct-treaty",
+        }),
+        // Share referral URL (highest among subtasks)
+        makeOwnedTask({
+          id: `share-${userId}`,
+          title: "Share your 1% Treaty referral URL",
+          taskKey: `${parentKey}:shareReferralUrl`,
+          ownerUserId: userId,
+          parentTaskId: `parent-${userId}`,
+        }),
+        // Assign first human
+        makeOwnedTask({
+          id: `assign1-${userId}`,
+          title: "Give your first human the 1% Treaty voting task",
+          taskKey: `${parentKey}:assignFirstHuman`,
+          ownerUserId: userId,
+          parentTaskId: `parent-${userId}`,
+        }),
+        // Assign second human
+        makeOwnedTask({
+          id: `assign2-${userId}`,
+          title: "Give your second human the 1% Treaty voting task",
+          taskKey: `${parentKey}:assignSecondHuman`,
+          ownerUserId: userId,
+          parentTaskId: `parent-${userId}`,
+        }),
+        // Humanity Management Training meta-task
+        makeOwnedTask({
+          id: `training-${userId}`,
+          title: "Humanity Management Training",
+          taskKey: `${parentKey}:completeTraining`,
+          ownerUserId: userId,
+          parentTaskId: `parent-${userId}`,
+        }),
+      ];
+    }
+
+    it("a fresh user sees all five auto-spawned onboarding tasks in priority order (parent first, training meta last)", async () => {
+      const userId = "fresh-user-1";
+      const tasks = makeAutoSpawnedTasks(userId);
+      mocks.listTasks.mockResolvedValue(tasks);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      // Priority mirrors production: parent has huge realEv, subtasks rank
+      // by their inputs (share is fastest = highest, training has no value
+      // until completion = lowest among ACTIVE).
+      mocks.computeTaskPriority.mockImplementation(
+        (input: { id: string; taskKey?: string }) => {
+          const key = input.taskKey ?? "";
+          if (key.endsWith(":completeTraining")) return makePriority({ priority: 1, realEv: 0 });
+          if (key.endsWith(":shareReferralUrl")) return makePriority({ priority: 5_000, realEv: 100 });
+          if (key.endsWith(":assignFirstHuman")) return makePriority({ priority: 4_000, realEv: 100 });
+          if (key.endsWith(":assignSecondHuman")) return makePriority({ priority: 4_000, realEv: 100 });
+          // Parent treaty task: enormous expected value
+          return makePriority({ priority: 9e14, realEv: 4.5e14 });
+        },
+      );
+
+      const client = await setup(userId, ALL_SCOPES);
+      const result = await client.callTool({ name: "getMyQueue", arguments: { maxResults: 10 } });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      const queue = body.queue as Array<{ id: string; taskKey: string; title: string }>;
+
+      expect(queue).toHaveLength(5);
+      // Parent always at top because of its priority
+      expect(queue[0]?.taskKey).toBe(`program:one-percent-treaty:user:${userId}`);
+      // Training meta-task always at the bottom (auto-completes via the others)
+      expect(queue[queue.length - 1]?.taskKey).toBe(
+        `program:one-percent-treaty:user:${userId}:completeTraining`,
+      );
+      // Share referral URL is the highest-priority concrete first action
+      const shareIndex = queue.findIndex((t) =>
+        t.taskKey.endsWith(":shareReferralUrl"),
+      );
+      const assign1Index = queue.findIndex((t) =>
+        t.taskKey.endsWith(":assignFirstHuman"),
+      );
+      expect(shareIndex).toBeLessThan(assign1Index);
+    });
+
+    it("after share-referral and both assignments verify, queue collapses to just the parent", async () => {
+      const userId = "fresh-user-2";
+      const tasks = makeAutoSpawnedTasks(userId);
+      // Simulate the three subtasks completing — listTasks at status=ACTIVE
+      // returns only what's still active (parent + training meta until the
+      // training auto-verifies).
+      const remainingActive = tasks.filter(
+        (t) => !t.taskKey.includes(":shareReferralUrl") &&
+               !t.taskKey.includes(":assignFirstHuman") &&
+               !t.taskKey.includes(":assignSecondHuman"),
+      );
+      mocks.listTasks.mockResolvedValue(remainingActive);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation(
+        (input: { id: string; taskKey?: string }) => {
+          if (input.taskKey?.endsWith(":completeTraining")) return makePriority({ priority: 1 });
+          return makePriority({ priority: 9e14 });
+        },
+      );
+
+      const client = await setup(userId, ALL_SCOPES);
+      const result = await client.callTool({ name: "getMyQueue", arguments: {} });
+
+      const body = parseToolBody(result);
+      const queue = body.queue as Array<{ id: string; taskKey: string }>;
+      // Parent + training meta survive (training will auto-VERIFY via
+      // refreshHumanityManagementTrainingCompletion in the real system).
+      expect(queue).toHaveLength(2);
+      expect(queue.map((t) => t.taskKey)).toEqual([
+        `program:one-percent-treaty:user:${userId}`,
+        `program:one-percent-treaty:user:${userId}:completeTraining`,
+      ]);
+    });
+
+    it("dynamic invitation tasks rank below the auto-spawned subtasks but above completed ones", async () => {
+      const userId = "fresh-user-3";
+      const baseline = makeAutoSpawnedTasks(userId);
+      const inviteTask = makeOwnedTask({
+        id: `invite-${userId}-alice`,
+        title: "alice@example.com: vote on the 1% Treaty",
+        taskKey: `program:one-percent-treaty:referral-invitation:invite-token-alice`,
+        ownerUserId: userId,
+        parentTaskId: `parent-${userId}`,
+      });
+      mocks.listTasks.mockResolvedValue([...baseline, inviteTask]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation(
+        (input: { id: string; taskKey?: string }) => {
+          const key = input.taskKey ?? "";
+          if (key.startsWith("program:one-percent-treaty:referral-invitation:")) {
+            return makePriority({ priority: 200 });
+          }
+          if (key.endsWith(":completeTraining")) return makePriority({ priority: 1 });
+          if (key.endsWith(":shareReferralUrl")) return makePriority({ priority: 5_000 });
+          if (key.endsWith(":assignFirstHuman")) return makePriority({ priority: 4_000 });
+          if (key.endsWith(":assignSecondHuman")) return makePriority({ priority: 4_000 });
+          return makePriority({ priority: 9e14 });
+        },
+      );
+
+      const client = await setup(userId, ALL_SCOPES);
+      const result = await client.callTool({ name: "getMyQueue", arguments: { maxResults: 10 } });
+
+      const body = parseToolBody(result);
+      const queue = body.queue as Array<{ taskKey: string }>;
+      const inviteIndex = queue.findIndex((t) =>
+        t.taskKey.startsWith("program:one-percent-treaty:referral-invitation:"),
+      );
+      const trainingIndex = queue.findIndex((t) => t.taskKey.endsWith(":completeTraining"));
+      const assignIndex = queue.findIndex((t) => t.taskKey.endsWith(":assignFirstHuman"));
+      // Invite ranks below assignFirstHuman (lower priority value) but above training meta
+      expect(inviteIndex).toBeGreaterThan(assignIndex);
+      expect(inviteIndex).toBeLessThan(trainingIndex);
+    });
+
+    it("a signer-reminder subtask appears in the citizen's queue alongside the onboarding tasks", async () => {
+      const userId = "fresh-user-4";
+      const baseline = makeAutoSpawnedTasks(userId);
+      const reminderTask = makeOwnedTask({
+        id: `reminder-${userId}-va`,
+        title: "Remind Raffaella Petrini to sign the 1% Treaty",
+        taskKey: `program:one-percent-treaty:reminder:va:${userId}`,
+        ownerUserId: userId,
+        parentTaskId: "1-pct-treaty-signer-va",
+      });
+      mocks.listTasks.mockResolvedValue([...baseline, reminderTask]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation(
+        (input: { id: string; taskKey?: string }) => {
+          const key = input.taskKey ?? "";
+          if (key.startsWith("program:one-percent-treaty:reminder:")) {
+            return makePriority({ priority: 50_000 });
+          }
+          if (key.endsWith(":completeTraining")) return makePriority({ priority: 1 });
+          if (key.endsWith(":shareReferralUrl")) return makePriority({ priority: 5_000 });
+          if (key.endsWith(":assignFirstHuman")) return makePriority({ priority: 4_000 });
+          if (key.endsWith(":assignSecondHuman")) return makePriority({ priority: 4_000 });
+          return makePriority({ priority: 9e14 });
+        },
+      );
+
+      const client = await setup(userId, ALL_SCOPES);
+      const result = await client.callTool({ name: "getMyQueue", arguments: { maxResults: 10 } });
+
+      const body = parseToolBody(result);
+      const queue = body.queue as Array<{ id: string; taskKey: string }>;
+
+      const reminderIndex = queue.findIndex((t) =>
+        t.taskKey.startsWith("program:one-percent-treaty:reminder:"),
+      );
+      expect(reminderIndex).toBeGreaterThanOrEqual(0);
+      // High priority → ranks above the training meta-task and the assignment subtasks
+      expect(reminderIndex).toBeLessThan(
+        queue.findIndex((t) => t.taskKey.endsWith(":completeTraining")),
+      );
+    });
+  });
+
+  describe("task triggers", () => {
+    it("hides createTaskTrigger / updateTaskTrigger / disableTaskTrigger from non-admin users", async () => {
+      const nonAdmin = await setup("user-1", ALL_SCOPES);
+      const admin = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const nonAdminNames = (await nonAdmin.listTools()).tools.map((t) => t.name);
+      const adminNames = (await admin.listTools()).tools.map((t) => t.name);
+
+      expect(nonAdminNames).not.toContain("createTaskTrigger");
+      expect(nonAdminNames).not.toContain("updateTaskTrigger");
+      expect(nonAdminNames).not.toContain("disableTaskTrigger");
+      // Read tools and fireTaskTrigger are not admin-gated.
+      expect(nonAdminNames).toContain("listTaskTriggers");
+      expect(nonAdminNames).toContain("getTaskTrigger");
+      expect(nonAdminNames).toContain("fireTaskTrigger");
+
+      expect(adminNames).toContain("createTaskTrigger");
+      expect(adminNames).toContain("updateTaskTrigger");
+      expect(adminNames).toContain("disableTaskTrigger");
+    });
+
+    it("createTaskTrigger forwards admin input and the actor user id", async () => {
+      mocks.createTaskTrigger.mockResolvedValue({
+        id: "trig-1",
+        triggerKey: "demo:flow",
+      });
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "createTaskTrigger",
+        arguments: {
+          triggerKey: "demo:flow",
+          eventName: "user.signup",
+          idempotencyKeyTemplate: "demo:{{user.id}}",
+          spawnSpecs: [
+            {
+              kind: "root",
+              isParent: true,
+              titleTemplate: "Hi {{user.name}}",
+              descriptionTemplate: "...",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.createTaskTrigger).toHaveBeenCalledTimes(1);
+      const [input, ctx] = mocks.createTaskTrigger.mock.calls[0]!;
+      expect((input as { triggerKey: string }).triggerKey).toBe("demo:flow");
+      expect(ctx).toEqual({ actorUserId: "admin-1" });
+      const body = parseToolBody(result);
+      expect(body.triggerKey).toBe("demo:flow");
+    });
+
+    it("fireTaskTrigger forwards dryRun and returns the rendered preview", async () => {
+      mocks.fireTaskTrigger.mockResolvedValue({
+        result: "spawned",
+        triggerKey: "demo:flow",
+        idempotencyKey: "demo:abc",
+        spawnedTaskIds: [],
+        spawnedTaskKeys: ["demo:abc"],
+        reason: "dryRun",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "fireTaskTrigger",
+        arguments: {
+          triggerKey: "demo:flow",
+          context: { user: { id: "abc" } },
+          dryRun: true,
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.fireTaskTrigger).toHaveBeenCalledTimes(1);
+      const [triggerKey, context, options] = mocks.fireTaskTrigger.mock.calls[0]!;
+      expect(triggerKey).toBe("demo:flow");
+      expect(context).toEqual({ user: { id: "abc" } });
+      expect(options).toEqual({ dryRun: true, actorUserId: "user-1" });
+      const body = parseToolBody(result) as { spawnedTaskKeys?: string[]; reason?: string };
+      expect(body.spawnedTaskKeys).toEqual(["demo:abc"]);
+      expect(body.reason).toBe("dryRun");
+    });
+
+    it("fireTaskTrigger blocks non-admin committed writes from caller-controlled context", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "fireTaskTrigger",
+        arguments: {
+          triggerKey: "demo:flow",
+          context: { user: { id: "abc" } },
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("non-admin callers may only use dryRun:true");
+    });
+
+    it("fireTaskTrigger requires triggerKey", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "fireTaskTrigger",
+        arguments: { context: {} },
+      });
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("triggerKey is required");
+    });
+
+    it("getTaskTrigger surfaces a clean not-found error", async () => {
+      mocks.getTaskTrigger.mockResolvedValue(null);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getTaskTrigger",
+        arguments: { triggerKey: "nope" },
+      });
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("TaskTrigger not found: nope");
     });
   });
 });

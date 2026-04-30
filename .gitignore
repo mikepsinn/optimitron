@@ -66,6 +66,7 @@ packages/web/output/
 NUL
 .vercel
 .playwright-mcp/
+.optimitron/
 screenshots/
 packages/wishonia/.tmp-visuals-body.json
 .claude/settings.local.json

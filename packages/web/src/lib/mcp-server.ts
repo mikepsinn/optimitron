@@ -15,6 +15,7 @@ import {
   AgentRunStatus,
   OrgStatus,
   OrgType,
+  ReferendumStatus,
   TaskCategory,
   TaskClaimPolicy,
   TaskDifficulty,
@@ -35,6 +36,7 @@ import {
   ALL_SCOPES,
   McpScope,
 } from "./mcp-scopes";
+import { slugify } from "./slugify";
 import type { RankableTask, TaskPriorityInput, TaskPriorityResult } from "./tasks/rank-tasks";
 
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
@@ -50,10 +52,12 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   recordTaskActuals: [McpScope.TASKS_ADMIN],
   updateMilestone: [McpScope.TASKS_ADMIN],
   addDependency: [McpScope.TASKS_ADMIN],
+  createReferendum: [McpScope.TASKS_ADMIN],
   createPerson: [McpScope.TASKS_ADMIN],
   upsertOrganization: [McpScope.TASKS_ADMIN],
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL],
+  claimSignerReminder: [McpScope.TASKS_PERSONAL],
   completeTaskClaim: [McpScope.TASKS_PERSONAL],
   logAgentRun: [McpScope.AGENT_RUN],
   acquireLease: [McpScope.AGENT_RUN],
@@ -69,6 +73,15 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getQueueAudit: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
+  searchRepo: [McpScope.TASKS_PERSONAL],
+  getFileContent: [McpScope.TASKS_PERSONAL],
+  listRepoFiles: [McpScope.TASKS_PERSONAL],
+  createTaskTrigger: [McpScope.TASKS_ADMIN],
+  updateTaskTrigger: [McpScope.TASKS_ADMIN],
+  disableTaskTrigger: [McpScope.TASKS_ADMIN],
+  listTaskTriggers: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  getTaskTrigger: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  fireTaskTrigger: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
@@ -79,12 +92,16 @@ const ADMIN_ONLY_TOOLS = new Set([
   "recordTaskActuals",
   "updateMilestone",
   "addDependency",
+  "createReferendum",
   "createPerson",
   "upsertOrganization",
   "logAgentRun",
   "acquireLease",
   "heartbeatLease",
   "releaseLease",
+  "createTaskTrigger",
+  "updateTaskTrigger",
+  "disableTaskTrigger",
 ]);
 
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {
@@ -236,6 +253,10 @@ function asStringArray(value: unknown) {
   return Array.isArray(value)
     ? value.filter((entry): entry is string => typeof entry === "string")
     : [];
+}
+
+function optionalString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
 function mergeTaskContextJson(input: {
@@ -1120,6 +1141,57 @@ function parseQueueLimit(value: unknown, fallback = 20, max = 100) {
 
   const clamped = Math.floor(value);
   return Math.max(1, Math.min(clamped, max));
+}
+
+const REFERENDUM_SELECT = {
+  _count: {
+    select: {
+      organizationPositions: true,
+      surveys: true,
+      votes: true,
+    },
+  },
+  createdAt: true,
+  createdByUserId: true,
+  description: true,
+  id: true,
+  jurisdictionId: true,
+  slug: true,
+  status: true,
+  title: true,
+  updatedAt: true,
+} satisfies Prisma.ReferendumSelect;
+
+type ReferendumToolRecord = Prisma.ReferendumGetPayload<{
+  select: typeof REFERENDUM_SELECT;
+}>;
+
+function parseReferendumStatus(value: unknown, fallback: ReferendumStatus) {
+  const normalized = optionalString(value)?.toUpperCase();
+  if (!normalized) return fallback;
+  return ReferendumStatus[normalized as keyof typeof ReferendumStatus] ?? null;
+}
+
+function referendumPath(slug: string) {
+  return `/agencies/dcongress/referendums/${slug}`;
+}
+
+function summarizeReferendum(referendum: ReferendumToolRecord) {
+  return {
+    createdAt: referendum.createdAt.toISOString(),
+    createdByUserId: referendum.createdByUserId,
+    description: referendum.description,
+    id: referendum.id,
+    jurisdictionId: referendum.jurisdictionId,
+    organizationPositionCount: referendum._count.organizationPositions,
+    path: referendumPath(referendum.slug),
+    slug: referendum.slug,
+    status: referendum.status,
+    surveyCount: referendum._count.surveys,
+    title: referendum.title,
+    updatedAt: referendum.updatedAt.toISOString(),
+    voteCount: referendum._count.votes,
+  };
 }
 
 function nextActionRecommendation(task: PersonalQueueRow | null) {
@@ -2338,6 +2410,22 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "claimSignerReminder",
+    description:
+      "Commit to reminding a specific head of state (or other 1% Treaty signer) to sign. Creates a private reminder subtask owned by you, parented to the signer task. The subtask carries an actionLink to a Google search for the signer's official contact, plus an outreach message template with your referral code embedded so any signer click-through credits you. Idempotent: calling twice with the same signer returns the existing subtask. The subtask auto-VERIFIES when the signer signs the treaty via your referral.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        signerTaskId: {
+          type: "string",
+          description:
+            "Task ID of the parent signer task (e.g. 1-pct-treaty-signer-us). Use listTasks or searchTasks with status=ACTIVE to find candidates.",
+        },
+      },
+      required: ["signerTaskId"],
+    },
+  },
+  {
     name: "completeTaskClaim",
     description: "Mark a claimed task as completed with evidence of what was done.",
     inputSchema: {
@@ -2365,13 +2453,43 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "addDependency",
-    description: "Add a dependency between tasks. The blocked task cannot proceed until the blocker is done.",
+    description:
+      "Add a dependency between tasks. The blocked task cannot proceed until the blocker is done. Optional edge metadata can estimate how much the blocker raises downstream success probability or accelerates downstream value.",
     inputSchema: {
       type: "object" as const,
       properties: {
         blockedTaskId: { type: "string", description: "Task that is blocked" },
         blockerTaskId: { type: "string", description: "Task that must complete first" },
-        label: { type: "string", description: "Optional label describing the dependency" },
+        probabilityDeltaBase: {
+          type: "number",
+          description:
+            "Base probability lift, 0-1, produced by completing blockerTaskId for blockedTaskId.",
+        },
+        increases_p_success: {
+          type: "number",
+          description:
+            "Alias for probabilityDeltaBase. Use for Notion-style 'this prerequisite raises downstream P(success)' estimates.",
+        },
+        timeDeltaDaysBase: {
+          type: "number",
+          description:
+            "Base days of acceleration produced by completing blockerTaskId for blockedTaskId.",
+        },
+        time_delta_days: {
+          type: "number",
+          description: "Alias for timeDeltaDaysBase.",
+        },
+        assumptions: {
+          type: "array",
+          items: { type: "string" },
+          description: "Short assumptions behind the edge lift estimate.",
+        },
+        calculationVersion: {
+          type: "string",
+          description: "Optional version tag for the edge-lift calculation.",
+        },
+        label: { type: "string", description: "Optional note describing the dependency" },
+        notes: { type: "string", description: "Optional note describing the dependency" },
       },
       required: ["blockedTaskId", "blockerTaskId"],
     },
@@ -2447,6 +2565,154 @@ const TASK_TOOL_DEFINITIONS = [
     name: "getFundingStats",
     description: "Get aggregate funding stats — total deposited, total spent, total agent runs, remaining budget.",
     inputSchema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "listReferendums",
+    description:
+      "List Optimitron referendums. Public callers see active referendums by default; admins can filter by DRAFT, ACTIVE, or CLOSED.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        status: {
+          type: "string",
+          enum: ["DRAFT", "ACTIVE", "CLOSED"],
+          description: "Referendum status filter. Defaults to ACTIVE.",
+        },
+        query: {
+          type: "string",
+          description: "Optional search over title, slug, and description.",
+        },
+        limit: {
+          type: "number",
+          description: "Max referendums to return (default 20, max 100).",
+        },
+      },
+    },
+  },
+  {
+    name: "createReferendum",
+    description:
+      "Create a new referendum row. Defaults to DRAFT so a new question does not start accepting votes until intentionally activated.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        title: { type: "string", description: "Human-readable referendum title." },
+        slug: {
+          type: "string",
+          description: "Optional URL slug. Defaults to a slugified title.",
+        },
+        description: {
+          type: "string",
+          description: "Public framing text for the referendum page.",
+        },
+        status: {
+          type: "string",
+          enum: ["DRAFT", "ACTIVE", "CLOSED"],
+          description: "Initial status. Defaults to DRAFT.",
+        },
+        jurisdictionId: {
+          type: "string",
+          description: "Optional jurisdiction ID if this referendum is scoped.",
+        },
+      },
+      required: ["title"],
+    },
+  },
+  {
+    name: "searchRepo",
+    description:
+      "Search allowed GitHub repositories through the server-side GitHub API token. Returns matching files and text-match snippets without exposing the token.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: {
+          type: "string",
+          description: "Search string, e.g. a function name, symbol, or code fragment.",
+        },
+        repo: {
+          type: "string",
+          description:
+            "Repository name or owner/repo. Default: the configured Optimitron repo.",
+        },
+        path: {
+          type: "string",
+          description: "Optional directory path qualifier, e.g. packages/web/src/lib.",
+        },
+        fileType: {
+          type: "string",
+          description: "Optional file extension without a dot, e.g. ts or tsx.",
+        },
+        limit: {
+          type: "number",
+          description: "Max GitHub code-search results to return (default 10, max 25).",
+        },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "getFileContent",
+    description:
+      "Fetch one allowed GitHub repository file through the server-side GitHub Contents API.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        repo: { type: "string", description: "Repository name or owner/repo." },
+        path: { type: "string", description: "File path within the repo." },
+        ref: {
+          type: "string",
+          description: "Optional branch, tag, or commit SHA. Default: main.",
+        },
+      },
+      required: ["repo", "path"],
+    },
+  },
+  {
+    name: "listRepoFiles",
+    description:
+      "List files/directories from an allowed GitHub repository directory through the server-side GitHub Contents API.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        repo: { type: "string", description: "Repository name or owner/repo." },
+        path: {
+          type: "string",
+          description: "Directory path within the repo. Default: repo root.",
+        },
+        ref: {
+          type: "string",
+          description: "Optional branch, tag, or commit SHA. Default: main.",
+        },
+      },
+      required: ["repo"],
+    },
+  },
+  {
+    name: "listSitePages",
+    description:
+      "Return a structured inventory of pages for configured Optimitron-owned domains. Agents should call this before creating a new page.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        site: {
+          type: "string",
+          description:
+            "Optional domain filter, e.g. optimitron.com, warondisease.org, 1percenttreaty.org, trialabundancesurvey.org, dfda.earth, dih.earth, or manual.warondisease.org.",
+        },
+      },
+    },
+  },
+  {
+    name: "getPageContent",
+    description:
+      "Fetch an Optimitron-owned page URL and return clean markdown, title, section headings, and last-modified metadata.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        url: { type: "string", description: "Full URL of an allowed page." },
+      },
+      required: ["url"],
+    },
   },
   // -- RAG / Wishonia tools --
   {
@@ -2573,6 +2839,201 @@ Posting a comment automatically sends comment notifications to task recipients a
         limit: { type: "number", description: "Default 50, max 100" },
       },
       required: ["taskId"],
+    },
+  },
+  {
+    name: "createTaskTrigger",
+    description:
+      "Create a new TaskTrigger blueprint. The trigger fires on a named event (e.g. 'user.signup', 'referral.sent', 'cron.<name>') and either spawns tasks, verifies a task on a completion gate, or spawns a communication. Templates use {{path.to.field}} substitution against the event context. This is the data-driven way to add new onboarding flows / reminder cadences / task spawners without a code commit. Returns the created trigger row.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        triggerKey: { type: "string", description: "Stable unique key, e.g. 'user-onboarding:treaty'." },
+        eventName: { type: "string", description: "Event that fires this trigger." },
+        triggerKind: {
+          type: "string",
+          enum: ["spawnTasks", "verifyTask", "spawnCommunication"],
+          description: "What the trigger does. Defaults to spawnTasks.",
+        },
+        idempotencyKeyTemplate: {
+          type: "string",
+          description: "Template producing a unique key per logical fire, e.g. 'user-onboarding:treaty:{{user.id}}'.",
+        },
+        eventFilter: { type: "object", description: "Optional JSON filter (equals/matches/and/or/not/exists)." },
+        completionGate: {
+          type: "object",
+          description:
+            "Optional gate spec (allOf/anyOf/count/always). Add inputScope: 'siblings' to gate against the verify target's siblings instead of its children.",
+        },
+        jurisdictionId: { type: "string", description: "Optional jurisdiction scope." },
+        notes: { type: "string", description: "Free-form notes." },
+        enabled: { type: "boolean", description: "Defaults to false for MCP-authored triggers." },
+        schedule: {
+          type: "string",
+          description:
+            "Optional cron expression (e.g. '30 * * * *'). When set, /api/cron/run-due-triggers fires this trigger when the schedule is due since its last successful fire. Omit for triggers that fire only on application events (user.signup, referral.sent, etc.).",
+        },
+        iterationSource: {
+          type: "string",
+          enum: ["none", "overdue-tasks"],
+          description:
+            "Optional resolver key for the data the cron handler iterates over before firing. 'overdue-tasks' fires the trigger once per overdue Task; 'none' fires once with no record. Omit for non-cron triggers.",
+        },
+        spawnSpecs: {
+          type: "array",
+          description:
+            "For triggerKind=spawnTasks: one spec per task to create. At most one isParent=true. Children get taskKey '<idempotencyKey>:<kind>'; parent gets just '<idempotencyKey>'.",
+          items: {
+            type: "object",
+            properties: {
+              kind: { type: "string", description: "Suffix used in spawned taskKey." },
+              isParent: { type: "boolean" },
+              sortOrder: { type: "number" },
+              titleTemplate: { type: "string" },
+              descriptionTemplate: { type: "string" },
+              impactStatementTemplate: { type: "string" },
+              roleTitleTemplate: { type: "string" },
+              category: { type: "string" },
+              difficulty: { type: "string" },
+              estimatedEffortHours: { type: "number" },
+              dueDays: { type: "number" },
+              availableInDays: { type: "number" },
+              deadlinePolicy: { type: "string", enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"] },
+              claimPolicy: { type: "string" },
+              isPublic: { type: "boolean" },
+              skillTagTemplates: { type: "array", items: { type: "string" } },
+              interestTagTemplates: { type: "array", items: { type: "string" } },
+              actionLinkUrlTemplate: { type: "string" },
+              actionLinkLabelTemplate: { type: "string" },
+              actionLinkInstructionsTemplate: { type: "string" },
+              ownerResolver: { type: "string" },
+              assigneePersonResolver: { type: "string" },
+              assigneeOrganizationResolver: { type: "string" },
+              parentResolver: { type: "string" },
+              contributesToGate: { type: "boolean" },
+            },
+            required: ["kind", "titleTemplate", "descriptionTemplate"],
+          },
+        },
+        communicationSpawnSpecs: {
+          type: "array",
+          description: "For triggerKind=spawnCommunication: one spec per outbound message.",
+          items: {
+            type: "object",
+            properties: {
+              kind: { type: "string" },
+              sortOrder: { type: "number" },
+              subjectTemplate: { type: "string" },
+              bodyTextTemplate: { type: "string" },
+              bodyHtmlTemplate: { type: "string" },
+              commentTemplate: { type: "string" },
+              channel: { type: "string" },
+              audienceResolver: { type: "string" },
+              purpose: { type: "string" },
+              emailScope: { type: "string" },
+              dedupeKeyTemplate: { type: "string" },
+              minHoursBetweenSends: { type: "number" },
+              maxSendsPerTask: { type: "number" },
+              minSendCount: {
+                type: "number",
+                description:
+                  "Inclusive lower bound on the prior-send count at which this spec is active. Lets one trigger carry escalating-tone variants — week-1 spec at 0/0, week-2 at 1/1, etc. Default 0.",
+              },
+              maxSendCount: {
+                type: ["number", "null"],
+                description:
+                  "Inclusive upper bound on the prior-send count. null = open-ended (this spec keeps firing once minSendCount is reached, until maxSendsPerTask runs out).",
+              },
+            },
+            required: ["kind", "subjectTemplate", "bodyTextTemplate", "dedupeKeyTemplate"],
+          },
+        },
+      },
+      required: ["triggerKey", "eventName", "idempotencyKeyTemplate"],
+    },
+  },
+  {
+    name: "updateTaskTrigger",
+    description:
+      "Update an existing TaskTrigger by triggerKey. Pass only the fields you want to change. spawnSpecs / communicationSpawnSpecs, when supplied, REPLACE the existing specs (delete + recreate).",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        triggerKey: { type: "string" },
+        eventName: { type: "string" },
+        triggerKind: { type: "string", enum: ["spawnTasks", "verifyTask", "spawnCommunication"] },
+        idempotencyKeyTemplate: { type: "string" },
+        eventFilter: { type: "object" },
+        completionGate: { type: "object" },
+        jurisdictionId: { type: "string" },
+        notes: { type: "string" },
+        enabled: { type: "boolean" },
+        schedule: { type: "string", description: "Cron expression. See createTaskTrigger." },
+        iterationSource: {
+          type: "string",
+          enum: ["none", "overdue-tasks"],
+          description: "Resolver key. See createTaskTrigger.",
+        },
+        spawnSpecs: { type: "array", items: { type: "object" } },
+        communicationSpawnSpecs: {
+          type: "array",
+          description:
+            "Replaces existing communication specs. Each item supports the same fields as in createTaskTrigger, including minSendCount / maxSendCount for escalating-tone variants.",
+          items: { type: "object" },
+        },
+      },
+      required: ["triggerKey"],
+    },
+  },
+  {
+    name: "disableTaskTrigger",
+    description: "Soft-disable a TaskTrigger. Sets enabled=false with an optional reason. Re-enable by calling updateTaskTrigger with enabled:true.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        triggerKey: { type: "string" },
+        disabledReason: { type: "string" },
+      },
+      required: ["triggerKey"],
+    },
+  },
+  {
+    name: "listTaskTriggers",
+    description: "List TaskTriggers, optionally filtered by eventName, enabled, or jurisdictionId. Returns triggerKey + summary fields, no specs.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        eventName: { type: "string" },
+        enabled: { type: "boolean" },
+        jurisdictionId: { type: "string" },
+        limit: { type: "number", description: "Default 100, max 500" },
+      },
+    },
+  },
+  {
+    name: "getTaskTrigger",
+    description: "Get full details of a TaskTrigger by triggerKey, including all spec rows and the most recent fires.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        triggerKey: { type: "string" },
+        recentFires: { type: "number", description: "How many recent fires to include. Default 10, max 100." },
+      },
+      required: ["triggerKey"],
+    },
+  },
+  {
+    name: "fireTaskTrigger",
+    description:
+      "Fire a TaskTrigger manually with arbitrary context. Use dryRun:true to render templates and return the planned spawn without committing — critical for iterating on a template before it goes live. Without dryRun: writes are committed and idempotent (re-firing the same idempotencyKey returns the cached result).",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        triggerKey: { type: "string" },
+        context: { type: "object", description: "Arbitrary event context. Templates and resolvers read from this." },
+        dryRun: { type: "boolean", description: "Default false. True = render-only, no writes." },
+      },
+      required: ["triggerKey", "context"],
     },
   },
 ];
@@ -4134,6 +4595,113 @@ export function createMcpServer(
           return ok({ claimId: claim.id, status: claim.status });
         }
 
+        // ── claimSignerReminder ────────────────────────────────
+        case "claimSignerReminder": {
+          if (!userId)
+            return authRequired(
+              name,
+              "Reminder subtasks are owned by the citizen who claims them; they must be authenticated.",
+            );
+          const signerTaskId = a.signerTaskId as string | undefined;
+          if (!signerTaskId || typeof signerTaskId !== "string") {
+            return err("signerTaskId is required");
+          }
+
+          const prisma = await getPrisma();
+          const { upsertSignerReminderTask, buildSignerReminderTaskKey } =
+            await import("./signer-reminder-tasks.server");
+
+          // 1. Fetch parent signer task and the citizen's user record (for referralCode + personId).
+          const [parentTask, callingUser] = await Promise.all([
+            prisma.task.findUnique({
+              where: { id: signerTaskId },
+              select: {
+                id: true,
+                taskKey: true,
+                roleTitle: true,
+                assigneePerson: { select: { displayName: true } },
+                assigneeOrganization: { select: { name: true } },
+              },
+            }),
+            prisma.user.findUnique({
+              where: { id: userId },
+              select: { id: true, personId: true, referralCode: true },
+            }),
+          ]);
+
+          if (!parentTask) return err(`Signer task not found: ${signerTaskId}`);
+          if (!callingUser?.referralCode)
+            return err("User missing referralCode — cannot attribute signer conversion.");
+
+          // 2. Validate it's actually a signer task and extract countryCode from taskKey.
+          const signerKeyMatch = parentTask.taskKey?.match(
+            /^program:one-percent-treaty:signer:([a-z0-9-]+)$/i,
+          );
+          if (!signerKeyMatch || !signerKeyMatch[1]) {
+            return err(
+              `Task ${signerTaskId} is not a 1% Treaty signer task (taskKey: ${parentTask.taskKey ?? "null"}). claimSignerReminder only works on parent signer tasks.`,
+            );
+          }
+          const countryCode = signerKeyMatch[1];
+
+          if (!parentTask.assigneePerson?.displayName || !parentTask.assigneeOrganization?.name) {
+            return err(
+              `Signer task ${signerTaskId} is missing assignee data (need both assigneePerson + assigneeOrganization).`,
+            );
+          }
+
+          // 3. Upsert the reminder subtask via the trigger framework. Fires
+          // its own transaction; idempotent on (countryCode, userId).
+          const result = await upsertSignerReminderTask({
+            ownerPersonId: callingUser.personId ?? null,
+            ownerUserId: userId,
+            referralCode: callingUser.referralCode!,
+            signer: {
+              countryCode,
+              governmentName: parentTask.assigneeOrganization!.name,
+              id: parentTask.id,
+              leaderName: parentTask.assigneePerson!.displayName,
+              roleTitle: parentTask.roleTitle,
+              taskKey: parentTask.taskKey ?? buildSignerReminderTaskKey(countryCode, userId),
+            },
+          });
+
+          // 4. Return the freshly-summarized task so the caller has the actionLink etc.
+          const { tasks } = await getTaskFunctions();
+          const detail = await tasks.getTaskDetailData(result.taskId, userId);
+          if (!detail) return err("Reminder subtask created but could not be loaded for summary.");
+
+          // Fire `mcp.claimSignerReminder` so AI-authored TaskTrigger blueprints
+          // can layer additional behavior. The seeded treaty:signer-reminder
+          // trigger is idempotent (Task upsert by taskKey) and currently
+          // produces an equivalent task to the one already created above.
+          const { fireTaskTriggersForEvent: fireForClaim, buildTriggerContext: buildCtxClaim } =
+            await import("./triggers");
+          await fireForClaim(
+            "mcp.claimSignerReminder",
+            buildCtxClaim({
+              user: { id: userId, referralCode: callingUser.referralCode },
+              signer: {
+                countryCode,
+                countryName: parentTask.assigneeOrganization?.name ?? "",
+                leaderName: parentTask.assigneePerson?.displayName ?? "",
+                roleTitle: parentTask.roleTitle ?? null,
+              },
+              parentTaskId: signerTaskId,
+            }),
+            { actorUserId: userId },
+          );
+
+          return ok({
+            alreadyExisted: result.alreadyExisted,
+            countryCode,
+            parentSignerTaskId: signerTaskId,
+            task: summarizeTask(detail.task),
+            taskId: result.taskId,
+            taskKey: result.taskKey,
+          });
+        }
+
         // ── completeTaskClaim ──────────────────────────────────
         case "completeTaskClaim": {
           const { tasks } = await getTaskFunctions();
@@ -4184,23 +4752,54 @@ export function createMcpServer(
           if (!blockerTask.isPublic && blockerTask.ownerUserId !== userId) {
             return err("Forbidden: blocker task is not accessible to current user");
           }
+          const probabilityDeltaBase = parseFiniteNumber(
+            a.probabilityDeltaBase ?? a.increases_p_success,
+          );
+          if (probabilityDeltaBase != null && (probabilityDeltaBase < 0 || probabilityDeltaBase > 1)) {
+            return err("probabilityDeltaBase must be between 0 and 1");
+          }
+          const timeDeltaDaysBase = parseFiniteNumber(a.timeDeltaDaysBase ?? a.time_delta_days);
+          if (timeDeltaDaysBase != null && timeDeltaDaysBase < 0) {
+            return err("timeDeltaDaysBase must be non-negative");
+          }
+          const assumptions = asStringArray(a.assumptions);
+          const notes =
+            typeof a.notes === "string"
+              ? a.notes
+              : typeof a.label === "string"
+                ? a.label
+                : null;
+          const calculationVersion =
+            typeof a.calculationVersion === "string" && a.calculationVersion.trim()
+              ? a.calculationVersion.trim()
+              : null;
+          const edgeMetadata = {
+            ...(probabilityDeltaBase != null ? { probabilityDeltaBase } : {}),
+            ...(timeDeltaDaysBase != null ? { timeDeltaDaysBase } : {}),
+            ...(assumptions.length > 0
+              ? { assumptionsJson: toInputJsonValue({ assumptions }) }
+              : {}),
+            ...(calculationVersion ? { calculationVersion } : {}),
+            ...(notes ? { notes } : {}),
+          };
           await prisma.taskEdge.updateMany({
             where: {
               fromTaskId: a.blockerTaskId as string,
               toTaskId: a.blockedTaskId as string,
               edgeType: TaskEdgeType.BLOCKS,
             },
-            data: { deletedAt: null },
+            data: { deletedAt: null, ...edgeMetadata },
           });
           await prisma.taskEdge.createMany({
             data: [{
               fromTaskId: a.blockerTaskId as string,
               toTaskId: a.blockedTaskId as string,
               edgeType: TaskEdgeType.BLOCKS,
+              ...edgeMetadata,
             }],
             skipDuplicates: true,
           });
-          return ok({ blockedTaskId, blockerTaskId, created: true });
+          return ok({ blockedTaskId, blockerTaskId, created: true, ...edgeMetadata });
         }
 
         // ── getBlockers ────────────────────────────────────────
@@ -4226,8 +4825,24 @@ export function createMcpServer(
             }),
           ]);
           return ok({
-            blockedBy: blockedBy.map((e) => ({ taskId: e.fromTask.id, title: e.fromTask.title, status: e.fromTask.status, edgeType: e.edgeType })),
-            blocks: blocks.map((e) => ({ taskId: e.toTask.id, title: e.toTask.title, status: e.toTask.status, edgeType: e.edgeType })),
+            blockedBy: blockedBy.map((e) => ({
+              edgeType: e.edgeType,
+              notes: e.notes,
+              probabilityDeltaBase: e.probabilityDeltaBase,
+              status: e.fromTask.status,
+              taskId: e.fromTask.id,
+              timeDeltaDaysBase: e.timeDeltaDaysBase,
+              title: e.fromTask.title,
+            })),
+            blocks: blocks.map((e) => ({
+              edgeType: e.edgeType,
+              notes: e.notes,
+              probabilityDeltaBase: e.probabilityDeltaBase,
+              status: e.toTask.status,
+              taskId: e.toTask.id,
+              timeDeltaDaysBase: e.timeDeltaDaysBase,
+              title: e.toTask.title,
+            })),
           });
         }
 
@@ -4296,6 +4911,123 @@ export function createMcpServer(
             totalApiCalls: runs._sum.apiCalls ?? 0,
             runCount: runs._count,
           });
+        }
+
+        // ── Referendum tools ──────────────────────────────────
+        case "listReferendums": {
+          const prisma = await getPrisma();
+          const status = parseReferendumStatus(a.status, ReferendumStatus.ACTIVE);
+          if (!status) {
+            return err("status must be one of DRAFT, ACTIVE, or CLOSED");
+          }
+          if (status !== ReferendumStatus.ACTIVE && !isAdmin) {
+            return err("Admin privileges are required to list non-active referendums.");
+          }
+
+          const query = optionalString(a.query);
+          const where: Prisma.ReferendumWhereInput = {
+            deletedAt: null,
+            status,
+            ...(query
+              ? {
+                  OR: [
+                    { title: { contains: query, mode: "insensitive" } },
+                    { slug: { contains: query, mode: "insensitive" } },
+                    { description: { contains: query, mode: "insensitive" } },
+                  ],
+                }
+              : {}),
+          };
+          const referendums = await prisma.referendum.findMany({
+            orderBy: [{ createdAt: "desc" }],
+            select: REFERENDUM_SELECT,
+            take: parseQueueLimit(a.limit, 20, 100),
+            where,
+          });
+
+          return ok({
+            count: referendums.length,
+            referendums: referendums.map(summarizeReferendum),
+          });
+        }
+
+        case "createReferendum": {
+          const prisma = await getPrisma();
+          const title = optionalString(a.title);
+          if (!title) return err("title is required");
+          const slug = slugify(optionalString(a.slug) ?? title);
+          if (!slug) return err("slug could not be derived from title");
+          const status = parseReferendumStatus(a.status, ReferendumStatus.DRAFT);
+          if (!status) {
+            return err("status must be one of DRAFT, ACTIVE, or CLOSED");
+          }
+
+          const description = optionalString(a.description);
+          const jurisdictionId = optionalString(a.jurisdictionId);
+          const data: Prisma.ReferendumUncheckedCreateInput = {
+            title,
+            slug,
+            status,
+            ...(description ? { description } : {}),
+            ...(jurisdictionId ? { jurisdictionId } : {}),
+            ...(userId ? { createdByUserId: userId } : {}),
+          };
+          const referendum = await prisma.referendum.create({
+            data,
+            select: REFERENDUM_SELECT,
+          });
+
+          return ok({ referendum: summarizeReferendum(referendum) });
+        }
+
+        // ── Repository / site inventory tools ──────────────────
+        case "searchRepo": {
+          const { searchRepo } = await import("./github-repo-tools.server");
+          return ok(
+            await searchRepo({
+              fileType: typeof a.fileType === "string" ? a.fileType : undefined,
+              limit: typeof a.limit === "number" ? a.limit : undefined,
+              path: typeof a.path === "string" ? a.path : undefined,
+              query: a.query as string,
+              repo: typeof a.repo === "string" ? a.repo : undefined,
+            }),
+          );
+        }
+
+        case "getFileContent": {
+          const { getFileContent } = await import("./github-repo-tools.server");
+          return ok(
+            await getFileContent({
+              path: a.path as string,
+              ref: typeof a.ref === "string" ? a.ref : undefined,
+              repo: a.repo as string,
+            }),
+          );
+        }
+
+        case "listRepoFiles": {
+          const { listRepoFiles } = await import("./github-repo-tools.server");
+          return ok(
+            await listRepoFiles({
+              path: typeof a.path === "string" ? a.path : undefined,
+              ref: typeof a.ref === "string" ? a.ref : undefined,
+              repo: a.repo as string,
+            }),
+          );
+        }
+
+        case "listSitePages": {
+          const { listSitePages } = await import("./site-inventory.server");
+          return ok(
+            await listSitePages({
+              site: typeof a.site === "string" ? a.site : undefined,
+            }),
+          );
+        }
+
+        case "getPageContent": {
+          const { getPageContent } = await import("./site-inventory.server");
+          return ok(await getPageContent({ url: a.url as string }));
         }
 
         // ── searchManual ───────────────────────────────────────
@@ -4466,6 +5198,73 @@ export function createMcpServer(
             nextCursor: feed.nextCursor?.toISOString() ?? null,
             activityEvents: activities,
           });
+        }
+
+        // ── createTaskTrigger ─────────────────────────────────
+        case "createTaskTrigger": {
+          const { createTaskTrigger } = await import("./triggers/admin");
+          const result = await createTaskTrigger(
+            a as unknown as Parameters<typeof createTaskTrigger>[0],
+            { actorUserId: userId ?? null },
+          );
+          return ok(result);
+        }
+
+        // ── updateTaskTrigger ─────────────────────────────────
+        case "updateTaskTrigger": {
+          const { updateTaskTrigger } = await import("./triggers/admin");
+          const result = await updateTaskTrigger(
+            a as unknown as Parameters<typeof updateTaskTrigger>[0],
+            { actorUserId: userId ?? null },
+          );
+          return ok(result);
+        }
+
+        // ── disableTaskTrigger ────────────────────────────────
+        case "disableTaskTrigger": {
+          const { disableTaskTrigger } = await import("./triggers/admin");
+          const result = await disableTaskTrigger(a as Parameters<typeof disableTaskTrigger>[0]);
+          return ok(result);
+        }
+
+        // ── listTaskTriggers ──────────────────────────────────
+        case "listTaskTriggers": {
+          const { listTaskTriggers } = await import("./triggers/admin");
+          const result = await listTaskTriggers(a as Parameters<typeof listTaskTriggers>[0]);
+          return ok(result);
+        }
+
+        // ── getTaskTrigger ────────────────────────────────────
+        case "getTaskTrigger": {
+          const { getTaskTrigger } = await import("./triggers/admin");
+          const triggerKey = a.triggerKey as string;
+          if (!triggerKey) return err("triggerKey is required");
+          const recentFires = typeof a.recentFires === "number" ? (a.recentFires as number) : 10;
+          const result = await getTaskTrigger({ triggerKey, recentFires });
+          if (!result) return err(`TaskTrigger not found: ${triggerKey}`);
+          return ok(result);
+        }
+
+        // ── fireTaskTrigger ───────────────────────────────────
+        case "fireTaskTrigger": {
+          const { fireTaskTrigger } = await import("./triggers/fire");
+          const triggerKey = a.triggerKey as string;
+          if (!triggerKey) return err("triggerKey is required");
+          const dryRun = a.dryRun === true;
+          // Personal users can only dryRun. Real fires write tasks under
+          // a context the caller controls — the actor could spawn tasks
+          // for another user by forging context.user.id. Limit real fires
+          // to admins / internal callers.
+          if (!dryRun && !isAdmin) {
+            return err(
+              "fireTaskTrigger commits writes from caller-controlled context; non-admin callers may only use dryRun:true",
+            );
+          }
+          const result = await fireTaskTrigger(triggerKey, a.context, {
+            dryRun,
+            actorUserId: userId ?? null,
+          });
+          return ok(result);
         }
 
         default:

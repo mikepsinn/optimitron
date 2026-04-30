@@ -1343,6 +1343,10 @@ export function getSiteConfig(key: SiteKey): SiteConfig {
   return SITE_CONFIGS[key];
 }
 
+export function getAllSiteConfigs(): SiteConfig[] {
+  return Object.values(SITE_CONFIGS);
+}
+
 export function isSiteKey(value: string | null | undefined): value is SiteKey {
   return typeof value === "string" && value in SITE_CONFIGS;
 }
