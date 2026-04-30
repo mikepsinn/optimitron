@@ -6,6 +6,7 @@ import { canSendEmailToUser } from "@/lib/email/can-send.server";
 import { formatEmailFromHeader, parseEmailFromHeader } from "@/lib/email/from-address";
 import { isTransactionalScope } from "@/lib/email/scopes";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
+import { appendWishoniaSignature } from "@/lib/email/wishonia-signature";
 import type { EmailScope } from "@/lib/email/scopes";
 
 interface BaseMessage {
@@ -121,14 +122,15 @@ export async function sendResendEmail(message: ResendMessage): Promise<SendResul
     return buildMockSendResult(unsubscribeUrl);
   }
 
+  const signed = appendWishoniaSignature(message);
   const resend = getResendClient();
   const response = await resend.emails.send({
     from: getEmailFromAddress(),
     to: [message.to],
     ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
-    html: message.html,
-    text: message.text,
+    html: signed.html,
+    text: signed.text,
     ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
   });
 
@@ -163,16 +165,17 @@ export async function sendReactEmail(message: ResendReactMessage): Promise<SendR
   }
 
   const resend = getResendClient();
-  const html = await render(message.react);
-  const text = await render(message.react, { plainText: true });
+  const renderedHtml = await render(message.react);
+  const renderedText = await render(message.react, { plainText: true });
+  const signed = appendWishoniaSignature({ html: renderedHtml, text: renderedText });
 
   const response = await resend.emails.send({
     from: getEmailFromAddress(),
     to: [message.to],
     ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
-    html,
-    text,
+    html: signed.html,
+    text: signed.text,
     ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
   });
 
@@ -199,14 +202,15 @@ export async function sendExternalResendEmail(message: ExternalResendMessage): P
     return buildMockSendResult(unsubscribeUrl);
   }
 
+  const signed = appendWishoniaSignature(message);
   const resend = getResendClient();
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
     to: [message.to],
     ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
-    html: message.html,
-    text: message.text,
+    html: signed.html,
+    text: signed.text,
     ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
   });
 

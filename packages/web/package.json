@@ -157,6 +157,7 @@
     "require-in-the-middle": "^8.0.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.9",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
   }

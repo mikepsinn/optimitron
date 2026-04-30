@@ -48,10 +48,13 @@ export function buildTriggerParams() {
     /// $3.48M — per-capita lifetime income gain under the Treaty trajectory.
     /// Used in the Promotion screen / first-task description compensation line.
     lifetimeIncomeGain: formatUsdMillions(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA),
-    /// Standard Wishonia / Earth Optimization Services email + comment signature.
-    /// One place to edit when the signature changes.
-    wishoniaSignature: "— Wishonia\nEarth Optimization Services, LLC",
   };
+  // Note: the Wishonia signature is intentionally NOT exposed as a template
+  // token. Outgoing emails get the signature appended automatically by the
+  // resend.ts send helpers — see @/lib/email/wishonia-signature. Embedding a
+  // signature token in trigger templates would double-sign (template
+  // expansion + email-layer append). Templates render task descriptions and
+  // comment bodies; the email layer owns the email-only signature.
 }
 
 /**
