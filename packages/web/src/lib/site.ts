@@ -35,6 +35,8 @@ export type SiteKey =
   | "onePercentTreaty"
   | "trialAbundanceSurvey";
 
+export const SITE_VARIANT_OVERRIDE_HEADER = "x-optimitron-site-key";
+
 export type SiteChromeVariant = "platform" | "referendum";
 export type SiteHomeVariant =
   | "optimitronLanding"
@@ -1334,9 +1336,23 @@ function normalizeHost(host: string | null | undefined) {
   return host?.split(":")[0]?.toLowerCase() ?? "";
 }
 
+export function getCanonicalHostForSiteKey(key: SiteKey): string {
+  return new URL(SITE_CONFIGS[key].canonicalOrigin).host;
+}
+
 export function getSiteFromHost(host: string | null | undefined): SiteConfig {
   if (!host) return OPTIMITRON_CONFIG;
   return SITE_CONFIGS[HOST_TO_SITE_KEY[normalizeHost(host)] ?? "optimitron"];
+}
+
+export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
+  const host = headers.get("host");
+  const override = headers.get(SITE_VARIANT_OVERRIDE_HEADER);
+  if (host && isLocalHost(host) && isSiteKey(override)) {
+    return SITE_CONFIGS[override];
+  }
+
+  return getSiteFromHost(host);
 }
 
 export function getSiteConfig(key: SiteKey): SiteConfig {
@@ -1480,7 +1496,7 @@ export function getConfiguredSiteOrigin(options?: {
   return OPTIMITRON_CANONICAL_ORIGIN;
 }
 
-function isLocalHost(host: string) {
+export function isLocalHost(host: string) {
   const hostname = host.split(":")[0]?.toLowerCase() ?? "";
   return (
     hostname === "localhost" ||

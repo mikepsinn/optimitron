@@ -2,6 +2,9 @@ import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 
 const screenshotDir = path.resolve(__dirname, "public/img/screenshots");
+const outputDir = process.env.PLAYWRIGHT_OUTPUT_DIR
+  ? path.resolve(process.env.PLAYWRIGHT_OUTPUT_DIR)
+  : screenshotDir;
 const isCI = Boolean(process.env.CI);
 
 export default defineConfig({
@@ -12,7 +15,7 @@ export default defineConfig({
   reporter: isCI ? [["line"], ["html", { open: "never" }]] : "html",
   timeout: 120_000,
   snapshotPathTemplate: `${screenshotDir}/{testName}/{arg}{ext}`,
-  outputDir: screenshotDir,
+  outputDir,
   use: {
     baseURL: process.env.BASE_URL ?? "http://localhost:3001",
     trace: "on-first-retry",

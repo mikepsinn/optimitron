@@ -59,8 +59,9 @@ Prioritized work coming out of the recent design conversations on email cleanup,
 **Other:**
 - [x] Hardcoded `ALLOWED_REPOS` in `github-repo-tools.server.ts` — dropped redundant `GITHUB_REPO_ALLOWLIST` + `GITHUB_DEFAULT_REPO` env vars from local `.env`, `.env.example`, and Vercel.
 - [x] Magic-link email reverted from the brief mortality-line experiment back to bare Lumbergh-mild. Site-variant aware copy work scoped into S8.
+- [x] **MCP error → Sentry wiring.** The MCP tool-dispatch catch block returns errors as JSON-RPC payloads (HTTP 200 with `isError: true`) instead of throwing, which means Sentry's `onRequestError` hook never sees them. Same for auth-failure 401s. Added explicit `Sentry.captureException` calls inside the tool-dispatch catch (with `mcp.tool` + `mcp.surface` tags + userId + args context), inside the auth-token-verification catch in `app/api/mcp/route.ts`, and a top-level transport-level try/catch on the route. Dynamic import of `@sentry/nextjs` so dev/test bundles don't choke when Sentry isn't initialized. Now MCP errors actually show up in Sentry dashboards. (User-facing message in Claude Desktop is still bounded by what Anthropic's client surfaces from the `isError: true` content payload — separate concern, can't fix server-side.)
 
-Verification at end of session: 1033/1033 vitest, `pnpm exec tsc --noEmit` clean.
+Verification at end of session: 1034/1034 vitest, `pnpm exec tsc --noEmit` clean.
 
 ### S1 — Dashboard + onboarding cleanup (Stage 1)
 
@@ -116,13 +117,14 @@ Multi-day; land AFTER S1 + S2 are live and after some real users go through Stag
 
 ### S5 — Visual flow audit harness + critique loop
 
-User-flagged 2026-04-30. The funnel from landing → vote → email → /hmt → /dashboard exists, but right now we only see it by clicking through manually. Two layers to build:
+User-flagged 2026-04-30. **Layer 1 local harness done (codex — 2026-04-30); preview-comment wiring still pending.** The funnel from landing → vote → email → /hmt → /dashboard exists, but right now we only see it by clicking through manually. Two layers to build:
 
 **Layer 1 — Static screenshot capture (worth doing soon):**
-- [ ] Add a Playwright spec at `packages/web/e2e/new-user-flow-screenshots.spec.ts` that walks the FULL new-user funnel for each site variant (warondisease.org, optimitron.com, 1percenttreaty.org, dfda.earth) using a fresh user per run. Frames captured: landing pre-vote, slider mid-state, slider submitted, magic-link email body (rendered HTML), /humanity-management-training, /dashboard immediately post-signin, dashboard after first subtask verified, dashboard after all 5 subtasks verified.
-- [ ] Output a single `packages/web/public/img/new-user-flow/<variant>/<step>.png` set + a `packages/web/public/img/new-user-flow/index.html` static page that lays them all out side-by-side per variant for visual review. Include desktop + mobile widths.
+
+- [x] *(codex)* Add a Playwright spec at `packages/web/e2e/new-user-flow-screenshots.spec.ts` that walks the new-user funnel for warondisease.org, optimitron.com, 1percenttreaty.org, and dfda.earth using a fresh user per run. Treaty-capable hosts capture landing, slider mid-state, slider submitted, magic-link email body (rendered HTML), dashboard immediately post-signin, /humanity-management-training, dashboard after first subtask verified, and dashboard after all 5 HMT gate subtasks are verified. dFDA does not expose the treaty/HMT route, so the harness records the landing/email/dashboard frames and flags the skipped treaty frames in the generated index.
+- [x] *(codex)* Output a `<repo>/screenshots/new-user-flow/<variant>/<viewport>/<step>.png` set + a `<repo>/screenshots/new-user-flow/index.html` static page that lays them all out side-by-side per variant for visual review. Include desktop + mobile widths. Repo-root `screenshots/` is already gitignored (`.gitignore:70`) and isn't watched by Next.js dev-server / shipped by Vercel — avoids the file-watcher churn + deploy bloat that `public/` would cause.
 - [ ] Wire this into Vercel deployment preview comments: a GitHub Actions job runs the spec against the preview URL and posts the static index.html link to the PR. Fail the check if any frame errors out (server crash, missing element).
-- [ ] Reuse the existing screenshot infrastructure at `packages/web/e2e/treaty-vote-post-vote-screenshots.spec.ts` — same dev-server-reuse pattern, same output-folder convention. Don't reinvent.
+- [x] *(codex)* Reuse the existing screenshot infrastructure at `packages/web/e2e/treaty-vote-post-vote-screenshots.spec.ts` — same dev-server-reuse pattern, same output-folder convention. Registered as `pnpm --filter @optimitron/web run e2e -- new-user-flow-screenshots --reporter=list`.
 
 **Layer 2 — Automated critique (speculative, do after Layer 1 stabilizes):**
 - [ ] After-deploy hook: pipe the captured screenshots + the `todo.md` "Active Slice" objectives + the rendered task descriptions to Claude/Gemini with a prompt of "given these objectives and these screens, what's reducing the chance the user completes the task tree?" Capture the output as a PR comment, NOT an automatic todo.md edit. Auto-mutating the todo from an LLM critique is too easy to get wrong silently.
@@ -203,7 +205,7 @@ User-flagged 2026-04-30 alongside S2. S2 added the `*Linked` markdown-link varia
 
 This is a sweep, not a one-shot fix. Land it after S2 + S8 are done; queue S3 / S5 / S6 / S7 ahead since they unblock product flow. S9 is a quality-tightening slice that benefits from S2's linked-variants infrastructure already being there.
 
-### S8 — Variant-aware magic-link email (and the broader "where did this user sign up from" question)
+### S8 — Variant-aware magic-link email (and the broader "where did this user sign up from" question) — DONE (codex — 2026-04-30)
 
 User-flagged 2026-04-30 after the mortality-stat experiment was reverted. The magic-link email fires on EVERY login, not just first signup, which means any treaty/voting framing in it is wrong: most recipients have already voted, and `trialabundancesurvey.org` signups (partner-survey, neutral voice per Q1) shouldn't see treaty copy at all. Current state is fine — the body is treaty-agnostic ("Yeahhh, here's your sign-in link. Mmkay.") — but we have no story for personalizing it per site.
 
@@ -215,13 +217,13 @@ User-flagged 2026-04-30 after the mortality-stat experiment was reverted. The ma
 Default: do (a) now, defer (b) until a non-magic-link email needs it.
 
 **Implementation sketch (~1-2 hr):**
-- [ ] `getSiteFromHost` already exists in `lib/site.ts`. Extend `sendMagicLinkEmail` to derive the site key from the magic-link URL host and pick a per-variant copy bundle.
-- [ ] Per-variant copy bundles in `lib/email/magic-link-email.ts` (or a sibling `magic-link-copy.ts`):
+- [x] *(codex)* `getSiteFromHost` already exists in `lib/site.ts`. Extend `sendMagicLinkEmail` to derive the site key from the magic-link URL host and pick a per-variant copy bundle.
+- [x] *(codex)* Per-variant copy bundles in `lib/email/magic-link-email.ts` (or a sibling `magic-link-copy.ts`):
   - `warondisease.org` / `optimitron.com` / `1percenttreaty.org`: current Lumbergh-mild ("Yeahhh, here's your sign-in link. Mmkay." + "Didn't ask for this? Just go ahead and ignore it. That'd be great.")
   - `trialabundancesurvey.org`: NEUTRAL, partner-friendly ("Sign in to Trial Abundance Survey." + "If you didn't request this, you can ignore it.") Q1 decision: don't make partner orgs nervous.
   - `dfda.earth`: clinical-neutral ("Sign in to dFDA." + same anti-phishing line)
-- [ ] Subject line should include the site display name (already does via `host`), so just confirm `Sign in to ${host}` reads cleanly per variant.
-- [ ] Test: a magic-link generated against `trialabundancesurvey.local` URL produces the neutral body; one against `warondisease.local` produces the Lumbergh body. Lock both with snapshot tests in `magic-link-email.test.ts` (file doesn't exist yet — add it).
+- [x] *(codex)* Subject line should include the site display name (already does via `host`), so just confirm `Sign in to ${host}` reads cleanly per variant.
+- [x] *(codex)* Test: a magic-link generated against `trialabundancesurvey.local` URL produces the neutral body; one against `warondisease.local` produces the Lumbergh body. Lock both with snapshot tests in `magic-link-email.test.ts` (file doesn't exist yet — add it).
 
 **Defer until justified (with concrete trigger conditions):**
 - [ ] `User.signupSiteKey String?` — capture at User creation from `headers().get("host")` → `getSiteFromHost`. Trigger to add: first feature that sends an outbound email NOT keyed off the URL host (e.g., a Wishonia digest, a cross-variant promotional email). Magic-link doesn't qualify because it already has the host in the URL.
@@ -401,6 +403,30 @@ Agent-usage feedback from 2026-04-25: the current toolset covers the core loop w
   - Naming boundary: `TaskCommunication` owns outbound/inbound delivery/contact envelopes; `TaskComment` owns the readable thread; `EmailLog` owns provider-level email delivery details.
   - Channel naming: use `externalUrl`, not `link` or `formSubmission`, for office forms / official pages / public profiles. "Link" sounds like the message being sent is the outreach, while "formSubmission" overclaims because the current code records opening/using the external URL, not proof that a form was submitted.
 - [ ] Rename other MCP tools directly when the new name is more self-documenting; do not keep old aliases by default.
+
+## Optimitron MCP Queue Sync (2026-04-30)
+
+Synced from the live Optimitron MCP server (`http://localhost:3001/api/mcp`) — engineering tasks present in the live priority queue that are not already covered above. Items are listed with their MCP task ID so the bidirectional state stays explicit. Mark `[x]` here AND call `updateTask({status: "VERIFIED"})` against the MCP server when finishing one.
+
+**Already verified on the MCP server during this sync (no action needed):**
+
+- [x] `cmokes2c9000e04jslbkjuggu` — Add GitHub repo search/read tools to MCP server. Implementation lives at `packages/web/src/lib/github-repo-tools.server.ts`; registered in `packages/web/src/lib/mcp-server.ts` (scope, deferred-tool list, defs, handler). Marked VERIFIED 2026-04-30.
+- [x] `cmoke6wzh000004js3ilpxnmy` — Fix MCP server: `getMyQueue` / `getQueueAudit` / `getMe` + test coverage. `getMyQueue` and `getMe` now return clean responses over HTTP transport; `mcp-local-identity.server.ts` and tests are present. Marked VERIFIED 2026-04-30.
+
+**Open engineering items from MCP queue not already in this file:**
+
+- [ ] **`cmojj9hwo002f04l1mr4bmxrh` — Fix failed Vercel production deployments** (`optimitron-web` + `s3-file-manager-nextjs`). Production sites down per Notion source. Diagnose the build failure first (Vercel logs, recent dependency / config changes), then fix in `packages/web` or root config. Priority 4500 in the MCP queue.
+- [ ] **`cmojj98ks002c04l1dcucgl9x` — Finish survey MVP (acceptable UI for demo)**. Core product surface for Earth Optimization Prize voting. Scaffolding already exists at `packages/web/src/app/survey/page.tsx` and `survey/[organizationSlug]/page.tsx`; finishing means: working post-vote state, partner-org embed flow, and a usable demo against a real referendum. Priority 4000.
+- [ ] **`cmojj6a1h001904l1hrtlhehd` — Implement vote flow v13 (11 screens)**. Core product feature. Confirm what the v13 spec is (likely lives at `docs/questions.md` or a successor doc — check the open question on `Update TODO.md: kill EOPs, add Optimization Rate formula, v13 spec ref` task `cmoj9142u000k1opieifih8ci`), then port the 11-screen flow into `packages/web/src/components/landing/TreatyVoteFlow.tsx` (which already supports flow variants via `TREATY_FLOW_VARIANTS`). Priority 3333.
+- [ ] **`cmojj9oif002i04l11wfukd3f` — Build interactive EV/uncertainty calculator for grant and donation pages**. Shows donors the expected-impact math driving the welfare-function rollup. Re-use `packages/data/src/parameters/parameters-calculations-citations.ts` and the existing `lib/treaty-share-flow-parameters` helpers; render as a client component with sliders for the most uncertain inputs (probability of treaty passage, fraction of users who recruit, etc.). Priority 4250.
+- [ ] **`cmojj9w2q002l04l1ezkjy553` — Add share-inducing questions to vote flow**. Viral mechanic. After the user votes, ask questions whose honest answer pulls them into sharing the link (e.g., "Who is the first person you'll send this to?"). Lives in `TreatyPostVoteShareFlow.tsx`. Keep neutral-mode partner-survey behavior intact (Q1 decision). Priority 5333.
+- [ ] **`cmojj61ho001604l1q3aj39gw` — Build commission page on warondisease.org**. Public-facing page showing Technical Commission members and their roles. New route under `packages/web/src/app/` (probably `/commission`). Read members + roles from a small static dataset in `packages/data/src/datasets/`. Priority 4500.
+- [ ] **`cmokjax3u000004l3sviunmuw` — Build referendum system with Court of Humanity as first referendum**. Optimitron currently has the 1% Treaty referendum hardcoded; this generalizes it. Schema work in `packages/db/prisma/schema.prisma`, route work in `packages/web/src/app/agencies/dcongress/referendums/`. Court of Humanity is the first instance. Priority 2125. Read full task description before scoping — overlaps with the existing `Referendum` model so likely a delta, not a rewrite.
+- [ ] **`cmojjamq3002u04l1hgy5p07g` — Build Revenue Paths table + rewire EV calculations to WIG (Annual Revenue Run Rate)**. Tagged ENGINEERING but the description is "Notion database restructure" — confirm whether this is in-app (a new page under `/admin` or `/fund/portfolio`) or external Notion-only before starting. Priority 4500.
+
+**MCP queue items already covered by other sections (no new entry needed):**
+- "Set up donation processor (Stripe nonprofit / Every.org)" `cmojj8t4m002604l1uf1g4lmo` and "Set up IAM donation page (Stripe)" `cmojj6hh8001c04l1ny2pjpgg` → Track 1 IAM donation flow at line 778+.
+- "Update TODO.md: kill EOPs, add Optimization Rate formula, v13 spec ref" `cmoj9142u000k1opieifih8ci` → tracked in the queue itself; will pick up alongside vote flow v13.
 
 ## Code Review Fixes (2026-04-29) — DONE
 

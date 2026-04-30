@@ -1,6 +1,7 @@
 import type { Parameter } from "@optimitron/data/parameters";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
+  GLOBAL_POPULATION_2024,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
@@ -8,6 +9,12 @@ import {
   TREATY_LIVES_SAVED_ANNUAL_GLOBAL,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
 } from "@optimitron/data/parameters";
+import { HUMANITY_MANAGEMENT } from "@/lib/messaging";
+import {
+  FLOW_DOUBLING_ROUNDS_TO_TARGET,
+  FLOW_MAJORITY_OF_HUMANS_ON_EARTH,
+  formatFlowWords,
+} from "@/lib/treaty-share-flow-parameters";
 
 /**
  * Standard parameter slugs available to every trigger fire as `{{params.<key>}}`.
@@ -69,8 +76,22 @@ export function buildTriggerParams() {
   const annualLivesSaved = roundParam(TREATY_LIVES_SAVED_ANNUAL_GLOBAL);
   const healthYearsGain = roundParam(TREATY_HALE_GAIN_YEAR_15, 1);
   const lifetimeIncomeGain = formatUsdMillions(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA);
+  const globalHumanity = formatFlowWords(GLOBAL_POPULATION_2024, 1);
+  const majorityHumanity = formatFlowWords(FLOW_MAJORITY_OF_HUMANS_ON_EARTH, 1);
 
   return {
+    /// 8 billion — rounded humans under management in the HMT role-play.
+    globalHumanity,
+    /// 4 billion — rounded majority-of-humanity treaty target.
+    majorityHumanity,
+    /// 32 — rounds if each reached human recruits two more humans.
+    doublingRoundsToTarget: String(FLOW_DOUBLING_ROUNDS_TO_TARGET),
+    /// One real call required for the phone-call training task.
+    requiredPhoneCalls: String(HUMANITY_MANAGEMENT.requiredPhoneCalls),
+    /// Two named assignment subtasks remain the Stage-1 minimum viable team.
+    directHumanAssignments: String(HUMANITY_MANAGEMENT.directHumanAssignments),
+    /// Each contacted human is asked to recruit two more humans.
+    propagationAsksPerHuman: String(HUMANITY_MANAGEMENT.propagationAsksPerHuman),
     /// 604 — military spending vs government clinical-trials spending ratio.
     militaryVsResearchRatio,
     militaryVsResearchRatioLinked: linkParam(

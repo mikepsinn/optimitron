@@ -608,7 +608,7 @@ export async function markReferralInvitationCopied(input: {
     return tx.referralInvitation.findUnique({
       where: { id: invitation.id },
     });
-  });
+  }, { timeout: 20_000 });
 }
 
 export async function convertReferralInvitationForVote(input: {

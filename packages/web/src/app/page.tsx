@@ -8,14 +8,14 @@ import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage
 import { authOptions } from "@/lib/auth";
 import { getRootSiteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
-import { getSiteFromHost } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { getTaskDetailData } from "@/lib/tasks.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
 
   if (site.pageVariants.home === "onePercentTreatyLanding") {
     const content = getOptionalReferendumSiteContent(site.contentKey);
@@ -33,7 +33,7 @@ export default async function Home({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   if (site.pageVariants.home === "onePercentTreatyLanding") {
     const resolvedParams = (await searchParams) ?? {};
     const rawPage = resolvedParams.signersPage;

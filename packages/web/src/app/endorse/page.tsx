@@ -4,21 +4,21 @@ import { getCurrentUser } from "@/lib/auth-utils";
 import { getSiteMetadata } from "@/lib/metadata";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
-import { getSiteFromHost } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 import { EndorseForm } from "./EndorseForm";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   const content = requireReferendumSiteContent(site);
   return getSiteMetadata(site, content.metadata.endorse, "/endorse");
 }
 
 export default async function EndorsePage() {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   const content = requireReferendumSiteContent(site);
   const user = await getCurrentUser();
 

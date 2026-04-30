@@ -8,6 +8,10 @@ import process from "node:process";
 
 const require = createRequire(import.meta.url);
 const DEFAULT_BASE_URL = "http://127.0.0.1:3001";
+const NEW_USER_FLOW_ARTIFACT_DIR = path.resolve(
+  process.cwd(),
+  "../../screenshots/new-user-flow/_playwright-artifacts",
+);
 const LOCAL_REACHABILITY_PATHS = [
   "/favicon.ico",
   "/manifest.json",
@@ -37,6 +41,7 @@ const MODE_SPECS = {
     : ["e2e/smoke.spec.ts"],
   contrast: ["e2e/contrast-audit.spec.ts"],
   mobile: ["e2e/mobile-responsiveness-audit.spec.ts"],
+  "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],
   "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
 };
 
@@ -66,7 +71,11 @@ async function main() {
         reuseExistingServer: false,
         reason: "CI run; using Playwright-managed server",
       }
-    : await resolveLocalExecution();
+    : await resolveLocalExecution({
+        requireRunningServer:
+          mode === "new-user-flow-screenshots" &&
+          !parseBoolean(process.env.E2E_ALLOW_PRODUCTION_FALLBACK),
+      });
 
   const env = { ...process.env, BASE_URL: execution.baseUrl };
 
@@ -82,6 +91,10 @@ async function main() {
     delete env.PLAYWRIGHT_CONTRAST_SCOPE;
   }
 
+  if (mode === "new-user-flow-screenshots") {
+    env.PLAYWRIGHT_OUTPUT_DIR = process.env.PLAYWRIGHT_OUTPUT_DIR ?? NEW_USER_FLOW_ARTIFACT_DIR;
+  }
+
   const playwrightArgs = ["test", ...MODE_SPECS[mode], ...appendDefaultProjectArg(passthroughArgs)];
 
   console.log(`[e2e] mode=${mode}`);
@@ -92,7 +105,7 @@ async function main() {
   process.exit(exitCode);
 }
 
-async function resolveLocalExecution() {
+async function resolveLocalExecution(options = {}) {
   for (const candidate of dedupe(LOCAL_BASE_URL_CANDIDATES)) {
     if (await isReachable(candidate)) {
       return {
@@ -101,6 +114,17 @@ async function resolveLocalExecution() {
         reason: `Reusing running server at ${candidate}`,
       };
     }
+  }
+
+  if (options.requireRunningServer) {
+    throw new Error(
+      [
+        "No running Optimitron web server was detected.",
+        `Checked: ${dedupe(LOCAL_BASE_URL_CANDIDATES).join(", ")}`,
+        "The new-user-flow-screenshots mode is designed to reuse `pnpm --filter @optimitron/web run dev` so it does not run against a stale or slow production build.",
+        "Set E2E_ALLOW_PRODUCTION_FALLBACK=1 only when you explicitly want Playwright to start the existing `.next` build.",
+      ].join(" "),
+    );
   }
 
   if (!hasExistingBuild()) {
@@ -227,12 +251,15 @@ Modes:
   smoke      Run smoke tests locally; in CI also includes a critical-route contrast audit
   contrast   Run only the contrast audit
   mobile     Run only the mobile responsiveness audit
+  new-user-flow-screenshots
+             Regenerate the cross-variant new-user funnel screenshots
   treaty-screenshots
-            Regenerate the treaty vote/post-vote screenshots
+             Regenerate the treaty vote/post-vote screenshots
 
 Behavior:
   - In CI, uses the Playwright-managed built server path
   - Locally, reuses BASE_URL or a running server on ${DEFAULT_BASE_URL} when available
+  - Locally, new-user-flow-screenshots requires a running dev server unless E2E_ALLOW_PRODUCTION_FALLBACK=1 is set
   - If no local server is running, falls back to an existing production build
 `);
 }

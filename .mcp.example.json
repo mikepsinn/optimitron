@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "optimitron-tasks": {
+      "command": "pnpm",
+      "args": [
+        "--filter",
+        "@optimitron/web",
+        "exec",
+        "tsx",
+        "scripts/mcp-task-server.ts"
+      ],
+      "cwd": "<absolute path to this repo>",
+      "env": {
+        "MCP_USER_EMAIL": "you@example.com"
+      }
+    },
+    "optimitron-local": {
+      "type": "http",
+      "url": "http://localhost:3001/api/mcp"
+    }
+  }
+}

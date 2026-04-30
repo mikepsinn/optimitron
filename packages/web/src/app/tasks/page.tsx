@@ -10,12 +10,12 @@ import type { TaskCardTask } from "@/components/tasks/task-card";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
 import { tasksLink } from "@/lib/routes";
-import { getSiteFromHost } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 import { getTasksPageData } from "@/lib/tasks.server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
 
   if (site.primaryReferendumSlug) {
     const content = getOptionalReferendumSiteContent(site.contentKey);

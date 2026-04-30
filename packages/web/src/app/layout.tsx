@@ -8,7 +8,7 @@ import { SiteStructuredData } from "@/components/site/SiteStructuredData";
 import { SiteChrome } from "@/components/site/SiteChrome";
 import { getRootLayoutMetadata } from "@/lib/metadata";
 import { RequestSiteOriginProvider } from "@/lib/request-site-origin";
-import { getRequestSiteOrigin, getSiteFromHost } from "@/lib/site";
+import { getRequestSiteOrigin, getSiteFromHeaders } from "@/lib/site";
 import { DEFAULT_THEME } from "@/lib/theme";
 import { wagmiConfig } from "@/lib/wagmi-config";
 
@@ -57,7 +57,7 @@ const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.v
 
 export async function generateMetadata(): Promise<Metadata> {
   const headerStore = await headers();
-  const site = getSiteFromHost(headerStore.get("host"));
+  const site = getSiteFromHeaders(headerStore);
 
   return getRootLayoutMetadata(site);
 }
@@ -74,7 +74,7 @@ export default async function RootLayout({
     forwardedHost: headerStore.get("x-forwarded-host"),
     forwardedProto: headerStore.get("x-forwarded-proto"),
   });
-  const site = getSiteFromHost(headerStore.get("host"));
+  const site = getSiteFromHeaders(headerStore);
   const initialState = cookieToInitialState(wagmiConfig, cookie);
 
   return (

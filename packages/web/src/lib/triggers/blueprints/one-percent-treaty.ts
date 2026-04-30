@@ -1,11 +1,12 @@
 import type { CreateTaskTriggerInput } from "../admin";
+import { HUMANITY_MANAGEMENT } from "@/lib/messaging";
 
 // ---------------------------------------------------------------------------
 // Pattern 1+2 — Per-user onboarding tree (1% Treaty)
 // ---------------------------------------------------------------------------
 
 const TREATY_PARENT_TASK_KEY = "program:one-percent-treaty:ratify";
-const USER_TREATY_TASK_TITLE = "Get 4 billion people to vote on the 1% Treaty";
+const USER_TREATY_TASK_TITLE = "Get {{params.majorityHumanity}} people to vote on the 1% Treaty";
 const USER_TREATY_TASK_ROLE_TITLE = "Humanity Manager, Earth Optimization Services, LLC";
 const HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE = "Complete Humanity Management Training";
 
@@ -22,7 +23,7 @@ const USER_TREATY_DESCRIPTION = [
   "",
   "You have been promoted to **Humanity Manager** at Earth Optimization Services, LLC.",
   "",
-  "**Direct reports:** ~8 billion humans",
+  "**Direct reports:** ~{{params.globalHumanity}} humans",
   "**Primary KPI:** Hours of human suffering prevented per week",
   "**Compensation:**",
   "- ~**{{params.healthYearsGainLinked}}** extra years of healthy life",
@@ -42,9 +43,9 @@ const USER_TREATY_DESCRIPTION = [
 // markdown-rendered task descriptions and HTML email bodies, use the
 // `*Linked` variants instead (see USER_TREATY_DESCRIPTION above).
 const PHONE_SCRIPT_DESCRIPTION = [
-  "Your job is to manage 8 billion humans. You're busy. Outsource it.",
+  "Your job is to manage {{params.globalHumanity}} humans. You're busy. Outsource it.",
   "",
-  "The trick: call one human you love and don't want to watch suffer or die from horrible diseases. Read them the script below. They vote, then call two humans they love. After 32 rounds of this, four billion humans are reached. Tom Sawyer painting the fence — you don't have to convince anyone of anything they don't already believe, you just have to get one human to start delegating too.",
+  "The trick: call one human you love and don't want to watch suffer or die from horrible diseases. Read them the script below. They vote, then call {{params.propagationAsksPerHuman}} humans they love. After {{params.doublingRoundsToTarget}} rounds of this, {{params.majorityHumanity}} humans are reached. Tom Sawyer painting the fence — you don't have to convince anyone of anything they don't already believe, you just have to get one human to start delegating too.",
   "",
   "Could be one nice phone call with someone who loves you. If they actually do it.",
   "",
@@ -58,11 +59,11 @@ const PHONE_SCRIPT_DESCRIPTION = [
   "",
   "Humanity has enough nuclear mass-murder capacity for about {{params.apocalypseCount}} apocalypses. The 1% Treaty asks you to sacrifice one of those apocalypses for disease eradication in your lifetime.",
   "",
-  "Voting takes thirty seconds. Open the link I'm about to send you, vote yes, then call two friends and read them this same paragraph. That's the whole ask. I do this with you, you do this with two more, after 32 rounds we've reached four billion humans.\"",
+  "Voting takes thirty seconds. Open the link I'm about to send you, vote yes, then call {{params.propagationAsksPerHuman}} humans you love and read them this same paragraph. That's the whole ask. I do this with you, you do this with {{params.propagationAsksPerHuman}} more, after {{params.doublingRoundsToTarget}} rounds we've reached {{params.majorityHumanity}} humans.\"",
   "",
   "---",
   "",
-  "Mark this task done after you've made the call AND actually sent your referral URL. The receiving end finishes when assigned humans vote — that's tracked separately by the two assign-a-human subtasks below.",
+  "Mark this task done after you've made the call AND actually sent your referral URL. The receiving end finishes when assigned humans vote — that's tracked separately by the {{params.directHumanAssignments}} assign-a-human subtasks below.",
 ].join("\n");
 
 const userOnboardingTreaty: CreateTaskTriggerInput = {
@@ -123,7 +124,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     {
       kind: "phoneScript",
       sortOrder: 20,
-      titleTemplate: "Make one phone call. Outsource humanity management.",
+      titleTemplate: HUMANITY_MANAGEMENT.callOneHumanTaskTitle,
       descriptionTemplate: PHONE_SCRIPT_DESCRIPTION,
       category: "OTHER",
       difficulty: "TRIVIAL",
@@ -152,7 +153,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       sortOrder: 40,
       titleTemplate: "Give your second human the 1% Treaty voting task",
       descriptionTemplate:
-        "Pick a second person. Same deal. Two reports is the minimum viable team.",
+        "Pick a second person. Same deal. {{params.directHumanAssignments}} reports is the minimum viable team.",
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,

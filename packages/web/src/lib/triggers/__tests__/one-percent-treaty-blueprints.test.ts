@@ -25,7 +25,9 @@ describe("1% Treaty trigger blueprints", () => {
     expect(phoneTask?.descriptionTemplate).toContain(
       "The trick: call one human you love",
     );
-    expect(phoneTask?.descriptionTemplate).toContain("then call two humans");
+    expect(phoneTask?.descriptionTemplate).toContain(
+      "then call {{params.propagationAsksPerHuman}} humans",
+    );
     expect(phoneTask?.descriptionTemplate).not.toContain("make two calls");
     expect(phoneTask?.descriptionTemplate).not.toContain("made two calls");
     expect(evidenceTemplate).toContain(
@@ -34,5 +36,30 @@ describe("1% Treaty trigger blueprints", () => {
     expect(evidenceTemplate).not.toContain(
       "made the phone calls",
     );
+  });
+
+  it("uses shared trigger params for HMT scale and propagation numbers", () => {
+    const onboarding = ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS.find(
+      (blueprint) => blueprint.triggerKey === "user-onboarding:treaty",
+    );
+    const rootTask = onboarding?.spawnSpecs?.find((spec) => spec.kind === "root");
+    const phoneTask = onboarding?.spawnSpecs?.find(
+      (spec) => spec.kind === "phoneScript",
+    );
+    const copy = [
+      rootTask?.titleTemplate,
+      rootTask?.descriptionTemplate,
+      phoneTask?.descriptionTemplate,
+    ].join("\n");
+
+    expect(copy).toContain("{{params.globalHumanity}}");
+    expect(copy).toContain("{{params.majorityHumanity}}");
+    expect(copy).toContain("{{params.doublingRoundsToTarget}}");
+    expect(copy).toContain("{{params.propagationAsksPerHuman}}");
+    expect(copy).toContain("{{params.directHumanAssignments}}");
+    expect(copy).not.toMatch(/\b8 billion\b/i);
+    expect(copy).not.toMatch(/\bfour billion\b/i);
+    expect(copy).not.toMatch(/\b32 rounds\b/i);
+    expect(copy).not.toMatch(/\btwo friends\b/i);
   });
 });

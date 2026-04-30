@@ -4,12 +4,12 @@ import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { ReferendumStepperPage } from "@/components/referendum/ReferendumStepperPage";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { treatyLink } from "@/lib/routes";
-import { getSiteFromHost } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
 
   if (site.primaryReferendumSlug) {
     const content = getOptionalReferendumSiteContent(site.contentKey);
@@ -28,7 +28,7 @@ interface TreatyPageProps {
 export default async function TreatyPage({ searchParams }: TreatyPageProps) {
   const params = await searchParams;
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   const referralCode = typeof params.ref === "string" ? params.ref : null;
   const treatyDashboardUrl =
     site.key === "onePercentTreaty" ? "/dashboard?welcome=1" : undefined;

@@ -12,13 +12,13 @@ import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { HumanityManagementDashboardClient } from "@/components/site/HumanityManagementDashboardClient";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
-import { getSiteFromHost } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
 
   if (site.contentKey) {
     const content = getOptionalReferendumSiteContent(site.contentKey);
@@ -39,7 +39,7 @@ export default async function DashboardPage({
 }: DashboardPageProps) {
   const params = await searchParams;
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   const session = await getServerSession(authOptions);
   const userId = session?.user.id;
 

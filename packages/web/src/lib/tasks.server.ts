@@ -1195,20 +1195,25 @@ export async function getTaskAncestors(
 export async function listTasks(options?: {
   assigneeOrganizationId?: string | null;
   assigneePersonId?: string | null;
+  category?: TaskCategory | null;
   frameKey?: TaskImpactFrameKey | string | null;
   limit?: number | null;
   status?: TaskStatus | null;
   userId?: string | null;
   visibility?: "public" | "owned" | "accessible";
 }) {
+  const visibilityWhere = getTaskVisibilityWhere({
+    assigneeOrganizationId: options?.assigneeOrganizationId,
+    assigneePersonId: options?.assigneePersonId,
+    status: options?.status,
+    userId: options?.userId,
+    visibility: options?.visibility,
+  });
+  const where: Prisma.TaskWhereInput = options?.category
+    ? { ...visibilityWhere, category: options.category }
+    : visibilityWhere;
   const tasks = await prisma.task.findMany({
-    where: getTaskVisibilityWhere({
-      assigneeOrganizationId: options?.assigneeOrganizationId,
-      assigneePersonId: options?.assigneePersonId,
-      status: options?.status,
-      userId: options?.userId,
-      visibility: options?.visibility,
-    }),
+    where,
     orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
     select: taskListSelect,
     ...(options?.limit == null ? {} : { take: options.limit }),

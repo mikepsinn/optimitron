@@ -3,9 +3,12 @@ import * as siteRegistry from "@/lib/site";
 import {
   buildTrialAbundanceSurveyUrl,
   getRequestSiteOrigin,
+  getCanonicalHostForSiteKey,
   getSiteConfig,
+  getSiteFromHeaders,
   getSiteFromHost,
   getSiteRouteDisposition,
+  isLocalHost,
   isSiteRouteAllowed,
 } from "@/lib/site";
 import { ROUTES } from "@/lib/routes";
@@ -41,6 +44,29 @@ describe("site variant registry", () => {
     expect(getSiteFromHost("dih.earth").key).toBe("dih");
     expect(getSiteFromHost("acceleratedmedicine.org").key).toBe("dih");
     expect(getSiteFromHost("optimitron.com").key).toBe("optimitron");
+  });
+
+  it("supports local-only middleware site override plumbing without DNS-specific hosts", () => {
+    expect(isLocalHost("127.0.0.1:3001")).toBe(true);
+    expect(isLocalHost("warondisease.org")).toBe(false);
+    expect(getCanonicalHostForSiteKey("warOnDisease")).toBe("warondisease.org");
+    expect(getCanonicalHostForSiteKey("dfda")).toBe("dfda.earth");
+    expect(
+      getSiteFromHeaders(
+        new Headers({
+          host: "127.0.0.1:3001",
+          "x-optimitron-site-key": "warOnDisease",
+        }),
+      ).key,
+    ).toBe("warOnDisease");
+    expect(
+      getSiteFromHeaders(
+        new Headers({
+          host: "warondisease.org",
+          "x-optimitron-site-key": "dfda",
+        }),
+      ).key,
+    ).toBe("warOnDisease");
   });
 
   it("uses the treaty home for War on Disease and the DIH home for Accelerated Medicine", () => {

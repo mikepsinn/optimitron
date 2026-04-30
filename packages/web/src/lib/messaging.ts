@@ -46,6 +46,16 @@ export const GAME = {
   wishocracyMinComparisons: 10,
 } as const;
 
+export const HUMANITY_MANAGEMENT = {
+  /** The phone-call training task requires one real call, not two. */
+  requiredPhoneCalls: 1,
+  /** Stage-1 training still requires two assigned humans. */
+  directHumanAssignments: 2,
+  /** Each contacted human is asked to recruit two more humans. */
+  propagationAsksPerHuman: 2,
+  callOneHumanTaskTitle: "Make one phone call. Outsource humanity management.",
+} as const;
+
 export const CTA = {
   playTheGame: "Play the Game",
   insertCoin: "Insert Coin",

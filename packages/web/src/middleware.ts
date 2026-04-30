@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ROUTES } from "@/lib/routes";
 import { getSiteStaticAssetRedirectPath } from "@/lib/site-assets";
 import {
+  getSiteFromHeaders,
   getSiteFromHost,
   getSiteRouteDisposition,
   isSiteRouteAllowed,
@@ -14,8 +15,7 @@ export function isMicrositeAllowed(pathname: string): boolean {
 
 export default withAuth(
   function middleware(req) {
-    const host = req.headers.get("host");
-    const site = getSiteFromHost(host);
+    const site = getSiteFromHeaders(req.headers);
     const assetRedirectPath = getSiteStaticAssetRedirectPath(
       site,
       req.nextUrl.pathname,

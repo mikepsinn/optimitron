@@ -21,14 +21,14 @@ import { fetchClinicalTrials } from "@/lib/medical/clinical-trials.server";
 import type { ClinicalTrialsIntApiResponse } from "@/lib/medical/clinical-trials.schema";
 import { getRouteMetadata } from "@/lib/metadata";
 import { conditionsLink, ROUTES, treatmentsLink } from "@/lib/routes";
-import { getSiteFromHost, type SiteConfig } from "@/lib/site";
+import { getSiteFromHeaders, type SiteConfig } from "@/lib/site";
 
 export const conditionsMetadata: Metadata = getRouteMetadata(conditionsLink);
 export const treatmentsMetadata: Metadata = getRouteMetadata(treatmentsLink);
 
 async function getRequestSite() {
   const hdrs = await headers();
-  return getSiteFromHost(hdrs.get("host"));
+  return getSiteFromHeaders(hdrs);
 }
 
 function formatCompactNumber(value: number) {

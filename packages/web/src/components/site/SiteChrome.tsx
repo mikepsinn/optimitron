@@ -5,7 +5,7 @@ import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { GameScoreBar } from "@/components/game/GameScoreBar";
-import { getSiteFromHost } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 import { SiteChromeFrame } from "@/components/site/SiteChromeFrame";
 
 export async function SiteChrome({
@@ -14,7 +14,7 @@ export async function SiteChrome({
   children: React.ReactNode;
 }) {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   const ui = getSiteVariantUiConfig(site.key);
 
   if (site.chromeVariant === "referendum") {

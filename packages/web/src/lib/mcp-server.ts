@@ -927,6 +927,9 @@ function resolveTaskEconomics(args: Record<string, unknown>, existing?: {
 }) {
   const existingContext = asObject(existing?.contextJson) ?? {};
   const existingFrame = asObject(existing?.selectedImpactFrame);
+  // Default 0.5 — neutral coin-flip — when no probability is supplied. The
+  // previous default was 1.0 which silently inflated EV for any task that
+  // omitted p_success; ranking treated those tasks as guaranteed successes.
   const pSuccess =
     firstFiniteNumber([
       args.p_success,
@@ -935,7 +938,7 @@ function resolveTaskEconomics(args: Record<string, unknown>, existing?: {
       existingContext.p_success,
       existingContext.pSuccess,
       existingFrame?.successProbabilityBase,
-    ], 1) ?? 1;
+    ], 0.5) ?? 0.5;
   const normalizedPSuccess = Math.max(0, Math.min(1, pSuccess));
   const grossValue = firstFiniteNumber([
     args.value,
@@ -1789,7 +1792,11 @@ const TASK_TOOL_DEFINITIONS = [
       type: "object" as const,
       properties: {
         status: { type: "string", enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"], description: "Filter by task status" },
-        category: { type: "string", description: "Filter by task category" },
+        category: {
+          type: "string",
+          enum: ["ADVOCACY", "RESEARCH", "COMMUNICATION", "ENGINEERING", "ORGANIZING", "OUTREACH", "GOVERNANCE", "SCIENCE", "LEGAL", "CREATIVE", "OTHER"],
+          description: "Filter by task category",
+        },
         assigneePersonId: { type: "string", description: "Filter by assignee person ID" },
         assignedToMe: {
           type: "boolean",
@@ -2065,7 +2072,11 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a new private personal task. Private visibility is the default (isPublic=false), and private tasks default to ACTIVE so they can enter the queue immediately. For useful life planning, include hours, value, p_success, and cash_cost whenever possible; use depends_on for true prerequisites; use executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; use deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at.",
+      "Create a new private personal task. Private visibility is the default (isPublic=false), and private tasks default to ACTIVE so they can enter the queue immediately. " +
+      "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
+      "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
+      "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
+      "The response includes a missingFields[] array — any soft-recommended fields (cash_cost, executor_type, difficulty, timeToImpactStartDays, taskKey) you skipped will be listed there so you can fill them in via updateTask.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -2156,7 +2167,7 @@ const TASK_TOOL_DEFINITIONS = [
         contextJson: TASK_CONTEXT_JSON_SCHEMA,
         sortOrder: { type: "number", description: "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score." },
       },
-      required: ["title"],
+      required: ["title", "description", "category", "impactStatement"],
     },
   },
 
@@ -3242,6 +3253,10 @@ export function createMcpServer(
           }
           const { tasks } = await getTaskFunctions();
           const status = a.status ? TaskStatus[a.status as keyof typeof TaskStatus] : null;
+          const category =
+            typeof a.category === "string" && a.category in TaskCategory
+              ? TaskCategory[a.category as keyof typeof TaskCategory]
+              : null;
           const limit = Math.min(Number(a.limit) || 20, 50);
           let assigneePersonId = (a.assigneePersonId as string) ?? null;
           let visibility: "public" | "accessible" = "public";
@@ -3256,6 +3271,7 @@ export function createMcpServer(
           }
           const list = await tasks.listTasks({
             status,
+            category,
             assigneePersonId,
             limit,
             userId: visibility === "accessible" ? userId : null,
@@ -3547,6 +3563,59 @@ export function createMcpServer(
           if (!a.title || typeof a.title !== "string" || !a.title.trim()) {
             return err("title is required.");
           }
+          if (!a.description || typeof a.description !== "string" || !a.description.trim()) {
+            return err("description is required. State what the task is and what 'done' looks like.");
+          }
+          if (!a.category || typeof a.category !== "string" || !(a.category in TaskCategory)) {
+            return err(
+              "category is required. Pick one of: ADVOCACY, RESEARCH, COMMUNICATION, ENGINEERING, ORGANIZING, OUTREACH, GOVERNANCE, SCIENCE, LEGAL, CREATIVE, OTHER.",
+            );
+          }
+          // Accept either an explicit array, or a markdown 'Acceptance
+          // criteria' section in the description (extracted later by
+          // mergeAcceptanceCriteriaIntoContext). Missing both = error.
+          const explicitCriteria = normalizeAcceptanceCriteria(a.acceptanceCriteria);
+          const extractedCriteria = explicitCriteria.length > 0
+            ? explicitCriteria
+            : extractAcceptanceCriteriaFromDescription(a.description);
+          if (extractedCriteria.length === 0) {
+            return err(
+              "acceptanceCriteria is required: pass a non-empty string array of testable 'done' conditions, " +
+              "or include a markdown '## Acceptance criteria' section with checklist bullets in the description.",
+            );
+          }
+          if (Array.isArray(a.acceptanceCriteria)
+            && a.acceptanceCriteria.some((c) => typeof c !== "string" || !c.trim())) {
+            return err("acceptanceCriteria entries must all be non-empty strings.");
+          }
+          if (!a.impactStatement || typeof a.impactStatement !== "string" || !a.impactStatement.trim()) {
+            return err(
+              "impactStatement is required. One sentence: why does completing this task matter? " +
+              "If you can't articulate the impact, the task should not exist.",
+            );
+          }
+          // Ranking-critical numeric fields. Each accepts aliases — see
+          // resolveTaskEconomics — but at least one of each group must be a
+          // finite number, otherwise the task scores 0 and never surfaces.
+          const hoursProvided = parseFiniteNumber(a.hours) != null
+            || parseFiniteNumber(a.estimatedEffortHours) != null;
+          const valueProvided = parseFiniteNumber(a.value) != null
+            || parseFiniteNumber(a.grossValue) != null
+            || parseFiniteNumber(a.expectedEconomicValueUsdBase) != null;
+          const pSuccessProvided = parseFiniteNumber(a.p_success) != null
+            || parseFiniteNumber(a.pSuccess) != null
+            || parseFiniteNumber(a.successProbabilityBase) != null;
+          const missingRanking: string[] = [];
+          if (!hoursProvided) missingRanking.push("hours (estimated effort hours)");
+          if (!valueProvided) missingRanking.push("value (gross USD welfare value if successful)");
+          if (!pSuccessProvided) missingRanking.push("p_success (success probability 0–1)");
+          if (missingRanking.length > 0) {
+            return err(
+              `Missing ranking-critical fields: ${missingRanking.join(", ")}. ` +
+              `Estimate them — a calibrated guess beats no number. ` +
+              `Tasks without these score 0 and will not surface in any queue.`,
+            );
+          }
 
           if (dependencyTaskIds.length > 0) {
             const dependencyTasks = await prisma.task.findMany({
@@ -3683,7 +3752,34 @@ export function createMcpServer(
               })
             : [];
 
-          return ok(scored[0] ?? { taskId: task.id, title: task.title, status: task.status });
+          // Soft-recommended fields the AI skipped. Surfaced so the next
+          // call (or an updateTask) can fill them in. Hard-required fields
+          // already errored above, so they are not echoed here.
+          const missingFields: string[] = [];
+          if (parseFiniteNumber(a.cash_cost) == null && parseFiniteNumber(a.estimatedCashCostUsdBase) == null) {
+            missingFields.push("cash_cost");
+          }
+          if (a.executor_type === undefined && a.executorType === undefined) {
+            missingFields.push("executor_type");
+          }
+          if (!a.difficulty) {
+            missingFields.push("difficulty");
+          }
+          if (parseFiniteNumber(a.timeToImpactStartDays) == null) {
+            missingFields.push("timeToImpactStartDays");
+          }
+          if (!a.taskKey || typeof a.taskKey !== "string" || !a.taskKey.trim()) {
+            missingFields.push("taskKey (stable dedup key — recommended for idempotency)");
+          }
+
+          const baseResult = scored[0] ?? { taskId: task.id, title: task.title, status: task.status };
+          return ok({
+            ...baseResult,
+            missingFields,
+            recommendation: missingFields.length === 0
+              ? "Task created with full metadata."
+              : `Task created. Consider an updateTask call to fill in: ${missingFields.join(", ")}.`,
+          });
         }
 
         case "upsertOrganization": {

@@ -3,13 +3,13 @@ import Link from "next/link";
 import { getSiteMetadata } from "@/lib/metadata";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getReferendumSiteSupportersData } from "@/lib/referendum-site.server";
-import { getSiteFromHost } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   const content = requireReferendumSiteContent(site);
   return getSiteMetadata(
     site,
@@ -21,7 +21,7 @@ export async function generateMetadata() {
 
 export default async function CoalitionPage() {
   const hdrs = await headers();
-  const site = getSiteFromHost(hdrs.get("host"));
+  const site = getSiteFromHeaders(hdrs);
   const content = requireReferendumSiteContent(site);
 
   const data = await getReferendumSiteSupportersData(site);

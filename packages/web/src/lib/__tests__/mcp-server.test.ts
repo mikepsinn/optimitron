@@ -1033,6 +1033,13 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Public Earth task",
+          description: "A public task that should be rejected for non-admin users.",
+          category: "ENGINEERING",
+          acceptanceCriteria: ["Public visibility is rejected for non-admin users"],
+          impactStatement: "Verifies the admin gate on public task creation.",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
           isPublic: true,
         },
       });
@@ -1075,6 +1082,13 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Build product demo",
+          description: "Record a 5-minute walkthrough of the new dashboard.",
+          category: "ENGINEERING",
+          acceptanceCriteria: [
+            "Demo video is recorded end-to-end",
+            "Video is uploaded and shareable link works",
+          ],
+          impactStatement: "Unlocks the grant submission worth $50K.",
           hours: 6,
           value: 50000,
           p_success: 0.9,
@@ -1142,6 +1156,8 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Add site inventory tools",
+          category: "ENGINEERING",
+          impactStatement: "Lets agents discover and read site pages programmatically.",
           description: [
             "## Problem",
             "",
@@ -1196,6 +1212,10 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Without parent or assignee or sourceUrl column",
+          description: "Create a task with no parent, no assignee, and a sourceUrl that should be folded into contextJson.",
+          category: "ENGINEERING",
+          acceptanceCriteria: ["sourceUrl is folded into contextJson.sourceUrls"],
+          impactStatement: "Regression-test the prisma write shape.",
           hours: 1,
           value: 100,
           p_success: 0.5,
@@ -1240,6 +1260,10 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Subtask with parent + assignee",
+          description: "A subtask attached to parent-1 and assigned to person-1.",
+          category: "ENGINEERING",
+          acceptanceCriteria: ["parentTaskId is set to parent-1", "assigneePersonId is set to person-1"],
+          impactStatement: "Verifies conditional-spread of FK fields in the create payload.",
           hours: 1,
           value: 100,
           p_success: 0.5,

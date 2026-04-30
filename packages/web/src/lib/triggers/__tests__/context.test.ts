@@ -5,7 +5,7 @@ describe("buildTriggerParams", () => {
   const params = buildTriggerParams();
 
   it("emits raw + Linked variants for every parameter", () => {
-    const expectedKeys = [
+    const linkedKeys = [
       "militaryVsResearchRatio",
       "statusQuoYears",
       "dfdaYears",
@@ -14,9 +14,20 @@ describe("buildTriggerParams", () => {
       "healthYearsGain",
       "lifetimeIncomeGain",
     ];
-    for (const key of expectedKeys) {
+    const rawOnlyKeys = [
+      "globalHumanity",
+      "majorityHumanity",
+      "doublingRoundsToTarget",
+      "requiredPhoneCalls",
+      "directHumanAssignments",
+      "propagationAsksPerHuman",
+    ];
+    for (const key of linkedKeys) {
       expect(params).toHaveProperty(key);
       expect(params).toHaveProperty(`${key}Linked`);
+    }
+    for (const key of rawOnlyKeys) {
+      expect(params).toHaveProperty(key);
     }
   });
 
