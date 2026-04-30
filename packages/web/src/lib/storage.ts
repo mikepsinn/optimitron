@@ -6,6 +6,11 @@ const STORAGE_KEYS = {
   signupShareAttempt: "signup_share_attempt",
   signupInviteToken: "signup_invite_token",
   signupSubscribe: "signup_subscribe",
+  /// First URL the user landed on, captured ONCE on first page load.
+  /// Posted to applyPostSigninSync at first signin and stored as
+  /// `User.signupLandingUrl`. Survives the magic-link round-trip because
+  /// localStorage persists across page navigations.
+  signupLandingUrl: "signup_landing_url",
   pendingWishocracy: "pendingWishocracy",
   pendingTreatyVote: "pending_treaty_vote",
   voteStatusCache: "vote_status_cache",
@@ -154,12 +159,24 @@ export const storage = {
   setSignupSubscribe: (subscribe: boolean) => setBooleanItem(STORAGE_KEYS.signupSubscribe, subscribe),
   clearSignupSubscribe: () => removeStorageItem(STORAGE_KEYS.signupSubscribe),
 
+  /// Returns the FIRST landing URL stored for this browser. Setter is
+  /// idempotent: calling setSignupLandingUrl after the value is already
+  /// present is a no-op so we never overwrite the original landing.
+  getSignupLandingUrl: () => getStringItem(STORAGE_KEYS.signupLandingUrl),
+  setSignupLandingUrlIfMissing: (url: string) => {
+    if (typeof window === "undefined") return;
+    if (getStringItem(STORAGE_KEYS.signupLandingUrl)) return;
+    setStringItem(STORAGE_KEYS.signupLandingUrl, url);
+  },
+  clearSignupLandingUrl: () => removeStorageItem(STORAGE_KEYS.signupLandingUrl),
+
   clearSignupData: () => {
     removeStorageItem(STORAGE_KEYS.signupName);
     removeStorageItem(STORAGE_KEYS.signupReferral);
     removeStorageItem(STORAGE_KEYS.signupShareAttempt);
     removeStorageItem(STORAGE_KEYS.signupInviteToken);
     removeStorageItem(STORAGE_KEYS.signupSubscribe);
+    removeStorageItem(STORAGE_KEYS.signupLandingUrl);
   },
 
   getChatApiKey: () => getStringItem(STORAGE_KEYS.chatApiKey),

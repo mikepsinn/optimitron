@@ -61,6 +61,7 @@ describe("post-signin auth route", () => {
       newsletterSubscribed: false,
       referralCode: "REF123",
       shareAttemptId: "sa_123",
+      signupLandingUrl: null,
     });
     await expect(response.json()).resolves.toEqual({
       success: true,

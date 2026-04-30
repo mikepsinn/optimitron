@@ -31,6 +31,9 @@ export async function POST(
       makePublic?: boolean;
       inviteToken?: string;
       orgContextToken?: string;
+      /// Full URL the voter was on when they hit submit (window.location.href).
+      /// Captured for forensic attribution — first-vote-wins, never overwritten.
+      originUrl?: string;
     };
 
     const answer = body.answer?.toUpperCase();
@@ -87,6 +90,10 @@ export async function POST(
       !verifiedOrganization.deletedAt
         ? verifiedOrganization.id
         : null;
+    /// Full URL the voter was on (e.g. https://warondisease.org/vote?ref=alice).
+    /// Captured at insert time from the client. Variant key is derivable from
+    /// the URL host on demand. First-vote-wins — revote does not overwrite.
+    const originUrl = typeof body.originUrl === "string" ? body.originUrl : null;
     const vote = await prisma.referendumVote.upsert({
       where: {
         userId_referendumId: {
@@ -105,6 +112,7 @@ export async function POST(
         referendumId: referendum.id,
         answer: answer as VotePosition,
         referredByUserId,
+        originUrl,
         ...(organizationId ? { organizationId } : {}),
       },
     });

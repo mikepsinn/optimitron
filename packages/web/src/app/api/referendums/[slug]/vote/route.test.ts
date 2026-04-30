@@ -188,7 +188,13 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(mocks.upsert).toHaveBeenCalledWith({
       where: { userId_referendumId: { userId: "user_1", referendumId: "ref_1" } },
       update: { answer: "YES", deletedAt: null },
-      create: { userId: "user_1", referendumId: "ref_1", answer: "YES", referredByUserId: null },
+      create: {
+        userId: "user_1",
+        referendumId: "ref_1",
+        answer: "YES",
+        referredByUserId: null,
+        originUrl: null,
+      },
     });
     expect(mocks.syncReferralVoteTokenMintForVote).toHaveBeenCalledWith({
       referredVoterUserId: "user_1",

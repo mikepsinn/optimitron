@@ -5,6 +5,7 @@ import type { State } from "wagmi";
 import { usePathname, useSearchParams } from "next/navigation";
 import { SessionProvider } from "next-auth/react";
 import { AuthPostSigninSync } from "@/components/auth/AuthPostSigninSync";
+import { SignupLandingUrlCapture } from "@/components/auth/SignupLandingUrlCapture";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Web3Provider } from "@/components/providers/Web3Provider";
 import { WishPointProvider } from "@/components/wishes/WishPointProvider";
@@ -31,6 +32,7 @@ export function Providers({
       <ThemeProvider>
         <Web3Provider initialState={initialState}>
           <WishPointProvider>
+            <SignupLandingUrlCapture />
             <AuthPostSigninSync />
             {showDeclarationPopup ? (
               <DeclarationSigningPopup forceOpen={declarationRequested} />

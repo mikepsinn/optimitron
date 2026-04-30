@@ -256,6 +256,7 @@ const taskListSelect = {
   isPublic: true,
   maxClaims: true,
   ownerUserId: true,
+  sortOrder: true,
   outgoingEdges: {
     where: {
       deletedAt: null,

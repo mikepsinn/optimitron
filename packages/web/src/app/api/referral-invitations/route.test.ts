@@ -98,6 +98,7 @@ describe("/api/referral-invitations", () => {
       referendumSlug: undefined,
       taskId: undefined,
       shareAttemptId: undefined,
+      originUrl: undefined,
     });
   });
 

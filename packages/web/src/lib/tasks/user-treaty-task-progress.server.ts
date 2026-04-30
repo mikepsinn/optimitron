@@ -13,7 +13,15 @@ type UserTreatyTaskProgressClient =
 
 async function fireVerifiedSubtaskEvent(
   db: UserTreatyTaskProgressClient,
-  input: { kind: "assignFirstHuman" | "assignSecondHuman" | "phoneScript" | "shareReferralUrl"; userId: string },
+  input: {
+    kind:
+      | "assignFirstHuman"
+      | "assignSecondHuman"
+      | "phoneScript"
+      | "shareReferralUrl"
+      | "signTreatyPersonally";
+    userId: string;
+  },
 ) {
   await fireTaskTriggersForEvent(
     "task.statusChanged.VERIFIED",
@@ -23,6 +31,74 @@ async function fireVerifiedSubtaskEvent(
     }),
     { actorUserId: input.userId, db },
   );
+}
+
+/**
+ * Verify the user's `signTreatyPersonally` HMT subtask. Trust-the-user:
+ * called when the dashboard records that they clicked through to
+ * `1percenttreaty.org/treaty` to publicly sign. There's no callback from
+ * 1percenttreaty.org back to us (yet — it's a future signature webhook),
+ * so we mirror the `phoneScript` pattern: the user attests by clicking,
+ * we mark the subtask done, the gate evaluates, completeTraining
+ * auto-VERIFIES once all five siblings are green.
+ *
+ * Idempotent — repeat calls after the task is already VERIFIED no-op
+ * because the updateMany filters on `status: { not: VERIFIED }`.
+ */
+export async function markUserTreatyPersonalSignComplete(
+  input: {
+    now?: Date;
+    personId?: string | null;
+    userId: string;
+  },
+  db: UserTreatyTaskProgressClient = prisma,
+): Promise<boolean> {
+  const now = input.now ?? new Date();
+  const treatyTask = await ensureUserTreatyTask(
+    {
+      now,
+      personId: input.personId ?? null,
+      userId: input.userId,
+    },
+    db,
+  );
+  const signTaskId = treatyTask.subtaskIds.signTreatyPersonally;
+
+  const updated = await db.task.updateMany({
+    where: {
+      deletedAt: null,
+      id: signTaskId,
+      ownerUserId: input.userId,
+      status: { not: TaskStatus.VERIFIED },
+    },
+    data: {
+      actualEffortSeconds: 30,
+      completedAt: now,
+      completionEvidence:
+        "User reported publicly signing the 1% Treaty at 1percenttreaty.org.",
+      status: TaskStatus.VERIFIED,
+      verifiedAt: now,
+      verifiedByUserId: input.userId,
+    },
+  });
+
+  if (updated.count === 0) return false;
+
+  await db.taskComment.create({
+    data: {
+      authorUserId: input.userId,
+      kind: TaskCommentKind.STATUS_UPDATE,
+      message: "Signed the 1% Treaty publicly.",
+      source: TaskCommentSource.WEB,
+      taskId: signTaskId,
+    },
+  });
+
+  await fireVerifiedSubtaskEvent(db, {
+    kind: "signTreatyPersonally",
+    userId: input.userId,
+  });
+  return true;
 }
 
 export async function markUserTreatyReferralShareComplete(

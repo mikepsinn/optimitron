@@ -71,8 +71,13 @@ export async function createReferralInvitationRequest(input: {
   recipientName: string;
   shareAttemptId?: string | null;
 }, fetcher: typeof fetch = fetch) {
+  /// Capture window.location.href at request time. The route stores it as
+  /// ReferralInvitation.originUrl for variant + UTM forensics. Server-side
+  /// callers (no window) just send undefined.
+  const originUrl =
+    typeof window !== "undefined" ? window.location.href : undefined;
   const response = await fetcher("/api/referral-invitations", {
-    body: JSON.stringify(input),
+    body: JSON.stringify({ ...input, originUrl }),
     headers: { "Content-Type": "application/json" },
     method: "POST",
   });

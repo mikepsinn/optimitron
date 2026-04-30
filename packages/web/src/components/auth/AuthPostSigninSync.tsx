@@ -23,9 +23,11 @@ export function AuthPostSigninSync() {
     const shareAttemptId = storage.getSignupShareAttempt();
     const name = storage.getSignupName();
     const newsletterSubscribed = storage.getSignupSubscribe();
+    const signupLandingUrl = storage.getSignupLandingUrl();
 
     const hasPostSigninContext =
-      Boolean(referralCode || shareAttemptId || name) || newsletterSubscribed !== null;
+      Boolean(referralCode || shareAttemptId || name || signupLandingUrl) ||
+      newsletterSubscribed !== null;
 
     if (!hasPostSigninContext) {
       void syncPendingReferendumVotes(session);
@@ -45,6 +47,7 @@ export function AuthPostSigninSync() {
         shareAttemptId,
         name,
         newsletterSubscribed,
+        signupLandingUrl,
       }),
     })
       .then(async (response) => {

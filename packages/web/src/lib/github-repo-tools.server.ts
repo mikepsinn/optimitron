@@ -21,7 +21,18 @@ export interface ListRepoFilesInput extends RepoToolInput {
   path?: string;
 }
 
-const DEFAULT_REPO = "mikepsinn/optimitron";
+/// Hardcoded list of repos the MCP GitHub tools may touch. Owner/name
+/// pairs only — no wildcards, no env-var override. The fine-grained PAT
+/// at `GITHUB_PAT` is the authoritative gate (out-of-scope requests are
+/// rejected by GitHub with 403); this list exists for fail-fast at the
+/// app layer if a too-broadly-scoped token is swapped in by accident.
+/// Adding a new repo is a one-line code change reviewed via PR.
+const ALLOWED_REPOS: readonly string[] = [
+  "mikepsinn/optimitron",
+  "mikepsinn/disease-eradication-plan",
+];
+/// First entry is the default when a tool call omits `repo`.
+const DEFAULT_REPO = ALLOWED_REPOS[0]!;
 const DEFAULT_REF = "main";
 const CONTENT_CACHE_TTL_MS = 60_000;
 
@@ -30,26 +41,8 @@ const fileContentCache = new Map<
   { expiresAt: number; value: Record<string, unknown> }
 >();
 
-function getDefaultRepo() {
-  return normalizeRepo(process.env.GITHUB_DEFAULT_REPO ?? DEFAULT_REPO);
-}
-
 function getToken() {
   return process.env.GITHUB_PAT ?? process.env.GITHUB_TOKEN ?? null;
-}
-
-function getAllowedRepoPatterns() {
-  const configured = process.env.GITHUB_REPO_ALLOWLIST?.split(",")
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-
-  if (configured?.length) {
-    return configured.map((entry) =>
-      entry.includes("/") ? entry.toLowerCase() : normalizeRepo(entry),
-    );
-  }
-
-  return [getDefaultRepo()];
 }
 
 function normalizeRepo(repo: string) {
@@ -71,20 +64,10 @@ function normalizeRepo(repo: string) {
   return `${parts[0]}/${parts[1]}`.toLowerCase();
 }
 
-function isRepoAllowed(repo: string) {
-  return getAllowedRepoPatterns().some((pattern) => {
-    if (pattern === "*" || pattern === repo) return true;
-    if (pattern.endsWith("/*")) {
-      return repo.startsWith(pattern.slice(0, -1));
-    }
-    return false;
-  });
-}
-
 function assertRepoAllowed(repo: string) {
-  if (!isRepoAllowed(repo)) {
+  if (!ALLOWED_REPOS.includes(repo)) {
     throw new Error(
-      `Repository ${repo} is not in GITHUB_REPO_ALLOWLIST. Add it explicitly before exposing it through MCP.`,
+      `Repository ${repo} is not in the MCP GitHub allowlist. Add it to ALLOWED_REPOS in github-repo-tools.server.ts.`,
     );
   }
 }
@@ -243,7 +226,7 @@ export async function listRepoFiles(input: ListRepoFilesInput) {
 
 function buildSearchQuery(input: SearchRepoInput) {
   const terms = [input.query.trim()];
-  const repo = input.repo ? normalizeRepo(input.repo) : getDefaultRepo();
+  const repo = input.repo ? normalizeRepo(input.repo) : DEFAULT_REPO;
   assertRepoAllowed(repo);
   terms.push(`repo:${repo}`);
 

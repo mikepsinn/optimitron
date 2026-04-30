@@ -147,6 +147,11 @@ export async function createReferralInvitation(input: {
   referendumSlug?: string | null;
   taskId?: string | null;
   shareAttemptId?: string | null;
+  /// Full URL the inviter was on when composing this invitation
+  /// (window.location.href). Captured by the client and passed through by
+  /// the API route. Stored once on insert; immutable thereafter. Variant
+  /// key is derivable from the URL host on demand.
+  originUrl?: string | null;
 }) {
   const recipientName = input.recipientName.trim();
   if (!recipientName) {
@@ -285,6 +290,7 @@ export async function createReferralInvitation(input: {
         taskId: linkedTaskId,
         shareAttemptId: input.shareAttemptId || null,
         inviteToken,
+        originUrl: input.originUrl ?? null,
       },
     });
   });

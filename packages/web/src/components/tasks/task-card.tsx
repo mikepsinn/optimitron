@@ -89,6 +89,7 @@ export interface TaskCardTask {
   parentTask?: { id: string; title: string } | null;
   roleTitle: string | null;
   recommendationScore?: number;
+  sortOrder?: number | null;
   sourceUrl: string | null;
   status: TaskStatus;
   taskKey?: string | null;

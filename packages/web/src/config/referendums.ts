@@ -49,6 +49,10 @@ async function postVote(
         ref: referredBy ?? undefined,
         inviteToken: inviteToken ?? undefined,
         orgContextToken: orgContextToken ?? undefined,
+        // Full URL the voter was on at submit time. Server stores as
+        // ReferendumVote.originUrl for variant + UTM forensics.
+        originUrl:
+          typeof window !== "undefined" ? window.location.href : undefined,
       }),
     });
     return res.ok;

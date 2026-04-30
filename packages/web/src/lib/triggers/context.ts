@@ -1,3 +1,4 @@
+import type { Parameter } from "@optimitron/data/parameters";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
@@ -16,8 +17,15 @@ import {
  * seed. When a parameter source changes, this is the only file that
  * needs updating — the rendered output flows through automatically.
  *
- * Numbers are rounded for human-readable copy. If a template needs the
- * raw float, add a separate `params.foo.raw` token.
+ * Each parameter is exposed in two variants:
+ *   - `{{params.foo}}`        — raw rounded number, e.g. "604". Use in
+ *                               read-aloud surfaces (phone script) or any
+ *                               context that doesn't render markdown.
+ *   - `{{params.fooLinked}}`  — markdown link to the canonical source, e.g.
+ *                               "[604](https://manual.warondisease.org/...)".
+ *                               Use in markdown-rendered surfaces (task
+ *                               descriptions, HTML email bodies). Lets a
+ *                               skeptical reader click through to verify.
  */
 function roundParam(param: { value: number }, digits = 0): string {
   const factor = 10 ** digits;
@@ -33,24 +41,65 @@ function formatUsdMillions(param: { value: number }): string {
   return `$${millions.toFixed(2)}M`;
 }
 
+/**
+ * Pick the best citation URL for a parameter. Priority: the narrative
+ * manual chapter (most user-friendly landing) > the calculations page
+ * (math derivation) > the raw source (e.g. WHO database). Returns null
+ * when none are present so the caller can fall back to plain text.
+ */
+function pickParameterUrl(param: Parameter): string | null {
+  return param.manualPageUrl ?? param.calculationsUrl ?? param.sourceUrl ?? null;
+}
+
+/**
+ * Render a parameter as a markdown link wrapping its formatted value.
+ * If the parameter has no citation URL, falls back to the plain rendered
+ * text — avoids producing broken `[value]()` links.
+ */
+function linkParam(param: Parameter, rendered: string): string {
+  const url = pickParameterUrl(param);
+  return url ? `[${rendered}](${url})` : rendered;
+}
+
 export function buildTriggerParams() {
+  const militaryVsResearchRatio = roundParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO);
+  const statusQuoYears = roundParam(STATUS_QUO_QUEUE_CLEARANCE_YEARS);
+  const dfdaYears = roundParam(DFDA_QUEUE_CLEARANCE_YEARS);
+  const apocalypseCount = roundParam(NUCLEAR_WINTER_OVERKILL_FACTOR);
+  const annualLivesSaved = roundParam(TREATY_LIVES_SAVED_ANNUAL_GLOBAL);
+  const healthYearsGain = roundParam(TREATY_HALE_GAIN_YEAR_15, 1);
+  const lifetimeIncomeGain = formatUsdMillions(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA);
+
   return {
     /// 604 — military spending vs government clinical-trials spending ratio.
-    militaryVsResearchRatio: roundParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO),
+    militaryVsResearchRatio,
+    militaryVsResearchRatioLinked: linkParam(
+      MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+      militaryVsResearchRatio,
+    ),
     /// 443 — years to clear the disease-treatment queue at status-quo throughput.
-    statusQuoYears: roundParam(STATUS_QUO_QUEUE_CLEARANCE_YEARS),
+    statusQuoYears,
+    statusQuoYearsLinked: linkParam(STATUS_QUO_QUEUE_CLEARANCE_YEARS, statusQuoYears),
     /// 36 — years to clear the same queue with dFDA throughput (the 1% Treaty bet).
-    dfdaYears: roundParam(DFDA_QUEUE_CLEARANCE_YEARS),
+    dfdaYears,
+    dfdaYearsLinked: linkParam(DFDA_QUEUE_CLEARANCE_YEARS, dfdaYears),
     /// 122 — nuclear-winter-scale civilization-ending capacity in the global arsenal.
-    apocalypseCount: roundParam(NUCLEAR_WINTER_OVERKILL_FACTOR),
+    apocalypseCount,
+    apocalypseCountLinked: linkParam(NUCLEAR_WINTER_OVERKILL_FACTOR, apocalypseCount),
     /// Annual global lives saved if the treaty's first-treatment timeline holds.
-    annualLivesSaved: roundParam(TREATY_LIVES_SAVED_ANNUAL_GLOBAL),
+    annualLivesSaved,
+    annualLivesSavedLinked: linkParam(TREATY_LIVES_SAVED_ANNUAL_GLOBAL, annualLivesSaved),
     /// 21.7 — HALE gain at year 15 under the Treaty trajectory. Used in the
     /// Promotion screen / first-task description compensation line.
-    healthYearsGain: roundParam(TREATY_HALE_GAIN_YEAR_15, 1),
+    healthYearsGain,
+    healthYearsGainLinked: linkParam(TREATY_HALE_GAIN_YEAR_15, healthYearsGain),
     /// $3.48M — per-capita lifetime income gain under the Treaty trajectory.
     /// Used in the Promotion screen / first-task description compensation line.
-    lifetimeIncomeGain: formatUsdMillions(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA),
+    lifetimeIncomeGain,
+    lifetimeIncomeGainLinked: linkParam(
+      TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
+      lifetimeIncomeGain,
+    ),
   };
   // Note: the Wishonia signature is intentionally NOT exposed as a template
   // token. Outgoing emails get the signature appended automatically by the

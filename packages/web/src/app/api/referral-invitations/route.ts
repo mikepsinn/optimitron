@@ -27,6 +27,9 @@ const createInvitationSchema = z.object({
   referendumSlug: z.string().trim().min(1).max(128).nullish(),
   taskId: z.string().trim().min(1).max(128).nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
+  /// Full URL the inviter was on (window.location.href). Forensic field;
+  /// optional. Cap at 2KB so a malicious client can't blow up storage.
+  originUrl: z.string().trim().max(2048).nullish(),
 });
 
 const patchInvitationSchema = z.object({
@@ -75,6 +78,7 @@ export async function POST(request: Request) {
       referendumSlug: parsed.referendumSlug,
       taskId: parsed.taskId,
       shareAttemptId: parsed.shareAttemptId,
+      originUrl: parsed.originUrl,
     });
 
     return NextResponse.json({ invitation }, { status: 201 });

@@ -27,6 +27,7 @@ const USER_TREATY_TASK_KEY_PREFIX = "program:one-percent-treaty:user";
 
 export type UserTreatySubtaskKind =
   | "completeTraining"
+  | "signTreatyPersonally"
   | "shareReferralUrl"
   | "phoneScript"
   | "assignFirstHuman"
@@ -36,6 +37,7 @@ export type UserTreatySubtaskIds = Record<UserTreatySubtaskKind, string>;
 export type UserTreatySubtaskStatuses = Record<UserTreatySubtaskKind, TaskStatus>;
 
 const REQUIRED_SUBTASK_KINDS: readonly UserTreatySubtaskKind[] = [
+  "signTreatyPersonally",
   "shareReferralUrl",
   "phoneScript",
   "assignFirstHuman",

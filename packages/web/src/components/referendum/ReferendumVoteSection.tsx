@@ -53,6 +53,8 @@ export function ReferendumVoteSection({
         body: JSON.stringify({
           answer: position,
           ref: storedRef,
+          originUrl:
+            typeof window !== "undefined" ? window.location.href : undefined,
         }),
       });
 

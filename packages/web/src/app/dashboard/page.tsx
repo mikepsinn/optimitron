@@ -71,17 +71,29 @@ export default async function DashboardPage({
       userId,
     });
     const taskData = await getTasksPageData(userId);
-    const nextTasks = taskData.ownedPrivateTasks.filter(
+    /// Order children by the sortOrder set in the user-onboarding:treaty
+    /// blueprint (sign 0 → share 10 → phone 20 → assign1 30 → assign2 40 →
+    /// completeTraining 50). Persuasion-optimized order: do the personal
+    /// commitment before asking anyone else.
+    const sortBySortOrder = (a: TaskCardTask, b: TaskCardTask) =>
+      (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+    const userTreatySubtasks = taskData.ownedPrivateTasks.filter(
       (task) =>
         task.id !== treatyTask.taskId &&
         task.parentTaskId === treatyTask.taskId &&
-        task.status !== "VERIFIED" &&
         task.status !== "STALE",
     ) as TaskCardTask[];
+    const nextTasks = userTreatySubtasks
+      .filter((task) => task.status !== "VERIFIED")
+      .sort(sortBySortOrder);
+    const completedTasks = userTreatySubtasks
+      .filter((task) => task.status === "VERIFIED")
+      .sort(sortBySortOrder);
 
     return (
       <HumanityManagementDashboardClient
         nextTasks={nextTasks}
+        completedTasks={completedTasks}
       />
     );
   }

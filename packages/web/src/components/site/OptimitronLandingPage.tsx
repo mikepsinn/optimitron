@@ -12,7 +12,6 @@ import { GovernmentReportCardPreview } from "@/components/landing/GovernmentRepo
 import { HeroSection } from "@/components/landing/HeroSection";
 import { HowToWinSection } from "@/components/landing/HowToWinSection";
 import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveyardSection";
-import { LandingFAQSection } from "@/components/landing/LandingFAQSection";
 import { OptimalPolicyPreview } from "@/components/landing/OptimalPolicyPreview";
 import { OptimizedGovernanceSection } from "@/components/landing/OptimizedGovernanceSection";
 import { PleaseSelectAnEarthSection } from "@/components/landing/PleaseSelectAnEarthSection";
@@ -145,10 +144,7 @@ export function OptimitronLandingPage({
       {/* ── 18. The Armory — player tools ── */}
       <ArmorySection />
 
-      {/* ── 19. Frequently Asked Objections ── */}
-      <LandingFAQSection />
-
-      {/* ── 20. Final CTA — countdown + ticker ── */}
+      {/* ── 19. Final CTA — countdown + ticker ── */}
       <FinalCTASection />
     </div>
   );

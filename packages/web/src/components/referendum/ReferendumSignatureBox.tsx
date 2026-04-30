@@ -115,6 +115,8 @@ export function ReferendumSignatureBox({
               answer: "YES",
               ref: referralCode ?? undefined,
               ...(showPrivacyToggle ? { makePublic } : {}),
+              originUrl:
+                typeof window !== "undefined" ? window.location.href : undefined,
             }),
           },
         );

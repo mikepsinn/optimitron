@@ -13,6 +13,13 @@ interface PostSigninSyncInput {
   newsletterSubscribed?: boolean;
   referralCode?: string | null;
   shareAttemptId?: string | null;
+  /// First URL the user landed on (with full query string for UTM /
+  /// referral / campaign attribution). Captured by the client into
+  /// localStorage on first page load and posted here at first signin.
+  /// Stored as `User.signupLandingUrl`, first-signin-wins. The site
+  /// variant is derivable from the URL's host via `getSiteFromHost` —
+  /// no separate normalized column.
+  signupLandingUrl?: string | null;
 }
 
 export async function applyPostSigninSync({
@@ -21,12 +28,14 @@ export async function applyPostSigninSync({
   newsletterSubscribed,
   referralCode,
   shareAttemptId,
+  signupLandingUrl,
 }: PostSigninSyncInput) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       name: true,
       newsletterSubscribed: true,
+      signupLandingUrl: true,
     },
   });
 
@@ -35,7 +44,11 @@ export async function applyPostSigninSync({
   }
 
   const trimmedName = name?.trim() || null;
-  const updateData: { name?: string; newsletterSubscribed?: boolean } = {};
+  const updateData: {
+    name?: string;
+    newsletterSubscribed?: boolean;
+    signupLandingUrl?: string;
+  } = {};
 
   if (trimmedName && !user.name) {
     updateData.name = trimmedName;
@@ -46,6 +59,13 @@ export async function applyPostSigninSync({
     newsletterSubscribed !== user.newsletterSubscribed
   ) {
     updateData.newsletterSubscribed = newsletterSubscribed;
+  }
+
+  // First-signin-wins: only set signupLandingUrl when the user doesn't
+  // already have one. Subsequent signins from different URLs don't
+  // overwrite the origin.
+  if (signupLandingUrl && !user.signupLandingUrl) {
+    updateData.signupLandingUrl = signupLandingUrl;
   }
 
   if (Object.keys(updateData).length > 0) {

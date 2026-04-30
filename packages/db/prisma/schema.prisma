@@ -718,6 +718,18 @@ model User {
   /// leaderboards, referral attribution, and human accountability views.
   isSystem Boolean @default(false)
 
+  /// First URL the user landed on, captured ONCE at first signin from the
+  /// client (via localStorage, populated on first page load). Preserves
+  /// query params (`?ref=alice`, `?utm_source=tweet`, `?campaign=...`)
+  /// AND the host (which encodes the site variant), so we don't need a
+  /// separate `signupSiteKey` column — derive the variant by passing the
+  /// URL's host to `getSiteFromHost` whenever we need it. If indexed
+  /// per-variant queries become hot later, add a Postgres generated
+  /// column or a partial index then. Null for users created before this
+  /// column was added or when the client didn't capture it (some browsers
+  /// block localStorage; some users disable JS).
+  signupLandingUrl String?
+
   /// Scopes the user has opted out of (e.g. "referral_sequence", "onboarding").
   /// The literal scope "all" means opt-out of every non-transactional email.
   /// Transactional scopes (magic_link, account_security) bypass this list.
@@ -2507,6 +2519,14 @@ model ReferralInvitation {
   /// Soft-delete timestamp
   deletedAt DateTime?
 
+  /// Full URL the inviter was on when they composed this invitation
+  /// (with query string for UTM / referral / campaign forensics).
+  /// Captured at insert time from the client's `window.location.href`.
+  /// Variant key is derivable from the URL's host on demand. Mirrors
+  /// `User.signupLandingUrl` and `ReferendumVote.originUrl` — one
+  /// column shape, one mental model.
+  originUrl String?
+
   // -- Relations --
   referrer           User                @relation("ReferralInvitationReferrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
   recipient          Person?             @relation("ReferralInvitationRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
@@ -3099,6 +3119,13 @@ model ReferendumVote {
 
   /// Soft-delete timestamp
   deletedAt DateTime?
+
+  /// Full URL the voter was on when they cast this vote (with query
+  /// string for UTM / referral / campaign forensics). Captured at insert
+  /// time from the client's `window.location.href`. Variant key is
+  /// derivable from the URL's host on demand. Mirrors `User.signupLandingUrl`
+  /// and `ReferralInvitation.originUrl`.
+  originUrl String?
 
   // -- Relations --
   user                        User                @relation("UserReferendumVotes", fields: [userId], references: [id], onDelete: Cascade)

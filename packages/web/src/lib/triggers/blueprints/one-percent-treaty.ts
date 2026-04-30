@@ -13,8 +13,10 @@ const HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE = "Complete Humanity Management Tr
 // docs/questions.md (lines 392-403, the Promotion screen). The live
 // "Performance to date" counter from the screen is omitted because it doesn't
 // translate to a static task body. Compensation numbers come from
-// {{params.healthYearsGain}} (TREATY_HALE_GAIN_YEAR_15 -> 21.7) and
-// {{params.lifetimeIncomeGain}} (TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA -> $3.48M).
+// {{params.healthYearsGainLinked}} (TREATY_HALE_GAIN_YEAR_15 -> 21.7) and
+// {{params.lifetimeIncomeGainLinked}} (TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA -> $3.48M).
+// Markdown task descriptions render the *Linked variants — clickable
+// citations to the manual chapter for skeptics who want to verify.
 const USER_TREATY_DESCRIPTION = [
   "🎉 **CONGRATULATIONS**",
   "",
@@ -23,8 +25,8 @@ const USER_TREATY_DESCRIPTION = [
   "**Direct reports:** ~8 billion humans",
   "**Primary KPI:** Hours of human suffering prevented per week",
   "**Compensation:**",
-  "- ~**{{params.healthYearsGain}}** extra years of healthy life",
-  "- ~**{{params.lifetimeIncomeGain}}** additional lifetime income",
+  "- ~**{{params.healthYearsGainLinked}}** extra years of healthy life",
+  "- ~**{{params.lifetimeIncomeGainLinked}}** additional lifetime income",
   "- Vesting: contingent on treaty passage. Forfeited on dismissal.",
 ].join("\n");
 
@@ -34,6 +36,11 @@ const USER_TREATY_DESCRIPTION = [
 //   {{params.statusQuoYears}}          -> 443 (queue clearance, status quo)
 //   {{params.dfdaYears}}               -> 36  (queue clearance, dFDA)
 //   {{params.apocalypseCount}}         -> 122 (nuclear-winter overkill factor)
+// These are deliberately the RAW variants, not `*Linked`. The script is
+// meant to be read aloud or copy-pasted into a text message — markdown
+// link syntax leaks as `[604](https://...)` in those contexts. For
+// markdown-rendered task descriptions and HTML email bodies, use the
+// `*Linked` variants instead (see USER_TREATY_DESCRIPTION above).
 const PHONE_SCRIPT_DESCRIPTION = [
   "Your job is to manage 8 billion humans. You're busy. Outsource it.",
   "",
@@ -55,7 +62,7 @@ const PHONE_SCRIPT_DESCRIPTION = [
   "",
   "---",
   "",
-  "Mark this task done after you've made two calls AND actually sent your referral URL to both of them. The receiving end finishes when those friends vote — that's tracked separately by the two assign-a-human subtasks below.",
+  "Mark this task done after you've made the call AND actually sent your referral URL. The receiving end finishes when those friends vote — that's tracked separately by the two assign-a-human subtasks below.",
 ].join("\n");
 
 const userOnboardingTreaty: CreateTaskTriggerInput = {
@@ -84,11 +91,27 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       parentResolver: `fixed:${TREATY_PARENT_TASK_KEY}`,
     },
     {
-      kind: "shareReferralUrl",
+      kind: "signTreatyPersonally",
       sortOrder: 0,
+      titleTemplate: "Sign the 1% Treaty publicly",
+      descriptionTemplate:
+        "Voting on this site is private. Signing on 1percenttreaty.org is public. You can't credibly ask a friend to do something you haven't publicly committed to yourself.",
+      category: "OTHER",
+      difficulty: "TRIVIAL",
+      estimatedEffortHours: 0.01,
+      ownerResolver: "actor",
+      assigneePersonResolver: "actor",
+      parentResolver: "trigger.parentSpec",
+      actionLinkUrlTemplate: "https://1percenttreaty.org/treaty",
+      actionLinkLabelTemplate: "Sign the treaty",
+      contributesToGate: true,
+    },
+    {
+      kind: "shareReferralUrl",
+      sortOrder: 10,
       titleTemplate: "Share your 1% Treaty referral URL",
       descriptionTemplate:
-        "Copy or post your referral URL so anyone who votes through it is attributed to your treaty-vote lineage.",
+        "Post your referral URL anywhere — text, social, email. Votes that arrive through it count toward your direct reports.",
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.02,
@@ -99,8 +122,8 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     },
     {
       kind: "phoneScript",
-      sortOrder: 5,
-      titleTemplate: "Make two phone calls. Outsource humanity management.",
+      sortOrder: 20,
+      titleTemplate: "Make a phone call. Outsource humanity management.",
       descriptionTemplate: PHONE_SCRIPT_DESCRIPTION,
       category: "OTHER",
       difficulty: "TRIVIAL",
@@ -112,10 +135,10 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     },
     {
       kind: "assignFirstHuman",
-      sortOrder: 10,
+      sortOrder: 30,
       titleTemplate: "Give your first human the 1% Treaty voting task",
       descriptionTemplate:
-        "Create one named invitation and actually contact that person with their voting task. If they vote, they get promoted too.",
+        "Pick someone you trust. Send them a named invitation. If they vote, they get promoted too.",
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,
@@ -126,10 +149,10 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     },
     {
       kind: "assignSecondHuman",
-      sortOrder: 20,
+      sortOrder: 40,
       titleTemplate: "Give your second human the 1% Treaty voting task",
       descriptionTemplate:
-        "Create a second named invitation and actually contact that person with their voting task. If they vote, they get promoted too.",
+        "Pick a second person. Same deal. Two reports is the minimum viable team.",
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,
@@ -140,10 +163,10 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     },
     {
       kind: "completeTraining",
-      sortOrder: 30,
+      sortOrder: 50,
       titleTemplate: HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE,
       descriptionTemplate:
-        "Finish the launch sequence: share your referral URL, give two named humans their voting tasks, and let the referral graph trace what happens next.",
+        "Auto-completes when the five tasks above are done. You don't action this one directly.",
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.25,
@@ -282,17 +305,17 @@ const hmtVerifyGate: CreateTaskTriggerInput = {
   idempotencyKeyTemplate: "program:one-percent-treaty:user:{{user.id}}:completeTraining",
   eventFilter: {
     field: "task.taskKey",
-    matches: "^program:one-percent-treaty:user:.+:(shareReferralUrl|phoneScript|assignFirstHuman|assignSecondHuman)$",
+    matches: "^program:one-percent-treaty:user:.+:(signTreatyPersonally|shareReferralUrl|phoneScript|assignFirstHuman|assignSecondHuman)$",
   },
   completionGate: {
     kind: "allOf",
     inputScope: "siblings",
-    subtaskKinds: ["shareReferralUrl", "phoneScript", "assignFirstHuman", "assignSecondHuman"],
+    subtaskKinds: ["signTreatyPersonally", "shareReferralUrl", "phoneScript", "assignFirstHuman", "assignSecondHuman"],
     evidenceTemplate:
-      "User shared their referral URL, made the phone call, and gave two named humans their 1% Treaty voting tasks.",
+      "User publicly signed the treaty, shared their referral URL, made the phone calls, and gave two named humans their 1% Treaty voting tasks.",
   },
   notes:
-    "Auto-VERIFIES the user's completeTraining subtask when its siblings (share + phoneScript + invite1 + invite2) are VERIFIED.",
+    "Auto-VERIFIES the user's completeTraining subtask when its siblings (sign + share + phoneScript + invite1 + invite2) are VERIFIED.",
 };
 
 // ---------------------------------------------------------------------------

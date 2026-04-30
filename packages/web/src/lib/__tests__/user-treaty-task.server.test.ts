@@ -98,14 +98,20 @@ function matchesTask(task: FakeTask, where: Record<string, unknown>) {
 function matchesComment(comment: FakeComment, where: Record<string, unknown>) {
   for (const [key, value] of Object.entries(where)) {
     if (key === "deletedAt" && value === null && comment.deletedAt !== null) return false;
-    if (
-      key === "message" &&
-      typeof value === "object" &&
-      value &&
-      "contains" in value &&
-      !comment.message.includes((value as { contains: string }).contains)
-    ) {
-      return false;
+    if (key === "message" && typeof value === "object" && value) {
+      if (
+        "contains" in value &&
+        !comment.message.includes((value as { contains: string }).contains)
+      ) {
+        return false;
+      }
+      if (
+        "startsWith" in value &&
+        !comment.message.startsWith((value as { startsWith: string }).startsWith)
+      ) {
+        return false;
+      }
+      continue;
     }
     if (key === "taskId") {
       if (typeof value === "string" && comment.taskId !== value) return false;
@@ -176,6 +182,9 @@ function createFakeTaskDb() {
         const comment = comments.find((c) => matchesComment(c, where ?? {}));
         return comment ? { id: comment.id } : null;
       }),
+      count: vi.fn(async ({ where }: { where?: Record<string, unknown> } = {}) => {
+        return comments.filter((c) => matchesComment(c, where ?? {})).length;
+      }),
     },
   };
   return { comments, db: db as never, tasks };
@@ -206,6 +215,7 @@ function seedSyntheticOnboardingTree(
     title: "Get 4 billion people to vote on the 1% Treaty",
   });
   const childKinds = [
+    "signTreatyPersonally",
     "shareReferralUrl",
     "phoneScript",
     "assignFirstHuman",

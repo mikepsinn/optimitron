@@ -4,44 +4,277 @@ This is the working checklist for Optimitron's task, expected-value, treaty, MCP
 
 ## Working Context
 
-- [x] Resolved the GitHub Actions `pnpm db:deploy` P3009 on `20260425200000_create_task_comment_tables` by inspecting the live migration ledger and partial schema state, marking the stale shim row applied, and rerunning deploy.
-- [x] Renamed the `/donate` founder-email constant to Mike-specific naming and use `m@warondisease.org`.
-- [x] Removed the root `AGENTS.md` rule that requires full `pnpm check` before every completed task; keep focused checks as the default local protocol.
-- [x] Added both conditional-on-success and 1%-success-probability suffering-years-per-dollar figures to `/donate`.
-- [x] Added a Playwright screenshot audit for the treaty survey and post-vote flow so the current UI can be reviewed before deciding on a more minimal black-and-white/serif redesign.
-  - Run: `pnpm --filter @optimitron/web exec playwright test e2e/treaty-vote-post-vote-screenshots.spec.ts --project=default --reporter=list`
-  - Outputs 19 desktop and 19 mobile-width screenshots under `packages/web/public/img/screenshots/treaty-vote-post-vote-flow/`.
-- [x] Redesign the Treaty survey/post-vote cards as a full-screen treaty-style experience: black and white, restrained Libre Baskerville typography, fewer cyan/pink neobrutalist accents, quieter controls, and preserved screen order/copy.
-  - Added a shared `TreatyFlowShell` with full-viewport paper framing, treaty-style buttons/inputs, and drop-cap support.
-  - Regenerated the screenshot audit after the redesign; desktop and mobile-width outputs remain under `packages/web/public/img/screenshots/treaty-vote-post-vote-flow/`.
-- [x] Simplified the treaty flow visual treatment by removing decorative top labels and replacing boxed percentage/math UI with quieter treaty-text-style rules.
-- [x] Removed the remaining full-screen treaty-flow edge outline, centered vote/post-vote text on mobile, and kept desktop paragraphs left-aligned.
-- [x] Replaced the post-vote message-format choice with a two-position Love mode / Bossy mode toggle and updated the screenshot audit path.
-- [x] Kept the treaty allocation percentages side-by-side on mobile with Military & Weapons left and Clinical Trials right.
-- [x] Completed agreed post-vote cleanup slice: replaced Bossy mode ASCII/markdown task formatting, removed the final donation screen, redirected feedback submit to dashboard, and removed the stray dashboard link.
-- [x] Fixed the desktop post-vote full-screen framing so screenshots and the live flow cannot show the unrelated yellow landing section beneath the treaty experience.
-- [x] Collapsed the post-vote math screen's repeated inline math toggles into one full-screen math dialog and fixed mobile Frame 07 screenshot containment.
-- [x] Updated `docs/questions.md` to match the current Check the Math modal and Love/Bossy mode flow while preserving ASCII as ideation reference.
-- [x] Implement numbered Treaty flow variants with minimal duplication.
-  - `treaty_flow_v1_vote_first` preserves the current implemented slider-first flow for later comparison.
-  - `treaty_flow_v2_context_first` implements the current `docs/questions.md` context-first flow as the default.
-  - Keep the fork at the orchestration/screen-sequence layer; share the slider, vote submission, verification, post-vote send loop, math dialog, and analytics plumbing.
-  - Support explicit URL override with `?treatyFlow=...` and attach the selected `flowVariant` to funnel analytics.
-  - Update the screenshot audit so each captured folder is keyed by flow variant and viewport.
-  - `docs/questions.md` references `packages/web/public/img/grandma.jpg`; the current UI renders a framed placeholder until that real asset is added.
-- [x] Replace the v2 grandma placeholder with the real `packages/web/public/img/grandma.jpg` asset and regenerate the context-first screenshots.
-- [x] Add a reusable treaty screenshot e2e mode that reuses the running dev server and update the screenshot audit selector for the current Grandma-screen copy.
-- [x] Fold the separate post-vote recipient-name screen into the message composer so voters enter the recipient inline while previewing Love/Bossy mode.
-- [x] Add a focused `/vote` route for the treaty question flow and point `/vote/[code]` referral redirects at it instead of the homepage anchor.
-- [x] Add a repo testing rule to keep E2E focused on behavior, screenshots, and route/data contracts instead of brittle exact-copy assertions.
-- [x] Remove brittle long-form copy assertions from content-heavy E2E tests while preserving behavior/data-contract coverage.
-- [x] Current active workspace for this slice is `C:\code\optimitron`.
-- [ ] Do Optimitron implementation from `C:\code\optimitron`, not from the DIH reference repo.
-- [ ] Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features until each feature is deliberately ported.
-- [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.
-- [ ] Before each implementation slice, confirm the active shell `cwd` is `C:\code\optimitron` and the target package is usually `packages/web`, `packages/agent`, or `packages/db`.
-- [ ] Keep the source repo and target repo names explicit in commits, notes, and final handoffs so DIH build failures are not confused with Optimitron build failures.
-- [ ] If the IDE/session is currently open in `E:\code\dih-neobrutalist`, reopen `E:\code\optimitron` before editing implementation files. Use DIH only for read-only reference unless a task explicitly targets DIH.
+This file is the compaction-safe control document. If a design decision is made in chat, add it here before starting the next code slice. Operating notes:
+
+- Active workspace: `E:\code\optimitron`. (Earlier slices used `C:\code\optimitron`; either path is fine if the IDE session matches the shell cwd.)
+- Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features. Read-only unless a task explicitly targets DIH.
+- Keep source repo and target repo names explicit in commits/notes so DIH build failures are not confused with Optimitron build failures.
+
+**Done already (do not re-check unless behavior changes):**
+- Treaty-flow redesign: full-screen `TreatyFlowShell` paper framing, Libre Baskerville typography, Love / Bossy mode toggle, math dialog modal, post-vote feedback → dashboard. Screenshot audit at `packages/web/e2e/treaty-vote-post-vote-screenshots.spec.ts`; output under `packages/web/public/img/screenshots/treaty-vote-post-vote-flow/`.
+- Two numbered flow variants (`treaty_flow_v1_vote_first`, `treaty_flow_v2_context_first`) sharing slider + vote submission + verification + send-loop + analytics. URL override via `?treatyFlow=...`.
+- `/vote` route owns the focused treaty flow; `/vote/[code]` referral redirects target it instead of the homepage anchor.
+- E2E rule: focus on behavior + route/data contracts + screenshots, not brittle exact-copy assertions.
+- `/donate` shows both conditional-on-success and 1%-success-probability suffering-years-per-dollar figures; founder email uses `m@warondisease.org`.
+- Migration ledger P3009 from `20260425200000_create_task_comment_tables` resolved (stale shim row marked applied).
+
+## Active Slice — Next (2026-04-30)
+
+Prioritized work coming out of the recent design conversations on email cleanup, MCP GitHub passthrough, and the warondisease.org new-user flow. Sequenced so each item unblocks the next; do them in order. The big idea: the new-user funnel from landing → vote → magic-link → /humanity-management-training → /dashboard now exists end-to-end, but the dashboard surfaces noise (PMS + Treaty buttons) and the onboarding tree is missing two beats: (a) "publicly sign the treaty yourself" before sharing, and (b) a Stage-2 promotion that turns finished Humanity Managers into President Managers with a leader-lobbying task.
+
+### Recently landed (this session, 2026-04-29 → 2026-04-30) — informational
+
+**Email cleanup + voice (committed earlier in session):**
+- [x] Stripped chrome / breadcrumbs / "New activity" / "OVERDUE" banners / author-label-in-body from magic-link, comment-notification, overdue-reminder templates.
+- [x] Lumbergh voice landed in nag/escalation surfaces only (overdue reminder subjects + body, magic-link mild). Deadpan-corporate stays elsewhere by design.
+- [x] Sender sign-off support in comment-notification email (`senderSignature: { name, role?, org? }`); Wishonia auto-append at Resend layer now skipped when `from` override is set so share emails sign as the sender, not Wishonia.
+- [x] Mortality-stat line in overdue reminders ("About 450,000 people died waiting in the meantime, just an FYI") at ~150K/day from `GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES`.
+
+**MCP GitHub passthrough (committed earlier in session):**
+- [x] `githubApi` generic passthrough tool added; existing `searchRepo`, `getFileContent`, `listRepoFiles` bumped to admin-only.
+- [x] New `GITHUB` MCP scope split from `TASKS_ADMIN`; migration `20260429220000_add_mcp_scope_github`.
+- [x] Saved `feedback_email_minimalism.md` memory: future email work stays minimal, share emails override From + CTA.
+
+**S1 Dashboard cleanup + onboarding tightening (uncommitted, pending):**
+- [x] Dashboard restructured: primary-CTA card for next actionable subtask, collapsed `<details>` for "up next", green-checked "done" list at bottom. Dropped "Read the Treaty" + "President Management System" exit-ramp buttons.
+- [x] Tasks sorted by seed `sortOrder` (sign 0 → share 10 → phone 20 → assign1 30 → assign2 40 → completeTraining 50). Renumbered with breathing room for future siblings.
+- [x] New `signTreatyPersonally` subtask in user-onboarding:treaty blueprint at sortOrder 0 — gates HMT completion alongside the other 4 siblings. Action-link → `1percenttreaty.org/treaty`.
+- [x] Tightened `shareReferralUrl` / `assignFirstHuman` / `assignSecondHuman` / `completeTraining` descriptions — no jargon, no instructional drift.
+- [x] `taskListSelect` exports `sortOrder`; `TaskCardTask` interface gains optional `sortOrder` field.
+- [x] `user-treaty-task.server.ts` + test updated to include `signTreatyPersonally` in required subtask kinds.
+- [x] `WISHONIA_WELCOME_COMMENT` confirmed as dead code (no callers outside its own file). Flagged for deletion in S9.
+
+**S2 Parameter-link rendering (uncommitted, pending):**
+- [x] `linkParam(param, rendered)` helper in `triggers/context.ts`. Resolves manual page URL → calculations URL → source URL.
+- [x] Every parameter in `buildTriggerParams()` exposes raw + `*Linked` variants (`militaryVsResearchRatio` + `militaryVsResearchRatioLinked`).
+- [x] `USER_TREATY_DESCRIPTION` (the Promotion content) converted to linked variants for the markdown-rendered surfaces. Phone script intentionally stays raw (read aloud).
+- [x] 5 new tests in `triggers/__tests__/context.test.ts` covering the contract.
+
+**Site tracking (uncommitted, pending):**
+- [x] Schema: `User.signupLandingUrl`, `ReferralInvitation.originUrl`, `ReferendumVote.originUrl`. All nullable, all single-column-per-row consistent shape. Variant key derived from URL host on demand. Migration `20260430110000_add_site_tracking_columns`.
+- [x] First-write-wins capture in `applyPostSigninSync` (User), insert-time capture in vote and invitation routes.
+- [x] Client-side `<SignupLandingUrlCapture />` mounted in `Providers.tsx`. Stores `window.location.href` to localStorage on first page load (idempotent). `AuthPostSigninSync` reads it from localStorage and posts at first signin.
+- [x] `storage.setSignupLandingUrlIfMissing()` helper that never overwrites a previously-set value. `clearSignupData` includes the new key.
+
+**Other:**
+- [x] Hardcoded `ALLOWED_REPOS` in `github-repo-tools.server.ts` — dropped redundant `GITHUB_REPO_ALLOWLIST` + `GITHUB_DEFAULT_REPO` env vars from local `.env`, `.env.example`, and Vercel.
+- [x] Magic-link email reverted from the brief mortality-line experiment back to bare Lumbergh-mild. Site-variant aware copy work scoped into S8.
+
+Verification at end of session: 1033/1033 vitest, `pnpm exec tsc --noEmit` clean.
+
+### S1 — Dashboard + onboarding cleanup (Stage 1)
+
+Concrete diff, ~2-3 hr. Land first.
+
+- [ ] Drop "Read the Treaty" and "President Management System" nav buttons from `HumanityManagementDashboardClient.tsx`. They're exit ramps from the dashboard's actual job (get the user through the 5 HMT subtasks).
+- [ ] Restrict the dashboard task list to `taskKey.startsWith("program:one-percent-treaty:user:<userId>:")`. Today `nextTasks` is mostly already filtered correctly; verify nothing else leaks in (e.g., signer-reminder subtasks claimed via MCP).
+- [ ] Sort the task list by the seed's sortOrder (0/5/10/20/30), not by created/updated, so users hit them in the persuasion-optimized order: share → phone-script → assign1 → assign2 → training-completion.
+- [ ] Restructure dashboard to "next task primary CTA + collapsed up-next + done": one big card showing the next-actionable subtask, a `<details>` disclosure with the rest, completed rows green-checked at the bottom. Showing 5+ tasks at once is paralyzing.
+- [ ] Add `signTreatyPersonally` subtask to the `user-onboarding:treaty` blueprint at `packages/web/src/lib/triggers/blueprints/one-percent-treaty.ts`:
+  - `kind: "signTreatyPersonally"`, `sortOrder: 0` (first)
+  - `titleTemplate: "Sign the 1% Treaty publicly"`
+  - `descriptionTemplate`: short Wishonia-deadpan line about public commitment vs. private vote
+  - `actionLinkUrlTemplate: "https://1percenttreaty.org/treaty"`, `actionLinkLabelTemplate: "Sign the treaty"`
+  - `contributesToGate: true`
+  - Update `user-onboarding:treaty:hmt-gate` `completionGate.subtaskKinds` to add `"signTreatyPersonally"` so all 5 siblings (sign + share + phone + assign1 + assign2) gate `completeTraining`
+- [ ] Tighten `shareReferralUrl` description (replace "lineage" jargon with plain language).
+- [ ] Tighten `assignFirstHuman` / `assignSecondHuman` descriptions — keep "If they vote, they get promoted too", drop everything else.
+- [ ] Add ONE mortality-stat line to magic-link email between the button and the anti-phishing line: `"About 150,000 humans will die from disease today. The treaty you're about to vote on shortens that timeline."`
+- [ ] Update `task-comment-notification-email.test.ts` + `task-overdue-reminder.test.ts` for any text-content changes; full vitest green before handing back.
+
+### S2 — Parameter-link rendering in templates
+
+Concrete, ~1-2 hr. Land second so S3 can use it.
+
+- [ ] Add `linkParam(p, { format? })` helper alongside `roundParam()` in `packages/web/src/lib/triggers/context.ts`. Returns markdown link `[604](url)` resolving the URL via priority: `manualPageUrl` → `calculationsUrl` → `sourceUrl`.
+- [ ] Extend `buildTriggerParams()` to emit two variants per parameter: `militaryVsResearchRatio` (raw) and `militaryVsResearchRatioLinked` (markdown).
+- [ ] Convert markdown-rendered template surfaces (parent task description, future HTML emails) to use the linked variant.
+- [ ] Phone-script body keeps the raw variant — read aloud, URLs would be ridiculous.
+- [ ] Add tests: phone-script body has no `[`, parent-task description has at least one `[N](https://...)`.
+
+### S3 — Stage 2: President Manager promotion
+
+Multi-day; land AFTER S1 + S2 are live and after some real users go through Stage 1 to validate the funnel.
+
+- [ ] New blueprint trigger `user-onboarding:treaty:promotion-stage-2` firing on `task.statusChanged.VERIFIED` with eventFilter for `taskKey.matches "^program:one-percent-treaty:user:.+:completeTraining$"`. Spawns:
+  - Promotion message comment on the user's HMT root: "🎉 PROMOTION — You are now an Acting President Manager at Earth Optimization Services."
+  - One per-user task pre-targeted to the user's country leader: `"[Leader name] is N days overdue on their treaty signing"` with action-link to the leader's contact page.
+  - Resolution: user.countryCode → matching `treaty:signer` slot. If no slot match (small country, leader not in the 193-slot list yet), spawn a generic "find your leader" task instead.
+- [ ] Activate the existing `treaty:signer` blueprint trigger (currently `enabled: false`). It already exists for the dataset import; flip it on once Stage 2 has somewhere for the user-leader pairing to land.
+- [ ] Dashboard updates: when the HMT root has Stage-2 spawned tasks, show the promotion banner + new task as the new primary CTA. Past HMT tasks collapse to "✓ done" rows.
+- [ ] Open question, do not commit: Stage 3 (after the leader signs) — do they get another role-play promotion, or does the parent task ("Get 4 billion to vote") just keep running with referral-chain visualization? The role ladder needs an answer before launch but it's not blocking S3.
+
+### S4 — Voice + copy audit (verification pass)
+
+~30 min. Land before launch, after S1-S3.
+
+- [ ] Walk every user-facing string in the warondisease.org flow (landing → vote → email → /hmt → /dashboard → each subtask page). Confirm:
+  - Lumbergh appears ONLY in: overdue/escalating reminders, magic-link mild ("Yeahhh, here's your sign-in link").
+  - Deadpan-corporate-HR appears in: promotion screen, KPIs, dashboard headings, role titles.
+  - Plain imperative appears in: action labels, CTAs, validation errors.
+- [ ] Audit `ReferralInvitationStatusCard` + `ReferralInvitationComposer` for any drift toward instructional/help-doc voice.
+
+### S5 — Visual flow audit harness + critique loop
+
+User-flagged 2026-04-30. The funnel from landing → vote → email → /hmt → /dashboard exists, but right now we only see it by clicking through manually. Two layers to build:
+
+**Layer 1 — Static screenshot capture (worth doing soon):**
+- [ ] Add a Playwright spec at `packages/web/e2e/new-user-flow-screenshots.spec.ts` that walks the FULL new-user funnel for each site variant (warondisease.org, optimitron.com, 1percenttreaty.org, dfda.earth) using a fresh user per run. Frames captured: landing pre-vote, slider mid-state, slider submitted, magic-link email body (rendered HTML), /humanity-management-training, /dashboard immediately post-signin, dashboard after first subtask verified, dashboard after all 5 subtasks verified.
+- [ ] Output a single `packages/web/public/img/new-user-flow/<variant>/<step>.png` set + a `packages/web/public/img/new-user-flow/index.html` static page that lays them all out side-by-side per variant for visual review. Include desktop + mobile widths.
+- [ ] Wire this into Vercel deployment preview comments: a GitHub Actions job runs the spec against the preview URL and posts the static index.html link to the PR. Fail the check if any frame errors out (server crash, missing element).
+- [ ] Reuse the existing screenshot infrastructure at `packages/web/e2e/treaty-vote-post-vote-screenshots.spec.ts` — same dev-server-reuse pattern, same output-folder convention. Don't reinvent.
+
+**Layer 2 — Automated critique (speculative, do after Layer 1 stabilizes):**
+- [ ] After-deploy hook: pipe the captured screenshots + the `todo.md` "Active Slice" objectives + the rendered task descriptions to Claude/Gemini with a prompt of "given these objectives and these screens, what's reducing the chance the user completes the task tree?" Capture the output as a PR comment, NOT an automatic todo.md edit. Auto-mutating the todo from an LLM critique is too easy to get wrong silently.
+- [ ] Stage 2 (only if Layer 2 produces signal worth chasing): give the critique agent permission to PROPOSE todo.md changes via PR, with a human reviewer in the loop. Never auto-merge.
+- [ ] Acceptance for Layer 1 alone: a reviewer who hasn't touched the codebase in a week can scan the index.html and identify the funnel state in 30 seconds. Acceptance for Layer 2: critiques surface at least one non-obvious issue per release that a human reviewer would have agreed with in a blind comparison.
+
+The reason this is worth investing in early: every change to a TaskTrigger blueprint or a dashboard component changes what the new-user funnel looks like. Without a visual snapshot, regressions land silently. The task-management framing helps — most of the funnel state IS just trigger blueprints + dashboard components, both of which we control directly. A normal app would need to re-discover state across many flows; here the state IS the trigger graph.
+
+### S6 — HMT graduation quiz
+
+User-flagged 2026-04-30. After the Humanity Management Training subtasks verify, gate the Stage-2 promotion behind a multiple-choice quiz that confirms the user can actually articulate the case to skeptics. The point is not gatekeeping; it's that a Humanity Manager who can't explain why they're recruiting will fail at recruiting.
+
+**Question bank (each backed by a citable parameter / source so the answer key links to the manual):**
+- [ ] How many nuclear-winter-scale apocalypses does humanity currently have weapons capacity for? *(target answer: ~122; parameter `NUCLEAR_WINTER_OVERKILL_FACTOR`)*
+- [ ] What is the ratio of military spending to government clinical-trials spending? *(~604x; `MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO`)*
+- [ ] At current throughput, how long to clear the disease-treatment queue? *(~443 years; `STATUS_QUO_QUEUE_CLEARANCE_YEARS`)*
+- [ ] At dFDA throughput (1% Treaty redirect), how long? *(~36 years; `DFDA_QUEUE_CLEARANCE_YEARS`)*
+- [ ] What was US military spending as a share of GDP just before WWII? *(~1.5%; needs new parameter — research source)*
+- [ ] How much did the US drop military spending after WWII as a share of GDP? *(post-war drop from ~38% peak to ~5% by 1948; needs new parameter)*
+- [ ] How many rounds of "each person recruits two" to reach 4 billion? *(32 rounds; from `2^32 ≈ 4.3B`, mentioned in phone-script body; encode as derived parameter or compute inline)*
+- [ ] Name a global treaty that successfully abolished an entire weapons class. *(Chemical Weapons Convention 1993, Biological Weapons Convention 1975, Mine Ban Treaty 1997, Convention on Cluster Munitions 2008, Treaty on the Prohibition of Nuclear Weapons 2017 — pick one, build a small reference dataset)*
+- [ ] How many humans die annually from disease and aging globally? *(~55M; `GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES`)*
+
+**Implementation plan:**
+- [ ] Add a `quiz` package or extend `packages/data/src/quizzes/` with a `humanity-management-training-quiz.ts` that exports `{ questions: QuizQuestion[] }` where each `QuizQuestion` has `prompt`, `options[]`, `correctOptionId`, and `parameterRef` (string or Parameter import) for the answer-explanation deep-link.
+- [ ] Add the missing two parameters (`PRE_WWII_US_MIL_SPEND_GDP_PCT`, `POST_WWII_US_MIL_SPEND_GDP_PCT`) to `packages/data/src/parameters/parameters-calculations-citations.ts` with sourceUrl pointing to OMB Historical Tables or similar primary source. Add a small dataset of major weapons-abolition treaties (`packages/data/src/datasets/weapons-abolition-treaties.ts`) with name, year, jurisdiction count, and source URL.
+- [ ] New page `/humanity-management-training/quiz` rendered after all five subtasks verify. Multiple choice, randomize option order, randomize question order, pass threshold (e.g. 7/9). Show the answer + parameter source URL after each question whether the user got it right or not — the goal is teaching, not grading.
+- [ ] Add a new HMT subtask `passQuiz` (sortOrder 60) that gates Stage-2 promotion. Update `user-onboarding:treaty:hmt-gate` `subtaskKinds` and the quiz page sets it VERIFIED on a passing score.
+- [ ] On fail, route back to a "review the case" page that surfaces the relevant manual chapter for the question(s) they missed, then let them retake. No 24-hour cooldown — friction here doesn't help.
+- [ ] Track per-question accuracy across all users (analytics) so the question bank can be tuned: a question that 95% get wrong is either too obscure or the explanation is bad; a question that 99% get right isn't testing anything.
+
+Open question: should the quiz be optional or gating? Gating fits the role-play ("you can't be promoted to President Manager without passing the certification") but adds friction. Optional with a graduation badge is softer. Default to gating, see what funnel data shows.
+
+### S10 — URL-helper sweep + always-attach-referral-code
+
+User-flagged 2026-04-30. Right now URLs to `1percenttreaty.org/treaty`, `warondisease.org/...`, share links, and treaty pages are scattered across the codebase as string literals. Two related fixes:
+
+**Centralize URL generation:**
+- [ ] Audit + replace hardcoded `1percenttreaty.org`, `warondisease.org`, `optimitron.com`, `dfda.earth`, `trialabundancesurvey.org` literals across `packages/web/src/`. Each should resolve through a helper that knows which environment we're in (`site.canonicalOrigin` already exists per `lib/site.ts:1213+`).
+- [ ] New module `packages/web/src/lib/url-helpers.ts` exporting:
+  - `treatySignUrl(opts?: { referralCode?: string })` → `https://1percenttreaty.org/treaty?ref=...`
+  - `voteUrl(opts?: { referralCode?: string; siteKey?: SiteKey })` → variant-aware `/vote` URL with optional referral
+  - `dashboardUrl(opts?: { siteKey?: SiteKey })`
+  - `referralLandingUrl(opts: { username?: string; referralCode?: string; inviteToken?: string })`
+- [ ] Decision rule: if a URL points to a public landing page that supports referral attribution, the helper accepts a `referralCode` param and appends it. Callers responsible for passing the user's code; the helper is dumb.
+
+**Always attach referral code when a logged-in user shares:**
+- [ ] Wherever the app builds an outbound shareable URL on behalf of a logged-in user — task action-links, share buttons, referral composer, signer-reminder URLs — make sure the user's `referralCode` is appended. Today it's mostly correct but at least one site (the new `signTreatyPersonally` action-link in S1) hardcodes `https://1percenttreaty.org/treaty` with no ref. Fix in the same PR as the URL helper landing.
+- [ ] Add a vitest that grep's the codebase for hardcoded `1percenttreaty.org` outside `lib/url-helpers.ts` and the test file itself, and fails if any are found. Prevents future regressions.
+
+**Trigger-blueprint URL templates:**
+- [ ] Trigger spawn-specs hold URL templates as literal strings (`actionLinkUrlTemplate: "https://1percenttreaty.org/treaty"` in `blueprints/one-percent-treaty.ts`). After the helper module exists, expose the URL helpers as trigger context tokens (`{{urls.treatySign}}`, `{{urls.dashboardForUser}}`) so seed authors can write `actionLinkUrlTemplate: "{{urls.treatySign}}"` and the spawn engine substitutes the right URL with the right ref appended at fire time. This also makes the per-user referral-code attachment automatic for seeded tasks.
+
+**ShareAttempt codes (`sa=`) + provenance:**
+- [ ] The URL helper should accept an optional `shareAttemptId` param and append `sa=<id>` when present, matching the existing `embedShareAttemptId()` pattern at `lib/share-channels.ts`. That helper is the closest existing equivalent — fold it into the new url-helpers module rather than maintaining two URL builders.
+- [ ] **Provenance question:** should the helper also append a `src=<page>` or `gen=<surface>` query param tagging WHERE the URL was generated (e.g., `src=dashboard`, `src=email-overdue-reminder`, `src=phone-script-task`)? This would let us answer "which surface produced the most converting share-link clicks?" Worth doing IF the analytics is wanted; the cost is one extra query-param everywhere we generate a URL. Open question — defaulting to YES because it's cheap and the data is otherwise lost. Acceptable values should be a small enum so analytics can group cleanly. Do not log full page paths (high cardinality).
+- [ ] Decide whether `src=` overrides or coexists with `sa=` — they answer different questions (`sa` is "which exact composed message", `src` is "which surface composed it"). Keep both, both nullable.
+
+**Don't collapse 1percenttreaty.org → warondisease.org/treaty.** Considered and rejected: 1percenttreaty.org is a memorable shareable URL ("vote at 1percenttreaty.org") that beats "warondisease.org/treaty" for stickiness, podcast mentions, and coalition-partner pitching. Internally everything is one codebase already, so the maintenance cost of the separate domain is just one DNS record + SSL cert.
+
+### S9 — Hardcoded-stats audit: convert literal numbers in user-facing strings to linked parameters
+
+User-flagged 2026-04-30 alongside S2. S2 added the `*Linked` markdown-link variants for trigger-spawned templates, but plenty of user-facing copy outside the trigger blueprint still has literal numbers baked in. Each of these is a credibility leak (no source link) and a drift risk (the `parameters-calculations-citations.ts` source moves; the literal doesn't).
+
+**Known offenders to audit (search `packages/web/src/` for hardcoded numerals + the words around them):**
+- [ ] `WISHONIA_WELCOME_COMMENT` in `packages/web/src/lib/tasks/user-treaty-task.server.ts:48-58` — has "60 million" deaths/year, "10.7 billion" deaths prevented over the century, "1%" of military spending, "4 billion people". Each number has a parameter export (`GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES`, `EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL` or similar, `TREATY_TARGET_VOTERS`). Note: this constant may already be unused per F6 ("drop welcome comment"); verify before editing — if it's unused, just delete it.
+- [ ] `OverdueReminderTaskInput` mortality line in `task-overdue-reminder.server.ts` currently hardcodes `GLOBAL_DAILY_DEATHS_FROM_DISEASE = 150_000` (rounded from 55M/yr). Replace with a derived `GLOBAL_DAILY_DEATHS_FROM_DISEASE` parameter export, or compute at module load from `GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES.value / 365`. Either way, render with a markdown link.
+- [ ] `TreatyPostVoteShareFlow.tsx` — already noted in "Highest Priority" section as parameterized, but verify *Linked variants are used wherever JSX renders sourced numbers (currently uses `<ParameterValue>` component for hover popovers, which is the JSX-equivalent of `*Linked`).
+- [ ] All landing-page hero copy for treaty/optimitron/dfda variants — search for literal "$3.48M", "21.7", "604", "443", "36", "60 million", "10.7 billion", "150,000", "8 billion", "4 billion" and convert.
+- [ ] Email template bodies that don't yet use the trigger framework (magic-link, referral invitations) — magic-link is intentionally bare per S8; referral invitations already pull from `treaty-share-flow-parameters.ts` wrappers.
+
+**Approach:**
+1. Grep for the canonical literal numbers across `packages/web/src/`. Each match is either (a) intentional copy that doesn't need linking, or (b) a candidate to replace.
+2. For trigger-rendered surfaces, swap to `{{params.fooLinked}}`.
+3. For React components, use the existing `<ParameterValue>` component (already wired into `TreatyPostVoteShareFlow.tsx`).
+4. For static markdown / HTML email helpers outside the trigger framework, build a small `formatParameterAsMarkdownLink(param, rendered)` helper in `lib/parameter-link.ts` and use it inline.
+5. Add a vitest that scans the trigger blueprint file for numbers like `\b(604|443|36|122|150,000|60 million)\b` and fails if any survive — prevents regression as new copy lands.
+
+This is a sweep, not a one-shot fix. Land it after S2 + S8 are done; queue S3 / S5 / S6 / S7 ahead since they unblock product flow. S9 is a quality-tightening slice that benefits from S2's linked-variants infrastructure already being there.
+
+### S8 — Variant-aware magic-link email (and the broader "where did this user sign up from" question)
+
+User-flagged 2026-04-30 after the mortality-stat experiment was reverted. The magic-link email fires on EVERY login, not just first signup, which means any treaty/voting framing in it is wrong: most recipients have already voted, and `trialabundancesurvey.org` signups (partner-survey, neutral voice per Q1) shouldn't see treaty copy at all. Current state is fine — the body is treaty-agnostic ("Yeahhh, here's your sign-in link. Mmkay.") — but we have no story for personalizing it per site.
+
+**The core question:** does the magic-link content branch on (a) the URL host the user is signing INTO right now, or (b) the site the user originally signed up FROM?
+
+- (a) is free — the host is already in the URL passed to `sendMagicLinkEmail`. Recipient receiving a link to `trialabundancesurvey.org/auth/callback?...` gets trial-abundance branding; recipient signing into `warondisease.org` gets H2EWD branding. Default behavior matches user expectation.
+- (b) requires schema (`User.signupSiteKey String?`) plus capture-at-signup-time. More work, justified later for cross-variant emails the system originates (e.g., a Wishonia digest sent to a treaty user vs. a partner-survey user).
+
+Default: do (a) now, defer (b) until a non-magic-link email needs it.
+
+**Implementation sketch (~1-2 hr):**
+- [ ] `getSiteFromHost` already exists in `lib/site.ts`. Extend `sendMagicLinkEmail` to derive the site key from the magic-link URL host and pick a per-variant copy bundle.
+- [ ] Per-variant copy bundles in `lib/email/magic-link-email.ts` (or a sibling `magic-link-copy.ts`):
+  - `warondisease.org` / `optimitron.com` / `1percenttreaty.org`: current Lumbergh-mild ("Yeahhh, here's your sign-in link. Mmkay." + "Didn't ask for this? Just go ahead and ignore it. That'd be great.")
+  - `trialabundancesurvey.org`: NEUTRAL, partner-friendly ("Sign in to Trial Abundance Survey." + "If you didn't request this, you can ignore it.") Q1 decision: don't make partner orgs nervous.
+  - `dfda.earth`: clinical-neutral ("Sign in to dFDA." + same anti-phishing line)
+- [ ] Subject line should include the site display name (already does via `host`), so just confirm `Sign in to ${host}` reads cleanly per variant.
+- [ ] Test: a magic-link generated against `trialabundancesurvey.local` URL produces the neutral body; one against `warondisease.local` produces the Lumbergh body. Lock both with snapshot tests in `magic-link-email.test.ts` (file doesn't exist yet — add it).
+
+**Defer until justified (with concrete trigger conditions):**
+- [ ] `User.signupSiteKey String?` — capture at User creation from `headers().get("host")` → `getSiteFromHost`. Trigger to add: first feature that sends an outbound email NOT keyed off the URL host (e.g., a Wishonia digest, a cross-variant promotional email). Magic-link doesn't qualify because it already has the host in the URL.
+- [ ] `ReferendumVote.siteKey String?` and `ReferralInvitation.siteKey String?` — capture at insert time. Trigger: first analytics view that needs per-site conversion breakdown. Until then, `Task.taskKey` prefixes and `referendumId` joins give an awkward-but-workable approximation.
+- [ ] Do NOT add `siteKey` to every model speculatively. YAGNI — most rows can derive their origin from foreign keys / taskKey prefixes; adding columns nothing reads is just schema noise.
+- [ ] Per-variant Wishonia signature toggle — keep the rotating-title signature on EVERY variant including trialabundancesurvey.org until a real partner org actually complains. The 15-titles × 11-taglines gag is more charming than alarming, and removing it speculatively is premature optimization. When/if the complaint lands, the fix is to add a per-message `signatureMode: "wishonia" | "none" | "sender"` option at the `resend.ts` chokepoint.
+- [ ] Audit other email surfaces (referral invitations, overdue reminders, comment notifications) for whether their voice is universally appropriate or needs the same per-variant branching. Likely yes — a partner-survey overdue reminder shouldn't read "Did you get the memo on signing the treaty?"
+
+### S7 — Earth Optimization Day (annual recurring task, August 4th)
+
+User-flagged 2026-04-30. Annual ritual: every August 4th, every Humanity Manager gets a one-day task to "conduct a distributed denial of death attack on humanity" — share their vote/referral link across every social channel they own. Framing: humanity becomes 1% less irrational each year on this day.
+
+**Schema check first — does the trigger framework already support this?**
+- [ ] The TaskTrigger model has `schedule` and `iterationSource` (added in F1). A schedule like `0 9 4 8 *` (cron: 9am August 4th, every year) fires the trigger annually. The `iterationSource` resolver enumerates active users → fires `fireTaskTrigger` per-user → spawns the day-of task. So yes, capable in principle. Confirm by re-reading `packages/web/src/lib/triggers/iteration-sources.ts` to verify "active users" is one of the registered sources, or add it.
+- [ ] If no `activeUsers` iteration source exists, add one. Filter: `User` rows where the user has an HMT root with `completeTraining` VERIFIED (i.e., they're actually a Humanity Manager, not a stalled signup).
+
+**Trigger blueprint to add:**
+- [ ] New blueprint `program:earth-optimization-day:annual` in `packages/web/src/lib/triggers/blueprints/earth-optimization-day.ts` (separate file from one-percent-treaty so it can outlive the treaty campaign).
+- [ ] `eventName: "cron.earth-optimization-day"`, `schedule: "0 9 4 8 *"` (Earth time — pick a TZ for the rendering layer; UTC is fine for the cron itself).
+- [ ] `iterationSource: "users.activeHumanityManagers"`.
+- [ ] Spawns one task per user, parented under that user's HMT root:
+  - `kind: "earthOptimizationDay:{{year}}"` (year-suffixed so each year is its own row, idempotent on re-fire)
+  - `idempotencyKeyTemplate: "earth-optimization-day:{{user.id}}:{{year}}"`
+  - `titleTemplate: "Earth Optimization Day {{year}}: post your referral URL everywhere"`
+  - `descriptionTemplate`: deadpan corporate-HR voice. "Today is the day humanity becomes 1% less irrational. Your annual contribution: post your treaty referral URL on every social channel you have access to. The Commission expects participation."
+  - `dueDays: 1` (closes end-of-day)
+  - `actionLink` to a special `/earth-optimization-day` page that bundles share buttons for X / Bluesky / Mastodon / LinkedIn / Facebook / email-everyone-in-contacts with pre-filled copy.
+- [ ] On verification: a follow-up email goes out the next day reporting how many votes flowed in via that user's referral URL on Aug 4th — closes the loop, makes participation feel measured.
+
+**Calendar surface (separate from the trigger):**
+- [ ] Use the wishonia@gmail.com Google account to publish a public Google Calendar with "Earth Optimization Day" recurring annually on August 4th. Embed the public calendar link in the dashboard footer + on `/earth-optimization-day`. Subscribe-button goes to `https://calendar.google.com/calendar/u/0/r?cid=...` so users add it to their own calendars. Decision needed: does the calendar invite ALL signed-up users automatically, or do they have to subscribe themselves? Auto-invite from a noreply Google account looks like spam to many filters; subscribe-yourself is cleaner. Default to subscribe-yourself.
+- [ ] Event description should match the task description so users get the same framing whether they see it in calendar or in the app.
+
+**Pre-launch verification:**
+- [ ] Test the trigger by manually firing `fireTaskTrigger("program:earth-optimization-day:annual", { year: 2026, user: { id: <test user> } })` to confirm the spawn path works before the first real Aug 4 fires. The cron route at `/api/cron/run-due-triggers` should pick it up automatically once seeded + enabled.
+- [ ] Decide what happens to non-active-HM users on Aug 4: skip silently? Send them a "you're missing the holiday — finish HMT" reminder? Default: skip silently. Earth Optimization Day is a graduate-only event; missing it isn't a nag opportunity.
+
+### Open questions (don't guess; ask)
+
+- After Stage 2 (President Manager) — what's Stage 3 when the user's leader actually signs? Another promotion? A "graduation"? The role ladder runs out of rungs eventually.
+- Should Stage 1's `signTreatyPersonally` task be the very first thing (sortOrder 0, gate-blocking) or a parallel side-quest? Current proposal: gate-blocking — you can't ask friends to vote for something you haven't signed. Risk: adds friction to a flow that already lost users at the magic-link round-trip.
+- "Late employee program" task section currently appears on the LANDING page (pre-vote, pre-signup). That's odd — assigning tasks before commitment. Worth pulling off the landing entirely? Probably yes; not in S1 scope.
+
+## Stale Items Audit (2026-04-30)
+
+Items in this file that are obsolete or partially overtaken by recent work. Listed for cleanup in a follow-up pass; do not act on them as written.
+
+- **"Phase B — One generic email-sequence engine"**: partially obsolete. The TaskTrigger framework's spawn-spec template rendering now owns the equivalent for spawned tasks. `renderTaskCommunication` is still relevant for ASSIGNMENT / cron-driven sends not yet on triggers, but the "collapse active builders" goal is half-done by triggers.
+- **"Drop hardcoded task-key prefix `program:one-percent-treaty:referral-invitation`"** (Phase C): verify against current state. Idempotency-key templates have moved into the trigger blueprint (`program:one-percent-treaty:referral-invitation:{{inviteToken}}`) — the literal might still appear in helper functions but is no longer the source of truth.
+- **"Phase 1: Rename TaskCommunicationEndpoint → TaskActionLink"** marked completed in this-session task tracker, but `schema.prisma` still defines `TaskCommunicationEndpoint` (line 543). Either the rename was reverted or the tracker is wrong. Re-evaluate before any future use.
+- **"Add the `wishonia` system User row + `User.isSystem` boolean"** under Phase A follow-ups (line ~423): completed in migration `20260425230000_add_user_is_system`. Marked `[x]` but the "Filtering helpers across listings/leaderboards/attribution are still needed" half-sentence is open-ended; re-state as concrete tasks per surface or drop.
+- **GITHUB_REPO_ALLOWLIST / GITHUB_DEFAULT_REPO env-var docs anywhere in the repo**: those env vars no longer exist (replaced by hardcoded `ALLOWED_REPOS`). If MCP/dev docs reference them, sweep.
+- **Magic-link email entries in "Email Sequences" section**: copy is now in Lumbergh voice — any test or doc still asserting the old "Sign in to {host}" + "Use the secure link below" body is stale.
 
 ## Architecture Guardrails
 
@@ -169,102 +402,21 @@ Agent-usage feedback from 2026-04-25: the current toolset covers the core loop w
   - Channel naming: use `externalUrl`, not `link` or `formSubmission`, for office forms / official pages / public profiles. "Link" sounds like the message being sent is the outreach, while "formSubmission" overclaims because the current code records opening/using the external URL, not proof that a form was submitted.
 - [ ] Rename other MCP tools directly when the new name is more self-documenting; do not keep old aliases by default.
 
-## Code Review Fixes (2026-04-29)
+## Code Review Fixes (2026-04-29) — DONE
 
-Findings from the review of uncommitted changes on `main` (~1700 added / ~380 removed lines: site.ts restructure, org-vote-survey-attribution migration, medical/treatment/condition/survey infrastructure, four new shadcn `components/ui/*` primitives, vote-API extensions). Full review at `~/.claude/plans/please-review-all-polished-hopcroft.md`.
+Review of ~1700-add / ~380-remove uncommitted-changes batch on `main` (site.ts restructure, org-vote-survey-attribution migration, medical/treatment/condition/survey infrastructure, four new shadcn `components/ui/*` primitives, vote-API extensions). All Critical / High-confidence-bugs / CLAUDE.md-violations / Test-gaps / Cleanup items completed; web suite was 879/879 + data 749/749 green at 14:50. Full archived review: `~/.claude/plans/please-review-all-polished-hopcroft.md`. Decisions captured below for future reference; do not re-litigate without behavior change.
+
+### Decisions captured (do not re-litigate)
+
+- **Q1 — `copyMode="neutral"`**: neutral partner-survey copy is intentional for embeds/nonprofit adoption. Concise + direct + useful; not full Wishonia voice if it would make partner orgs nervous.
+- **Q2 — Org attribution**: `ReferendumVote` is first-org-wins, matching `referredByUserId`. Later votes from another org link must not steal attribution. Per-org `SurveyResponse` rows can record their own org context.
+- **Q3 — `/conditions` vs `/agencies/dfda/conditions`**: canonical depends on host. `dfda.earth` → short paths canonical. `optimitron.com` → agency-scoped paths canonical. Use canonical metadata or host-aware redirects, not a single global canonical.
+- **Q4 — dfda.earth**: keep as standalone medical surface AND expose DFDA under Optimitron's agency tree. Do not deprecate the domain by accident.
+- **Q5 — `components/ui/*` shadcn files**: rewrite compatibility wrappers to brutalist/semantic tokens; preserve API surface; do not introduce a second visual system.
+- **Q6 — `google-grounded-search.ts`**: do not delete while `OutcomeLabel` imports it.
+- **Q7 — Treatment slug consistency**: 216 conditions, 0 missing `treatments/*.json` files. Stable.
 
 **Coordination protocol:** mark a task `[~]` (in progress) and put your handle in parens before editing the listed files. Mark `[x]` when done. Each task lists the files it touches so a parallel agent can pick non-conflicting work. **Do not** start a `[~]` task someone else has claimed.
-
-### Critical (must land before merge)
-
-- [x] **#1 — `Math.random` in HMAC randomHex** *(claude — done)*
-  Files: `packages/web/src/lib/reasoning/org-context.server.ts`. Replace ad-hoc loop with `crypto.randomBytes(bytes).toString("hex")`.
-- [x] **#11 — Misleading env var error message** *(claude — done)*
-  Files: `packages/web/src/lib/reasoning/org-context.server.ts:46-49`. Update to mention canonical `ORG_CONTEXT_SECRET` and legacy fallback.
-- [x] **#12 — `User.name` direct read on org page** *(claude — done)*
-  Files: `packages/web/src/app/organizations/[id]/page.tsx`. Use `getUserDisplayName(m.user)` and `userDisplaySelect` from `@/lib/user-display`. Also drop `[font-family:var(--v0-font-libre-baskerville)]` v0 leftover on line 75.
-- [x] **#2 — Broken dfda.earth URL** *(claude — done)*
-  Files: `packages/web/src/components/dfda/ComparativeEffectivenessSection.tsx:120`. Dropped `https://dfda.earth/agencies/dfda` prefix; uses local `/agencies/dfda/conditions/.../treatments/...`. Removed `target="_blank"` since now same-origin. Also fixed banned `font-medium` on the link to `font-bold`. Footer link to `https://dfda.earth` (line 136) left as-is pending Q4.
-- [x] **#3 — Vote-route org attribution semantics** *(claude — done)*
-  Removed `organizationVoteData` spread from upsert `update` branch — first-org-wins, matches `referredByUserId`. Updated existing happy-path test assertion to expect no `organizationId` on `update`. Added two new tests: revote does not overwrite prior org, bad-signature token does not attribute. Files: `route.ts:90-111`, `route.test.ts:619+`.
-- [x] **#4 — `border-black`/`bg-white`/scale-color regressions in neobrutalist-loader** *(claude — done)*
-  Restored `border-foreground`/`bg-background`. Replaced `bg-gradient-to-r from-gray-50 to-gray-100` and `bg-gray-200/300` with `bg-muted`. Replaced `bg-yellow-100` → `bg-brutal-yellow` and `bg-blue-100` → `bg-brutal-cyan`. Restored shadow consistency at `8px_8px` on the loading message (had regressed to `6px`).
-
-### High-confidence bugs
-
-- [x] **#5 — Rewrite `components/ui/{button,card,badge,tooltip}.tsx` to brutalist** *(claude — done)*
-  All four files restyled to brutalist tokens with hard `4px_4px` shadow, `border-2 border-foreground`, `font-bold uppercase`, semantic foreground tokens (no `text-white`). Removed `ref={ref as any}` in favor of `React.Ref<HTMLButtonElement>` / `React.Ref<HTMLSpanElement>`. Removed `dark:` shadcn variants and `shadow-xs/sm/md` and `rounded-xl`. API surface preserved (named exports, `variant`/`size` shapes) so existing downstream imports keep compiling. `ghost` and `link` button variants opt out of the hard-shadow translate so they don't look like buttons.
-- [x] **#6 — `HealthEconomicsDisplay.tsx` color rewrite** *(claude — done)*
-  Replaced `RATING_SWATCHES` with brutal-* tokens (excellent → green, good → cyan, moderate → yellow, poor/dominated → red). Removed `bg-gradient-to-r from-green-50 to-emerald-50`. Every inline `bg-green-*`/`bg-emerald-*`/`bg-orange-*`/`bg-red-*` and `text-green-*`/`text-orange-*`/`text-red-*` replaced with semantic (`text-foreground`/`text-muted-foreground`) or brutal-* tokens. Replaced every `font-medium`/`font-semibold` with `font-bold`/`font-black uppercase`. Cards/Badges/Tooltips inherit brutalist look from the rewritten `components/ui/*` primitives in #5.
-- [x] **#7 — Make `medical-pages-parity.test.ts` a real parity test** *(codex — done)*
-  Files: `packages/web/src/components/medical/__tests__/medical-pages-parity.test.ts`. Stop reading source as text. Import both `app/conditions/page.tsx` and `app/agencies/dfda/conditions/page.tsx` and assert their default export is referentially equal to `ConditionsPage` from `medical-pages.tsx`. Same for treatments.
-- [x] **#8 — `getTreatmentsByConditionSlug` dynamic import bundle bloat** *(codex — done; valid, but fix the real client path)*
-  Files: `packages/data/src/datasets/medical.ts:226-240`, `packages/web/src/lib/path-helpers.ts`, maybe a new slug-only data helper. `getTreatmentsByConditionSlug` production callers are server-side, but `path-helpers.ts` is imported by `"use client"` components and imports `medicalNameToSlug` from the same medical data module. Fix by moving/importing slugification from a tiny side-effect-free helper so client code does not pull the treatment JSON dynamic-import context.
-- [x] **#9 — INVALID AS WRITTEN: do not hard-fail incidence/prevalence ratios**
-  Files: `packages/data/src/datasets/medical-data/conditions.json`, `packages/data/src/datasets/medical.ts`, new `packages/data/src/__tests__/datasets/medical-validation.test.ts`. The general concern is valid: generated medical data needs provenance and validation. But the proposed invariant `newCasesPerYear ≤ peopleAffected × 5` is not medically safe; acute diseases can have annual incidence far above point prevalence. `deathsPerYear / peopleAffected` is also not a case-fatality rate when `peopleAffected` is prevalence. Replace this task with source/provenance checks, nonnegative checks, unique slugs, treatment-file existence, and a soft outlier report that prints suspicious rows without pretending the ratio is impossible.
-- [x] **#10 — `medical-pages.tsx` `ConditionPage` not on brutalist primitives** *(codex — done)*
-  Files: `packages/web/src/components/medical/medical-pages.tsx:142-202`. Replace `<div className="rounded-lg border p-4">` stat boxes with `StatCardGrid`/`StatCard`. Use `<h1 className="font-black uppercase tracking-tight">` to match siblings. Add `font-bold` to body paragraphs.
-- [x] **#13 — `clinical-trials.server.ts` no fetch timeout** *(claude — done)*
-  Added `signal: AbortSignal.timeout(15_000)` to the ClinicalTrials.gov fetch in `clinical-trials.server.ts:130-148`. `medical-pages.tsx:240-248` already swallows the failure into a "Failed to load clinical trials" UI string, so a timeout now produces that fallback rather than blocking the render.
-
-### CLAUDE.md violations (style/voice)
-
-- [x] **#15 — Hardcoded hex in survey pages** *(claude — done)*
-  Added `--treaty-paper`, `--treaty-ink`, `--treaty-ink-soft`, `--treaty-ink-muted` to `globals.css :root` (a separate parchment palette, intentionally not part of the brutalist neon set). Both survey pages now reference them as `bg-[var(--treaty-paper)]` / `text-[var(--treaty-ink)]` etc. Existing `TreatyVoteFlow.tsx`/`TreatyPostVoteShareFlow.tsx`/`TreatyFlowShell.tsx`/`HumanityManagementTrainingFlow.tsx`/`/vote/page.tsx`/`/questions/page.tsx`/`/humanity-management-training/page.tsx`/`AuthForm.tsx`/`ReferendumStepper.tsx`/`SignatoriesLeaderboard.tsx`/`ReferendumSignatureBox.tsx`/`TreatyMechanismExplainer.tsx`/`TreatySection.tsx` still use the same hex literals — they can migrate to the same tokens in a follow-up pass. Did not touch them in this change to keep the diff focused.
-- [x] **#16 — Generic copy, missing Wishonia voice** *(codex — done; small surgical edits)*
-  Files: `packages/web/src/components/medical/medical-pages.tsx:81-83, 291-293`, `packages/web/src/components/condition/TreatmentRankings.tsx:20-25`, `packages/web/src/app/organizations/page.tsx:23,26-28`, `packages/web/src/app/organizations/[id]/page.tsx:138-140, 161-163`. Rewrite each to deadpan/data-first/sardonic per CLAUDE.md voice rules. Survey pages may be intentionally neutral (Q1) — leave those.
-- [x] **#18 — `dfdaLink`/`dihLink` description copy** *(codex — done; small)*
-  Files: `packages/web/src/lib/routes.ts:164-184`. Update `description`/`tagline` to describe the local Optimitron agency pages. `dfda.earth` is not deprecated; it remains the standalone DFDA host.
-
-### Test gaps
-
-- [x] **#19 — `clinical-trials.server.test.ts` only tests URL builder** *(codex — done)*
-  Files: `packages/web/src/lib/__tests__/clinical-trials.server.test.ts`. Mock `fetch` at the import boundary; assert the parsed shape on success and that a non-OK status throws.
-- [x] **#20 — Vote-route tests miss org-switch / bad-token paths** *(folded into #3 above)*
-
-### Cleanup
-
-- [x] **#23 — Inline `organization-context-token.server.ts` re-export** *(codex — done; small)*
-  Files: `packages/web/src/lib/organization-context-token.server.ts`, `packages/web/src/app/api/referendums/[slug]/vote/route.ts`, `packages/web/src/lib/organization.server.ts`. Either delete the re-export and import directly from `@/lib/reasoning/org-context.server`, or move the impl out of `reasoning/` into the new file. The current setup adds indirection with no value.
-- [x] **#24 — `google-grounded-search.ts` implemented** *(claude — done)*
-  Replaced the `return null` stub with a real `'use server'` action that calls `@google/genai` (`gemini-2.5-flash` via `RAG_MODEL`) with the `googleSearch` tool, returns `{ answer, citations: [{ url, title? }], renderedContent }` mapped from `response.candidates[0].groundingMetadata`. Returns `null` on missing/invalid input, missing `GOOGLE_GENERATIVE_AI_API_KEY`, or any thrown error. Moved the `GroundedSearchResult` interface to `lib/types/grounded-search.ts` so the `'use server'` file only exports an async function. Updated `OutcomeLabel.tsx` to import the type from the new location. Files: `packages/web/src/lib/actions/google-grounded-search.ts`, `packages/web/src/lib/types/grounded-search.ts`, `packages/web/src/components/landing/OutcomeLabel.tsx`.
-- [x] **#25 — Document treatment dataset generator** *(codex — done)*
-  Files: `packages/data/src/datasets/medical-data/README.md` (new). Either commit the upstream generator or document where it lives (Vertex AI grounding workflow producing `treatments/*.json`). Without this the dataset rots silently.
-- [x] **#26 — SEO duplicate `/conditions` vs `/agencies/dfda/conditions`** *(codex — done; decision below)*
-  Files: `packages/web/src/components/medical/medical-pages.tsx` (metadata generators), and/or `packages/web/src/lib/site.ts` route disposition. Add canonical metadata or host-aware redirects. Decision: `dfda.earth` canonical is `/conditions` / `/treatments`; `optimitron.com` canonical is `/agencies/dfda/conditions` / `/agencies/dfda/treatments`.
-- [x] **#27 — INVALID AS WRITTEN: host-aware sitemap probably must stay dynamic**
-  Files: `packages/web/src/app/sitemap.ts`. The sitemap reads `headers()` and emits different canonical URLs per active domain variant. Do not replace `force-dynamic` with plain `revalidate = 3600` unless the implementation is proven to vary cache entries by host; a cached `dfda.earth` sitemap leaking onto `1percenttreaty.org` is worse than a small runtime cost.
-- [x] **#28 — Middleware uses 308 (permanent) for site redirects** *(claude — done)*
-  Site-route redirect (line 36) now uses 307. The asset-redirect path (line 28, added by codex) stays at 308 because relocated assets are intentionally permanent.
-
-### Verification
-
-- [x] **Run affected tests after each batch** *(claude — full web+data test suites green at 2026-04-29 14:50)*
-  ```
-  pnpm --filter @optimitron/web check
-  pnpm --filter @optimitron/web test
-  pnpm --filter @optimitron/data test
-  pnpm --filter @optimitron/web exec playwright test e2e/contrast-audit.spec.ts --project=default
-  ```
-  - Codex batch verification completed:
-    - `pnpm --filter @optimitron/web test -- src/components/medical/__tests__/medical-pages-parity.test.ts src/lib/__tests__/clinical-trials.server.test.ts src/lib/__tests__/site-sitemap.test.ts src/lib/__tests__/site.test.ts --reporter=dot`
-    - `pnpm --filter @optimitron/data test -- src/__tests__/datasets/medical.test.ts --reporter=dot`
-    - `pnpm --filter @optimitron/web typecheck`
-  - Claude batch verification completed (after #1, #2, #3, #4, #5, #6, #11, #12, #13, #15, #28):
-    - `pnpm --filter @optimitron/web exec tsc --noEmit` → exit 0
-    - `pnpm --filter @optimitron/web test` → 879 tests across 147 files passed
-    - `pnpm --filter @optimitron/data test` → 749 tests across 47 files passed
-    - Playwright contrast-audit not run (requires running dev server; recommend the user run it manually before merge to catch any remaining color-rule violations in untouched files).
-
-### Open product questions (need user decision; do not guess)
-
-- Q1 `copyMode="neutral"` voice: DECIDED — neutral partner-survey copy is intentional for embeds and nonprofit adoption. It should still be concise, direct, and useful, but not full Wishonia/H2EWD voice if that would make partner organizations nervous.
-- Q2 Org attribution: DECIDED — `ReferendumVote` should be first-org-wins, matching `referredByUserId` acquisition semantics. A later vote from another org link must not steal attribution. If a separate `SurveyResponse` row is created per org/survey event, that row can record its own org context.
-- Q3 `/conditions` vs `/agencies/dfda/conditions`: DECIDED — canonical depends on host. On `dfda.earth`, short `/conditions` and `/treatments` are canonical. On `optimitron.com`, the agency-scoped paths `/agencies/dfda/conditions` and `/agencies/dfda/treatments` are canonical. The SEO fix should use canonical metadata or host-aware redirects, not pretend one path is globally canonical.
-- Q4 dfda.earth status: DECIDED — keep `dfda.earth` as the standalone medical surface while also exposing DFDA under Optimitron's agency tree. Do not deprecate the domain by accident.
-- Q5 `components/ui/*` shadcn files intent: DECIDED — rewrite these compatibility wrappers to brutalist/semantic tokens while preserving their API surface. Do not introduce a second visual system; do not churn all downstream imports unless the wrappers cannot support the needed API.
-- Q6 `google-grounded-search.ts` stub: DECIDED — do not delete the file while `OutcomeLabel` imports it. Either implement it or remove the UI fetch path in a focused pass.
-- Q7 Treatment slug consistency: CHECKED — 216 conditions, 0 missing `treatments/*.json` files.
 
 ## Highest Priority
 - [x] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
@@ -777,28 +929,6 @@ Allocation rules across all tracks: 100% innovation (no Treasuries / no broad in
 - [ ] Decide whether dFDA content becomes an Optimitron package, a separate app, or remains on DIH long term.
 - [ ] Add compatibility redirects only when a route is intentionally moved.
 - [ ] Keep `warondisease.org` and `1percenttreaty.org` on Optimitron only after the treaty vote/share/dashboard path is launch-ready.
-
-## DIH Source Reference Paths
-
-- [ ] Survey/embed reference paths:
-  - Main survey route: `E:\code\dih-neobrutalist\app\survey\[slug]\page.tsx`.
-  - Demo survey route: `E:\code\dih-neobrutalist\app\survey\demo\page.tsx`.
-  - Landing vote section: `E:\code\dih-neobrutalist\components\landing\treaty-vote-section.tsx`.
-  - Survey hero/visualization: `E:\code\dih-neobrutalist\components\landing\survey-hero-section.tsx`, `E:\code\dih-neobrutalist\components\landing\treaty-visualization.tsx`.
-  - Survey parameter/math UI references: `E:\code\dih-neobrutalist\components\shared\ParameterValue.tsx`, `E:\code\dih-neobrutalist\components\shared\ImpactExplainer.tsx`, `E:\code\dih-neobrutalist\components\shared\impact-math.tsx`.
-- [ ] Treaty vote/share/reference paths:
-  - Canonical copy docs: `E:\code\dih-neobrutalist\docs\questions.md`, `E:\code\dih-neobrutalist\docs\stupid-questions.md`.
-  - Vote sync/referral APIs: `E:\code\dih-neobrutalist\app\api\votes\sync\route.ts`, `E:\code\dih-neobrutalist\app\api\referral-invitations\route.ts`, `E:\code\dih-neobrutalist\app\api\referral-invitations\nudge-opt-in\route.ts`.
-  - Send page/client: `E:\code\dih-neobrutalist\app\send\send-referral-invitation-client.tsx`.
-  - Referral helpers: `E:\code\dih-neobrutalist\lib\referral.server.ts`, `E:\code\dih-neobrutalist\lib\referral.client.ts`, `E:\code\dih-neobrutalist\lib\referral-invitations.ts`, `E:\code\dih-neobrutalist\lib\share-copy.ts`.
-  - Referral tests: `E:\code\dih-neobrutalist\tests\integration\referral-invitations-api.test.ts`, `E:\code\dih-neobrutalist\tests\integration\votes-sync-referral-invitation.test.ts`, `E:\code\dih-neobrutalist\tests\integration\referral-tree.test.ts`, `E:\code\dih-neobrutalist\tests\e2e\referral-flow.spec.ts`.
-- [ ] Donation/Stripe reference paths:
-  - Donation routes: `E:\code\dih-neobrutalist\app\donate\page.tsx`, `E:\code\dih-neobrutalist\app\donate\success\page.tsx`.
-  - Stripe APIs: `E:\code\dih-neobrutalist\app\api\stripe\create-checkout\route.ts`, `E:\code\dih-neobrutalist\app\api\stripe\session\route.ts`, `E:\code\dih-neobrutalist\app\api\stripe\webhook\route.ts`.
-  - Stripe helpers/tests: `E:\code\dih-neobrutalist\lib\stripe.ts`, `E:\code\dih-neobrutalist\lib\stripe-config.ts`, `E:\code\dih-neobrutalist\lib\stripe-payment-links.ts`, `E:\code\dih-neobrutalist\app\api\stripe\webhook\route.test.ts`, `E:\code\dih-neobrutalist\tests\e2e\donate.spec.ts`.
-- [ ] Crowdfunding reference paths:
-  - Components: `E:\code\dih-neobrutalist\components\campaigns\campaign-card.tsx`, `E:\code\dih-neobrutalist\components\campaigns\funding-widget.tsx`, `E:\code\dih-neobrutalist\components\dashboard\CampaignsCard.tsx`.
-  - Prisma migrations: `E:\code\dih-neobrutalist\prisma\migrations\20251126035432_add_crowdfunding_campaigns\migration.sql`, `E:\code\dih-neobrutalist\prisma\migrations\20260423140000_add_source_url_to_donation_and_pledge\migration.sql`.
 
 ## Quality Gates
 
