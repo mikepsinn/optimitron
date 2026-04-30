@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
+import { API_ROUTES } from "@/lib/api-routes";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import {
@@ -50,7 +51,7 @@ export function TaskCommunicationActions({
 
   async function recordCommunication() {
     try {
-      await fetch(`/api/tasks/${taskId}/communications`, {
+      await fetch(API_ROUTES.tasks.communications(taskId), {
         body: JSON.stringify({
           channel: communicationAction.channel,
           endpointId: communicationAction.endpointId,

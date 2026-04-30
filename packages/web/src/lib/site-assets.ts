@@ -1,5 +1,6 @@
 import type { Metadata, MetadataRoute } from "next";
 import type { SiteConfig, SiteKey } from "@/lib/site";
+import { ROUTES } from "@/lib/routes";
 
 export function getSiteManifestPath(site: SiteConfig) {
   return `/manifest.webmanifest?site=${site.key}`;
@@ -106,9 +107,9 @@ export function getSiteRobots(site: SiteConfig): MetadataRoute.Robots {
         "/api",
         "/admin",
         "/auth",
-        "/dashboard",
-        "/profile",
-        "/settings",
+        ROUTES.dashboard,
+        ROUTES.profile,
+        ROUTES.settings,
         "/_next",
       ],
     },

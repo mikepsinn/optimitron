@@ -51,8 +51,16 @@ export const ROUTES = {
   // The Treaty
   treaty: "/treaty",
   vote: "/vote",
+  why: "/why",
+  legal: "/legal",
+  impact: "/impact",
+  endorse: "/endorse",
+  coalition: "/coalition",
+  organizations: "/organizations",
+  people: "/people",
   questions: "/questions",
   humanityManagementTraining: "/humanity-management-training",
+  survey: "/survey",
   // The Game
   prize: "/prize",
   scoreboard: "/scoreboard",
@@ -90,6 +98,9 @@ export const ROUTES = {
 export const DEFAULT_POST_LOGIN_ROUTE = ROUTES.dashboard;
 export const DASHBOARD_INVITE_SECTION_ID = "referral-invitations";
 export const DASHBOARD_INVITE_HREF = `${ROUTES.dashboard}#${DASHBOARD_INVITE_SECTION_ID}`;
+export const DASHBOARD_REFERRAL_SECTION_ID = "referral";
+export const DASHBOARD_REFERRAL_HASH = `#${DASHBOARD_REFERRAL_SECTION_ID}`;
+export const DASHBOARD_REFERRAL_HREF = `${ROUTES.dashboard}${DASHBOARD_REFERRAL_HASH}`;
 
 export interface NavItem {
   href: string;
@@ -117,6 +128,14 @@ export function getLegislationPath(slug: string): string {
 
 export function getWishoniaAgencyPath(id: string): string {
   return `${ROUTES.agencies}/${id}`;
+}
+
+export function getTaskPath(id: string): string {
+  return `${ROUTES.tasks}/${id}`;
+}
+
+export function getOrganizationPath(id: string): string {
+  return `${ROUTES.organizations}/${id}`;
 }
 
 export function getSignInPath(
@@ -348,6 +367,14 @@ export const dashboardLink: NavItem = {
   cta: "Open Dashboard",
 };
 
+export const treatyDashboardLink: NavItem = {
+  ...dashboardLink,
+  description:
+    "Assign humans Earth Optimization Tasks and track the assignments you created.",
+  label: "Dashboard",
+  tagline: "Assign and track Earth Optimization Tasks",
+};
+
 export const tasksLink: NavItem = {
   href: ROUTES.tasks,
   label: "Tasks",
@@ -355,6 +382,14 @@ export const tasksLink: NavItem = {
   description: "Concrete tasks for actual humans, including the ones who run states and still need reminding. Claim what you can do. Track what others are supposed to do.",
   tagline: "Claim what you can do. Track what others should do.",
   cta: "Open Tasks",
+};
+
+export const treatyTasksLink: NavItem = {
+  ...tasksLink,
+  description:
+    "Track public leaders and the Earth Optimization Tasks assigned to humans who still need to vote.",
+  label: "President Management System",
+  tagline: "Track public leaders and treaty assignments",
 };
 
 export const searchLink: NavItem = {
@@ -552,6 +587,11 @@ export const treatyLink: NavItem = {
   cta: "Read the Treaty",
 };
 
+export const readTreatyLink: NavItem = {
+  ...treatyLink,
+  label: "Read the Treaty",
+};
+
 export const voteLink: NavItem = {
   href: ROUTES.vote,
   label: "Vote",
@@ -562,6 +602,12 @@ export const voteLink: NavItem = {
   cta: "Vote Now",
 };
 
+export const treatyVoteLink: NavItem = {
+  ...voteLink,
+  description: "Vote on the 1% Treaty, then ask another human to vote.",
+  tagline: "Vote on the 1% Treaty",
+};
+
 export const questionsLink: NavItem = {
   href: ROUTES.questions,
   label: "Treaty Questions",
@@ -570,6 +616,61 @@ export const questionsLink: NavItem = {
   tagline: "Story, stakes, math, and the treaty vote",
   matchPrefixes: [ROUTES.questions],
   cta: "See the Questions",
+};
+
+export const whyLink: NavItem = {
+  href: ROUTES.why,
+  label: "Why",
+  emoji: "?",
+  description: "The numbers behind redirecting 1% of military spending.",
+  tagline: "The numbers behind the treaty",
+  cta: "Read Why",
+};
+
+export const endorseLink: NavItem = {
+  href: ROUTES.endorse,
+  label: "Endorse",
+  emoji: "+",
+  description: "Put an organization on record supporting the 1% Treaty.",
+  tagline: "Endorse as an organization",
+  cta: "Endorse",
+};
+
+export const coalitionLink: NavItem = {
+  href: ROUTES.coalition,
+  label: "Supporters",
+  emoji: "*",
+  description: "Organizations publicly supporting the 1% Treaty.",
+  tagline: "See public supporters",
+  cta: "See Supporters",
+};
+
+export const legalLink: NavItem = {
+  href: ROUTES.legal,
+  label: "Legal",
+  emoji: "§",
+  description: "Legal notes for boards and counsel reviewing endorsement.",
+  tagline: "For boards and counsel",
+  cta: "Read Legal Notes",
+};
+
+export const trialSurveyLink: NavItem = {
+  href: ROUTES.survey,
+  label: "Take Survey",
+  emoji: "□",
+  description:
+    "Answer two questions about government funding for pragmatic clinical trials.",
+  tagline: "Answer two survey questions",
+  cta: "Take Survey",
+};
+
+export const trialEmbedLink: NavItem = {
+  href: ROUTES.organizations,
+  label: "Embed Survey",
+  emoji: "<>",
+  description: "Get your organization's survey link and iframe code.",
+  tagline: "Survey link and iframe code",
+  cta: "Embed Survey",
 };
 
 export const prizeLink: NavItem = {

@@ -6,7 +6,7 @@ import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { WorldIdVerificationCard } from "@/components/personhood/WorldIdVerificationCard";
-import { getSignInPath } from "@/lib/routes";
+import { getSignInPath, ROUTES } from "@/lib/routes";
 import { REFERRAL } from "@/lib/messaging";
 import { storage } from "@/lib/storage";
 import { buildReferendumReferralUrl } from "@/lib/url";
@@ -133,7 +133,7 @@ export function ReferendumVoteSection({
           <p className="text-sm font-bold text-brutal-yellow-foreground">
             {REFERRAL.verifyAndEarn} Link a wallet on your{" "}
             <Link
-              href="/profile"
+              href={ROUTES.profile}
               className="font-black text-brutal-pink underline hover:text-brutal-yellow-foreground"
             >
               profile

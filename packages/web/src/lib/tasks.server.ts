@@ -13,6 +13,7 @@ import { findOrCreatePerson } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { getSearchTerms, scoreSearchRecord } from "@/lib/site-search";
 import { canonicalizeSiteUrl } from "@/lib/site";
+import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import {
   buildPrimaryTaskCommunicationEndpointCreateData,
@@ -527,7 +528,7 @@ function mapTaskSearchResult(
     task.assigneePerson?.currentAffiliation,
     task.assigneeOrganization?.name,
   ].filter((value): value is string => Boolean(value?.trim()));
-  const href = `/tasks/${task.id}`;
+  const href = getTaskPath(task.id);
   const snippet = [
     task.description,
     task.roleTitle,

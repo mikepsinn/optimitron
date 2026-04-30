@@ -7,7 +7,7 @@ import { getPersonhoodProviderLabel } from "@/lib/personhood";
 import { getPersonhoodSummary } from "@/lib/personhood.server";
 import { prisma } from "@/lib/prisma";
 import { getPublishedPrizeDepositActivity } from "@/lib/prize-deposit-hypercert.server";
-import { ROUTES } from "@/lib/routes";
+import { DASHBOARD_REFERRAL_HASH, ROUTES } from "@/lib/routes";
 import { getVerifiedVoteStats } from "@/lib/verified-votes.server";
 import type {
   DashboardImpactReceipt,
@@ -272,7 +272,7 @@ export async function getImpactReceipts(
       statusTone: verifiedVotes > 0 ? "success" : "muted",
       icon: "🤝",
       timeLabel: null,
-      href: "#referral",
+      href: DASHBOARD_REFERRAL_HASH,
       external: false,
     });
   }

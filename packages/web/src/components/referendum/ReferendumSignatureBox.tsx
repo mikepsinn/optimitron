@@ -41,7 +41,7 @@ export function ReferendumSignatureBox({
   referendumSlug,
   title,
   authPromptText,
-  authCallbackUrl = "/dashboard",
+  authCallbackUrl = ROUTES.dashboard,
   postSignRedirectUrl,
   referralCode = null,
   storePendingVote,

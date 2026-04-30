@@ -13,6 +13,7 @@ import { FaDiscord, FaEthereum, FaGithub, FaGoogle, FaTelegram, FaXTwitter } fro
 import { signIn } from "next-auth/react"
 import { useAccount, useConnect, useDisconnect } from "wagmi"
 import type { ReactNode } from "react"
+import { ROUTES } from "@/lib/routes"
 
 interface ConnectedAccountsCardProps {
   availableAuthProviderIds: string[]
@@ -110,7 +111,7 @@ export function ConnectedAccountsCard({
     socialAccounts.find((sa) => sa.platform === platform)
 
   const handleConnectSocial = async (provider: string) => {
-    await signIn(provider.toLowerCase(), { callbackUrl: "/profile" })
+    await signIn(provider.toLowerCase(), { callbackUrl: ROUTES.profile })
   }
 
   const handleDisconnectAuth = async (providerId: string) => {

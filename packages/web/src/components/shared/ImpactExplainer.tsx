@@ -5,6 +5,7 @@ import { HelpCircle, ArrowUpRight, UsersRound, HeartPulse, Clock3, Zap, X } from
 import Link from "next/link"
 import { Dialog } from "@/components/retroui/Dialog"
 import { cn } from "@/lib/utils"
+import { ROUTES } from "@/lib/routes"
 import {
   EFFICACY_LAG_YEARS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
@@ -144,7 +145,7 @@ export function ImpactExplainer({
 
             {showFullAnalysisLink ? (
               <Link
-                href="/impact"
+                href={ROUTES.impact}
                 className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
               >
                 See the full analysis

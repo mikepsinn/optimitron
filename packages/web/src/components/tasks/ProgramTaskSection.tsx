@@ -27,6 +27,7 @@ import {
   getTreatyLevelCostOfDelay,
 } from "@/lib/tasks/delay-attribution";
 import { isTreatyParentTaskKey } from "@/lib/tasks/task-keys";
+import { getTaskPath } from "@/lib/routes";
 
 function formatTotalEffort(hours: number | null | undefined): string | null {
   if (hours == null || hours <= 0) return null;
@@ -54,7 +55,7 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
       {/* Header row: title + overdue chip */}
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 border-b-4 border-foreground bg-foreground px-4 py-3 text-background">
         <Link
-          href={`/tasks/${task.id}`}
+          href={getTaskPath(task.id)}
           className="text-2xl font-black uppercase leading-tight hover:underline sm:text-3xl"
         >
           {task.title}

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/retroui/Button";
+import { API_ROUTES } from "@/lib/api-routes";
+import { getTaskPath } from "@/lib/routes";
 
 interface TaskClaimButtonProps {
   canClaim: boolean;
@@ -27,7 +29,7 @@ export function TaskClaimButton({
   if (viewerHasClaim) {
     return (
       <Button asChild className="font-black uppercase" variant="outline">
-        <Link href={`/tasks/${taskId}`}>View Claim</Link>
+        <Link href={getTaskPath(taskId)}>View Claim</Link>
       </Button>
     );
   }
@@ -48,7 +50,7 @@ export function TaskClaimButton({
         onClick={() => {
           setError(null);
           startTransition(() => {
-            void fetch(`/api/tasks/${taskId}/claim`, {
+            void fetch(API_ROUTES.tasks.claim(taskId), {
               method: "POST",
             })
               .then(async (response) => {

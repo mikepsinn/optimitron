@@ -1,7 +1,8 @@
 "use client"
 
-import Link from 'next/link';
-import { AlertTriangle } from 'lucide-react';
+import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 export function TreatyWarningBox() {
   return (
@@ -22,7 +23,7 @@ export function TreatyWarningBox() {
         </div>
         <div className="flex-shrink-0 w-full md:w-auto">
           <Link
-            href="/vote"
+            href={ROUTES.vote}
             className="inline-flex w-full items-center justify-center border-4 border-primary bg-brutal-pink px-6 py-3 text-lg font-black uppercase text-brutal-pink-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:w-auto"
           >
             FIX IT

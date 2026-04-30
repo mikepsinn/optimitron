@@ -4,6 +4,7 @@ import { getSiteMetadata } from "@/lib/metadata";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getReferendumSiteSupportersData } from "@/lib/referendum-site.server";
 import { getSiteFromHeaders } from "@/lib/site";
+import { ROUTES } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export async function generateMetadata() {
   return getSiteMetadata(
     site,
     content.metadata.supporters,
-    "/coalition",
+    ROUTES.coalition,
     { robots: { index: true, follow: true } },
   );
 }
@@ -50,7 +51,7 @@ export default async function CoalitionPage() {
             {data.content.supporters.emptyBody}
           </p>
           <Link
-            href="/endorse"
+            href={ROUTES.endorse}
             className="mt-6 inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
           >
             {data.content.supporters.ctaLabel}
@@ -109,7 +110,7 @@ export default async function CoalitionPage() {
 
       <div className="mt-16 text-center">
         <Link
-          href="/endorse"
+          href={ROUTES.endorse}
           className="inline-block border-2 border-foreground bg-foreground px-8 py-4 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
         >
           {data.content.supporters.ctaLabel}

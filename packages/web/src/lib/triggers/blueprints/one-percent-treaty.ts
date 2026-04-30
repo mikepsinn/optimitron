@@ -1,5 +1,6 @@
 import type { CreateTaskTriggerInput } from "../admin";
 import { HUMANITY_MANAGEMENT } from "@/lib/messaging";
+import { ROUTES } from "@/lib/routes";
 
 // ---------------------------------------------------------------------------
 // Pattern 1+2 — Per-user onboarding tree (1% Treaty)
@@ -91,55 +92,15 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       assigneePersonResolver: "actor",
       parentResolver: `fixed:${TREATY_PARENT_TASK_KEY}`,
     },
-    {
-      kind: "signTreatyPersonally",
-      sortOrder: 0,
-      titleTemplate: "Sign the 1% Treaty publicly",
-      descriptionTemplate:
-        "Voting on this site is private. Signing on 1percenttreaty.org is public. You can't credibly ask a friend to do something you haven't publicly committed to yourself.",
-      category: "OTHER",
-      difficulty: "TRIVIAL",
-      estimatedEffortHours: 0.01,
-      ownerResolver: "actor",
-      assigneePersonResolver: "actor",
-      parentResolver: "trigger.parentSpec",
-      // Relative path. The middleware (getSiteRouteDisposition) redirects
-      // users on a variant without /treaty to the canonical onePercentTreaty
-      // origin automatically — see getSiteRouteRedirect in lib/site.ts.
-      actionLinkUrlTemplate: "/treaty",
-      actionLinkLabelTemplate: "Sign the treaty",
-      contributesToGate: true,
-    },
-    {
-      kind: "shareReferralUrl",
-      sortOrder: 10,
-      titleTemplate: "Share your 1% Treaty referral URL",
-      descriptionTemplate:
-        "Post your referral URL anywhere — text, social, email. Votes that arrive through it count toward your direct reports.",
-      category: "OTHER",
-      difficulty: "TRIVIAL",
-      estimatedEffortHours: 0.02,
-      ownerResolver: "actor",
-      assigneePersonResolver: "actor",
-      parentResolver: "trigger.parentSpec",
-      contributesToGate: true,
-    },
-    {
-      kind: "phoneScript",
-      sortOrder: 20,
-      titleTemplate: HUMANITY_MANAGEMENT.callOneHumanTaskTitle,
-      descriptionTemplate: PHONE_SCRIPT_DESCRIPTION,
-      category: "OTHER",
-      difficulty: "TRIVIAL",
-      estimatedEffortHours: 0.5,
-      ownerResolver: "actor",
-      assigneePersonResolver: "actor",
-      parentResolver: "trigger.parentSpec",
-      contributesToGate: true,
-    },
+    // sortOrder: chain-creating actions first (assign 2 humans), then the
+    // public-signal layer (broadcast URL + sign personally), then the
+    // hardest-friction action (phone call) last. The user is at peak
+    // motivation right after signin; spend that on the action that
+    // actually creates the doubling chain. Lower-leverage public-signal
+    // and the highest-friction phone call wait for after they're invested.
     {
       kind: "assignFirstHuman",
-      sortOrder: 30,
+      sortOrder: 0,
       titleTemplate: "Give your first human the 1% Treaty voting task",
       descriptionTemplate:
         "Pick someone you trust. Send them a named invitation. If they vote, they get promoted too.",
@@ -153,13 +114,59 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     },
     {
       kind: "assignSecondHuman",
-      sortOrder: 40,
+      sortOrder: 10,
       titleTemplate: "Give your second human the 1% Treaty voting task",
       descriptionTemplate:
         "Pick a second person. Same deal. {{params.directHumanAssignments}} reports is the minimum viable team.",
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,
+      ownerResolver: "actor",
+      assigneePersonResolver: "actor",
+      parentResolver: "trigger.parentSpec",
+      contributesToGate: true,
+    },
+    {
+      kind: "shareReferralUrl",
+      sortOrder: 20,
+      titleTemplate: "Share your 1% Treaty referral URL",
+      descriptionTemplate:
+        "Post your referral URL anywhere — text, social, email. Votes that arrive through it count toward your direct reports.",
+      category: "OTHER",
+      difficulty: "TRIVIAL",
+      estimatedEffortHours: 0.02,
+      ownerResolver: "actor",
+      assigneePersonResolver: "actor",
+      parentResolver: "trigger.parentSpec",
+      contributesToGate: true,
+    },
+    {
+      kind: "signTreatyPersonally",
+      sortOrder: 30,
+      titleTemplate: "Sign the 1% Treaty publicly",
+      descriptionTemplate:
+        "Voting on this site is private. Signing on 1percenttreaty.org is public. You can't credibly ask a friend to do something you haven't publicly committed to yourself.",
+      category: "OTHER",
+      difficulty: "TRIVIAL",
+      estimatedEffortHours: 0.01,
+      ownerResolver: "actor",
+      assigneePersonResolver: "actor",
+      parentResolver: "trigger.parentSpec",
+      // Relative path. The middleware (getSiteRouteDisposition) redirects
+      // users on a variant without /treaty to the canonical onePercentTreaty
+      // origin automatically — see getSiteRouteRedirect in lib/site.ts.
+      actionLinkUrlTemplate: ROUTES.treaty,
+      actionLinkLabelTemplate: "Sign the treaty",
+      contributesToGate: true,
+    },
+    {
+      kind: "phoneScript",
+      sortOrder: 40,
+      titleTemplate: HUMANITY_MANAGEMENT.callOneHumanTaskTitle,
+      descriptionTemplate: PHONE_SCRIPT_DESCRIPTION,
+      category: "OTHER",
+      difficulty: "TRIVIAL",
+      estimatedEffortHours: 0.5,
       ownerResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
@@ -352,7 +359,7 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
       // Relative path. The middleware (getSiteRouteDisposition) redirects
       // users on a variant without /treaty to the canonical onePercentTreaty
       // origin automatically — see getSiteRouteRedirect in lib/site.ts.
-      actionLinkUrlTemplate: "/treaty",
+      actionLinkUrlTemplate: ROUTES.treaty,
       actionLinkLabelTemplate: "Sign the treaty",
     },
   ],

@@ -14,6 +14,7 @@ import {
 } from "@/lib/tasks/accountability";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
+import { ROUTES } from "@/lib/routes";
 
 export async function generateMetadata({
   params,
@@ -91,7 +92,7 @@ export default async function PersonDetailPage({
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8">
         <header className="space-y-4">
           <nav className="text-sm font-bold">
-            <Link className="underline underline-offset-4" href="/tasks">
+            <Link className="underline underline-offset-4" href={ROUTES.tasks}>
               Tasks
             </Link>
             <span className="mx-2 text-muted-foreground">/</span>

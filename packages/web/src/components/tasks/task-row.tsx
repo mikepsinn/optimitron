@@ -21,6 +21,7 @@ import {
 } from "@/lib/tasks/task-context";
 import { getGovernmentLeader } from "@optimitron/data";
 import { getPersonHref } from "@/lib/person-href";
+import { getTaskPath } from "@/lib/routes";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
 import { DeathCounter } from "./death-counter";
@@ -415,7 +416,7 @@ export function TaskRow({
           above this with `relative z-10` so they keep their own click targets.
         */}
         <Link
-          href={`/tasks/${task.id}`}
+          href={getTaskPath(task.id)}
           className="absolute inset-0 z-0"
           aria-label={`Open ${targetLabel}'s task`}
           tabIndex={-1}
@@ -489,7 +490,7 @@ export function TaskRow({
           className={`relative z-[1] min-w-0 ${hideAssignee ? "flex-1" : "hidden flex-[1.2] lg:block"}`}
         >
           <Link
-            href={`/tasks/${task.id}`}
+            href={getTaskPath(task.id)}
             className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
           >
             {task.title}
@@ -586,7 +587,7 @@ export function TaskRow({
         className={`relative flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
       >
         <Link
-          href={`/tasks/${task.id}`}
+          href={getTaskPath(task.id)}
           className="absolute inset-0 z-0"
           aria-label={`Open ${targetLabel}'s task`}
           tabIndex={-1}
@@ -639,7 +640,7 @@ export function TaskRow({
           className={`relative z-[1] min-w-0 ${hideAssignee ? "flex-1" : "hidden flex-[1.2] lg:block"}`}
         >
           <Link
-            href={`/tasks/${task.id}`}
+            href={getTaskPath(task.id)}
             className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
           >
             {task.title}
@@ -681,7 +682,7 @@ export function TaskRow({
     >
       {/* Overlay link — fills the row so clicking empty space opens the task. */}
       <Link
-        href={`/tasks/${task.id}`}
+        href={getTaskPath(task.id)}
         className="absolute inset-0 z-0"
         aria-label={`Open ${task.title}`}
         tabIndex={-1}
@@ -720,7 +721,7 @@ export function TaskRow({
 
       <div className="relative z-[1] min-w-0 flex-1">
         <Link
-          href={`/tasks/${task.id}`}
+          href={getTaskPath(task.id)}
           className="block truncate text-sm font-bold underline-offset-4 hover:underline"
         >
           {task.title}

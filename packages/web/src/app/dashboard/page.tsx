@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (site.contentKey) {
     const content = getOptionalReferendumSiteContent(site.contentKey);
     if (content) {
-      return getSiteMetadata(site, content.metadata.dashboard, "/dashboard");
+      return getSiteMetadata(site, content.metadata.dashboard, ROUTES.dashboard);
     }
   }
 

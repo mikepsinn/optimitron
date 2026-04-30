@@ -7,6 +7,7 @@ import { Avatar } from "@/components/retroui/Avatar";
 import { Button } from "@/components/retroui/Button";
 import { Dialog } from "@/components/retroui/Dialog";
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
+import { API_ROUTES } from "@/lib/api-routes";
 import { getPersonHref } from "@/lib/person-href";
 import {
   getUserDisplayAvatar,
@@ -171,7 +172,7 @@ export function TaskCommentFeed({
   // Polling to pick up Wishonia replies landing in the background
   const fetchLatest = useCallback(async () => {
     try {
-      const res = await fetch(`/api/tasks/${taskId}/comments?sort=new&limit=100`);
+      const res = await fetch(API_ROUTES.tasks.comments(taskId, "sort=new&limit=100"));
       if (!res.ok) return;
       const data = (await res.json()) as {
         comments: TaskCommentRow[];
@@ -214,7 +215,7 @@ export function TaskCommentFeed({
     const streamingPlaceholderId = `streaming:${crypto.randomUUID()}`;
 
     try {
-      const res = await fetch(`/api/tasks/${taskId}/comments`, {
+      const res = await fetch(API_ROUTES.tasks.comments(taskId), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -401,7 +402,7 @@ export function TaskCommentFeed({
       ),
     );
     try {
-      const res = await fetch(`/api/tasks/comments/${commentId}/vote`, {
+      const res = await fetch(API_ROUTES.tasks.commentVote(commentId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ value: nextValue }),
@@ -444,7 +445,7 @@ export function TaskCommentFeed({
     const target = deleteTarget;
     setDeleteTarget(null);
     try {
-      const res = await fetch(`/api/tasks/comments/${target.id}`, { method: "DELETE" });
+      const res = await fetch(API_ROUTES.tasks.comment(target.id), { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       if (currentUserIsAdmin) {
         setComments((prev) =>

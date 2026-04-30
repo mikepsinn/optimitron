@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
+import { getOrganizationPath, getSignInPath, ROUTES } from "@/lib/routes";
 import { buildTrialAbundanceSurveyUrl } from "@/lib/site";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
@@ -16,7 +17,7 @@ export default async function OrganizationPage({
   const { id } = await params;
   const user = await getCurrentUser();
   if (!user) {
-    redirect(`/auth/signin?callbackUrl=${encodeURIComponent(`/organizations/${id}`)}`);
+    redirect(getSignInPath(getOrganizationPath(id)));
   }
 
   const [canManage, org] = await Promise.all([
@@ -174,7 +175,7 @@ export default async function OrganizationPage({
           {org.referendumPositions.length === 0 ? (
             <p className="text-sm font-bold text-muted-foreground">
               No positions submitted yet.{" "}
-              <Link href="/endorse" className="underline">
+              <Link href={ROUTES.endorse} className="underline">
                 Submit one on /endorse
               </Link>
               .

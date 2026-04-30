@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
+import {
+  coalitionLink,
+  endorseLink,
+  legalLink,
+  readTreatyLink,
+  trialEmbedLink,
+  trialSurveyLink,
+  treatyDashboardLink,
+  treatyTasksLink,
+  treatyVoteLink,
+  whyLink,
+} from "@/lib/routes";
 import { getSiteConfig } from "@/lib/site";
 import type { SiteKey } from "@/lib/site";
 
@@ -7,6 +19,15 @@ function labelsFor(siteKey: SiteKey) {
   return getSiteVariantUiConfig(siteKey).nav.sections.flatMap((section) =>
     section.items.map((item) => item.label),
   );
+}
+
+function chromeItemsFor(siteKey: SiteKey) {
+  const config = getSiteVariantUiConfig(siteKey);
+
+  return [
+    ...config.nav.sections.flatMap((section) => section.items),
+    ...config.footer.columns.flatMap((column) => column.items),
+  ];
 }
 
 describe("site variant UI config", () => {
@@ -69,6 +90,38 @@ describe("site variant UI config", () => {
     expect(labelsFor("trialAbundanceSurvey")).not.toContain(
       "President Management System",
     );
+  });
+
+  it("assembles campaign chrome from route-level nav items", () => {
+    const treatyItems = chromeItemsFor("onePercentTreaty");
+    const warOnDiseaseItems = chromeItemsFor("warOnDisease");
+    const surveyItems = chromeItemsFor("trialAbundanceSurvey");
+
+    for (const item of [
+      treatyVoteLink,
+      treatyDashboardLink,
+      treatyTasksLink,
+      readTreatyLink,
+      whyLink,
+      coalitionLink,
+      endorseLink,
+      legalLink,
+    ]) {
+      expect(treatyItems).toContain(item);
+    }
+
+    for (const item of [
+      treatyVoteLink,
+      treatyDashboardLink,
+      readTreatyLink,
+      whyLink,
+      legalLink,
+    ]) {
+      expect(warOnDiseaseItems).toContain(item);
+    }
+
+    expect(surveyItems).toContain(trialSurveyLink);
+    expect(surveyItems).toContain(trialEmbedLink);
   });
 
   it("defines medical navigation for the DFDA site", () => {

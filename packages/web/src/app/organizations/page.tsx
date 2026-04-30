@@ -2,13 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
+import { getSignInPath, ROUTES } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrganizationsPage() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect(`/auth/signin?callbackUrl=${encodeURIComponent("/organizations")}`);
+    redirect(getSignInPath(ROUTES.organizations));
   }
 
   const organizations = await getManageableOrganizationsForUser(user.id);

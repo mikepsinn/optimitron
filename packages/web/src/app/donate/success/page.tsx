@@ -8,7 +8,7 @@ import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/retroui/Button";
-import { DASHBOARD_INVITE_HREF } from "@/lib/routes";
+import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
 
 interface SessionData {
   amount_total: number | null;
@@ -86,7 +86,7 @@ function DonateSuccessInner() {
                   <Link href={DASHBOARD_INVITE_HREF}>Invite one voter</Link>
                 </Button>
                 <Button asChild variant="outline" className="flex-1">
-                  <Link href="/dashboard">Open dashboard</Link>
+                  <Link href={ROUTES.dashboard}>Open dashboard</Link>
                 </Button>
               </div>
             </div>

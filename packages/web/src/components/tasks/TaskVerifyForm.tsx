@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Textarea } from "@/components/retroui/Textarea";
+import { API_ROUTES } from "@/lib/api-routes";
 
 interface TaskVerifyFormProps {
   claimId?: string | null;
@@ -39,7 +40,7 @@ export function TaskVerifyForm({
         onClick={() => {
           setError(null);
           startTransition(() => {
-            void fetch(`/api/tasks/${taskId}/verify`, {
+            void fetch(API_ROUTES.tasks.verify(taskId), {
               body: JSON.stringify(
                 claimId
                   ? { claimId, verificationNote: text }

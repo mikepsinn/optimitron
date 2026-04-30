@@ -3,7 +3,7 @@ import type { TaskDifficulty } from "@optimitron/db";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard } from "@/components/ui/brutal-card";
-import { ROUTES } from "@/lib/routes";
+import { getTaskPath, ROUTES } from "@/lib/routes";
 
 interface TopTask {
   canClaim: boolean;
@@ -59,7 +59,7 @@ export function TopTasksCard({ tasks }: { tasks: TopTask[] }) {
                 />
                 <Link
                   className="text-sm font-black uppercase underline underline-offset-4"
-                  href={`/tasks/${task.id}`}
+                  href={getTaskPath(task.id)}
                 >
                   Details
                 </Link>

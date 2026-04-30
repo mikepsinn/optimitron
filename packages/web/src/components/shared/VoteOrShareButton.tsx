@@ -8,7 +8,7 @@ import { Button } from "@/components/retroui/Button"
 import { Share2, Vote, ArrowRight } from "lucide-react"
 import { getUsernameOrReferralCode } from "@/lib/referral.client"
 import { cn } from "@/lib/utils"
-import { ROUTES } from "@/lib/routes"
+import { DASHBOARD_REFERRAL_HREF, ROUTES } from "@/lib/routes"
 
 interface VoteOrShareButtonProps {
   variant?: "default" | "hero" | "nav" | "cta" | "inline"
@@ -83,7 +83,7 @@ export function VoteOrShareButton({
     }
 
     if (voteStatus?.hasVoted) {
-      return `${ROUTES.dashboard}#referral`
+      return DASHBOARD_REFERRAL_HREF
     }
 
     return ROUTES.wishocracy

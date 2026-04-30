@@ -2,6 +2,7 @@ import {
   buildReferralInvitationMessage,
   type ReferralInvitationMessageFormat,
 } from "@/lib/referral-invitation-copy";
+import { API_ROUTES } from "@/lib/api-routes";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 
 export type ReferralInvitationContactMethod = "EMAIL" | "COPY" | "SMS" | "OTHER";
@@ -76,7 +77,7 @@ export async function createReferralInvitationRequest(input: {
   /// callers (no window) just send undefined.
   const originUrl =
     typeof window !== "undefined" ? window.location.href : undefined;
-  const response = await fetcher("/api/referral-invitations", {
+  const response = await fetcher(API_ROUTES.referralInvitations.root, {
     body: JSON.stringify({ ...input, originUrl }),
     headers: { "Content-Type": "application/json" },
     method: "POST",
@@ -97,7 +98,7 @@ export async function updateReferralInvitationRequest(input: {
   shareAttemptId?: string | null;
   wasEdited?: boolean;
 }, fetcher: typeof fetch = fetch) {
-  const response = await fetcher("/api/referral-invitations", {
+  const response = await fetcher(API_ROUTES.referralInvitations.root, {
     body: JSON.stringify(input),
     headers: { "Content-Type": "application/json" },
     method: "PATCH",

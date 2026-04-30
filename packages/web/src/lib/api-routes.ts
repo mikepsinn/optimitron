@@ -18,7 +18,12 @@ export const API_ROUTES = {
   tasks: {
     root: "/api/tasks",
     claim: (id: string) => `/api/tasks/${id}/claim`,
+    communications: (id: string) => `/api/tasks/${id}/communications`,
     complete: (id: string) => `/api/tasks/${id}/complete`,
+    comments: (id: string, query?: string) =>
+      `/api/tasks/${id}/comments${query ? `?${query}` : ""}`,
+    comment: (id: string) => `/api/tasks/comments/${id}`,
+    commentVote: (id: string) => `/api/tasks/comments/${id}/vote`,
     verify: (id: string) => `/api/tasks/${id}/verify`,
     reassign: (id: string) => `/api/tasks/${id}/reassign`,
   },

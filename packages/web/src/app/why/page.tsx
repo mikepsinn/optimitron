@@ -1,13 +1,15 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { getSiteMetadata } from "@/lib/metadata";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getSiteFromHeaders } from "@/lib/site";
+import { ROUTES } from "@/lib/routes";
 
 export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
   const content = requireReferendumSiteContent(site);
-  return getSiteMetadata(site, content.metadata.why, "/why");
+  return getSiteMetadata(site, content.metadata.why, ROUTES.why);
 }
 
 export default async function WhyPage() {
@@ -55,12 +57,12 @@ export default async function WhyPage() {
         <p className="mx-auto mt-4 max-w-xl text-base font-bold text-muted-foreground">
           {content.why.closingBody}
         </p>
-        <a
-          href="/treaty"
+        <Link
+          href={ROUTES.treaty}
           className="mt-10 inline-block border-2 border-foreground bg-foreground px-8 py-4 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
         >
           {content.why.ctaLabel}
-        </a>
+        </Link>
       </div>
     </section>
   );

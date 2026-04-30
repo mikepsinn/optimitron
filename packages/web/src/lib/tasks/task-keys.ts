@@ -1,3 +1,5 @@
+import { getTaskPath } from "@/lib/routes";
+
 export const TREATY_PARENT_TASK_ID = "1-pct-treaty";
 export const TREATY_PARENT_TASK_KEY = "program:one-percent-treaty:ratify";
 export const TREATY_PARENT_TASK_TITLE = "Ratify the 1% Treaty";
@@ -6,7 +8,7 @@ export const TREATY_SIGNER_TASK_KEY_PREFIX = "program:one-percent-treaty:signer"
 export const TREATY_SIGNER_TASK_TITLE = "Sign the 1% Treaty";
 
 export function getTreatyParentTaskHref() {
-  return `/tasks/${TREATY_PARENT_TASK_ID}`;
+  return getTaskPath(TREATY_PARENT_TASK_ID);
 }
 
 export function getTreatySignerTaskKey(input: { countryCode: string }) {

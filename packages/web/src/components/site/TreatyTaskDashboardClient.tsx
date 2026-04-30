@@ -10,7 +10,7 @@ import {
   treatyPrimaryButtonClass,
   treatySecondaryButtonClass,
 } from "@/components/landing/TreatyFlowShell";
-import { DASHBOARD_INVITE_SECTION_ID } from "@/lib/routes";
+import { DASHBOARD_INVITE_SECTION_ID, getTaskPath, ROUTES } from "@/lib/routes";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 
@@ -41,7 +41,7 @@ export function TreatyTaskDashboardClient({
           variant="outline"
           data-testid="sign-out-button"
           onClick={() => {
-            void signOut({ callbackUrl: "/" });
+            void signOut({ callbackUrl: ROUTES.home });
           }}
           className="min-h-11 border border-[var(--treaty-ink)] bg-transparent px-3 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[#efe4cf]"
         >
@@ -149,7 +149,7 @@ function PrimaryTaskCard({ task }: { task: TaskCardTask }) {
   const isSignTreatyTask = Boolean(
     task.taskKey?.endsWith(":signTreatyPersonally"),
   );
-  const ctaUrl = actionLink?.url ?? `/tasks/${task.id}`;
+  const ctaUrl = actionLink?.url ?? getTaskPath(task.id);
   const ctaLabel = actionLink?.label ?? "Open the task";
   // External-link target only when the URL is to a genuinely different
   // origin. The blueprint stores /treaty (relative); middleware redirects

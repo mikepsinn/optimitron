@@ -8,7 +8,7 @@ import { Vote, Heart, BarChart3 } from "lucide-react";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { calculateImpactLedger } from "@/lib/impact-ledger";
 import { formatLives } from "@/lib/formatters";
-import { ROUTES } from "@/lib/routes";
+import { DASHBOARD_REFERRAL_HREF, ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
 import { POINTS, POINT_NAME, REFERRAL } from "@/lib/messaging";
 
@@ -62,7 +62,7 @@ export function GameScoreBar() {
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-2 sm:h-10 sm:flex-row sm:items-center sm:justify-between sm:py-0">
         <div className="flex items-center gap-4 text-[11px] font-black uppercase text-muted-foreground sm:gap-5 sm:text-xs">
           <Link
-            href="/dashboard#referral"
+            href={DASHBOARD_REFERRAL_HREF}
             className="flex items-center gap-1.5 transition-colors hover:text-foreground"
             title={`${POINTS} (${REFERRAL.earnOneShort})`}
           >
@@ -71,7 +71,7 @@ export function GameScoreBar() {
           </Link>
 
           <Link
-            href="/dashboard"
+            href={ROUTES.dashboard}
             className="flex items-center gap-1.5 transition-colors hover:text-foreground"
             title="Lives saved through recruitment"
           >
@@ -80,7 +80,7 @@ export function GameScoreBar() {
           </Link>
 
           <Link
-            href="/agencies/dcongress/wishocracy"
+            href={ROUTES.wishocracy}
             className="hidden items-center gap-1.5 transition-colors hover:text-foreground sm:flex"
             title="Budget comparisons completed"
           >
@@ -98,7 +98,7 @@ export function GameScoreBar() {
           />
 
           <Link
-            href="/dashboard"
+            href={ROUTES.dashboard}
             className="whitespace-nowrap text-[11px] font-black uppercase text-muted-foreground transition-colors hover:text-foreground sm:text-xs"
           >
             Dashboard &rarr;

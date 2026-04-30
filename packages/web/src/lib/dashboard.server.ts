@@ -22,7 +22,7 @@ import {
 } from "@optimitron/data/parameters";
 import { MAJORITY_OF_HUMANS_ON_EARTH_VALUE } from "@/lib/majority-humanity-target";
 import { getImpactReceipts } from "@/lib/impact-receipts.server";
-import { ROUTES } from "@/lib/routes";
+import { DASHBOARD_REFERRAL_HASH, ROUTES } from "@/lib/routes";
 import { GAME } from "@/lib/messaging";
 import type {
   DashboardData,
@@ -150,7 +150,7 @@ export async function getDashboardData(
       wishesLabel: "1 VOTE",
       completed: referralCount >= GAME.referralGoal,
       href: null,
-      anchor: "#referral",
+      anchor: DASHBOARD_REFERRAL_HASH,
       comingSoon: false,
     },
     {

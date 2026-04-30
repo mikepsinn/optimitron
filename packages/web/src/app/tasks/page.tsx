@@ -9,7 +9,7 @@ import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
-import { tasksLink } from "@/lib/routes";
+import { ROUTES, tasksLink } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { getTasksPageData } from "@/lib/tasks.server";
 
@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (site.primaryReferendumSlug) {
     const content = getOptionalReferendumSiteContent(site.contentKey);
     if (content) {
-      return getSiteMetadata(site, content.metadata.tasks, "/tasks");
+      return getSiteMetadata(site, content.metadata.tasks, ROUTES.tasks);
     }
   }
 

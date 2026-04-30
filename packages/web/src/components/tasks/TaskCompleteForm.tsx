@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Textarea } from "@/components/retroui/Textarea";
+import { API_ROUTES } from "@/lib/api-routes";
 
 interface TaskCompleteFormProps {
   taskId: string;
@@ -29,7 +30,7 @@ export function TaskCompleteForm({ taskId }: TaskCompleteFormProps) {
           onClick={() => {
             setError(null);
             startTransition(() => {
-              void fetch(`/api/tasks/${taskId}/complete`, {
+              void fetch(API_ROUTES.tasks.complete(taskId), {
                 body: JSON.stringify({ completionEvidence }),
                 headers: { "Content-Type": "application/json" },
                 method: "POST",

@@ -13,7 +13,7 @@ import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { Avatar } from "@/components/retroui/Avatar";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard, type BrutalCardBgColor } from "@/components/ui/brutal-card";
-import { getSignInPath, ROUTES } from "@/lib/routes";
+import { getSignInPath, getTaskPath, ROUTES } from "@/lib/routes";
 import {
   formatCompactCount,
   formatCompactCurrency,
@@ -274,13 +274,13 @@ export function TaskCard({
           ) : null}
           {task.parentTask ? (
             <Link
-              href={`/tasks/${task.parentTask.id}`}
+              href={getTaskPath(task.parentTask.id)}
               className="inline-block text-xs font-black uppercase tracking-[0.18em] text-muted-foreground underline underline-offset-4 hover:text-foreground"
             >
               ↑ {task.parentTask.title}
             </Link>
           ) : null}
-          <Link href={`/tasks/${task.id}`} className="block">
+          <Link href={getTaskPath(task.id)} className="block">
             <h3 className="text-2xl font-black uppercase leading-tight underline-offset-4 hover:underline">
               {task.title}
             </h3>
@@ -354,7 +354,7 @@ export function TaskCard({
           ) : null}
           <Link
             className="text-sm font-black uppercase underline underline-offset-4"
-            href={`/tasks/${task.id}`}
+            href={getTaskPath(task.id)}
           >
             Details
           </Link>

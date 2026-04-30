@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { getTaskPath } from "@/lib/routes";
 import type { TaskContext } from "@/lib/tasks/task-context";
 
 interface TaskBlockerCardProps {
@@ -10,7 +11,7 @@ export function TaskBlockerCard({ context }: TaskBlockerCardProps) {
   const blocked = context.blockedBy;
   if (!blocked) return null;
 
-  const href = blocked.callToActionHref ?? `/tasks/${blocked.taskId}`;
+  const href = blocked.callToActionHref ?? getTaskPath(blocked.taskId);
 
   return (
     <BrutalCard bgColor="yellow" padding="lg">

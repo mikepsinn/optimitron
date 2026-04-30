@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/container";
 import { GameCTA } from "@/components/ui/game-cta";
 import { SectionContainer } from "@/components/ui/section-container";
+import { ROUTES } from "@/lib/routes";
 
 export default function TreatyVoteSection() {
   return (
@@ -23,10 +24,10 @@ export default function TreatyVoteSection() {
             Training helps you give two humans their treaty voting tasks.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <GameCTA href="/vote" size="lg" variant="primary">
+            <GameCTA href={ROUTES.vote} size="lg" variant="primary">
               Vote Now
             </GameCTA>
-            <GameCTA href="/questions" size="lg" variant="outline">
+            <GameCTA href={ROUTES.questions} size="lg" variant="outline">
               See the Questions
             </GameCTA>
           </div>

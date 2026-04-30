@@ -11,7 +11,7 @@ import {
   formatCompactCurrency,
 } from "@/lib/tasks/accountability";
 import { getConfiguredSiteOrigin } from "@/lib/site";
-import { ROUTES } from "@/lib/routes";
+import { getTaskPath, ROUTES } from "@/lib/routes";
 import type { TaskCardTask } from "./task-card";
 
 interface TopTaskCardProps {
@@ -39,7 +39,7 @@ export function TopTaskCard({ task }: TopTaskCardProps) {
           ) : null}
         </div>
 
-        <Link href={`/tasks/${task.id}`}>
+        <Link href={getTaskPath(task.id)}>
           <h2 className="text-2xl font-black uppercase leading-tight hover:underline sm:text-3xl">
             {task.title}
           </h2>
@@ -89,7 +89,7 @@ export function TopTaskCard({ task }: TopTaskCardProps) {
         ) : null}
 
         <div className="flex flex-wrap items-center gap-3">
-          <GameCTA href={`/tasks/${task.id}`} size="sm">
+          <GameCTA href={getTaskPath(task.id)} size="sm">
             View Subtasks
           </GameCTA>
           <ShareOverdueListButtons

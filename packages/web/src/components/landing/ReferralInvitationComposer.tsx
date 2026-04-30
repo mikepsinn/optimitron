@@ -15,6 +15,7 @@ import {
   treatyTextareaClass,
 } from "@/components/landing/TreatyFlowShell";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { API_ROUTES } from "@/lib/api-routes";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import {
   buildReferralInvitationMessage,
@@ -86,7 +87,7 @@ export function ReferralInvitationComposer() {
     setError(null);
 
     try {
-      const response = await fetch("/api/referral-invitations", {
+      const response = await fetch(API_ROUTES.referralInvitations.root, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -139,7 +140,7 @@ export function ReferralInvitationComposer() {
       wasEdited: boolean,
     ) => {
       try {
-        await fetch("/api/referral-invitations", {
+        await fetch(API_ROUTES.referralInvitations.root, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -213,7 +214,7 @@ export function ReferralInvitationComposer() {
         invitationId = created.invitation.id;
       }
 
-      const response = await fetch("/api/referral-invitations", {
+      const response = await fetch(API_ROUTES.referralInvitations.root, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

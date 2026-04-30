@@ -15,6 +15,7 @@ import type { TaskCardTask } from "@/components/tasks/task-card";
 import { prisma } from "@/lib/prisma";
 import type { SiteConfig } from "@/lib/site";
 import { getTaskDetailData } from "@/lib/tasks.server";
+import { ROUTES } from "@/lib/routes";
 import {
   getTreatyParentTaskHref,
   TREATY_PARENT_TASK_ID,
@@ -242,7 +243,7 @@ export async function getReferendumSiteHomeData(
         ? ((treatyParentTask?.task.childTasks ?? []) as unknown as TaskCardTask[])
         : [],
     fullTasksHref:
-      site.key === "onePercentTreaty" ? getTreatyParentTaskHref() : "/tasks",
+      site.key === "onePercentTreaty" ? getTreatyParentTaskHref() : ROUTES.tasks,
     individualCount,
     organizationCount,
     treatyMarkdown:

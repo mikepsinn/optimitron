@@ -1,3 +1,4 @@
+import { getTaskPath } from "@/lib/routes";
 import {
   formatCompactCount,
   formatCompactCurrency,
@@ -123,7 +124,7 @@ export function getOverdueSignerHighlights<T extends SignerTaskLike>(input: {
 
     return {
       taskId: task.id,
-      taskHref: `/tasks/${task.id}`,
+      taskHref: getTaskPath(task.id),
       leaderFirstName: getFirstName(assigneePerson.displayName),
       leaderFullName,
       leaderImageUrl: assigneePerson.image ?? null,

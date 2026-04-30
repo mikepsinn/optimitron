@@ -5,6 +5,7 @@ import { getSiteMetadata } from "@/lib/metadata";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getSiteFromHeaders } from "@/lib/site";
+import { getSignInPath, ROUTES } from "@/lib/routes";
 import { EndorseForm } from "./EndorseForm";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +14,7 @@ export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
   const content = requireReferendumSiteContent(site);
-  return getSiteMetadata(site, content.metadata.endorse, "/endorse");
+  return getSiteMetadata(site, content.metadata.endorse, ROUTES.endorse);
 }
 
 export default async function EndorsePage() {
@@ -43,7 +44,7 @@ export default async function EndorsePage() {
           {content.endorse.signInDescription}
         </p>
         <Link
-          href={`/auth/signin?callbackUrl=${encodeURIComponent("/endorse")}`}
+          href={getSignInPath(ROUTES.endorse)}
           className="mt-8 inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
         >
           {content.endorse.signInLabel}
@@ -79,7 +80,7 @@ export default async function EndorsePage() {
 
       <p className="mt-8 text-center text-xs font-bold text-muted-foreground">
         Already endorsed? See the full list on{" "}
-        <Link href="/coalition" className="underline">
+        <Link href={ROUTES.coalition} className="underline">
           {content.endorse.existingSupportersLabel}
         </Link>
         .

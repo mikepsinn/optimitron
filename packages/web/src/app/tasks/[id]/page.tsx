@@ -44,7 +44,13 @@ import {
   GLOBAL_MILITARY_USD,
   getSignerDelayAttribution,
 } from "@/lib/tasks/delay-attribution";
-import { DASHBOARD_INVITE_HREF, getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
+import {
+  DASHBOARD_INVITE_HREF,
+  getSignInPath,
+  getTaskPath,
+  tasksLink,
+  ROUTES,
+} from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
 import { getAssigneeTwitterHandle, readTaskContext } from "@/lib/tasks/task-context";
 import { getTaskAncestors, getTaskDetailData } from "@/lib/tasks.server";
@@ -388,7 +394,7 @@ export default async function TaskDetailPage({
         ? formatCompactCurrency(context.assigneeProfile.budgetUsdPerYear)
         : "",
     taskTitle: task.title,
-    taskUrl: `/tasks/${task.id}`,
+    taskUrl: getTaskPath(task.id),
   };
 
   const isTreatySigner = task.taskKey?.startsWith("program:one-percent-treaty:signer:") ?? false;
@@ -407,7 +413,7 @@ export default async function TaskDetailPage({
               <span>/</span>
               <Link
                 className="underline underline-offset-4"
-                href={`/tasks/${ancestor.id}`}
+                href={getTaskPath(ancestor.id)}
               >
                 {ancestor.title}
               </Link>

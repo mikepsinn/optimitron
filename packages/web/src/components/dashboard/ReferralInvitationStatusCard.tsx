@@ -5,6 +5,7 @@ import { CheckCircle2, Clipboard, Mail, Send, XCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
+import { API_ROUTES } from "@/lib/api-routes";
 import { ROUTES } from "@/lib/routes";
 import { FLOW_VOTER_LIVES_SAVED_ROUNDED } from "@/lib/treaty-share-flow-parameters";
 
@@ -112,7 +113,7 @@ export function ReferralInvitationStatusCard() {
   useEffect(() => {
     let cancelled = false;
 
-    void fetch("/api/referral-invitations")
+    void fetch(API_ROUTES.referralInvitations.root)
       .then(async (response) => {
         if (!response.ok) return [];
         const payload = (await response.json()) as {

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { ReferendumStepperPage } from "@/components/referendum/ReferendumStepperPage";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
-import { treatyLink } from "@/lib/routes";
+import { ROUTES, treatyLink } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (site.primaryReferendumSlug) {
     const content = getOptionalReferendumSiteContent(site.contentKey);
     if (content) {
-      return getSiteMetadata(site, content.metadata.treaty, "/treaty");
+      return getSiteMetadata(site, content.metadata.treaty, ROUTES.treaty);
     }
   }
 

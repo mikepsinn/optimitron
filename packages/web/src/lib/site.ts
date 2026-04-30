@@ -2,21 +2,27 @@ import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
   ROUTES,
+  coalitionLink,
   conditionsLink,
   communityLinks,
-  dashboardLink,
   dfdaLink,
   dihLink,
+  endorseLink,
   exploreLinks,
   footerAppLinks,
   githubLink,
   inviteVoterLink,
+  legalLink,
   navSections,
   paperLinks,
-  tasksLink,
+  readTreatyLink,
   treatmentsLink,
-  treatyLink,
-  voteLink,
+  treatyDashboardLink,
+  treatyTasksLink,
+  treatyVoteLink,
+  trialEmbedLink,
+  trialSurveyLink,
+  whyLink,
   type NavItem,
   type NavSection,
 } from "@/lib/routes";
@@ -285,90 +291,26 @@ const TRIAL_ABUNDANCE_SURVEY_ASSETS = copiedSiteAssets({
   themeColor: "#000000",
 });
 
-const onePercentDashboardLink: NavItem = {
-  ...dashboardLink,
-  description:
-    "Assign humans Earth Optimization Tasks and track the assignments you created.",
-  label: "Dashboard",
-  tagline: "Assign and track Earth Optimization Tasks",
-};
-
-const onePercentTasksLink: NavItem = {
-  ...tasksLink,
-  description:
-    "Track public leaders and the Earth Optimization Tasks assigned to humans who still need to vote.",
-  label: "President Management System",
-  tagline: "Track public leaders and treaty assignments",
-};
-
-const onePercentVoteLink: NavItem = {
-  ...voteLink,
-  description:
-    "Vote on the 1% Treaty, then ask another human to vote.",
-  tagline: "Vote on the 1% Treaty",
-};
-
-const onePercentTreatyLink: NavItem = {
-  ...treatyLink,
-  label: "Read the Treaty",
-};
-
-const onePercentWhyLink: NavItem = {
-  href: "/why",
-  label: "Why",
-  emoji: "?",
-  description: "The numbers behind redirecting 1% of military spending.",
-  tagline: "The numbers behind the treaty",
-  cta: "Read Why",
-};
-
-const onePercentEndorseLink: NavItem = {
-  href: "/endorse",
-  label: "Endorse",
-  emoji: "+",
-  description: "Put an organization on record supporting the 1% Treaty.",
-  tagline: "Endorse as an organization",
-  cta: "Endorse",
-};
-
-const onePercentCoalitionLink: NavItem = {
-  href: "/coalition",
-  label: "Supporters",
-  emoji: "*",
-  description: "Organizations publicly supporting the 1% Treaty.",
-  tagline: "See public supporters",
-  cta: "See Supporters",
-};
-
-const onePercentLegalLink: NavItem = {
-  href: "/legal",
-  label: "Legal",
-  emoji: "§",
-  description: "Legal notes for boards and counsel reviewing endorsement.",
-  tagline: "For boards and counsel",
-  cta: "Read Legal Notes",
-};
-
 const onePercentNavSections: NavSection[] = [
   {
     id: "primary",
     label: "Primary",
     primary: true,
     items: [
-      onePercentVoteLink,
-      onePercentDashboardLink,
-      onePercentTasksLink,
+      treatyVoteLink,
+      treatyDashboardLink,
+      treatyTasksLink,
     ],
   },
   {
     id: "learn",
     label: "Learn",
     items: [
-      onePercentTreatyLink,
-      onePercentWhyLink,
-      onePercentCoalitionLink,
-      onePercentEndorseLink,
-      onePercentLegalLink,
+      readTreatyLink,
+      whyLink,
+      coalitionLink,
+      endorseLink,
+      legalLink,
     ],
   },
 ];
@@ -378,7 +320,7 @@ const warOnDiseaseNavSections: NavSection[] = [
     id: "primary",
     label: "Primary",
     primary: true,
-    items: [onePercentVoteLink, onePercentDashboardLink, onePercentTreatyLink],
+    items: [treatyVoteLink, treatyDashboardLink, readTreatyLink],
   },
   {
     id: "learn",
@@ -386,30 +328,11 @@ const warOnDiseaseNavSections: NavSection[] = [
     items: [
       conditionsLink,
       treatmentsLink,
-      onePercentWhyLink,
-      onePercentLegalLink,
+      whyLink,
+      legalLink,
     ],
   },
 ];
-
-const trialSurveyLink: NavItem = {
-  href: "/survey",
-  label: "Take Survey",
-  emoji: "□",
-  description:
-    "Answer two questions about government funding for pragmatic clinical trials.",
-  tagline: "Answer two survey questions",
-  cta: "Take Survey",
-};
-
-const trialEmbedLink: NavItem = {
-  href: "/organizations",
-  label: "Embed Survey",
-  emoji: "<>",
-  description: "Get your organization's survey link and iframe code.",
-  tagline: "Survey link and iframe code",
-  cta: "Embed Survey",
-};
 
 const trialSurveyNavSections: NavSection[] = [
   {
@@ -547,14 +470,14 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
       {
         title: "Campaign",
         items: [
-          onePercentVoteLink,
-          onePercentTreatyLink,
-          onePercentDashboardLink,
+          treatyVoteLink,
+          readTreatyLink,
+          treatyDashboardLink,
         ],
       },
       {
         title: "Evidence",
-        items: [conditionsLink, treatmentsLink, onePercentWhyLink],
+        items: [conditionsLink, treatmentsLink, whyLink],
       },
     ],
   },
@@ -583,19 +506,19 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
       {
         title: "Campaign",
         items: [
-          onePercentVoteLink,
-          onePercentTreatyLink,
-          onePercentDashboardLink,
-          onePercentTasksLink,
+          treatyVoteLink,
+          readTreatyLink,
+          treatyDashboardLink,
+          treatyTasksLink,
         ],
       },
       {
         title: "Proof",
         items: [
-          onePercentWhyLink,
-          onePercentCoalitionLink,
-          onePercentEndorseLink,
-          onePercentLegalLink,
+          whyLink,
+          coalitionLink,
+          endorseLink,
+          legalLink,
         ],
       },
     ],
@@ -691,8 +614,8 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: "/dashboard", label: "Open Dashboard", variant: "primary" },
-    { href: "/tasks", label: "See Tasks", variant: "outline" },
+    { href: ROUTES.dashboard, label: "Open Dashboard", variant: "primary" },
+    { href: ROUTES.tasks, label: "See Tasks", variant: "outline" },
   ],
   primaryReferendumSlug: null,
   primaryTaskKey: null,
@@ -729,9 +652,9 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     publicPrefixes: [],
     operationalPrefixes: [],
     minimalChromePrefixes: [
-      "/vote",
-      "/questions",
-      "/humanity-management-training",
+      ROUTES.vote,
+      ROUTES.questions,
+      ROUTES.humanityManagementTraining,
     ],
   },
   assets: OPTIMITRON_ASSETS,
@@ -820,7 +743,7 @@ const DFDA_CONFIG: SiteConfig = {
       "/treatments",
       "/outcome-labels",
       "/find-trials",
-      "/agencies/dfda",
+      ROUTES.dfda,
     ],
     restrictToAllowlist: true,
     publicPrefixes: [
@@ -828,11 +751,11 @@ const DFDA_CONFIG: SiteConfig = {
       "/treatments",
       "/outcome-labels",
       "/find-trials",
-      "/agencies/dfda",
-      "/about",
-      "/donate",
+      ROUTES.dfda,
+      ROUTES.about,
+      ROUTES.donate,
     ],
-    operationalPrefixes: ["/auth", "/dashboard", "/profile", "/settings"],
+    operationalPrefixes: ["/auth", ROUTES.dashboard, ROUTES.profile, ROUTES.settings],
     minimalChromePrefixes: [],
   },
   assets: DFDA_ASSETS,
@@ -931,25 +854,25 @@ const DIH_CONFIG: SiteConfig = {
   },
   routePolicy: {
     canonicalPrefixes: [
-      "/agencies/dih",
+      ROUTES.dih,
       "/institutes",
-      "/agencies/dcongress/wishocracy",
+      ROUTES.wishocracy,
     ],
     restrictToAllowlist: true,
     publicPrefixes: [
-      "/agencies/dih",
+      ROUTES.dih,
       "/institutes",
-      "/survey",
-      "/organizations",
+      ROUTES.survey,
+      ROUTES.organizations,
       "/conditions",
       "/treatments",
-      "/agencies/dfda/conditions",
-      "/agencies/dfda/treatments",
-      "/agencies/dcongress/wishocracy",
-      "/about",
-      "/donate",
+      ROUTES.conditions,
+      ROUTES.treatments,
+      ROUTES.wishocracy,
+      ROUTES.about,
+      ROUTES.donate,
     ],
-    operationalPrefixes: ["/auth", "/dashboard", "/profile", "/settings"],
+    operationalPrefixes: ["/auth", ROUTES.dashboard, ROUTES.profile, ROUTES.settings],
     minimalChromePrefixes: [],
   },
   assets: DIH_ASSETS,
@@ -1006,8 +929,8 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: "/vote", label: "Vote Now", variant: "primary" },
-    { href: "/treaty", label: "Read the Treaty", variant: "outline" },
+    { href: ROUTES.vote, label: "Vote Now", variant: "primary" },
+    { href: ROUTES.treaty, label: "Read the Treaty", variant: "outline" },
   ],
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
@@ -1039,36 +962,36 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     canonicalPrefixes: [],
     restrictToAllowlist: true,
     publicPrefixes: [
-      "/treaty",
-      "/tasks",
-      "/people",
-      "/governments",
-      "/declaration",
-      "/why",
-      "/legal",
-      "/impact",
-      "/organizations",
+      ROUTES.treaty,
+      ROUTES.tasks,
+      ROUTES.people,
+      ROUTES.governments,
+      ROUTES.declaration,
+      ROUTES.why,
+      ROUTES.legal,
+      ROUTES.impact,
+      ROUTES.organizations,
       "/conditions",
       "/treatments",
-      "/agencies/dfda/conditions",
-      "/agencies/dfda/treatments",
-      "/reasoning",
-      "/donate",
+      ROUTES.conditions,
+      ROUTES.treatments,
+      ROUTES.reasoning,
+      ROUTES.donate,
     ],
     operationalPrefixes: [
       "/r",
-      "/vote",
-      "/questions",
+      ROUTES.vote,
+      ROUTES.questions,
       "/auth",
-      "/dashboard",
-      "/profile",
-      "/settings",
-      "/humanity-management-training",
+      ROUTES.dashboard,
+      ROUTES.profile,
+      ROUTES.settings,
+      ROUTES.humanityManagementTraining,
     ],
     minimalChromePrefixes: [
-      "/vote",
-      "/questions",
-      "/humanity-management-training",
+      ROUTES.vote,
+      ROUTES.questions,
+      ROUTES.humanityManagementTraining,
     ],
   },
   assets: WAR_ON_DISEASE_ASSETS,
@@ -1120,13 +1043,13 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
     description:
       "Vote on redirecting 1% of military spending to pragmatic clinical trials.",
     eyebrow: "Referendum",
-    primaryPath: "/treaty",
+    primaryPath: ROUTES.treaty,
     parentKey: "warOnDisease",
     rootTaskKey: null,
   },
   homeActions: [
-    { href: "/vote", label: "Vote Now", variant: "primary" },
-    { href: "/treaty", label: "Read the Treaty", variant: "outline" },
+    { href: ROUTES.vote, label: "Vote Now", variant: "primary" },
+    { href: ROUTES.treaty, label: "Read the Treaty", variant: "outline" },
   ],
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
@@ -1158,48 +1081,48 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   },
   routePolicy: {
     canonicalPrefixes: [
-      "/treaty",
-      "/people",
-      "/governments",
-      "/declaration",
-      "/endorse",
-      "/coalition",
-      "/why",
-      "/legal",
-      "/impact",
-      "/humanity-management-training",
-      "/vote",
-      "/questions",
+      ROUTES.treaty,
+      ROUTES.people,
+      ROUTES.governments,
+      ROUTES.declaration,
+      ROUTES.endorse,
+      ROUTES.coalition,
+      ROUTES.why,
+      ROUTES.legal,
+      ROUTES.impact,
+      ROUTES.humanityManagementTraining,
+      ROUTES.vote,
+      ROUTES.questions,
     ],
     restrictToAllowlist: true,
     publicPrefixes: [
-      "/treaty",
-      "/tasks",
-      "/people",
-      "/governments",
-      "/declaration",
-      "/endorse",
-      "/coalition",
-      "/why",
-      "/legal",
-      "/impact",
-      "/organizations",
-      "/reasoning",
-      "/donate",
+      ROUTES.treaty,
+      ROUTES.tasks,
+      ROUTES.people,
+      ROUTES.governments,
+      ROUTES.declaration,
+      ROUTES.endorse,
+      ROUTES.coalition,
+      ROUTES.why,
+      ROUTES.legal,
+      ROUTES.impact,
+      ROUTES.organizations,
+      ROUTES.reasoning,
+      ROUTES.donate,
     ],
     operationalPrefixes: [
       "/r",
-      "/vote",
-      "/questions",
+      ROUTES.vote,
+      ROUTES.questions,
       "/auth",
-      "/dashboard",
-      "/profile",
-      "/settings",
-      "/humanity-management-training",
+      ROUTES.dashboard,
+      ROUTES.profile,
+      ROUTES.settings,
+      ROUTES.humanityManagementTraining,
     ],
     minimalChromePrefixes: [
-      "/vote",
-      "/humanity-management-training",
+      ROUTES.vote,
+      ROUTES.humanityManagementTraining,
     ],
   },
   assets: ONE_PERCENT_TREATY_ASSETS,
@@ -1251,13 +1174,13 @@ const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
     description:
       "A two-question survey about whether governments should fund more pragmatic clinical trials.",
     eyebrow: "Partner Survey",
-    primaryPath: "/survey",
+    primaryPath: ROUTES.survey,
     parentKey: "onePercentTreaty",
     rootTaskKey: null,
   },
   homeActions: [
-    { href: "/survey", label: "Take Survey", variant: "primary" },
-    { href: "/organizations", label: "Embed Survey", variant: "outline" },
+    { href: ROUTES.survey, label: "Take Survey", variant: "primary" },
+    { href: ROUTES.organizations, label: "Embed Survey", variant: "outline" },
   ],
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
@@ -1286,16 +1209,16 @@ const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
     ],
   },
   routePolicy: {
-    canonicalPrefixes: ["/survey"],
+    canonicalPrefixes: [ROUTES.survey],
     restrictToAllowlist: true,
-    publicPrefixes: ["/survey", "/vote", "/questions", "/organizations"],
+    publicPrefixes: [ROUTES.survey, ROUTES.vote, ROUTES.questions, ROUTES.organizations],
     operationalPrefixes: [
       "/auth",
-      "/dashboard",
-      "/profile",
-      "/settings",
+      ROUTES.dashboard,
+      ROUTES.profile,
+      ROUTES.settings,
     ],
-    minimalChromePrefixes: ["/survey", "/vote", "/questions"],
+    minimalChromePrefixes: [ROUTES.survey, ROUTES.vote, ROUTES.questions],
   },
   assets: TRIAL_ABUNDANCE_SURVEY_ASSETS,
   sitemap: {
@@ -1342,7 +1265,7 @@ export function getCanonicalHostForSiteKey(key: SiteKey): string {
   return new URL(SITE_CONFIGS[key].canonicalOrigin).host;
 }
 
-const TREATY_SIGN_PATH = "/treaty";
+const TREATY_SIGN_PATH = ROUTES.treaty;
 const TREATY_SIGN_FALLBACK_URL = "https://1percenttreaty.org/treaty";
 
 // Returns the URL where the user should publicly sign the 1% Treaty from the

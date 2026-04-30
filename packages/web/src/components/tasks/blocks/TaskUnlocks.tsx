@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { getTaskPath } from "@/lib/routes";
 import type { TaskContext, TaskContextUnlock } from "@/lib/tasks/task-context";
 
 interface TaskUnlocksProps {
@@ -40,7 +41,7 @@ function UnlockCard({ unlock }: { unlock: TaskContextUnlock }) {
           {unlock.childTaskId ? (
             <Link
               className="inline-block text-xs font-black uppercase underline underline-offset-4"
-              href={`/tasks/${unlock.childTaskId}`}
+              href={getTaskPath(unlock.childTaskId)}
             >
               Full Analysis →
             </Link>

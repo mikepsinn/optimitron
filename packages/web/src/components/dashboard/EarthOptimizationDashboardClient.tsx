@@ -21,7 +21,11 @@ import type { TaskCardTask } from "@/components/tasks/task-card"
 import { QuestChecklistCard } from "@/components/dashboard/QuestChecklistCard"
 import { ImpactReceiptsCard } from "@/components/dashboard/ImpactReceiptsCard"
 import { useRequestSiteOrigin } from "@/lib/request-site-origin"
-import { DASHBOARD_INVITE_SECTION_ID } from "@/lib/routes"
+import {
+  DASHBOARD_INVITE_SECTION_ID,
+  DASHBOARD_REFERRAL_SECTION_ID,
+  ROUTES,
+} from "@/lib/routes"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
 export function EarthOptimizationDashboardClient({
@@ -49,7 +53,7 @@ export function EarthOptimizationDashboardClient({
             <Button
               variant="outline"
               onClick={() => {
-                void signOut({ callbackUrl: "/" })
+                void signOut({ callbackUrl: ROUTES.home })
               }}
               className="min-h-11 border border-[var(--treaty-ink)] bg-transparent px-3 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[#efe4cf] sm:px-4"
             >
@@ -64,7 +68,7 @@ export function EarthOptimizationDashboardClient({
           <ReferralInvitationStatusCard />
         </section>
 
-        <section className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2" id="referral">
+        <section className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2" id={DASHBOARD_REFERRAL_SECTION_ID}>
           <ReferralLinkCard referralLink={referralLink} className="h-full" />
           <ReferralGoalCard stats={initialData.stats} />
         </section>
