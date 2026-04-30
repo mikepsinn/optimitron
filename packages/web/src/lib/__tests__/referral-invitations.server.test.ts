@@ -104,7 +104,7 @@ describe("createReferralInvitation", () => {
     });
   });
 
-  it("creates the referral task inside the invitation transaction and does not re-fire referral.sent with partial context", async () => {
+  it("prepares the onboarding tree before the invitation transaction and does not re-fire referral.sent with partial context", async () => {
     const result = await createReferralInvitation({
       contactMethod: ReferralInvitationContactMethod.EMAIL,
       messageFormat: ReferralInvitationMessageFormat.SINCERE,
@@ -116,7 +116,10 @@ describe("createReferralInvitation", () => {
     expect(result.id).toBe("invite_1");
     expect(mocks.ensureUserTreatyTask).toHaveBeenCalledWith(
       expect.objectContaining({ userId: "user_1" }),
-      mocks.tx,
+    );
+    expect(mocks.ensureUserTreatyTask.mock.calls[0]?.[1]).toBeUndefined();
+    expect(mocks.ensureUserTreatyTask.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.prisma.$transaction.mock.invocationCallOrder[0]!,
     );
     expect(mocks.createReferralInvitationTask).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -131,6 +134,17 @@ describe("createReferralInvitation", () => {
       expect.anything(),
       expect.anything(),
     );
+  });
+
+  it("does not use a larger transaction timeout for invitation-specific writes", async () => {
+    await createReferralInvitation({
+      contactMethod: ReferralInvitationContactMethod.COPY,
+      messageFormat: ReferralInvitationMessageFormat.TASK_NOTIFICATION,
+      recipientName: "Recipient Human",
+      referrerUserId: "user_1",
+    });
+
+    expect(mocks.prisma.$transaction.mock.calls[0]?.[1]).toBeUndefined();
   });
 });
 

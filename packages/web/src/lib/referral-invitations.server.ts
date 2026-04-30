@@ -236,6 +236,13 @@ export async function createReferralInvitation(input: {
   });
   const taskContactTemplate = messageText ?? defaultMessageText;
 
+  const userTreatyTask = linkedTaskId
+    ? null
+    : await ensureUserTreatyTask({
+        personId: referrer.person?.id ?? null,
+        userId: input.referrerUserId,
+      });
+
   const invitation = await prisma.$transaction(async (tx) => {
     const recipientPerson = recipientEmail
       ? await tx.person.upsert({
@@ -253,12 +260,9 @@ export async function createReferralInvitation(input: {
       : null;
 
     if (!linkedTaskId) {
-      // Keep the onboarding tree, referral task, and ReferralInvitation row
-      // in this transaction so a failed invitation cannot leave orphan tasks.
-      const userTreatyTask = await ensureUserTreatyTask({
-        personId: referrer.person?.id ?? null,
-        userId: input.referrerUserId,
-      }, tx);
+      // Keep the invite-specific task and ReferralInvitation row together.
+      // The broader onboarding tree is idempotently prepared before this
+      // transaction so a simple invite does not inherit the full trigger cost.
       linkedTaskId = await createReferralInvitationTask(
         {
           endpoint: {
@@ -267,7 +271,7 @@ export async function createReferralInvitation(input: {
           },
           inviteToken,
           ownerUserId: input.referrerUserId,
-          parentTaskId: userTreatyTask.taskId,
+          parentTaskId: userTreatyTask?.taskId ?? null,
           recipientName,
           recipientPersonId: recipientPerson?.id ?? null,
           referendumSlug: input.referendumSlug || TREATY_REFERENDUM_SLUG,

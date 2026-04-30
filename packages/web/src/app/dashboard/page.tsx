@@ -7,13 +7,13 @@ import { backfillUserLocationFromHeaders } from "@/lib/geo/backfill-location.ser
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
 import { getTasksPageData } from "@/lib/tasks.server";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
-import type { TaskCardTask } from "@/components/tasks/task-card";
 import { EarthOptimizationDashboardClient } from "@/components/dashboard/EarthOptimizationDashboardClient";
 import { TreatyTaskDashboardClient } from "@/components/site/TreatyTaskDashboardClient";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getSiteFromHeaders } from "@/lib/site";
 import { ensurePersonForUser } from "@/lib/person.server";
+import { selectActionableTreatyTasks } from "@/lib/tasks/treaty-dashboard-tasks";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -71,24 +71,14 @@ export default async function DashboardPage({
       userId,
     });
     const taskData = await getTasksPageData(userId);
-    /// Order children by the sortOrder set in the user-onboarding:treaty
-    /// blueprint (sign 0 → share 10 → phone 20 → assign1 30 → assign2 40 →
-    /// completeTraining 50). Persuasion-optimized order: do the personal
-    /// commitment before asking anyone else.
-    const sortBySortOrder = (a: TaskCardTask, b: TaskCardTask) =>
-      (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
-    const userTreatySubtasks = taskData.ownedPrivateTasks.filter(
-      (task) =>
-        task.id !== treatyTask.taskId &&
-        task.parentTaskId === treatyTask.taskId &&
-        task.status !== "STALE",
-    ) as TaskCardTask[];
-    const nextTasks = userTreatySubtasks
-      .filter((task) => task.status !== "VERIFIED")
-      .sort(sortBySortOrder);
-    const completedTasks = userTreatySubtasks
-      .filter((task) => task.status === "VERIFIED")
-      .sort(sortBySortOrder);
+    // Persuasion-optimized order: sign personally → share → phone → assign1
+    // → assign2. The :completeTraining gate is hidden from both lists by
+    // selectActionableTreatyTasks (it's a meta auto-complete, not a queue
+    // entry). See the helper for the full rationale.
+    const { nextTasks, completedTasks } = selectActionableTreatyTasks({
+      ownedPrivateTasks: taskData.ownedPrivateTasks,
+      treatyTaskId: treatyTask.taskId,
+    });
 
     return (
       <TreatyTaskDashboardClient
