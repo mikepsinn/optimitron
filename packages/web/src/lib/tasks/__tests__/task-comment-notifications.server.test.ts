@@ -113,7 +113,7 @@ describe("postTaskCommentAndNotify", () => {
       expect.objectContaining({
         recipientEmail: "joe@example.com",
         senderUserId: "user_alice",
-        subject: expect.stringContaining("Alice the Inviter"),
+        subject: "Get Joe to vote on the 1% Treaty",
       }),
     );
     expect(mocks.sendDraftTaskNotification).toHaveBeenCalled();
@@ -158,7 +158,7 @@ describe("postTaskCommentAndNotify", () => {
     );
   });
 
-  it("uses the explicit authorNameOverride when provided", async () => {
+  it("renders the comment body verbatim regardless of author override", async () => {
     mocks.userFindUnique.mockResolvedValue(null);
 
     await postTaskCommentAndNotify({
@@ -167,11 +167,9 @@ describe("postTaskCommentAndNotify", () => {
       taskId: "task_1",
     });
 
-    expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
-      expect.objectContaining({
-        subject: expect.stringContaining("Wishonia"),
-      }),
-    );
+    const draftCall = mocks.draftTaskNotification.mock.calls[0]?.[0];
+    expect(draftCall.subject).toBe("Get Joe to vote on the 1% Treaty");
+    expect(draftCall.text).toContain("Welcome.");
   });
 
   it("creates the comment but skips notification when no recipient resolves", async () => {

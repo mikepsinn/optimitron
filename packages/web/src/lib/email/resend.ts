@@ -26,10 +26,14 @@ interface BaseMessage {
 interface ResendMessage extends BaseMessage {
   html: string;
   text: string;
+  /// Per-message From override (e.g. share emails: "Mike via Earth Optimization Services"
+  /// from formatShareEmailFromHeader). Omit to use the default system address.
+  from?: string;
 }
 
 interface ResendReactMessage extends BaseMessage {
   react: React.ReactElement;
+  from?: string;
 }
 
 interface ExternalResendMessage {
@@ -62,7 +66,12 @@ function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
 }
 
 export function getEmailFromAddress() {
-  return formatEmailFromHeader(serverEnv.EMAIL_FROM, "Wishonia");
+  // Default sender is the platform brand. Per docs/questions.md system emails
+  // come from "Earth Optimization Services <noreply@warondisease.org>";
+  // share emails override via the per-message `from` field with
+  // formatShareEmailFromHeader (so the recipient's inbox foregrounds the
+  // friend's name instead of a corporate brand they don't recognize).
+  return formatEmailFromHeader(serverEnv.EMAIL_FROM, "Earth Optimization Services");
 }
 
 export function isResendConfigured() {
@@ -122,10 +131,14 @@ export async function sendResendEmail(message: ResendMessage): Promise<SendResul
     return buildMockSendResult(unsubscribeUrl);
   }
 
-  const signed = appendWishoniaSignature(message);
+  /// Skip Wishonia auto-sign when the caller set a per-message `from`. A real
+  /// human (e.g. a referrer inviting a friend) is the sender — Wishonia
+  /// signing on top would double-attribute. The share-email path renders its
+  /// own sender sign-off in the body via buildSenderSignature*.
+  const signed = message.from ? message : appendWishoniaSignature(message);
   const resend = getResendClient();
   const response = await resend.emails.send({
-    from: getEmailFromAddress(),
+    from: message.from ?? getEmailFromAddress(),
     to: [message.to],
     ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
@@ -167,10 +180,13 @@ export async function sendReactEmail(message: ResendReactMessage): Promise<SendR
   const resend = getResendClient();
   const renderedHtml = await render(message.react);
   const renderedText = await render(message.react, { plainText: true });
-  const signed = appendWishoniaSignature({ html: renderedHtml, text: renderedText });
+  /// See sendResendEmail for why we gate on `from`.
+  const signed = message.from
+    ? { html: renderedHtml, text: renderedText }
+    : appendWishoniaSignature({ html: renderedHtml, text: renderedText });
 
   const response = await resend.emails.send({
-    from: getEmailFromAddress(),
+    from: message.from ?? getEmailFromAddress(),
     to: [message.to],
     ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
@@ -202,7 +218,8 @@ export async function sendExternalResendEmail(message: ExternalResendMessage): P
     return buildMockSendResult(unsubscribeUrl);
   }
 
-  const signed = appendWishoniaSignature(message);
+  /// See sendResendEmail for why we gate on `from`.
+  const signed = message.from ? message : appendWishoniaSignature(message);
   const resend = getResendClient();
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),

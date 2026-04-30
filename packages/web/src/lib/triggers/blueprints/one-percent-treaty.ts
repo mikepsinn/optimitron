@@ -33,6 +33,7 @@ const USER_TREATY_DESCRIPTION = [
 //   {{params.militaryVsResearchRatio}} -> 604 (military vs gov clinical trials)
 //   {{params.statusQuoYears}}          -> 443 (queue clearance, status quo)
 //   {{params.dfdaYears}}               -> 36  (queue clearance, dFDA)
+//   {{params.apocalypseCount}}         -> 122 (nuclear-winter overkill factor)
 const PHONE_SCRIPT_DESCRIPTION = [
   "Your job is to manage 8 billion humans. You're busy. Outsource it.",
   "",
@@ -48,7 +49,7 @@ const PHONE_SCRIPT_DESCRIPTION = [
   "",
   "Humans spend {{params.militaryVsResearchRatio}} times more on weapons than on testing which medicines work. There's a treaty — the 1% Treaty — that redirects 1% of military spending into pragmatic clinical trials. Sixty million humans die every year, mostly from things we already know how to fix. The treaty would shorten the time to disease eradication from about {{params.statusQuoYears}} years to about {{params.dfdaYears}}.",
   "",
-  "We have enough money on this planet for roughly twelve apocalypses. The 1% Treaty asks you to sacrifice one of those apocalypses for disease eradication in your lifetime.",
+  "Humanity has enough nuclear mass-murder capacity for about {{params.apocalypseCount}} apocalypses. The 1% Treaty asks you to sacrifice one of those apocalypses for disease eradication in your lifetime.",
   "",
   "Voting takes thirty seconds. Open the link I'm about to send you, vote yes, then call two friends and read them this same paragraph. That's the whole ask. I do this with you, you do this with two more, after 32 rounds we've reached four billion humans.\"",
   "",

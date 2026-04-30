@@ -8,6 +8,7 @@ import {
   TaskCommentSource,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
+import { formatShareEmailFromHeader } from "@/lib/email/from-address";
 import { prisma } from "@/lib/prisma";
 import {
   createReferralInvitationTask,
@@ -367,10 +368,14 @@ export async function sendReferralInvitationMessage(input: {
         treatyUrl: inviteUrl,
       });
 
+  const fromHeader = formatShareEmailFromHeader(senderName);
   const notifyResult = await postTaskCommentAndNotify({
     authorUserId: input.referrerUserId,
+    cta: { label: "Take 30 seconds to end war and disease", url: inviteUrl },
+    from: fromHeader || null,
     kind: TaskCommentKind.OUTBOUND_MESSAGE,
     message: messageBody,
+    senderSignature: { name: senderName },
     source: TaskCommentSource.WEB,
     taskId: invitation.taskId,
   });

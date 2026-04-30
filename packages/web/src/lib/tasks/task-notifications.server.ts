@@ -467,6 +467,7 @@ export async function sendDraftTaskNotification(input: SendDraftTaskNotification
     const result = communication.recipientUserId
       ? await sendResendEmail({
           emailLogId: claimed.emailLogId,
+          from: input.from ?? undefined,
           html,
           bcc: bccEmails,
           scope: userEmailOptions.emailScope,

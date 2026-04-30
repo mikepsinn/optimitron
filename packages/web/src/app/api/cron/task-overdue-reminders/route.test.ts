@@ -119,7 +119,7 @@ describe("/api/cron/task-overdue-reminders", () => {
         taskId: "task_1",
         taskCommentId: "comment_1",
         step: 1,
-        subject: expect.stringContaining("[OVERDUE]"),
+        subject: expect.stringMatching(/^Yeahhh, about /),
       }),
     );
     expect(mocks.taskCommentCreate).toHaveBeenCalledWith(

@@ -150,3 +150,47 @@ export function appendWishoniaSignature<T extends { html: string; text: string }
     html: `${message.html}${buildWishoniaSignatureHtml(selection)}`,
   };
 }
+
+export interface SenderSignature {
+  /** "Mike Sinn" — required. */
+  name: string;
+  /** "Recently promoted to Humanity Manager" — defaults to that exact line. */
+  role?: string;
+  /** "Earth Optimization Services LLC" — defaults to that exact org. */
+  org?: string;
+}
+
+const DEFAULT_SENDER_ROLE = "Recently promoted to Humanity Manager";
+const DEFAULT_SENDER_ORG = "Earth Optimization Services LLC";
+
+/**
+ * Build the share-email sender sign-off. Used when a real human (not
+ * Wishonia) is the sender — e.g. a referrer inviting a friend. Mirrors the
+ * Wishonia signature format so recipients reading multiple emails see a
+ * coherent visual rhythm: separator, "Love," sign-off, name, role, org.
+ *
+ * Wishonia auto-append is gated on the absence of `from` on the message,
+ * so when this signature is rendered into the body, Wishonia's is skipped
+ * (no double-signing). See resend.ts.
+ */
+export function buildSenderSignatureText(signature: SenderSignature): string {
+  const role = signature.role ?? DEFAULT_SENDER_ROLE;
+  const org = signature.org ?? DEFAULT_SENDER_ORG;
+  return ["", "---", "", "Yours in not dying,", "", signature.name, role, org].join("\n");
+}
+
+export function buildSenderSignatureHtml(signature: SenderSignature): string {
+  const role = signature.role ?? DEFAULT_SENDER_ROLE;
+  const org = signature.org ?? DEFAULT_SENDER_ORG;
+  return `
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px 0 0 0;border-collapse:collapse;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <tr>
+    <td valign="top" style="border-left:3px solid #111827;padding:0 0 0 16px;">
+      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Yours in not dying,</div>
+      <div style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">${escapeHtml(signature.name)}</div>
+      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(role)}</div>
+      <div style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">${escapeHtml(org)}</div>
+    </td>
+  </tr>
+</table>`.trim();
+}

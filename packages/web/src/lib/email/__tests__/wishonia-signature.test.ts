@@ -3,6 +3,8 @@ import {
   WISHONIA_TAGLINES,
   WISHONIA_TITLES,
   appendWishoniaSignature,
+  buildSenderSignatureHtml,
+  buildSenderSignatureText,
   buildWishoniaSignatureHtml,
   buildWishoniaSignatureText,
   selectWishoniaSignature,
@@ -143,6 +145,51 @@ describe("Wishonia signature module", () => {
       const out = appendWishoniaSignature({ html: "<p>body</p>", text: "BODY" });
       expect(out.html.startsWith("<p>body</p>")).toBe(true);
       expect(out.text.startsWith("BODY")).toBe(true);
+    });
+  });
+
+  describe("buildSenderSignatureText", () => {
+    it("renders 'Yours in not dying,' sign-off with name + default role + default org", () => {
+      const text = buildSenderSignatureText({ name: "Mike Sinn" });
+      expect(text).toContain("Yours in not dying,");
+      expect(text).toContain("Mike Sinn");
+      expect(text).toContain("Recently promoted to Humanity Manager");
+      expect(text).toContain("Earth Optimization Services LLC");
+    });
+
+    it("starts with a separator line", () => {
+      const text = buildSenderSignatureText({ name: "X" });
+      expect(text.startsWith("\n---\n")).toBe(true);
+    });
+
+    it("respects role and org overrides", () => {
+      const text = buildSenderSignatureText({
+        name: "Mike",
+        role: "Senior Voter",
+        org: "1% Treaty Coalition",
+      });
+      expect(text).toContain("Senior Voter");
+      expect(text).toContain("1% Treaty Coalition");
+      expect(text).not.toContain("Recently promoted");
+    });
+  });
+
+  describe("buildSenderSignatureHtml", () => {
+    it("escapes HTML-unsafe characters in name / role / org", () => {
+      const html = buildSenderSignatureHtml({
+        name: "<script>",
+        role: "<img onerror=x>",
+        org: "Org<tag>",
+      });
+      expect(html).not.toContain("<script>");
+      expect(html).not.toContain("<img onerror");
+      expect(html).toContain("&lt;script&gt;");
+      expect(html).toContain("Org&lt;tag&gt;");
+    });
+
+    it("renders without an avatar image (we don't have the sender's photo)", () => {
+      const html = buildSenderSignatureHtml({ name: "Mike Sinn" });
+      expect(html).not.toContain("<img");
     });
   });
 });

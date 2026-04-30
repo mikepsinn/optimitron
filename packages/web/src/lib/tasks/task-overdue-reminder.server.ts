@@ -44,20 +44,58 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+/// Disease-mortality baseline used in the body line. ~55M deaths/year from
+/// all diseases and aging globally → ~150,000/day. See
+/// GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES in @optimitron/data/parameters.
+/// Hardcoded here (not pulled from parameters) because rounding once is
+/// fine for email copy and we don't want a parameter import in the
+/// transactional path.
+const GLOBAL_DAILY_DEATHS_FROM_DISEASE = 150_000;
+
+function formatDeathCount(n: number): string {
+  if (n >= 1_000_000) {
+    return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1).replace(/\.0$/, "")} million`;
+  }
+  if (n >= 1_000) {
+    return `${Math.round(n / 1_000) * 1_000}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  return `${n}`;
+}
+
 function buildSubject(sendCount: number, title: string) {
-  const prefix = sendCount >= MAX_OVERDUE_SEND_COUNT ? "[FINAL NOTICE]" : "[OVERDUE]";
-  return `${prefix} ${title}`;
+  /// Lumbergh-style escalation. No "[OVERDUE]" / "[FINAL NOTICE]" — corporate
+  /// thriller framing fights the deadpan voice. Subject lines read like
+  /// passive-aggressive corporate follow-up. Same task title at the end so
+  /// inbox threading stays sane.
+  if (sendCount >= MAX_OVERDUE_SEND_COUNT) {
+    return `I'm gonna need you to go ahead and finish ${title}. Mmkay?`;
+  }
+  if (sendCount >= 3) {
+    return `Did you get the memo on ${title}?`;
+  }
+  if (sendCount >= 2) {
+    return `So... about ${title}`;
+  }
+  return `Yeahhh, about ${title}`;
+}
+
+function buildOpener(sendCount: number, title: string) {
+  if (sendCount >= MAX_OVERDUE_SEND_COUNT) {
+    return `I'm gonna need you to go ahead and finish ${title}, mmkay? That'd be great.`;
+  }
+  if (sendCount >= 3) {
+    return `So I'm not sure if you got the memo, but ${title} is still sitting there. Did you get the memo?`;
+  }
+  if (sendCount >= 2) {
+    return `Yeahhh, so we're gonna need to circle back on ${title}.`;
+  }
+  return `Yeahhh... if you could just go ahead and finish ${title}, that'd be great.`;
 }
 
 function daysOverdue(dueAt: Date | null, now: Date) {
   if (!dueAt) return 0;
   const ms = now.getTime() - dueAt.getTime();
   return Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)));
-}
-
-function formatBreadcrumb(ancestors: Array<{ title: string }>) {
-  if (ancestors.length === 0) return null;
-  return ancestors.map((a) => a.title).join(" › ");
 }
 
 function absoluteTaskUrl(taskId: string, baseUrl: string) {
@@ -67,56 +105,49 @@ function absoluteTaskUrl(taskId: string, baseUrl: string) {
 
 function renderCommentsHtml(comments: OverdueReminderComment[]) {
   if (comments.length === 0) return "";
-  const items = comments
+  return comments
     .map((comment) => {
-      const author = comment.authorName ? escapeHtml(comment.authorName) : "Anonymous";
       const message = escapeHtml(comment.message);
-      return `<div style="margin:0 0 16px;padding:12px 14px;border-left:3px solid #111827;background:#f4f4f5;font-size:14px;line-height:1.5;white-space:pre-wrap;"><div style="font-weight:700;margin-bottom:4px;">${author}:</div>${message}</div>`;
+      return `<div style="margin:0 0 16px;font-size:15px;line-height:1.6;white-space:pre-wrap;">${message}</div>`;
     })
     .join("");
-  return `<div style="margin:0 0 24px;"><p style="margin:0 0 8px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#71717a;">Recent activity</p>${items}</div>`;
+}
+
+function buildMortalityLine(daysLate: number): string {
+  /// Lumbergh-style understatement applied to civilizational catastrophe:
+  /// quote the death count as an FYI, mmkay. The N=daysLate × 150,000
+  /// approximation rounds aggressively because the joke is the absurd
+  /// ratio, not three-decimal precision. For ≤0 days we still render
+  /// something — overdue triggers run on tasks past their dueAt.
+  const days = Math.max(daysLate, 1);
+  const deaths = days * GLOBAL_DAILY_DEATHS_FROM_DISEASE;
+  return `About ${formatDeathCount(deaths)} people died waiting in the meantime, just an FYI.`;
 }
 
 function buildHtml(input: {
-  breadcrumb: string | null;
   comments: OverdueReminderComment[];
   daysLate: number;
-  description: string | null;
-  isFinal: boolean;
+  opener: string;
   taskUrl: string;
   title: string;
   unsubscribePlaceholder: string;
 }) {
   const titleEsc = escapeHtml(input.title);
-  const descriptionEsc = input.description ? escapeHtml(input.description) : null;
-  const breadcrumbEsc = input.breadcrumb ? escapeHtml(input.breadcrumb) : null;
   const taskUrlEsc = escapeHtml(input.taskUrl);
-  const banner = input.isFinal ? "FINAL NOTICE" : "OVERDUE TASK";
-  const overdueLine =
-    input.daysLate > 0
-      ? `${input.daysLate} day${input.daysLate === 1 ? "" : "s"} overdue.`
-      : "Overdue.";
+  const openerEsc = escapeHtml(input.opener);
+  const days = Math.max(input.daysLate, 1);
+  const overdueLineEsc = escapeHtml(
+    `${days} day${days === 1 ? "" : "s"} overdue. ${buildMortalityLine(input.daysLate)}`,
+  );
 
   return `<!doctype html>
 <html lang="en">
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;color:#111827;">
-  <div style="background:#f4f4f5;padding:32px 16px;">
-    <div style="max-width:560px;margin:0 auto;background:#ffffff;border:3px solid #111827;padding:32px;">
-      <p style="margin:0 0 12px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#71717a;">
-        ${banner}
-      </p>
-      <h1 style="margin:0 0 16px;font-size:26px;line-height:1.2;font-weight:900;">
-        ${titleEsc}
-      </h1>
-      ${breadcrumbEsc
-        ? `<p style="margin:0 0 16px;font-size:13px;line-height:1.5;color:#52525b;font-weight:700;">${breadcrumbEsc}</p>`
-        : ""}
-      <p style="margin:0 0 20px;font-size:15px;line-height:1.5;font-weight:700;">
-        ${overdueLine}
-      </p>
-      ${descriptionEsc
-        ? `<div style="margin:0 0 24px;font-size:15px;line-height:1.6;white-space:pre-wrap;">${descriptionEsc}</div>`
-        : ""}
+<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,sans-serif;color:#111827;">
+  <div style="padding:32px 16px;">
+    <div style="max-width:560px;margin:0 auto;">
+      <h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;font-weight:900;">${titleEsc}</h1>
+      <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">${openerEsc}</p>
+      <p style="margin:0 0 24px;font-size:15px;line-height:1.5;color:#52525b;">${overdueLineEsc}</p>
       ${renderCommentsHtml(input.comments)}
       <a
         href="${taskUrlEsc}"
@@ -125,7 +156,7 @@ function buildHtml(input: {
         Open the task
       </a>
       <p style="margin:32px 0 0;font-size:12px;line-height:1.6;color:#71717a;">
-        Don't want overdue reminders for this task? <a href="${input.unsubscribePlaceholder}" style="color:#71717a;">Unsubscribe</a>.
+        <a href="${input.unsubscribePlaceholder}" style="color:#71717a;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -135,43 +166,30 @@ function buildHtml(input: {
 
 function renderCommentsText(comments: OverdueReminderComment[]) {
   if (comments.length === 0) return null;
-  const lines = ["RECENT ACTIVITY", ""];
-  for (const comment of comments) {
-    const author = comment.authorName ?? "Anonymous";
-    lines.push(`${author}:`);
-    lines.push(comment.message);
-    lines.push("");
-  }
-  return lines.join("\n");
+  return comments.map((comment) => comment.message).join("\n\n");
 }
 
 function buildText(input: {
-  breadcrumb: string | null;
   comments: OverdueReminderComment[];
   daysLate: number;
-  description: string | null;
-  isFinal: boolean;
+  opener: string;
   taskUrl: string;
   title: string;
   unsubscribePlaceholder: string;
 }) {
-  const overdueLine =
-    input.daysLate > 0
-      ? `${input.daysLate} day${input.daysLate === 1 ? "" : "s"} overdue.`
-      : "Overdue.";
-  const banner = input.isFinal ? "FINAL NOTICE" : "OVERDUE TASK";
+  const days = Math.max(input.daysLate, 1);
+  const overdueLine = `${days} day${days === 1 ? "" : "s"} overdue. ${buildMortalityLine(
+    input.daysLate,
+  )}`;
   const commentsBlock = renderCommentsText(input.comments);
 
   return [
-    banner,
-    "",
     input.title,
-    input.breadcrumb ? input.breadcrumb : null,
+    "",
+    input.opener,
     "",
     overdueLine,
     "",
-    input.description ?? null,
-    input.description ? "" : null,
     commentsBlock,
     commentsBlock ? "" : null,
     `Open the task: ${input.taskUrl}`,
@@ -187,18 +205,14 @@ export function buildOverdueReminderEmail(
 ): OverdueReminderEmail {
   const baseUrl = input.baseUrl ?? getBaseUrl();
   const now = input.now ?? new Date();
-  const isFinal = input.sendCount >= MAX_OVERDUE_SEND_COUNT;
   const daysLate = daysOverdue(input.task.dueAt, now);
-  const breadcrumb = formatBreadcrumb(input.ancestors);
   const taskUrl = absoluteTaskUrl(input.task.id, baseUrl);
   const subject = buildSubject(input.sendCount, input.task.title);
   const comments = (input.comments ?? []).slice(0, MAX_COMMENTS_IN_REMINDER);
   const params = {
-    breadcrumb,
     comments,
     daysLate,
-    description: input.task.description,
-    isFinal,
+    opener: buildOpener(input.sendCount, input.task.title),
     taskUrl,
     title: input.task.title,
     unsubscribePlaceholder: OVERDUE_REMINDER_PLACEHOLDER,

@@ -9,9 +9,11 @@ import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { checkTaskCommunicationCooldown } from "@/lib/tasks/task-communications.server";
+import type { SenderSignature } from "@/lib/email/wishonia-signature";
 import {
   buildTaskCommentNotificationEmail,
   COMMENT_NOTIFICATION_PLACEHOLDER,
+  type CommentNotificationCta,
 } from "@/lib/tasks/task-comment-notification-email.server";
 import {
   draftTaskNotification,
@@ -19,7 +21,6 @@ import {
 } from "@/lib/tasks/task-notifications.server";
 import { recipientWithinRateLimits } from "@/lib/tasks/task-recipient-rate-limit.server";
 import { resolveTaskRecipients } from "@/lib/tasks/task-recipients.server";
-import { getTaskAncestors } from "@/lib/tasks.server";
 
 const log = createLogger("task-comment-notifications");
 
@@ -27,8 +28,20 @@ export interface PostTaskCommentInput {
   authorNameOverride?: string | null;
   authorPersonId?: string | null;
   authorUserId?: string | null;
+  /// Override the email CTA. Default points to the in-app task page. Pass null
+  /// to suppress entirely. Used by share emails to point recipients at the
+  /// invite URL ("Take 30 seconds to end war and disease").
+  cta?: CommentNotificationCta | null;
+  /// Per-message From override. Used by share emails to foreground the
+  /// sender's name (e.g. "Mike via Earth Optimization Services").
+  from?: string | null;
   kind?: TaskCommentKind;
   message: string;
+  /// When set, render a sender sign-off block in the email body. Used by
+  /// share emails so the recipient sees their friend's name + role + org
+  /// instead of (or in addition to) Wishonia's auto-signature. The Resend
+  /// layer skips Wishonia auto-append when `from` is also set.
+  senderSignature?: SenderSignature | null;
   source?: TaskCommentSource;
   taskId: string;
 }
@@ -94,7 +107,10 @@ export async function notifyTaskCommentRecipients(input: {
   authorUserId?: string | null;
   authorNameOverride?: string | null;
   commentId: string;
+  cta?: CommentNotificationCta | null;
+  from?: string | null;
   message: string;
+  senderSignature?: SenderSignature | null;
   taskId: string;
 }): Promise<PostTaskCommentResult> {
   const { commentId, taskId, message } = input;
@@ -125,7 +141,7 @@ export async function notifyTaskCommentRecipients(input: {
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
-    select: { description: true, id: true, title: true, deletedAt: true },
+    select: { id: true, title: true, deletedAt: true },
   });
   if (!task || task.deletedAt) {
     return { commentId, status: "skipped", reason: "task_missing" };
@@ -136,11 +152,11 @@ export async function notifyTaskCommentRecipients(input: {
     authorPersonId: input.authorPersonId ?? null,
     authorUserId: input.authorUserId ?? null,
   });
-  const ancestors = await getTaskAncestors(taskId);
 
   const email = buildTaskCommentNotificationEmail({
-    ancestors,
     comment: { authorName, message },
+    cta: input.cta,
+    senderSignature: input.senderSignature,
     task,
   });
 
@@ -205,6 +221,7 @@ export async function notifyTaskCommentRecipients(input: {
 
       const sendResult = await sendDraftTaskNotification({
         communicationId: draft.id,
+        from: input.from ?? null,
         now,
       });
 
@@ -269,7 +286,10 @@ export async function postTaskCommentAndNotify(
     authorPersonId: input.authorPersonId ?? null,
     authorUserId: input.authorUserId ?? null,
     commentId: comment.id,
+    cta: input.cta,
+    from: input.from ?? null,
     message: input.message,
+    senderSignature: input.senderSignature ?? null,
     taskId: input.taskId,
   });
 }

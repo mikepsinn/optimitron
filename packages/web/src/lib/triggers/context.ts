@@ -1,6 +1,7 @@
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_HALE_GAIN_YEAR_15,
   TREATY_LIVES_SAVED_ANNUAL_GLOBAL,
@@ -40,6 +41,8 @@ export function buildTriggerParams() {
     statusQuoYears: roundParam(STATUS_QUO_QUEUE_CLEARANCE_YEARS),
     /// 36 — years to clear the same queue with dFDA throughput (the 1% Treaty bet).
     dfdaYears: roundParam(DFDA_QUEUE_CLEARANCE_YEARS),
+    /// 122 — nuclear-winter-scale civilization-ending capacity in the global arsenal.
+    apocalypseCount: roundParam(NUCLEAR_WINTER_OVERKILL_FACTOR),
     /// Annual global lives saved if the treaty's first-treatment timeline holds.
     annualLivesSaved: roundParam(TREATY_LIVES_SAVED_ANNUAL_GLOBAL),
     /// 21.7 — HALE gain at year 15 under the Treaty trajectory. Used in the

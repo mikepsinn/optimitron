@@ -28,45 +28,68 @@ const baseInput = {
 };
 
 describe("buildOverdueReminderEmail", () => {
-  it("uses [OVERDUE] subject prefix on send #1", () => {
+  it("uses Lumbergh-style 'Yeahhh, about ...' subject on send #1 (no [OVERDUE] prefix)", () => {
     const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 1 });
-    expect(email.subject).toBe("[OVERDUE] Get Joe to vote on the 1% Treaty");
+    expect(email.subject).toBe("Yeahhh, about Get Joe to vote on the 1% Treaty");
+    expect(email.subject).not.toContain("[OVERDUE]");
   });
 
-  it("escalates to [FINAL NOTICE] on the cap send", () => {
+  it("escalates subject through send #2", () => {
+    const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 2 });
+    expect(email.subject).toBe("So... about Get Joe to vote on the 1% Treaty");
+  });
+
+  it("escalates subject through send #3 with 'memo' framing", () => {
+    const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 3 });
+    expect(email.subject).toBe("Did you get the memo on Get Joe to vote on the 1% Treaty?");
+  });
+
+  it("escalates subject to 'I'm gonna need you to ...' on the cap send (no [FINAL NOTICE])", () => {
     const email = buildOverdueReminderEmail({
       ...baseInput,
       sendCount: MAX_OVERDUE_SEND_COUNT,
     });
-    expect(email.subject).toBe("[FINAL NOTICE] Get Joe to vote on the 1% Treaty");
+    expect(email.subject).toBe(
+      "I'm gonna need you to go ahead and finish Get Joe to vote on the 1% Treaty. Mmkay?",
+    );
+    expect(email.subject).not.toContain("[FINAL NOTICE]");
   });
 
-  it("includes the days-overdue line in the body", () => {
+  it("includes the days-overdue line + mortality FYI", () => {
     const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 1 });
     expect(email.text).toContain("3 days overdue.");
+    expect(email.text).toContain(
+      "About 450,000 people died waiting in the meantime, just an FYI.",
+    );
   });
 
-  it("uses singular 'day' for one-day overdue", () => {
+  it("uses singular 'day' for one-day overdue and reports ~150,000 deaths", () => {
     const email = buildOverdueReminderEmail({
       ...baseInput,
       now: new Date("2026-04-25T12:00:00.000Z"),
       sendCount: 1,
     });
     expect(email.text).toContain("1 day overdue.");
+    expect(email.text).toContain("About 150,000 people died waiting");
   });
 
-  it("renders the ancestor breadcrumb in the body", () => {
-    const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 1 });
-    expect(email.text).toContain("Optimize Earth");
-    expect(email.text).toContain("End War and Disease");
-    expect(email.text).toContain("Ratify the 1% Treaty");
-  });
-
-  it("includes the task description verbatim", () => {
+  it("renders the Lumbergh opener line in the body", () => {
     const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 1 });
     expect(email.text).toContain(
-      "Vote on the 1% Treaty. It takes 30 seconds and your vote prevents lifetimes of suffering.",
+      "Yeahhh... if you could just go ahead and finish Get Joe to vote on the 1% Treaty",
     );
+  });
+
+  it("does not render the ancestor breadcrumb (noise)", () => {
+    const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 1 });
+    expect(email.text).not.toContain("Optimize Earth");
+    expect(email.text).not.toContain("End War and Disease");
+  });
+
+  it("does not include the task description (noise — they can click through)", () => {
+    const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 1 });
+    expect(email.text).not.toContain("It takes 30 seconds");
+    expect(email.html).not.toContain("It takes 30 seconds");
   });
 
   it("absolutizes the task URL with the provided base URL", () => {
@@ -81,7 +104,7 @@ describe("buildOverdueReminderEmail", () => {
     expect(email.text).toContain(OVERDUE_REMINDER_PLACEHOLDER);
   });
 
-  it("renders comments under a Recent activity heading when provided", () => {
+  it("renders comment messages without author labels (noise — sender already in From)", () => {
     const email = buildOverdueReminderEmail({
       ...baseInput,
       comments: [
@@ -93,14 +116,15 @@ describe("buildOverdueReminderEmail", () => {
       ],
       sendCount: 1,
     });
-    expect(email.text).toContain("RECENT ACTIVITY");
-    expect(email.text).toContain("Alice:");
     expect(email.text).toContain("Hey Joe — this matters, please vote.");
-    expect(email.html).toContain("Recent activity");
-    expect(email.html).toContain("Alice:");
+    expect(email.text).not.toContain("Alice:");
+    expect(email.html).toContain("Hey Joe — this matters, please vote.");
+    expect(email.html).not.toContain("Alice:");
+    expect(email.text).not.toContain("RECENT ACTIVITY");
+    expect(email.html).not.toContain("Recent activity");
   });
 
-  it("escapes HTML-unsafe characters in description and comment bodies", () => {
+  it("escapes HTML-unsafe characters in title and comment bodies", () => {
     const email = buildOverdueReminderEmail({
       ...baseInput,
       comments: [
@@ -113,19 +137,10 @@ describe("buildOverdueReminderEmail", () => {
       sendCount: 1,
       task: {
         ...baseInput.task,
-        description: "<script>alert(1)</script>",
         title: "Title with <tag>",
       },
     });
-    expect(email.html).not.toContain("<script>alert(1)</script>");
-    expect(email.html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
-    expect(email.html).toContain("&lt;script&gt;");
     expect(email.html).toContain("&lt;a href=&quot;x&quot;&gt;here&lt;/a&gt;");
-  });
-
-  it("omits the Recent activity block when no comments are passed", () => {
-    const email = buildOverdueReminderEmail({ ...baseInput, sendCount: 1 });
-    expect(email.text).not.toContain("RECENT ACTIVITY");
-    expect(email.html).not.toContain("Recent activity");
+    expect(email.html).toContain("&lt;tag&gt;");
   });
 });

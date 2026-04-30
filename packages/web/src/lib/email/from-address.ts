@@ -49,6 +49,24 @@ export function formatEmailFromHeader(
   return `${displayName} <${parsed.address}>`;
 }
 
+/**
+ * Build the share-email From header in the form:
+ *   `<senderName> via Earth Optimization Services <noreply@warondisease.org>`
+ *
+ * Used when a user-authored email goes out under the platform's mail domain
+ * but the inbox should foreground the named sender (so the recipient sees
+ * a friend's name, not a brand they don't recognize). Per docs/questions.md.
+ *
+ * Returns "" if EMAIL_FROM is unset/malformed (caller bails out gracefully).
+ */
+export function formatShareEmailFromHeader(senderName: string): string {
+  const address = getConfiguredFromAddress();
+  if (!address) return "";
+  const safeSender = sanitizeDisplayName(senderName, "A voter");
+  const displayName = `${safeSender} via Earth Optimization Services`;
+  return `${displayName} <${address}>`;
+}
+
 /** Sanitize a sender display name for use inside an RFC 5322 header. */
 export function sanitizeDisplayName(name: string, fallback: string): string {
   return name.replace(/[<>\r\n"]/g, "").trim() || fallback;
