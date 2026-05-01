@@ -959,7 +959,7 @@ export async function getTasksPageData(
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
-  const [viewer, topLevelTasks, allTasks, myClaims, ownedTasks] = await Promise.all([
+  const [viewer, topLevelTasks, allTasks] = await Promise.all([
     userId ? getTaskViewer(userId) : Promise.resolve(null),
     prisma.task.findMany({
       where: {
@@ -985,40 +985,6 @@ export async function getTasksPageData(
       take: 500,
       select: taskListSelect,
     }),
-    userId
-      ? prisma.taskClaim.findMany({
-          where: {
-            deletedAt: null,
-            userId,
-          },
-          orderBy: [{ claimedAt: "desc" }],
-          select: {
-            actualCashCostUsd: true,
-            actualEffortSeconds: true,
-            claimedAt: true,
-            completedAt: true,
-            id: true,
-            status: true,
-            task: {
-              select: taskListSelect,
-            },
-            verificationNote: true,
-            verifiedAt: true,
-          },
-          take: 40,
-        })
-      : Promise.resolve([]),
-    userId
-      ? prisma.task.findMany({
-          where: getTaskVisibilityWhere({
-            userId,
-            visibility: "owned",
-          }),
-          orderBy: [{ dueAt: "asc" }, { updatedAt: "desc" }],
-          select: taskListSelect,
-          take: 40,
-        })
-      : Promise.resolve([]),
   ]);
 
   const decoratedTasks = allTasks.map((task) =>
@@ -1028,13 +994,6 @@ export async function getTasksPageData(
     }),
   );
   const allTasksSorted = sortTasksForAccountability(decoratedTasks);
-
-  const assignedToYou =
-    viewer?.personId != null
-      ? sortTasksForAccountability(
-          decoratedTasks.filter((task) => task.assigneePerson?.id === viewer.personId),
-        )
-      : [];
 
   const forYou =
     viewer == null
@@ -1050,13 +1009,6 @@ export async function getTasksPageData(
           ...entry.task,
           recommendationScore: entry.score,
         }));
-  const decoratedOwnedTasks = ownedTasks.map((task) =>
-    decorateTask(task, {
-      frameKey: options?.frameKey,
-      userId: viewer?.id ?? null,
-    }),
-  );
-  const ownedPrivateTasks = decoratedOwnedTasks.filter((task) => !task.isPublic);
 
   const topLevelTaskIds = new Set(topLevelTasks.map((t) => t.id));
   const topLevelChildIds = new Set(
@@ -1083,16 +1035,7 @@ export async function getTasksPageData(
 
   return {
     allTasks: filteredAllTasks,
-    assignedToYou,
     forYou,
-    myClaims: myClaims.map((claim) => ({
-      ...claim,
-      task: decorateTask(claim.task, {
-        frameKey: options?.frameKey,
-        userId,
-      }),
-    })),
-    ownedPrivateTasks,
     topLevelTasks: decoratedTopLevel,
     viewer,
   };

@@ -67,20 +67,28 @@ export default async function DashboardPage({
   ) {
     const person = await ensurePersonForUser(userId);
     // Still ensure the per-user HMT root task exists — it's the parent the
-    // referral-invitation tasks attach to. The 5-subtask checklist that used
-    // to live underneath it was removed; both action levers live as direct
-    // composers on the dashboard now.
+    // referral-invitation tasks attach to.
     await ensureUserTreatyTask({ personId: person.id, userId });
 
     const taskData = await getTasksPageData(userId);
-    const now = Date.now();
-    const overdueLeaders = (taskData.allTasks as TaskCardTask[])
-      .filter((task) => task.taskKey?.startsWith("program:one-percent-treaty:signer:"))
-      .filter((task) => task.dueAt != null && task.dueAt.getTime() < now)
-      .sort((a, b) => (a.dueAt!.getTime()) - (b.dueAt!.getTime()))
-      .slice(0, 10);
+    // Pull the same data shape `/tasks` uses for the signer leaderboard so
+    // we render the identical ProgramTaskSection (program card + signer
+    // SortableTaskList) here.
+    const prizeRoot = taskData.topLevelTasks.find(
+      (t) => t.id === "win-earth-optimization-prize",
+    );
+    const programChildren = (prizeRoot?.childTasks ?? []) as unknown as TaskCardTask[];
+    const treatyProgram = programChildren.find((p) => p.id === "1-pct-treaty") ?? null;
+    const signerTasks = (taskData.allTasks as TaskCardTask[]).filter((task) =>
+      task.taskKey?.startsWith("program:one-percent-treaty:signer:"),
+    );
 
-    return <TreatyTaskDashboardClient overdueLeaders={overdueLeaders} />;
+    return (
+      <TreatyTaskDashboardClient
+        treatyProgram={treatyProgram}
+        signerTasks={signerTasks}
+      />
+    );
   }
 
   const [initialData, leaderboard, taskData] = await Promise.all([
