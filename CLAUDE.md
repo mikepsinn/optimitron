@@ -111,15 +111,15 @@ Separation is enforced at every layer: contract imports, ABI targets, route desc
 
 Supporting: `AlignmentScoreOracle`, `PoliticalIncentiveAllocator` (on-chain alignment scoring).
 
-## Display Identity: Person is canonical
+## Display Identity: Person owns it
 
-`Person` owns `displayName`, `handle`, `image`, `bio`. `User.name` / `User.username` / `User.image` are a legacy mirror cache — **never read directly**.
+`Person` owns every public-facing identity field: `displayName`, `handle`, `image`, `bio`, `headline`, `coverImage`, `website`, `isPublic`. `User` is the auth/account record — credentials, preferences, demographics, geo. There is **no mirror, no fallback, no transitional state**: any display read goes through `Person`.
 
-- **Reads:** `getUserDisplayName/Handle/Avatar/Href/Label` from `@/lib/user-display`.
-- **Queries:** spread `userDisplaySelect` into the Prisma select (joins Person automatically).
+- **Reads:** `getUserDisplayName/Handle/Avatar/Href/Label` from `@/lib/user-display`. Helpers read `user.person.X` only.
+- **Queries:** spread `userDisplaySelect` into the Prisma select (joins Person automatically). It selects the User keys (`id`, `email`) plus the Person fields the helpers need.
 - **URLs:** `getPersonHref(person)` from `@/lib/person-href`. Never `/people/${id}`.
-- **Profile edits:** `/api/dashboard/profile` writes Person first, mirrors to User inside a `$transaction`. Handle uniqueness checks `Person.handle`.
-- **OAuth/signup:** untouched — `ensurePersonForUser()` handles the sync.
+- **Profile edits:** `/api/dashboard/profile` writes Person directly. Handle uniqueness checks `Person.handle`.
+- **OAuth/signup:** the auth adapter and credentials signup route create the User with auth fields only, then call `ensurePersonForUser(userId, { displayName, image })` which seeds the Person with a unique handle.
 
 ## Page Metadata
 

@@ -51,7 +51,6 @@ async function loadRecentTaskComments(taskId: string) {
       authorPerson: { select: { displayName: true } },
       authorUser: {
         select: {
-          name: true,
           person: { select: { displayName: true } },
         },
       },
@@ -64,7 +63,6 @@ async function loadRecentTaskComments(taskId: string) {
   return comments.reverse().map((c) => ({
     authorName:
       c.authorUser?.person?.displayName ??
-      c.authorUser?.name ??
       c.authorPerson?.displayName ??
       null,
     createdAt: c.createdAt,

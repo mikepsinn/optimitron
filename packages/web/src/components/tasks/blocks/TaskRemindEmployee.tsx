@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
 import { Textarea } from "@/components/retroui/Textarea";
 import { BrutalCard } from "@/components/ui/brutal-card";
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildTaskUrl } from "@/lib/url";
 import { renderTemplate } from "@/lib/tasks/render-template";
@@ -30,7 +30,7 @@ export function TaskRemindEmployee({
 }: TaskRemindEmployeeProps) {
   const { data: session } = useSession();
   const requestOrigin = useRequestSiteOrigin();
-  const referralId = getUsernameOrReferralCode(session?.user);
+  const referralId = getHandleOrReferralCode(session?.user);
   const initialMessage = useMemo(() => {
     if (!reminder) return "";
     const absoluteTaskUrl = buildTaskUrl(taskId, requestOrigin, referralId);

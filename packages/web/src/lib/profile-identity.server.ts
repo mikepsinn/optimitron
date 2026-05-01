@@ -22,7 +22,7 @@ export interface ProfileIdentityData {
 export interface UpdateProfileInput {
   name?: string;
   bio?: string;
-  username?: string | null;
+  handle?: string | null;
   headline?: string | null;
   website?: string | null;
   coverImage?: string | null;
@@ -34,7 +34,7 @@ export interface UpdateProfileInput {
 export class ProfileValidationError extends Error {
   constructor(
     message: string,
-    public readonly field: "username" | "name" | "bio" | "other" = "other",
+    public readonly field: "handle" | "name" | "bio" | "other" = "other",
   ) {
     super(message);
     this.name = "ProfileValidationError";
@@ -55,23 +55,23 @@ function normalizeHandle(raw: unknown): string | null | undefined {
   if (trimmed.length < 3 || trimmed.length > 24) {
     throw new ProfileValidationError(
       "Player name must be between 3 and 24 characters.",
-      "username",
+      "handle",
     );
   }
   if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
     throw new ProfileValidationError(
       "Player name can only include letters, numbers, hyphens, and underscores.",
-      "username",
+      "handle",
     );
   }
   return trimmed.toLowerCase();
 }
 
 /**
- * Canonical profile writer. Person is the source of truth for displayName /
- * handle / bio; User columns are a legacy mirror cache. This helper writes
- * Person first inside a transaction, mirrors to User, and is shared between
- * the dashboard PATCH route and the MCP `updateMyProfile` tool.
+ * Canonical profile writer. Person owns every public-display field; User
+ * keeps only newsletter/unsubscribe preferences. This helper writes both in
+ * a transaction and is shared between the dashboard PATCH route and the MCP
+ * `updateMyProfile` tool.
  *
  * Throws `ProfileValidationError` for handle-format and handle-collision
  * problems so callers can map to their own error envelope (HTTP 400 / MCP
@@ -84,7 +84,7 @@ export async function updateUserProfile(
   input: UpdateProfileInput,
 ): Promise<ProfileIdentityData | null> {
   const handle =
-    "username" in input ? normalizeHandle(input.username) : undefined;
+    "handle" in input ? normalizeHandle(input.handle) : undefined;
 
   if (handle && handle.length > 0) {
     const collision = await prisma.person.findFirst({
@@ -94,7 +94,7 @@ export async function updateUserProfile(
     if (collision) {
       throw new ProfileValidationError(
         "That player name is already taken. Please choose another.",
-        "username",
+        "handle",
       );
     }
   }
@@ -108,12 +108,27 @@ export async function updateUserProfile(
     });
 
     if (userRecord.personId) {
+      // Person owns all public-display fields (handle, displayName, bio,
+      // headline, coverImage, website, isPublic). User keeps account-only
+      // state (newsletter prefs, unsubscribed scopes, etc.).
       await tx.person.update({
         where: { id: userRecord.personId },
         data: {
           ...(typeof input.name === "string" ? { displayName: input.name } : {}),
           ...(handle !== undefined ? { handle } : {}),
           ...(typeof input.bio === "string" ? { bio: input.bio } : {}),
+          ...(typeof input.headline === "string" || input.headline === null
+            ? { headline: input.headline }
+            : {}),
+          ...(typeof input.website === "string" || input.website === null
+            ? { website: input.website }
+            : {}),
+          ...(typeof input.coverImage === "string" || input.coverImage === null
+            ? { coverImage: input.coverImage }
+            : {}),
+          ...(typeof input.isPublic === "boolean"
+            ? { isPublic: input.isPublic }
+            : {}),
         },
       });
     }
@@ -125,30 +140,24 @@ export async function updateUserProfile(
         )
       : undefined;
 
-    await tx.user.update({
-      where: { id: userId },
-      data: {
-        ...(typeof input.name === "string" ? { name: input.name } : {}),
-        ...(typeof input.bio === "string" ? { bio: input.bio } : {}),
-        ...(typeof input.headline === "string" || input.headline === null
-          ? { headline: input.headline }
-          : {}),
-        ...(typeof input.website === "string" || input.website === null
-          ? { website: input.website }
-          : {}),
-        ...(typeof input.coverImage === "string" || input.coverImage === null
-          ? { coverImage: input.coverImage }
-          : {}),
-        ...(typeof input.isPublic === "boolean" ? { isPublic: input.isPublic } : {}),
-        ...(typeof input.newsletterSubscribed === "boolean"
-          ? { newsletterSubscribed: input.newsletterSubscribed }
-          : {}),
-        ...(unsubscribedScopesUpdate !== undefined
-          ? { unsubscribedScopes: unsubscribedScopesUpdate }
-          : {}),
-        ...(handle !== undefined ? { username: handle } : {}),
-      },
-    });
+    // Only account-level fields (newsletter/unsubscribe prefs) live on User.
+    // Skip the user.update entirely when there's nothing account-y to write.
+    if (
+      typeof input.newsletterSubscribed === "boolean" ||
+      unsubscribedScopesUpdate !== undefined
+    ) {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          ...(typeof input.newsletterSubscribed === "boolean"
+            ? { newsletterSubscribed: input.newsletterSubscribed }
+            : {}),
+          ...(unsubscribedScopesUpdate !== undefined
+            ? { unsubscribedScopes: unsubscribedScopesUpdate }
+            : {}),
+        },
+      });
+    }
   });
 
   return getProfileIdentityData(userId);
@@ -166,6 +175,11 @@ export async function getProfileIdentityData(
           handle: true,
           displayName: true,
           image: true,
+          bio: true,
+          headline: true,
+          website: true,
+          coverImage: true,
+          isPublic: true,
         },
       },
       accounts: {
@@ -184,16 +198,17 @@ export async function getProfileIdentityData(
     user: {
       id: user.id,
       name: getUserDisplayName(user),
-      username: getUserDisplayHandle(user),
+      handle: getUserDisplayHandle(user),
       email: user.email,
-      bio: user.bio || "",
-      headline: user.headline || null,
-      website: user.website || null,
-      coverImage: user.coverImage || null,
-      isPublic: user.isPublic,
+      bio: user.person?.bio ?? "",
+      headline: user.person?.headline ?? null,
+      website: user.person?.website ?? null,
+      coverImage: user.person?.coverImage ?? null,
+      isPublic: user.person?.isPublic ?? false,
       referralCode: user.referralCode,
       image: getUserDisplayAvatar(user),
       newsletterSubscribed: user.newsletterSubscribed,
+      person: user.person,
     },
     socialAccounts: user.socialAccounts.map((sa) => ({
       platform: sa.platform,

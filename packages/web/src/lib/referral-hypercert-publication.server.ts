@@ -7,6 +7,11 @@ import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import { serverEnv } from "@/lib/env";
 import { getVerifiedVoteStats } from "@/lib/verified-votes.server";
+import {
+  getUserDisplayHandle,
+  getUserDisplayName,
+  userDisplaySelect,
+} from "@/lib/user-display";
 
 const logger = createLogger("referral-hypercert-publication");
 
@@ -87,7 +92,7 @@ export async function publishReferralHypercerts(): Promise<ReferralHypercertPubl
 
       const referrer = await prisma.user.findUnique({
         where: { id: referrerId },
-        select: { id: true, name: true, username: true },
+        select: userDisplaySelect,
       });
 
       if (!referrer) {
@@ -97,7 +102,7 @@ export async function publishReferralHypercerts(): Promise<ReferralHypercertPubl
 
       const input: ReferralHypercertInput = {
         referrerId: referrer.id,
-        referrerName: referrer.username ?? referrer.name ?? "Anonymous",
+        referrerName: getUserDisplayName(referrer),
         referendumId: "global",
         referendumTitle: "Global Health Reallocation Treaty",
         verifiedVotesRecruited: stats.verifiedVotes,
@@ -108,7 +113,7 @@ export async function publishReferralHypercerts(): Promise<ReferralHypercertPubl
 
       const draft = createReferralHypercertDraft(input);
       const bundle = await publishReferralHypercertDraft(publisher, contributorDid, draft);
-      logger.info(`Published Hypercert for ${referrer.username ?? referrer.id}: ${bundle.refs.activity.cid}`);
+      logger.info(`Published Hypercert for ${getUserDisplayHandle(referrer) ?? referrer.id}: ${bundle.refs.activity.cid}`);
       published++;
     } catch (error) {
       const msg = `Failed to publish hypercert for referrer ${referrerId}: ${error}`;

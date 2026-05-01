@@ -57,17 +57,16 @@ describe("signup auth route", () => {
     });
   });
 
-  it("creates the user and records attribution", async () => {
-    // email check → no existing user; username uniqueness → available; referral code → available
+  it("creates the user and records attribution; Person.handle is seeded by ensurePersonForUser", async () => {
+    // email check → no existing user; referral code → available.
+    // The route no longer writes User.username — handle is seeded on Person
+    // by ensurePersonForUser, which is mocked here as a side-effect-free spy.
     mocks.findUnique.mockResolvedValueOnce(null);
     mocks.hashPassword.mockResolvedValue("hashed-password");
-    mocks.findUnique.mockResolvedValueOnce(null);
     mocks.findUnique.mockResolvedValueOnce(null);
     mocks.create.mockResolvedValue({
       id: "user_1",
       email: "user@example.com",
-      name: "Test User",
-      username: "covert-optimizer",
       referralCode: "REFCODE1",
       newsletterSubscribed: true,
       createdAt: new Date("2026-03-11T00:00:00.000Z"),
@@ -92,18 +91,25 @@ describe("signup auth route", () => {
       data: {
         email: "user@example.com",
         password: "hashed-password",
-        name: "Test User",
-        username: expect.any(String),
         referralCode: expect.any(String),
         newsletterSubscribed: true,
       },
     });
+    // User.create must NOT carry display fields — they live on Person now.
+    const createPayload = mocks.create.mock.calls[0]?.[0]?.data ?? {};
+    expect(createPayload).not.toHaveProperty("username");
+    expect(createPayload).not.toHaveProperty("name");
+    expect(createPayload).not.toHaveProperty("image");
+    expect(createPayload).not.toHaveProperty("bio");
     expect(mocks.recordReferralAttributionForUser).toHaveBeenCalledWith(
       "user_1",
       "REF123",
       "sa_123",
     );
-    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
+    // The signup form's `name` is forwarded to Person via ensurePersonForUser.
+    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1", {
+      displayName: "Test User",
+    });
     await expect(response.json()).resolves.toEqual({
       success: true,
       userId: "user_1",

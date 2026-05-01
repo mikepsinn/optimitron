@@ -65,10 +65,10 @@ describe("post-signin sync", () => {
     mocks.recordReferralAttributionForUser.mockReset();
   });
 
-  it("updates missing profile fields and records referral attribution", async () => {
+  it("updates account-level fields and forwards displayName to ensurePersonForUser", async () => {
     mocks.findUnique.mockResolvedValue({
-      name: null,
       newsletterSubscribed: true,
+      signupLandingUrl: null,
     });
     mocks.recordReferralAttributionForUser.mockResolvedValue(true);
 
@@ -85,10 +85,11 @@ describe("post-signin sync", () => {
       userUpdated: true,
     });
 
+    // User update only carries account-level fields. displayName flows
+    // through Person via ensurePersonForUser.
     expect(mocks.update).toHaveBeenCalledWith({
       where: { id: "user_1" },
       data: {
-        name: "Jane Doe",
         newsletterSubscribed: false,
       },
     });
@@ -97,7 +98,9 @@ describe("post-signin sync", () => {
       "REF123",
       "sa_123",
     );
-    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
+    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1", {
+      displayName: "Jane Doe",
+    });
     expect(mocks.ensureUserTreatyTask).toHaveBeenCalledWith({
       personId: "person_1",
       userId: "user_1",
@@ -107,8 +110,8 @@ describe("post-signin sync", () => {
 
   it("does not post a welcome comment — the HMT task description IS the welcome", async () => {
     mocks.findUnique.mockResolvedValue({
-      name: "Existing User",
       newsletterSubscribed: true,
+      signupLandingUrl: null,
     });
     mocks.recordReferralAttributionForUser.mockResolvedValue(false);
     mocks.ensureUserTreatyTask.mockResolvedValue({ created: true, taskId: "task_2" });
@@ -122,10 +125,10 @@ describe("post-signin sync", () => {
     expect(mocks.postTaskCommentAndNotify).not.toHaveBeenCalled();
   });
 
-  it("leaves the user unchanged when nothing new is provided", async () => {
+  it("does not touch User when nothing account-level changed", async () => {
     mocks.findUnique.mockResolvedValue({
-      name: "Existing User",
       newsletterSubscribed: true,
+      signupLandingUrl: null,
     });
     mocks.recordReferralAttributionForUser.mockResolvedValue(false);
 
@@ -140,6 +143,10 @@ describe("post-signin sync", () => {
     });
 
     expect(mocks.update).not.toHaveBeenCalled();
-    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
+    // displayName still forwards to Person — that's a Person concern, not a
+    // User update.
+    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1", {
+      displayName: "New Name",
+    });
   });
 });

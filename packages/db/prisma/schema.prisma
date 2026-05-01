@@ -651,6 +651,18 @@ model Person {
   /// Optional country code for matching and accountability views
   countryCode String?
 
+  /// One-line headline shown above the bio (e.g. "Data scientist at X")
+  headline String?
+
+  /// Cover/banner image URL for the public profile
+  coverImage String?
+
+  /// Personal website URL (also tracked alongside other social handles in `links`)
+  website String?
+
+  /// Whether the public profile at /people/{handle} is visible to anyone
+  isPublic Boolean @default(false)
+
   /// Whether this person primarily exists as a public figure / officeholder record
   isPublicFigure Boolean @default(false)
 
@@ -679,6 +691,7 @@ model Person {
 
   @@index([displayName])
   @@index([countryCode])
+  @@index([isPublic])
   @@index([isPublicFigure])
   @@index([deletedAt])
 }
@@ -690,15 +703,6 @@ model User {
 
   /// Unique email address used for authentication
   email String @unique
-
-  /// Optional display name
-  name String?
-
-  /// Optional public username used in referral links
-  username String? @unique
-
-  /// Optional avatar URL
-  image String?
 
   /// Password hash for credentials auth
   password String?
@@ -842,21 +846,6 @@ model User {
   /// When the census/location snapshot was last updated
   censusUpdatedAt DateTime?
 
-  /// Short bio for public profile
-  bio String?
-
-  /// One-line headline (e.g. "Data scientist at X")
-  headline String?
-
-  /// Cover/banner image URL
-  coverImage String?
-
-  /// Personal website URL
-  website String?
-
-  /// Whether this profile is publicly visible
-  isPublic Boolean @default(false)
-
   /// Whether this user has admin privileges
   isAdmin Boolean @default(false)
 
@@ -919,7 +908,6 @@ model User {
   sentTaskCommunications     TaskCommunication[]              @relation("TaskCommunicationSenderUser")
 
   @@index([email])
-  @@index([username])
   @@index([referralCode])
   @@index([countryCode, regionCode])
   @@index([annualHouseholdIncomeUsd])
@@ -928,7 +916,6 @@ model User {
   @@index([availableHoursPerWeek])
   @@index([maxTaskDifficulty])
   @@index([createdAt])
-  @@index([isPublic])
   @@index([deletedAt])
   @@index([unsubscribedScopes], type: Gin)
 }

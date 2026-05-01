@@ -13,7 +13,7 @@ import { ROUTES } from "@/lib/routes";
 describe("url helpers", () => {
   it("builds clean referral links at /vote/identifier", () => {
     expect(
-      buildUserReferralUrl({ username: "jane", referralCode: "REF123" }, "https://example.com"),
+      buildUserReferralUrl({ handle: "jane", referralCode: "REF123" }, "https://example.com"),
     ).toBe("https://example.com/vote/jane");
     expect(buildReferralUrl("REF123", "https://example.com")).toBe(
       "https://example.com/vote/REF123",
@@ -26,7 +26,7 @@ describe("url helpers", () => {
   it("builds invite referral links without changing the canonical /vote path", () => {
     expect(
       buildUserInviteReferralUrl(
-        { username: "jane", referralCode: "REF123" },
+        { handle: "jane", referralCode: "REF123" },
         "invite_123",
         "https://example.com",
       ),
@@ -42,7 +42,7 @@ describe("url helpers", () => {
   it("builds alignment sharing links with path segment", () => {
     expect(
       buildUserAlignmentUrl(
-        { username: "jane", referralCode: "REF123" },
+        { handle: "jane", referralCode: "REF123" },
         "https://example.com",
       ),
     ).toBe(`https://example.com${ROUTES.alignment}/jane`);

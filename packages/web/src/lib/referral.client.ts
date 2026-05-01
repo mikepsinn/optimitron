@@ -1,12 +1,12 @@
 type ReferralUser = {
-  username?: string | null;
+  handle?: string | null;
   referralCode?: string | null;
 };
 
-export function getUsernameOrReferralCode(user: ReferralUser | null | undefined): string | null {
-  const username = user?.username?.trim();
-  if (username) {
-    return username;
+export function getHandleOrReferralCode(user: ReferralUser | null | undefined): string | null {
+  const handle = user?.handle?.trim();
+  if (handle) {
+    return handle;
   }
 
   return user?.referralCode ?? null;

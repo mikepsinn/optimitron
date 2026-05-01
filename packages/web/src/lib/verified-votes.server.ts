@@ -1,5 +1,10 @@
 import { PersonhoodVerificationStatus, VotePosition } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import {
+  getUserDisplayAvatar,
+  getUserDisplayName,
+  userDisplaySelect,
+} from "@/lib/user-display";
 
 export interface VerifiedVoteStats {
   totalReferrals: number;
@@ -130,7 +135,7 @@ export async function getTopReferrersByVerifiedVotes(
 
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
-    select: { id: true, name: true, username: true, image: true },
+    select: userDisplaySelect,
   });
 
   const userMap = new Map(users.map((u) => [u.id, u]));
@@ -142,8 +147,8 @@ export async function getTopReferrersByVerifiedVotes(
       return {
         rank: index + 1,
         userId: v.referredByUserId!,
-        name: user?.username ?? user?.name ?? "Anonymous",
-        image: user?.image ?? null,
+        name: getUserDisplayName(user),
+        image: getUserDisplayAvatar(user),
         verifiedVotes: v._count._all,
       };
     });

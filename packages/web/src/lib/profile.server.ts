@@ -78,7 +78,6 @@ const profileUserSelect = {
   // Identity (needed for display/subjects)
   id: true,
   email: true,
-  name: true,
 } satisfies Prisma.UserSelect;
 
 type ProfileUser = Prisma.UserGetPayload<{ select: typeof profileUserSelect }>;
@@ -233,7 +232,6 @@ export async function saveProfileSnapshot(userId: string, input: unknown) {
       select: {
         email: true,
         id: true,
-        name: true,
       },
     });
 
@@ -245,7 +243,7 @@ export async function saveProfileSnapshot(userId: string, input: unknown) {
       },
     });
 
-    await ensurePersonForUser(userId, tx);
+    await ensurePersonForUser(userId, undefined, tx);
 
     const hasHouseholdIncome = profile.annualHouseholdIncomeUsd !== null && profile.annualHouseholdIncomeUsd !== undefined;
     const hasPersonalIncome = profile.annualPersonalIncomeUsd !== null && profile.annualPersonalIncomeUsd !== undefined;
@@ -298,7 +296,6 @@ export async function saveDailyCheckIn(userId: string, input: unknown) {
         id: true,
         latitude: true,
         longitude: true,
-        name: true,
       },
     });
     const catalog = await ensureProfileCatalog(tx);
@@ -614,20 +611,17 @@ async function ensureProfileCatalog(tx: Prisma.TransactionClient): Promise<Profi
 
 async function ensureSubject(
   tx: Prisma.TransactionClient,
-  user: { email: string | null; id: string; name: string | null },
+  user: { email: string | null; id: string },
 ) {
-  // Subject display name is internal (used by measurement time-series), but
-  // we still prefer Person.displayName when one exists to keep the entire app
-  // aligned on Person as canonical. Falls back to legacy User.name → email.
+  // Subject display name is internal (used by measurement time-series).
+  // Person owns displayName; we fall back to email when a Person hasn't
+  // been linked yet.
   const linkedPerson = await tx.person.findFirst({
     where: { user: { id: user.id } },
     select: { displayName: true },
   });
   const displayName =
-    linkedPerson?.displayName?.trim() ||
-    user.name ||
-    user.email ||
-    "Optimitron User";
+    linkedPerson?.displayName?.trim() || user.email || "Optimitron User";
 
   return tx.subject.upsert({
     where: { externalId: user.id },

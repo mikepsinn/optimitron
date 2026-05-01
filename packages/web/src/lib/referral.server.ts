@@ -3,26 +3,17 @@ import { prisma } from "@/lib/prisma";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
 
-export async function findUserByUsernameOrReferralCode(identifier: string | null | undefined) {
+export async function findUserByHandleOrReferralCode(identifier: string | null | undefined) {
   const value = identifier?.trim();
   if (!value) {
     return null;
   }
 
-  // Username is mirrored from Person.handle so existing username-based lookups
-  // still work; we also include the linked Person on the result so callers can
-  // route display reads through the user-display helpers.
   return prisma.user.findFirst({
     where: {
       OR: [
         {
           referralCode: {
-            equals: value,
-            mode: "insensitive",
-          },
-        },
-        {
-          username: {
             equals: value,
             mode: "insensitive",
           },
@@ -61,7 +52,7 @@ export async function recordReferralAttributionForUser(
   identifier: string | null | undefined,
   shareAttemptId?: string | null,
 ) {
-  const referrer = await findUserByUsernameOrReferralCode(identifier);
+  const referrer = await findUserByHandleOrReferralCode(identifier);
   if (!referrer || referrer.id === userId) {
     return false;
   }

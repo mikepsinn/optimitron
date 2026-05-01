@@ -43,7 +43,13 @@ export default async function AdminReferendumPositionsPage({
         select: { id: true, name: true, status: true, website: true },
       },
       referendum: { select: { id: true, slug: true, title: true } },
-      submittedBy: { select: { id: true, name: true, email: true } },
+      submittedBy: {
+        select: {
+          id: true,
+          email: true,
+          person: { select: { displayName: true } },
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
     take: 200,
@@ -96,7 +102,9 @@ export default async function AdminReferendumPositionsPage({
                 status: p.status,
                 statement: p.statement,
                 submittedBy:
-                  p.submittedBy?.name ?? p.submittedBy?.email ?? null,
+                  p.submittedBy?.person?.displayName ??
+                  p.submittedBy?.email ??
+                  null,
               }}
             />
           ))}

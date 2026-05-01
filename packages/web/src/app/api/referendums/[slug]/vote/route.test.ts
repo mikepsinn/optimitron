@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   findUnique: vi.fn(),
   grantWishes: vi.fn(),
   upsert: vi.fn(),
-  findUserByUsernameOrReferralCode: vi.fn(),
+  findUserByHandleOrReferralCode: vi.fn(),
   syncReferralVoteTokenMintForVote: vi.fn(),
   resolveInvitationReferrer: vi.fn(),
   convertReferralInvitationForVote: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 vi.mock("@/lib/referral.server", () => ({
-  findUserByUsernameOrReferralCode: mocks.findUserByUsernameOrReferralCode,
+  findUserByHandleOrReferralCode: mocks.findUserByHandleOrReferralCode,
 }));
 
 vi.mock("@/lib/referral-vote-token-mint.server", () => ({
@@ -290,12 +290,12 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("resolves referrer from ref parameter", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.findUserByUsernameOrReferralCode.mockResolvedValue({ id: "referrer_1" });
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "referrer_1" });
     mocks.upsert.mockResolvedValue({ id: "vote_1" });
 
     await POST(makeRequest("test-ref", { answer: "YES", ref: "friend123" }), makeParams("test-ref"));
 
-    expect(mocks.findUserByUsernameOrReferralCode).toHaveBeenCalledWith("friend123");
+    expect(mocks.findUserByHandleOrReferralCode).toHaveBeenCalledWith("friend123");
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({ referredByUserId: "referrer_1" }),
@@ -306,7 +306,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("does NOT set referrer when ref is the voter's own ID", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.findUserByUsernameOrReferralCode.mockResolvedValue({ id: "user_1" });
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "user_1" });
     mocks.upsert.mockResolvedValue({ id: "vote_1" });
 
     await POST(makeRequest("test-ref", { answer: "YES", ref: "myself" }), makeParams("test-ref"));
@@ -325,7 +325,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
 
     await POST(makeRequest("test-ref", { answer: "YES" }), makeParams("test-ref"));
 
-    expect(mocks.findUserByUsernameOrReferralCode).not.toHaveBeenCalled();
+    expect(mocks.findUserByHandleOrReferralCode).not.toHaveBeenCalled();
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({ referredByUserId: null }),
@@ -353,7 +353,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
       makeParams("test-ref"),
     );
 
-    expect(mocks.findUserByUsernameOrReferralCode).not.toHaveBeenCalled();
+    expect(mocks.findUserByHandleOrReferralCode).not.toHaveBeenCalled();
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({ referredByUserId: "referrer_1" }),
@@ -587,7 +587,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("stores verified organization attribution alongside personal referral credit", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.findUserByUsernameOrReferralCode.mockResolvedValue({ id: "referrer_1" });
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "referrer_1" });
     mocks.verifyOrgContextToken.mockReturnValue({
       ok: true,
       organizationId: "org_1",

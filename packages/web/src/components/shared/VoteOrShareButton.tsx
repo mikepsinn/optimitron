@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/retroui/Button"
 import { Share2, Vote, ArrowRight } from "lucide-react"
-import { getUsernameOrReferralCode } from "@/lib/referral.client"
+import { getHandleOrReferralCode } from "@/lib/referral.client"
 import { cn } from "@/lib/utils"
 import { DASHBOARD_REFERRAL_HREF, ROUTES } from "@/lib/routes"
 
@@ -40,7 +40,7 @@ export function VoteOrShareButton({
   useEffect(() => {
     const checkVoteStatus = async () => {
       if (status === "authenticated" && session?.user) {
-        const sessionReferralIdentifier = getUsernameOrReferralCode(session.user) || undefined
+        const sessionReferralIdentifier = getHandleOrReferralCode(session.user) || undefined
 
         try {
           const response = await fetch("/api/referendums")

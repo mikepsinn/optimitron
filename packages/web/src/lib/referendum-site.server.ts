@@ -136,7 +136,7 @@ export async function getReferendumSiteHomeData(
     referendumId: context.referendum.id,
     deletedAt: null,
     answer: VotePosition.YES,
-    user: { isPublic: true },
+    user: { person: { isPublic: true } },
   };
 
   const requestedPage = Math.max(1, Math.floor(options.signersPage ?? 1));

@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
   removePendingTreatyVote: vi.fn(),
   setPendingTreatyVote: vi.fn(),
   setVoteStatusCache: vi.fn(),
-  getUsernameOrReferralCode: vi.fn(),
+  getHandleOrReferralCode: vi.fn(),
 }));
 
 vi.mock("@/lib/storage", () => ({
@@ -28,7 +28,7 @@ vi.mock("@/lib/storage", () => ({
 }));
 
 vi.mock("@/lib/referral.client", () => ({
-  getUsernameOrReferralCode: mocks.getUsernameOrReferralCode,
+  getHandleOrReferralCode: mocks.getHandleOrReferralCode,
 }));
 
 import { syncPendingReferendumVotes } from "../referendum-vote-sync";
@@ -42,8 +42,8 @@ describe("referendum vote sync", () => {
     mocks.getPendingTreatyVote.mockReset();
     mocks.removePendingTreatyVote.mockReset();
     mocks.setVoteStatusCache.mockReset();
-    mocks.getUsernameOrReferralCode.mockReset();
-    mocks.getUsernameOrReferralCode.mockReturnValue("demo-referral");
+    mocks.getHandleOrReferralCode.mockReset();
+    mocks.getHandleOrReferralCode.mockReturnValue("demo-referral");
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 

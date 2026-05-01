@@ -207,8 +207,14 @@ export async function createReferralInvitation(input: {
   const inviteToken = await createUniqueInviteToken();
   const messageFormat = input.messageFormat ?? ReferralInvitationMessageFormat.SINCERE;
   const baseUrl = getBaseUrl();
-  const inviteUrl = buildUserInviteReferralUrl(referrer, inviteToken, baseUrl);
-  const draftReferralUrl = buildUserReferralUrl(referrer, baseUrl);
+  // The URL builders only inspect top-level `handle` / `referralCode`. The
+  // Prisma user shape nests handle under `.person.handle`, so we adapt.
+  const referrerForUrl = {
+    handle: referrer.person?.handle ?? null,
+    referralCode: referrer.referralCode,
+  };
+  const inviteUrl = buildUserInviteReferralUrl(referrerForUrl, inviteToken, baseUrl);
+  const draftReferralUrl = buildUserReferralUrl(referrerForUrl, baseUrl);
   const senderName = getUserDisplayName(referrer) || "A voter";
   const rawMessageText = input.messageText?.trim() || null;
   // If the user typed a custom message, swap any draft-URL placeholders for
@@ -344,7 +350,7 @@ export async function sendReferralInvitationMessage(input: {
       status: true,
       taskId: true,
       task: { select: { parentTaskId: true } },
-      referrer: { select: userDisplaySelect },
+      referrer: { select: { ...userDisplaySelect, referralCode: true } },
     },
   });
 
@@ -353,12 +359,18 @@ export async function sendReferralInvitationMessage(input: {
   if (!invitation.taskId) return { status: "missing_task" };
 
   const baseUrl = getBaseUrl();
+  const referrerForUrl = invitation.referrer
+    ? {
+        handle: invitation.referrer.person?.handle ?? null,
+        referralCode: invitation.referrer.referralCode,
+      }
+    : null;
   const inviteUrl = buildUserInviteReferralUrl(
-    invitation.referrer,
+    referrerForUrl,
     invitation.inviteToken,
     baseUrl,
   );
-  const draftReferralUrl = buildUserReferralUrl(invitation.referrer, baseUrl);
+  const draftReferralUrl = buildUserReferralUrl(referrerForUrl, baseUrl);
   const senderName = getUserDisplayName(invitation.referrer) || "A voter";
   const trimmed = input.messageText?.trim() || null;
   const messageBody = trimmed
@@ -504,7 +516,13 @@ export async function markReferralInvitationCopied(input: {
   const shouldRecordShareAttempt =
     Boolean(messageText && shareAttemptId) && shareAttemptId !== existingShareAttemptId;
   const senderName = getUserDisplayName(invitation.referrer) || "A voter";
-  const inviteUrl = buildUserInviteReferralUrl(invitation.referrer, invitation.inviteToken, getBaseUrl());
+  const referrerForUrl = invitation.referrer
+    ? {
+        handle: invitation.referrer.person?.handle ?? null,
+        referralCode: invitation.referrer.referralCode,
+      }
+    : null;
+  const inviteUrl = buildUserInviteReferralUrl(referrerForUrl, invitation.inviteToken, getBaseUrl());
   const templateBody = buildDefaultReferralInvitationMessage({
     messageFormat: invitation.messageFormat,
     recipientName: invitation.recipientName,

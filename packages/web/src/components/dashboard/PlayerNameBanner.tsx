@@ -24,7 +24,7 @@ export function PlayerNameBanner({
 }: PlayerNameBannerProps) {
   const [dismissed, setDismissed] = useState(true)
   const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState(user.username || "")
+  const [draft, setDraft] = useState(user.handle || "")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,8 +33,8 @@ export function PlayerNameBanner({
   }, [])
 
   useEffect(() => {
-    setDraft(user.username || "")
-  }, [user.username])
+    setDraft(user.handle || "")
+  }, [user.handle])
 
   if (dismissed) return null
 
@@ -61,7 +61,7 @@ export function PlayerNameBanner({
       const res = await fetch("/api/dashboard/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: trimmed }),
+        body: JSON.stringify({ handle: trimmed }),
       })
 
       if (!res.ok) {
@@ -69,7 +69,7 @@ export function PlayerNameBanner({
         throw new Error(data.error || "Failed to update player name")
       }
 
-      onUserChange({ ...user, username: trimmed })
+      onUserChange({ ...user, handle: trimmed })
       onRefresh()
       setEditing(false)
     } catch (err) {
@@ -99,7 +99,7 @@ export function PlayerNameBanner({
       {!editing ? (
         <>
           <p className="text-3xl sm:text-4xl font-black uppercase mb-2">
-            {user.username || "NOT SET"}
+            {user.handle || "NOT SET"}
           </p>
           <p className="font-bold text-sm mb-1">
             This is your referral code. Share it to recruit voters and earn VOTE tokens.

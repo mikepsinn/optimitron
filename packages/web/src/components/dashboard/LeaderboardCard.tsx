@@ -24,7 +24,7 @@ export function LeaderboardCard({ leaderboard, user, stats }: LeaderboardCardPro
         {
           rank: stats.rank,
           userId: user.id,
-          name: user.username || user.name,
+          name: user.handle || user.name,
           image: user.image,
           referrals: stats.referrals,
         },

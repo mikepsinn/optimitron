@@ -59,8 +59,6 @@ const fullIdentityRow = {
   createdAt: new Date("2026-01-01T00:00:00Z"),
   email: "demo@optimitron.org",
   id: "user_123",
-  image: null,
-  name: "Demo",
   newsletterSubscribed: false,
   personId: "person_123",
   person: {
@@ -72,7 +70,6 @@ const fullIdentityRow = {
   personhoodVerifications: [],
   countryCode: "US",
   referralCode: "REF123",
-  username: "demo",
 };
 
 describe("authOptions.callbacks.jwt", () => {
@@ -109,12 +106,12 @@ describe("authOptions.callbacks.jwt", () => {
 
     expect(token.id).toBe("user_123");
     expect(token.email).toBe("demo@optimitron.org");
-    // Person.displayName takes precedence over User.name
+    // Person.displayName is the canonical source for token.name
     expect(token.name).toBe("Demo Person");
     expect(token.personId).toBe("person_123");
     expect(token.referralCode).toBe("REF123");
-    // Person.handle takes precedence over User.username
-    expect(token.username).toBe("demo-handle");
+    // Person.handle is the canonical source for token.handle
+    expect(token.handle).toBe("demo-handle");
     expect(token.personhoodVerified).toBe(false);
     expect(token.verifiedProviders).toEqual([]);
   });

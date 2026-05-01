@@ -17,7 +17,7 @@ export interface ReferralInvitationClientRecord {
 export interface ReferralInvitationUser {
   name?: string | null;
   referralCode?: string | null;
-  username?: string | null;
+  handle?: string | null;
 }
 
 export type ReferralInvitationUpdateAction =
@@ -36,7 +36,7 @@ interface ReferralInvitationApiPayload {
 export function getReferralInvitationSenderName(
   user: ReferralInvitationUser | null | undefined,
 ) {
-  return user?.name?.trim() || user?.username?.trim() || "A voter";
+  return user?.name?.trim() || user?.handle?.trim() || "A voter";
 }
 
 export function buildReferralInvitationShareMessage(input: {

@@ -58,16 +58,21 @@ describe("getDashboardData", () => {
     const mockUser = {
       id: "user-1",
       name: "Test User",
-      username: "testuser",
       email: "test@example.com",
       bio: "Hello",
-      headline: "Dev",
-      website: "https://example.com",
-      coverImage: null,
-      isPublic: true,
       referralCode: "ref-123",
       image: null,
       newsletterSubscribed: true,
+      person: {
+        id: "person-1",
+        handle: "testuser",
+        displayName: "Test User",
+        image: null,
+        headline: "Dev",
+        website: "https://example.com",
+        coverImage: null,
+        isPublic: true,
+      },
       accounts: [
         {
           provider: "google",
@@ -137,7 +142,7 @@ describe("getDashboardData", () => {
     const result = await getDashboardData("user-1");
 
     expect(result.user.name).toBe("Test User");
-    expect(result.user.username).toBe("testuser");
+    expect(result.user.handle).toBe("testuser");
     expect(result.stats.referrals).toBe(1);
     expect(result.stats.wishes).toBe(7);
     expect(result.stats.wishocraticAllocations).toBe(3);

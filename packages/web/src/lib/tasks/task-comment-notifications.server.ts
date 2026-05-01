@@ -78,11 +78,10 @@ async function resolveAuthorName(input: {
     const user = await prisma.user.findUnique({
       where: { id: input.authorUserId },
       select: {
-        name: true,
         person: { select: { displayName: true } },
       },
     });
-    return user?.person?.displayName ?? user?.name ?? null;
+    return user?.person?.displayName ?? null;
   }
 
   if (input.authorPersonId) {

@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  findUserByUsernameOrReferralCode: vi.fn(),
+  findUserByHandleOrReferralCode: vi.fn(),
   referralClickCreate: vi.fn(),
   shareAttemptUpdateMany: vi.fn(),
 }));
 
 vi.mock("@/lib/referral.server", () => ({
-  findUserByUsernameOrReferralCode: mocks.findUserByUsernameOrReferralCode,
+  findUserByHandleOrReferralCode: mocks.findUserByHandleOrReferralCode,
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -28,7 +28,7 @@ import {
 
 describe("referral redirect helpers", () => {
   beforeEach(() => {
-    mocks.findUserByUsernameOrReferralCode.mockReset();
+    mocks.findUserByHandleOrReferralCode.mockReset();
     mocks.referralClickCreate.mockReset();
     mocks.shareAttemptUpdateMany.mockReset();
     mocks.shareAttemptUpdateMany.mockResolvedValue({ count: 1 });
@@ -53,7 +53,7 @@ describe("referral redirect helpers", () => {
   });
 
   it("logs canonical /vote username clicks through the shared resolver", async () => {
-    mocks.findUserByUsernameOrReferralCode.mockResolvedValue({ id: "user_jane" });
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "user_jane" });
 
     await logReferralRedirectClick({
       code: "jane",
@@ -62,7 +62,7 @@ describe("referral redirect helpers", () => {
       userAgent: "vitest",
     });
 
-    expect(mocks.findUserByUsernameOrReferralCode).toHaveBeenCalledWith("jane");
+    expect(mocks.findUserByHandleOrReferralCode).toHaveBeenCalledWith("jane");
     expect(mocks.referralClickCreate).toHaveBeenCalledWith({
       data: {
         code: "jane",
@@ -76,7 +76,7 @@ describe("referral redirect helpers", () => {
   });
 
   it("logs canonical /vote referral-code clicks and share-attempt attribution", async () => {
-    mocks.findUserByUsernameOrReferralCode.mockResolvedValue({ id: "user_ref" });
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "user_ref" });
 
     await logReferralRedirectClick({
       code: "REF123",
@@ -85,7 +85,7 @@ describe("referral redirect helpers", () => {
       userAgent: null,
     });
 
-    expect(mocks.findUserByUsernameOrReferralCode).toHaveBeenCalledWith("REF123");
+    expect(mocks.findUserByHandleOrReferralCode).toHaveBeenCalledWith("REF123");
     expect(mocks.referralClickCreate).toHaveBeenCalledWith({
       data: {
         code: "REF123",

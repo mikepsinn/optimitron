@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { buildCivicVoteUrl, getBaseUrl } from "@/lib/url";
-import { getUserDisplayLabel } from "@/lib/user-display";
+import { getUserDisplayLabel, userDisplaySelect } from "@/lib/user-display";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 
@@ -38,21 +38,7 @@ export default async function CivicVotePage({
     where: { shareIdentifier: identifier },
     include: {
       user: {
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          image: true,
-          email: true,
-          person: {
-            select: {
-              id: true,
-              handle: true,
-              displayName: true,
-              image: true,
-            },
-          },
-        },
+        select: userDisplaySelect,
       },
     },
   });

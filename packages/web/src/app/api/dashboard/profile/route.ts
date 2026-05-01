@@ -13,7 +13,7 @@ export async function PATCH(req: NextRequest) {
     await updateUserProfile(userId, {
       name: typeof data.name === "string" ? data.name : undefined,
       bio: typeof data.bio === "string" ? data.bio : undefined,
-      username: "username" in data ? (data.username as string | null) : undefined,
+      handle: "handle" in data ? (data.handle as string | null) : undefined,
       headline: "headline" in data ? (data.headline as string | null) : undefined,
       website: "website" in data ? (data.website as string | null) : undefined,
       coverImage:

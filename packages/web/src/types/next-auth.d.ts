@@ -16,7 +16,7 @@ declare module "next-auth" {
       personhoodVerified?: boolean;
       personhoodVerifiedAt?: string | null;
       referralCode?: string;
-      username?: string | null;
+      handle?: string | null;
       verifiedProviders?: PersonhoodProviderValue[];
     };
   }
@@ -33,7 +33,7 @@ declare module "next-auth" {
     personhoodVerified?: boolean;
     personhoodVerifiedAt?: string | null;
     referralCode?: string;
-    username?: string | null;
+    handle?: string | null;
     verifiedProviders?: PersonhoodProviderValue[];
   }
 }
@@ -48,7 +48,7 @@ declare module "next-auth/jwt" {
     personhoodVerified?: boolean;
     personhoodVerifiedAt?: string | null;
     referralCode?: string;
-    username?: string | null;
+    handle?: string | null;
     verifiedProviders?: PersonhoodProviderValue[];
   }
 }

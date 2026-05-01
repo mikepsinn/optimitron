@@ -202,7 +202,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     label: "Many People Are Saying",
     recipientModes: ["leader", "humanity", "one_human"],
     requiredTokens: ["target_name", "deaths_from_delay", "trial_capacity_multiplier"],
-    body: "Many people are saying {target_name} can't sign the 1% Treaty — drops mass murder capacity from 120 apocalypses to 118.8, in exchange for {trial_capacity_multiplier}× more clinical trials — because he doesn't know how to click a button on a website. I don't know! Maybe true, maybe not! But {deaths_from_delay} dead of curable disease since the task was assigned. Someone help {target_name} out. {treaty_url}",
+    body: "Many people are saying {target_name} can't sign the 1% Treaty — drops mass murder capacity from 120 apocalypses to 118.8, in exchange for {trial_capacity_multiplier}× more clinical trials — because they don't know how to click a button on a website. I don't know! Maybe true, maybe not! But {deaths_from_delay} dead of curable disease since the task was assigned. Someone help {target_name} out. {treaty_url}",
   },
   {
     id: "the-ratio",

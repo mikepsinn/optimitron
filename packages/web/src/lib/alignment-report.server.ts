@@ -9,8 +9,8 @@ import {
   type PersonalAlignmentState,
 } from "@/lib/alignment-report";
 import { loadAlignmentBenchmarkProfiles } from "@/lib/alignment-politicians.server";
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
-import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
+import { findUserByHandleOrReferralCode } from "@/lib/referral.server";
 import {
   getUserDisplayHandle,
   getUserDisplayLabel,
@@ -20,7 +20,7 @@ import {
 export interface AlignmentReportOwner {
   id: string;
   name: string | null;
-  username: string | null;
+  handle: string | null;
   referralCode: string;
   publicIdentifier: string;
   displayName: string;
@@ -74,17 +74,18 @@ function summarizeCandidateSource(profiles: AlignmentBenchmarkProfile[]) {
 export async function findAlignmentReportOwnerByIdentifier(
   identifier: string,
 ): Promise<AlignmentReportOwner | null> {
-  const user = await findUserByUsernameOrReferralCode(identifier);
+  const user = await findUserByHandleOrReferralCode(identifier);
   if (!user) {
     return null;
   }
 
+  const handle = getUserDisplayHandle(user);
   return {
     id: user.id,
     name: getUserDisplayName(user),
-    username: getUserDisplayHandle(user),
+    handle,
     referralCode: user.referralCode,
-    publicIdentifier: getUsernameOrReferralCode(user) ?? user.referralCode,
+    publicIdentifier: getHandleOrReferralCode({ handle, referralCode: user.referralCode }) ?? user.referralCode,
     displayName: getUserDisplayLabel(user),
   };
 }

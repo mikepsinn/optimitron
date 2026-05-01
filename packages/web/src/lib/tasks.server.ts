@@ -13,6 +13,7 @@ import { findOrCreatePerson } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { getSearchTerms, scoreSearchRecord } from "@/lib/site-search";
 import { canonicalizeSiteUrl } from "@/lib/site";
+import { userDisplaySelect } from "@/lib/user-display";
 import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import {
@@ -204,21 +205,7 @@ const taskListSelect = {
       id: true,
       status: true,
       user: {
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          image: true,
-          email: true,
-          person: {
-            select: {
-              id: true,
-              handle: true,
-              displayName: true,
-              image: true,
-            },
-          },
-        },
+        select: userDisplaySelect,
       },
       userId: true,
       verificationNote: true,
@@ -347,8 +334,7 @@ const taskMilestoneSelect = {
   verifiedByUser: {
     select: {
       id: true,
-      name: true,
-      username: true,
+      person: { select: { handle: true, displayName: true } },
     },
   },
 } satisfies Prisma.TaskMilestoneSelect;
@@ -415,8 +401,7 @@ const taskDetailSelect = {
   verifiedByUser: {
     select: {
       id: true,
-      name: true,
-      username: true,
+      person: { select: { handle: true, displayName: true } },
     },
   },
 } satisfies Prisma.TaskSelect;

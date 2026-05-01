@@ -1991,12 +1991,12 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateMyProfile",
     description:
-      "Update the authenticated user's profile. Person is canonical for displayName/handle/bio; this tool writes Person first inside a transaction and mirrors the legacy User columns. Only fields you supply are changed. Pass `username: \"\"` (or null) to clear the handle. Returns the fresh profile.",
+      "Update the authenticated user's profile. Person is canonical for the public-facing fields (displayName, handle, bio, headline, coverImage, website, isPublic); this tool writes Person directly. Only fields you supply are changed. Pass `handle: \"\"` (or null) to clear the handle. Returns the fresh profile.",
     inputSchema: {
       type: "object" as const,
       properties: {
         name: { type: "string", description: "Display name shown across the app." },
-        username: {
+        handle: {
           type: ["string", "null"],
           description:
             "Player-name handle, 3–24 chars, [A-Za-z0-9_-]. Empty/null clears it. Must be unique.",
@@ -3870,8 +3870,8 @@ export function createMcpServer(
             const profile = await updateUserProfile(userId, {
               name: typeof a.name === "string" ? a.name : undefined,
               bio: typeof a.bio === "string" ? a.bio : undefined,
-              username:
-                "username" in a ? (a.username as string | null) : undefined,
+              handle:
+                "handle" in a ? (a.handle as string | null) : undefined,
               headline:
                 "headline" in a ? (a.headline as string | null) : undefined,
               website: "website" in a ? (a.website as string | null) : undefined,

@@ -33,7 +33,6 @@ export async function applyPostSigninSync({
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
-      name: true,
       newsletterSubscribed: true,
       signupLandingUrl: true,
     },
@@ -45,14 +44,9 @@ export async function applyPostSigninSync({
 
   const trimmedName = name?.trim() || null;
   const updateData: {
-    name?: string;
     newsletterSubscribed?: boolean;
     signupLandingUrl?: string;
   } = {};
-
-  if (trimmedName && !user.name) {
-    updateData.name = trimmedName;
-  }
 
   if (
     typeof newsletterSubscribed === "boolean" &&
@@ -75,7 +69,12 @@ export async function applyPostSigninSync({
     });
   }
 
-  const person = await ensurePersonForUser(userId);
+  // Person owns displayName. Forward the signin-form name so a freshly
+  // created Person picks it up. Existing Persons keep whatever displayName
+  // they already have — name updates flow through the profile editor.
+  const person = await ensurePersonForUser(userId, {
+    displayName: trimmedName,
+  });
 
   // The HMT root task description IS the welcome — it's the Promotion
   // content (CONGRATULATIONS, Humanity Manager, KPIs, compensation,

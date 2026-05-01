@@ -5,6 +5,7 @@
 
 import { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { userDisplaySelect } from "@/lib/user-display";
 
 const MAX_MESSAGE_LENGTH = 20_000;
 const MIN_MESSAGE_LENGTH = 1;
@@ -33,11 +34,14 @@ export interface TaskCommentRow {
   updatedAt: Date;
   authorUser: {
     id: string;
-    name: string | null;
-    username: string | null;
-    image: string | null;
-    person: { id: string; handle: string | null } | null;
-  };
+    email: string | null;
+    person: {
+      id: string;
+      handle: string | null;
+      displayName: string;
+      image: string | null;
+    } | null;
+  } | null;
   viewerVote?: 1 | -1 | 0;
 }
 
@@ -49,10 +53,13 @@ export interface TaskActivityRow {
   metadata: unknown;
   user: {
     id: string;
-    name: string | null;
-    username: string | null;
-    image: string | null;
-    person: { id: string; handle: string | null } | null;
+    email: string | null;
+    person: {
+      id: string;
+      handle: string | null;
+      displayName: string;
+      image: string | null;
+    } | null;
   };
 }
 
@@ -62,14 +69,14 @@ function parseMentions(message: string): string[] {
   return [...new Set(matches.map((m) => m.trim().slice(1).toLowerCase()))];
 }
 
-/** Resolve mentioned usernames to user IDs. */
-async function resolveMentionedUserIds(usernames: string[]): Promise<string[]> {
-  if (usernames.length === 0) return [];
-  const users = await prisma.user.findMany({
-    where: { username: { in: usernames, mode: "insensitive" } },
-    select: { id: true },
+/** Resolve mentioned handles to user IDs via Person.handle. */
+async function resolveMentionedUserIds(handles: string[]): Promise<string[]> {
+  if (handles.length === 0) return [];
+  const persons = await prisma.person.findMany({
+    where: { handle: { in: handles, mode: "insensitive" } },
+    select: { user: { select: { id: true } } },
   });
-  return users.map((u) => u.id);
+  return persons.flatMap((p) => (p.user ? [p.user.id] : []));
 }
 
 /**
@@ -126,7 +133,7 @@ export async function postComment(input: {
       },
       include: {
         authorUser: {
-          select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
+          select: userDisplaySelect,
         },
       },
     });
@@ -138,7 +145,7 @@ export async function postComment(input: {
       data: { path: newPath },
       include: {
         authorUser: {
-          select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
+          select: userDisplaySelect,
         },
       },
     });
@@ -331,7 +338,7 @@ export async function getTaskCommentFeed(input: {
     take: limit + 1,
     include: {
       authorUser: {
-        select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
+        select: userDisplaySelect,
       },
     },
   });
@@ -378,7 +385,7 @@ export async function getTaskActivityTimeline(
     take: limit,
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
+        select: userDisplaySelect,
       },
     },
   });

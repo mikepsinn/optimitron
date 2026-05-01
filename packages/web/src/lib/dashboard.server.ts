@@ -5,6 +5,7 @@ import {
   getUserDisplayHandle,
   getUserDisplayLabel,
   getUserDisplayName,
+  userDisplaySelect,
 } from "@/lib/user-display";
 import {
   getWishBalance,
@@ -53,6 +54,11 @@ export async function getDashboardData(
           handle: true,
           displayName: true,
           image: true,
+          bio: true,
+          headline: true,
+          website: true,
+          coverImage: true,
+          isPublic: true,
         },
       },
       activities: {
@@ -100,7 +106,7 @@ export async function getDashboardData(
       referrals: {
         some: {},
       },
-      isPublic: true,
+      person: { isPublic: true },
       NOT: { id: userId },
     },
   });
@@ -227,19 +233,20 @@ export async function getDashboardData(
   return {
     user: {
       id: user.id,
-      // Prefer Person.displayName / handle / image over the legacy User mirror
-      // columns. Falls back through getUserDisplay* helpers when Person is null.
+      // Person owns displayName/handle/image. Helpers fall back to email →
+      // "Anonymous" only when no Person is linked yet.
       name: getUserDisplayName(user),
-      username: getUserDisplayHandle(user),
+      handle: getUserDisplayHandle(user),
       email: user.email,
-      bio: user.bio || "",
-      headline: user.headline || null,
-      website: user.website || null,
-      coverImage: user.coverImage || null,
-      isPublic: user.isPublic,
+      bio: user.person?.bio ?? "",
+      headline: user.person?.headline ?? null,
+      website: user.person?.website ?? null,
+      coverImage: user.person?.coverImage ?? null,
+      isPublic: user.person?.isPublic ?? false,
       referralCode: user.referralCode,
       image: getUserDisplayAvatar(user),
       newsletterSubscribed: user.newsletterSubscribed,
+      person: user.person,
     },
     stats: {
       wishes: wishBalance,
@@ -287,23 +294,11 @@ export async function getDashboardData(
 export async function getTopReferrers(): Promise<LeaderboardEntry[]> {
   const topUsers = await prisma.user.findMany({
     where: {
-      isPublic: true,
+      person: { isPublic: true },
       referrals: { some: {} },
     },
     select: {
-      id: true,
-      name: true,
-      username: true,
-      image: true,
-      email: true,
-      person: {
-        select: {
-          id: true,
-          handle: true,
-          displayName: true,
-          image: true,
-        },
-      },
+      ...userDisplaySelect,
       _count: {
         select: { referrals: true },
       },

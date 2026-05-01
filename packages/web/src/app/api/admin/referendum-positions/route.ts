@@ -50,8 +50,16 @@ export async function GET(request: NextRequest) {
             },
           },
           referendum: { select: { id: true, slug: true, title: true } },
-          submittedBy: { select: { id: true, name: true, email: true } },
-          approvedBy: { select: { id: true, name: true } },
+          submittedBy: {
+            select: {
+              id: true,
+              email: true,
+              person: { select: { displayName: true } },
+            },
+          },
+          approvedBy: {
+            select: { id: true, person: { select: { displayName: true } } },
+          },
         },
         orderBy: [{ status: "asc" }, { createdAt: "desc" }],
         take: limit,

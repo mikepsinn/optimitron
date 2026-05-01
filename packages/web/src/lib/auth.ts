@@ -17,13 +17,9 @@ async function getSessionIdentity(userId: string) {
       createdAt: true,
       email: true,
       id: true,
-      image: true,
-      name: true,
       newsletterSubscribed: true,
       personId: true,
-      // Include the linked Person so the session callback can populate
-      // session.user.{name, image} from Person.{displayName, image} —
-      // Person is canonical, the User columns are a transitional mirror.
+      // Person owns displayName/handle/image — read straight from Person.
       person: {
         select: {
           id: true,
@@ -49,7 +45,6 @@ async function getSessionIdentity(userId: string) {
       },
       countryCode: true,
       referralCode: true,
-      username: true,
     },
   });
 
@@ -92,6 +87,9 @@ const providers: NextAuthOptions["providers"] = [
 
       const user = await prisma.user.findUnique({
         where: { email: credentials.email.toLowerCase() },
+        include: {
+          person: { select: { handle: true, displayName: true, image: true } },
+        },
       });
 
       if (!user?.password) {
@@ -106,11 +104,11 @@ const providers: NextAuthOptions["providers"] = [
       return {
         id: user.id,
         email: user.email,
-        name: user.name,
-        image: user.image,
+        name: user.person?.displayName ?? null,
+        image: user.person?.image ?? null,
         personId: user.personId,
         referralCode: user.referralCode,
-        username: user.username,
+        handle: user.person?.handle ?? null,
       };
     },
   }),
@@ -184,20 +182,20 @@ export const authOptions: NextAuthOptions = {
         if (identity) {
           token.id = identity.id;
           token.email = identity.email;
-          // Person.displayName is canonical; User.name is the legacy mirror.
-          // Same for image. The session shape stays unchanged so callers
-          // reading session.user.name keep working.
-          token.name = identity.person?.displayName ?? identity.name;
+          // Person owns displayName/image — these populate session.user.name
+          // and session.user.image via NextAuth's default JWT→session
+          // forwarding.
+          token.name = identity.person?.displayName ?? null;
           token.personId = identity.personId;
           token.personhoodProvider = identity.personhoodProvider;
           token.personhoodVerificationLevel = identity.personhoodVerificationLevel;
           token.personhoodVerified = identity.isVerified;
           token.personhoodVerifiedAt = identity.personhoodVerifiedAt;
-          token.picture = identity.person?.image ?? identity.image;
+          token.picture = identity.person?.image ?? null;
           token.countryCode = identity.countryCode;
           token.referralCode = identity.referralCode;
-          // Person.handle is canonical; User.username is the legacy mirror.
-          token.username = identity.person?.handle ?? identity.username;
+          // Person.handle is the canonical public identifier.
+          token.handle = identity.person?.handle ?? null;
           token.verifiedProviders = identity.verifiedProviders;
         }
       }
@@ -217,7 +215,7 @@ export const authOptions: NextAuthOptions = {
         session.user.personId = (token.personId as string | null | undefined) ?? null;
         session.user.countryCode = (token.countryCode as string | null | undefined) ?? null;
         session.user.referralCode = token.referralCode as string | undefined;
-        session.user.username = (token.username as string | null | undefined) ?? null;
+        session.user.handle = (token.handle as string | null | undefined) ?? null;
         session.user.verifiedProviders = Array.isArray(token.verifiedProviders)
           ? (token.verifiedProviders as typeof session.user.verifiedProviders)
           : [];

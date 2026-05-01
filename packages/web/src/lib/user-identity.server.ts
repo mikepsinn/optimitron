@@ -61,20 +61,21 @@ export function generateRandomPlayerName(): string {
 }
 
 /**
- * Create a unique username by generating random player names.
- * Tries up to 5 random combos, then appends a 2-digit number on collision.
+ * Create a unique handle by generating random player names. Collision-checks
+ * against the canonical `Person.handle`. Tries up to 5 random combos, then
+ * appends a 2-digit number on collision.
  */
-export async function createUniqueUsername(): Promise<string> {
+export async function createUniqueHandle(): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt++) {
     const candidate = generateRandomPlayerName();
-    const existing = await prisma.user.findUnique({ where: { username: candidate } });
+    const existing = await prisma.person.findUnique({ where: { handle: candidate } });
     if (!existing) return candidate;
   }
 
   // Fallback: pick a name and append a random number
   const base = generateRandomPlayerName();
   let candidate = `${base}-${Math.floor(Math.random() * 90 + 10)}`;
-  while (await prisma.user.findUnique({ where: { username: candidate } })) {
+  while (await prisma.person.findUnique({ where: { handle: candidate } })) {
     candidate = `${base}-${Math.floor(Math.random() * 900 + 100)}`;
   }
   return candidate;

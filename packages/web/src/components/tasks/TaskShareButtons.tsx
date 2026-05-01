@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildTaskUrl } from "@/lib/url";
 
@@ -24,7 +24,7 @@ export function TaskShareButtons({
 }: TaskShareButtonsProps) {
   const { data: session } = useSession();
   const requestOrigin = useRequestSiteOrigin();
-  const referralId = getUsernameOrReferralCode(session?.user);
+  const referralId = getHandleOrReferralCode(session?.user);
   const taskUrl = useMemo(
     () => buildTaskUrl(taskId, baseUrl ?? requestOrigin, referralId),
     [baseUrl, requestOrigin, taskId, referralId],

@@ -72,7 +72,7 @@ type PendingManualAction = "copy" | "sms" | "call" | null;
 interface TrainingReferralUser {
   name?: string | null;
   referralCode?: string | null;
-  username?: string | null;
+  handle?: string | null;
 }
 
 const primaryButtonClass = treatyPrimaryButtonClass;
@@ -184,7 +184,7 @@ function buildTrainingReferralShareMessage(input: {
 function hasReferralIdentifier(
   user: TrainingReferralUser | null | undefined,
 ): user is TrainingReferralUser {
-  return Boolean(user?.username?.trim() || user?.referralCode?.trim());
+  return Boolean(user?.handle?.trim() || user?.referralCode?.trim());
 }
 
 export function HumanityManagementTrainingFlow({

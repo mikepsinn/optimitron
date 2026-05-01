@@ -49,7 +49,7 @@ import { Dialog } from "@/components/retroui/Dialog";
 import { Drawer } from "@/components/retroui/Drawer";
 import { Select } from "@/components/retroui/Select";
 import { renderTemplate } from "@/lib/tasks/render-template";
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import {
   buildChannelHref,
@@ -297,7 +297,7 @@ export function TaskRowShare({
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: session } = useSession();
   const requestOrigin = useRequestSiteOrigin();
-  const referralId = getUsernameOrReferralCode(session?.user);
+  const referralId = getHandleOrReferralCode(session?.user);
   const taskUrl = useMemo(
     () => buildTaskUrl(taskId, baseUrl ?? requestOrigin, referralId),
     [baseUrl, requestOrigin, taskId, referralId],

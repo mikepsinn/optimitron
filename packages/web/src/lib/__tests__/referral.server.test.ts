@@ -35,7 +35,7 @@ vi.mock("@/lib/badges.server", () => ({
 }));
 
 import {
-  findUserByUsernameOrReferralCode,
+  findUserByHandleOrReferralCode,
   getReferralCountsByUserIds,
   getReferralCount,
   recordReferralAttributionForUser,
@@ -56,14 +56,14 @@ describe("referral server helpers", () => {
   });
 
   it("skips database lookup for blank identifiers", async () => {
-    await expect(findUserByUsernameOrReferralCode("   ")).resolves.toBeNull();
+    await expect(findUserByHandleOrReferralCode("   ")).resolves.toBeNull();
     expect(mocks.findFirst).not.toHaveBeenCalled();
   });
 
-  it("uses case-insensitive referral and username lookup", async () => {
+  it("uses case-insensitive referral and handle lookup against Person", async () => {
     mocks.findFirst.mockResolvedValue({ id: "user_1" });
 
-    await findUserByUsernameOrReferralCode(" ReF123 ");
+    await findUserByHandleOrReferralCode(" ReF123 ");
 
     expect(mocks.findFirst).toHaveBeenCalledWith({
       include: {
@@ -80,12 +80,6 @@ describe("referral server helpers", () => {
         OR: [
           {
             referralCode: {
-              equals: "ReF123",
-              mode: "insensitive",
-            },
-          },
-          {
-            username: {
               equals: "ReF123",
               mode: "insensitive",
             },

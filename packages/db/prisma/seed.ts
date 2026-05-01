@@ -1446,21 +1446,18 @@ async function seedWishoniaUser() {
     },
   });
 
-  // Upsert the user by stable email and link to the Person.
+  // Upsert the user by stable email and link to the Person. Display fields
+  // (name/image/handle) live exclusively on Person — set them in the Person
+  // upsert above, not here.
   const user = await prisma.user.upsert({
     where: { email: WISHONIA_EMAIL },
     update: {
-      name: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
       isSystem: true,
       person: { connect: { id: person.id } },
     },
     create: {
       email: WISHONIA_EMAIL,
-      name: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
       isSystem: true,
-      username: WISHONIA_USERNAME,
       emailVerified: new Date(),
       person: { connect: { id: person.id } },
     },
@@ -1695,32 +1692,49 @@ async function seedDemoUser() {
     "$2b$12$Hy27qJOTykSezth61xRCJ..sMPVvzWxs9wZEEsEsYn9o3GaUYkGCa";
 
   try {
-    await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { email: "demo@optimitron.org" },
       update: {
-        name: "Demo User",
         password: DEMO_PASSWORD_HASH,
-        username: "demo",
         emailVerified: new Date(),
       },
       create: {
         email: "demo@optimitron.org",
-        name: "Demo User",
         password: DEMO_PASSWORD_HASH,
-        username: "demo",
         emailVerified: new Date(),
         referralCode: "DEMO",
       },
     });
+
+    // Person owns the public-display fields (handle / displayName / image).
+    const person = await prisma.person.upsert({
+      where: { email: "demo@optimitron.org" },
+      update: {
+        displayName: "Demo User",
+        handle: "demo",
+      },
+      create: {
+        email: "demo@optimitron.org",
+        displayName: "Demo User",
+        handle: "demo",
+      },
+    });
+
+    if (user.personId !== person.id) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { personId: person.id },
+      });
+    }
     console.log("  ✓ demo@optimitron.org / demo1234");
   } catch (err) {
-    // If schema is out of sync, try raw SQL fallback
+    // If schema is out of sync, try raw SQL fallback. Display fields live
+    // on Person now, so the User row carries only auth-level columns.
     console.log("  ⚠ upsert failed, trying raw SQL...");
     await prisma.$executeRawUnsafe(`
-      INSERT INTO "User" (id, email, name, password, "referralCode", "emailVerified", "createdAt", "updatedAt")
-      VALUES ('demo-user-id', 'demo@optimitron.org', 'Demo User', $1, 'DEMO', NOW(), NOW(), NOW())
+      INSERT INTO "User" (id, email, password, "referralCode", "emailVerified", "createdAt", "updatedAt")
+      VALUES ('demo-user-id', 'demo@optimitron.org', $1, 'DEMO', NOW(), NOW(), NOW())
       ON CONFLICT (email) DO UPDATE SET
-        name = 'Demo User',
         password = $1,
         "emailVerified" = NOW(),
         "updatedAt" = NOW()

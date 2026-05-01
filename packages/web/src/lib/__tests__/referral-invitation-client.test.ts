@@ -47,7 +47,7 @@ describe("referral invitation client helpers", () => {
       user: {
         name: "Ada",
         referralCode: "ada_fallback",
-        username: "ada",
+        handle: "ada",
       },
     });
 
@@ -55,9 +55,9 @@ describe("referral invitation client helpers", () => {
     expect(message).toContain("https://warondisease.org/vote/ada?invite=invite_token");
   });
 
-  it("uses name, username, then default sender display name", () => {
-    expect(getReferralInvitationSenderName({ name: " Ada ", username: "ada" })).toBe("Ada");
-    expect(getReferralInvitationSenderName({ name: " ", username: "ada" })).toBe("ada");
+  it("uses name, handle, then default sender display name", () => {
+    expect(getReferralInvitationSenderName({ name: " Ada ", handle: "ada" })).toBe("Ada");
+    expect(getReferralInvitationSenderName({ name: " ", handle: "ada" })).toBe("ada");
     expect(getReferralInvitationSenderName(null)).toBe("A voter");
   });
 

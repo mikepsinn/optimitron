@@ -3,7 +3,7 @@ import type { OrgType } from "@optimitron/db";
 export interface DashboardUser {
   id: string;
   name: string;
-  username: string | null;
+  handle: string | null;
   email: string;
   bio: string;
   headline: string | null;
@@ -13,6 +13,17 @@ export interface DashboardUser {
   referralCode: string;
   image: string | null;
   newsletterSubscribed: boolean;
+  person: {
+    id: string;
+    handle: string | null;
+    displayName: string;
+    image: string | null;
+    bio: string | null;
+    headline: string | null;
+    website: string | null;
+    coverImage: string | null;
+    isPublic: boolean;
+  } | null;
 }
 
 export interface DashboardStats {

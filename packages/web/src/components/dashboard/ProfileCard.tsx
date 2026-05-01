@@ -22,7 +22,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
   const [formError, setFormError] = useState<string | null>(null)
   const [editForm, setEditForm] = useState({
     name: user.name,
-    username: user.username || "",
+    handle: user.handle || "",
     bio: user.bio,
     isPublic: user.isPublic,
     website: user.website || "",
@@ -36,7 +36,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
   useEffect(() => {
     setEditForm({
       name: user.name,
-      username: user.username || "",
+      handle: user.handle || "",
       bio: user.bio,
       isPublic: user.isPublic,
       website: user.website || "",
@@ -49,13 +49,13 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
     setOrigin(window.location.origin)
   }, [])
 
-  const handleUsernameChange = (value: string) => {
+  const handleHandleChange = (value: string) => {
     const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, "")
-    setEditForm((prev) => ({ ...prev, username: sanitized }))
+    setEditForm((prev) => ({ ...prev, handle: sanitized }))
   }
 
   const handleCopyUrl = () => {
-    const url = `${origin}/u/${editForm.username}`
+    const url = `${origin}/u/${editForm.handle}`
     navigator.clipboard.writeText(url)
     setIsCopied(true)
     setTimeout(() => setIsCopied(false), 2000)
@@ -70,7 +70,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: editForm.name,
-          username: editForm.username,
+          handle: editForm.handle,
           bio: editForm.bio,
           isPublic: editForm.isPublic,
           website: editForm.website || null,
@@ -88,7 +88,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         ...user,
         name: editForm.name,
         bio: editForm.bio,
-        username: editForm.username ? editForm.username : null,
+        handle: editForm.handle ? editForm.handle : null,
         isPublic: editForm.isPublic,
         website: editForm.website || null,
         headline: editForm.headline || null,
@@ -123,8 +123,8 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
           <div>
             <Label className="text-sm font-bold uppercase">Player Name</Label>
             <Input
-              value={editForm.username}
-              onChange={(e) => handleUsernameChange(e.target.value)}
+              value={editForm.handle}
+              onChange={(e) => handleHandleChange(e.target.value)}
               className="border-4 border-primary bg-background"
               placeholder="your-player-name"
             />
@@ -197,7 +197,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
             onChange={(value) => setEditForm({ ...editForm, isPublic: value })}
           />
 
-          {editForm.isPublic && editForm.username && (
+          {editForm.isPublic && editForm.handle && (
             <div className="mt-4 p-4 bg-muted/30 border-4 border-primary border-dashed rounded-lg animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center justify-between mb-2">
                 <Label className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-1">
@@ -205,7 +205,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
                   Public Profile Link
                 </Label>
                 <Link
-                  href={`/u/${editForm.username}`}
+                  href={`/u/${editForm.handle}`}
                   target="_blank"
                   className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
                 >
@@ -215,7 +215,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={`${origin}/u/${editForm.username}`}
+                  value={`${origin}/u/${editForm.handle}`}
                   className="bg-background border-4 border-primary h-9 font-mono text-sm"
                 />
                 <Button

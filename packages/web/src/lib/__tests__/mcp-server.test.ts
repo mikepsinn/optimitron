@@ -1644,7 +1644,7 @@ describe("MCP server tool dispatch", () => {
       user: {
         id: "user-1",
         name: "Test User",
-        username: "testuser",
+        handle: "testuser",
         email: "test@example.com",
         bio: "",
         headline: null,
@@ -1694,13 +1694,13 @@ describe("MCP server tool dispatch", () => {
 
       const result = await client.callTool({
         name: "updateMyProfile",
-        arguments: { name: "New Name", username: "newhandle", bio: "hi" },
+        arguments: { name: "New Name", handle: "newhandle", bio: "hi" },
       });
 
       expect(result.isError).toBeFalsy();
       expect(mocks.updateUserProfile).toHaveBeenCalledWith("user-1", {
         name: "New Name",
-        username: "newhandle",
+        handle: "newhandle",
         bio: "hi",
         headline: undefined,
         website: undefined,
@@ -1717,14 +1717,14 @@ describe("MCP server tool dispatch", () => {
       mocks.updateUserProfile.mockRejectedValue(
         new ProfileValidationError(
           "That player name is already taken. Please choose another.",
-          "username",
+          "handle",
         ),
       );
       const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
 
       const result = await client.callTool({
         name: "updateMyProfile",
-        arguments: { username: "taken" },
+        arguments: { handle: "taken" },
       });
 
       expect(result.isError).toBe(true);

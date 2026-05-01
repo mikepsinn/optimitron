@@ -28,7 +28,7 @@ export default async function HumanityManagementTrainingPage() {
   const referralUser = {
     name: session.user.name ?? null,
     referralCode: session.user.referralCode ?? null,
-    username: session.user.username ?? null,
+    handle: session.user.handle ?? null,
   };
   const initialCompletedContactCount = [
     treatyTask.subtaskStatuses.assignFirstHuman,

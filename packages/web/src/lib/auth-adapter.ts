@@ -4,10 +4,7 @@ import type { Adapter } from "next-auth/adapters";
 import { readVercelGeo } from "@/lib/geo/vercel-geo";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
-import {
-  createUniqueReferralCode,
-  createUniqueUsername,
-} from "@/lib/user-identity.server";
+import { createUniqueReferralCode } from "@/lib/user-identity.server";
 
 async function readGeoFromRequestHeaders() {
   try {
@@ -26,7 +23,6 @@ export function createAuthAdapter(): Adapter {
   return {
     ...adapter,
     async createUser(user: Parameters<NonNullable<Adapter["createUser"]>>[0]) {
-      const username = await createUniqueUsername();
       const referralCode = await createUniqueReferralCode();
       const geo = await readGeoFromRequestHeaders();
 
@@ -34,9 +30,6 @@ export function createAuthAdapter(): Adapter {
         data: {
           email: user.email,
           emailVerified: user.emailVerified ?? null,
-          image: user.image ?? null,
-          name: user.name ?? null,
-          username,
           referralCode,
           ...(geo.countryCode ? { countryCode: geo.countryCode } : {}),
           ...(geo.regionCode ? { regionCode: geo.regionCode } : {}),
@@ -47,7 +40,12 @@ export function createAuthAdapter(): Adapter {
         },
       });
 
-      await ensurePersonForUser(createdUser.id);
+      // Pass the OAuth-provided display fields straight through to Person —
+      // they never live on User.
+      await ensurePersonForUser(createdUser.id, {
+        displayName: user.name ?? null,
+        image: user.image ?? null,
+      });
 
       return createdUser;
     },

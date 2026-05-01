@@ -9,7 +9,7 @@ import {
 } from "@optimitron/data/parameters";
 import { splitIntoSlides } from "@/components/referendum/ReferendumStepper";
 import { DECLARATION_SLUG } from "@/lib/declaration";
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { getTreatyWishocraticAllocation } from "@/lib/treaty-vote";
@@ -65,7 +65,7 @@ function cacheVoteStatus(
   session: Session | null | undefined,
   answer: string,
 ): void {
-  const referralIdentifier = getUsernameOrReferralCode(session?.user);
+  const referralIdentifier = getHandleOrReferralCode(session?.user);
   if (referralIdentifier) {
     storage.setVoteStatusCache({
       hasVoted: true,

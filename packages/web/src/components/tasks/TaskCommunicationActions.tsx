@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
 import { API_ROUTES } from "@/lib/api-routes";
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import {
   resolveTaskCommunicationAction,
@@ -33,7 +33,7 @@ export function TaskCommunicationActions({
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
   const { data: session } = useSession();
   const requestOrigin = useRequestSiteOrigin();
-  const referralId = getUsernameOrReferralCode(session?.user);
+  const referralId = getHandleOrReferralCode(session?.user);
   const taskUrl = useMemo(
     () => buildTaskUrl(taskId, baseUrl ?? requestOrigin, referralId),
     [baseUrl, requestOrigin, taskId, referralId],

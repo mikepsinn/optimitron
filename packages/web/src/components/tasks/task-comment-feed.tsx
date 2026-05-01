@@ -18,12 +18,12 @@ import {
 
 interface CommentUser {
   id: string;
-  name: string | null;
-  username: string | null;
-  image: string | null;
+  email?: string | null;
   person?: {
     id: string;
     handle: string | null;
+    displayName: string;
+    image: string | null;
   } | null;
 }
 
@@ -51,7 +51,7 @@ interface TaskCommentRow {
   hiddenByCurator: boolean;
   path: string;
   createdAt: string | Date;
-  authorUser: CommentUser;
+  authorUser: CommentUser | null;
   viewerVote?: 1 | -1 | 0;
   /** Client-only: true while Wishonia is actively streaming tokens into this row. */
   isStreaming?: boolean;
@@ -327,9 +327,12 @@ export function TaskCommentFeed({
               createdAt: new Date().toISOString(),
               authorUser: {
                 id: wishoniaUserId ?? "wishonia",
-                name: "Wishonia",
-                username: "wishonia",
-                image: "/sprites/wishonia/smirk-smile.png",
+                person: {
+                  id: "wishonia-person",
+                  handle: "wishonia",
+                  displayName: "Wishonia",
+                  image: "/sprites/wishonia/smirk-smile.png",
+                },
               },
               isStreaming: true,
             };

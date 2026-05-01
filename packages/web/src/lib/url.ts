@@ -1,4 +1,4 @@
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { clientEnv } from "@/lib/env";
 import { ROUTES } from "@/lib/routes";
 import { getConfiguredSiteOrigin } from "@/lib/site";
@@ -33,18 +33,18 @@ export function buildInviteReferralUrl(
 }
 
 export function buildUserReferralUrl(
-  user: { username?: string | null; referralCode?: string | null } | null | undefined,
+  user: { handle?: string | null; referralCode?: string | null } | null | undefined,
   baseUrl: string = getBaseUrl(),
 ): string {
-  return buildReferralUrl(getUsernameOrReferralCode(user), baseUrl);
+  return buildReferralUrl(getHandleOrReferralCode(user), baseUrl);
 }
 
 export function buildUserInviteReferralUrl(
-  user: { username?: string | null; referralCode?: string | null } | null | undefined,
+  user: { handle?: string | null; referralCode?: string | null } | null | undefined,
   inviteToken?: string | null,
   baseUrl: string = getBaseUrl(),
 ): string {
-  return buildInviteReferralUrl(getUsernameOrReferralCode(user), inviteToken, baseUrl);
+  return buildInviteReferralUrl(getHandleOrReferralCode(user), inviteToken, baseUrl);
 }
 
 /** Build an alignment sharing link: /agencies/dfec/alignment/identifier */
@@ -57,10 +57,10 @@ export function buildAlignmentUrl(
 }
 
 export function buildUserAlignmentUrl(
-  user: { username?: string | null; referralCode?: string | null } | null | undefined,
+  user: { handle?: string | null; referralCode?: string | null } | null | undefined,
   baseUrl: string = getBaseUrl(),
 ): string {
-  return buildAlignmentUrl(getUsernameOrReferralCode(user), baseUrl);
+  return buildAlignmentUrl(getHandleOrReferralCode(user), baseUrl);
 }
 
 /** Build a civic vote sharing link */

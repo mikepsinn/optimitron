@@ -1,16 +1,21 @@
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { createUniqueHandle } from "@/lib/user-identity.server";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
 
 interface UserPersonIdentity {
-  bio: string | null;
   countryCode: string | null;
   email: string;
   id: string;
-  image: string | null;
-  name: string | null;
   personId: string | null;
+}
+
+export interface EnsurePersonOptions {
+  /** Display name for a freshly-created Person (from OAuth profile or signup form). */
+  displayName?: string | null;
+  /** Avatar image URL for a freshly-created Person (from OAuth profile). */
+  image?: string | null;
 }
 
 interface PersonDraftInput {
@@ -88,40 +93,20 @@ export function derivePersonSourceRef(input: PersonDraftInput) {
   return keyParts.length > 0 ? `public-figure:${keyParts.join(":")}` : null;
 }
 
-function getDisplayName(user: UserPersonIdentity) {
-  const trimmedName = user.name?.trim();
-
-  if (trimmedName) {
-    return trimmedName;
-  }
-
-  if (user.email.trim()) {
-    return user.email.trim().toLowerCase();
-  }
-
+function defaultDisplayName(user: UserPersonIdentity, override?: string | null) {
+  const trimmedOverride = override?.trim();
+  if (trimmedOverride) return trimmedOverride;
+  if (user.email.trim()) return user.email.trim().toLowerCase();
   return `Person ${user.id.slice(0, 8)}`;
-}
-
-function buildPersonSyncData(user: UserPersonIdentity) {
-  return {
-    bio: user.bio,
-    countryCode: user.countryCode,
-    displayName: getDisplayName(user),
-    email: user.email,
-    image: user.image,
-  };
 }
 
 async function loadUserIdentity(db: DbClient, userId: string): Promise<UserPersonIdentity> {
   return db.user.findUniqueOrThrow({
     where: { id: userId },
     select: {
-      bio: true,
       countryCode: true,
       email: true,
       id: true,
-      image: true,
-      name: true,
       personId: true,
     },
   });
@@ -250,17 +235,36 @@ export async function mergeDuplicatePerson(
   return mergeDuplicatePersonInClient(input, db);
 }
 
+/**
+ * Ensure the User has a linked canonical Person row. Idempotent.
+ *
+ * Person owns every public-display field, so this helper does NOT pull
+ * displayName / image / bio off User (those columns no longer exist).
+ * Callers that have fresh display data — OAuth signup, credentials signup —
+ * pass it through `options`. Callers that don't (re-sync paths) leave it
+ * undefined; in that case the Person keeps its existing values, and brand
+ * new Persons get an email-or-id derived placeholder displayName.
+ *
+ * On create, also seeds Person.handle via `createUniqueHandle()`.
+ */
 export async function ensurePersonForUser(
   userId: string,
+  options: EnsurePersonOptions = {},
   db: DbClient = prisma,
 ) {
   const user = await loadUserIdentity(db, userId);
-  const personData = buildPersonSyncData(user);
+
+  // Account-level fields that genuinely belong on the Person too. Display
+  // fields (displayName / image) only flow on Person create — see below.
+  const accountSyncData = {
+    countryCode: user.countryCode,
+    email: user.email,
+  };
 
   if (user.personId) {
     return db.person.update({
       where: { id: user.personId },
-      data: personData,
+      data: accountSyncData,
     });
   }
 
@@ -268,21 +272,33 @@ export async function ensurePersonForUser(
     where: { email: user.email },
     select: {
       id: true,
+      handle: true,
       user: {
         select: { id: true },
       },
     },
   });
 
-  const person =
-    existingPerson && (!existingPerson.user || existingPerson.user.id === user.id)
-      ? await db.person.update({
-          where: { id: existingPerson.id },
-          data: personData,
-        })
-      : await db.person.create({
-          data: personData,
-        });
+  let person;
+  if (existingPerson && (!existingPerson.user || existingPerson.user.id === user.id)) {
+    // Linking an existing Person to this User. Don't overwrite display data
+    // the Person may already own. Backfill handle if it's missing.
+    person = await db.person.update({
+      where: { id: existingPerson.id },
+      data: existingPerson.handle
+        ? accountSyncData
+        : { ...accountSyncData, handle: await createUniqueHandle() },
+    });
+  } else {
+    person = await db.person.create({
+      data: {
+        ...accountSyncData,
+        displayName: defaultDisplayName(user, options.displayName),
+        image: options.image ?? null,
+        handle: await createUniqueHandle(),
+      },
+    });
+  }
 
   await db.user.update({
     where: { id: user.id },

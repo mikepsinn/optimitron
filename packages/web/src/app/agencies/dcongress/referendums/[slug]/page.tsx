@@ -106,7 +106,7 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
         existingAnswer={existingVote?.answer ?? null}
         referralCode={ref ?? null}
         userId={user?.id ?? null}
-        username={user?.username ?? user?.referralCode ?? null}
+        username={user?.person?.handle ?? user?.referralCode ?? null}
       />
     </div>
   );

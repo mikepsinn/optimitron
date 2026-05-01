@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   allocationsFindMany: vi.fn(),
-  findUserByUsernameOrReferralCode: vi.fn(),
+  findUserByHandleOrReferralCode: vi.fn(),
   loadAlignmentBenchmarkProfiles: vi.fn(),
   selectionsFindMany: vi.fn(),
 }));
@@ -23,7 +23,7 @@ vi.mock("@/lib/alignment-politicians.server", () => ({
 }));
 
 vi.mock("@/lib/referral.server", () => ({
-  findUserByUsernameOrReferralCode: mocks.findUserByUsernameOrReferralCode,
+  findUserByHandleOrReferralCode: mocks.findUserByHandleOrReferralCode,
 }));
 
 import {
@@ -35,7 +35,7 @@ import { ALIGNMENT_BENCHMARKS } from "@/lib/alignment-benchmarks";
 describe("alignment report server loader", () => {
   beforeEach(() => {
     mocks.allocationsFindMany.mockReset();
-    mocks.findUserByUsernameOrReferralCode.mockReset();
+    mocks.findUserByHandleOrReferralCode.mockReset();
     mocks.loadAlignmentBenchmarkProfiles.mockReset();
     mocks.selectionsFindMany.mockReset();
     mocks.loadAlignmentBenchmarkProfiles.mockResolvedValue(ALIGNMENT_BENCHMARKS);
@@ -150,12 +150,17 @@ describe("alignment report server loader", () => {
     expect(state.report.candidateSourceNote.length).toBeGreaterThan(0);
   });
 
-  it("resolves a public alignment owner from username or referral code", async () => {
-    mocks.findUserByUsernameOrReferralCode.mockResolvedValue({
+  it("resolves a public alignment owner from Person.handle or referral code", async () => {
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({
       id: "user-1",
       name: "Jane Example",
       referralCode: "REF123",
-      username: "jane",
+      person: {
+        id: "person-1",
+        handle: "jane",
+        displayName: "Jane Example",
+        image: null,
+      },
     });
 
     const owner = await findAlignmentReportOwnerByIdentifier("jane");

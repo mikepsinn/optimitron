@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
 import { ActivityType, OrgStatus, VotePosition } from "@optimitron/db";
-import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
+import { findUserByHandleOrReferralCode } from "@/lib/referral.server";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
 import { syncReferralVoteTokenMintForVote } from "@/lib/referral-vote-token-mint.server";
@@ -65,7 +65,7 @@ export async function POST(
     // Resolve referrer if provided
     let referredByUserId: string | null = null;
     if (body.ref) {
-      const referrer = await findUserByUsernameOrReferralCode(body.ref);
+      const referrer = await findUserByHandleOrReferralCode(body.ref);
       if (referrer && referrer.id !== userId) {
         referredByUserId = referrer.id;
       }
@@ -129,17 +129,24 @@ export async function POST(
       log.error("Referral invitation conversion error", invitationError);
     }
 
-    // Apply public-profile intent from the signature-box checkbox. Only
-    // updates User.isPublic when the caller sent an explicit boolean AND it
-    // differs from the current state (avoids redundant writes).
+    // Apply public-profile intent from the signature-box checkbox. Person owns
+    // the public-profile flag; we route the toggle through personId. Only
+    // writes when the caller sent an explicit boolean AND it differs from the
+    // current state (avoids redundant writes).
     if (typeof body.makePublic === "boolean") {
       const currentUser = await prisma.user.findUnique({
         where: { id: userId },
-        select: { isPublic: true },
+        select: {
+          personId: true,
+          person: { select: { isPublic: true } },
+        },
       });
-      if (currentUser && currentUser.isPublic !== body.makePublic) {
-        await prisma.user.update({
-          where: { id: userId },
+      if (
+        currentUser?.personId &&
+        currentUser.person?.isPublic !== body.makePublic
+      ) {
+        await prisma.person.update({
+          where: { id: currentUser.personId },
           data: { isPublic: body.makePublic },
         });
       }

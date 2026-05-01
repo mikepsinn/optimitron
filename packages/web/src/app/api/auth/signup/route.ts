@@ -4,7 +4,7 @@ import { readVercelGeo } from "@/lib/geo/vercel-geo";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { recordReferralAttributionForUser } from "@/lib/referral.server";
-import { createUniqueReferralCode, createUniqueUsername } from "@/lib/user-identity.server";
+import { createUniqueReferralCode } from "@/lib/user-identity.server";
 
 export async function POST(req: Request) {
   try {
@@ -40,15 +40,12 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await hashPassword(password);
-    const username = await createUniqueUsername();
     const generatedReferralCode = await createUniqueReferralCode();
     const geo = readVercelGeo(req.headers);
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        name,
-        username,
         referralCode: generatedReferralCode,
         newsletterSubscribed,
         ...(geo.countryCode ? { countryCode: geo.countryCode } : {}),
@@ -60,7 +57,8 @@ export async function POST(req: Request) {
       },
     });
 
-    await ensurePersonForUser(user.id);
+    // Person owns displayName and image. Forward what the signup form sent.
+    await ensurePersonForUser(user.id, { displayName: name });
 
     await recordReferralAttributionForUser(user.id, referralCode, shareAttemptId);
 

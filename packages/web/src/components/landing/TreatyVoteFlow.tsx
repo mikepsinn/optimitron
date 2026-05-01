@@ -11,7 +11,7 @@ import { storage } from "@/lib/storage";
 import { TreatyPostVoteShareFlow } from "@/components/landing/TreatyPostVoteShareFlow";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
-import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { getHandleOrReferralCode } from "@/lib/referral.client";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -401,7 +401,7 @@ export function TreatyVoteFlow({
 
     if (status === "authenticated" && session && postVoteBehavior === "overlay") {
       void syncPendingReferendumVotes(session).then(() => {
-        const referralIdentifier = getUsernameOrReferralCode(session.user);
+        const referralIdentifier = getHandleOrReferralCode(session.user);
         if (referralIdentifier) {
           storage.setVoteStatusCache({
             hasVoted: true,
@@ -427,7 +427,7 @@ export function TreatyVoteFlow({
     postVoteRedirectStartedRef.current = true;
     void syncPendingReferendumVotes(session)
       .then(() => {
-        const referralIdentifier = getUsernameOrReferralCode(session.user);
+        const referralIdentifier = getHandleOrReferralCode(session.user);
         if (referralIdentifier) {
           storage.setVoteStatusCache({
             hasVoted: true,

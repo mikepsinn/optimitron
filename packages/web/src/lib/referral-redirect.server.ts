@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
+import { findUserByHandleOrReferralCode } from "@/lib/referral.server";
 
 export function buildReferralRedirectUrl(input: {
   code: string;
@@ -23,7 +23,7 @@ export async function logReferralRedirectClick(input: {
   userAgent: string | null;
 }) {
   try {
-    const referrer = await findUserByUsernameOrReferralCode(input.code);
+    const referrer = await findUserByHandleOrReferralCode(input.code);
 
     await prisma.referralClick.create({
       data: {
