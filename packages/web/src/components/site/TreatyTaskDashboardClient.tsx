@@ -71,6 +71,7 @@ export function TreatyTaskDashboardClient({
           onRefresh={refreshPage}
           dismissible={false}
           className={TREATY_BANNER_CLASSNAME}
+          userFraming="manager"
         />
 
         <TreatyReminderComposer />

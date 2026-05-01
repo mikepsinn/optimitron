@@ -161,6 +161,15 @@ describe("site variant registry", () => {
     }
   });
 
+  it("assigns the manager framing to campaign sites and voter framing to reference sites", () => {
+    expect(getSiteConfig("onePercentTreaty").userFraming).toBe("manager");
+    expect(getSiteConfig("warOnDisease").userFraming).toBe("manager");
+    expect(getSiteConfig("optimitron").userFraming).toBe("manager");
+    expect(getSiteConfig("dfda").userFraming).toBe("voter");
+    expect(getSiteConfig("dih").userFraming).toBe("voter");
+    expect(getSiteConfig("trialAbundanceSurvey").userFraming).toBe("voter");
+  });
+
   it("keeps treaty signing on-domain when the current site allows it", () => {
     expect(getTreatySignUrl(getSiteConfig("optimitron"))).toBe("/treaty");
     expect(getTreatySignUrl(getSiteConfig("warOnDisease"))).toBe("/treaty");
