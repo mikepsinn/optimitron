@@ -13,8 +13,8 @@ import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getSiteFromHeaders } from "@/lib/site";
 import { ensurePersonForUser } from "@/lib/person.server";
-import { selectActionableTreatyTasks } from "@/lib/tasks/treaty-dashboard-tasks";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
+import type { TaskCardTask } from "@/components/tasks/task-card";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
@@ -66,26 +66,21 @@ export default async function DashboardPage({
     site.primaryReferendumSlug
   ) {
     const person = await ensurePersonForUser(userId);
-    const treatyTask = await ensureUserTreatyTask({
-      personId: person.id,
-      userId,
-    });
-    const taskData = await getTasksPageData(userId);
-    // Persuasion-optimized order: sign personally → share → phone → assign1
-    // → assign2. The :completeTraining gate is hidden from both lists by
-    // selectActionableTreatyTasks (it's a meta auto-complete, not a queue
-    // entry). See the helper for the full rationale.
-    const { nextTasks, completedTasks } = selectActionableTreatyTasks({
-      ownedPrivateTasks: taskData.ownedPrivateTasks,
-      treatyTaskId: treatyTask.taskId,
-    });
+    // Still ensure the per-user HMT root task exists — it's the parent the
+    // referral-invitation tasks attach to. The 5-subtask checklist that used
+    // to live underneath it was removed; both action levers live as direct
+    // composers on the dashboard now.
+    await ensureUserTreatyTask({ personId: person.id, userId });
 
-    return (
-      <TreatyTaskDashboardClient
-        nextTasks={nextTasks}
-        completedTasks={completedTasks}
-      />
-    );
+    const taskData = await getTasksPageData(userId);
+    const now = Date.now();
+    const overdueLeaders = (taskData.allTasks as TaskCardTask[])
+      .filter((task) => task.taskKey?.startsWith("program:one-percent-treaty:signer:"))
+      .filter((task) => task.dueAt != null && task.dueAt.getTime() < now)
+      .sort((a, b) => (a.dueAt!.getTime()) - (b.dueAt!.getTime()))
+      .slice(0, 10);
+
+    return <TreatyTaskDashboardClient overdueLeaders={overdueLeaders} />;
   }
 
   const [initialData, leaderboard, taskData] = await Promise.all([

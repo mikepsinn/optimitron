@@ -38,17 +38,20 @@ async function sha256Hex(input: string): Promise<string> {
 const TREATY_DUE_AT = new Date("2026-04-14T00:00:00.000Z");
 const DAY_MS = 1000 * 60 * 60 * 24;
 
-interface PostVoteRemindersProps {
+interface TreatyReminderComposerProps {
   cardClassName?: string;
   defaultCowardMode?: boolean;
   surface?: string;
 }
 
-export function PostVoteReminders({
+export function TreatyReminderComposer({
   cardClassName,
   defaultCowardMode = false,
+  // Kept as "post_vote_reminders" for analytics continuity — historical
+  // share-attempts records use this surface value. The component renamed
+  // from PostVoteReminders → TreatyReminderComposer; the surface did not.
   surface = "post_vote_reminders",
-}: PostVoteRemindersProps = {}) {
+}: TreatyReminderComposerProps = {}) {
   const { data: session } = useSession();
   const [cowardMode, setCowardMode] = useState(defaultCowardMode);
   const [messageCopyState, setMessageCopyState] = useState<"idle" | "copied" | "error">("idle");
@@ -324,10 +327,10 @@ export function PostVoteReminders({
         headerAccessory={(
           <label className="flex items-center gap-2">
             <span className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
-              Coward Mode
+              {cowardMode ? "Humanity Mode" : "Leader Mode"}
             </span>
             <Switch
-              aria-label="Toggle coward mode"
+              aria-label={cowardMode ? "Switch to leader mode" : "Switch to humanity mode"}
               checked={cowardMode}
               onCheckedChange={setCowardMode}
             />

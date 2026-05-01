@@ -1,6 +1,6 @@
 "use client";
 
-import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
+import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
 import { getReferendumConfig } from "@/config/referendums";
 import { ReferendumSignatureBox } from "@/components/referendum/ReferendumSignatureBox";
 import { ParameterValue } from "@/components/shared/ParameterValue";
@@ -50,7 +50,7 @@ export function ReferendumSiteInlineSign({
     );
   const signedShare =
     config.slug === TREATY_REFERENDUM_SLUG ? (
-      <PostVoteReminders
+      <TreatyReminderComposer
         defaultCowardMode
         surface="post_sign_treaty_share"
         cardClassName="w-full overflow-hidden border-2 border-[#8e6b48]/35 bg-background p-0 text-foreground shadow-[6px_6px_0_rgba(58,42,25,0.12)]"

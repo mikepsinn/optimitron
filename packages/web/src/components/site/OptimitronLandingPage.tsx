@@ -15,7 +15,7 @@ import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveya
 import { OptimalPolicyPreview } from "@/components/landing/OptimalPolicyPreview";
 import { OptimizedGovernanceSection } from "@/components/landing/OptimizedGovernanceSection";
 import { PleaseSelectAnEarthSection } from "@/components/landing/PleaseSelectAnEarthSection";
-import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
+import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
 import { TLDRSection } from "@/components/landing/TLDRSection";
 import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
 import { WhyPlaySection } from "@/components/landing/WhyPlaySection";
@@ -58,7 +58,7 @@ export function OptimitronLandingPage({
           <div className="text-center">
             <TasksRootIntro />
             <div className="mx-auto mt-8 max-w-2xl text-left">
-              <PostVoteReminders />
+              <TreatyReminderComposer />
             </div>
           </div>
           {lateEmployeeProgramTask ? (

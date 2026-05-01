@@ -1,7 +1,7 @@
 /**
  * Share-channel URL builders and shared type.
  *
- * Used by the React share dialogs (TaskRowShare, PostVoteReminders) AND the
+ * Used by the React share dialogs (TaskRowShare, TreatyReminderComposer) AND the
  * server-side email renderer. Keep this module dependency-free — no React,
  * no Prisma, no Next.js helpers — so it works in both environments.
  */

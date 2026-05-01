@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
-import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
+import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { ProgramCard, ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
@@ -71,7 +71,7 @@ export default async function TasksPage() {
           <div className="text-center">
             <TasksRootIntro />
             <div className="mx-auto mt-6 max-w-2xl text-left">
-              <PostVoteReminders />
+              <TreatyReminderComposer />
             </div>
           </div>
         ) : null}

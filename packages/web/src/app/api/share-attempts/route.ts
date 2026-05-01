@@ -26,7 +26,7 @@ const shareAttemptSchema = z.object({
 
 /**
  * Log a share-button press from an in-app surface (TaskRowShare,
- * PostVoteReminders, etc.). The client pre-generates the `id` as a cuid2 and
+ * TreatyReminderComposer, etc.). The client pre-generates the `id` as a cuid2 and
  * embeds `?sa=<id>` in the outbound referral URL before opening the
  * third-party share window — so this endpoint is fire-and-forget from the
  * client's perspective. Failed inserts leave an orphan `sa=` in the URL,
