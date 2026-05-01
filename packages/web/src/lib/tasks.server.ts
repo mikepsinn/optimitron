@@ -1569,6 +1569,30 @@ export async function updateOwnedTask(
   });
 }
 
+// Soft-delete a task the user owns. Mirrors the MCP deleteTask handler:
+// owner-scoped, refuses public tasks (those need admin), sets deletedAt.
+export async function deleteOwnedTask(taskId: string, ownerUserId: string) {
+  const existing = await prisma.task.findFirst({
+    where: { deletedAt: null, id: taskId, ownerUserId },
+    select: { id: true, isPublic: true },
+  });
+
+  if (!existing) {
+    throw new Error("Task not found.");
+  }
+
+  if (existing.isPublic) {
+    throw new Error("Public tasks can't be self-deleted. Ask an admin.");
+  }
+
+  await prisma.task.update({
+    where: { id: taskId },
+    data: { deletedAt: new Date() },
+  });
+
+  return { id: taskId, deleted: true };
+}
+
 export async function claimTask(taskId: string, userId: string) {
   return prisma.$transaction(async (tx) => {
     const task = await tx.task.findUniqueOrThrow({

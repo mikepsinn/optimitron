@@ -1,4 +1,3 @@
-import "../../generated/country-panel";
 import { describe, expect, it } from "vitest";
 import {
   estimateCountryGovernmentBudgetUsd,
@@ -101,6 +100,7 @@ describe("getGovernmentLeader", () => {
   it("returns the US leader with budget data by country code", () => {
     const us = getGovernmentLeader("US");
     expect(us).toBeDefined();
+    expect(us!.leaderName).toBe("Donald Trump");
     expect(us!.militaryBudgetUsd).toBeGreaterThan(300_000_000_000);
     expect(us!.governmentBudgetUsd).toBeGreaterThan(5_000_000_000_000);
     expect(us!.countryCode).toBe("US");

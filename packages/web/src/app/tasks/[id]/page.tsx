@@ -15,6 +15,7 @@ import { getUserDisplayLabel } from "@/lib/user-display";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
+import { TaskDeleteButton } from "@/components/tasks/TaskDeleteButton";
 import { TaskMilestoneEditor } from "@/components/tasks/TaskMilestoneEditor";
 import { TaskRowShare } from "@/components/tasks/task-row-share";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
@@ -472,6 +473,9 @@ export default async function TaskDetailPage({
               taskId={task.id}
               taskTitle={task.title}
             />
+          ) : null}
+          {!task.isPublic && userId && task.ownerUserId === userId ? (
+            <TaskDeleteButton taskId={task.id} taskTitle={task.title} />
           ) : null}
           <TaskHeroStats
             effortHours={task.estimatedEffortHours}

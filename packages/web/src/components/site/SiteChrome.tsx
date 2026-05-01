@@ -4,7 +4,9 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getSiteFromHeaders } from "@/lib/site";
+import { getAllSiteConfigs, getSiteFromHeaders } from "@/lib/site";
+import { isLocalSiteVariantOverrideEnabled } from "@/lib/site-dev-override";
+import { DevSiteVariantSwitcher } from "@/components/site/DevSiteVariantSwitcher";
 import { SiteChromeFrame } from "@/components/site/SiteChromeFrame";
 
 export async function SiteChrome({
@@ -15,6 +17,13 @@ export async function SiteChrome({
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
   const ui = getSiteVariantUiConfig(site.key);
+  const showDevSiteSwitcher = isLocalSiteVariantOverrideEnabled(hdrs.get("host"));
+  const devSiteOptions = showDevSiteSwitcher
+    ? getAllSiteConfigs().map((config) => ({
+        key: config.key,
+        label: config.shortName,
+      }))
+    : [];
 
   if (site.chromeVariant === "referendum") {
     return (
@@ -26,6 +35,12 @@ export async function SiteChrome({
         >
           {children}
         </SiteChromeFrame>
+        {showDevSiteSwitcher ? (
+          <DevSiteVariantSwitcher
+            currentSiteKey={site.key}
+            sites={devSiteOptions}
+          />
+        ) : null}
         {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
       </>
     );
@@ -40,6 +55,12 @@ export async function SiteChrome({
       >
         {children}
       </SiteChromeFrame>
+      {showDevSiteSwitcher ? (
+        <DevSiteVariantSwitcher
+          currentSiteKey={site.key}
+          sites={devSiteOptions}
+        />
+      ) : null}
       <Analytics />
       {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
     </>

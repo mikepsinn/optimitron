@@ -11,6 +11,11 @@
  * Refresh with: pnpm --filter @optimitron/data run generate:country-panel
  */
 
+import {
+  COUNTRY_PANEL_DATA as GENERATED_COUNTRY_PANEL_DATA,
+  COUNTRY_PANEL_METADATA as GENERATED_COUNTRY_PANEL_METADATA,
+} from '../generated/country-panel';
+
 export interface CountryPanelRow {
   /** ISO 3166-1 alpha-3 country code */
   jurisdictionIso3: string;
@@ -86,20 +91,9 @@ export interface CountryPanelMetadata {
   sources: string[];
 }
 
-// These are populated by the generated module
-export let COUNTRY_PANEL: CountryPanelRow[] = [];
-export let COUNTRY_PANEL_METADATA: CountryPanelMetadata | null = null;
-
-/**
- * Initialize from generated data (called by generated module).
- */
-export function setCountryPanel(
-  rows: CountryPanelRow[],
-  metadata: CountryPanelMetadata,
-): void {
-  COUNTRY_PANEL = rows;
-  COUNTRY_PANEL_METADATA = metadata;
-}
+export const COUNTRY_PANEL: CountryPanelRow[] = GENERATED_COUNTRY_PANEL_DATA;
+export const COUNTRY_PANEL_METADATA: CountryPanelMetadata =
+  GENERATED_COUNTRY_PANEL_METADATA;
 
 /** Get all rows */
 export function getCountryPanel(): CountryPanelRow[] {

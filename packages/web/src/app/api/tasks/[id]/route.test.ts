@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  deleteOwnedTask: vi.fn(),
   getServerSession: vi.fn(),
   getTaskDetailData: vi.fn(),
   requireAuth: vi.fn(),
@@ -20,14 +21,16 @@ vi.mock("@/lib/auth-utils", () => ({
 }));
 
 vi.mock("@/lib/tasks.server", () => ({
+  deleteOwnedTask: mocks.deleteOwnedTask,
   getTaskDetailData: mocks.getTaskDetailData,
   updateOwnedTask: mocks.updateOwnedTask,
 }));
 
-import { GET, PATCH } from "./route";
+import { DELETE, GET, PATCH } from "./route";
 
 describe("task detail route", () => {
   beforeEach(() => {
+    mocks.deleteOwnedTask.mockReset();
     mocks.getServerSession.mockReset();
     mocks.getTaskDetailData.mockReset();
     mocks.requireAuth.mockReset();
@@ -87,5 +90,56 @@ describe("task detail route", () => {
       }),
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
+  });
+
+  it("deletes an owned task for the authenticated user", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.deleteOwnedTask.mockResolvedValue({ id: "task_1", deleted: true });
+
+    const response = await DELETE(
+      new Request("http://localhost/api/tasks/task_1", { method: "DELETE" }),
+      { params: Promise.resolve({ id: "task_1" }) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.deleteOwnedTask).toHaveBeenCalledWith("task_1", "user_1");
+    await expect(response.json()).resolves.toMatchObject({ success: true });
+  });
+
+  it("returns 401 when delete is called without auth", async () => {
+    mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
+
+    const response = await DELETE(
+      new Request("http://localhost/api/tasks/task_1", { method: "DELETE" }),
+      { params: Promise.resolve({ id: "task_1" }) },
+    );
+
+    expect(response.status).toBe(401);
+  });
+
+  it("returns 404 when delete target does not exist", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.deleteOwnedTask.mockRejectedValue(new Error("Task not found."));
+
+    const response = await DELETE(
+      new Request("http://localhost/api/tasks/task_x", { method: "DELETE" }),
+      { params: Promise.resolve({ id: "task_x" }) },
+    );
+
+    expect(response.status).toBe(404);
+  });
+
+  it("returns 400 when delete is rejected (e.g. public task)", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.deleteOwnedTask.mockRejectedValue(
+      new Error("Public tasks can't be self-deleted. Ask an admin."),
+    );
+
+    const response = await DELETE(
+      new Request("http://localhost/api/tasks/task_1", { method: "DELETE" }),
+      { params: Promise.resolve({ id: "task_1" }) },
+    );
+
+    expect(response.status).toBe(400);
   });
 });

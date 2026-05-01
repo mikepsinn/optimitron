@@ -5,7 +5,6 @@
  */
 
 import type { CountryPanelRow, CountryPanelMetadata } from '../datasets/country-panel';
-import { setCountryPanel } from '../datasets/country-panel';
 
 export const COUNTRY_PANEL_METADATA: CountryPanelMetadata = {
   "generatedAt": "2026-04-04T20:46:12.368Z",
@@ -30,6 +29,3 @@ const COUNTRY_PANEL_JSON = String.raw`[{"jurisdictionIso3":"ABW","jurisdictionNa
 export const COUNTRY_PANEL_DATA = JSON.parse(
   COUNTRY_PANEL_JSON,
 ) as CountryPanelRow[];
-
-// Auto-initialize the panel
-setCountryPanel(COUNTRY_PANEL_DATA, COUNTRY_PANEL_METADATA);

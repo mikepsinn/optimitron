@@ -29,6 +29,8 @@ import {
 
 export const OPTIMITRON_CANONICAL_ORIGIN = "https://optimitron.com";
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
+export const SITE_VARIANT_OVERRIDE_COOKIE = "optimitron_site_key";
+export const SITE_VARIANT_OVERRIDE_QUERY_PARAM = "site";
 
 // ---------------------------------------------------------------------------
 // Per-host site configuration (generic Site* / referendum-microsite layer)
@@ -1295,6 +1297,14 @@ export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
     return SITE_CONFIGS[override];
   }
 
+  const cookieOverride = getCookieValue(
+    headers.get("cookie"),
+    SITE_VARIANT_OVERRIDE_COOKIE,
+  );
+  if (host && isLocalHost(host) && isSiteKey(cookieOverride)) {
+    return SITE_CONFIGS[cookieOverride];
+  }
+
   return getSiteFromHost(host);
 }
 
@@ -1308,6 +1318,23 @@ export function getAllSiteConfigs(): SiteConfig[] {
 
 export function isSiteKey(value: string | null | undefined): value is SiteKey {
   return typeof value === "string" && value in SITE_CONFIGS;
+}
+
+function getCookieValue(cookieHeader: string | null | undefined, name: string) {
+  if (!cookieHeader) return null;
+
+  for (const part of cookieHeader.split(";")) {
+    const [rawKey, ...rawValue] = part.trim().split("=");
+    if (rawKey === name) {
+      try {
+        return decodeURIComponent(rawValue.join("="));
+      } catch {
+        return rawValue.join("=");
+      }
+    }
+  }
+
+  return null;
 }
 
 export function isOnePercentTreatyHost(host: string | null | undefined): boolean {

@@ -53,10 +53,6 @@ export * from './economic-theft-series';
 // bundle). Consumers who actually need this data must import it explicitly
 // via the `@optimitron/data/datasets/median-income-series` subpath export.
 export * from './country-panel';
-// Side-effect import: populates COUNTRY_PANEL via setCountryPanel() at load time.
-// Without this, getCountryPanelLatestResolved() returns [] and
-// listGovernmentLeaders() finds no leaders.
-import '../generated/country-panel';
 export * from './us-policy-recommendations';
 export * from './oecd-category-mappings';
 export * from './us-preventable-deaths';

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import * as siteRegistry from "@/lib/site";
 import {
+  SITE_VARIANT_OVERRIDE_COOKIE,
+  SITE_VARIANT_OVERRIDE_HEADER,
   buildTrialAbundanceSurveyUrl,
   getRequestSiteOrigin,
   getCanonicalHostForSiteKey,
@@ -65,6 +67,22 @@ describe("site variant registry", () => {
         new Headers({
           host: "warondisease.org",
           "x-optimitron-site-key": "dfda",
+        }),
+      ).key,
+    ).toBe("warOnDisease");
+    expect(
+      getSiteFromHeaders(
+        new Headers({
+          host: "localhost:3001",
+          cookie: `${SITE_VARIANT_OVERRIDE_COOKIE}=trialAbundanceSurvey`,
+        }),
+      ).key,
+    ).toBe("trialAbundanceSurvey");
+    expect(
+      getSiteFromHeaders(
+        new Headers({
+          host: "warondisease.org",
+          cookie: `${SITE_VARIANT_OVERRIDE_COOKIE}=dfda`,
         }),
       ).key,
     ).toBe("warOnDisease");

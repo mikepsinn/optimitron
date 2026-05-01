@@ -9,7 +9,11 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth-utils";
-import { getTaskDetailData, updateOwnedTask } from "@/lib/tasks.server";
+import {
+  deleteOwnedTask,
+  getTaskDetailData,
+  updateOwnedTask,
+} from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
 
@@ -94,5 +98,29 @@ export async function PATCH(
 
     console.error("[TASKS] Failed to update task:", error);
     return NextResponse.json({ error: "Failed to update task." }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { userId } = await requireAuth();
+    const { id } = await context.params;
+    const result = await deleteOwnedTask(id, userId);
+    return NextResponse.json({ data: result, success: true });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (error instanceof Error) {
+      const status = error.message === "Task not found." ? 404 : 400;
+      return NextResponse.json({ error: error.message }, { status });
+    }
+
+    console.error("[TASKS] Failed to delete task:", error);
+    return NextResponse.json({ error: "Failed to delete task." }, { status: 500 });
   }
 }

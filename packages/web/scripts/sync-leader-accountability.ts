@@ -14,7 +14,6 @@
 
 import "./load-env";
 import { pathToFileURL } from "url";
-import "../../data/src/generated/country-panel";
 import { LEADER_ACTIVITIES } from "@optimitron/data";
 import { findOrCreateOrganization } from "../src/lib/organization.server";
 import { findOrCreatePerson } from "../src/lib/person.server";

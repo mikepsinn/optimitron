@@ -302,7 +302,6 @@ async function main(): Promise<void> {
  */
 
 import type { CountryPanelRow, CountryPanelMetadata } from '../datasets/country-panel';
-import { setCountryPanel } from '../datasets/country-panel';
 
 export const COUNTRY_PANEL_METADATA: CountryPanelMetadata = ${metadataJson};
 
@@ -311,9 +310,6 @@ const COUNTRY_PANEL_JSON = String.raw\`${rowsJson}\`;
 export const COUNTRY_PANEL_DATA = JSON.parse(
   COUNTRY_PANEL_JSON,
 ) as CountryPanelRow[];
-
-// Auto-initialize the panel
-setCountryPanel(COUNTRY_PANEL_DATA, COUNTRY_PANEL_METADATA);
 `;
 
   const outputDir = path.resolve(__dirname, '../src/generated');
