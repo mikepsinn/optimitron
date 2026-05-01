@@ -22,6 +22,7 @@ import {
   legalLink,
   navSections,
   paperLinks,
+  profileLink,
   readTreatyLink,
   treatmentsLink,
   treatyDashboardLink,
@@ -334,6 +335,11 @@ const onePercentNavSections: NavSection[] = [
       legalLink,
     ],
   },
+  {
+    id: "account",
+    label: "Account",
+    items: [profileLink],
+  },
 ];
 
 const warOnDiseaseNavSections: NavSection[] = [
@@ -352,6 +358,11 @@ const warOnDiseaseNavSections: NavSection[] = [
       whyLink,
       legalLink,
     ],
+  },
+  {
+    id: "account",
+    label: "Account",
+    items: [profileLink],
   },
 ];
 

@@ -14,29 +14,44 @@ interface PlayerNameBannerProps {
   referralLink: string
   onUserChange: (user: DashboardUser) => void
   onRefresh: () => void
+  /** Override the outer Card classes (default: brutal-yellow). Useful for
+   *  embedding on a dashboard with a different visual theme. */
+  className?: string
+  /** When false, the banner is permanently visible and the close button is
+   *  hidden. Defaults to true (the original sticky-dismissible behavior). */
+  dismissible?: boolean
 }
+
+const DEFAULT_CARD_CLASSES =
+  "relative bg-brutal-yellow border-4 border-primary p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8"
 
 export function PlayerNameBanner({
   user,
   referralLink,
   onUserChange,
   onRefresh,
+  className,
+  dismissible = true,
 }: PlayerNameBannerProps) {
-  const [dismissed, setDismissed] = useState(true)
+  // Start dismissed only if the banner is actually dismissible — otherwise it
+  // should always render. Hydration-safe: useEffect rehydrates the localStorage
+  // state before the first paint completes.
+  const [dismissed, setDismissed] = useState(dismissible)
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(user.handle || "")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!dismissible) return
     setDismissed(localStorage.getItem(STORAGE_KEY) === "true")
-  }, [])
+  }, [dismissible])
 
   useEffect(() => {
     setDraft(user.handle || "")
   }, [user.handle])
 
-  if (dismissed) return null
+  if (dismissible && dismissed) return null
 
   const handleDismiss = () => {
     localStorage.setItem(STORAGE_KEY, "true")
@@ -80,14 +95,16 @@ export function PlayerNameBanner({
   }
 
   return (
-    <Card className="relative bg-brutal-yellow border-4 border-primary p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
-      <button
-        onClick={handleDismiss}
-        className="absolute top-3 right-3 p-1 hover:bg-foreground/10 rounded-sm transition-colors"
-        aria-label="Dismiss"
-      >
-        <X className="h-5 w-5 stroke-[3px]" />
-      </button>
+    <Card className={className ?? DEFAULT_CARD_CLASSES}>
+      {dismissible ? (
+        <button
+          onClick={handleDismiss}
+          className="absolute top-3 right-3 p-1 hover:bg-foreground/10 rounded-sm transition-colors"
+          aria-label="Dismiss"
+        >
+          <X className="h-5 w-5 stroke-[3px]" />
+        </button>
+      ) : null}
 
       <div className="flex items-center gap-2 mb-3">
         <Gamepad2 className="h-6 w-6 stroke-[3px]" />
