@@ -22,6 +22,7 @@ import {
   legalLink,
   navSections,
   paperLinks,
+  profileLink,
   readTreatyLink,
   treatmentsLink,
   treatyDashboardLink,
@@ -184,6 +185,19 @@ export interface SitePageVariants {
   home: SiteHomeVariant;
 }
 
+/**
+ * Recruitment / chain narrative frame for a site variant:
+ * - "manager": Earth Optimization Services LLC is hiring humanity managers,
+ *   each one hires 2 more. Identity-based, sustains chain behavior.
+ * - "voter": Recruit verified voters for the referendum. Action-based,
+ *   default for non-campaign and reference sites.
+ *
+ * Drives recruitment-chain copy via `getUserFramingVocabulary(framing)` in
+ * `lib/messaging.ts`. Vote-action surfaces ("Vote yes on the 1% Treaty",
+ * the actual ballot) are frame-independent and use literal strings.
+ */
+export type SiteUserFraming = "manager" | "voter";
+
 export interface SiteConfig {
   key: SiteKey;
   chromeVariant: SiteChromeVariant;
@@ -205,6 +219,8 @@ export interface SiteConfig {
   emailBranding: SiteEmailBranding;
   footerComplianceNotice: string | null;
   sameAs: string[];
+  /** See SiteUserFraming. Drives vocabulary lookups via getUserFramingVocabulary(). */
+  userFraming: SiteUserFraming;
   initiative: SiteInitiativeConfig;
   homeActions: readonly SiteHomeAction[];
   /** Required for referendum microsites. Absent on the master platform. */
@@ -219,14 +235,13 @@ export interface SiteConfig {
   pageVariants: SitePageVariants;
 }
 
-const ORGANIZATION_NAME = "The Earth Optimization Commission";
+const ORGANIZATION_NAME = "Earth Optimization Services LLC";
 const ORGANIZATION_URL = OPTIMITRON_CANONICAL_ORIGIN;
 const ORGANIZATION_LOGO_PATH = "/icons/icon-192.png";
 const PUBLIC_CONTACT_EMAIL = "hello@warondisease.org";
 const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}/about`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
-const EARTH_OPTIMIZATION_COMMISSION =
-  "The Earth Optimization Commission";
+const EARTH_OPTIMIZATION_SERVICES_LLC = "Earth Optimization Services LLC";
 const NO_FOOTER_COMPLIANCE_NOTICE = null;
 
 function siteAssetPath(directory: string, filename: string) {
@@ -334,6 +349,11 @@ const onePercentNavSections: NavSection[] = [
       legalLink,
     ],
   },
+  {
+    id: "account",
+    label: "Account",
+    items: [profileLink],
+  },
 ];
 
 const warOnDiseaseNavSections: NavSection[] = [
@@ -352,6 +372,11 @@ const warOnDiseaseNavSections: NavSection[] = [
       whyLink,
       legalLink,
     ],
+  },
+  {
+    id: "account",
+    label: "Account",
+    items: [profileLink],
   },
 ];
 
@@ -595,6 +620,7 @@ const OPTIMITRON_PLATFORM_PREFIXES = [
 const OPTIMITRON_CONFIG: SiteConfig = {
   key: "optimitron",
   chromeVariant: "platform",
+  userFraming: "manager",
   canonicalOrigin: OPTIMITRON_CANONICAL_ORIGIN,
   domains: [
     "optimitron.com",
@@ -615,12 +641,12 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_COMMISSION,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
     fromName: "Optimitron",
     primaryColor: "#ff00ff",
     secondaryColor: "#00d9ff",
-    orgName: EARTH_OPTIMIZATION_COMMISSION,
+    orgName: EARTH_OPTIMIZATION_SERVICES_LLC,
   },
   footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
   sameAs: ORGANIZATION_SAME_AS,
@@ -693,6 +719,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
 const DFDA_CONFIG: SiteConfig = {
   key: "dfda",
   chromeVariant: "platform",
+  userFraming: "voter",
   canonicalOrigin: "https://dfda.earth",
   domains: ["dfda.earth", "www.dfda.earth", "dfda.local"],
   name: "DFDA",
@@ -708,7 +735,7 @@ const DFDA_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_COMMISSION,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
     fromName: "DFDA",
     primaryColor: "#2563eb",
@@ -794,6 +821,7 @@ const DFDA_CONFIG: SiteConfig = {
 const DIH_CONFIG: SiteConfig = {
   key: "dih",
   chromeVariant: "platform",
+  userFraming: "voter",
   canonicalOrigin: "https://dih.earth",
   domains: [
     "dih.earth",
@@ -819,7 +847,7 @@ const DIH_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_COMMISSION,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
     fromName: "DIH",
     primaryColor: "#ff6b9d",
@@ -911,6 +939,7 @@ const DIH_CONFIG: SiteConfig = {
 const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   key: "warOnDisease",
   chromeVariant: "referendum",
+  userFraming: "manager",
   canonicalOrigin: "https://warondisease.org",
   domains: [
     "warondisease.org",
@@ -930,7 +959,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_COMMISSION,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
     fromName: "War on Disease",
     primaryColor: "#ff6b9d",
@@ -1030,6 +1059,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
 const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   key: "onePercentTreaty",
   chromeVariant: "referendum",
+  userFraming: "manager",
   canonicalOrigin: "https://1percenttreaty.org",
   domains: [
     "1percenttreaty.org",
@@ -1049,7 +1079,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_COMMISSION,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
     fromName: "1% Treaty",
     primaryColor: "#ff6b9d",
@@ -1161,6 +1191,9 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
 const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
   key: "trialAbundanceSurvey",
   chromeVariant: "platform",
+  // Partner-embed neutral; no recruit copy renders here. The frame is unused
+  // in practice but typed so the SiteConfig shape stays exhaustive.
+  userFraming: "voter",
   canonicalOrigin: "https://trialabundancesurvey.org",
   domains: [
     "trialabundancesurvey.org",
@@ -1180,7 +1213,7 @@ const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_COMMISSION,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
     fromName: "Trial Abundance Survey",
     primaryColor: "#000000",

@@ -5,6 +5,8 @@ import { Card } from "@/components/retroui/Card"
 import { Button } from "@/components/retroui/Button"
 import { Input } from "@/components/retroui/Input"
 import { Pencil, X, Check, Gamepad2 } from "lucide-react"
+import { getUserFramingVocabulary } from "@/lib/messaging"
+import type { SiteUserFraming } from "@/lib/site"
 import type { DashboardUser } from "@/types/dashboard"
 
 const STORAGE_KEY = "playerNameBannerDismissed"
@@ -14,29 +16,50 @@ interface PlayerNameBannerProps {
   referralLink: string
   onUserChange: (user: DashboardUser) => void
   onRefresh: () => void
+  /** Override the outer Card classes (default: brutal-yellow). Useful for
+   *  embedding on a dashboard with a different visual theme. */
+  className?: string
+  /** When false, the banner is permanently visible and the close button is
+   *  hidden. Defaults to true (the original sticky-dismissible behavior). */
+  dismissible?: boolean
+  /** Recruitment vocabulary frame for the share-prompt copy. Defaults to
+   *  "voter" (the legacy copy) so existing call sites keep working. The
+   *  treaty/WoD dashboard mounts pass "manager". */
+  userFraming?: SiteUserFraming
 }
+
+const DEFAULT_CARD_CLASSES =
+  "relative bg-brutal-yellow border-4 border-primary p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8"
 
 export function PlayerNameBanner({
   user,
   referralLink,
   onUserChange,
   onRefresh,
+  className,
+  dismissible = true,
+  userFraming = "voter",
 }: PlayerNameBannerProps) {
-  const [dismissed, setDismissed] = useState(true)
+  const vocab = getUserFramingVocabulary(userFraming)
+  // Start dismissed only if the banner is actually dismissible — otherwise it
+  // should always render. Hydration-safe: useEffect rehydrates the localStorage
+  // state before the first paint completes.
+  const [dismissed, setDismissed] = useState(dismissible)
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(user.handle || "")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!dismissible) return
     setDismissed(localStorage.getItem(STORAGE_KEY) === "true")
-  }, [])
+  }, [dismissible])
 
   useEffect(() => {
     setDraft(user.handle || "")
   }, [user.handle])
 
-  if (dismissed) return null
+  if (dismissible && dismissed) return null
 
   const handleDismiss = () => {
     localStorage.setItem(STORAGE_KEY, "true")
@@ -80,14 +103,16 @@ export function PlayerNameBanner({
   }
 
   return (
-    <Card className="relative bg-brutal-yellow border-4 border-primary p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
-      <button
-        onClick={handleDismiss}
-        className="absolute top-3 right-3 p-1 hover:bg-foreground/10 rounded-sm transition-colors"
-        aria-label="Dismiss"
-      >
-        <X className="h-5 w-5 stroke-[3px]" />
-      </button>
+    <Card className={className ?? DEFAULT_CARD_CLASSES}>
+      {dismissible ? (
+        <button
+          onClick={handleDismiss}
+          className="absolute top-3 right-3 p-1 hover:bg-foreground/10 rounded-sm transition-colors"
+          aria-label="Dismiss"
+        >
+          <X className="h-5 w-5 stroke-[3px]" />
+        </button>
+      ) : null}
 
       <div className="flex items-center gap-2 mb-3">
         <Gamepad2 className="h-6 w-6 stroke-[3px]" />
@@ -102,7 +127,7 @@ export function PlayerNameBanner({
             {user.handle || "NOT SET"}
           </p>
           <p className="font-bold text-sm mb-1">
-            This is your referral code. Share it to recruit voters and earn VOTE tokens.
+            {vocab.shareLinkPrompt}
           </p>
           <p className="font-bold text-xs text-muted-foreground mb-4 break-all">
             {referralLink}

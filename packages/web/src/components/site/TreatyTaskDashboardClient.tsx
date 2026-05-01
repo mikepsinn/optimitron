@@ -1,22 +1,46 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
+import { PlayerNameBanner } from "@/components/dashboard/PlayerNameBanner";
 import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { ROUTES } from "@/lib/routes";
+import { useRequestSiteOrigin } from "@/lib/request-site-origin";
+import { buildUserReferralUrl } from "@/lib/url";
 import type { TaskCardTask } from "@/components/tasks/task-card";
+import type { DashboardUser } from "@/types/dashboard";
 
 interface TreatyTaskDashboardClientProps {
+  user: DashboardUser;
   treatyProgram: TaskCardTask | null;
   signerTasks: TaskCardTask[];
 }
 
+// Treaty-paper themed wrapper for the handle/referral-link card. Replaces the
+// default brutal-yellow Card so it sits naturally inside the treaty layout.
+const TREATY_BANNER_CLASSNAME =
+  "relative border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8 shadow-none mb-8";
+
 export function TreatyTaskDashboardClient({
+  user: initialUser,
   treatyProgram,
   signerTasks,
 }: TreatyTaskDashboardClientProps) {
+  const router = useRouter();
+  const { update: updateSession } = useSession();
+  const [user, setUser] = useState(initialUser);
+  const requestOrigin = useRequestSiteOrigin();
+  const referralLink = buildUserReferralUrl(user, requestOrigin);
+
+  const refreshPage = () => {
+    void updateSession();
+    router.refresh();
+  };
+
   const overdueCount = signerTasks.filter(
     (t) => t.dueAt != null && t.dueAt.getTime() < Date.now(),
   ).length;
@@ -39,6 +63,16 @@ export function TreatyTaskDashboardClient({
             <LogOut className="h-4 w-4 stroke-[2.5px]" />
           </Button>
         </div>
+
+        <PlayerNameBanner
+          user={user}
+          referralLink={referralLink}
+          onUserChange={setUser}
+          onRefresh={refreshPage}
+          dismissible={false}
+          className={TREATY_BANNER_CLASSNAME}
+          userFraming="manager"
+        />
 
         <TreatyReminderComposer />
 

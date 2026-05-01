@@ -15,15 +15,109 @@ export const POINT_NAME = "VOTE" as const;
 export const POINT = `${POINT_NAME} Point` as const;
 export const POINTS = `${POINT_NAME} Points` as const;
 
-export const REFERRAL = {
-  /** How you earn — the core mechanic */
-  earnOne: `Every verified voter you bring in earns you 1 ${POINT}.`,
-  /** Short version for compact UI */
-  earnOneShort: `1 ${POINT} per verified voter recruited`,
-  /** No deposit needed */
-  noDeposit: "No deposit required.",
-  /** World ID + earn combo */
+// ---------------------------------------------------------------------------
+// User-framing vocabulary (variant-aware)
+//
+// Two narrative frames live in the codebase:
+//   - "manager" — Earth Optimization Services LLC is hiring humanity managers,
+//     each one hires 2 more. Identity-based, sustains chain behavior.
+//   - "voter" — Recruit verified voters for the referendum. Action-based.
+//
+// `getUserFramingVocabulary(frame)` returns the right strings for each surface.
+// Components never hardcode recruit-CTA copy; they look it up by frame.
+// The site's framing is set on `SiteConfig.userFraming` in `lib/site.ts`.
+//
+// Vote-action surfaces ("Vote yes on the 1% Treaty", the actual ballot) are
+// frame-independent and use literal strings. Only the recruitment chain
+// vocabulary varies.
+// ---------------------------------------------------------------------------
+
+export type UserFraming = "manager" | "voter";
+
+export interface UserFramingVocabulary {
+  recruit: {
+    /** "hire" / "recruit" */
+    verb: string;
+    /** "hired" / "recruited" */
+    verbPast: string;
+    /** "humanity manager" / "voter" */
+    noun: string;
+    /** "humanity managers" / "voters" */
+    nounPlural: string;
+  };
+  org: {
+    /** "Earth Optimization Services" — same across both framings; the legal
+     *  entity is constant, only the recruitment vocabulary varies. */
+    shortName: string;
+    /** "Earth Optimization Services LLC" */
+    longName: string;
+  };
+  /** Pre-baked CTA strings (the unique recruitment-chain copy points). */
+  recruitCtaShort: string;
+  shareLinkPrompt: string;
+  earnPerRecruit: string;
+  earnPerRecruitShort: string;
+  verifyAndEarn: string;
+  depositAndRecruit: string;
+  /** Used by leaderboard / activity feed display labels (NOT the schema enum). */
+  recruitedActivityVerb: string;
+}
+
+const MANAGER_VOCAB: UserFramingVocabulary = {
+  recruit: {
+    verb: "hire",
+    verbPast: "hired",
+    noun: "humanity manager",
+    nounPlural: "humanity managers",
+  },
+  org: {
+    shortName: "Earth Optimization Services",
+    longName: "Earth Optimization Services LLC",
+  },
+  recruitCtaShort: "Hire two humanity managers",
+  shareLinkPrompt: `This is your hiring link. Share it to hire humanity managers and earn ${POINTS}.`,
+  earnPerRecruit: `Each humanity manager you hire earns you 1 ${POINT}.`,
+  earnPerRecruitShort: `1 ${POINT} per humanity manager hired`,
+  verifyAndEarn: `Verify with World ID, then share your link. Each humanity manager you hire earns you 1 ${POINT}.`,
+  depositAndRecruit: `Deposit into the prize pool, hire humanity managers, earn ${POINTS}.`,
+  recruitedActivityVerb: "hired a humanity manager",
+};
+
+const VOTER_VOCAB: UserFramingVocabulary = {
+  recruit: {
+    verb: "recruit",
+    verbPast: "recruited",
+    noun: "voter",
+    nounPlural: "voters",
+  },
+  // Same canonical legal entity as the manager frame. Only the recruitment
+  // vocabulary varies. "Earth Optimization Commission" is reserved for
+  // Wishonia narrator asides, not the structural org name (per TODO.md).
+  org: {
+    shortName: "Earth Optimization Services",
+    longName: "Earth Optimization Services LLC",
+  },
+  recruitCtaShort: "Recruit verified voters",
+  shareLinkPrompt: `This is your referral code. Share it to recruit voters and earn ${POINTS}.`,
+  earnPerRecruit: `Every verified voter you bring in earns you 1 ${POINT}.`,
+  earnPerRecruitShort: `1 ${POINT} per verified voter recruited`,
   verifyAndEarn: `Verify with World ID, then share your link. Each verified voter who uses it earns you 1 ${POINT}.`,
+  depositAndRecruit: `Deposit into the prize pool, recruit verified voters, earn ${POINTS}.`,
+  recruitedActivityVerb: "recruited a voter",
+};
+
+export function getUserFramingVocabulary(frame: UserFraming): UserFramingVocabulary {
+  return frame === "manager" ? MANAGER_VOCAB : VOTER_VOCAB;
+}
+
+// Legacy aggregate constants — preserved for backward compatibility with call
+// sites that haven't been migrated to vocab lookups yet. They mirror the
+// VOTER_VOCAB defaults so the existing copy is unchanged.
+export const REFERRAL = {
+  earnOne: VOTER_VOCAB.earnPerRecruit,
+  earnOneShort: VOTER_VOCAB.earnPerRecruitShort,
+  noDeposit: "No deposit required.",
+  verifyAndEarn: VOTER_VOCAB.verifyAndEarn,
 } as const;
 
 export const PRIZE_OUTCOMES = {
@@ -35,7 +129,7 @@ export const PRIZE_OUTCOMES = {
 
 export const PRIZE_CTA_COPY = {
   /** The standard PrizeCTA body suffix used across all pages */
-  depositAndRecruit: `Deposit into the prize pool, recruit verified voters, earn ${POINTS}.`,
+  depositAndRecruit: VOTER_VOCAB.depositAndRecruit,
 } as const;
 
 /** Game balance constants — tweak here, updates everywhere */

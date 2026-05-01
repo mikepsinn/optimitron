@@ -152,6 +152,24 @@ describe("site variant registry", () => {
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 
+  it("exposes a Profile link in the campaign navs so users can edit their handle", () => {
+    for (const siteKey of ["onePercentTreaty", "warOnDisease"] as const) {
+      const sections = getSiteConfig(siteKey).ui.nav.sections;
+      const account = sections.find((s) => s.id === "account");
+      expect(account, `${siteKey} should have an account nav section`).toBeDefined();
+      expect(account?.items.some((i) => i.href === ROUTES.profile)).toBe(true);
+    }
+  });
+
+  it("assigns the manager framing to campaign sites and voter framing to reference sites", () => {
+    expect(getSiteConfig("onePercentTreaty").userFraming).toBe("manager");
+    expect(getSiteConfig("warOnDisease").userFraming).toBe("manager");
+    expect(getSiteConfig("optimitron").userFraming).toBe("manager");
+    expect(getSiteConfig("dfda").userFraming).toBe("voter");
+    expect(getSiteConfig("dih").userFraming).toBe("voter");
+    expect(getSiteConfig("trialAbundanceSurvey").userFraming).toBe("voter");
+  });
+
   it("keeps treaty signing on-domain when the current site allows it", () => {
     expect(getTreatySignUrl(getSiteConfig("optimitron"))).toBe("/treaty");
     expect(getTreatySignUrl(getSiteConfig("warOnDisease"))).toBe("/treaty");

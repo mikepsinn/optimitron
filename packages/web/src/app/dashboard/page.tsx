@@ -14,6 +14,7 @@ import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getSiteFromHeaders } from "@/lib/site";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
+import { getProfileIdentityData } from "@/lib/profile-identity.server";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -70,7 +71,16 @@ export default async function DashboardPage({
     // referral-invitation tasks attach to.
     await ensureUserTreatyTask({ personId: person.id, userId });
 
-    const taskData = await getTasksPageData(userId);
+    // Fetch tasks + the DashboardUser shape in parallel. The user is needed
+    // to render the handle/referral-link banner above the composer.
+    const [taskData, profileData] = await Promise.all([
+      getTasksPageData(userId),
+      getProfileIdentityData(userId),
+    ]);
+    if (!profileData) {
+      redirect(getSignInPath(ROUTES.dashboard));
+    }
+
     // Pull the same data shape `/tasks` uses for the signer leaderboard so
     // we render the identical ProgramTaskSection (program card + signer
     // SortableTaskList) here.
@@ -85,6 +95,7 @@ export default async function DashboardPage({
 
     return (
       <TreatyTaskDashboardClient
+        user={profileData.user}
         treatyProgram={treatyProgram}
         signerTasks={signerTasks}
       />

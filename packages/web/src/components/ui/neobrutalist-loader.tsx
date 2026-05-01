@@ -1,11 +1,18 @@
+"use client";
+
 import React from 'react';
 
 interface NeobrutalistLoaderProps {
   message?: string;
+  submessage?: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
-export function NeobrutalistLoader({ message = 'Loading...', size = 'md' }: NeobrutalistLoaderProps) {
+export function NeobrutalistLoader({
+  message = 'Booting Earth Optimization System',
+  submessage = 'Thank you for your patience. Your civilization is very important to us.',
+  size = 'md',
+}: NeobrutalistLoaderProps) {
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
@@ -34,6 +41,12 @@ export function NeobrutalistLoader({ message = 'Loading...', size = 'md' }: Neob
             {message}
           </div>
         </div>
+      )}
+
+      {submessage && (
+        <p className="max-w-xl text-center text-sm font-bold uppercase tracking-[0.18em] text-muted-foreground">
+          {submessage}
+        </p>
       )}
 
       <style jsx>{`
