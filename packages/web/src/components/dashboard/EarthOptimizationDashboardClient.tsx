@@ -15,7 +15,7 @@ import { OrganizationsCard } from "@/components/dashboard/OrganizationsCard"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { ShareTemplatesCard } from "@/components/dashboard/ShareTemplatesCard"
 import { ReferralInvitationStatusCard } from "@/components/dashboard/ReferralInvitationStatusCard"
-import { ReferralInvitationComposer } from "@/components/landing/ReferralInvitationComposer"
+import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer"
 import { SortableTaskList } from "@/components/tasks/task-list-controls"
 import type { TaskCardTask } from "@/components/tasks/task-card"
 import { QuestChecklistCard } from "@/components/dashboard/QuestChecklistCard"
@@ -64,7 +64,7 @@ export function EarthOptimizationDashboardClient({
         </header>
 
         <section className="mx-auto mb-10 max-w-2xl space-y-4" id={DASHBOARD_INVITE_SECTION_ID}>
-          <ReferralInvitationComposer />
+          <TreatyReminderComposer defaultRecipientMode="one_human" />
           <ReferralInvitationStatusCard />
         </section>
 

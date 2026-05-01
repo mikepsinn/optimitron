@@ -1,3 +1,10 @@
+import {
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  GLOBAL_WARHEAD_COUNT,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
+  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+} from "@optimitron/data/parameters";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
@@ -26,6 +33,18 @@ import {
   type NavItem,
   type NavSection,
 } from "@/lib/routes";
+
+// Campaign-copy numbers sourced from the parameter manifest so marketing
+// strings stay synced when sources update (FAS warhead count, DFDA queue
+// math, etc.). The manifest holds the precise figure plus citation; we
+// round for prose. TREATY_FRACTION is the canonical 1% reallocation.
+const TREATY_FRACTION = 0.01;
+const warheadCount = Math.round(GLOBAL_WARHEAD_COUNT.value).toLocaleString("en-US");
+const nuclearWinterThreshold = Math.round(NUCLEAR_WINTER_WARHEAD_THRESHOLD.value);
+const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
+const apocalypseSlice = (NUCLEAR_WINTER_OVERKILL_FACTOR.value * TREATY_FRACTION).toFixed(2);
+const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
+const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
 
 export const OPTIMITRON_CANONICAL_ORIGIN = "https://optimitron.com";
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
@@ -416,8 +435,9 @@ const DFDA_UI: SiteVariantUiConfig = {
     brandHref: ROUTES.home,
     brandLabel: "DFDA",
     brandDescription:
-      "Find conditions, treatments, outcomes, and clinical trials in one evidence system.",
-    bottomText: "DFDA makes medical evidence easier to find and use.",
+      "Every condition, every treatment, ranked by what actually happened to real humans.",
+    bottomText:
+      "Your FDA waits 8.2 years to let dying humans take drugs already proven safe. This is your safety system.",
     columns: [
       { title: "Medical", items: [conditionsLink, treatmentsLink] },
       { title: "System", items: [dfdaLink, dihLink] },
@@ -441,7 +461,7 @@ const DIH_UI: SiteVariantUiConfig = {
     brandLabel: "DIH",
     brandDescription: "Create and fund disease-focused research institutes.",
     bottomText:
-      "DIH funds disease eradication work by verified public priorities.",
+      "Your NIH spends 3.3% of its budget on actual clinical trials. It's like a fire department that spends 3% of its budget on water.",
     columns: [
       { title: "Institutes", items: [dihLink, trialEmbedLink] },
       { title: "Evidence", items: [conditionsLink, treatmentsLink] },
@@ -465,9 +485,9 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     brandHref: ROUTES.home,
     brandLabel: "War on Disease",
     brandDescription:
-      "Move money from weapons into cures, starting with the 1% Treaty.",
+      `Trade ${apocalypseSlice} of your ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`,
     bottomText:
-      "War on Disease starts by moving money from weapons into cures.",
+      "Building a nuclear bomb requires mass spectrometers and centrifuge cascades. Not building one requires nothing. Rocks do it daily.",
     columns: [
       {
         title: "Campaign",
@@ -501,7 +521,7 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
     brandHref: ROUTES.home,
     brandLabel: "1% Treaty",
     brandDescription:
-      "Vote on redirecting 1% of military spending to pragmatic clinical trials.",
+      "Move one percent of the murder budget to the medicine budget. Your species will find this controversial.",
     bottomText:
       "© 4237 Wishonia. Reproduction of the general welfare is encouraged and, at this point, somewhat urgent.",
     columns: [
@@ -609,7 +629,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     name: "Optimize Earth",
     shortName: "Optimize Earth",
     description:
-      "A task system for finding the highest-value work on Earth and assigning it to humans and institutions.",
+      "Finds the highest-leverage work on your planet and assigns it to humans who would otherwise have spent the afternoon arguing online.",
     eyebrow: "Optimitron",
     primaryPath: "/",
     parentKey: null,
@@ -702,7 +722,7 @@ const DFDA_CONFIG: SiteConfig = {
     name: "Decentralized FDA",
     shortName: "DFDA",
     description:
-      "Find conditions, treatments, outcomes, and clinical trials in one evidence system.",
+      "Treatments ranked by what happened to actual humans, not by which drug rep brought the best donuts in 2003.",
     eyebrow: "Medical Evidence",
     primaryPath: "/agencies/dfda/conditions",
     parentKey: "optimizeEarth",
@@ -717,10 +737,10 @@ const DFDA_CONFIG: SiteConfig = {
   rootMetadata: {
     title: "DFDA — Decentralized FDA",
     description:
-      "Find conditions, treatments, outcomes, and clinical trials in one evidence system.",
+      "Every condition, every treatment, ranked by what actually happened to real humans. Your current method is donuts and vibes.",
     openGraphTitle: "DFDA — Decentralized FDA",
     openGraphDescription:
-      "Browse medical conditions, compare treatments, and find pragmatic clinical trials.",
+      "Treatments ranked by what happened to actual humans, not by what a marketing department hoped happened.",
     openGraphImage: {
       url: "/site-assets/dfda/dfda-og-1200x630.png",
       width: 1200,
@@ -729,7 +749,7 @@ const DFDA_CONFIG: SiteConfig = {
     },
     twitterTitle: "DFDA — Decentralized FDA",
     twitterDescription:
-      "Browse conditions, treatments, outcomes, and clinical trials.",
+      "Treatments ranked by what happened to real humans. Like a leaderboard for not dying.",
     twitterImage: "/site-assets/dfda/dfda-og-1200x630.png",
     keywords: [
       "DFDA",
@@ -813,7 +833,7 @@ const DIH_CONFIG: SiteConfig = {
     name: "Decentralized Institutes of Health",
     shortName: "DIH",
     description:
-      "Create and fund disease-focused research institutes, then allocate resources by verified public priorities.",
+      "Pick the disease that's killing you. Fund the institute working on it. Skip the part where a committee decides which diseases are fashionable.",
     eyebrow: "Research Funding",
     primaryPath: "/agencies/dih",
     parentKey: "optimizeEarth",
@@ -832,10 +852,10 @@ const DIH_CONFIG: SiteConfig = {
   rootMetadata: {
     title: "DIH — Decentralized Institutes of Health",
     description:
-      "Create disease-focused institutes, fund them through verified demand, and allocate resources with Wishocracy.",
+      "Pick a disease. Spin up an institute for it. Fund it by what humans actually want, not by what a grant committee thinks is fashionable this year.",
     openGraphTitle: "DIH — Decentralized Institutes of Health",
     openGraphDescription:
-      "Create and fund disease-focused research institutes, then allocate resources by verified public priorities.",
+      "An institute for whatever's killing you, funded by people who would rather not die of it.",
     openGraphImage: {
       url: "/site-assets/dih/dih-og-social-70s-utopian-1280x640.png",
       width: 1280,
@@ -844,7 +864,7 @@ const DIH_CONFIG: SiteConfig = {
     },
     twitterTitle: "DIH — Decentralized Institutes of Health",
     twitterDescription:
-      "Create and fund disease-focused research institutes.",
+      "An institute for whatever's killing you, funded by people who would rather not die of it.",
     twitterImage: "/site-assets/dih/dih-og-social-70s-utopian-1280x640.png",
     keywords: [
       "DIH",
@@ -901,7 +921,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   shortName: "War on Disease",
   alternateSiteNames: ["War on Disease"],
   description:
-    "Move money from weapons into cures, starting with the 1% Treaty.",
+    `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_WAR_ON_DISEASE_ID,
   contentKey: "onePercentTreaty",
@@ -924,7 +944,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     name: "War on Disease",
     shortName: "War on Disease",
     description:
-      "Move money from weapons into cures, starting with the 1% Treaty.",
+      "Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%. The budget does not reflect this.",
     eyebrow: "Disease Eradication",
     primaryPath: "/",
     parentKey: "optimizeEarth",
@@ -939,10 +959,10 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   rootMetadata: {
     title: "War on Disease",
     description:
-      "Vote on redirecting 1% of military spending toward clinical trials and disease eradication.",
+      `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
     openGraphTitle: "War on Disease",
     openGraphDescription:
-      "Move money from weapons into cures, starting with the 1% Treaty.",
+      `Trade ${apocalypseSlice} of your ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}. Your species will find this controversial.`,
     openGraphImage: {
       url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
       width: 1200,
@@ -951,7 +971,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     },
     twitterTitle: "War on Disease",
     twitterDescription:
-      "Vote on redirecting 1% of military spending toward clinical trials and disease eradication.",
+      `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount}. That is ${apocalypseCount} apocalypses, in case the first ${apocalypseCount - 1} do not take.`,
     twitterImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     keywords: [
       "War on Disease",
@@ -1020,7 +1040,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   shortName: "1% Treaty",
   alternateSiteNames: ["1 Percent Treaty"],
   description:
-    "Vote on redirecting 1% of military spending to pragmatic clinical trials.",
+    "Move one percent of the murder budget to the medicine budget. Your species will find this controversial.",
   ogImage: "/site-assets/treaty/treaty-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_ONE_PERCENT_TREATY_ID,
   contentKey: "onePercentTreaty",
@@ -1043,7 +1063,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
     name: "1% Treaty",
     shortName: "1% Treaty",
     description:
-      "Vote on redirecting 1% of military spending to pragmatic clinical trials.",
+      "One percent off the weapons budget. The other 99% is still available for weapons. Your species will find this radical.",
     eyebrow: "Referendum",
     primaryPath: ROUTES.treaty,
     parentKey: "warOnDisease",
@@ -1058,10 +1078,10 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   rootMetadata: {
     title: "1% Treaty",
     description:
-      "Vote on redirecting 1% of military spending to pragmatic clinical trials.",
+      "Move one percent of the murder budget to the medicine budget. Your species will find this controversial.",
     openGraphTitle: "1% Treaty",
     openGraphDescription:
-      "Vote on redirecting 1% of military spending to pragmatic clinical trials.",
+      "Your species spends 604 times more on weapons than on testing which medicines work. The treaty starts denting the ratio. Baby steps.",
     openGraphImage: {
       url: "/site-assets/treaty/treaty-og-1200x630.png",
       width: 1200,
@@ -1070,7 +1090,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
     },
     twitterTitle: "1% Treaty",
     twitterDescription:
-      "Vote on redirecting 1% of military spending to pragmatic clinical trials.",
+      `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
     twitterImage: "/site-assets/treaty/treaty-og-1200x630.png",
     keywords: [
       "1% Treaty",

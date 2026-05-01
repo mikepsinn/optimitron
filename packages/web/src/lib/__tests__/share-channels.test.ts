@@ -41,6 +41,28 @@ describe("buildChannelHref", () => {
     expect(href).toContain(`subject=${encodeURIComponent(`Please complete: ${input.taskTitle}`)}`);
     expect(href).toContain(`body=${encodeURIComponent(input.message)}`);
   });
+
+  it("builds direct-person channel URLs with the message prefilled", () => {
+    expect(buildChannelHref("sms", input)).toBe(
+      `sms:?&body=${encodeURIComponent(input.message)}`,
+    );
+    expect(buildChannelHref("whatsapp", input)).toBe(
+      `https://wa.me/?text=${encodeURIComponent(input.message)}`,
+    );
+    expect(buildChannelHref("telegram", input)).toBe(
+      `https://t.me/share/url?url=${encodeURIComponent(input.shareUrl)}&text=${encodeURIComponent(input.message)}`,
+    );
+  });
+
+  it("prefills a known email recipient when provided", () => {
+    const href = buildChannelHref("email", {
+      ...input,
+      recipientEmail: "jake@example.test",
+    });
+
+    expect(href.startsWith("mailto:jake@example.test?")).toBe(true);
+    expect(href).toContain(`body=${encodeURIComponent(input.message)}`);
+  });
 });
 
 describe("embedShareAttemptId", () => {

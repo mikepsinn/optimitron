@@ -8,6 +8,10 @@ import {
   buildTaskShareTokens,
   getTaskDelayStats,
 } from "./accountability";
+import {
+  HUMANITY_SHARE_TEMPLATES,
+  getUsableHumanityShareTemplates,
+} from "./humanity-share-templates";
 import { SHARE_TEMPLATES, getUsableShareTemplates } from "./share-templates";
 
 /**
@@ -241,6 +245,7 @@ describe("buildTaskShareTokens", () => {
     const tokens = buildTaskShareTokens(SIGNER_INPUT);
 
     expect(tokens.leader_name).toBe("The President");
+    expect(tokens.target_name).toBe("The President");
     expect(tokens.country).toBe("United States");
     expect(tokens.leader_handle).toBe("realPres");
     expect(tokens.citizen_name).toBe("A citizen");
@@ -265,6 +270,7 @@ describe("buildTaskShareTokens", () => {
     expect(tokens.country).toBe("");
     expect(tokens.government_spending_ytd).toBe("");
     expect(tokens.leader_handle).toBe("");
+    expect(tokens.target_name).toBe("Humanity");
     expect(tokens.days_overdue).toBe("3");
     // Treaty-wide per-day rates are always available (no attribution share).
     expect(tokens.deaths_per_day).not.toBe("");
@@ -278,6 +284,60 @@ describe("buildTaskShareTokens", () => {
     });
 
     expect(tokens.citizen_name).toBe("Alice");
+  });
+});
+
+describe("humanity and one-human share templates", () => {
+  const humanityTokens = buildTaskShareTokens({
+    currentDelayDays: 3,
+    currentEconomicValueUsdLost: null,
+    currentHumanLivesLost: 42,
+    targetLabel: "humanity",
+    taskTitle: "Sign the 1% Treaty",
+    treatyUrl: "https://warondisease.org/vote/alex",
+    citizenName: "Alex",
+  });
+
+  const oneHumanTokens = buildTaskShareTokens({
+    currentDelayDays: 3,
+    currentEconomicValueUsdLost: null,
+    currentHumanLivesLost: null,
+    targetLabel: "Jake",
+    taskTitle: "Sign the 1% Treaty",
+    treatyUrl: "https://example.com/vote/alex",
+    citizenName: "Alex",
+  });
+
+  it("generalizes the non-president templates to named humans", () => {
+    const usable = getUsableHumanityShareTemplates(oneHumanTokens);
+
+    expect(usable.length).toBeGreaterThan(2);
+    for (const template of usable) {
+      const rendered = renderTemplate(template.body, oneHumanTokens);
+      expect(rendered).toContain("Jake");
+      expect(rendered).not.toContain("Hi humanity");
+      expect(rendered).toContain("https://example.com/vote/alex");
+      expect(rendered).not.toMatch(/\{\w+\}/);
+    }
+  });
+
+  it("keeps humanity as the default non-president recipient", () => {
+    const rendered = renderTemplate(
+      HUMANITY_SHARE_TEMPLATES.find((template) => template.id === "polite-reminder")!.body,
+      humanityTokens,
+    );
+
+    expect(rendered).toContain("Hi humanity");
+    expect(rendered).not.toMatch(/\{\w+\}/);
+  });
+
+  it("adds the old tracked-invite copy formats to the non-president template pool", () => {
+    const usableIds = getUsableHumanityShareTemplates(oneHumanTokens).map(
+      (template) => template.id,
+    );
+
+    expect(usableIds).toContain("task-notification");
+    expect(usableIds).toContain("sincere");
   });
 });
 

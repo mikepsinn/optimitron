@@ -14,6 +14,9 @@ export type ReminderChannel =
   | "facebook"
   | "linkedin"
   | "reddit"
+  | "sms"
+  | "telegram"
+  | "whatsapp"
   | "x";
 
 /** Channels that produce an HTTPS (or mailto:) URL to open. */
@@ -24,6 +27,8 @@ export interface ShareChannelInput {
   message: string;
   /** A short one-liner fallback used for Reddit's `title` param. */
   shareText: string;
+  /** Optional direct recipient for mailto links. */
+  recipientEmail?: string | null;
   /** The canonical URL to attach for URL-only channels (already may contain sa=). */
   shareUrl?: string;
   /** The URL the share is ultimately about (task page or owned referral link). */
@@ -46,9 +51,18 @@ export function buildChannelHref(channel: ShareableChannel, input: ShareChannelI
       return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
     case "reddit":
       return `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent(input.shareText)}`;
+    case "sms":
+      return `sms:?&body=${encodedMessage}`;
+    case "whatsapp":
+      return `https://wa.me/?text=${encodedMessage}`;
+    case "telegram":
+      return `https://t.me/share/url?url=${encodedUrl}&text=${encodedMessage}`;
     case "email": {
       const subject = encodeURIComponent(`Please complete: ${input.taskTitle}`);
-      return `mailto:?subject=${subject}&body=${encodedMessage}`;
+      const recipient = input.recipientEmail?.trim()
+        ? encodeURI(input.recipientEmail.trim())
+        : "";
+      return `mailto:${recipient}?subject=${subject}&body=${encodedMessage}`;
     }
   }
 }

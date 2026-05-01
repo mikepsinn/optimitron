@@ -42,6 +42,7 @@ export type ShareTokenKey =
   | "mil_to_trials_ratio"
   | "money_wasted"
   | "money_wasted_per_day"
+  | "target_name"
   | "task_title"
   | "treaty_hale_gain"
   | "treaty_url"

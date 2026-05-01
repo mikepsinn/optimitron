@@ -118,6 +118,7 @@ describe("referral invitation client helpers", () => {
         action: "markCopied",
         id: "invite_1",
         messageText: "edited message",
+        shareChannel: "whatsapp",
       },
       fetcher,
     );
@@ -134,6 +135,7 @@ describe("referral invitation client helpers", () => {
       action: "markCopied",
       id: "invite_1",
       messageText: "edited message",
+      shareChannel: "whatsapp",
     });
   });
 });

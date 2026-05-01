@@ -343,6 +343,7 @@ export function buildTaskShareTokens(
 
   return {
     leader_name: input.targetLabel,
+    target_name: input.targetLabel,
     country,
     leader_handle: leaderHandle,
     citizen_name: input.citizenName?.trim() || "A citizen",

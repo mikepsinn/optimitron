@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => {
     markUserTreatyPhoneCallComplete: vi.fn(),
     markNextHumanAssignmentSubtaskComplete: vi.fn(),
     notifyTaskCommentRecipients: vi.fn(),
+    recordShareAttempt: vi.fn(),
     prisma: {
       $transaction: vi.fn(),
       referendum: { findFirst: vi.fn() },
@@ -59,7 +60,7 @@ vi.mock("@/lib/referral-invitation-tasks.server", async (importOriginal) => {
 });
 
 vi.mock("@/lib/share-attempts.server", () => ({
-  recordShareAttempt: vi.fn(),
+  recordShareAttempt: mocks.recordShareAttempt,
 }));
 
 // Trigger framework is fired alongside the existing path; not relevant
@@ -76,6 +77,7 @@ import {
   convertReferralInvitationForVote,
   markReferralInvitationCopied,
 } from "../referral-invitations.server";
+import { buildReferralUrl, getBaseUrl } from "@/lib/url";
 
 describe("createReferralInvitation", () => {
   beforeEach(() => {
@@ -146,6 +148,26 @@ describe("createReferralInvitation", () => {
 
     expect(mocks.prisma.$transaction.mock.calls[0]?.[1]).toBeUndefined();
   });
+
+  it("replaces the general share link with the generated referral link before creating the task", async () => {
+    const draftReferralUrl = buildReferralUrl("ref_sender", getBaseUrl());
+
+    await createReferralInvitation({
+      contactMethod: ReferralInvitationContactMethod.COPY,
+      messageFormat: ReferralInvitationMessageFormat.TASK_NOTIFICATION,
+      messageText: `Please vote here: ${draftReferralUrl}`,
+      recipientName: "Recipient Human",
+      referrerUserId: "user_1",
+    });
+
+    const taskInput = mocks.createReferralInvitationTask.mock.calls[0]?.[0];
+    expect(taskInput.endpoint.instructions).toMatch(
+      new RegExp(
+        `^Please vote here: ${draftReferralUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?invite=[\\w-]+$`,
+      ),
+    );
+    expect(taskInput.endpoint.instructions).not.toContain("\n\n");
+  });
 });
 
 describe("markReferralInvitationCopied", () => {
@@ -198,6 +220,26 @@ describe("markReferralInvitationCopied", () => {
         userId: "user_1",
       }),
       mocks.tx,
+    );
+  });
+
+  it("records the supplied direct share channel for one-human app shares", async () => {
+    await markReferralInvitationCopied({
+      invitationId: "invite_call",
+      messageText: "Please vote here: https://warondisease.org/vote/ref_sender?invite=abc&sa=share_1",
+      referrerUserId: "user_1",
+      shareAttemptId: "share_1",
+      shareChannel: "whatsapp",
+    });
+
+    expect(mocks.recordShareAttempt).toHaveBeenCalledWith(
+      mocks.tx,
+      expect.objectContaining({
+        channel: "whatsapp",
+        id: "share_1",
+        renderedMessage: expect.stringContaining("invite=abc"),
+        taskId: "referral_task_call",
+      }),
     );
   });
 });

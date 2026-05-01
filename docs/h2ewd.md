@@ -161,7 +161,7 @@ Everyone currently alive will be dead before we finish (current timeline)
 The Cost of War
 Humans spend $2.72T every year on stuff designed specifically to make humans stop being alive:
 
-13,000 nuclear warheads (enough to end civilization 13 times, just in case the first 12 apocalypses don’t take)
+12,241 nuclear warheads. Nuclear winter research says about 100 detonations over cities are sufficient to end civilization. So that is 122 apocalypses, just in case the first 121 do not take.
 AI murder-bots
 Invisible jets that cost more than hospitals
 Space Force (to fight the zero aliens attacking you)

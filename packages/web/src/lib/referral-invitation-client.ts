@@ -95,6 +95,7 @@ export async function updateReferralInvitationRequest(input: {
   action: ReferralInvitationUpdateAction;
   id: string;
   messageText?: string | null;
+  shareChannel?: string | null;
   shareAttemptId?: string | null;
   wasEdited?: boolean;
 }, fetcher: typeof fetch = fetch) {

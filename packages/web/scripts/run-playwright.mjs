@@ -43,6 +43,7 @@ const MODE_SPECS = {
   mobile: ["e2e/mobile-responsiveness-audit.spec.ts"],
   "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],
   "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
+  "treaty-reminder-one-human": ["e2e/treaty-reminder-one-human.spec.ts"],
 };
 
 const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];

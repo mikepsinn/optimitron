@@ -113,7 +113,7 @@ Multi-day; land AFTER S1 + S2 are live and after some real users go through Stag
   - Lumbergh appears ONLY in: overdue/escalating reminders, magic-link mild ("Yeahhh, here's your sign-in link").
   - Deadpan-corporate-HR appears in: promotion screen, KPIs, dashboard headings, role titles.
   - Plain imperative appears in: action labels, CTAs, validation errors.
-- [ ] Audit `ReferralInvitationStatusCard` + `ReferralInvitationComposer` for any drift toward instructional/help-doc voice.
+- [ ] Audit `ReferralInvitationStatusCard` + `TreatyReminderComposer` one-human mode for any drift toward instructional/help-doc voice.
 
 ### S5 — Visual flow audit harness + critique loop
 
@@ -760,7 +760,7 @@ The principle for this phase: data-drive the components whose variation is *temp
 
 - [ ] Make `components/landing/PostVoteReminders.tsx` task-driven: replace `TREATY_DUE_AT` (line 38) with `task.dueAt`; replace `taskTitle: "Sign the 1% Treaty"` (lines 74, 96) and `getTreatyLevelCostOfDelay()` (line 75) with `task.title` and a generic `getTaskCostOfDelay(task, delayDays)`.
 - [ ] Decouple `components/dashboard/ReferralInvitationStatusCard.tsx` from treaty parameters: replace the `FLOW_VOTER_LIVES_SAVED_ROUNDED` import (line 9) and the inline math (lines 165, 168) with `task.metrics.perCompletionImpact`. Header "Earth Optimization Tasks" (line 177) and "Inverse Kills Score" (line 184) become `task.metrics.cardTitle` / `task.metrics.impactLabel`.
-- [ ] Parameterize `components/landing/ReferralInvitationComposer.tsx`: header "Assign One Earth Optimization Task" (line 239), "vote task" copy (lines 242, 271), and the default `messageFormat` (line 38) all derive from `task.invitationConfig`.
+- [ ] Parameterize the one-human invitation path in `components/landing/TreatyReminderComposer.tsx`: the task title/heading/step labels and invitation `messageFormat` should derive from `task.invitationConfig` instead of treaty-specific defaults.
 - [ ] Rewrite `app/send/page.tsx`: replace the hardcoded hierarchy "Optimize Earth contains End War and Disease, which contains Ratify the 1% Treaty…" (lines 29-31) with `getTaskAncestors(task.id)` plus a copy template.
 - [ ] Replace `const isTreaty = program.id === "1-pct-treaty"` at `app/tasks/page.tsx:83` with a `program.hasDetailedSubtaskView` boolean (or equivalent metadata) on the program record. The branch at lines 84-97 then keys off task data.
 - [ ] Keep the Wishonia voice and project-management framing intact through these renames — the goal is to data-drive the copy, not flatten its tone. Seeded `TaskCommunicationVariant` rows for the treaty must read identically to today's hand-written strings.
@@ -768,7 +768,7 @@ The principle for this phase: data-drive the components whose variation is *temp
 **Structural — extract primitives, keep narrative as code:**
 
 - [ ] Split `components/landing/TreatyPostVoteShareFlow.tsx` (~1000 lines) into reusable primitives + treaty-specific narrative.
-  - Extract reusable, task-agnostic primitives into `components/share-flow/` (or similar): the send-loop subcomponent (much of which already lives in `ReferralInvitationComposer`), the screen-transition / animation wrapper, the depth-hook component, the analytics tracker scaffolding, the feedback step, and the completion → dashboard redirect. These take a `task` prop and don't know anything about the treaty.
+  - Extract reusable, task-agnostic primitives into `components/share-flow/` (or similar): the send-loop subcomponent (now folded into `TreatyReminderComposer` one-human mode), the screen-transition / animation wrapper, the depth-hook component, the analytics tracker scaffolding, the feedback step, and the completion → dashboard redirect. These take a `task` prop and don't know anything about the treaty.
   - Leave the screen sequence (`opening`, `stakes`, `nuclear`, `math`, `neat`, `twoHumans`, `perVote`, `sendMessage`) and the narrative copy (nuclear / wasteful-apocalypses / chain-letter screens) inside `TreatyPostVoteShareFlow.tsx`. They are deliberately campaign-specific persuasion. Do **not** move them to database rows.
   - Replace `manual.warondisease.org` citation URLs (lines 558, 617, 626) with parameter-backed wrappers (`task.helpUrl` if it exists, otherwise leave the literal — these are cite links, not generic).
   - Rename analytics events from `trackTreatyPostVote*` (lines 15-21) to `trackTaskShareFlow*` with a `taskId` dimension *only if* the underlying primitive emits the event. Treaty-specific screen-advanced events stay treaty-named.

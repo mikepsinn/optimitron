@@ -604,7 +604,7 @@ export const voteLink: NavItem = {
 
 export const treatyVoteLink: NavItem = {
   ...voteLink,
-  description: "Vote on the 1% Treaty, then ask another human to vote.",
+  description: "Please take 30 seconds to end war and disease.",
   tagline: "Vote on the 1% Treaty",
 };
 
@@ -622,7 +622,7 @@ export const whyLink: NavItem = {
   href: ROUTES.why,
   label: "Why",
   emoji: "?",
-  description: "The numbers behind redirecting 1% of military spending.",
+  description: "What happens when one percent of the murder budget becomes medicine budget.",
   tagline: "The numbers behind the treaty",
   cta: "Read Why",
 };

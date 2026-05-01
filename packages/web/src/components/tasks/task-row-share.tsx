@@ -115,6 +115,10 @@ export function ReminderComposer({
   copyIdleLabel = "Copy Reminder Message",
   copyCopiedLabel = "Reminder Copied ✓",
   copyErrorLabel = "Copy Failed",
+  copyDisabled = false,
+  customActions,
+  extraControls,
+  hideDefaultActions = false,
   headerAccessory,
   steps,
 }: {
@@ -132,6 +136,10 @@ export function ReminderComposer({
   copyIdleLabel?: string;
   copyCopiedLabel?: string;
   copyErrorLabel?: string;
+  copyDisabled?: boolean;
+  customActions?: React.ReactNode;
+  extraControls?: React.ReactNode;
+  hideDefaultActions?: boolean;
   headerAccessory?: React.ReactNode;
   steps?: string[];
 }) {
@@ -167,6 +175,8 @@ export function ReminderComposer({
         </div>
         {headerAccessory ? <div className="shrink-0">{headerAccessory}</div> : null}
       </div>
+
+      {extraControls}
 
       {/* Template selector — dropdown instead of 6 buttons */}
       {availableTemplates.length > 1 ? (
@@ -218,6 +228,7 @@ export function ReminderComposer({
       {/* Primary CTA */}
       <Button
         className="w-full cursor-pointer justify-center border-4 border-foreground bg-brutal-pink font-black uppercase text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none"
+        disabled={copyDisabled}
         size="sm"
         type="button"
         onClick={onCopy}
@@ -230,6 +241,7 @@ export function ReminderComposer({
       </Button>
 
       {/* Share channels */}
+      {hideDefaultActions ? null : (
       <div className="space-y-1.5">
         {stepThree ? (
           <p className="text-xs font-black uppercase tracking-[0.14em] text-foreground">
@@ -263,6 +275,9 @@ export function ReminderComposer({
           ))}
         </div>
       </div>
+      )}
+
+      {customActions}
     </div>
   );
 }

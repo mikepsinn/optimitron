@@ -29,26 +29,12 @@ import {
   buildReferralInvitationMessage,
   getReferralInvitationFirstName,
 } from "@/lib/referral-invitation-copy";
-import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
+import { insertGeneratedReferralInviteUrl } from "@/lib/referral-invitation-message-url";
+import { buildUserInviteReferralUrl, buildUserReferralUrl, getBaseUrl } from "@/lib/url";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const INVITE_TOKEN_SIZE = 24;
 const CREATE_LIMIT_PER_HOUR = 50;
-
-/**
- * Replace draft "warondisease.org" placeholders in client-composed message
- * text with the real invitation URL. The composer pre-fills the textarea
- * before the invitation row exists, so any URL it embeds is a placeholder
- * — this swaps it for the real one before we store/send the message.
- */
-function replaceDraftInviteUrlInMessage(
-  messageText: string,
-  inviteUrl: string,
-): string {
-  const draftUrlPattern = /https?:\/\/warondisease\.org|warondisease\.org/g;
-  const replaced = messageText.replace(draftUrlPattern, inviteUrl);
-  return replaced.includes(inviteUrl) ? replaced : `${replaced}\n\n${inviteUrl}`;
-}
 
 export function isValidInvitationEmail(email: string | null | undefined): boolean {
   if (!email) return false;
@@ -220,13 +206,17 @@ export async function createReferralInvitation(input: {
 
   const inviteToken = await createUniqueInviteToken();
   const messageFormat = input.messageFormat ?? ReferralInvitationMessageFormat.SINCERE;
-  const inviteUrl = buildUserInviteReferralUrl(referrer, inviteToken, getBaseUrl());
+  const baseUrl = getBaseUrl();
+  const inviteUrl = buildUserInviteReferralUrl(referrer, inviteToken, baseUrl);
+  const draftReferralUrl = buildUserReferralUrl(referrer, baseUrl);
   const senderName = getUserDisplayName(referrer) || "A voter";
   const rawMessageText = input.messageText?.trim() || null;
   // If the user typed a custom message, swap any draft-URL placeholders for
   // the real invite URL. Otherwise build the default template.
   const messageText = rawMessageText
-    ? replaceDraftInviteUrlInMessage(rawMessageText, inviteUrl)
+    ? insertGeneratedReferralInviteUrl(rawMessageText, inviteUrl, {
+        draftReferralUrl,
+      })
     : null;
   const defaultMessageText = buildDefaultReferralInvitationMessage({
     messageFormat,
@@ -362,15 +352,19 @@ export async function sendReferralInvitationMessage(input: {
   if (!invitation.recipientEmail) return { status: "missing_recipient_email" };
   if (!invitation.taskId) return { status: "missing_task" };
 
+  const baseUrl = getBaseUrl();
   const inviteUrl = buildUserInviteReferralUrl(
     invitation.referrer,
     invitation.inviteToken,
-    getBaseUrl(),
+    baseUrl,
   );
+  const draftReferralUrl = buildUserReferralUrl(invitation.referrer, baseUrl);
   const senderName = getUserDisplayName(invitation.referrer) || "A voter";
   const trimmed = input.messageText?.trim() || null;
   const messageBody = trimmed
-    ? replaceDraftInviteUrlInMessage(trimmed, inviteUrl)
+    ? insertGeneratedReferralInviteUrl(trimmed, inviteUrl, {
+        draftReferralUrl,
+      })
     : buildDefaultReferralInvitationMessage({
         messageFormat: invitation.messageFormat,
         recipientName: invitation.recipientName,
@@ -468,6 +462,7 @@ export async function markReferralInvitationCopied(input: {
   contactConfirmed?: boolean;
   messageText?: string | null;
   referrerUserId: string;
+  shareChannel?: string | null;
   shareAttemptId?: string | null;
   wasEdited?: boolean;
   now?: Date;
@@ -524,10 +519,12 @@ export async function markReferralInvitationCopied(input: {
         userId: input.referrerUserId,
         source: ShareSource.IN_APP,
         surface: "referral_invitation_composer",
-        channel: getShareAttemptChannel({
-          contactConfirmed: input.contactConfirmed,
-          contactMethod: invitation.contactMethod,
-        }),
+        channel:
+          input.shareChannel?.trim() ||
+          getShareAttemptChannel({
+            contactConfirmed: input.contactConfirmed,
+            contactMethod: invitation.contactMethod,
+          }),
         taskId: invitation.taskId,
         templateId: `referral_invitation:${invitation.messageFormat.toLowerCase()}`,
         templateBody,

@@ -36,6 +36,7 @@ const patchInvitationSchema = z.object({
   id: z.string().min(1).max(128),
   action: z.enum(["markCopied", "markManualContacted", "decline", "cancel", "sendMessage"]),
   messageText: z.string().trim().max(10_000).nullish(),
+  shareChannel: z.string().trim().min(1).max(64).regex(/^[a-z0-9_-]+$/i).nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
   wasEdited: z.boolean().optional(),
 });
@@ -118,6 +119,7 @@ export async function PATCH(request: Request) {
         contactConfirmed: parsed.action === "markManualContacted",
         messageText: parsed.messageText,
         referrerUserId: userId,
+        shareChannel: parsed.shareChannel,
         shareAttemptId: parsed.shareAttemptId,
         wasEdited: parsed.wasEdited,
         now,

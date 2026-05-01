@@ -2,7 +2,6 @@
 
 import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { ReferralInvitationComposer } from "@/components/landing/ReferralInvitationComposer";
 import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
 import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
@@ -42,8 +41,6 @@ export function TreatyTaskDashboardClient({
         </div>
 
         <TreatyReminderComposer />
-
-        <ReferralInvitationComposer />
 
         {treatyProgram ? (
           <ProgramTaskSection
