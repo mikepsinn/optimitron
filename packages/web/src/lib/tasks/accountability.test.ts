@@ -9,10 +9,12 @@ import {
   getTaskDelayStats,
 } from "./accountability";
 import {
-  HUMANITY_SHARE_TEMPLATES,
-  getUsableHumanityShareTemplates,
-} from "./humanity-share-templates";
-import { SHARE_TEMPLATES, getUsableShareTemplates } from "./share-templates";
+  HUMANITY_DEFAULT_SHARE_TEMPLATE_ID,
+  ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID,
+  SHARE_TEMPLATES,
+  getUsableShareTemplates,
+  pickDefaultShareTemplateId,
+} from "./share-templates";
 
 /**
  * These suites assert properties of the leader-audience pool (targeting the
@@ -20,8 +22,23 @@ import { SHARE_TEMPLATES, getUsableShareTemplates } from "./share-templates";
  * is addressed to a friend, not a leader, and is covered separately.
  */
 const LEADER_SHARE_TEMPLATES = SHARE_TEMPLATES.filter(
-  (t) => (t.audience ?? "leader") === "leader",
+  (t) => (t.recipientModes ?? ["leader"]).includes("leader"),
 );
+
+const UNIVERSAL_SHARE_TEMPLATE_IDS = [
+  "polite-reminder",
+  "sleepy-sign-it",
+  "deal-maker",
+  "many-people-are-saying",
+  "tremendous-treaty",
+  "slack-dm",
+  "task-notification",
+  "sincere",
+] as const;
+
+function templateModes(template: (typeof SHARE_TEMPLATES)[number]) {
+  return template.recipientModes ?? ["leader"];
+}
 
 describe("task accountability helpers", () => {
   it("derives overdue cost from frame-level delay metrics and treaty-specific metrics", () => {
@@ -290,7 +307,7 @@ describe("buildTaskShareTokens", () => {
 describe("humanity and one-human share templates", () => {
   const humanityTokens = buildTaskShareTokens({
     currentDelayDays: 3,
-    currentEconomicValueUsdLost: null,
+    currentEconomicValueUsdLost: 1000,
     currentHumanLivesLost: 42,
     targetLabel: "humanity",
     taskTitle: "Sign the 1% Treaty",
@@ -300,39 +317,92 @@ describe("humanity and one-human share templates", () => {
 
   const oneHumanTokens = buildTaskShareTokens({
     currentDelayDays: 3,
-    currentEconomicValueUsdLost: null,
-    currentHumanLivesLost: null,
+    currentEconomicValueUsdLost: 1000,
+    currentHumanLivesLost: 42,
     targetLabel: "Jake",
     taskTitle: "Sign the 1% Treaty",
     treatyUrl: "https://example.com/vote/alex",
     citizenName: "Alex",
   });
 
-  it("generalizes the non-president templates to named humans", () => {
-    const usable = getUsableHumanityShareTemplates(oneHumanTokens);
+  it("marks universal templates for leader, humanity, and one-human modes", () => {
+    for (const id of UNIVERSAL_SHARE_TEMPLATE_IDS) {
+      const template = SHARE_TEMPLATES.find((entry) => entry.id === id);
+      expect(template, `Missing universal template "${id}"`).toBeDefined();
+      expect(templateModes(template!)).toEqual(["leader", "humanity", "one_human"]);
+    }
+  });
 
-    expect(usable.length).toBeGreaterThan(2);
-    for (const template of usable) {
+  it("renders universal templates cleanly for named humans", () => {
+    const usable = getUsableShareTemplates(oneHumanTokens, "one_human");
+    const usableIds = usable.map((template) => template.id);
+
+    expect(usableIds).toEqual(expect.arrayContaining([...UNIVERSAL_SHARE_TEMPLATE_IDS]));
+    for (const template of usable.filter((entry) =>
+      UNIVERSAL_SHARE_TEMPLATE_IDS.includes(
+        entry.id as (typeof UNIVERSAL_SHARE_TEMPLATE_IDS)[number],
+      ),
+    )) {
       const rendered = renderTemplate(template.body, oneHumanTokens);
       expect(rendered).toContain("Jake");
       expect(rendered).not.toContain("Hi humanity");
+      expect(rendered).not.toMatch(/\bhe\b|\bhis\b|\bit hit\b|\bit doesn't\b/i);
       expect(rendered).toContain("https://example.com/vote/alex");
       expect(rendered).not.toMatch(/\{\w+\}/);
     }
   });
 
-  it("keeps humanity as the default non-president recipient", () => {
-    const rendered = renderTemplate(
-      HUMANITY_SHARE_TEMPLATES.find((template) => template.id === "polite-reminder")!.body,
-      humanityTokens,
-    );
+  it("renders universal templates cleanly for humanity", () => {
+    const usable = getUsableShareTemplates(humanityTokens, "humanity");
+    const usableIds = usable.map((template) => template.id);
 
-    expect(rendered).toContain("Hi humanity");
-    expect(rendered).not.toMatch(/\{\w+\}/);
+    expect(usableIds).toEqual(expect.arrayContaining([...UNIVERSAL_SHARE_TEMPLATE_IDS]));
+    for (const template of usable.filter((entry) =>
+      UNIVERSAL_SHARE_TEMPLATE_IDS.includes(
+        entry.id as (typeof UNIVERSAL_SHARE_TEMPLATE_IDS)[number],
+      ),
+    )) {
+      const rendered = renderTemplate(template.body, humanityTokens);
+      expect(rendered).toContain("humanity");
+      expect(rendered).not.toMatch(/\{\w+\}/);
+    }
   });
 
-  it("adds the old tracked-invite copy formats to the non-president template pool", () => {
-    const usableIds = getUsableHumanityShareTemplates(oneHumanTokens).map(
+  it("keeps mode-specific defaults for non-president recipients", () => {
+    const humanityUsable = getUsableShareTemplates(humanityTokens, "humanity");
+    const oneHumanUsable = getUsableShareTemplates(oneHumanTokens, "one_human");
+
+    expect(pickDefaultShareTemplateId(humanityUsable, "humanity")).toBe(
+      HUMANITY_DEFAULT_SHARE_TEMPLATE_ID,
+    );
+    expect(pickDefaultShareTemplateId(oneHumanUsable, "one_human")).toBe(
+      ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID,
+    );
+  });
+
+  it("keeps leader-only templates out of humanity and one-human modes", () => {
+    const leaderOnlyIds = SHARE_TEMPLATES
+      .filter((template) => {
+        const modes = templateModes(template);
+        return modes.includes("leader") && modes.length === 1;
+      })
+      .map((template) => template.id);
+
+    const humanityIds = getUsableShareTemplates(humanityTokens, "humanity").map(
+      (template) => template.id,
+    );
+    const oneHumanIds = getUsableShareTemplates(oneHumanTokens, "one_human").map(
+      (template) => template.id,
+    );
+
+    for (const id of leaderOnlyIds) {
+      expect(humanityIds).not.toContain(id);
+      expect(oneHumanIds).not.toContain(id);
+    }
+  });
+
+  it("keeps the tracked-invite copy formats in one-human mode", () => {
+    const usableIds = getUsableShareTemplates(oneHumanTokens, "one_human").map(
       (template) => template.id,
     );
 
@@ -585,7 +655,7 @@ describe("full pipeline: data-package leader → share tokens → all templates 
 
 describe("peer share templates (most-important-secret)", () => {
   const PEER_TEMPLATES = SHARE_TEMPLATES.filter(
-    (t) => (t.audience ?? "leader") === "peer",
+    (t) => templateModes(t).includes("peer"),
   );
 
   it("exactly one peer template exists today", () => {

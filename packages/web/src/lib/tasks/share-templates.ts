@@ -1,10 +1,9 @@
 /**
  * Share-text templates for the task reminder dialog.
  *
- * Seventeen voice variants of the same overdue-task reminder. Each template
- * commits to a single container (memo, ticket, invoice, post, voicemail);
- * the dissonance between the form and the subject does the comedy. Don't
- * argue the full case inside any one variant — let the form carry it.
+ * Voice variants of the same overdue-task reminder. Templates that work for
+ * any addressee use {target_name}; templates that need public-office context
+ * stay leader-only.
  *
  * All templates consume the same flat token set produced by
  * `buildTaskShareTokens`. Tokens that are unresolved render as empty
@@ -49,7 +48,7 @@ export type ShareTokenKey =
   | "trial_capacity_multiplier"
   | "trials_budget_pct";
 
-export type ShareAudience = "leader" | "peer";
+export type ShareRecipientMode = "leader" | "humanity" | "one_human" | "peer";
 
 export interface ShareTemplate {
   id: string;
@@ -58,25 +57,26 @@ export interface ShareTemplate {
   /** Tokens this template falls apart without. */
   requiredTokens: ShareTokenKey[];
   /**
-   * Who is this message addressed to?
+   * Which recipient modes can use this template?
    *
-   * - `leader` (default): message is aimed at the overdue head of state, signed
-   *   by the user. The existing 17 accountability-pressure templates.
-   * - `peer`: message is aimed at a friend/family member the user is recruiting
-   *   into the chain. "Can I tell you the most important secret in the world?"
+   * - `leader` (default): message is aimed at the overdue head of state.
+   * - `humanity`: message is aimed at humanity as the named recipient.
+   * - `one_human`: message is aimed at a friend/family member the user names.
+   * - `peer`: message is aimed at a friend without a referral task/link.
    *
    * Omitting the field means `leader` — preserves the existing pool's
    * behavior without touching every entry.
    */
-  audience?: ShareAudience;
+  recipientModes?: ShareRecipientMode[];
 }
 
 export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "polite-reminder",
     label: "Polite Reminder",
+    recipientModes: ["leader", "humanity", "one_human"],
     requiredTokens: [
-      "leader_name",
+      "target_name",
       "days_overdue",
       "deaths_per_day",
       "money_wasted_per_day",
@@ -86,7 +86,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "eradication_years_treaty",
     ],
     body: [
-      `Hi {leader_name},`,
+      `Hi {target_name},`,
       ``,
       `Friendly reminder — the 1% Treaty is still unsigned. Day {days_overdue}.`,
       ``,
@@ -180,26 +180,29 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "sleepy-sign-it",
     label: "Sleepy Sign-It",
-    requiredTokens: ["leader_name", "deaths_from_delay", "trial_capacity_multiplier"],
-    body: "Sleepy {leader_name} STILL hasn't signed the 1% Treaty. 120 apocalypses of mass murder capacity down to 118.8 — you can only HAVE one apocalypse, folks — in exchange for {trial_capacity_multiplier}× the clinical trials. Easiest deal ever written. 30 seconds! I could do it in 5. {deaths_from_delay} dead of curable disease waiting. Very weak. Very sad. {treaty_url} — sign it!",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name", "deaths_from_delay", "trial_capacity_multiplier"],
+    body: "Sleepy {target_name} STILL hasn't signed the 1% Treaty. 120 apocalypses of mass murder capacity down to 118.8 — you can only HAVE one apocalypse, folks — in exchange for {trial_capacity_multiplier}× the clinical trials. Easiest deal ever written. 30 seconds! I could do it in 5. {deaths_from_delay} dead of curable disease waiting. Very weak. Very sad. {treaty_url} — sign it!",
   },
   {
     id: "deal-maker",
     label: "The Deal-Maker",
+    recipientModes: ["leader", "humanity", "one_human"],
     requiredTokens: [
-      "leader_name",
+      "target_name",
       "mil_synonym",
       "trial_capacity_multiplier",
       "eradication_years_status_quo",
       "eradication_years_treaty",
     ],
-    body: "Look, {leader_name}. I've made a LOT of deals. This one's a layup. 1% off {mil_synonym}, you get {trial_capacity_multiplier}× the clinical trials, disease clock drops from {eradication_years_status_quo} years to {eradication_years_treaty}. Easiest deal ever written. Sign it. {treaty_url}. 30 seconds. Not hard!",
+    body: "Look, {target_name}. I've made a LOT of deals. This one's a layup. 1% off {mil_synonym}, you get {trial_capacity_multiplier}× the clinical trials, disease clock drops from {eradication_years_status_quo} years to {eradication_years_treaty}. Easiest deal ever written. Sign it. {treaty_url}. 30 seconds. Not hard!",
   },
   {
     id: "many-people-are-saying",
     label: "Many People Are Saying",
-    requiredTokens: ["leader_name", "deaths_from_delay", "trial_capacity_multiplier"],
-    body: "Many people are saying {leader_name} can't sign the 1% Treaty — drops mass murder capacity from 120 apocalypses to 118.8, in exchange for {trial_capacity_multiplier}× more clinical trials — because he doesn't know how to read a PDF. I don't know! Maybe true, maybe not! But {deaths_from_delay} dead of curable disease since it hit his desk. Someone help him out. {treaty_url}",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name", "deaths_from_delay", "trial_capacity_multiplier"],
+    body: "Many people are saying {target_name} can't sign the 1% Treaty — drops mass murder capacity from 120 apocalypses to 118.8, in exchange for {trial_capacity_multiplier}× more clinical trials — because he doesn't know how to click a button on a website. I don't know! Maybe true, maybe not! But {deaths_from_delay} dead of curable disease since the task was assigned. Someone help {target_name} out. {treaty_url}",
   },
   {
     id: "the-ratio",
@@ -216,13 +219,14 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "tremendous-treaty",
     label: "The Tremendous Treaty",
+    recipientModes: ["leader", "humanity", "one_human"],
     requiredTokens: [
-      "leader_name",
+      "target_name",
       "deaths_per_day",
       "eradication_years_status_quo",
       "eradication_years_treaty",
     ],
-    body: "I have a BEAUTIFUL treaty. Many people are saying it's the greatest treaty ever written. {eradication_years_status_quo}-year disease timeline? Down to {eradication_years_treaty}. TREMENDOUS. {leader_name} won't sign. Very unfair to the {deaths_per_day} people who permanently stop every day. {treaty_url}",
+    body: "I have a BEAUTIFUL treaty. Many people are saying it's the greatest treaty ever written. {eradication_years_status_quo}-year disease timeline? Down to {eradication_years_treaty}. TREMENDOUS. {target_name} won't sign. Very unfair to the {deaths_per_day} people who permanently stop every day. {treaty_url}",
   },
   {
     id: "lumbergh",
@@ -414,9 +418,10 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "slack-dm",
     label: "Slack DM",
-    requiredTokens: ["leader_name", "days_overdue", "deaths_from_delay", "trial_capacity_multiplier"],
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name", "days_overdue", "deaths_from_delay", "trial_capacity_multiplier"],
     body: [
-      `hey {leader_name} 👋`,
+      `hey {target_name} 👋`,
       ``,
       `quick one — did you sign the treaty yet? the 1% one, drops mass murder capacity from 120 apocalypses to 118.8 in exchange for {trial_capacity_multiplier}× the clinical trials. {treaty_url}`,
       ``,
@@ -426,9 +431,34 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     ].join("\n"),
   },
   {
+    id: "task-notification",
+    label: "Task Notification",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name", "citizen_name", "eradication_years_status_quo"],
+    body: [
+      "Overdue task: End War and Disease",
+      "",
+      "Assigned to: {target_name}",
+      "Assigned by: {citizen_name}",
+      "Time required: 30 seconds",
+      "Due: about {eradication_years_status_quo} years ago",
+      "",
+      "Please vote on the 1% Treaty:",
+      "{treaty_url}",
+    ].join("\n"),
+  },
+  {
+    id: "sincere",
+    label: "Sincere",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body:
+      "Hi {target_name}. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? {treaty_url}",
+  },
+  {
     id: "most-important-secret",
     label: "The Most Important Secret",
-    audience: "peer",
+    recipientModes: ["peer"],
     requiredTokens: ["citizen_name"],
     body: [
       `Can I tell you the most important secret in the world?`,
@@ -447,50 +477,56 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
  * political tribes in a way the Trump/LinkedIn voices don't.
  */
 export const DEFAULT_SHARE_TEMPLATE_ID = "lumbergh";
+export const HUMANITY_DEFAULT_SHARE_TEMPLATE_ID = "polite-reminder";
+export const ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID = "task-notification";
 
-/** Peer-audience default — there's only one peer template today. */
+/** Peer-recipient default — there's only one peer template today. */
 export const DEFAULT_PEER_SHARE_TEMPLATE_ID = "most-important-secret";
 
 export function getShareTemplate(id: string): ShareTemplate | undefined {
   return SHARE_TEMPLATES.find((template) => template.id === id);
 }
 
-function getTemplateAudience(template: ShareTemplate): ShareAudience {
-  return template.audience ?? "leader";
+function getTemplateRecipientModes(template: ShareTemplate): ShareRecipientMode[] {
+  return template.recipientModes ?? ["leader"];
 }
 
 /**
- * Choose which template to show first. Prefers the audience-specific default,
+ * Choose which template to show first. Prefers the recipient-mode default,
  * falls back to the first usable template if the default got filtered out
  * (e.g. missing tokens on the current task).
  */
 export function pickDefaultShareTemplateId(
   templates: ShareTemplate[],
-  audience: ShareAudience = "leader",
+  recipientMode: ShareRecipientMode = "leader",
 ): string | null {
-  const preferredId =
-    audience === "peer"
-      ? DEFAULT_PEER_SHARE_TEMPLATE_ID
-      : DEFAULT_SHARE_TEMPLATE_ID;
-  if (templates.some((t) => t.id === preferredId)) {
-    return preferredId;
+  const preferredId = {
+    humanity: HUMANITY_DEFAULT_SHARE_TEMPLATE_ID,
+    leader: DEFAULT_SHARE_TEMPLATE_ID,
+    one_human: ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID,
+    peer: DEFAULT_PEER_SHARE_TEMPLATE_ID,
+  } satisfies Record<ShareRecipientMode, string>;
+
+  const selectedPreferredId = preferredId[recipientMode];
+  if (templates.some((t) => t.id === selectedPreferredId)) {
+    return selectedPreferredId;
   }
   return templates[0]?.id ?? null;
 }
 
 /**
  * Filter templates down to those whose required tokens all have non-empty
- * values in the given token bag AND match the requested audience. Keeps the
+ * values in the given token bag AND match the requested recipient mode. Keeps the
  * picker from offering the Performance Review variant on a non-signer task
- * where half the fields would render blank, and keeps peer-audience messages
+ * where half the fields would render blank, and keeps peer messages
  * out of leader-facing surfaces (and vice versa).
  */
 export function getUsableShareTemplates(
   tokens: Record<string, string>,
-  audience: ShareAudience = "leader",
+  recipientMode: ShareRecipientMode = "leader",
 ): ShareTemplate[] {
   return SHARE_TEMPLATES.filter((template) => {
-    if (getTemplateAudience(template) !== audience) return false;
+    if (!getTemplateRecipientModes(template).includes(recipientMode)) return false;
     return template.requiredTokens.every((key) => {
       const value = tokens[key];
       return value != null && value !== "";

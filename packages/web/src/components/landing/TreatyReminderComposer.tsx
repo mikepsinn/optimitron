@@ -12,11 +12,6 @@ import { getGovernmentLeader } from "@optimitron/data";
 import { buildTaskShareTokens } from "@/lib/tasks/accountability";
 import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import {
-  ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID,
-  getUsableHumanityShareTemplates,
-  pickDefaultHumanityShareTemplateId,
-} from "@/lib/tasks/humanity-share-templates";
-import {
   getUsableShareTemplates,
   pickDefaultShareTemplateId,
 } from "@/lib/tasks/share-templates";
@@ -151,7 +146,7 @@ export function TreatyReminderComposer({
       treatyUrl: referralUrl,
     });
     return {
-      leaderTemplates: getUsableShareTemplates(tokens),
+      leaderTemplates: getUsableShareTemplates(tokens, "leader"),
       leaderTokenBag: tokens,
       leaderName: targetLabel,
     };
@@ -170,7 +165,7 @@ export function TreatyReminderComposer({
       treatyUrl: referralUrl,
     });
     return {
-      humanityTemplates: getUsableHumanityShareTemplates(tokens),
+      humanityTemplates: getUsableShareTemplates(tokens, "humanity"),
       humanityTokenBag: tokens,
     };
   }, [delayDays, referralUrl, session?.user?.name]);
@@ -188,23 +183,19 @@ export function TreatyReminderComposer({
       treatyUrl: referralUrl,
     });
     return {
-      oneHumanTemplates: getUsableHumanityShareTemplates(tokens),
+      oneHumanTemplates: getUsableShareTemplates(tokens, "one_human"),
       oneHumanTokenBag: tokens,
     };
   }, [delayDays, oneHumanTargetName, referralUrl, session?.user?.name]);
 
   const [selectedLeaderTemplateId, setSelectedLeaderTemplateId] = useState<string | null>(
-    () => pickDefaultShareTemplateId(leaderTemplates),
+    () => pickDefaultShareTemplateId(leaderTemplates, "leader"),
   );
   const [selectedHumanityTemplateId, setSelectedHumanityTemplateId] = useState<string | null>(
-    () => pickDefaultHumanityShareTemplateId(humanityTemplates),
+    () => pickDefaultShareTemplateId(humanityTemplates, "humanity"),
   );
   const [selectedOneHumanTemplateId, setSelectedOneHumanTemplateId] = useState<string | null>(
-    () =>
-      pickDefaultHumanityShareTemplateId(
-        oneHumanTemplates,
-        ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID,
-      ),
+    () => pickDefaultShareTemplateId(oneHumanTemplates, "one_human"),
   );
 
   useEffect(() => {
@@ -216,7 +207,7 @@ export function TreatyReminderComposer({
       selectedLeaderTemplateId == null ||
       !leaderTemplates.some((template) => template.id === selectedLeaderTemplateId)
     ) {
-      setSelectedLeaderTemplateId(pickDefaultShareTemplateId(leaderTemplates));
+      setSelectedLeaderTemplateId(pickDefaultShareTemplateId(leaderTemplates, "leader"));
     }
   }, [leaderTemplates, selectedLeaderTemplateId]);
 
@@ -230,7 +221,7 @@ export function TreatyReminderComposer({
       !humanityTemplates.some((template) => template.id === selectedHumanityTemplateId)
     ) {
       setSelectedHumanityTemplateId(
-        pickDefaultHumanityShareTemplateId(humanityTemplates),
+        pickDefaultShareTemplateId(humanityTemplates, "humanity"),
       );
     }
   }, [humanityTemplates, selectedHumanityTemplateId]);
@@ -245,10 +236,7 @@ export function TreatyReminderComposer({
       !oneHumanTemplates.some((template) => template.id === selectedOneHumanTemplateId)
     ) {
       setSelectedOneHumanTemplateId(
-        pickDefaultHumanityShareTemplateId(
-          oneHumanTemplates,
-          ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID,
-        ),
+        pickDefaultShareTemplateId(oneHumanTemplates, "one_human"),
       );
     }
   }, [oneHumanTemplates, selectedOneHumanTemplateId]);
