@@ -175,7 +175,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
-      name: production
+      name: Production
       url: ${{ steps.deploy.outputs.deployment_url }}
     env:
       VERCEL_CLI_VERSION: 50.37.3
