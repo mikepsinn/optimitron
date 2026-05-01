@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
 import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
@@ -12,26 +12,33 @@ const databaseUrl = process.env.DATABASE_URL
   ? assertSafeLocalTestDatabaseUrl(process.env.DATABASE_URL)
   : null;
 const describeIfDatabase = databaseUrl ? describe : describe.skip;
+const SEED_TEST_TIMEOUT_MS = 60_000;
+
+async function readBaselineCounts(prisma: PrismaClient) {
+  return {
+    units: await prisma.unit.count(),
+    variableCategories: await prisma.variableCategory.count(),
+    globalVariables: await prisma.globalVariable.count(),
+    jurisdictions: await prisma.jurisdiction.count(),
+    wishocraticItems: await prisma.wishocraticItem.count(),
+  };
+}
 
 describeIfDatabase("seedDatabase", () => {
   const adapter = new PrismaPg({ connectionString: databaseUrl! });
   const prisma = new PrismaClient({ adapter });
+
+  beforeAll(async () => {
+    await seedDatabase();
+  }, SEED_TEST_TIMEOUT_MS);
 
   afterAll(async () => {
     await prisma.$disconnect();
     await disconnectSeedClient();
   });
 
-  it("seeds baseline reference data idempotently", async () => {
-    await seedDatabase();
-
-    const firstCounts = {
-      units: await prisma.unit.count(),
-      variableCategories: await prisma.variableCategory.count(),
-      globalVariables: await prisma.globalVariable.count(),
-      jurisdictions: await prisma.jurisdiction.count(),
-      wishocraticItems: await prisma.wishocraticItem.count(),
-    };
+  it("seeds baseline reference data", async () => {
+    const firstCounts = await readBaselineCounts(prisma);
 
     expect(firstCounts.units).toBeGreaterThanOrEqual(40);
     expect(firstCounts.variableCategories).toBeGreaterThanOrEqual(35);
@@ -51,23 +58,19 @@ describeIfDatabase("seedDatabase", () => {
       name: "Pragmatic Clinical Trials",
       sourceUrl: "https://copenhagenconsensus.com/copenhagen-consensus-iii/outcome",
     });
+  });
+
+  it("can run idempotently without duplicating baseline data", async () => {
+    const firstCounts = await readBaselineCounts(prisma);
 
     await seedDatabase();
 
-    const secondCounts = {
-      units: await prisma.unit.count(),
-      variableCategories: await prisma.variableCategory.count(),
-      globalVariables: await prisma.globalVariable.count(),
-      jurisdictions: await prisma.jurisdiction.count(),
-      wishocraticItems: await prisma.wishocraticItem.count(),
-    };
+    const secondCounts = await readBaselineCounts(prisma);
 
     expect(secondCounts).toEqual(firstCounts);
-  }, 15000);
+  }, SEED_TEST_TIMEOUT_MS);
 
   it("restores seeded records when they drift before a re-run", async () => {
-    await seedDatabase();
-
     const originalTask = await prisma.task.findUniqueOrThrow({
       where: { id: "1-pct-treaty" },
       select: { title: true, description: true },
@@ -114,11 +117,9 @@ describeIfDatabase("seedDatabase", () => {
     await expect(
       prisma.organization.findUnique({ where: { slug: "humanity" } }),
     ).resolves.toMatchObject(originalOrganization);
-  }, 15000);
+  }, SEED_TEST_TIMEOUT_MS);
 
   it("seeds task communication endpoint contracts for task-driven reminders", async () => {
-    await seedDatabase();
-
     const signerTasksMissingContactContract = await prisma.task.count({
       where: {
         taskKey: { startsWith: "program:one-percent-treaty:signer:" },

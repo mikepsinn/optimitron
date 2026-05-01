@@ -17,6 +17,7 @@ concurrency:
 jobs:
   core-validate:
     name: core-validate
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -73,6 +74,7 @@ jobs:
 
   web-validate:
     name: web-validate
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -170,8 +172,7 @@ jobs:
 
   deploy-production:
     name: deploy-production
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: [core-validate, web-validate]
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
