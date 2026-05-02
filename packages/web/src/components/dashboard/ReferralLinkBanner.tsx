@@ -76,8 +76,6 @@ export function ReferralLinkBanner({
         onRefresh={onRefresh}
         variant={variant}
         cardClassName={className}
-        title="Your voting link"
-        description="Make it readable. Copy it. Send it to one human."
       />
     </div>
   )

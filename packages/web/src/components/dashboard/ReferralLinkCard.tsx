@@ -32,8 +32,6 @@ export function ReferralLinkCard({
         onUserChange={onUserChange}
         onRefresh={onRefresh}
         variant="treaty"
-        title="Your voting link"
-        description="Make it readable. Copy it. Send it to one human."
       />
     </Card>
   )

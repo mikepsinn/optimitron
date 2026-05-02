@@ -76,8 +76,8 @@ export function ReferralLinkEditor({
   baseUrl,
   onUserChange,
   onRefresh,
-  title = "Your voting link",
-  description = "Make it readable. Copy it. Send it to one human.",
+  title = "Share your link",
+  description,
   variant = "default",
   className,
 }: ReferralLinkEditorProps) {
@@ -234,7 +234,7 @@ export function ReferralLinkEditor({
             /vote/
           </span>
           <Input
-            aria-label="Voting link name"
+            aria-label="Link name"
             aria-invalid={Boolean(error)}
             value={draft}
             onChange={(event) => {
@@ -252,23 +252,25 @@ export function ReferralLinkEditor({
           />
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          disabled={!dirty || saving}
-          onClick={() => {
-            void saveLinkName()
-          }}
-          className={cn(
-            "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
-            isTreaty
-              ? "border border-[var(--treaty-ink)] text-[var(--treaty-ink)] hover:bg-[#efe4cf]"
-              : "border-4 border-primary",
-          )}
-        >
-          <Save className="h-4 w-4 stroke-[2.5px]" />
-          {saving ? "Saving" : "Save"}
-        </Button>
+        {dirty ? (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={saving}
+            onClick={() => {
+              void saveLinkName()
+            }}
+            className={cn(
+              "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
+              isTreaty
+                ? "border border-[var(--treaty-ink)] text-[var(--treaty-ink)] hover:bg-[#efe4cf]"
+                : "border-4 border-primary",
+            )}
+          >
+            <Save className="h-4 w-4 stroke-[2.5px]" />
+            {saving ? "Saving" : "Save"}
+          </Button>
+        ) : null}
 
         <Button
           type="button"
@@ -292,14 +294,6 @@ export function ReferralLinkEditor({
         </Button>
       </div>
 
-      <p
-        className={cn(
-          "break-all font-mono text-xs font-bold",
-          isTreaty ? "text-[var(--treaty-ink-soft)]" : "text-muted-foreground",
-        )}
-      >
-        {dirty ? displayedUrl : savedUrl}
-      </p>
       {error ? <p className="text-sm font-bold text-destructive">{error}</p> : null}
     </div>
   )
