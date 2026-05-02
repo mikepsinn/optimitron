@@ -72,11 +72,13 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
         | { error?: string }
         | null;
       if (!res.ok) {
-        throw new Error(data?.error ?? "Failed to submit endorsement");
+        throw new Error(data?.error ?? "Failed to sign as organization");
       }
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit");
+      setError(
+        err instanceof Error ? err.message : "Failed to sign as organization",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -86,11 +88,10 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
     return (
       <div className="border-2 border-foreground bg-background p-8 text-center">
         <p className="text-xl font-black uppercase text-foreground">
-          Submitted — pending review.
+          Organization signed.
         </p>
         <p className="mt-3 text-sm font-bold text-muted-foreground">
-          An administrator will verify your organization and publish the
-          endorsement on the supporters page. You can close this tab.
+          It now appears on the organizational signatories page.
         </p>
       </div>
     );
@@ -138,7 +139,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
               checked={mode === "new"}
               onChange={() => setMode("new")}
             />
-            Create a new organization
+            Add a new organization
           </label>
         </fieldset>
       ) : null}
@@ -190,7 +191,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
           value={statement}
           onChange={(e) => setStatement(e.target.value)}
           rows={3}
-          placeholder="A short quote that will appear on the supporters page."
+          placeholder="A short public reason for signing the 1% Treaty."
           className="w-full border-2 border-foreground bg-background px-3 py-2 font-bold text-foreground"
         />
       </div>
@@ -204,7 +205,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
         disabled={submitting}
         className="w-full border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground disabled:opacity-50"
       >
-        {submitting ? "Submitting..." : "Submit endorsement"}
+        {submitting ? "Signing..." : "Sign as Organization"}
       </button>
     </form>
   );

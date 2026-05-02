@@ -11,6 +11,7 @@ const reducedApocalypseCount = fmtRaw(
   NUCLEAR_WINTER_OVERKILL_FACTOR.value * 0.99,
 );
 const diseaseAcceleration = fmtParamValueOnly(DFDA_TRIAL_CAPACITY_MULTIPLIER);
+const campaignName = "International Campaign to End War and Disease";
 
 export const onePercentTreatyContent: ReferendumSiteContent = {
   key: "onePercentTreaty",
@@ -36,14 +37,14 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
         "The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.",
     },
     endorse: {
-      title: "Endorse — 1% Treaty",
+      title: "Sign as Organization — 1% Treaty",
       description:
-        "Your organization puts its name next to 'against war and disease.' Controversial, apparently.",
+        "Sign the 1% Treaty as an organization: one percent less for war, one percent more for medicine.",
     },
     supporters: {
-      title: "Supporters — 1% Treaty",
+      title: "Organizational Signatories — 1% Treaty",
       description:
-        "Organizations willing to go on record opposing death. A remarkably short list so far.",
+        "Organizations that signed the 1% Treaty: one percent less for war, one percent more for medicine.",
     },
     why: {
       title: "Why — 1% Treaty",
@@ -53,7 +54,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     legal: {
       title: "Legal — 1% Treaty",
       description:
-        "For boards and counsel: endorsing is not lobbying, not a campaign, and not domestic legislation.",
+        "For boards and counsel: joining is not lobbying, not election campaigning, and not domestic legislation.",
     },
     impact: {
       title: "Impact — 1% Treaty",
@@ -63,8 +64,8 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   },
   navItems: [
     { label: "Treaty", href: "/treaty" },
-    { label: "Endorse", href: "/endorse" },
-    { label: "Supporters", href: "/coalition" },
+    { label: "Sign as Organization", href: "/endorse" },
+    { label: "Signatories", href: "/campaign" },
     { label: "Tasks", href: "/tasks" },
     { label: "Why", href: "/why" },
     { label: "Legal", href: "/legal" },
@@ -78,7 +79,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     ],
     intro: "",
     primaryCtaLabel: "Read and sign the treaty",
-    secondaryCtaLabel: "Endorse as an organization",
+    secondaryCtaLabel: "Sign as Organization",
     treatyEyebrow: "Treaty text",
     signTitle: "Sign the treaty now",
     signBody:
@@ -88,7 +89,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     lateEmployeesTitle: "Your late employees still have overdue Earth Optimization Tasks.",
     lateEmployeesBody:
       "These are the subtasks under Ratify the 1% Treaty. They are the humans you hired to promote the general welfare. They are late. The task is a pen.",
-    lateEmployeesCtaLabel: "Open the full late-employee list",
+    lateEmployeesCtaLabel: "See every late employee",
   },
   dashboard: {
     welcomeTitle: "You signed. Thank you.",
@@ -100,7 +101,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     shareText:
       "I signed the 1% Treaty to redirect 1% of military spending to finding out which medicines work. Sign it, then pressure the leaders who haven't:",
     shareEmailSubject: "I signed the 1% Treaty",
-    shareCtaLabel: "Open the full accountability list",
+    shareCtaLabel: "See who still needs reminders",
     urgencyTitle: "Unsigned leaders are still costing lives and money.",
     urgencyBody:
       "Each overdue task below shows the damage from delay and includes the share-and-contact buttons you need to apply pressure until the wrist movement occurs.",
@@ -110,28 +111,28 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     tasksTitle: "Outstanding leader tasks",
     tasksBody:
       "Sort by deaths or wasted money. Then share the overdue tasks until the responsible humans stop pretending not to notice.",
-    fullDashboardLabel: "Open the full Optimitron dashboard",
+    fullDashboardLabel: "Open your Earth Optimization dashboard",
   },
   supporters: {
-    eyebrow: "Official endorsers",
-    title: "Supporters of the 1% Treaty",
+    eyebrow: "Organizational signatories",
+    title: "Organizational Signatories",
     description:
-      "Organizations that have formally resolved that curing disease is preferable to dying from it. An astonishingly non-obvious position, apparently.",
-    emptyTitle: "No endorsements published yet.",
+      `Organizations in the ${campaignName} that signed the 1% Treaty and formally resolved that curing disease is preferable to dying from it.`,
+    emptyTitle: "No organizational signatories yet.",
     emptyBody:
-      "Be the first organization willing to go on record opposing preventable death. It should not be a bold stance.",
-    ctaLabel: "Add your organization",
+      "Be the first organization willing to say the murder budget can spare one percent.",
+    ctaLabel: "Sign as Organization",
   },
   endorse: {
-    eyebrow: "Organizational endorsement",
-    title: "Endorse the 1% Treaty",
+    eyebrow: "Organizational signature",
+    title: "Sign as an Organization",
     description:
       "Allowing billions to suffer and die from disease so we can have capacity for 120 apocalypses instead of 118.8 is morally wrong. Historically, mass cruelties like slavery don't end until 3.5% of people have the courage to say it in public. By endorsing this treaty, you can be part of that 3.5% — instead of the 96.5% who allowed it to continue.",
-    signInTitle: "Sign in to endorse",
+    signInTitle: "Sign in to sign",
     signInDescription:
-      "Endorsements are tied to a verified account, because your species requires this before believing anything.",
+      "Organization signatures are tied to verified accounts so nobody signs your organization for you. Humans invented fraud; now everyone gets paperwork.",
     signInLabel: "Sign in",
-    existingSupportersLabel: "Supporters",
+    existingSupportersLabel: "organizational signatories",
   },
   why: {
     eyebrow: "The case",
@@ -172,12 +173,12 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   },
   legal: {
     eyebrow: "For boards and counsel",
-    title: "Legal analysis of organizational endorsement",
+    title: "Legal analysis for organizational signatories",
     sections: [
       {
         heading: "Summary",
         paragraphs: [
-          "Endorsement of the 1% Treaty by a 501(c)(3) organization is not lobbying under U.S. tax law, does not involve participation in a political campaign, and does not constitute support for any specific domestic legislation. It is an expression of institutional support for an international policy principle.",
+          "Signing the 1% Treaty as an organization is not lobbying under U.S. tax law, does not involve participation in an election campaign, and does not constitute support for any specific domestic legislation. It is an expression of institutional support for an international policy principle.",
         ],
       },
       {
@@ -187,22 +188,22 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
         ],
       },
       {
-        heading: "Why this is not campaign activity",
+        heading: "Why this is not election campaign activity",
         paragraphs: [
-          "501(c)(3) organizations may not participate in, or intervene in, any political campaign on behalf of or in opposition to any candidate for public office. The 1% Treaty endorsement names no candidate, takes no position for or against any candidate, and does not coordinate with any campaign. It is policy advocacy in the broad sense permitted to charitable organizations.",
+          "501(c)(3) organizations may not participate in, or intervene in, any political campaign on behalf of or in opposition to any candidate for public office. Joining this campaign names no candidate, takes no position for or against any candidate, and does not coordinate with any candidate campaign. It is policy advocacy in the broad sense permitted to charitable organizations.",
         ],
       },
       {
         heading: "Historical precedent",
         paragraphs: [
-          "Charitable organizations have long signed onto international policy declarations — from the Universal Declaration of Human Rights to more recent global health frameworks — without implicating their tax-exempt status. The 1% Treaty endorsement follows the same pattern.",
+          "Charitable organizations have long signed international policy declarations — from the Universal Declaration of Human Rights to more recent global health frameworks — without implicating their tax-exempt status. The 1% Treaty signature follows the same pattern.",
         ],
       },
       {
-        heading: "What endorsement commits your organization to",
+        heading: "What signing commits your organization to",
         paragraphs: [],
         bullets: [
-          "Public display of your organization's name and logo on the supporters page.",
+          "Public display of your organization's name and logo on the organizational signatories page.",
           "A single optional public statement (up to a few sentences) that appears beside your logo.",
           "No ongoing obligations. No financial contributions. No signatures on unrelated documents.",
         ],
@@ -210,13 +211,13 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
       {
         heading: "Withdrawal",
         paragraphs: [
-          "An organization may withdraw its endorsement at any time by contacting the site administrator. Removal is processed within seven days.",
+          "An organization may withdraw its signature at any time by contacting the site administrator. Removal is processed within seven days.",
         ],
       },
       {
         heading: "Full treaty text",
         paragraphs: [
-          "The canonical treaty text is available at /treaty. Counsel should review the full text before approving endorsement.",
+          "The canonical treaty text is available at /treaty. Counsel should review the full text before signing.",
         ],
       },
     ],
@@ -224,7 +225,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   impactUrl: "https://impact.acceleratedmedicine.org",
   notFound: {
     title: "This page is not here.",
-    description: "Your species has 1.6 billion websites. This particular URL is not on the coalition site. Try one of the others.",
+    description: "Your species has 1.6 billion websites. This particular URL is not on the campaign site. Try one of the others.",
     ctaLabel: "Return home",
   },
 };

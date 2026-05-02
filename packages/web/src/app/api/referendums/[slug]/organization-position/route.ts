@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import {
   OrganizationReferendumPositionStatus,
+  OrgStatus,
   OrgType,
+  ReferendumStatus,
   VotePosition,
 } from "@optimitron/db";
 import { requireAuth } from "@/lib/auth-utils";
@@ -55,12 +57,21 @@ export async function POST(
 
     const referendum = await prisma.referendum.findUnique({
       where: { slug },
-      select: { id: true, deletedAt: true },
+      select: { id: true, status: true, deletedAt: true },
     });
     if (!referendum || referendum.deletedAt) {
       return NextResponse.json(
         { error: "Referendum not found" },
         { status: 404 },
+      );
+    }
+    if (referendum.status !== ReferendumStatus.ACTIVE) {
+      return NextResponse.json(
+        {
+          error:
+            "This referendum is not currently accepting organization signatures",
+        },
+        { status: 400 },
       );
     }
 
@@ -86,6 +97,7 @@ export async function POST(
           description: body.newOrganization.description ?? null,
           logo: body.newOrganization.logo ?? null,
           contactEmail: body.newOrganization.contactEmail ?? null,
+          status: OrgStatus.APPROVED,
         },
         userId,
       );
@@ -116,14 +128,16 @@ export async function POST(
           referendumId: referendum.id,
         },
       },
-      select: { id: true, status: true },
+      select: { id: true, status: true, deletedAt: true },
     });
 
-    if (existing?.status === OrganizationReferendumPositionStatus.APPROVED) {
+    if (
+      existing?.deletedAt ||
+      existing?.status === OrganizationReferendumPositionStatus.REJECTED
+    ) {
       return NextResponse.json(
         {
-          error:
-            "This organization already has an approved position on this referendum. An admin must reject or delete it before a new one can be submitted.",
+          error: "This organization's signatory record was removed by an admin.",
         },
         { status: 409 },
       );
@@ -142,7 +156,7 @@ export async function POST(
         submittedByUserId: userId,
         approvedByUserId: null,
         deletedAt: null,
-        status: OrganizationReferendumPositionStatus.PENDING,
+        status: OrganizationReferendumPositionStatus.APPROVED,
       },
       create: {
         organizationId,
@@ -150,7 +164,7 @@ export async function POST(
         position,
         statement: body.statement ?? null,
         submittedByUserId: userId,
-        status: OrganizationReferendumPositionStatus.PENDING,
+        status: OrganizationReferendumPositionStatus.APPROVED,
       },
     });
 

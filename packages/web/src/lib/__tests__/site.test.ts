@@ -241,6 +241,9 @@ describe("site variant registry", () => {
   it("allows War on Disease footer trust routes without opening the whole platform", () => {
     const warSite = getSiteFromHost("warondisease.org");
 
+    expect(isSiteRouteAllowed(warSite, "/campaign")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/coalition")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/endorse")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/privacy")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/terms")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/search")).toBe(false);

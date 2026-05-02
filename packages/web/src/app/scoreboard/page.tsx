@@ -141,7 +141,7 @@ export default async function ScoreboardPage() {
         <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed text-center">
             On my planet, we solved this in year 12. You lot have been arguing
-            about it for 4,237 years. The scoreboard makes the coalition size
+            about it for 4,237 years. The scoreboard makes the campaign size
             impossible to pretend does not exist. Updated in real time. Visible
             to everyone. The only question is whether you join before or after
             it becomes embarrassing not to.

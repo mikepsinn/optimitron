@@ -188,7 +188,6 @@ function ParameterDetailContent({
             <MetaLink
               href={param.sourceUrl}
               icon={ExternalLink}
-              accent="pink"
               label="Original Source"
             />
           )}
@@ -196,7 +195,6 @@ function ParameterDetailContent({
             <MetaLink
               href={citation.URL}
               icon={ExternalLink}
-              accent="pink"
               label="Published Study"
             />
           )}
@@ -210,7 +208,6 @@ function ParameterDetailContent({
             <MetaLink
               href={param.calculationsUrl}
               icon={FlaskConical}
-              accent="cyan"
               label="Simulations & Sensitivity"
             />
           )}
@@ -218,7 +215,6 @@ function ParameterDetailContent({
             <MetaLink
               href={param.manualPageUrl}
               icon={BookOpen}
-              accent="yellow"
               label="Chapter"
               detail={param.manualPageTitle ?? "Manual"}
             />
@@ -273,13 +269,11 @@ function ConfidenceIntervalBlock({ param }: { param: Parameter }) {
 function MetaLink({
   href,
   icon: Icon,
-  accent: _accent,
   label,
   detail,
 }: {
   href: string
   icon: LucideIcon
-  accent: "cyan" | "yellow" | "pink"
   label: string
   detail?: string
 }) {

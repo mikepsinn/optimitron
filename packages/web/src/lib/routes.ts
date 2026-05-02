@@ -57,6 +57,7 @@ export const ROUTES = {
   terms: "/terms",
   impact: "/impact",
   endorse: "/endorse",
+  campaign: "/campaign",
   coalition: "/coalition",
   organizations: "/organizations",
   people: "/people",
@@ -417,7 +418,8 @@ export const declarationLink: NavItem = {
   href: ROUTES.declaration,
   label: "Declaration",
   emoji: "📜",
-  description: "The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly endorse it.",
+  description:
+    "The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.",
   tagline: "Why optimization is necessary and what signatories commit to",
   cta: "Read Declaration",
 };
@@ -621,27 +623,32 @@ export const whyLink: NavItem = {
 
 export const endorseLink: NavItem = {
   href: ROUTES.endorse,
-  label: "Endorse",
+  label: "Sign as Organization",
   emoji: "+",
-  description: "Put an organization on record supporting the 1% Treaty.",
-  tagline: "Endorse as an organization",
-  cta: "Endorse",
+  description:
+    "Sign the 1% Treaty as an organization.",
+  tagline: "Sign as an organization",
+  cta: "Sign as Organization",
 };
 
-export const coalitionLink: NavItem = {
-  href: ROUTES.coalition,
-  label: "Supporters",
+export const campaignPartnersLink: NavItem = {
+  href: ROUTES.campaign,
+  label: "Organizational Signatories",
   emoji: "*",
-  description: "Organizations publicly supporting the 1% Treaty.",
-  tagline: "See public supporters",
-  cta: "See Supporters",
+  description:
+    "Organizations that signed the 1% Treaty.",
+  tagline: "See the organizations on record",
+  cta: "See Organizational Signatories",
 };
+
+export const coalitionLink = campaignPartnersLink;
 
 export const legalLink: NavItem = {
   href: ROUTES.legal,
   label: "Legal",
   emoji: "§",
-  description: "Legal notes for boards and counsel reviewing endorsement.",
+  description:
+    "Legal notes for boards and counsel reviewing organizational signatures.",
   tagline: "For boards and counsel",
   cta: "Read Legal Notes",
 };

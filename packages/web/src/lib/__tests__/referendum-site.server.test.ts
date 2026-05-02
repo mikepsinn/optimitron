@@ -57,7 +57,7 @@ describe("referendum-site.server", () => {
     mocks.referendumVoteGroupBy.mockResolvedValue([]);
   });
 
-  it("requires both approved orgs and approved YES positions in supporter queries", () => {
+  it("requires approved orgs and approved YES positions in signatory queries", () => {
     expect(buildApprovedOrganizationPositionWhere("ref_1")).toEqual({
       referendumId: "ref_1",
       position: VotePosition.YES,
@@ -70,7 +70,7 @@ describe("referendum-site.server", () => {
     });
   });
 
-  it("uses dual-approval filters for homepage counters", async () => {
+  it("uses approved signatory filters for homepage counters", async () => {
     mocks.referendumFindUnique.mockResolvedValue({
       id: "ref_1",
       title: "1% Treaty",
@@ -88,7 +88,7 @@ describe("referendum-site.server", () => {
     });
   });
 
-  it("uses the same dual-approval filters for supporters lists", async () => {
+  it("uses the same approved filters for organizational signatory lists", async () => {
     mocks.referendumFindUnique.mockResolvedValue({
       id: "ref_2",
       title: "1% Treaty",

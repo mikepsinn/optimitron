@@ -174,9 +174,9 @@ export default async function OrganizationPage({
           </h2>
           {org.referendumPositions.length === 0 ? (
             <p className="text-sm font-bold text-muted-foreground">
-              No positions submitted yet.{" "}
+              No treaty signature yet.{" "}
               <Link href={ROUTES.endorse} className="underline">
-                Submit one on /endorse
+                Sign as an organization
               </Link>
               .
             </p>

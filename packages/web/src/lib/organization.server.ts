@@ -144,6 +144,7 @@ export async function upsertTrustedOrganization(
 interface CreateOrganizationInput {
   name: string;
   type?: OrgType | null;
+  status?: OrgStatus | null;
   website?: string | null;
   description?: string | null;
   logo?: string | null;
@@ -152,9 +153,10 @@ interface CreateOrganizationInput {
 }
 
 /**
- * Public-facing creation path: creates an Organization with status PENDING
- * and immediately inserts an owner OrganizationMember row in the same
- * transaction. Callers must pass an authenticated user id.
+ * Public-facing creation path: creates an Organization and immediately inserts
+ * an owner OrganizationMember row in the same transaction. Most public callers
+ * default to PENDING; the signatory flow opts into APPROVED for post-moderation.
+ * Callers must pass an authenticated user id.
  */
 export async function createOrganizationWithOwner(
   input: CreateOrganizationInput,
@@ -173,7 +175,7 @@ export async function createOrganizationWithOwner(
         name,
         slug: nextSlug,
         type: input.type ?? OrgType.OTHER,
-        status: OrgStatus.PENDING,
+        status: input.status ?? OrgStatus.PENDING,
         creatorId: creatorUserId,
         website: input.website ?? null,
         description: input.description ?? null,
