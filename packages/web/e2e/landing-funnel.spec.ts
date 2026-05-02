@@ -178,11 +178,8 @@ test("vote page: authenticated user reaches training after voting", async ({
   await completeSlider(page);
   await voteYes(page);
 
-  await expect(page).toHaveURL(/\/humanity-management-training(?:[?#]|$)/, {
+  await expect(page).toHaveURL(/\/dashboard(?:[?#]|$)/, {
     timeout: 15_000,
-  });
-  await expect(page.getByTestId("humanity-management-training-flow")).toBeVisible({
-    timeout: 10_000,
   });
 });
 

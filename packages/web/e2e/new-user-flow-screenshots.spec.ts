@@ -249,7 +249,7 @@ async function createAndConfirmInvitation(
       contactMethod: input.contactMethod,
       messageFormat: "TASK_NOTIFICATION",
       messageText: `${input.recipientName}, vote on the 1% Treaty.`,
-      originUrl: "/humanity-management-training",
+      originUrl: "/dashboard",
       recipientName: input.recipientName,
     },
   });
@@ -444,41 +444,11 @@ async function captureTreatyVoteAndTraining(
   );
 
   await voteSection.getByRole("button", { name: "YES" }).click();
-  await expect(page).toHaveURL(/\/humanity-management-training(?:[?#]|$)/, {
+  await expect(page).toHaveURL(/\/dashboard(?:[?#]|$)/, {
     timeout: 15_000,
   });
-
-  const training = page.getByTestId("humanity-management-training-flow");
-  await expect(training).toHaveAttribute("data-screen", "promotion", {
-    timeout: 10_000,
-  });
   await stabilizeVisuals(page);
-  await captureStep(outcome, dir, stepState, "hmt-promotion", (filePath) =>
-    captureElement(training, filePath),
-  );
-
-  const startTraining = training.getByRole("button", { name: /Start training/i });
-  await expect(startTraining).toBeEnabled({ timeout: 10_000 });
-  await page.waitForTimeout(500);
-  await startTraining.click();
-  await expect(training).toHaveAttribute("data-screen", "share", { timeout: 10_000 });
-  await captureStep(outcome, dir, stepState, "hmt-share", (filePath) =>
-    captureElement(training, filePath),
-  );
-
-  await training.getByRole("button", { name: "Copy URL" }).click();
-  await expect(training.getByRole("button", { name: "Continue" })).toBeEnabled({
-    timeout: 10_000,
-  });
-  await training.getByRole("button", { name: "Continue" }).click();
-  await expect(training).toHaveAttribute("data-screen", "composer", {
-    timeout: 10_000,
-  });
-  await captureStep(outcome, dir, stepState, "hmt-composer", (filePath) =>
-    captureElement(training, filePath),
-  );
-
-  await captureDashboard(page, outcome, dir, stepState, "dashboard-after-first-subtask");
+  await captureDashboard(page, outcome, dir, stepState, "dashboard-after-vote");
 
   await markSignTreatySubtask(page);
   await createAndConfirmInvitation(page, {
@@ -489,21 +459,6 @@ async function captureTreatyVoteAndTraining(
     contactMethod: "COPY",
     recipientName: `Second Friend ${Date.now().toString(36)}`,
   });
-
-  const trainingResponse = await page.goto("/humanity-management-training", {
-    timeout: 30_000,
-    waitUntil: "domcontentloaded",
-  });
-  if ((trainingResponse?.status() ?? 0) < 500) {
-    const completeTraining = page.getByTestId("humanity-management-training-flow");
-    await expect(completeTraining).toHaveAttribute("data-screen", "complete", {
-      timeout: 10_000,
-    });
-    await stabilizeVisuals(page);
-    await captureStep(outcome, dir, stepState, "hmt-complete", (filePath) =>
-      captureElement(completeTraining, filePath),
-    );
-  }
 
   await captureDashboard(page, outcome, dir, stepState, "dashboard-after-all-subtasks");
 }

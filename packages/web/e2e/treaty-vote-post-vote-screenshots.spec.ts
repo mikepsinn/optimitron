@@ -182,17 +182,9 @@ test.describe("treaty vote and training screenshot audit", () => {
       await expect(page.getByTestId("treaty-vote-prelude-card")).toHaveCount(0);
       await capture(page.getByTestId("treaty-vote-slider-card"), dir, step++, "fast-vote-slider");
       await completeSliderAndVote(page);
-      await expect(page).toHaveURL(/\/humanity-management-training(?:[?#]|$)/, { timeout: 15_000 });
-      const training = page.getByTestId("humanity-management-training-flow");
-      await expect(training).toHaveAttribute("data-screen", "promotion", { timeout: 10_000 });
-      await capture(training, dir, step++, "training-promotion");
-      await training.getByRole("button", { name: "Start training" }).click();
-      await expect(training).toHaveAttribute("data-screen", "share", { timeout: 10_000 });
-      await capture(training, dir, step++, "training-share");
-      await training.getByRole("button", { name: "Copy URL" }).click();
-      await training.getByRole("button", { name: "Continue" }).click();
-      await expect(training).toHaveAttribute("data-screen", "composer", { timeout: 10_000 });
-      await capture(training, dir, step++, "training-composer");
+      await expect(page).toHaveURL(/\/dashboard(?:[?#]|$)/, { timeout: 15_000 });
+      await stabilizeVisuals(page);
+      await capture(page.locator("body"), dir, step++, "dashboard-after-vote");
     });
 
     test(`captures questions context flow (${viewportVariant.slug})`, async ({

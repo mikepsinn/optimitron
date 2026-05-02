@@ -316,6 +316,7 @@ describe("humanity and one-human share templates", () => {
   });
 
   const oneHumanTokens = buildTaskShareTokens({
+    countryCode: "US",
     currentDelayDays: 3,
     currentEconomicValueUsdLost: 1000,
     currentHumanLivesLost: 42,
