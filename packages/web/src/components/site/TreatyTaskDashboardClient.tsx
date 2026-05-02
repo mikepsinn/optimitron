@@ -8,6 +8,7 @@ import { TreatyReminderComposer } from "@/components/landing/TreatyReminderCompo
 import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner";
 import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
+import { TreatyContent } from "@/components/treaty/TreatyContent";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
@@ -88,6 +89,10 @@ export function TreatyTaskDashboardClient({
             }
           />
         ) : null}
+
+        <section className="pt-10">
+          <TreatyContent />
+        </section>
       </div>
     </div>
   );

@@ -29,6 +29,13 @@ export interface ParameterValueProps {
   showPopover?: boolean
   /** Additional CSS classes for the value */
   className?: string
+  /**
+   * Override the rendered text (popover metadata still uses `param`). Useful
+   * when the displayed value is derived from `param` but needs custom
+   * formatting the auto-formatter can't express — e.g., a percentage
+   * computed from a ratio with a fixed decimal count.
+   */
+  valueOverride?: string
 }
 
 export function ParameterValue({
@@ -37,10 +44,11 @@ export function ParameterValue({
   figures = 3,
   showPopover = true,
   className,
+  valueOverride,
 }: ParameterValueProps) {
   const [open, setOpen] = useState(false)
 
-  const text = (() => {
+  const text = valueOverride ?? (() => {
     switch (display) {
       case "integer":
         return String(Math.round(param.value))
@@ -88,7 +96,7 @@ export function ParameterValue({
         className="!w-[95vw] !max-w-[900px] max-h-[90vh] !grid-cols-[minmax(0,1fr)] overflow-hidden"
       >
         <div className="flex min-w-0 items-start justify-between gap-4 border-b-2 border-primary bg-primary px-4 py-3 text-primary-foreground">
-          <h2 className="min-w-0 flex-1 truncate text-base font-black uppercase leading-tight">
+          <h2 className="min-w-0 flex-1 break-words text-base font-black uppercase leading-tight">
             {param.displayName ?? "Parameter Details"}
           </h2>
           <Dialog.Close asChild>
@@ -265,7 +273,7 @@ function ConfidenceIntervalBlock({ param }: { param: Parameter }) {
 function MetaLink({
   href,
   icon: Icon,
-  accent,
+  accent: _accent,
   label,
   detail,
 }: {
@@ -275,22 +283,13 @@ function MetaLink({
   label: string
   detail?: string
 }) {
-  const accentClasses = {
-    cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-    yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
-    pink: "bg-brutal-pink text-brutal-pink-foreground",
-  }[accent]
-
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
-      className={cn(
-        "inline-flex max-w-full items-center gap-1.5 rounded-none border-2 border-primary px-2 py-1 text-[10px] leading-tight shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-px hover:translate-y-px hover:shadow-none",
-        accentClasses
-      )}
+      className="inline-flex max-w-full items-center gap-1.5 rounded-none border-2 border-primary bg-background px-2 py-1 text-[10px] leading-tight text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-px hover:translate-y-px hover:shadow-none"
     >
       <Icon className="h-3 w-3 shrink-0" />
       <span className="font-black uppercase tracking-wide">{label}</span>

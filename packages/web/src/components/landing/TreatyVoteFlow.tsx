@@ -22,6 +22,12 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
+// Convert the ratio to percentages so the reality-check matches the format
+// the user just used on the slider (their answer was a %, today's reality
+// should also be a %). Module-level so the math runs once, not per render.
+const TRIALS_BUDGET_PCT_TODAY =
+  100 / (MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value + 1);
+const MILITARY_BUDGET_PCT_TODAY = 100 - TRIALS_BUDGET_PCT_TODAY;
 import {
   trackSliderSubmitted,
   trackTreatyFlowScreenAdvanced,
@@ -115,6 +121,10 @@ export function TreatyVoteFlow({
   const choiceCardRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
+  // True only when the user submits the slider in this session. Prevents the
+  // scroll-to-choice effect from firing when sliderSubmitted is restored from
+  // localStorage on page load (which would auto-scroll past the document).
+  const userSubmittedSliderRef = useRef(false);
   const initialVoteShellClassName = compactInitialScreen
     ? "min-h-0 overflow-visible px-0 py-0 sm:px-0 sm:py-0"
     : undefined;
@@ -134,6 +144,7 @@ export function TreatyVoteFlow({
   // in the bottom half of the viewport with empty whitespace above it.
   useEffect(() => {
     if (!sliderSubmitted) return;
+    if (!userSubmittedSliderRef.current) return;
     const node = choiceCardRef.current;
     if (!node) return;
     /// Two ticks: one for AnimatePresence to mount the new node, one for
@@ -357,6 +368,7 @@ export function TreatyVoteFlow({
       flowVariant,
       militaryAllocationPercent: militaryAllocation,
     });
+    userSubmittedSliderRef.current = true;
     setSliderSubmitted(true);
     setShowSlider(false);
 
@@ -595,27 +607,27 @@ export function TreatyVoteFlow({
           }}
         >
           {isWaitingForAuth ? (
-            <TreatyFlowShell contentClassName="max-w-2xl">
+            <TreatyFlowShell
+              className="py-2 sm:py-4"
+              contentClassName="max-w-2xl justify-start pt-0 pb-6 sm:pt-0 sm:pb-12"
+            >
               <div className="space-y-4 text-center">
                 <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
-                  Vote counted.
-                </p>
-                <p className="text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
-                  Saving your vote and opening your Humanity Management dashboard.
+                  Saving your vote.
                 </p>
               </div>
             </TreatyFlowShell>
           ) : (
-            <TreatyFlowShell contentClassName="max-w-2xl">
+            <TreatyFlowShell
+              className="py-2 sm:py-4"
+              contentClassName="max-w-2xl justify-start pt-0 pb-6 sm:pt-0 sm:pb-12"
+            >
               <div className="space-y-4">
                 <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
-                  Vote counted.
+                  Save your vote.
                 </p>
                 <p className="text-center text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
-                  Governments won&apos;t listen to bot votes. They barely
-                  listen to human ones, but at least yours will be on file.
-                  Verify you&apos;re a real human so yours counts in the final
-                  tally and opens your Humanity Management dashboard.
+                  Please verify humanity so your vote counts. No robots allowed!
                 </p>
               </div>
               <AuthForm
@@ -794,8 +806,10 @@ export function TreatyVoteFlow({
               // justify-start beats the shell default (justify-center) via
               // twMerge so the heading lands near the top of the viewport
               // instead of centered, which previously left a half-empty
-              // viewport above the dropcap copy.
-              contentClassName="max-w-4xl justify-start space-y-5 pt-12 pb-6 sm:space-y-8 sm:pt-16 sm:pb-12"
+              // viewport above the dropcap copy. Tight pt-0 because the
+              // section already has its own (reduced) py via className.
+              className="py-2 sm:py-4"
+              contentClassName="max-w-4xl justify-start space-y-5 pt-0 pb-6 sm:space-y-8 sm:pt-0 sm:pb-12"
             >
               {copyMode === "neutral" ? (
                 <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
@@ -803,39 +817,61 @@ export function TreatyVoteFlow({
                   clinical trials.
                 </TreatyFlowParagraph>
               ) : (
-                <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
-                  Your governments spend{" "}
-                  <br className="hidden sm:block" />
-                  <span className="font-black text-[var(--treaty-ink)]">
-                    $<ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} />
-                  </span>{" "}
-                  {VOTE_SECTION.realityCheck}
-                </TreatyFlowParagraph>
+                <div className="space-y-8 text-center">
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
+                      Today's actual allocation
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-4 sm:gap-12">
+                      <div className="text-center">
+                        <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
+                          <ParameterValue
+                            param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+                            valueOverride={`${MILITARY_BUDGET_PCT_TODAY.toFixed(1)}%`}
+                            className="!no-underline"
+                          />
+                        </div>
+                        <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
+                          Military &amp; Weapons
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
+                          <ParameterValue
+                            param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+                            valueOverride={`${TRIALS_BUDGET_PCT_TODAY.toFixed(1)}%`}
+                            className="!no-underline"
+                          />
+                        </div>
+                        <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
+                          Clinical Trials
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
+                      What moving 1% could do
+                    </div>
+                    <div className="mt-3 space-y-3 text-xl font-bold leading-snug text-[var(--treaty-ink)] sm:text-3xl">
+                      <div>
+                        <ParameterValue
+                          param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+                          display="withUnit"
+                          figures={2}
+                        />{" "}
+                        more clinical trials
+                      </div>
+                      <div>
+                        Disease eradication in{" "}
+                        <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} figures={2} />{" "}
+                        years instead of{" "}
+                        <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} figures={3} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
-
-              <TreatyFlowParagraph center className="text-sm leading-7 sm:text-lg sm:leading-8">
-                Moving 1% of military spending to pragmatic clinical trials
-                would increase clinical trial capacity by{" "}
-                <ParameterValue
-                  param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-                  className="font-black text-[var(--treaty-ink)]"
-                  display="withUnit"
-                  figures={2}
-                />
-                , compressing disease eradication from{" "}
-                <ParameterValue
-                  param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-                  className="font-black text-[var(--treaty-ink)]"
-                  figures={3}
-                />{" "}
-                years to{" "}
-                <ParameterValue
-                  param={DFDA_QUEUE_CLEARANCE_YEARS}
-                  className="font-black text-[var(--treaty-ink)]"
-                  figures={2}
-                />
-                {" "}years.
-              </TreatyFlowParagraph>
 
               <div className="text-center text-xl font-black leading-tight text-[var(--treaty-ink)] sm:text-3xl md:text-4xl">
                 {copyMode === "neutral"
