@@ -601,7 +601,7 @@ export function TreatyVoteFlow({
                   Vote counted.
                 </p>
                 <p className="text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
-                  Saving your vote and opening Humanity Management Training.
+                  Saving your vote and opening your Humanity Management dashboard.
                 </p>
               </div>
             </TreatyFlowShell>
@@ -615,7 +615,7 @@ export function TreatyVoteFlow({
                   Governments won&apos;t listen to bot votes. They barely
                   listen to human ones, but at least yours will be on file.
                   Verify you&apos;re a real human so yours counts in the final
-                  tally and opens Humanity Management Training.
+                  tally and opens your Humanity Management dashboard.
                 </p>
               </div>
               <AuthForm

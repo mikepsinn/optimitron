@@ -59,7 +59,6 @@ export const ROUTES = {
   organizations: "/organizations",
   people: "/people",
   questions: "/questions",
-  humanityManagementTraining: "/humanity-management-training",
   survey: "/survey",
   // The Game
   prize: "/prize",
@@ -458,15 +457,6 @@ export const inviteVoterLink: NavItem = {
   description: "Assign one human an Earth optimization task: vote on the 1% Treaty.",
   tagline: "Assign one Earth optimization task",
   cta: "Invite",
-};
-
-export const humanityManagementTrainingLink: NavItem = {
-  href: ROUTES.humanityManagementTraining,
-  label: "Humanity Management Training",
-  emoji: "ðŸ“‹",
-  description: "Post-vote training for newly promoted Humanity Managers: share your referral URL and give two humans their voting tasks.",
-  tagline: "Give two humans their voting tasks",
-  cta: "Start Training",
 };
 
 export const transparencyLink: NavItem = {

@@ -231,14 +231,19 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "lumbergh",
     label: "Office Memo",
+    // Works for friends as well as leaders — the Office Space cadence is the
+    // joke and it doesn't depend on the recipient holding office. {target_name}
+    // and {leader_name} both populate from the same field, so this template
+    // renders correctly in either context.
+    recipientModes: ["leader", "humanity", "one_human"],
     requiredTokens: [
-      "leader_name",
+      "target_name",
       "deaths_from_delay",
       "mil_to_trials_ratio",
       "mil_synonym",
     ],
     body: [
-      `Yeahhh, hi {leader_name}, if you could go ahead and sign the 1% Treaty, that'd be great.`,
+      `Yeahhh, hi {target_name}, if you could go ahead and sign the 1% Treaty, that'd be great.`,
       ``,
       `It's at {treaty_url}. You just type your name and click submit. Should take about 30 seconds. So if you could just go ahead and do that, that'd be terrific.`,
       ``,
@@ -478,10 +483,26 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
  */
 export const DEFAULT_SHARE_TEMPLATE_ID = "lumbergh";
 export const HUMANITY_DEFAULT_SHARE_TEMPLATE_ID = "polite-reminder";
-export const ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID = "task-notification";
+/**
+ * Friend-recipient default. Lumbergh's Office Space cadence is the joke and
+ * the joke is the shield: sender isn't "becoming a recruiter," they're
+ * sending a hilarious office memo — a recognized comedic genre that costs
+ * less reputation than sincere political asks. The earnest variants
+ * (`sincere`, `task-notification`) remain in the picker for users who'd
+ * rather lead with vulnerability or a clean utility framing.
+ */
+export const ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID = "lumbergh";
 
-/** Peer-recipient default — there's only one peer template today. */
-export const DEFAULT_PEER_SHARE_TEMPLATE_ID = "most-important-secret";
+/**
+ * Peer-recipient default. Lumbergh wins for friend-shaped audiences because
+ * the comedy shield does the work that earnest copy can't: the sender isn't
+ * "becoming a recruiter" — they're sending a hilarious office memo. The
+ * Trump/Lumbergh/IT-ticket genre is recognized comedy, so participating in
+ * it costs less reputation than sending a sincere political ask. Curiosity
+ * variants like `most-important-secret` are still good and remain in the
+ * picker; this is just the default the composer opens with.
+ */
+export const DEFAULT_PEER_SHARE_TEMPLATE_ID = "lumbergh";
 
 export function getShareTemplate(id: string): ShareTemplate | undefined {
   return SHARE_TEMPLATES.find((template) => template.id === id);

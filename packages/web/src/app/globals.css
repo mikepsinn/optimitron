@@ -126,10 +126,10 @@ body {
   --brutal-green: rgb(34, 197, 94);
   --brutal-green-foreground: rgb(0, 0, 0);
 
-  /* Treaty palette — used by /vote, /survey, /humanity-management-training,
-     and the TreatyVoteFlow / TreatyPostVoteShareFlow / TreatyFlowShell components.
-     Background is plain white; ink is dark brown for the parchment-document feel
-     without the cream tint. */
+  /* Treaty palette — used by /vote, /survey, and the TreatyVoteFlow /
+     TreatyPostVoteShareFlow / TreatyFlowShell components. Background is plain
+     white; ink is dark brown for the parchment-document feel without the
+     cream tint. */
   --treaty-paper: #ffffff;
   --treaty-ink: #23180d;
   --treaty-ink-soft: #2f2417;
