@@ -16,8 +16,8 @@ export function TreatyWarningBox() {
             <span className="text-brutal-pink">WARNING:</span> LIMITED TRIALS AVAILABLE
           </h2>
           <p className="font-bold text-sm md:text-base leading-relaxed">
-            You can search for trials, but you probably can't join any because the{" "}
-            <span className="text-brutal-pink">1% Treaty hasn't passed yet</span>. Most trials are severely limited
+            You can search for trials, but you probably can&apos;t join any because the{" "}
+            <span className="text-brutal-pink">1% Treaty hasn&apos;t passed yet</span>. Most trials are severely limited
             by lack of funding and bureaucratic barriers. Help change this!
           </p>
         </div>

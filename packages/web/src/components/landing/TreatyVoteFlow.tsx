@@ -820,7 +820,7 @@ export function TreatyVoteFlow({
                 <div className="space-y-8 text-center">
                   <div>
                     <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
-                      Today's actual allocation
+                      Today&apos;s actual allocation
                     </div>
                     <div className="mt-3 grid grid-cols-2 gap-4 sm:gap-12">
                       <div className="text-center">

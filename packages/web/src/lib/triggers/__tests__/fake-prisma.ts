@@ -692,8 +692,7 @@ export function createFakeTriggerDb() {
   return { db: db as never as TriggerDbForTests, store };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Delegate = Record<string, (args: any) => Promise<any>>;
+type Delegate = Record<string, (args: unknown) => Promise<unknown>>;
 export interface TriggerDbForTests {
   task: Delegate;
   taskComment: Delegate;
