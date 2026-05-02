@@ -7,22 +7,19 @@ interface Props {
   data: ReferendumSiteHomeData;
 }
 
-export function OnePercentTreatyLandingPage({ data }: Props) {
-  const { content } = data;
+export function OnePercentTreatyLandingPage({ data: _data }: Props) {
+  // The hero/CTA copy ("Please Take 30 Seconds to End War and Disease") now
+  // lives inside the slider screen itself, so it stays visually paired with
+  // the action that fulfills it and disappears cleanly when the user advances
+  // to the YES/NO choice screen.
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <header className="mb-6 text-center">
-        <h1 className="mx-auto max-w-4xl text-4xl font-black uppercase tracking-tight text-foreground sm:text-6xl [font-family:var(--v0-font-libre-baskerville)]">
-          {content.home.heroTitle}
-        </h1>
-      </header>
-
       <section id="sign" className="mb-16">
         <TreatyVoteFlow
-          authCallbackUrl={ROUTES.humanityManagementTraining}
+          authCallbackUrl={ROUTES.dashboard}
           defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
           postVoteBehavior="redirect"
-          postVoteRedirectUrl={ROUTES.humanityManagementTraining}
+          postVoteRedirectUrl={ROUTES.dashboard}
           respectStoredFlowVariant={false}
           compactInitialScreen
           surface="landing_vote_page"

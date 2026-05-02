@@ -87,15 +87,15 @@ describe("OnePercentTreatyLandingPage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("uses the fast vote-first flow and sends voters to training", () => {
+  it("uses the fast vote-first flow and sends voters straight to the dashboard", () => {
     const page = OnePercentTreatyLandingPage({ data: landingData });
     const voteFlow = findElementByType(page, TreatyVoteFlow);
 
     expect(voteFlow?.props).toMatchObject({
-      authCallbackUrl: ROUTES.humanityManagementTraining,
+      authCallbackUrl: ROUTES.dashboard,
       defaultFlowVariant: TREATY_FLOW_VARIANTS.voteFirstV1,
       postVoteBehavior: "redirect",
-      postVoteRedirectUrl: ROUTES.humanityManagementTraining,
+      postVoteRedirectUrl: ROUTES.dashboard,
       respectStoredFlowVariant: false,
       surface: "landing_vote_page",
     });

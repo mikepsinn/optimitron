@@ -127,10 +127,11 @@ export function TreatyVoteFlow({
   }, []);
 
   // When the slider submits, scroll the reality-check / yes-no card into
-  // view at the top of the viewport. Without this, the previous slider
-  // shell (min-h-screen) leaves the user scrolled mid-page when the new
-  // shell mounts, so the choice card lands in the bottom half of the
-  // viewport with empty whitespace above it. Momentum killer.
+  // view in the middle of the viewport. `block: "center"` keeps the question
+  // header visible above the YES/NO buttons; `block: "start"` cut it off.
+  // Without this, the previous slider shell (min-h-screen) leaves the user
+  // scrolled mid-page when the new shell mounts, so the choice card lands
+  // in the bottom half of the viewport with empty whitespace above it.
   useEffect(() => {
     if (!sliderSubmitted) return;
     const node = choiceCardRef.current;
@@ -139,7 +140,7 @@ export function TreatyVoteFlow({
     /// the layout to settle so scrollIntoView positions correctly.
     const id = window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        node.scrollIntoView({ behavior: "smooth", block: "start" });
+        node.scrollIntoView({ behavior: "smooth", block: "center" });
       });
     });
     return () => window.cancelAnimationFrame(id);
@@ -662,6 +663,12 @@ export function TreatyVoteFlow({
               className={initialVoteShellClassName}
               contentClassName={initialVoteContentClassName}
             >
+              {copyMode === "neutral" ? null : (
+                <h1 className="mx-auto max-w-4xl text-center text-3xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
+                  Please Take 30 Seconds to End War and Disease
+                </h1>
+              )}
+
               <TreatyFlowParagraph
                 dropCap
                 className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"

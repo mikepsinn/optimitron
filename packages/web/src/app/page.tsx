@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { OnePercentTreatyLandingPage } from "@/components/site/OnePercentTreatyLandingPage";
 import { OptimitronLandingPage } from "@/components/site/OptimitronLandingPage";
 import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage";
 import { authOptions } from "@/lib/auth";
 import { getRootSiteMetadata, getSiteMetadata } from "@/lib/metadata";
+import { prisma } from "@/lib/prisma";
 import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
+import { ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { getTaskDetailData } from "@/lib/tasks.server";
@@ -42,9 +45,28 @@ export default async function Home({
       ? Math.max(1, parseInt(signersPageParam, 10) || 1)
       : 1;
     const session = await getServerSession(authOptions);
+    const userId = session?.user?.id ?? null;
+
+    // Returning voters skip the slider entirely. The dashboard is the
+    // post-vote experience: handle picker, share link, composer, tasks.
+    // No reason to make them re-watch the question they already answered.
+    if (userId && site.primaryReferendumSlug) {
+      const existingVote = await prisma.referendumVote.findFirst({
+        where: {
+          userId,
+          referendum: { slug: site.primaryReferendumSlug },
+          deletedAt: null,
+        },
+        select: { id: true },
+      });
+      if (existingVote) {
+        redirect(ROUTES.dashboard);
+      }
+    }
+
     const data = await getReferendumSiteHomeData(site, {
       signersPage,
-      currentUserId: session?.user?.id ?? null,
+      currentUserId: userId,
     });
     if (!data) {
       return (
