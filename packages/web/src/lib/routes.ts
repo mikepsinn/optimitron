@@ -53,6 +53,8 @@ export const ROUTES = {
   vote: "/vote",
   why: "/why",
   legal: "/legal",
+  privacy: "/privacy",
+  terms: "/terms",
   impact: "/impact",
   endorse: "/endorse",
   coalition: "/coalition",
@@ -642,6 +644,25 @@ export const legalLink: NavItem = {
   description: "Legal notes for boards and counsel reviewing endorsement.",
   tagline: "For boards and counsel",
   cta: "Read Legal Notes",
+};
+
+export const privacyLink: NavItem = {
+  href: ROUTES.privacy,
+  label: "Privacy",
+  emoji: "§",
+  description:
+    "What this site collects, why it collects it, and how to contact us.",
+  tagline: "Data use and choices",
+  cta: "Read Privacy",
+};
+
+export const termsLink: NavItem = {
+  href: ROUTES.terms,
+  label: "Terms",
+  emoji: "§",
+  description: "The rules for using this site.",
+  tagline: "Site rules",
+  cta: "Read Terms",
 };
 
 export const trialSurveyLink: NavItem = {

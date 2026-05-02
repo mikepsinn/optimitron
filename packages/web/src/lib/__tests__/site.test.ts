@@ -152,13 +152,15 @@ describe("site variant registry", () => {
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 
-  it("exposes a Profile link in the campaign navs so users can edit their handle", () => {
-    for (const siteKey of ["onePercentTreaty", "warOnDisease"] as const) {
-      const sections = getSiteConfig(siteKey).ui.nav.sections;
-      const account = sections.find((s) => s.id === "account");
-      expect(account, `${siteKey} should have an account nav section`).toBeDefined();
-      expect(account?.items.some((i) => i.href === ROUTES.profile)).toBe(true);
-    }
+  it("keeps Profile out of the War on Disease menu chrome", () => {
+    const treatySections = getSiteConfig("onePercentTreaty").ui.nav.sections;
+    const treatyAccount = treatySections.find((s) => s.id === "account");
+    expect(treatyAccount?.items.some((i) => i.href === ROUTES.profile)).toBe(true);
+
+    const warItems = getSiteConfig("warOnDisease").ui.nav.sections.flatMap(
+      (section) => section.items,
+    );
+    expect(warItems.some((item) => item.href === ROUTES.profile)).toBe(false);
   });
 
   it("assigns the manager framing to campaign sites and voter framing to reference sites", () => {
@@ -234,6 +236,14 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(treatySite, "/tasks")).toBe(true);
     expect(isSiteRouteAllowed(treatySite, "/scoreboard")).toBe(false);
     expect(isSiteRouteAllowed(treatySite, "/search")).toBe(false);
+  });
+
+  it("allows War on Disease footer trust routes without opening the whole platform", () => {
+    const warSite = getSiteFromHost("warondisease.org");
+
+    expect(isSiteRouteAllowed(warSite, "/privacy")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/terms")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/search")).toBe(false);
   });
 
   it("limits neutral survey hosts to voting and survey routes", () => {
