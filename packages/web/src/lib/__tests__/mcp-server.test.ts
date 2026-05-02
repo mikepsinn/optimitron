@@ -1716,7 +1716,7 @@ describe("MCP server tool dispatch", () => {
     it("updateMyProfile maps a ProfileValidationError to a clean tool error", async () => {
       mocks.updateUserProfile.mockRejectedValue(
         new ProfileValidationError(
-          "That player name is already taken. Please choose another.",
+          "That link name is already taken. Please choose another.",
           "handle",
         ),
       );

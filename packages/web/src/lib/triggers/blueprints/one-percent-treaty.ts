@@ -9,7 +9,7 @@ import { ROUTES } from "@/lib/routes";
 const TREATY_PARENT_TASK_KEY = "program:one-percent-treaty:ratify";
 const USER_TREATY_TASK_TITLE = "Get {{params.majorityHumanity}} people to vote on the 1% Treaty";
 const USER_TREATY_TASK_ROLE_TITLE = "Humanity Manager, Earth Optimization Services, LLC";
-const HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE = "Complete Humanity Management Training";
+const PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE = "Promote to Humanity Manager";
 
 // Per-user HMT root description = the Promotion content from
 // docs/questions.md (lines 392-403, the Promotion screen). The live
@@ -180,7 +180,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
     {
       kind: "completeTraining",
       sortOrder: 50,
-      titleTemplate: HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE,
+      titleTemplate: PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE,
       descriptionTemplate:
         "Auto-completes when the five tasks above are done. You don't action this one directly.",
       category: "OTHER",

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { ArcadeTag } from "@/components/ui/arcade-tag"
-import { PlayerNameBanner } from "@/components/dashboard/PlayerNameBanner"
+import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner"
 import { ProfileCard } from "@/components/dashboard/ProfileCard"
 import { ConnectedAccountsCard } from "@/components/dashboard/ConnectedAccountsCard"
 import { EmailSignatureCard } from "@/components/dashboard/EmailSignatureCard"
@@ -49,7 +49,7 @@ export function ProfileIdentityClient({
       </div>
 
       <div className="space-y-8">
-        <PlayerNameBanner
+        <ReferralLinkBanner
           user={user}
           referralLink={referralLink}
           onUserChange={setUser}

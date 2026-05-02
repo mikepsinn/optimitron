@@ -55,13 +55,13 @@ function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!;
 }
 
-/** Generate a random player name like "covert-optimizer" or "pareto-sentinel" */
+/** Generate a random public link handle like "covert-optimizer" or "pareto-sentinel" */
 export function generateRandomPlayerName(): string {
   return `${pickRandom(ADJECTIVES)}-${pickRandom(NOUNS)}`;
 }
 
 /**
- * Create a unique handle by generating random player names. Collision-checks
+ * Create a unique handle by generating random link handles. Collision-checks
  * against the canonical `Person.handle`. Tries up to 5 random combos, then
  * appends a 2-digit number on collision.
  */
