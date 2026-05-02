@@ -203,6 +203,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Cache Next.js production build
+        uses: actions/cache@v4
+        with:
+          path: packages/web/.next/cache
+          key: nextjs-production-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('packages/web/src/**', 'packages/web/next.config.js', 'packages/web/package.json') }}
+          restore-keys: |
+            nextjs-production-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            nextjs-production-${{ runner.os }}-
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            nextjs-${{ runner.os }}-
+
       - name: Verify Vercel configuration
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
