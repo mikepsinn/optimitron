@@ -1,4 +1,4 @@
-import type { IronicLaw } from "@optimitron/data";
+import type { IronicLaw } from "@optimitron/data/datasets/us-ironic-laws";
 import { BrutalCard } from "@/components/ui/brutal-card";
 
 interface IronicLawCalloutProps {

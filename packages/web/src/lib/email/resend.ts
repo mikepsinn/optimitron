@@ -38,6 +38,10 @@ interface ResendReactMessage extends BaseMessage {
 
 interface ExternalResendMessage {
   from?: string;
+  /// Optional Reply-To header. Lets task notifications route inbound replies
+  /// to a per-task address (`reply+{taskId}@reply.warondisease.org`) without
+  /// changing the From line that recipients see.
+  replyTo?: string;
   html: string;
   bcc?: string[];
   subject: string;
@@ -228,6 +232,7 @@ export async function sendExternalResendEmail(message: ExternalResendMessage): P
     subject: message.subject,
     html: signed.html,
     text: signed.text,
+    ...(message.replyTo ? { replyTo: message.replyTo } : {}),
     ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
   });
 

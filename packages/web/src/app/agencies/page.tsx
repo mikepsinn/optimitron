@@ -4,7 +4,10 @@ import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { GameCTA } from "@/components/ui/game-cta";
 import { agenciesLink, getWishoniaAgencyPath } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
-import { getAgenciesByDepartment, WISHONIA_AGENCIES } from "@optimitron/data";
+import {
+  getAgenciesByDepartment,
+  WISHONIA_AGENCIES,
+} from "@optimitron/data/datasets/wishonia-agencies";
 
 export const metadata = getRouteMetadata(agenciesLink);
 

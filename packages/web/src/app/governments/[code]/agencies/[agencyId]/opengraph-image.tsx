@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og";
-import {
-  getGovernmentMetrics,
-  getAgencyPerformance,
-} from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
+import { getAgencyPerformance } from "@optimitron/data/datasets/agency-performance";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };

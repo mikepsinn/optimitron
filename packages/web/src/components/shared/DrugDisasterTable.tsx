@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { FDAApprovedDrugDisaster } from "@optimitron/data";
+import type { FDAApprovedDrugDisaster } from "@optimitron/data/datasets/us-fda-approved-drug-deaths";
 import { BrutalCard } from "@/components/ui/brutal-card";
 
 interface DrugDisasterTableProps {

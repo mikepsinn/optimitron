@@ -1,12 +1,12 @@
+import type { GovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
 import {
-  type GovernmentMetrics,
   getArmsExportsPerCapitaPPP,
   getGovernmentClinicalTrialSpendingPerCapitaPPP,
   getGovernmentMedicalResearchSpendingPerCapitaPPP,
   getMilitarySpendingPerCapitaPPP,
   getMilitaryToGovernmentClinicalTrialRatio,
   getMilitaryToGovernmentMedicalResearchRatio,
-} from "@optimitron/data";
+} from "@optimitron/data/datasets/government-spending-ratios";
 
 export type GovernmentScatterMetricKey =
   | "trialRatio"

@@ -1,8 +1,8 @@
+import type { GovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
 import {
-  type GovernmentMetrics,
   getMilitaryToGovernmentClinicalTrialRatio,
   getMilitaryToGovernmentMedicalResearchRatio,
-} from "@optimitron/data";
+} from "@optimitron/data/datasets/government-spending-ratios";
 
 export interface GovernmentDetailStatCard {
   label: string;

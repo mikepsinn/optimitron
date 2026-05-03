@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchers } from "@optimitron/data";
+import * as fetchers from "@optimitron/data/fetchers";
 import {
   classifyLegislativeBill,
   inferLegislativeBudgetDirection,

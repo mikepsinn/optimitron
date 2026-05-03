@@ -8,23 +8,13 @@ const mocks = vi.hoisted(() => ({
   fetchRollCallVote: vi.fn(),
 }));
 
-vi.mock("@optimitron/data", async () => {
-  const actual = await vi.importActual<typeof import("@optimitron/data")>(
-    "@optimitron/data",
-  );
-
-  return {
-    ...actual,
-    fetchers: {
-      ...actual.fetchers,
-      fetchBillSubjects: mocks.fetchBillSubjects,
-      fetchBillVotes: mocks.fetchBillVotes,
-      fetchBills: mocks.fetchBills,
-      fetchBillsByType: mocks.fetchBillsByType,
-      fetchRollCallVote: mocks.fetchRollCallVote,
-    },
-  };
-});
+vi.mock("@optimitron/data/fetchers", () => ({
+  fetchBillSubjects: mocks.fetchBillSubjects,
+  fetchBillVotes: mocks.fetchBillVotes,
+  fetchBills: mocks.fetchBills,
+  fetchBillsByType: mocks.fetchBillsByType,
+  fetchRollCallVote: mocks.fetchRollCallVote,
+}));
 
 import {
   buildAllocationRecordFromStoredVotes,

@@ -4,7 +4,7 @@
  */
 
 import { naturalExperimentsData } from "@/data/natural-experiments";
-import { NATURAL_EXPERIMENTS } from "@optimitron/data";
+import { NATURAL_EXPERIMENTS } from "@optimitron/data/datasets/natural-experiments";
 import {
   DRUG_POLICY_COMPARISON,
   HEALTH_SYSTEM_COMPARISON,

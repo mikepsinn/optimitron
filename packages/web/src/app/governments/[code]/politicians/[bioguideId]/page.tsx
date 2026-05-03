@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { getGovernmentMetrics } from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
 import Image from "next/image";
 import { DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT } from "@optimitron/data/parameters";
 import { EmployeeReviewBanner } from "@/components/shared/employee-review-banner";

@@ -1,4 +1,8 @@
-import { getEarthAgency, type EarthAgency, type WishoniaAgency } from "@optimitron/data";
+import {
+  getEarthAgency,
+  type EarthAgency,
+} from "@optimitron/data/datasets/earth-agencies";
+import type { WishoniaAgency } from "@optimitron/data/datasets/wishonia-agencies";
 
 /**
  * Resolve all Earth agencies that a Wishonia agency replaces.

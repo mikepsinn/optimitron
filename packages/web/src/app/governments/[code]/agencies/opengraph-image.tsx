@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og";
-import {
-  getGovernmentMetrics,
-  getAgencyPerformanceByCountry,
-} from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
+import { getAgencyPerformanceByCountry } from "@optimitron/data/datasets/agency-performance";
 
 export const runtime = "nodejs";
 export const revalidate = 86400;

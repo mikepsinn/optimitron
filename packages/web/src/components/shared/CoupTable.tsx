@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { CIACoup } from "@optimitron/data";
+import type { CIACoup } from "@optimitron/data/datasets/us-cia-coups";
 import { BrutalCard } from "@/components/ui/brutal-card";
 
 interface CoupTableProps {

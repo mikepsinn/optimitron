@@ -1,4 +1,4 @@
-import { fetchers } from "@optimitron/data";
+import * as fetchers from "@optimitron/data/fetchers";
 import {
   ALIGNMENT_BILL_FEEDS,
   type AlignmentBillFeedConfig,

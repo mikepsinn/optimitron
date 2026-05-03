@@ -13,7 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { GovernmentMetrics } from "@optimitron/data";
+import type { GovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
 import { Switch } from "@/components/retroui/Switch";
 import {
   GOVERNMENT_SCATTERPLOT_DEFAULT_X,

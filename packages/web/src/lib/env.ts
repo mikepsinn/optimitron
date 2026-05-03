@@ -32,6 +32,12 @@ const serverSchema = z.object({
   /// Signing secret for the Resend webhook. Configured in Resend dashboard
   /// under "Webhooks" and pasted here. Required only if webhooks are wired.
   RESEND_WEBHOOK_SECRET: z.string().optional(),
+  /// Signing secret for the inbound-email webhook (Resend Inbound Parse, or
+  /// fallback Cloudflare Email Worker). Required only if inbound replies are wired.
+  RESEND_INBOUND_WEBHOOK_SECRET: z.string().optional(),
+  /// Domain used for the reply-to-comment email routing. Inbound MX records
+  /// must point to this subdomain. Defaults to `reply.warondisease.org`.
+  REPLY_EMAIL_DOMAIN: z.string().optional(),
 
   // ── Google OAuth ──────────────────────────────────────────────────
   GOOGLE_CLIENT_ID: z.string().optional(),

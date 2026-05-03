@@ -7,7 +7,7 @@
  */
 
 import type { Item } from '@optimitron/wishocracy';
-import type { WishocraticItemDefinition } from '@optimitron/data';
+import type { WishocraticItemDefinition } from '@optimitron/data/datasets/us-wishocratic-items';
 import { WISHOCRATIC_ITEMS, type WishocraticItemId } from '@/lib/wishocracy-data';
 import { usBudgetAnalysis as budgetAnalysisData } from '@/data/us-budget-analysis';
 

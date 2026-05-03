@@ -2,7 +2,10 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import type { AgencyPerformance, AgencyGrade } from "@optimitron/data";
+import type {
+  AgencyPerformance,
+  AgencyGrade,
+} from "@optimitron/data/datasets/agency-performance";
 
 const OUTCOME_COLORS = [
   "var(--brutal-pink)",

@@ -19,7 +19,7 @@ import {
   departmentOfWarLink,
   type NavItem,
 } from "@/lib/routes";
-import { WISHONIA_AGENCIES } from "@optimitron/data";
+import { WISHONIA_AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 
 const agencies: NavItem[] = [
   wishocracyLink,

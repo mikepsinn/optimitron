@@ -1,4 +1,4 @@
-import type { GovernmentLie } from "@optimitron/data";
+import type { GovernmentLie } from "@optimitron/data/datasets/us-government-lies";
 import { BrutalCard } from "@/components/ui/brutal-card";
 
 interface LieComparisonCardProps {

@@ -4,11 +4,15 @@ import Link from "next/link";
 import {
   GOVERNMENTS,
   getGovernmentMetrics,
+} from "@optimitron/data/datasets/government-report-cards";
+import {
   getAgencyPerformance,
   getAgencyPerformanceByCountry,
+} from "@optimitron/data/datasets/agency-performance";
+import {
   getHistoricalTrend,
-} from "@optimitron/data";
-import type { AgencyGrade } from "@optimitron/data";
+} from "@optimitron/data/datasets/agency-historical-trends";
+import type { AgencyGrade } from "@optimitron/data/datasets/agency-performance";
 import { GameCTA } from "@/components/ui/game-cta";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
@@ -17,7 +21,7 @@ import { AgencyGradeChart } from "@/components/shared/AgencyGradeChart";
 import { HistoricalTrendChart } from "@/components/shared/HistoricalTrendChart";
 import { StatCard } from "@/components/ui/stat-card";
 import { AgencySupplementarySections } from "@/components/shared/AgencySupplementarySections";
-import { getWishoniaReplacementFor } from "@optimitron/data";
+import { getWishoniaReplacementFor } from "@optimitron/data/datasets/wishonia-agencies";
 
 // ---------------------------------------------------------------------------
 // Helpers
