@@ -29,8 +29,8 @@ export function MonthlyLifetimeImpact({ monthlyAmountUsd }: Props) {
   const dalys = totalDollars * dalysPerDollar;
 
   return (
-    <div className="border-l-4 border-primary bg-muted/40 p-3 text-sm font-bold">
-      <p className="font-black uppercase text-xs tracking-[0.14em] mb-1">
+    <div className="border border-black p-3 text-sm leading-6">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em]">
         Five-year horizon
       </p>
       <p>
@@ -39,13 +39,12 @@ export function MonthlyLifetimeImpact({ monthlyAmountUsd }: Props) {
         <strong>{lives.toFixed(1)} lives</strong> and{" "}
         <strong>{Math.round(dalys).toLocaleString()} healthy life-years</strong>.
       </p>
-      <p className="text-xs mt-1 opacity-70">
+      <p className="mt-1 text-xs text-neutral-600">
         Risk-adjusted at{" "}
         {(POLITICAL_SUCCESS_PROBABILITY.value * 100).toFixed(0)}% success
-        probability (Wishonia&apos;s skeptical default; the conditional-success
-        figure is roughly{" "}
+        probability. The conditional-success figure is roughly{" "}
         {Math.round(1 / POLITICAL_SUCCESS_PROBABILITY.value).toLocaleString()}x
-        higher).
+        higher.
       </p>
     </div>
   );

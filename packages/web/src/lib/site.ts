@@ -710,6 +710,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     minimalChromePrefixes: [
       ROUTES.vote,
       ROUTES.questions,
+      ROUTES.donate,
     ],
   },
   assets: OPTIMITRON_ASSETS,
@@ -1057,6 +1058,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     minimalChromePrefixes: [
       ROUTES.vote,
       ROUTES.questions,
+      ROUTES.donate,
     ],
   },
   assets: WAR_ON_DISEASE_ASSETS,
@@ -1188,6 +1190,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
     ],
     minimalChromePrefixes: [
       ROUTES.vote,
+      ROUTES.donate,
     ],
   },
   assets: ONE_PERCENT_TREATY_ASSETS,

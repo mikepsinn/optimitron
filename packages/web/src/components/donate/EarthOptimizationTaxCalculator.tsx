@@ -95,7 +95,7 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
 
   return (
     <div className="space-y-5 text-foreground">
-      <div className="border-l-4 border-primary bg-muted/40 p-3 text-xs font-bold leading-snug">
+      <div className="border border-black bg-white p-3 text-xs font-semibold leading-snug text-neutral-700">
         Not tax advice. U.S.-only. Uses 2024 federal brackets and top-marginal
         state rates. Real return preparation requires your CPA, your AGI as
         actually filed, AMT analysis, and review of any state-specific
@@ -202,18 +202,19 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
       </div>
 
       {comparison.extraDollarsToCharity > 0 ? (
-        <div className="border-4 border-primary bg-brutal-pink p-4 text-brutal-pink-foreground space-y-2">
-          <p className="font-black uppercase text-sm tracking-[0.14em]">
-            Wishonia&apos;s recommendation
+        <div className="space-y-2 border border-black p-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em]">
+            Recommended strategy
           </p>
-          <p className="font-black text-lg leading-snug">
+          <p className="text-lg font-semibold leading-snug">
             Donate the asset directly. The treaty receives{" "}
             <strong>${formatMoney(comparison.extraDollarsToCharity)}</strong>{" "}
             more, and your out-of-pocket drops by{" "}
             <strong>${formatMoney(comparison.extraOutOfPocket)}</strong>.
           </p>
-          <p className="font-bold text-sm">
-            That extra ${formatMoney(comparison.extraDollarsToCharity)} buys{" "}
+          <p className="text-sm leading-6 text-neutral-700">
+            That extra ${formatMoney(comparison.extraDollarsToCharity)} is
+            modeled as{" "}
             <strong>
               {(comparison.extraDollarsToCharity * livesPerDollar).toFixed(2)}{" "}
               lives
@@ -225,27 +226,23 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
               ).toLocaleString()}{" "}
               healthy life-years
             </strong>{" "}
-            at the risk-adjusted model. Choosing Strategy A funds{" "}
-            {Math.round(
-              comparison.extraDollarsToCharity * livesPerDollar,
-            ).toLocaleString()}{" "}
-            preventable deaths instead of preventing them. The cap gains tax
-            funds the missiles. Don&apos;t fund the missiles.
+            at the risk-adjusted assumptions.
           </p>
         </div>
       ) : null}
 
-      <div className="border-4 border-primary p-4 space-y-2 bg-muted/30">
-        <p className="font-black uppercase text-sm tracking-[0.14em]">
-          Impact at recommended strategy ({recommendedStrategy === "direct" ? "B" : "A"})
+      <div className="space-y-2 border border-black p-4">
+        <p className="text-sm font-semibold uppercase tracking-[0.14em]">
+          Impact at recommended strategy (
+          {recommendedStrategy === "direct" ? "B" : "A"})
         </p>
-        <p className="font-bold text-base">
+        <p className="text-base font-semibold">
           ${formatMoney(recommended.charityReceivedUsd)} to the treaty →
         </p>
-        <ul className="text-sm font-bold space-y-1 list-disc list-inside">
+        <ul className="list-inside list-disc space-y-1 text-sm">
           <li>
-            <strong>{livesAtRecommended.toFixed(1)} lives</strong> permanently
-            not stopped
+            <strong>{livesAtRecommended.toFixed(1)} lives</strong> modeled as
+            deaths averted
           </li>
           <li>
             <strong>
@@ -262,20 +259,23 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
             prevented
           </li>
         </ul>
-        <p className="text-xs font-bold opacity-70">
-          Risk-adjusted at {(POLITICAL_SUCCESS_PROBABILITY.value * 100).toFixed(0)}%
-          treaty success probability. Conditional-success figures are roughly{" "}
-          {Math.round(1 / POLITICAL_SUCCESS_PROBABILITY.value).toLocaleString()}x
-          higher.
+        <p className="text-xs leading-5 text-neutral-600">
+          Risk-adjusted at{" "}
+          {(POLITICAL_SUCCESS_PROBABILITY.value * 100).toFixed(0)}% treaty
+          success probability. Conditional-success figures are roughly{" "}
+          {Math.round(
+            1 / POLITICAL_SUCCESS_PROBABILITY.value,
+          ).toLocaleString()}
+          x higher.
         </p>
       </div>
 
       {allWarnings.length > 0 ? (
-        <div className="border-4 border-primary bg-brutal-yellow p-4 text-brutal-yellow-foreground space-y-2">
-          <p className="font-black uppercase text-sm tracking-[0.14em]">
+        <div className="space-y-2 border border-black p-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em]">
             Caveats
           </p>
-          <ul className="text-sm font-bold space-y-1 list-disc list-inside">
+          <ul className="list-inside list-disc space-y-1 text-sm leading-6 text-neutral-700">
             {allWarnings.map((warning, idx) => (
               <li key={idx}>{warning}</li>
             ))}
@@ -286,7 +286,7 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
       <div className="grid gap-3 sm:grid-cols-2">
         <Button
           asChild
-          className="w-full"
+          className="w-full justify-center border border-black bg-black text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black active:translate-x-0 active:translate-y-0"
         >
           <a
             href={`mailto:m@warondisease.org?subject=${encodeURIComponent(
@@ -296,15 +296,20 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
                   : assetType === "crypto"
                     ? "crypto"
                     : "stock") +
-                " — $" +
+                " - $" +
                 formatMoney(inputs.giftFmvUsd),
             )}`}
           >
-            Email transfer instructions →
+            Email transfer instructions
           </a>
         </Button>
         {onClose ? (
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="w-full justify-center border border-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
+          >
             Close
           </Button>
         ) : null}
@@ -326,16 +331,22 @@ function StrategyCard({
 }) {
   return (
     <div
-      className={`border-4 border-primary p-4 space-y-3 ${
-        highlighted ? "bg-brutal-cyan text-brutal-cyan-foreground" : "bg-background"
+      className={`space-y-3 border border-black p-4 ${
+        highlighted ? "bg-black text-white" : "bg-white text-black"
       }`}
     >
       <div className="space-y-1">
-        <p className="font-black uppercase text-sm tracking-[0.1em]">{title}</p>
-        <p className="text-xs font-bold opacity-80">{subtitle}</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.1em]">
+          {title}
+        </p>
+        <p className="text-xs leading-5 opacity-80">{subtitle}</p>
       </div>
       <div className="space-y-1.5 text-sm">
-        <Row label="Charity receives" value={`$${formatMoney(outcome.charityReceivedUsd)}`} bold />
+        <Row
+          label="Charity receives"
+          value={`$${formatMoney(outcome.charityReceivedUsd)}`}
+          bold
+        />
         <Row
           label="Capital gains tax paid"
           value={`$${formatMoney(outcome.capitalGainsTaxPaidUsd)}`}
@@ -349,7 +360,7 @@ function StrategyCard({
           label="State income tax saved"
           value={`$${formatMoney(outcome.stateIncomeTaxSavedUsd)}`}
         />
-        <div className="border-t-2 border-current pt-2">
+        <div className="border-t border-current pt-2">
           <Row
             label="Out-of-pocket cost"
             value={`$${formatMoney(outcome.outOfPocketCostUsd)}`}
@@ -406,7 +417,7 @@ function FieldGroup({
 }) {
   return (
     <div className={`space-y-1 ${className ?? ""}`}>
-      <label className="text-xs font-black uppercase tracking-[0.14em]">
+      <label className="text-xs font-semibold uppercase tracking-[0.14em]">
         {label}
       </label>
       {children}
@@ -433,10 +444,10 @@ function RadioGroup({
           type="button"
           disabled={disabled}
           onClick={() => onChange(option.value)}
-          className={`border-2 border-primary px-2 py-1.5 text-xs font-black uppercase ${
+          className={`border border-black px-2 py-1.5 text-xs font-semibold uppercase ${
             value === option.value
-              ? "bg-primary text-primary-foreground"
-              : "bg-background text-foreground hover:bg-muted"
+              ? "bg-black text-white"
+              : "bg-white text-black hover:bg-neutral-100"
           } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {option.label}
