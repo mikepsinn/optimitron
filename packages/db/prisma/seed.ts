@@ -43,6 +43,7 @@ import {
 import {
   TREATY_REFERENDUM_SLUG,
   DECLARATION_REFERENDUM_SLUG,
+  COURT_OF_HUMANITY_REFERENDUM_SLUG,
 } from "../src/constants.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { pathToFileURL } from "node:url";
@@ -1464,6 +1465,23 @@ async function seedReferendums() {
     create: declarationReferendumData,
   });
   console.log("  ✓ Declaration of Optimization referendum");
+
+  const courtReferendumData = {
+    title: "The Court of Humanity",
+    slug: COURT_OF_HUMANITY_REFERENDUM_SLUG,
+    description:
+      "Should every person have the legal right to seek justice against any government " +
+      "that kills, injures, or harms them or their family? Join the decentralized court " +
+      "where 8 billion humans are the jury and sovereign immunity is abolished.",
+    status: ReferendumStatus.ACTIVE,
+  } satisfies Prisma.ReferendumUncheckedCreateInput;
+
+  await prisma.referendum.upsert({
+    where: { slug: COURT_OF_HUMANITY_REFERENDUM_SLUG },
+    update: courtReferendumData,
+    create: courtReferendumData,
+  });
+  console.log("  ✓ Court of Humanity referendum");
 }
 
 export async function seedReferenceData() {

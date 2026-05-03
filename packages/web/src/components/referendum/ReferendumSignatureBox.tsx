@@ -13,6 +13,11 @@ import { buildUserReferralUrl } from "@/lib/url";
 import { getUserDisplayName } from "@/lib/user-display";
 import { cn } from "@/lib/utils";
 
+type ReferralUser = {
+  handle?: string | null;
+  referralCode?: string | null;
+};
+
 export interface ReferendumSignatureBoxProps {
   referendumSlug: string;
   title: string;
@@ -29,6 +34,15 @@ export interface ReferendumSignatureBoxProps {
   signedShare?: ReactNode;
   variant?: "stepper" | "reader";
   showReaderShell?: boolean;
+  submitLabel?: string;
+  submittingLabel?: string;
+  authTitle?: string;
+  emailButtonLabel?: string;
+  emailPendingButtonLabel?: string;
+  buildShareUrl?: (
+    user: ReferralUser | null | undefined,
+    baseUrl?: string,
+  ) => string;
   /**
    * Render the pre-checked "display publicly" toggle. Only shown for
    * authenticated users — unauthenticated flow keeps the existing behavior
@@ -53,6 +67,12 @@ export function ReferendumSignatureBox({
   signedShare,
   variant = "stepper",
   showReaderShell = true,
+  submitLabel = "Sign",
+  submittingLabel = "...",
+  authTitle = "Finish Signing",
+  emailButtonLabel = "Email Me a Link to Finish Signing",
+  emailPendingButtonLabel = "Sending Finish-Signing Link...",
+  buildShareUrl = buildUserReferralUrl,
   showPrivacyToggle = false,
 }: ReferendumSignatureBoxProps) {
   const router = useRouter();
@@ -62,7 +82,7 @@ export function ReferendumSignatureBox({
   const [error, setError] = useState<string | null>(null);
   const [makePublic, setMakePublic] = useState(true);
 
-  const referralUrl = buildUserReferralUrl(session?.user);
+  const referralUrl = buildShareUrl(session?.user);
   const isReader = variant === "reader";
   const shellClass = isReader && showReaderShell
     ? "rounded-[24px] border border-[#8e6b48]/25 bg-[#f7f1e4]/88 px-6 py-6 shadow-[0_12px_24px_rgba(58,42,25,0.08)]"
@@ -207,11 +227,11 @@ export function ReferendumSignatureBox({
           referralCode={referralCode}
           compact
           variant={isReader ? "document" : "default"}
-          title="Finish Signing"
+          title={authTitle}
           subtitle={authPromptText}
           googleButtonLabel="Finish with Google"
-          emailButtonLabel="Email Me a Link to Finish Signing"
-          emailPendingButtonLabel="Sending Finish-Signing Link..."
+          emailButtonLabel={emailButtonLabel}
+          emailPendingButtonLabel={emailPendingButtonLabel}
         />
       </div>
     );
@@ -234,7 +254,7 @@ export function ReferendumSignatureBox({
         disabled={signing}
         className={cn(buttonClass, "w-full")}
       >
-        {signing ? "..." : "Sign"}
+        {signing ? submittingLabel : submitLabel}
       </Button>
       {showPrivacyToggle && status === "authenticated" ? (
         <div className="mt-4">

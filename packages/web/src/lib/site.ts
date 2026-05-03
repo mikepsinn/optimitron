@@ -12,6 +12,7 @@ import {
   coalitionLink,
   conditionsLink,
   communityLinks,
+  courtLink,
   dfdaLink,
   dihLink,
   donateLink,
@@ -529,7 +530,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
       },
       {
         title: "Reference",
-        items: [whyLink, legalLink, privacyLink, termsLink],
+        items: [whyLink, courtLink, legalLink, privacyLink, termsLink],
       },
     ],
   },
@@ -570,6 +571,7 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
         title: "Proof",
         items: [
           whyLink,
+          courtLink,
           peopleLink,
           coalitionLink,
           endorseLink,
@@ -1026,6 +1028,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     restrictToAllowlist: true,
     publicPrefixes: [
       ROUTES.treaty,
+      ROUTES.court,
       ROUTES.tasks,
       ROUTES.people,
       ROUTES.governments,
@@ -1150,6 +1153,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   routePolicy: {
     canonicalPrefixes: [
       ROUTES.treaty,
+      ROUTES.court,
       ROUTES.people,
       ROUTES.governments,
       ROUTES.declaration,
@@ -1165,6 +1169,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
     restrictToAllowlist: true,
     publicPrefixes: [
       ROUTES.treaty,
+      ROUTES.court,
       ROUTES.tasks,
       ROUTES.people,
       ROUTES.governments,

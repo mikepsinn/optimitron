@@ -39,6 +39,22 @@ export function buildUserReferralUrl(
   return buildReferralUrl(getHandleOrReferralCode(user), baseUrl);
 }
 
+function buildPathReferralUrl(
+  path: string,
+  identifier?: string | null,
+  baseUrl: string = getBaseUrl(),
+): string {
+  const base = `${baseUrl}${path}`;
+  return identifier ? `${base}?ref=${encodeURIComponent(identifier)}` : base;
+}
+
+export function buildCourtReferralUrl(
+  user: { handle?: string | null; referralCode?: string | null } | null | undefined,
+  baseUrl: string = getBaseUrl(),
+): string {
+  return buildPathReferralUrl(ROUTES.court, getHandleOrReferralCode(user), baseUrl);
+}
+
 export function buildUserInviteReferralUrl(
   user: { handle?: string | null; referralCode?: string | null } | null | undefined,
   inviteToken?: string | null,
