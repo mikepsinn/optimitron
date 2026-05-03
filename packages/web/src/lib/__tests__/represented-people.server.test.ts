@@ -39,7 +39,8 @@ describe("represented-people.server", () => {
     mocks.referendumVoteCount
       .mockResolvedValueOnce(10)
       .mockResolvedValueOnce(3)
-      .mockResolvedValueOnce(1);
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(4);
     mocks.referendumVoteFindMany.mockResolvedValue([
       {
         id: "vote_1",
@@ -143,6 +144,55 @@ describe("represented-people.server", () => {
     );
   });
 
+  it("sorts closest-to-cure evidence without hiding represented people that lack lag evidence", async () => {
+    mocks.referendumVoteCount.mockReset();
+    mocks.referendumVoteCount
+      .mockResolvedValueOnce(10)
+      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(3);
+    mocks.referendumVoteFindMany.mockResolvedValue([
+      representedVote({
+        displayName: "No lag evidence",
+        id: "vote_no_lag",
+      }),
+      representedVote({
+        daysBeforeApproval: 20,
+        displayName: "Twenty days",
+        id: "vote_20",
+      }),
+      representedVote({
+        daysBeforeApproval: 2,
+        displayName: "Two days",
+        id: "vote_2",
+      }),
+    ]);
+
+    const firstPage = await getRepresentedPeopleGalleryData("one-percent-treaty", {
+      page: 1,
+      pageSize: 2,
+      sort: "died-closest-to-cure",
+    });
+    const secondPage = await getRepresentedPeopleGalleryData("one-percent-treaty", {
+      page: 2,
+      pageSize: 2,
+      sort: "died-closest-to-cure",
+    });
+
+    expect(firstPage?.people.map((person) => person.displayName)).toEqual([
+      "Two days",
+      "Twenty days",
+    ]);
+    expect(secondPage?.people.map((person) => person.displayName)).toEqual([
+      "No lag evidence",
+    ]);
+    expect(firstPage?.filteredCount).toBe(3);
+    expect(firstPage?.totalPages).toBe(2);
+    expect(mocks.referendumVoteFindMany).toHaveBeenCalledWith(
+      expect.not.objectContaining({ take: 200 }),
+    );
+  });
+
   it("requires public memorial consent before a deceased person profile is visible", async () => {
     mocks.personFindFirst.mockResolvedValue(null);
 
@@ -185,3 +235,38 @@ describe("represented-people.server", () => {
     );
   });
 });
+
+function representedVote({
+  daysBeforeApproval,
+  displayName,
+  id,
+}: {
+  daysBeforeApproval?: number;
+  displayName: string;
+  id: string;
+}) {
+  return {
+    id,
+    publicComment: null,
+    person: {
+      conditions: [],
+      displayName,
+      handle: null,
+      id: `person_${id}`,
+      image: null,
+      lifeStatus: "DECEASED",
+      memorial: {
+        efficacyLagEvidence:
+          daysBeforeApproval === undefined
+            ? []
+            : [{ diedBeforeApprovalDays: daysBeforeApproval }],
+        submissions: [],
+      },
+    },
+    user: {
+      email: "mike@example.com",
+      id: "user_1",
+      person: null,
+    },
+  };
+}
