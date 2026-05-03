@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getReplyAddress,
   getReplyEmailDomain,
@@ -74,6 +74,56 @@ describe("reply-address encode/decode", () => {
       expect(parseReplyAddress("not-an-email")).toBeNull();
       expect(parseReplyAddress("")).toBeNull();
     });
+  });
+});
+
+describe("app-URL helpers", () => {
+  const originalBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const originalNextAuthUrl = process.env.NEXTAUTH_URL;
+
+  afterEach(() => {
+    if (originalBaseUrl !== undefined) {
+      process.env.NEXT_PUBLIC_BASE_URL = originalBaseUrl;
+    } else {
+      delete process.env.NEXT_PUBLIC_BASE_URL;
+    }
+    if (originalNextAuthUrl !== undefined) {
+      process.env.NEXTAUTH_URL = originalNextAuthUrl;
+    } else {
+      delete process.env.NEXTAUTH_URL;
+    }
+    vi.resetModules();
+  });
+
+  it("uses NEXT_PUBLIC_BASE_URL when set", async () => {
+    process.env.NEXT_PUBLIC_BASE_URL = "https://staging.warondisease.org";
+    vi.resetModules();
+    const { getAppBaseUrl, getTaskUrl } = await import("../task-notification");
+
+    expect(getAppBaseUrl()).toBe("https://staging.warondisease.org");
+    expect(getTaskUrl("abc")).toBe("https://staging.warondisease.org/tasks/abc");
+  });
+
+  it("strips trailing slash from the configured base", async () => {
+    process.env.NEXT_PUBLIC_BASE_URL = "https://example.com/";
+    vi.resetModules();
+    const { getAppBaseUrl, getTaskUrl } = await import("../task-notification");
+
+    expect(getAppBaseUrl()).toBe("https://example.com");
+    expect(getTaskUrl("abc")).toBe("https://example.com/tasks/abc");
+  });
+
+  it("falls back to a fixed production URL when no env vars are set", async () => {
+    delete process.env.NEXT_PUBLIC_BASE_URL;
+    delete process.env.NEXTAUTH_URL;
+    vi.resetModules();
+    const { getTaskUrl } = await import("../task-notification");
+
+    // Intentionally minimal: just verify the fallback is a real-looking URL
+    // and the task-url builder uses it. The exact fallback domain is an
+    // implementation detail — assertion is on shape, not value.
+    const url = getTaskUrl("xyz");
+    expect(url).toMatch(/^https?:\/\/.+\/tasks\/xyz$/);
   });
 });
 

@@ -13,6 +13,7 @@ import { sendExternalResendEmail, type SendResult } from "@/lib/email/resend";
 import { serverEnv } from "@/lib/env";
 
 const DEFAULT_REPLY_DOMAIN = "reply.warondisease.org";
+const DEFAULT_BASE_URL = "https://warondisease.org";
 
 export function getReplyEmailDomain(): string {
   return serverEnv.REPLY_EMAIL_DOMAIN ?? DEFAULT_REPLY_DOMAIN;
@@ -20,6 +21,26 @@ export function getReplyEmailDomain(): string {
 
 export function getReplyAddress(taskId: string): string {
   return `reply+${taskId}@${getReplyEmailDomain()}`;
+}
+
+/**
+ * Resolve the canonical app base URL for outbound email links. Reads in
+ * priority order: NEXT_PUBLIC_BASE_URL (explicit, also available server-side
+ * since NEXT_PUBLIC_ vars are inlined into the runtime), NEXTAUTH_URL (set
+ * per deployment), then a hardcoded production fallback. Always returned
+ * without a trailing slash so callers can append `/path` directly.
+ */
+export function getAppBaseUrl(): string {
+  const raw =
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    serverEnv.NEXTAUTH_URL ??
+    DEFAULT_BASE_URL;
+  return raw.replace(/\/$/, "");
+}
+
+/** Build the URL where a task can be viewed in the app. */
+export function getTaskUrl(taskId: string): string {
+  return `${getAppBaseUrl()}/tasks/${taskId}`;
 }
 
 /**

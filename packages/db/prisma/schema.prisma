@@ -6363,8 +6363,10 @@ model TaskCommunication {
   /// Error message captured on failed sends
   errorMessage String?
 
-  /// Provider's message id (e.g., Resend)
-  providerMessageId String?
+  /// Provider's message id (e.g., Resend). Unique so inbound-webhook
+  /// retries collapse safely — DB-enforced idempotency on inbound replies.
+  /// Multiple NULL rows are allowed (Postgres treats NULLs as distinct).
+  providerMessageId String? @unique
 
   /// Free-form metadata for channel-specific details (openedAt, submittedAt, subject pick, etc.)
   metadataJson Json?

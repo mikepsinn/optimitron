@@ -7,7 +7,7 @@ import { vi } from "vitest";
  * Supports the operations fire.ts and admin.ts perform:
  *   - task: create, findUnique, findFirst, findMany, update, updateMany, upsert (by taskKey)
  *   - taskComment: create, findFirst
- *   - taskCommunication: create, count
+ *   - taskCommunication: create, count, update
  *   - taskCommunicationEndpoint: create, findFirst, update, updateMany
  *   - taskTrigger: findUnique (with include), findMany, create, update
  *   - taskSpawnSpec: createMany, deleteMany
@@ -405,6 +405,20 @@ export function createFakeTriggerDb() {
       }),
       count: vi.fn(async ({ where }: { where?: Record<string, unknown> } = {}) =>
         store.communications.filter((c) => matchesRow(c, where)).length,
+      ),
+      update: vi.fn(
+        async ({
+          where,
+          data,
+        }: {
+          where: { id: string };
+          data: Partial<FakeCommunication>;
+        }) => {
+          const comm = store.communications.find((c) => c.id === where.id);
+          if (!comm) throw new Error("communication not found");
+          Object.assign(comm, data);
+          return comm;
+        },
       ),
     },
     taskCommunicationEndpoint: {
