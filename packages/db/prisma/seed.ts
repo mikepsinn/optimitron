@@ -31,6 +31,7 @@ import {
   JurisdictionType,
   PersonConditionStatus,
   PersonLifeStatus,
+  ReferendumKind,
   ReferendumStatus,
   ReferendumVoteSource,
   TaskCommunicationEndpointKind,
@@ -46,12 +47,14 @@ import {
   COURT_OF_HUMANITY_REFERENDUM_SLUG,
 } from "../src/constants.js";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import {
   US_WISHOCRATIC_JURISDICTION,
   getUSWishocraticCatalogRecords,
   listGovernmentLeaders,
 } from "@optimitron/data";
+import { COURT_OF_HUMANITY_TEXT } from "@optimitron/data/referendums";
 import {
   getAllConditions,
   getAllTreatments,
@@ -70,6 +73,7 @@ import {
   EARTH_OPTIMIZATION_PRIZE_DEADLINE,
   EARTH_OPTIMIZATION_PRIZE_DEADLINE_YEAR,
   EARTH_OPTIMIZATION_PRIZE_INCOME_GROWTH_EFFECT_PP_PER_YEAR,
+  shareableSnippets,
 } from "@optimitron/data/parameters";
 import { WORLD_LEADERS } from "@optimitron/data/datasets/world-leaders";
 import {
@@ -101,6 +105,27 @@ function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/-{2,}/g, "-");
+}
+
+function normalizeReferendumContentText(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+function buildReferendumContentHash(input: {
+  question: string;
+  description?: string | null;
+  bodyMarkdown?: string | null;
+}) {
+  return createHash("sha256")
+    .update(
+      JSON.stringify({
+        question: input.question.trim(),
+        description: normalizeReferendumContentText(input.description),
+        bodyMarkdown: normalizeReferendumContentText(input.bodyMarkdown),
+      }),
+    )
+    .digest("hex");
 }
 
 async function upsertUnit(data: Prisma.UnitUncheckedCreateInput) {
@@ -1433,16 +1458,33 @@ export interface SeedDatabaseOptions {
 
 async function seedReferendums() {
   console.log("🗳️  Seeding referendums...");
+  const publishedAt = new Date("2026-05-03T00:00:00.000Z");
+  const buildReferendumData = (
+    data: Omit<Prisma.ReferendumUncheckedCreateInput, "contentHash"> & {
+      question: string;
+    },
+  ): Prisma.ReferendumUncheckedCreateInput => ({
+    ...data,
+    contentHash: buildReferendumContentHash({
+      question: data.question,
+      description: data.description ?? null,
+      bodyMarkdown: data.bodyMarkdown ?? null,
+    }),
+  });
 
-  const treatyReferendumData = {
+  const treatyReferendumData = buildReferendumData({
     title: "The 1% Treaty",
     slug: TREATY_REFERENDUM_SLUG,
+    question:
+      "Should governments redirect 1% of military spending to pragmatic clinical trials and disease eradication by adopting the 1% Treaty?",
+    kind: ReferendumKind.TREATY,
     description:
-      "Should your government redirect 1% of military spending to pragmatic clinical trials? " +
-      "The 1% Treaty would fund evidence-based health optimization at a fraction of current costs. " +
-      "Every verified vote makes pluralistic ignorance harder to maintain.",
+      "The 1% Treaty redirects one percent of military spending into pragmatic clinical trials so disease gets less time to kill people.",
+    bodyMarkdown: shareableSnippets.onePercentTreatyText.markdown,
+    publishedAt,
+    lockedAt: null,
     status: ReferendumStatus.ACTIVE,
-  } satisfies Prisma.ReferendumUncheckedCreateInput;
+  });
 
   await prisma.referendum.upsert({
     where: { slug: TREATY_REFERENDUM_SLUG },
@@ -1451,13 +1493,21 @@ async function seedReferendums() {
   });
   console.log("  ✓ 1% Treaty referendum");
 
-  const declarationReferendumData = {
+  const declarationReferendumData = buildReferendumData({
     title: "Declaration of Optimization",
     slug: DECLARATION_REFERENDUM_SLUG,
+    question: "Do you endorse the Declaration of Optimization?",
+    kind: ReferendumKind.DECLARATION,
     description:
       "Sign the Declaration of Optimization to declare your support for evidence-based governance.",
+    bodyMarkdown: [
+      shareableSnippets.whyOptimizationIsNecessary.markdown,
+      shareableSnippets.declarationOfOptimization.markdown,
+    ].join("\n\n"),
+    publishedAt,
+    lockedAt: null,
     status: ReferendumStatus.ACTIVE,
-  } satisfies Prisma.ReferendumUncheckedCreateInput;
+  });
 
   await prisma.referendum.upsert({
     where: { slug: DECLARATION_REFERENDUM_SLUG },
@@ -1466,15 +1516,19 @@ async function seedReferendums() {
   });
   console.log("  ✓ Declaration of Optimization referendum");
 
-  const courtReferendumData = {
+  const courtReferendumData = buildReferendumData({
     title: "The Court of Humanity",
     slug: COURT_OF_HUMANITY_REFERENDUM_SLUG,
+    question:
+      "Should every person have the legal right to seek justice against any government that kills, injures, or harms them or their family?",
+    kind: ReferendumKind.MEMBERSHIP,
     description:
-      "Should every person have the legal right to seek justice against any government " +
-      "that kills, injures, or harms them or their family? Join the decentralized court " +
-      "where 8 billion humans are the jury and sovereign immunity is abolished.",
+      "Join the decentralized court where 8 billion humans are the jury and sovereign immunity is abolished.",
+    bodyMarkdown: COURT_OF_HUMANITY_TEXT.markdown,
+    publishedAt,
+    lockedAt: null,
     status: ReferendumStatus.ACTIVE,
-  } satisfies Prisma.ReferendumUncheckedCreateInput;
+  });
 
   await prisma.referendum.upsert({
     where: { slug: COURT_OF_HUMANITY_REFERENDUM_SLUG },

@@ -4,9 +4,11 @@ import {
   CourtCasePartyCapacity,
   CourtCasePartyRole,
   CourtCaseStatus,
+  ReferendumKind,
   ReferendumStatus,
   SubjectType,
 } from "@optimitron/db/enums";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { prisma } from "./prisma";
 import { slugify } from "./slugify";
@@ -34,6 +36,27 @@ const optionalUrl = optionalTrimmedString(MAX_URL_LENGTH).refine(
   (value) => value === null || /^https?:\/\//i.test(value),
   "Use an http(s) URL.",
 );
+
+function normalizeReferendumContentText(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+function buildReferendumContentHash(input: {
+  question: string;
+  description?: string | null;
+  bodyMarkdown?: string | null;
+}) {
+  return createHash("sha256")
+    .update(
+      JSON.stringify({
+        question: input.question.trim(),
+        description: normalizeReferendumContentText(input.description),
+        bodyMarkdown: normalizeReferendumContentText(input.bodyMarkdown),
+      }),
+    )
+    .digest("hex");
+}
 
 const optionalDate = z.unknown().transform((value) => {
   if (value instanceof Date) return value;
@@ -675,18 +698,28 @@ export async function openCourtCaseJuryVote(input: unknown, db: DbClient = prism
 
   const questionKey = data.questionKey ?? "verdict";
   const referendumSlug = slugify(`court-${courtCase.slug}-${questionKey}`);
-  const title = data.questionTitle ?? `Should humanity find for the plaintiffs in ${courtCase.title}?`;
+  const question = data.questionTitle ?? `Should humanity find for the plaintiffs in ${courtCase.title}?`;
+  const title = question;
   const description = `Court of Humanity jury vote for ${courtCase.title}.`;
+  const contentHash = buildReferendumContentHash({ question, description });
 
   const referendum = await db.referendum.upsert({
     where: { slug: referendumSlug },
     update: {
+      contentHash,
       description,
+      kind: ReferendumKind.COURT_CASE,
+      question,
       status: ReferendumStatus.ACTIVE,
     },
     create: {
+      contentHash,
       createdByUserId: data.createdByUserId,
       description,
+      kind: ReferendumKind.COURT_CASE,
+      lockedAt: null,
+      publishedAt: new Date(),
+      question,
       slug: referendumSlug,
       status: ReferendumStatus.ACTIVE,
       title,
@@ -696,6 +729,8 @@ export async function openCourtCaseJuryVote(input: unknown, db: DbClient = prism
       slug: true,
       title: true,
       status: true,
+      question: true,
+      kind: true,
       description: true,
     },
   });

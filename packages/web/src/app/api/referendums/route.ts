@@ -1,6 +1,46 @@
 import { NextResponse } from "next/server";
+import { createHash } from "node:crypto";
+import type { ReferendumKind } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
+
+const REFERENDUM_KINDS = new Set([
+  "GENERAL",
+  "DECLARATION",
+  "TREATY",
+  "MEMBERSHIP",
+  "COURT_CASE",
+  "AMENDMENT",
+  "BUDGET",
+]);
+
+function cleanRequiredString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function cleanOptionalString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function buildReferendumContentHash(input: {
+  question: string;
+  description?: string | null;
+  bodyMarkdown?: string | null;
+}) {
+  return createHash("sha256")
+    .update(
+      JSON.stringify({
+        question: input.question.trim(),
+        description: cleanOptionalString(input.description),
+        bodyMarkdown: cleanOptionalString(input.bodyMarkdown),
+      }),
+    )
+    .digest("hex");
+}
 
 export async function GET() {
   try {
@@ -11,8 +51,13 @@ export async function GET() {
         id: true,
         title: true,
         slug: true,
+        question: true,
+        kind: true,
         description: true,
         status: true,
+        publishedAt: true,
+        lockedAt: true,
+        contentHash: true,
         createdAt: true,
         _count: { select: { votes: { where: { deletedAt: null } } } },
       },
@@ -31,15 +76,19 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { userId } = await requireAuth();
-    const { title, slug, description } = (await request.json()) as {
-      title: string;
-      slug: string;
-      description?: string;
-    };
+    const body = (await request.json()) as Record<string, unknown>;
+    const title = cleanRequiredString(body.title);
+    const slug = cleanRequiredString(body.slug);
+    const question = cleanRequiredString(body.question);
+    const description = cleanOptionalString(body.description);
+    const bodyMarkdown = cleanOptionalString(body.bodyMarkdown);
+    const requestedKind = (
+      cleanOptionalString(body.kind) ?? "GENERAL"
+    ).toUpperCase();
 
-    if (!title || !slug) {
+    if (!title || !slug || !question) {
       return NextResponse.json(
-        { error: "Title and slug are required" },
+        { error: "Title, slug, and question are required" },
         { status: 400 },
       );
     }
@@ -50,6 +99,14 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+
+    if (!REFERENDUM_KINDS.has(requestedKind)) {
+      return NextResponse.json(
+        { error: "Invalid referendum kind" },
+        { status: 400 },
+      );
+    }
+    const kind = requestedKind as ReferendumKind;
 
     const existing = await prisma.referendum.findUnique({ where: { slug } });
     if (existing) {
@@ -63,7 +120,17 @@ export async function POST(request: Request) {
       data: {
         title,
         slug,
-        description: description ?? null,
+        question,
+        kind,
+        description,
+        bodyMarkdown,
+        publishedAt: new Date(),
+        lockedAt: null,
+        contentHash: buildReferendumContentHash({
+          question,
+          description,
+          bodyMarkdown,
+        }),
         createdByUserId: userId,
       },
     });

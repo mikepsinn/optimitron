@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { ReferendumStepperPage } from "@/components/referendum/ReferendumStepperPage";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { getRouteMetadata } from "@/lib/metadata";
+import { getReferendumPageContent } from "@/lib/referendum-content.server";
 import { courtLink } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
@@ -25,12 +26,15 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
   const referralCode = typeof params.ref === "string" ? params.ref : null;
   const dashboardUrl =
     site.key === "onePercentTreaty" ? "/dashboard?welcome=1" : undefined;
+  const referendumContent = await getReferendumPageContent(COURT_OF_HUMANITY_SLUG);
 
   return (
     <div className="min-h-screen bg-background">
       <ReferendumStepperPage
         slug={COURT_OF_HUMANITY_SLUG}
         referralCode={referralCode}
+        question={referendumContent?.question}
+        bodyMarkdown={referendumContent?.bodyMarkdown}
         authCallbackUrl={dashboardUrl}
         postSignRedirectUrl={dashboardUrl}
       />

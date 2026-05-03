@@ -18,6 +18,7 @@ import {
   McpToolCallStatus,
   OrgStatus,
   OrgType,
+  ReferendumKind,
   ReferendumStatus,
   TaskCategory,
   TaskClaimPolicy,
@@ -1405,9 +1406,15 @@ const REFERENDUM_SELECT = {
   },
   createdAt: true,
   createdByUserId: true,
+  bodyMarkdown: true,
+  contentHash: true,
   description: true,
   id: true,
   jurisdictionId: true,
+  kind: true,
+  lockedAt: true,
+  publishedAt: true,
+  question: true,
   slug: true,
   status: true,
   title: true,
@@ -1424,6 +1431,28 @@ function parseReferendumStatus(value: unknown, fallback: ReferendumStatus) {
   return ReferendumStatus[normalized as keyof typeof ReferendumStatus] ?? null;
 }
 
+function parseReferendumKind(value: unknown, fallback: ReferendumKind) {
+  const normalized = optionalString(value)?.toUpperCase();
+  if (!normalized) return fallback;
+  return ReferendumKind[normalized as keyof typeof ReferendumKind] ?? null;
+}
+
+function buildReferendumContentHash(input: {
+  question: string;
+  description?: string | null;
+  bodyMarkdown?: string | null;
+}) {
+  return createHash("sha256")
+    .update(
+      JSON.stringify({
+        question: input.question.trim(),
+        description: optionalString(input.description),
+        bodyMarkdown: optionalString(input.bodyMarkdown),
+      }),
+    )
+    .digest("hex");
+}
+
 function referendumPath(slug: string) {
   return `/agencies/dcongress/referendums/${slug}`;
 }
@@ -1431,12 +1460,18 @@ function referendumPath(slug: string) {
 function summarizeReferendum(referendum: ReferendumToolRecord) {
   return {
     createdAt: referendum.createdAt.toISOString(),
+    bodyMarkdown: referendum.bodyMarkdown,
+    contentHash: referendum.contentHash,
     createdByUserId: referendum.createdByUserId,
     description: referendum.description,
     id: referendum.id,
     jurisdictionId: referendum.jurisdictionId,
+    kind: referendum.kind,
+    lockedAt: referendum.lockedAt?.toISOString() ?? null,
     organizationPositionCount: referendum._count.organizationPositions,
     path: referendumPath(referendum.slug),
+    publishedAt: referendum.publishedAt?.toISOString() ?? null,
+    question: referendum.question,
     slug: referendum.slug,
     status: referendum.status,
     surveyCount: referendum._count.surveys,
@@ -3438,7 +3473,28 @@ const TASK_TOOL_DEFINITIONS = [
         },
         description: {
           type: "string",
-          description: "Public framing text for the referendum page.",
+          description: "Short public summary for cards, lists, and metadata.",
+        },
+        question: {
+          type: "string",
+          description: "Canonical yes/no ballot question voters answer.",
+        },
+        bodyMarkdown: {
+          type: "string",
+          description: "Full public referendum detail text in Markdown.",
+        },
+        kind: {
+          type: "string",
+          enum: [
+            "GENERAL",
+            "DECLARATION",
+            "TREATY",
+            "MEMBERSHIP",
+            "COURT_CASE",
+            "AMENDMENT",
+            "BUDGET",
+          ],
+          description: "Referendum kind. Defaults to GENERAL.",
         },
         status: {
           type: "string",
@@ -3450,7 +3506,7 @@ const TASK_TOOL_DEFINITIONS = [
           description: "Optional jurisdiction ID if this referendum is scoped.",
         },
       },
-      required: ["title"],
+      required: ["title", "question"],
     },
   },
   {
@@ -6138,19 +6194,38 @@ export function createMcpServer(
           const prisma = await getPrisma();
           const title = optionalString(a.title);
           if (!title) return err("title is required");
+          const question = optionalString(a.question);
+          if (!question) return err("question is required");
           const slug = slugify(optionalString(a.slug) ?? title);
           if (!slug) return err("slug could not be derived from title");
           const status = parseReferendumStatus(a.status, ReferendumStatus.DRAFT);
           if (!status) {
             return err("status must be one of DRAFT, ACTIVE, or CLOSED");
           }
+          const kind = parseReferendumKind(a.kind, ReferendumKind.GENERAL);
+          if (!kind) {
+            return err(
+              "kind must be one of GENERAL, DECLARATION, TREATY, MEMBERSHIP, COURT_CASE, AMENDMENT, or BUDGET",
+            );
+          }
 
           const description = optionalString(a.description);
+          const bodyMarkdown = optionalString(a.bodyMarkdown);
           const jurisdictionId = optionalString(a.jurisdictionId);
           const data: Prisma.ReferendumUncheckedCreateInput = {
             title,
             slug,
+            question,
+            kind,
             status,
+            contentHash: buildReferendumContentHash({
+              question,
+              description,
+              bodyMarkdown,
+            }),
+            lockedAt: null,
+            publishedAt: status === ReferendumStatus.DRAFT ? null : new Date(),
+            ...(bodyMarkdown ? { bodyMarkdown } : {}),
             ...(description ? { description } : {}),
             ...(jurisdictionId ? { jurisdictionId } : {}),
             ...(userId ? { createdByUserId: userId } : {}),

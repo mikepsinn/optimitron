@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { referendumLink } from "@/lib/routes";
+import { ROUTES, referendumLink } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 
 export const metadata = getRouteMetadata(referendumLink);
@@ -13,6 +13,8 @@ export default async function ReferendumsIndexPage() {
       id: true,
       title: true,
       slug: true,
+      question: true,
+      kind: true,
       description: true,
       createdAt: true,
       _count: { select: { votes: { where: { deletedAt: null } } } },
@@ -48,7 +50,7 @@ export default async function ReferendumsIndexPage() {
           {referendums.map((referendum) => (
             <Link
               key={referendum.id}
-              href={`/referendum/${referendum.slug}`}
+              href={`${ROUTES.referendum}/${referendum.slug}`}
               className="block border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
             >
               <div className="flex items-start justify-between gap-4">
@@ -56,6 +58,9 @@ export default async function ReferendumsIndexPage() {
                   <h2 className="text-xl font-black uppercase text-foreground mb-2">
                     {referendum.title}
                   </h2>
+                  <p className="mb-2 text-base font-black text-foreground">
+                    {referendum.question}
+                  </p>
                   {referendum.description && (
                     <p className="text-sm font-bold text-foreground line-clamp-2">
                       {referendum.description}

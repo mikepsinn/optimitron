@@ -88,7 +88,7 @@ export function ReferendumVoteSection({
   }
 
   if (!isAuthenticated) {
-    const signInHref = getSignInPath(`/referendum/${referendumSlug}`, {
+    const signInHref = getSignInPath(`${ROUTES.referendum}/${referendumSlug}`, {
       referralCode,
     });
 
