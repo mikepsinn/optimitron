@@ -14,6 +14,7 @@ import {
   communityLinks,
   dfdaLink,
   dihLink,
+  donateLink,
   endorseLink,
   exploreLinks,
   footerAppLinks,
@@ -523,6 +524,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
           peopleLink,
           coalitionLink,
           endorseLink,
+          donateLink,
         ],
       },
       {
@@ -561,6 +563,7 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
           treatyDashboardLink,
           peopleLink,
           treatyTasksLink,
+          donateLink,
         ],
       },
       {

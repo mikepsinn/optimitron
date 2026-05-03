@@ -244,8 +244,8 @@ export function getMilitarySynonymTitle(seed: string): string {
 export const ARCADE_LABELS = {
   gameTitle: "The Earth Optimization Game",
   insertCoin: "Insert Coin to Play",
-  gameOverWin: "Game Over — You Win",
-  gameOverLose: "Game Over — You Lose",
+  gameOverWin: "Game Over: You Win",
+  gameOverLose: "Game Over: You Lose",
   selectMode: "Select Mode",
   versusMode: "Versus Mode",
   bossFight: "Boss Fight",
@@ -297,7 +297,7 @@ export const ARMORY = {
   pageTitle: "The Armory",
   itemCount: (n: number) => `${n} Items Available`,
   shopkeeperGreeting:
-    "Welcome, hero. Everything here is designed to make your species slightly less terrible at governing itself. Browse. Equip. Try not to break anything.",
+    "Welcome, hero. Everything here is designed to make your species slightly less terrible at governing itself. Browse. Equip. Try not to break anything important.",
   shopkeeperFooter:
     "You're still here? Go equip something. The metrics won't move themselves.",
   shelves: {

@@ -256,10 +256,9 @@ export default function DTreasuryPage() {
                 <h3 className="font-black uppercase text-sm">No politicians deciding. No lobbying. Just data.</h3>
                 <p className="text-sm font-bold mt-1">
                   The budget reflects what citizens actually want, updated
-                  continuously, verified mathematically. On my planet, this
-                  process takes about four minutes a week. You lot seem to spend
-                  most of your time shouting about it on your little phones and
-                  then doing absolutely nothing.
+                  continuously, verified mathematically. On Wishonia, this
+                  takes about four minutes a week. Here it takes polling, donor
+                  pressure, and a national screaming ritual.
                 </p>
               </div>
             </div>

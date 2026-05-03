@@ -102,7 +102,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
     <Card className="border-4 border-primary">
       <Card.Header>
         <Card.Title className="text-2xl font-black uppercase">YOUR PROFILE</Card.Title>
-        <Card.Description className="font-bold">Your public record on this planet</Card.Description>
+        <Card.Description className="font-bold">Your public record on this planet.</Card.Description>
       </Card.Header>
       <Card.Content className="space-y-6">
         <div className="space-y-4">

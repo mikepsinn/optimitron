@@ -38,7 +38,7 @@ export function BadgesSection({ badges }: BadgesSectionProps) {
               </div>
             ))
           ) : (
-            <p className="text-center text-muted-foreground py-8 col-span-3">No achievements unlocked yet. On my planet we&apos;d call this &ldquo;a blank record.&rdquo; Yours is showing.</p>
+            <p className="text-center text-muted-foreground py-8 col-span-3">No achievements unlocked yet. Go make the record less blank.</p>
           )}
         </div>
       </Card.Content>

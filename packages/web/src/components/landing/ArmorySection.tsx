@@ -32,7 +32,7 @@ export function ArmorySection() {
       <Container>
         <SectionHeader
           title="The Armory"
-          subtitle="Your toolkit for fixing the mess described above. Browse. Equip. Try not to break anything."
+          subtitle="Your toolkit for fixing the mess described above. Browse. Equip. Try not to break anything important."
           size="lg"
         />
         <NavItemCardGrid columns={3}>

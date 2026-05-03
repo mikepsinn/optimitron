@@ -408,7 +408,7 @@ export const profileLink: NavItem = {
   href: ROUTES.profile,
   label: "Profile",
   emoji: "🧭",
-  description: "Your name, your face, your connected accounts. On my planet this takes four seconds. Your species will somehow need twenty minutes and a password reset.",
+  description: "Your name, face, public profile, and connected accounts.",
   tagline: "Your name, your face, your connected accounts",
 
   cta: "View Profile",
@@ -428,8 +428,8 @@ export const censusLink: NavItem = {
   href: ROUTES.census,
   label: "Census",
   emoji: "📋",
-  description: "Location, income, demographics. Without this you are a rounding error. With it you are a data point. On your planet this counts as a promotion.",
-  tagline: "Location, income, demographics — become a data point",
+  description: "Location, income, demographics. Without this you are a rounding error. With it you are a data point.",
+  tagline: "Location, income, demographics - become a useful data point",
 
   cta: "Take Census",
 };
@@ -438,7 +438,7 @@ export const checkInLink: NavItem = {
   href: ROUTES.checkIn,
   label: "Check-In",
   emoji: "☀️",
-  description: "Thirty seconds a day to tell me if you're alive and thriving. On my planet we call this 'minimum viable self-awareness.'",
+  description: "Thirty seconds a day to say whether you are alive and thriving. Minimum viable self-awareness.",
   tagline: "Thirty seconds a day of minimum viable self-awareness",
 
   cta: "Check In",
@@ -448,7 +448,7 @@ export const settingsLink: NavItem = {
   href: ROUTES.settings,
   label: "Settings",
   emoji: "⚙️",
-  description: "Notification preferences, account toggles, and other knobs your species inexplicably needs labelled.",
+  description: "Notification preferences, account toggles, and profile controls.",
   tagline: "Notification preferences and account toggles",
 
   cta: "Open Settings",
@@ -653,6 +653,16 @@ export const campaignPartnersLink: NavItem = {
 
 export const coalitionLink = campaignPartnersLink;
 
+export const donateLink: NavItem = {
+  href: ROUTES.donate,
+  label: "Donate",
+  emoji: "$",
+  description:
+    "Less than a cent buys one year of healthy human life. About 50,000× cheaper than anti-malaria bed nets. Tax-deductible to a 501(c)(3).",
+  tagline: "Less than a cent per healthy life-year",
+  cta: "Donate",
+};
+
 export const legalLink: NavItem = {
   href: ROUTES.legal,
   label: "Legal",
@@ -755,8 +765,8 @@ export const contributeLink: NavItem = {
   href: ROUTES.contribute,
   label: "Contribute",
   emoji: "🤝",
-  description: "How to help. The bar is on the floor and your species still trips over it.",
-  tagline: "How to help — the bar is on the floor",
+  description: "Four useful ways to help: vote, fund, code, or feed the machine real data.",
+  tagline: "Vote, fund, code, or feed the machine",
 
   cta: "Contribute",
 };
@@ -765,8 +775,8 @@ export const fundLink: NavItem = {
   href: ROUTES.fund,
   label: "Fund Optimization",
   emoji: "🪙",
-  description: "Insert coin. AI agents optimise your planet. You get a receipt showing exactly how many suffering-hours your dollar prevented. It is genuinely less complicated than your tax code.",
-  tagline: "Insert coin, optimise Earth",
+  description: "Insert coin. AI agents optimize Earth. See what your dollar did and where the money went.",
+  tagline: "Insert coin, optimize Earth",
 
   cta: "Fund Now",
 };

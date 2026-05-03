@@ -28,8 +28,7 @@ export function SettingsClient({ emailPreferences, notificationPreferences }: Se
           <span className="text-brutal-cyan">SETTINGS</span>
         </h1>
         <p className="text-base font-bold text-muted-foreground">
-          Notification preferences, account toggles, and other knobs your species inexplicably
-          needs labelled.
+          Notification preferences, account toggles, and profile controls.
         </p>
       </div>
 

@@ -97,6 +97,7 @@ describe("site variant UI config", () => {
       "People",
       "Organizational Signatories",
       "Sign as Organization",
+      "Donate",
       "Why",
       "Legal",
       "Privacy",

@@ -325,7 +325,7 @@ export function RepresentedPersonForm({
             `I voted for ${personName}.`,
             condition ? `${personName} is on the board because of ${condition}.` : null,
             publicComment.trim() || null,
-            "This is not an election. It is a receipt.",
+            `${personName} couldn't click the button. So I clicked it for them.`,
             peopleUrl,
           ]
             .filter(Boolean)
@@ -373,7 +373,7 @@ export function RepresentedPersonForm({
             Drag someone to the polls
           </h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            Add someone the budget failed. Official votes stay official. This part is for receipts.
+            Add someone who couldn't click the button themselves. Official vote totals stay separate.
           </p>
         </div>
 
@@ -948,7 +948,7 @@ export function RepresentedPersonForm({
           type="button"
         >
           <UserPlus className="mr-2 h-5 w-5" aria-hidden="true" />
-          {status === "saving" ? "Filing receipt" : "File their vote against missiles"}
+          {status === "saving" ? "Filing…" : "File their vote against missiles"}
         </Button>
 
         {error ? (

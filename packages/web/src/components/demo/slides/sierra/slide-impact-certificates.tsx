@@ -38,7 +38,7 @@ export function SlideImpactCertificates() {
           className="font-terminal text-2xl md:text-3xl text-zinc-200 text-center transition-opacity duration-500"
           style={{ opacity: phase >= 2 ? 1 : 0 }}
         >
-          Every action mints an on-chain impact receipt
+          Every action leaves on-chain proof
         </div>
 
         {/* Three actions */}

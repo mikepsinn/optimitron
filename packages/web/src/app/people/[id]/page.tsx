@@ -190,7 +190,7 @@ function RepresentedPersonProfile({
         {conditions.length > 0 ? (
           <section className="space-y-3">
             <h2 className="text-xl font-black uppercase tracking-[0.12em]">
-              Condition receipts
+              Conditions
             </h2>
             <ul className="grid gap-3 sm:grid-cols-2">
               {conditions.map((condition) => (

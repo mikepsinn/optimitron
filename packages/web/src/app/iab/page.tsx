@@ -149,10 +149,8 @@ export default function IABPage() {
 
         <div className="border-4 border-primary bg-background p-6 mt-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm text-foreground font-bold leading-relaxed">
-            On my planet, we split revenue by algorithm and nobody argues about
-            it. You lot spend most of your revenue on people whose job it is to
-            argue about how to split revenue. The 80/10/10 is hardcoded in the
-            smart contract. No lobbying required to lobby.
+            The 80/10/10 split is hardcoded in the smart contract. No committee
+            gets to argue it into mush later. No lobbying required to lobby.
           </p>
         </div>
       </section>

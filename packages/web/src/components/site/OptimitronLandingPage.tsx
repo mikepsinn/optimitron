@@ -112,7 +112,7 @@ export function OptimitronLandingPage({
         <Container>
           <SectionHeader
             title="Worst Players: Politicians"
-            subtitle="How your representatives actually vote vs what you actually wanted. The receipts."
+            subtitle="How your representatives actually vote vs what humans actually wanted."
             size="lg"
             className="text-background [&_p]:text-background"
           />

@@ -66,9 +66,8 @@ export default function ToolsPage() {
           The Armory
         </h1>
         <p className="max-w-3xl text-lg font-bold text-muted-foreground">
-          Everything here is designed to make your species slightly less
-          terrible at governing itself. Browse. Equip. Try not to break
-          anything.
+          Your toolkit for fixing the mess described above. Browse. Equip. Try
+          not to break anything important.
         </p>
       </section>
 

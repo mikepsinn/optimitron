@@ -57,7 +57,7 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
     <Card className="border-4 border-primary mb-8">
       <Card.Header>
         <Card.Title className="text-2xl font-black uppercase">NOTIFICATION PREFERENCES</Card.Title>
-        <Card.Description className="font-bold">Choose how and when to be bothered</Card.Description>
+        <Card.Description className="font-bold">Choose how and when to be bothered.</Card.Description>
       </Card.Header>
       <Card.Content className="space-y-4">
         {/* Channel headers */}
@@ -101,7 +101,7 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
 
         <div className="p-4 border-2 border-dashed border-primary bg-brutal-yellow">
           <p className="text-sm font-bold text-center">
-            On my planet, notifications take 0.003 seconds to process. You lot seem to need the option to ignore them entirely.
+            Notifications are only useful if you can ignore the useless ones.
           </p>
         </div>
       </Card.Content>

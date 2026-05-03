@@ -120,14 +120,14 @@ export default async function PrizePage() {
       <section className="mb-16">
         <TwoOutcomes
           fail={{
-            title: "Game Over — You Lose",
+            title: "Game Over: You Lose",
             metric: <>~{poolMultiple} BACK</>,
             description: <>Humanity stays stupid. Metrics miss the targets after 15 years. Projected outcome: ~{poolReturn} annual growth for 15 years (based on VC-sector diversification).</>,
           }}
           success={{
-            title: "Game Over — You Win",
+            title: "Game Over: You Win",
             metric: <>{incomeGain}+ INCOME</>,
-            description: <>Humanity gets its act together. You lose the deposit. But your income just went up {incomeGain} per capita lifetime and you gained {haleGain} extra healthy years. You won&apos;t miss the deposit.</>,
+            description: <>Humanity gets its act together. Your deposit stays in the prize pool. Your expected upside is {incomeGain} more per capita lifetime income and {haleGain} extra healthy years.</>,
           }}
           footer={<>Recruit voters too? You earn {POINTS}. {PRIZE_OUTCOMES.successShort}<span className="font-black text-brutal-pink"> Dominant assurance design.</span></>}
         />
@@ -181,14 +181,14 @@ export default async function PrizePage() {
         </div>
       </section>
 
-      {/* INSERT COIN — Deposit Section */}
+      {/* Insert Coin - Deposit Section */}
       <section id="invest" className="mb-16">
         <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="font-pixel text-2xl font-black uppercase mb-4">
             Insert Coin
           </h2>
           <p className="text-sm font-bold mb-6 max-w-2xl">
-            Your papers would go into the Earth Optimization Prize fund (projected {poolReturn} annually, based on VC-sector diversification). You get PRIZE shares.
+            Your deposit goes into the Earth Optimization Prize fund (projected {poolReturn} annually, based on VC-sector diversification). You get PRIZE shares.
             Recruit verified voters and you also earn {POINTS}, which would pay out if humanity
             wins. This is the first arcade game in history where the house loses on purpose.
           </p>
