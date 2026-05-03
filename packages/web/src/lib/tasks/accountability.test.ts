@@ -9,9 +9,11 @@ import {
   getTaskDelayStats,
 } from "./accountability";
 import {
+  DEFAULT_PEER_SHARE_TEMPLATE_ID,
   HUMANITY_DEFAULT_SHARE_TEMPLATE_ID,
   ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID,
   SHARE_TEMPLATES,
+  getShareTemplate,
   getUsableShareTemplates,
   pickDefaultShareTemplateId,
 } from "./share-templates";
@@ -381,6 +383,33 @@ describe("humanity and one-human share templates", () => {
     );
   });
 
+  it("one-human Office Memo default leans on personal-benefit stats, not leader-blame stats", () => {
+    const template = getShareTemplate(ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID);
+    expect(template).toBeDefined();
+    expect(template!.label).toBe("Office Memo");
+    expect(templateModes(template!)).toContain("one_human");
+    // Friend-targeted asks shouldn't blame the reader for government spending.
+    // The leader version uses {mil_to_trials_ratio} + {mil_synonym}; the friend
+    // version swaps those for personal-ROI stats the reader can act on.
+    expect(template!.requiredTokens).not.toContain("mil_to_trials_ratio");
+    expect(template!.requiredTokens).not.toContain("mil_synonym");
+    expect(template!.requiredTokens).toContain("treaty_hale_gain");
+    expect(template!.requiredTokens).toContain("lifetime_income_gain");
+
+    const usableIds = getUsableShareTemplates(oneHumanTokens, "one_human").map(
+      (entry) => entry.id,
+    );
+    const rendered = renderTemplate(template!.body, oneHumanTokens);
+
+    expect(usableIds).toContain(ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID);
+    expect(rendered).toContain("Jake");
+    expect(rendered).toContain(oneHumanTokens.treaty_url);
+    expect(rendered).toContain(oneHumanTokens.deaths_from_delay);
+    expect(rendered).toContain(oneHumanTokens.treaty_hale_gain);
+    expect(rendered).toContain(oneHumanTokens.lifetime_income_gain);
+    expect(rendered).toMatch(/two more humans/i);
+  });
+
   it("keeps leader-only templates out of humanity and one-human modes", () => {
     const leaderOnlyIds = SHARE_TEMPLATES
       .filter((template) => {
@@ -433,6 +462,14 @@ describe("share-text templates", () => {
       expect(rendered.length).toBeGreaterThan(0);
     });
   }
+
+  it("throws instead of silently blanking unresolved placeholders", () => {
+    expect(() =>
+      renderTemplate("Hi {target_name}. Vote here: {treaty_url}", {
+        target_name: "Taylor",
+      }),
+    ).toThrow(/Missing template token\(s\): treaty_url/);
+  });
 
   it("filters templates requiring tax data when it is missing", () => {
     const nonSignerTokens = buildTaskShareTokens({
@@ -708,5 +745,17 @@ describe("peer share templates (most-important-secret)", () => {
     expect(rendered).not.toMatch(/https?:\/\//);
     expect(rendered).not.toContain("1percenttreaty");
     expect(rendered).not.toMatch(/\{\w+\}/);
+  });
+
+  it("peer default is safe for the secret-chain pitch token bag", () => {
+    const peer = getShareTemplate(DEFAULT_PEER_SHARE_TEMPLATE_ID);
+    expect(peer).toBeDefined();
+    expect(templateModes(peer!)).toContain("peer");
+
+    const rendered = renderTemplate(peer!.body, { citizen_name: "Alex" });
+
+    expect(rendered).toContain("Alex");
+    expect(rendered).not.toMatch(/\{\w+\}/);
+    expect(rendered).not.toMatch(/https?:\/\//);
   });
 });
