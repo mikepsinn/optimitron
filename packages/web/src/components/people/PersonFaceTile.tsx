@@ -22,7 +22,7 @@ const FALLBACK_PALETTE = [
 ] as const;
 
 function lifeStatusBadge(status: PersonLifeStatus): string {
-  if (status === PersonLifeStatus.DECEASED) return "Memorial vote 👻";
+  if (status === PersonLifeStatus.DECEASED) return "Memorial signature 👻";
   if (status === PersonLifeStatus.LIVING) return "Represented human";
   return "Status unknown";
 }

@@ -15,7 +15,7 @@ import {
 } from "@/lib/tasks/accountability";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
-import { ROUTES } from "@/lib/routes";
+import { peopleLink, ROUTES } from "@/lib/routes";
 import {
   getRepresentedPersonProfileData,
   type RepresentedPersonProfileData,
@@ -30,7 +30,8 @@ export async function generateMetadata({
   const representedData = await getRepresentedPersonProfileData(id);
 
   if (representedData) {
-    const isDeceased = representedData.person.lifeStatus === PersonLifeStatus.DECEASED;
+    const isDeceased =
+      representedData.person.lifeStatus === PersonLifeStatus.DECEASED;
     const ghost = isDeceased ? "👻 " : "";
     const condition = representedData.memorial?.conditionLabel ?? null;
     const lag = representedData.memorial?.efficacyLag ?? null;
@@ -39,14 +40,14 @@ export async function generateMetadata({
       representedData.memorial?.memorialMessage ??
       (isDeceased
         ? `${representedData.person.displayName} is in the Invisible Graveyard.`
-        : `${representedData.person.displayName}'s symbolic 1% Treaty vote.`);
+        : `${representedData.person.displayName}'s represented 1% Treaty signature.`);
     const description = lag
       ? `${baseDescription} ${lag.interventionName} was approved ${lag.approvalDate.getUTCFullYear()}.`
       : condition && isDeceased
         ? `${representedData.person.displayName} died of ${condition}. ${baseDescription}`
         : baseDescription;
     return {
-      title: `${ghost}${representedData.person.displayName} | The Invisible Graveyard`,
+      title: `${ghost}${representedData.person.displayName} | ${isDeceased ? "The Invisible Graveyard" : peopleLink.label}`,
       description,
       openGraph: {
         title: `${ghost}${representedData.person.displayName}`,
@@ -88,7 +89,7 @@ function getFallbackInitials(value: string) {
 }
 
 function getRepresentedLifeStatusLabel(status: PersonLifeStatus) {
-  if (status === PersonLifeStatus.DECEASED) return "Memorial vote 👻";
+  if (status === PersonLifeStatus.DECEASED) return "Memorial signature 👻";
   if (status === PersonLifeStatus.LIVING) return "Represented human";
   return "Status unknown";
 }
@@ -113,7 +114,14 @@ function RepresentedPersonProfile({
 }: {
   data: RepresentedPersonProfileData;
 }) {
-  const { conditions, memorial, person, relationshipType, representedBy, vote } = data;
+  const {
+    conditions,
+    memorial,
+    person,
+    relationshipType,
+    representedBy,
+    vote,
+  } = data;
   const fallbackInitials = getFallbackInitials(person.displayName);
   const relationship = formatRelationship(relationshipType);
   const birthDate = formatDate(person.birthDate);
@@ -128,7 +136,7 @@ function RepresentedPersonProfile({
       <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:py-14">
         <nav className="text-sm font-black uppercase tracking-[0.14em]">
           <Link className="underline underline-offset-4" href={ROUTES.people}>
-            People
+            {peopleLink.label}
           </Link>
           <span className="mx-2 text-muted-foreground">/</span>
           <span className="text-muted-foreground">{person.displayName}</span>
@@ -136,7 +144,10 @@ function RepresentedPersonProfile({
 
         <header className="grid gap-8 border-b border-border pb-8 md:grid-cols-[auto_1fr]">
           <Avatar className="h-36 w-36 border border-border bg-muted">
-            <Avatar.Image alt={person.displayName} src={person.image ?? undefined} />
+            <Avatar.Image
+              alt={person.displayName}
+              src={person.image ?? undefined}
+            />
             <Avatar.Fallback className="bg-muted text-4xl font-black">
               {fallbackInitials || "?"}
             </Avatar.Fallback>
@@ -158,7 +169,9 @@ function RepresentedPersonProfile({
                 {birthDate ? `Born ${birthDate}` : null}
                 {birthDate && deathDate ? " / " : null}
                 {deathDate ? `Died ${deathDate}` : null}
-                {memorial?.deathCountryCode ? ` in ${memorial.deathCountryCode}` : ""}
+                {memorial?.deathCountryCode
+                  ? ` in ${memorial.deathCountryCode}`
+                  : ""}
               </p>
             ) : null}
           </div>
@@ -175,14 +188,18 @@ function RepresentedPersonProfile({
             <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
               Relationship
             </p>
-            <p className="mt-2 text-2xl font-black">{relationship ?? "Not specified"}</p>
+            <p className="mt-2 text-2xl font-black">
+              {relationship ?? "Not specified"}
+            </p>
           </div>
           <div className="border border-border bg-card p-5 text-card-foreground">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-              Vote type
+              Signature type
             </p>
             <p className="mt-2 text-2xl font-black">
-              {person.lifeStatus === PersonLifeStatus.DECEASED ? "Memorial" : "Represented"}
+              {person.lifeStatus === PersonLifeStatus.DECEASED
+                ? "Memorial"
+                : "Represented"}
             </p>
           </div>
         </section>
@@ -198,7 +215,9 @@ function RepresentedPersonProfile({
                   className="border border-border bg-card p-4 text-card-foreground"
                   key={`${condition.conditionName}-${condition.status}`}
                 >
-                  <p className="text-lg font-black uppercase">{condition.conditionName}</p>
+                  <p className="text-lg font-black uppercase">
+                    {condition.conditionName}
+                  </p>
                   <p className="mt-1 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
                     {condition.status.replace(/_/g, " ").toLowerCase()}
                   </p>
@@ -249,8 +268,8 @@ function RepresentedPersonProfile({
             </h2>
             <p className="font-bold leading-7 text-muted-foreground">
               At least one submitter has consented to court-evidence use of this
-              memorial. The structured filing is available as JSON for the
-              Court of Humanity (or any future legal proceeding) to ingest.
+              memorial. The structured filing is available as JSON for the Court
+              of Humanity (or any future legal proceeding) to ingest.
             </p>
             <a
               className="inline-block border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background"
@@ -264,7 +283,9 @@ function RepresentedPersonProfile({
 
         <section className="border border-border bg-card p-5 text-card-foreground">
           <p className="font-bold leading-7 text-muted-foreground">
-            This is not an official referendum vote. Official counts only include living humans voting for themselves. This page exists because budgets look different when the dead and sick get faces.
+            This is not a direct treaty signature. Direct counts only include
+            living humans signing for themselves. This page exists because
+            budgets look different when the dead and sick get faces.
           </p>
         </section>
       </div>
@@ -323,7 +344,10 @@ export default async function PersonDetailPage({
           </nav>
           <div className="flex items-start gap-4">
             <Avatar className="h-20 w-20 shrink-0 border-2 border-foreground bg-muted">
-              <Avatar.Image alt={person.displayName} src={person.image ?? undefined} />
+              <Avatar.Image
+                alt={person.displayName}
+                src={person.image ?? undefined}
+              />
               <Avatar.Fallback className="bg-foreground font-black text-background">
                 {fallbackInitials || "?"}
               </Avatar.Fallback>
@@ -339,73 +363,90 @@ export default async function PersonDetailPage({
               ) : null}
               {isPublicOfficialPerson(person) ? (
                 <p className="text-xs font-bold text-muted-foreground">
-                  Job: Promote General Welfare (i.e. maximize median health and wealth)
+                  Job: Promote General Welfare (i.e. maximize median health and
+                  wealth)
                 </p>
               ) : null}
             </div>
           </div>
           {person.bio?.trim() ? (
-            <p className="max-w-4xl text-sm font-bold text-muted-foreground">{person.bio}</p>
+            <p className="max-w-4xl text-sm font-bold text-muted-foreground">
+              {person.bio}
+            </p>
           ) : null}
         </header>
 
         {/* Stats — overdue clock + net completed impact */}
         {hasAnyTasks ? (
           <section className="space-y-2">
-            <h2 className="text-lg font-bold uppercase tracking-wide">Employee Performance</h2>
+            <h2 className="text-lg font-bold uppercase tracking-wide">
+              Employee Performance
+            </h2>
             <div className="grid gap-3 border-2 border-foreground bg-background p-4 sm:grid-cols-3 lg:grid-cols-5">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Overdue Tasks
-              </p>
-              <p className="mt-1 text-2xl font-bold">{openTasks.length.toLocaleString("en-US")}</p>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                DALYs Lost From Delay
-              </p>
-              <p className="mt-1 text-2xl font-bold">
-                {formatCompactCount(openSummary.currentHumanLivesLost)}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Economic Loss From Delay
-              </p>
-              <p className="mt-1 text-2xl font-bold">
-                {formatCompactCurrency(openSummary.currentEconomicValueUsdLost)}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Net Lives Saved
-              </p>
-              <p className="mt-1 text-2xl font-bold">
-                {formatCompactCount(netLivesSaved)}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Net $ Saved
-              </p>
-              <p className="mt-1 text-2xl font-bold">
-                {formatCompactCurrency(netEconomicImpact)}
-              </p>
-            </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  Overdue Tasks
+                </p>
+                <p className="mt-1 text-2xl font-bold">
+                  {openTasks.length.toLocaleString("en-US")}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  DALYs Lost From Delay
+                </p>
+                <p className="mt-1 text-2xl font-bold">
+                  {formatCompactCount(openSummary.currentHumanLivesLost)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  Economic Loss From Delay
+                </p>
+                <p className="mt-1 text-2xl font-bold">
+                  {formatCompactCurrency(
+                    openSummary.currentEconomicValueUsdLost,
+                  )}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  Net Lives Saved
+                </p>
+                <p className="mt-1 text-2xl font-bold">
+                  {formatCompactCount(netLivesSaved)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  Net $ Saved
+                </p>
+                <p className="mt-1 text-2xl font-bold">
+                  {formatCompactCurrency(netEconomicImpact)}
+                </p>
+              </div>
             </div>
           </section>
         ) : null}
 
         {openTasksTyped.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="text-lg font-bold uppercase tracking-wide">Overdue Tasks</h2>
-            <SortableTaskList tasks={openTasksTyped} variant="signer" hideAssignee />
+            <h2 className="text-lg font-bold uppercase tracking-wide">
+              Overdue Tasks
+            </h2>
+            <SortableTaskList
+              tasks={openTasksTyped}
+              variant="signer"
+              hideAssignee
+            />
           </section>
         ) : null}
 
         {verifiedTyped.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="text-lg font-bold uppercase tracking-wide">Completed Tasks</h2>
+            <h2 className="text-lg font-bold uppercase tracking-wide">
+              Completed Tasks
+            </h2>
             <SortableTaskList
               tasks={verifiedTyped}
               variant="completed"
