@@ -16,6 +16,7 @@ export function ReferendumSiteInlineSign({
   authCallbackUrl,
   postSignRedirectUrl,
   title,
+  variant = "reader",
   showPrivacyToggle,
   showReaderShell = false,
 }: {
@@ -24,6 +25,7 @@ export function ReferendumSiteInlineSign({
   authCallbackUrl?: string;
   postSignRedirectUrl?: string;
   title?: string;
+  variant?: "stepper" | "reader";
   showPrivacyToggle?: boolean;
   showReaderShell?: boolean;
 }) {
@@ -76,7 +78,7 @@ export function ReferendumSiteInlineSign({
       signedTitle={config.signedTitle}
       signedBody={signedBody}
       signedShare={signedShare}
-      variant="reader"
+      variant={variant}
       showReaderShell={showReaderShell}
       submitLabel={config.action.submitLabel}
       submittingLabel={config.action.submittingLabel}

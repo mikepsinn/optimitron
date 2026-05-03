@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 import React from "react";
+import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { DECLARATION_SLUG } from "@/lib/declaration";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
@@ -45,6 +46,22 @@ describe("ReferendumStepperPage", () => {
 
     expect(signature.props.referendumSlug).toBe(DECLARATION_SLUG);
     expect(signature.props.referralCode).toBe("alice");
+  }, 20000);
+
+  it("passes the active display mode to the generic signature surface", async () => {
+    const element = await renderPage({
+      slug: COURT_OF_HUMANITY_SLUG,
+      referralCode: "alice",
+    });
+    const signatureSlot = element.props.signatureSlot as (
+      mode: "stepper" | "reader",
+    ) => ReactElement;
+
+    const stepperSignature = signatureSlot("stepper");
+    const readerSignature = signatureSlot("reader");
+
+    expect(stepperSignature.props.variant).toBe("stepper");
+    expect(readerSignature.props.variant).toBe("reader");
   }, 20000);
 
   it("keeps the treaty on the treaty vote flow", async () => {

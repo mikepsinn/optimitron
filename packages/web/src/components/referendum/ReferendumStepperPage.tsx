@@ -47,6 +47,7 @@ export function ReferendumStepperPage({
         referralCode={referralCode}
         authCallbackUrl={authCallbackUrl}
         postSignRedirectUrl={postSignRedirectUrl}
+        variant={mode}
         showReaderShell={mode === "reader"}
       />
     );

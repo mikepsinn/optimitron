@@ -3,6 +3,7 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import {
   OrgStatus,
   OrgType,
+  ReferendumKind,
   ReferendumStatus,
   TaskClaimPolicy,
   TaskStatus,
@@ -293,7 +294,13 @@ beforeEach(() => {
     id: "ref-new",
     title: "Trial Abundance Referendum",
     slug: "trial-abundance-referendum",
+    question: "Should we fund pragmatic trials?",
+    kind: ReferendumKind.GENERAL,
     description: "Should we fund pragmatic trials?",
+    bodyMarkdown: null,
+    contentHash: "a".repeat(64),
+    lockedAt: null,
+    publishedAt: null,
     status: ReferendumStatus.DRAFT,
     jurisdictionId: null,
     createdByUserId: "user-1",
@@ -1008,28 +1015,52 @@ describe("MCP server tool dispatch", () => {
         name: "createReferendum",
         arguments: {
           title: "Trial Abundance Referendum",
+          question: "Should we fund pragmatic trials?",
           description: "Should we fund pragmatic trials?",
         },
       });
 
       expect(result.isError).toBeFalsy();
       expect(mocks.referendumCreate).toHaveBeenCalledWith({
-        data: {
+        data: expect.objectContaining({
           title: "Trial Abundance Referendum",
           slug: "trial-abundance-referendum",
+          question: "Should we fund pragmatic trials?",
+          kind: ReferendumKind.GENERAL,
           description: "Should we fund pragmatic trials?",
           status: ReferendumStatus.DRAFT,
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+          lockedAt: null,
+          publishedAt: null,
           createdByUserId: "user-1",
-        },
+        }),
         select: expect.any(Object),
       });
       const body = parseToolBody(result);
       expect(body.referendum).toMatchObject({
         id: "ref-new",
         slug: "trial-abundance-referendum",
+        question: "Should we fund pragmatic trials?",
+        kind: ReferendumKind.GENERAL,
+        contentHash: "a".repeat(64),
         status: ReferendumStatus.DRAFT,
         voteCount: 0,
       });
+    });
+
+    it("createReferendum requires a canonical ballot question", async () => {
+      const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "createReferendum",
+        arguments: {
+          title: "Trial Abundance Referendum",
+          description: "Should we fund pragmatic trials?",
+        },
+      });
+
+      expect(result.isError).toBeTruthy();
+      expect(parseToolBody(result).error).toBe("question is required");
+      expect(mocks.referendumCreate).not.toHaveBeenCalled();
     });
   });
 
