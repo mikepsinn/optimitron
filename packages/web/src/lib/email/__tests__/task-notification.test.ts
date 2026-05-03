@@ -77,6 +77,30 @@ describe("reply-address encode/decode", () => {
   });
 });
 
+describe("reply domain env", () => {
+  const originalReplyDomain = process.env.REPLY_EMAIL_DOMAIN;
+
+  afterEach(() => {
+    if (originalReplyDomain !== undefined) {
+      process.env.REPLY_EMAIL_DOMAIN = originalReplyDomain;
+    } else {
+      delete process.env.REPLY_EMAIL_DOMAIN;
+    }
+    vi.resetModules();
+  });
+
+  it("falls back to the default reply domain when the env var is blank", async () => {
+    process.env.REPLY_EMAIL_DOMAIN = "";
+    vi.resetModules();
+    const { getReplyAddress, getReplyEmailDomain } = await import(
+      "../task-notification"
+    );
+
+    expect(getReplyEmailDomain()).toBe("reply.warondisease.org");
+    expect(getReplyAddress("abc")).toBe("reply+abc@reply.warondisease.org");
+  });
+});
+
 describe("app-URL helpers", () => {
   const originalBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const originalNextAuthUrl = process.env.NEXTAUTH_URL;
@@ -134,6 +158,7 @@ describe("sendTaskNotificationEmail", () => {
   const originalMockSend = process.env.RESEND_MOCK_SEND;
 
   beforeEach(() => {
+    vi.resetModules();
     delete process.env.RESEND_API_KEY;
     delete process.env.RESEND_MOCK_SEND;
   });

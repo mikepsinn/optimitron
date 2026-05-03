@@ -356,6 +356,9 @@ export async function fireSpawnCommunication(
     });
   }
   const taskId = taskIdValue;
+  let attemptedSendCount = 0;
+  let sentCount = 0;
+  const unsentReasons: string[] = [];
 
   const priorSendCount = await tx.taskCommunication.count({
     where: {
@@ -456,8 +459,10 @@ export async function fireSpawnCommunication(
         purpose: "REMINDER",
       },
     });
+    attemptedSendCount++;
 
     if (!recipient) {
+      unsentReasons.push(`${spec.kind}: no recipient email resolved`);
       continue;
     }
 
@@ -488,6 +493,28 @@ export async function fireSpawnCommunication(
         providerMessageId: sendResult.providerMessageId ?? null,
       },
     });
+
+    if (sendResult.status === "sent") {
+      sentCount++;
+    } else {
+      unsentReasons.push(
+        `${spec.kind}: ${sendResult.status}${
+          sendResult.errorMessage ? ` (${sendResult.errorMessage})` : ""
+        }`,
+      );
+    }
+  }
+  if (attemptedSendCount > 0 && sentCount === 0) {
+    return {
+      result: "failed",
+      triggerId: trigger.id,
+      triggerKey: trigger.triggerKey,
+      idempotencyKey,
+      spawnedSpecs: [],
+      spawnedTaskIds: [taskId],
+      spawnedTaskKeys: [],
+      error: unsentReasons.join("; ") || "no communication sent",
+    };
   }
   return {
     result: "communicated",
