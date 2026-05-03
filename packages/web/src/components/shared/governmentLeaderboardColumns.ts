@@ -9,7 +9,8 @@ export type GovernmentLeaderboardSortKey =
   | "militarySpending"
   | "healthSpending"
   | "trialRatio"
-  | "researchRatio";
+  | "researchRatio"
+  | "memorialDeaths";
 
 export interface GovernmentLeaderboardColumnMeta {
   label: string;
@@ -45,10 +46,12 @@ export const GOVERNMENT_LEADERBOARD_COLUMN_VISIBILITY: Record<
   militaryPerCapitaPPP:{ toggleable: true,  defaultHiddenClass: "hidden xl:table-cell",  compactHidden: true },
   healthSpending:      { toggleable: true,  defaultHiddenClass: "hidden xl:table-cell",  compactHidden: true },
   researchRatio:       { toggleable: true,  defaultHiddenClass: "hidden md:table-cell",  compactHidden: false },
+  memorialDeaths:      { toggleable: true,  defaultHiddenClass: "hidden md:table-cell",  compactHidden: true  },
 };
 
 export const GOVERNMENT_LEADERBOARD_COLUMN_ORDER: GovernmentLeaderboardSortKey[] = [
   "rank", "country", "militarySpending", "killed", "trialRatio",
+  "memorialDeaths",
   "hale", "lifeExpectancy", "medianIncome", "militaryPerCapitaPPP",
   "healthSpending", "researchRatio",
 ];
@@ -100,5 +103,10 @@ export const GOVERNMENT_LEADERBOARD_COLUMN_META: Record<
   researchRatio: {
     label: "Mil/Research",
     description: "Military spending per $1 of total government medical research spending.",
+  },
+  memorialDeaths: {
+    label: "Memorial 👻",
+    description:
+      "Public memorials in the Invisible Graveyard attributed to this government — by death-country or by named responsible party. Click to sort.",
   },
 };

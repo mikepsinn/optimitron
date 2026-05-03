@@ -19,6 +19,9 @@ vi.mock("@/lib/prisma", () => ({
       create: vi.fn(),
       update: vi.fn(),
     },
+    subject: {
+      upsert: vi.fn(),
+    },
   },
 }));
 
@@ -82,6 +85,7 @@ describe("person server", () => {
     expect(db.person.update).toHaveBeenCalledWith({
       data: {
         countryCode: null,
+        createdByUserId: null,
         currentAffiliation: "United States Government",
         displayName: "Donald Trump",
         email: null,
@@ -251,6 +255,7 @@ describe("ensurePersonForUser", () => {
     vi.mocked(prisma.person.findUnique).mockReset();
     vi.mocked(prisma.person.create).mockReset();
     vi.mocked(prisma.person.update).mockReset();
+    vi.mocked(prisma.subject.upsert).mockReset();
   });
 
   it("seeds a non-null Person.handle when creating a fresh Person at signup", async () => {
@@ -278,6 +283,18 @@ describe("ensurePersonForUser", () => {
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: "user_new" },
       data: { personId: "person_new" },
+    });
+    expect(prisma.subject.upsert).toHaveBeenCalledWith({
+      where: { userId: "user_new" },
+      update: expect.objectContaining({
+        personId: "person_new",
+        subjectType: "USER",
+      }),
+      create: expect.objectContaining({
+        personId: "person_new",
+        subjectType: "USER",
+        userId: "user_new",
+      }),
     });
   });
 

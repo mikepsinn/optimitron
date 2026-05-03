@@ -9,6 +9,7 @@ import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
+import { RepresentedPersonForm } from "@/components/people/RepresentedPersonForm";
 import {
   TreatyFlowButtonRow,
   TreatyFlowParagraph,
@@ -81,6 +82,7 @@ type FlowScreen =
   | "neat"
   | "twoHumans"
   | "perVote"
+  | "representPerson"
   | "promotion"
   | "sendMessage"
   | "copyConfirm"
@@ -949,12 +951,30 @@ export function TreatyPostVoteShareFlow({
             </div>
             <FlowButtonRow>
               <Button className={dismissButtonClass} onClick={() => go("promotion", true)}>
-                I reject mathematics
+                {answer === "yes" ? "I only vote for myself" : "I reject mathematics"}
               </Button>
-              <Button className={primaryButtonClass} onClick={() => go("promotion")}>
-                Show me mine
+              <Button
+                className={primaryButtonClass}
+                onClick={() => go(answer === "yes" ? "representPerson" : "promotion")}
+              >
+                {answer === "yes" ? "Drag someone to the polls" : "Show me mine"}
               </Button>
             </FlowButtonRow>
+          </>
+        );
+
+      case "representPerson":
+        return (
+          <>
+            <div className="space-y-4">
+              <FlowParagraph>
+                Thank you for voting. Now: would you like to vote on behalf of someone who can't? Someone who died of a disease that might have been cured, or a war that didn't need to happen? Give them a voice. They would have voted too.
+              </FlowParagraph>
+            </div>
+            <RepresentedPersonForm variant="inline" />
+            <Button className={dismissButtonClass} onClick={() => go("promotion", true)}>
+              Skip
+            </Button>
           </>
         );
 

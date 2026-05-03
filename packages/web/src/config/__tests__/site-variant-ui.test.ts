@@ -4,6 +4,7 @@ import {
   coalitionLink,
   endorseLink,
   legalLink,
+  peopleLink,
   privacyLink,
   readTreatyLink,
   termsLink,
@@ -93,6 +94,7 @@ describe("site variant UI config", () => {
       "Vote",
       "Read the Treaty",
       "Dashboard",
+      "People",
       "Organizational Signatories",
       "Sign as Organization",
       "Why",
@@ -136,6 +138,7 @@ describe("site variant UI config", () => {
     for (const item of [
       treatyVoteLink,
       treatyDashboardLink,
+      peopleLink,
       readTreatyLink,
       coalitionLink,
       endorseLink,
@@ -167,6 +170,7 @@ describe("site variant UI config", () => {
     expect(labelsFor("warOnDisease")).toEqual([
       "Vote",
       "Share",
+      "People",
       "Read the Treaty",
       "Why",
     ]);

@@ -5,6 +5,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
+import { RepresentedPersonForm } from "@/components/people/RepresentedPersonForm";
 import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner";
 import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
@@ -77,6 +78,8 @@ export function TreatyTaskDashboardClient({
         />
 
         <TreatyReminderComposer />
+
+        <RepresentedPersonForm onCreated={refreshPage} />
 
         {treatyProgram ? (
           <ProgramTaskSection

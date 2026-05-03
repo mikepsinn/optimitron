@@ -71,9 +71,14 @@ export async function aggregateCensusData(): Promise<CensusAggregationResult> {
         globalVariable: {
           name: { in: [HEALTH_VARIABLE_NAME, HAPPINESS_VARIABLE_NAME] },
         },
+        subject: {
+          userId: { not: null },
+        },
       },
       select: {
-        userId: true,
+        subject: {
+          select: { userId: true },
+        },
         value: true,
         globalVariable: { select: { name: true } },
       },
@@ -84,11 +89,14 @@ export async function aggregateCensusData(): Promise<CensusAggregationResult> {
   const userHealth = new Map<string, number[]>();
   const userHappiness = new Map<string, number[]>();
   for (const m of recentMeasurements) {
+    const measurementUserId = m.subject.userId;
+    if (!measurementUserId) continue;
+
     const map =
       m.globalVariable.name === HEALTH_VARIABLE_NAME ? userHealth : userHappiness;
-    const existing = map.get(m.userId) ?? [];
+    const existing = map.get(measurementUserId) ?? [];
     existing.push(m.value);
-    map.set(m.userId, existing);
+    map.set(measurementUserId, existing);
   }
 
   // Group users by jurisdiction (countryCode, or countryCode+regionCode)

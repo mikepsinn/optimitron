@@ -1,5 +1,6 @@
-import type { Prisma } from "@optimitron/db";
+import { PersonLifeStatus, type Person, type Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { ensureSubjectForUser } from "@/lib/subject.server";
 import { createUniqueHandle } from "@/lib/user-identity.server";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
@@ -20,6 +21,7 @@ export interface EnsurePersonOptions {
 
 interface PersonDraftInput {
   countryCode?: string | null;
+  createdByUserId?: string | null;
   currentAffiliation?: string | null;
   displayName: string;
   email?: string | null;
@@ -247,11 +249,11 @@ export async function mergeDuplicatePerson(
  *
  * On create, also seeds Person.handle via `createUniqueHandle()`.
  */
-export async function ensurePersonForUser(
+async function ensurePersonForUserInClient(
   userId: string,
   options: EnsurePersonOptions = {},
-  db: DbClient = prisma,
-) {
+  db: Prisma.TransactionClient,
+): Promise<Person> {
   const user = await loadUserIdentity(db, userId);
 
   // Account-level fields that genuinely belong on the Person too. Display
@@ -259,13 +261,19 @@ export async function ensurePersonForUser(
   const accountSyncData = {
     countryCode: user.countryCode,
     email: user.email,
+    lifeStatus: PersonLifeStatus.LIVING,
   };
 
   if (user.personId) {
-    return db.person.update({
+    const person = await db.person.update({
       where: { id: user.personId },
       data: accountSyncData,
     });
+    await ensureSubjectForUser(db, {
+      ...user,
+      personId: person.id,
+    });
+    return person;
   }
 
   const existingPerson = await db.person.findUnique({
@@ -293,6 +301,7 @@ export async function ensurePersonForUser(
     person = await db.person.create({
       data: {
         ...accountSyncData,
+        createdByUserId: user.id,
         displayName: defaultDisplayName(user, options.displayName),
         image: options.image ?? null,
         handle: await createUniqueHandle(),
@@ -306,8 +315,24 @@ export async function ensurePersonForUser(
       personId: person.id,
     },
   });
+  await ensureSubjectForUser(db, {
+    ...user,
+    personId: person.id,
+  });
 
   return person;
+}
+
+export async function ensurePersonForUser(
+  userId: string,
+  options: EnsurePersonOptions = {},
+  db: DbClient = prisma,
+): Promise<Person> {
+  if ("$transaction" in db) {
+    return db.$transaction((tx) => ensurePersonForUserInClient(userId, options, tx));
+  }
+
+  return ensurePersonForUserInClient(userId, options, db);
 }
 
 export async function findOrCreatePerson(
@@ -338,6 +363,7 @@ export async function findOrCreatePerson(
         data: {
           countryCode: input.countryCode ?? existingByEmail.countryCode,
           currentAffiliation: input.currentAffiliation ?? existingByEmail.currentAffiliation,
+          createdByUserId: existingByEmail.createdByUserId ?? input.createdByUserId ?? null,
           displayName,
           image: input.image ?? existingByEmail.image,
           isPublicFigure: input.isPublicFigure ?? existingByEmail.isPublicFigure,
@@ -361,6 +387,8 @@ export async function findOrCreatePerson(
         data: {
           countryCode: input.countryCode ?? existingBySourceRef.countryCode,
           currentAffiliation: input.currentAffiliation ?? existingBySourceRef.currentAffiliation,
+          createdByUserId:
+            existingBySourceRef.createdByUserId ?? input.createdByUserId ?? null,
           displayName,
           email: normalizedEmail ?? existingBySourceRef.email,
           image: input.image ?? existingBySourceRef.image,
@@ -389,6 +417,8 @@ export async function findOrCreatePerson(
           countryCode: input.countryCode ?? existingByPublicSignature.countryCode,
           currentAffiliation:
             input.currentAffiliation ?? existingByPublicSignature.currentAffiliation,
+          createdByUserId:
+            existingByPublicSignature.createdByUserId ?? input.createdByUserId ?? null,
           displayName,
           email: normalizedEmail ?? existingByPublicSignature.email,
           image: input.image ?? existingByPublicSignature.image,
@@ -403,6 +433,7 @@ export async function findOrCreatePerson(
   return db.person.create({
     data: {
       countryCode: input.countryCode ?? null,
+      createdByUserId: input.createdByUserId ?? null,
       currentAffiliation: input.currentAffiliation ?? null,
       displayName,
       email: normalizedEmail,

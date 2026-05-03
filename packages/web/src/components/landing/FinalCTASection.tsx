@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -25,10 +26,14 @@ export function FinalCTASection() {
           <CollapseCountdownTimer />
         </div>
 
-        {/* Real-time death ticker */}
-        <div className="mb-8">
+        {/* Real-time death ticker — link to The Invisible Graveyard so the deaths aren't abstract */}
+        <Link
+          aria-label="Open the Invisible Graveyard"
+          className="mb-8 block transition-opacity hover:opacity-90"
+          href={ROUTES.people}
+        >
           <LiveDeathTicker surface="dark" />
-        </div>
+        </Link>
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

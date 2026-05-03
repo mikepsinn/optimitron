@@ -5,12 +5,13 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated/prisma/client.js";
 import {
   assertSafeLocalTestDatabaseUrl,
-  DEFAULT_LOCAL_DATABASE_URL,
 } from "./db-cli.js";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(currentDir, "..");
 const repoRoot = resolve(currentDir, "../../..");
+const DEFAULT_LOCAL_TEST_DATABASE_URL =
+  "postgresql://postgres:postgres@localhost:5432/optimitron_test";
 
 function runCommand(
   command: string,
@@ -45,6 +46,12 @@ function getDatabaseName(databaseUrl: string): string {
   return decodeURIComponent(url.pathname.replace(/^\//u, "")) || "postgres";
 }
 
+function formatDatabaseUrlForLog(databaseUrl: string): string {
+  const url = new URL(databaseUrl);
+  if (url.password) url.password = "***";
+  return url.toString();
+}
+
 function escapeIdentifier(identifier: string): string {
   return `"${identifier.replaceAll('"', '""')}"`;
 }
@@ -77,7 +84,7 @@ async function ensureDatabaseExists(databaseUrl: string): Promise<void> {
 
 async function main(): Promise<void> {
   const databaseUrl = assertSafeLocalTestDatabaseUrl(
-    process.env["OPTIMITRON_TEST_DATABASE_URL"] ?? DEFAULT_LOCAL_DATABASE_URL,
+    process.env["OPTIMITRON_TEST_DATABASE_URL"] ?? DEFAULT_LOCAL_TEST_DATABASE_URL,
   );
   const env = {
     ...process.env,
@@ -85,7 +92,9 @@ async function main(): Promise<void> {
     DATABASE_URL_UNPOOLED: databaseUrl,
   };
 
-  process.stdout.write("Using local test database at postgresql://postgres:postgres@localhost:5432/optimitron\n");
+  process.stdout.write(
+    `Using local test database at ${formatDatabaseUrlForLog(databaseUrl)}\n`,
+  );
 
   try {
     await ensureDatabaseExists(databaseUrl);
@@ -94,7 +103,20 @@ async function main(): Promise<void> {
     await ensureDatabaseExists(databaseUrl);
   }
 
-  runCommand("pnpm", ["run", "prisma:migrate:deploy"], packageRoot, env);
+  runCommand(
+    "pnpm",
+    [
+      "exec",
+      "prisma",
+      "migrate",
+      "reset",
+      "--schema",
+      "prisma/schema.prisma",
+      "--force",
+    ],
+    packageRoot,
+    env,
+  );
   runCommand("pnpm", ["exec", "vitest", "run", "src/__tests__/seed.integration.test.ts"], packageRoot, env);
 }
 

@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { OrgStatus } from "@optimitron/db";
+import { OrgStatus, OrgType } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
   txOrganizationCreate: vi.fn(),
+  txOrganizationFindFirst: vi.fn(),
   txOrganizationFindUnique: vi.fn(),
   txOrganizationMemberCreate: vi.fn(),
 }));
@@ -23,6 +24,7 @@ describe("organization.server", () => {
   beforeEach(() => {
     mocks.transaction.mockReset();
     mocks.txOrganizationCreate.mockReset();
+    mocks.txOrganizationFindFirst.mockReset();
     mocks.txOrganizationFindUnique.mockReset();
     mocks.txOrganizationMemberCreate.mockReset();
   });
@@ -32,6 +34,7 @@ describe("organization.server", () => {
       callback({
         organization: {
           create: mocks.txOrganizationCreate,
+          findFirst: mocks.txOrganizationFindFirst,
           findUnique: mocks.txOrganizationFindUnique,
         },
         organizationMember: {
@@ -61,6 +64,84 @@ describe("organization.server", () => {
         userId: "user_1",
       },
     });
+  });
+
+  it("creates approved MCP organizations with generated slugs and strict uniqueness", async () => {
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback({
+        organization: {
+          create: mocks.txOrganizationCreate,
+          findFirst: mocks.txOrganizationFindFirst,
+          findUnique: mocks.txOrganizationFindUnique,
+        },
+        organizationMember: {
+          create: mocks.txOrganizationMemberCreate,
+        },
+      }),
+    );
+    mocks.txOrganizationFindFirst.mockResolvedValue(null);
+    mocks.txOrganizationFindUnique.mockResolvedValue(null);
+    mocks.txOrganizationCreate.mockResolvedValue({ id: "org_foundation" });
+    mocks.txOrganizationMemberCreate.mockResolvedValue({ id: "membership_1" });
+
+    await createOrganizationWithOwner(
+      {
+        name: "Survival and Flourishing Fund",
+        status: OrgStatus.APPROVED,
+        type: OrgType.FOUNDATION,
+        website: "https://survivalandflourishing.fund",
+      },
+      "user_1",
+      { rejectDuplicates: true },
+    );
+
+    expect(mocks.txOrganizationFindFirst).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        name: { equals: "Survival and Flourishing Fund", mode: "insensitive" },
+      },
+      select: { name: true },
+    });
+    expect(mocks.txOrganizationFindUnique).toHaveBeenCalledWith({
+      where: { slug: "survival-and-flourishing-fund" },
+      select: { slug: true },
+    });
+    expect(mocks.txOrganizationCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          creatorId: "user_1",
+          name: "Survival and Flourishing Fund",
+          slug: "survival-and-flourishing-fund",
+          status: OrgStatus.APPROVED,
+          type: OrgType.FOUNDATION,
+        }),
+      }),
+    );
+  });
+
+  it("rejects duplicate organization names when strict uniqueness is requested", async () => {
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback({
+        organization: {
+          create: mocks.txOrganizationCreate,
+          findFirst: mocks.txOrganizationFindFirst,
+          findUnique: mocks.txOrganizationFindUnique,
+        },
+        organizationMember: {
+          create: mocks.txOrganizationMemberCreate,
+        },
+      }),
+    );
+    mocks.txOrganizationFindFirst.mockResolvedValue({ name: "Open Philanthropy" });
+
+    await expect(
+      createOrganizationWithOwner(
+        { name: "Open Philanthropy", type: OrgType.FOUNDATION },
+        "user_1",
+        { rejectDuplicates: true },
+      ),
+    ).rejects.toThrow("Organization name already exists: Open Philanthropy");
+    expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
   });
 
   it("keeps the trusted upsert path explicitly auto-approved", async () => {

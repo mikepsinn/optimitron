@@ -1,6 +1,12 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { ReferendumStatus, TaskClaimPolicy, TaskStatus } from "@optimitron/db/enums";
+import {
+  OrgStatus,
+  OrgType,
+  ReferendumStatus,
+  TaskClaimPolicy,
+  TaskStatus,
+} from "@optimitron/db/enums";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -21,6 +27,13 @@ const mocks = vi.hoisted(() => ({
   taskImpactFrameEstimateCreate: vi.fn(),
   referendumCreate: vi.fn(),
   referendumFindMany: vi.fn(),
+  mcpToolCallAuditCreate: vi.fn(),
+  getPerson: vi.fn(),
+  recordRepresentedReferendumVote: vi.fn(),
+  searchPeople: vi.fn(),
+  upsertOrganization: vi.fn(),
+  upsertMemorialPerson: vi.fn(),
+  reportContent: vi.fn(),
   transaction: vi.fn(),
   userFindUnique: vi.fn(),
   upsertPrimaryTaskCommunicationEndpoint: vi.fn(),
@@ -30,6 +43,7 @@ const mocks = vi.hoisted(() => ({
   generateAndPostWishoniaReply: vi.fn(),
   getProfileIdentityData: vi.fn(),
   updateUserProfile: vi.fn(),
+  createOrganizationWithOwner: vi.fn(),
   taskFindUnique: vi.fn(),
   upsertSignerReminderTask: vi.fn(),
   createTaskTrigger: vi.fn(),
@@ -121,6 +135,19 @@ vi.mock("../site-inventory.server", () => ({
   getPageContent: mocks.getPageContent,
 }));
 
+vi.mock("../earth-data.server", () => ({
+  getPerson: mocks.getPerson,
+  recordRepresentedReferendumVote: mocks.recordRepresentedReferendumVote,
+  searchPeople: mocks.searchPeople,
+  upsertOrganization: mocks.upsertOrganization,
+  upsertMemorialPerson: mocks.upsertMemorialPerson,
+  reportContent: mocks.reportContent,
+}));
+
+vi.mock("../organization.server", () => ({
+  createOrganizationWithOwner: mocks.createOrganizationWithOwner,
+}));
+
 vi.mock("../prisma", () => ({
   prisma: {
     $transaction: mocks.transaction,
@@ -141,6 +168,9 @@ vi.mock("../prisma", () => ({
     referendum: {
       create: mocks.referendumCreate,
       findMany: mocks.referendumFindMany,
+    },
+    mcpToolCallAudit: {
+      create: mocks.mcpToolCallAuditCreate,
     },
     user: {
       findUnique: mocks.userFindUnique,
@@ -253,6 +283,38 @@ beforeEach(() => {
     _count: { votes: 0, surveys: 0, organizationPositions: 0 },
   });
   mocks.referendumFindMany.mockResolvedValue([]);
+  mocks.mcpToolCallAuditCreate.mockResolvedValue({ id: "audit-1" });
+  mocks.recordRepresentedReferendumVote.mockResolvedValue({ vote: { id: "vote-1" } });
+  mocks.searchPeople.mockResolvedValue([]);
+  mocks.getPerson.mockResolvedValue({ id: "person-1", displayName: "Public Person" });
+  mocks.upsertOrganization.mockResolvedValue({
+    contactEmail: null,
+    id: "org-1",
+    name: "Existing Org",
+    slug: "existing-org",
+    type: OrgType.NONPROFIT,
+    website: null,
+  });
+  mocks.upsertMemorialPerson.mockResolvedValue({
+    created: true,
+    memorial: { id: "memorial-1" },
+    person: { id: "person-deceased", displayName: "Test Person" },
+    vote: { id: "vote-1" },
+  });
+  mocks.reportContent.mockResolvedValue({
+    report: { id: "report-1", status: "OPEN" },
+  });
+  mocks.createOrganizationWithOwner.mockResolvedValue({
+    contactEmail: null,
+    createdAt: new Date("2026-05-02T00:00:00.000Z"),
+    description: "Foundation funding human survival.",
+    id: "org-survival-and-flourishing-fund",
+    name: "Survival and Flourishing Fund",
+    slug: "survival-and-flourishing-fund",
+    status: OrgStatus.APPROVED,
+    type: OrgType.FOUNDATION,
+    website: "https://survivalandflourishing.fund",
+  });
   mocks.taskUpdate.mockImplementation(async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => ({
     id: where.id,
     status: data.status ?? TaskStatus.ACTIVE,
@@ -334,6 +396,238 @@ describe("MCP server tool dispatch", () => {
     expect(adminNames).toContain("addDependency");
     expect(adminNames).toContain("acquireLease");
     expect(adminNames).toContain("logAgentRun");
+  });
+
+  it("exposes Earth-data write tools to authenticated earthdata writers and moderation tools only to admins", async () => {
+    const writerClient = await setup("user-1", [
+      McpScope.TASKS_PERSONAL,
+      McpScope.EARTHDATA_WRITE,
+    ]);
+    const adminClient = await setup(
+      "admin-1",
+      [
+        McpScope.TASKS_PERSONAL,
+        McpScope.EARTHDATA_WRITE,
+        McpScope.EARTHDATA_ADMIN,
+      ],
+      { isAdmin: true },
+    );
+
+    const writerNames = (await writerClient.listTools()).tools.map((tool) => tool.name);
+    const adminNames = (await adminClient.listTools()).tools.map((tool) => tool.name);
+
+    expect(writerNames).toEqual(
+      expect.arrayContaining([
+        "createOrganization",
+        "upsertMemorialPerson",
+        "addMemorialEvidence",
+        "recordInterventionExperience",
+        "reportContent",
+        "suggestCorrection",
+      ]),
+    );
+    expect(writerNames).not.toContain("upsertOrganization");
+    expect(writerNames).not.toContain("hideContent");
+    expect(writerNames).not.toContain("restoreContent");
+    expect(writerNames).not.toContain("mergeDuplicatePeople");
+
+    expect(adminNames).toEqual(
+      expect.arrayContaining([
+        "upsertOrganization",
+        "hideContent",
+        "restoreContent",
+        "resolveContentReport",
+      ]),
+    );
+    expect(adminNames).not.toContain("mergeDuplicatePeople");
+  });
+
+  it("forces public person reads for non-admin Earth-data MCP callers", async () => {
+    const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+    await client.callTool({
+      name: "searchPeople",
+      arguments: { query: "private", publicOnly: false },
+    });
+    await client.callTool({
+      name: "getPerson",
+      arguments: { idOrHandle: "private-person", publicOnly: false },
+    });
+
+    expect(mocks.searchPeople).toHaveBeenCalledWith({
+      limit: undefined,
+      publicOnly: true,
+      query: "private",
+    });
+    expect(mocks.getPerson).toHaveBeenCalledWith({
+      idOrHandle: "private-person",
+      publicOnly: true,
+    });
+  });
+
+  it("passes through private person reads only for admin Earth-data MCP callers", async () => {
+    const client = await setup(
+      "admin-1",
+      [McpScope.EARTHDATA_WRITE, McpScope.EARTHDATA_ADMIN],
+      { isAdmin: true },
+    );
+
+    await client.callTool({
+      name: "searchPeople",
+      arguments: { query: "private", publicOnly: false },
+    });
+    await client.callTool({
+      name: "getPerson",
+      arguments: { idOrHandle: "private-person", publicOnly: false },
+    });
+
+    expect(mocks.searchPeople).toHaveBeenCalledWith({
+      limit: undefined,
+      publicOnly: false,
+      query: "private",
+    });
+    expect(mocks.getPerson).toHaveBeenCalledWith({
+      idOrHandle: "private-person",
+      publicOnly: false,
+    });
+  });
+
+  it("createOrganization creates approved task-assignee organizations with strict duplicate errors", async () => {
+    const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+    const result = await client.callTool({
+      name: "createOrganization",
+      arguments: {
+        name: "Survival and Flourishing Fund",
+        type: "FOUNDATION",
+        website: "https://survivalandflourishing.fund",
+      },
+    });
+
+    expect(result.isError).toBeFalsy();
+    expect(mocks.createOrganizationWithOwner).toHaveBeenCalledWith(
+      {
+        contactEmail: null,
+        description: null,
+        jurisdictionId: null,
+        logo: null,
+        name: "Survival and Flourishing Fund",
+        slug: null,
+        status: OrgStatus.APPROVED,
+        type: OrgType.FOUNDATION,
+        website: "https://survivalandflourishing.fund",
+      },
+      "user-1",
+      { rejectDuplicates: true },
+    );
+
+    const body = parseToolBody(result);
+    expect(body.organization).toEqual({
+      contactEmail: null,
+      createdAt: "2026-05-02T00:00:00.000Z",
+      description: "Foundation funding human survival.",
+      id: "org-survival-and-flourishing-fund",
+      name: "Survival and Flourishing Fund",
+      slug: "survival-and-flourishing-fund",
+      status: "APPROVED",
+      type: "FOUNDATION",
+      website: "https://survivalandflourishing.fund",
+    });
+  });
+
+  it("createOrganization returns a clear duplicate error instead of a tool crash", async () => {
+    mocks.createOrganizationWithOwner.mockRejectedValueOnce(
+      new Error("Organization name already exists: Open Philanthropy"),
+    );
+    const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+    const result = await client.callTool({
+      name: "createOrganization",
+      arguments: {
+        name: "Open Philanthropy",
+        type: "FOUNDATION",
+      },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(parseToolBody(result)).toEqual({
+      error: "Organization name already exists: Open Philanthropy",
+    });
+  });
+
+  it("audits successful Earth-data MCP writes without storing raw payloads", async () => {
+    const client = await setup("user-1", [
+      McpScope.TASKS_PERSONAL,
+      McpScope.EARTHDATA_WRITE,
+    ]);
+
+    const result = await client.callTool({
+      name: "upsertMemorialPerson",
+      arguments: {
+        displayName: "A sourced casualty",
+        lifeStatus: "DECEASED",
+        dateOfDeath: "2024-01-01",
+        deathCountryCode: "PS",
+        sourceKind: "PUBLIC_IMPORT",
+        sourceUrl: "https://example.org/casualty",
+        sourceKey: "casualty:example:1",
+      },
+    });
+
+    expect(result.isError).toBeFalsy();
+    expect(mocks.upsertMemorialPerson).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayName: "A sourced casualty",
+        submittedByUserId: "user-1",
+      }),
+    );
+    expect(mocks.mcpToolCallAuditCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: "SUCCEEDED",
+          toolName: "upsertMemorialPerson",
+          userId: "user-1",
+          inputHash: expect.any(String),
+          inputSummaryJson: expect.not.objectContaining({
+            displayName: "A sourced casualty",
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("audits failed Earth-data MCP writes without raw payloads", async () => {
+    mocks.reportContent.mockRejectedValueOnce(new Error("database unavailable"));
+    const client = await setup("user-1", [
+      McpScope.TASKS_PERSONAL,
+      McpScope.EARTHDATA_WRITE,
+    ]);
+
+    const result = await client.callTool({
+      name: "reportContent",
+      arguments: {
+        targetType: "Person",
+        targetId: "person-1",
+        reasonType: "correction",
+        message: "This private note should not be copied into audit summaries.",
+      },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(mocks.mcpToolCallAuditCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          errorSummary: "database unavailable",
+          inputHash: expect.any(String),
+          inputSummaryJson: expect.not.objectContaining({
+            message: "This private note should not be copied into audit summaries.",
+          }),
+          status: "FAILED",
+          toolName: "reportContent",
+          userId: "user-1",
+        }),
+      }),
+    );
   });
 
   describe("task read tools", () => {

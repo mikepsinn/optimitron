@@ -14,6 +14,14 @@ const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
     title: "Manage private tasks",
     detail: "Create, update, delete, prioritize, and comment on your private tasks.",
   },
+  [McpScope.EARTHDATA_WRITE]: {
+    title: "Add Earth data",
+    detail: "Create sourced memorials, evidence, organization signatures, intervention reports, and correction reports.",
+  },
+  [McpScope.EARTHDATA_ADMIN]: {
+    title: "Moderate Earth data",
+    detail: "Hide, restore, merge, and resolve public Earth-data records and reports.",
+  },
   [McpScope.AGENT_RUN]: {
     title: "Run coordinated agents",
     detail: "Acquire leases and log multi-agent runs for public optimize-earth workflows.",

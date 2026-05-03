@@ -12,6 +12,7 @@ import {
   getUserDisplayName,
   userDisplaySelect,
 } from "@/lib/user-display";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 
 const logger = createLogger("referral-hypercert-publication");
 
@@ -48,8 +49,8 @@ export async function publishReferralHypercerts(): Promise<ReferralHypercertPubl
   const referrers = await prisma.referendumVote.groupBy({
     by: ["referredByUserId"],
     where: {
+      ...buildOfficialReferendumVoteWhere(),
       referredByUserId: { not: null },
-      deletedAt: null,
       user: {
         personhoodVerifications: {
           some: {

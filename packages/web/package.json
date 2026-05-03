@@ -43,6 +43,7 @@
     "media:upload": "tsx scripts/upload-media-to-r2.ts"
   },
   "dependencies": {
+    "@aws-sdk/s3-request-presigner": "^3.1037.0",
     "@google/genai": "^1.48.0",
     "@headlessui/react": "^2.2.9",
     "@modelcontextprotocol/sdk": "^1.29.0",

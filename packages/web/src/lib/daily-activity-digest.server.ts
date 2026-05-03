@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 import { getProvider, getVoterPrizeTreasuryContract } from "@/lib/contracts/server-client";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import { ROUTES } from "@/lib/routes";
 import { getConfiguredSiteOrigin } from "@/lib/site";
 
@@ -230,13 +231,13 @@ export async function getDailyActivityDigestSummary(
   const [totalVotes, verifiedVotes, referralSignups] = await Promise.all([
     prisma.referendumVote.count({
       where: {
-        deletedAt: null,
+        ...buildOfficialReferendumVoteWhere(),
         createdAt,
       },
     }),
     prisma.referendumVote.count({
       where: {
-        deletedAt: null,
+        ...buildOfficialReferendumVoteWhere(),
         createdAt,
         user: {
           personhoodVerifications: {

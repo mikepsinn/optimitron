@@ -40,7 +40,11 @@ function formatRatio(ratio: number): string {
   return `${ratio.toFixed(1)}:1`;
 }
 
-function getSortValue(gov: GovernmentMetrics, key: SortKey): number {
+function getSortValue(
+  gov: GovernmentMetrics,
+  key: SortKey,
+  memorialAttributionsByCountry?: Record<string, number>,
+): number {
   switch (key) {
     case "country": return 0;
     case "rank":
@@ -57,6 +61,8 @@ function getSortValue(gov: GovernmentMetrics, key: SortKey): number {
       return getMilitaryToGovernmentClinicalTrialRatio(gov) ?? 999_999_999;
     case "researchRatio":
       return getMilitaryToGovernmentMedicalResearchRatio(gov) ?? 999_999_999;
+    case "memorialDeaths":
+      return memorialAttributionsByCountry?.[gov.code] ?? 0;
   }
 }
 
@@ -67,6 +73,12 @@ interface GovernmentLeaderboardProps {
   limit?: number;
   /** Show compact version (fewer columns) */
   compact?: boolean;
+  /**
+   * Per-government memorial counts, keyed by ISO country code. When provided,
+   * the "Memorial 👻" column is rendered and sortable. Fetched server-side via
+   * `getMemorialAttributionsByGovernment` from `lib/prosecution-data.server.ts`.
+   */
+  memorialAttributionsByCountry?: Record<string, number>;
 }
 
 function GovernmentRowLink({
@@ -185,7 +197,11 @@ const COLUMN_HELP_TEXT: Record<string, string> = {
   researchRatio: "Military spending per $1 of total government medical research spending.",
 };
 
-export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLeaderboardProps) {
+export function GovernmentLeaderboard({
+  limit,
+  compact = false,
+  memorialAttributionsByCountry,
+}: GovernmentLeaderboardProps) {
   const [rankMode, setRankMode] = useState<RankMode>("worst");
   const [sortKey, setSortKey] = useState<SortKey>(
     GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY,
@@ -272,7 +288,9 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
       const comparison = a.name.localeCompare(b.name);
       return sortAsc ? comparison : -comparison;
     }
-    const diff = getSortValue(b, sortKey) - getSortValue(a, sortKey);
+    const diff =
+      getSortValue(b, sortKey, memorialAttributionsByCountry) -
+      getSortValue(a, sortKey, memorialAttributionsByCountry);
     return sortAsc ? -diff : diff;
   });
   const govs = limit ? sorted.slice(0, limit) : sorted;
@@ -374,6 +392,11 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
               {colVis.trialRatio.visible && (
                 <th className={`${hdrClass} text-right ${colVis.trialRatio.className}`} onClick={() => handleSort("trialRatio")}>
                   Mil/Trials{indicator("trialRatio")}<ColumnHelp text={COLUMN_HELP_TEXT.trialRatio!} />
+                </th>
+              )}
+              {colVis.memorialDeaths.visible && memorialAttributionsByCountry && (
+                <th className={`${hdrClass} text-right ${colVis.memorialDeaths.className}`} onClick={() => handleSort("memorialDeaths")}>
+                  Memorial 👻{indicator("memorialDeaths")}<ColumnHelp text="Public memorials in the Invisible Graveyard attributed to this government." />
                 </th>
               )}
               {colVis.hale.visible && (
@@ -488,6 +511,16 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
                             className="mt-1"
                           />
                         )}
+                      </GovernmentRowLink>
+                    </td>
+                  )}
+
+                  {colVis.memorialDeaths.visible && memorialAttributionsByCountry && (
+                    <td className={`p-2 text-right min-w-[80px] ${colVis.memorialDeaths.className}`}>
+                      <GovernmentRowLink href={detailHref} className="text-right">
+                        <div className="text-sm font-black text-foreground tabular-nums">
+                          {(memorialAttributionsByCountry[gov.code] ?? 0).toLocaleString()}
+                        </div>
                       </GovernmentRowLink>
                     </td>
                   )}

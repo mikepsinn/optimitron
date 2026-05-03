@@ -143,6 +143,7 @@ export async function upsertTrustedOrganization(
 
 interface CreateOrganizationInput {
   name: string;
+  slug?: string | null;
   type?: OrgType | null;
   status?: OrgStatus | null;
   website?: string | null;
@@ -150,6 +151,10 @@ interface CreateOrganizationInput {
   logo?: string | null;
   contactEmail?: string | null;
   jurisdictionId?: string | null;
+}
+
+interface CreateOrganizationOptions {
+  rejectDuplicates?: boolean;
 }
 
 /**
@@ -161,14 +166,45 @@ interface CreateOrganizationInput {
 export async function createOrganizationWithOwner(
   input: CreateOrganizationInput,
   creatorUserId: string,
+  options: CreateOrganizationOptions = {},
 ) {
   const name = input.name.trim();
   if (!name) {
     throw new Error("Organization name is required");
   }
 
+  const baseSlug = slugify(input.slug?.trim() || name);
+  if (!baseSlug) {
+    throw new Error("Organization slug is required or must be derivable from name");
+  }
+
   return prisma.$transaction(async (tx) => {
-    const nextSlug = await getAvailableSlug(tx, slugify(name));
+    let nextSlug = baseSlug;
+
+    if (options.rejectDuplicates) {
+      const existingByName = await tx.organization.findFirst({
+        where: {
+          deletedAt: null,
+          name: { equals: name, mode: "insensitive" },
+        },
+        select: { name: true },
+      });
+
+      if (existingByName) {
+        throw new Error(`Organization name already exists: ${existingByName.name}`);
+      }
+
+      const existingBySlug = await tx.organization.findUnique({
+        where: { slug: baseSlug },
+        select: { slug: true },
+      });
+
+      if (existingBySlug) {
+        throw new Error(`Organization slug already exists: ${existingBySlug.slug}`);
+      }
+    } else {
+      nextSlug = await getAvailableSlug(tx, baseSlug);
+    }
 
     const organization = await tx.organization.create({
       data: {

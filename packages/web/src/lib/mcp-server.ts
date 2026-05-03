@@ -6,6 +6,7 @@
  * - app/api/mcp/route.ts (HTTP transport for Claude Desktop / remote clients)
  */
 
+import { createHash } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   CallToolRequestSchema,
@@ -13,6 +14,8 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import {
   AgentRunStatus,
+  ContentReportStatus,
+  McpToolCallStatus,
   OrgStatus,
   OrgType,
   ReferendumStatus,
@@ -21,6 +24,7 @@ import {
   TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
+  VotePosition,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
 
@@ -49,7 +53,7 @@ import type { RankableTask, TaskPriorityInput, TaskPriorityResult } from "./task
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 
 const TOOL_SCOPES: Record<string, McpScope[]> = {
-  createOrganization: [McpScope.TASKS_ADMIN],
+  createOrganization: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
   createTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   proposeTaskBundle: [McpScope.TASKS_ADMIN],
   promoteTask: [McpScope.TASKS_ADMIN],
@@ -61,7 +65,29 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   addDependency: [McpScope.TASKS_ADMIN],
   createReferendum: [McpScope.TASKS_ADMIN],
   createPerson: [McpScope.TASKS_ADMIN],
-  upsertOrganization: [McpScope.TASKS_ADMIN],
+  upsertOrganization: [McpScope.EARTHDATA_ADMIN, McpScope.TASKS_ADMIN],
+  castReferendumVote: [McpScope.EARTHDATA_WRITE],
+  recordRepresentedReferendumVote: [McpScope.EARTHDATA_WRITE],
+  searchPeople: [McpScope.EARTHDATA_WRITE],
+  getPerson: [McpScope.EARTHDATA_WRITE],
+  searchOrganizations: [McpScope.EARTHDATA_WRITE],
+  signReferendumAsOrganization: [McpScope.EARTHDATA_WRITE],
+  upsertMemorialPerson: [McpScope.EARTHDATA_WRITE],
+  addMemorialEvidence: [McpScope.EARTHDATA_WRITE],
+  addMemorialResponsibleParty: [McpScope.EARTHDATA_WRITE],
+  upsertConflict: [McpScope.EARTHDATA_WRITE],
+  resolveGlobalVariable: [McpScope.EARTHDATA_WRITE],
+  upsertSourceArtifact: [McpScope.EARTHDATA_WRITE],
+  upsertInterventionApprovalTimeline: [McpScope.EARTHDATA_WRITE],
+  upsertVariableRelationshipEvidenceEstimate: [McpScope.EARTHDATA_WRITE],
+  recordInterventionExperience: [McpScope.EARTHDATA_WRITE],
+  runEfficacyLagMatcher: [McpScope.EARTHDATA_WRITE],
+  reportContent: [McpScope.EARTHDATA_WRITE],
+  suggestCorrection: [McpScope.EARTHDATA_WRITE],
+  hideContent: [McpScope.EARTHDATA_ADMIN],
+  restoreContent: [McpScope.EARTHDATA_ADMIN],
+  mergeDuplicatePeople: [McpScope.EARTHDATA_ADMIN],
+  resolveContentReport: [McpScope.EARTHDATA_ADMIN],
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL],
   claimSignerReminder: [McpScope.TASKS_PERSONAL],
@@ -88,7 +114,6 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
-  "createOrganization",
   "proposeTaskBundle",
   "promoteTask",
   "setTaskImpact",
@@ -107,6 +132,17 @@ const ADMIN_ONLY_TOOLS = new Set([
   "listRepoFiles",
   "githubApi",
   ...TASK_TRIGGER_ADMIN_TOOL_NAMES,
+  "hideContent",
+  "restoreContent",
+  "mergeDuplicatePeople",
+  "resolveContentReport",
+]);
+
+const DISABLED_TOOLS = new Set([
+  // The underlying merge helper predates person-centered votes/memorials.
+  // Keep this hidden until the merge path explicitly reassigns every Person
+  // relation, including referendum votes, memorials, conditions, and subjects.
+  "mergeDuplicatePeople",
 ]);
 
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {
@@ -167,6 +203,199 @@ function getMcpBaseUrl(): string {
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : "http://localhost:3001")
   );
+}
+
+const AUDITED_EARTH_DATA_TOOLS = new Set([
+  "createOrganization",
+  "upsertOrganization",
+  "castReferendumVote",
+  "recordRepresentedReferendumVote",
+  "signReferendumAsOrganization",
+  "upsertMemorialPerson",
+  "addMemorialEvidence",
+  "addMemorialResponsibleParty",
+  "upsertConflict",
+  "resolveGlobalVariable",
+  "upsertSourceArtifact",
+  "upsertInterventionApprovalTimeline",
+  "upsertVariableRelationshipEvidenceEstimate",
+  "recordInterventionExperience",
+  "runEfficacyLagMatcher",
+  "reportContent",
+  "suggestCorrection",
+  "hideContent",
+  "restoreContent",
+  "mergeDuplicatePeople",
+  "resolveContentReport",
+]);
+
+function stableStringify(value: unknown) {
+  const seen = new WeakSet<object>();
+  return JSON.stringify(value, (_key, item) => {
+    if (item && typeof item === "object") {
+      if (seen.has(item)) return "[Circular]";
+      seen.add(item);
+      if (!Array.isArray(item)) {
+        return Object.fromEntries(
+          Object.entries(item as Record<string, unknown>).sort(([a], [b]) =>
+            a.localeCompare(b),
+          ),
+        );
+      }
+    }
+    return item;
+  });
+}
+
+function hashMcpInput(input: unknown) {
+  return createHash("sha256").update(stableStringify(input) ?? "null").digest("hex");
+}
+
+function mcpToolInputSummary(args: Record<string, unknown>) {
+  const safeScalarKeys = [
+    "targetType",
+    "targetId",
+    "reasonType",
+    "sourceKind",
+    "referendumSlug",
+    "lifeStatus",
+    "causeCategory",
+    "position",
+    "kind",
+    "codeSystem",
+    "sourceSystem",
+    "artifactType",
+    "status",
+  ];
+  const summary: Record<string, unknown> = { keys: Object.keys(args).sort() };
+  for (const key of safeScalarKeys) {
+    const value = args[key];
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      summary[key] = value;
+    }
+  }
+  for (const key of [
+    "sourceUrl",
+    "sourceArtifactId",
+    "sourceKey",
+    "correctionJson",
+    "payloadJson",
+    "memorialMessage",
+    "publicComment",
+    "notes",
+  ]) {
+    summary[`${key}Present`] = args[key] != null && args[key] !== "";
+  }
+  return summary;
+}
+
+function mcpToolOutputSummary(output: unknown) {
+  const refs: Record<string, string[]> = {};
+  const visit = (value: unknown, depth = 0) => {
+    if (!value || depth > 4) return;
+    if (Array.isArray(value)) {
+      for (const item of value.slice(0, 20)) visit(item, depth + 1);
+      return;
+    }
+    if (typeof value !== "object") return;
+    for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
+      if (
+        typeof item === "string" &&
+        (key === "id" || /Id$/.test(key) || key === "slug" || key === "handle")
+      ) {
+        refs[key] = [...(refs[key] ?? []), item];
+      } else {
+        visit(item, depth + 1);
+      }
+    }
+  };
+  visit(output);
+  return { refs };
+}
+
+async function writeMcpToolAudit(input: {
+  agentId?: string | null;
+  args: Record<string, unknown>;
+  clientId?: string | null;
+  error?: unknown;
+  oauthGrantId?: string | null;
+  output?: unknown;
+  runId?: string | null;
+  status: McpToolCallStatus;
+  toolName: string;
+  userId?: string | null;
+}) {
+  if (!AUDITED_EARTH_DATA_TOOLS.has(input.toolName)) return;
+  try {
+    const prisma = await getPrisma();
+    await prisma.mcpToolCallAudit.create({
+      data: {
+        agentId: input.agentId ?? null,
+        clientId: input.clientId ?? null,
+        completedAt: new Date(),
+        errorSummary:
+          input.error == null
+            ? null
+            : input.error instanceof Error
+              ? input.error.message.slice(0, 500)
+              : String(input.error).slice(0, 500),
+        inputHash: hashMcpInput(input.args),
+        inputSummaryJson: mcpToolInputSummary(input.args) as Prisma.InputJsonValue,
+        oauthGrantId: input.oauthGrantId ?? null,
+        outputSummaryJson:
+          input.status === McpToolCallStatus.SUCCEEDED
+            ? (mcpToolOutputSummary(input.output) as Prisma.InputJsonValue)
+            : undefined,
+        status: input.status,
+        toolName: input.toolName,
+        userId: input.userId ?? null,
+      },
+    });
+  } catch (auditError) {
+    console.error(`[mcp] failed to audit tool "${input.toolName}":`, auditError);
+  }
+}
+
+async function runAuditedEarthDataTool(
+  toolName: string,
+  args: Record<string, unknown>,
+  ctx: {
+    clientId?: string | null;
+    oauthGrantId?: string | null;
+    userId?: string | null;
+  },
+  fn: () => Promise<unknown>,
+) {
+  const agentId = typeof args.agentId === "string" ? args.agentId : null;
+  const runId = typeof args.runId === "string" ? args.runId : null;
+  try {
+    const output = await fn();
+    await writeMcpToolAudit({
+      agentId,
+      args,
+      clientId: ctx.clientId,
+      oauthGrantId: ctx.oauthGrantId,
+      output,
+      runId,
+      status: McpToolCallStatus.SUCCEEDED,
+      toolName,
+      userId: ctx.userId,
+    });
+    return ok(output);
+  } catch (error) {
+    await writeMcpToolAudit({
+      agentId,
+      args,
+      clientId: ctx.clientId,
+      error,
+      oauthGrantId: ctx.oauthGrantId,
+      runId,
+      status: McpToolCallStatus.FAILED,
+      toolName,
+      userId: ctx.userId,
+    });
+    throw error;
+  }
 }
 
 // Personal-queue tools need to know *whose* queue to fetch — they cannot run
@@ -1515,7 +1744,384 @@ const TASK_CONTEXT_JSON_SCHEMA = {
 // Tool definitions (shared between both transports)
 // ---------------------------------------------------------------------------
 
+const EARTH_DATA_TOOL_DEFINITIONS = [
+  {
+    name: "castReferendumVote",
+    description: "Cast or update the authenticated user's own referendum vote.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        answer: { type: "string", enum: ["YES", "NO", "ABSTAIN"] },
+        publicComment: { type: "string" },
+        referendumSlug: { type: "string" },
+      },
+    },
+  },
+  {
+    name: "recordRepresentedReferendumVote",
+    description: "Record a represented or memorial referendum vote for an existing Person.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        answer: { type: "string", enum: ["YES", "NO", "ABSTAIN"] },
+        isPublic: { type: "boolean" },
+        personId: { type: "string" },
+        publicComment: { type: "string" },
+        referendumSlug: { type: "string" },
+      },
+      required: ["personId"],
+    },
+  },
+  {
+    name: "searchPeople",
+    description: "Search public Person records by name, handle, affiliation, or source key.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string" },
+        limit: { type: "number" },
+        publicOnly: { type: "boolean" },
+      },
+    },
+  },
+  {
+    name: "getPerson",
+    description: "Fetch one Person by id or handle, including public memorial/vote context.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        idOrHandle: { type: "string" },
+        personId: { type: "string" },
+        publicOnly: {
+          type: "boolean",
+          description: "Admin-only escape hatch. Non-admin callers always receive public data.",
+        },
+      },
+    },
+  },
+  {
+    name: "searchOrganizations",
+    description: "Search organization records by name, slug, website, or source key.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string" },
+        limit: { type: "number" },
+      },
+    },
+  },
+  {
+    name: "signReferendumAsOrganization",
+    description: "Sign a referendum as an organization, auto-active under post-moderation.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string" },
+        newOrganizationName: { type: "string" },
+        type: { type: "string" },
+        website: { type: "string" },
+        description: { type: "string" },
+        logo: { type: "string" },
+        contactEmail: { type: "string" },
+        referendumSlug: { type: "string" },
+        position: { type: "string", enum: ["YES", "NO", "ABSTAIN"] },
+        statement: { type: "string" },
+      },
+    },
+  },
+  {
+    name: "upsertMemorialPerson",
+    description:
+      "Create or update a memorial/represented Person, optional condition, memorial, evidence, responsible party, relationship, and YES referendum vote. Agent imports require sourceKey/sourceRef plus sourceUrl or sourceArtifactId.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        displayName: { type: "string" },
+        lifeStatus: { type: "string", enum: ["UNKNOWN", "LIVING", "DECEASED"] },
+        birthDate: { type: "string" },
+        dateOfDeath: { type: "string" },
+        deathCountryCode: { type: "string" },
+        conditionName: { type: "string" },
+        conditionCodeSystem: { type: "string" },
+        conditionCode: { type: "string" },
+        causeCategory: { type: "string" },
+        conflictId: { type: "string" },
+        conflictName: { type: "string" },
+        responsiblePartyName: { type: "string" },
+        relationshipType: { type: "string" },
+        imageUrl: { type: "string" },
+        memorialMessage: { type: "string" },
+        publicComment: { type: "string" },
+        isPublic: { type: "boolean" },
+        consentCourtEvidence: { type: "boolean" },
+        recordTreatyVote: { type: "boolean" },
+        referendumSlug: { type: "string" },
+        sourceKind: { type: "string", enum: ["PERSONAL_TESTIMONY", "PUBLIC_IMPORT"] },
+        sourceKey: { type: "string" },
+        sourceRef: { type: "string" },
+        sourceUrl: { type: "string" },
+        sourceArtifactId: { type: "string" },
+      },
+      required: ["displayName"],
+    },
+  },
+  {
+    name: "addMemorialEvidence",
+    description: "Attach public non-sensitive sourced evidence to a memorial. Requires sourceUrl or sourceArtifactId.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        memorialId: { type: "string" },
+        evidenceKind: { type: "string" },
+        title: { type: "string" },
+        description: { type: "string" },
+        sourceUrl: { type: "string" },
+        sourceArtifactId: { type: "string" },
+        sourceKey: { type: "string" },
+        isPublic: { type: "boolean", description: "Must be true; private evidence is not accepted." },
+        containsSensitiveData: { type: "boolean", description: "Must be false; do not submit sensitive evidence." },
+      },
+      required: ["memorialId"],
+    },
+  },
+  {
+    name: "addMemorialResponsibleParty",
+    description: "Attach a government, organization, or free-text responsible party to a memorial.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        memorialId: { type: "string" },
+        jurisdictionId: { type: "string" },
+        organizationId: { type: "string" },
+        name: { type: "string" },
+        roleSlug: { type: "string" },
+        sourceUrl: { type: "string" },
+        sourceArtifactId: { type: "string" },
+        isPrimary: { type: "boolean" },
+        isPublic: { type: "boolean" },
+        confidenceScore: { type: "number" },
+      },
+      required: ["memorialId"],
+    },
+  },
+  {
+    name: "upsertConflict",
+    description: "Create or update a named conflict reference by slug/name/source key.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: { type: "string" },
+        slug: { type: "string" },
+        description: { type: "string" },
+        sourceUrl: { type: "string" },
+        startDate: { type: "string" },
+        endDate: { type: "string" },
+        primaryJurisdictionId: { type: "string" },
+      },
+      required: ["name"],
+    },
+  },
+  {
+    name: "resolveGlobalVariable",
+    description: "Find or create a canonical condition, intervention, side-effect, outcome, or policy GlobalVariable, with optional external code.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: { type: "string" },
+        kind: { type: "string", enum: ["condition", "intervention", "outcome", "side_effect", "policy", "other"] },
+        codeSystem: { type: "string" },
+        code: { type: "string" },
+        sourceArtifactId: { type: "string" },
+        sourceUrl: { type: "string" },
+        variableCategoryName: { type: "string" },
+      },
+      required: ["name"],
+    },
+  },
+  {
+    name: "upsertSourceArtifact",
+    description: "Idempotently store source/provenance metadata for imports and evidence.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        sourceKey: { type: "string" },
+        sourceSystem: { type: "string" },
+        artifactType: { type: "string" },
+        sourceUrl: { type: "string" },
+        sourceRef: { type: "string" },
+        externalKey: { type: "string" },
+        versionKey: { type: "string" },
+        title: { type: "string" },
+        contentHash: { type: "string" },
+        payloadJson: { type: "object" },
+      },
+      required: ["sourceKey"],
+    },
+  },
+  {
+    name: "upsertInterventionApprovalTimeline",
+    description: "Create or update a regulatory first-evidence/approval timeline for an intervention and condition.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        interventionName: { type: "string" },
+        conditionName: { type: "string" },
+        interventionGlobalVariableId: { type: "string" },
+        conditionGlobalVariableId: { type: "string" },
+        brandName: { type: "string" },
+        regulatorName: { type: "string" },
+        jurisdictionId: { type: "string" },
+        firstEvidenceDate: { type: "string" },
+        approvalDate: { type: "string" },
+        sourceUrl: { type: "string" },
+        sourceKey: { type: "string" },
+        sourceArtifactId: { type: "string" },
+      },
+      required: ["interventionName", "conditionName"],
+    },
+  },
+  {
+    name: "upsertVariableRelationshipEvidenceEstimate",
+    description: "Import or update evidence for predictor GlobalVariable -> outcome GlobalVariable effects.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        predictorGlobalVariableId: { type: "string" },
+        outcomeGlobalVariableId: { type: "string" },
+        contextGlobalVariableId: { type: "string" },
+        metricKind: { type: "string" },
+        sourceType: { type: "string" },
+        value: { type: "number" },
+        unitId: { type: "string" },
+        confidenceScore: { type: "number" },
+        participants: { type: "number" },
+        studies: { type: "number" },
+        rationale: { type: "string" },
+        sourceUrl: { type: "string" },
+        sourceArtifactId: { type: "string" },
+      },
+      required: ["predictorGlobalVariableId", "outcomeGlobalVariableId"],
+    },
+  },
+  {
+    name: "recordInterventionExperience",
+    description: "Record a user's intervention experience with optional outcomes and side effects.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        subjectId: { type: "string" },
+        conditionGlobalVariableId: { type: "string" },
+        interventionGlobalVariableId: { type: "string" },
+        status: { type: "string" },
+        startedAt: { type: "string" },
+        endedAt: { type: "string" },
+        doseValue: { type: "number" },
+        doseUnitId: { type: "string" },
+        frequencyText: { type: "string" },
+        notes: { type: "string" },
+        sourceArtifactId: { type: "string" },
+        isPublic: { type: "boolean" },
+        outcomes: { type: "array", items: { type: "object" } },
+        sideEffects: { type: "array", items: { type: "object" } },
+      },
+      required: ["interventionGlobalVariableId"],
+    },
+  },
+  {
+    name: "runEfficacyLagMatcher",
+    description: "Match memorial deaths to approval timelines and create efficacy-lag evidence candidates.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        limit: { type: "number" },
+      },
+    },
+  },
+  {
+    name: "reportContent",
+    description: "Report wrong, duplicate, spam, impersonation, abusive, or unsourced public data for post-moderation review.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        targetType: { type: "string" },
+        targetId: { type: "string" },
+        reasonType: { type: "string" },
+        message: { type: "string" },
+        sourceUrl: { type: "string" },
+        correctionJson: { type: "object" },
+      },
+      required: ["targetType", "targetId", "reasonType"],
+    },
+  },
+  {
+    name: "suggestCorrection",
+    description: "Suggest structured replacement fields for an existing public data record.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        targetType: { type: "string" },
+        targetId: { type: "string" },
+        reasonType: { type: "string" },
+        message: { type: "string" },
+        sourceUrl: { type: "string" },
+        correctionJson: { type: "object" },
+      },
+      required: ["targetType", "targetId", "correctionJson"],
+    },
+  },
+  {
+    name: "hideContent",
+    description: "Admin-only: hide or soft-delete a supported public Earth-data record.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        targetType: { type: "string" },
+        targetId: { type: "string" },
+      },
+      required: ["targetType", "targetId"],
+    },
+  },
+  {
+    name: "restoreContent",
+    description: "Admin-only: restore a hidden supported Earth-data record.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        targetType: { type: "string" },
+        targetId: { type: "string" },
+      },
+      required: ["targetType", "targetId"],
+    },
+  },
+  {
+    name: "mergeDuplicatePeople",
+    description: "Admin-only: merge a duplicate Person into the canonical Person.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        canonicalPersonId: { type: "string" },
+        duplicatePersonId: { type: "string" },
+      },
+      required: ["canonicalPersonId", "duplicatePersonId"],
+    },
+  },
+  {
+    name: "resolveContentReport",
+    description: "Admin-only: mark a content report as resolved or dismissed.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        id: { type: "string" },
+        status: { type: "string", enum: ["OPEN", "RESOLVED", "DISMISSED"] },
+        resolutionNote: { type: "string" },
+      },
+      required: ["id"],
+    },
+  },
+];
+
 const TASK_TOOL_DEFINITIONS = [
+  ...EARTH_DATA_TOOL_DEFINITIONS,
   {
     name: "getNextTask",
     description:
@@ -2034,7 +2640,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createOrganization",
     description:
-      "Create an organization (adds your user as owner) for task assignment, defaulting to pending state.",
+      "Create an approved organization for task assignment. Uses post-moderation: create now, reject later if needed.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -2060,13 +2666,22 @@ const TASK_TOOL_DEFINITIONS = [
           ],
           description: "Organization type",
         },
+        slug: {
+          type: "string",
+          description: "Optional URL slug. Defaults to a kebab-case slug generated from name.",
+        },
         website: { type: "string", description: "Website URL" },
         contactEmail: { type: "string", description: "Primary contact email" },
         description: { type: "string", description: "Mission or provenance note" },
+        status: {
+          type: "string",
+          enum: ["PENDING", "APPROVED", "REJECTED"],
+          description: "Organization status. Defaults to APPROVED.",
+        },
         logo: { type: "string", description: "Logo image URL" },
         jurisdictionId: { type: "string", description: "Optional jurisdiction ID" },
       },
-      required: ["name"],
+      required: ["name", "type"],
     },
   },
   {
@@ -2909,7 +3524,7 @@ Posting a comment automatically sends comment notifications to task recipients a
 export function createMcpServer(
   userId?: string,
   scopes?: McpScope[],
-  options: { isAdmin?: boolean } = {},
+  options: { clientId?: string | null; isAdmin?: boolean; oauthGrantId?: string | null } = {},
 ): Server {
   const isAdmin = options.isAdmin === true;
   const server = new Server(
@@ -2921,6 +3536,7 @@ export function createMcpServer(
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: TASK_TOOL_DEFINITIONS.filter(
       (t) =>
+        !DISABLED_TOOLS.has(t.name) &&
         hasScope(scopes, t.name) &&
         (!ADMIN_ONLY_TOOLS.has(t.name) || isAdmin),
     ),
@@ -2937,6 +3553,9 @@ export function createMcpServer(
     if (!hasScope(scopes, name)) {
       return err(`Insufficient scope for tool "${name}". Required: ${TOOL_SCOPES[name]?.join(", ")}`);
     }
+    if (DISABLED_TOOLS.has(name)) {
+      return err(`Tool "${name}" is disabled until person merge handles all person-centered relations.`);
+    }
     if (ADMIN_ONLY_TOOLS.has(name) && !isAdmin) {
       return err(`Admin privileges are required for public/Earth task tool "${name}".`);
     }
@@ -2952,6 +3571,282 @@ export function createMcpServer(
       }
 
       switch (name) {
+        case "castReferendumVote": {
+          if (!userId) return authRequired(name, "This tool casts your own referendum vote.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () =>
+              earthData.castReferendumVote({
+                answer: enumValue(VotePosition, a.answer, VotePosition.YES),
+                publicComment: (a.publicComment as string) ?? null,
+                referendumSlug: (a.referendumSlug as string) ?? null,
+                userId,
+              }),
+          );
+        }
+
+        case "recordRepresentedReferendumVote": {
+          if (!userId) return authRequired(name, "This tool records a represented referendum vote.");
+          const personId = (a.personId as string) ?? "";
+          if (!personId.trim()) return err("personId is required");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () =>
+              earthData.recordRepresentedReferendumVote({
+                answer: enumValue(VotePosition, a.answer, VotePosition.YES),
+                isPublic: a.isPublic !== false,
+                personId,
+                publicComment: (a.publicComment as string) ?? null,
+                referendumSlug: (a.referendumSlug as string) ?? null,
+                userId,
+              }),
+          );
+        }
+
+        case "searchPeople": {
+          const earthData = await import("./earth-data.server");
+          const people = await earthData.searchPeople({
+            limit: typeof a.limit === "number" ? a.limit : undefined,
+            publicOnly: isAdmin ? a.publicOnly !== false : true,
+            query: (a.query as string) ?? null,
+          });
+          return ok({ people });
+        }
+
+        case "getPerson": {
+          const earthData = await import("./earth-data.server");
+          const idOrHandle = ((a.idOrHandle as string) ?? (a.personId as string) ?? "").trim();
+          if (!idOrHandle) return err("idOrHandle or personId is required");
+          const person = await earthData.getPerson({
+            idOrHandle,
+            publicOnly: isAdmin ? a.publicOnly !== false : true,
+          });
+          return ok({ person });
+        }
+
+        case "searchOrganizations": {
+          const earthData = await import("./earth-data.server");
+          const organizations = await earthData.searchOrganizations({
+            limit: typeof a.limit === "number" ? a.limit : undefined,
+            query: (a.query as string) ?? null,
+          });
+          return ok({ organizations });
+        }
+
+        case "signReferendumAsOrganization": {
+          if (!userId) return authRequired(name, "This tool signs a referendum as an organization.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.signReferendumAsOrganization({ ...a, submittedByUserId: userId }),
+          );
+        }
+
+        case "upsertMemorialPerson": {
+          if (!userId) return authRequired(name, "This tool creates sourced people, memorials, and votes.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.upsertMemorialPerson({ ...a, submittedByUserId: userId }),
+          );
+        }
+
+        case "addMemorialEvidence": {
+          if (!userId) return authRequired(name, "This tool attaches memorial evidence.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.addMemorialEvidence({ ...a, submittedByUserId: userId }),
+          );
+        }
+
+        case "addMemorialResponsibleParty": {
+          if (!userId) return authRequired(name, "This tool attaches memorial responsible-party data.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.addMemorialResponsibleParty(a),
+          );
+        }
+
+        case "upsertConflict": {
+          if (!userId) return authRequired(name, "This tool writes sourced conflict references.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.upsertConflict(a),
+          );
+        }
+
+        case "resolveGlobalVariable": {
+          if (!userId) return authRequired(name, "This tool writes canonical variable references.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.resolveGlobalVariable(a),
+          );
+        }
+
+        case "upsertSourceArtifact": {
+          if (!userId) return authRequired(name, "This tool writes source/provenance artifacts.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.upsertSourceArtifact(a),
+          );
+        }
+
+        case "upsertInterventionApprovalTimeline": {
+          if (!userId) return authRequired(name, "This tool writes intervention approval timelines.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.upsertInterventionApprovalTimeline(a),
+          );
+        }
+
+        case "upsertVariableRelationshipEvidenceEstimate": {
+          if (!userId) return authRequired(name, "This tool writes variable relationship evidence.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.upsertVariableRelationshipEvidenceEstimate(a),
+          );
+        }
+
+        case "recordInterventionExperience": {
+          if (!userId) return authRequired(name, "This tool records intervention experiences.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.recordInterventionExperience({ ...a, reportedByUserId: userId }),
+          );
+        }
+
+        case "runEfficacyLagMatcher": {
+          if (!userId) return authRequired(name, "This tool writes efficacy-lag evidence candidates.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () =>
+              earthData.runEfficacyLagMatcher({
+                limit: typeof a.limit === "number" ? a.limit : undefined,
+              }),
+          );
+        }
+
+        case "reportContent": {
+          if (!userId) return authRequired(name, "This tool files a crowd-correction report.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.reportContent({ ...a, reportedByUserId: userId }),
+          );
+        }
+
+        case "suggestCorrection": {
+          if (!userId) return authRequired(name, "This tool files a structured correction suggestion.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () => earthData.suggestCorrection({ ...a, reportedByUserId: userId }),
+          );
+        }
+
+        case "hideContent": {
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () =>
+              earthData.hideContent({
+                targetId: (a.targetId as string) ?? "",
+                targetType: (a.targetType as string) ?? "",
+              }),
+          );
+        }
+
+        case "restoreContent": {
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () =>
+              earthData.restoreContent({
+                targetId: (a.targetId as string) ?? "",
+                targetType: (a.targetType as string) ?? "",
+              }),
+          );
+        }
+
+        case "mergeDuplicatePeople": {
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () =>
+              earthData.mergeDuplicatePeople({
+                canonicalPersonId: (a.canonicalPersonId as string) ?? "",
+                duplicatePersonId: (a.duplicatePersonId as string) ?? "",
+              }),
+          );
+        }
+
+        case "resolveContentReport": {
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            () =>
+              earthData.resolveContentReport({
+                id: (a.id as string) ?? "",
+                resolutionNote: (a.resolutionNote as string) ?? null,
+                reviewedByUserId: userId ?? null,
+                status: enumValue(
+                  ContentReportStatus,
+                  a.status,
+                  ContentReportStatus.RESOLVED,
+                ),
+              }),
+          );
+        }
+
         // ── getNextTask ────────────────────────────────────────
         case "getNextTask": {
           const { tasks, ranking, lease } = await getTaskFunctions();
@@ -3788,28 +4683,35 @@ export function createMcpServer(
         }
 
         case "upsertOrganization": {
-          const { upsertTrustedOrganization } = await import("./organization.server");
-          const organization = await upsertTrustedOrganization({
-            contactEmail: (a.contactEmail as string) ?? null,
-            description: (a.description as string) ?? null,
-            logo: (a.logo as string) ?? null,
-            name: a.name as string,
-            sourceRef: (a.sourceRef as string) ?? null,
-            sourceUrl: (a.sourceUrl as string) ?? null,
-            type: enumValue(OrgType, a.type, OrgType.OTHER),
-            website: (a.website as string) ?? null,
-          });
-
-          return ok({
-            organization: {
-              contactEmail: organization.contactEmail,
-              id: organization.id,
-              name: organization.name,
-              slug: organization.slug,
-              type: organization.type,
-              website: organization.website,
+          if (!userId) return authRequired(name, "This tool creates or updates organization records.");
+          const earthData = await import("./earth-data.server");
+          return await runAuditedEarthDataTool(
+            name,
+            a,
+            { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+            async () => {
+              const organization = await earthData.upsertOrganization({
+                contactEmail: (a.contactEmail as string) ?? null,
+                description: (a.description as string) ?? null,
+                logo: (a.logo as string) ?? null,
+                name: a.name as string,
+                sourceRef: (a.sourceRef as string) ?? null,
+                sourceUrl: (a.sourceUrl as string) ?? null,
+                type: enumValue(OrgType, a.type, OrgType.OTHER),
+                website: (a.website as string) ?? null,
+              });
+              return {
+                organization: {
+                  contactEmail: organization.contactEmail,
+                  id: organization.id,
+                  name: organization.name,
+                  slug: organization.slug,
+                  type: organization.type,
+                  website: organization.website,
+                },
+              };
             },
-          });
+          );
         }
 
         case "createPerson": {
@@ -3824,6 +4726,7 @@ export function createMcpServer(
             currentAffiliation: (a.currentAffiliation as string) ?? null,
             displayName,
             email: (a.email as string) ?? null,
+            createdByUserId: userId,
             image: (a.image as string) ?? null,
             isPublicFigure: a.isPublicFigure === true,
             sourceRef: (a.sourceRef as string) ?? null,
@@ -3904,23 +4807,66 @@ export function createMcpServer(
           );
           const orgName = (a.name as string) ?? "";
           if (!orgName.trim()) return err("name is required");
+          const orgType =
+            typeof a.type === "string"
+              ? OrgType[a.type as keyof typeof OrgType]
+              : null;
+          if (!orgType) {
+            return err(`type must be one of: ${Object.keys(OrgType).join(", ")}`);
+          }
+          const status =
+            a.status == null || a.status === ""
+              ? OrgStatus.APPROVED
+              : typeof a.status === "string"
+                ? OrgStatus[a.status as keyof typeof OrgStatus]
+                : null;
+          if (!status) {
+            return err(`status must be one of: ${Object.keys(OrgStatus).join(", ")}`);
+          }
 
-          const organization = await createOrganizationWithOwner(
-            {
-              contactEmail: (a.contactEmail as string) ?? null,
-              description: (a.description as string) ?? null,
-              jurisdictionId: (a.jurisdictionId as string) ?? null,
-              logo: (a.logo as string) ?? null,
-              name: orgName,
-              website: (a.website as string) ?? null,
-              type: enumValue(OrgType, a.type, OrgType.OTHER),
-            },
-            userId,
-          );
+          try {
+            return await runAuditedEarthDataTool(
+              name,
+              a,
+              { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+              async () => {
+                const organization = await createOrganizationWithOwner(
+                  {
+                    contactEmail: (a.contactEmail as string) ?? null,
+                    description: (a.description as string) ?? null,
+                    jurisdictionId: (a.jurisdictionId as string) ?? null,
+                    logo: (a.logo as string) ?? null,
+                    name: orgName,
+                    slug: (a.slug as string) ?? null,
+                    status,
+                    website: (a.website as string) ?? null,
+                    type: orgType,
+                  },
+                  userId,
+                  { rejectDuplicates: true },
+                );
 
-          return ok({
-            organization,
-          });
+                return {
+                  organization: {
+                    contactEmail: organization.contactEmail,
+                    createdAt: organization.createdAt,
+                    description: organization.description,
+                    id: organization.id,
+                    name: organization.name,
+                    slug: organization.slug,
+                    status: organization.status,
+                    type: organization.type,
+                    website: organization.website,
+                  },
+                };
+              },
+            );
+          } catch (error) {
+            if (error instanceof Error) {
+              return err(error.message);
+            }
+            throw error;
+          }
         }
 
         // ── proposeTaskBundle ───────────────────────────────────

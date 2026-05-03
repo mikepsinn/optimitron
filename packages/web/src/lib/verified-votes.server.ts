@@ -5,6 +5,7 @@ import {
   getUserDisplayName,
   userDisplaySelect,
 } from "@/lib/user-display";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 
 export interface VerifiedVoteStats {
   totalReferrals: number;
@@ -37,8 +38,8 @@ export async function getVerifiedVoteCount(
 ): Promise<number> {
   return prisma.referendumVote.count({
     where: {
+      ...buildOfficialReferendumVoteWhere(),
       referredByUserId: userId,
-      deletedAt: null,
       ...(referendumId ? { referendumId } : {}),
       user: {
         personhoodVerifications: {
@@ -60,8 +61,8 @@ export async function getVerifiedVoteStats(
 ): Promise<VerifiedVoteStats> {
   const referrals = await prisma.referendumVote.findMany({
     where: {
+      ...buildOfficialReferendumVoteWhere(),
       referredByUserId: userId,
-      deletedAt: null,
     },
     select: {
       user: {
@@ -108,8 +109,8 @@ export async function getTopReferrersByVerifiedVotes(
   const votes = await prisma.referendumVote.groupBy({
     by: ["referredByUserId"],
     where: {
+      ...buildOfficialReferendumVoteWhere(),
       referredByUserId: { not: null },
-      deletedAt: null,
       ...(referendumId ? { referendumId } : {}),
       user: {
         personhoodVerifications: {
@@ -162,7 +163,7 @@ export async function getGlobalVerifiedVoteCount(
 ): Promise<number> {
   return prisma.referendumVote.count({
     where: {
-      deletedAt: null,
+      ...buildOfficialReferendumVoteWhere(),
       ...(referendumId ? { referendumId } : {}),
       user: {
         personhoodVerifications: {
@@ -184,18 +185,23 @@ export async function getReferendumStats(
 ): Promise<ReferendumStats> {
   const [totalVotes, yesVotes, noVotes, verifiedVotes] = await Promise.all([
     prisma.referendumVote.count({
-      where: { referendumId, deletedAt: null },
+      where: buildOfficialReferendumVoteWhere({ referendumId }),
     }),
     prisma.referendumVote.count({
-      where: { referendumId, deletedAt: null, answer: VotePosition.YES },
+      where: buildOfficialReferendumVoteWhere({
+        referendumId,
+        answer: VotePosition.YES,
+      }),
     }),
     prisma.referendumVote.count({
-      where: { referendumId, deletedAt: null, answer: VotePosition.NO },
+      where: buildOfficialReferendumVoteWhere({
+        referendumId,
+        answer: VotePosition.NO,
+      }),
     }),
     prisma.referendumVote.count({
       where: {
-        referendumId,
-        deletedAt: null,
+        ...buildOfficialReferendumVoteWhere({ referendumId }),
         user: {
           personhoodVerifications: {
             some: {

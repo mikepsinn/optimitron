@@ -602,6 +602,16 @@ export const treatyVoteLink: NavItem = {
   tagline: "Vote on the 1% Treaty",
 };
 
+export const peopleLink: NavItem = {
+  href: ROUTES.people,
+  label: "People",
+  emoji: "+",
+  description:
+    "The living, sick, and dead humans voters dragged to the 1% Treaty polls.",
+  tagline: "Humans the treaty is for",
+  cta: "See People",
+};
+
 export const questionsLink: NavItem = {
   href: ROUTES.questions,
   label: "Treaty Questions",

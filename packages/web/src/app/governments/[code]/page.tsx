@@ -22,6 +22,8 @@ import {
   TREATY_PROJECTED_HALE_YEAR_15,
 } from "@optimitron/data/parameters";
 import { getGovernmentDetailSections } from "@/lib/government-detail-stats";
+import { getMemorialAttributionsForGovernment } from "@/lib/prosecution-data.server";
+import { ROUTES } from "@/lib/routes";
 
 interface PageProps {
   params: Promise<{ code: string }>;
@@ -136,6 +138,21 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
 
   const trialRatio = getMilitaryToGovernmentClinicalTrialRatio(gov);
   const researchRatio = getMilitaryToGovernmentMedicalResearchRatio(gov);
+
+  // Invisible Graveyard attributions — best-effort. Failures fall back to
+  // an empty summary so the page still renders.
+  let memorialAttributions: Awaited<ReturnType<typeof getMemorialAttributionsForGovernment>> = {
+    attributedMemorialIds: [],
+    conflictCivilianDeaths: 0,
+    efficacyLagDeaths: 0,
+    memorialDeaths: 0,
+    topEfficacyLagConditions: [],
+  };
+  try {
+    memorialAttributions = await getMemorialAttributionsForGovernment(gov.code);
+  } catch (error) {
+    console.error("Failed to load memorial attributions for", gov.code, error);
+  }
 
   // Bar config for spending profile cards
   const spendingBarConfig: Record<string, { value: number; max: number; color: "red" | "cyan" | "green" | "yellow" }> = {
@@ -572,6 +589,75 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
           </GameCTA>
         </BrutalCard>
       </section>
+
+      {/* The Invisible Graveyard says... */}
+      {memorialAttributions.memorialDeaths > 0 ? (
+        <section className="mb-12 border-4 border-primary bg-foreground p-8 text-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <h2 className="mb-4 text-2xl font-black uppercase">
+            The Invisible Graveyard says…
+          </h2>
+          <p className="text-lg font-bold leading-relaxed">
+            {memorialAttributions.memorialDeaths.toLocaleString()} public memorial
+            {memorialAttributions.memorialDeaths === 1 ? "" : "s"} attributed to {gov.name}
+            {memorialAttributions.efficacyLagDeaths > 0
+              ? ` — ${memorialAttributions.efficacyLagDeaths.toLocaleString()} of them died waiting for treatments that already worked`
+              : ""}
+            {memorialAttributions.conflictCivilianDeaths > 0
+              ? `, ${memorialAttributions.conflictCivilianDeaths.toLocaleString()} civilian conflict death${memorialAttributions.conflictCivilianDeaths === 1 ? "" : "s"}`
+              : ""}
+            .
+          </p>
+
+          {/* WISHONIA — TODO.md:1411, parameterized. */}
+          <p className="mt-5 text-base font-bold leading-relaxed">
+            This government spent {formatUSD(gov.militarySpendingAnnual.value)} on weapons and{" "}
+            {gov.clinicalTrialSpending
+              ? formatUSD(gov.clinicalTrialSpending.value)
+              : "almost nothing"}{" "}
+            on clinical trials. {memorialAttributions.memorialDeaths.toLocaleString()} of its
+            citizens in this database died of treatable causes during that period. In any other
+            employment relationship, this would be called &ldquo;gross negligence.&rdquo; In
+            government, it is called &ldquo;policy.&rdquo;
+          </p>
+
+          {memorialAttributions.conflictCivilianDeaths > 0 ? (
+            <p className="mt-4 text-base font-bold leading-relaxed">
+              I notice your species has a word for when a government kills people from other
+              countries. You call it &ldquo;war&rdquo; and give medals for it. You also have a
+              word for when a government kills its own people. You call it… actually, you
+              don&apos;t really have a word for it. You just call it &ldquo;Tuesday.&rdquo; The
+              Court of Humanity would like to introduce a word for it. The word is
+              &ldquo;evidence.&rdquo;
+            </p>
+          ) : null}
+
+          {memorialAttributions.topEfficacyLagConditions.length > 0 ? (
+            <div className="mt-5 space-y-2">
+              <p className="text-xs font-black uppercase tracking-[0.16em] opacity-70">
+                Top efficacy-lag conditions in this attribution
+              </p>
+              <ul className="grid gap-1 sm:grid-cols-2">
+                {memorialAttributions.topEfficacyLagConditions.map((row) => (
+                  <li
+                    className="flex items-center justify-between border border-background/30 px-3 py-2 text-sm font-bold"
+                    key={row.conditionName}
+                  >
+                    <span>{row.conditionName}</span>
+                    <span className="tabular-nums opacity-80">{row.count.toLocaleString()}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          <Link
+            className="mt-6 inline-block border-2 border-background bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground"
+            href={`${ROUTES.people}?country=${gov.code}`}
+          >
+            See the names →
+          </Link>
+        </section>
+      ) : null}
 
       {/* CTA */}
       <section className="border-4 border-primary bg-brutal-cyan p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
