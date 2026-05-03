@@ -15,6 +15,12 @@ import { z } from "zod";
 /*  Schema                                                             */
 /* ------------------------------------------------------------------ */
 
+const optionalNonEmptyString = z.preprocess(
+  (value) =>
+    typeof value === "string" && value.trim() === "" ? undefined : value,
+  z.string().trim().min(1).optional(),
+);
+
 const serverSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
@@ -37,7 +43,7 @@ const serverSchema = z.object({
   RESEND_INBOUND_WEBHOOK_SECRET: z.string().optional(),
   /// Domain used for the reply-to-comment email routing. Inbound MX records
   /// must point to this subdomain. Defaults to `reply.warondisease.org`.
-  REPLY_EMAIL_DOMAIN: z.string().optional(),
+  REPLY_EMAIL_DOMAIN: optionalNonEmptyString,
 
   // ── Google OAuth ──────────────────────────────────────────────────
   GOOGLE_CLIENT_ID: z.string().optional(),

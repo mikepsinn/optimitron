@@ -7,12 +7,20 @@ const harness = vi.hoisted(async () => {
   const { createFakeTriggerDb } = await import("./fake-prisma");
   return createFakeTriggerDb();
 });
+type MockTaskSendResult = {
+  status: "sent" | "disabled" | "failed";
+  providerMessageId?: string | null;
+  errorMessage?: string;
+  replyTo: string;
+};
 const emailMocks = vi.hoisted(() => ({
-  sendTaskNotificationEmail: vi.fn(async (input: { taskId: string }) => ({
-    status: "sent" as const,
-    providerMessageId: `mock_${input.taskId}_${Date.now()}`,
-    replyTo: `reply+${input.taskId}@reply.test`,
-  })),
+  sendTaskNotificationEmail: vi.fn(
+    async (input: { taskId: string }): Promise<MockTaskSendResult> => ({
+      status: "sent",
+      providerMessageId: `mock_${input.taskId}_${Date.now()}`,
+      replyTo: `reply+${input.taskId}@reply.test`,
+    }),
+  ),
 }));
 
 vi.mock("@/lib/prisma", async () => ({
@@ -526,7 +534,10 @@ describe("triggers/fire integration", () => {
         withEndpoint: false,
       });
 
-      await fireTaskTrigger("demo:escalate-failed", { task: { id: taskId } });
+      const first = await fireTaskTrigger("demo:escalate-failed", {
+        task: { id: taskId },
+      });
+      expect(first.result).toBe("failed");
       expect(store.communications[0]?.status).toBe("FAILED");
 
       await db.taskCommunicationEndpoint.create({
@@ -548,6 +559,22 @@ describe("triggers/fire integration", () => {
       );
       expect(subjects).toEqual(["FIRST", "FIRST"]);
       expect(store.communications[1]?.status).toBe("SENT");
+    });
+
+    it("returns failed when email infrastructure is disabled so the fire can retry", async () => {
+      const taskId = await setupTriggerAndTask("demo:escalate-disabled");
+      emailMocks.sendTaskNotificationEmail.mockResolvedValueOnce({
+        status: "disabled",
+        replyTo: `reply+${taskId}@reply.test`,
+      });
+
+      const result = await fireTaskTrigger("demo:escalate-disabled", {
+        task: { id: taskId },
+      });
+
+      expect(result.result).toBe("failed");
+      expect(result.error).toContain("first: disabled");
+      expect(store.communications[0]?.status).toBe("DRAFT");
     });
 
     it("uses primary MAILTO endpoints that carry an email address", async () => {
