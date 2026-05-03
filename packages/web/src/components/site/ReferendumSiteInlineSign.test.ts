@@ -1,7 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 import React from "react";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
+
+const storageMocks = vi.hoisted(() => ({
+  getSignupReferral: vi.fn(),
+  setPendingCourtOfHumanityVote: vi.fn(),
+}));
 
 vi.mock("@/components/referendum/ReferendumSignatureBox", () => ({
   ReferendumSignatureBox: () => null,
@@ -12,8 +17,16 @@ vi.mock("@/components/landing/TreatyReminderComposer", () => ({
 vi.mock("@/components/shared/ParameterValue", () => ({
   ParameterValue: () => null,
 }));
+vi.mock("@/lib/storage", () => ({
+  storage: storageMocks,
+}));
 
 describe("ReferendumSiteInlineSign", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    storageMocks.getSignupReferral.mockReturnValue(null);
+  });
+
   it("passes Court membership labels, referral attribution, and share URL behavior", async () => {
     (globalThis as typeof globalThis & { React: typeof React }).React = React;
     const { ReferendumSiteInlineSign } = await import(
@@ -44,5 +57,32 @@ describe("ReferendumSiteInlineSign", () => {
         "https://example.org",
       ),
     ).toBe("https://example.org/court?ref=member-1");
+  }, 20000);
+
+  it("falls back to the stored signup referral when no current URL ref is passed", async () => {
+    storageMocks.getSignupReferral.mockReturnValue("stored-ref");
+    (globalThis as typeof globalThis & { React: typeof React }).React = React;
+    const { ReferendumSiteInlineSign } = await import(
+      "./ReferendumSiteInlineSign"
+    );
+
+    const element = (ReferendumSiteInlineSign as unknown as (props: {
+      referendumSlug: string;
+      referralCode?: string | null;
+    }) => ReactElement)({
+      referendumSlug: COURT_OF_HUMANITY_SLUG,
+      referralCode: null,
+    });
+
+    expect(element.props.referralCode).toBe("stored-ref");
+
+    element.props.storePendingVote("Example Member");
+
+    expect(storageMocks.setPendingCourtOfHumanityVote).toHaveBeenCalledWith(
+      expect.objectContaining({
+        answer: "YES",
+        referredBy: "stored-ref",
+      }),
+    );
   }, 20000);
 });

@@ -9,6 +9,7 @@ import {
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
+import { storage } from "@/lib/storage";
 
 export function ReferendumSiteInlineSign({
   referendumSlug,
@@ -62,6 +63,7 @@ export function ReferendumSiteInlineSign({
         cardClassName="w-full overflow-hidden border-2 border-[#8e6b48]/35 bg-background p-0 text-foreground shadow-[6px_6px_0_rgba(58,42,25,0.12)]"
       />
     ) : undefined;
+  const effectiveReferralCode = referralCode ?? storage.getSignupReferral();
 
   return (
     <ReferendumSignatureBox
@@ -70,8 +72,10 @@ export function ReferendumSiteInlineSign({
       authPromptText={config.authPromptText}
       authCallbackUrl={authCallbackUrl ?? postSignRedirectUrl ?? config.authCallbackUrl}
       postSignRedirectUrl={postSignRedirectUrl}
-      referralCode={referralCode}
-      storePendingVote={(name) => config.storePendingVote(name, referralCode)}
+      referralCode={effectiveReferralCode}
+      storePendingVote={(name) =>
+        config.storePendingVote(name, effectiveReferralCode)
+      }
       clearPendingVote={() => config.clearPendingVote()}
       shareText={config.shareText}
       emailSubject={config.emailSubject}
