@@ -33,6 +33,14 @@ const mocks = vi.hoisted(() => ({
   searchPeople: vi.fn(),
   upsertOrganization: vi.fn(),
   upsertMemorialPerson: vi.fn(),
+  addCourtCaseClaim: vi.fn(),
+  addCourtCaseEvidence: vi.fn(),
+  addCourtCaseHarm: vi.fn(),
+  addCourtCaseParty: vi.fn(),
+  addCourtCaseRemedy: vi.fn(),
+  getCourtCase: vi.fn(),
+  openCourtCaseJuryVote: vi.fn(),
+  upsertCourtCase: vi.fn(),
   reportContent: vi.fn(),
   transaction: vi.fn(),
   userFindUnique: vi.fn(),
@@ -142,6 +150,17 @@ vi.mock("../earth-data.server", () => ({
   upsertOrganization: mocks.upsertOrganization,
   upsertMemorialPerson: mocks.upsertMemorialPerson,
   reportContent: mocks.reportContent,
+}));
+
+vi.mock("../court-data.server", () => ({
+  addCourtCaseClaim: mocks.addCourtCaseClaim,
+  addCourtCaseEvidence: mocks.addCourtCaseEvidence,
+  addCourtCaseHarm: mocks.addCourtCaseHarm,
+  addCourtCaseParty: mocks.addCourtCaseParty,
+  addCourtCaseRemedy: mocks.addCourtCaseRemedy,
+  getCourtCase: mocks.getCourtCase,
+  openCourtCaseJuryVote: mocks.openCourtCaseJuryVote,
+  upsertCourtCase: mocks.upsertCourtCase,
 }));
 
 vi.mock("../organization.server", () => ({
@@ -1010,6 +1029,92 @@ describe("MCP server tool dispatch", () => {
         slug: "trial-abundance-referendum",
         status: ReferendumStatus.DRAFT,
         voteCount: 0,
+      });
+    });
+  });
+
+  describe("court tools", () => {
+    it("exposes Court of Humanity drafting tools to Earth-data writers", async () => {
+      const noScopeClient = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const writerClient = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const noScopeNames = (await noScopeClient.listTools()).tools.map((tool) => tool.name);
+      const writerNames = (await writerClient.listTools()).tools.map((tool) => tool.name);
+
+      expect(noScopeNames).not.toContain("upsertCourtCase");
+      expect(writerNames).toEqual(
+        expect.arrayContaining([
+          "upsertCourtCase",
+          "addCourtCaseParty",
+          "addCourtCaseClaim",
+          "addCourtCaseHarm",
+          "addCourtCaseEvidence",
+          "addCourtCaseRemedy",
+          "getCourtCase",
+          "openCourtCaseJuryVote",
+        ]),
+      );
+    });
+
+    it("passes the authenticated user through to court case creation", async () => {
+      mocks.upsertCourtCase.mockResolvedValue({
+        id: "case-1",
+        slug: "humanity-v-pentagon",
+        title: "Humanity v. Pentagon",
+      });
+
+      const client = await setup("agent-user", [McpScope.EARTHDATA_WRITE]);
+      const result = await client.callTool({
+        name: "upsertCourtCase",
+        arguments: {
+          title: "Humanity v. Pentagon",
+          summary: "Audit failure and resource misallocation case.",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.upsertCourtCase).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdByUserId: "agent-user",
+          summary: "Audit failure and resource misallocation case.",
+          title: "Humanity v. Pentagon",
+        }),
+      );
+      const body = parseToolBody(result);
+      expect(body.case).toMatchObject({
+        id: "case-1",
+        slug: "humanity-v-pentagon",
+      });
+    });
+
+    it("passes the authenticated user through to court evidence creation", async () => {
+      mocks.addCourtCaseEvidence.mockResolvedValue({
+        id: "evidence-1",
+        parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
+      });
+
+      const client = await setup("agent-user", [McpScope.EARTHDATA_WRITE]);
+      const result = await client.callTool({
+        name: "addCourtCaseEvidence",
+        arguments: {
+          caseId: "case-1",
+          parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
+          title: "Pentagon unaccounted funds parameter",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.addCourtCaseEvidence).toHaveBeenCalledWith(
+        expect.objectContaining({
+          caseId: "case-1",
+          createdByUserId: "agent-user",
+          parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
+        }),
+      );
+      const body = parseToolBody(result);
+      expect(body.evidence).toMatchObject({
+        id: "evidence-1",
+        parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
       });
     });
   });

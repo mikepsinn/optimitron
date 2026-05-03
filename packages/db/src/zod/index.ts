@@ -186,6 +186,36 @@ export type ReferendumVoteSource = z.infer<typeof ReferendumVoteSourceSchema>;
 export const ReferendumStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'CLOSED']);
 export type ReferendumStatus = z.infer<typeof ReferendumStatusSchema>;
 
+export const CourtCaseStatusSchema = z.enum(['DRAFT', 'OPEN', 'VOTING', 'JUDGED', 'ARCHIVED']);
+export type CourtCaseStatus = z.infer<typeof CourtCaseStatusSchema>;
+
+export const CourtCasePartyRoleSchema = z.enum([
+  'NOMINAL_PLAINTIFF',
+  'NAMED_PLAINTIFF',
+  'REPRESENTATIVE_CLASS',
+  'RESPONDENT',
+  'AMICUS',
+  'BENEFICIARY',
+]);
+export type CourtCasePartyRole = z.infer<typeof CourtCasePartyRoleSchema>;
+
+export const CourtCasePartyCapacitySchema = z.enum([
+  'INSTITUTIONAL',
+  'OFFICIAL_CAPACITY',
+  'PERSONAL_CAPACITY',
+  'OVERSIGHT_CAPACITY',
+  'CLASS_REPRESENTATIVE',
+]);
+export type CourtCasePartyCapacity = z.infer<typeof CourtCasePartyCapacitySchema>;
+
+export const CourtCaseItemStatusSchema = z.enum([
+  'PROPOSED',
+  'ACCEPTED',
+  'REJECTED',
+  'SUPERSEDED',
+]);
+export type CourtCaseItemStatus = z.infer<typeof CourtCaseItemStatusSchema>;
+
 export const VoteTokenMintStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'CONFIRMED', 'FAILED']);
 export type VoteTokenMintStatus = z.infer<typeof VoteTokenMintStatusSchema>;
 
@@ -1582,6 +1612,154 @@ export const ReferendumVoteSchema = z.object({
   originUrl: z.string().nullable().optional(),
 });
 export type ReferendumVoteType = z.infer<typeof ReferendumVoteSchema>;
+
+/** Zod schema for the CourtCase model */
+export const CourtCaseSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  summary: z.string().nullable().optional(),
+  status: CourtCaseStatusSchema.default('DRAFT'),
+  isPublic: z.boolean().default(false),
+  createdByUserId: z.string().nullable().optional(),
+  nominalPlaintiffSubjectId: z.string().nullable().optional(),
+  primaryRespondentSubjectId: z.string().nullable().optional(),
+  beneficiarySubjectId: z.string().nullable().optional(),
+  rootTaskId: z.string().nullable().optional(),
+  juryReferendumId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseType = z.infer<typeof CourtCaseSchema>;
+
+/** Zod schema for the CourtCaseParty model */
+export const CourtCasePartySchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  partyKey: z.string().nullable().optional(),
+  subjectId: z.string(),
+  role: CourtCasePartyRoleSchema,
+  capacity: CourtCasePartyCapacitySchema.nullable().optional(),
+  displayNameSnapshot: z.string().nullable().optional(),
+  standingTheory: z.string().nullable().optional(),
+  powerToRemedyScore: z.number().nullable().optional(),
+  blameAttributionScore: z.number().nullable().optional(),
+  publicAccountabilityScore: z.number().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCasePartyType = z.infer<typeof CourtCasePartySchema>;
+
+/** Zod schema for the CourtCaseClaim model */
+export const CourtCaseClaimSchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimKey: z.string().nullable().optional(),
+  title: z.string(),
+  claimType: z.string().nullable().optional(),
+  argumentMarkdown: z.string(),
+  requestedFinding: z.string().nullable().optional(),
+  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  juryReferendumId: z.string().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseClaimType = z.infer<typeof CourtCaseClaimSchema>;
+
+/** Zod schema for the CourtCaseHarm model */
+export const CourtCaseHarmSchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimId: z.string().nullable().optional(),
+  harmKey: z.string().nullable().optional(),
+  harmType: z.string().nullable().optional(),
+  title: z.string(),
+  bodyMarkdown: z.string().nullable().optional(),
+  affectedSubjectId: z.string().nullable().optional(),
+  globalVariableId: z.string().nullable().optional(),
+  parameterName: z.string().nullable().optional(),
+  lowValue: z.number().nullable().optional(),
+  baseValue: z.number().nullable().optional(),
+  highValue: z.number().nullable().optional(),
+  unit: z.string().nullable().optional(),
+  confidenceScore: z.number().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseHarmType = z.infer<typeof CourtCaseHarmSchema>;
+
+/** Zod schema for the CourtCaseEvidence model */
+export const CourtCaseEvidenceSchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimId: z.string().nullable().optional(),
+  harmId: z.string().nullable().optional(),
+  evidenceKey: z.string().nullable().optional(),
+  evidenceType: z.string().nullable().optional(),
+  title: z.string(),
+  bodyMarkdown: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  personMemorialId: z.string().nullable().optional(),
+  globalVariableId: z.string().nullable().optional(),
+  parameterName: z.string().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  contentHash: z.string().nullable().optional(),
+  isPublic: z.boolean().default(true),
+  containsSensitiveData: z.boolean().default(false),
+  reviewStatus: CourtCaseItemStatusSchema.default('PROPOSED'),
+  confidenceScore: z.number().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseEvidenceType = z.infer<typeof CourtCaseEvidenceSchema>;
+
+/** Zod schema for the CourtCaseRemedy model */
+export const CourtCaseRemedySchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimId: z.string().nullable().optional(),
+  targetPartyId: z.string().nullable().optional(),
+  remedyKey: z.string().nullable().optional(),
+  remedyType: z.string().nullable().optional(),
+  title: z.string(),
+  bodyMarkdown: z.string(),
+  amountUsdLow: z.number().nullable().optional(),
+  amountUsdBase: z.number().nullable().optional(),
+  amountUsdHigh: z.number().nullable().optional(),
+  deadlineAt: nullableDateSchema,
+  enforcementTaskId: z.string().nullable().optional(),
+  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseRemedyType = z.infer<typeof CourtCaseRemedySchema>;
 
 /** Zod schema for the PublicGoodsRecipient model */
 export const PublicGoodsRecipientSchema = z.object({
