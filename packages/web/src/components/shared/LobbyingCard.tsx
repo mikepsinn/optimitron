@@ -1,4 +1,4 @@
-import type { LobbyingIndustry } from "@optimitron/data";
+import type { LobbyingIndustry } from "@optimitron/data/datasets/us-lobbying";
 import { BrutalCard } from "@/components/ui/brutal-card";
 
 interface LobbyingCardProps {

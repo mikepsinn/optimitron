@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
-import { AGENCIES } from "@optimitron/data";
+import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import { dirsLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 

@@ -5,10 +5,12 @@ import Link from "next/link";
 import {
   type GovernmentMetrics,
   getGovernmentsByHALE,
+} from "@optimitron/data/datasets/government-report-cards";
+import {
   getMilitarySpendingPerCapitaPPP,
   getMilitaryToGovernmentClinicalTrialRatio,
   getMilitaryToGovernmentMedicalResearchRatio,
-} from "@optimitron/data";
+} from "@optimitron/data/datasets/government-spending-ratios";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
 import { Popover } from "@/components/retroui/Popover";

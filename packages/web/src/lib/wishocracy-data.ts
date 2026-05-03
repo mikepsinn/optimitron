@@ -12,9 +12,9 @@ export {
   getDefaultWishocraticCatalogRecord as buildWishocraticCatalogRecord,
   getDefaultWishocraticCatalogRecords,
   getDefaultWishocraticAllocations as getActualGovernmentAllocations,
-} from '@optimitron/data';
+} from '@optimitron/data/wishocratic-items-registry';
 
 export type {
   DefaultWishocraticCatalogRecord as WishocraticCatalogRecord,
   DefaultWishocraticItemId as WishocraticItemId,
-} from '@optimitron/data';
+} from '@optimitron/data/wishocratic-items-registry';

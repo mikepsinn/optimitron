@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
-import { getWishoniaAgency, getWishoniaAgencies } from "@optimitron/data";
+import {
+  getWishoniaAgency,
+  getWishoniaAgencies,
+} from "@optimitron/data/datasets/wishonia-agencies";
 
 interface PageProps {
   params: Promise<{ agencyId: string }>;

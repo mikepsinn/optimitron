@@ -8,7 +8,7 @@ import { Card } from "@/components/retroui/Card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
-import { getGovernmentLeader } from "@optimitron/data";
+import { getGovernmentLeader } from "@optimitron/data/datasets/government-leaders";
 import { buildTaskShareTokens } from "@/lib/tasks/accountability";
 import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import {

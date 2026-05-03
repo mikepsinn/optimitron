@@ -17,7 +17,7 @@ import {
   TaskImpactPublicationStatus,
   TaskStatus,
 } from "@optimitron/db";
-import type { LeaderActivityRecord } from "@optimitron/data";
+import type { LeaderActivityRecord } from "@optimitron/data/datasets/leader-activities";
 import type {
   ImportedImpactFrameDraft,
   ImportedImpactMetricDraft,

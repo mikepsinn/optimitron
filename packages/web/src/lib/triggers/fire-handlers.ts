@@ -1,10 +1,15 @@
 import {
   TaskCommentKind,
   TaskCommentSource,
+  TaskCommunicationStatus,
   TaskDeadlinePolicy,
   TaskStatus,
 } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
+import {
+  getReplyAddress,
+  sendTaskNotificationEmail,
+} from "@/lib/email/task-notification";
 import { upsertPrimaryTaskCommunicationEndpoint } from "@/lib/tasks/task-communication-endpoints.server";
 import {
   gateEvidenceTemplate,
@@ -318,10 +323,15 @@ async function maybeVerifyByGate(
   return updated.count > 0;
 }
 
-// CURRENT SCOPE: this handler creates a TaskComment + a TaskCommunication
-// row. It does NOT invoke the existing email/notification dispatch pipeline.
-// The TaskComment surfaces in the in-product task thread; the
-// TaskCommunication row is a draft + audit record.
+// SCOPE: creates a TaskComment + a TaskCommunication row, then attempts to
+// send the email via Resend. The TaskCommunication is written before the
+// provider call so the attempt remains auditable if the send/update fails.
+//
+// Recipients are resolved from (in priority order):
+//   1. The task's primary `TaskCommunicationEndpoint` of kind=EMAIL
+//   2. The assignee Organization's `contactEmail`
+//   3. The assignee Person's `email`
+// If none resolve, status=FAILED with reason "no recipient email".
 export async function fireSpawnCommunication(
   tx: FireDb,
   trigger: LoadedTrigger,
@@ -413,10 +423,19 @@ export async function fireSpawnCommunication(
       },
     });
 
-    await tx.taskCommunication.create({
+    const recipient = await resolveTaskRecipientEmail(tx, taskId);
+    const replyTo = getReplyAddress(taskId);
+
+    const communication = await tx.taskCommunication.create({
       data: {
         taskId,
         taskCommentId: comment.id,
+        recipientEmail: recipient ?? null,
+        failedAt: recipient ? null : new Date(),
+        status: recipient
+          ? TaskCommunicationStatus.DRAFT
+          : TaskCommunicationStatus.FAILED,
+        errorMessage: recipient ? null : "no recipient email resolved",
         metadataJson: {
           triggerId: trigger.id,
           triggerKey: trigger.triggerKey,
@@ -425,9 +444,42 @@ export async function fireSpawnCommunication(
           bodyText,
           bodyHtml,
           dedupeKey,
+          replyTo,
         } as Prisma.InputJsonValue,
         audience: "ASSIGNEE",
         purpose: "REMINDER",
+      },
+    });
+
+    if (!recipient) {
+      continue;
+    }
+
+    const sendResult = await sendTaskNotificationEmail({
+      taskId,
+      recipientEmail: recipient,
+      subject,
+      text: bodyText,
+      html: bodyHtml ?? undefined,
+    });
+
+    const sentAt = sendResult.status === "sent" ? new Date() : null;
+    const failedAt = sendResult.status === "failed" ? new Date() : null;
+    const status =
+      sendResult.status === "sent"
+        ? TaskCommunicationStatus.SENT
+        : sendResult.status === "failed"
+          ? TaskCommunicationStatus.FAILED
+          : TaskCommunicationStatus.DRAFT; // disabled (no email infra) -> leave DRAFT
+
+    await tx.taskCommunication.update({
+      where: { id: communication.id },
+      data: {
+        sentAt,
+        failedAt,
+        status,
+        errorMessage: sendResult.errorMessage ?? null,
+        providerMessageId: sendResult.providerMessageId ?? null,
       },
     });
   }
@@ -440,6 +492,50 @@ export async function fireSpawnCommunication(
     spawnedTaskIds: [taskId],
     spawnedTaskKeys: [],
   };
+}
+
+/**
+ * Resolve the email address for a task notification.
+ *
+ * Priority: primary EMAIL TaskCommunicationEndpoint, then the assignee
+ * organization's contactEmail, then the assignee person's email. Returns
+ * null when no email can be resolved — the caller marks the
+ * TaskCommunication row as FAILED so the omission is visible.
+ */
+async function resolveTaskRecipientEmail(
+  tx: FireDb,
+  taskId: string,
+): Promise<string | null> {
+  // 1) Primary EMAIL endpoint takes precedence (operator-set contact method).
+  const endpoint = await tx.taskCommunicationEndpoint.findFirst({
+    where: {
+      taskId,
+      kind: "EMAIL",
+      isPrimary: true,
+      deletedAt: null,
+      email: { not: null },
+    },
+    select: { email: true },
+  });
+  if (endpoint?.email) return endpoint.email;
+
+  // 2) Assignee org contactEmail
+  const task = await tx.task.findUnique({
+    where: { id: taskId },
+    select: {
+      assigneeOrganizationId: true,
+      assigneePersonId: true,
+      assigneeOrganization: { select: { contactEmail: true } },
+      assigneePerson: { select: { email: true } },
+    },
+  });
+  if (task?.assigneeOrganization?.contactEmail) {
+    return task.assigneeOrganization.contactEmail;
+  }
+  if (task?.assigneePerson?.email) {
+    return task.assigneePerson.email;
+  }
+  return null;
 }
 
 export async function dryRunFire(

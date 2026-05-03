@@ -1,5 +1,5 @@
 import { TaskImpactFrameKey, TaskStatus } from "@optimitron/db";
-import { getGovernmentLeader } from "@optimitron/data";
+import { getGovernmentLeader } from "@optimitron/data/datasets/government-leaders";
 import { describe, expect, it } from "vitest";
 import { renderTemplate } from "@/lib/tasks/render-template";
 import {

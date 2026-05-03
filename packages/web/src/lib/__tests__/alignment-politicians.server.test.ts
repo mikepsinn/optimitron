@@ -27,20 +27,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@optimitron/data", async () => {
-  const actual = await vi.importActual<typeof import("@optimitron/data")>(
-    "@optimitron/data",
-  );
-
-  return {
-    ...actual,
-    fetchers: {
-      ...actual.fetchers,
-      fetchMemberDetails: mocks.fetchMemberDetails,
-      getCongressApiKey: mocks.getCongressApiKey,
-    },
-  };
-});
+vi.mock("@optimitron/data/fetchers", () => ({
+  fetchMemberDetails: mocks.fetchMemberDetails,
+  getCongressApiKey: mocks.getCongressApiKey,
+}));
 
 vi.mock("@/lib/alignment-legislative-sync.server", async () => {
   const actual = await vi.importActual<typeof import("@/lib/alignment-legislative-sync.server")>(

@@ -6,10 +6,8 @@ import {
   getSignerDelayAttribution,
 } from "./delay-attribution";
 import { getMetricBaseValue, type TaskImpactFrameSummary, type TaskImpactMetricSummary } from "./impact";
-import {
-  getGovernmentMetrics,
-  getMilitaryToGovernmentClinicalTrialRatio,
-} from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
+import { getMilitaryToGovernmentClinicalTrialRatio } from "@optimitron/data/datasets/government-spending-ratios";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,

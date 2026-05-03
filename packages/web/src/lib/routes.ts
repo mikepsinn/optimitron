@@ -8,7 +8,10 @@ import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   VICTORY_BOND_ANNUAL_RETURN_PCT,
 } from "@optimitron/data/parameters";
-import { AGENCIES, WISHONIA_AGENCIES } from "@optimitron/data";
+import {
+  AGENCIES,
+  WISHONIA_AGENCIES,
+} from "@optimitron/data/datasets/wishonia-agencies";
 // Precompute for descriptions (same pattern as demo-script.ts)
 const costReduction = Math.round(DFDA_TRIAL_COST_REDUCTION_FACTOR.value);
 const speedup = Math.round(DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER.value);

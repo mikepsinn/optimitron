@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getGovernmentMetrics } from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
 import { getGovernmentDetailSections } from "../government-detail-stats";
 
 function getLabels(code: string): string[] {

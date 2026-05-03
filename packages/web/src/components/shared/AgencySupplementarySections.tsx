@@ -2,8 +2,13 @@ import {
   getAgencySupplementarySections,
   type SupplementarySection,
   type StatCardItem,
-} from "@optimitron/data";
-import type { FDAApprovedDrugDisaster, GovernmentLie, IronicLaw, CIACoup, LobbyingIndustry, RevolvingDoorStat } from "@optimitron/data";
+} from "@optimitron/data/datasets/agency-supplementary";
+import type { CIACoup } from "@optimitron/data/datasets/us-cia-coups";
+import type { FDAApprovedDrugDisaster } from "@optimitron/data/datasets/us-fda-approved-drug-deaths";
+import type { GovernmentLie } from "@optimitron/data/datasets/us-government-lies";
+import type { IronicLaw } from "@optimitron/data/datasets/us-ironic-laws";
+import type { LobbyingIndustry } from "@optimitron/data/datasets/us-lobbying";
+import type { RevolvingDoorStat } from "@optimitron/data/datasets/us-revolving-door";
 import { SupplementaryStatCards } from "./SupplementaryStatCards";
 import { DrugDisasterTable } from "./DrugDisasterTable";
 import { LieComparisonCard } from "./LieComparisonCard";

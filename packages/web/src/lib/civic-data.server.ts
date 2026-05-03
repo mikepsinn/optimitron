@@ -1,4 +1,4 @@
-import { fetchers } from "@optimitron/data";
+import * as fetchers from "@optimitron/data/fetchers";
 import { ALIGNMENT_BENCHMARKS } from "./alignment-benchmarks";
 import type { CivicRepresentative, StateDistrict } from "./civic-data";
 

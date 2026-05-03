@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { getGovernmentMetrics, GOVERNMENTS } from "@optimitron/data";
+import {
+  getGovernmentMetrics,
+  GOVERNMENTS,
+} from "@optimitron/data/datasets/government-report-cards";
 import { getLatestAggregateScores } from "@/lib/aggregate-alignment.server";
 import { PoliticianAlignmentDashboard } from "@/components/scoreboard/PoliticianAlignmentDashboard";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";

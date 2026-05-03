@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import type { AgencyHistoricalTrend } from "@optimitron/data";
+import type { AgencyHistoricalTrend } from "@optimitron/data/datasets/agency-historical-trends";
 
 const SERIES_COLORS = [
   "var(--brutal-pink)",

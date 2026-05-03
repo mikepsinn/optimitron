@@ -156,6 +156,9 @@ export async function fireTaskTrigger(
     if (options.db) {
       return await runWith(options.db as FireDb);
     }
+    if (trigger.triggerKind === "spawnCommunication") {
+      return await runWith(prisma);
+    }
     return await prisma.$transaction((tx) => runWith(tx));
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);

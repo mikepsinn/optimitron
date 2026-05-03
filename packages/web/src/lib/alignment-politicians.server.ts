@@ -1,4 +1,4 @@
-import { fetchers } from "@optimitron/data";
+import * as fetchers from "@optimitron/data/fetchers";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import {

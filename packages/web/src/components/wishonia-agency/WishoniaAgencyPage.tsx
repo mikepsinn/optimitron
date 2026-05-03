@@ -1,5 +1,5 @@
 import { StatCardGrid } from "@/components/ui/stat-card";
-import type { WishoniaAgency } from "@optimitron/data";
+import type { WishoniaAgency } from "@optimitron/data/datasets/wishonia-agencies";
 import { AgencyStampHero } from "./AgencyStampHero";
 import { AnnotatedCodeBlock } from "./AnnotatedCodeBlock";
 import { EarthAgencyReportCard } from "./EarthAgencyReportCard";

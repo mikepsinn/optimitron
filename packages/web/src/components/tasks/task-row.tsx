@@ -19,7 +19,7 @@ import {
   getAssigneeMilitaryBudgetUsd,
   getAssigneeTwitterHandle,
 } from "@/lib/tasks/task-context";
-import { getGovernmentLeader } from "@optimitron/data";
+import { getGovernmentLeader } from "@optimitron/data/datasets/government-leaders";
 import { getPersonHref } from "@/lib/person-href";
 import { getTaskPath } from "@/lib/routes";
 import type { TaskCardTask } from "./task-card";

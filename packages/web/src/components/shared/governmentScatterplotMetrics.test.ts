@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { GOVERNMENTS, getGovernmentMetrics } from "@optimitron/data";
+import {
+  GOVERNMENTS,
+  getGovernmentMetrics,
+} from "@optimitron/data/datasets/government-report-cards";
 import {
   GOVERNMENT_SCATTERPLOT_DEFAULT_X,
   GOVERNMENT_SCATTERPLOT_DEFAULT_Y,

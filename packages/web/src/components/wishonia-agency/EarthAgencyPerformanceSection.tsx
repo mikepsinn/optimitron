@@ -1,6 +1,7 @@
 "use client";
 
-import type { EarthAgency, AgencyPerformance } from "@optimitron/data";
+import type { EarthAgency } from "@optimitron/data/datasets/earth-agencies";
+import type { AgencyPerformance } from "@optimitron/data/datasets/agency-performance";
 import { AgencyGradeChart } from "@/components/shared/AgencyGradeChart";
 import {
   Tabs,

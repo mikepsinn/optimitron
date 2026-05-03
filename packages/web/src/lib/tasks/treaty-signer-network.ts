@@ -6,7 +6,7 @@ import {
   TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
-import type { GovernmentLeaderRecord } from "@optimitron/data";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
 import {
   SIPRI_MILITARY_SPENDING_2024_SOURCE_URL,
   SIPRI_WORLD_MILITARY_SPENDING_SNAPSHOT_YEAR,
@@ -379,4 +379,3 @@ export function buildTreatySignerImportDraft(input: {
 
   return cloned;
 }
-

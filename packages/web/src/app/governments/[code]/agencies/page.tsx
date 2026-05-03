@@ -4,8 +4,10 @@ import Link from "next/link";
 import {
   GOVERNMENTS,
   getGovernmentMetrics,
+} from "@optimitron/data/datasets/government-report-cards";
+import {
   getAgencyPerformanceByCountry,
-} from "@optimitron/data";
+} from "@optimitron/data/datasets/agency-performance";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { ROUTES } from "@/lib/routes";

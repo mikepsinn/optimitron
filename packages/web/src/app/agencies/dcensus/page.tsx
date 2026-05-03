@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
-import { AGENCIES } from "@optimitron/data";
+import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 
 const agency = AGENCIES.dcensus;
 

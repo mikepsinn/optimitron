@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 
 import {
   ROUTES,
@@ -41,6 +42,12 @@ describe("navigation routes", () => {
         ROUTES.governments,
       ]),
     );
+  });
+
+  it("keeps route metadata off the root data barrel", () => {
+    const source = readFileSync(new URL("../routes.ts", import.meta.url), "utf8");
+
+    expect(source).not.toMatch(/from\s+["']@optimitron\/data["']/);
   });
 
   it("uses intent-based navigation buckets instead of the old generic fund section", () => {

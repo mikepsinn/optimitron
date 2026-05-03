@@ -4,13 +4,19 @@ import Link from "next/link";
 import {
   GOVERNMENTS,
   getGovernmentMetrics,
-  getGovernmentProfile,
   getGovernmentsByHALE,
+} from "@optimitron/data/datasets/government-report-cards";
+import { getGovernmentProfile } from "@optimitron/data/datasets/governments";
+import {
   getAgencyPerformanceByCountry,
+} from "@optimitron/data/datasets/agency-performance";
+import {
   ALL_HISTORICAL_TRENDS,
+} from "@optimitron/data/datasets/agency-historical-trends";
+import {
   getMilitaryToGovernmentClinicalTrialRatio,
   getMilitaryToGovernmentMedicalResearchRatio,
-} from "@optimitron/data";
+} from "@optimitron/data/datasets/government-spending-ratios";
 import { GameCTA } from "@/components/ui/game-cta";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { SpendingBar } from "@/components/ui/spending-bar";

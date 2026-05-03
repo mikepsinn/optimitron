@@ -1,4 +1,5 @@
-import { GOVERNMENTS, getGovernmentProfile } from "@optimitron/data";
+import { GOVERNMENTS } from "@optimitron/data/datasets/government-report-cards";
+import { getGovernmentProfile } from "@optimitron/data/datasets/governments";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { GameCTA } from "@/components/ui/game-cta";
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";

@@ -1,5 +1,5 @@
 import { BrutalCard } from "@/components/ui/brutal-card";
-import type { OptimizationMetric } from "@optimitron/data";
+import type { OptimizationMetric } from "@optimitron/data/datasets/wishonia-agencies";
 import { X, Check } from "lucide-react";
 
 type AccentColor = "pink" | "cyan" | "yellow" | "green";

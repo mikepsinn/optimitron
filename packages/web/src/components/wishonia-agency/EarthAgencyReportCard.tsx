@@ -1,6 +1,6 @@
 import { BrutalCard } from "@/components/ui/brutal-card";
-import type { EarthAgency } from "@optimitron/data";
-import type { AgencyGrade } from "@optimitron/data";
+import type { EarthAgency } from "@optimitron/data/datasets/earth-agencies";
+import type { AgencyGrade } from "@optimitron/data/datasets/agency-performance";
 
 type AccentColor = "pink" | "cyan" | "yellow" | "green";
 
