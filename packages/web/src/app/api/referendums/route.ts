@@ -1,18 +1,10 @@
 import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
-import type { ReferendumKind } from "@optimitron/db";
+import { ReferendumKind } from "@optimitron/db/enums";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
 
-const REFERENDUM_KINDS = new Set([
-  "GENERAL",
-  "DECLARATION",
-  "TREATY",
-  "MEMBERSHIP",
-  "COURT_CASE",
-  "AMENDMENT",
-  "BUDGET",
-]);
+const REFERENDUM_KINDS = new Set<string>(Object.values(ReferendumKind));
 
 function cleanRequiredString(value: unknown): string | null {
   if (typeof value !== "string") return null;

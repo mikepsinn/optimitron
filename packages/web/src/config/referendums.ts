@@ -22,7 +22,7 @@ type ReferendumShareUser = {
   referralCode?: string | null;
 };
 
-export type ReferendumKind = "declaration" | "treaty" | "membership";
+export type ReferendumFlowKind = "declaration" | "treaty" | "membership";
 
 export interface ReferendumActionConfig {
   submitLabel: string;
@@ -38,7 +38,7 @@ export interface ReferendumActionConfig {
 
 export interface ReferendumConfig {
   slug: string;
-  kind: ReferendumKind;
+  kind: ReferendumFlowKind;
   introText: string;
   slides: string[];
   backgroundImages?: string[];

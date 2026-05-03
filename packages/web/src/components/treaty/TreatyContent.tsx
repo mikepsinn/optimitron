@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getReferendumConfig } from "@/config/referendums";
 import { readerMarkdownComponents } from "@/components/referendum/ReferendumStepper";
 import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
-import { ROUTES } from "@/lib/routes";
+import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
+import { buildCourtReferralUrl } from "@/lib/url";
 
 /**
  * Treaty body + public signature box, styled to match the /treaty reader mode
@@ -17,8 +19,31 @@ import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
  * stays in lockstep with /treaty — single source of truth for both surfaces.
  */
 export function TreatyContent() {
+  const [courtReferralCode, setCourtReferralCode] = useState<string | null>(
+    null,
+  );
   const config = getReferendumConfig(TREATY_REFERENDUM_SLUG);
+
+  useEffect(() => {
+    const currentReferralCode =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("ref");
+
+    if (currentReferralCode) {
+      storage.setSignupReferral(currentReferralCode);
+      setCourtReferralCode(currentReferralCode);
+      return;
+    }
+
+    setCourtReferralCode(storage.getSignupReferral());
+  }, []);
+
   if (!config) return null;
+  const courtHref = buildCourtReferralUrl(
+    { referralCode: courtReferralCode },
+    "",
+  );
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-10">
@@ -41,7 +66,7 @@ export function TreatyContent() {
           Next: the enforcement stack
         </p>
         <Link
-          href={ROUTES.court}
+          href={courtHref}
           className="mt-3 inline-block text-xl font-bold text-[var(--treaty-ink)] underline decoration-[#8e6b48]/60 decoration-2 underline-offset-4 [font-family:var(--v0-font-libre-baskerville)] hover:decoration-[var(--treaty-ink)] sm:text-2xl"
         >
           Join the Court of Humanity →

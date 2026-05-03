@@ -21,6 +21,19 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@optimitron/db/enums", () => ({
+  ReferendumKind: {
+    GENERAL: "GENERAL",
+    DECLARATION: "DECLARATION",
+    TREATY: "TREATY",
+    MEMBERSHIP: "MEMBERSHIP",
+    COURT_CASE: "COURT_CASE",
+    AMENDMENT: "AMENDMENT",
+    BUDGET: "BUDGET",
+    EXPERIMENTAL: "EXPERIMENTAL",
+  },
+}));
+
 import { GET, POST } from "./route";
 
 function makePostRequest(body: Record<string, unknown>) {
@@ -137,6 +150,24 @@ describe("/api/referendums", () => {
         bodyMarkdown: "Details.",
         kind: "GENERAL",
       },
+    });
+  });
+
+  it("validates referendum kinds from the exported DB enum", async () => {
+    const res = await POST(
+      makePostRequest({
+        title: "Experimental Referendum",
+        slug: "experimental-referendum",
+        question: "Should this new kind work without editing the route?",
+        kind: "EXPERIMENTAL",
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    expect(mocks.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        kind: "EXPERIMENTAL",
+      }),
     });
   });
 });
