@@ -5,6 +5,15 @@ const mocks = vi.hoisted(() => ({
   getStripeClient: vi.fn(),
   sessionsCreate: vi.fn(),
   getBaseUrl: vi.fn(),
+  getServerSession: vi.fn(),
+}));
+
+vi.mock("next-auth", () => ({
+  getServerSession: mocks.getServerSession,
+}));
+
+vi.mock("@/lib/auth", () => ({
+  authOptions: {},
 }));
 
 vi.mock("@/lib/stripe", () => ({
@@ -31,6 +40,7 @@ describe("POST /api/stripe/create-checkout", () => {
     vi.resetAllMocks();
     mocks.isStripeConfigured.mockReturnValue(true);
     mocks.getBaseUrl.mockReturnValue("http://localhost:3001");
+    mocks.getServerSession.mockResolvedValue(null);
     mocks.getStripeClient.mockReturnValue({
       checkout: { sessions: { create: mocks.sessionsCreate } },
     });
@@ -62,11 +72,15 @@ describe("POST /api/stripe/create-checkout", () => {
     expect(res.status).toBe(400);
   });
 
-  it("rejects missing name or email", async () => {
+  it("accepts missing name or email so Stripe can collect donor identity", async () => {
     const res = await POST(
-      makeRequest({ amount: 50, donationType: "monthly", name: "", email: "ada@example.com" }),
+      makeRequest({ amount: 50, donationType: "monthly" }),
     );
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(200);
+    const call = mocks.sessionsCreate.mock.calls[0]![0];
+    expect(call.customer_email).toBeUndefined();
+    expect(call.metadata).not.toHaveProperty("donorName");
+    expect(call.metadata).not.toHaveProperty("donorEmail");
   });
 
   it("rejects invalid email format", async () => {
@@ -129,6 +143,29 @@ describe("POST /api/stripe/create-checkout", () => {
     const call = mocks.sessionsCreate.mock.calls[0]![0];
     expect(call.mode).toBe("subscription");
     expect(call.line_items[0].price_data.recurring).toEqual({ interval: "month" });
+  });
+
+  it("uses the authenticated user for Stripe email prefill and attribution", async () => {
+    mocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "grace@example.com",
+        id: "user_123",
+        name: "Grace",
+      },
+    });
+    const res = await POST(makeRequest({ amount: 50, donationType: "monthly" }));
+
+    expect(res.status).toBe(200);
+    const call = mocks.sessionsCreate.mock.calls[0]![0];
+    expect(call.customer_email).toBe("grace@example.com");
+    expect(call.client_reference_id).toBe("user_123");
+    expect(call.metadata).toEqual(
+      expect.objectContaining({
+        donorEmail: "grace@example.com",
+        donorName: "Grace",
+        userId: "user_123",
+      }),
+    );
   });
 
   it("strips query and hash from sourceUrl + sourceReferrer", async () => {

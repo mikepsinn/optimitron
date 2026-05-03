@@ -19,13 +19,13 @@ const PATHS: GivingPath[] = [
     title: "Appreciated stock or mutual funds",
     body: "Donate shares held more than a year directly. You may deduct the full market value and avoid capital gains tax on the sale.",
     subject: "Stock donation",
-    who: "Best for vested RSUs, long-held index funds, or any position sitting on a fat unrealized gain.",
+    who: "Best for vested RSUs, long-held index funds, or highly appreciated positions.",
   },
   {
     title: "Crypto (BTC, ETH, anything ≥1 year)",
     body: "Crypto held more than a year can often be donated as property, avoiding capital gains while preserving the charitable deduction.",
     subject: "Crypto donation",
-    who: "Best for early holders staring at a cost basis that looks like a typo.",
+    who: "Best for crypto with long-term unrealized gains.",
   },
   {
     title: "Donor-Advised Fund (DAF) grant",
@@ -37,7 +37,7 @@ const PATHS: GivingPath[] = [
     title: "Employer matching",
     body: "Many employers match charitable gifts. Donate first, then submit the receipt through your benefits portal.",
     subject: "Employer matching",
-    who: "Best for anyone with a W-2 from a large company and 90 seconds to fill out a portal form.",
+    who: "Best if your employer matches charitable gifts.",
   },
   {
     title: "Qualified Charitable Distribution (QCD)",
@@ -49,7 +49,7 @@ const PATHS: GivingPath[] = [
     title: "Bequest in your will",
     body: "Add the Institute for Accelerated Medicine to your estate plan as a beneficiary.",
     subject: "Bequest",
-    who: "Best for absolutely everyone with a will, which should be absolutely everyone.",
+    who: "Best for estate gifts.",
   },
 ];
 
