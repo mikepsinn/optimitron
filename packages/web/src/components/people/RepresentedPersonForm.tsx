@@ -370,7 +370,7 @@ export function RepresentedPersonForm({
       <div className="space-y-4">
         <div>
           <h2 className="text-xl font-black uppercase tracking-[0.08em]">
-            Drag someone to the polls
+            Help someone vote
           </h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
             Add someone who couldn't click the button themselves. Official vote totals stay separate.

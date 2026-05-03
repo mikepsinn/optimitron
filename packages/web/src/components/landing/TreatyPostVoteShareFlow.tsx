@@ -957,7 +957,7 @@ export function TreatyPostVoteShareFlow({
                 className={primaryButtonClass}
                 onClick={() => go(answer === "yes" ? "representPerson" : "promotion")}
               >
-                {answer === "yes" ? "Drag someone to the polls" : "Show me mine"}
+                {answer === "yes" ? "help someone vote" : "Show me mine"}
               </Button>
             </FlowButtonRow>
           </>

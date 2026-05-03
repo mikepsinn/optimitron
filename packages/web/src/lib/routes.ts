@@ -605,7 +605,7 @@ export const treatyVoteLink: NavItem = {
 export const peopleLink: NavItem = {
   href: ROUTES.people,
   label: "People",
-  emoji: "+",
+  emoji: "👥",
   description:
     "The living, sick, and dead humans voters dragged to the 1% Treaty polls.",
   tagline: "Humans the treaty is for",
@@ -615,7 +615,7 @@ export const peopleLink: NavItem = {
 export const questionsLink: NavItem = {
   href: ROUTES.questions,
   label: "Treaty Questions",
-  emoji: "ðŸ—³ï¸",
+  emoji: "❓",
   description: "The longer context-first treaty walkthrough with the story, stakes, math, and vote question.",
   tagline: "Story, stakes, math, and the treaty vote",
   matchPrefixes: [ROUTES.questions],
@@ -625,7 +625,7 @@ export const questionsLink: NavItem = {
 export const whyLink: NavItem = {
   href: ROUTES.why,
   label: "Why",
-  emoji: "?",
+  emoji: "🧠",
   description: "What happens when one percent of the murder budget becomes medicine budget.",
   tagline: "The numbers behind the treaty",
   cta: "Read Why",
@@ -634,7 +634,7 @@ export const whyLink: NavItem = {
 export const endorseLink: NavItem = {
   href: ROUTES.endorse,
   label: "Sign as Organization",
-  emoji: "+",
+  emoji: "✍️",
   description:
     "Sign the 1% Treaty as an organization.",
   tagline: "Sign as an organization",
@@ -644,7 +644,7 @@ export const endorseLink: NavItem = {
 export const campaignPartnersLink: NavItem = {
   href: ROUTES.campaign,
   label: "Organizational Signatories",
-  emoji: "*",
+  emoji: "🏢",
   description:
     "Organizations that signed the 1% Treaty.",
   tagline: "See the organizations on record",
@@ -656,7 +656,7 @@ export const coalitionLink = campaignPartnersLink;
 export const donateLink: NavItem = {
   href: ROUTES.donate,
   label: "Donate",
-  emoji: "$",
+  emoji: "💝",
   description:
     "Less than a cent buys one year of healthy human life. About 50,000× cheaper than anti-malaria bed nets. Tax-deductible to a 501(c)(3).",
   tagline: "Less than a cent per healthy life-year",
@@ -666,7 +666,7 @@ export const donateLink: NavItem = {
 export const legalLink: NavItem = {
   href: ROUTES.legal,
   label: "Legal",
-  emoji: "§",
+  emoji: "⚖️",
   description:
     "Legal notes for boards and counsel reviewing organizational signatures.",
   tagline: "For boards and counsel",
@@ -676,7 +676,7 @@ export const legalLink: NavItem = {
 export const privacyLink: NavItem = {
   href: ROUTES.privacy,
   label: "Privacy",
-  emoji: "§",
+  emoji: "🔒",
   description:
     "What this site collects, why it collects it, and how to contact us.",
   tagline: "Data use and choices",
@@ -686,7 +686,7 @@ export const privacyLink: NavItem = {
 export const termsLink: NavItem = {
   href: ROUTES.terms,
   label: "Terms",
-  emoji: "§",
+  emoji: "📄",
   description: "The rules for using this site.",
   tagline: "Site rules",
   cta: "Read Terms",
@@ -695,7 +695,7 @@ export const termsLink: NavItem = {
 export const trialSurveyLink: NavItem = {
   href: ROUTES.survey,
   label: "Take Survey",
-  emoji: "□",
+  emoji: "📝",
   description:
     "Answer two questions about government funding for pragmatic clinical trials.",
   tagline: "Answer two survey questions",
@@ -705,7 +705,7 @@ export const trialSurveyLink: NavItem = {
 export const trialEmbedLink: NavItem = {
   href: ROUTES.organizations,
   label: "Embed Survey",
-  emoji: "<>",
+  emoji: "🧩",
   description: "Get your organization's survey link and iframe code.",
   tagline: "Survey link and iframe code",
   cta: "Embed Survey",

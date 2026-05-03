@@ -74,7 +74,11 @@ export function EarthOptimizationDashboardClient({
         </header>
 
         <section className="mx-auto mb-10 max-w-2xl space-y-4" id={DASHBOARD_INVITE_SECTION_ID}>
-          <TreatyReminderComposer defaultRecipientMode="one_human" />
+          <TreatyReminderComposer
+            defaultRecipientMode="one_human"
+            referralBaseUrl={baseUrl}
+            referralUser={user}
+          />
           <ReferralInvitationStatusCard />
         </section>
 
