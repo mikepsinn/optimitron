@@ -12,21 +12,11 @@ import {
   TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   TREATY_VS_BED_NETS_MULTIPLIER,
 } from "@optimitron/data/parameters";
-import { AmountSelector } from "@/components/ui/amount-selector";
-import { BrutalCard } from "@/components/ui/brutal-card";
-import { Container } from "@/components/ui/container";
-import { SectionContainer } from "@/components/ui/section-container";
-import { SectionHeader } from "@/components/ui/section-header";
-import { ParameterValue } from "@/components/shared/ParameterValue";
-import { TreatyMechanismExplainer } from "@/components/shared/TreatyMechanismExplainer";
 import { ChaplinReference } from "@/components/donate/ChaplinReference";
-import { DeathTicker } from "@/components/donate/DeathTicker";
 import { DonationImpactCalculator } from "@/components/donate/DonationImpactCalculator";
-import { IdentifiableVictimCard } from "@/components/donate/IdentifiableVictimCard";
 import { MonthlyLifetimeImpact } from "@/components/donate/MonthlyLifetimeImpact";
 import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
-import { Button } from "@/components/retroui/Button";
-import { Input } from "@/components/retroui/Input";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { Dialog } from "@/components/retroui/Dialog";
 import { PRESET_DONATION_AMOUNTS, type DonationFrequency } from "@/lib/stripe";
 import {
@@ -34,15 +24,11 @@ import {
   getTreatyDonationImpactPerDollar,
 } from "@/lib/treaty-donation-impact";
 
-// Stripe's per-card transaction limit is $999,999 — anything larger
-// silently rejects in checkout. We surface this in the UI rather than letting
-// donors discover it after the fact.
 const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
 const MIKE_EMAIL = "m@warondisease.org";
 const MAJOR_GIFT_THRESHOLD_USD = 5_000;
-// 24% federal bracket — rough median for households with disposable income
-// large enough to itemize. Itemizers only — flagged in the copy.
 const FEDERAL_TAX_BRACKET_RATE = 0.24;
+
 const donationImpact = getTreatyDonationImpactPerDollar();
 const conditionalSufferingYearsPerDollarText = formatDonationImpactNumber(
   donationImpact.conditionalSufferingYearsPreventedPerDollar,
@@ -58,6 +44,9 @@ const riskAdjustedSufferingYearsPerDollarText = formatDonationImpactNumber(
 const riskAdjustedSuccessProbabilityText = formatDonationImpactNumber(
   donationImpact.successProbability * 100,
 );
+const globalMilitarySpendingTrillions = (
+  GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value / 1e12
+).toFixed(2);
 
 export default function DonatePage() {
   const searchParams = useSearchParams();
@@ -70,7 +59,7 @@ export default function DonatePage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [militaryDialogOpen, setMilitaryDialogOpen] = useState(false);
+  const [majorGiftDialogOpen, setMajorGiftDialogOpen] = useState(false);
 
   const effectiveAmount =
     customAmount.trim() && Number.isFinite(Number(customAmount))
@@ -99,8 +88,10 @@ export default function DonatePage() {
 
     setLoading(true);
     try {
-      const sourceUrl = typeof window !== "undefined" ? window.location.href : "";
-      const sourceReferrer = typeof document !== "undefined" ? document.referrer : "";
+      const sourceUrl =
+        typeof window !== "undefined" ? window.location.href : "";
+      const sourceReferrer =
+        typeof document !== "undefined" ? document.referrer : "";
 
       const response = await fetch("/api/stripe/create-checkout", {
         method: "POST",
@@ -131,290 +122,316 @@ export default function DonatePage() {
   }
 
   return (
-    <SectionContainer bgColor="background">
-      <Container size="md">
-        <SectionHeader
-          title="FUND THE TASK"
-          subtitle={
-            <>
-              Every minute you make that face at this page, 104 humans permanently
-              stop. Please make a different face. Donations fund the global 1% Treaty
-              referendum: hosting, identity verification, fraud prevention, translation,
-              outreach, and public evidence pages. Tax-deductible via the Institute for
-              Accelerated Medicine 501(c)(3).
-            </>
-          }
-          size="md"
-        />
+    <div className="min-h-screen bg-white text-black">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+        <header className="max-w-3xl border-b border-black pb-8">
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
+            Buy healthy life-years.
+          </h1>
+          <p className="mt-5 text-lg leading-8 text-neutral-700 sm:text-xl">
+            Your donation funds the campaign to pass the 1% Treaty: identity
+            verification, fraud prevention, translation, hosting, outreach, and
+            public evidence pages. Use the calculator to change assumptions and
+            add the modeled price to checkout.
+          </p>
+          <p className="mt-4 text-sm leading-6 text-neutral-600">
+            Donations are processed for the Institute for Accelerated Medicine,
+            a U.S. 501(c)(3). Tax-deductible in the United States.
+          </p>
+        </header>
 
         {canceled ? (
-          <BrutalCard bgColor="yellow" className="mb-6">
-            <p className="font-bold">
-              Checkout canceled. Nothing was charged. The task remains overdue.
-            </p>
-          </BrutalCard>
+          <div className="mt-6 border border-black p-4 text-sm">
+            Checkout canceled. Nothing was charged.
+          </div>
         ) : null}
 
-        <DeathTicker />
+        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+          <div className="space-y-8">
+            <DonationImpactCalculator
+              onSetAmount={(amount) => setCustomAmount(String(amount))}
+            />
 
-        <BrutalCard bgColor="cyan" shadowSize={8} className="mb-6">
-          <div className="space-y-5">
-            <p className="font-black uppercase text-xl">The math</p>
-            <TreatyMechanismExplainer />
-          </div>
-        </BrutalCard>
-
-        <DonationImpactCalculator
-          onSetAmount={(amount) => setCustomAmount(String(amount))}
-        />
-
-        <BrutalCard bgColor="yellow" shadowSize={8} className="mb-6">
-          <div className="space-y-3 font-bold">
-            <p className="font-black uppercase text-xl">Cost-effectiveness</p>
-            <p>
-              <strong>
-                <ParameterValue
-                  param={{
-                    ...TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
-                    unit: "USD",
-                  }}
-                  figures={3}
-                />
-              </strong>{" "}
-              to save one year of healthy human life. Anti-malaria bed nets, the gold
-              standard for keeping humans alive, cost{" "}
-              <strong>
-                <ParameterValue
-                  param={{ ...BED_NETS_COST_PER_DALY, unit: "USD" }}
-                  figures={2}
-                />
-              </strong>
-              . This is{" "}
-              <strong>
-                <ParameterValue
-                  param={TREATY_VS_BED_NETS_MULTIPLIER}
-                  display="withUnit"
-                  figures={3}
-                />{" "}
-                cheaper
-              </strong>
-              . It beats smallpox eradication (
-              <ParameterValue param={SMALLPOX_ERADICATION_ROI} figures={3} /> to 1) and
-              childhood vaccinations (
-              <ParameterValue param={CHILDHOOD_VACCINATION_ROI} figures={2} /> to 1),
-              which were humanity&apos;s previous greatest hits in the &quot;not
-              dying&quot; genre.
-            </p>
-            <p>
-              Even if you assume only a 1% probability of the treaty actually passing
-              (because you&apos;re you), the expected return is still{" "}
-              <strong>
-                <ParameterValue
-                  param={TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER}
-                  display="withUnit"
-                  figures={3}
-                />{" "}
-                better
-              </strong>{" "}
-              than anti-malaria bed nets. Your calculator will display an error, emit a
-              tiny electronic scream, and attempt to leave the desk. This is correct.
-            </p>
-            <p>
-              Conditional on success, the current model divides{" "}
-              <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} figures={1} /> of campaign cost
-              by the projected impact. That works out to about{" "}
-              <strong>{conditionalLivesPerDollarText} modeled deaths averted</strong> and{" "}
-              <strong>{conditionalSufferingYearsPerDollarText} years of suffering prevented</strong>{" "}
-              per campaign dollar. At the deliberately skeptical{" "}
-              <strong>{riskAdjustedSuccessProbabilityText}% success probability</strong> used above,
-              the risk-adjusted figure is still about{" "}
-              <strong>
-                {riskAdjustedSufferingYearsPerDollarText} expected years of suffering prevented
-              </strong>{" "}
-              per campaign dollar.
-            </p>
-          </div>
-        </BrutalCard>
-
-        <IdentifiableVictimCard />
-
-        <BrutalCard bgColor="background" shadowSize={8}>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <p className="font-black uppercase mb-3">How often</p>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  type="button"
-                  variant={frequency === "monthly" ? "default" : "outline"}
-                  onClick={() => setFrequency("monthly")}
-                >
-                  Monthly
-                </Button>
-                <Button
-                  type="button"
-                  variant={frequency === "one-time" ? "default" : "outline"}
-                  onClick={() => setFrequency("one-time")}
-                >
-                  One-time
-                </Button>
-              </div>
-            </div>
-
-            <div>
-              <p className="font-black uppercase mb-3">
-                Amount {frequency === "monthly" ? "per month" : ""}
-              </p>
-              <AmountSelector
-                amounts={[...PRESET_DONATION_AMOUNTS]}
-                value={customAmount.trim() ? null : amount}
-                onChange={(value) => {
-                  setAmount(value);
-                  setCustomAmount("");
-                }}
-                columns={3}
-                formatPrefix="$"
-                formatSuffix={frequency === "monthly" ? "/mo" : ""}
-                activeColor="pink"
-              />
-              <div className="mt-3 space-y-2">
-                <Input
-                  type="number"
-                  min={1}
-                  max={STRIPE_MAX_CUSTOM_AMOUNT_USD}
-                  step={1}
-                  placeholder={`Or enter a custom amount (up to $${STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()})`}
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
-                />
-                <p className="text-xs font-bold text-muted-foreground">
-                  Stripe declines transactions above $999,999.
+            <section className="border-t border-black pt-8">
+              <h2 className="text-2xl font-semibold">Calculation summary</h2>
+              <div className="mt-4 space-y-4 text-sm leading-7 text-neutral-700">
+                <p>
+                  The current model estimates{" "}
+                  <strong className="text-black">
+                    <ParameterValue
+                      param={{
+                        ...TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+                        unit: "USD",
+                      }}
+                      figures={3}
+                    />
+                  </strong>{" "}
+                  to save one healthy life-year. Anti-malaria bed nets are
+                  commonly benchmarked at{" "}
+                  <strong className="text-black">
+                    <ParameterValue
+                      param={{ ...BED_NETS_COST_PER_DALY, unit: "USD" }}
+                      figures={2}
+                    />
+                  </strong>
+                  .
+                </p>
+                <p>
+                  In the published assumptions, the treaty campaign is{" "}
+                  <strong className="text-black">
+                    <ParameterValue
+                      param={TREATY_VS_BED_NETS_MULTIPLIER}
+                      display="withUnit"
+                      figures={3}
+                    />{" "}
+                    cheaper
+                  </strong>{" "}
+                  per healthy life-year than bed nets. Even at the model&apos;s
+                  skeptical success probability, expected impact is{" "}
+                  <strong className="text-black">
+                    <ParameterValue
+                      param={TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER}
+                      display="withUnit"
+                      figures={3}
+                    />{" "}
+                    better
+                  </strong>{" "}
+                  than bed nets.
+                </p>
+                <p>
+                  Conditional on success,{" "}
+                  <ParameterValue
+                    param={TREATY_CAMPAIGN_TOTAL_COST}
+                    figures={1}
+                  />{" "}
+                  of campaign cost buys about{" "}
+                  <strong className="text-black">
+                    {conditionalLivesPerDollarText} modeled deaths averted
+                  </strong>{" "}
+                  and{" "}
+                  <strong className="text-black">
+                    {conditionalSufferingYearsPerDollarText} years of suffering
+                    prevented
+                  </strong>{" "}
+                  per campaign dollar. At{" "}
+                  <strong className="text-black">
+                    {riskAdjustedSuccessProbabilityText}% success probability
+                  </strong>
+                  , the risk-adjusted estimate is{" "}
+                  <strong className="text-black">
+                    {riskAdjustedSufferingYearsPerDollarText} expected years of
+                    suffering prevented
+                  </strong>{" "}
+                  per dollar.
+                </p>
+                <p>
+                  Historical public-health wins such as smallpox eradication (
+                  <ParameterValue param={SMALLPOX_ERADICATION_ROI} figures={3} />{" "}
+                  to 1) and childhood vaccination (
+                  <ParameterValue
+                    param={CHILDHOOD_VACCINATION_ROI}
+                    figures={2}
+                  />{" "}
+                  to 1) are included for comparison.
                 </p>
               </div>
-              <div className="mt-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  onClick={() => setMilitaryDialogOpen(true)}
-                >
-                  ${" "}
-                  {(GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value / 1e12).toFixed(2)}{" "}
-                  trillion (match the global murder budget)
-                </Button>
+            </section>
+          </div>
+
+          <aside className="lg:sticky lg:top-6">
+            <form
+              onSubmit={handleSubmit}
+              className="border border-black bg-white p-5 sm:p-6"
+            >
+              <h2 className="text-2xl font-semibold">Checkout</h2>
+
+              <div className="mt-6">
+                <p className="mb-3 text-sm font-semibold">Frequency</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    className={frequencyButtonClass(frequency === "monthly")}
+                    onClick={() => setFrequency("monthly")}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    type="button"
+                    className={frequencyButtonClass(frequency === "one-time")}
+                    onClick={() => setFrequency("one-time")}
+                  >
+                    One-time
+                  </button>
+                </div>
               </div>
-              {frequency === "monthly" && effectiveAmount >= 1 ? (
-                <div className="mt-3">
-                  <MonthlyLifetimeImpact monthlyAmountUsd={effectiveAmount} />
+
+              <div className="mt-6">
+                <p className="mb-3 text-sm font-semibold">
+                  Amount{frequency === "monthly" ? " per month" : ""}
+                </p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {[...PRESET_DONATION_AMOUNTS].map((presetAmount) => (
+                    <button
+                      key={presetAmount}
+                      type="button"
+                      className={amountButtonClass(
+                        !customAmount.trim() && amount === presetAmount,
+                      )}
+                      onClick={() => {
+                        setAmount(presetAmount);
+                        setCustomAmount("");
+                      }}
+                    >
+                      ${presetAmount.toLocaleString()}
+                      {frequency === "monthly" ? "/mo" : ""}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className={amountButtonClass(false)}
+                    onClick={() => setMajorGiftDialogOpen(true)}
+                  >
+                    ${globalMilitarySpendingTrillions} trillion
+                  </button>
+                </div>
+
+                <label className="mt-4 block text-sm font-semibold">
+                  Custom amount
+                  <input
+                    className="mt-2 w-full border border-black px-3 py-2 text-base outline-none focus:ring-2 focus:ring-black"
+                    type="number"
+                    min={1}
+                    max={STRIPE_MAX_CUSTOM_AMOUNT_USD}
+                    step={1}
+                    placeholder={`Up to $${STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}`}
+                    value={customAmount}
+                    onChange={(e) => setCustomAmount(e.target.value)}
+                  />
+                </label>
+                <p className="mt-2 text-xs leading-5 text-neutral-600">
+                  Card checkout supports up to $
+                  {STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}. Larger gifts
+                  can be wired.
+                </p>
+
+                {frequency === "monthly" && effectiveAmount >= 1 ? (
+                  <div className="mt-4">
+                    <MonthlyLifetimeImpact monthlyAmountUsd={effectiveAmount} />
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="mt-6 grid gap-3">
+                <label className="text-sm font-semibold">
+                  Full name
+                  <input
+                    className="mt-2 w-full border border-black px-3 py-2 text-base outline-none focus:ring-2 focus:ring-black"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </label>
+                <label className="text-sm font-semibold">
+                  Email
+                  <input
+                    className="mt-2 w-full border border-black px-3 py-2 text-base outline-none focus:ring-2 focus:ring-black"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+
+              {error ? (
+                <div className="mt-4 border border-black p-3 text-sm">
+                  {error}
                 </div>
               ) : null}
-            </div>
 
-            <div className="grid gap-3">
-              <Input
-                type="text"
-                placeholder="Full name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-6 w-full border border-black bg-black px-5 py-3 text-base font-semibold text-white transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading
+                  ? "Opening checkout..."
+                  : `Donate $${effectiveAmount.toLocaleString()}${
+                      frequency === "monthly" ? "/mo" : ""
+                    }`}
+              </button>
 
-            {error ? (
-              <BrutalCard bgColor="red" shadowSize={4}>
-                <p className="font-bold text-brutal-red-foreground">{error}</p>
-              </BrutalCard>
-            ) : null}
-
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading
-                ? "Opening checkout…"
-                : `Donate $${effectiveAmount}${frequency === "monthly" ? "/mo" : ""}`}
-            </Button>
-
-            <p className="text-xs font-bold text-muted-foreground">
-              ≈ $
-              {Math.round(
-                effectiveAmount * (1 - FEDERAL_TAX_BRACKET_RATE),
-              ).toLocaleString()}{" "}
-              after federal deduction (
-              {Math.round(FEDERAL_TAX_BRACKET_RATE * 100)}% bracket, if you itemize).
-            </p>
-
-            {effectiveAmount >= MAJOR_GIFT_THRESHOLD_USD ? (
-              <p className="text-xs font-bold">
-                Donating ${MAJOR_GIFT_THRESHOLD_USD.toLocaleString()}+? Stripe&apos;s fees
-                eat ~3%. Email{" "}
-                <a
-                  href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
-                    "Wire instructions for major gift",
-                  )}`}
-                  className="underline"
-                >
-                  {MIKE_EMAIL}
-                </a>{" "}
-                for wire instructions and skip the haircut.
-              </p>
-            ) : null}
-
-            <p className="text-sm font-bold text-muted-foreground">
-              Donations are routed through the Institute for Accelerated Medicine, a U.S.
-              501(c)(3), which administers referendum and platform operations: hosting,
-              identity verification, fraud prevention, translation, outreach, and public
-              evidence pages. Tax-deductible in the United States.
-            </p>
-          </form>
-        </BrutalCard>
-
-        <WaysToGiveCard />
-
-        <BrutalCard bgColor="pink" shadowSize={8} className="mt-6">
-          <p className="font-black text-xl leading-tight">
-            <ParameterValue
-              param={{ ...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD" }}
-              figures={3}
-            />{" "}
-            a year exists. The child is dying because every single person who could
-            change that decided it wasn&apos;t their problem.
-          </p>
-        </BrutalCard>
-
-        <ChaplinReference />
-
-        <Dialog open={militaryDialogOpen} onOpenChange={setMilitaryDialogOpen}>
-          <Dialog.Content title="Stripe limit">
-            <div className="space-y-3 p-2 font-bold">
-              <p>
-                Sorry, Stripe only accepts up to $
-                {STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}. So just do that{" "}
-                {Math.ceil(
-                  GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value /
-                    STRIPE_MAX_CUSTOM_AMOUNT_USD,
+              <p className="mt-3 text-xs leading-5 text-neutral-600">
+                Estimated out-of-pocket after federal deduction: $
+                {Math.round(
+                  effectiveAmount * (1 - FEDERAL_TAX_BRACKET_RATE),
                 ).toLocaleString()}{" "}
-                times.
+                if you itemize in a {Math.round(FEDERAL_TAX_BRACKET_RATE * 100)}
+                % bracket.
               </p>
-              <p>
-                Or wire it. Email{" "}
-                <a
-                  href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
-                    "Wire instructions for major gift",
-                  )}`}
-                  className="underline"
-                >
-                  {MIKE_EMAIL}
-                </a>{" "}
-                for instructions.
-              </p>
-            </div>
-          </Dialog.Content>
-        </Dialog>
-      </Container>
-    </SectionContainer>
+
+              {effectiveAmount >= MAJOR_GIFT_THRESHOLD_USD ? (
+                <p className="mt-3 text-xs leading-5 text-neutral-700">
+                  Donating ${MAJOR_GIFT_THRESHOLD_USD.toLocaleString()}+?
+                  Email{" "}
+                  <a
+                    href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
+                      "Wire instructions for major gift",
+                    )}`}
+                    className="underline"
+                  >
+                    {MIKE_EMAIL}
+                  </a>{" "}
+                  for wire instructions and lower processing fees.
+                </p>
+              ) : null}
+            </form>
+          </aside>
+        </div>
+
+        <div className="mt-10">
+          <WaysToGiveCard />
+        </div>
+
+        <div className="mt-12">
+          <ChaplinReference />
+        </div>
+      </div>
+
+      <Dialog open={majorGiftDialogOpen} onOpenChange={setMajorGiftDialogOpen}>
+        <Dialog.Content title="Large gift">
+          <div className="space-y-4 p-5 text-sm leading-6">
+            <p>
+              Card checkout is capped at $
+              {STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}. For larger
+              gifts, use wire, stock, crypto, or DAF transfer instructions.
+            </p>
+            <a
+              href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
+                `Large donation inquiry: $${globalMilitarySpendingTrillions} trillion`,
+              )}`}
+              className="inline-block border border-black bg-black px-4 py-2 font-semibold text-white"
+            >
+              Email transfer instructions
+            </a>
+          </div>
+        </Dialog.Content>
+      </Dialog>
+    </div>
   );
+}
+
+function frequencyButtonClass(active: boolean) {
+  return [
+    "border border-black px-4 py-2 text-sm font-semibold transition",
+    active ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100",
+  ].join(" ");
+}
+
+function amountButtonClass(active: boolean) {
+  return [
+    "min-h-12 border border-black px-3 py-2 text-sm font-semibold transition",
+    active ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100",
+  ].join(" ");
 }

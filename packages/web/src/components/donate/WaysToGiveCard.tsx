@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { Button } from "@/components/retroui/Button";
 import { Dialog } from "@/components/retroui/Dialog";
 import { EarthOptimizationTaxCalculator } from "./EarthOptimizationTaxCalculator";
@@ -11,44 +10,45 @@ const MIKE_EMAIL = "m@warondisease.org";
 interface GivingPath {
   title: string;
   body: string;
+  subject: string;
   who: string;
 }
 
 const PATHS: GivingPath[] = [
   {
     title: "Appreciated stock or mutual funds",
-    body:
-      "Donate shares held more than a year directly. You deduct the full market value AND skip the capital gains tax you'd pay on a sale. Net cost roughly 15–20% lower than donating cash.",
+    body: "Donate shares held more than a year directly. You may deduct the full market value and avoid capital gains tax on the sale.",
+    subject: "Stock donation",
     who: "Best for vested RSUs, long-held index funds, or any position sitting on a fat unrealized gain.",
   },
   {
     title: "Crypto (BTC, ETH, anything ≥1 year)",
-    body:
-      "Same treatment as stock. Deduct fair market value, skip capital gains. The IRS treats it as property; the dying children do not particularly care which property.",
+    body: "Crypto held more than a year can often be donated as property, avoiding capital gains while preserving the charitable deduction.",
+    subject: "Crypto donation",
     who: "Best for early holders staring at a cost basis that looks like a typo.",
   },
   {
     title: "Donor-Advised Fund (DAF) grant",
-    body:
-      "Already deducted in the year you funded the DAF. Recommend a grant from Fidelity Charitable, Schwab Charitable, Vanguard Charitable, etc. to the Institute for Accelerated Medicine. No new tax form, no new deduction — the dollars just leave the holding pen.",
+    body: "Recommend a grant from Fidelity Charitable, Schwab Charitable, Vanguard Charitable, or another DAF sponsor.",
+    subject: "DAF grant",
     who: "Best if you parked a windfall in a DAF and have been meaning to deploy it.",
   },
   {
     title: "Employer matching",
-    body:
-      "Microsoft, Google, Salesforce, Goldman, Chevron and ~65% of Fortune 500 employers match $5–$15K/yr per employee. Submit through your benefits portal after donating. Doubling is free; you have to ask.",
+    body: "Many employers match charitable gifts. Donate first, then submit the receipt through your benefits portal.",
+    subject: "Employer matching",
     who: "Best for anyone with a W-2 from a large company and 90 seconds to fill out a portal form.",
   },
   {
     title: "Qualified Charitable Distribution (QCD)",
-    body:
-      "Age 70½+: direct up to $108K/yr from your IRA to the charity. The distribution doesn't count as taxable income, which can also lower your Medicare premium. Bypasses both the income tax AND the standard-deduction-vs-itemize math.",
+    body: "Age 70½+: direct a distribution from your IRA to the charity. It may satisfy RMDs without increasing taxable income.",
+    subject: "Qualified charitable distribution",
     who: "Best for retirees taking required minimum distributions.",
   },
   {
     title: "Bequest in your will",
-    body:
-      "You can't take it with you. The cells dying right now also can't. A bequest costs nothing today, requires one paragraph in your estate plan, and may be the single highest-leverage gift you ever make if it's large.",
+    body: "Add the Institute for Accelerated Medicine to your estate plan as a beneficiary.",
+    subject: "Bequest",
     who: "Best for absolutely everyone with a will, which should be absolutely everyone.",
   },
 ];
@@ -57,56 +57,61 @@ export function WaysToGiveCard() {
   const [calcOpen, setCalcOpen] = useState(false);
 
   return (
-    <BrutalCard bgColor="background" shadowSize={8} className="mt-6">
-      <div className="space-y-4">
-        <div className="space-y-1">
-          <p className="font-black uppercase text-xl">
-            How to maximally not fund missiles
-          </p>
-          <p className="font-bold text-sm text-muted-foreground">
-            For donors above $1K, these routes redirect more dollars to the treaty and
-            fewer to the IRS, the broker, or your future self&apos;s capital-gains bill.
+    <section className="border-t border-black pt-8">
+      <details>
+        <summary className="cursor-pointer text-2xl font-semibold">
+          Other ways to give
+        </summary>
+        <div className="mt-4 space-y-4">
+          <p className="max-w-3xl text-sm leading-6 text-neutral-700">
+            For larger gifts, these routes can reduce taxes or processing fees.
             Not tax advice. Talk to your CPA. The math here is U.S.-specific.
           </p>
-        </div>
 
         <Button
           type="button"
           onClick={() => setCalcOpen(true)}
-          className="w-full bg-brutal-pink text-brutal-pink-foreground"
+          className="w-full border border-black bg-white text-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
         >
-          Open the Earth Optimization Tax Calculator →
+          Open tax calculator
         </Button>
 
         <div className="grid gap-3 sm:grid-cols-2">
           {PATHS.map((path) => (
             <div
               key={path.title}
-              className="border-4 border-primary p-3 space-y-1 bg-muted/30"
+              className="space-y-3 border border-black p-4"
             >
-              <p className="font-black uppercase text-sm">{path.title}</p>
-              <p className="text-sm font-bold leading-snug">{path.body}</p>
-              <p className="text-xs font-bold text-muted-foreground leading-snug">
+              <p className="text-sm font-semibold">{path.title}</p>
+              <p className="text-sm leading-6 text-neutral-700">{path.body}</p>
+              <p className="text-xs leading-5 text-neutral-500">
                 {path.who}
               </p>
+              <a
+                className="inline-block border border-black px-3 py-2 text-xs font-semibold hover:bg-black hover:text-white"
+                href={buildMailto(path)}
+              >
+                Ask about this
+              </a>
             </div>
           ))}
         </div>
 
-        <p className="text-sm font-bold">
-          Wire transfer, stock transfer, crypto, DAF grant instructions, or anything
-          weird? Email{" "}
+        <p className="text-sm leading-6 text-neutral-700">
+          Wire transfer, stock transfer, crypto, DAF grant instructions, or
+          anything unusual? Email{" "}
           <a
             href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
-              "Ways to give — tax-optimized routing",
+              "Donation transfer instructions",
             )}`}
             className="underline"
           >
             {MIKE_EMAIL}
-          </a>{" "}
-          and we&apos;ll route it. Reply within a day. The cells aren&apos;t waiting.
+          </a>
+          .
         </p>
-      </div>
+        </div>
+      </details>
 
       <Dialog open={calcOpen} onOpenChange={setCalcOpen}>
         <Dialog.Content
@@ -119,6 +124,19 @@ export function WaysToGiveCard() {
           </div>
         </Dialog.Content>
       </Dialog>
-    </BrutalCard>
+    </section>
   );
+}
+
+function buildMailto(path: GivingPath) {
+  const subject = `Donation interest: ${path.subject}`;
+  const body = [
+    `I'm interested in making a donation through: ${path.title}.`,
+    "",
+    "Estimated amount:",
+    "Timing:",
+    "Anything else I should know:",
+  ].join("\n");
+
+  return `mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

@@ -15,7 +15,6 @@ import {
   TREATY_REDUCTION_PCT,
   fmtRaw,
 } from "@optimitron/data/parameters";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Slider } from "@/components/retroui/Slider";
@@ -79,8 +78,8 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
   const [costPerVote, setCostPerVote] = useState(COST_PER_VOTE_DEFAULT);
   const [successProbability, setSuccessProbability] = useState(SUCCESS_DEFAULT);
   const [treatyReductionPct, setTreatyReductionPct] = useState(REDUCTION_DEFAULT);
-  const [storeUnit, setStoreUnit] = useState<StoreUnit>("lives");
-  const [storeQuantity, setStoreQuantity] = useState<string>("100");
+  const [storeUnit, setStoreUnit] = useState<StoreUnit>("dalys");
+  const [storeQuantity, setStoreQuantity] = useState<string>("1000");
 
   const reset = () => {
     setVotesNeeded(VOTES_DEFAULT);
@@ -119,19 +118,17 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
   const reductionPctText = `${(treatyReductionPct * 100).toFixed(2)}%`;
 
   return (
-    <BrutalCard bgColor="cyan" shadowSize={8} className="mb-6">
-      <div className="space-y-6">
+    <section className="border border-black p-5 sm:p-6">
+      <div className="space-y-7">
         <div className="space-y-1">
-          <p className="font-black uppercase text-xl">
-            Wishonia&apos;s impact calculator
-          </p>
-          <p className="font-bold text-sm">
-            Drag any slider until you stop disagreeing with us. The math updates. Your
-            calculator can leave the desk if it wants.
+          <h2 className="text-2xl font-semibold">Healthy life-year calculator</h2>
+          <p className="text-sm leading-6 text-neutral-700">
+            Choose what you want to buy, adjust the assumptions, and add the
+            modeled price to checkout.
           </p>
         </div>
 
-        <div className="space-y-5 border-t-4 border-primary pt-5">
+        <div className="space-y-5 border-t border-black pt-6">
           <SliderRow
             label="Votes needed for the treaty"
             valueText={fmtRaw(votesNeeded, 3)}
@@ -168,9 +165,9 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
             valueText={successPctText}
             footnote={
               <>
-                Wishonia&apos;s skeptical default lives at{" "}
-                <ParameterValue param={POLITICAL_SUCCESS_PROBABILITY} figures={2} />. Slider
-                tops out at 100% for the conditional-success view.
+                The skeptical published assumption is{" "}
+                <ParameterValue param={POLITICAL_SUCCESS_PROBABILITY} figures={2} />.
+                Use 100% for the conditional-success view.
               </>
             }
             value={successProbability}
@@ -197,13 +194,18 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
             onChange={setTreatyReductionPct}
           />
 
-          <Button type="button" variant="outline" onClick={reset} className="w-full">
-            Reset to Wishonia defaults
+          <Button
+            type="button"
+            variant="outline"
+            onClick={reset}
+            className="w-full border border-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
+          >
+            Reset calculator
           </Button>
         </div>
 
-        <div className="space-y-3 border-4 border-primary bg-background p-4 text-foreground">
-          <p className="font-black uppercase text-sm tracking-[0.14em]">Your numbers</p>
+        <div className="space-y-3 border border-black p-4">
+          <p className="text-sm font-semibold">Modeled output</p>
           <OutputRow
             label="Campaign cost"
             valueNode={
@@ -267,7 +269,7 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
               />
             }
           />
-          <div className="border-t-2 border-primary pt-3 space-y-2">
+          <div className="space-y-2 border-t border-black pt-3">
             <OutputRow
               label="Cost per life saved"
               valueNode={`$${fmtRaw(derived.costPerLife, 3)}`}
@@ -294,12 +296,12 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
           </div>
         </div>
 
-        <div className="space-y-4 border-4 border-primary bg-foreground p-4 text-background">
+        <div className="space-y-4 border border-black bg-black p-4 text-white">
           <div className="space-y-1">
-            <p className="font-black uppercase text-base tracking-[0.14em]">Add to cart</p>
-            <p className="font-bold text-sm">
-              Pick a unit. Type a quantity. Get a price. Wishonia accepts no returns; the
-              dead stay dead.
+            <p className="text-base font-semibold">Build your donation</p>
+            <p className="text-sm leading-6 text-neutral-300">
+              Pick a unit, type a quantity, and use the model price as your
+              checkout amount.
             </p>
           </div>
 
@@ -312,10 +314,10 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
                   setStoreUnit(unit.key);
                   setStoreQuantity(String(unit.defaultQuantity));
                 }}
-                className={`border-4 border-background px-3 py-2 text-xs font-black uppercase ${
+                className={`border border-white px-3 py-2 text-xs font-semibold ${
                   storeUnit === unit.key
-                    ? "bg-brutal-pink text-brutal-pink-foreground"
-                    : "bg-foreground text-background hover:bg-brutal-pink hover:text-brutal-pink-foreground"
+                    ? "bg-white text-black"
+                    : "bg-black text-white hover:bg-neutral-900"
                 }`}
               >
                 {unit.label}
@@ -335,7 +337,7 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
                 step={1}
                 value={storeQuantity}
                 onChange={(event) => setStoreQuantity(event.target.value)}
-                className="text-foreground"
+                className="border border-white bg-white text-black shadow-none"
               />
             </div>
             <div className="text-right">
@@ -350,13 +352,13 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
             type="button"
             disabled={!isValidQuantity || storePriceRounded < 1}
             onClick={() => onSetAmount(storePriceRounded)}
-            className="w-full bg-brutal-pink text-brutal-pink-foreground"
+            className="w-full border border-white bg-white text-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
           >
             Add ${storePriceRounded.toLocaleString()} to checkout
           </Button>
         </div>
       </div>
-    </BrutalCard>
+    </section>
   );
 }
 
@@ -382,8 +384,8 @@ function SliderRow({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-3">
-        <label className="text-xs font-black uppercase">{label}</label>
-        <span className="font-black text-lg">{valueText}</span>
+        <label className="text-sm font-semibold">{label}</label>
+        <span className="text-lg font-semibold">{valueText}</span>
       </div>
       <Slider
         value={[value]}
@@ -394,7 +396,7 @@ function SliderRow({
           if (values[0] !== undefined) onChange(values[0]);
         }}
       />
-      <p className="text-xs font-bold leading-snug">{footnote}</p>
+      <p className="text-xs leading-5 text-neutral-600">{footnote}</p>
     </div>
   );
 }
@@ -410,11 +412,11 @@ function OutputRow({
 }) {
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-      <span className="text-sm font-bold">{label}</span>
-      <span className="text-right font-black">
+      <span className="text-sm text-neutral-700">{label}</span>
+      <span className="text-right font-semibold text-black">
         {valueNode}
         {note ? (
-          <span className="block text-xs font-bold opacity-70 sm:inline sm:ml-2">
+          <span className="block text-xs font-normal text-neutral-500 sm:ml-2 sm:inline">
             {note}
           </span>
         ) : null}
