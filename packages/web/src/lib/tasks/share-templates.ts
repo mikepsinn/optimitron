@@ -6,8 +6,8 @@
  * stay leader-only.
  *
  * All templates consume the same flat token set produced by
- * `buildTaskShareTokens`. Tokens that are unresolved render as empty
- * strings via `renderTemplate`.
+ * `buildTaskShareTokens`. `renderTemplate` throws when placeholders are
+ * unresolved so broken token/template combinations fail loudly in tests.
  *
  * `requiredTokens` lists the tokens whose absence makes the template
  * incoherent — the picker filters those out so a non-signer task never shows
@@ -93,6 +93,10 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       `The task: sign at {treaty_url}. Type your name, click submit. 30 seconds.`,
       ``,
       `The math: humanity has 120 apocalypses worth of mass murder capacity. The treaty reduces this to 118.8 in exchange for {trial_capacity_multiplier}× clinical trial capacity — compressing disease eradication from {eradication_years_status_quo} years to {eradication_years_treaty}. You can only have one apocalypse. 118.8 is functionally indistinguishable from 120.`,
+      ``,
+      `Precedent check, in case 1% sounds bold: pre-WWII US military spending was 96.7% lower than today's peacetime budget, inflation-adjusted. The US still won WWII, then cut spending 87.6% in two years and produced the largest economic expansion in history. Your governments have already banned chemical weapons (1993, 193 countries), biological weapons (1975, 187 countries), and landmines (1997, 164 countries) — weapons they actually like using. This one just asks them to buy 1% fewer of them.`,
+      ``,
+      `{eradication_years_treaty} years also means you, personally, might watch the world's last disease get cured. {eradication_years_status_quo} years means your great-great-great-grandchildren still won't.`,
       ``,
       `While it sits unsigned: {deaths_per_day} die per day waiting for treatments. {money_wasted_per_day} per day — each day late pushes the eradication finish line one day later. {deaths_from_delay} dead since this task was assigned.`,
       ``,
@@ -231,11 +235,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "lumbergh",
     label: "Office Memo",
-    // Works for friends as well as leaders — the Office Space cadence is the
-    // joke and it doesn't depend on the recipient holding office. {target_name}
-    // and {leader_name} both populate from the same field, so this template
-    // renders correctly in either context.
-    recipientModes: ["leader", "humanity", "one_human"],
+    recipientModes: ["leader", "humanity"],
     requiredTokens: [
       "target_name",
       "deaths_from_delay",
@@ -250,6 +250,306 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "Oh, and I'm going to need you to be aware that {deaths_from_delay} people have died waiting for cures since we assigned this to you. You know. Because of the delayed disease eradication. So. Yeah.",
       ``,
       "So if you could just sign that. And maybe stop spending ${mil_to_trials_ratio} on {mil_synonym} for every $1 on clinical trials. That'd be great.",
+    ].join("\n"),
+  },
+  {
+    id: "lumbergh-one-human",
+    label: "Office Memo",
+    recipientModes: ["one_human"],
+    requiredTokens: [
+      "target_name",
+      "deaths_from_delay",
+      "trial_capacity_multiplier",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
+    ],
+    body: [
+      `Yeahhh, hi {target_name}. Quick workflow update from the Department of Civilization Made a Spreadsheet and It Is Bad.`,
+      ``,
+      `If you could go ahead and vote on the 1% Treaty, that'd be great:`,
+      `{treaty_url}`,
+      ``,
+      `It takes about 30 seconds. That is less time than deciding whether the leftovers in your fridge are food or a threat.`,
+      ``,
+      "Small note for the agenda: the treaty trades 1% of military spending for {trial_capacity_multiplier}× more clinical trials. That compresses disease eradication from {eradication_years_status_quo} years to {eradication_years_treaty}. Mathematically it drops mass-murder capacity from 120 apocalypses to 118.8 — and, just to be clear, you can only have one apocalypse. (Humanity has ~12,000 warheads, nuclear winter takes ~100, the other 11,900 are decorative.) The 119 spare apocalypses will not be missed.",
+      ``,
+      "{eradication_years_treaty} years also means you, personally, might watch the world's last disease get cured. {eradication_years_status_quo} years means your great-great-great-grandchildren still won't. Just so you have the timeline in front of you.",
+      ``,
+      "Before you flag this as 'unrealistic' on the agenda — pre-WWII US military spending was 96.7% lower than today, inflation-adjusted. The US still won WWII, then cut spending 87.6% in two years and produced the largest economic expansion in history. The same governments later banned chemical weapons (1993, 193 countries), biological weapons (1975, 187 countries), and landmines (1997, 164 countries) — weapons they actually like using. This one just asks them to buy 1% fewer of them. That's it.",
+      ``,
+      "Also {deaths_from_delay} people have died waiting for cures since I sent you this. We are trying to make that number stop going up.",
+      ``,
+      "So if you could vote, then send this to two more humans who prefer not dying from preventable diseases, that'd be great.",
+    ].join("\n"),
+  },
+  {
+    id: "class-action",
+    label: "Class Action",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: [
+      "target_name",
+      "trial_capacity_multiplier",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
+    ],
+    body: [
+      `IN THE COURT OF HUMANITY`,
+      `Civil Case — Class Action Complaint`,
+      ``,
+      `PLAINTIFFS: All humans currently alive (~8 billion)`,
+      `DEFENDANTS: The governments of Earth, et al.`,
+      `RE: Breach of fiduciary duty to promote the general welfare`,
+      ``,
+      `COUNT 1 — MISALLOCATION OF FUNDS`,
+      `Defendants were created and salaried to promote the median health and wealth of the citizenry. Since 1900 they have instead used $170 trillion of plaintiffs' money to kill 310 million humans, including approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and 102 million children who will never grow up to replace them.`,
+      ``,
+      `COUNT 2 — OPPORTUNITY COST`,
+      `That $170 trillion could have funded ~37,778 years of clinical trials at current spending levels. Defendants bought 310 million murders instead.`,
+      ``,
+      `DAMAGES SOUGHT`,
+      `$3,000,000 per living human, payable forthwith. (Total: ~$24 quadrillion.)`,
+      ``,
+      `ALTERNATIVE SETTLEMENT OFFER`,
+      `Pass the 1% Treaty: redirect 1% of military spending to clinical trials, unlocking {trial_capacity_multiplier}× clinical trial capacity and compressing disease eradication from {eradication_years_status_quo} years to {eradication_years_treaty}. Plaintiffs will accept this in lieu of cash damages, as the projected peace-dividend plus reduced disease burden delivers comparable per-capita compensation within 20 years.`,
+      ``,
+      `RESPONSE DEADLINE: 30 seconds`,
+      `RESPONSE METHOD: {treaty_url}`,
+      ``,
+      `Defendants are reminded that ignoring this complaint will not make plaintiffs go away, as plaintiffs are also the funding source.`,
+      ``,
+      `— {target_name}, on behalf of the class`,
+    ].join("\n"),
+  },
+  {
+    id: "personal-roi",
+    label: "Personal ROI",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `Quick personal-finance note. Had your governments not spent $170 trillion murdering people and destroying everything they spent their entire lives building, the average human alive today would earn $333,636 a year instead of $14,375. Dead scientists do not discover things and exploded cities are very expensive to fix.`,
+      ``,
+      `Through the compound effects of this misallocation to war alone, you are 23.2 times poorer than you would otherwise be. (Source and citations: warondisease.org/why.)`,
+      ``,
+      `Going forward: global military spending has been growing 2.76% a year for twenty years. If no one tells it to stop, every human alive will pay about $402,488 over their lifetime (mostly funding explosions in countries they cannot find on a map). A one percent cut tells it to stop. That saves the average person about $290,052 — the peace dividend.`,
+      ``,
+      `The 1% Treaty is the cut: {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "pentagon-hr",
+    label: "Pentagon HR Memo",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `PERFORMANCE NOTE — Department of "Defense"`,
+      ``,
+      `The Department of "Defense" has "misplaced" $2.46 trillion, failed seven consecutive audits trying to find it, and then requested additional trillions without explanation or apology.`,
+      ``,
+      `Not to belabor the point, but that money could have funded 547 years of clinical trials at current funding levels, possibly saving billions of lives and preventing quadrillions of hours of suffering.`,
+      ``,
+      `So if {target_name} could go ahead and have them be more careful in the future, that'd be great.`,
+      ``,
+      `The 1% Treaty starts that — redirects 1% of military spending to the trials that would test which medicines work. {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "850-bullets",
+    label: "850 Bullets",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body:
+      "{target_name} — your employees spend $2.72 trillion a year on their capacity for mass murder, which is enough to buy 850 bullets for every man, woman, and child every year, even though it would require at most 2 bullets per person to murder everyone. After the 1% Treaty cut they would still have $2.69 trillion — enough to murder everyone 20 times, which should be more than sufficient. Sign: {treaty_url}",
+  },
+  {
+    id: "diseases-no-decency",
+    label: "Diseases Without the Decency",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name", "daily_disease_deaths"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `Diseases kill more people than all wars combined and, unlike wars, do not even have the decency to be quick about it.`,
+      ``,
+      `{daily_disease_deaths} die of disease every day.`,
+      `Your chance of dying in a terrorist attack: 1 in 30 million.`,
+      `Your chance of dying of a disease: 100%.`,
+      `Your government's budget does not reflect this.`,
+      ``,
+      `The 1% Treaty does. Sign: {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "four-year-olds",
+    label: "Four-Year-Old Foreign Policy",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `Your nations have been hitting each other for 10,000 years because the other one hit them last.`,
+      ``,
+      `This is the conflict resolution strategy of four-year-olds, except four-year-olds eventually get tired and take a nap. Your species invented naps and then refused to apply them to geopolitics.`,
+      ``,
+      `The 1% Treaty applies a 1% nap. {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "mortality-reminder",
+    label: "Mortality Reminder",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: [
+      "target_name",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
+      "trial_capacity_multiplier",
+    ],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `At the current discovery rate, finding treatments for all diseases takes ~{eradication_years_status_quo} years. You personally will be dead within 80 years, which I mention not to be rude but because you seem weirdly calm about it.`,
+      ``,
+      `One percent of the explosions budget could increase clinical trial capacity by {trial_capacity_multiplier}x and compress that wait to ~{eradication_years_treaty} years. That puts disease eradication inside your lifetime instead of your great-great-great-grandchildren's.`,
+      ``,
+      `Sign: {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "orphan-manufacturing",
+    label: "Orphan Manufacturing",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `Your governments currently spend $604 on the capacity for orphan manufacturing for every $1 on the trials that might cure what is actually going to kill you.`,
+      ``,
+      `Six hundred and four to one. In favor of the orphans.`,
+      ``,
+      `The 1% Treaty rebalances this slightly. Specifically: 99 to 1 stays the way it is, 1 part moves to the cures. Sign: {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "cunk",
+    label: "Naive Question",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `So I was reading about the 1% Treaty and I had a few questions.`,
+      ``,
+      `Apparently humanity has 12,000 nuclear warheads, but you only need about 100 to end civilisation. So… what are the other 11,900 for? Are we expecting more civilisations to turn up?`,
+      ``,
+      `And apparently your governments spend $604 on weapons for every $1 on testing which medicines work. Wouldn't it be better the other way round? Or, you know, even slightly the other way round?`,
+      ``,
+      `The treaty asks for $604 on weapons to become $598 on weapons. I asked an expert if this was a lot to ask. They said no.`,
+      ``,
+      `Sign: {treaty_url}. The expert said it takes about 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "deep-thought",
+    label: "Deep Thought",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Sometimes I wonder, if humanity has 12,000 nuclear warheads but only one civilization to destroy, what we're saving the other 11,900 for. Maybe we think more civilizations will turn up. They won't.`,
+      ``,
+      `Other times I think about how every disease has a cure waiting to be discovered, and we just haven't tried the right combinations yet, because we're busy buying our 12,001st nuclear warhead.`,
+      ``,
+      `If we redirected one percent of the warhead-buying to the cure-discovering, {target_name}'s mom might still get to meet her grandchildren. That seems worth thinking about.`,
+      ``,
+      `Anyway. {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "specific-future-humans",
+    label: "Specific Future Humans",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `Discovering treatments centuries sooner is projected to prevent approximately 10.7 billion deaths and 1.93 quadrillion hours of human suffering, which are not metaphors and refer to specific future humans with specific future plans for next Tuesday.`,
+      ``,
+      `The 1% Treaty is the policy that buys us those centuries. {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "receipt",
+    label: "Article V Receipt",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `Your government works for you. The 1% Treaty is the receipt.`,
+      ``,
+      `Article V: any citizen of a signatory nation may sue their own government, in its own courts, for non-compliance with the treaty. Where domestic courts decline jurisdiction or invoke sovereign immunity, citizens may bring the same claim in the Court of Humanity — whose jurisdiction derives from human consent rather than sovereign consent, and whose judgments are enforced through capital markets rather than coercion.`,
+      ``,
+      `Translation: for the first time in recorded history, "the government works for the people" comes with a refund mechanism.`,
+      ``,
+      `Sign: {treaty_url}. 30 seconds.`,
+    ].join("\n"),
+  },
+  {
+    id: "whereas-counterproductive",
+    label: "WHEREAS, This Seems Counterproductive",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: ["target_name"],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `WHEREAS, your governments were hired to promote the median health and wealth of the citizenry;`,
+      ``,
+      `WHEREAS, they have instead spent approximately $170 trillion on war and destruction since 1913, killing approximately 310 million humans;`,
+      ``,
+      `WHEREAS, these murdered humans included 930,000 doctors, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and 102 million children who will never grow up to replace them;`,
+      ``,
+      `WHEREAS, this seems counterproductive;`,
+      ``,
+      `WHEREAS, your governments currently spend $604 on weapons for every $1 on the clinical trials that might cure what is actually going to kill you;`,
+      ``,
+      `WHEREAS, this also seems counterproductive;`,
+      ``,
+      `WHEREAS, the 1% Treaty redirects $6 of those $604 to the cures, leaving the weapons budget at approximately 99% of what it was;`,
+      ``,
+      `WHEREAS, this would in fact be productive;`,
+      ``,
+      `NOW THEREFORE, sign at {treaty_url}. 30 seconds.`,
+      ``,
+      `— {target_name}`,
+    ].join("\n"),
+  },
+  {
+    id: "weve-done-this-before",
+    label: "Precedent",
+    recipientModes: ["leader", "humanity", "one_human"],
+    requiredTokens: [
+      "target_name",
+      "trial_capacity_multiplier",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
+    ],
+    body: [
+      `Hi {target_name},`,
+      ``,
+      `Quick fact-check before anyone calls the 1% Treaty unrealistic.`,
+      ``,
+      `Pre-WW2 US military spending was 96.7% lower than today's peacetime budget, even after adjusting for inflation. The US still won World War II, then cut military spending 87.6% in two years and stumbled into the greatest economic boom in history by running out of people to shoot at.`,
+      ``,
+      `Your governments have already done harder things:`,
+      `  • Banned chemical weapons (1993, 193 countries)`,
+      `  • Banned biological weapons (1975, 187 countries)`,
+      `  • Banned landmines (1997, 164 countries)`,
+      ``,
+      `They've signed treaties banning weapons they actually like using. This one just asks them to buy 1% fewer of them — in exchange for {trial_capacity_multiplier}× more clinical trials and disease eradication compressed from {eradication_years_status_quo} years to {eradication_years_treaty}.`,
+      ``,
+      `Even people who really, really love exploding people should be able to handle 1%.`,
+      ``,
+      `Sign it: {treaty_url}. 30 seconds.`,
     ].join("\n"),
   },
   {
@@ -484,25 +784,16 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
 export const DEFAULT_SHARE_TEMPLATE_ID = "lumbergh";
 export const HUMANITY_DEFAULT_SHARE_TEMPLATE_ID = "polite-reminder";
 /**
- * Friend-recipient default. Lumbergh's Office Space cadence is the joke and
- * the joke is the shield: sender isn't "becoming a recruiter," they're
- * sending a hilarious office memo — a recognized comedic genre that costs
- * less reputation than sincere political asks. The earnest variants
- * (`sincere`, `task-notification`) remain in the picker for users who'd
- * rather lead with vulnerability or a clean utility framing.
+ * Friend-recipient default. This keeps the Office Space cadence while using
+ * only friend-safe tokens: the named human and their vote link.
  */
-export const ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID = "lumbergh";
+export const ONE_HUMAN_DEFAULT_SHARE_TEMPLATE_ID = "lumbergh-one-human";
 
 /**
- * Peer-recipient default. Lumbergh wins for friend-shaped audiences because
- * the comedy shield does the work that earnest copy can't: the sender isn't
- * "becoming a recruiter" — they're sending a hilarious office memo. The
- * Trump/Lumbergh/IT-ticket genre is recognized comedy, so participating in
- * it costs less reputation than sending a sincere political ask. Curiosity
- * variants like `most-important-secret` are still good and remain in the
- * picker; this is just the default the composer opens with.
+ * Peer-recipient default for the secret-chain pitch. It must render with only
+ * `{citizen_name}` because that surface has no task target or vote link.
  */
-export const DEFAULT_PEER_SHARE_TEMPLATE_ID = "lumbergh";
+export const DEFAULT_PEER_SHARE_TEMPLATE_ID = "most-important-secret";
 
 export function getShareTemplate(id: string): ShareTemplate | undefined {
   return SHARE_TEMPLATES.find((template) => template.id === id);
