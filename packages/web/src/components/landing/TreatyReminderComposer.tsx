@@ -61,6 +61,11 @@ interface TreatyReminderComposerProps {
   cardClassName?: string;
   defaultCowardMode?: boolean;
   defaultRecipientMode?: TreatyReminderRecipientMode;
+  referralBaseUrl?: string;
+  referralUser?: {
+    handle?: string | null;
+    referralCode?: string | null;
+  } | null;
   surface?: string;
 }
 
@@ -85,6 +90,8 @@ export function TreatyReminderComposer({
   cardClassName,
   defaultCowardMode = false,
   defaultRecipientMode,
+  referralBaseUrl,
+  referralUser,
   // Kept as "post_vote_reminders" for analytics continuity — historical
   // share-attempts records use this surface value. The component renamed
   // from PostVoteReminders → TreatyReminderComposer; the surface did not.
@@ -110,9 +117,10 @@ export function TreatyReminderComposer({
   const countryCode =
     session?.user?.countryCode || getCountryFromLocale() || "US";
 
-  const baseUrl = getBaseUrl();
-  const referralUrl = session?.user
-    ? buildUserReferralUrl(session.user, baseUrl)
+  const baseUrl = referralBaseUrl ?? getBaseUrl();
+  const referralIdentity = referralUser ?? session?.user ?? null;
+  const referralUrl = referralIdentity
+    ? buildUserReferralUrl(referralIdentity, baseUrl)
     : baseUrl;
   const delayDays = useMemo(
     () => Math.max(0, Math.ceil((Date.now() - TREATY_DUE_AT.getTime()) / DAY_MS)),
@@ -126,8 +134,8 @@ export function TreatyReminderComposer({
 
   const inviteUrl = useMemo(() => {
     if (!invitation) return null;
-    return buildUserInviteReferralUrl(session?.user, invitation.inviteToken, baseUrl);
-  }, [baseUrl, invitation, session?.user]);
+    return buildUserInviteReferralUrl(referralIdentity, invitation.inviteToken, baseUrl);
+  }, [baseUrl, invitation, referralIdentity]);
 
   const { leaderTemplates, leaderTokenBag, leaderName } = useMemo(() => {
     const leader = getGovernmentLeader(countryCode);
@@ -390,7 +398,7 @@ export function TreatyReminderComposer({
     if (!created) return null;
 
     const createdInviteUrl = buildUserInviteReferralUrl(
-      session?.user,
+      referralIdentity,
       created.inviteToken,
       baseUrl,
     );
@@ -421,7 +429,7 @@ export function TreatyReminderComposer({
     invitation,
     message,
     referralUrl,
-    session?.user,
+    referralIdentity,
   ]);
 
   const handleOneHumanCopy = useCallback(async () => {
