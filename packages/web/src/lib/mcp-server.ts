@@ -67,6 +67,12 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   createReferendum: [McpScope.TASKS_ADMIN],
   createPerson: [McpScope.TASKS_ADMIN],
   upsertOrganization: [McpScope.EARTHDATA_ADMIN, McpScope.TASKS_ADMIN],
+  updateOrganization: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
+  deleteOrganization: [McpScope.EARTHDATA_ADMIN, McpScope.TASKS_ADMIN],
+  addOrganizationMember: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
+  removeOrganizationMember: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
+  updateOrganizationMemberRole: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
+  listOrganizationMembers: [McpScope.EARTHDATA_WRITE],
   castReferendumVote: [McpScope.EARTHDATA_WRITE],
   recordRepresentedReferendumVote: [McpScope.EARTHDATA_WRITE],
   searchPeople: [McpScope.EARTHDATA_WRITE],
@@ -132,6 +138,7 @@ const ADMIN_ONLY_TOOLS = new Set([
   "createReferendum",
   "createPerson",
   "upsertOrganization",
+  "deleteOrganization",
   "logAgentRun",
   "acquireLease",
   "heartbeatLease",
@@ -217,6 +224,11 @@ function getMcpBaseUrl(): string {
 const AUDITED_EARTH_DATA_TOOLS = new Set([
   "createOrganization",
   "upsertOrganization",
+  "updateOrganization",
+  "deleteOrganization",
+  "addOrganizationMember",
+  "removeOrganizationMember",
+  "updateOrganizationMemberRole",
   "castReferendumVote",
   "recordRepresentedReferendumVote",
   "signReferendumAsOrganization",
@@ -3071,6 +3083,130 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "updateOrganization",
+    description:
+      "Edit an existing Organization. Caller must be an owner/admin of the org (or its legacy creator). status and jurisdictionId changes additionally require platform-admin privileges.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string", description: "Organization ID to update" },
+        name: { type: "string", description: "New name" },
+        slug: {
+          type: "string",
+          description:
+            "New URL slug. Pass empty string to regenerate from the (possibly updated) name. Slug collisions auto-disambiguate with -2, -3, etc.",
+        },
+        type: {
+          type: "string",
+          enum: [
+            "UNIVERSITY",
+            "RESEARCH_CENTER",
+            "NONPROFIT",
+            "DAO",
+            "GOVERNMENT",
+            "GOVERNMENT_AGENCY",
+            "HOSPITAL",
+            "BIOTECH",
+            "COMPANY",
+            "FOUNDATION",
+            "INTERGOVERNMENTAL",
+            "MEDIA",
+            "POLITICAL_PARTY",
+            "ADVOCACY",
+            "OTHER",
+          ],
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "APPROVED", "REJECTED"],
+          description: "Approval status. Platform-admin only.",
+        },
+        website: { type: "string", description: "Website URL (empty string clears)" },
+        description: { type: "string", description: "Mission or provenance note (empty string clears)" },
+        logo: { type: "string", description: "Logo image URL (empty string clears)" },
+        contactEmail: { type: "string", description: "Primary contact email (empty string clears)" },
+        jurisdictionId: {
+          type: "string",
+          description: "Jurisdiction ID (empty string clears). Platform-admin only.",
+        },
+      },
+      required: ["organizationId"],
+    },
+  },
+  {
+    name: "deleteOrganization",
+    description:
+      "Soft-delete an Organization (sets deletedAt). Caller must be an owner of the org AND a platform admin. Tasks previously assigned to this org keep their assigneeOrganizationId — orphan visibility is intentional for accountability.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string", description: "Organization ID to soft-delete" },
+      },
+      required: ["organizationId"],
+    },
+  },
+  {
+    name: "addOrganizationMember",
+    description:
+      "Add a user to an Organization with a given role, or update an existing member's role to that value. Caller must be an owner/admin of the org. Accepts only userId (no email lookup — that would expose User-account enumeration).",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string", description: "Organization ID" },
+        userId: { type: "string", description: "User ID to add as a member" },
+        role: {
+          type: "string",
+          enum: ["owner", "admin", "member", "viewer"],
+          description: "Role within the organization. Default: member.",
+        },
+      },
+      required: ["organizationId", "userId"],
+    },
+  },
+  {
+    name: "removeOrganizationMember",
+    description:
+      "Remove a user from an Organization. Caller must be an owner/admin of the org, OR be removing themselves. Cannot remove the last remaining owner — transfer ownership first by adding another owner.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string", description: "Organization ID" },
+        userId: { type: "string", description: "User ID to remove" },
+      },
+      required: ["organizationId", "userId"],
+    },
+  },
+  {
+    name: "updateOrganizationMemberRole",
+    description:
+      "Change a member's role within an Organization. Caller must be an owner/admin. Cannot demote the last remaining owner.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string", description: "Organization ID" },
+        userId: { type: "string", description: "User ID whose role to change" },
+        role: {
+          type: "string",
+          enum: ["owner", "admin", "member", "viewer"],
+          description: "New role.",
+        },
+      },
+      required: ["organizationId", "userId", "role"],
+    },
+  },
+  {
+    name: "listOrganizationMembers",
+    description:
+      "List members of an Organization with their roles, emails, and display names. Caller must be an owner/admin of the org.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string", description: "Organization ID" },
+      },
+      required: ["organizationId"],
+    },
+  },
+  {
     name: "proposeTaskBundle",
     description: "Propose a bundle of tasks for review. Creates each as DRAFT, runs validation, returns review decisions. Does NOT auto-promote.",
     inputSchema: {
@@ -3125,7 +3261,7 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "updateTask",
-    description: "Update a private task's estimates, dependencies, deadline metadata, executor, or status. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete.",
+    description: "Update a private task's estimates, dependencies, deadline metadata, executor, or status. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5050,6 +5186,217 @@ export function createMcpServer(
               };
             },
           );
+        }
+
+        case "updateOrganization": {
+          if (!userId) return authRequired(name, "This tool edits an existing organization.");
+          const orgServer = await import("./organization.server");
+          const organizationId = (a.organizationId as string) ?? "";
+          if (!organizationId.trim()) return err("organizationId is required");
+
+          const patch: Parameters<typeof orgServer.updateOrganization>[2] = {};
+          const nullable = (raw: unknown) => (raw === "" ? null : (raw as string));
+          if (typeof a.name === "string") patch.name = a.name;
+          if (a.slug !== undefined) {
+            patch.slug = a.slug === "" ? null : (a.slug as string);
+          }
+          if (typeof a.type === "string") {
+            const orgType = OrgType[a.type as keyof typeof OrgType];
+            if (!orgType) return err(`type must be one of: ${Object.keys(OrgType).join(", ")}`);
+            patch.type = orgType;
+          }
+          if (typeof a.status === "string" && a.status !== "") {
+            const orgStatus = OrgStatus[a.status as keyof typeof OrgStatus];
+            if (!orgStatus) return err(`status must be one of: ${Object.keys(OrgStatus).join(", ")}`);
+            patch.status = orgStatus;
+          }
+          if (a.website !== undefined) patch.website = nullable(a.website);
+          if (a.description !== undefined) patch.description = nullable(a.description);
+          if (a.logo !== undefined) patch.logo = nullable(a.logo);
+          if (a.contactEmail !== undefined) patch.contactEmail = nullable(a.contactEmail);
+          if (a.jurisdictionId !== undefined) patch.jurisdictionId = nullable(a.jurisdictionId);
+
+          try {
+            return await runAuditedEarthDataTool(
+              name,
+              a,
+              { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+              async () => {
+                const organization = await orgServer.updateOrganization(
+                  organizationId,
+                  userId,
+                  patch,
+                  { allowStatusChange: hasAdminTaskWriteAccess(scopes, isAdmin) },
+                );
+                return {
+                  organization: {
+                    contactEmail: organization.contactEmail,
+                    description: organization.description,
+                    id: organization.id,
+                    jurisdictionId: organization.jurisdictionId,
+                    logo: organization.logo,
+                    name: organization.name,
+                    slug: organization.slug,
+                    status: organization.status,
+                    type: organization.type,
+                    website: organization.website,
+                  },
+                };
+              },
+            );
+          } catch (error) {
+            if (error instanceof Error) return err(error.message);
+            throw error;
+          }
+        }
+
+        case "deleteOrganization": {
+          if (!userId) return authRequired(name, "This tool soft-deletes an organization.");
+          const orgServer = await import("./organization.server");
+          const organizationId = (a.organizationId as string) ?? "";
+          if (!organizationId.trim()) return err("organizationId is required");
+
+          try {
+            return await runAuditedEarthDataTool(
+              name,
+              a,
+              { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+              async () => {
+                await orgServer.softDeleteOrganization(organizationId, userId);
+                return { organizationId, deleted: true };
+              },
+            );
+          } catch (error) {
+            if (error instanceof Error) return err(error.message);
+            throw error;
+          }
+        }
+
+        case "addOrganizationMember": {
+          if (!userId) return authRequired(name, "This tool adds a member to an organization.");
+          const orgServer = await import("./organization.server");
+          const organizationId = (a.organizationId as string) ?? "";
+          const targetUserId = (a.userId as string) ?? "";
+          if (!organizationId.trim()) return err("organizationId is required");
+          if (!targetUserId.trim()) return err("userId is required");
+          const roleInput = (typeof a.role === "string" && a.role) || "member";
+          if (!orgServer.isOrganizationMemberRole(roleInput)) {
+            return err(`role must be one of: owner, admin, member, viewer`);
+          }
+
+          try {
+            return await runAuditedEarthDataTool(
+              name,
+              a,
+              { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+              async () => {
+                const membership = await orgServer.addOrganizationMember(
+                  organizationId,
+                  userId,
+                  targetUserId,
+                  roleInput,
+                );
+                return {
+                  membership: {
+                    organizationId: membership.organizationId,
+                    userId: membership.userId,
+                    role: membership.role,
+                    joinedAt: membership.joinedAt,
+                  },
+                };
+              },
+            );
+          } catch (error) {
+            if (error instanceof Error) return err(error.message);
+            throw error;
+          }
+        }
+
+        case "removeOrganizationMember": {
+          if (!userId) return authRequired(name, "This tool removes a member from an organization.");
+          const orgServer = await import("./organization.server");
+          const organizationId = (a.organizationId as string) ?? "";
+          const targetUserId = (a.userId as string) ?? "";
+          if (!organizationId.trim()) return err("organizationId is required");
+          if (!targetUserId.trim()) return err("userId is required");
+
+          try {
+            return await runAuditedEarthDataTool(
+              name,
+              a,
+              { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+              async () => {
+                await orgServer.removeOrganizationMember(organizationId, userId, targetUserId);
+                return { organizationId, userId: targetUserId, removed: true };
+              },
+            );
+          } catch (error) {
+            if (error instanceof Error) return err(error.message);
+            throw error;
+          }
+        }
+
+        case "updateOrganizationMemberRole": {
+          if (!userId) return authRequired(name, "This tool changes an organization member's role.");
+          const orgServer = await import("./organization.server");
+          const organizationId = (a.organizationId as string) ?? "";
+          const targetUserId = (a.userId as string) ?? "";
+          const roleInput = (a.role as string) ?? "";
+          if (!organizationId.trim()) return err("organizationId is required");
+          if (!targetUserId.trim()) return err("userId is required");
+          if (!orgServer.isOrganizationMemberRole(roleInput)) {
+            return err(`role must be one of: owner, admin, member, viewer`);
+          }
+
+          try {
+            return await runAuditedEarthDataTool(
+              name,
+              a,
+              { clientId: options.clientId, oauthGrantId: options.oauthGrantId, userId },
+              async () => {
+                const membership = await orgServer.updateOrganizationMemberRole(
+                  organizationId,
+                  userId,
+                  targetUserId,
+                  roleInput,
+                );
+                return {
+                  membership: {
+                    organizationId: membership.organizationId,
+                    userId: membership.userId,
+                    role: membership.role,
+                    joinedAt: membership.joinedAt,
+                  },
+                };
+              },
+            );
+          } catch (error) {
+            if (error instanceof Error) return err(error.message);
+            throw error;
+          }
+        }
+
+        case "listOrganizationMembers": {
+          if (!userId) return authRequired(name, "This tool lists members of an organization.");
+          const orgServer = await import("./organization.server");
+          const organizationId = (a.organizationId as string) ?? "";
+          if (!organizationId.trim()) return err("organizationId is required");
+          try {
+            const members = await orgServer.listOrganizationMembers(organizationId, userId);
+            return ok({
+              members: members.map((m) => ({
+                userId: m.user.id,
+                email: m.user.email,
+                displayName: m.user.person?.displayName ?? null,
+                handle: m.user.person?.handle ?? null,
+                role: m.role,
+                joinedAt: m.joinedAt,
+              })),
+            });
+          } catch (error) {
+            if (error instanceof Error) return err(error.message);
+            throw error;
+          }
         }
 
         case "createPerson": {

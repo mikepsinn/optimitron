@@ -4,7 +4,7 @@ import { Button } from "@/components/retroui/Button";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Square, CheckSquare } from "lucide-react";
+import { CheckSquare, Hand, Square } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
@@ -118,13 +118,8 @@ export function TreatyVoteFlow({
   const { data: session, status } = useSession();
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
-  const choiceCardRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
-  // True only when the user submits the slider in this session. Prevents the
-  // scroll-to-choice effect from firing when sliderSubmitted is restored from
-  // localStorage on page load (which would auto-scroll past the document).
-  const userSubmittedSliderRef = useRef(false);
   const initialVoteShellClassName = compactInitialScreen
     ? "min-h-0 overflow-visible px-0 py-0 sm:px-0 sm:py-0"
     : undefined;
@@ -135,27 +130,6 @@ export function TreatyVoteFlow({
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // When the slider submits, scroll the reality-check / yes-no card into
-  // view in the middle of the viewport. `block: "center"` keeps the question
-  // header visible above the YES/NO buttons; `block: "start"` cut it off.
-  // Without this, the previous slider shell (min-h-screen) leaves the user
-  // scrolled mid-page when the new shell mounts, so the choice card lands
-  // in the bottom half of the viewport with empty whitespace above it.
-  useEffect(() => {
-    if (!sliderSubmitted) return;
-    if (!userSubmittedSliderRef.current) return;
-    const node = choiceCardRef.current;
-    if (!node) return;
-    /// Two ticks: one for AnimatePresence to mount the new node, one for
-    /// the layout to settle so scrollIntoView positions correctly.
-    const id = window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        node.scrollIntoView({ behavior: "smooth", block: "center" });
-      });
-    });
-    return () => window.cancelAnimationFrame(id);
-  }, [sliderSubmitted]);
 
   useEffect(() => {
     const requestedVariant =
@@ -368,7 +342,6 @@ export function TreatyVoteFlow({
       flowVariant,
       militaryAllocationPercent: militaryAllocation,
     });
-    userSubmittedSliderRef.current = true;
     setSliderSubmitted(true);
     setShowSlider(false);
 
@@ -712,7 +685,7 @@ export function TreatyVoteFlow({
                 </div>
 
                 {/* Slider with Animation */}
-                <div className="relative px-2 pt-3">
+                <div className="relative px-2 pb-10 pt-3">
                   <AnimatePresence>
                     {showAnimation && !userHasDragged && (
                       <>
@@ -735,14 +708,29 @@ export function TreatyVoteFlow({
                         </motion.div>
 
                         <motion.div
-                          className="absolute z-20 pointer-events-none"
+                          aria-hidden="true"
+                          className="pointer-events-none absolute z-20"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
                           style={{
                             left: `${animatedValue}%`,
                             transform: "translateX(-50%)",
-                            top: "16px",
+                            top: "30px",
                           }}
                         >
-                          <div className="h-8 w-px bg-[var(--treaty-ink)]" />
+                          <motion.div
+                            animate={{ rotate: [-12, -18, -12], y: [0, 2, 0] }}
+                            className="flex h-8 w-8 items-center justify-center text-[var(--treaty-ink)]"
+                            transition={{
+                              duration: 0.8,
+                              ease: "easeInOut",
+                              repeat: Infinity,
+                            }}
+                          >
+                            <Hand className="h-7 w-7" strokeWidth={2.5} />
+                          </motion.div>
                         </motion.div>
                       </>
                     )}
@@ -795,7 +783,6 @@ export function TreatyVoteFlow({
       <AnimatePresence>
         {sliderSubmitted && (
           <motion.div
-            ref={choiceCardRef}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}

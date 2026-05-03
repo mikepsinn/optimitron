@@ -343,3 +343,246 @@ export async function getApprovedOrganizationSurveyContext(slug: string) {
     orgContextToken: issueOrgContextToken(organization.id).encoded,
   };
 }
+
+export class ForbiddenError extends Error {
+  constructor(message = "Forbidden") {
+    super(message);
+    this.name = "ForbiddenError";
+  }
+}
+
+export class LastOwnerError extends Error {
+  constructor(message = "Cannot remove or demote the last owner of the organization") {
+    super(message);
+    this.name = "LastOwnerError";
+  }
+}
+
+export type OrganizationMemberRole = "owner" | "admin" | "member" | "viewer";
+
+const ORGANIZATION_MEMBER_ROLES: ReadonlySet<OrganizationMemberRole> = new Set([
+  "owner",
+  "admin",
+  "member",
+  "viewer",
+]);
+
+export function isOrganizationMemberRole(value: string): value is OrganizationMemberRole {
+  return ORGANIZATION_MEMBER_ROLES.has(value as OrganizationMemberRole);
+}
+
+async function isOrgOwner(userId: string, organizationId: string): Promise<boolean> {
+  const membership = await prisma.organizationMember.findUnique({
+    where: { organizationId_userId: { organizationId, userId } },
+    select: { role: true },
+  });
+  return membership?.role === "owner";
+}
+
+async function assertNotLastOwner(
+  tx: Prisma.TransactionClient,
+  organizationId: string,
+  userIdBeingChanged: string,
+) {
+  const ownerCount = await tx.organizationMember.count({
+    where: { organizationId, role: "owner" },
+  });
+  if (ownerCount <= 1) {
+    const targetMembership = await tx.organizationMember.findUnique({
+      where: { organizationId_userId: { organizationId, userId: userIdBeingChanged } },
+      select: { role: true },
+    });
+    if (targetMembership?.role === "owner") {
+      throw new LastOwnerError();
+    }
+  }
+}
+
+interface UpdateOrganizationInput {
+  name?: string;
+  slug?: string | null;
+  type?: OrgType;
+  status?: OrgStatus;
+  website?: string | null;
+  description?: string | null;
+  logo?: string | null;
+  contactEmail?: string | null;
+  jurisdictionId?: string | null;
+}
+
+interface UpdateOrganizationOptions {
+  allowStatusChange?: boolean;
+}
+
+export async function updateOrganization(
+  organizationId: string,
+  callerUserId: string,
+  patch: UpdateOrganizationInput,
+  options: UpdateOrganizationOptions = {},
+) {
+  if (!(await canManageOrganization(callerUserId, organizationId))) {
+    throw new ForbiddenError("You do not have permission to manage this organization");
+  }
+
+  if (
+    !options.allowStatusChange &&
+    (patch.status !== undefined || patch.jurisdictionId !== undefined)
+  ) {
+    throw new ForbiddenError(
+      "Changing status or jurisdictionId requires platform-admin privileges",
+    );
+  }
+
+  const existing = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { id: true, name: true, slug: true, deletedAt: true },
+  });
+  if (!existing || existing.deletedAt) {
+    throw new Error("Organization not found");
+  }
+
+  const data: Prisma.OrganizationUpdateInput = {};
+
+  if (patch.name !== undefined) {
+    const nextName = patch.name.trim();
+    if (!nextName) throw new Error("Organization name cannot be empty");
+    data.name = nextName;
+  }
+
+  if (patch.slug !== undefined) {
+    const baseSource =
+      patch.slug && patch.slug.trim()
+        ? patch.slug.trim()
+        : (data.name as string | undefined) ?? existing.name;
+    const nextSlug = await getAvailableSlug(prisma, slugify(baseSource), existing.id);
+    data.slug = nextSlug;
+  }
+
+  if (patch.type !== undefined) data.type = patch.type;
+  if (patch.status !== undefined) data.status = patch.status;
+  if (patch.website !== undefined) data.website = patch.website;
+  if (patch.description !== undefined) data.description = patch.description;
+  if (patch.logo !== undefined) data.logo = patch.logo;
+  if (patch.contactEmail !== undefined) data.contactEmail = patch.contactEmail;
+  if (patch.jurisdictionId !== undefined) {
+    data.jurisdiction = patch.jurisdictionId
+      ? { connect: { id: patch.jurisdictionId } }
+      : { disconnect: true };
+  }
+
+  return prisma.organization.update({
+    where: { id: organizationId },
+    data,
+  });
+}
+
+export async function addOrganizationMember(
+  organizationId: string,
+  callerUserId: string,
+  targetUserId: string,
+  role: OrganizationMemberRole,
+) {
+  if (!isOrganizationMemberRole(role)) {
+    throw new Error(`Invalid role: ${role}`);
+  }
+  if (!(await canManageOrganization(callerUserId, organizationId))) {
+    throw new ForbiddenError("You do not have permission to manage this organization");
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: targetUserId },
+    select: { id: true },
+  });
+  if (!targetUser) {
+    throw new Error("Target user not found");
+  }
+
+  return prisma.$transaction(async (tx) => {
+    return tx.organizationMember.upsert({
+      where: { organizationId_userId: { organizationId, userId: targetUserId } },
+      update: { role },
+      create: { organizationId, userId: targetUserId, role },
+    });
+  });
+}
+
+export async function removeOrganizationMember(
+  organizationId: string,
+  callerUserId: string,
+  targetUserId: string,
+) {
+  const isSelfRemoval = callerUserId === targetUserId;
+  if (!isSelfRemoval && !(await canManageOrganization(callerUserId, organizationId))) {
+    throw new ForbiddenError("You do not have permission to manage this organization");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await assertNotLastOwner(tx, organizationId, targetUserId);
+    await tx.organizationMember.delete({
+      where: { organizationId_userId: { organizationId, userId: targetUserId } },
+    });
+  });
+}
+
+export async function updateOrganizationMemberRole(
+  organizationId: string,
+  callerUserId: string,
+  targetUserId: string,
+  role: OrganizationMemberRole,
+) {
+  if (!isOrganizationMemberRole(role)) {
+    throw new Error(`Invalid role: ${role}`);
+  }
+  if (!(await canManageOrganization(callerUserId, organizationId))) {
+    throw new ForbiddenError("You do not have permission to manage this organization");
+  }
+
+  return prisma.$transaction(async (tx) => {
+    if (role !== "owner") {
+      await assertNotLastOwner(tx, organizationId, targetUserId);
+    }
+    return tx.organizationMember.update({
+      where: { organizationId_userId: { organizationId, userId: targetUserId } },
+      data: { role },
+    });
+  });
+}
+
+export async function listOrganizationMembers(
+  organizationId: string,
+  callerUserId: string,
+) {
+  if (!(await canManageOrganization(callerUserId, organizationId))) {
+    throw new ForbiddenError("You do not have permission to view this organization's members");
+  }
+
+  return prisma.organizationMember.findMany({
+    where: { organizationId },
+    select: {
+      role: true,
+      joinedAt: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          person: { select: { displayName: true, handle: true } },
+        },
+      },
+    },
+    orderBy: { joinedAt: "asc" },
+  });
+}
+
+export async function softDeleteOrganization(
+  organizationId: string,
+  callerUserId: string,
+) {
+  if (!(await isOrgOwner(callerUserId, organizationId))) {
+    throw new ForbiddenError("Only an organization owner can delete it");
+  }
+
+  await prisma.organization.update({
+    where: { id: organizationId },
+    data: { deletedAt: new Date() },
+  });
+}

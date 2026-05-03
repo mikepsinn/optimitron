@@ -53,6 +53,12 @@ const mocks = vi.hoisted(() => ({
   getProfileIdentityData: vi.fn(),
   updateUserProfile: vi.fn(),
   createOrganizationWithOwner: vi.fn(),
+  updateOrganizationServer: vi.fn(),
+  addOrganizationMember: vi.fn(),
+  removeOrganizationMember: vi.fn(),
+  updateOrganizationMemberRole: vi.fn(),
+  listOrganizationMembers: vi.fn(),
+  softDeleteOrganization: vi.fn(),
   taskFindUnique: vi.fn(),
   upsertSignerReminderTask: vi.fn(),
   createTaskTrigger: vi.fn(),
@@ -164,8 +170,33 @@ vi.mock("../court-data.server", () => ({
   upsertCourtCase: mocks.upsertCourtCase,
 }));
 
+class ForbiddenError extends Error {
+  constructor(message = "Forbidden") {
+    super(message);
+    this.name = "ForbiddenError";
+  }
+}
+
+class LastOwnerError extends Error {
+  constructor(message = "Cannot remove or demote the last owner of the organization") {
+    super(message);
+    this.name = "LastOwnerError";
+  }
+}
+
+const VALID_MEMBER_ROLES = new Set(["owner", "admin", "member", "viewer"]);
+
 vi.mock("../organization.server", () => ({
   createOrganizationWithOwner: mocks.createOrganizationWithOwner,
+  updateOrganization: mocks.updateOrganizationServer,
+  addOrganizationMember: mocks.addOrganizationMember,
+  removeOrganizationMember: mocks.removeOrganizationMember,
+  updateOrganizationMemberRole: mocks.updateOrganizationMemberRole,
+  listOrganizationMembers: mocks.listOrganizationMembers,
+  softDeleteOrganization: mocks.softDeleteOrganization,
+  isOrganizationMemberRole: (value: string) => VALID_MEMBER_ROLES.has(value),
+  ForbiddenError,
+  LastOwnerError,
 }));
 
 vi.mock("../prisma", () => ({
@@ -654,6 +685,266 @@ describe("MCP server tool dispatch", () => {
         }),
       }),
     );
+  });
+
+  describe("organization management tools", () => {
+    it("updateOrganization patches basic fields and returns the updated org", async () => {
+      mocks.updateOrganizationServer.mockResolvedValueOnce({
+        contactEmail: "hello@example.org",
+        description: "Updated mission",
+        id: "org-1",
+        jurisdictionId: null,
+        logo: null,
+        name: "Renamed Org",
+        slug: "renamed-org",
+        status: OrgStatus.APPROVED,
+        type: OrgType.NONPROFIT,
+        website: "https://example.org",
+      });
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "updateOrganization",
+        arguments: {
+          organizationId: "org-1",
+          name: "Renamed Org",
+          website: "https://example.org",
+          description: "Updated mission",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.updateOrganizationServer).toHaveBeenCalledWith(
+        "org-1",
+        "user-1",
+        expect.objectContaining({
+          name: "Renamed Org",
+          website: "https://example.org",
+          description: "Updated mission",
+        }),
+        { allowStatusChange: false },
+      );
+      const body = parseToolBody(result);
+      expect((body.organization as Record<string, unknown>)?.slug).toBe("renamed-org");
+    });
+
+    it("updateOrganization passes allowStatusChange=true when caller has admin scope", async () => {
+      mocks.updateOrganizationServer.mockResolvedValueOnce({
+        contactEmail: null,
+        description: null,
+        id: "org-1",
+        jurisdictionId: null,
+        logo: null,
+        name: "Org",
+        slug: "org",
+        status: OrgStatus.APPROVED,
+        type: OrgType.NONPROFIT,
+        website: null,
+      });
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      await client.callTool({
+        name: "updateOrganization",
+        arguments: { organizationId: "org-1", status: "APPROVED" },
+      });
+
+      expect(mocks.updateOrganizationServer).toHaveBeenCalledWith(
+        "org-1",
+        "admin-1",
+        expect.objectContaining({ status: OrgStatus.APPROVED }),
+        { allowStatusChange: true },
+      );
+    });
+
+    it("updateOrganization returns a clean error when the caller cannot manage the org", async () => {
+      mocks.updateOrganizationServer.mockRejectedValueOnce(
+        new ForbiddenError("You do not have permission to manage this organization"),
+      );
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "updateOrganization",
+        arguments: { organizationId: "org-1", name: "New name" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toEqual({
+        error: "You do not have permission to manage this organization",
+      });
+    });
+
+    it("addOrganizationMember defaults role to member and forwards the call", async () => {
+      mocks.addOrganizationMember.mockResolvedValueOnce({
+        organizationId: "org-1",
+        userId: "user-2",
+        role: "member",
+        joinedAt: new Date("2026-05-03T00:00:00.000Z"),
+      });
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "addOrganizationMember",
+        arguments: { organizationId: "org-1", userId: "user-2" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.addOrganizationMember).toHaveBeenCalledWith(
+        "org-1",
+        "user-1",
+        "user-2",
+        "member",
+      );
+    });
+
+    it("addOrganizationMember rejects unknown roles before hitting the server", async () => {
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "addOrganizationMember",
+        arguments: { organizationId: "org-1", userId: "user-2", role: "wizard" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.addOrganizationMember).not.toHaveBeenCalled();
+    });
+
+    it("removeOrganizationMember surfaces the LastOwnerError as a clean error", async () => {
+      mocks.removeOrganizationMember.mockRejectedValueOnce(
+        new LastOwnerError("Cannot remove or demote the last owner of the organization"),
+      );
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "removeOrganizationMember",
+        arguments: { organizationId: "org-1", userId: "user-1" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toEqual({
+        error: "Cannot remove or demote the last owner of the organization",
+      });
+    });
+
+    it("removeOrganizationMember allows self-removal even when the caller cannot manage the org", async () => {
+      mocks.removeOrganizationMember.mockResolvedValueOnce(undefined);
+      const client = await setup("user-2", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "removeOrganizationMember",
+        arguments: { organizationId: "org-1", userId: "user-2" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.removeOrganizationMember).toHaveBeenCalledWith(
+        "org-1",
+        "user-2",
+        "user-2",
+      );
+    });
+
+    it("updateOrganizationMemberRole forwards role changes", async () => {
+      mocks.updateOrganizationMemberRole.mockResolvedValueOnce({
+        organizationId: "org-1",
+        userId: "user-2",
+        role: "admin",
+        joinedAt: new Date("2026-05-03T00:00:00.000Z"),
+      });
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "updateOrganizationMemberRole",
+        arguments: { organizationId: "org-1", userId: "user-2", role: "admin" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.updateOrganizationMemberRole).toHaveBeenCalledWith(
+        "org-1",
+        "user-1",
+        "user-2",
+        "admin",
+      );
+    });
+
+    it("listOrganizationMembers returns a flattened member shape", async () => {
+      mocks.listOrganizationMembers.mockResolvedValueOnce([
+        {
+          role: "owner",
+          joinedAt: new Date("2026-04-01T00:00:00.000Z"),
+          user: {
+            id: "user-1",
+            email: "owner@example.org",
+            person: { displayName: "Owner Person", handle: "owner-person" },
+          },
+        },
+      ]);
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "listOrganizationMembers",
+        arguments: { organizationId: "org-1" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(body.members).toEqual([
+        {
+          userId: "user-1",
+          email: "owner@example.org",
+          displayName: "Owner Person",
+          handle: "owner-person",
+          role: "owner",
+          joinedAt: "2026-04-01T00:00:00.000Z",
+        },
+      ]);
+    });
+
+    it("deleteOrganization soft-deletes when caller is platform admin and org owner", async () => {
+      mocks.softDeleteOrganization.mockResolvedValueOnce(undefined);
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "deleteOrganization",
+        arguments: { organizationId: "org-1" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.softDeleteOrganization).toHaveBeenCalledWith("org-1", "admin-1");
+      expect(parseToolBody(result)).toMatchObject({
+        organizationId: "org-1",
+        deleted: true,
+      });
+    });
+
+    it("deleteOrganization returns a clean error when the caller is not the owner", async () => {
+      mocks.softDeleteOrganization.mockRejectedValueOnce(
+        new ForbiddenError("Only an organization owner can delete it"),
+      );
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "deleteOrganization",
+        arguments: { organizationId: "org-1" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toEqual({
+        error: "Only an organization owner can delete it",
+      });
+    });
+
+    it("organization management tools require an authenticated user", async () => {
+      const client = await setup(undefined, [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "addOrganizationMember",
+        arguments: { organizationId: "org-1", userId: "user-2" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toBe("authentication_required");
+      expect(mocks.addOrganizationMember).not.toHaveBeenCalled();
+    });
   });
 
   describe("task read tools", () => {

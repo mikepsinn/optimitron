@@ -27,10 +27,39 @@ async function completeSliderAndVote(page: Page): Promise<void> {
 
   const submit = voteSection.locator("button:has-text('SUBMIT')");
   await expect(submit).toBeVisible({ timeout: 10_000 });
+  const scrollYBeforeSubmit = await page.evaluate(() => window.scrollY);
   await submit.click();
 
   const yesButton = voteSection.locator("button:has-text('YES')");
   await expect(yesButton).toBeVisible({ timeout: 10_000 });
+  const maxSubmitScrollDelta = await page.evaluate(
+    (scrollYBeforeSubmit) =>
+      new Promise<number>((resolve) => {
+        const startedAt = performance.now();
+        let maxDelta = 0;
+
+        const sample = () => {
+          maxDelta = Math.max(
+            maxDelta,
+            Math.abs(window.scrollY - scrollYBeforeSubmit),
+          );
+
+          if (performance.now() - startedAt >= 700) {
+            resolve(maxDelta);
+            return;
+          }
+
+          requestAnimationFrame(sample);
+        };
+
+        requestAnimationFrame(sample);
+      }),
+    scrollYBeforeSubmit,
+  );
+  expect(
+    maxSubmitScrollDelta,
+    "submitting the allocation slider should not auto-scroll the page",
+  ).toBeLessThan(80);
   await yesButton.click();
 }
 

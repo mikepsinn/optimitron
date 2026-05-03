@@ -15,7 +15,9 @@ describe("buildSiteStructuredData", () => {
     const website = graph.find((node) => node["@type"] === "WebSite");
 
     expect(organization).toMatchObject({
-      name: "Earth Optimization Services LLC",
+      // The 1% Treaty site shares the campaign brand with WoD; the legal
+      // entity (Earth Optimization Services LLC) lives on legalEntityName.
+      name: "International Campaign to End War and Disease",
       url: "https://optimitron.com",
       email: "hello@warondisease.org",
     });
