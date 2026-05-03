@@ -261,8 +261,8 @@ export async function getRepresentedPeopleGalleryData(
   };
 
   // Sort handling. The "died-closest-to-cure" sort is a nested aggregation
-  // Prisma can't express in orderBy, so we hydrate up to 200 rows and sort
-  // in-memory before paginating. For other sorts we let Prisma do the work.
+  // Prisma can't express in orderBy, so we hydrate the filtered rows, sort
+  // in-memory, and then paginate. For other sorts we let Prisma do the work.
   const isSpecialSort = sort === "died-closest-to-cure";
   const orderBy = (() => {
     switch (sort) {
@@ -276,8 +276,7 @@ export async function getRepresentedPeopleGalleryData(
         return { createdAt: "desc" as const }; // overridden by in-memory sort
     }
   })();
-  const gallerySkip: number = isSpecialSort ? 0 : (page - 1) * pageSize;
-  const galleryTake: number = isSpecialSort ? 200 : pageSize;
+  const gallerySkip = (page - 1) * pageSize;
 
   const [
     officialVoteCount,
@@ -302,19 +301,13 @@ export async function getRepresentedPeopleGalleryData(
     prisma.referendumVote.findMany({
       where: filteredVoteWhere,
       orderBy,
-      skip: gallerySkip,
-      take: galleryTake,
+      ...(isSpecialSort ? {} : { skip: gallerySkip, take: pageSize }),
       select: galleryVoteSelect,
     }),
   ]);
 
   const sortedVotes = isSpecialSort
     ? [...rawVotes]
-        .filter(
-          (vote) =>
-            vote.person.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays !==
-            undefined,
-        )
         .sort((a, b) => {
           const aDays =
             a.person.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays ??
@@ -322,7 +315,8 @@ export async function getRepresentedPeopleGalleryData(
           const bDays =
             b.person.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays ??
             Number.POSITIVE_INFINITY;
-          return aDays - bDays;
+          if (aDays === bDays) return 0;
+          return aDays < bDays ? -1 : 1;
         })
         .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
     : rawVotes;

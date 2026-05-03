@@ -262,6 +262,8 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "trial_capacity_multiplier",
       "eradication_years_status_quo",
       "eradication_years_treaty",
+      "treaty_hale_gain",
+      "lifetime_income_gain",
     ],
     body: [
       `Yeahhh, hi {target_name}. Quick workflow update from the Department of Civilization Made a Spreadsheet and It Is Bad.`,
@@ -274,6 +276,8 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "Small note for the agenda: the treaty trades 1% of military spending for {trial_capacity_multiplier}× more clinical trials. That compresses disease eradication from {eradication_years_status_quo} years to {eradication_years_treaty}. Mathematically it drops mass-murder capacity from 122 apocalypses to 120.8 — and, just to be clear, you can only have one apocalypse. (Humanity has 12,241 warheads, nuclear winter takes ~100, the other 12,141 are decorative.) The 121 spare apocalypses will not be missed.",
       ``,
       "{eradication_years_treaty} years also means you, personally, might watch the world's last disease get cured. {eradication_years_status_quo} years means your great-great-great-grandchildren still won't. Just so you have the timeline in front of you.",
+      ``,
+      "The personal math is also rude: {treaty_hale_gain} additional healthy years per human and {lifetime_income_gain} additional lifetime income per person. HR says we should call this a wellness benefit.",
       ``,
       "Before you flag this as 'unrealistic' on the agenda — pre-WWII US military spending was 96.7% lower than today, inflation-adjusted. The US still won WWII, then cut spending 87.6% in two years and produced the largest economic expansion in history. The same governments later banned chemical weapons (1993, 193 countries), biological weapons (1975, 187 countries), and landmines (1997, 164 countries) — weapons they actually like using. This one just asks them to buy 1% fewer of them. That's it.",
       ``,

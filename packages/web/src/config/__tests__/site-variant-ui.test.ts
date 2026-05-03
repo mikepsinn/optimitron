@@ -94,7 +94,7 @@ describe("site variant UI config", () => {
       "Vote",
       "Read the Treaty",
       "Dashboard",
-      "People",
+      peopleLink.label,
       "Organizational Signatories",
       "Sign as Organization",
       "Donate",
@@ -171,7 +171,7 @@ describe("site variant UI config", () => {
     expect(labelsFor("warOnDisease")).toEqual([
       "Vote",
       "Share",
-      "People",
+      peopleLink.label,
       "Read the Treaty",
       "Why",
     ]);
