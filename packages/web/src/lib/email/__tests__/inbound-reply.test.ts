@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { stripQuotedReply } from "../inbound-reply";
+import { Prisma } from "@optimitron/db";
+import { describe, expect, it, vi } from "vitest";
+import { processInboundReply, stripQuotedReply } from "../inbound-reply";
 
 /**
  * Unit tests for the inbound-reply quote stripper. Pure function — covers
@@ -81,5 +82,127 @@ describe("stripQuotedReply", () => {
 
   it("trims trailing whitespace", () => {
     expect(stripQuotedReply("Reply.\n\n\n")).toBe("Reply.");
+  });
+});
+
+function inboundEvent(overrides: Partial<Parameters<typeof processInboundReply>[0]> = {}) {
+  return {
+    from: "Assignee <assignee@example.org>",
+    to: "reply+task_1@reply.warondisease.org",
+    subject: "Re: task",
+    text: "Done.",
+    providerMessageId: "provider_msg_1",
+    ...overrides,
+  };
+}
+
+function makeInboundDb() {
+  const db = {
+    taskCommunication: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => ({
+        id: "comm_1",
+        ...data,
+      })),
+    },
+    taskComment: {
+      create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => ({
+        id: "comment_1",
+        ...data,
+      })),
+    },
+    task: {
+      findUnique: vi.fn().mockResolvedValue({
+        id: "task_1",
+        title: "Task",
+        ownerUserId: null,
+        owner: null,
+        assigneePerson: { id: "person_1", email: "assignee@example.org" },
+        assigneeOrganization: null,
+        communicationEndpoints: [],
+      }),
+    },
+    user: {
+      findUnique: vi.fn(),
+    },
+    $transaction: vi.fn(),
+  };
+  db.$transaction.mockImplementation(
+    async (fn: (tx: typeof db) => Promise<unknown>) => fn(db),
+  );
+  return db;
+}
+
+describe("processInboundReply", () => {
+  it("rejects an inbound reply when the sender is not known on the task", async () => {
+    const db = makeInboundDb();
+
+    const result = await processInboundReply(
+      inboundEvent({ from: "Stranger <stranger@example.org>" }),
+      db as never,
+    );
+
+    expect(result).toEqual({
+      status: "skipped",
+      reason: "unauthorized sender",
+    });
+    expect(db.$transaction).not.toHaveBeenCalled();
+    expect(db.taskComment.create).not.toHaveBeenCalled();
+    expect(db.taskCommunication.create).not.toHaveBeenCalled();
+  });
+
+  it("accepts replies from a configured task communication endpoint", async () => {
+    const db = makeInboundDb();
+    db.task.findUnique.mockResolvedValue({
+      id: "task_1",
+      title: "Task",
+      ownerUserId: null,
+      owner: null,
+      assigneePerson: null,
+      assigneeOrganization: null,
+      communicationEndpoints: [{ email: "contact@example.org" }],
+    });
+
+    const result = await processInboundReply(
+      inboundEvent({ from: "Contact <contact@example.org>" }),
+      db as never,
+    );
+
+    expect(result).toMatchObject({
+      status: "created",
+      taskCommentId: "comment_1",
+      taskCommunicationId: "comm_1",
+    });
+    expect(db.taskComment.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        authorNameSnapshot: "Contact",
+        message: "Done.",
+      }),
+    });
+  });
+
+  it("collapses a concurrent duplicate when the provider message insert loses the race", async () => {
+    const db = makeInboundDb();
+    db.$transaction.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+        code: "P2002",
+        clientVersion: "test",
+      }),
+    );
+    db.taskCommunication.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        id: "comm_winner",
+        taskCommentId: "comment_winner",
+      });
+
+    const result = await processInboundReply(inboundEvent(), db as never);
+
+    expect(result).toEqual({
+      status: "skipped",
+      reason: "duplicate providerMessageId (concurrent race)",
+      taskCommentId: "comment_winner",
+      taskCommunicationId: "comm_winner",
+    });
   });
 });

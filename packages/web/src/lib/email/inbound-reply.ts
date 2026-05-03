@@ -4,8 +4,8 @@
  * Wired by `/api/webhooks/resend-inbound` (or equivalent route). Decodes the
  * `reply+{taskId}@reply.warondisease.org` address back to a taskId, strips
  * quoted prior messages from the body, authenticates the sender by matching
- * email to a known Person/Organization on the task, and creates a
- * TaskComment + TaskCommunication record.
+ * email to a known user, Person, Organization, or endpoint on the task, and
+ * creates a TaskComment + TaskCommunication record.
  *
  * Idempotent on `providerMessageId` — safe for webhook retries.
  *
@@ -17,10 +17,13 @@ import {
   TaskCommentSource,
   TaskCommunicationStatus,
 } from "@optimitron/db";
-import type { Prisma } from "@optimitron/db";
+import { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
-import { sendTaskNotificationEmail } from "@/lib/email/task-notification";
-import { parseReplyAddress } from "@/lib/email/task-notification";
+import {
+  getTaskUrl,
+  parseReplyAddress,
+  sendTaskNotificationEmail,
+} from "@/lib/email/task-notification";
 
 export interface InboundEmailEvent {
   /// Sender as the provider parsed it. May be `Display Name <addr@host>`.
@@ -110,7 +113,10 @@ export async function processInboundReply(
   }
   const taskId = parsed.taskId;
 
-  // Idempotency: bail if we've already recorded this provider message.
+  // Idempotency check (fast path): bail if we already have a row for this
+  // providerMessageId. The DB-enforced unique constraint on the column is
+  // the source of truth — see the catch below for the race-condition case
+  // where two concurrent webhooks both pass this check.
   const existing = await db.taskCommunication.findFirst({
     where: { providerMessageId: event.providerMessageId, deletedAt: null },
     select: { id: true, taskCommentId: true },
@@ -133,8 +139,13 @@ export async function processInboundReply(
       ownerUserId: true,
       assigneePersonId: true,
       assigneeOrganizationId: true,
+      owner: { select: { id: true, email: true } },
       assigneePerson: { select: { id: true, email: true } },
       assigneeOrganization: { select: { id: true, contactEmail: true } },
+      communicationEndpoints: {
+        where: { deletedAt: null, email: { not: null } },
+        select: { email: true },
+      },
     },
   });
   if (!task) {
@@ -144,37 +155,43 @@ export async function processInboundReply(
   // Authenticate sender by email match.
   const senderEmail = extractEmailAddress(event.from);
   const senderDisplayName = extractDisplayName(event.from);
+  let authorUserId: string | null = null;
   let authorPersonId: string | null = null;
   let authorOrganizationId: string | null = null;
   let authorNameSnapshot: string | null = null;
+  let isAuthorizedSender = false;
 
   if (senderEmail) {
     if (
+      task.owner?.email &&
+      task.owner.email.toLowerCase() === senderEmail
+    ) {
+      authorUserId = task.owner.id;
+      isAuthorizedSender = true;
+    } else if (
       task.assigneeOrganization?.contactEmail &&
       task.assigneeOrganization.contactEmail.toLowerCase() === senderEmail
     ) {
       authorOrganizationId = task.assigneeOrganization.id;
+      isAuthorizedSender = true;
     } else if (
       task.assigneePerson?.email &&
       task.assigneePerson.email.toLowerCase() === senderEmail
     ) {
       authorPersonId = task.assigneePerson.id;
-    } else {
-      // Sender doesn't match the assigned org/person. Look for any Person
-      // with this email so delegates (chief of staff, foundation program
-      // officer) can also reply naturally.
-      const person = await db.person.findUnique({
-        where: { email: senderEmail },
-        select: { id: true },
-      });
-      if (person) {
-        authorPersonId = person.id;
-      } else {
-        authorNameSnapshot = senderDisplayName ?? senderEmail;
-      }
+      isAuthorizedSender = true;
+    } else if (
+      task.communicationEndpoints.some(
+        (endpoint) => endpoint.email?.toLowerCase() === senderEmail,
+      )
+    ) {
+      authorNameSnapshot = senderDisplayName ?? senderEmail;
+      isAuthorizedSender = true;
     }
-  } else {
-    authorNameSnapshot = senderDisplayName ?? "(unknown sender)";
+  }
+
+  if (!isAuthorizedSender) {
+    return { status: "skipped", reason: "unauthorized sender" };
   }
 
   // Strip quoted text + clean body.
@@ -183,44 +200,73 @@ export async function processInboundReply(
     return { status: "skipped", reason: "empty body after quote-stripping" };
   }
 
-  // Create the comment + communication atomically.
-  const created = await db.$transaction(async (tx) => {
-    const comment = await tx.taskComment.create({
-      data: {
-        taskId,
-        message: cleanBody,
-        kind: TaskCommentKind.INBOUND_MESSAGE,
-        source: TaskCommentSource.EMAIL_REPLY,
-        authorPersonId,
-        authorOrganizationId,
-        authorNameSnapshot,
-      },
-    });
+  // Create the comment + communication atomically. The unique constraint on
+  // TaskCommunication.providerMessageId is the actual idempotency guard:
+  // if a concurrent webhook delivery slips past the fast-path findFirst
+  // above and both reach this insert, exactly one wins and the loser's
+  // transaction throws Prisma error code P2002, which we catch and turn
+  // into a "skipped, duplicate" success.
+  let created: { commentId: string; communicationId: string };
+  try {
+    created = await db.$transaction(async (tx) => {
+      const comment = await tx.taskComment.create({
+        data: {
+          taskId,
+          message: cleanBody,
+          kind: TaskCommentKind.INBOUND_MESSAGE,
+          source: TaskCommentSource.EMAIL_REPLY,
+          authorUserId,
+          authorPersonId,
+          authorOrganizationId,
+          authorNameSnapshot,
+        },
+      });
 
-    const communication = await tx.taskCommunication.create({
-      data: {
-        taskId,
-        taskCommentId: comment.id,
-        direction: "INBOUND",
-        channel: "EMAIL",
-        status: TaskCommunicationStatus.RECEIVED,
-        recipientEmail: event.to,
-        senderNameSnapshot: senderDisplayName,
-        providerMessageId: event.providerMessageId,
-        receivedAt: new Date(),
-        audience: "ASSIGNEE",
-        purpose: "REMINDER",
-        metadataJson: {
-          inboundFrom: event.from,
-          inboundSubject: event.subject,
-          inReplyTo: event.inReplyTo ?? null,
-          authMatched: Boolean(authorPersonId || authorOrganizationId),
-        } as Prisma.InputJsonValue,
-      },
-    });
+      const communication = await tx.taskCommunication.create({
+        data: {
+          taskId,
+          taskCommentId: comment.id,
+          direction: "INBOUND",
+          channel: "EMAIL",
+          status: TaskCommunicationStatus.RECEIVED,
+          recipientEmail: event.to,
+          senderNameSnapshot: senderDisplayName,
+          providerMessageId: event.providerMessageId,
+          receivedAt: new Date(),
+          audience: "ASSIGNEE",
+          purpose: "REMINDER",
+          metadataJson: {
+            inboundFrom: event.from,
+            inboundSubject: event.subject,
+            inReplyTo: event.inReplyTo ?? null,
+            authMatched: isAuthorizedSender,
+          } as Prisma.InputJsonValue,
+        },
+      });
 
-    return { commentId: comment.id, communicationId: communication.id };
-  });
+      return { commentId: comment.id, communicationId: communication.id };
+    });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002"
+    ) {
+      // Race lost — another concurrent delivery committed first. Look up
+      // the winner and return its IDs so the webhook caller still gets a
+      // useful response payload.
+      const winner = await db.taskCommunication.findFirst({
+        where: { providerMessageId: event.providerMessageId, deletedAt: null },
+        select: { id: true, taskCommentId: true },
+      });
+      return {
+        status: "skipped",
+        reason: "duplicate providerMessageId (concurrent race)",
+        taskCommentId: winner?.taskCommentId ?? undefined,
+        taskCommunicationId: winner?.id,
+      };
+    }
+    throw e;
+  }
 
   // Notify the task owner so they don't have to poll the dashboard. Best-
   // effort — failures here don't block the inbound write.
@@ -234,7 +280,7 @@ export async function processInboundReply(
           subject: `New reply on task: ${task.title ?? taskId}`,
           text:
             `${senderDisplayName ?? senderEmail ?? "Someone"} replied:\n\n${cleanBody}` +
-            `\n\n---\nView the task: https://warondisease.org/tasks/${taskId}`,
+            `\n\n---\nView the task: ${getTaskUrl(taskId)}`,
         });
       }
     } catch (e) {

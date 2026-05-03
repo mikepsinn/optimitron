@@ -328,7 +328,7 @@ async function maybeVerifyByGate(
 // provider call so the attempt remains auditable if the send/update fails.
 //
 // Recipients are resolved from (in priority order):
-//   1. The task's primary `TaskCommunicationEndpoint` of kind=EMAIL
+//   1. The task's primary EMAIL/MAILTO `TaskCommunicationEndpoint`
 //   2. The assignee Organization's `contactEmail`
 //   3. The assignee Person's `email`
 // If none resolve, status=FAILED with reason "no recipient email".
@@ -361,6 +361,9 @@ export async function fireSpawnCommunication(
     where: {
       taskId,
       deletedAt: null,
+      direction: "OUTBOUND",
+      status: TaskCommunicationStatus.SENT,
+      sentAt: { not: null },
       metadataJson: {
         path: ["triggerId"],
         equals: trigger.id,
@@ -385,7 +388,9 @@ export async function fireSpawnCommunication(
             where: {
               taskId,
               deletedAt: null,
-              createdAt: { gte: window },
+              direction: "OUTBOUND",
+              status: TaskCommunicationStatus.SENT,
+              sentAt: { gte: window },
               metadataJson: { path: ["triggerId"], equals: trigger.id },
             },
           })
@@ -430,6 +435,7 @@ export async function fireSpawnCommunication(
       data: {
         taskId,
         taskCommentId: comment.id,
+        direction: "OUTBOUND",
         recipientEmail: recipient ?? null,
         failedAt: recipient ? null : new Date(),
         status: recipient
@@ -497,7 +503,7 @@ export async function fireSpawnCommunication(
 /**
  * Resolve the email address for a task notification.
  *
- * Priority: primary EMAIL TaskCommunicationEndpoint, then the assignee
+ * Priority: primary EMAIL/MAILTO TaskCommunicationEndpoint, then the assignee
  * organization's contactEmail, then the assignee person's email. Returns
  * null when no email can be resolved — the caller marks the
  * TaskCommunication row as FAILED so the omission is visible.
@@ -506,11 +512,11 @@ async function resolveTaskRecipientEmail(
   tx: FireDb,
   taskId: string,
 ): Promise<string | null> {
-  // 1) Primary EMAIL endpoint takes precedence (operator-set contact method).
+  // 1) Primary email-capable endpoint takes precedence (operator-set contact method).
   const endpoint = await tx.taskCommunicationEndpoint.findFirst({
     where: {
       taskId,
-      kind: "EMAIL",
+      kind: { in: ["EMAIL", "MAILTO"] },
       isPrimary: true,
       deletedAt: null,
       email: { not: null },

@@ -7,9 +7,20 @@ const harness = vi.hoisted(async () => {
   const { createFakeTriggerDb } = await import("./fake-prisma");
   return createFakeTriggerDb();
 });
+const emailMocks = vi.hoisted(() => ({
+  sendTaskNotificationEmail: vi.fn(async (input: { taskId: string }) => ({
+    status: "sent" as const,
+    providerMessageId: `mock_${input.taskId}_${Date.now()}`,
+    replyTo: `reply+${input.taskId}@reply.test`,
+  })),
+}));
 
 vi.mock("@/lib/prisma", async () => ({
   prisma: (await harness).db,
+}));
+vi.mock("@/lib/email/task-notification", () => ({
+  getReplyAddress: (taskId: string) => `reply+${taskId}@reply.test`,
+  sendTaskNotificationEmail: emailMocks.sendTaskNotificationEmail,
 }));
 
 import { fireTaskTrigger, fireTaskTriggersForEvent } from "../fire";
@@ -35,6 +46,7 @@ async function reset() {
   store.fires.length = 0;
   store.persons.length = 0;
   store.users.length = 0;
+  emailMocks.sendTaskNotificationEmail.mockClear();
 }
 
 describe("triggers/fire integration", () => {
@@ -398,7 +410,10 @@ describe("triggers/fire integration", () => {
   });
 
   describe("spawnCommunication sendCount-range gating", () => {
-    async function setupTriggerAndTask(triggerKey: string) {
+    async function setupTriggerAndTask(
+      triggerKey: string,
+      { withEndpoint = true }: { withEndpoint?: boolean } = {},
+    ) {
       const target = await db.task.create({
         data: {
           taskKey: `${triggerKey}-target`,
@@ -451,7 +466,18 @@ describe("triggers/fire integration", () => {
         },
         { actorUserId: "u_admin" },
       );
-      return (target as { id: string }).id;
+      const taskId = (target as { id: string }).id;
+      if (withEndpoint) {
+        await db.taskCommunicationEndpoint.create({
+          data: {
+            taskId,
+            kind: "EMAIL",
+            email: `${triggerKey}@example.org`,
+            isPrimary: true,
+          },
+        });
+      }
+      return taskId;
     }
 
     it("first fire (priorSendCount=0) uses the 'first' spec, not the others", async () => {
@@ -493,6 +519,59 @@ describe("triggers/fire integration", () => {
       );
       // 4 sends: FIRST, SECOND, THIRD, THIRD (the open-ended spec keeps applying).
       expect(subjects).toEqual(["FIRST", "SECOND", "THIRD", "THIRD"]);
+    });
+
+    it("does not count failed or draft attempts as prior sends", async () => {
+      const taskId = await setupTriggerAndTask("demo:escalate-failed", {
+        withEndpoint: false,
+      });
+
+      await fireTaskTrigger("demo:escalate-failed", { task: { id: taskId } });
+      expect(store.communications[0]?.status).toBe("FAILED");
+
+      await db.taskCommunicationEndpoint.create({
+        data: {
+          taskId,
+          kind: "EMAIL",
+          email: "new-recipient@example.org",
+          isPrimary: true,
+        },
+      });
+
+      const second = await fireTaskTrigger("demo:escalate-failed", {
+        task: { id: taskId },
+      });
+
+      expect(second.result).toBe("communicated");
+      const subjects = store.communications.map(
+        (c) => (c.metadataJson as { subject?: string })?.subject,
+      );
+      expect(subjects).toEqual(["FIRST", "FIRST"]);
+      expect(store.communications[1]?.status).toBe("SENT");
+    });
+
+    it("uses primary MAILTO endpoints that carry an email address", async () => {
+      const taskId = await setupTriggerAndTask("demo:escalate-mailto", {
+        withEndpoint: false,
+      });
+      await db.taskCommunicationEndpoint.create({
+        data: {
+          taskId,
+          kind: "MAILTO",
+          email: "mailto-recipient@example.org",
+          isPrimary: true,
+        },
+      });
+
+      const result = await fireTaskTrigger("demo:escalate-mailto", {
+        task: { id: taskId },
+      });
+
+      expect(result.result).toBe("communicated");
+      expect(store.communications[0]?.recipientEmail).toBe(
+        "mailto-recipient@example.org",
+      );
+      expect(store.communications[0]?.status).toBe("SENT");
     });
   });
 
