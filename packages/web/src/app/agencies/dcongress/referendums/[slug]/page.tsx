@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { getReferendumStats } from "@/lib/verified-votes.server";
@@ -14,14 +16,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const referendum = await prisma.referendum.findUnique({
     where: { slug, deletedAt: null },
-    select: { title: true, description: true },
+    select: { title: true, question: true, description: true },
   });
 
   if (!referendum) return { title: "Referendum Not Found" };
 
   return {
     title: `${referendum.title} | Optimitron`,
-    description: referendum.description ?? `Vote on: ${referendum.title}`,
+    description: referendum.description ?? referendum.question,
   };
 }
 
@@ -66,7 +68,23 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
             {referendum.description}
           </p>
         )}
+        <div className="mt-6 border-4 border-primary bg-brutal-yellow p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
+            Ballot Question
+          </p>
+          <p className="text-xl font-black leading-snug text-brutal-yellow-foreground">
+            {referendum.question}
+          </p>
+        </div>
       </section>
+
+      {referendum.bodyMarkdown && (
+        <section className="prose prose-neutral mb-10 max-w-none border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {referendum.bodyMarkdown}
+          </ReactMarkdown>
+        </section>
+      )}
 
       {/* Vote tally */}
       <section className="mb-10">

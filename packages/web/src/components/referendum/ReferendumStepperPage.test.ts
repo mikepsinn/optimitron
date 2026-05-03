@@ -16,17 +16,27 @@ vi.mock("@/components/site/ReferendumSiteInlineSign", () => ({
 }));
 
 describe("ReferendumStepperPage", () => {
-  async function renderPage(slug: string, referralCode?: string | null) {
+  async function renderPage(props: {
+    slug: string;
+    referralCode?: string | null;
+    question?: string | null;
+    bodyMarkdown?: string | null;
+  }) {
     (globalThis as typeof globalThis & { React: typeof React }).React = React;
     const { ReferendumStepperPage } = await import("./ReferendumStepperPage");
     return (ReferendumStepperPage as unknown as (props: {
       slug: string;
       referralCode?: string | null;
-    }) => ReactElement)({ slug, referralCode });
+      question?: string | null;
+      bodyMarkdown?: string | null;
+    }) => ReactElement)(props);
   }
 
   it("uses the generic signature surface for non-treaty referendums", async () => {
-    const element = await renderPage(DECLARATION_SLUG, "alice");
+    const element = await renderPage({
+      slug: DECLARATION_SLUG,
+      referralCode: "alice",
+    });
     const signatureSlot = element.props.signatureSlot as (
       mode: "stepper" | "reader",
     ) => ReactElement;
@@ -38,7 +48,7 @@ describe("ReferendumStepperPage", () => {
   }, 20000);
 
   it("keeps the treaty on the treaty vote flow", async () => {
-    const element = await renderPage(TREATY_REFERENDUM_SLUG);
+    const element = await renderPage({ slug: TREATY_REFERENDUM_SLUG });
     const signatureSlot = element.props.signatureSlot as (
       mode: "stepper" | "reader",
     ) => ReactElement;
@@ -47,5 +57,16 @@ describe("ReferendumStepperPage", () => {
 
     expect(signature.props.referendumSlug).toBeUndefined();
     expect(signature.props.authCallbackUrl).toBe("/treaty");
+  }, 20000);
+
+  it("prefers database question and markdown body when supplied", async () => {
+    const element = await renderPage({
+      slug: DECLARATION_SLUG,
+      question: "Do you endorse the tiny test referendum?",
+      bodyMarkdown: "First detail.\n\nSecond detail.",
+    });
+
+    expect(element.props.introText).toBe("Do you endorse the tiny test referendum?");
+    expect(element.props.slides).toEqual(["First detail.", "Second detail."]);
   }, 20000);
 });

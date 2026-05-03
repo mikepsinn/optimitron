@@ -162,7 +162,7 @@ export function VoteTokenBalanceCard() {
                 >
                   <div className="flex-1 min-w-0">
                     <Link
-                      href={`/referendum/${mint.referendum.slug}`}
+                      href={`${ROUTES.referendum}/${mint.referendum.slug}`}
                       className="text-sm font-black text-foreground hover:text-brutal-pink transition-colors truncate block"
                     >
                       {mint.referendum.title}

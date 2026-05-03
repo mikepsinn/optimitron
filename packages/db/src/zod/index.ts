@@ -186,6 +186,17 @@ export type ReferendumVoteSource = z.infer<typeof ReferendumVoteSourceSchema>;
 export const ReferendumStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'CLOSED']);
 export type ReferendumStatus = z.infer<typeof ReferendumStatusSchema>;
 
+export const ReferendumKindSchema = z.enum([
+  'GENERAL',
+  'DECLARATION',
+  'TREATY',
+  'MEMBERSHIP',
+  'COURT_CASE',
+  'AMENDMENT',
+  'BUDGET',
+]);
+export type ReferendumKind = z.infer<typeof ReferendumKindSchema>;
+
 export const CourtCaseStatusSchema = z.enum(['DRAFT', 'OPEN', 'VOTING', 'JUDGED', 'ARCHIVED']);
 export type CourtCaseStatus = z.infer<typeof CourtCaseStatusSchema>;
 
@@ -1584,7 +1595,13 @@ export const ReferendumSchema = z.object({
   id: z.string(),
   title: z.string(),
   slug: z.string(),
+  question: z.string(),
+  kind: ReferendumKindSchema.default('GENERAL'),
   description: z.string().nullable().optional(),
+  bodyMarkdown: z.string().nullable().optional(),
+  publishedAt: nullableDateSchema,
+  lockedAt: nullableDateSchema,
+  contentHash: z.string().nullable().optional(),
   createdByUserId: z.string().nullable().optional(),
   jurisdictionId: z.string().nullable().optional(),
   status: ReferendumStatusSchema.default('ACTIVE'),

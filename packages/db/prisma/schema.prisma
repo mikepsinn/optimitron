@@ -4153,6 +4153,18 @@ enum ReferendumStatus {
   CLOSED
 }
 
+/// High-level referendum shape. The kind controls default public action copy
+/// and keeps the canonical yes/no question separate from body text.
+enum ReferendumKind {
+  GENERAL
+  DECLARATION
+  TREATY
+  MEMBERSHIP
+  COURT_CASE
+  AMENDMENT
+  BUDGET
+}
+
 /// Lifecycle for a Court of Humanity case.
 enum CourtCaseStatus {
   DRAFT
@@ -4200,8 +4212,26 @@ model Referendum {
   /// URL-safe slug for routing
   slug String @unique
 
-  /// Rich description or framing text
+  /// Canonical yes/no ballot question voters answer
+  question String
+
+  /// High-level referendum type for default action and result semantics
+  kind ReferendumKind @default(GENERAL)
+
+  /// Short summary or framing text for cards, lists, and metadata
   description String?
+
+  /// Full public referendum body in Markdown. This is the detail text, not the ballot question.
+  bodyMarkdown String?
+
+  /// First publication timestamp for public referendum content
+  publishedAt DateTime?
+
+  /// Content lock timestamp. Locked referendums should be amended, not edited in place.
+  lockedAt DateTime?
+
+  /// SHA-256 hash of the canonical question/description/body payload
+  contentHash String?
 
   /// User who created this referendum (optional for system-created ones)
   createdByUserId String?
@@ -4234,6 +4264,8 @@ model Referendum {
 
   @@index([slug])
   @@index([status])
+  @@index([kind, status])
+  @@index([contentHash])
   @@index([jurisdictionId])
   @@index([createdByUserId])
 }

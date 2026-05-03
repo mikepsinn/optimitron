@@ -8,6 +8,7 @@ import {
   OrgStatus,
   OrgType,
   PrismaClient,
+  ReferendumKind,
   ReferendumVoteSource,
   SubjectType,
   TaskCommunicationAudience,
@@ -244,6 +245,63 @@ describeIfDatabase("seedDatabase", () => {
     await expect(
       prisma.organization.findUnique({ where: { slug: "humanity" } }),
     ).resolves.toMatchObject(originalOrganization);
+  }, SEED_TEST_TIMEOUT_MS);
+
+  it("seeds canonical referendum ballot text and content metadata", async () => {
+    const referendums = await prisma.referendum.findMany({
+      where: {
+        slug: {
+          in: [
+            "one-percent-treaty",
+            "declaration-of-optimization",
+            "court-of-humanity",
+          ],
+        },
+        deletedAt: null,
+      },
+      select: {
+        slug: true,
+        title: true,
+        question: true,
+        kind: true,
+        description: true,
+        bodyMarkdown: true,
+        publishedAt: true,
+        lockedAt: true,
+        contentHash: true,
+      },
+    });
+
+    expect(referendums).toHaveLength(3);
+    expect(referendums).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          slug: "one-percent-treaty",
+          kind: ReferendumKind.TREATY,
+          question: expect.stringContaining("redirect 1% of military spending"),
+          bodyMarkdown: expect.stringContaining("Article I"),
+          lockedAt: null,
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
+        expect.objectContaining({
+          slug: "declaration-of-optimization",
+          kind: ReferendumKind.DECLARATION,
+          question: "Do you endorse the Declaration of Optimization?",
+          bodyMarkdown: expect.stringContaining("unanimous Declaration"),
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
+        expect.objectContaining({
+          slug: "court-of-humanity",
+          kind: ReferendumKind.MEMBERSHIP,
+          question: expect.stringContaining("legal right to seek justice"),
+          bodyMarkdown: expect.stringContaining("sovereign immunity"),
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
+      ]),
+    );
+    for (const referendum of referendums) {
+      expect(referendum.publishedAt).toBeInstanceOf(Date);
+    }
   }, SEED_TEST_TIMEOUT_MS);
 
   it("seeds task communication endpoint contracts for task-driven reminders", async () => {
