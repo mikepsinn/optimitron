@@ -1,5 +1,6 @@
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
   GLOBAL_WARHEAD_COUNT,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   NUCLEAR_WINTER_WARHEAD_THRESHOLD,
@@ -51,6 +52,7 @@ const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
 const apocalypseSlice = (NUCLEAR_WINTER_OVERKILL_FACTOR.value * TREATY_FRACTION).toFixed(2);
 const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
+const trialCapacityMultiplier = Math.round(DFDA_TRIAL_CAPACITY_MULTIPLIER.value);
 
 export const OPTIMITRON_CANONICAL_ORIGIN = "https://optimitron.com";
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
@@ -248,6 +250,13 @@ const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}/about`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 const EARTH_OPTIMIZATION_SERVICES_LLC = "Earth Optimization Services LLC";
 const NO_FOOTER_COMPLIANCE_NOTICE = null;
+
+/// Public-facing campaign brand for the WoD + 1pt sites. Distinct from
+/// `EARTH_OPTIMIZATION_SERVICES_LLC` (the legal entity, used in compliance
+/// surfaces). Both campaign sites point `organizationName` at this so SEO
+/// + footer attribution carry the campaign brand instead of the LLC name.
+const INTERNATIONAL_CAMPAIGN_ORG_NAME =
+  "International Campaign to End War and Disease";
 
 function siteAssetPath(directory: string, filename: string) {
   return `/site-assets/${directory}/${filename}`;
@@ -512,9 +521,8 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     brandHref: ROUTES.home,
     brandLabel: "War on Disease",
     brandDescription:
-      `Trade ${apocalypseSlice} of your ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`,
-    bottomText:
-      "Building a nuclear bomb requires mass spectrometers and centrifuge cascades. Not building one requires nothing. Rocks do it daily.",
+      `Is it OK if we trade ${apocalypseSlice} of our ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}?`,
+    bottomText: "",
     columns: [
       {
         title: "Campaign",
@@ -530,7 +538,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
       },
       {
         title: "Reference",
-        items: [whyLink, courtLink, legalLink, privacyLink, termsLink],
+        items: [whyLink, courtLink],
       },
     ],
   },
@@ -967,7 +975,10 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_WAR_ON_DISEASE_ID,
   contentKey: "onePercentTreaty",
-  organizationName: ORGANIZATION_NAME,
+  // Public-facing campaign brand on WoD; the legal entity (Earth
+  // Optimization Services LLC) stays in `legalEntityName` for compliance
+  // surfaces. SEO + footer attribution show the campaign name.
+  organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   organizationUrl: ORGANIZATION_URL,
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
@@ -1093,7 +1104,9 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   ogImage: "/site-assets/treaty/treaty-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_ONE_PERCENT_TREATY_ID,
   contentKey: "onePercentTreaty",
-  organizationName: ORGANIZATION_NAME,
+  // Same campaign brand as warondisease.org. Legal entity stays in
+  // legalEntityName for compliance surfaces.
+  organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   organizationUrl: ORGANIZATION_URL,
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,

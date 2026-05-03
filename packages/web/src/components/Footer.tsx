@@ -47,25 +47,27 @@ export default function Footer({ siteKey = "optimitron" }: FooterProps) {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center text-sm font-bold text-muted-foreground">
-          <p>
-            {config.bottomText}
-            {config.sourceLink ? (
-              <>
-                {" "}
-                <NavItemLink
-                  item={config.sourceLink}
-                  variant="custom"
-                  external
-                  className="font-bold text-foreground hover:underline"
-                >
-                  Source code
-                </NavItemLink>{" "}
-                open for inspection by any sufficiently curious primate.
-              </>
-            ) : null}
-          </p>
-          <p className="mt-3 text-xs">
-            Published by {site.organizationName}. Contact{" "}
+          {config.bottomText || config.sourceLink ? (
+            <p>
+              {config.bottomText}
+              {config.sourceLink ? (
+                <>
+                  {" "}
+                  <NavItemLink
+                    item={config.sourceLink}
+                    variant="custom"
+                    external
+                    className="font-bold text-foreground hover:underline"
+                  >
+                    Source code
+                  </NavItemLink>{" "}
+                  open for inspection by any sufficiently curious primate.
+                </>
+              ) : null}
+            </p>
+          ) : null}
+          <p className="text-xs">
+            {site.organizationName}. Contact{" "}
             <a href={`mailto:${site.publicContactEmail}`} className="underline hover:no-underline">
               {site.publicContactEmail}
             </a>
