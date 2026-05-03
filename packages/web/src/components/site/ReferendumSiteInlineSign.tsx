@@ -12,12 +12,16 @@ import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 export function ReferendumSiteInlineSign({
   referendumSlug,
+  referralCode = null,
+  authCallbackUrl,
   postSignRedirectUrl,
   title,
-  showPrivacyToggle = false,
+  showPrivacyToggle,
   showReaderShell = false,
 }: {
   referendumSlug: string | null;
+  referralCode?: string | null;
+  authCallbackUrl?: string;
   postSignRedirectUrl?: string;
   title?: string;
   showPrivacyToggle?: boolean;
@@ -62,9 +66,10 @@ export function ReferendumSiteInlineSign({
       referendumSlug={config.slug}
       title={title ?? config.title}
       authPromptText={config.authPromptText}
-      authCallbackUrl={postSignRedirectUrl ?? config.authCallbackUrl}
+      authCallbackUrl={authCallbackUrl ?? postSignRedirectUrl ?? config.authCallbackUrl}
       postSignRedirectUrl={postSignRedirectUrl}
-      storePendingVote={(name) => config.storePendingVote(name, null)}
+      referralCode={referralCode}
+      storePendingVote={(name) => config.storePendingVote(name, referralCode)}
       clearPendingVote={() => config.clearPendingVote()}
       shareText={config.shareText}
       emailSubject={config.emailSubject}
@@ -73,7 +78,13 @@ export function ReferendumSiteInlineSign({
       signedShare={signedShare}
       variant="reader"
       showReaderShell={showReaderShell}
-      showPrivacyToggle={showPrivacyToggle}
+      submitLabel={config.action.submitLabel}
+      submittingLabel={config.action.submittingLabel}
+      authTitle={config.action.authTitle}
+      emailButtonLabel={config.action.emailButtonLabel}
+      emailPendingButtonLabel={config.action.emailPendingButtonLabel}
+      buildShareUrl={config.action.buildShareUrl}
+      showPrivacyToggle={showPrivacyToggle ?? config.showPrivacyToggle ?? false}
     />
   );
 }

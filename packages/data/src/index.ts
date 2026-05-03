@@ -73,6 +73,10 @@ export * from './utils/index';
 export type { Parameter, Citation, SourceType, Confidence, ParameterName } from './parameters/index';
 export type { FormatParameterOptions } from './parameters/index';
 
+// Hand-edited referendum bodies (use @optimitron/data/referendums for full access)
+// These are referendum content that doesn't yet flow through the auto-generated
+// QMD pipeline in parameters-calculations-citations.ts.
+
 // Version
 export const VERSION = '0.1.0';
 export * from './pipelines/fetch-country-timeseries';

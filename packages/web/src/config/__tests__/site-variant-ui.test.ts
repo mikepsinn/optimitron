@@ -99,6 +99,7 @@ describe("site variant UI config", () => {
       "Sign as Organization",
       "Donate",
       "Why",
+      "Court of Humanity",
       "Legal",
       "Privacy",
       "Terms",

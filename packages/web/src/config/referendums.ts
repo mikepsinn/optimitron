@@ -7,15 +7,38 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
+import { COURT_OF_HUMANITY_TEXT } from "@optimitron/data/referendums";
 import { splitIntoSlides } from "@/components/referendum/ReferendumStepper";
+import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { DECLARATION_SLUG } from "@/lib/declaration";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { getTreatyWishocraticAllocation } from "@/lib/treaty-vote";
+import { buildCourtReferralUrl, buildUserReferralUrl } from "@/lib/url";
+
+type ReferendumShareUser = {
+  handle?: string | null;
+  referralCode?: string | null;
+};
+
+export type ReferendumKind = "declaration" | "treaty" | "membership";
+
+export interface ReferendumActionConfig {
+  submitLabel: string;
+  submittingLabel: string;
+  authTitle: string;
+  emailButtonLabel: string;
+  emailPendingButtonLabel: string;
+  buildShareUrl: (
+    user: ReferendumShareUser | null | undefined,
+    baseUrl?: string,
+  ) => string;
+}
 
 export interface ReferendumConfig {
   slug: string;
+  kind: ReferendumKind;
   introText: string;
   slides: string[];
   backgroundImages?: string[];
@@ -28,10 +51,30 @@ export interface ReferendumConfig {
   emailSubject: string;
   signedTitle: string;
   signedBody: string;
+  action: ReferendumActionConfig;
+  showPrivacyToggle?: boolean;
   storePendingVote: (name: string, referralCode: string | null) => void;
   clearPendingVote: () => void;
   syncPending: (session?: Session | null) => Promise<void>;
 }
+
+const signAction: ReferendumActionConfig = {
+  submitLabel: "Sign",
+  submittingLabel: "...",
+  authTitle: "Finish Signing",
+  emailButtonLabel: "Email Me a Link to Finish Signing",
+  emailPendingButtonLabel: "Sending Finish-Signing Link...",
+  buildShareUrl: buildUserReferralUrl,
+};
+
+const joinAction: ReferendumActionConfig = {
+  submitLabel: "Join",
+  submittingLabel: "Joining...",
+  authTitle: "Finish Joining",
+  emailButtonLabel: "Email Me a Link to Finish Joining",
+  emailPendingButtonLabel: "Sending Finish-Joining Link...",
+  buildShareUrl: buildCourtReferralUrl,
+};
 
 async function postVote(
   slug: string,
@@ -127,6 +170,7 @@ async function syncPendingTreatyAllocation(): Promise<boolean> {
 
 const declarationConfig: ReferendumConfig = {
   slug: DECLARATION_SLUG,
+  kind: "declaration",
   introText: "Please quickly skim and sign the Declaration of Optimization.",
   slides: [
     ...splitIntoSlides(shareableSnippets.whyOptimizationIsNecessary.markdown),
@@ -145,6 +189,7 @@ const declarationConfig: ReferendumConfig = {
   signedTitle: "Declaration Signed",
   signedBody:
     "Share your link. Every signature is one more reason your government will pretend it always supported this.",
+  action: signAction,
   storePendingVote: (name) => {
     storage.setDeclarationSigned({
       signedAt: new Date().toISOString(),
@@ -168,6 +213,7 @@ const declarationConfig: ReferendumConfig = {
 
 const treatyConfig: ReferendumConfig = {
   slug: TREATY_REFERENDUM_SLUG,
+  kind: "treaty",
   introText:
     "Please end war and disease by quickly skimming and signing the 1% Treaty.",
   slides: splitIntoSlides(shareableSnippets.onePercentTreatyText.markdown),
@@ -183,6 +229,7 @@ const treatyConfig: ReferendumConfig = {
   signedTitle: "Thank you for ending war and disease!",
   signedBody:
     `For each person you get to sign with your link, you will be personally to blame for saving ${fmtRaw(VOTER_LIVES_SAVED.value, 2)} lives and preventing ${fmtRaw(VOTER_SUFFERING_HOURS_PREVENTED.value, 2)} hours of suffering.`,
+  action: signAction,
   storePendingVote: (_name, referralCode) =>
     storage.setPendingTreatyVote({
       answer: "YES",
@@ -224,9 +271,56 @@ const treatyConfig: ReferendumConfig = {
   },
 };
 
+/**
+ * Court of Humanity referendum — framed as "join" rather than "sign" since
+ * the user is becoming a member of the decentralized court / jury, not
+ * petitioning for a one-time policy change. Underlying data model is the
+ * same `ReferendumVote` table; the "join" treatment lives entirely in the
+ * copy fields below.
+ */
+const courtOfHumanityConfig: ReferendumConfig = {
+  slug: COURT_OF_HUMANITY_SLUG,
+  kind: "membership",
+  introText:
+    "Please join the Court of Humanity by quickly skimming and signing below.",
+  slides: splitIntoSlides(COURT_OF_HUMANITY_TEXT.markdown),
+  title: "Joined this day, {date}, in the year of our ongoing confusion.",
+  authPromptText:
+    "Verify your identity to become a member of the Court of Humanity.",
+  authCallbackUrl: "/court",
+  shareText:
+    "I just joined the Court of Humanity. Sovereign immunity is now slightly less of a thing. Join too:",
+  emailSubject: "I joined the Court of Humanity",
+  signedTitle: "You are a member of the Court of Humanity.",
+  signedBody:
+    "For each human you bring into the Court with your link, the jury grows by one and sovereign immunity weakens by an amount your governments' lawyers will quietly notice.",
+  action: joinAction,
+  showPrivacyToggle: true,
+  storePendingVote: (_name, referralCode) =>
+    storage.setPendingCourtOfHumanityVote({
+      answer: "YES",
+      referredBy: referralCode,
+      timestamp: new Date().toISOString(),
+    }),
+  clearPendingVote: () => storage.removePendingCourtOfHumanityVote(),
+  syncPending: async (session) => {
+    const pending = storage.getPendingCourtOfHumanityVote();
+    if (!pending) return;
+    const ok = await postVote(
+      COURT_OF_HUMANITY_SLUG,
+      pending.answer,
+      pending.referredBy,
+    );
+    if (!ok) return;
+    storage.removePendingCourtOfHumanityVote();
+    cacheVoteStatus(session, pending.answer);
+  },
+};
+
 export const REFERENDUMS: Record<string, ReferendumConfig> = {
   [DECLARATION_SLUG]: declarationConfig,
   [TREATY_REFERENDUM_SLUG]: treatyConfig,
+  [COURT_OF_HUMANITY_SLUG]: courtOfHumanityConfig,
 };
 
 export function getReferendumConfig(slug: string): ReferendumConfig | null {

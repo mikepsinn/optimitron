@@ -18,6 +18,7 @@ const STORAGE_KEYS = {
   chatProvider: "opto-chat-provider",
   declarationSigned: "declaration_signed",
   pendingDeclarationVote: "pending_declaration_vote",
+  pendingCourtOfHumanityVote: "pending_court_of_humanity_vote",
   reasoningState: "reasoning_state",
   treatyFlowVariant: "treaty_flow_variant",
 } as const;
@@ -49,6 +50,12 @@ export type DeclarationSignedState = {
 
 export type PendingDeclarationVoteState = {
   answer: string;
+  timestamp: string;
+};
+
+export type PendingCourtOfHumanityVoteState = {
+  answer: string;
+  referredBy: string | null;
   timestamp: string;
 };
 
@@ -208,6 +215,15 @@ export const storage = {
     setStorageItem(STORAGE_KEYS.pendingDeclarationVote, data),
   removePendingDeclarationVote: () =>
     removeStorageItem(STORAGE_KEYS.pendingDeclarationVote),
+
+  getPendingCourtOfHumanityVote: () =>
+    getStorageItem<PendingCourtOfHumanityVoteState>(
+      STORAGE_KEYS.pendingCourtOfHumanityVote,
+    ),
+  setPendingCourtOfHumanityVote: (data: PendingCourtOfHumanityVoteState) =>
+    setStorageItem(STORAGE_KEYS.pendingCourtOfHumanityVote, data),
+  removePendingCourtOfHumanityVote: () =>
+    removeStorageItem(STORAGE_KEYS.pendingCourtOfHumanityVote),
 
   getVoteStatusCache: () => getStorageItem<VoteStatusCache>(STORAGE_KEYS.voteStatusCache),
   setVoteStatusCache: (data: VoteStatusCache) =>

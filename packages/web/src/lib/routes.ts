@@ -52,6 +52,7 @@ export const ROUTES = {
   politicians: "/politicians",
   // The Treaty
   treaty: "/treaty",
+  court: "/court",
   vote: "/vote",
   why: "/why",
   legal: "/legal",
@@ -602,6 +603,16 @@ export const treatyLink: NavItem = {
     "The full text of the treaty that redirects 1% of military spending to clinical trials. Read it, sign it, share it. Every signature from an official account is verified on the public ledger.",
   tagline: "1% of war budgets → clinical trials",
   cta: "Read the Treaty",
+};
+
+export const courtLink: NavItem = {
+  href: ROUTES.court,
+  label: "Court of Humanity",
+  emoji: "⚖️",
+  description:
+    "Join the decentralized court where 8 billion humans are the jury and sovereign immunity is a choice nobody chose. Verified members can seek justice against any government that kills, injures, or harms them or their family.",
+  tagline: "8B humans · 1 jury · 0 sovereign immunity",
+  cta: "Join the Court",
 };
 
 export const readTreatyLink: NavItem = {

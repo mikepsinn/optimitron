@@ -7,3 +7,4 @@
 
 export const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
 export const DECLARATION_REFERENDUM_SLUG = "declaration-of-optimization";
+export const COURT_OF_HUMANITY_REFERENDUM_SLUG = "court-of-humanity";
