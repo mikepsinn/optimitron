@@ -124,7 +124,9 @@ export function RepresentedPersonForm({
   );
   const [wasChild, setWasChild] = useState<"unknown" | "yes" | "no">("unknown");
   const [circumstances, setCircumstances] = useState("");
-  const [responsibleParties, setResponsibleParties] = useState<ResponsiblePartyDraft[]>([]);
+  const [responsibleParties, setResponsibleParties] = useState<
+    ResponsiblePartyDraft[]
+  >([]);
   const [memorialEvidence, setMemorialEvidence] = useState<EvidenceDraft[]>([]);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
@@ -136,15 +138,21 @@ export function RepresentedPersonForm({
   const [memorialMessage, setMemorialMessage] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [consentCourtEvidence, setConsentCourtEvidence] = useState(false);
-  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">(
+    "idle",
+  );
   const [error, setError] = useState<string | null>(null);
   const [shareText, setShareText] = useState("");
-  const [submittedDisplayName, setSubmittedDisplayName] = useState<string | null>(null);
+  const [submittedDisplayName, setSubmittedDisplayName] = useState<
+    string | null
+  >(null);
   const [efficacyLagNotices, setEfficacyLagNotices] = useState<
     Array<{ explanation: string; interventionName: string }>
   >([]);
   const [conflictOptions, setConflictOptions] = useState<ConflictOption[]>([]);
-  const [jurisdictionOptions, setJurisdictionOptions] = useState<JurisdictionOption[]>([]);
+  const [jurisdictionOptions, setJurisdictionOptions] = useState<
+    JurisdictionOption[]
+  >([]);
 
   const disabled = status === "saving";
   const isConflictCause = CONFLICT_CAUSE_CATEGORIES.has(causeCategory);
@@ -160,14 +168,20 @@ export function RepresentedPersonForm({
       try {
         const [conflictsRes, jurisdictionsRes] = await Promise.all([
           fetch("/api/conflicts/search?limit=50", { cache: "no-store" }),
-          fetch("/api/jurisdictions/search?limit=50&type=COUNTRY", { cache: "no-store" }),
+          fetch("/api/jurisdictions/search?limit=50&type=COUNTRY", {
+            cache: "no-store",
+          }),
         ]);
         if (!cancelled && conflictsRes.ok) {
-          const data = (await conflictsRes.json()) as { results: ConflictOption[] };
+          const data = (await conflictsRes.json()) as {
+            results: ConflictOption[];
+          };
           setConflictOptions(data.results);
         }
         if (!cancelled && jurisdictionsRes.ok) {
-          const data = (await jurisdictionsRes.json()) as { results: JurisdictionOption[] };
+          const data = (await jurisdictionsRes.json()) as {
+            results: JurisdictionOption[];
+          };
           setJurisdictionOptions(data.results);
         }
       } catch {
@@ -187,10 +201,16 @@ export function RepresentedPersonForm({
 
   function addResponsibleParty() {
     if (responsibleParties.length >= MAX_RESPONSIBLE_PARTIES) return;
-    setResponsibleParties((prev) => [...prev, { jurisdictionCode: "", name: "", roleSlug: "" }]);
+    setResponsibleParties((prev) => [
+      ...prev,
+      { jurisdictionCode: "", name: "", roleSlug: "" },
+    ]);
   }
 
-  function updateResponsibleParty(index: number, patch: Partial<ResponsiblePartyDraft>) {
+  function updateResponsibleParty(
+    index: number,
+    patch: Partial<ResponsiblePartyDraft>,
+  ) {
     setResponsibleParties((prev) =>
       prev.map((party, i) => (i === index ? { ...party, ...patch } : party)),
     );
@@ -200,30 +220,42 @@ export function RepresentedPersonForm({
     setResponsibleParties((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handlePhotoSelected(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoSelected(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
     const file = event.target.files?.[0];
     if (!file) return;
     setPhotoError(null);
     setPhotoUploading(true);
     try {
-      const { publicUrl } = await uploadFileViaPresign({ file, kind: "person-photo" });
+      const { publicUrl } = await uploadFileViaPresign({
+        file,
+        kind: "person-photo",
+      });
       setImageUrl(publicUrl);
     } catch (caught) {
-      setPhotoError(caught instanceof Error ? caught.message : "Upload failed.");
+      setPhotoError(
+        caught instanceof Error ? caught.message : "Upload failed.",
+      );
     } finally {
       setPhotoUploading(false);
       if (photoInputRef.current) photoInputRef.current.value = "";
     }
   }
 
-  async function handleEvidenceSelected(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleEvidenceSelected(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
     const file = event.target.files?.[0];
     if (!file) return;
     if (memorialEvidence.length >= MAX_EVIDENCE_ITEMS) return;
     setEvidenceError(null);
     setEvidenceUploading(true);
     try {
-      const { publicUrl } = await uploadFileViaPresign({ file, kind: "memorial-evidence" });
+      const { publicUrl } = await uploadFileViaPresign({
+        file,
+        kind: "memorial-evidence",
+      });
       const evidenceKind = file.type.startsWith("image/")
         ? PersonMemorialEvidenceKind.PHOTO
         : file.type === "application/pdf"
@@ -239,7 +271,9 @@ export function RepresentedPersonForm({
         },
       ]);
     } catch (caught) {
-      setEvidenceError(caught instanceof Error ? caught.message : "Upload failed.");
+      setEvidenceError(
+        caught instanceof Error ? caught.message : "Upload failed.",
+      );
     } finally {
       setEvidenceUploading(false);
       if (evidenceInputRef.current) evidenceInputRef.current.value = "";
@@ -264,41 +298,54 @@ export function RepresentedPersonForm({
     setEfficacyLagNotices([]);
 
     try {
-      const res = await fetch(`/api/referendums/${referendumSlug}/represented-people`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          birthDate,
-          causeCategory,
-          circumstances: showConflictFields ? circumstances : "",
-          civilianStatus: showConflictFields ? civilianStatus : PersonCivilianStatus.UNKNOWN,
-          conditionName,
-          conflictId: showConflictFields ? conflictId : "",
-          conflictNameOverride: showConflictFields ? conflictNameOverride : "",
-          consentCourtEvidence,
-          dateOfDeath,
-          deathCountryCode,
-          displayName,
-          imageUrl,
-          isPublic,
-          lifeStatus,
-          memorialEvidence: lifeStatus === PersonLifeStatus.DECEASED ? memorialEvidence : [],
-          memorialMessage,
-          publicComment,
-          relationshipType,
-          responsibleParties: responsibleParties
-            .map((party) => ({
-              jurisdictionCode: party.jurisdictionCode || null,
-              name: party.name,
-              roleSlug: party.roleSlug,
-            }))
-            .filter((party) => party.jurisdictionCode || party.name),
-          wasChild:
-            showConflictFields && wasChild !== "unknown" ? wasChild === "yes" : null,
-        }),
-      });
+      const res = await fetch(
+        `/api/referendums/${referendumSlug}/represented-people`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            birthDate,
+            causeCategory,
+            circumstances: showConflictFields ? circumstances : "",
+            civilianStatus: showConflictFields
+              ? civilianStatus
+              : PersonCivilianStatus.UNKNOWN,
+            conditionName,
+            conflictId: showConflictFields ? conflictId : "",
+            conflictNameOverride: showConflictFields
+              ? conflictNameOverride
+              : "",
+            consentCourtEvidence,
+            dateOfDeath,
+            deathCountryCode,
+            displayName,
+            imageUrl,
+            isPublic,
+            lifeStatus,
+            memorialEvidence:
+              lifeStatus === PersonLifeStatus.DECEASED ? memorialEvidence : [],
+            memorialMessage,
+            publicComment,
+            relationshipType,
+            responsibleParties: responsibleParties
+              .map((party) => ({
+                jurisdictionCode: party.jurisdictionCode || null,
+                name: party.name,
+                roleSlug: party.roleSlug,
+              }))
+              .filter((party) => party.jurisdictionCode || party.name),
+            wasChild:
+              showConflictFields && wasChild !== "unknown"
+                ? wasChild === "yes"
+                : null,
+          }),
+        },
+      );
       const payload = (await res.json()) as {
-        efficacyLagMatches?: Array<{ explanation: string; interventionName: string }>;
+        efficacyLagMatches?: Array<{
+          explanation: string;
+          interventionName: string;
+        }>;
         error?: string;
         person?: { displayName?: string; lifeStatus?: PersonLifeStatus };
       };
@@ -316,16 +363,18 @@ export function RepresentedPersonForm({
         ? [
             `${ghost}${personName} died${condition ? ` of ${condition}` : ""}.`,
             publicComment.trim() || null,
-            "They are one of millions the system left behind. They have a page now.",
+            "I signed the 1% Treaty in their memory. They have a page now.",
             peopleUrl,
           ]
             .filter(Boolean)
             .join(" ")
         : [
-            `I voted for ${personName}.`,
-            condition ? `${personName} is on the board because of ${condition}.` : null,
+            `I signed the 1% Treaty for ${personName}.`,
+            condition
+              ? `${personName} is on the board because of ${condition}.`
+              : null,
             publicComment.trim() || null,
-            `${personName} couldn't click the button. So I clicked it for them.`,
+            `${personName} could not sign it themselves. So I carried their name to the treaty.`,
             peopleUrl,
           ]
             .filter(Boolean)
@@ -356,7 +405,9 @@ export function RepresentedPersonForm({
       onCreated?.();
     } catch (caught) {
       setStatus("error");
-      setError(caught instanceof Error ? caught.message : "Could not add this person.");
+      setError(
+        caught instanceof Error ? caught.message : "Could not add this person.",
+      );
     }
   }
 
@@ -370,16 +421,20 @@ export function RepresentedPersonForm({
       <div className="space-y-4">
         <div>
           <h2 className="text-xl font-black uppercase tracking-[0.08em]">
-            Help someone vote
+            Sign for someone
           </h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            Add someone who couldn't click the button themselves. Official vote totals stay separate.
+            Add someone who cannot sign the 1% Treaty themselves. Direct treaty
+            signatures stay separate.
           </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase" htmlFor="represented-name">
+            <Label
+              className="text-xs font-black uppercase"
+              htmlFor="represented-name"
+            >
               Name
             </Label>
             <Input
@@ -392,7 +447,10 @@ export function RepresentedPersonForm({
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase" htmlFor="represented-life-status">
+            <Label
+              className="text-xs font-black uppercase"
+              htmlFor="represented-life-status"
+            >
               Status
             </Label>
             <select
@@ -413,7 +471,10 @@ export function RepresentedPersonForm({
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase" htmlFor="represented-birth-date">
+            <Label
+              className="text-xs font-black uppercase"
+              htmlFor="represented-birth-date"
+            >
               Birth date optional
             </Label>
             <Input
@@ -426,7 +487,10 @@ export function RepresentedPersonForm({
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase" htmlFor="represented-photo-input">
+            <Label
+              className="text-xs font-black uppercase"
+              htmlFor="represented-photo-input"
+            >
               Photo optional
             </Label>
             <div className="flex items-center gap-3">
@@ -454,7 +518,11 @@ export function RepresentedPersonForm({
                 type="button"
               >
                 <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
-                {photoUploading ? "Uploading…" : imageUrl ? "Replace photo" : "Upload photo"}
+                {photoUploading
+                  ? "Uploading…"
+                  : imageUrl
+                    ? "Replace photo"
+                    : "Upload photo"}
               </Button>
               {imageUrl ? (
                 <Button
@@ -472,7 +540,9 @@ export function RepresentedPersonForm({
               Faces are what make this work. JPEG/PNG/WebP/GIF, up to 5 MB.
             </p>
             {photoError ? (
-              <p className="text-xs font-black text-destructive">{photoError}</p>
+              <p className="text-xs font-black text-destructive">
+                {photoError}
+              </p>
             ) : null}
           </div>
         </div>
@@ -480,7 +550,10 @@ export function RepresentedPersonForm({
         {lifeStatus === PersonLifeStatus.DECEASED ? (
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="space-y-2">
-              <Label className="text-xs font-black uppercase" htmlFor="represented-date-of-death">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-date-of-death"
+              >
                 Date of death
               </Label>
               <Input
@@ -493,7 +566,10 @@ export function RepresentedPersonForm({
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs font-black uppercase" htmlFor="represented-country">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-country"
+              >
                 Country of death
               </Label>
               <Input
@@ -501,13 +577,18 @@ export function RepresentedPersonForm({
                 disabled={disabled}
                 id="represented-country"
                 maxLength={2}
-                onChange={(event) => setDeathCountryCode(event.target.value.toUpperCase())}
+                onChange={(event) =>
+                  setDeathCountryCode(event.target.value.toUpperCase())
+                }
                 placeholder="US"
                 value={deathCountryCode}
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs font-black uppercase" htmlFor="represented-cause-kind">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-cause-kind"
+              >
                 Cause kind
               </Label>
               <select
@@ -515,23 +596,31 @@ export function RepresentedPersonForm({
                 disabled={disabled}
                 id="represented-cause-kind"
                 onChange={(event) =>
-                  setCauseCategory(event.target.value as PersonDeathCauseCategory)
+                  setCauseCategory(
+                    event.target.value as PersonDeathCauseCategory,
+                  )
                 }
                 value={causeCategory}
               >
-                <option value={PersonDeathCauseCategory.DISEASE}>Disease</option>
+                <option value={PersonDeathCauseCategory.DISEASE}>
+                  Disease
+                </option>
                 <option value={PersonDeathCauseCategory.ARMED_CONFLICT}>
                   Armed conflict
                 </option>
                 <option value={PersonDeathCauseCategory.STATE_VIOLENCE}>
                   State violence
                 </option>
-                <option value={PersonDeathCauseCategory.TERRORISM}>Terrorism</option>
+                <option value={PersonDeathCauseCategory.TERRORISM}>
+                  Terrorism
+                </option>
                 <option value={PersonDeathCauseCategory.OTHER_PREVENTABLE}>
                   Other preventable
                 </option>
                 <option value={PersonDeathCauseCategory.OTHER}>Other</option>
-                <option value={PersonDeathCauseCategory.UNKNOWN}>Unknown</option>
+                <option value={PersonDeathCauseCategory.UNKNOWN}>
+                  Unknown
+                </option>
               </select>
             </div>
           </div>
@@ -545,7 +634,10 @@ export function RepresentedPersonForm({
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-xs font-black uppercase" htmlFor="represented-conflict">
+                <Label
+                  className="text-xs font-black uppercase"
+                  htmlFor="represented-conflict"
+                >
                   Specific conflict
                 </Label>
                 <select
@@ -569,7 +661,9 @@ export function RepresentedPersonForm({
                   <Input
                     className="mt-2 border-border bg-background font-bold"
                     disabled={disabled}
-                    onChange={(event) => setConflictNameOverride(event.target.value)}
+                    onChange={(event) =>
+                      setConflictNameOverride(event.target.value)
+                    }
                     placeholder="Or name the conflict"
                     value={conflictNameOverride}
                   />
@@ -577,7 +671,10 @@ export function RepresentedPersonForm({
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs font-black uppercase" htmlFor="represented-civilian-status">
+                <Label
+                  className="text-xs font-black uppercase"
+                  htmlFor="represented-civilian-status"
+                >
                   Civilian status
                 </Label>
                 <select
@@ -585,13 +682,19 @@ export function RepresentedPersonForm({
                   disabled={disabled}
                   id="represented-civilian-status"
                   onChange={(event) =>
-                    setCivilianStatus(event.target.value as PersonCivilianStatus)
+                    setCivilianStatus(
+                      event.target.value as PersonCivilianStatus,
+                    )
                   }
                   value={civilianStatus}
                 >
                   <option value={PersonCivilianStatus.UNKNOWN}>Unknown</option>
-                  <option value={PersonCivilianStatus.CIVILIAN}>Civilian</option>
-                  <option value={PersonCivilianStatus.COMBATANT}>Combatant</option>
+                  <option value={PersonCivilianStatus.CIVILIAN}>
+                    Civilian
+                  </option>
+                  <option value={PersonCivilianStatus.COMBATANT}>
+                    Combatant
+                  </option>
                 </select>
               </div>
             </div>
@@ -626,7 +729,10 @@ export function RepresentedPersonForm({
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-black uppercase" htmlFor="represented-circumstances">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-circumstances"
+              >
                 What happened?
               </Label>
               <Textarea
@@ -639,7 +745,8 @@ export function RepresentedPersonForm({
                 value={circumstances}
               />
               <p className="text-xs font-bold text-muted-foreground">
-                Up to 1000 characters. Used in the future Court of Humanity evidence package.
+                Up to 1000 characters. Used in future accountability evidence if
+                you consent below.
               </p>
             </div>
 
@@ -668,24 +775,49 @@ export function RepresentedPersonForm({
                           disabled={disabled}
                           onChange={(event) =>
                             updateEvidence(index, {
-                              evidenceKind: event.target.value as PersonMemorialEvidenceKind,
+                              evidenceKind: event.target
+                                .value as PersonMemorialEvidenceKind,
                             })
                           }
                           value={evidence.evidenceKind}
                         >
-                          <option value={PersonMemorialEvidenceKind.PHOTO}>Photo</option>
-                          <option value={PersonMemorialEvidenceKind.DOCUMENT}>Document</option>
-                          <option value={PersonMemorialEvidenceKind.NEWS_ARTICLE}>News article</option>
-                          <option value={PersonMemorialEvidenceKind.HOSPITAL_RECORD}>Hospital record</option>
-                          <option value={PersonMemorialEvidenceKind.DEATH_RECORD}>Death record</option>
-                          <option value={PersonMemorialEvidenceKind.WITNESS_STATEMENT}>Witness statement</option>
-                          <option value={PersonMemorialEvidenceKind.OTHER}>Other</option>
+                          <option value={PersonMemorialEvidenceKind.PHOTO}>
+                            Photo
+                          </option>
+                          <option value={PersonMemorialEvidenceKind.DOCUMENT}>
+                            Document
+                          </option>
+                          <option
+                            value={PersonMemorialEvidenceKind.NEWS_ARTICLE}
+                          >
+                            News article
+                          </option>
+                          <option
+                            value={PersonMemorialEvidenceKind.HOSPITAL_RECORD}
+                          >
+                            Hospital record
+                          </option>
+                          <option
+                            value={PersonMemorialEvidenceKind.DEATH_RECORD}
+                          >
+                            Death record
+                          </option>
+                          <option
+                            value={PersonMemorialEvidenceKind.WITNESS_STATEMENT}
+                          >
+                            Witness statement
+                          </option>
+                          <option value={PersonMemorialEvidenceKind.OTHER}>
+                            Other
+                          </option>
                         </select>
                         <Input
                           className="border-border bg-background font-bold"
                           disabled={disabled}
                           onChange={(event) =>
-                            updateEvidence(index, { description: event.target.value })
+                            updateEvidence(index, {
+                              description: event.target.value,
+                            })
                           }
                           placeholder="Short description (optional)"
                           value={evidence.description}
@@ -741,11 +873,16 @@ export function RepresentedPersonForm({
                 {evidenceUploading ? "Uploading…" : "+ Add evidence file"}
               </Button>
               <p className="text-xs font-bold text-muted-foreground">
-                Only upload files that can be public. Photos, PDFs, or text, up to 25 MB each.
-                {!isPublic ? " Make the memorial public before adding evidence." : ""}
+                Only upload files that can be public. Photos, PDFs, or text, up
+                to 25 MB each.
+                {!isPublic
+                  ? " Make the memorial public before adding evidence."
+                  : ""}
               </p>
               {evidenceError ? (
-                <p className="text-xs font-black text-destructive">{evidenceError}</p>
+                <p className="text-xs font-black text-destructive">
+                  {evidenceError}
+                </p>
               ) : null}
             </div>
           </div>
@@ -753,7 +890,10 @@ export function RepresentedPersonForm({
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase" htmlFor="represented-condition">
+            <Label
+              className="text-xs font-black uppercase"
+              htmlFor="represented-condition"
+            >
               Disease or cause
             </Label>
             <Input
@@ -766,7 +906,10 @@ export function RepresentedPersonForm({
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase" htmlFor="represented-relationship">
+            <Label
+              className="text-xs font-black uppercase"
+              htmlFor="represented-relationship"
+            >
               Your relationship
             </Label>
             <Input
@@ -820,7 +963,10 @@ export function RepresentedPersonForm({
                         {jurisdictionOptions
                           .filter((option) => option.code !== null)
                           .map((option) => (
-                            <option key={option.id} value={option.code as string}>
+                            <option
+                              key={option.id}
+                              value={option.code as string}
+                            >
                               {option.name}
                             </option>
                           ))}
@@ -830,7 +976,9 @@ export function RepresentedPersonForm({
                           className="border-border bg-background font-bold"
                           disabled={disabled}
                           onChange={(event) =>
-                            updateResponsibleParty(index, { name: event.target.value })
+                            updateResponsibleParty(index, {
+                              name: event.target.value,
+                            })
                           }
                           placeholder="Or name a regulator, militia, organization"
                           value={party.name}
@@ -845,7 +993,9 @@ export function RepresentedPersonForm({
                         className="border-border bg-background font-bold"
                         disabled={disabled}
                         onChange={(event) =>
-                          updateResponsibleParty(index, { roleSlug: event.target.value })
+                          updateResponsibleParty(index, {
+                            roleSlug: event.target.value,
+                          })
                         }
                         placeholder="e.g. funder, regulator, armed-force"
                         value={party.roleSlug}
@@ -880,7 +1030,10 @@ export function RepresentedPersonForm({
 
         {lifeStatus === PersonLifeStatus.DECEASED ? (
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase" htmlFor="represented-memorial-message">
+            <Label
+              className="text-xs font-black uppercase"
+              htmlFor="represented-memorial-message"
+            >
               Tell us about them
             </Label>
             <p className="text-xs font-bold text-muted-foreground">
@@ -897,7 +1050,10 @@ export function RepresentedPersonForm({
         ) : null}
 
         <div className="space-y-2">
-          <Label className="text-xs font-black uppercase" htmlFor="represented-comment">
+          <Label
+            className="text-xs font-black uppercase"
+            htmlFor="represented-comment"
+          >
             What would they trade one apocalypse for?
           </Label>
           <Textarea
@@ -918,7 +1074,7 @@ export function RepresentedPersonForm({
           />
           <span>
             {lifeStatus === PersonLifeStatus.DECEASED
-              ? "I consent to this memorial being displayed publicly on the People's page."
+              ? "I consent to this memorial being displayed publicly on the Sign for Someone page."
               : "Show this card publicly."}
           </span>
         </label>
@@ -928,10 +1084,14 @@ export function RepresentedPersonForm({
             <Checkbox
               checked={consentCourtEvidence}
               disabled={disabled}
-              onCheckedChange={(value) => setConsentCourtEvidence(value === true)}
+              onCheckedChange={(value) =>
+                setConsentCourtEvidence(value === true)
+              }
             />
             <span>
-              I consent to this record being used as evidence in any future legal proceeding, including the Court of Humanity, seeking accountability for preventable deaths.
+              I consent to this record being used as evidence in any future
+              legal proceeding, including the Court of Humanity, seeking
+              accountability for preventable deaths.
             </span>
           </label>
         ) : null}
@@ -948,7 +1108,7 @@ export function RepresentedPersonForm({
           type="button"
         >
           <UserPlus className="mr-2 h-5 w-5" aria-hidden="true" />
-          {status === "saving" ? "Filing…" : "File their vote against missiles"}
+          {status === "saving" ? "Filing…" : "Sign the treaty for them"}
         </Button>
 
         {error ? (
@@ -975,7 +1135,9 @@ export function RepresentedPersonForm({
               </div>
             ) : null}
             <p className="text-base font-bold leading-7">
-              You just gave <strong>{submittedDisplayName}</strong> a voice. Now give a voice to everyone else you've lost. The more names in this database, the harder it is to ignore.
+              You just put <strong>{submittedDisplayName}</strong> on the treaty
+              record. Now sign for everyone else the button cannot reach. The
+              more names in this database, the harder it is to ignore.
             </p>
             <Button
               className="min-h-12 w-full border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0"
@@ -988,7 +1150,7 @@ export function RepresentedPersonForm({
               type="button"
             >
               <UserPlus className="mr-2 h-5 w-5" aria-hidden="true" />
-              Add another memorial
+              Add another human
             </Button>
             {shareText ? (
               <div className="space-y-2">

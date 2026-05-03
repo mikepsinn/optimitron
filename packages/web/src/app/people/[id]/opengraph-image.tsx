@@ -31,11 +31,13 @@ function formatDuration(days: number): string {
 }
 
 function fallbackInitials(name: string): string {
-  return name
-    .split(/\s+/u)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("") || "?";
+  return (
+    name
+      .split(/\s+/u)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? "")
+      .join("") || "?"
+  );
 }
 
 export default async function OGImage({
@@ -48,29 +50,28 @@ export default async function OGImage({
 
   if (!data) {
     return new ImageResponse(
-      (
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            height: "100%",
-            backgroundColor: FALLBACK_BG,
-            color: "#fff",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 48,
-            fontWeight: 900,
-          }}
-        >
-          The Invisible Graveyard
-        </div>
-      ),
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          height: "100%",
+          backgroundColor: FALLBACK_BG,
+          color: "#fff",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 48,
+          fontWeight: 900,
+        }}
+      >
+        Sign for Someone
+      </div>,
       { ...size },
     );
   }
 
   const isDeceased = data.person.lifeStatus === PersonLifeStatus.DECEASED;
   const ghost = isDeceased ? "👻" : "";
+  const pageLabel = isDeceased ? "The Invisible Graveyard" : "Sign for Someone";
   const dates = (() => {
     const parts: string[] = [];
     if (data.person.birthDate) parts.push(formatDate(data.person.birthDate));
@@ -82,186 +83,185 @@ export default async function OGImage({
   const country = data.memorial?.deathCountryCode ?? null;
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        backgroundColor: FALLBACK_BG,
+        color: "#fff",
+        padding: "60px 70px",
+        fontFamily: "sans-serif",
+        gap: 50,
+      }}
+    >
+      {/* Photo or initials */}
       <div
         style={{
           display: "flex",
-          width: "100%",
-          height: "100%",
-          backgroundColor: FALLBACK_BG,
-          color: "#fff",
-          padding: "60px 70px",
-          fontFamily: "sans-serif",
-          gap: 50,
+          width: 360,
+          height: 360,
+          flexShrink: 0,
+          alignItems: "center",
+          justifyContent: "center",
+          border: "6px solid #fff",
+          backgroundColor: "#1a1a1a",
         }}
       >
-        {/* Photo or initials */}
-        <div
-          style={{
-            display: "flex",
-            width: 360,
-            height: 360,
-            flexShrink: 0,
-            alignItems: "center",
-            justifyContent: "center",
-            border: "6px solid #fff",
-            backgroundColor: "#1a1a1a",
-          }}
-        >
-          {data.person.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={data.person.displayName}
-              src={data.person.image}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                fontSize: 180,
-                fontWeight: 900,
-                color: ACCENT_CYAN,
-              }}
-            >
-              {fallbackInitials(data.person.displayName)}
-            </div>
-          )}
-        </div>
-
-        {/* Text column */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            flex: 1,
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div
-              style={{
-                display: "flex",
-                fontSize: 22,
-                fontWeight: 700,
-                color: "#888",
-                textTransform: "uppercase",
-                letterSpacing: 2,
-              }}
-            >
-              {ghost ? `${ghost}  ` : ""}The Invisible Graveyard
-            </div>
-            <div
-              style={{
-                display: "flex",
-                fontSize: 72,
-                fontWeight: 900,
-                lineHeight: 1.05,
-                letterSpacing: -2,
-              }}
-            >
-              {data.person.displayName}
-            </div>
-            {dates ? (
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: "#bbb",
-                }}
-              >
-                {dates}
-                {country ? ` · ${country}` : ""}
-              </div>
-            ) : null}
-            {condition ? (
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: 30,
-                  fontWeight: 800,
-                  color: ACCENT_CYAN,
-                  marginTop: 12,
-                }}
-              >
-                {isDeceased ? "Died of " : "Lived with "}
-                {condition}.
-              </div>
-            ) : null}
-            {lag ? (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: 16,
-                  padding: "16px 20px",
-                  backgroundColor: "#1a1a1a",
-                  borderLeft: `6px solid ${ACCENT_PINK}`,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: 14,
-                    fontWeight: 800,
-                    color: ACCENT_PINK,
-                    textTransform: "uppercase",
-                    letterSpacing: 2,
-                  }}
-                >
-                  Efficacy lag flagged
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: 22,
-                    fontWeight: 700,
-                    color: "#fff",
-                    marginTop: 4,
-                  }}
-                >
-                  {lag.interventionName} approved {formatDate(lag.approvalDate)}
-                  {typeof lag.daysBeforeApproval === "number"
-                    ? ` — ${formatDuration(lag.daysBeforeApproval)} too late.`
-                    : "."}
-                </div>
-              </div>
-            ) : null}
-          </div>
-
+        {data.person.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            alt={data.person.displayName}
+            src={data.person.image}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        ) : (
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
+              fontSize: 180,
+              fontWeight: 900,
+              color: ACCENT_CYAN,
             }}
           >
+            {fallbackInitials(data.person.displayName)}
+          </div>
+        )}
+      </div>
+
+      {/* Text column */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 22,
+              fontWeight: 700,
+              color: "#888",
+              textTransform: "uppercase",
+              letterSpacing: 2,
+            }}
+          >
+            {ghost ? `${ghost}  ` : ""}
+            {pageLabel}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 72,
+              fontWeight: 900,
+              lineHeight: 1.05,
+              letterSpacing: -2,
+            }}
+          >
+            {data.person.displayName}
+          </div>
+          {dates ? (
             <div
               style={{
                 display: "flex",
-                fontSize: 18,
+                fontSize: 24,
                 fontWeight: 700,
-                color: "#888",
+                color: "#bbb",
               }}
             >
-              warondisease.org/people
+              {dates}
+              {country ? ` · ${country}` : ""}
             </div>
+          ) : null}
+          {condition ? (
             <div
               style={{
                 display: "flex",
-                fontSize: 18,
-                fontWeight: 900,
-                color: ACCENT_PINK,
-                textTransform: "uppercase",
+                fontSize: 30,
+                fontWeight: 800,
+                color: ACCENT_CYAN,
+                marginTop: 12,
               }}
             >
-              They had a name.
+              {isDeceased ? "Died of " : "Lived with "}
+              {condition}.
             </div>
+          ) : null}
+          {lag ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                marginTop: 16,
+                padding: "16px 20px",
+                backgroundColor: "#1a1a1a",
+                borderLeft: `6px solid ${ACCENT_PINK}`,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: 14,
+                  fontWeight: 800,
+                  color: ACCENT_PINK,
+                  textTransform: "uppercase",
+                  letterSpacing: 2,
+                }}
+              >
+                Efficacy lag flagged
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "#fff",
+                  marginTop: 4,
+                }}
+              >
+                {lag.interventionName} approved {formatDate(lag.approvalDate)}
+                {typeof lag.daysBeforeApproval === "number"
+                  ? ` — ${formatDuration(lag.daysBeforeApproval)} too late.`
+                  : "."}
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              fontSize: 18,
+              fontWeight: 700,
+              color: "#888",
+            }}
+          >
+            warondisease.org/people
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 18,
+              fontWeight: 900,
+              color: ACCENT_PINK,
+              textTransform: "uppercase",
+            }}
+          >
+            They had a name.
           </div>
         </div>
       </div>
-    ),
+    </div>,
     { ...size },
   );
 }

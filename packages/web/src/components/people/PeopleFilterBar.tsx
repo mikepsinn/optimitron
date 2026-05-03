@@ -24,29 +24,41 @@ interface ConditionOption {
   name: string;
 }
 
-const SORT_OPTIONS: Array<{ value: RepresentedPeopleSortKey; label: string }> = [
-  { value: "recent", label: "Most recent" },
-  { value: "oldest", label: "Oldest" },
-  { value: "alphabetical", label: "Alphabetical" },
-  { value: "died-closest-to-cure", label: "Died closest to when the cure was approved" },
-];
+const SORT_OPTIONS: Array<{ value: RepresentedPeopleSortKey; label: string }> =
+  [
+    { value: "recent", label: "Most recent" },
+    { value: "oldest", label: "Oldest" },
+    { value: "alphabetical", label: "Alphabetical" },
+    {
+      value: "died-closest-to-cure",
+      label: "Died closest to when the cure was approved",
+    },
+  ];
 
-const CAUSE_OPTIONS: Array<{ value: PersonDeathCauseCategory; label: string }> = [
-  { value: PersonDeathCauseCategory.DISEASE, label: "Disease" },
-  { value: PersonDeathCauseCategory.ARMED_CONFLICT, label: "Armed conflict" },
-  { value: PersonDeathCauseCategory.STATE_VIOLENCE, label: "State violence" },
-  { value: PersonDeathCauseCategory.TERRORISM, label: "Terrorism" },
-  { value: PersonDeathCauseCategory.OTHER_PREVENTABLE, label: "Other preventable" },
-];
+const CAUSE_OPTIONS: Array<{ value: PersonDeathCauseCategory; label: string }> =
+  [
+    { value: PersonDeathCauseCategory.DISEASE, label: "Disease" },
+    { value: PersonDeathCauseCategory.ARMED_CONFLICT, label: "Armed conflict" },
+    { value: PersonDeathCauseCategory.STATE_VIOLENCE, label: "State violence" },
+    { value: PersonDeathCauseCategory.TERRORISM, label: "Terrorism" },
+    {
+      value: PersonDeathCauseCategory.OTHER_PREVENTABLE,
+      label: "Other preventable",
+    },
+  ];
 
 export function PeopleFilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
 
-  const [conditionOptions, setConditionOptions] = useState<ConditionOption[]>([]);
+  const [conditionOptions, setConditionOptions] = useState<ConditionOption[]>(
+    [],
+  );
   const [conflictOptions, setConflictOptions] = useState<ConflictOption[]>([]);
-  const [jurisdictionOptions, setJurisdictionOptions] = useState<JurisdictionOption[]>([]);
+  const [jurisdictionOptions, setJurisdictionOptions] = useState<
+    JurisdictionOption[]
+  >([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,15 +73,21 @@ export function PeopleFilterBar() {
         ]);
         if (cancelled) return;
         if (conditions.ok) {
-          const data = (await conditions.json()) as { results: ConditionOption[] };
+          const data = (await conditions.json()) as {
+            results: ConditionOption[];
+          };
           setConditionOptions(data.results);
         }
         if (conflicts.ok) {
-          const data = (await conflicts.json()) as { results: ConflictOption[] };
+          const data = (await conflicts.json()) as {
+            results: ConflictOption[];
+          };
           setConflictOptions(data.results);
         }
         if (jurisdictions.ok) {
-          const data = (await jurisdictions.json()) as { results: JurisdictionOption[] };
+          const data = (await jurisdictions.json()) as {
+            results: JurisdictionOption[];
+          };
           setJurisdictionOptions(data.results.filter((j) => j.code !== null));
         }
       } catch {
@@ -97,7 +115,8 @@ export function PeopleFilterBar() {
     });
   }
 
-  const selectedSort = (searchParams.get("sort") as RepresentedPeopleSortKey | null) ?? "recent";
+  const selectedSort =
+    (searchParams.get("sort") as RepresentedPeopleSortKey | null) ?? "recent";
   const selectedCause = searchParams.get("cause") ?? "";
   const selectedCondition = searchParams.get("conditionId") ?? "";
   const selectedConflict = searchParams.get("conflictId") ?? "";
@@ -105,133 +124,169 @@ export function PeopleFilterBar() {
   const efficacyOnly = searchParams.get("efficacyLag") === "1";
   const hasFilter =
     Boolean(
-      selectedCause || selectedCondition || selectedConflict || selectedCountry || efficacyOnly,
+      selectedCause ||
+      selectedCondition ||
+      selectedConflict ||
+      selectedCountry ||
+      efficacyOnly,
     ) || selectedSort !== "recent";
 
   return (
-    <section className="space-y-4 border border-border bg-card p-4 text-card-foreground">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-          Filter and sort
-        </p>
-        {hasFilter ? (
-          <Button
-            className="min-h-9 border border-border bg-transparent px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
-            onClick={clearAll}
-            type="button"
-          >
-            Clear
-          </Button>
-        ) : null}
-      </div>
+    <section className="border border-border bg-card p-4 text-card-foreground">
+      <details className="group" {...(hasFilter ? { open: true } : {})}>
+        <summary className="inline-flex min-h-9 cursor-pointer list-none items-center gap-2 border border-border bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground marker:hidden hover:bg-muted">
+          <span>Filter and sort</span>
+          {hasFilter ? (
+            <span className="text-muted-foreground">Active</span>
+          ) : null}
+        </summary>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="space-y-1">
-          <Label className="text-xs font-black uppercase" htmlFor="people-filter-sort">
-            Sort
-          </Label>
-          <select
-            className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
-            id="people-filter-sort"
-            onChange={(event) => applyFilter("sort", event.target.value)}
-            value={selectedSort}
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <div className="mt-4 space-y-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+              Find a human
+            </p>
+            {hasFilter ? (
+              <Button
+                className="min-h-9 border border-border bg-transparent px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                onClick={clearAll}
+                type="button"
+              >
+                Clear
+              </Button>
+            ) : null}
+          </div>
 
-        <div className="space-y-1">
-          <Label className="text-xs font-black uppercase" htmlFor="people-filter-cause">
-            Cause
-          </Label>
-          <select
-            className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
-            id="people-filter-cause"
-            onChange={(event) => applyFilter("cause", event.target.value)}
-            value={selectedCause}
-          >
-            <option value="">All causes</option>
-            {CAUSE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-1">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="people-filter-sort"
+              >
+                Sort
+              </Label>
+              <select
+                className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
+                id="people-filter-sort"
+                onChange={(event) => applyFilter("sort", event.target.value)}
+                value={selectedSort}
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="space-y-1">
-          <Label className="text-xs font-black uppercase" htmlFor="people-filter-condition">
-            Condition
-          </Label>
-          <select
-            className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
-            id="people-filter-condition"
-            onChange={(event) => applyFilter("conditionId", event.target.value)}
-            value={selectedCondition}
-          >
-            <option value="">All conditions</option>
-            {conditionOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            <div className="space-y-1">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="people-filter-cause"
+              >
+                Cause
+              </Label>
+              <select
+                className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
+                id="people-filter-cause"
+                onChange={(event) => applyFilter("cause", event.target.value)}
+                value={selectedCause}
+              >
+                <option value="">All causes</option>
+                {CAUSE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="space-y-1">
-          <Label className="text-xs font-black uppercase" htmlFor="people-filter-conflict">
-            Conflict
-          </Label>
-          <select
-            className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
-            id="people-filter-conflict"
-            onChange={(event) => applyFilter("conflictId", event.target.value)}
-            value={selectedConflict}
-          >
-            <option value="">All conflicts</option>
-            {conflictOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            <div className="space-y-1">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="people-filter-condition"
+              >
+                Condition
+              </Label>
+              <select
+                className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
+                id="people-filter-condition"
+                onChange={(event) =>
+                  applyFilter("conditionId", event.target.value)
+                }
+                value={selectedCondition}
+              >
+                <option value="">All conditions</option>
+                {conditionOptions.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="space-y-1">
-          <Label className="text-xs font-black uppercase" htmlFor="people-filter-country">
-            Country of death
-          </Label>
-          <select
-            className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
-            id="people-filter-country"
-            onChange={(event) => applyFilter("country", event.target.value)}
-            value={selectedCountry}
-          >
-            <option value="">All countries</option>
-            {jurisdictionOptions.map((option) => (
-              <option key={option.id} value={option.code ?? ""}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            <div className="space-y-1">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="people-filter-conflict"
+              >
+                Conflict
+              </Label>
+              <select
+                className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
+                id="people-filter-conflict"
+                onChange={(event) =>
+                  applyFilter("conflictId", event.target.value)
+                }
+                value={selectedConflict}
+              >
+                <option value="">All conflicts</option>
+                {conflictOptions.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 text-sm font-bold">
-            <Input
-              checked={efficacyOnly}
-              className="h-4 w-4"
-              onChange={(event) => applyFilter("efficacyLag", event.target.checked ? "1" : "")}
-              type="checkbox"
-            />
-            Only show efficacy-lag flagged 👻
-          </label>
+            <div className="space-y-1">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="people-filter-country"
+              >
+                Country of death
+              </Label>
+              <select
+                className="min-h-11 w-full border border-border bg-background px-3 font-bold text-foreground"
+                id="people-filter-country"
+                onChange={(event) => applyFilter("country", event.target.value)}
+                value={selectedCountry}
+              >
+                <option value="">All countries</option>
+                {jurisdictionOptions.map((option) => (
+                  <option key={option.id} value={option.code ?? ""}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 text-sm font-bold">
+                <Input
+                  checked={efficacyOnly}
+                  className="h-4 w-4"
+                  onChange={(event) =>
+                    applyFilter("efficacyLag", event.target.checked ? "1" : "")
+                  }
+                  type="checkbox"
+                />
+                Only show efficacy-lag flagged 👻
+              </label>
+            </div>
+          </div>
         </div>
-      </div>
+      </details>
     </section>
   );
 }
