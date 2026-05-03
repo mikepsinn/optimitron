@@ -70,10 +70,10 @@ export async function POST(req: Request) {
             product_data: {
               name:
                 donationType === "monthly"
-                  ? "Monthly donation — global 1% Treaty referendum"
-                  : "Donation — global 1% Treaty referendum",
+                  ? "1% Treaty Monthly Donation"
+                  : "1% Treaty Donation",
               description:
-                "Funds the global 1% Treaty referendum: hosting, identity verification, fraud prevention, translation, outreach, and public evidence pages. Tax-deductible via the Institute for Accelerated Medicine 501(c)(3).",
+                "Funds the 1% Treaty campaign: hosting, identity verification, fraud prevention, translation, outreach, and public evidence pages. Tax-deductible via the Institute for Accelerated Medicine, a U.S. 501(c)(3).",
             },
             ...(donationType === "monthly" ? { recurring: { interval: "month" as const } } : {}),
           },

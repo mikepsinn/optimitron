@@ -97,8 +97,8 @@ describe("POST /api/stripe/create-checkout", () => {
             price_data: expect.objectContaining({
               currency: "usd",
               product_data: expect.objectContaining({
-                description: expect.stringContaining("global 1% Treaty referendum"),
-                name: "Donation — global 1% Treaty referendum",
+                description: expect.stringContaining("1% Treaty campaign"),
+                name: "1% Treaty Donation",
               }),
               unit_amount: 10000,
             }),
