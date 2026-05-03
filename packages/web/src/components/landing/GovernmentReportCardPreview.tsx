@@ -11,7 +11,7 @@ export function GovernmentReportCardPreview() {
       <Container>
         <SectionHeader
           title="Worst Players: Governments"
-          subtitle="Every government ranked by body count — the data they hope you never see."
+          subtitle="Every government ranked by body count. The data they hope you never see."
           size="lg"
         />
         <GovernmentLeaderboard limit={10} compact />

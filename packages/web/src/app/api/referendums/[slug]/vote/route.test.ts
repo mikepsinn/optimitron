@@ -172,7 +172,14 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("casts a YES vote successfully", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    const vote = { id: "vote_1", answer: "YES", userId: "user_1", referendumId: "ref_1" };
+    const vote = {
+      id: "vote_1",
+      answer: "YES",
+      personId: "person_1",
+      userId: "user_1",
+      referendumId: "ref_1",
+      voteSource: "SELF",
+    };
     mocks.upsert.mockResolvedValue(vote);
     mocks.grantWishes.mockResolvedValue({ amount: 2 });
 
@@ -186,13 +193,22 @@ describe("POST /api/referendums/[slug]/vote", () => {
       convertedReferralInvitation: null,
     });
     expect(mocks.upsert).toHaveBeenCalledWith({
-      where: { userId_referendumId: { userId: "user_1", referendumId: "ref_1" } },
-      update: { answer: "YES", deletedAt: null },
+      where: { referendumId_personId: { referendumId: "ref_1", personId: "person_1" } },
+      update: {
+        answer: "YES",
+        deletedAt: null,
+        isPublic: true,
+        userId: "user_1",
+        voteSource: "SELF",
+      },
       create: {
         userId: "user_1",
+        personId: "person_1",
         referendumId: "ref_1",
         answer: "YES",
+        voteSource: "SELF",
         referredByUserId: null,
+        isPublic: true,
         originUrl: null,
       },
     });
@@ -282,7 +298,13 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        update: { answer: "ABSTAIN", deletedAt: null },
+        update: expect.objectContaining({
+          answer: "ABSTAIN",
+          deletedAt: null,
+          isPublic: true,
+          userId: "user_1",
+          voteSource: "SELF",
+        }),
       }),
     );
   });

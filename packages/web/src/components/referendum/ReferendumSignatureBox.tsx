@@ -249,7 +249,7 @@ export function ReferendumSignatureBox({
               className="mt-1 h-4 w-4 cursor-pointer accent-brutal-pink"
             />
             <span>
-              Display my name publicly on the supporters list and leaderboards{" "}
+              Display my name publicly on the signer list and leaderboards{" "}
               <span className="opacity-70">(recommended)</span>.
             </span>
           </label>

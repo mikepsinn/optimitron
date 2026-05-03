@@ -22,7 +22,6 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
   const [formError, setFormError] = useState<string | null>(null)
   const [editForm, setEditForm] = useState({
     name: user.name,
-    handle: user.handle || "",
     bio: user.bio,
     isPublic: user.isPublic,
     website: user.website || "",
@@ -36,7 +35,6 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
   useEffect(() => {
     setEditForm({
       name: user.name,
-      handle: user.handle || "",
       bio: user.bio,
       isPublic: user.isPublic,
       website: user.website || "",
@@ -49,14 +47,12 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
     setOrigin(window.location.origin)
   }, [])
 
-  const handleHandleChange = (value: string) => {
-    const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, "")
-    setEditForm((prev) => ({ ...prev, handle: sanitized }))
-  }
+  const publicProfileUrl =
+    origin && user.handle ? `${origin}/u/${user.handle}` : null
 
   const handleCopyUrl = () => {
-    const url = `${origin}/u/${editForm.handle}`
-    navigator.clipboard.writeText(url)
+    if (!publicProfileUrl) return
+    navigator.clipboard.writeText(publicProfileUrl)
     setIsCopied(true)
     setTimeout(() => setIsCopied(false), 2000)
   }
@@ -70,7 +66,6 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: editForm.name,
-          handle: editForm.handle,
           bio: editForm.bio,
           isPublic: editForm.isPublic,
           website: editForm.website || null,
@@ -88,7 +83,6 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         ...user,
         name: editForm.name,
         bio: editForm.bio,
-        handle: editForm.handle ? editForm.handle : null,
         isPublic: editForm.isPublic,
         website: editForm.website || null,
         headline: editForm.headline || null,
@@ -108,7 +102,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
     <Card className="border-4 border-primary">
       <Card.Header>
         <Card.Title className="text-2xl font-black uppercase">YOUR PROFILE</Card.Title>
-        <Card.Description className="font-bold">Your public record on this planet</Card.Description>
+        <Card.Description className="font-bold">Your public record on this planet.</Card.Description>
       </Card.Header>
       <Card.Content className="space-y-6">
         <div className="space-y-4">
@@ -119,18 +113,6 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
               onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
               className="border-4 border-primary bg-background"
             />
-          </div>
-          <div>
-            <Label className="text-sm font-bold uppercase">Player Name</Label>
-            <Input
-              value={editForm.handle}
-              onChange={(e) => handleHandleChange(e.target.value)}
-              className="border-4 border-primary bg-background"
-              placeholder="your-player-name"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              3-24 characters. Letters, numbers, hyphens, and underscores.
-            </p>
           </div>
           <div>
             <Label className="text-sm font-bold uppercase">Bio</Label>
@@ -197,15 +179,15 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
             onChange={(value) => setEditForm({ ...editForm, isPublic: value })}
           />
 
-          {editForm.isPublic && editForm.handle && (
+          {editForm.isPublic && publicProfileUrl && (
             <div className="mt-4 p-4 bg-muted/30 border-4 border-primary border-dashed rounded-lg animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center justify-between mb-2">
                 <Label className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-1">
                   <Globe className="w-3 h-3" />
-                  Public Profile Link
+                  Public Profile URL
                 </Label>
                 <Link
-                  href={`/u/${editForm.handle}`}
+                  href={`/u/${user.handle}`}
                   target="_blank"
                   className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
                 >
@@ -215,7 +197,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={`${origin}/u/${editForm.handle}`}
+                  value={publicProfileUrl}
                   className="bg-background border-4 border-primary h-9 font-mono text-sm"
                 />
                 <Button

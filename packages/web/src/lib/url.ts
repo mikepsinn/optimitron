@@ -91,3 +91,8 @@ export function buildReferendumReferralUrl(
   const base = `${baseUrl}${ROUTES.referendum}/${slug}`;
   return identifier ? `${base}?ref=${identifier}` : base;
 }
+
+/** Build the public people gallery URL for the current site. */
+export function buildPeopleUrl(baseUrl: string = getBaseUrl()): string {
+  return `${baseUrl}${ROUTES.people}`;
+}

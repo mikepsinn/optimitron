@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildAlignmentUrl,
   buildInviteReferralUrl,
+  buildPeopleUrl,
   buildReferralUrl,
   buildUserAlignmentUrl,
   buildUserInviteReferralUrl,
@@ -55,5 +56,11 @@ describe("url helpers", () => {
     expect(
       buildReferendumReferralUrl("one-percent-treaty", "friend-123", "https://example.com"),
     ).toBe(`https://example.com${ROUTES.referendum}/one-percent-treaty?ref=friend-123`);
+  });
+
+  it("builds people gallery links from the provided base URL", () => {
+    expect(buildPeopleUrl("https://warondisease.org")).toBe(
+      `https://warondisease.org${ROUTES.people}`,
+    );
   });
 });

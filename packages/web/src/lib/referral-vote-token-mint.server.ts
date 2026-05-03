@@ -6,6 +6,7 @@ import {
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { serverEnv } from "@/lib/env";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 
 const REWARD_WALLET_PLATFORMS = [
   SocialPlatform.BASE,
@@ -118,9 +119,9 @@ export async function syncReferralVoteTokenMintsForVerifiedVoter(
 ) {
   const referredVotes = await prisma.referendumVote.findMany({
     where: {
+      ...buildOfficialReferendumVoteWhere(),
       userId: referredVoterUserId,
       referredByUserId: { not: null },
-      deletedAt: null,
     },
     orderBy: { createdAt: "asc" },
     select: {
@@ -147,8 +148,8 @@ export async function syncPendingReferralVoteTokenMints(
 ) {
   const referredVotes = await prisma.referendumVote.findMany({
     where: {
+      ...buildOfficialReferendumVoteWhere(),
       referredByUserId: { not: null },
-      deletedAt: null,
       user: {
         personhoodVerifications: {
           some: {

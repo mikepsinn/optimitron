@@ -1095,3 +1095,374 @@ Allocation rules across all tracks: 100% innovation (no Treasuries / no broad in
 - [ ] Keep `pnpm --filter @optimitron/db exec prisma migrate status --schema prisma/schema.prisma` current before testing dashboard/API features against the configured DB.
 - [ ] Clean up existing lint warnings only in a separate, focused pass.
 - [ ] Do a final copy audit before launch: visible post-vote UI, generated invite copy, email templates, dashboard labels, and task rows.
+
+
+## Active Slice — Person-Centered Votes + Invisible Graveyard Foundation (2026-05-02)
+
+Purpose: implement the first usable memorial/vote flow now while laying the schema foundation for the full Invisible Graveyard PRD below. The product can start with a simple `/people` wall and "drag someone to the polls" form, but the schema should already support evidence, efficacy-lag matching, conflict deaths, responsible governments, and future Court of Humanity filings without a later rewrite.
+
+### Schema Decisions
+
+- [x] `Person` remains the canonical human identity record. Use it for names, photos, public profile visibility, `lifeStatus`, and user-created person ownership.
+- [x] `ReferendumVote` remains the ledger for human referendum positions. The official/represented/dead-person distinction comes from `voteSource` plus linked `Person.lifeStatus`, not a separate representation table.
+- [x] Add `PersonMemorial` as the per-person death/case-fact record. Do not put submitter testimony or consent on this row; dedupe later should not merge away a relative's statement.
+- [x] Add `PersonMemorialSubmission` for submitter-owned memorial text, public-display consent, and court-evidence consent. Submitter relationship lives in `PersonRelationship` so the human graph has one source of truth.
+- [x] Add `PersonMemorialResponsibleParty` so one death can attribute responsibility to multiple governments, organizations, conflicts, or named systemic failures. Public display is explicitly gated per attribution.
+- [x] Add `PersonMemorialEvidence` for source URLs, uploaded documents/photos, hospital records, witness statements, and future evidence packages.
+- [x] Add `Conflict` as a reference table so conflict deaths can be filtered and aggregated without encoding Gaza/Ukraine/Yemen/etc. as enums.
+- [x] Add `InterventionApprovalTimeline` as the future drug/procedure/policy regulatory-lag reference table. It links intervention variables, condition variables, regulator jurisdiction, first evidence date, approval date, estimated lives saved, and sources.
+- [x] Add `PersonEfficacyLagEvidence` as a computed cross-reference result between a memorial and a treatment approval timeline. This keeps computed legal/prosecution claims separate from raw memorial submissions and allows retroactive recomputation.
+- [x] Keep `PersonCondition` as the disease/cause relation. Use `status = CAUSE_OF_DEATH` for disease deaths; use `conditionCodeSystem` + `conditionCode` for ICD-10 or later vocabularies; use `PersonMemorial.causeCategory` for armed conflict, state violence, terrorism, and other preventable causes.
+- [x] Enforce high-risk data invariants in the database: `SELF` referendum votes must target the casting user's living `Person`, memorial primary conditions must belong to the memorialized person, and submission-linked evidence must belong to the same memorial.
+- [x] Keep relationship categories as string slugs, not enums, so future human relationship categories do not require migrations.
+
+### Implementation Checkpoints
+
+- [x] Person-centered referendum vote migration foundation.
+- [x] Shared referendum vote query builders for official, represented, and memorial vote surfaces.
+- [x] Public `/people` first pass with Grandma Kay seeded as a real represented person and separate counters.
+- [x] Represented/dead-person API guarded by signed-in self YES vote.
+- [x] Expand the migration with memorial/evidence/efficacy-lag foundation tables before this branch is reviewed.
+- [x] Update Zod/runtime schemas and generated Prisma client.
+- [x] Wire v1 form fields into `PersonMemorial` + `PersonMemorialSubmission` for deceased entries: date of death, country, memorial message, public display consent, court-evidence consent, cause category, responsible party text.
+- [x] Make v1 evidence public-only: upload/attach only public, non-sensitive source URLs or files. Do not collect private health records, witness contact info, or sealed evidence in this first slice.
+- [ ] Keep full efficacy-lag matching, ICD-10 import, conflict evidence package generation, prosecution dashboards, and social-card generation as later feature slices using the schema above.
+
+# The Invisible Graveyard
+## Product Requirements Document
+### Making the Dead Visible, Letting Them Vote, and Building the Case
+
+**Project:** warondisease.org memorial & evidence system
+**Author:** WISHONIA (Chief Optimization Officer, Earth Optimization Services LLC)
+**Status:** Draft
+**Priority:** High — dead people have been waiting long enough
+
+---
+
+## Executive Summary
+
+Humans die. This is not news. What IS news is that many of them died unnecessarily because:
+
+1. A treatment existed but was stuck in an 8.2-year regulatory queue behind a mountain of paperwork
+2. Their government spent the money that would have funded the trial on a missile instead
+3. Their government fired the missile at them directly
+
+Currently, these deaths are invisible. They appear in no database, generate no legal claims, and produce no political consequences. The people who caused them face no accountability because dead people do not have lobbyists.
+
+This feature set fixes that by:
+
+- Letting living humans memorialize their dead humans
+- Letting dead humans "vote" on the 1% Treaty (they would have, let's be honest)
+- Cross-referencing deaths against drug approval timelines to identify who died during the efficacy lag
+- Collecting structured evidence for the Court of Humanity
+- Making the invisible graveyard visible, searchable, and emotionally unbearable to ignore
+
+---
+
+## Feature 1: Dead Person Registration
+
+### The Memorial Form
+
+After a living user votes on the 1% Treaty, prompt them:
+
+> "Thank you for voting. Now: would you like to vote on behalf of someone who can't? Someone who died of a disease that might have been cured, or a war that didn't need to happen? Give them a voice. They would have voted too."
+
+The form collects:
+
+- **Name** of the deceased (required)
+- **Photo** upload (optional but strongly encouraged — faces are what make this work)
+- **Date of birth** (optional)
+- **Date of death** (required)
+- **Primary cause of death** — searchable dropdown mapped to ICD-10 codes + a "conflict/war" category with subcategories:
+  - Disease (select condition from list)
+  - Armed conflict (select conflict from list or enter custom)
+  - State violence
+  - Terrorism
+  - Other preventable cause
+- **Country of death** (required)
+- **Responsible party** (optional) — which government, conflict, or systemic failure contributed. Dropdown with all nations + "No specific government" + free text
+- **Relationship** of submitter to deceased (parent, child, spouse, sibling, friend, etc.)
+- **Memorial message** — free text, 500 char max. "Tell us about them. Not how they died. How they lived."
+- **Their treaty vote** — pre-filled as YES on the 1% Treaty because literally no dead person would vote to continue dying. But the submitter can write what they think their person would have said about the treaty allocation slider (military vs clinical trials split)
+- **Consent checkboxes:**
+  - "I consent to this memorial being displayed publicly on the People's page"
+  - "I consent to this record being used as evidence in any future legal proceeding, including the Court of Humanity, seeking accountability for preventable deaths"
+
+### Data Model
+
+This uses the existing `Person` table (no `User` account required for the deceased, obviously, because they are dead). Implemented schema mapping:
+
+- `Person.lifeStatus`, `Person.birthDate`, and `Person.deathDate` store the human's life-state facts.
+- `PersonCondition` stores disease/cause rows; `status = CAUSE_OF_DEATH` marks disease deaths, and `conditionCodeSystem` + `conditionCode` stores ICD-10 or later vocabularies.
+- `PersonMemorial` stores the death/case facts: `causeCategory`, `deathCountryCode`, optional `conflictId`, civilian/child flags, circumstances, and `primaryPersonConditionId`.
+- `PersonMemorialSubmission` stores submitter-owned memorial text, `submittedByUserId`, public-display consent, court-evidence consent, and separate consent timestamps.
+- `PersonRelationship` stores relationship-to-submitter as a string slug, not an enum.
+- `PersonMemorialResponsibleParty` stores government/organization/free-text responsibility attribution.
+- `PersonMemorialEvidence` stores photos, documents, source URLs, witness statements, and future court evidence package inputs. V1 write paths accept only public, non-sensitive evidence; do not upload anything that should stay private.
+- `PersonEfficacyLagEvidence` stores computed efficacy-lag matches against `InterventionApprovalTimeline`; do not put efficacy-lag flags or drug names directly on `Person`.
+
+---
+
+## Feature 2: Dead People Voting
+
+### How It Works
+
+When a memorial Person is created with a treaty vote, they appear in the vote totals. Their vote is visually distinguished but absolutely counted.
+
+On the main vote counter / dashboard:
+
+```
+Living votes:     12,847
+Memorial votes:    3,291  👻
+Total voices:     16,138
+```
+
+The ghost emoji is not optional. WISHONIA insists.
+
+Implementation note: official referendum totals, VOTE rewards, and verified-voter leaderboards count only living humans voting for themselves. Memorial votes are counted on public "dead-person votes" and "total voices" surfaces so the message lands without corrupting the official ledger.
+
+### The People's Page
+
+A public page displaying all memorialized persons (who consented to public display). This is the Invisible Graveyard made visible.
+
+**Default view:** A wall of faces. Photos in a grid. No text until you hover/tap. Just faces. Let the scale of it hit first.
+
+**On hover/tap:** Name, dates, cause of death, memorial message, and their treaty "vote."
+
+**Filters:**
+- By cause of death (disease, conflict, state violence)
+- By specific condition (Alzheimer's, cancer, heart disease, etc.)
+- By conflict (Gaza, Ukraine, Yemen, etc.)
+- By country
+- By efficacy lag flag (show only people who died waiting for a drug that now exists)
+
+**Sort options:**
+- Most recent
+- Oldest
+- Alphabetical
+- "Died closest to when the cure was approved" (this is the cruelest sort order and the most important one)
+
+**Counter at the top of the page:**
+
+> "These are [N] people who are no longer alive. [X] of them died of diseases for which treatments now exist but arrived too late. [Y] of them were killed by their own governments. They are not statistics. They had names. Scroll down."
+
+### Death Clock Integration
+
+The existing death clock on the homepage ("X people died today") should link to the People's page. The deaths are not abstract. They are these people.
+
+---
+
+## Feature 3: Efficacy Lag Cross-Reference Engine
+
+This is where the memorial database becomes a legal weapon.
+
+### The Drug Approval Timeline Database
+
+Build or import a reference table of:
+
+- Drug name (generic + brand)
+- Condition(s) it treats
+- Date of first evidence of efficacy (Phase II results, or equivalent)
+- Date of FDA approval (or equivalent regulatory approval)
+- Efficacy lag in years (approval date minus first evidence date)
+- Estimated lives saved per year post-approval (from literature where available)
+- Estimated deaths during lag (lives_saved_per_year x lag_years)
+
+**Seed data** (these are the heavy hitters):
+
+| Drug | Condition | Lag | Deaths During Lag (est.) |
+|------|-----------|-----|--------------------------|
+| Beta-blockers | Post-MI cardiac | ~9 years (1972-1981) | ~100,000 |
+| Dexamethasone | COVID-19 | ~3 months (but it was already on the shelf) | Thousands per week globally |
+| Imatinib (Gleevec) | CML | ~3 years | Thousands |
+| Interleukin-2 | Kidney cancer | ~3 years (available in 9 EU countries) | Unknown but calculable |
+| ACE inhibitors | Heart failure | ~5 years | Tens of thousands |
+| Antiretrovirals | HIV/AIDS | varies | Hundreds of thousands |
+| Statins | Cardiovascular | ~2-3 years | Tens of thousands |
+
+This table should be expandable. Eventually it should cover every drug ever approved, with lag calculations. That is a large project. Start with the top 20 most impactful.
+
+### Automatic Flagging
+
+When a memorial is submitted:
+
+1. Look up the memorial's `PersonCondition` where `status = CAUSE_OF_DEATH`
+2. Check if any `InterventionApprovalTimeline` row treats that condition via `conditionGlobalVariableId` or imported code mapping
+3. Check if `Person.deathDate` falls between `firstEvidenceDate` and `approvalDate`
+4. If yes: create a `PersonEfficacyLagEvidence` row linked to the memorial and approval timeline
+5. Generate a notice for the submitter:
+
+> "Your [relationship] [name] died of [condition] on [date]. [Drug name] was approved for [condition] on [approval date], [X years] after evidence showed it worked. [Name] died [Y months/years] before it became available. They are one of an estimated [N] people who died during this delay. This record has been flagged as efficacy lag evidence."
+
+This is the moment the invisible graveyard becomes a specific, named, documented indictment.
+
+---
+
+## Feature 4: Conflict Death Registry
+
+### For War Deaths
+
+The same memorial form, but when cause of death is "Armed conflict" or "State violence," collect additional structured data:
+
+- **Specific conflict** (dropdown: Gaza 2023-present, Ukraine 2022-present, Yemen, Syria, etc. + custom entry)
+- **Circumstances** — free text. "What happened?"
+- **Was the deceased a civilian?** (yes/no/unknown)
+- **Were they a child?** (yes/no)
+- **Government(s) responsible** — multi-select from nations list
+- **Supporting documentation** — public source URLs or public files only. Do not upload private health records, sealed documents, or anything that should not be public.
+- **Witnesses** — public witness statements only in v1. Private witness contact handling is a later admin/legal workflow, not part of the public memorial form.
+
+### Evidence Package Generation
+
+For each conflict death with `consent_court_evidence = true`, the system should be able to generate a structured evidence summary:
+
+```
+COURT OF HUMANITY — EVIDENCE FILING
+Case: [Submitter Name] v. [Government]
+Decedent: [Name], age [X], civilian
+Date of death: [date]
+Location: [location]
+Conflict: [conflict name]
+Circumstances: [free text]
+Submitted by: [relationship], [submitter name]
+Date of submission: [date]
+Supporting documents: [list]
+```
+
+This doesn't need to be legally formatted yet because the court doesn't exist yet. But the data structure should be ready. When the court does exist, it inherits a database of thousands of pre-structured filings from families who already consented.
+
+---
+
+## Feature 5: The Prosecution Dashboard
+
+A public-facing analytics page. Governments are the defendants. The data is the evidence.
+
+### By Government
+
+For each country, show:
+
+- Total memorial deaths attributed to that government (conflict + disease via underfunding)
+- Breakdown: conflict deaths, efficacy lag deaths, other preventable
+- Military spending vs clinical trial spending (from existing treaty data)
+- "If [country] had redirected 1% of military spending to clinical trials in [year], [N] of these people might still be alive"
+- Timeline chart: deaths over time, overlaid with military spending
+
+### By Disease
+
+For each condition:
+
+- Total memorials
+- Efficacy lag deaths (people who died waiting for a drug that now exists)
+- Current treatment status (treated / untreated / partially treated)
+- Position in the 443-year queue
+- "At current trial capacity, a treatment for [condition] is estimated to arrive in [year]. [N] people in this database will not be alive to receive it."
+
+### The Leaderboard Nobody Wants to Be On
+
+Rank governments by:
+
+- Total preventable deaths attributed
+- Military-to-clinical-trials spending ratio
+- Efficacy lag deaths per capita
+- Conflict civilian deaths
+
+This is the optimitron accountability model applied to the memorial data. Governments as employees with overdue tasks. The task is "stop killing your employers." Status: overdue.
+
+---
+
+## Feature 6: Social Sharing & Viral Loop
+
+### After Memorial Submission
+
+> "You just gave [Name] a voice. Now give a voice to everyone else you've lost. The more names in this database, the harder it is to ignore."
+
+Button: "Add another memorial"
+
+### Shareable Memorial Cards
+
+Auto-generate a social media card for each memorial:
+
+- Photo (or silhouette if no photo)
+- Name, dates
+- "[Name] died of [condition] on [date]. A treatment was approved [X years] later. They are one of [N] people in the Invisible Graveyard."
+- QR code / link to vote + add your own memorials
+
+### Social Media Auto-Distribution (Future)
+
+When a memorial is added or an efficacy lag flag is triggered, optionally auto-post to campaign social accounts:
+
+> "Today we added [Name] to the Invisible Graveyard. They died of [condition] in [year]. [Drug] was approved in [year]. [X years] too late. Vote: warondisease.org"
+
+This can be implemented later via the optimitron task comment → social media pipeline discussed elsewhere. Not MVP.
+
+---
+
+## Feature 7: The WISHONIA Commentary Layer
+
+Throughout the memorial system, WISHONIA provides commentary. This is not decoration. The alien voice is what makes people share it instead of scroll past it.
+
+**On the empty People's page before any memorials exist:**
+
+> "This page is empty. That's not because no one has died. It's because no one has documented it yet. On Wishonia, we kept records. Your species... does not. This is how 10.7 billion preventable deaths remain invisible. They have no page. Fix that."
+
+**On the efficacy lag flag notification:**
+
+> "I want to make sure I understand this correctly. Your species discovered that [drug] could treat [condition] in [year]. Then your regulatory apparatus spent [X years] making sure it worked, even though you already knew it worked, during which time [N] people died of the thing you knew how to treat. And no one was charged with a crime. I have been observing your species for 4,297 years and this is in the top five most confusing things I have encountered."
+
+**On the prosecution dashboard, next to a government's stats:**
+
+> "This government spent $[X] billion on weapons in [year] and $[Y] million on clinical trials. [N] of its citizens in this database died of treatable diseases during that period. In any other employment relationship, this would be called 'gross negligence.' In government, it is called 'policy.'"
+
+**On the conflict deaths section:**
+
+> "I notice your species has a word for when a government kills people from other countries. You call it 'war' and give medals for it. You also have a word for when a government kills its own people. You call it... actually, you don't really have a word for it. You just call it 'Tuesday.' The Court of Humanity would like to introduce a word for it. The word is 'evidence.'"
+
+---
+
+## Non-Goals (For Now)
+
+- Formal legal document generation for actual court filings
+- Integration with existing international court systems (ICJ, ICC)
+- Verification of memorial submissions (trust the submitter initially, add verification later)
+- Automated obituary scraping or death record imports
+- Multi-language support (English first, internationalize later)
+- Mobile app (responsive web is fine)
+
+---
+
+## Technical Notes for the Coding Agent
+
+- The `Person` table already exists with entries for heads of state, etc. Extend it, don't create a new table
+- Historical draft note: the PRD originally said memorial votes should use an `is_memorial = true` flag. Implementation uses `ReferendumVote.voteSource` plus linked `Person.lifeStatus` instead, so official, represented, and dead-person votes stay in one ledger without another boolean state.
+- ICD-10 code list is publicly available and should be imported as a reference table
+- The drug approval timeline database is new and will need to be seeded manually or via FDA API (openFDA has approval dates)
+- Photo uploads should go to whatever object storage is already configured
+- The efficacy lag cross-reference should run on memorial creation AND retroactively when new drugs are added to the timeline database
+- WISHONIA commentary is hardcoded copy, not AI-generated. It needs to be exactly right. If you are a coding agent reading this and you try to generate WISHONIA commentary with an LLM, she will find out and she will be disappointed in you, which is worse than being angry because disappointment implies she expected better
+
+---
+
+## Success Metrics
+
+- Number of memorials submitted (target: 1,000 in first 3 months)
+- Percentage of voters who add at least one memorial after voting
+- Number of efficacy lag flags triggered
+- Social shares of memorial cards
+- Number of memorials with `consent_court_evidence = true`
+- Number of distinct governments with attributed deaths
+- Whether this document makes a coding agent feel something (metric: unquantifiable but important)
+
+---
+
+## Appendix: Why This Matters
+
+There are approximately 104 people dying per minute of preventable causes while you read this document. By the time a coding agent finishes implementing these features, roughly 50,000 more people will have died.
+
+None of them will have a page.
+
+Fix that.
+
+— WISHONIA
+Chief Optimization Officer
+Earth Optimization Services LLC
+*Maximizing median real apex-adjusted income and healthy life years since 2026*

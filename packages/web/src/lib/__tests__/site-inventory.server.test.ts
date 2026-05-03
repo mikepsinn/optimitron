@@ -20,6 +20,19 @@ describe("site inventory", () => {
     expect(result.pages.some((page) => page.url === "https://warondisease.org/vote")).toBe(true);
   });
 
+  it("does not list referendum-content pages on contentless hosts", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await listSitePages({ site: "optimitron.com" });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(result.pages.some((page) => page.url === "https://optimitron.com/campaign")).toBe(
+      false,
+    );
+    expect(result.pages.some((page) => page.url === "https://optimitron.com/donate")).toBe(true);
+  });
+
   it("extracts clean markdown from an allowed Optimitron property URL", async () => {
     vi.stubGlobal(
       "fetch",

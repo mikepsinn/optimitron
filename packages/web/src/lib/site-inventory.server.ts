@@ -2,7 +2,7 @@ import { allNavLinks, type NavItem } from "@/lib/routes";
 import {
   getAllSiteConfigs,
   getSiteFromHost,
-  isSiteRouteAllowed,
+  isStaticPathEnabledForSite,
   type SiteConfig,
 } from "@/lib/site";
 
@@ -105,7 +105,7 @@ function pagePathsForSite(site: SiteConfig) {
   const paths = new Set<string>(["/"]);
   for (const item of navItemsForSite(site)) {
     if (item.external || !item.href.startsWith("/")) continue;
-    if (isSiteRouteAllowed(site, item.href)) paths.add(item.href);
+    if (isStaticPathEnabledForSite(site, item.href)) paths.add(item.href);
   }
 
   for (const prefix of [
@@ -113,7 +113,7 @@ function pagePathsForSite(site: SiteConfig) {
     ...site.routePolicy.publicPrefixes,
   ]) {
     if (prefix.includes("[") || prefix.includes(":")) continue;
-    if (isSiteRouteAllowed(site, prefix)) paths.add(prefix);
+    if (isStaticPathEnabledForSite(site, prefix)) paths.add(prefix);
   }
 
   return [...paths].sort();
@@ -229,7 +229,7 @@ function isAllowedPropertyUrl(url: URL) {
   const host = url.hostname.toLowerCase();
   if (host === MANUAL_HOST) return true;
   const site = getKnownSite(host);
-  return !!site && isSiteRouteAllowed(site, url.pathname);
+  return !!site && isStaticPathEnabledForSite(site, url.pathname);
 }
 
 function htmlEntityDecode(value: string) {

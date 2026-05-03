@@ -1,8 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/retroui/Button"
 import { LogOut } from "lucide-react"
-import { signOut } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { buildUserReferralUrl } from "@/lib/url"
 import { ImpactLedgerCard } from "@/components/dashboard/ImpactLedgerCard"
 import { ReferralLinkCard } from "@/components/dashboard/ReferralLinkCard"
@@ -37,8 +39,16 @@ export function EarthOptimizationDashboardClient({
   leaderboard: LeaderboardEntry[]
   topTasks: TaskCardTask[]
 }) {
+  const router = useRouter()
+  const { update: updateSession } = useSession()
+  const [user, setUser] = useState(initialData.user)
   const baseUrl = useRequestSiteOrigin()
-  const referralLink = buildUserReferralUrl(initialData.user, baseUrl)
+  const referralLink = buildUserReferralUrl(user, baseUrl)
+
+  const refreshPage = () => {
+    void updateSession()
+    router.refresh()
+  }
 
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] pb-20 text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
@@ -69,7 +79,13 @@ export function EarthOptimizationDashboardClient({
         </section>
 
         <section className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2" id={DASHBOARD_REFERRAL_SECTION_ID}>
-          <ReferralLinkCard referralLink={referralLink} className="h-full" />
+          <ReferralLinkCard
+            user={user}
+            baseUrl={baseUrl}
+            onUserChange={setUser}
+            onRefresh={refreshPage}
+            className="h-full"
+          />
           <ReferralGoalCard stats={initialData.stats} />
         </section>
 
@@ -109,7 +125,7 @@ export function EarthOptimizationDashboardClient({
               {leaderboard.length > 0 && (
                 <LeaderboardCard
                   leaderboard={leaderboard}
-                  user={initialData.user}
+                  user={user}
                   stats={initialData.stats}
                 />
               )}

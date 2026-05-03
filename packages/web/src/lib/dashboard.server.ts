@@ -23,6 +23,7 @@ import {
 } from "@optimitron/data/parameters";
 import { MAJORITY_OF_HUMANS_ON_EARTH_VALUE } from "@/lib/majority-humanity-target";
 import { getImpactReceipts } from "@/lib/impact-receipts.server";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import { DASHBOARD_REFERRAL_HASH, ROUTES } from "@/lib/routes";
 import { GAME } from "@/lib/messaging";
 import type {
@@ -113,7 +114,9 @@ export async function getDashboardData(
   const rank = usersAhead + 1;
 
   // Global progress: total referendum votes as % of global population
-  const totalReferendumVotes = await prisma.referendumVote.count();
+  const totalReferendumVotes = await prisma.referendumVote.count({
+    where: buildOfficialReferendumVoteWhere(),
+  });
   const globalProgressPct =
     (totalReferendumVotes / GLOBAL_POPULATION_2024.value) * 100;
   const targetPct =

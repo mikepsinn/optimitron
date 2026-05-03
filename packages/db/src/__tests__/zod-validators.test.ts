@@ -16,7 +16,16 @@ import {
   PersonhoodVerificationStatusSchema,
   JurisdictionTypeSchema,
   SubjectTypeSchema,
+  InterventionExperienceStatusSchema,
+  InterventionOutcomeRatingSchema,
+  InterventionSideEffectSeveritySchema,
+  VariableEvidenceMetricKindSchema,
+  VariableRelationshipEvidenceSourceTypeSchema,
+  InterventionRankingRunStatusSchema,
   ReferralAnswerSchema,
+  McpScopeSchema,
+  McpToolCallAuditSchema,
+  ContentReportSchema,
   // Models
   AccountSchema,
   PersonhoodVerificationSchema,
@@ -26,9 +35,16 @@ import {
   VariableCategorySchema,
   VerificationTokenSchema,
   GlobalVariableSchema,
+  GlobalVariableExternalCodeSchema,
   SubjectSchema,
   NOf1VariableSchema,
   MeasurementSchema,
+  InterventionExperienceSchema,
+  InterventionExperienceOutcomeSchema,
+  InterventionExperienceSideEffectSchema,
+  VariableRelationshipEvidenceEstimateSchema,
+  InterventionRankingRunSchema,
+  RankedInterventionSchema,
   TrackingReminderSchema,
   TrackingReminderNotificationSchema,
   NOf1VariableRelationshipSchema,
@@ -56,7 +72,8 @@ const now = new Date();
 
 const validMeasurement = {
   id: 'clx1234567890',
-  userId: 'user_abc',
+  subjectId: 'subject_abc',
+  recordedByUserId: 'user_abc',
   nOf1VariableId: 'uvar_abc',
   globalVariableId: 'gvar_abc',
   startTime: now,
@@ -111,6 +128,10 @@ const validSubject = {
   id: 'subject_1',
   subjectType: 'USER' as const,
   externalId: 'user_abc',
+  userId: 'user_abc',
+  personId: null,
+  jurisdictionId: null,
+  organizationId: null,
   displayName: 'Primary User',
   createdAt: now,
   updatedAt: now,
@@ -223,7 +244,7 @@ describe('Enum schemas', () => {
   });
 
   it('17. SubjectType — accepts all valid values', () => {
-    for (const val of ['USER', 'JURISDICTION', 'COHORT', 'ORGANIZATION']) {
+    for (const val of ['USER', 'PERSON', 'JURISDICTION', 'COHORT', 'ORGANIZATION']) {
       expect(SubjectTypeSchema.parse(val)).toBe(val);
     }
   });
@@ -248,6 +269,15 @@ describe('Enum schemas', () => {
     expect(PersonhoodVerificationStatusSchema.parse('VERIFIED')).toBe('VERIFIED');
     expect(PersonhoodVerificationStatusSchema.parse('REVOKED')).toBe('REVOKED');
     expect(PersonhoodVerificationStatusSchema.safeParse('PENDING').success).toBe(false);
+  });
+
+  it('22. Intervention and evidence enums accept canonical values', () => {
+    expect(InterventionExperienceStatusSchema.parse('CURRENT')).toBe('CURRENT');
+    expect(InterventionOutcomeRatingSchema.parse('MAJOR_IMPROVEMENT')).toBe('MAJOR_IMPROVEMENT');
+    expect(InterventionSideEffectSeveritySchema.parse('SEVERE')).toBe('SEVERE');
+    expect(VariableEvidenceMetricKindSchema.parse('NNT')).toBe('NNT');
+    expect(VariableRelationshipEvidenceSourceTypeSchema.parse('IMPORTED_STUDY')).toBe('IMPORTED_STUDY');
+    expect(InterventionRankingRunStatusSchema.parse('ACTIVE')).toBe('ACTIVE');
   });
 });
 
@@ -275,10 +305,9 @@ describe('MeasurementSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('19. fails when required field "userId" is missing', () => {
-    const { userId, ...noUser } = validMeasurement;
-    const result = MeasurementSchema.safeParse(noUser);
-    expect(result.success).toBe(false);
+  it('19. validates subject-owned measurements without legacy user ownership', () => {
+    const result = MeasurementSchema.safeParse(validMeasurement);
+    expect(result.success).toBe(true);
   });
 
   it('20. fails when required field "startTime" is missing', () => {
@@ -303,7 +332,7 @@ describe('MeasurementSchema', () => {
   it('22. allows optional fields to be omitted', () => {
     const minimal = {
       id: 'meas_1',
-      userId: 'user_1',
+      subjectId: 'subject_1',
       nOf1VariableId: 'uv_1',
       globalVariableId: 'gv_1',
       startTime: now,
@@ -416,6 +445,17 @@ describe('SubjectSchema', () => {
       subjectType: 'TEAM',
     });
     expect(result.success).toBe(false);
+  });
+
+  it('33. accepts an explicit person subject link', () => {
+    const result = SubjectSchema.safeParse({
+      ...validSubject,
+      subjectType: 'PERSON',
+      externalId: null,
+      personId: 'person_1',
+      userId: null,
+    });
+    expect(result.success).toBe(true);
   });
 });
 
@@ -763,13 +803,114 @@ describe('Additional models', () => {
   it('50. validates a NOf1Variable', () => {
     const data = {
       id: 'uv_1',
-      userId: 'user_1',
       subjectId: 'subject_1',
       globalVariableId: 'gv_1',
       createdAt: now,
       updatedAt: now,
     };
     expect(NOf1VariableSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('50b. fails when NOf1Variable subjectId is missing', () => {
+    const data = {
+      id: 'uv_1',
+      globalVariableId: 'gv_1',
+      createdAt: now,
+      updatedAt: now,
+    };
+    expect(NOf1VariableSchema.safeParse(data).success).toBe(false);
+  });
+
+  it('50c. validates GlobalVariableExternalCode', () => {
+    expect(
+      GlobalVariableExternalCodeSchema.safeParse({
+        id: 'code_1',
+        globalVariableId: 'gv_alzheimers',
+        codeSystem: 'ICD-10',
+        code: 'G30.9',
+        displayName: 'Alzheimer disease, unspecified',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('50d. validates intervention report and ranking models', () => {
+    expect(
+      InterventionExperienceSchema.safeParse({
+        id: 'ix_1',
+        subjectId: 'subject_1',
+        reportedByUserId: 'user_1',
+        conditionGlobalVariableId: 'gv_condition',
+        interventionGlobalVariableId: 'gv_treatment',
+        status: 'CURRENT',
+        doseValue: 10,
+        doseUnitId: 'unit_mg',
+        frequencyText: 'daily',
+        isPublic: false,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      InterventionExperienceOutcomeSchema.safeParse({
+        id: 'ixo_1',
+        interventionExperienceId: 'ix_1',
+        outcomeGlobalVariableId: 'gv_outcome',
+        rating: 'MODERATE_IMPROVEMENT',
+        value: 4,
+        unitId: 'unit_rating',
+        isPublic: false,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      InterventionExperienceSideEffectSchema.safeParse({
+        id: 'ixs_1',
+        interventionExperienceId: 'ix_1',
+        sideEffectGlobalVariableId: 'gv_nausea',
+        severity: 'MILD',
+        isPublic: false,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      VariableRelationshipEvidenceEstimateSchema.safeParse({
+        id: 'vre_1',
+        predictorGlobalVariableId: 'gv_treatment',
+        outcomeGlobalVariableId: 'gv_condition',
+        metricKind: 'EFFECTIVENESS',
+        sourceType: 'CURATED_DATASET',
+        value: 72,
+        confidenceScore: 0.8,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      InterventionRankingRunSchema.safeParse({
+        id: 'rank_run_1',
+        conditionGlobalVariableId: 'gv_condition',
+        algorithmKey: 'medical-static-v1',
+        status: 'ACTIVE',
+        rankedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      RankedInterventionSchema.safeParse({
+        id: 'ranked_1',
+        rankingRunId: 'rank_run_1',
+        interventionGlobalVariableId: 'gv_treatment',
+        rank: 1,
+        score: 91,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
   });
 
   it('51. validates a TrackingReminder', () => {
@@ -876,6 +1017,44 @@ describe('Additional models', () => {
 // ============================================================================
 
 describe('Edge cases', () => {
+  it('58. MCP Earth-data schemas accept new scopes and audit/report rows', () => {
+    expect(McpScopeSchema.parse('EARTHDATA_WRITE')).toBe('EARTHDATA_WRITE');
+    expect(McpToolCallAuditSchema.safeParse({
+      id: 'audit_1',
+      userId: 'user_1',
+      clientId: 'client_1',
+      oauthGrantId: null,
+      agentId: 'agent_1',
+      runId: 'run_1',
+      toolName: 'upsertMemorialPerson',
+      status: 'SUCCEEDED',
+      inputHash: 'abc123',
+      inputSummaryJson: { keys: ['displayName'] },
+      outputSummaryJson: { refs: { personId: ['person_1'] } },
+      errorSummary: null,
+      createdAt: now,
+      completedAt: now,
+      updatedAt: now,
+    }).success).toBe(true);
+    expect(ContentReportSchema.safeParse({
+      id: 'report_1',
+      targetType: 'Person',
+      targetId: 'person_1',
+      reportedByUserId: 'user_1',
+      reasonType: 'correction',
+      message: 'Wrong date',
+      correctionJson: { deathDate: '2020-01-01' },
+      sourceUrl: 'https://example.org/source',
+      status: 'OPEN',
+      reviewedByUserId: null,
+      reviewedAt: null,
+      resolutionNote: null,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    }).success).toBe(true);
+  });
+
   it('59. rejects completely empty object for Measurement', () => {
     expect(MeasurementSchema.safeParse({}).success).toBe(false);
   });
@@ -888,7 +1067,7 @@ describe('Edge cases', () => {
 
   it('61. rejects number for a string field', () => {
     expect(
-      MeasurementSchema.safeParse({ ...validMeasurement, userId: 12345 }).success,
+      MeasurementSchema.safeParse({ ...validMeasurement, subjectId: 12345 }).success,
     ).toBe(false);
   });
 
@@ -942,4 +1121,3 @@ describe('Edge cases', () => {
     ).toBe(false);
   });
 });
-

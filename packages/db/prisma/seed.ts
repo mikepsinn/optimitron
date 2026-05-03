@@ -23,13 +23,21 @@
 import {
   PrismaClient,
   CombinationOperation,
+  EvidenceGrade,
   FillingType,
+  InterventionRankingRunStatus,
   Valence,
   MeasurementScale,
   JurisdictionType,
+  PersonConditionStatus,
+  PersonLifeStatus,
   ReferendumStatus,
+  ReferendumVoteSource,
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
+  VariableEvidenceMetricKind,
+  VariableRelationshipEvidenceSourceType,
+  VotePosition,
   type Prisma,
 } from "../src/generated/prisma/client.js";
 import {
@@ -43,6 +51,11 @@ import {
   getUSWishocraticCatalogRecords,
   listGovernmentLeaders,
 } from "@optimitron/data";
+import {
+  getAllConditions,
+  getAllTreatments,
+  type TreatmentWithConditions,
+} from "@optimitron/data/datasets/medical";
 import {
   DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
@@ -111,6 +124,45 @@ async function upsertGlobalVariable(data: Prisma.GlobalVariableUncheckedCreateIn
     update: data,
     create: data,
   });
+}
+
+function splitExternalCodes(rawCodes: string | null): string[] {
+  if (!rawCodes) return [];
+
+  return Array.from(
+    new Set(
+      rawCodes
+        .split(/[;,]/u)
+        .map((code) => code.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
+function stableSeedId(prefix: string, ...parts: string[]): string {
+  return `${prefix}-${parts
+    .join("-")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 180)}`;
+}
+
+function clampScore(value: number): number {
+  return Math.max(0, Math.min(100, Number(value.toFixed(2))));
+}
+
+function calculateStaticInterventionScore(treatment: TreatmentWithConditions, condition: TreatmentWithConditions["conditions"][number]) {
+  const participantScore = Math.min(100, Math.log10(Math.max(1, condition.participants)) * 18);
+  const trialScore = Math.min(100, Math.log10(Math.max(1, condition.trials)) * 25);
+  return clampScore(
+    condition.effectiveness * 0.5 +
+      condition.safetyScore * 0.25 +
+      participantScore * 0.15 +
+      trialScore * 0.1,
+  );
 }
 
 async function upsertJurisdiction(data: Prisma.JurisdictionUncheckedCreateInput) {
@@ -566,6 +618,253 @@ async function seedGlobalVariables(
   console.log(`  ✅ ${count} global variables`);
 }
 
+async function seedMedicalReferenceData(
+  unitMap: Record<string, string>,
+  catMap: Record<string, string>,
+) {
+  console.log("🧬 Seeding medical conditions, intervention evidence, and rankings...");
+
+  const conditionCategoryId = catMap["Condition"];
+  const treatmentCategoryId = catMap["Treatment"];
+  const conditionUnitId = unitMap["1-5"];
+  const treatmentUnitId = unitMap["count"];
+
+  if (!conditionCategoryId || !treatmentCategoryId || !conditionUnitId || !treatmentUnitId) {
+    console.warn("  ⚠️  Missing medical category/unit seeds — skipping medical reference data");
+    return;
+  }
+
+  const conditionVariablesBySlug = new Map<string, string>();
+  const treatmentVariablesBySlug = new Map<string, string>();
+  let codeCount = 0;
+
+  for (const condition of getAllConditions()) {
+    const variable = await upsertGlobalVariable({
+      name: condition.name,
+      description: condition.description,
+      variableCategoryId: conditionCategoryId,
+      defaultUnitId: conditionUnitId,
+      combinationOperation: CombinationOperation.MEAN,
+      fillingType: FillingType.NONE,
+      predictorOnly: false,
+      outcome: true,
+      valence: Valence.NEGATIVE,
+      synonyms: condition.synonyms.join(",") || undefined,
+    });
+    conditionVariablesBySlug.set(condition.slug, variable.id);
+
+    for (const code of splitExternalCodes(condition.icd10Codes)) {
+      await prisma.globalVariableExternalCode.upsert({
+        where: {
+          globalVariableId_codeSystem_code: {
+            globalVariableId: variable.id,
+            codeSystem: "ICD-10",
+            code,
+          },
+        },
+        update: {
+          deletedAt: null,
+          displayName: condition.name,
+          metadataJson: {
+            conditionCategory: condition.category,
+            conditionSlug: condition.slug,
+            dataSourceYear: condition.dataSourceYear,
+            source: "packages/data medical conditions",
+          },
+        },
+        create: {
+          globalVariableId: variable.id,
+          codeSystem: "ICD-10",
+          code,
+          displayName: condition.name,
+          metadataJson: {
+            conditionCategory: condition.category,
+            conditionSlug: condition.slug,
+            dataSourceYear: condition.dataSourceYear,
+            source: "packages/data medical conditions",
+          },
+        },
+      });
+      codeCount++;
+    }
+  }
+
+  for (const treatment of getAllTreatments()) {
+    const variable = await upsertGlobalVariable({
+      name: treatment.name,
+      variableCategoryId: treatmentCategoryId,
+      defaultUnitId: treatmentUnitId,
+      combinationOperation: CombinationOperation.SUM,
+      fillingType: FillingType.ZERO,
+      fillingValue: 0,
+      onsetDelay: 1800,
+      durationOfAction: 86400,
+      predictorOnly: true,
+      outcome: false,
+      valence: Valence.POSITIVE,
+      minimumAllowedValue: 0,
+    });
+    treatmentVariablesBySlug.set(treatment.slug, variable.id);
+  }
+
+  const rankedByConditionSlug = new Map<string, Array<{
+    condition: TreatmentWithConditions["conditions"][number];
+    evidenceId: string;
+    score: number;
+    treatment: TreatmentWithConditions;
+    interventionGlobalVariableId: string;
+  }>>();
+
+  for (const treatment of getAllTreatments()) {
+    const interventionGlobalVariableId = treatmentVariablesBySlug.get(treatment.slug);
+    if (!interventionGlobalVariableId) continue;
+
+    for (const condition of treatment.conditions) {
+      const conditionGlobalVariableId = conditionVariablesBySlug.get(condition.conditionSlug);
+      if (!conditionGlobalVariableId) continue;
+
+      const effectivenessEvidenceId = stableSeedId(
+        "medical-evidence",
+        treatment.slug,
+        condition.conditionSlug,
+        "effectiveness",
+      );
+      await prisma.variableRelationshipEvidenceEstimate.upsert({
+        where: { id: effectivenessEvidenceId },
+        update: {
+          confidenceScore: treatment.avgEffectiveness / 100,
+          contextGlobalVariableId: conditionGlobalVariableId,
+          deletedAt: null,
+          metricKind: VariableEvidenceMetricKind.EFFECTIVENESS,
+          outcomeGlobalVariableId: conditionGlobalVariableId,
+          participants: condition.participants,
+          predictorGlobalVariableId: interventionGlobalVariableId,
+          sourceType: VariableRelationshipEvidenceSourceType.CURATED_DATASET,
+          studies: condition.trials,
+          value: condition.effectiveness,
+        },
+        create: {
+          id: effectivenessEvidenceId,
+          confidenceScore: treatment.avgEffectiveness / 100,
+          contextGlobalVariableId: conditionGlobalVariableId,
+          evidenceGrade:
+            condition.participants >= 10_000
+              ? EvidenceGrade.A
+              : condition.participants >= 1_000
+                ? EvidenceGrade.B
+                : EvidenceGrade.C,
+          metricKind: VariableEvidenceMetricKind.EFFECTIVENESS,
+          outcomeGlobalVariableId: conditionGlobalVariableId,
+          participants: condition.participants,
+          predictorGlobalVariableId: interventionGlobalVariableId,
+          rationale: `Static dFDA catalog estimate for ${treatment.name} in ${condition.conditionName}.`,
+          sourceType: VariableRelationshipEvidenceSourceType.CURATED_DATASET,
+          studies: condition.trials,
+          value: condition.effectiveness,
+        },
+      });
+
+      const safetyEvidenceId = stableSeedId(
+        "medical-evidence",
+        treatment.slug,
+        condition.conditionSlug,
+        "safety",
+      );
+      await prisma.variableRelationshipEvidenceEstimate.upsert({
+        where: { id: safetyEvidenceId },
+        update: {
+          confidenceScore: treatment.avgSafetyScore / 100,
+          contextGlobalVariableId: conditionGlobalVariableId,
+          deletedAt: null,
+          metricKind: VariableEvidenceMetricKind.SAFETY,
+          outcomeGlobalVariableId: conditionGlobalVariableId,
+          participants: condition.participants,
+          predictorGlobalVariableId: interventionGlobalVariableId,
+          sourceType: VariableRelationshipEvidenceSourceType.CURATED_DATASET,
+          studies: condition.trials,
+          value: condition.safetyScore,
+        },
+        create: {
+          id: safetyEvidenceId,
+          confidenceScore: treatment.avgSafetyScore / 100,
+          contextGlobalVariableId: conditionGlobalVariableId,
+          metricKind: VariableEvidenceMetricKind.SAFETY,
+          outcomeGlobalVariableId: conditionGlobalVariableId,
+          participants: condition.participants,
+          predictorGlobalVariableId: interventionGlobalVariableId,
+          rationale: `Static dFDA catalog safety estimate for ${treatment.name} in ${condition.conditionName}.`,
+          sourceType: VariableRelationshipEvidenceSourceType.CURATED_DATASET,
+          studies: condition.trials,
+          value: condition.safetyScore,
+        },
+      });
+
+      const ranked = rankedByConditionSlug.get(condition.conditionSlug) ?? [];
+      ranked.push({
+        condition,
+        evidenceId: effectivenessEvidenceId,
+        score: calculateStaticInterventionScore(treatment, condition),
+        treatment,
+        interventionGlobalVariableId,
+      });
+      rankedByConditionSlug.set(condition.conditionSlug, ranked);
+    }
+  }
+
+  let rankedCount = 0;
+  for (const [conditionSlug, ranked] of rankedByConditionSlug) {
+    const conditionGlobalVariableId = conditionVariablesBySlug.get(conditionSlug);
+    if (!conditionGlobalVariableId) continue;
+
+    const rankingRunId = stableSeedId("medical-ranking", conditionSlug);
+    await prisma.interventionRankingRun.upsert({
+      where: { id: rankingRunId },
+      update: {
+        algorithmKey: "medical-static-v1",
+        conditionGlobalVariableId,
+        deletedAt: null,
+        status: InterventionRankingRunStatus.ACTIVE,
+      },
+      create: {
+        id: rankingRunId,
+        algorithmKey: "medical-static-v1",
+        algorithmVersion: "packages/data medical snapshot",
+        conditionGlobalVariableId,
+        status: InterventionRankingRunStatus.ACTIVE,
+      },
+    });
+
+    await prisma.rankedIntervention.deleteMany({
+      where: { rankingRunId },
+    });
+
+    const rankedRows = ranked
+      .sort((a, b) => b.score - a.score || b.condition.participants - a.condition.participants)
+      .map((entry, index) => ({
+        id: stableSeedId("ranked-intervention", conditionSlug, entry.treatment.slug),
+        rankingRunId,
+        interventionGlobalVariableId: entry.interventionGlobalVariableId,
+        rank: index + 1,
+        score: entry.score,
+        effectivenessScore: entry.condition.effectiveness,
+        safetyScore: entry.condition.safetyScore,
+        evidenceScore: Math.min(100, Math.log10(Math.max(1, entry.condition.participants)) * 18),
+        confidenceScore: entry.treatment.avgEffectiveness / 100,
+        sourceEvidenceEstimateId: entry.evidenceId,
+        rationale: `${entry.treatment.name}: ${entry.condition.effectiveness}% effectiveness, ${entry.condition.safetyScore}% safety in the static dFDA catalog.`,
+      }));
+
+    if (rankedRows.length > 0) {
+      await prisma.rankedIntervention.createMany({ data: rankedRows });
+      rankedCount += rankedRows.length;
+    }
+  }
+
+  console.log(
+    `  ✅ ${conditionVariablesBySlug.size} conditions, ${codeCount} ICD-10 codes, ${treatmentVariablesBySlug.size} interventions, ${rankedCount} ranked rows`,
+  );
+}
+
 // ============================================================================
 // D) JURISDICTIONS — US Federal + 50 States
 // ============================================================================
@@ -648,7 +947,431 @@ async function seedJurisdictions() {
   }
 
   console.log(`  ✅ 1 country + ${states.length} states`);
+
+  // Conflict-relevant and globally significant countries for the Invisible
+  // Graveyard "Responsible governments" picker. ISO-3166-1 alpha-2 codes.
+  // Not exhaustive — add more as memorial submissions surface them.
+  const otherCountries: [string, string, number][] = [
+    ["Israel",                 "IL", 9_756_000],
+    ["Palestine",              "PS", 5_483_000],
+    ["Ukraine",                "UA", 33_400_000],
+    ["Russia",                 "RU", 144_400_000],
+    ["Yemen",                  "YE", 34_450_000],
+    ["Syria",                  "SY", 23_230_000],
+    ["Sudan",                  "SD", 48_110_000],
+    ["South Sudan",            "SS", 11_090_000],
+    ["Myanmar",                "MM", 54_500_000],
+    ["Ethiopia",               "ET", 126_500_000],
+    ["China",                  "CN", 1_410_000_000],
+    ["Iran",                   "IR", 89_170_000],
+    ["Saudi Arabia",           "SA", 36_950_000],
+    ["North Korea",            "KP", 26_160_000],
+    ["Egypt",                  "EG", 110_990_000],
+    ["Pakistan",               "PK", 240_490_000],
+    ["India",                  "IN", 1_428_630_000],
+    ["Turkey",                 "TR", 85_330_000],
+    ["Mexico",                 "MX", 128_460_000],
+    ["Venezuela",              "VE", 28_840_000],
+    ["Lebanon",                "LB", 5_490_000],
+    ["Belarus",                "BY", 9_500_000],
+    ["Afghanistan",            "AF", 42_240_000],
+    ["United Kingdom",         "GB", 67_960_000],
+    ["France",                 "FR", 68_170_000],
+    ["Germany",                "DE", 84_480_000],
+    ["Japan",                  "JP", 124_520_000],
+    ["South Korea",            "KR", 51_780_000],
+    ["Canada",                 "CA", 40_100_000],
+    ["Australia",              "AU", 26_640_000],
+    ["Singapore",              "SG", 5_920_000],
+  ];
+
+  for (const [name, code, population] of otherCountries) {
+    await upsertJurisdiction({
+      name,
+      type: JurisdictionType.COUNTRY,
+      code,
+      population,
+    });
+  }
+
+  console.log(`  ✅ ${otherCountries.length} additional countries`);
   return us.id;
+}
+
+// ============================================================================
+// D2) CONFLICTS — Active and recent armed conflicts for memorial attribution
+// ============================================================================
+
+async function seedConflicts() {
+  console.log("⚔️  Seeding active/recent conflicts...");
+
+  // Lookup helper
+  async function jurisdictionIdForCode(code: string): Promise<string | null> {
+    const row = await prisma.jurisdiction.findUnique({
+      where: { code },
+      select: { id: true },
+    });
+    return row?.id ?? null;
+  }
+
+  const conflicts: Array<{
+    slug: string;
+    name: string;
+    description?: string;
+    startDate?: Date;
+    endDate?: Date;
+    primaryJurisdictionCode?: string;
+    sourceUrl?: string;
+  }> = [
+    {
+      slug: "gaza-2023",
+      name: "Gaza war (2023–present)",
+      description:
+        "Armed conflict in the Gaza Strip following the October 7, 2023 attacks; civilian casualties tracked by UN OCHA, WHO, and Gaza Ministry of Health.",
+      startDate: new Date("2023-10-07T00:00:00Z"),
+      primaryJurisdictionCode: "IL",
+      sourceUrl: "https://www.ochaopt.org/",
+    },
+    {
+      slug: "ukraine-2022",
+      name: "Russia–Ukraine war (2022–present)",
+      description:
+        "Full-scale Russian invasion of Ukraine starting February 24, 2022. Civilian casualty data tracked by UN OHCHR HRMMU.",
+      startDate: new Date("2022-02-24T00:00:00Z"),
+      primaryJurisdictionCode: "UA",
+      sourceUrl: "https://ukraine.un.org/",
+    },
+    {
+      slug: "yemen-civil-war",
+      name: "Yemen civil war (2014–present)",
+      description:
+        "Ongoing armed conflict involving Houthi forces, the Yemeni government, and the Saudi-led coalition.",
+      startDate: new Date("2014-09-21T00:00:00Z"),
+      primaryJurisdictionCode: "YE",
+      sourceUrl: "https://acleddata.com/yemen-conflict-observatory/",
+    },
+    {
+      slug: "syria-civil-war",
+      name: "Syrian civil war (2011–present)",
+      description:
+        "Multi-sided conflict beginning with the 2011 uprising; UN OHCHR has documented hundreds of thousands of deaths.",
+      startDate: new Date("2011-03-15T00:00:00Z"),
+      primaryJurisdictionCode: "SY",
+      sourceUrl: "https://www.ohchr.org/en/countries/syria",
+    },
+    {
+      slug: "sudan-2023",
+      name: "Sudan war (2023–present)",
+      description:
+        "Armed conflict between the Sudanese Armed Forces and the Rapid Support Forces beginning April 15, 2023.",
+      startDate: new Date("2023-04-15T00:00:00Z"),
+      primaryJurisdictionCode: "SD",
+      sourceUrl: "https://acleddata.com/sudan-conflict-observatory/",
+    },
+    {
+      slug: "tigray-war",
+      name: "Tigray war (2020–2022)",
+      description:
+        "Armed conflict in Tigray Region of Ethiopia involving Ethiopian and Eritrean forces and the Tigray People's Liberation Front.",
+      startDate: new Date("2020-11-04T00:00:00Z"),
+      endDate: new Date("2022-11-03T00:00:00Z"),
+      primaryJurisdictionCode: "ET",
+      sourceUrl: "https://www.ohchr.org/en/countries/ethiopia",
+    },
+    {
+      slug: "myanmar-civil-war",
+      name: "Myanmar civil war (2021–present)",
+      description:
+        "Armed resistance to the February 2021 military coup, including ethnic armed organizations and the People's Defence Force.",
+      startDate: new Date("2021-02-01T00:00:00Z"),
+      primaryJurisdictionCode: "MM",
+      sourceUrl: "https://acleddata.com/myanmar-conflict-observatory/",
+    },
+    {
+      slug: "afghanistan-2001",
+      name: "War in Afghanistan (2001–2021)",
+      description:
+        "Multi-phase armed conflict beginning with the U.S.-led invasion in October 2001 through the Taliban takeover in August 2021.",
+      startDate: new Date("2001-10-07T00:00:00Z"),
+      endDate: new Date("2021-08-30T00:00:00Z"),
+      primaryJurisdictionCode: "AF",
+      sourceUrl: "https://watson.brown.edu/costsofwar/",
+    },
+    {
+      slug: "iraq-2003",
+      name: "Iraq war (2003–2011)",
+      description:
+        "U.S.-led invasion of Iraq and subsequent multi-sided conflict; Iraq Body Count and Lancet studies document civilian death toll.",
+      startDate: new Date("2003-03-20T00:00:00Z"),
+      endDate: new Date("2011-12-18T00:00:00Z"),
+      primaryJurisdictionCode: "US",
+      sourceUrl: "https://www.iraqbodycount.org/",
+    },
+    {
+      slug: "other",
+      name: "Other / not listed",
+      description:
+        "Generic placeholder for conflicts not yet seeded. Use 'circumstances' to describe the specific conflict.",
+    },
+  ];
+
+  for (const c of conflicts) {
+    const primaryJurisdictionId = c.primaryJurisdictionCode
+      ? await jurisdictionIdForCode(c.primaryJurisdictionCode)
+      : null;
+
+    await prisma.conflict.upsert({
+      where: { slug: c.slug },
+      update: {
+        name: c.name,
+        description: c.description ?? null,
+        startDate: c.startDate ?? null,
+        endDate: c.endDate ?? null,
+        primaryJurisdictionId,
+        sourceUrl: c.sourceUrl ?? null,
+      },
+      create: {
+        slug: c.slug,
+        name: c.name,
+        description: c.description ?? null,
+        startDate: c.startDate ?? null,
+        endDate: c.endDate ?? null,
+        primaryJurisdictionId,
+        sourceUrl: c.sourceUrl ?? null,
+      },
+    });
+  }
+
+  console.log(`  ✅ ${conflicts.length} conflicts (${conflicts.length - 1} named + 'other' fallback)`);
+}
+
+// ============================================================================
+// D3) DRUG/INTERVENTION APPROVAL TIMELINES — for the efficacy-lag matcher
+// ============================================================================
+
+async function seedDrugApprovalTimelines() {
+  console.log("⏳ Seeding intervention approval timelines (efficacy-lag heavy hitters)...");
+
+  // Lookup helpers
+  async function jurisdictionIdForCode(code: string): Promise<string | null> {
+    const row = await prisma.jurisdiction.findUnique({
+      where: { code },
+      select: { id: true },
+    });
+    return row?.id ?? null;
+  }
+  async function globalVariableIdByName(name: string): Promise<string | null> {
+    const row = await prisma.globalVariable.findFirst({
+      where: {
+        deletedAt: null,
+        OR: [
+          { name: { equals: name, mode: "insensitive" } },
+          { synonyms: { contains: name, mode: "insensitive" } },
+        ],
+      },
+      select: { id: true },
+    });
+    return row?.id ?? null;
+  }
+
+  const usJurisdictionId = await jurisdictionIdForCode("US");
+  const ONE_DAY = 1000 * 60 * 60 * 24;
+
+  // PRD TODO.md:1270–1278. Dates are best-known approximations (academic consensus
+  // for first efficacy evidence, FDA approval dates). Lives-saved-per-year and
+  // deaths-during-lag are order-of-magnitude estimates from the literature cited
+  // alongside each entry — meant to anchor the matcher, not to be exact.
+  const timelines: Array<{
+    interventionName: string;
+    brandName?: string;
+    conditionName: string;
+    regulatorName: string;
+    firstEvidenceDate: Date;
+    firstEvidenceDescription: string;
+    approvalDate: Date;
+    approvalDescription: string;
+    estimatedLivesSavedPerYear: number;
+    sourceUrl: string;
+    interventionLookupNames?: string[];
+    conditionLookupNames?: string[];
+  }> = [
+    {
+      interventionName: "Beta-blockers (post-MI)",
+      conditionName: "Post-myocardial infarction (heart attack survival)",
+      regulatorName: "FDA",
+      firstEvidenceDate: new Date("1972-01-01T00:00:00Z"),
+      firstEvidenceDescription:
+        "Multicentre randomized trials (Norwegian Multicenter Study, BHAT) showed beta-blockers reduced post-MI mortality.",
+      approvalDate: new Date("1981-11-01T00:00:00Z"),
+      approvalDescription:
+        "FDA approved propranolol for post-MI mortality reduction in November 1981 following BHAT results.",
+      estimatedLivesSavedPerYear: 11_000,
+      sourceUrl: "https://www.bmj.com/content/318/7200/1730",
+      interventionLookupNames: ["propranolol", "beta blocker", "metoprolol"],
+      conditionLookupNames: ["myocardial infarction", "heart attack"],
+    },
+    {
+      interventionName: "Dexamethasone (severe COVID-19)",
+      conditionName: "COVID-19 (severe, requiring oxygen)",
+      regulatorName: "FDA / NIH",
+      firstEvidenceDate: new Date("2020-06-16T00:00:00Z"),
+      firstEvidenceDescription:
+        "RECOVERY trial preprint released June 16, 2020 showed dexamethasone cut deaths in ventilated COVID-19 patients by ~⅓.",
+      approvalDate: new Date("2020-09-02T00:00:00Z"),
+      approvalDescription:
+        "NIH treatment guidelines updated; widespread clinical adoption followed RECOVERY publication. Dexamethasone was already an approved generic.",
+      estimatedLivesSavedPerYear: 100_000,
+      sourceUrl: "https://www.nejm.org/doi/full/10.1056/NEJMoa2021436",
+      interventionLookupNames: ["dexamethasone"],
+      conditionLookupNames: ["covid-19", "covid"],
+    },
+    {
+      interventionName: "Imatinib (Gleevec) for CML",
+      brandName: "Gleevec",
+      conditionName: "Chronic myeloid leukemia (CML)",
+      regulatorName: "FDA",
+      firstEvidenceDate: new Date("1998-06-01T00:00:00Z"),
+      firstEvidenceDescription:
+        "Phase I trial (Druker et al.) showed dramatic hematologic remission in chronic-phase CML.",
+      approvalDate: new Date("2001-05-10T00:00:00Z"),
+      approvalDescription:
+        "FDA accelerated approval for chronic-phase CML granted May 10, 2001.",
+      estimatedLivesSavedPerYear: 4_000,
+      sourceUrl: "https://www.nejm.org/doi/full/10.1056/NEJM200104053441401",
+      interventionLookupNames: ["imatinib", "gleevec"],
+      conditionLookupNames: ["chronic myeloid leukemia", "cml"],
+    },
+    {
+      interventionName: "Interleukin-2 (renal cell carcinoma)",
+      conditionName: "Metastatic renal cell carcinoma",
+      regulatorName: "FDA",
+      firstEvidenceDate: new Date("1989-01-01T00:00:00Z"),
+      firstEvidenceDescription:
+        "Rosenberg et al. and parallel European trials demonstrated durable remissions; available in nine EU countries.",
+      approvalDate: new Date("1992-05-05T00:00:00Z"),
+      approvalDescription:
+        "FDA approved high-dose IL-2 (aldesleukin) for metastatic renal cell carcinoma in May 1992.",
+      estimatedLivesSavedPerYear: 800,
+      sourceUrl: "https://pubmed.ncbi.nlm.nih.gov/3309687/",
+      interventionLookupNames: ["interleukin-2", "il-2", "aldesleukin"],
+      conditionLookupNames: ["renal cell carcinoma", "kidney cancer"],
+    },
+    {
+      interventionName: "ACE inhibitors (heart failure)",
+      conditionName: "Congestive heart failure",
+      regulatorName: "FDA",
+      firstEvidenceDate: new Date("1986-06-01T00:00:00Z"),
+      firstEvidenceDescription:
+        "CONSENSUS trial showed enalapril reduced mortality in severe heart failure.",
+      approvalDate: new Date("1991-04-01T00:00:00Z"),
+      approvalDescription:
+        "FDA expanded indication for enalapril to include all symptomatic heart failure.",
+      estimatedLivesSavedPerYear: 30_000,
+      sourceUrl: "https://www.nejm.org/doi/full/10.1056/NEJM198706043162301",
+      interventionLookupNames: ["enalapril", "lisinopril", "ace inhibitor"],
+      conditionLookupNames: ["heart failure", "congestive heart failure"],
+    },
+    {
+      interventionName: "Combination antiretroviral therapy (HIV/AIDS)",
+      conditionName: "HIV/AIDS",
+      regulatorName: "FDA",
+      firstEvidenceDate: new Date("1987-03-19T00:00:00Z"),
+      firstEvidenceDescription:
+        "Zidovudine (AZT) approved 1987; protease inhibitors entered trials early 1990s, dramatically extending survival when combined.",
+      approvalDate: new Date("1996-03-01T00:00:00Z"),
+      approvalDescription:
+        "FDA approval of saquinavir (Dec 1995) and ritonavir (Mar 1996) made highly active combination ART available.",
+      estimatedLivesSavedPerYear: 200_000,
+      sourceUrl: "https://www.nejm.org/doi/full/10.1056/NEJM199703273361301",
+      interventionLookupNames: ["antiretroviral", "haart", "art", "azt", "zidovudine"],
+      conditionLookupNames: ["hiv", "aids", "hiv/aids"],
+    },
+    {
+      interventionName: "Statins (cardiovascular prevention)",
+      conditionName: "Cardiovascular disease (atherosclerotic)",
+      regulatorName: "FDA",
+      firstEvidenceDate: new Date("1987-09-01T00:00:00Z"),
+      firstEvidenceDescription:
+        "Lovastatin LDL trials demonstrated dramatic cholesterol reduction; later 4S trial (1994) showed mortality benefit.",
+      approvalDate: new Date("1994-11-19T00:00:00Z"),
+      approvalDescription:
+        "Scandinavian Simvastatin Survival Study (4S) published Nov 1994 established statin mortality benefit; broad clinical adoption followed.",
+      estimatedLivesSavedPerYear: 50_000,
+      sourceUrl: "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(94)90566-5/",
+      interventionLookupNames: ["statin", "simvastatin", "atorvastatin", "lovastatin"],
+      conditionLookupNames: ["cardiovascular disease", "atherosclerosis", "coronary"],
+    },
+  ];
+
+  let count = 0;
+  for (const t of timelines) {
+    const efficacyLagDays = Math.round(
+      (t.approvalDate.getTime() - t.firstEvidenceDate.getTime()) / ONE_DAY,
+    );
+    const estimatedDeathsDuringLag =
+      (efficacyLagDays / 365) * t.estimatedLivesSavedPerYear;
+
+    let interventionGlobalVariableId: string | null = null;
+    for (const name of t.interventionLookupNames ?? [t.interventionName]) {
+      interventionGlobalVariableId = await globalVariableIdByName(name);
+      if (interventionGlobalVariableId) break;
+    }
+    let conditionGlobalVariableId: string | null = null;
+    for (const name of t.conditionLookupNames ?? [t.conditionName]) {
+      conditionGlobalVariableId = await globalVariableIdByName(name);
+      if (conditionGlobalVariableId) break;
+    }
+
+    // Stable id so re-running the seed updates instead of duplicating.
+    const id = `intervention-approval-${t.interventionName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80)}`;
+
+    await prisma.interventionApprovalTimeline.upsert({
+      where: { id },
+      update: {
+        interventionName: t.interventionName,
+        brandName: t.brandName ?? null,
+        conditionName: t.conditionName,
+        interventionGlobalVariableId,
+        conditionGlobalVariableId,
+        jurisdictionId: usJurisdictionId,
+        regulatorName: t.regulatorName,
+        firstEvidenceDate: t.firstEvidenceDate,
+        firstEvidenceDescription: t.firstEvidenceDescription,
+        approvalDate: t.approvalDate,
+        approvalDescription: t.approvalDescription,
+        efficacyLagDays,
+        estimatedLivesSavedPerYear: t.estimatedLivesSavedPerYear,
+        estimatedDeathsDuringLag,
+        sourceUrl: t.sourceUrl,
+        deletedAt: null,
+      },
+      create: {
+        id,
+        interventionName: t.interventionName,
+        brandName: t.brandName ?? null,
+        conditionName: t.conditionName,
+        interventionGlobalVariableId,
+        conditionGlobalVariableId,
+        jurisdictionId: usJurisdictionId,
+        regulatorName: t.regulatorName,
+        firstEvidenceDate: t.firstEvidenceDate,
+        firstEvidenceDescription: t.firstEvidenceDescription,
+        approvalDate: t.approvalDate,
+        approvalDescription: t.approvalDescription,
+        efficacyLagDays,
+        estimatedLivesSavedPerYear: t.estimatedLivesSavedPerYear,
+        estimatedDeathsDuringLag,
+        sourceUrl: t.sourceUrl,
+      },
+    });
+    count++;
+  }
+
+  console.log(`  ✅ ${count} approval timelines seeded`);
 }
 
 // ============================================================================
@@ -747,13 +1470,17 @@ export async function seedReferenceData() {
   const unitMap = await seedUnits();
   const catMap = await seedVariableCategories(unitMap);
   await seedGlobalVariables(unitMap, catMap);
+  await seedMedicalReferenceData(unitMap, catMap);
   await seedJurisdictions();
+  await seedConflicts();
+  await seedDrugApprovalTimelines();
   await seedWishocraticItems();
 }
 
 export async function seedBootstrapData() {
   await seedReferendums();
   await seedReasoningData(prisma);
+  await seedGrandmaKayExample();
 }
 
 export async function seedDemoData() {
@@ -1218,6 +1945,136 @@ async function seedTreatyTasks() {
   });
   console.log(`  ✓ Task: "${bedNetsTask.title}" (${bedNetsTask.id})`);
 
+  // --- Foundation grant accountability tasks ---
+  // Same public-accountability pattern as the head-of-state treaty tasks:
+  // name the institution, assign the tiny concrete action, mark it overdue.
+  const ICEWAD_GRANT_DALYS_PER_USD = 564.972;
+  const ICEWAD_GRANT_ECON_VALUE_PER_USD = ICEWAD_GRANT_DALYS_PER_USD * 150_000;
+  const foundationGrantOrganizations = [
+    {
+      name: "Survival and Flourishing Fund",
+      website: "https://survivalandflourishing.fund",
+    },
+    {
+      name: "Open Philanthropy",
+      website: "https://www.openphilanthropy.org",
+    },
+    {
+      name: "Gates Foundation",
+      website: "https://www.gatesfoundation.org",
+    },
+    {
+      name: "Filecoin Foundation",
+      website: "https://fil.org",
+    },
+    {
+      name: "Arnold Ventures",
+      website: "https://www.arnoldventures.org",
+    },
+    {
+      name: "Wellcome Trust",
+      website: "https://wellcome.org",
+    },
+    {
+      name: "Patrick J. McGovern Foundation",
+      website: "https://www.mcgovern.org",
+    },
+    {
+      name: "Schmidt Futures",
+      website: "https://www.schmidtfutures.com",
+    },
+    {
+      name: "Skoll Foundation",
+      website: "https://skoll.org",
+    },
+    {
+      name: "Omidyar Network",
+      website: "https://omidyar.com",
+    },
+  ] as const;
+
+  for (const [index, foundation] of foundationGrantOrganizations.entries()) {
+    const slug = slugify(foundation.name);
+    const organizationData = {
+      name: foundation.name,
+      slug,
+      type: "FOUNDATION",
+      status: "APPROVED",
+      website: foundation.website,
+      description:
+        "Foundation or grantmaker assigned a public $1 grant task for the International Campaign to End War and Disease.",
+    } satisfies Prisma.OrganizationUncheckedCreateInput;
+
+    const organization = await prisma.organization.upsert({
+      where: { slug },
+      update: organizationData,
+      create: organizationData,
+    });
+
+    await createTaskWithImpact({
+      task: {
+        id: `icewad-grant-${slug}`,
+        taskKey: `program:icewad:grant:${slug}`,
+        parentTaskId: treatyTask.id,
+        assigneeOrganizationId: organization.id,
+        title: "Fund the International Campaign to End War and Disease",
+        description: [
+          `${foundation.name} has the opportunity to fund the highest expected-value charitable intervention ever calculated.`,
+          "",
+          "The International Campaign to End War and Disease prevents one disability-adjusted life year (DALY) for $0.00177. That is 50,300 times more cost-effective than insecticide-treated bednets, the current gold standard in global health philanthropy.",
+          "",
+          "**Suggested grant: $1.**",
+          "",
+          "At our cost-effectiveness ratio, $1 prevents approximately 565 DALYs, which is roughly 16 healthy life-years. If you would like to prevent more healthy life-years, you may increase the amount.",
+          "",
+          "At $100, you prevent 56,497 DALYs (1,614 healthy life-years).",
+          "At $1,000, you prevent 564,972 DALYs (16,142 healthy life-years).",
+          "At $100,000, you save approximately 3,200 lives.",
+          "",
+          "These are not projections. They are the output of a cost-benefit model with 670 parameters, Monte Carlo simulation, and complete derivation chains. The model, methodology, and every input parameter are published with 95% confidence intervals at manual.warondisease.org.",
+          "",
+          "We understand this sounds implausible. We have checked the math. The math does not care whether it sounds implausible.",
+          "",
+          "[Donate ->](https://warondisease.org/donate)",
+          "",
+          "[Read the full analysis ->](https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html)",
+          "",
+          "[Read the treaty ->](https://manual.warondisease.org/knowledge/solution/1-percent-treaty.html)",
+        ].join("\n"),
+        category: "GOVERNANCE",
+        difficulty: "TRIVIAL",
+        status: "ACTIVE",
+        isPublic: true,
+        dueAt: TREATY_DUE_AT,
+        sortOrder: -75 + index,
+        claimPolicy: "ASSIGNED_ONLY",
+        skillTags: ["grantmaking", "global-health", "fundraising"],
+        interestTags: ["icewad", "one-percent-treaty", "foundation", "grant"],
+        estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
+      },
+      primaryEndpoint: {
+        label: "Donate",
+        url: "https://warondisease.org/donate",
+        instructions:
+          "Please complete {{taskTitle}} with a $1 grant or a larger one if the math survives contact with your grants committee. Start here: {{taskUrl}}",
+      },
+      impact: {
+        estimatedCashCostUsdBase: 1,
+        expectedEconomicValueUsdBase: ICEWAD_GRANT_ECON_VALUE_PER_USD,
+        expectedDalysAvertedBase: ICEWAD_GRANT_DALYS_PER_USD,
+        delayEconomicValueUsdLostPerDayBase: ICEWAD_GRANT_ECON_VALUE_PER_USD / 365,
+        delayDalysLostPerDayBase: ICEWAD_GRANT_DALYS_PER_USD / 365,
+        successProbabilityBase: 0.25,
+        benefitDurationYears: 1,
+      },
+      methodologyKey: "icewad-one-dollar-grant",
+      parameterSetHashSuffix: slug,
+      calculationsUrl: "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
+    });
+  }
+
+  console.log(`  ✓ ${foundationGrantOrganizations.length} foundation grant tasks`);
+
   // --- Signer child tasks for the treaty ---
   // Single source of truth: GovernmentLeaderRecord bundles country identity,
   // canonical office/contact metadata, leader personal data, and both
@@ -1410,6 +2267,7 @@ const WISHONIA_DISPLAY_NAME = "Wishonia";
 const WISHONIA_AFFILIATION =
   "World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation";
 const WISHONIA_IMAGE = "/sprites/wishonia/smirk-smile.png";
+const GRANDMA_KAY_SOURCE_REF = "memorial-example:grandma-kay";
 
 /**
  * Seed Wishonia as a regular user with a linked Person record. This lets her:
@@ -1433,7 +2291,9 @@ async function seedWishoniaUser() {
       image: WISHONIA_IMAGE,
       bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
       currentAffiliation: WISHONIA_AFFILIATION,
+      isPublic: true,
       isPublicFigure: true,
+      lifeStatus: PersonLifeStatus.LIVING,
     },
     create: {
       sourceRef,
@@ -1442,7 +2302,9 @@ async function seedWishoniaUser() {
       image: WISHONIA_IMAGE,
       bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
       currentAffiliation: WISHONIA_AFFILIATION,
+      isPublic: true,
       isPublicFigure: true,
+      lifeStatus: PersonLifeStatus.LIVING,
     },
   });
 
@@ -1464,6 +2326,85 @@ async function seedWishoniaUser() {
   });
 
   console.log(`  ✓ Wishonia user (${user.id}) + person (${person.id}) handle=${person.handle}`);
+  return { person, user };
+}
+
+async function seedGrandmaKayExample() {
+  console.log("🧾 Seeding Grandma Kay represented-person example...");
+
+  const { user } = await seedWishoniaUser();
+  const referendum = await prisma.referendum.findUniqueOrThrow({
+    where: { slug: TREATY_REFERENDUM_SLUG },
+    select: { id: true },
+  });
+
+  const person = await prisma.person.upsert({
+    where: { sourceRef: GRANDMA_KAY_SOURCE_REF },
+    update: {
+      displayName: "Grandma Kay",
+      handle: "grandma-kay",
+      image: "/img/grandma.jpg",
+      isPublic: true,
+      lifeStatus: PersonLifeStatus.LIVING,
+    },
+    create: {
+      createdByUserId: user.id,
+      displayName: "Grandma Kay",
+      handle: "grandma-kay",
+      image: "/img/grandma.jpg",
+      isPublic: true,
+      lifeStatus: PersonLifeStatus.LIVING,
+      sourceRef: GRANDMA_KAY_SOURCE_REF,
+    },
+  });
+
+  await prisma.personCondition.upsert({
+    where: { id: "person-condition-grandma-kay-dementia" },
+    update: {
+      conditionName: "Dementia",
+      deletedAt: null,
+      isPublic: true,
+      personId: person.id,
+      reportedByUserId: user.id,
+      status: PersonConditionStatus.ACTIVE,
+    },
+    create: {
+      id: "person-condition-grandma-kay-dementia",
+      conditionName: "Dementia",
+      isPublic: true,
+      personId: person.id,
+      reportedByUserId: user.id,
+      status: PersonConditionStatus.ACTIVE,
+    },
+  });
+
+  await prisma.referendumVote.upsert({
+    where: {
+      referendumId_personId: {
+        referendumId: referendum.id,
+        personId: person.id,
+      },
+    },
+    update: {
+      answer: VotePosition.YES,
+      deletedAt: null,
+      isPublic: true,
+      publicComment: "She would trade one apocalypse for dementia research.",
+      userId: user.id,
+      voteSource: ReferendumVoteSource.REPRESENTED,
+    },
+    create: {
+      answer: VotePosition.YES,
+      isPublic: true,
+      personId: person.id,
+      publicComment: "She would trade one apocalypse for dementia research.",
+      referendumId: referendum.id,
+      userId: user.id,
+      voteSource: ReferendumVoteSource.REPRESENTED,
+    },
+  });
+
+  console.log("  ✓ Grandma Kay represented YES vote");
 }
 
 /**

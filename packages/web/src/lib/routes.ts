@@ -53,13 +53,15 @@ export const ROUTES = {
   vote: "/vote",
   why: "/why",
   legal: "/legal",
+  privacy: "/privacy",
+  terms: "/terms",
   impact: "/impact",
   endorse: "/endorse",
+  campaign: "/campaign",
   coalition: "/coalition",
   organizations: "/organizations",
   people: "/people",
   questions: "/questions",
-  humanityManagementTraining: "/humanity-management-training",
   survey: "/survey",
   // The Game
   prize: "/prize",
@@ -406,7 +408,7 @@ export const profileLink: NavItem = {
   href: ROUTES.profile,
   label: "Profile",
   emoji: "🧭",
-  description: "Your name, your face, your connected accounts. On my planet this takes four seconds. Your species will somehow need twenty minutes and a password reset.",
+  description: "Your name, face, public profile, and connected accounts.",
   tagline: "Your name, your face, your connected accounts",
 
   cta: "View Profile",
@@ -416,7 +418,8 @@ export const declarationLink: NavItem = {
   href: ROUTES.declaration,
   label: "Declaration",
   emoji: "📜",
-  description: "The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly endorse it.",
+  description:
+    "The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.",
   tagline: "Why optimization is necessary and what signatories commit to",
   cta: "Read Declaration",
 };
@@ -425,8 +428,8 @@ export const censusLink: NavItem = {
   href: ROUTES.census,
   label: "Census",
   emoji: "📋",
-  description: "Location, income, demographics. Without this you are a rounding error. With it you are a data point. On your planet this counts as a promotion.",
-  tagline: "Location, income, demographics — become a data point",
+  description: "Location, income, demographics. Without this you are a rounding error. With it you are a data point.",
+  tagline: "Location, income, demographics - become a useful data point",
 
   cta: "Take Census",
 };
@@ -435,7 +438,7 @@ export const checkInLink: NavItem = {
   href: ROUTES.checkIn,
   label: "Check-In",
   emoji: "☀️",
-  description: "Thirty seconds a day to tell me if you're alive and thriving. On my planet we call this 'minimum viable self-awareness.'",
+  description: "Thirty seconds a day to say whether you are alive and thriving. Minimum viable self-awareness.",
   tagline: "Thirty seconds a day of minimum viable self-awareness",
 
   cta: "Check In",
@@ -445,7 +448,7 @@ export const settingsLink: NavItem = {
   href: ROUTES.settings,
   label: "Settings",
   emoji: "⚙️",
-  description: "Notification preferences, account toggles, and other knobs your species inexplicably needs labelled.",
+  description: "Notification preferences, account toggles, and profile controls.",
   tagline: "Notification preferences and account toggles",
 
   cta: "Open Settings",
@@ -458,15 +461,6 @@ export const inviteVoterLink: NavItem = {
   description: "Assign one human an Earth optimization task: vote on the 1% Treaty.",
   tagline: "Assign one Earth optimization task",
   cta: "Invite",
-};
-
-export const humanityManagementTrainingLink: NavItem = {
-  href: ROUTES.humanityManagementTraining,
-  label: "Humanity Management Training",
-  emoji: "ðŸ“‹",
-  description: "Post-vote training for newly promoted Humanity Managers: share your referral URL and give two humans their voting tasks.",
-  tagline: "Give two humans their voting tasks",
-  cta: "Start Training",
 };
 
 export const transparencyLink: NavItem = {
@@ -608,6 +602,16 @@ export const treatyVoteLink: NavItem = {
   tagline: "Vote on the 1% Treaty",
 };
 
+export const peopleLink: NavItem = {
+  href: ROUTES.people,
+  label: "People",
+  emoji: "+",
+  description:
+    "The living, sick, and dead humans voters dragged to the 1% Treaty polls.",
+  tagline: "Humans the treaty is for",
+  cta: "See People",
+};
+
 export const questionsLink: NavItem = {
   href: ROUTES.questions,
   label: "Treaty Questions",
@@ -629,29 +633,63 @@ export const whyLink: NavItem = {
 
 export const endorseLink: NavItem = {
   href: ROUTES.endorse,
-  label: "Endorse",
+  label: "Sign as Organization",
   emoji: "+",
-  description: "Put an organization on record supporting the 1% Treaty.",
-  tagline: "Endorse as an organization",
-  cta: "Endorse",
+  description:
+    "Sign the 1% Treaty as an organization.",
+  tagline: "Sign as an organization",
+  cta: "Sign as Organization",
 };
 
-export const coalitionLink: NavItem = {
-  href: ROUTES.coalition,
-  label: "Supporters",
+export const campaignPartnersLink: NavItem = {
+  href: ROUTES.campaign,
+  label: "Organizational Signatories",
   emoji: "*",
-  description: "Organizations publicly supporting the 1% Treaty.",
-  tagline: "See public supporters",
-  cta: "See Supporters",
+  description:
+    "Organizations that signed the 1% Treaty.",
+  tagline: "See the organizations on record",
+  cta: "See Organizational Signatories",
+};
+
+export const coalitionLink = campaignPartnersLink;
+
+export const donateLink: NavItem = {
+  href: ROUTES.donate,
+  label: "Donate",
+  emoji: "$",
+  description:
+    "Less than a cent buys one year of healthy human life. About 50,000× cheaper than anti-malaria bed nets. Tax-deductible to a 501(c)(3).",
+  tagline: "Less than a cent per healthy life-year",
+  cta: "Donate",
 };
 
 export const legalLink: NavItem = {
   href: ROUTES.legal,
   label: "Legal",
   emoji: "§",
-  description: "Legal notes for boards and counsel reviewing endorsement.",
+  description:
+    "Legal notes for boards and counsel reviewing organizational signatures.",
   tagline: "For boards and counsel",
   cta: "Read Legal Notes",
+};
+
+export const privacyLink: NavItem = {
+  href: ROUTES.privacy,
+  label: "Privacy",
+  emoji: "§",
+  description:
+    "What this site collects, why it collects it, and how to contact us.",
+  tagline: "Data use and choices",
+  cta: "Read Privacy",
+};
+
+export const termsLink: NavItem = {
+  href: ROUTES.terms,
+  label: "Terms",
+  emoji: "§",
+  description: "The rules for using this site.",
+  tagline: "Site rules",
+  cta: "Read Terms",
 };
 
 export const trialSurveyLink: NavItem = {
@@ -727,8 +765,8 @@ export const contributeLink: NavItem = {
   href: ROUTES.contribute,
   label: "Contribute",
   emoji: "🤝",
-  description: "How to help. The bar is on the floor and your species still trips over it.",
-  tagline: "How to help — the bar is on the floor",
+  description: "Four useful ways to help: vote, fund, code, or feed the machine real data.",
+  tagline: "Vote, fund, code, or feed the machine",
 
   cta: "Contribute",
 };
@@ -737,8 +775,8 @@ export const fundLink: NavItem = {
   href: ROUTES.fund,
   label: "Fund Optimization",
   emoji: "🪙",
-  description: "Insert coin. AI agents optimise your planet. You get a receipt showing exactly how many suffering-hours your dollar prevented. It is genuinely less complicated than your tax code.",
-  tagline: "Insert coin, optimise Earth",
+  description: "Insert coin. AI agents optimize Earth. See what your dollar did and where the money went.",
+  tagline: "Insert coin, optimize Earth",
 
   cta: "Fund Now",
 };

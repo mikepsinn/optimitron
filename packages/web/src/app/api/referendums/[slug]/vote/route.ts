@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { ActivityType, OrgStatus, VotePosition } from "@optimitron/db";
+import {
+  ActivityType,
+  OrgStatus,
+  ReferendumStatus,
+  ReferendumVoteSource,
+  VotePosition,
+} from "@optimitron/db";
 import { findUserByHandleOrReferralCode } from "@/lib/referral.server";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
@@ -55,7 +61,7 @@ export async function POST(
       );
     }
 
-    if (referendum.status !== "ACTIVE") {
+    if (referendum.status !== ReferendumStatus.ACTIVE) {
       return NextResponse.json(
         { error: "This referendum is not currently accepting votes" },
         { status: 400 },
@@ -94,11 +100,12 @@ export async function POST(
     /// Captured at insert time from the client. Variant key is derivable from
     /// the URL host on demand. First-vote-wins — revote does not overwrite.
     const originUrl = typeof body.originUrl === "string" ? body.originUrl : null;
+    const person = await ensurePersonForUser(userId);
     const vote = await prisma.referendumVote.upsert({
       where: {
-        userId_referendumId: {
-          userId,
+        referendumId_personId: {
           referendumId: referendum.id,
+          personId: person.id,
         },
       },
       // Org attribution is first-org-wins, matching referredByUserId semantics:
@@ -106,12 +113,18 @@ export async function POST(
       update: {
         answer: answer as VotePosition,
         deletedAt: null,
+        isPublic: true,
+        userId,
+        voteSource: ReferendumVoteSource.SELF,
       },
       create: {
         userId,
+        personId: person.id,
         referendumId: referendum.id,
         answer: answer as VotePosition,
+        voteSource: ReferendumVoteSource.SELF,
         referredByUserId,
+        isPublic: true,
         originUrl,
         ...(organizationId ? { organizationId } : {}),
       },
@@ -134,19 +147,9 @@ export async function POST(
     // writes when the caller sent an explicit boolean AND it differs from the
     // current state (avoids redundant writes).
     if (typeof body.makePublic === "boolean") {
-      const currentUser = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          personId: true,
-          person: { select: { isPublic: true } },
-        },
-      });
-      if (
-        currentUser?.personId &&
-        currentUser.person?.isPublic !== body.makePublic
-      ) {
+      if (person.isPublic !== body.makePublic) {
         await prisma.person.update({
-          where: { id: currentUser.personId },
+          where: { id: person.id },
           data: { isPublic: body.makePublic },
         });
       }
@@ -204,7 +207,6 @@ export async function POST(
 
     if (referendum.slug === TREATY_REFERENDUM_SLUG) {
       try {
-        const person = await ensurePersonForUser(userId);
         await ensureUserTreatyTask({
           personId: person.id,
           userId,

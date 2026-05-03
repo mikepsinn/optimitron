@@ -125,6 +125,11 @@ describe("daily activity digest", () => {
           gte: new Date("2026-03-30T05:00:00.000Z"),
           lt: new Date("2026-03-31T05:00:00.000Z"),
         },
+        person: {
+          deletedAt: null,
+          lifeStatus: "LIVING",
+        },
+        voteSource: "SELF",
       },
     });
     expect(prisma.referendumVote.count).toHaveBeenNthCalledWith(2, {
@@ -134,6 +139,10 @@ describe("daily activity digest", () => {
           gte: new Date("2026-03-30T05:00:00.000Z"),
           lt: new Date("2026-03-31T05:00:00.000Z"),
         },
+        person: {
+          deletedAt: null,
+          lifeStatus: "LIVING",
+        },
         user: {
           personhoodVerifications: {
             some: {
@@ -142,6 +151,7 @@ describe("daily activity digest", () => {
             },
           },
         },
+        voteSource: "SELF",
       },
     });
   });

@@ -16,7 +16,7 @@ export default function ContributePage() {
         <Container>
           <SectionHeader
             title="Contribute"
-            subtitle="The bar is on the floor and your species still trips over it. Here is how to help."
+            subtitle="Four useful ways to help: vote, fund, code, or feed the machine real data."
             size="lg"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -36,7 +36,7 @@ export default function ContributePage() {
                 Deposit
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                On your planet, &ldquo;investment&rdquo; means gambling but wearing a suit. This one&apos;s different. Plan works? VOTE holders split the pool. Plan fails? Projected 11x return (based on VC-sector diversification). All figures are projections, not guarantees.
+                Most investing is gambling in a suit. This one funds the campaign. Plan works? VOTE holders split the pool. Plan fails? Projected 11x return from VC-sector diversification. Projections, not guarantees.
               </p>
               <GameCTA href={ROUTES.prize} variant="secondary">
                 Insert Coin
@@ -47,7 +47,7 @@ export default function ContributePage() {
                 Code
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                Your species built TikTok and a website where people argue about sandwiches. This is a TypeScript monorepo that might prevent your extinction. Fifteen packages. All open source.
+                Humanity built TikTok and a website where people argue about sandwiches. This is a TypeScript monorepo that might help prevent extinction. Fifteen packages. Open source.
               </p>
               <GameCTA href="https://github.com/mikepsinn/optimitron" variant="secondary">
                 GitHub
@@ -58,7 +58,7 @@ export default function ContributePage() {
                 Data
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                Your body is a meat robot with 37 trillion cells breaking in 7,000 different ways. Track what you put in it. I&apos;ll tell you what&apos;s actually working. Your intuition is wrong. I checked.
+                You are a meat robot with 37 trillion cells breaking in 7,000 different ways. Track what you put in it. The dFDA can learn what is actually working.
               </p>
               <GameCTA href={ROUTES.transmit} variant="secondary">
                 Transmit Data

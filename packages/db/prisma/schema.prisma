@@ -159,8 +159,10 @@ enum JurisdictionType {
 
 /// Classification of an analysis subject
 enum SubjectType {
-  /// A single person/account
+  /// Application account subject; normally linked through Subject.userId.
   USER
+  /// Human subject; may be linked through Subject.personId or keyed by externalId.
+  PERSON
   /// A jurisdictional entity (country/state/city)
   JURISDICTION
   /// A grouped cohort (e.g., age band, treatment arm)
@@ -185,6 +187,122 @@ enum PersonhoodProvider {
 enum PersonhoodVerificationStatus {
   VERIFIED
   REVOKED
+}
+
+/// Known life state for a Person record. UNKNOWN supports imported or
+/// user-created humans where the platform should not overclaim.
+enum PersonLifeStatus {
+  UNKNOWN
+  LIVING
+  DECEASED
+}
+
+/// Relationship between a person and a condition or cause.
+enum PersonConditionStatus {
+  UNKNOWN
+  ACTIVE
+  PAST
+  CAUSE_OF_DEATH
+}
+
+/// Broad cause category for memorial/death records.
+enum PersonDeathCauseCategory {
+  UNKNOWN
+  DISEASE
+  ARMED_CONFLICT
+  STATE_VIOLENCE
+  TERRORISM
+  OTHER_PREVENTABLE
+  OTHER
+}
+
+/// Civilian/combatant status for conflict and state-violence deaths.
+enum PersonCivilianStatus {
+  UNKNOWN
+  CIVILIAN
+  COMBATANT
+}
+
+/// Evidence artifact category for memorial/court records.
+enum PersonMemorialEvidenceKind {
+  PHOTO
+  DOCUMENT
+  NEWS_ARTICLE
+  HOSPITAL_RECORD
+  DEATH_RECORD
+  WITNESS_STATEMENT
+  OTHER
+}
+
+/// Review state for computed efficacy-lag evidence matches.
+enum EfficacyLagEvidenceStatus {
+  CANDIDATE
+  CONFIRMED
+  REJECTED
+}
+
+/// User-reported intervention use lifecycle.
+enum InterventionExperienceStatus {
+  UNKNOWN
+  CURRENT
+  PAST
+  PLANNED
+  NEVER_TRIED
+}
+
+/// Coarse user-reported outcome direction for an intervention.
+enum InterventionOutcomeRating {
+  UNKNOWN
+  MUCH_WORSE
+  WORSE
+  NO_EFFECT
+  MODERATE_IMPROVEMENT
+  MAJOR_IMPROVEMENT
+}
+
+/// Coarse user-reported side-effect severity.
+enum InterventionSideEffectSeverity {
+  UNKNOWN
+  NONE
+  MINIMAL
+  MILD
+  MODERATE
+  SEVERE
+  EXTREME
+}
+
+/// Metric represented by imported or computed predictor/outcome evidence.
+enum VariableEvidenceMetricKind {
+  EFFECT_SIZE
+  EFFECTIVENESS
+  SAFETY
+  NNT
+  NNH
+  COST
+  COST_PER_QALY
+  QALYS_GAINED
+  REMISSION_RATE
+  RESPONSE_RATE
+  ACCESS
+  CONFIDENCE
+  OTHER
+}
+
+/// Provenance category for variable relationship evidence rows.
+enum VariableRelationshipEvidenceSourceType {
+  IMPORTED_STUDY
+  USER_REPORT
+  OPTIMIZER_N_OF_1
+  OPTIMIZER_AGGREGATE
+  CURATED_DATASET
+  MANUAL
+  OTHER
+}
+
+/// Lifecycle of a generated intervention ranking.
+enum InterventionRankingRunStatus {
+  DRAFT
+  ACTIVE
 }
 
 /// Type of activity event for the audit log
@@ -586,15 +704,30 @@ enum TaskCommentSource {
 /// `@map` gives the OAuth wire format ("tasks:personal") that's stored in the DB
 /// and surfaced in URLs / JWTs / OAuth metadata.
 enum McpScope {
-  TASKS_ADMIN    @map("tasks:admin")
-  TASKS_PERSONAL @map("tasks:personal")
-  AGENT_RUN      @map("agent:run")
+  TASKS_ADMIN     @map("tasks:admin")
+  TASKS_PERSONAL  @map("tasks:personal")
+  AGENT_RUN       @map("agent:run")
+  EARTHDATA_WRITE @map("earthdata:write")
+  EARTHDATA_ADMIN @map("earthdata:admin")
   /// Server-side GitHub API access via the configured PAT. Covers the
   /// repo-allowlist-gated read tools and the `githubApi` passthrough.
   /// Distinct from TASKS_ADMIN because GitHub access is orthogonal to
   /// task-platform admin — an integration could be granted GITHUB
   /// without touching task admin operations.
-  GITHUB         @map("github")
+  GITHUB          @map("github")
+}
+
+/// Status of a recorded MCP tool call.
+enum McpToolCallStatus {
+  SUCCEEDED
+  FAILED
+}
+
+/// Public content correction/report lifecycle.
+enum ContentReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
 }
 
 /// Type of survey question
@@ -641,6 +774,12 @@ model Person {
   /// Optional short biography
   bio String?
 
+  /// Known birth date when available
+  birthDate DateTime?
+
+  /// Known death date when available
+  deathDate DateTime?
+
   /// Optional public links (twitter, website, wikipedia, etc.) as a JSON object
   /// keyed by platform name. Shape: { twitter: "url", website: "url", ... }
   links Json?
@@ -666,6 +805,12 @@ model Person {
   /// Whether this person primarily exists as a public figure / officeholder record
   isPublicFigure Boolean @default(false)
 
+  /// Known life state for public and user-created human records
+  lifeStatus PersonLifeStatus @default(UNKNOWN)
+
+  /// User who created this Person record, when it was created inside Optimitron
+  createdByUserId String?
+
   /// Source URL used when this person was imported from public/manual data
   sourceUrl String?
 
@@ -682,7 +827,14 @@ model Person {
   deletedAt DateTime?
 
   // -- Relations --
+  createdByUser               User?                @relation("UserCreatedPeople", fields: [createdByUserId], references: [id], onDelete: SetNull)
   user                        User?                @relation("UserPerson")
+  subject                     Subject?             @relation("PersonSubject")
+  referendumVotes             ReferendumVote[]     @relation("PersonReferendumVotes")
+  conditions                  PersonCondition[]    @relation("PersonConditions")
+  memorial                    PersonMemorial?      @relation("PersonMemorialPerson")
+  relationshipsAsSubject      PersonRelationship[] @relation("PersonRelationshipSubject")
+  relationshipsAsObject       PersonRelationship[] @relation("PersonRelationshipObject")
   assignedTasks               Task[]               @relation("TaskAssigneePerson")
   receivedReferralInvitations ReferralInvitation[] @relation("ReferralInvitationRecipientPerson")
   authoredTaskComments        TaskComment[]        @relation("TaskCommentAuthorPerson")
@@ -690,10 +842,514 @@ model Person {
   sentTaskCommunications      TaskCommunication[]  @relation("TaskCommunicationSenderPerson")
 
   @@index([displayName])
+  @@index([deathDate])
   @@index([countryCode])
+  @@index([createdByUserId])
+  @@index([lifeStatus])
   @@index([isPublic])
   @@index([isPublicFigure])
   @@index([deletedAt])
+}
+
+/// Directional relationship between two human records. The relationshipType is
+/// a free-form slug so new human categories do not require enum migrations.
+model PersonRelationship {
+  /// Unique identifier for this relationship
+  id String @id @default(cuid())
+
+  /// Person the relationship is from
+  subjectPersonId String
+
+  /// Person the relationship points to
+  objectPersonId String
+
+  /// Directional slug, e.g. "grandchild-of", "friend-of", "caregiver-of"
+  relationshipType String
+
+  /// User who entered this relationship, when known
+  createdByUserId String?
+
+  /// Whether this relationship is visible on public pages
+  isPublic Boolean @default(true)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  subjectPerson Person @relation("PersonRelationshipSubject", fields: [subjectPersonId], references: [id], onDelete: Cascade)
+  objectPerson  Person @relation("PersonRelationshipObject", fields: [objectPersonId], references: [id], onDelete: Cascade)
+  createdByUser User?  @relation("UserCreatedPersonRelationships", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([subjectPersonId])
+  @@index([objectPersonId])
+  @@index([createdByUserId])
+}
+
+/// Public or private condition/cause attached to a human record.
+model PersonCondition {
+  /// Unique identifier for this person-condition row
+  id String @id @default(cuid())
+
+  /// Person this condition belongs to
+  personId String
+
+  /// Human-readable condition or cause name
+  conditionName String
+
+  /// Coding system for canonical condition identifiers, e.g. "ICD-10"
+  conditionCodeSystem String?
+
+  /// Canonical condition identifier within conditionCodeSystem
+  conditionCode String?
+
+  /// Optional canonical variable for later DFDA/health modeling
+  globalVariableId String?
+
+  /// Current or historical relationship to the person
+  status PersonConditionStatus @default(ACTIVE)
+
+  /// User who reported this condition, when known
+  reportedByUserId String?
+
+  /// Optional public source URL
+  sourceUrl String?
+
+  /// Whether this condition is visible on public pages
+  isPublic Boolean @default(true)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  person              Person                      @relation("PersonConditions", fields: [personId], references: [id], onDelete: Cascade)
+  globalVariable      GlobalVariable?             @relation("GlobalVariablePersonConditions", fields: [globalVariableId], references: [id], onDelete: SetNull)
+  reportedByUser      User?                       @relation("UserReportedPersonConditions", fields: [reportedByUserId], references: [id], onDelete: SetNull)
+  primaryForMemorials PersonMemorial[]            @relation("PersonMemorialPrimaryCondition")
+  efficacyLagEvidence PersonEfficacyLagEvidence[] @relation("PersonConditionEfficacyLagEvidence")
+
+  @@index([personId])
+  @@index([globalVariableId])
+  @@index([conditionName])
+  @@index([conditionCodeSystem, conditionCode])
+  @@index([status])
+}
+
+/// Named conflict reference used by memorials and prosecution dashboards.
+model Conflict {
+  /// Unique identifier for this conflict
+  id String @id @default(cuid())
+
+  /// Stable slug for URLs/imports
+  slug String @unique
+
+  /// Human-readable conflict name
+  name String
+
+  /// Optional description
+  description String?
+
+  /// When the conflict began, if known
+  startDate DateTime?
+
+  /// When the conflict ended, if known
+  endDate DateTime?
+
+  /// Primary jurisdiction associated with this conflict, when useful
+  primaryJurisdictionId String?
+
+  /// Source URL for provenance
+  sourceUrl String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  primaryJurisdiction Jurisdiction?    @relation("ConflictPrimaryJurisdiction", fields: [primaryJurisdictionId], references: [id], onDelete: SetNull)
+  memorials           PersonMemorial[] @relation("PersonMemorialConflict")
+
+  @@index([name])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([primaryJurisdictionId])
+  @@index([deletedAt])
+}
+
+/// Death/memorial/legal-evidence record attached to a Person.
+model PersonMemorial {
+  /// Unique identifier for this memorial/death case
+  id String @id @default(cuid())
+
+  /// The human being memorialized
+  personId String @unique
+
+  /// Broad cause category for filtering and dashboards
+  causeCategory PersonDeathCauseCategory @default(UNKNOWN)
+
+  /// Primary disease/condition cause when applicable
+  primaryPersonConditionId String?
+
+  /// ISO country code where death occurred, when known
+  deathCountryCode String?
+
+  /// Human-readable death location
+  deathLocation String?
+
+  /// Optional named conflict reference
+  conflictId String?
+
+  /// Conflict/state-violence civilian status
+  civilianStatus PersonCivilianStatus @default(UNKNOWN)
+
+  /// Whether the decedent was a child
+  wasChild Boolean?
+
+  /// Structured summary of what happened
+  circumstances String?
+
+  /// Whether memorial details may be displayed publicly
+  isPublic Boolean @default(false)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  person                 Person                           @relation("PersonMemorialPerson", fields: [personId], references: [id], onDelete: Cascade)
+  primaryPersonCondition PersonCondition?                 @relation("PersonMemorialPrimaryCondition", fields: [primaryPersonConditionId], references: [id], onDelete: SetNull)
+  conflict               Conflict?                        @relation("PersonMemorialConflict", fields: [conflictId], references: [id], onDelete: SetNull)
+  submissions            PersonMemorialSubmission[]       @relation("PersonMemorialSubmissions")
+  responsibleParties     PersonMemorialResponsibleParty[] @relation("PersonMemorialResponsibleParties")
+  evidence               PersonMemorialEvidence[]         @relation("PersonMemorialEvidence")
+  efficacyLagEvidence    PersonEfficacyLagEvidence[]      @relation("PersonMemorialEfficacyLagEvidence")
+  courtCaseEvidence      CourtCaseEvidence[]              @relation("CourtCaseEvidencePersonMemorial")
+
+  @@index([causeCategory])
+  @@index([primaryPersonConditionId])
+  @@index([deathCountryCode])
+  @@index([conflictId])
+  @@index([isPublic])
+  @@index([deletedAt])
+}
+
+/// Submitter-owned testimony, consent, and public memorial text for a death case.
+model PersonMemorialSubmission {
+  /// Unique identifier for this memorial submission
+  id String @id @default(cuid())
+
+  /// Memorial/death case this submission belongs to
+  memorialId String
+
+  /// User who submitted the memorial, when known
+  submittedByUserId String?
+
+  /// Public memorial text
+  memorialMessage String?
+
+  /// Whether this submitter consented to public display
+  consentPublicDisplay Boolean @default(false)
+
+  /// Whether this submitter consented to future legal/evidence use
+  consentCourtEvidence Boolean @default(false)
+
+  /// When this submitter consented to public display
+  consentPublicDisplayAt DateTime?
+
+  /// When this submitter consented to future legal/evidence use
+  consentCourtEvidenceAt DateTime?
+
+  /// Whether this testimony may be displayed publicly
+  isPublic Boolean @default(false)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  memorial        PersonMemorial           @relation("PersonMemorialSubmissions", fields: [memorialId], references: [id], onDelete: Cascade)
+  submittedByUser User?                    @relation("UserSubmittedPersonMemorialSubmissions", fields: [submittedByUserId], references: [id], onDelete: SetNull)
+  evidence        PersonMemorialEvidence[] @relation("PersonMemorialSubmissionEvidence")
+
+  @@index([memorialId])
+  @@index([submittedByUserId])
+  @@index([consentCourtEvidence])
+  @@index([isPublic, deletedAt])
+}
+
+/// Responsible party attribution for a memorial death.
+model PersonMemorialResponsibleParty {
+  /// Unique identifier for this attribution
+  id String @id @default(cuid())
+
+  /// Memorial this attribution belongs to
+  memorialId String
+
+  /// Responsible jurisdiction/government, when canonicalized
+  jurisdictionId String?
+
+  /// Responsible organization, when canonicalized
+  organizationId String?
+
+  /// Free-text party name before canonical mapping
+  name String?
+
+  /// Optional shared source artifact/provenance row
+  sourceArtifactId String?
+
+  /// Role/category slug, e.g. "government", "regulator", "armed-force"
+  roleSlug String?
+
+  /// Whether this is the main party shown in compact UI
+  isPrimary Boolean @default(false)
+
+  /// Whether this attribution can be shown publicly
+  isPublic Boolean @default(false)
+
+  /// Confidence score from 0 to 1 for computed or reviewed attribution
+  confidenceScore Float?
+
+  /// Source URL for provenance
+  sourceUrl String?
+
+  /// Private notes about attribution; never render publicly
+  privateNotes String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  memorial       PersonMemorial  @relation("PersonMemorialResponsibleParties", fields: [memorialId], references: [id], onDelete: Cascade)
+  jurisdiction   Jurisdiction?   @relation("JurisdictionPersonMemorialResponsibleParties", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  organization   Organization?   @relation("OrganizationPersonMemorialResponsibleParties", fields: [organizationId], references: [id], onDelete: SetNull)
+  sourceArtifact SourceArtifact? @relation("SourceArtifactPersonMemorialResponsibleParties", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+
+  @@index([memorialId])
+  @@index([jurisdictionId])
+  @@index([organizationId])
+  @@index([sourceArtifactId])
+  @@index([isPublic, deletedAt])
+}
+
+/// Supporting document, source, media, or witness evidence for a memorial.
+model PersonMemorialEvidence {
+  /// Unique identifier for this evidence item
+  id String @id @default(cuid())
+
+  /// Memorial this evidence supports
+  memorialId String
+
+  /// User who submitted this evidence
+  submittedByUserId String?
+
+  /// Submitter testimony this evidence supports, when applicable
+  submissionId String?
+
+  /// Optional shared source artifact/provenance row
+  sourceArtifactId String?
+
+  /// Evidence category
+  evidenceKind PersonMemorialEvidenceKind @default(OTHER)
+
+  /// Human-readable title
+  title String?
+
+  /// Optional description
+  description String?
+
+  /// External source URL
+  sourceUrl String?
+
+  /// Whether this evidence can be shown publicly
+  isPublic Boolean @default(false)
+
+  /// Whether this evidence may contain sensitive/private data
+  containsSensitiveData Boolean @default(true)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  memorial        PersonMemorial            @relation("PersonMemorialEvidence", fields: [memorialId], references: [id], onDelete: Cascade)
+  submittedByUser User?                     @relation("UserSubmittedPersonMemorialEvidence", fields: [submittedByUserId], references: [id], onDelete: SetNull)
+  submission      PersonMemorialSubmission? @relation("PersonMemorialSubmissionEvidence", fields: [submissionId], references: [id], onDelete: SetNull)
+  sourceArtifact  SourceArtifact?           @relation("SourceArtifactPersonMemorialEvidence", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+
+  @@index([memorialId])
+  @@index([submittedByUserId])
+  @@index([submissionId])
+  @@index([sourceArtifactId])
+  @@index([evidenceKind])
+  @@index([isPublic, deletedAt])
+}
+
+/// Reference row for regulatory approval lag between first evidence and approval.
+model InterventionApprovalTimeline {
+  /// Unique identifier for this timeline row
+  id String @id @default(cuid())
+
+  /// Source/display intervention name from the approval dataset. This is kept
+  /// even when interventionGlobalVariableId is set because imported regulatory
+  /// records need their original label preserved.
+  interventionName String
+
+  /// Optional brand name
+  brandName String?
+
+  /// Optional canonical intervention variable link for joins/ranking. Writers
+  /// should preserve interventionName and set this when canonicalization is
+  /// available.
+  interventionGlobalVariableId String?
+
+  /// Source/display condition name from the approval dataset. This is kept even
+  /// when conditionGlobalVariableId is set because imported records need their
+  /// original indication text preserved.
+  conditionName String
+
+  /// Optional canonical condition/outcome variable link for matching and
+  /// querying. Writers should preserve conditionName and set this when
+  /// canonicalization is available.
+  conditionGlobalVariableId String?
+
+  /// Regulator/jurisdiction responsible for approval, e.g. United States/FDA
+  jurisdictionId String?
+
+  /// Free-text regulator name before canonical mapping
+  regulatorName String?
+
+  /// Date of first efficacy evidence
+  firstEvidenceDate DateTime?
+
+  /// Description/source context for first evidence
+  firstEvidenceDescription String?
+
+  /// Date of regulatory approval
+  approvalDate DateTime?
+
+  /// Description/source context for approval
+  approvalDescription String?
+
+  /// Approval minus first evidence, cached in days when both dates are known
+  efficacyLagDays Int?
+
+  /// Estimated lives saved per year after approval
+  estimatedLivesSavedPerYear Float?
+
+  /// Estimated deaths during approval lag
+  estimatedDeathsDuringLag Float?
+
+  /// Source URL for provenance
+  sourceUrl String?
+
+  /// Optional shared source artifact/provenance row
+  sourceArtifactId String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  interventionGlobalVariable GlobalVariable?             @relation("InterventionApprovalInterventionVariable", fields: [interventionGlobalVariableId], references: [id], onDelete: SetNull)
+  conditionGlobalVariable    GlobalVariable?             @relation("InterventionApprovalConditionVariable", fields: [conditionGlobalVariableId], references: [id], onDelete: SetNull)
+  jurisdiction               Jurisdiction?               @relation("JurisdictionInterventionApprovalTimelines", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  sourceArtifact             SourceArtifact?             @relation("SourceArtifactInterventionApprovalTimelines", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  efficacyLagEvidence        PersonEfficacyLagEvidence[] @relation("InterventionApprovalEfficacyLagEvidence")
+}
+
+/// Computed evidence that a memorialized person died during an approval lag.
+model PersonEfficacyLagEvidence {
+  /// Unique identifier for this efficacy-lag match
+  id String @id @default(cuid())
+
+  /// Memorial/death case being matched
+  memorialId String
+
+  /// Condition/cause row used for the match, when available
+  personConditionId String?
+
+  /// Intervention timeline used for the match
+  interventionApprovalTimelineId String
+
+  /// Review/computation status
+  status EfficacyLagEvidenceStatus @default(CANDIDATE)
+
+  /// Days between death and eventual approval when death occurred before approval
+  diedBeforeApprovalDays Int?
+
+  /// Human-readable explanation for notices and evidence packages
+  explanation String?
+
+  /// Confidence score from 0 to 1
+  confidenceScore Float?
+
+  /// When this match was computed
+  computedAt DateTime @default(now())
+
+  /// Reviewer for confirmed/rejected matches
+  reviewedByUserId String?
+
+  /// When this match was reviewed
+  reviewedAt DateTime?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  memorial                     PersonMemorial               @relation("PersonMemorialEfficacyLagEvidence", fields: [memorialId], references: [id], onDelete: Cascade)
+  personCondition              PersonCondition?             @relation("PersonConditionEfficacyLagEvidence", fields: [personConditionId], references: [id], onDelete: SetNull)
+  interventionApprovalTimeline InterventionApprovalTimeline @relation("InterventionApprovalEfficacyLagEvidence", fields: [interventionApprovalTimelineId], references: [id], onDelete: Cascade)
+  reviewedByUser               User?                        @relation("UserReviewedPersonEfficacyLagEvidence", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([memorialId, interventionApprovalTimelineId], map: "PersonEfficacyLagEvidence_memorial_timeline_key")
 }
 
 /// Application user account used for Optimitron and Wishocracy sign-in
@@ -862,50 +1518,68 @@ model User {
   deletedAt DateTime?
 
   // -- Relations --
-  person                     Person?                          @relation("UserPerson", fields: [personId], references: [id], onDelete: SetNull)
-  accounts                   Account[]
-  personhoodVerifications    PersonhoodVerification[]
-  referrals                  Referral[]                       @relation("UserReferrals")
-  referralClicks             ReferralClick[]                  @relation("UserReferralClicks")
-  sessions                   Session[]
-  referral                   Referral?                        @relation("UserReferral")
-  wishocraticAllocations     WishocraticAllocation[]          @relation("UserWishocraticAllocations")
-  wishocraticItemInclusions  WishocraticItemInclusion[]       @relation("UserWishocraticItemInclusions")
-  citizenBillVotes           CitizenBillVote[]                @relation("UserCitizenBillVotes")
-  webPushSubscriptions       WebPushSubscription[]            @relation("UserWebPushSubscriptions")
-  userPreference             UserPreference?                  @relation("UserPreference")
-  notificationPreferences    NotificationPreference[]         @relation("UserNotificationPreferences")
-  notifications              Notification[]                   @relation("UserNotifications")
-  encryptedAllocations       WishocraticEncryptedAllocation?  @relation("UserEncryptedAllocations")
-  createdReferendums         Referendum[]                     @relation("UserCreatedReferendums")
-  referendumVotes            ReferendumVote[]                 @relation("UserReferendumVotes")
-  referendumReferrals        ReferendumVote[]                 @relation("UserReferendumReferrals")
-  voteTokenMints             VoteTokenMint[]                  @relation("UserVoteTokenMints")
-  activities                 Activity[]                       @relation("UserActivities")
-  createdOrganizations       Organization[]                   @relation("OrgCreator")
-  organizationMemberships    OrganizationMember[]             @relation("UserOrgMemberships")
-  submittedOrgPositions      OrganizationReferendumPosition[] @relation("OrgPositionSubmitter")
-  approvedOrgPositions       OrganizationReferendumPosition[] @relation("OrgPositionApprover")
-  badges                     Badge[]                          @relation("UserBadges")
-  wishPoints                 WishPoint[]                      @relation("UserWishPoints")
-  socialAccounts             SocialAccount[]                  @relation("UserSocialAccounts")
-  emailLogs                  EmailLog[]                       @relation("UserEmailLogs")
-  shareAttempts              ShareAttempt[]                   @relation("UserShareAttempts")
-  sentReferralInvitations    ReferralInvitation[]             @relation("ReferralInvitationReferrer")
-  surveyResponses            SurveyResponse[]                 @relation("UserSurveyResponses")
-  taskClaims                 TaskClaim[]                      @relation("UserTaskClaims")
-  ownedTasks                 Task[]                           @relation("TaskOwner")
-  verifiedTasks              Task[]                           @relation("TaskVerifiedByUser")
-  verifiedTaskClaims         TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
-  verifiedTaskMilestones     TaskMilestone[]                  @relation("TaskMilestoneVerifiedByUser")
-  taskComments               TaskComment[]                    @relation("TaskCommentAuthor")
-  moderatedTaskComments      TaskComment[]                    @relation("TaskCommentModerator")
-  taskCommentVotes           TaskCommentVote[]                @relation("TaskCommentVoter")
-  agentComputeDeposits       AgentComputeDeposit[]            @relation("UserAgentComputeDeposits")
-  oauthAuthCodes             OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
-  oauthGrants                OAuthGrant[]                     @relation("UserOAuthGrants")
-  receivedTaskCommunications TaskCommunication[]              @relation("TaskCommunicationRecipientUser")
-  sentTaskCommunications     TaskCommunication[]              @relation("TaskCommunicationSenderUser")
+  person                             Person?                          @relation("UserPerson", fields: [personId], references: [id], onDelete: SetNull)
+  subject                            Subject?                         @relation("UserSubject")
+  recordedMeasurements               Measurement[]                    @relation("UserRecordedMeasurements")
+  accounts                           Account[]
+  personhoodVerifications            PersonhoodVerification[]
+  referrals                          Referral[]                       @relation("UserReferrals")
+  referralClicks                     ReferralClick[]                  @relation("UserReferralClicks")
+  sessions                           Session[]
+  referral                           Referral?                        @relation("UserReferral")
+  wishocraticAllocations             WishocraticAllocation[]          @relation("UserWishocraticAllocations")
+  wishocraticItemInclusions          WishocraticItemInclusion[]       @relation("UserWishocraticItemInclusions")
+  citizenBillVotes                   CitizenBillVote[]                @relation("UserCitizenBillVotes")
+  webPushSubscriptions               WebPushSubscription[]            @relation("UserWebPushSubscriptions")
+  userPreference                     UserPreference?                  @relation("UserPreference")
+  notificationPreferences            NotificationPreference[]         @relation("UserNotificationPreferences")
+  notifications                      Notification[]                   @relation("UserNotifications")
+  encryptedAllocations               WishocraticEncryptedAllocation?  @relation("UserEncryptedAllocations")
+  createdReferendums                 Referendum[]                     @relation("UserCreatedReferendums")
+  createdCourtCases                  CourtCase[]                      @relation("UserCreatedCourtCases")
+  createdCourtCaseParties            CourtCaseParty[]                 @relation("UserCreatedCourtCaseParties")
+  createdCourtCaseClaims             CourtCaseClaim[]                 @relation("UserCreatedCourtCaseClaims")
+  createdCourtCaseHarms              CourtCaseHarm[]                  @relation("UserCreatedCourtCaseHarms")
+  createdCourtCaseEvidence           CourtCaseEvidence[]              @relation("UserCreatedCourtCaseEvidence")
+  createdCourtCaseRemedies           CourtCaseRemedy[]                @relation("UserCreatedCourtCaseRemedies")
+  referendumVotes                    ReferendumVote[]                 @relation("UserReferendumVotes")
+  referendumReferrals                ReferendumVote[]                 @relation("UserReferendumReferrals")
+  voteTokenMints                     VoteTokenMint[]                  @relation("UserVoteTokenMints")
+  activities                         Activity[]                       @relation("UserActivities")
+  createdOrganizations               Organization[]                   @relation("OrgCreator")
+  organizationMemberships            OrganizationMember[]             @relation("UserOrgMemberships")
+  submittedOrgPositions              OrganizationReferendumPosition[] @relation("OrgPositionSubmitter")
+  approvedOrgPositions               OrganizationReferendumPosition[] @relation("OrgPositionApprover")
+  badges                             Badge[]                          @relation("UserBadges")
+  wishPoints                         WishPoint[]                      @relation("UserWishPoints")
+  socialAccounts                     SocialAccount[]                  @relation("UserSocialAccounts")
+  emailLogs                          EmailLog[]                       @relation("UserEmailLogs")
+  shareAttempts                      ShareAttempt[]                   @relation("UserShareAttempts")
+  sentReferralInvitations            ReferralInvitation[]             @relation("ReferralInvitationReferrer")
+  surveyResponses                    SurveyResponse[]                 @relation("UserSurveyResponses")
+  taskClaims                         TaskClaim[]                      @relation("UserTaskClaims")
+  ownedTasks                         Task[]                           @relation("TaskOwner")
+  verifiedTasks                      Task[]                           @relation("TaskVerifiedByUser")
+  verifiedTaskClaims                 TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
+  verifiedTaskMilestones             TaskMilestone[]                  @relation("TaskMilestoneVerifiedByUser")
+  taskComments                       TaskComment[]                    @relation("TaskCommentAuthor")
+  moderatedTaskComments              TaskComment[]                    @relation("TaskCommentModerator")
+  taskCommentVotes                   TaskCommentVote[]                @relation("TaskCommentVoter")
+  agentComputeDeposits               AgentComputeDeposit[]            @relation("UserAgentComputeDeposits")
+  oauthAuthCodes                     OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
+  oauthGrants                        OAuthGrant[]                     @relation("UserOAuthGrants")
+  mcpToolCallAudits                  McpToolCallAudit[]               @relation("UserMcpToolCallAudits")
+  reportedContentReports             ContentReport[]                  @relation("UserReportedContentReports")
+  reviewedContentReports             ContentReport[]                  @relation("UserReviewedContentReports")
+  receivedTaskCommunications         TaskCommunication[]              @relation("TaskCommunicationRecipientUser")
+  sentTaskCommunications             TaskCommunication[]              @relation("TaskCommunicationSenderUser")
+  createdPeople                      Person[]                         @relation("UserCreatedPeople")
+  createdPersonRelationships         PersonRelationship[]             @relation("UserCreatedPersonRelationships")
+  reportedPersonConditions           PersonCondition[]                @relation("UserReportedPersonConditions")
+  submittedPersonMemorialSubmissions PersonMemorialSubmission[]       @relation("UserSubmittedPersonMemorialSubmissions")
+  submittedMemorialEvidence          PersonMemorialEvidence[]         @relation("UserSubmittedPersonMemorialEvidence")
+  reviewedEfficacyLagEvidence        PersonEfficacyLagEvidence[]      @relation("UserReviewedPersonEfficacyLagEvidence")
+  reportedInterventionExperiences    InterventionExperience[]         @relation("UserReportedInterventionExperiences")
 
   @@index([email])
   @@index([referralCode])
@@ -1155,11 +1829,14 @@ model Unit {
   deletedAt DateTime?
 
   // -- Relations --
-  globalVariables      GlobalVariable[]   @relation("GlobalVariableDefaultUnit")
-  variableCategories   VariableCategory[] @relation("VariableCategoryDefaultUnit")
-  nOf1Variables        NOf1Variable[]     @relation("NOf1VariableDefaultUnit")
-  measurements         Measurement[]      @relation("MeasurementUnit")
-  measurementsOriginal Measurement[]      @relation("MeasurementOriginalUnit")
+  globalVariables                GlobalVariable[]                       @relation("GlobalVariableDefaultUnit")
+  variableCategories             VariableCategory[]                     @relation("VariableCategoryDefaultUnit")
+  nOf1Variables                  NOf1Variable[]                         @relation("NOf1VariableDefaultUnit")
+  measurements                   Measurement[]                          @relation("MeasurementUnit")
+  measurementsOriginal           Measurement[]                          @relation("MeasurementOriginalUnit")
+  interventionExperienceDoses    InterventionExperience[]               @relation("InterventionExperienceDoseUnit")
+  interventionExperienceOutcomes InterventionExperienceOutcome[]        @relation("InterventionExperienceOutcomeUnit")
+  evidenceEstimates              VariableRelationshipEvidenceEstimate[] @relation("VariableEvidenceUnit")
 
   @@index([unitCategoryId])
 }
@@ -1351,17 +2028,76 @@ model GlobalVariable {
   deletedAt DateTime?
 
   // -- Relations --
-  nOf1Variables                     NOf1Variable[]
-  measurements                      Measurement[]
-  trackingReminders                 TrackingReminder[]
-  nOf1RelationshipsAsPredictor      NOf1VariableRelationship[]      @relation("NOf1RelPredictorGlobal")
-  nOf1RelationshipsAsOutcome        NOf1VariableRelationship[]      @relation("NOf1RelOutcomeGlobal")
-  aggregateRelationshipsAsPredictor AggregateVariableRelationship[] @relation("AggregateRelPredictorGlobal")
-  aggregateRelationshipsAsOutcome   AggregateVariableRelationship[] @relation("AggregateRelOutcomeGlobal")
+  nOf1Variables                               NOf1Variable[]
+  measurements                                Measurement[]
+  trackingReminders                           TrackingReminder[]
+  externalCodes                               GlobalVariableExternalCode[]           @relation("GlobalVariableExternalCodes")
+  nOf1RelationshipsAsPredictor                NOf1VariableRelationship[]             @relation("NOf1RelPredictorGlobal")
+  nOf1RelationshipsAsOutcome                  NOf1VariableRelationship[]             @relation("NOf1RelOutcomeGlobal")
+  aggregateRelationshipsAsPredictor           AggregateVariableRelationship[]        @relation("AggregateRelPredictorGlobal")
+  aggregateRelationshipsAsOutcome             AggregateVariableRelationship[]        @relation("AggregateRelOutcomeGlobal")
+  personConditions                            PersonCondition[]                      @relation("GlobalVariablePersonConditions")
+  interventionApprovalTimelinesAsIntervention InterventionApprovalTimeline[]         @relation("InterventionApprovalInterventionVariable")
+  interventionApprovalTimelinesAsCondition    InterventionApprovalTimeline[]         @relation("InterventionApprovalConditionVariable")
+  interventionExperiencesAsCondition          InterventionExperience[]               @relation("InterventionExperienceConditionVariable")
+  interventionExperiencesAsIntervention       InterventionExperience[]               @relation("InterventionExperienceInterventionVariable")
+  interventionExperienceOutcomes              InterventionExperienceOutcome[]        @relation("InterventionExperienceOutcomeVariable")
+  interventionExperienceSideEffects           InterventionExperienceSideEffect[]     @relation("InterventionExperienceSideEffectVariable")
+  evidenceEstimatesAsPredictor                VariableRelationshipEvidenceEstimate[] @relation("VariableEvidencePredictor")
+  evidenceEstimatesAsOutcome                  VariableRelationshipEvidenceEstimate[] @relation("VariableEvidenceOutcome")
+  evidenceEstimatesAsContext                  VariableRelationshipEvidenceEstimate[] @relation("VariableEvidenceContext")
+  interventionRankingRunsForCondition         InterventionRankingRun[]               @relation("InterventionRankingConditionVariable")
+  rankedInterventions                         RankedIntervention[]                   @relation("RankedInterventionVariable")
+  courtCaseHarms                              CourtCaseHarm[]                        @relation("CourtCaseHarmGlobalVariable")
+  courtCaseEvidence                           CourtCaseEvidence[]                    @relation("CourtCaseEvidenceGlobalVariable")
 
   @@index([variableCategoryId])
   @@index([defaultUnitId])
   @@index([name])
+}
+
+/// External medical/scientific/policy codes attached to a canonical variable.
+/// Examples: ICD-10 condition codes, RxNorm drug codes, ATC classes, MeSH terms.
+model GlobalVariableExternalCode {
+  /// Unique identifier for this variable-code mapping
+  id String @id @default(cuid())
+
+  /// Canonical variable being coded
+  globalVariableId String
+
+  /// Coding system name, e.g. ICD-10, RxNorm, ATC, MeSH
+  codeSystem String
+
+  /// Code or range exactly as represented by the source
+  code String
+
+  /// Optional human-readable label for this code
+  displayName String?
+
+  /// Optional source artifact/provenance row
+  sourceArtifactId String?
+
+  /// Flexible payload for source-specific import metadata
+  metadataJson Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  globalVariable GlobalVariable  @relation("GlobalVariableExternalCodes", fields: [globalVariableId], references: [id], onDelete: Cascade)
+  sourceArtifact SourceArtifact? @relation("SourceArtifactGlobalVariableExternalCodes", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+
+  @@unique([globalVariableId, codeSystem, code])
+  @@index([codeSystem, code])
+  @@index([globalVariableId])
+  @@index([sourceArtifactId])
+  @@index([deletedAt])
 }
 
 /// Generic analysis subject for N-of-1 and aggregate pipelines.
@@ -1374,8 +2110,20 @@ model Subject {
   /// Subject classification
   subjectType SubjectType @default(USER)
 
-  /// External source identifier, if available
-  externalId String? @unique
+  /// Stable source identifier for subjects that are not keyed only by a typed FK
+  externalId String?
+
+  /// Linked user account when this subject is an Optimitron account
+  userId String? @unique
+
+  /// Linked person when this subject is a human record
+  personId String? @unique
+
+  /// Linked jurisdiction when this subject is a polity/geographic unit
+  jurisdictionId String? @unique
+
+  /// Linked organization when this subject is an institution
+  organizationId String? @unique
 
   /// Human-readable subject label
   displayName String?
@@ -1390,10 +2138,23 @@ model Subject {
   deletedAt DateTime?
 
   // -- Relations --
-  nOf1Variables             NOf1Variable[]
-  nOf1VariableRelationships NOf1VariableRelationship[]
+  user                            User?                      @relation("UserSubject", fields: [userId], references: [id], onDelete: SetNull)
+  person                          Person?                    @relation("PersonSubject", fields: [personId], references: [id], onDelete: Cascade)
+  jurisdiction                    Jurisdiction?              @relation("JurisdictionSubject", fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  organization                    Organization?              @relation("OrganizationSubject", fields: [organizationId], references: [id], onDelete: Cascade)
+  nOf1Variables                   NOf1Variable[]
+  measurements                    Measurement[]
+  nOf1VariableRelationships       NOf1VariableRelationship[]
+  interventionExperiences         InterventionExperience[]   @relation("SubjectInterventionExperiences")
+  courtCasesAsNominalPlaintiff    CourtCase[]                @relation("CourtCaseNominalPlaintiffSubject")
+  courtCasesAsPrimaryRespondent   CourtCase[]                @relation("CourtCasePrimaryRespondentSubject")
+  courtCasesAsBeneficiary         CourtCase[]                @relation("CourtCaseBeneficiarySubject")
+  courtCaseParties                CourtCaseParty[]           @relation("CourtCasePartySubject")
+  courtCaseHarmsAsAffectedSubject CourtCaseHarm[]            @relation("CourtCaseHarmAffectedSubject")
 
+  @@unique([subjectType, externalId])
   @@index([subjectType])
+  @@index([externalId])
 }
 
 /// Per-subject instance of a GlobalVariable with personal overrides and running stats.
@@ -1404,17 +2165,14 @@ model Subject {
 /// Running statistics implemented in packages/data/src/variable-statistics.ts (calculateNOf1VariableStatistics)
 /// Daily value aggregation implemented in packages/data/src/daily-aggregation.ts (aggregateToDaily)
 model NOf1Variable {
-  /// Unique identifier for this unit-variable instance
+  /// Unique identifier for this subject-variable instance
   id String @id @default(cuid())
 
-  /// ID of the user who owns this variable instance
-  userId String
-
-  /// Optional generic subject owner ID (migration path from user-only ownership)
-  subjectId String?
+  /// Generic subject owner ID
+  subjectId String
 
   /// Relation to Subject
-  subject Subject? @relation(fields: [subjectId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
 
   /// ID of the canonical GlobalVariable this is an instance of
   globalVariableId String
@@ -1422,10 +2180,10 @@ model NOf1Variable {
   /// Relation to the canonical GlobalVariable
   globalVariable GlobalVariable @relation(fields: [globalVariableId], references: [id])
 
-  /// User's preferred unit (overrides global default)
+  /// Subject-specific preferred unit (overrides global default)
   defaultUnitId String?
 
-  /// Relation to the user's preferred Unit
+  /// Relation to the subject-specific preferred Unit
   defaultUnit Unit? @relation("NOf1VariableDefaultUnit", fields: [defaultUnitId], references: [id])
 
   /// Personal override for onset delay (seconds)
@@ -1434,7 +2192,7 @@ model NOf1Variable {
   /// Personal override for duration of action (seconds)
   durationOfAction Int?
 
-  /// How to handle missing data for this user's variable
+  /// How to handle missing data for this subject's variable
   fillingType FillingType @default(NONE)
 
   /// Personal override for the fill value when fillingType is "value"
@@ -1448,46 +2206,46 @@ model NOf1Variable {
 
   // -- Running statistics (updated on each new measurement) --
 
-  /// Total number of measurements this unit has recorded for this variable
+  /// Total number of measurements this subject has recorded for this variable
   numberOfMeasurements Int @default(0)
 
-  /// Timestamp of this unit's most recent measurement for this variable
+  /// Timestamp of this subject's most recent measurement for this variable
   latestMeasurementStartAt DateTime?
 
-  /// Timestamp of this unit's earliest measurement for this variable
+  /// Timestamp of this subject's earliest measurement for this variable
   earliestMeasurementStartAt DateTime?
 
-  /// Arithmetic mean of this unit's measurements
+  /// Arithmetic mean of this subject's measurements
   mean Float?
 
-  /// Median of this unit's measurements
+  /// Median of this subject's measurements
   median Float?
 
-  /// Standard deviation of this unit's measurements
+  /// Standard deviation of this subject's measurements
   standardDeviation Float?
 
-  /// Variance of this unit's measurements
+  /// Variance of this subject's measurements
   variance Float?
 
-  /// Kurtosis of this user's measurement distribution
+  /// Kurtosis of this subject's measurement distribution
   kurtosis Float?
 
-  /// Skewness of this user's measurement distribution
+  /// Skewness of this subject's measurement distribution
   skewness Float?
 
-  /// Lowest value this unit has ever recorded
+  /// Lowest value this subject has ever recorded
   minimumRecordedValue Float?
 
-  /// Highest value this unit has ever recorded
+  /// Highest value this subject has ever recorded
   maximumRecordedValue Float?
 
   /// Processing status: "WAITING" | "ANALYZING" | "DONE" | "ERROR"
   status AnalysisStatus @default(WAITING)
 
-  /// When the last statistical analysis began for this unit-variable
+  /// When the last statistical analysis began for this subject-variable
   analysisStartedAt DateTime?
 
-  /// When the last statistical analysis completed for this unit-variable
+  /// When the last statistical analysis completed for this subject-variable
   analysisEndedAt DateTime?
 
   /// When this record was created
@@ -1503,8 +2261,7 @@ model NOf1Variable {
   measurements      Measurement[]
   trackingReminders TrackingReminder[]
 
-  @@unique([userId, globalVariableId])
-  @@index([userId])
+  @@unique([subjectId, globalVariableId])
   @@index([subjectId])
   @@index([globalVariableId])
 }
@@ -1518,8 +2275,17 @@ model Measurement {
   /// Unique identifier for this measurement
   id String @id @default(cuid())
 
-  /// ID of the user who recorded this measurement
-  userId String
+  /// Subject this measurement is about
+  subjectId String
+
+  /// Relation to the measured Subject
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  /// User who entered/imported the measurement, if known
+  recordedByUserId String?
+
+  /// Relation to the recording user
+  recordedByUser User? @relation("UserRecordedMeasurements", fields: [recordedByUserId], references: [id], onDelete: SetNull)
 
   /// Link to the unit's personal variable instance
   nOf1VariableId String
@@ -1584,14 +2350,179 @@ model Measurement {
   /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
-  @@unique([userId, globalVariableId, startTime])
-  @@index([userId])
-  @@index([userId, startTime])
+  // -- Relations --
+  interventionOutcomesAsBefore InterventionExperienceOutcome[] @relation("InterventionOutcomeBeforeMeasurement")
+  interventionOutcomesAsAfter  InterventionExperienceOutcome[] @relation("InterventionOutcomeAfterMeasurement")
+
+  @@unique([subjectId, globalVariableId, startTime])
+  @@index([subjectId])
+  @@index([subjectId, startTime])
+  @@index([recordedByUserId])
   @@index([globalVariableId])
   @@index([globalVariableId, startTime])
   @@index([nOf1VariableId])
   @@index([startTime])
-  @@index([userId, globalVariableId, startTime])
+  @@index([subjectId, globalVariableId, startTime])
+}
+
+/// A subject's reported use, plan, or non-use of an intervention for a condition/context.
+/// Actual time-series values remain in Measurement; this row stores report context.
+model InterventionExperience {
+  /// Unique identifier for this intervention experience
+  id String @id @default(cuid())
+
+  /// Subject the report is about
+  subjectId String
+
+  /// User who entered the report, if known
+  reportedByUserId String?
+
+  /// Condition/context variable this intervention is used for
+  conditionGlobalVariableId String?
+
+  /// Intervention/treatment/policy variable being reported
+  interventionGlobalVariableId String
+
+  /// Whether the subject currently uses, formerly used, plans, or never tried it
+  status InterventionExperienceStatus @default(UNKNOWN)
+
+  /// Approximate start date/time
+  startedAt DateTime?
+
+  /// Approximate stop date/time
+  endedAt DateTime?
+
+  /// Dose amount when the intervention has a numeric dose
+  doseValue Float?
+
+  /// Dose unit
+  doseUnitId String?
+
+  /// Human-readable frequency, e.g. daily, weekly, as needed
+  frequencyText String?
+
+  /// Private/free-text report notes
+  notes String?
+
+  /// Optional source artifact/provenance row
+  sourceArtifactId String?
+
+  /// Whether this report can appear publicly
+  isPublic Boolean @default(false)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  subject                    Subject                            @relation("SubjectInterventionExperiences", fields: [subjectId], references: [id], onDelete: Cascade)
+  reportedByUser             User?                              @relation("UserReportedInterventionExperiences", fields: [reportedByUserId], references: [id], onDelete: SetNull)
+  conditionGlobalVariable    GlobalVariable?                    @relation("InterventionExperienceConditionVariable", fields: [conditionGlobalVariableId], references: [id], onDelete: SetNull)
+  interventionGlobalVariable GlobalVariable                     @relation("InterventionExperienceInterventionVariable", fields: [interventionGlobalVariableId], references: [id])
+  doseUnit                   Unit?                              @relation("InterventionExperienceDoseUnit", fields: [doseUnitId], references: [id], onDelete: SetNull)
+  sourceArtifact             SourceArtifact?                    @relation("SourceArtifactInterventionExperiences", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  outcomes                   InterventionExperienceOutcome[]    @relation("InterventionExperienceOutcomes")
+  sideEffects                InterventionExperienceSideEffect[] @relation("InterventionExperienceSideEffects")
+}
+
+/// Outcome reported for a specific intervention experience.
+model InterventionExperienceOutcome {
+  /// Unique identifier for this outcome report
+  id String @id @default(cuid())
+
+  /// Parent intervention experience
+  interventionExperienceId String
+
+  /// Outcome variable affected
+  outcomeGlobalVariableId String
+
+  /// Coarse subjective outcome direction
+  rating InterventionOutcomeRating @default(UNKNOWN)
+
+  /// Optional numeric outcome value
+  value Float?
+
+  /// Unit for the optional numeric value
+  unitId String?
+
+  /// Optional baseline measurement reference
+  beforeMeasurementId String?
+
+  /// Optional follow-up measurement reference
+  afterMeasurementId String?
+
+  /// Public comment about the outcome
+  publicComment String?
+
+  /// Whether this outcome can appear publicly
+  isPublic Boolean @default(false)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  interventionExperience InterventionExperience @relation("InterventionExperienceOutcomes", fields: [interventionExperienceId], references: [id], onDelete: Cascade)
+  outcomeGlobalVariable  GlobalVariable         @relation("InterventionExperienceOutcomeVariable", fields: [outcomeGlobalVariableId], references: [id])
+  unit                   Unit?                  @relation("InterventionExperienceOutcomeUnit", fields: [unitId], references: [id], onDelete: SetNull)
+  beforeMeasurement      Measurement?           @relation("InterventionOutcomeBeforeMeasurement", fields: [beforeMeasurementId], references: [id], onDelete: SetNull)
+  afterMeasurement       Measurement?           @relation("InterventionOutcomeAfterMeasurement", fields: [afterMeasurementId], references: [id], onDelete: SetNull)
+}
+
+/// Side effect reported for a specific intervention experience.
+model InterventionExperienceSideEffect {
+  /// Unique identifier for this side-effect report
+  id String @id @default(cuid())
+
+  /// Parent intervention experience
+  interventionExperienceId String
+
+  /// Side-effect variable
+  sideEffectGlobalVariableId String
+
+  /// Coarse subjective severity
+  severity InterventionSideEffectSeverity @default(UNKNOWN)
+
+  /// Approximate onset time
+  onsetAt DateTime?
+
+  /// Approximate resolution time
+  resolvedAt DateTime?
+
+  /// Whether this was medically serious
+  isSerious Boolean?
+
+  /// Action taken, e.g. stopped, reduced dose, treated symptom
+  actionTaken String?
+
+  /// Public comment about the side effect
+  publicComment String?
+
+  /// Whether this side-effect report can appear publicly
+  isPublic Boolean @default(false)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  interventionExperience   InterventionExperience @relation("InterventionExperienceSideEffects", fields: [interventionExperienceId], references: [id], onDelete: Cascade)
+  sideEffectGlobalVariable GlobalVariable         @relation("InterventionExperienceSideEffectVariable", fields: [sideEffectGlobalVariableId], references: [id])
 }
 
 /// A scheduled reminder to collect data for a variable.
@@ -2094,6 +3025,187 @@ model AggregateVariableRelationship {
   @@index([numberOfSubjects])
 }
 
+/// Imported, curated, user-reported, or optimizer-derived evidence about a predictor/outcome relationship.
+/// This stays generic so treatments, policies, budgets, behaviors, and environments share one evidence layer.
+model VariableRelationshipEvidenceEstimate {
+  /// Unique identifier for this evidence estimate
+  id String @id @default(cuid())
+
+  /// Predictor/intervention/input variable
+  predictorGlobalVariableId String
+
+  /// Outcome/condition/result variable
+  outcomeGlobalVariableId String
+
+  /// Optional context variable, e.g. condition for a treatment outcome
+  contextGlobalVariableId String?
+
+  /// Metric this row estimates
+  metricKind VariableEvidenceMetricKind
+
+  /// Provenance category
+  sourceType VariableRelationshipEvidenceSourceType @default(OTHER)
+
+  /// Numeric estimate value
+  value Float?
+
+  /// Unit for the numeric estimate
+  unitId String?
+
+  /// Confidence score from 0 to 1 when available
+  confidenceScore Float?
+
+  /// Letter grade summarizing evidence quality
+  evidenceGrade EvidenceGrade?
+
+  /// Number of participants represented
+  participants Int?
+
+  /// Number of studies/trials represented
+  studies Int?
+
+  /// Human-readable explanation or rationale
+  rationale String?
+
+  /// Direct source URL
+  sourceUrl String?
+
+  /// Optional source artifact/provenance row
+  sourceArtifactId String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  predictorGlobalVariable GlobalVariable       @relation("VariableEvidencePredictor", fields: [predictorGlobalVariableId], references: [id])
+  outcomeGlobalVariable   GlobalVariable       @relation("VariableEvidenceOutcome", fields: [outcomeGlobalVariableId], references: [id])
+  contextGlobalVariable   GlobalVariable?      @relation("VariableEvidenceContext", fields: [contextGlobalVariableId], references: [id], onDelete: SetNull)
+  unit                    Unit?                @relation("VariableEvidenceUnit", fields: [unitId], references: [id], onDelete: SetNull)
+  sourceArtifact          SourceArtifact?      @relation("SourceArtifactVariableRelationshipEvidenceEstimates", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  rankedInterventions     RankedIntervention[] @relation("RankedInterventionSourceEvidence")
+
+  @@index([predictorGlobalVariableId])
+  @@index([outcomeGlobalVariableId])
+  @@index([contextGlobalVariableId])
+  @@index([metricKind])
+  @@index([sourceType])
+  @@index([unitId])
+  @@index([sourceArtifactId])
+  @@index([deletedAt])
+}
+
+/// A generated set of intervention rankings for a condition/context variable.
+model InterventionRankingRun {
+  /// Unique identifier for this ranking run
+  id String @id @default(cuid())
+
+  /// Condition/context being ranked against
+  conditionGlobalVariableId String?
+
+  /// Algorithm family, e.g. medical-static-v1 or optimizer-v1
+  algorithmKey String
+
+  /// Optional algorithm version or dataset snapshot key
+  algorithmVersion String?
+
+  /// Ranking lifecycle
+  status InterventionRankingRunStatus @default(DRAFT)
+
+  /// When the ranking was computed
+  rankedAt DateTime @default(now())
+
+  /// Optional source artifact/provenance row
+  sourceArtifactId String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  conditionGlobalVariable GlobalVariable?      @relation("InterventionRankingConditionVariable", fields: [conditionGlobalVariableId], references: [id], onDelete: SetNull)
+  sourceArtifact          SourceArtifact?      @relation("SourceArtifactInterventionRankingRuns", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  rankedInterventions     RankedIntervention[] @relation("InterventionRankingRunRankedInterventions")
+
+  @@index([conditionGlobalVariableId])
+  @@index([algorithmKey])
+  @@index([status])
+  @@index([rankedAt])
+  @@index([sourceArtifactId])
+  @@index([deletedAt])
+}
+
+/// One ranked intervention inside an InterventionRankingRun.
+model RankedIntervention {
+  /// Unique identifier for this ranked intervention row
+  id String @id @default(cuid())
+
+  /// Ranking run this row belongs to
+  rankingRunId String
+
+  /// Intervention variable being ranked
+  interventionGlobalVariableId String
+
+  /// 1-based rank within the run
+  rank Int
+
+  /// Composite score used for ordering
+  score Float
+
+  /// Component score for expected benefit
+  effectivenessScore Float?
+
+  /// Component score for safety/tolerability
+  safetyScore Float?
+
+  /// Component score for evidence quality
+  evidenceScore Float?
+
+  /// Component score for cost/access
+  costScore Float?
+
+  /// Confidence score from 0 to 1
+  confidenceScore Float?
+
+  /// Optional top evidence estimate behind this rank
+  sourceEvidenceEstimateId String?
+
+  /// Human-readable rationale
+  rationale String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  rankingRun                 InterventionRankingRun                @relation("InterventionRankingRunRankedInterventions", fields: [rankingRunId], references: [id], onDelete: Cascade)
+  interventionGlobalVariable GlobalVariable                        @relation("RankedInterventionVariable", fields: [interventionGlobalVariableId], references: [id])
+  sourceEvidenceEstimate     VariableRelationshipEvidenceEstimate? @relation("RankedInterventionSourceEvidence", fields: [sourceEvidenceEstimateId], references: [id], onDelete: SetNull)
+
+  @@unique([rankingRunId, interventionGlobalVariableId])
+  @@unique([rankingRunId, rank])
+  @@index([rankingRunId])
+  @@index([interventionGlobalVariableId])
+  @@index([sourceEvidenceEstimateId])
+  @@index([score])
+  @@index([deletedAt])
+}
+
 /// Metadata about an external data source / integration (e.g. Fitbit, Apple Health, Oura).
 /// Used to track which integrations are available and their connection status per user.
 /// legacy API reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Connector.php
@@ -2297,14 +3409,18 @@ model Jurisdiction {
   deletedAt DateTime?
 
   // -- Relations --
-  items           WishocraticItem[]
-  politicians     Politician[]
-  aggregationRuns AggregationRun[]
-  referendums     Referendum[]
-  organizations   Organization[]
-  surveys         Survey[]
-  tasks           Task[]
-  taskTriggers    TaskTrigger[]     @relation("JurisdictionTaskTriggers")
+  subjects                      Subject[]                        @relation("JurisdictionSubject")
+  items                         WishocraticItem[]
+  politicians                   Politician[]
+  aggregationRuns               AggregationRun[]
+  referendums                   Referendum[]
+  organizations                 Organization[]
+  surveys                       Survey[]
+  tasks                         Task[]
+  taskTriggers                  TaskTrigger[]                    @relation("JurisdictionTaskTriggers")
+  conflicts                     Conflict[]                       @relation("ConflictPrimaryJurisdiction")
+  memorialResponsibleParties    PersonMemorialResponsibleParty[] @relation("JurisdictionPersonMemorialResponsibleParties")
+  interventionApprovalTimelines InterventionApprovalTimeline[]   @relation("JurisdictionInterventionApprovalTimelines")
 
   @@index([type])
   @@index([parentJurisdictionId])
@@ -2865,6 +3981,12 @@ enum VotePosition {
   ABSTAIN
 }
 
+/// How a referendum position was entered.
+enum ReferendumVoteSource {
+  SELF
+  REPRESENTED
+}
+
 /// A citizen's vote on a specific legislative bill, with optional CBA snapshot
 model CitizenBillVote {
   /// Unique identifier
@@ -3031,6 +4153,42 @@ enum ReferendumStatus {
   CLOSED
 }
 
+/// Lifecycle for a Court of Humanity case.
+enum CourtCaseStatus {
+  DRAFT
+  OPEN
+  VOTING
+  JUDGED
+  ARCHIVED
+}
+
+/// Role a subject plays in a Court of Humanity case.
+enum CourtCasePartyRole {
+  NOMINAL_PLAINTIFF
+  NAMED_PLAINTIFF
+  REPRESENTATIVE_CLASS
+  RESPONDENT
+  AMICUS
+  BENEFICIARY
+}
+
+/// Accountability posture for a Court of Humanity party.
+enum CourtCasePartyCapacity {
+  INSTITUTIONAL
+  OFFICIAL_CAPACITY
+  PERSONAL_CAPACITY
+  OVERSIGHT_CAPACITY
+  CLASS_REPRESENTATIVE
+}
+
+/// Review / publication state shared by claims, harms, evidence, and remedies.
+enum CourtCaseItemStatus {
+  PROPOSED
+  ACCEPTED
+  REJECTED
+  SUPERSEDED
+}
+
 /// A public referendum that users can vote on (e.g., "Should we adopt the 1% Treaty?")
 model Referendum {
   /// Unique identifier
@@ -3064,13 +4222,15 @@ model Referendum {
   deletedAt DateTime?
 
   // -- Relations --
-  createdBy             User?                            @relation("UserCreatedReferendums", fields: [createdByUserId], references: [id])
-  jurisdiction          Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
-  votes                 ReferendumVote[]
-  voteTokenMints        VoteTokenMint[]
-  surveys               Survey[]
-  organizationPositions OrganizationReferendumPosition[]
-  referralInvitations   ReferralInvitation[]
+  createdBy                       User?                            @relation("UserCreatedReferendums", fields: [createdByUserId], references: [id])
+  jurisdiction                    Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
+  votes                           ReferendumVote[]
+  voteTokenMints                  VoteTokenMint[]
+  surveys                         Survey[]
+  organizationPositions           OrganizationReferendumPosition[]
+  referralInvitations             ReferralInvitation[]
+  courtCasesAsJuryReferendum      CourtCase[]                      @relation("CourtCaseJuryReferendum")
+  courtCaseClaimsAsJuryReferendum CourtCaseClaim[]                 @relation("CourtCaseClaimJuryReferendum")
 
   @@index([slug])
   @@index([status])
@@ -3078,13 +4238,16 @@ model Referendum {
   @@index([createdByUserId])
 }
 
-/// A user's vote on a specific referendum
+/// A referendum position for a Person, entered by a signed-in User
 model ReferendumVote {
   /// Unique identifier
   id String @id @default(cuid())
 
-  /// The user who cast this vote
+  /// The user who entered this vote
   userId String
+
+  /// The human whose position this row records
+  personId String
 
   /// Which referendum this vote is for
   referendumId String
@@ -3092,11 +4255,20 @@ model ReferendumVote {
   /// The citizen's position
   answer VotePosition
 
+  /// Whether this was entered by the person themself or by someone representing them
+  voteSource ReferendumVoteSource @default(SELF)
+
   /// Who brought this voter in via referral link
   referredByUserId String?
 
   /// Organization context for partner-hosted survey or embed attribution
   organizationId String?
+
+  /// Optional public note attached to represented or self-entered positions
+  publicComment String?
+
+  /// Whether this vote can appear on public vote/person surfaces
+  isPublic Boolean @default(true)
 
   /// When this record was created
   createdAt DateTime @default(now())
@@ -3116,17 +4288,502 @@ model ReferendumVote {
 
   // -- Relations --
   user                        User                @relation("UserReferendumVotes", fields: [userId], references: [id], onDelete: Cascade)
+  person                      Person              @relation("PersonReferendumVotes", fields: [personId], references: [id], onDelete: Cascade)
   referendum                  Referendum          @relation(fields: [referendumId], references: [id])
   referrer                    User?               @relation("UserReferendumReferrals", fields: [referredByUserId], references: [id])
   organization                Organization?       @relation("OrganizationReferendumVotes", fields: [organizationId], references: [id])
   convertedReferralInvitation ReferralInvitation? @relation("ReferralInvitationConvertedVote")
 
-  @@unique([userId, referendumId])
+  @@unique([referendumId, personId])
   @@index([userId])
+  @@index([userId, referendumId])
+  @@index([personId])
   @@index([referendumId])
+  @@index([referendumId, answer, voteSource, deletedAt])
   @@index([referredByUserId])
   @@index([organizationId])
   @@index([createdAt])
+}
+
+/// Root Court of Humanity case record. Reuses Subject, Referendum, Task,
+/// SourceArtifact, and MCP audit tables for high-volume adjacent behavior.
+model CourtCase {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// URL-safe case identity
+  slug String @unique
+
+  /// Public case caption
+  title String
+
+  /// Short case summary
+  summary String?
+
+  /// Case lifecycle state
+  status CourtCaseStatus @default(DRAFT)
+
+  /// Whether the case can be shown publicly
+  isPublic Boolean @default(false)
+
+  /// User or agent owner who drafted the case
+  createdByUserId String?
+
+  /// Optional nominal plaintiff, e.g. Humanity
+  nominalPlaintiffSubjectId String?
+
+  /// Optional primary respondent, e.g. an agency or official
+  primaryRespondentSubjectId String?
+
+  /// Optional beneficiary class for remedies
+  beneficiarySubjectId String?
+
+  /// Optional task that coordinates case work
+  rootTaskId String? @unique
+
+  /// Optional public referendum used as the jury vote
+  juryReferendumId String? @unique
+
+  /// Structured context that is not stable enough for first-class fields
+  metadataJson Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  createdBy                User?               @relation("UserCreatedCourtCases", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  nominalPlaintiffSubject  Subject?            @relation("CourtCaseNominalPlaintiffSubject", fields: [nominalPlaintiffSubjectId], references: [id], onDelete: SetNull)
+  primaryRespondentSubject Subject?            @relation("CourtCasePrimaryRespondentSubject", fields: [primaryRespondentSubjectId], references: [id], onDelete: SetNull)
+  beneficiarySubject       Subject?            @relation("CourtCaseBeneficiarySubject", fields: [beneficiarySubjectId], references: [id], onDelete: SetNull)
+  rootTask                 Task?               @relation("CourtCaseRootTask", fields: [rootTaskId], references: [id], onDelete: SetNull)
+  juryReferendum           Referendum?         @relation("CourtCaseJuryReferendum", fields: [juryReferendumId], references: [id], onDelete: SetNull)
+  parties                  CourtCaseParty[]    @relation("CourtCaseParties")
+  claims                   CourtCaseClaim[]    @relation("CourtCaseClaims")
+  harms                    CourtCaseHarm[]     @relation("CourtCaseHarms")
+  evidence                 CourtCaseEvidence[] @relation("CourtCaseEvidence")
+  remedies                 CourtCaseRemedy[]   @relation("CourtCaseRemedies")
+
+  @@index([status, isPublic, deletedAt])
+  @@index([createdByUserId])
+  @@index([nominalPlaintiffSubjectId])
+  @@index([primaryRespondentSubjectId])
+  @@index([beneficiarySubjectId])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+/// Party in a Court of Humanity case. The party identity itself lives in Subject.
+model CourtCaseParty {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent case
+  caseId String
+
+  /// Optional idempotency key for imports/agents
+  partyKey String?
+
+  /// Subject playing this party role
+  subjectId String
+
+  /// Party role in the case
+  role CourtCasePartyRole
+
+  /// Legal or accountability capacity for this party
+  capacity CourtCasePartyCapacity?
+
+  /// Name captured at filing time for durable public captions
+  displayNameSnapshot String?
+
+  /// Why this plaintiff/class has standing or why this respondent is answerable
+  standingTheory String?
+
+  /// Ability to implement or cause the requested remedy, 0 to 1
+  powerToRemedyScore Float?
+
+  /// Claimed responsibility share or blame attribution, 0 to 1
+  blameAttributionScore Float?
+
+  /// Usefulness of naming this party for public accountability, 0 to 1
+  publicAccountabilityScore Float?
+
+  /// Display order within party groups
+  sortOrder Int @default(0)
+
+  /// Whether the party row is public
+  isPublic Boolean @default(true)
+
+  /// User or agent who drafted this party row
+  createdByUserId String?
+
+  /// Flexible context that should not become schema yet
+  metadataJson Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  case             CourtCase         @relation("CourtCaseParties", fields: [caseId], references: [id], onDelete: Cascade)
+  subject          Subject           @relation("CourtCasePartySubject", fields: [subjectId], references: [id], onDelete: Cascade)
+  createdBy        User?             @relation("UserCreatedCourtCaseParties", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  targetedRemedies CourtCaseRemedy[] @relation("CourtCaseRemedyTargetParty")
+
+  @@unique([caseId, partyKey])
+  @@unique([caseId, role, subjectId])
+  @@index([caseId, role])
+  @@index([subjectId, role])
+  @@index([createdByUserId])
+  @@index([isPublic, deletedAt])
+  @@index([deletedAt])
+}
+
+/// Structured legal, moral, or accounting allegation within a court case.
+model CourtCaseClaim {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent case
+  caseId String
+
+  /// Optional idempotency key for imports/agents
+  claimKey String?
+
+  /// Claim title
+  title String
+
+  /// Free-form claim taxonomy
+  claimType String?
+
+  /// Argument body in Markdown
+  argumentMarkdown String
+
+  /// Finding requested from the jury
+  requestedFinding String?
+
+  /// Review state
+  status CourtCaseItemStatus @default(PROPOSED)
+
+  /// Optional claim-specific jury referendum
+  juryReferendumId String? @unique
+
+  /// Display order
+  sortOrder Int @default(0)
+
+  /// Whether the claim can be shown publicly
+  isPublic Boolean @default(true)
+
+  /// User or agent who drafted this claim
+  createdByUserId String?
+
+  /// Flexible context that should not become schema yet
+  metadataJson Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  case           CourtCase           @relation("CourtCaseClaims", fields: [caseId], references: [id], onDelete: Cascade)
+  juryReferendum Referendum?         @relation("CourtCaseClaimJuryReferendum", fields: [juryReferendumId], references: [id], onDelete: SetNull)
+  createdBy      User?               @relation("UserCreatedCourtCaseClaims", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  harms          CourtCaseHarm[]     @relation("CourtCaseClaimHarms")
+  evidence       CourtCaseEvidence[] @relation("CourtCaseClaimEvidence")
+  remedies       CourtCaseRemedy[]   @relation("CourtCaseClaimRemedies")
+
+  @@unique([caseId, claimKey])
+  @@index([caseId, status, deletedAt])
+  @@index([createdByUserId])
+  @@index([isPublic, deletedAt])
+  @@index([deletedAt])
+}
+
+/// Quantified or qualitative harm asserted in a Court of Humanity case.
+model CourtCaseHarm {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent case
+  caseId String
+
+  /// Optional claim this harm supports
+  claimId String?
+
+  /// Optional idempotency key for imports/agents
+  harmKey String?
+
+  /// Free-form harm taxonomy
+  harmType String?
+
+  /// Harm title
+  title String
+
+  /// Harm explanation in Markdown
+  bodyMarkdown String?
+
+  /// Affected subject, e.g. Humanity, taxpayers, patients, or future humans
+  affectedSubjectId String?
+
+  /// Optional canonical variable for measured harm
+  globalVariableId String?
+
+  /// Optional parameter name when harm comes from generated parameter data
+  parameterName String?
+
+  /// Low estimate for the harm
+  lowValue Float?
+
+  /// Base estimate for the harm
+  baseValue Float?
+
+  /// High estimate for the harm
+  highValue Float?
+
+  /// Unit for low/base/high values
+  unit String?
+
+  /// Confidence score from 0 to 1
+  confidenceScore Float?
+
+  /// Display order
+  sortOrder Int @default(0)
+
+  /// Whether the harm can be shown publicly
+  isPublic Boolean @default(true)
+
+  /// Review state
+  status CourtCaseItemStatus @default(PROPOSED)
+
+  /// User or agent who drafted this harm
+  createdByUserId String?
+
+  /// Flexible context that should not become schema yet
+  metadataJson Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  case            CourtCase           @relation("CourtCaseHarms", fields: [caseId], references: [id], onDelete: Cascade)
+  claim           CourtCaseClaim?     @relation("CourtCaseClaimHarms", fields: [claimId], references: [id], onDelete: SetNull)
+  affectedSubject Subject?            @relation("CourtCaseHarmAffectedSubject", fields: [affectedSubjectId], references: [id], onDelete: SetNull)
+  globalVariable  GlobalVariable?     @relation("CourtCaseHarmGlobalVariable", fields: [globalVariableId], references: [id], onDelete: SetNull)
+  createdBy       User?               @relation("UserCreatedCourtCaseHarms", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  evidence        CourtCaseEvidence[] @relation("CourtCaseHarmEvidence")
+
+  @@unique([caseId, harmKey])
+  @@index([caseId, status, deletedAt])
+  @@index([claimId])
+  @@index([affectedSubjectId])
+  @@index([globalVariableId])
+  @@index([parameterName])
+  @@index([harmType])
+  @@index([createdByUserId])
+  @@index([isPublic, deletedAt])
+  @@index([deletedAt])
+}
+
+/// Public evidence attached to a Court of Humanity case, claim, or harm.
+model CourtCaseEvidence {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent case
+  caseId String
+
+  /// Optional claim this evidence supports
+  claimId String?
+
+  /// Optional harm this evidence supports
+  harmId String?
+
+  /// Optional idempotency key for imports/agents
+  evidenceKey String?
+
+  /// Free-form evidence taxonomy
+  evidenceType String?
+
+  /// Evidence title
+  title String
+
+  /// Evidence explanation in Markdown
+  bodyMarkdown String?
+
+  /// Existing source artifact row
+  sourceArtifactId String?
+
+  /// Existing memorial/death evidence row
+  personMemorialId String?
+
+  /// Optional canonical variable for measured evidence
+  globalVariableId String?
+
+  /// Optional parameter name when evidence comes from generated parameter data
+  parameterName String?
+
+  /// Direct public source URL when no SourceArtifact exists yet
+  sourceUrl String?
+
+  /// Content hash for dedupe/provenance
+  contentHash String?
+
+  /// Whether the evidence can be shown publicly
+  isPublic Boolean @default(true)
+
+  /// Whether the evidence contains sensitive personal data
+  containsSensitiveData Boolean @default(false)
+
+  /// Review/admissibility state
+  reviewStatus CourtCaseItemStatus @default(PROPOSED)
+
+  /// Confidence score from 0 to 1
+  confidenceScore Float?
+
+  /// Display order
+  sortOrder Int @default(0)
+
+  /// User or agent who drafted this evidence row
+  createdByUserId String?
+
+  /// Flexible context that should not become schema yet
+  metadataJson Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  case           CourtCase       @relation("CourtCaseEvidence", fields: [caseId], references: [id], onDelete: Cascade)
+  claim          CourtCaseClaim? @relation("CourtCaseClaimEvidence", fields: [claimId], references: [id], onDelete: SetNull)
+  harm           CourtCaseHarm?  @relation("CourtCaseHarmEvidence", fields: [harmId], references: [id], onDelete: SetNull)
+  sourceArtifact SourceArtifact? @relation("CourtCaseEvidenceSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  personMemorial PersonMemorial? @relation("CourtCaseEvidencePersonMemorial", fields: [personMemorialId], references: [id], onDelete: SetNull)
+  globalVariable GlobalVariable? @relation("CourtCaseEvidenceGlobalVariable", fields: [globalVariableId], references: [id], onDelete: SetNull)
+  createdBy      User?           @relation("UserCreatedCourtCaseEvidence", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([caseId, evidenceKey])
+  @@index([caseId, reviewStatus, deletedAt])
+  @@index([claimId])
+  @@index([harmId])
+  @@index([sourceArtifactId])
+  @@index([personMemorialId])
+  @@index([globalVariableId])
+  @@index([parameterName])
+  @@index([sourceUrl])
+  @@index([evidenceType])
+  @@index([createdByUserId])
+  @@index([isPublic, containsSensitiveData, deletedAt])
+  @@index([deletedAt])
+}
+
+/// Remedy requested from a Court of Humanity case or claim.
+model CourtCaseRemedy {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent case
+  caseId String
+
+  /// Optional claim this remedy addresses
+  claimId String?
+
+  /// Optional target party
+  targetPartyId String?
+
+  /// Optional idempotency key for imports/agents
+  remedyKey String?
+
+  /// Free-form remedy taxonomy
+  remedyType String?
+
+  /// Remedy title
+  title String
+
+  /// Remedy requested in Markdown
+  bodyMarkdown String
+
+  /// Low USD value for monetary remedies
+  amountUsdLow Float?
+
+  /// Base USD value for monetary remedies
+  amountUsdBase Float?
+
+  /// High USD value for monetary remedies
+  amountUsdHigh Float?
+
+  /// Requested completion deadline
+  deadlineAt DateTime?
+
+  /// Existing task that tracks enforcement or implementation
+  enforcementTaskId String?
+
+  /// Review state
+  status CourtCaseItemStatus @default(PROPOSED)
+
+  /// Display order
+  sortOrder Int @default(0)
+
+  /// Whether the remedy can be shown publicly
+  isPublic Boolean @default(true)
+
+  /// User or agent who drafted this remedy
+  createdByUserId String?
+
+  /// Flexible context that should not become schema yet
+  metadataJson Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  case            CourtCase       @relation("CourtCaseRemedies", fields: [caseId], references: [id], onDelete: Cascade)
+  claim           CourtCaseClaim? @relation("CourtCaseClaimRemedies", fields: [claimId], references: [id], onDelete: SetNull)
+  targetParty     CourtCaseParty? @relation("CourtCaseRemedyTargetParty", fields: [targetPartyId], references: [id], onDelete: SetNull)
+  enforcementTask Task?           @relation("CourtCaseRemedyEnforcementTask", fields: [enforcementTaskId], references: [id], onDelete: SetNull)
+  createdBy       User?           @relation("UserCreatedCourtCaseRemedies", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([caseId, remedyKey])
+  @@index([caseId, status, deletedAt])
+  @@index([claimId])
+  @@index([targetPartyId])
+  @@index([enforcementTaskId])
+  @@index([remedyType])
+  @@index([createdByUserId])
+  @@index([isPublic, deletedAt])
+  @@index([deletedAt])
 }
 
 // ============================================================================
@@ -3451,9 +5108,11 @@ model Organization {
   assignedTasks              Task[]                           @relation("TaskAssigneeOrganization")
   authoredTaskComments       TaskComment[]                    @relation("TaskCommentAuthorOrganization")
   receivedTaskCommunications TaskCommunication[]              @relation("TaskCommunicationRecipientOrganization")
+  subjects                   Subject[]                        @relation("OrganizationSubject")
   referendumPositions        OrganizationReferendumPosition[]
   referendumVotes            ReferendumVote[]                 @relation("OrganizationReferendumVotes")
   surveyResponses            SurveyResponse[]                 @relation("OrganizationSurveyResponses")
+  memorialResponsibleParties PersonMemorialResponsibleParty[] @relation("OrganizationPersonMemorialResponsibleParties")
 
   @@index([slug])
   @@index([type])
@@ -3656,28 +5315,30 @@ model Task {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction             Jurisdiction?               @relation(fields: [jurisdictionId], references: [id])
-  parentTask               Task?                       @relation("TaskHierarchy", fields: [parentTaskId], references: [id], onDelete: SetNull)
-  childTasks               Task[]                      @relation("TaskHierarchy")
-  assigneePerson           Person?                     @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
-  assigneeOrganization     Organization?               @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
-  verifiedByUser           User?                       @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
-  owner                    User?                       @relation("TaskOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
-  currentImpactEstimateSet TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
-  impactEstimateSets       TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
-  claims                   TaskClaim[]                 @relation("TaskClaims")
-  milestones               TaskMilestone[]             @relation("TaskMilestones")
-  comments                 TaskComment[]               @relation("TaskComments")
-  sourceArtifacts          TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
-  outgoingEdges            TaskEdge[]                  @relation("TaskOutgoingEdges")
-  incomingEdges            TaskEdge[]                  @relation("TaskIncomingEdges")
-  agentRunCosts            AgentRunCost[]              @relation("TaskAgentRunCosts")
-  agentLeases              AgentTaskLease[]            @relation("TaskAgentLeases")
-  shareAttempts            ShareAttempt[]              @relation("TaskShareAttempts")
-  referralInvitations      ReferralInvitation[]        @relation("TaskReferralInvitations")
-  communicationEndpoints   TaskCommunicationEndpoint[] @relation("TaskCommunicationEndpoints")
-  communicationTemplates   TaskCommunicationTemplate[] @relation("TaskCommunicationTemplates")
-  communications           TaskCommunication[]         @relation("TaskCommunications")
+  jurisdiction              Jurisdiction?               @relation(fields: [jurisdictionId], references: [id])
+  parentTask                Task?                       @relation("TaskHierarchy", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  childTasks                Task[]                      @relation("TaskHierarchy")
+  assigneePerson            Person?                     @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
+  assigneeOrganization      Organization?               @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
+  verifiedByUser            User?                       @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  owner                     User?                       @relation("TaskOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  currentImpactEstimateSet  TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
+  impactEstimateSets        TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
+  claims                    TaskClaim[]                 @relation("TaskClaims")
+  milestones                TaskMilestone[]             @relation("TaskMilestones")
+  comments                  TaskComment[]               @relation("TaskComments")
+  sourceArtifacts           TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
+  outgoingEdges             TaskEdge[]                  @relation("TaskOutgoingEdges")
+  incomingEdges             TaskEdge[]                  @relation("TaskIncomingEdges")
+  agentRunCosts             AgentRunCost[]              @relation("TaskAgentRunCosts")
+  agentLeases               AgentTaskLease[]            @relation("TaskAgentLeases")
+  shareAttempts             ShareAttempt[]              @relation("TaskShareAttempts")
+  referralInvitations       ReferralInvitation[]        @relation("TaskReferralInvitations")
+  communicationEndpoints    TaskCommunicationEndpoint[] @relation("TaskCommunicationEndpoints")
+  communicationTemplates    TaskCommunicationTemplate[] @relation("TaskCommunicationTemplates")
+  communications            TaskCommunication[]         @relation("TaskCommunications")
+  courtCaseRootFor          CourtCase?                  @relation("CourtCaseRootTask")
+  courtCaseRemediesEnforced CourtCaseRemedy[]           @relation("CourtCaseRemedyEnforcementTask")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -3800,8 +5461,16 @@ model SourceArtifact {
   deletedAt DateTime?
 
   // -- Relations --
-  taskLinks   TaskSourceArtifact[]       @relation("TaskSourceArtifactLinks")
-  impactLinks TaskImpactSourceArtifact[] @relation("TaskImpactSourceArtifactLinks")
+  taskLinks                             TaskSourceArtifact[]                   @relation("TaskSourceArtifactLinks")
+  impactLinks                           TaskImpactSourceArtifact[]             @relation("TaskImpactSourceArtifactLinks")
+  globalVariableExternalCodes           GlobalVariableExternalCode[]           @relation("SourceArtifactGlobalVariableExternalCodes")
+  personMemorialEvidence                PersonMemorialEvidence[]               @relation("SourceArtifactPersonMemorialEvidence")
+  personMemorialResponsibleParties      PersonMemorialResponsibleParty[]       @relation("SourceArtifactPersonMemorialResponsibleParties")
+  interventionApprovalTimelines         InterventionApprovalTimeline[]         @relation("SourceArtifactInterventionApprovalTimelines")
+  interventionExperiences               InterventionExperience[]               @relation("SourceArtifactInterventionExperiences")
+  variableRelationshipEvidenceEstimates VariableRelationshipEvidenceEstimate[] @relation("SourceArtifactVariableRelationshipEvidenceEstimates")
+  interventionRankingRuns               InterventionRankingRun[]               @relation("SourceArtifactInterventionRankingRuns")
+  courtCaseEvidence                     CourtCaseEvidence[]                    @relation("CourtCaseEvidenceSourceArtifact")
 
   @@index([sourceSystem, artifactType])
   @@index([externalKey])
@@ -5694,8 +7363,9 @@ model OAuthClient {
   updatedAt DateTime @updatedAt
 
   // -- Relations --
-  authCodes OAuthAuthCode[]
-  grants    OAuthGrant[]
+  authCodes         OAuthAuthCode[]
+  grants            OAuthGrant[]
+  mcpToolCallAudits McpToolCallAudit[] @relation("OAuthClientMcpToolCallAudits")
 }
 
 /// Short-lived authorization code issued during the OAuth consent flow.
@@ -5771,13 +7441,138 @@ model OAuthGrant {
   revokedAt DateTime?
 
   // -- Relations --
-  client OAuthClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  user   User        @relation("UserOAuthGrants", fields: [userId], references: [id], onDelete: Cascade)
+  client            OAuthClient        @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user              User               @relation("UserOAuthGrants", fields: [userId], references: [id], onDelete: Cascade)
+  mcpToolCallAudits McpToolCallAudit[] @relation("OAuthGrantMcpToolCallAudits")
 
   @@unique([clientId, userId])
   @@index([clientId])
   @@index([userId])
   @@index([refreshTokenHash])
+}
+
+/// Audit record for MCP tool calls that mutate Earth data or execute agent work.
+/// Stores redacted summaries and hashes, not raw sensitive payloads.
+model McpToolCallAudit {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Authenticated user whose OAuth token authorized the call
+  userId String?
+
+  /// Public OAuth client identifier, when the call came through remote MCP
+  clientId String?
+
+  /// OAuth grant row used by the client, when resolvable
+  oauthGrantId String?
+
+  /// Caller-supplied autonomous agent identifier
+  agentId String?
+
+  /// Caller-supplied run identifier, usually matching AgentRunCost.runId
+  runId String?
+
+  /// MCP tool name
+  toolName String
+
+  /// Final call status
+  status McpToolCallStatus
+
+  /// SHA-256 hash of the normalized input payload
+  inputHash String?
+
+  /// Redacted structural input summary
+  inputSummaryJson Json?
+
+  /// Redacted output resource summary
+  outputSummaryJson Json?
+
+  /// Short error summary for failed calls
+  errorSummary String?
+
+  /// When the call started
+  createdAt DateTime @default(now())
+
+  /// When the call completed
+  completedAt DateTime?
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  user       User?        @relation("UserMcpToolCallAudits", fields: [userId], references: [id], onDelete: SetNull)
+  client     OAuthClient? @relation("OAuthClientMcpToolCallAudits", fields: [clientId], references: [clientId], onDelete: SetNull)
+  oauthGrant OAuthGrant?  @relation("OAuthGrantMcpToolCallAudits", fields: [oauthGrantId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([oauthGrantId])
+  @@index([agentId])
+  @@index([runId])
+  @@index([toolName, createdAt])
+  @@index([status, createdAt])
+  @@index([deletedAt])
+}
+
+/// Crowd correction, abuse, duplicate, spam, and provenance report for public data.
+model ContentReport {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Target model/table slug, e.g. "person", "person_memorial", "intervention_approval_timeline"
+  targetType String
+
+  /// Target row id
+  targetId String
+
+  /// User who filed the report
+  reportedByUserId String?
+
+  /// Reason slug, e.g. wrong, duplicate, spam, impersonation, abusive, unsourced
+  reasonType String
+
+  /// Optional reporter note
+  message String?
+
+  /// Proposed correction payload; reviewed before applying
+  correctionJson Json?
+
+  /// Optional source URL supporting the report/correction
+  sourceUrl String?
+
+  /// Review lifecycle
+  status ContentReportStatus @default(OPEN)
+
+  /// Admin/reviewer who resolved or dismissed it
+  reviewedByUserId String?
+
+  /// When the report was reviewed
+  reviewedAt DateTime?
+
+  /// Review/resolution note
+  resolutionNote String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  reportedByUser User? @relation("UserReportedContentReports", fields: [reportedByUserId], references: [id], onDelete: SetNull)
+  reviewedByUser User? @relation("UserReviewedContentReports", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId, status])
+  @@index([reportedByUserId])
+  @@index([reviewedByUserId])
+  @@index([status, createdAt])
+  @@index([deletedAt])
 }
 
 // ============================================================================

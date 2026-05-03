@@ -6,6 +6,7 @@ import {
   buildTrialAbundanceSurveyUrl,
   getRequestSiteOrigin,
   getCanonicalHostForSiteKey,
+  getEnabledStaticPathsForSite,
   getSiteConfig,
   getSiteFromHeaders,
   getSiteFromHost,
@@ -152,13 +153,15 @@ describe("site variant registry", () => {
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 
-  it("exposes a Profile link in the campaign navs so users can edit their handle", () => {
-    for (const siteKey of ["onePercentTreaty", "warOnDisease"] as const) {
-      const sections = getSiteConfig(siteKey).ui.nav.sections;
-      const account = sections.find((s) => s.id === "account");
-      expect(account, `${siteKey} should have an account nav section`).toBeDefined();
-      expect(account?.items.some((i) => i.href === ROUTES.profile)).toBe(true);
-    }
+  it("keeps Profile out of the War on Disease menu chrome", () => {
+    const treatySections = getSiteConfig("onePercentTreaty").ui.nav.sections;
+    const treatyAccount = treatySections.find((s) => s.id === "account");
+    expect(treatyAccount?.items.some((i) => i.href === ROUTES.profile)).toBe(true);
+
+    const warItems = getSiteConfig("warOnDisease").ui.nav.sections.flatMap(
+      (section) => section.items,
+    );
+    expect(warItems.some((item) => item.href === ROUTES.profile)).toBe(false);
   });
 
   it("assigns the manager framing to campaign sites and voter framing to reference sites", () => {
@@ -236,6 +239,17 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(treatySite, "/search")).toBe(false);
   });
 
+  it("allows War on Disease footer trust routes without opening the whole platform", () => {
+    const warSite = getSiteFromHost("warondisease.org");
+
+    expect(isSiteRouteAllowed(warSite, "/campaign")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/coalition")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/endorse")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/privacy")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/terms")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/search")).toBe(false);
+  });
+
   it("limits neutral survey hosts to voting and survey routes", () => {
     const surveySite = getSiteFromHost("trialabundancesurvey.org");
 
@@ -256,6 +270,35 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(dfdaSite, "/treatments/metformin")).toBe(true);
     expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/treatments/metformin")).toBe(true);
     expect(isSiteRouteAllowed(dfdaSite, "/treaty")).toBe(false);
+  });
+
+  it("filters static smoke paths by site capability", () => {
+    const candidates = [
+      ROUTES.campaign,
+      ROUTES.coalition,
+      ROUTES.endorse,
+      ROUTES.impact,
+      ROUTES.legal,
+      ROUTES.why,
+      ROUTES.treaty,
+      ROUTES.donate,
+    ];
+
+    expect(
+      getEnabledStaticPathsForSite(getSiteConfig("optimitron"), candidates),
+    ).toEqual([ROUTES.donate, ROUTES.treaty]);
+    expect(
+      getEnabledStaticPathsForSite(getSiteConfig("onePercentTreaty"), candidates),
+    ).toEqual([
+      ROUTES.campaign,
+      ROUTES.coalition,
+      ROUTES.donate,
+      ROUTES.endorse,
+      ROUTES.impact,
+      ROUTES.legal,
+      ROUTES.treaty,
+      ROUTES.why,
+    ]);
   });
 
   it("keeps Optimitron medical links canonical under DFDA", () => {

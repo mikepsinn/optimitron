@@ -29,9 +29,8 @@ export function CheckInPageClient({ initialData }: CheckInPageClientProps) {
           HOW ARE YOU <span className="text-brutal-pink">TODAY</span>?
         </h1>
         <p className="max-w-2xl text-base font-bold text-foreground">
-          Thirty seconds. Health and happiness on a scale of 1–5.
-          On my planet this takes four seconds but your brains
-          apparently need &quot;a moment to reflect.&quot;
+          Thirty seconds. Health and happiness on a scale of 1 to 5.
+          Minimum viable self-awareness.
         </p>
       </section>
 

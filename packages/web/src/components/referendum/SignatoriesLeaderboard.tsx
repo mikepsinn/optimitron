@@ -2,6 +2,7 @@ import Link from "next/link";
 import { fmtRaw } from "@optimitron/data/parameters";
 import { HelpCircle } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
+import { VoteCounterSplit } from "@/components/referendum/VoteCounterSplit";
 import { ImpactExplainer } from "@/components/shared/ImpactExplainer";
 import type { PublicSignersPage } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
@@ -19,11 +20,22 @@ interface SignatoriesLeaderboardProps {
    * appends `?signersPage=N#signatories`. Defaults to "/".
    */
   pagePathname?: string;
+  /**
+   * Optional vote-count split rendered above the leaderboard header. Pass when
+   * you want the PRD-mandated Living/Memorial/Total split alongside the ranked
+   * list. Omit to keep the leaderboard standalone.
+   */
+  voteCounterSplit?: {
+    liveVotes: number;
+    memorialVotes: number;
+    representedVotes?: number;
+  };
 }
 
 export function SignatoriesLeaderboard({
   publicSigners,
   pagePathname = "/",
+  voteCounterSplit,
 }: SignatoriesLeaderboardProps) {
   const { currentUserSigner, signers, totalCount, page, pageSize, totalPages } = publicSigners;
   if (totalCount === 0) {
@@ -47,6 +59,15 @@ export function SignatoriesLeaderboard({
           <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
             War is a barbaric mass cruelty like slavery. It will be allowed to continue until enough people are brave enough to publicly state that it is morally wrong and incredibly stupid. These are those people.
           </p>
+          {voteCounterSplit ? (
+            <VoteCounterSplit
+              className="mx-auto max-w-md text-left"
+              liveVotes={voteCounterSplit.liveVotes}
+              linkMemorialToPeople
+              memorialVotes={voteCounterSplit.memorialVotes}
+              representedVotes={voteCounterSplit.representedVotes}
+            />
+          ) : null}
         </div>
 
         <div className="overflow-hidden border-2 border-foreground bg-background text-foreground">

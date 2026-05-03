@@ -26,7 +26,7 @@ export default async function EndorsePage() {
   if (!site.primaryReferendumSlug) {
     return (
       <section className="mx-auto max-w-xl px-4 py-20 text-center">
-        <h1 className="text-3xl font-black uppercase">Endorse</h1>
+        <h1 className="text-3xl font-black uppercase">Sign as Organization</h1>
         <p className="mt-4 font-bold text-muted-foreground">
           No referendum is configured for this site.
         </p>
@@ -79,8 +79,8 @@ export default async function EndorsePage() {
       />
 
       <p className="mt-8 text-center text-xs font-bold text-muted-foreground">
-        Already endorsed? See the full list on{" "}
-        <Link href={ROUTES.coalition} className="underline">
+        Already signed? See the{" "}
+        <Link href={ROUTES.campaign} className="underline">
           {content.endorse.existingSupportersLabel}
         </Link>
         .

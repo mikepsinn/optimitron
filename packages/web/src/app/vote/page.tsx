@@ -10,10 +10,10 @@ export default function VotePage() {
     <div className="min-h-screen bg-[var(--treaty-paper)]">
       <section id="vote" className="min-h-screen bg-[var(--treaty-paper)]">
         <TreatyVoteFlow
-          authCallbackUrl={ROUTES.humanityManagementTraining}
+          authCallbackUrl={ROUTES.dashboard}
           defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
           postVoteBehavior="redirect"
-          postVoteRedirectUrl={ROUTES.humanityManagementTraining}
+          postVoteRedirectUrl={ROUTES.dashboard}
           respectStoredFlowVariant={false}
           surface="fast_vote_page"
         />

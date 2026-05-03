@@ -17,9 +17,12 @@ import { TreatmentReport } from "@/components/medical/TreatmentReport";
 import { TreatmentTrials } from "@/components/medical/TreatmentTrials";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { StatCardGrid } from "@/components/ui/stat-card";
+import { findCanonicalConditionGlobalVariable } from "@/lib/global-variable-lookup.server";
 import { fetchClinicalTrials } from "@/lib/medical/clinical-trials.server";
 import type { ClinicalTrialsIntApiResponse } from "@/lib/medical/clinical-trials.schema";
 import { getRouteMetadata } from "@/lib/metadata";
+import { prisma } from "@/lib/prisma";
+import { getMemorialAttributionsForCondition } from "@/lib/prosecution-data.server";
 import { conditionsLink, ROUTES, treatmentsLink } from "@/lib/routes";
 import { getSiteFromHeaders, type SiteConfig } from "@/lib/site";
 
@@ -180,6 +183,18 @@ export async function ConditionPage({
 
   const comparisonData = await getTreatmentsByConditionSlug(condition.slug);
 
+  // Best-effort look up the canonical GlobalVariable for this condition and
+  // pull memorial counts. Failures fall back to no Invisible Graveyard section.
+  let memorialSummary = { memorialCount: 0, efficacyLagCount: 0 };
+  try {
+    const canonical = await findCanonicalConditionGlobalVariable(prisma, condition.name);
+    if (canonical) {
+      memorialSummary = await getMemorialAttributionsForCondition(canonical.id);
+    }
+  } catch (error) {
+    console.error("Failed to load memorial attributions for condition", condition.slug, error);
+  }
+
   return (
     <main className="container mx-auto max-w-6xl space-y-8 px-4 py-8">
       <div className="border-b-4 border-foreground pb-8">
@@ -239,6 +254,30 @@ export async function ConditionPage({
           ]}
         />
       </div>
+
+      {memorialSummary.memorialCount > 0 ? (
+        <section className="border-4 border-foreground bg-foreground p-6 text-background">
+          <p className="text-xs font-black uppercase tracking-[0.18em] opacity-70">
+            The Invisible Graveyard
+          </p>
+          <h2 className="mt-2 text-2xl font-black uppercase leading-tight">
+            {memorialSummary.memorialCount.toLocaleString()} memorialized human
+            {memorialSummary.memorialCount === 1 ? "" : "s"} died of {condition.name}.
+          </h2>
+          {memorialSummary.efficacyLagCount > 0 ? (
+            <p className="mt-3 text-base font-bold leading-7">
+              👻 {memorialSummary.efficacyLagCount.toLocaleString()} of them died waiting for a
+              treatment that already existed. They are flagged as efficacy-lag evidence.
+            </p>
+          ) : null}
+          <Link
+            className="mt-5 inline-block border-2 border-background bg-background px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+            href={`${ROUTES.people}?cause=DISEASE`}
+          >
+            See the names →
+          </Link>
+        </section>
+      ) : null}
 
       <div>
         <h2 className="mb-4 text-3xl font-black uppercase">

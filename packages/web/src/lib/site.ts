@@ -14,6 +14,7 @@ import {
   communityLinks,
   dfdaLink,
   dihLink,
+  donateLink,
   endorseLink,
   exploreLinks,
   footerAppLinks,
@@ -22,8 +23,11 @@ import {
   legalLink,
   navSections,
   paperLinks,
+  peopleLink,
+  privacyLink,
   profileLink,
   readTreatyLink,
+  termsLink,
   treatmentsLink,
   treatyDashboardLink,
   treatyTasksLink,
@@ -335,6 +339,7 @@ const onePercentNavSections: NavSection[] = [
     items: [
       treatyVoteLink,
       treatyDashboardLink,
+      peopleLink,
       treatyTasksLink,
     ],
   },
@@ -344,6 +349,7 @@ const onePercentNavSections: NavSection[] = [
     items: [
       readTreatyLink,
       whyLink,
+      peopleLink,
       coalitionLink,
       endorseLink,
       legalLink,
@@ -361,22 +367,17 @@ const warOnDiseaseNavSections: NavSection[] = [
     id: "primary",
     label: "Primary",
     primary: true,
-    items: [treatyVoteLink, treatyDashboardLink, readTreatyLink],
-  },
-  {
-    id: "learn",
-    label: "Learn",
     items: [
-      conditionsLink,
-      treatmentsLink,
+      treatyVoteLink,
+      {
+        ...treatyDashboardLink,
+        label: "Share",
+        tagline: "Share your voting link",
+      },
+      peopleLink,
+      readTreatyLink,
       whyLink,
-      legalLink,
     ],
-  },
-  {
-    id: "account",
-    label: "Account",
-    items: [profileLink],
   },
 ];
 
@@ -520,11 +521,15 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
           treatyVoteLink,
           readTreatyLink,
           treatyDashboardLink,
+          peopleLink,
+          coalitionLink,
+          endorseLink,
+          donateLink,
         ],
       },
       {
-        title: "Evidence",
-        items: [conditionsLink, treatmentsLink, whyLink],
+        title: "Reference",
+        items: [whyLink, legalLink, privacyLink, termsLink],
       },
     ],
   },
@@ -556,13 +561,16 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
           treatyVoteLink,
           readTreatyLink,
           treatyDashboardLink,
+          peopleLink,
           treatyTasksLink,
+          donateLink,
         ],
       },
       {
         title: "Proof",
         items: [
           whyLink,
+          peopleLink,
           coalitionLink,
           endorseLink,
           legalLink,
@@ -702,7 +710,6 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     minimalChromePrefixes: [
       ROUTES.vote,
       ROUTES.questions,
-      ROUTES.humanityManagementTraining,
     ],
   },
   assets: OPTIMITRON_ASSETS,
@@ -948,7 +955,10 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   ],
   name: "War on Disease",
   shortName: "War on Disease",
-  alternateSiteNames: ["War on Disease"],
+  alternateSiteNames: [
+    "War on Disease",
+    "International Campaign to End War and Disease",
+  ],
   description:
     `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
@@ -1004,6 +1014,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     twitterImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     keywords: [
       "War on Disease",
+      "International Campaign to End War and Disease",
       "1% Treaty",
       "disease eradication",
       "clinical trials",
@@ -1018,8 +1029,13 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.people,
       ROUTES.governments,
       ROUTES.declaration,
+      ROUTES.endorse,
+      ROUTES.campaign,
+      ROUTES.coalition,
       ROUTES.why,
       ROUTES.legal,
+      ROUTES.privacy,
+      ROUTES.terms,
       ROUTES.impact,
       ROUTES.organizations,
       "/conditions",
@@ -1037,12 +1053,10 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.dashboard,
       ROUTES.profile,
       ROUTES.settings,
-      ROUTES.humanityManagementTraining,
     ],
     minimalChromePrefixes: [
       ROUTES.vote,
       ROUTES.questions,
-      ROUTES.humanityManagementTraining,
     ],
   },
   assets: WAR_ON_DISEASE_ASSETS,
@@ -1138,11 +1152,11 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       ROUTES.governments,
       ROUTES.declaration,
       ROUTES.endorse,
+      ROUTES.campaign,
       ROUTES.coalition,
       ROUTES.why,
       ROUTES.legal,
       ROUTES.impact,
-      ROUTES.humanityManagementTraining,
       ROUTES.vote,
       ROUTES.questions,
     ],
@@ -1154,6 +1168,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       ROUTES.governments,
       ROUTES.declaration,
       ROUTES.endorse,
+      ROUTES.campaign,
       ROUTES.coalition,
       ROUTES.why,
       ROUTES.legal,
@@ -1170,11 +1185,9 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       ROUTES.dashboard,
       ROUTES.profile,
       ROUTES.settings,
-      ROUTES.humanityManagementTraining,
     ],
     minimalChromePrefixes: [
       ROUTES.vote,
-      ROUTES.humanityManagementTraining,
     ],
   },
   assets: ONE_PERCENT_TREATY_ASSETS,
@@ -1471,6 +1484,54 @@ export function getSiteRouteDisposition(
   }
 
   return { type: "notFound" };
+}
+
+const REFERENDUM_SITE_CONTENT_PATH_PREFIXES = [
+  ROUTES.campaign,
+  ROUTES.coalition,
+  ROUTES.endorse,
+  ROUTES.impact,
+  ROUTES.legal,
+  ROUTES.why,
+] as const;
+
+export function requiresReferendumSiteContent(pathname: string): boolean {
+  return REFERENDUM_SITE_CONTENT_PATH_PREFIXES.some((prefix) =>
+    matchesPrefix(pathname, prefix),
+  );
+}
+
+export function isStaticPathEnabledForSite(
+  site: SiteConfig,
+  pathname: string,
+): boolean {
+  if (getSiteRouteDisposition(site, pathname).type !== "allow") {
+    return false;
+  }
+
+  if (requiresReferendumSiteContent(pathname) && !site.contentKey) {
+    return false;
+  }
+
+  return true;
+}
+
+export function getEnabledStaticPathsForSite(
+  site: SiteConfig,
+  candidatePaths: Iterable<string>,
+): string[] {
+  const enabled = new Set<string>();
+
+  for (const candidatePath of candidatePaths) {
+    const pathname = normalizePath(
+      candidatePath.trim().split(/[?#]/, 1)[0] ?? "",
+    );
+    if (isStaticPathEnabledForSite(site, pathname)) {
+      enabled.add(pathname);
+    }
+  }
+
+  return [...enabled].sort((left, right) => left.localeCompare(right));
 }
 
 function normalizeOrigin(origin: string) {

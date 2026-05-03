@@ -194,10 +194,10 @@ export function ReminderComposer({
               value={selectedTemplateId ?? undefined}
               onValueChange={onTemplateChange}
             >
-              <Select.Trigger className="h-8 min-w-0 flex-1 border-2 border-foreground text-[11px] font-black uppercase">
+              <Select.Trigger className="h-8 min-w-0 flex-1 border-2 border-foreground text-[11px] font-black uppercase !shadow-none">
                 <Select.Value />
               </Select.Trigger>
-              <Select.Content className="border-2 border-foreground">
+              <Select.Content className="border-2 border-foreground !shadow-none">
                 {availableTemplates.map((template) => (
                   <Select.Item
                     key={template.id}
@@ -217,7 +217,7 @@ export function ReminderComposer({
       <textarea
         ref={textareaRef}
         aria-label={`Reminder message for ${targetLabel}`}
-        className="min-h-[4rem] max-h-[50vh] w-full resize-none overflow-y-auto border-4 border-foreground bg-background px-4 py-2 text-sm font-bold leading-5 shadow-xs transition placeholder:text-muted-foreground focus:shadow-none focus:outline-hidden"
+        className="min-h-[4rem] max-h-[50vh] w-full resize-none overflow-y-auto border-4 border-foreground bg-background px-4 py-2 text-sm font-bold leading-5 placeholder:text-muted-foreground focus:outline-hidden"
         value={message}
         onChange={(event) => {
           onMessageChange(event.target.value);
@@ -227,7 +227,7 @@ export function ReminderComposer({
 
       {/* Primary CTA */}
       <Button
-        className="w-full cursor-pointer justify-center border-4 border-foreground bg-brutal-pink font-black uppercase text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none"
+        className="w-full cursor-pointer justify-center border-4 border-foreground bg-brutal-pink font-black uppercase text-brutal-pink-foreground !shadow-none transition-colors hover:bg-brutal-pink/85"
         disabled={copyDisabled}
         size="sm"
         type="button"
@@ -254,7 +254,7 @@ export function ReminderComposer({
               key={channel}
               type="button"
               aria-label={label}
-              className="group flex cursor-pointer flex-col items-center gap-1 rounded-sm border-2 border-foreground bg-background px-1 py-2 text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none"
+              className="group flex cursor-pointer flex-col items-center gap-1 rounded-sm border-2 border-foreground bg-background px-1 py-2 text-foreground transition-colors hover:bg-muted"
               onClick={() => {
                 if (channel === "copy-link") {
                   setLinkCopyState("copied");

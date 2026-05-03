@@ -179,6 +179,11 @@ describe("referral vote token mint sync helpers", () => {
         userId: "voter_1",
         referredByUserId: { not: null },
         deletedAt: null,
+        person: {
+          deletedAt: null,
+          lifeStatus: "LIVING",
+        },
+        voteSource: "SELF",
       },
       orderBy: { createdAt: "asc" },
       select: {
@@ -212,6 +217,10 @@ describe("referral vote token mint sync helpers", () => {
       where: {
         referredByUserId: { not: null },
         deletedAt: null,
+        person: {
+          deletedAt: null,
+          lifeStatus: "LIVING",
+        },
         user: {
           personhoodVerifications: {
             some: {
@@ -230,6 +239,7 @@ describe("referral vote token mint sync helpers", () => {
             },
           },
         },
+        voteSource: "SELF",
       },
       orderBy: { createdAt: "asc" },
       take: 25,

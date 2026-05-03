@@ -88,6 +88,17 @@ const serverSchema = z.object({
   // ── Stripe (donations to IAM 501(c)(3)) ───────────────────────────
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+
+  // ── Cloudflare R2 (object storage for memorial photos + evidence) ─
+  // Required for the memorial photo + evidence upload flow (PRD F1/F4).
+  // The runtime presign route reads these to issue PUT URLs scoped to the
+  // bucket; the bucket's public hostname is served from R2_PUBLIC_URL.
+  // For dev-only media uploads (legacy), see also CLOUDFLARE_TOKEN above.
+  R2_ENDPOINT: z.string().url().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_PUBLIC_URL: z.string().url().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
 });
 
 const clientSchema = z.object({

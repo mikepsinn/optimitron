@@ -56,7 +56,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Game-first design system — Sierra aesthetic */
+/* Minimal treaty-first baseline. Expressive colors live in brutal/demo tokens. */
 :root {
   /* Base colors — light theme is the default app baseline */
   --background: rgb(255, 255, 255);
@@ -68,8 +68,8 @@ body {
   --popover: rgb(255, 255, 255);
   --popover-foreground: rgb(0, 0, 0);
 
-  /* Primary */
-  --primary: rgb(236, 70, 153);
+  /* Primary action color: formal black/white, not an accent hue. */
+  --primary: rgb(0, 0, 0);
   --primary-foreground: rgb(255, 255, 255);
 
   /* Secondary - Bright yellow */
@@ -106,7 +106,7 @@ body {
   /* Sidebar */
   --sidebar-background: rgb(250, 250, 250);
   --sidebar-foreground: rgb(0, 0, 0);
-  --sidebar-primary: rgb(236, 70, 153);
+  --sidebar-primary: rgb(0, 0, 0);
   --sidebar-primary-foreground: rgb(255, 255, 255);
   --sidebar-accent: rgb(123, 221, 234);
   --sidebar-accent-foreground: rgb(0, 0, 0);
@@ -126,10 +126,10 @@ body {
   --brutal-green: rgb(34, 197, 94);
   --brutal-green-foreground: rgb(0, 0, 0);
 
-  /* Treaty palette — used by /vote, /survey, /humanity-management-training,
-     and the TreatyVoteFlow / TreatyPostVoteShareFlow / TreatyFlowShell components.
-     Background is plain white; ink is dark brown for the parchment-document feel
-     without the cream tint. */
+  /* Treaty palette — used by /vote, /survey, and the TreatyVoteFlow /
+     TreatyPostVoteShareFlow / TreatyFlowShell components. Background is plain
+     white; ink is dark brown for the parchment-document feel without the
+     cream tint. */
   --treaty-paper: #ffffff;
   --treaty-ink: #23180d;
   --treaty-ink-soft: #2f2417;
@@ -152,7 +152,7 @@ body {
   --card-foreground: rgb(255, 255, 255);
   --popover: rgb(23, 23, 23);
   --popover-foreground: rgb(255, 255, 255);
-  --primary: rgb(244, 114, 182);
+  --primary: rgb(255, 255, 255);
   --primary-foreground: rgb(0, 0, 0);
   --secondary: rgb(253, 224, 71);
   --secondary-foreground: rgb(0, 0, 0);
@@ -172,7 +172,7 @@ body {
   --chart-5: rgb(168, 85, 247);
   --sidebar-background: rgb(10, 10, 10);
   --sidebar-foreground: rgb(255, 255, 255);
-  --sidebar-primary: rgb(244, 114, 182);
+  --sidebar-primary: rgb(255, 255, 255);
   --sidebar-primary-foreground: rgb(0, 0, 0);
   --sidebar-accent: rgb(165, 243, 252);
   --sidebar-accent-foreground: rgb(0, 0, 0);

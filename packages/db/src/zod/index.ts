@@ -12,7 +12,7 @@
 import { z } from 'zod';
 
 // ============================================================================
-// ENUMS (16)
+// ENUMS
 // ============================================================================
 
 export const CombinationOperationSchema = z.enum(['SUM', 'MEAN']);
@@ -63,7 +63,7 @@ export type NotificationStatus = z.infer<typeof NotificationStatusSchema>;
 export const JurisdictionTypeSchema = z.enum(['CITY', 'COUNTY', 'STATE', 'COUNTRY']);
 export type JurisdictionType = z.infer<typeof JurisdictionTypeSchema>;
 
-export const SubjectTypeSchema = z.enum(['USER', 'JURISDICTION', 'COHORT', 'ORGANIZATION']);
+export const SubjectTypeSchema = z.enum(['USER', 'PERSON', 'JURISDICTION', 'COHORT', 'ORGANIZATION']);
 export type SubjectType = z.infer<typeof SubjectTypeSchema>;
 
 export const ReferralAnswerSchema = z.enum(['YES', 'NO']);
@@ -75,11 +75,146 @@ export type PersonhoodProvider = z.infer<typeof PersonhoodProviderSchema>;
 export const PersonhoodVerificationStatusSchema = z.enum(['VERIFIED', 'REVOKED']);
 export type PersonhoodVerificationStatus = z.infer<typeof PersonhoodVerificationStatusSchema>;
 
+export const PersonLifeStatusSchema = z.enum(['UNKNOWN', 'LIVING', 'DECEASED']);
+export type PersonLifeStatus = z.infer<typeof PersonLifeStatusSchema>;
+
+export const PersonConditionStatusSchema = z.enum(['UNKNOWN', 'ACTIVE', 'PAST', 'CAUSE_OF_DEATH']);
+export type PersonConditionStatus = z.infer<typeof PersonConditionStatusSchema>;
+
+export const PersonDeathCauseCategorySchema = z.enum([
+  'UNKNOWN',
+  'DISEASE',
+  'ARMED_CONFLICT',
+  'STATE_VIOLENCE',
+  'TERRORISM',
+  'OTHER_PREVENTABLE',
+  'OTHER',
+]);
+export type PersonDeathCauseCategory = z.infer<typeof PersonDeathCauseCategorySchema>;
+
+export const PersonCivilianStatusSchema = z.enum(['UNKNOWN', 'CIVILIAN', 'COMBATANT']);
+export type PersonCivilianStatus = z.infer<typeof PersonCivilianStatusSchema>;
+
+export const PersonMemorialEvidenceKindSchema = z.enum([
+  'PHOTO',
+  'DOCUMENT',
+  'NEWS_ARTICLE',
+  'HOSPITAL_RECORD',
+  'DEATH_RECORD',
+  'WITNESS_STATEMENT',
+  'OTHER',
+]);
+export type PersonMemorialEvidenceKind = z.infer<typeof PersonMemorialEvidenceKindSchema>;
+
+export const EfficacyLagEvidenceStatusSchema = z.enum([
+  'CANDIDATE',
+  'CONFIRMED',
+  'REJECTED',
+]);
+export type EfficacyLagEvidenceStatus = z.infer<typeof EfficacyLagEvidenceStatusSchema>;
+
+export const InterventionExperienceStatusSchema = z.enum([
+  'UNKNOWN',
+  'CURRENT',
+  'PAST',
+  'PLANNED',
+  'NEVER_TRIED',
+]);
+export type InterventionExperienceStatus = z.infer<typeof InterventionExperienceStatusSchema>;
+
+export const InterventionOutcomeRatingSchema = z.enum([
+  'UNKNOWN',
+  'MUCH_WORSE',
+  'WORSE',
+  'NO_EFFECT',
+  'MODERATE_IMPROVEMENT',
+  'MAJOR_IMPROVEMENT',
+]);
+export type InterventionOutcomeRating = z.infer<typeof InterventionOutcomeRatingSchema>;
+
+export const InterventionSideEffectSeveritySchema = z.enum([
+  'UNKNOWN',
+  'NONE',
+  'MINIMAL',
+  'MILD',
+  'MODERATE',
+  'SEVERE',
+  'EXTREME',
+]);
+export type InterventionSideEffectSeverity = z.infer<typeof InterventionSideEffectSeveritySchema>;
+
+export const VariableEvidenceMetricKindSchema = z.enum([
+  'EFFECT_SIZE',
+  'EFFECTIVENESS',
+  'SAFETY',
+  'NNT',
+  'NNH',
+  'COST',
+  'COST_PER_QALY',
+  'QALYS_GAINED',
+  'REMISSION_RATE',
+  'RESPONSE_RATE',
+  'ACCESS',
+  'CONFIDENCE',
+  'OTHER',
+]);
+export type VariableEvidenceMetricKind = z.infer<typeof VariableEvidenceMetricKindSchema>;
+
+export const VariableRelationshipEvidenceSourceTypeSchema = z.enum([
+  'IMPORTED_STUDY',
+  'USER_REPORT',
+  'OPTIMIZER_N_OF_1',
+  'OPTIMIZER_AGGREGATE',
+  'CURATED_DATASET',
+  'MANUAL',
+  'OTHER',
+]);
+export type VariableRelationshipEvidenceSourceType = z.infer<typeof VariableRelationshipEvidenceSourceTypeSchema>;
+
+export const InterventionRankingRunStatusSchema = z.enum([
+  'DRAFT',
+  'ACTIVE',
+]);
+export type InterventionRankingRunStatus = z.infer<typeof InterventionRankingRunStatusSchema>;
+
 export const VotePositionSchema = z.enum(['YES', 'NO', 'ABSTAIN']);
 export type VotePosition = z.infer<typeof VotePositionSchema>;
 
+export const ReferendumVoteSourceSchema = z.enum(['SELF', 'REPRESENTED']);
+export type ReferendumVoteSource = z.infer<typeof ReferendumVoteSourceSchema>;
+
 export const ReferendumStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'CLOSED']);
 export type ReferendumStatus = z.infer<typeof ReferendumStatusSchema>;
+
+export const CourtCaseStatusSchema = z.enum(['DRAFT', 'OPEN', 'VOTING', 'JUDGED', 'ARCHIVED']);
+export type CourtCaseStatus = z.infer<typeof CourtCaseStatusSchema>;
+
+export const CourtCasePartyRoleSchema = z.enum([
+  'NOMINAL_PLAINTIFF',
+  'NAMED_PLAINTIFF',
+  'REPRESENTATIVE_CLASS',
+  'RESPONDENT',
+  'AMICUS',
+  'BENEFICIARY',
+]);
+export type CourtCasePartyRole = z.infer<typeof CourtCasePartyRoleSchema>;
+
+export const CourtCasePartyCapacitySchema = z.enum([
+  'INSTITUTIONAL',
+  'OFFICIAL_CAPACITY',
+  'PERSONAL_CAPACITY',
+  'OVERSIGHT_CAPACITY',
+  'CLASS_REPRESENTATIVE',
+]);
+export type CourtCasePartyCapacity = z.infer<typeof CourtCasePartyCapacitySchema>;
+
+export const CourtCaseItemStatusSchema = z.enum([
+  'PROPOSED',
+  'ACCEPTED',
+  'REJECTED',
+  'SUPERSEDED',
+]);
+export type CourtCaseItemStatus = z.infer<typeof CourtCaseItemStatusSchema>;
 
 export const VoteTokenMintStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'CONFIRMED', 'FAILED']);
 export type VoteTokenMintStatus = z.infer<typeof VoteTokenMintStatusSchema>;
@@ -342,6 +477,22 @@ export type TaskCommentVisibility = z.infer<typeof TaskCommentVisibilitySchema>;
 export const TaskCommentSourceSchema = z.enum(['WEB', 'AGENT', 'EMAIL_REPLY', 'MANUAL_IMPORT', 'SYSTEM']);
 export type TaskCommentSource = z.infer<typeof TaskCommentSourceSchema>;
 
+export const McpScopeSchema = z.enum([
+  'TASKS_ADMIN',
+  'TASKS_PERSONAL',
+  'EARTHDATA_WRITE',
+  'EARTHDATA_ADMIN',
+  'AGENT_RUN',
+  'GITHUB',
+]);
+export type McpScope = z.infer<typeof McpScopeSchema>;
+
+export const McpToolCallStatusSchema = z.enum(['SUCCEEDED', 'FAILED']);
+export type McpToolCallStatus = z.infer<typeof McpToolCallStatusSchema>;
+
+export const ContentReportStatusSchema = z.enum(['OPEN', 'RESOLVED', 'DISMISSED']);
+export type ContentReportStatus = z.infer<typeof ContentReportStatusSchema>;
+
 export const QuestionTypeSchema = z.enum([
   'MULTIPLE_CHOICE',
   'FREE_TEXT',
@@ -375,6 +526,9 @@ export const PersonSchema = z.object({
   email: z.string().email().nullable().optional(),
   image: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
+  birthDate: nullableDateSchema,
+  deathDate: nullableDateSchema,
+  links: nullableJsonSchema,
   currentAffiliation: z.string().nullable().optional(),
   countryCode: z.string().nullable().optional(),
   headline: z.string().nullable().optional(),
@@ -382,6 +536,8 @@ export const PersonSchema = z.object({
   website: z.string().nullable().optional(),
   isPublic: z.boolean().default(false),
   isPublicFigure: z.boolean().default(false),
+  lifeStatus: PersonLifeStatusSchema.default('UNKNOWN'),
+  createdByUserId: z.string().nullable().optional(),
   sourceUrl: z.string().nullable().optional(),
   sourceRef: z.string().nullable().optional(),
   createdAt: dateSchema,
@@ -389,6 +545,173 @@ export const PersonSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type PersonType = z.infer<typeof PersonSchema>;
+
+/** Zod schema for the PersonRelationship model */
+export const PersonRelationshipSchema = z.object({
+  id: z.string(),
+  subjectPersonId: z.string(),
+  objectPersonId: z.string(),
+  relationshipType: z.string(),
+  createdByUserId: z.string().nullable().optional(),
+  isPublic: z.boolean().default(true),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonRelationshipType = z.infer<typeof PersonRelationshipSchema>;
+
+/** Zod schema for the PersonCondition model */
+export const PersonConditionSchema = z.object({
+  id: z.string(),
+  personId: z.string(),
+  conditionName: z.string(),
+  conditionCodeSystem: z.string().nullable().optional(),
+  conditionCode: z.string().nullable().optional(),
+  globalVariableId: z.string().nullable().optional(),
+  status: PersonConditionStatusSchema.default('ACTIVE'),
+  reportedByUserId: z.string().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  isPublic: z.boolean().default(true),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonConditionType = z.infer<typeof PersonConditionSchema>;
+
+/** Zod schema for the Conflict model */
+export const ConflictSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  startDate: nullableDateSchema,
+  endDate: nullableDateSchema,
+  primaryJurisdictionId: z.string().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type ConflictType = z.infer<typeof ConflictSchema>;
+
+/** Zod schema for the PersonMemorial model */
+export const PersonMemorialSchema = z.object({
+  id: z.string(),
+  personId: z.string(),
+  causeCategory: PersonDeathCauseCategorySchema.default('UNKNOWN'),
+  primaryPersonConditionId: z.string().nullable().optional(),
+  deathCountryCode: z.string().nullable().optional(),
+  deathLocation: z.string().nullable().optional(),
+  conflictId: z.string().nullable().optional(),
+  civilianStatus: PersonCivilianStatusSchema.default('UNKNOWN'),
+  wasChild: z.boolean().nullable().optional(),
+  circumstances: z.string().nullable().optional(),
+  isPublic: z.boolean().default(false),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonMemorialType = z.infer<typeof PersonMemorialSchema>;
+
+/** Zod schema for the PersonMemorialSubmission model */
+export const PersonMemorialSubmissionSchema = z.object({
+  id: z.string(),
+  memorialId: z.string(),
+  submittedByUserId: z.string().nullable().optional(),
+  memorialMessage: z.string().nullable().optional(),
+  consentPublicDisplay: z.boolean().default(false),
+  consentCourtEvidence: z.boolean().default(false),
+  consentPublicDisplayAt: nullableDateSchema,
+  consentCourtEvidenceAt: nullableDateSchema,
+  isPublic: z.boolean().default(false),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonMemorialSubmissionType = z.infer<typeof PersonMemorialSubmissionSchema>;
+
+/** Zod schema for the PersonMemorialResponsibleParty model */
+export const PersonMemorialResponsiblePartySchema = z.object({
+  id: z.string(),
+  memorialId: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  organizationId: z.string().nullable().optional(),
+  name: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  roleSlug: z.string().nullable().optional(),
+  isPrimary: z.boolean().default(false),
+  isPublic: z.boolean().default(false),
+  confidenceScore: z.number().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  privateNotes: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonMemorialResponsiblePartyType = z.infer<typeof PersonMemorialResponsiblePartySchema>;
+
+/** Zod schema for the PersonMemorialEvidence model */
+export const PersonMemorialEvidenceSchema = z.object({
+  id: z.string(),
+  memorialId: z.string(),
+  submittedByUserId: z.string().nullable().optional(),
+  submissionId: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  evidenceKind: PersonMemorialEvidenceKindSchema.default('OTHER'),
+  title: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  isPublic: z.boolean().default(false),
+  containsSensitiveData: z.boolean().default(true),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonMemorialEvidenceType = z.infer<typeof PersonMemorialEvidenceSchema>;
+
+/** Zod schema for the InterventionApprovalTimeline model */
+export const InterventionApprovalTimelineSchema = z.object({
+  id: z.string(),
+  interventionName: z.string(),
+  brandName: z.string().nullable().optional(),
+  interventionGlobalVariableId: z.string().nullable().optional(),
+  conditionName: z.string(),
+  conditionGlobalVariableId: z.string().nullable().optional(),
+  jurisdictionId: z.string().nullable().optional(),
+  regulatorName: z.string().nullable().optional(),
+  firstEvidenceDate: nullableDateSchema,
+  firstEvidenceDescription: z.string().nullable().optional(),
+  approvalDate: nullableDateSchema,
+  approvalDescription: z.string().nullable().optional(),
+  efficacyLagDays: z.number().int().nullable().optional(),
+  estimatedLivesSavedPerYear: z.number().nullable().optional(),
+  estimatedDeathsDuringLag: z.number().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type InterventionApprovalTimelineType = z.infer<typeof InterventionApprovalTimelineSchema>;
+
+/** Zod schema for the PersonEfficacyLagEvidence model */
+export const PersonEfficacyLagEvidenceSchema = z.object({
+  id: z.string(),
+  memorialId: z.string(),
+  personConditionId: z.string().nullable().optional(),
+  interventionApprovalTimelineId: z.string(),
+  status: EfficacyLagEvidenceStatusSchema.default('CANDIDATE'),
+  diedBeforeApprovalDays: z.number().int().nullable().optional(),
+  explanation: z.string().nullable().optional(),
+  confidenceScore: z.number().nullable().optional(),
+  computedAt: dateSchema,
+  reviewedByUserId: z.string().nullable().optional(),
+  reviewedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonEfficacyLagEvidenceType = z.infer<typeof PersonEfficacyLagEvidenceSchema>;
 
 // ============================================================================
 // AUTH / ACCOUNT MODELS
@@ -602,11 +925,30 @@ export const GlobalVariableSchema = z.object({
 });
 export type GlobalVariableType = z.infer<typeof GlobalVariableSchema>;
 
+/** Zod schema for the GlobalVariableExternalCode model */
+export const GlobalVariableExternalCodeSchema = z.object({
+  id: z.string(),
+  globalVariableId: z.string(),
+  codeSystem: z.string(),
+  code: z.string(),
+  displayName: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type GlobalVariableExternalCodeType = z.infer<typeof GlobalVariableExternalCodeSchema>;
+
 /** Zod schema for the Subject model */
 export const SubjectSchema = z.object({
   id: z.string(),
   subjectType: SubjectTypeSchema.default('USER'),
   externalId: z.string().nullable().optional(),
+  userId: z.string().nullable().optional(),
+  personId: z.string().nullable().optional(),
+  jurisdictionId: z.string().nullable().optional(),
+  organizationId: z.string().nullable().optional(),
   displayName: z.string().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -617,8 +959,7 @@ export type SubjectType_ = z.infer<typeof SubjectSchema>;
 /** Zod schema for the NOf1Variable model */
 export const NOf1VariableSchema = z.object({
   id: z.string(),
-  userId: z.string(),
-  subjectId: z.string().nullable().optional(),
+  subjectId: z.string(),
   globalVariableId: z.string(),
   defaultUnitId: z.string().nullable().optional(),
   onsetDelay: z.number().int().nullable().optional(),
@@ -650,7 +991,8 @@ export type NOf1VariableType = z.infer<typeof NOf1VariableSchema>;
 /** Zod schema for the Measurement model */
 export const MeasurementSchema = z.object({
   id: z.string(),
-  userId: z.string(),
+  subjectId: z.string(),
+  recordedByUserId: z.string().nullable().optional(),
   nOf1VariableId: z.string(),
   globalVariableId: z.string(),
   startTime: dateSchema,
@@ -669,6 +1011,64 @@ export const MeasurementSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type MeasurementType = z.infer<typeof MeasurementSchema>;
+
+/** Zod schema for the InterventionExperience model */
+export const InterventionExperienceSchema = z.object({
+  id: z.string(),
+  subjectId: z.string(),
+  reportedByUserId: z.string().nullable().optional(),
+  conditionGlobalVariableId: z.string().nullable().optional(),
+  interventionGlobalVariableId: z.string(),
+  status: InterventionExperienceStatusSchema.default('UNKNOWN'),
+  startedAt: nullableDateSchema,
+  endedAt: nullableDateSchema,
+  doseValue: z.number().nullable().optional(),
+  doseUnitId: z.string().nullable().optional(),
+  frequencyText: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  isPublic: z.boolean().default(false),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type InterventionExperienceType = z.infer<typeof InterventionExperienceSchema>;
+
+/** Zod schema for the InterventionExperienceOutcome model */
+export const InterventionExperienceOutcomeSchema = z.object({
+  id: z.string(),
+  interventionExperienceId: z.string(),
+  outcomeGlobalVariableId: z.string(),
+  rating: InterventionOutcomeRatingSchema.default('UNKNOWN'),
+  value: z.number().nullable().optional(),
+  unitId: z.string().nullable().optional(),
+  beforeMeasurementId: z.string().nullable().optional(),
+  afterMeasurementId: z.string().nullable().optional(),
+  publicComment: z.string().nullable().optional(),
+  isPublic: z.boolean().default(false),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type InterventionExperienceOutcomeType = z.infer<typeof InterventionExperienceOutcomeSchema>;
+
+/** Zod schema for the InterventionExperienceSideEffect model */
+export const InterventionExperienceSideEffectSchema = z.object({
+  id: z.string(),
+  interventionExperienceId: z.string(),
+  sideEffectGlobalVariableId: z.string(),
+  severity: InterventionSideEffectSeveritySchema.default('UNKNOWN'),
+  onsetAt: nullableDateSchema,
+  resolvedAt: nullableDateSchema,
+  isSerious: z.boolean().nullable().optional(),
+  actionTaken: z.string().nullable().optional(),
+  publicComment: z.string().nullable().optional(),
+  isPublic: z.boolean().default(false),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type InterventionExperienceSideEffectType = z.infer<typeof InterventionExperienceSideEffectSchema>;
 
 /** Zod schema for the TrackingReminder model */
 export const TrackingReminderSchema = z.object({
@@ -829,6 +1229,66 @@ export const AggregateVariableRelationshipSchema = z.object({
 export type AggregateVariableRelationshipType = z.infer<
   typeof AggregateVariableRelationshipSchema
 >;
+
+/** Zod schema for the VariableRelationshipEvidenceEstimate model */
+export const VariableRelationshipEvidenceEstimateSchema = z.object({
+  id: z.string(),
+  predictorGlobalVariableId: z.string(),
+  outcomeGlobalVariableId: z.string(),
+  contextGlobalVariableId: z.string().nullable().optional(),
+  metricKind: VariableEvidenceMetricKindSchema,
+  sourceType: VariableRelationshipEvidenceSourceTypeSchema.default('OTHER'),
+  value: z.number().nullable().optional(),
+  unitId: z.string().nullable().optional(),
+  confidenceScore: z.number().nullable().optional(),
+  evidenceGrade: EvidenceGradeSchema.nullable().optional(),
+  participants: z.number().int().nullable().optional(),
+  studies: z.number().int().nullable().optional(),
+  rationale: z.string().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type VariableRelationshipEvidenceEstimateType = z.infer<
+  typeof VariableRelationshipEvidenceEstimateSchema
+>;
+
+/** Zod schema for the InterventionRankingRun model */
+export const InterventionRankingRunSchema = z.object({
+  id: z.string(),
+  conditionGlobalVariableId: z.string().nullable().optional(),
+  algorithmKey: z.string(),
+  algorithmVersion: z.string().nullable().optional(),
+  status: InterventionRankingRunStatusSchema.default('DRAFT'),
+  rankedAt: dateSchema,
+  sourceArtifactId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type InterventionRankingRunType = z.infer<typeof InterventionRankingRunSchema>;
+
+/** Zod schema for the RankedIntervention model */
+export const RankedInterventionSchema = z.object({
+  id: z.string(),
+  rankingRunId: z.string(),
+  interventionGlobalVariableId: z.string(),
+  rank: z.number().int(),
+  score: z.number(),
+  effectivenessScore: z.number().nullable().optional(),
+  safetyScore: z.number().nullable().optional(),
+  evidenceScore: z.number().nullable().optional(),
+  costScore: z.number().nullable().optional(),
+  confidenceScore: z.number().nullable().optional(),
+  sourceEvidenceEstimateId: z.string().nullable().optional(),
+  rationale: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type RankedInterventionType = z.infer<typeof RankedInterventionSchema>;
 
 /** Zod schema for the IntegrationProvider model */
 export const IntegrationProviderSchema = z.object({
@@ -1138,14 +1598,168 @@ export type ReferendumType = z.infer<typeof ReferendumSchema>;
 export const ReferendumVoteSchema = z.object({
   id: z.string(),
   userId: z.string(),
+  personId: z.string(),
   referendumId: z.string(),
   answer: VotePositionSchema,
+  voteSource: ReferendumVoteSourceSchema.default('SELF'),
   referredByUserId: z.string().nullable().optional(),
+  organizationId: z.string().nullable().optional(),
+  publicComment: z.string().nullable().optional(),
+  isPublic: z.boolean().default(true),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+  originUrl: z.string().nullable().optional(),
+});
+export type ReferendumVoteType = z.infer<typeof ReferendumVoteSchema>;
+
+/** Zod schema for the CourtCase model */
+export const CourtCaseSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  summary: z.string().nullable().optional(),
+  status: CourtCaseStatusSchema.default('DRAFT'),
+  isPublic: z.boolean().default(false),
+  createdByUserId: z.string().nullable().optional(),
+  nominalPlaintiffSubjectId: z.string().nullable().optional(),
+  primaryRespondentSubjectId: z.string().nullable().optional(),
+  beneficiarySubjectId: z.string().nullable().optional(),
+  rootTaskId: z.string().nullable().optional(),
+  juryReferendumId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type ReferendumVoteType = z.infer<typeof ReferendumVoteSchema>;
+export type CourtCaseType = z.infer<typeof CourtCaseSchema>;
+
+/** Zod schema for the CourtCaseParty model */
+export const CourtCasePartySchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  partyKey: z.string().nullable().optional(),
+  subjectId: z.string(),
+  role: CourtCasePartyRoleSchema,
+  capacity: CourtCasePartyCapacitySchema.nullable().optional(),
+  displayNameSnapshot: z.string().nullable().optional(),
+  standingTheory: z.string().nullable().optional(),
+  powerToRemedyScore: z.number().nullable().optional(),
+  blameAttributionScore: z.number().nullable().optional(),
+  publicAccountabilityScore: z.number().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCasePartyType = z.infer<typeof CourtCasePartySchema>;
+
+/** Zod schema for the CourtCaseClaim model */
+export const CourtCaseClaimSchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimKey: z.string().nullable().optional(),
+  title: z.string(),
+  claimType: z.string().nullable().optional(),
+  argumentMarkdown: z.string(),
+  requestedFinding: z.string().nullable().optional(),
+  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  juryReferendumId: z.string().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseClaimType = z.infer<typeof CourtCaseClaimSchema>;
+
+/** Zod schema for the CourtCaseHarm model */
+export const CourtCaseHarmSchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimId: z.string().nullable().optional(),
+  harmKey: z.string().nullable().optional(),
+  harmType: z.string().nullable().optional(),
+  title: z.string(),
+  bodyMarkdown: z.string().nullable().optional(),
+  affectedSubjectId: z.string().nullable().optional(),
+  globalVariableId: z.string().nullable().optional(),
+  parameterName: z.string().nullable().optional(),
+  lowValue: z.number().nullable().optional(),
+  baseValue: z.number().nullable().optional(),
+  highValue: z.number().nullable().optional(),
+  unit: z.string().nullable().optional(),
+  confidenceScore: z.number().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseHarmType = z.infer<typeof CourtCaseHarmSchema>;
+
+/** Zod schema for the CourtCaseEvidence model */
+export const CourtCaseEvidenceSchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimId: z.string().nullable().optional(),
+  harmId: z.string().nullable().optional(),
+  evidenceKey: z.string().nullable().optional(),
+  evidenceType: z.string().nullable().optional(),
+  title: z.string(),
+  bodyMarkdown: z.string().nullable().optional(),
+  sourceArtifactId: z.string().nullable().optional(),
+  personMemorialId: z.string().nullable().optional(),
+  globalVariableId: z.string().nullable().optional(),
+  parameterName: z.string().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
+  contentHash: z.string().nullable().optional(),
+  isPublic: z.boolean().default(true),
+  containsSensitiveData: z.boolean().default(false),
+  reviewStatus: CourtCaseItemStatusSchema.default('PROPOSED'),
+  confidenceScore: z.number().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseEvidenceType = z.infer<typeof CourtCaseEvidenceSchema>;
+
+/** Zod schema for the CourtCaseRemedy model */
+export const CourtCaseRemedySchema = z.object({
+  id: z.string(),
+  caseId: z.string(),
+  claimId: z.string().nullable().optional(),
+  targetPartyId: z.string().nullable().optional(),
+  remedyKey: z.string().nullable().optional(),
+  remedyType: z.string().nullable().optional(),
+  title: z.string(),
+  bodyMarkdown: z.string(),
+  amountUsdLow: z.number().nullable().optional(),
+  amountUsdBase: z.number().nullable().optional(),
+  amountUsdHigh: z.number().nullable().optional(),
+  deadlineAt: nullableDateSchema,
+  enforcementTaskId: z.string().nullable().optional(),
+  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  sortOrder: z.number().int().default(0),
+  isPublic: z.boolean().default(true),
+  createdByUserId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CourtCaseRemedyType = z.infer<typeof CourtCaseRemedySchema>;
 
 /** Zod schema for the PublicGoodsRecipient model */
 export const PublicGoodsRecipientSchema = z.object({
@@ -1388,6 +2002,47 @@ export const SourceArtifactSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type SourceArtifactTypeModel = z.infer<typeof SourceArtifactSchema>;
+
+/** Zod schema for the McpToolCallAudit model */
+export const McpToolCallAuditSchema = z.object({
+  id: z.string(),
+  userId: z.string().nullable().optional(),
+  clientId: z.string().nullable().optional(),
+  oauthGrantId: z.string().nullable().optional(),
+  agentId: z.string().nullable().optional(),
+  runId: z.string().nullable().optional(),
+  toolName: z.string(),
+  status: McpToolCallStatusSchema,
+  inputHash: z.string().nullable().optional(),
+  inputSummaryJson: nullableJsonSchema,
+  outputSummaryJson: nullableJsonSchema,
+  errorSummary: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  completedAt: nullableDateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type McpToolCallAuditType = z.infer<typeof McpToolCallAuditSchema>;
+
+/** Zod schema for the ContentReport model */
+export const ContentReportSchema = z.object({
+  id: z.string(),
+  targetType: z.string(),
+  targetId: z.string(),
+  reportedByUserId: z.string().nullable().optional(),
+  reasonType: z.string(),
+  message: z.string().nullable().optional(),
+  correctionJson: nullableJsonSchema,
+  sourceUrl: z.string().nullable().optional(),
+  status: ContentReportStatusSchema.default('OPEN'),
+  reviewedByUserId: z.string().nullable().optional(),
+  reviewedAt: nullableDateSchema,
+  resolutionNote: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type ContentReportType = z.infer<typeof ContentReportSchema>;
 
 /** Zod schema for the TaskSourceArtifact model */
 export const TaskSourceArtifactSchema = z.object({

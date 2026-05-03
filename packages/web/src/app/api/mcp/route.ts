@@ -116,10 +116,12 @@ async function handleMcpRequest(req: Request): Promise<Response> {
       return unauthorized(req, "missing_token");
     }
 
+    let clientId: string;
     let userId: string;
     let scopes: McpScope[];
     try {
       const result = await verifyMcpAccessToken(authHeader.slice(7));
+      clientId = result.clientId;
       userId = result.sub;
       scopes = result.scopes;
     } catch (error) {
@@ -134,13 +136,28 @@ async function handleMcpRequest(req: Request): Promise<Response> {
       return unauthorized(req, "invalid_token");
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { isAdmin: true },
-    });
+    const [user, oauthGrant] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { isAdmin: true },
+      }),
+      prisma.oAuthGrant.findUnique({
+        where: {
+          clientId_userId: {
+            clientId,
+            userId,
+          },
+        },
+        select: { id: true },
+      }),
+    ]);
 
     const transport = new WebStandardStreamableHTTPServerTransport();
-    const server = createMcpServer(userId, scopes, { isAdmin: user?.isAdmin === true });
+    const server = createMcpServer(userId, scopes, {
+      clientId,
+      isAdmin: user?.isAdmin === true,
+      oauthGrantId: oauthGrant?.id ?? null,
+    });
     await server.connect(transport);
     return transport.handleRequest(req);
   } catch (error) {

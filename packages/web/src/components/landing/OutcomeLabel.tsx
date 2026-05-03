@@ -215,7 +215,7 @@ export function OutcomeLabel({ title, subtitle, tag, data, footer }: OutcomeLabe
   // Fallback if no data, not loading, no error, and no fetched info (e.g. title was not provided initially)
   return (
     <div className="rounded-lg border bg-background p-4 w-full max-w-xl mx-auto">
-      <p className="text-sm text-muted-foreground">No outcome data available for "{title}".</p>
+      <p className="text-sm text-muted-foreground">No outcome data available for &ldquo;{title}&rdquo;.</p>
     </div>
   );
 } 

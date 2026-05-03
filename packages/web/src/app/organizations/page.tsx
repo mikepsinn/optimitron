@@ -21,18 +21,18 @@ export default async function OrganizationsPage() {
           Organizations
         </p>
         <h1 className="text-3xl font-black uppercase text-foreground sm:text-4xl">
-          Organization Survey Links
+          Organization Signatory Tools
         </h1>
         <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
-          Give your audience a clean treaty survey link. They vote on your site;
+          Give your audience a treaty survey link. They vote on your site;
           you get credited for helping humanity click the obvious rectangle.
         </p>
       </header>
 
       {organizations.length === 0 ? (
         <p className="font-bold text-muted-foreground">
-          No organizations are connected to your account yet. A clipboard with
-          zero clipboards attached is just a rectangle.
+          No organization signatories are connected to your account yet. Sign
+          as an organization first.
         </p>
       ) : (
         <ul className="space-y-3">

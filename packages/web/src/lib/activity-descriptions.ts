@@ -46,7 +46,7 @@ export function getActivityDescription(
       return "Voted in the referendum. Democracy: attempted.";
 
     case ActivityType.SUBMITTED_COMPARISON:
-      return "Submitted a pairwise comparison — one data point closer to a functioning civilisation.";
+      return "Submitted a pairwise comparison - one data point closer to a functioning civilisation.";
 
     case ActivityType.DEPOSITED_PRIZE:
       if (meta.amount) {
@@ -61,7 +61,7 @@ export function getActivityDescription(
       return "Contacted an accountability target. Pressure applied.";
 
     case ActivityType.VERIFIED_PERSONHOOD:
-      return "Verified personhood — confirmed: not a bot. Probably.";
+      return "Verified personhood - confirmed: not a bot. Probably.";
 
     case ActivityType.TRACKED_MEASUREMENT:
       return "Tracked a health measurement. Your future self will thank you.";

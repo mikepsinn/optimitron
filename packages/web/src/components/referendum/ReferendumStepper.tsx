@@ -226,7 +226,7 @@ const stepperMarkdownComponents = {
   hr: () => <hr className="border-t-4 border-white/30" />,
 };
 
-const readerMarkdownComponents = {
+export const readerMarkdownComponents = {
   h1: ({ children }: { children?: ReactNode }) => (
     <h1 className="text-center text-4xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
       {children}
@@ -597,26 +597,9 @@ export function ReferendumStepper({
       className={
         isStepperMode
           ? "fixed inset-0 z-[100] flex flex-col overflow-hidden bg-black"
-          : "fixed inset-0 z-[100] overflow-y-auto overflow-x-hidden bg-[#ece2d0]"
+          : "relative min-h-screen w-full overflow-x-hidden bg-background"
       }
     >
-      {!isStepperMode && (
-        <>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,245,0.94)_0%,rgba(245,237,222,0.94)_38%,rgba(231,219,197,0.96)_100%)]" />
-          <div
-            className="absolute inset-0 opacity-60"
-            style={{
-              backgroundImage: [
-                "radial-gradient(circle at 18% 12%, rgba(255,255,255,0.95) 0, rgba(255,255,255,0) 28%)",
-                "radial-gradient(circle at 82% 18%, rgba(255,255,255,0.7) 0, rgba(255,255,255,0) 24%)",
-                "radial-gradient(circle at 70% 72%, rgba(255,255,255,0.42) 0, rgba(255,255,255,0) 26%)",
-                "linear-gradient(115deg, rgba(142,107,72,0.08) 0%, rgba(142,107,72,0) 22%, rgba(142,107,72,0.09) 44%, rgba(142,107,72,0) 66%, rgba(142,107,72,0.08) 100%)",
-              ].join(", "),
-            }}
-          />
-        </>
-      )}
-
       {mode === "stepper" && (
         <div className="sr-only" aria-hidden="false">
           <p>{introText}</p>
@@ -685,9 +668,12 @@ export function ReferendumStepper({
           <div className="mx-auto w-full max-w-4xl">
             <div className="mx-auto mb-10 h-px w-24 bg-[#8e6b48]/40" />
             <div className="mx-auto w-full max-w-2xl space-y-10">
-              <p className="text-center text-2xl leading-relaxed text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
-                {introText}
-              </p>
+              <div className="space-y-8">
+                <p className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
+                  {introText}
+                </p>
+                <div className="mx-auto h-px w-24 bg-[#8e6b48]/40" />
+              </div>
               {slides.map((slide, i) => (
                 <ReactMarkdown
                   key={i}
@@ -705,6 +691,8 @@ export function ReferendumStepper({
         </div>
       )}
 
+      {/* Narration playback temporarily disabled — re-enable by flipping this to true. */}
+      {false && (
       <button
         onClick={togglePlayback}
         className={narratorClass}
@@ -747,6 +735,7 @@ export function ReferendumStepper({
           <Play className="ml-0.5 h-5 w-5" />
         )}
       </button>
+      )}
 
       {hasBgImages && (
         <button

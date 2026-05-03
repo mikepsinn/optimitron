@@ -4,7 +4,10 @@ import {
   coalitionLink,
   endorseLink,
   legalLink,
+  peopleLink,
+  privacyLink,
   readTreatyLink,
+  termsLink,
   trialEmbedLink,
   trialSurveyLink,
   treatyDashboardLink,
@@ -67,6 +70,7 @@ describe("site variant UI config", () => {
 
   it("defines footer columns per variant", () => {
     const treatyFooter = getSiteVariantUiConfig("onePercentTreaty").footer;
+    const warFooter = getSiteVariantUiConfig("warOnDisease").footer;
 
     expect(treatyFooter.columns.map((column) => column.title)).toEqual([
       "Campaign",
@@ -77,6 +81,28 @@ describe("site variant UI config", () => {
         column.items.map((item) => item.label),
       ),
     ).toContain("President Management System");
+
+    expect(warFooter.columns.map((column) => column.title)).toEqual([
+      "Campaign",
+      "Reference",
+    ]);
+    expect(
+      warFooter.columns.flatMap((column) =>
+        column.items.map((item) => item.label),
+      ),
+    ).toEqual([
+      "Vote",
+      "Read the Treaty",
+      "Dashboard",
+      "People",
+      "Organizational Signatories",
+      "Sign as Organization",
+      "Donate",
+      "Why",
+      "Legal",
+      "Privacy",
+      "Terms",
+    ]);
   });
 
   it("defines restrained navigation for the neutral survey site", () => {
@@ -113,9 +139,14 @@ describe("site variant UI config", () => {
     for (const item of [
       treatyVoteLink,
       treatyDashboardLink,
+      peopleLink,
       readTreatyLink,
+      coalitionLink,
+      endorseLink,
       whyLink,
       legalLink,
+      privacyLink,
+      termsLink,
     ]) {
       expect(warOnDiseaseItems).toContain(item);
     }
@@ -137,9 +168,13 @@ describe("site variant UI config", () => {
     const config = getSiteVariantUiConfig("warOnDisease");
 
     expect(config.nav.brandLabel).toBe("War on Disease");
-    expect(labelsFor("warOnDisease")).toEqual(
-      expect.arrayContaining(["Vote", "Read the Treaty"]),
-    );
+    expect(labelsFor("warOnDisease")).toEqual([
+      "Vote",
+      "Share",
+      "People",
+      "Read the Treaty",
+      "Why",
+    ]);
   });
 
   it("keeps partner and medical variant chrome free of internal architecture jargon", () => {

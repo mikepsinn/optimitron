@@ -3,8 +3,8 @@ import { z } from "zod";
 import { NOf1VariableRelationshipSchema } from "@optimitron/optimizer";
 import { prisma } from "@/lib/prisma";
 import { runAggregationForPairs } from "@/lib/aggregate-relationships.server";
+import { ensureExternalPersonSubject } from "@/lib/subject.server";
 import {
-  SubjectType,
   CombinationOperation,
   FillingType,
   EvidenceGrade,
@@ -72,15 +72,10 @@ export async function POST(req: NextRequest) {
     const input = SubmitHealthAnalysisSchema.parse(body);
 
     const result = await prisma.$transaction(async (tx) => {
-      // Ensure Subject exists for this anonymous contributor
-      const subject = await tx.subject.upsert({
-        where: { externalId: input.contributorId },
-        update: {},
-        create: {
-          externalId: input.contributorId,
-          displayName: "Extension Contributor",
-          subjectType: SubjectType.USER,
-        },
+      // Extension uploads are about a human subject without an Optimitron account.
+      const subject = await ensureExternalPersonSubject(tx, {
+        displayName: "Extension Contributor",
+        externalId: input.contributorId,
       });
 
       const { categoryId, unitId } = await ensureDefaults(tx);

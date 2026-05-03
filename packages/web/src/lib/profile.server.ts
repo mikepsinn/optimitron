@@ -2,11 +2,11 @@ import {
   CombinationOperation,
   FillingType,
   MeasurementScale,
-  SubjectType,
   Valence,
   type Prisma,
 } from "@optimitron/db";
 import { ensurePersonForUser } from "@/lib/person.server";
+import { ensureSubjectForUser } from "@/lib/subject.server";
 import {
   ANNUAL_HOUSEHOLD_INCOME_VARIABLE_NAME,
   ANNUAL_PERSONAL_INCOME_VARIABLE_NAME,
@@ -96,10 +96,10 @@ interface UpsertMeasurementInput {
   latitude: number | null;
   longitude: number | null;
   note: string | null;
+  recordedByUserId: string;
   sourceName: string;
   subjectId: string;
   unitId: string;
-  userId: string;
   value: number;
 }
 
@@ -112,7 +112,7 @@ export async function getProfilePageData(userId: string): Promise<ProfilePageDat
     prisma.measurement.findMany({
       where: {
         deletedAt: null,
-        userId,
+        subject: { userId },
         globalVariable: {
           name: {
             in: [
@@ -180,7 +180,7 @@ export async function getCheckInPageData(userId: string): Promise<CheckInPageDat
     prisma.measurement.findMany({
       where: {
         deletedAt: null,
-        userId,
+        subject: { userId },
         globalVariable: {
           name: { in: [HEALTH_VARIABLE_NAME, HAPPINESS_VARIABLE_NAME] },
         },
@@ -232,6 +232,7 @@ export async function saveProfileSnapshot(userId: string, input: unknown) {
       select: {
         email: true,
         id: true,
+        personId: true,
       },
     });
 
@@ -243,14 +244,17 @@ export async function saveProfileSnapshot(userId: string, input: unknown) {
       },
     });
 
-    await ensurePersonForUser(userId, undefined, tx);
+    const person = await ensurePersonForUser(userId, undefined, tx);
 
     const hasHouseholdIncome = profile.annualHouseholdIncomeUsd !== null && profile.annualHouseholdIncomeUsd !== undefined;
     const hasPersonalIncome = profile.annualPersonalIncomeUsd !== null && profile.annualPersonalIncomeUsd !== undefined;
 
     if (hasHouseholdIncome || hasPersonalIncome) {
       const catalog = await ensureProfileCatalog(tx);
-      const subject = await ensureSubject(tx, user);
+      const subject = await ensureSubjectForUser(tx, {
+        ...user,
+        personId: person.id,
+      });
 
       if (hasHouseholdIncome) {
         await upsertDailyMeasurement(tx, {
@@ -258,10 +262,10 @@ export async function saveProfileSnapshot(userId: string, input: unknown) {
           latitude: profile.latitude ?? null,
           longitude: profile.longitude ?? null,
           note: "Annual household income snapshot.",
+          recordedByUserId: userId,
           sourceName: PROFILE_SOURCE_NAME,
           subjectId: subject.id,
           unitId: catalog.usdUnitId,
-          userId,
           value: profile.annualHouseholdIncomeUsd!,
         });
       }
@@ -272,10 +276,10 @@ export async function saveProfileSnapshot(userId: string, input: unknown) {
           latitude: profile.latitude ?? null,
           longitude: profile.longitude ?? null,
           note: "Annual personal income snapshot.",
+          recordedByUserId: userId,
           sourceName: PROFILE_SOURCE_NAME,
           subjectId: subject.id,
           unitId: catalog.usdUnitId,
-          userId,
           value: profile.annualPersonalIncomeUsd!,
         });
       }
@@ -296,10 +300,15 @@ export async function saveDailyCheckIn(userId: string, input: unknown) {
         id: true,
         latitude: true,
         longitude: true,
+        personId: true,
       },
     });
     const catalog = await ensureProfileCatalog(tx);
-    const subject = await ensureSubject(tx, user);
+    const person = await ensurePersonForUser(userId, undefined, tx);
+    const subject = await ensureSubjectForUser(tx, {
+      ...user,
+      personId: person.id,
+    });
     const hasSubmittedCoordinates =
       checkIn.latitude != null && checkIn.longitude != null;
     const coordinates: { latitude: number | null; longitude: number | null } =
@@ -324,10 +333,10 @@ export async function saveDailyCheckIn(userId: string, input: unknown) {
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
       note: checkIn.note ?? null,
+      recordedByUserId: userId,
       sourceName: CHECK_IN_SOURCE_NAME,
       subjectId: subject.id,
       unitId: catalog.ratingUnitId,
-      userId,
       value: checkIn.healthRating,
     });
 
@@ -336,10 +345,10 @@ export async function saveDailyCheckIn(userId: string, input: unknown) {
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
       note: checkIn.note ?? null,
+      recordedByUserId: userId,
       sourceName: CHECK_IN_SOURCE_NAME,
       subjectId: subject.id,
       unitId: catalog.ratingUnitId,
-      userId,
       value: checkIn.happinessRating,
     });
   });
@@ -609,54 +618,24 @@ async function ensureProfileCatalog(tx: Prisma.TransactionClient): Promise<Profi
   };
 }
 
-async function ensureSubject(
-  tx: Prisma.TransactionClient,
-  user: { email: string | null; id: string },
-) {
-  // Subject display name is internal (used by measurement time-series).
-  // Person owns displayName; we fall back to email when a Person hasn't
-  // been linked yet.
-  const linkedPerson = await tx.person.findFirst({
-    where: { user: { id: user.id } },
-    select: { displayName: true },
-  });
-  const displayName =
-    linkedPerson?.displayName?.trim() || user.email || "Optimitron User";
-
-  return tx.subject.upsert({
-    where: { externalId: user.id },
-    update: {
-      displayName,
-      subjectType: SubjectType.USER,
-    },
-    create: {
-      displayName,
-      externalId: user.id,
-      subjectType: SubjectType.USER,
-    },
-  });
-}
-
 async function upsertDailyMeasurement(
   tx: Prisma.TransactionClient,
   input: UpsertMeasurementInput,
 ) {
   const nOf1Variable = await tx.nOf1Variable.upsert({
     where: {
-      userId_globalVariableId: {
+      subjectId_globalVariableId: {
         globalVariableId: input.globalVariableId,
-        userId: input.userId,
+        subjectId: input.subjectId,
       },
     },
     update: {
       defaultUnitId: input.unitId,
-      subjectId: input.subjectId,
     },
     create: {
       defaultUnitId: input.unitId,
       globalVariableId: input.globalVariableId,
       subjectId: input.subjectId,
-      userId: input.userId,
     },
   });
   const { end, start } = getUtcDayBounds(new Date());
@@ -668,7 +647,7 @@ async function upsertDailyMeasurement(
         gte: start,
         lt: end,
       },
-      userId: input.userId,
+      subjectId: input.subjectId,
     },
     orderBy: [{ startTime: "desc" }],
     select: { id: true },
@@ -683,7 +662,9 @@ async function upsertDailyMeasurement(
         note: input.note,
         originalUnitId: input.unitId,
         originalValue: input.value,
+        recordedByUserId: input.recordedByUserId,
         sourceName: input.sourceName,
+        subjectId: input.subjectId,
         unitId: input.unitId,
         value: input.value,
       },
@@ -698,10 +679,11 @@ async function upsertDailyMeasurement(
         note: input.note,
         originalUnitId: input.unitId,
         originalValue: input.value,
+        recordedByUserId: input.recordedByUserId,
         sourceName: input.sourceName,
         startTime: new Date(),
+        subjectId: input.subjectId,
         unitId: input.unitId,
-        userId: input.userId,
         value: input.value,
       },
     });

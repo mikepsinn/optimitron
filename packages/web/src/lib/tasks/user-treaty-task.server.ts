@@ -20,8 +20,8 @@ import { buildTriggerContext, fireTaskTrigger } from "@/lib/triggers";
 
 export const USER_TREATY_TASK_TITLE =
   "Get 4 billion people to vote on the 1% Treaty";
-export const HUMANITY_MANAGEMENT_TRAINING_TASK_TITLE =
-  "Complete Humanity Management Training";
+export const PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE =
+  "Promote to Humanity Manager";
 
 const USER_TREATY_TASK_KEY_PREFIX = "program:one-percent-treaty:user";
 

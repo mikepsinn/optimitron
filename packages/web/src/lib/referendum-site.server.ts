@@ -21,6 +21,11 @@ import {
   TREATY_PARENT_TASK_ID,
 } from "@/lib/tasks/task-keys";
 import { userDisplaySelect, type UserForDisplay } from "@/lib/user-display";
+import {
+  buildMemorialReferendumVoteWhere,
+  buildOfficialReferendumVoteWhere,
+  buildRepresentedReferendumVoteWhere,
+} from "@/lib/referendum-vote-classification.server";
 
 export const PUBLIC_SIGNERS_PAGE_SIZE = 48;
 
@@ -60,6 +65,10 @@ export interface ReferendumSiteHomeData extends ReferendumSiteContext {
   lateEmployeeTasks: TaskCardTask[];
   fullTasksHref: string;
   individualCount: number;
+  /** Living-but-couldn't-click-the-button represented votes (PRD Feature 2). */
+  representedHumanCount: number;
+  /** Memorial votes — deceased people whose representatives spoke for them. */
+  memorialVoteCount: number;
   organizationCount: number;
   treatyMarkdown: string;
   publicSigners: PublicSignersPage;
@@ -132,27 +141,41 @@ export async function getReferendumSiteHomeData(
     return null;
   }
 
-  const publicSignersWhere: Prisma.ReferendumVoteWhereInput = {
-    referendumId: context.referendum.id,
-    deletedAt: null,
+  const publicSignersWhere = buildOfficialReferendumVoteWhere({
     answer: VotePosition.YES,
-    user: { person: { isPublic: true } },
-  };
+    publicOnly: true,
+    referendumId: context.referendum.id,
+  });
 
   const requestedPage = Math.max(1, Math.floor(options.signersPage ?? 1));
 
   const [
     individualCount,
+    representedHumanCount,
+    memorialVoteCount,
     organizationCount,
     allPublicSigners,
     referrerCounts,
   ] = await Promise.all([
     prisma.referendumVote.count({
-      where: {
-        referendumId: context.referendum.id,
-        deletedAt: null,
+      where: buildOfficialReferendumVoteWhere({
         answer: VotePosition.YES,
-      },
+        referendumId: context.referendum.id,
+      }),
+    }),
+    prisma.referendumVote.count({
+      where: buildRepresentedReferendumVoteWhere({
+        answer: VotePosition.YES,
+        publicOnly: true,
+        referendumId: context.referendum.id,
+      }),
+    }),
+    prisma.referendumVote.count({
+      where: buildMemorialReferendumVoteWhere({
+        answer: VotePosition.YES,
+        publicOnly: true,
+        referendumId: context.referendum.id,
+      }),
     }),
     prisma.organizationReferendumPosition.count({
       where: buildApprovedOrganizationPositionWhere(context.referendum.id),
@@ -245,6 +268,8 @@ export async function getReferendumSiteHomeData(
     fullTasksHref:
       site.key === "onePercentTreaty" ? getTreatyParentTaskHref() : ROUTES.tasks,
     individualCount,
+    representedHumanCount,
+    memorialVoteCount,
     organizationCount,
     treatyMarkdown:
       site.key === "onePercentTreaty"

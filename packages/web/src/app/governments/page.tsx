@@ -3,6 +3,7 @@ import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { GameCTA } from "@/components/ui/game-cta";
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
 import { GovernmentScatterplot } from "@/components/shared/GovernmentScatterplot";
+import { getMemorialAttributionsByGovernment } from "@/lib/prosecution-data.server";
 import { governmentsLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 
@@ -28,10 +29,22 @@ function formatNumber(value: number): string {
   return value.toLocaleString();
 }
 
-export default function GovernmentsPage() {
+export default async function GovernmentsPage() {
   const auditedGovernmentProfiles = GOVERNMENTS
     .map((government) => getGovernmentProfile(government.code))
     .filter((government): government is NonNullable<typeof government> => government != null);
+
+  // Per-government memorial attribution counts for the new Memorial column.
+  // Best-effort — failures fall back to no column rendered.
+  let memorialAttributionsByCountry: Record<string, number> = {};
+  try {
+    const summaries = await getMemorialAttributionsByGovernment();
+    memorialAttributionsByCountry = Object.fromEntries(
+      Object.entries(summaries).map(([code, s]) => [code, s.memorialDeaths]),
+    );
+  } catch (error) {
+    console.error("Failed to load memorial attributions for governments page", error);
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
@@ -70,7 +83,7 @@ export default function GovernmentsPage() {
           trials, from largest ratio to smallest. Click any column to sort by a
           different metric.
         </p>
-        <GovernmentLeaderboard />
+        <GovernmentLeaderboard memorialAttributionsByCountry={memorialAttributionsByCountry} />
       </section>
 
       <section className="mb-16">

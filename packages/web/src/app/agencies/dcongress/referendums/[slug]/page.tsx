@@ -40,12 +40,12 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
     getCurrentUser(),
   ]);
 
-  const existingVote = user
+  const existingVote = user?.personId
     ? await prisma.referendumVote.findUnique({
         where: {
-          userId_referendumId: {
-            userId: user.id,
+          referendumId_personId: {
             referendumId: referendum.id,
+            personId: user.personId,
           },
         },
         select: { answer: true },

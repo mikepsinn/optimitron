@@ -42,7 +42,7 @@ export class ProfileValidationError extends Error {
 }
 
 /**
- * Validate a player-name handle (3–24 chars, [A-Za-z0-9_-]) and resolve it to
+ * Validate a public link handle (3–24 chars, [A-Za-z0-9_-]) and resolve it to
  * a normalized lowercase form. Empty string clears the handle. Returns:
  *   - `null` when the caller wants to clear the handle.
  *   - `string` (lowercase) when the caller wants to set/change it.
@@ -54,13 +54,13 @@ function normalizeHandle(raw: unknown): string | null | undefined {
   if (trimmed === "") return null;
   if (trimmed.length < 3 || trimmed.length > 24) {
     throw new ProfileValidationError(
-      "Player name must be between 3 and 24 characters.",
+      "Link name must be between 3 and 24 characters.",
       "handle",
     );
   }
   if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
     throw new ProfileValidationError(
-      "Player name can only include letters, numbers, hyphens, and underscores.",
+      "Link name can only include letters, numbers, hyphens, and underscores.",
       "handle",
     );
   }
@@ -93,7 +93,7 @@ export async function updateUserProfile(
     });
     if (collision) {
       throw new ProfileValidationError(
-        "That player name is already taken. Please choose another.",
+        "That link name is already taken. Please choose another.",
         "handle",
       );
     }

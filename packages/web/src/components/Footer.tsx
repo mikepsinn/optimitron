@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
+import { ROUTES } from "@/lib/routes";
 import { getSiteConfig, type SiteKey } from "@/lib/site";
 
 interface FooterProps {
@@ -70,6 +71,22 @@ export default function Footer({ siteKey = "optimitron" }: FooterProps) {
             </a>
             .
           </p>
+          <nav
+            aria-label="Legal"
+            className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs"
+          >
+            <Link href={ROUTES.privacy} className="underline hover:no-underline">
+              Privacy
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link href={ROUTES.terms} className="underline hover:no-underline">
+              Terms
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link href={ROUTES.legal} className="underline hover:no-underline">
+              Legal
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>

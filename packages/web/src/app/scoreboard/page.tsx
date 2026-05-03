@@ -117,7 +117,7 @@ export default async function ScoreboardPage() {
             <NumberedStepCard
               step={1}
               title="Deposit"
-              description={`Put your papers in the machine. Get PRIZE shares. Your papers grow at ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15 years whether humanity figures it out or not.`}
+              description={`Put your money in the machine. Get PRIZE shares. Projected growth is ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15 years if the campaign misses its targets.`}
               color="pink"
             />
             <NumberedStepCard
@@ -140,11 +140,11 @@ export default async function ScoreboardPage() {
       <section className="mb-12">
         <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed text-center">
-            On my planet, we solved this in year 12. You lot have been arguing
-            about it for 4,237 years. The scoreboard makes the coalition size
-            impossible to pretend does not exist. Updated in real time. Visible
-            to everyone. The only question is whether you join before or after
-            it becomes embarrassing not to.
+            On Wishonia, we solved this in year 12. You lot have been arguing
+            about it for 4,237 years. The scoreboard makes the campaign size
+            impossible to ignore. Updated in real time. Visible to everyone.
+            The only question is whether you join before or after it becomes
+            embarrassing not to.
           </p>
         </div>
       </section>

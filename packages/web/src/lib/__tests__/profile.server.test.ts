@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  personServer: {
+    ensurePersonForUser: vi.fn(),
+  },
   prisma: {
     measurementFindMany: vi.fn(),
     userPreferenceUpdateMany: vi.fn(),
@@ -19,6 +22,7 @@ const mocks = vi.hoisted(() => ({
     nOf1VariableUpdate: vi.fn(),
     nOf1VariableUpsert: vi.fn(),
     personFindFirst: vi.fn(),
+    personFindUnique: vi.fn(),
     subjectUpsert: vi.fn(),
     unitUpsert: vi.fn(),
     userFindUniqueOrThrow: vi.fn(),
@@ -45,7 +49,7 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 vi.mock("@/lib/person.server", () => ({
-  ensurePersonForUser: vi.fn(),
+  ensurePersonForUser: mocks.personServer.ensurePersonForUser,
 }));
 
 import {
@@ -100,6 +104,7 @@ function createTransactionClient() {
     },
     person: {
       findFirst: mocks.tx.personFindFirst,
+      findUnique: mocks.tx.personFindUnique,
     },
     subject: {
       upsert: mocks.tx.subjectUpsert,
@@ -147,7 +152,12 @@ function mockCatalogDefaults() {
   mocks.tx.subjectUpsert.mockResolvedValue({ id: "subject_1" });
   mocks.tx.nOf1VariableUpsert.mockResolvedValue({ id: "n1_1" });
   mocks.tx.nOf1VariableCount.mockResolvedValue(1);
+  mocks.personServer.ensurePersonForUser.mockResolvedValue({ id: "person_1" });
   mocks.tx.personFindFirst.mockResolvedValue(null);
+  mocks.tx.personFindUnique.mockResolvedValue({
+    displayName: "Jane",
+    id: "person_1",
+  });
   mocks.tx.measurementFindMany.mockResolvedValue([
     { startTime: new Date("2026-03-12T10:00:00.000Z"), value: 4 },
   ]);
@@ -349,13 +359,23 @@ describe("profile server", () => {
         note: "Annual household income snapshot.",
         originalUnitId: "unit_usd",
         originalValue: 120_000,
+        recordedByUserId: "user_1",
         sourceName: "profile",
         startTime: expect.any(Date),
+        subjectId: "subject_1",
         unitId: "unit_usd",
-        userId: "user_1",
         value: 120_000,
       }),
     });
+    expect(mocks.tx.measurementCreate.mock.calls[0]?.[0]?.data).not.toHaveProperty(
+      "userId",
+    );
+    expect(mocks.tx.nOf1VariableUpsert.mock.calls[0]?.[0]?.create).not.toHaveProperty(
+      "userId",
+    );
+    expect(mocks.tx.nOf1VariableUpsert.mock.calls[0]?.[0]?.update).not.toHaveProperty(
+      "userId",
+    );
     expect(result!.profile.annualHouseholdIncomeUsd).toBe(120_000);
     expect(result!.profile.lastIncomeReportedAt).toBe("2026-03-12T10:00:00.000Z");
   });
@@ -433,20 +453,30 @@ describe("profile server", () => {
         latitude: 41,
         longitude: -87,
         note: "Better today",
+        recordedByUserId: "user_1",
         sourceName: "daily-checkin",
+        subjectId: "subject_1",
         value: 4,
       }),
     });
+    expect(mocks.tx.measurementUpdate.mock.calls[0]?.[0]?.data).not.toHaveProperty(
+      "userId",
+    );
     expect(mocks.tx.measurementUpdate).toHaveBeenNthCalledWith(2, {
       where: { id: "measurement_happiness" },
       data: expect.objectContaining({
         latitude: 41,
         longitude: -87,
         note: "Better today",
+        recordedByUserId: "user_1",
         sourceName: "daily-checkin",
+        subjectId: "subject_1",
         value: 5,
       }),
     });
+    expect(mocks.tx.measurementUpdate.mock.calls[1]?.[0]?.data).not.toHaveProperty(
+      "userId",
+    );
     expect(result!.currentCheckIn).toEqual({
       date: "2026-03-12",
       happinessRating: 5,

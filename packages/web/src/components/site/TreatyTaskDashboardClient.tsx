@@ -5,9 +5,11 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
-import { PlayerNameBanner } from "@/components/dashboard/PlayerNameBanner";
+import { RepresentedPersonForm } from "@/components/people/RepresentedPersonForm";
+import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner";
 import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
+import { TreatyContent } from "@/components/treaty/TreatyContent";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
@@ -64,7 +66,7 @@ export function TreatyTaskDashboardClient({
           </Button>
         </div>
 
-        <PlayerNameBanner
+        <ReferralLinkBanner
           user={user}
           referralLink={referralLink}
           onUserChange={setUser}
@@ -72,9 +74,12 @@ export function TreatyTaskDashboardClient({
           dismissible={false}
           className={TREATY_BANNER_CLASSNAME}
           userFraming="manager"
+          variant="treaty"
         />
 
         <TreatyReminderComposer />
+
+        <RepresentedPersonForm onCreated={refreshPage} />
 
         {treatyProgram ? (
           <ProgramTaskSection
@@ -87,6 +92,10 @@ export function TreatyTaskDashboardClient({
             }
           />
         ) : null}
+
+        <section className="pt-10">
+          <TreatyContent />
+        </section>
       </div>
     </div>
   );
