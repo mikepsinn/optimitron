@@ -6,6 +6,7 @@ import {
   buildTrialAbundanceSurveyUrl,
   getRequestSiteOrigin,
   getCanonicalHostForSiteKey,
+  getEnabledStaticPathsForSite,
   getSiteConfig,
   getSiteFromHeaders,
   getSiteFromHost,
@@ -269,6 +270,35 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(dfdaSite, "/treatments/metformin")).toBe(true);
     expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/treatments/metformin")).toBe(true);
     expect(isSiteRouteAllowed(dfdaSite, "/treaty")).toBe(false);
+  });
+
+  it("filters static smoke paths by site capability", () => {
+    const candidates = [
+      ROUTES.campaign,
+      ROUTES.coalition,
+      ROUTES.endorse,
+      ROUTES.impact,
+      ROUTES.legal,
+      ROUTES.why,
+      ROUTES.treaty,
+      ROUTES.donate,
+    ];
+
+    expect(
+      getEnabledStaticPathsForSite(getSiteConfig("optimitron"), candidates),
+    ).toEqual([ROUTES.donate, ROUTES.treaty]);
+    expect(
+      getEnabledStaticPathsForSite(getSiteConfig("onePercentTreaty"), candidates),
+    ).toEqual([
+      ROUTES.campaign,
+      ROUTES.coalition,
+      ROUTES.donate,
+      ROUTES.endorse,
+      ROUTES.impact,
+      ROUTES.legal,
+      ROUTES.treaty,
+      ROUTES.why,
+    ]);
   });
 
   it("keeps Optimitron medical links canonical under DFDA", () => {

@@ -1486,6 +1486,54 @@ export function getSiteRouteDisposition(
   return { type: "notFound" };
 }
 
+const REFERENDUM_SITE_CONTENT_PATH_PREFIXES = [
+  ROUTES.campaign,
+  ROUTES.coalition,
+  ROUTES.endorse,
+  ROUTES.impact,
+  ROUTES.legal,
+  ROUTES.why,
+] as const;
+
+export function requiresReferendumSiteContent(pathname: string): boolean {
+  return REFERENDUM_SITE_CONTENT_PATH_PREFIXES.some((prefix) =>
+    matchesPrefix(pathname, prefix),
+  );
+}
+
+export function isStaticPathEnabledForSite(
+  site: SiteConfig,
+  pathname: string,
+): boolean {
+  if (getSiteRouteDisposition(site, pathname).type !== "allow") {
+    return false;
+  }
+
+  if (requiresReferendumSiteContent(pathname) && !site.contentKey) {
+    return false;
+  }
+
+  return true;
+}
+
+export function getEnabledStaticPathsForSite(
+  site: SiteConfig,
+  candidatePaths: Iterable<string>,
+): string[] {
+  const enabled = new Set<string>();
+
+  for (const candidatePath of candidatePaths) {
+    const pathname = normalizePath(
+      candidatePath.trim().split(/[?#]/, 1)[0] ?? "",
+    );
+    if (isStaticPathEnabledForSite(site, pathname)) {
+      enabled.add(pathname);
+    }
+  }
+
+  return [...enabled].sort((left, right) => left.localeCompare(right));
+}
+
 function normalizeOrigin(origin: string) {
   return origin.trim().replace(/\/+$/, "");
 }

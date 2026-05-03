@@ -1,8 +1,8 @@
 /**
  * Smoke tests: verify all pages load without errors and have valid metadata.
  *
- * Page list is derived from ROUTES in routes.ts — adding a new route
- * automatically adds it to these tests.
+ * Page list is derived from src/app and filtered through the active site
+ * routing policy.
  *
  * Auth-required pages are tested by signing in with the demo account first.
  *

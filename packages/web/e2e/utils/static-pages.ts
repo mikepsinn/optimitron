@@ -6,8 +6,24 @@
 import * as fs from "fs";
 import * as path from "path";
 import { ROUTES } from "@/lib/routes";
+import {
+  getEnabledStaticPathsForSite,
+  getSiteFromHost,
+} from "@/lib/site";
 
 const APP_DIR = path.resolve(__dirname, "..", "..", "src", "app");
+
+function getSmokeTestHost() {
+  if (!process.env.BASE_URL) return null;
+
+  try {
+    return new URL(process.env.BASE_URL).host;
+  } catch {
+    return null;
+  }
+}
+
+const SMOKE_TEST_SITE = getSiteFromHost(getSmokeTestHost());
 
 /** Routes that require authentication (redirect to sign-in when unauthenticated) */
 export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
@@ -22,23 +38,6 @@ export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
 
 /** Routes to skip entirely (auth forms, not content pages) */
 const SKIP_PATHS: Set<string> = new Set([ROUTES.signIn]);
-
-/**
- * Routes that exist only on the 1percenttreaty.org host. They call
- * `requireReferendumSiteContent(site)` which legitimately 404s on the default
- * Optimitron host (where `contentKey` is `null`). Smoke tests run against
- * 127.0.0.1 which resolves to the Optimitron host, so these routes must be
- * excluded — they're tested separately when host emulation is configured.
- *
- * Keep in sync with `grep -rln requireReferendumSiteContent src/app`.
- */
-const REFERENDUM_SITE_ONLY_PATHS: Set<string> = new Set([
-  "/coalition",
-  "/endorse",
-  "/impact",
-  "/legal",
-  "/why",
-]);
 
 function discoverStaticAppPages(
   dir: string,
@@ -92,14 +91,13 @@ function isRouteGroup(segment: string): boolean {
   return segment.startsWith("(") && segment.endsWith(")");
 }
 
-/** All testable static page paths derived from src/app (excludes sign-in
- * and referendum-site-only pages that 404 on the default Optimitron host) */
-export const ALL_PAGE_PATHS: string[] = [...new Set(discoverStaticAppPages(APP_DIR))]
-  .filter(
-    (pagePath) =>
-      !SKIP_PATHS.has(pagePath) && !REFERENDUM_SITE_ONLY_PATHS.has(pagePath),
-  )
-  .sort((left, right) => left.localeCompare(right));
+/** All static page paths enabled for the site under test. */
+export const ALL_PAGE_PATHS: string[] = getEnabledStaticPathsForSite(
+  SMOKE_TEST_SITE,
+  discoverStaticAppPages(APP_DIR).filter(
+    (pagePath) => !SKIP_PATHS.has(pagePath),
+  ),
+);
 
 /** Public page paths only — no authentication required */
 export const PUBLIC_PAGE_PATHS: string[] = ALL_PAGE_PATHS.filter(
