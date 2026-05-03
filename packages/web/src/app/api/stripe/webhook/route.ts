@@ -84,14 +84,21 @@ async function recordDonationActivity(session: Stripe.Checkout.Session) {
   const amountCents = session.amount_total ?? 0;
   const sourceUrl = (session.metadata?.sourceUrl as string | undefined) ?? null;
   const sourceReferrer = (session.metadata?.sourceReferrer as string | undefined) ?? null;
+  const metadataUserId = (session.metadata?.userId as string | undefined) ?? null;
 
-  // Attribute to a user account when the donor email matches one.
-  const user = donorEmail
+  let user = metadataUserId
     ? await prisma.user.findUnique({
-        where: { email: donorEmail.toLowerCase() },
+        where: { id: metadataUserId },
         select: { id: true },
       })
     : null;
+
+  if (!user && donorEmail) {
+    user = await prisma.user.findUnique({
+      where: { email: donorEmail.toLowerCase() },
+      select: { id: true },
+    });
+  }
 
   if (!user) {
     log.info("Donation completed by non-user", {

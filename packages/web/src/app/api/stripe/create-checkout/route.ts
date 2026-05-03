@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import type { DonationFrequency } from "@/lib/stripe";
 import { createLogger } from "@/lib/logger";
@@ -11,8 +13,8 @@ export const runtime = "nodejs";
 interface CheckoutRequest {
   amount: number;
   donationType: DonationFrequency;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   sourceUrl?: string;
   sourceReferrer?: string;
 }
@@ -33,6 +35,8 @@ export async function POST(req: Request) {
   }
 
   const { amount, donationType, name, email, sourceUrl, sourceReferrer } = body;
+  const trimmedName = name?.trim() ?? "";
+  const trimmedEmail = email?.trim().toLowerCase() ?? "";
 
   if (!amount || typeof amount !== "number" || amount < 1) {
     return NextResponse.json({ error: "Amount must be at least $1." }, { status: 400 });
@@ -40,10 +44,7 @@ export async function POST(req: Request) {
   if (!donationType || !["one-time", "monthly"].includes(donationType)) {
     return NextResponse.json({ error: "donationType must be one-time or monthly." }, { status: 400 });
   }
-  if (!name?.trim() || !email?.trim()) {
-    return NextResponse.json({ error: "Name and email are required." }, { status: 400 });
-  }
-  if (!EMAIL_REGEX.test(email)) {
+  if (trimmedEmail && !EMAIL_REGEX.test(trimmedEmail)) {
     return NextResponse.json({ error: "Invalid email format." }, { status: 400 });
   }
 
@@ -54,6 +55,19 @@ export async function POST(req: Request) {
 
   const stripe = getStripeClient();
   const baseUrl = getBaseUrl();
+  const sessionUser = (await getServerSession(authOptions))?.user;
+  const donorEmail = sessionUser?.email?.toLowerCase() ?? trimmedEmail;
+  const donorName = sessionUser?.name?.trim() ?? trimmedName;
+  const metadata: Record<string, string> = {
+    donationType,
+    sourceUrl: cleanUrl,
+    sourceReferrer: cleanReferrer,
+    cause: "earth-optimization-prize-and-ops",
+  };
+
+  if (donorName) metadata.donorName = donorName.slice(0, 200);
+  if (donorEmail) metadata.donorEmail = donorEmail.slice(0, 200);
+  if (sessionUser?.id) metadata.userId = sessionUser.id;
 
   try {
     // Always use dynamic prices keyed off `unit_amount`. Avoids requiring product/price
@@ -61,7 +75,8 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: donationType === "monthly" ? "subscription" : "payment",
       payment_method_types: ["card"],
-      customer_email: email,
+      ...(donorEmail ? { customer_email: donorEmail } : {}),
+      ...(sessionUser?.id ? { client_reference_id: sessionUser.id } : {}),
       line_items: [
         {
           price_data: {
@@ -82,14 +97,7 @@ export async function POST(req: Request) {
       ],
       success_url: `${baseUrl}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/donate?canceled=true`,
-      metadata: {
-        donorName: name.slice(0, 200),
-        donorEmail: email.slice(0, 200),
-        donationType,
-        sourceUrl: cleanUrl,
-        sourceReferrer: cleanReferrer,
-        cause: "earth-optimization-prize-and-ops",
-      },
+      metadata,
     });
 
     log.info("Checkout session created", { sessionId: session.id, amount, donationType });

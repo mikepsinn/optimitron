@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
 import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
 
@@ -16,6 +17,7 @@ interface SessionData {
 
 function DonateSuccessInner() {
   const searchParams = useSearchParams();
+  const { status } = useSession();
   const sessionId = searchParams?.get("session_id");
   const [session, setSession] = useState<SessionData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +49,10 @@ function DonateSuccessInner() {
     : error
       ? "Donation status pending."
       : "Confirming your donation with Stripe...";
+  const trackHref =
+    status === "authenticated"
+      ? ROUTES.dashboard
+      : `/auth/signin?callbackUrl=${encodeURIComponent(ROUTES.dashboard)}`;
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -70,26 +76,30 @@ function DonateSuccessInner() {
               <p className="leading-7 text-neutral-700">
                 Receipt sent to {session.customer_email ?? "your email"}. Funds
                 route through the Institute for Accelerated Medicine 501(c)(3)
-                to the 1% Treaty campaign and platform operations.
+                to the 1% Treaty campaign.
               </p>
               <p className="leading-7 text-neutral-700">
-                Your donation funds hosting, identity verification,
-                translation, fraud prevention, and public evidence pages. The
-                most useful next step is getting one more human to vote.
+                It funds hosting, identity verification, translation, fraud
+                prevention, and public evidence pages. The most useful next
+                step is getting one more human to vote.
+              </p>
+              <p className="leading-7 text-neutral-700">
+                To track it in your dashboard, sign in with the same email you
+                used in Stripe.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button
                   asChild
                   className="flex-1 justify-center border border-black bg-black text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black active:translate-x-0 active:translate-y-0"
                 >
-                  <Link href={DASHBOARD_INVITE_HREF}>Invite one voter</Link>
+                  <Link href={trackHref}>Track your impact</Link>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
                   className="flex-1 justify-center border border-black bg-white text-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
                 >
-                  <Link href={ROUTES.dashboard}>Open dashboard</Link>
+                  <Link href={DASHBOARD_INVITE_HREF}>Invite one voter</Link>
                 </Button>
               </div>
             </div>
