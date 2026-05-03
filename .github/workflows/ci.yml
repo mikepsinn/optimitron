@@ -131,8 +131,11 @@ jobs:
       - name: Apply database migrations
         run: pnpm db:deploy
 
+      - name: Build web workspace dependencies
+        run: pnpm --filter @optimitron/web run build:workspace-deps
+
       - name: Typecheck web app
-        run: pnpm --filter @optimitron/web run typecheck
+        run: pnpm --filter @optimitron/web run typecheck:fast
 
       - name: Run web unit tests
         run: pnpm --filter @optimitron/web run test
@@ -140,7 +143,7 @@ jobs:
       - name: Build web app
         env:
           NODE_OPTIONS: --max-old-space-size=6144
-        run: pnpm --filter @optimitron/web run build
+        run: pnpm --filter @optimitron/web run build:fast
 
       - name: Cache Playwright browsers
         id: playwright-cache
