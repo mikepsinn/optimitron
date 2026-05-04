@@ -42,9 +42,8 @@ export default async function TasksPage() {
             Earth Optimization Tasks
           </h1>
           <p className="mx-auto max-w-3xl text-base font-bold text-muted-foreground sm:text-lg">
-            The full tree. Every task is a bet on moving median healthy life
-            years and median income toward their 2040 targets. Pick a node and
-            drill in.
+            Public programs first, active task queue below. Pick a node and
+            move healthy life years or income toward their 2040 targets.
           </p>
         </header>
 
