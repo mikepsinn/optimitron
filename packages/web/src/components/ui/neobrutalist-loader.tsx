@@ -8,82 +8,86 @@ interface NeobrutalistLoaderProps {
 }
 
 interface NeobrutalistLoaderMarkProps {
+  label?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 export function NeobrutalistLoaderMark({
+  label = 'OPTIMIZING EARTH',
   size = 'md',
   className = '',
 }: NeobrutalistLoaderMarkProps) {
-  const sizeClasses = {
-    sm: 'h-16 w-16',
-    md: 'h-24 w-24',
-    lg: 'h-32 w-32',
+  const panelClasses = {
+    sm: 'w-40 p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]',
+    md: 'w-56 p-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
+    lg: 'w-72 p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]',
   };
 
-  const cargoClasses = {
-    sm: 'h-3 w-3',
-    md: 'h-4 w-4',
-    lg: 'h-5 w-5',
+  const labelClasses = {
+    sm: 'text-[0.55rem]',
+    md: 'text-[0.68rem]',
+    lg: 'text-xs',
+  };
+
+  const barClasses = {
+    sm: 'h-2',
+    md: 'h-2.5',
+    lg: 'h-3',
   };
 
   return (
     <div
-      aria-label="Loading Earth Optimization System"
-      className={`relative ${sizeClasses[size]} ${className}`}
+      aria-label={`Loading: ${label}`}
+      className={`inline-flex ${className}`}
       role="status"
     >
-      <div className="absolute inset-0 border-4 border-foreground bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <div className="absolute inset-[18%] rounded-full border-2 border-foreground" />
-        <div className="absolute left-1/2 top-[18%] h-[64%] w-[2px] -translate-x-1/2 bg-foreground/70" />
-        <div className="absolute left-[18%] top-1/2 h-[2px] w-[64%] -translate-y-1/2 bg-foreground/70" />
-        <div className="absolute left-[28%] top-[18%] h-[64%] w-[18%] rounded-full border-l-2 border-r-2 border-foreground/70" />
-        <div className="absolute right-[28%] top-[18%] h-[64%] w-[18%] rounded-full border-l-2 border-r-2 border-foreground/70" />
-
-        <div className="earth-os-orbit absolute inset-2">
-          <div
-            className={`absolute left-1/2 top-0 -translate-x-1/2 border-2 border-foreground bg-brutal-cyan shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${cargoClasses[size]}`}
-          />
+      <div
+        className={`border-2 border-foreground bg-background font-mono text-foreground ${panelClasses[size]}`}
+      >
+        <div>
+          <span
+            className={`block text-center font-black leading-tight tracking-[0.16em] ${labelClasses[size]}`}
+          >
+            {label}
+          </span>
         </div>
 
-        <div className="absolute bottom-2 left-2 right-2 h-2 border-2 border-foreground bg-background">
-          <div className="earth-os-packet h-full w-1/3 bg-foreground" />
+        <div
+          className={`mt-2 overflow-hidden border border-foreground bg-background ${barClasses[size]}`}
+        >
+          <div className="earth-os-progress h-full bg-foreground" />
         </div>
       </div>
 
       <style jsx>{`
-        .earth-os-orbit {
-          animation: earth-os-orbit 1.8s linear infinite;
-          transform-origin: center;
+        .earth-os-progress {
+          animation: earth-os-progress 1.4s steps(7, end) infinite;
+          transform-origin: left;
         }
 
-        .earth-os-packet {
-          animation: earth-os-packet 1.2s steps(5, end) infinite;
-        }
-
-        @keyframes earth-os-orbit {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes earth-os-packet {
+        @keyframes earth-os-progress {
           0% {
-            transform: translateX(0);
+            transform: scaleX(0.18);
           }
-          50% {
-            transform: translateX(200%);
+          45% {
+            transform: scaleX(0.72);
+          }
+          75% {
+            transform: scaleX(1);
           }
           100% {
-            transform: translateX(0);
+            transform: scaleX(0.18);
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .earth-os-orbit,
-          .earth-os-packet {
+          .earth-os-progress {
             animation: none;
+          }
+
+          .earth-os-progress {
+            transform: scaleX(0.72);
           }
         }
       `}</style>
@@ -99,16 +103,7 @@ export function NeobrutalistLoader({
 }: NeobrutalistLoaderProps) {
   return (
     <div className={`flex flex-col items-center justify-center gap-6 py-12 ${className}`}>
-      <NeobrutalistLoaderMark size={size} />
-
-      {/* Loading Message */}
-      {message && (
-        <div className="relative">
-          <div className="text-xl font-black uppercase tracking-wider border-4 border-foreground bg-background px-6 py-3 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            {message}
-          </div>
-        </div>
-      )}
+      <NeobrutalistLoaderMark label={message} size={size} />
 
       {submessage && (
         <p className="max-w-xl text-center text-sm font-bold uppercase tracking-[0.18em] text-muted-foreground">

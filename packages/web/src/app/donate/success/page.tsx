@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
+import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
 
 interface SessionData {
@@ -75,8 +76,8 @@ function DonateSuccessInner() {
               </p>
               <p className="leading-7 text-neutral-700">
                 Receipt sent to {session.customer_email ?? "your email"}. Funds
-                route through the Institute for Accelerated Medicine 501(c)(3)
-                to the 1% Treaty campaign.
+                route through {NONPROFIT.legalName} (EIN {NONPROFIT.ein}), a
+                U.S. 501(c)(3) public charity, to the 1% Treaty campaign.
               </p>
               <p className="leading-7 text-neutral-700">
                 It funds hosting, identity verification, translation, fraud

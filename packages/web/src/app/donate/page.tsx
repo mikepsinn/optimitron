@@ -1,456 +1,293 @@
-"use client";
-
-import { useState, type FormEvent } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, type ReactNode } from "react";
 import {
   BED_NETS_COST_PER_DALY,
-  CHILDHOOD_VACCINATION_ROI,
-  POLITICAL_SUCCESS_PROBABILITY,
-  SMALLPOX_ERADICATION_ROI,
-  THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION,
-  TREATY_CAMPAIGN_TOTAL_COST,
-  TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
-  TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
+  CURRENT_TRIAL_SLOTS_AVAILABLE,
+  DFDA_ANNUAL_TRIAL_FUNDING,
+  DFDA_PATIENTS_FUNDABLE_ANNUALLY,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
+  DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  EFFICACY_LAG_YEARS,
+  GLOBAL_DISEASE_DEATHS_DAILY,
+  GLOBAL_REGISTERED_VOTERS,
+  GLOBAL_WARHEAD_COUNT,
+  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
+  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+  STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TRADITIONAL_PHASE3_COST_PER_PATIENT,
   TREATY_REDUCTION_PCT,
-  TREATY_VS_BED_NETS_MULTIPLIER,
   fmtRaw,
 } from "@optimitron/data/parameters";
+
+const HOURS_PER_YEAR = 24 * 365;
+const SUFFERING_YEARS_VALUE =
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS.value / HOURS_PER_YEAR;
 import { ChaplinReference } from "@/components/donate/ChaplinReference";
-import { deriveDonationImpact } from "@/components/donate/donation-impact-calc";
+import { DonationImpactCalculator } from "@/components/donate/DonationImpactCalculator";
 import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { Dialog } from "@/components/retroui/Dialog";
-import type { DonationFrequency } from "@/lib/stripe";
+import { getRouteMetadata } from "@/lib/metadata";
+import { donateLink } from "@/lib/routes";
 
-const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
-const MIKE_EMAIL = "m@warondisease.org";
-const FEDERAL_TAX_BRACKET_RATE = 0.24;
-const HOURS_PER_YEAR = 24 * 365;
+export const metadata = getRouteMetadata(donateLink);
 
-const EXPECTED_IMPACT = deriveDonationImpact({
-  votesNeeded: THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION.value,
-  costPerVote: 2,
-  successProbability: POLITICAL_SUCCESS_PROBABILITY.value,
-  treatyReductionPct: TREATY_REDUCTION_PCT.value,
-});
-
-const HEALTHY_YEARS_PER_DOLLAR =
-  EXPECTED_IMPACT.dalys / EXPECTED_IMPACT.campaignCostUsd;
-const LIVES_PER_DOLLAR =
-  EXPECTED_IMPACT.livesSaved / EXPECTED_IMPACT.campaignCostUsd;
-const SUFFERING_YEARS_PER_DOLLAR =
-  EXPECTED_IMPACT.sufferingHours / HOURS_PER_YEAR / EXPECTED_IMPACT.campaignCostUsd;
-
-type ProductKey = "healthy-years" | "lives";
-
-interface Product {
-  description: string;
-  key: ProductKey;
-  label: string;
-  noun: string;
-  presets: number[];
-  singularLabel: string;
-  shortLabel: string;
-  startQuantity: number;
-  unitPriceUsd: number;
+interface Step {
+  n: number;
+  headline: ReactNode;
+  body: ReactNode;
 }
 
-const PRODUCTS: Product[] = [
+const STEPS: Step[] = [
   {
-    key: "healthy-years",
-    label: "Healthy Life-Years",
-    shortLabel: "years",
-    singularLabel: "year",
-    noun: "healthy life-years",
-    description:
-      "A risk-adjusted year of healthy human life from the 1% Treaty model.",
-    startQuantity: 1_000,
-    presets: [100, 1_000, 10_000],
-    unitPriceUsd: 1 / HEALTHY_YEARS_PER_DOLLAR,
+    n: 1,
+    headline: (
+      <>
+        Earth approves about{" "}
+        <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} figures={2} />{" "}
+        new treatments per year.
+      </>
+    ),
+    body: "That is the throughput of every drug regulator on the planet, combined.",
   },
   {
-    key: "lives",
-    label: "Lives Saved",
-    shortLabel: "lives",
-    singularLabel: "life",
-    noun: "modeled lives saved",
-    description:
-      "The blunt unit: risk-adjusted lives saved by funding the campaign.",
-    startQuantity: 1,
-    presets: [1, 10, 100],
-    unitPriceUsd: 1 / LIVES_PER_DOLLAR,
+    n: 2,
+    headline: (
+      <>
+        Earth has about{" "}
+        <ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} figures={3} />{" "}
+        known diseases with no treatment.
+      </>
+    ),
+    body: "Mostly rare diseases. People are alive today who will die before their disease ever gets a first trial.",
+  },
+  {
+    n: 3,
+    headline: (
+      <>
+        At the current rate, the average untreated disease waits{" "}
+        <ParameterValue
+          param={STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT}
+          figures={3}
+        />{" "}
+        years for its first treatment.
+      </>
+    ),
+    body: (
+      <>
+        The full queue takes{" "}
+        <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} figures={3} />{" "}
+        years to clear (the last disease in line). People alive today will die
+        of diseases their grandchildren&apos;s grandchildren still won&apos;t
+        have a treatment for.
+      </>
+    ),
+  },
+  {
+    n: 4,
+    headline: (
+      <>
+        The bottleneck is trial slots:{" "}
+        <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} figures={2} />{" "}
+        per year worldwide.
+      </>
+    ),
+    body: (
+      <>
+        At about{" "}
+        <ParameterValue
+          param={{ ...TRADITIONAL_PHASE3_COST_PER_PATIENT, unit: "USD" }}
+          figures={2}
+        />{" "}
+        per patient. Most of that cost is on-site monitoring, not science.
+      </>
+    ),
+  },
+  {
+    n: 5,
+    headline: (
+      <>
+        Pragmatic decentralized trials cost{" "}
+        <ParameterValue
+          param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }}
+          figures={3}
+        />{" "}
+        per patient — about 44× cheaper.
+      </>
+    ),
+    body: "Same statistical power, real-world data, no on-site visits. The technology exists. The regulators do not run it.",
+  },
+  {
+    n: 6,
+    headline: (
+      <>
+        <ParameterValue
+          param={{ ...DFDA_ANNUAL_TRIAL_FUNDING, unit: "USD" }}
+          figures={3}
+        />
+        /year funds{" "}
+        <ParameterValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} figures={3} />{" "}
+        trial patients —{" "}
+        <ParameterValue
+          param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+          display="withUnit"
+          figures={3}
+        />{" "}
+        current global capacity.
+      </>
+    ),
+    body: "12× the trials, 12× the disease coverage per year, on the same pool of compounds.",
+  },
+  {
+    n: 7,
+    headline: (
+      <>
+        The 443-year queue compresses to{" "}
+        <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} figures={3} /> years.
+      </>
+    ),
+    body: (
+      <>
+        Average disease gets its first treatment{" "}
+        <ParameterValue
+          param={DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS}
+          figures={3}
+        />{" "}
+        years sooner. Add{" "}
+        <ParameterValue param={EFFICACY_LAG_YEARS} figures={2} /> years of removed
+        FDA efficacy lag →{" "}
+        <ParameterValue
+          param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS}
+          figures={3}
+        />{" "}
+        years sooner.
+      </>
+    ),
+  },
+  {
+    n: 8,
+    headline: (
+      <>
+        <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} figures={3} /> people
+        die from disease every day.
+      </>
+    ),
+    body: (
+      <>
+        Across the full acceleration window, that is{" "}
+        <ParameterValue
+          param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
+          figures={3}
+        />{" "}
+        deaths prevented and{" "}
+        <ParameterValue
+          param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
+          figures={3}
+          valueOverride={fmtRaw(SUFFERING_YEARS_VALUE, 3)}
+        />{" "}
+        years of suffering and disability prevented.
+      </>
+    ),
+  },
+  {
+    n: 9,
+    headline: (
+      <>
+        Funding source:{" "}
+        <ParameterValue
+          param={TREATY_REDUCTION_PCT}
+          display="withUnit"
+          figures={2}
+        />{" "}
+        of global military spending.
+      </>
+    ),
+    body: (
+      <>
+        Earth owns{" "}
+        <ParameterValue param={GLOBAL_WARHEAD_COUNT} figures={3} /> nuclear
+        warheads.{" "}
+        <ParameterValue param={NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={2} />{" "}
+        is enough for nuclear winter. We have{" "}
+        <ParameterValue param={NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} />{" "}
+        apocalypses&apos; worth of weapons. Keep 121. Spend the other one
+        curing every disease.
+      </>
+    ),
+  },
+  {
+    n: 10,
+    headline: (
+      <>
+        To pass the treaty: a majority of humans vote yes —{" "}
+        <ParameterValue param={GLOBAL_REGISTERED_VOTERS} figures={3} /> people.
+      </>
+    ),
+    body: "At $2 per voter that is an $8 billion campaign — less than the U.S. spends on military bands.",
+  },
+  {
+    n: 11,
+    headline: <>$8B campaign ÷ 10.7B lives = 75¢ per life.</>,
+    body: (
+      <>
+        $0.014 per healthy life-year. Bed nets — currently the most
+        cost-effective charity on Earth — are{" "}
+        <ParameterValue param={BED_NETS_COST_PER_DALY} display="withUnit" figures={2} />.
+        This is 6,300× better. If it works.
+      </>
+    ),
   },
 ];
 
-const productByKey = Object.fromEntries(
-  PRODUCTS.map((product) => [product.key, product]),
-) as Record<ProductKey, Product>;
-
 export default function DonatePage() {
-  const searchParams = useSearchParams();
-  const canceled = searchParams?.get("canceled") === "true";
-
-  const [productKey, setProductKey] = useState<ProductKey>("healthy-years");
-  const [quantity, setQuantity] = useState<string>(
-    String(productByKey["healthy-years"].startQuantity),
-  );
-  const [frequency, setFrequency] = useState<DonationFrequency>("monthly");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [majorGiftDialogOpen, setMajorGiftDialogOpen] = useState(false);
-
-  const product = productByKey[productKey];
-  const quantityNumber = Number(quantity.replace(/,/g, ""));
-  const validQuantity = Number.isFinite(quantityNumber) && quantityNumber > 0;
-  const rawPrice = validQuantity ? quantityNumber * product.unitPriceUsd : 0;
-  const checkoutAmount = Math.max(1, Math.ceil(rawPrice));
-  const exceedsCardLimit = checkoutAmount > STRIPE_MAX_CUSTOM_AMOUNT_USD;
-  const purchasedHealthyYears = checkoutAmount * HEALTHY_YEARS_PER_DOLLAR;
-  const purchasedLives = checkoutAmount * LIVES_PER_DOLLAR;
-  const sufferingYearsPrevented = checkoutAmount * SUFFERING_YEARS_PER_DOLLAR;
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-
-    if (!validQuantity) {
-      setError("Enter a quantity above zero.");
-      return;
-    }
-
-    if (exceedsCardLimit) {
-      setMajorGiftDialogOpen(true);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const sourceUrl =
-        typeof window !== "undefined" ? window.location.href : "";
-      const sourceReferrer =
-        typeof document !== "undefined" ? document.referrer : "";
-
-      const response = await fetch("/api/stripe/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: checkoutAmount,
-          donationType: frequency,
-          sourceUrl,
-          sourceReferrer,
-        }),
-      });
-
-      const data = (await response.json()) as { url?: string; error?: string };
-      if (!response.ok || !data.url) {
-        setError(data.error ?? "Failed to start checkout. Try again.");
-        setLoading(false);
-        return;
-      }
-
-      window.location.href = data.url;
-    } catch (err) {
-      console.error(err);
-      setError("Could not reach the donation server.");
-      setLoading(false);
-    }
-  }
-
-  function selectProduct(nextProduct: Product) {
-    setProductKey(nextProduct.key);
-    setQuantity(String(nextProduct.startQuantity));
-  }
-
   return (
     <div className="min-h-screen bg-white text-black">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-        <header className="border-b border-black pb-7">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
-            Buy human life.
-          </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-700 sm:text-xl">
-            Choose expected impact. Pick one-time or monthly. No account
-            required before checkout.
-          </p>
-          <p className="mt-4 text-sm leading-6 text-neutral-600">
-            Donations are processed for the Institute for Accelerated Medicine,
-            a U.S. 501(c)(3). Tax-deductible in the United States.
-          </p>
-        </header>
+        <h1 className="sr-only">Buy human life</h1>
 
-        {canceled ? (
-          <div className="mt-6 border border-black p-4 text-sm">
-            Checkout canceled. Nothing was charged.
-          </div>
-        ) : null}
-
-        <form
-          onSubmit={handleSubmit}
-          className="mt-8 grid gap-6 border border-black p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_340px]"
+        <Suspense
+          fallback={
+            <div className="border border-black p-6 text-sm">
+              Loading calculator…
+            </div>
+          }
         >
-          <section className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold">Choose product</h2>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {PRODUCTS.map((option) => (
-                  <button
-                    key={option.key}
-                    type="button"
-                    onClick={() => selectProduct(option)}
-                    className={[
-                      "min-h-36 border p-4 text-left transition",
-                      productKey === option.key
-                        ? "border-black bg-black text-white"
-                        : "border-black bg-white text-black hover:bg-neutral-100",
-                    ].join(" ")}
-                  >
-                    <span className="block text-xl font-semibold">
-                      {option.label}
-                    </span>
-                    <span
-                      className={[
-                        "mt-3 block text-sm leading-6",
-                        productKey === option.key
-                          ? "text-neutral-200"
-                          : "text-neutral-700",
-                      ].join(" ")}
-                    >
-                      {option.description}
-                    </span>
-                    <span className="mt-4 block text-sm font-semibold">
-                      About ${formatMoney(option.unitPriceUsd)} per{" "}
-                      {option.singularLabel}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+          <DonationImpactCalculator />
+        </Suspense>
 
-            <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_220px] sm:items-end">
-              <label className="block text-sm font-semibold">
-                Quantity
-                <input
-                  className="mt-2 w-full border border-black px-3 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-black"
-                  inputMode="numeric"
-                  min={1}
-                  type="number"
-                  value={quantity}
-                  onChange={(event) => setQuantity(event.target.value)}
-                />
-              </label>
-              <div className="text-sm leading-6 text-neutral-700">
-                {validQuantity ? (
-                  <>
-                    You are buying{" "}
-                    <strong className="text-black">
-                      {formatQuantity(quantityNumber)} {product.noun}
-                    </strong>
-                    .
-                  </>
-                ) : (
-                  "Enter a positive quantity."
-                )}
-              </div>
-            </div>
+        <section id="how-this-is-calculated" className="mt-16 scroll-mt-8">
+          <h2 className="border-b border-black pb-3 text-2xl font-semibold">
+            How this is calculated
+          </h2>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-neutral-700">
+            Click any number for the source equation, citation, and confidence
+            interval.
+          </p>
 
-            <div>
-              <p className="mb-3 text-sm font-semibold">Presets</p>
-              <div className="grid grid-cols-3 gap-2">
-                {product.presets.map((preset) => (
-                  <button
-                    key={preset}
-                    type="button"
-                    className="border border-black px-3 py-2 text-sm font-semibold hover:bg-black hover:text-white"
-                    onClick={() => setQuantity(String(preset))}
-                  >
-                    {formatQuantity(preset)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="mb-3 text-sm font-semibold">Purchase type</p>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  className={toggleButtonClass(frequency === "monthly")}
-                  onClick={() => setFrequency("monthly")}
-                >
-                  Monthly
-                </button>
-                <button
-                  type="button"
-                  className={toggleButtonClass(frequency === "one-time")}
-                  onClick={() => setFrequency("one-time")}
-                >
-                  One-time
-                </button>
-              </div>
-            </div>
-
-            {error ? (
-              <div className="border border-black p-3 text-sm">{error}</div>
-            ) : null}
-          </section>
-
-          <aside className="border border-black bg-black p-5 text-white">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em]">
-              Your order
-            </p>
-            <div className="mt-5 space-y-5">
-              <div>
-                <p className="text-sm text-neutral-300">Product</p>
-                <p className="text-2xl font-semibold">{product.label}</p>
-              </div>
-              <div>
-                <p className="text-sm text-neutral-300">Quantity</p>
-                <p className="text-xl font-semibold">
-                  {validQuantity ? formatQuantity(quantityNumber) : "0"}{" "}
-                  {product.shortLabel}
+          <ol className="mt-6 space-y-6">
+            {STEPS.map((step) => (
+              <li key={step.n} className="border border-black p-5 sm:p-6">
+                <div className="flex items-baseline gap-4">
+                  <span className="text-3xl font-semibold tabular-nums sm:text-4xl">
+                    {step.n}
+                  </span>
+                  <h3 className="text-xl font-semibold leading-snug sm:text-2xl">
+                    {step.headline}
+                  </h3>
+                </div>
+                <p className="mt-3 max-w-3xl text-base leading-7 text-neutral-700 sm:ml-12">
+                  {step.body}
                 </p>
-              </div>
-              <div className="border-t border-white/30 pt-5">
-                <p className="text-sm text-neutral-300">Total</p>
-                <p className="text-5xl font-semibold tracking-tight">
-                  ${checkoutAmount.toLocaleString()}
-                  {frequency === "monthly" ? "/mo" : ""}
-                </p>
-                <p className="mt-2 text-xs leading-5 text-neutral-300">
-                  Estimated out-of-pocket after federal deduction: $
-                  {Math.round(
-                    checkoutAmount * (1 - FEDERAL_TAX_BRACKET_RATE),
-                  ).toLocaleString()}{" "}
-                  if you itemize in a{" "}
-                  {Math.round(FEDERAL_TAX_BRACKET_RATE * 100)}% bracket.
-                </p>
-              </div>
-
-              <div className="space-y-2 border-t border-white/30 pt-5 text-sm">
-                <ImpactLine
-                  label="Expected healthy life-years"
-                  value={formatQuantity(purchasedHealthyYears)}
-                />
-                <ImpactLine
-                  label="Expected lives saved"
-                  value={formatQuantity(purchasedLives, 1)}
-                />
-                <ImpactLine
-                  label="Suffering-years prevented"
-                  value={formatQuantity(sufferingYearsPrevented)}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !validQuantity}
-                className="w-full border border-white bg-white px-5 py-3 text-base font-semibold text-black transition hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loading
-                  ? "Opening Stripe..."
-                  : exceedsCardLimit
-                    ? "Email transfer instructions"
-                    : `Checkout - $${checkoutAmount.toLocaleString()}${
-                        frequency === "monthly" ? "/mo" : ""
-                      }`}
-              </button>
-              <p className="text-xs leading-5 text-neutral-400">
-                Stripe collects email and payment details on the next screen.
-              </p>
-            </div>
-          </aside>
-        </form>
-
-        <details className="mt-8 border-t border-black pt-6">
-          <summary className="cursor-pointer text-2xl font-semibold">
-            How the estimate works
-          </summary>
-          <div className="mt-4 grid gap-5 text-sm leading-7 text-neutral-700 lg:grid-cols-2">
-            <div className="space-y-4">
-              <p>
-                The estimate uses the skeptical model:{" "}
-                <ParameterValue
-                  param={THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION}
-                  figures={2}
-                />{" "}
-                votes, $2 per vote,{" "}
-                <ParameterValue param={POLITICAL_SUCCESS_PROBABILITY} figures={2} />{" "}
-                treaty success probability, and a{" "}
-                <ParameterValue param={TREATY_REDUCTION_PCT} figures={1} />{" "}
-                military-spending redirect.
-              </p>
-              <p>
-                That produces about{" "}
-                <strong className="text-black">
-                  ${fmtRaw(EXPECTED_IMPACT.costPerDaly, 3)}
-                </strong>{" "}
-                per expected healthy life-year and{" "}
-                <strong className="text-black">
-                  ${fmtRaw(EXPECTED_IMPACT.costPerLife, 3)}
-                </strong>{" "}
-                per expected life saved.
-              </p>
-              <p>
-                The published reference estimate is{" "}
-                <strong className="text-black">
-                  <ParameterValue
-                    param={{
-                      ...TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
-                      unit: "USD",
-                    }}
-                    figures={3}
-                  />
-                </strong>{" "}
-                per healthy life-year. Anti-malaria bed nets are commonly
-                benchmarked at{" "}
-                <strong className="text-black">
-                  <ParameterValue
-                    param={{ ...BED_NETS_COST_PER_DALY, unit: "USD" }}
-                    figures={2}
-                  />
-                </strong>
-                .
-              </p>
-            </div>
-            <div className="space-y-4">
-              <p>
-                In the published assumptions, the treaty campaign is{" "}
-                <strong className="text-black">
-                  <ParameterValue
-                    param={TREATY_VS_BED_NETS_MULTIPLIER}
-                    display="withUnit"
-                    figures={3}
-                  />{" "}
-                  cheaper
-                </strong>{" "}
-                per healthy life-year than bed nets. Even at the skeptical
-                success probability, expected impact is{" "}
-                <strong className="text-black">
-                  <ParameterValue
-                    param={TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER}
-                    display="withUnit"
-                    figures={3}
-                  />{" "}
-                  better
-                </strong>{" "}
-                than bed nets.
-              </p>
-              <p>
-                Historical public-health wins such as smallpox eradication (
-                <ParameterValue param={SMALLPOX_ERADICATION_ROI} figures={3} />{" "}
-                to 1) and childhood vaccination (
-                <ParameterValue param={CHILDHOOD_VACCINATION_ROI} figures={2} />{" "}
-                to 1) are included for comparison.
-              </p>
-              <p>
-                Campaign cost baseline:{" "}
-                <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} figures={1} />
-                . It converts your donation into the model's expected share of
-                a political campaign.
-              </p>
-            </div>
-          </div>
-        </details>
+              </li>
+            ))}
+          </ol>
+        </section>
 
         <div className="mt-10">
           <WaysToGiveCard />
@@ -460,56 +297,6 @@ export default function DonatePage() {
           <ChaplinReference />
         </div>
       </div>
-
-      <Dialog open={majorGiftDialogOpen} onOpenChange={setMajorGiftDialogOpen}>
-        <Dialog.Content title="Large gift">
-          <div className="space-y-4 p-5 text-sm leading-6">
-            <p>
-              Card checkout is capped at $
-              {STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}. This order wants{" "}
-              ${checkoutAmount.toLocaleString()}. Use wire, stock, crypto, or
-              DAF transfer instructions.
-            </p>
-            <a
-              href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
-                `Large donation inquiry: $${checkoutAmount.toLocaleString()}`,
-              )}`}
-              className="inline-block border border-black bg-black px-4 py-2 font-semibold text-white"
-            >
-              Email transfer instructions
-            </a>
-          </div>
-        </Dialog.Content>
-      </Dialog>
     </div>
   );
-}
-
-function ImpactLine({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-baseline justify-between gap-3">
-      <span className="text-neutral-300">{label}</span>
-      <span className="font-semibold tabular-nums">{value}</span>
-    </div>
-  );
-}
-
-function toggleButtonClass(active: boolean) {
-  return [
-    "border border-black px-4 py-2 text-sm font-semibold transition",
-    active ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100",
-  ].join(" ");
-}
-
-function formatMoney(value: number) {
-  if (!Number.isFinite(value)) return "many";
-  if (value < 1) return value.toFixed(2);
-  return Math.ceil(value).toLocaleString();
-}
-
-function formatQuantity(value: number, maximumFractionDigits = 0) {
-  if (!Number.isFinite(value)) return "0";
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits,
-  }).format(value);
 }
