@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import type { DonationFrequency } from "@/lib/stripe";
 import { createLogger } from "@/lib/logger";
+import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { getBaseUrl } from "@/lib/url";
 
 const log = createLogger("stripe-checkout");
@@ -87,8 +88,7 @@ export async function POST(req: Request) {
                 donationType === "monthly"
                   ? "1% Treaty Monthly Donation"
                   : "1% Treaty Donation",
-              description:
-                "Funds the 1% Treaty campaign: hosting, identity verification, fraud prevention, translation, outreach, and public evidence pages. Tax-deductible via the Institute for Accelerated Medicine, a U.S. 501(c)(3).",
+              description: `Funds the 1% Treaty campaign: hosting, identity verification, fraud prevention, translation, outreach, and public evidence pages. Tax-deductible via ${NONPROFIT.legalName} (EIN ${NONPROFIT.ein}), a U.S. 501(c)(3) public charity.`,
             },
             ...(donationType === "monthly" ? { recurring: { interval: "month" as const } } : {}),
           },

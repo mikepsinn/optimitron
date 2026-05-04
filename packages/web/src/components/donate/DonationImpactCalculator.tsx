@@ -1,34 +1,28 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import {
-  BED_NETS_COST_PER_DALY,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
-  GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   GLOBAL_REGISTERED_VOTERS,
   POLITICAL_SUCCESS_PROBABILITY,
   THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION,
-  TREATY_CAMPAIGN_TOTAL_COST,
   TREATY_REDUCTION_PCT,
-  fmtRaw,
 } from "@optimitron/data/parameters";
-import { Button } from "@/components/retroui/Button";
-import { Input } from "@/components/retroui/Input";
-import { Slider } from "@/components/retroui/Slider";
-import { ParameterValue } from "@/components/shared/ParameterValue";
+import { Dialog } from "@/components/retroui/Dialog";
+import { NONPROFIT } from "@/lib/nonprofit-identity";
+import type { DonationFrequency } from "@/lib/stripe";
 import { deriveDonationImpact } from "./donation-impact-calc";
 
-// ── Slider ranges, sourced from parameter properties where possible ─────────
+const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
+const HOURS_PER_YEAR = 24 * 365;
+const FEDERAL_TAX_BRACKET_RATE = 0.24;
+
 const VOTES_MIN = Math.round(
-  THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION.confidenceInterval?.[0] ??
-    THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION.value * 0.3,
+  THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION.value,
 );
 const VOTES_MAX = Math.round(GLOBAL_REGISTERED_VOTERS.value);
-const VOTES_DEFAULT = Math.round(THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION.value);
-const VOTES_STEP = 1_000_000;
+const VOTES_DEFAULT = Math.round(GLOBAL_REGISTERED_VOTERS.value);
+const VOTES_STEP = 10_000_000;
 
 const COST_PER_VOTE_MIN = 0.5;
 const COST_PER_VOTE_MAX = 10;
@@ -45,48 +39,32 @@ const REDUCTION_MAX = 0.05;
 const REDUCTION_DEFAULT = TREATY_REDUCTION_PCT.value;
 const REDUCTION_STEP = 0.001;
 
-type StoreUnit = "lives" | "dalys" | "sufferingHours" | "economicValue";
+type Field = "usd" | "lives" | "sufferingYears";
 
-const STORE_UNITS: Array<{
-  key: StoreUnit;
-  label: string;
-  shortLabel: string;
-  defaultQuantity: number;
-}> = [
-  { key: "lives", label: "Lives saved", shortLabel: "lives", defaultQuantity: 100 },
-  { key: "dalys", label: "Healthy life-years", shortLabel: "DALYs", defaultQuantity: 1_000 },
-  {
-    key: "sufferingHours",
-    label: "Hours of suffering prevented",
-    shortLabel: "hours",
-    defaultQuantity: 100_000,
-  },
-  {
-    key: "economicValue",
-    label: "Dollars of GDP added",
-    shortLabel: "USD",
-    defaultQuantity: 1_000_000,
-  },
-];
-
-interface Props {
-  onSetAmount: (amount: number) => void;
+interface Draft {
+  field: Field;
+  value: string;
 }
 
-export function DonationImpactCalculator({ onSetAmount }: Props) {
+const FIELD_LABELS: Record<Field, string> = {
+  usd: "Your donation (USD)",
+  lives: "Lives saved",
+  sufferingYears: "Years of suffering and disability prevented",
+};
+
+export function DonationImpactCalculator() {
+  const searchParams = useSearchParams();
+  const canceled = searchParams?.get("canceled") === "true";
+
   const [votesNeeded, setVotesNeeded] = useState(VOTES_DEFAULT);
   const [costPerVote, setCostPerVote] = useState(COST_PER_VOTE_DEFAULT);
   const [successProbability, setSuccessProbability] = useState(SUCCESS_DEFAULT);
   const [treatyReductionPct, setTreatyReductionPct] = useState(REDUCTION_DEFAULT);
-  const [storeUnit, setStoreUnit] = useState<StoreUnit>("dalys");
-  const [storeQuantity, setStoreQuantity] = useState<string>("1000");
-
-  const reset = () => {
-    setVotesNeeded(VOTES_DEFAULT);
-    setCostPerVote(COST_PER_VOTE_DEFAULT);
-    setSuccessProbability(SUCCESS_DEFAULT);
-    setTreatyReductionPct(REDUCTION_DEFAULT);
-  };
+  const [draft, setDraft] = useState<Draft>({ field: "usd", value: "100" });
+  const [frequency, setFrequency] = useState<DonationFrequency>("monthly");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [largeGiftOpen, setLargeGiftOpen] = useState(false);
 
   const derived = useMemo(
     () =>
@@ -99,266 +77,275 @@ export function DonationImpactCalculator({ onSetAmount }: Props) {
     [votesNeeded, costPerVote, successProbability, treatyReductionPct],
   );
 
-  const storePerDollar: Record<StoreUnit, number> = {
-    lives: derived.livesSaved / derived.campaignCostUsd,
-    dalys: derived.dalys / derived.campaignCostUsd,
-    sufferingHours: derived.sufferingHours / derived.campaignCostUsd,
-    economicValue: derived.economicValue / derived.campaignCostUsd,
-  };
+  const livesPerDollar = derived.livesSaved / derived.campaignCostUsd;
+  const sufferingYearsPerDollar =
+    derived.sufferingHours / HOURS_PER_YEAR / derived.campaignCostUsd;
 
-  const quantityNum = Number(storeQuantity);
-  const isValidQuantity = Number.isFinite(quantityNum) && quantityNum > 0;
-  const storePrice =
-    isValidQuantity && storePerDollar[storeUnit] > 0
-      ? quantityNum / storePerDollar[storeUnit]
-      : 0;
-  const storePriceRounded = Math.max(1, Math.round(storePrice));
+  const draftRaw = parseNumber(draft.value);
+  const usdFromDraft = (() => {
+    if (!Number.isFinite(draftRaw) || draftRaw <= 0) return 0;
+    if (draft.field === "usd") return draftRaw;
+    if (draft.field === "lives") return draftRaw / livesPerDollar;
+    return draftRaw / sufferingYearsPerDollar;
+  })();
 
-  const successPctText = `${(successProbability * 100).toFixed(successProbability < 0.1 ? 1 : 0)}%`;
-  const reductionPctText = `${(treatyReductionPct * 100).toFixed(2)}%`;
+  function valueFor(field: Field): number {
+    if (field === "usd") return usdFromDraft;
+    if (field === "lives") return usdFromDraft * livesPerDollar;
+    return usdFromDraft * sufferingYearsPerDollar;
+  }
+
+  function displayFor(field: Field): string {
+    if (field === draft.field) return draft.value;
+    const value = valueFor(field);
+    if (!Number.isFinite(value) || value <= 0) return "";
+    if (field === "usd") return formatNumber(value, 2);
+    return formatQuantity(value);
+  }
+
+  function handleFieldChange(field: Field, value: string) {
+    setDraft({ field, value });
+  }
+
+  const checkoutAmount = Math.max(1, Math.ceil(usdFromDraft));
+  const exceedsCardLimit = checkoutAmount > STRIPE_MAX_CUSTOM_AMOUNT_USD;
+  const hasValidAmount = usdFromDraft > 0;
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+
+    if (!hasValidAmount) {
+      setError("Enter an amount above zero in any box.");
+      return;
+    }
+
+    if (exceedsCardLimit) {
+      setLargeGiftOpen(true);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const sourceUrl =
+        typeof window !== "undefined" ? window.location.href : "";
+      const sourceReferrer =
+        typeof document !== "undefined" ? document.referrer : "";
+
+      const response = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: checkoutAmount,
+          donationType: frequency,
+          sourceUrl,
+          sourceReferrer,
+        }),
+      });
+
+      const data = (await response.json()) as { url?: string; error?: string };
+      if (!response.ok || !data.url) {
+        setError(data.error ?? "Failed to start checkout. Try again.");
+        setLoading(false);
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      setError("Could not reach the donation server.");
+      setLoading(false);
+    }
+  }
+
+  function reset() {
+    setVotesNeeded(VOTES_DEFAULT);
+    setCostPerVote(COST_PER_VOTE_DEFAULT);
+    setSuccessProbability(SUCCESS_DEFAULT);
+    setTreatyReductionPct(REDUCTION_DEFAULT);
+  }
 
   return (
-    <section className="border border-black p-5 sm:p-6">
-      <div className="space-y-7">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-semibold">Healthy life-year calculator</h2>
+    <form onSubmit={handleSubmit} className="border border-black">
+      {canceled ? (
+        <div className="border-b border-black p-4 text-sm">
+          Checkout canceled. Nothing was charged.
+        </div>
+      ) : null}
+
+      <div className="grid gap-0 lg:grid-cols-2">
+        <div className="space-y-6 border-b border-black p-5 sm:p-6 lg:border-b-0 lg:border-r">
+          <h2 className="text-2xl font-semibold">Pick your donation</h2>
           <p className="text-sm leading-6 text-neutral-700">
-            Choose what you want to buy, adjust the assumptions, and add the
-            modeled price to checkout.
+            Type in any box. The other three update.{" "}
+            <a
+              href="#how-this-is-calculated"
+              className="font-semibold underline underline-offset-2"
+            >
+              See how this is calculated ↓
+            </a>
           </p>
-        </div>
 
-        <div className="space-y-5 border-t border-black pt-6">
-          <SliderRow
-            label="Votes needed for the treaty"
-            valueText={fmtRaw(votesNeeded, 3)}
-            footnote={
-              <>
-                Default <ParameterValue param={THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION} figures={2} />{" "}
-                (Chenoweth&apos;s{" "}
-                <ParameterValue param={GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT} figures={2} />{" "}
-                rule). Crank to{" "}
-                <ParameterValue param={GLOBAL_REGISTERED_VOTERS} figures={2} /> if you want a
-                full majority of humans on Earth.
-              </>
-            }
-            value={votesNeeded}
-            min={VOTES_MIN}
-            max={VOTES_MAX}
-            step={VOTES_STEP}
-            onChange={setVotesNeeded}
-          />
-
-          <SliderRow
-            label="Cost per vote (paid acquisition)"
-            valueText={`$${costPerVote.toFixed(2)}`}
-            footnote="Meta and Google petition CPC. Cheaper if your message goes viral; more if you target U.S. swing states."
-            value={costPerVote}
-            min={COST_PER_VOTE_MIN}
-            max={COST_PER_VOTE_MAX}
-            step={COST_PER_VOTE_STEP}
-            onChange={setCostPerVote}
-          />
-
-          <SliderRow
-            label="Probability the treaty actually passes"
-            valueText={successPctText}
-            footnote={
-              <>
-                The skeptical published assumption is{" "}
-                <ParameterValue param={POLITICAL_SUCCESS_PROBABILITY} figures={2} />.
-                Use 100% for the conditional-success view.
-              </>
-            }
-            value={successProbability}
-            min={SUCCESS_MIN}
-            max={SUCCESS_MAX}
-            step={SUCCESS_STEP}
-            onChange={setSuccessProbability}
-          />
-
-          <SliderRow
-            label="Share of military spending redirected"
-            valueText={reductionPctText}
-            footnote={
-              <>
-                Default <ParameterValue param={TREATY_REDUCTION_PCT} figures={1} /> — the
-                treaty as written. Linear scaling above 1% is approximate; diminishing returns
-                kick in eventually.
-              </>
-            }
-            value={treatyReductionPct}
-            min={REDUCTION_MIN}
-            max={REDUCTION_MAX}
-            step={REDUCTION_STEP}
-            onChange={setTreatyReductionPct}
-          />
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={reset}
-            className="w-full border border-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
-          >
-            Reset calculator
-          </Button>
-        </div>
-
-        <div className="space-y-3 border border-black p-4">
-          <p className="text-sm font-semibold">Modeled output</p>
-          <OutputRow
-            label="Campaign cost"
-            valueNode={
-              <ParameterValue
-                param={{ ...TREATY_CAMPAIGN_TOTAL_COST, value: derived.campaignCostUsd }}
-                figures={3}
-              />
-            }
-            note={
-              <>
-                vs published <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} figures={1} />{" "}
-                IAB campaign budget
-              </>
-            }
-          />
-          <OutputRow
-            label="Lives saved (expected)"
-            valueNode={
-              <ParameterValue
-                param={{
-                  ...DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-                  value: derived.livesSaved,
-                }}
-                figures={3}
-              />
-            }
-          />
-          <OutputRow
-            label="Healthy life-years saved (DALYs)"
-            valueNode={
-              <ParameterValue
-                param={{
-                  ...DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
-                  value: derived.dalys,
-                }}
-                figures={3}
-              />
-            }
-          />
-          <OutputRow
-            label="Hours of suffering prevented"
-            valueNode={
-              <ParameterValue
-                param={{
-                  ...DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
-                  value: derived.sufferingHours,
-                }}
-                figures={3}
-              />
-            }
-          />
-          <OutputRow
-            label="Modeled economic value"
-            valueNode={
-              <ParameterValue
-                param={{
-                  ...DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
-                  value: derived.economicValue,
-                }}
-                figures={3}
-              />
-            }
-          />
-          <div className="space-y-2 border-t border-black pt-3">
-            <OutputRow
-              label="Cost per life saved"
-              valueNode={`$${fmtRaw(derived.costPerLife, 3)}`}
-            />
-            <OutputRow
-              label="Cost per healthy life-year"
-              valueNode={`$${fmtRaw(derived.costPerDaly, 3)}`}
-              note={
-                <>
-                  Bed nets:{" "}
-                  <ParameterValue
-                    param={{ ...BED_NETS_COST_PER_DALY, unit: "USD" }}
-                    figures={2}
-                  />
-                  /DALY (the standard you&apos;re beating by{" "}
-                  <strong>{fmtRaw(derived.vsBedNetsMultiplier, 3)}x</strong>)
-                </>
-              }
-            />
-            <OutputRow
-              label="Return on every dollar"
-              valueNode={`${fmtRaw(derived.roi, 3)}x`}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-4 border border-black bg-black p-4 text-white">
-          <div className="space-y-1">
-            <p className="text-base font-semibold">Build your donation</p>
-            <p className="text-sm leading-6 text-neutral-300">
-              Pick a unit, type a quantity, and use the model price as your
-              checkout amount.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {STORE_UNITS.map((unit) => (
-              <button
-                key={unit.key}
-                type="button"
-                onClick={() => {
-                  setStoreUnit(unit.key);
-                  setStoreQuantity(String(unit.defaultQuantity));
-                }}
-                className={`border border-white px-3 py-2 text-xs font-semibold ${
-                  storeUnit === unit.key
-                    ? "bg-white text-black"
-                    : "bg-black text-white hover:bg-neutral-900"
-                }`}
-              >
-                {unit.label}
-              </button>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {(Object.keys(FIELD_LABELS) as Field[]).map((field) => (
+              <label key={field} className="block">
+                <span className="text-xs font-semibold uppercase tracking-wide text-neutral-700">
+                  {FIELD_LABELS[field]}
+                </span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className="mt-1 w-full border border-black px-3 py-3 text-2xl font-semibold tabular-nums outline-none focus:ring-2 focus:ring-black"
+                  value={displayFor(field)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleFieldChange(field, e.target.value)
+                  }
+                />
+              </label>
             ))}
           </div>
 
-          <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
-            <div className="space-y-1">
-              <label className="text-xs font-black uppercase">
-                How many{" "}
-                {STORE_UNITS.find((unit) => unit.key === storeUnit)?.shortLabel}?
-              </label>
-              <Input
-                type="number"
-                min={1}
-                step={1}
-                value={storeQuantity}
-                onChange={(event) => setStoreQuantity(event.target.value)}
-                className="border border-white bg-white text-black shadow-none"
-              />
-            </div>
-            <div className="text-right">
-              <p className="text-xs font-black uppercase opacity-70">Price</p>
-              <p className="text-2xl font-black leading-none">
-                ${storePriceRounded.toLocaleString()}
-              </p>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-700">
+              Frequency
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setFrequency("monthly")}
+                className={toggleClass(frequency === "monthly")}
+              >
+                Monthly
+              </button>
+              <button
+                type="button"
+                onClick={() => setFrequency("one-time")}
+                className={toggleClass(frequency === "one-time")}
+              >
+                One-time
+              </button>
             </div>
           </div>
 
-          <Button
-            type="button"
-            disabled={!isValidQuantity || storePriceRounded < 1}
-            onClick={() => onSetAmount(storePriceRounded)}
-            className="w-full border border-white bg-white text-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
+          {error ? (
+            <div className="border border-black p-3 text-sm">{error}</div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={loading || !hasValidAmount}
+            className="w-full border border-black bg-black px-5 py-4 text-base font-semibold text-white transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Add ${storePriceRounded.toLocaleString()} to checkout
-          </Button>
+            {loading
+              ? "Opening Stripe..."
+              : exceedsCardLimit
+                ? "Email transfer instructions"
+                : `Donate $${checkoutAmount.toLocaleString()}${frequency === "monthly" ? "/mo" : ""}`}
+          </button>
+
+          <p className="text-xs leading-5 text-neutral-600">
+            Estimated out-of-pocket after federal deduction: $
+            {Math.round(
+              checkoutAmount * (1 - FEDERAL_TAX_BRACKET_RATE),
+            ).toLocaleString()}{" "}
+            if you itemize in a {Math.round(FEDERAL_TAX_BRACKET_RATE * 100)}%
+            bracket. Processed for {NONPROFIT.legalName} (EIN{" "}
+            {NONPROFIT.ein}), a U.S. 501(c)(3) public charity.
+          </p>
+        </div>
+
+        <div className="space-y-6 p-5 sm:p-6">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-2xl font-semibold">Adjust the model</h2>
+            <button
+              type="button"
+              onClick={reset}
+              className="text-xs font-semibold uppercase tracking-wide underline"
+            >
+              Reset
+            </button>
+          </div>
+          <p className="text-sm leading-6 text-neutral-700">
+            Don&apos;t trust an assumption? Drag it. Every box on the left
+            recomputes.
+          </p>
+
+          <SliderRow
+            label="Votes needed for the treaty to pass"
+            valueText={formatNumber(votesNeeded)}
+            footnote={`Default: ${formatNumber(GLOBAL_REGISTERED_VOTERS.value)} — every registered voter on Earth.`}
+            min={VOTES_MIN}
+            max={VOTES_MAX}
+            step={VOTES_STEP}
+            value={votesNeeded}
+            onChange={setVotesNeeded}
+          />
+          <SliderRow
+            label="Cost to reach one voter"
+            valueText={`$${costPerVote.toFixed(2)}`}
+            footnote="Meta and Google petition CPC. Cheaper if it goes viral."
+            min={COST_PER_VOTE_MIN}
+            max={COST_PER_VOTE_MAX}
+            step={COST_PER_VOTE_STEP}
+            value={costPerVote}
+            onChange={setCostPerVote}
+          />
+          <SliderRow
+            label="Probability the treaty actually passes if a majority votes yes"
+            valueText={`${(successProbability * 100).toFixed(successProbability < 0.1 ? 1 : 0)}%`}
+            footnote="Default 100%. If a majority of humans vote yes and governments still refuse, the failure mode is a separate (much bigger) campaign."
+            min={SUCCESS_MIN}
+            max={SUCCESS_MAX}
+            step={SUCCESS_STEP}
+            value={successProbability}
+            onChange={setSuccessProbability}
+          />
+          <SliderRow
+            label="Share of military spending the treaty redirects"
+            valueText={`${(treatyReductionPct * 100).toFixed(2)}%`}
+            footnote="Default 1% — the treaty as written. Linear above 1%."
+            min={REDUCTION_MIN}
+            max={REDUCTION_MAX}
+            step={REDUCTION_STEP}
+            value={treatyReductionPct}
+            onChange={setTreatyReductionPct}
+          />
+
+          <div className="border-t border-black pt-4 text-sm leading-6">
+            <Row label="Cost per life saved">
+              ${formatPrice(1 / livesPerDollar)}
+            </Row>
+            <Row label="Cost per year of suffering and disability prevented">
+              ${formatPrice(1 / sufferingYearsPerDollar)}
+            </Row>
+            <Row label="Total campaign cost">
+              ${formatNumber(derived.campaignCostUsd)}
+            </Row>
+          </div>
         </div>
       </div>
-    </section>
+
+      <Dialog open={largeGiftOpen} onOpenChange={setLargeGiftOpen}>
+        <Dialog.Content title="Large gift">
+          <div className="space-y-4 p-5 text-sm leading-6">
+            <p>
+              Card checkout is capped at $
+              {STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}. This order wants
+              ${checkoutAmount.toLocaleString()}. Use wire, stock, crypto, or
+              DAF transfer instructions.
+            </p>
+            <a
+              href={`mailto:${NONPROFIT.donationsEmail}?subject=${encodeURIComponent(
+                `Large donation inquiry: $${checkoutAmount.toLocaleString()}`,
+              )}`}
+              className="inline-block border border-black bg-black px-4 py-2 font-semibold text-white"
+            >
+              Email transfer instructions
+            </a>
+          </div>
+        </Dialog.Content>
+      </Dialog>
+    </form>
   );
 }
 
@@ -366,61 +353,84 @@ function SliderRow({
   label,
   valueText,
   footnote,
-  value,
   min,
   max,
   step,
+  value,
   onChange,
 }: {
   label: string;
   valueText: string;
-  footnote: React.ReactNode;
-  value: number;
+  footnote: string;
   min: number;
   max: number;
   step: number;
-  onChange: (value: number) => void;
+  value: number;
+  onChange: (next: number) => void;
 }) {
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-3">
         <label className="text-sm font-semibold">{label}</label>
-        <span className="text-lg font-semibold">{valueText}</span>
+        <span className="text-lg font-semibold tabular-nums">{valueText}</span>
       </div>
-      <Slider
-        value={[value]}
+      <input
+        type="range"
         min={min}
         max={max}
         step={step}
-        onValueChange={(values) => {
-          if (values[0] !== undefined) onChange(values[0]);
-        }}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full accent-black"
       />
       <p className="text-xs leading-5 text-neutral-600">{footnote}</p>
     </div>
   );
 }
 
-function OutputRow({
-  label,
-  valueNode,
-  note,
-}: {
-  label: string;
-  valueNode: React.ReactNode;
-  note?: React.ReactNode;
-}) {
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-      <span className="text-sm text-neutral-700">{label}</span>
-      <span className="text-right font-semibold text-black">
-        {valueNode}
-        {note ? (
-          <span className="block text-xs font-normal text-neutral-500 sm:ml-2 sm:inline">
-            {note}
-          </span>
-        ) : null}
-      </span>
+    <div className="flex items-baseline justify-between gap-3 py-1">
+      <span className="text-neutral-700">{label}</span>
+      <span className="font-semibold tabular-nums">{children}</span>
     </div>
   );
+}
+
+function toggleClass(active: boolean) {
+  return [
+    "border border-black px-4 py-2 text-sm font-semibold transition",
+    active ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100",
+  ].join(" ");
+}
+
+function parseNumber(raw: string): number {
+  const cleaned = raw.replace(/[\s,]/g, "");
+  if (cleaned === "" || cleaned === "-" || cleaned === ".") return NaN;
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function formatNumber(value: number, decimals = 0): string {
+  if (!Number.isFinite(value)) return "";
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: decimals,
+    minimumFractionDigits: 0,
+  }).format(value);
+}
+
+// For lives / DALYs / suffering-years: integer (with commas) when ≥ 1,
+// 2 significant figures when < 1 so a $0.50 donation reads "0.65 lives"
+// rather than "0".
+function formatQuantity(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "";
+  if (value >= 1) return formatNumber(value, 0);
+  return Number(value.toPrecision(2)).toString();
+}
+
+function formatPrice(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "—";
+  if (value >= 1) return value.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  if (value >= 0.01) return value.toFixed(2);
+  return value.toPrecision(2);
 }
