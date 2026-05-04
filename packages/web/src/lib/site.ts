@@ -1,6 +1,5 @@
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
-  DFDA_TRIAL_CAPACITY_MULTIPLIER,
   GLOBAL_WARHEAD_COUNT,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   NUCLEAR_WINTER_WARHEAD_THRESHOLD,
@@ -52,7 +51,6 @@ const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
 const apocalypseSlice = (NUCLEAR_WINTER_OVERKILL_FACTOR.value * TREATY_FRACTION).toFixed(2);
 const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
-const trialCapacityMultiplier = Math.round(DFDA_TRIAL_CAPACITY_MULTIPLIER.value);
 
 export const OPTIMITRON_CANONICAL_ORIGIN = "https://optimitron.com";
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
@@ -251,10 +249,13 @@ const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 const EARTH_OPTIMIZATION_SERVICES_LLC = "Earth Optimization Services LLC";
 const NO_FOOTER_COMPLIANCE_NOTICE = null;
 
-/// Public-facing campaign brand for the WoD + 1pt sites. Distinct from
-/// `EARTH_OPTIMIZATION_SERVICES_LLC` (the legal entity, used in compliance
-/// surfaces). Both campaign sites point `organizationName` at this so SEO
-/// + footer attribution carry the campaign brand instead of the LLC name.
+/// Public-facing campaign brand for sites operated by the campaign.
+/// Distinct from `EARTH_OPTIMIZATION_SERVICES_LLC` (the legal entity, used
+/// in compliance surfaces). Used by WoD, 1pt, and the Trial Abundance
+/// Survey — all three point `organizationName` at this so SEO + footer
+/// attribution carry the campaign brand instead of the LLC name. The
+/// survey's neutral UX (no campaign branding in the embedded form) is a
+/// separate concern from operator-metadata disclosure to crawlers.
 const INTERNATIONAL_CAMPAIGN_ORG_NAME =
   "International Campaign to End War and Disease";
 
@@ -1242,7 +1243,11 @@ const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
   ogImage: "/site-assets/survey/survey-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_TRIAL_ABUNDANCE_SURVEY_ID,
   contentKey: null,
-  organizationName: ORGANIZATION_NAME,
+  // The trial-abundance survey is operated by the same campaign — neutral
+  // SURVEY UX (intentional, so partners can embed it without political
+  // branding) is distinct from operator-metadata disclosure. Crawlers,
+  // journalists, and due-diligence-doing partners get truthful attribution.
+  organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   organizationUrl: ORGANIZATION_URL,
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,

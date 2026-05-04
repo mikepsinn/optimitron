@@ -756,6 +756,30 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it.each([
+      ["organizationId", 123],
+      ["name", { value: "Renamed Org" }],
+      ["type", 7],
+      ["status", ["APPROVED"]],
+      ["slug", { value: "renamed-org" }],
+      ["website", 42],
+      ["description", false],
+      ["logo", ["https://example.org/logo.png"]],
+      ["contactEmail", { email: "hello@example.org" }],
+      ["jurisdictionId", 99],
+    ])("updateOrganization rejects non-string %s values", async (field, value) => {
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "updateOrganization",
+        arguments: { organizationId: "org-1", [field]: value },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toEqual({ error: `${field} must be a string` });
+      expect(mocks.updateOrganizationServer).not.toHaveBeenCalled();
+    });
+
     it("updateOrganization returns a clean error when the caller cannot manage the org", async () => {
       mocks.updateOrganizationServer.mockRejectedValueOnce(
         new ForbiddenError("You do not have permission to manage this organization"),
