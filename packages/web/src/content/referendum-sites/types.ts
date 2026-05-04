@@ -6,6 +6,7 @@ export type ReferendumSitePageKey =
   | "dashboard"
   | "tasks"
   | "endorse"
+  | "signatories"
   | "supporters"
   | "why"
   | "legal"

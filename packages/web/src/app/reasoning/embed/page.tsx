@@ -8,7 +8,10 @@ import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
 import { resolveLocale } from "@/lib/reasoning/locale.server";
 import { prepareReasoningSession } from "@/lib/reasoning/session.server";
 import { ReasoningFlow } from "@/components/reasoning/ReasoningFlow";
-import { CALL_SCRIPT_TOPOLOGY, ENTRY_NODE_ID } from "@/lib/reasoning/call-script";
+import {
+  CALL_SCRIPT_TOPOLOGY,
+  ENTRY_NODE_ID,
+} from "@/lib/reasoning/call-script";
 import type { NodeId } from "@/lib/reasoning/types";
 
 export const dynamic = "force-dynamic";
@@ -59,8 +62,10 @@ export default async function EmbedPage({
 
   if (!prepared) {
     return (
-      <div className="p-4 border-4 border-primary">
-        <p className="font-black uppercase">Convince-me is not yet seeded.</p>
+      <div className="border border-black bg-white p-4 text-black">
+        <p className="text-sm font-semibold">
+          This persuasion flow is not live yet.
+        </p>
       </div>
     );
   }

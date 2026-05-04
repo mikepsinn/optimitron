@@ -24,15 +24,15 @@ export default async function OrganizationsPage() {
           Organization Signatory Tools
         </h1>
         <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
-          Give your audience a treaty survey link. They vote on your site;
-          you get credited for helping humanity click the obvious rectangle.
+          Give your audience a treaty survey link. You get credited for every
+          verified signature it produces.
         </p>
       </header>
 
       {organizations.length === 0 ? (
         <p className="font-bold text-muted-foreground">
-          No organization signatories are connected to your account yet. Sign
-          as an organization first.
+          No organization signatories are connected to your account yet. Sign as
+          an organization first.
         </p>
       ) : (
         <ul className="space-y-3">

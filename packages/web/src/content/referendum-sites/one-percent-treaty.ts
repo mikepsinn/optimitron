@@ -18,8 +18,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   metadata: {
     home: {
       title: "1% Treaty — Take 30 Seconds to End War and Disease",
-      description:
-        `Humanity currently spends enough on mass murder capacity for ${apocalypseCount} apocalypses. This proposes we settle for ${reducedApocalypseCount} and use the savings to eradicate disease ${diseaseAcceleration} times faster.`,
+      description: `Humanity currently spends enough on mass murder capacity for ${apocalypseCount} apocalypses. This proposes we settle for ${reducedApocalypseCount} and use the savings to eradicate disease ${diseaseAcceleration} times faster.`,
     },
     treaty: {
       title: "Treaty — 1% Treaty",
@@ -40,6 +39,11 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
       title: "Sign as Organization — 1% Treaty",
       description:
         "Sign the 1% Treaty as an organization: one percent less for war, one percent more for medicine.",
+    },
+    signatories: {
+      title: "Signatories — 1% Treaty",
+      description:
+        "Organizations and humans who publicly signed the 1% Treaty.",
     },
     supporters: {
       title: "Organizational Signatories — 1% Treaty",
@@ -65,7 +69,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   navItems: [
     { label: "Treaty", href: "/treaty" },
     { label: "Sign as Organization", href: "/endorse" },
-    { label: "Signatories", href: "/campaign" },
+    { label: "Signatories", href: "/signatories" },
     { label: "Tasks", href: "/tasks" },
     { label: "Why", href: "/why" },
     { label: "Legal", href: "/legal" },
@@ -86,7 +90,8 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
       "Read it. Sign it. Then go remind your late employees — the ones your species pays to promote the general welfare — that their thirty-second task is overdue.",
     signBoxTitle: "Sign the 1% Treaty",
     lateEmployeesEyebrow: "Late employees",
-    lateEmployeesTitle: "Your late employees still have overdue Earth Optimization Tasks.",
+    lateEmployeesTitle:
+      "Your late employees still have overdue Earth Optimization Tasks.",
     lateEmployeesBody:
       "These are the subtasks under Ratify the 1% Treaty. They are the humans you hired to promote the general welfare. They are late. The task is a pen.",
     lateEmployeesCtaLabel: "See every late employee",
@@ -116,21 +121,20 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   supporters: {
     eyebrow: "Organizational signatories",
     title: "Organizational Signatories",
-    description:
-      `Organizations in the ${campaignName} that signed the 1% Treaty and formally resolved that curing disease is preferable to dying from it.`,
+    description: `Organizations that publicly signed the 1% Treaty through the ${campaignName}.`,
     emptyTitle: "No organizational signatories yet.",
     emptyBody:
-      "Be the first organization willing to say the murder budget can spare one percent.",
+      "Be the first organization willing to put one percent less war and one percent more medicine on the record.",
     ctaLabel: "Sign as Organization",
   },
   endorse: {
     eyebrow: "Organizational signature",
     title: "Sign as an Organization",
     description:
-      "Allowing billions to suffer and die from disease so we can have capacity for 120 apocalypses instead of 118.8 is morally wrong. Historically, mass cruelties like slavery don't end until 3.5% of people have the courage to say it in public. By endorsing this treaty, you can be part of that 3.5% — instead of the 96.5% who allowed it to continue.",
+      "Add your organization to the public signatory list. No donation required. No candidate endorsement. No ongoing obligation. Just one official position: one percent less for war, one percent more for medicine.",
     signInTitle: "Sign in to sign",
     signInDescription:
-      "Organization signatures are tied to verified accounts so nobody signs your organization for you. Humans invented fraud; now everyone gets paperwork.",
+      "Organization signatures use verified accounts so nobody signs your organization for you.",
     signInLabel: "Sign in",
     existingSupportersLabel: "organizational signatories",
   },
@@ -225,7 +229,8 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   impactUrl: "https://impact.acceleratedmedicine.org",
   notFound: {
     title: "This page is not here.",
-    description: "Your species has 1.6 billion websites. This particular URL is not on the campaign site. Try one of the others.",
+    description:
+      "Your species has 1.6 billion websites. This particular URL is not on the campaign site. Try one of the others.",
     ctaLabel: "Return home",
   },
 };

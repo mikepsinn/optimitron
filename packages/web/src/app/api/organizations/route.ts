@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
       {
         name,
         type,
+        status: OrgStatus.APPROVED,
         website: body.website ?? null,
         description: body.description ?? null,
         contactEmail: userEmail ?? null,
@@ -73,10 +74,7 @@ export async function POST(req: NextRequest) {
       userId,
     );
 
-    return NextResponse.json(
-      { success: true, organization },
-      { status: 201 },
-    );
+    return NextResponse.json({ success: true, organization }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

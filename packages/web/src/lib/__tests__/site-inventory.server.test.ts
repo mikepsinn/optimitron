@@ -14,10 +14,19 @@ describe("site inventory", () => {
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(result.count).toBeGreaterThan(0);
-    expect(result.pages.every((page) => page.url.startsWith("https://warondisease.org/"))).toBe(
-      true,
-    );
-    expect(result.pages.some((page) => page.url === "https://warondisease.org/vote")).toBe(true);
+    expect(
+      result.pages.every((page) =>
+        page.url.startsWith("https://warondisease.org/"),
+      ),
+    ).toBe(true);
+    expect(
+      result.pages.some((page) => page.url === "https://warondisease.org/vote"),
+    ).toBe(true);
+    expect(
+      result.pages.some(
+        (page) => page.url === "https://warondisease.org/reasoning",
+      ),
+    ).toBe(false);
   });
 
   it("does not list referendum-content pages on contentless hosts", async () => {
@@ -27,10 +36,14 @@ describe("site inventory", () => {
     const result = await listSitePages({ site: "optimitron.com" });
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(result.pages.some((page) => page.url === "https://optimitron.com/campaign")).toBe(
-      false,
-    );
-    expect(result.pages.some((page) => page.url === "https://optimitron.com/donate")).toBe(true);
+    expect(
+      result.pages.some(
+        (page) => page.url === "https://optimitron.com/campaign",
+      ),
+    ).toBe(false);
+    expect(
+      result.pages.some((page) => page.url === "https://optimitron.com/donate"),
+    ).toBe(true);
   });
 
   it("extracts clean markdown from an allowed Optimitron property URL", async () => {
@@ -50,7 +63,9 @@ describe("site inventory", () => {
       }),
     );
 
-    const result = await getPageContent({ url: "https://warondisease.org/vote" });
+    const result = await getPageContent({
+      url: "https://warondisease.org/vote",
+    });
 
     expect(result).toMatchObject({
       lastModified: "Wed, 29 Apr 2026 12:00:00 GMT",
@@ -64,8 +79,8 @@ describe("site inventory", () => {
   });
 
   it("rejects URLs outside configured Optimitron properties", async () => {
-    await expect(getPageContent({ url: "https://example.com/vote" })).rejects.toThrow(
-      "URL is not an allowed Optimitron property route",
-    );
+    await expect(
+      getPageContent({ url: "https://example.com/vote" }),
+    ).rejects.toThrow("URL is not an allowed Optimitron property route");
   });
 });

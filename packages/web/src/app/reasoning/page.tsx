@@ -2,13 +2,18 @@
  * /reasoning — allocator-driven hosted reasoning flow.
  */
 
+import Link from "next/link";
 import { headers } from "next/headers";
 import { resolveOrgFromHost } from "@/lib/reasoning/host-resolution.server";
 import { resolveLocale } from "@/lib/reasoning/locale.server";
 import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
 import { prepareReasoningSession } from "@/lib/reasoning/session.server";
 import { ReasoningFlow } from "@/components/reasoning/ReasoningFlow";
-import { CALL_SCRIPT_TOPOLOGY, ENTRY_NODE_ID } from "@/lib/reasoning/call-script";
+import {
+  CALL_SCRIPT_TOPOLOGY,
+  ENTRY_NODE_ID,
+} from "@/lib/reasoning/call-script";
+import { ROUTES } from "@/lib/routes";
 import type { NodeId, RelationshipBucket } from "@/lib/reasoning/types";
 
 export const dynamic = "force-dynamic";
@@ -60,10 +65,33 @@ export default async function ReasoningPage({
 
   if (!prepared) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <p className="text-lg font-black uppercase">
-          Convince-me is not yet seeded. Run the seed script.
-        </p>
+      <div className="flex min-h-screen items-center justify-center bg-white p-6 text-black">
+        <div className="max-w-xl border border-black p-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-neutral-600">
+            Not live yet
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold">
+            This persuasion flow is still loading.
+          </h1>
+          <p className="mt-4 text-base leading-7 text-neutral-700">
+            Vote on the treaty now, then use your share link to bring in the
+            next human.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href={ROUTES.vote}
+              className="border border-black bg-black px-4 py-2 text-sm font-semibold text-white"
+            >
+              Vote
+            </Link>
+            <Link
+              href={ROUTES.dashboard}
+              className="border border-black px-4 py-2 text-sm font-semibold"
+            >
+              Share
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }

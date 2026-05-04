@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/auth-utils";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import { getOrganizationPath, getSignInPath, ROUTES } from "@/lib/routes";
-import { buildTrialAbundanceSurveyUrl } from "@/lib/site";
+import { buildOrganizationSurveyUrl } from "@/lib/site";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 export const dynamic = "force-dynamic";
@@ -61,12 +61,25 @@ export default async function OrganizationPage({
     );
   }
 
-  const surveyUrl = buildTrialAbundanceSurveyUrl(org.slug);
-  const iframeTitle = `${org.name} Trial Abundance Survey`.replaceAll(
-    "\"",
-    "&quot;",
-  );
-  const iframeCode = `<iframe src="${surveyUrl}" title="${iframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
+  const referralIdentifier = user.person?.handle ?? user.referralCode ?? null;
+  const organizationSurveyUrl = buildOrganizationSurveyUrl(org.slug);
+  const surveyUrl = buildOrganizationSurveyUrl(org.slug, {
+    referralCode: referralIdentifier,
+  });
+  const iframeTitle = `${org.name} Trial Abundance Survey`;
+  const escapedIframeTitle = iframeTitle.replaceAll('"', "&quot;");
+  const iframeCode = `<iframe src="${surveyUrl}" title="${escapedIframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
+  const buttonCode = `<a href="${surveyUrl}" style="display:inline-block;border:1px solid #000;padding:12px 16px;color:#000;text-decoration:none;font-weight:700;">Take the Trial Abundance Survey</a>`;
+  const emailSubject = "Two questions about clinical trial funding";
+  const emailBody = `Subject: ${emailSubject}
+
+Hi,
+
+Can you take 30 seconds to answer two questions about clinical trial funding?
+
+${surveyUrl}
+
+Responses from this link are credited to ${org.name}.`;
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
@@ -137,18 +150,54 @@ export default async function OrganizationPage({
           {org.status === "APPROVED" ? (
             <div className="space-y-4">
               <p className="text-sm font-bold text-muted-foreground">
-                Put this on your site. Your audience gets a clean survey;{" "}
-                {org.name} gets credited for moving humans toward the useful
-                button.
+                Use the member link for email and social posts. Use the iframe
+                for a website page. Both credit {org.name}; the member link also
+                credits your referral code.
               </p>
-              <div>
-                <p className="mb-1 text-sm font-bold text-muted-foreground">
-                  Direct link
-                </p>
-                <a href={surveyUrl} className="break-all text-sm font-bold underline">
-                  {surveyUrl}
-                </a>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="mb-1 text-sm font-bold text-muted-foreground">
+                    Member link
+                  </p>
+                  <a
+                    href={surveyUrl}
+                    className="break-all text-sm font-bold underline"
+                  >
+                    {surveyUrl}
+                  </a>
+                </div>
+                <div>
+                  <p className="mb-1 text-sm font-bold text-muted-foreground">
+                    Organization-only link
+                  </p>
+                  <a
+                    href={organizationSurveyUrl}
+                    className="break-all text-sm font-bold underline"
+                  >
+                    {organizationSurveyUrl}
+                  </a>
+                </div>
               </div>
+              <label className="block">
+                <span className="mb-1 block text-sm font-bold text-muted-foreground">
+                  Email starter
+                </span>
+                <textarea
+                  readOnly
+                  className="min-h-36 w-full border-2 border-foreground bg-background p-3 font-mono text-xs"
+                  value={emailBody}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-sm font-bold text-muted-foreground">
+                  Website button
+                </span>
+                <textarea
+                  readOnly
+                  className="min-h-28 w-full border-2 border-foreground bg-background p-3 font-mono text-xs"
+                  value={buttonCode}
+                />
+              </label>
               <label className="block">
                 <span className="mb-1 block text-sm font-bold text-muted-foreground">
                   Iframe code
@@ -159,11 +208,21 @@ export default async function OrganizationPage({
                   value={iframeCode}
                 />
               </label>
+              <div>
+                <p className="mb-2 text-sm font-bold text-muted-foreground">
+                  Preview
+                </p>
+                <iframe
+                  src={surveyUrl}
+                  title={iframeTitle}
+                  className="h-[520px] w-full border-2 border-foreground"
+                />
+              </div>
             </div>
           ) : (
             <p className="text-sm font-bold text-muted-foreground">
-              Approval unlocks your survey link and iframe. Until then, the
-              rectangle is supervised.
+              This organization is not approved yet. New organizations are
+              approved automatically; this one may be legacy or admin-created.
             </p>
           )}
         </div>

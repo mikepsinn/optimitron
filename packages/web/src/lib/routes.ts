@@ -63,6 +63,7 @@ export const ROUTES = {
   terms: "/terms",
   impact: "/impact",
   endorse: "/endorse",
+  signatories: "/signatories",
   campaign: "/campaign",
   coalition: "/coalition",
   organizations: "/organizations",
@@ -479,8 +480,7 @@ export const inviteVoterLink: NavItem = {
   href: DASHBOARD_INVITE_HREF,
   label: "Invite a Voter",
   emoji: "📨",
-  description:
-    "Help one human vote on the 1% Treaty.",
+  description: "Help one human vote on the 1% Treaty.",
   tagline: "Help someone vote",
   cta: "Invite",
 };
@@ -616,8 +616,8 @@ export const courtLink: NavItem = {
   label: "Court of Humanity",
   emoji: "⚖️",
   description:
-    "Join the decentralized court where 8 billion humans are the jury and sovereign immunity is a choice nobody chose. Verified members can seek justice against any government that kills, injures, or harms them or their family.",
-  tagline: "8B humans · 1 jury · 0 sovereign immunity",
+    "Join the public jury and plaintiff class for government harm. If a government kills, injures, imprisons, or ruins your family, humanity should be able to hear the case.",
+  tagline: "Public jury for government harm",
   cta: "Join the Court",
 };
 
@@ -684,12 +684,12 @@ export const endorseLink: NavItem = {
 };
 
 export const campaignPartnersLink: NavItem = {
-  href: ROUTES.campaign,
-  label: "Organizational Signatories",
+  href: ROUTES.signatories,
+  label: "Signatories",
   emoji: "🏢",
-  description: "Organizations that signed the 1% Treaty.",
-  tagline: "See the organizations on record",
-  cta: "See Organizational Signatories",
+  description: "Organizations and humans publicly signed onto the 1% Treaty.",
+  tagline: "See who signed",
+  cta: "See Signatories",
 };
 
 export const coalitionLink = campaignPartnersLink;
@@ -699,8 +699,8 @@ export const donateLink: NavItem = {
   label: "Donate",
   emoji: "💝",
   description:
-    "Less than a cent buys one year of healthy human life. About 50,000× cheaper than anti-malaria bed nets. Tax-deductible to a 501(c)(3).",
-  tagline: "Less than a cent per healthy life-year",
+    "Use the calculator to buy expected lives saved or years of suffering prevented. Tax-deductible to a U.S. 501(c)(3).",
+  tagline: "Buy expected lives saved",
   cta: "Donate",
 };
 

@@ -15,8 +15,10 @@ describe("site sitemap routing", () => {
     const paths = pathsFor("onePercentTreaty");
 
     expect(paths).toEqual(
-      expect.arrayContaining(["/", "/treaty", "/vote", "/why"]),
+      expect.arrayContaining(["/", "/signatories", "/treaty", "/vote", "/why"]),
     );
+    expect(paths).not.toContain("/campaign");
+    expect(paths).not.toContain("/reasoning");
     expect(paths).not.toContain("/scoreboard");
     expect(paths).not.toContain("/agencies/dfda/conditions");
   });

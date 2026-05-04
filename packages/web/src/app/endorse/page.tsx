@@ -80,7 +80,7 @@ export default async function EndorsePage() {
 
       <p className="mt-8 text-center text-xs font-bold text-muted-foreground">
         Already signed? See the{" "}
-        <Link href={ROUTES.campaign} className="underline">
+        <Link href={ROUTES.signatories} className="underline">
           {content.endorse.existingSupportersLabel}
         </Link>
         .
