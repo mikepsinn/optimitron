@@ -10,22 +10,26 @@ async function completeSliderAndVote(page: Page): Promise<void> {
   const slider = voteSection.locator('input[type="range"]');
   await expect(slider).toBeVisible({ timeout: 15_000 });
 
-  const box = await slider.boundingBox();
-  expect(box, "slider track should have geometry").not.toBeNull();
-  if (!box) return;
-
-  const y = box.y + box.height / 2;
-  const targetX = box.x + box.width * 0.3;
-  const startX = box.x + box.width / 2;
-
-  await page.mouse.move(startX, y);
-  await page.mouse.down();
-  await page.mouse.move(targetX, y, { steps: 8 });
-  await page.mouse.up();
-  await slider.dispatchEvent("input");
-  await slider.dispatchEvent("change");
-
   const submit = voteSection.locator("button:has-text('SUBMIT')");
+  for (const targetRatio of [0.3, 0.25, 0.35]) {
+    const box = await slider.boundingBox();
+    expect(box, "slider track should have geometry").not.toBeNull();
+    if (!box) return;
+
+    const y = box.y + box.height / 2;
+    const targetX = box.x + box.width * targetRatio;
+    const startX = box.x + box.width / 2;
+
+    await page.mouse.move(startX, y);
+    await page.mouse.down();
+    await page.mouse.move(targetX, y, { steps: 12 });
+    await page.mouse.up();
+
+    if (await submit.isVisible({ timeout: 1_500 }).catch(() => false)) {
+      break;
+    }
+  }
+
   await expect(submit).toBeVisible({ timeout: 10_000 });
   const scrollYBeforeSubmit = await page.evaluate(() => window.scrollY);
   await submit.click();
