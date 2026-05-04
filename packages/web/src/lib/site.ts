@@ -45,10 +45,16 @@ import {
 // math, etc.). The manifest holds the precise figure plus citation; we
 // round for prose. TREATY_FRACTION is the canonical 1% reallocation.
 const TREATY_FRACTION = 0.01;
-const warheadCount = Math.round(GLOBAL_WARHEAD_COUNT.value).toLocaleString("en-US");
-const nuclearWinterThreshold = Math.round(NUCLEAR_WINTER_WARHEAD_THRESHOLD.value);
+const warheadCount = Math.round(GLOBAL_WARHEAD_COUNT.value).toLocaleString(
+  "en-US",
+);
+const nuclearWinterThreshold = Math.round(
+  NUCLEAR_WINTER_WARHEAD_THRESHOLD.value,
+);
 const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
-const apocalypseSlice = (NUCLEAR_WINTER_OVERKILL_FACTOR.value * TREATY_FRACTION).toFixed(2);
+const apocalypseSlice = (
+  NUCLEAR_WINTER_OVERKILL_FACTOR.value * TREATY_FRACTION
+).toFixed(2);
 const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
 
@@ -342,6 +348,13 @@ const TRIAL_ABUNDANCE_SURVEY_ASSETS = copiedSiteAssets({
   themeColor: "#000000",
 });
 
+// Hidden until the public signatory list has enough real organizations to be
+// useful. Keep the route and route object alive so restoring the link is one
+// flag flip, not archaeology.
+const SHOW_ORGANIZATIONAL_SIGNATORIES_LINK = false;
+const organizationalSignatoryLinks: NavItem[] =
+  SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [coalitionLink] : [];
+
 const onePercentNavSections: NavSection[] = [
   {
     id: "primary",
@@ -361,7 +374,7 @@ const onePercentNavSections: NavSection[] = [
       readTreatyLink,
       whyLink,
       peopleLink,
-      coalitionLink,
+      ...organizationalSignatoryLinks,
       endorseLink,
       legalLink,
     ],
@@ -373,6 +386,13 @@ const onePercentNavSections: NavSection[] = [
   },
 ];
 
+const warOnDiseaseShareLink: NavItem = {
+  ...treatyDashboardLink,
+  label: "Share",
+  tagline: "Share your voting link",
+  cta: "Share",
+};
+
 const warOnDiseaseNavSections: NavSection[] = [
   {
     id: "primary",
@@ -380,11 +400,8 @@ const warOnDiseaseNavSections: NavSection[] = [
     primary: true,
     items: [
       treatyVoteLink,
-      {
-        ...treatyDashboardLink,
-        label: "Share",
-        tagline: "Share your voting link",
-      },
+      warOnDiseaseShareLink,
+      donateLink,
       peopleLink,
       readTreatyLink,
       whyLink,
@@ -521,8 +538,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
   footer: {
     brandHref: ROUTES.home,
     brandLabel: "War on Disease",
-    brandDescription:
-      `Is it OK if we trade ${apocalypseSlice} of our ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}?`,
+    brandDescription: `Is it OK if we trade ${apocalypseSlice} of our ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}?`,
     bottomText: "",
     columns: [
       {
@@ -530,9 +546,9 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
         items: [
           treatyVoteLink,
           readTreatyLink,
-          treatyDashboardLink,
+          warOnDiseaseShareLink,
           peopleLink,
-          coalitionLink,
+          ...organizationalSignatoryLinks,
           endorseLink,
           donateLink,
         ],
@@ -582,7 +598,7 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
           whyLink,
           courtLink,
           peopleLink,
-          coalitionLink,
+          ...organizationalSignatoryLinks,
           endorseLink,
           legalLink,
         ],
@@ -605,8 +621,7 @@ const TRIAL_ABUNDANCE_SURVEY_UI: SiteVariantUiConfig = {
   footer: {
     brandHref: ROUTES.home,
     brandLabel: "Trial Abundance Survey",
-    brandDescription:
-      "A two-question survey about clinical trial funding.",
+    brandDescription: "A two-question survey about clinical trial funding.",
     bottomText:
       "Use your organization link so responses from your audience get credited correctly.",
     columns: [{ title: "Survey", items: [trialSurveyLink, trialEmbedLink] }],
@@ -690,8 +705,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     title: "Optimitron — The Evidence-Based Earth Optimization Game",
     description:
       "Earth Optimization Game for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data.",
-    openGraphTitle:
-      "Optimitron — The Evidence-Based Earth Optimization Game",
+    openGraphTitle: "Optimitron — The Evidence-Based Earth Optimization Game",
     openGraphDescription:
       "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next.",
     openGraphImage: {
@@ -718,11 +732,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     restrictToAllowlist: false,
     publicPrefixes: [],
     operationalPrefixes: [],
-    minimalChromePrefixes: [
-      ROUTES.vote,
-      ROUTES.questions,
-      ROUTES.donate,
-    ],
+    minimalChromePrefixes: [ROUTES.vote, ROUTES.questions, ROUTES.donate],
   },
   assets: OPTIMITRON_ASSETS,
   sitemap: {
@@ -823,7 +833,12 @@ const DFDA_CONFIG: SiteConfig = {
       ROUTES.about,
       ROUTES.donate,
     ],
-    operationalPrefixes: ["/auth", ROUTES.dashboard, ROUTES.profile, ROUTES.settings],
+    operationalPrefixes: [
+      "/auth",
+      ROUTES.dashboard,
+      ROUTES.profile,
+      ROUTES.settings,
+    ],
     minimalChromePrefixes: [],
   },
   assets: DFDA_ASSETS,
@@ -922,11 +937,7 @@ const DIH_CONFIG: SiteConfig = {
     ],
   },
   routePolicy: {
-    canonicalPrefixes: [
-      ROUTES.dih,
-      "/institutes",
-      ROUTES.wishocracy,
-    ],
+    canonicalPrefixes: [ROUTES.dih, "/institutes", ROUTES.wishocracy],
     restrictToAllowlist: true,
     publicPrefixes: [
       ROUTES.dih,
@@ -941,7 +952,12 @@ const DIH_CONFIG: SiteConfig = {
       ROUTES.about,
       ROUTES.donate,
     ],
-    operationalPrefixes: ["/auth", ROUTES.dashboard, ROUTES.profile, ROUTES.settings],
+    operationalPrefixes: [
+      "/auth",
+      ROUTES.dashboard,
+      ROUTES.profile,
+      ROUTES.settings,
+    ],
     minimalChromePrefixes: [],
   },
   assets: DIH_ASSETS,
@@ -960,19 +976,14 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   chromeVariant: "referendum",
   userFraming: "manager",
   canonicalOrigin: "https://warondisease.org",
-  domains: [
-    "warondisease.org",
-    "www.warondisease.org",
-    "warondisease.local",
-  ],
+  domains: ["warondisease.org", "www.warondisease.org", "warondisease.local"],
   name: "War on Disease",
   shortName: "War on Disease",
   alternateSiteNames: [
     "War on Disease",
     "International Campaign to End War and Disease",
   ],
-  description:
-    `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
+  description: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_WAR_ON_DISEASE_ID,
   contentKey: "onePercentTreaty",
@@ -1012,11 +1023,9 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   primaryTaskKey: null,
   rootMetadata: {
     title: "War on Disease",
-    description:
-      `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
+    description: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
     openGraphTitle: "War on Disease",
-    openGraphDescription:
-      `Trade ${apocalypseSlice} of your ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}. Your species will find this controversial.`,
+    openGraphDescription: `Trade ${apocalypseSlice} of your ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}. Your species will find this controversial.`,
     openGraphImage: {
       url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
       width: 1200,
@@ -1024,8 +1033,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       alt: "War on Disease social image",
     },
     twitterTitle: "War on Disease",
-    twitterDescription:
-      `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount}. That is ${apocalypseCount} apocalypses, in case the first ${apocalypseCount - 1} do not take.`,
+    twitterDescription: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount}. That is ${apocalypseCount} apocalypses, in case the first ${apocalypseCount - 1} do not take.`,
     twitterImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     keywords: [
       "War on Disease",
@@ -1046,6 +1054,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.governments,
       ROUTES.declaration,
       ROUTES.endorse,
+      ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
       ROUTES.why,
@@ -1054,11 +1063,11 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.terms,
       ROUTES.impact,
       ROUTES.organizations,
+      ROUTES.survey,
       "/conditions",
       "/treatments",
       ROUTES.conditions,
       ROUTES.treatments,
-      ROUTES.reasoning,
       ROUTES.donate,
     ],
     operationalPrefixes: [
@@ -1074,6 +1083,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.vote,
       ROUTES.questions,
       ROUTES.donate,
+      ROUTES.survey,
     ],
   },
   assets: WAR_ON_DISEASE_ASSETS,
@@ -1152,8 +1162,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       alt: "1% Treaty social image",
     },
     twitterTitle: "1% Treaty",
-    twitterDescription:
-      `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
+    twitterDescription: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
     twitterImage: "/site-assets/treaty/treaty-og-1200x630.png",
     keywords: [
       "1% Treaty",
@@ -1173,6 +1182,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       ROUTES.governments,
       ROUTES.declaration,
       ROUTES.endorse,
+      ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
       ROUTES.why,
@@ -1191,13 +1201,13 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       ROUTES.governments,
       ROUTES.declaration,
       ROUTES.endorse,
+      ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
       ROUTES.why,
       ROUTES.legal,
       ROUTES.impact,
       ROUTES.organizations,
-      ROUTES.reasoning,
       ROUTES.donate,
     ],
     operationalPrefixes: [
@@ -1209,10 +1219,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
       ROUTES.profile,
       ROUTES.settings,
     ],
-    minimalChromePrefixes: [
-      ROUTES.vote,
-      ROUTES.donate,
-    ],
+    minimalChromePrefixes: [ROUTES.vote, ROUTES.donate],
   },
   assets: ONE_PERCENT_TREATY_ASSETS,
   sitemap: {
@@ -1294,8 +1301,7 @@ const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
       alt: "Trial Abundance Survey",
     },
     twitterTitle: "Trial Abundance Survey",
-    twitterDescription:
-      "A two-question survey about clinical trial funding.",
+    twitterDescription: "A two-question survey about clinical trial funding.",
     twitterImage: "/site-assets/survey/survey-og-1200x630.png",
     keywords: [
       "Trial Abundance Survey",
@@ -1307,7 +1313,12 @@ const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
   routePolicy: {
     canonicalPrefixes: [ROUTES.survey],
     restrictToAllowlist: true,
-    publicPrefixes: [ROUTES.survey, ROUTES.vote, ROUTES.questions, ROUTES.organizations],
+    publicPrefixes: [
+      ROUTES.survey,
+      ROUTES.vote,
+      ROUTES.questions,
+      ROUTES.organizations,
+    ],
     operationalPrefixes: [
       "/auth",
       ROUTES.dashboard,
@@ -1431,7 +1442,9 @@ function getCookieValue(cookieHeader: string | null | undefined, name: string) {
   return null;
 }
 
-export function isOnePercentTreatyHost(host: string | null | undefined): boolean {
+export function isOnePercentTreatyHost(
+  host: string | null | undefined,
+): boolean {
   if (!host) return false;
   return HOST_TO_SITE_KEY[normalizeHost(host)] === "onePercentTreaty";
 }
@@ -1440,7 +1453,10 @@ function matchesPrefix(pathname: string, prefix: string) {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
 }
 
-export function isSiteRouteAllowed(site: SiteConfig, pathname: string): boolean {
+export function isSiteRouteAllowed(
+  site: SiteConfig,
+  pathname: string,
+): boolean {
   if (!site.routePolicy.restrictToAllowlist) {
     return true;
   }
@@ -1515,6 +1531,7 @@ export function getSiteRouteDisposition(
 }
 
 const REFERENDUM_SITE_CONTENT_PATH_PREFIXES = [
+  ROUTES.signatories,
   ROUTES.campaign,
   ROUTES.coalition,
   ROUTES.endorse,
@@ -1631,7 +1648,10 @@ export function getRequestSiteOrigin(input?: {
     return getConfiguredSiteOrigin({ allowLocalFallback: true });
   }
 
-  const forwardedProto = input?.forwardedProto?.split(",")[0]?.trim().toLowerCase();
+  const forwardedProto = input?.forwardedProto
+    ?.split(",")[0]
+    ?.trim()
+    .toLowerCase();
   const protocol = forwardedProto || (isLocalHost(host) ? "http" : "https");
 
   return `${protocol}://${host.replace(/\/+$/, "")}`;
@@ -1641,11 +1661,24 @@ export function absoluteCanonicalSiteUrl(path: string) {
   return `${OPTIMITRON_CANONICAL_ORIGIN}${normalizePath(path)}`;
 }
 
-export function buildTrialAbundanceSurveyUrl(organizationSlug: string) {
-  return `${TRIAL_ABUNDANCE_SURVEY_CONFIG.canonicalOrigin}/survey/${encodeURIComponent(
-    organizationSlug,
-  )}`;
+export function buildOrganizationSurveyUrl(
+  organizationSlug: string,
+  options?: { referralCode?: string | null },
+) {
+  const url = new URL(
+    `/survey/${encodeURIComponent(organizationSlug)}`,
+    WAR_ON_DISEASE_CONFIG.canonicalOrigin,
+  );
+
+  const referralCode = options?.referralCode?.trim();
+  if (referralCode) {
+    url.searchParams.set("ref", referralCode);
+  }
+
+  return url.toString();
 }
+
+export const buildTrialAbundanceSurveyUrl = buildOrganizationSurveyUrl;
 
 export function absoluteConfiguredSiteUrl(
   path: string,

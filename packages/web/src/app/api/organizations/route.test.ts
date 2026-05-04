@@ -36,7 +36,7 @@ describe("organizations route", () => {
     await expect(response.json()).resolves.toEqual({ error: "Unauthorized" });
   });
 
-  it("creates pending organizations through the owner-creating helper", async () => {
+  it("creates approved organizations through the owner-creating helper", async () => {
     mocks.requireAuth.mockResolvedValue({
       userId: "user_1",
       userEmail: "owner@example.com",
@@ -44,7 +44,7 @@ describe("organizations route", () => {
     mocks.createOrganizationWithOwner.mockResolvedValue({
       id: "org_1",
       name: "Test Org",
-      status: "PENDING",
+      status: "APPROVED",
     });
 
     const response = await POST(
@@ -63,6 +63,7 @@ describe("organizations route", () => {
       expect.objectContaining({
         contactEmail: "owner@example.com",
         name: "Test Org",
+        status: "APPROVED",
         website: "https://example.org",
       }),
       "user_1",

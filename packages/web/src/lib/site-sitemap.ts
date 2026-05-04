@@ -27,7 +27,7 @@ const STATIC_SITEMAP_ROUTES: SiteSitemapRoute[] = [
   { path: ROUTES.legal, priority: 0.6, changeFrequency: "monthly" },
   { path: ROUTES.impact, priority: 0.75, changeFrequency: "weekly" },
   { path: ROUTES.endorse, priority: 0.7, changeFrequency: "weekly" },
-  { path: ROUTES.campaign, priority: 0.65, changeFrequency: "weekly" },
+  { path: ROUTES.signatories, priority: 0.65, changeFrequency: "weekly" },
   { path: ROUTES.people, priority: 0.65, changeFrequency: "weekly" },
   { path: ROUTES.governments, priority: 0.8, changeFrequency: "weekly" },
   { path: ROUTES.declaration, priority: 0.8, changeFrequency: "monthly" },

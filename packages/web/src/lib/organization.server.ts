@@ -92,7 +92,11 @@ export async function findOrCreateOrganization(
   });
 
   if (existingByName) {
-    const nextSlug = await getAvailableSlug(db, slugify(name), existingByName.id);
+    const nextSlug = await getAvailableSlug(
+      db,
+      slugify(name),
+      existingByName.id,
+    );
 
     return db.organization.update({
       where: { id: existingByName.id },
@@ -159,8 +163,8 @@ interface CreateOrganizationOptions {
 
 /**
  * Public-facing creation path: creates an Organization and immediately inserts
- * an owner OrganizationMember row in the same transaction. Most public callers
- * default to PENDING; the signatory flow opts into APPROVED for post-moderation.
+ * an owner OrganizationMember row in the same transaction. New organizations
+ * default to APPROVED so their survey/referral links work immediately.
  * Callers must pass an authenticated user id.
  */
 export async function createOrganizationWithOwner(
@@ -175,7 +179,9 @@ export async function createOrganizationWithOwner(
 
   const baseSlug = slugify(input.slug?.trim() || name);
   if (!baseSlug) {
-    throw new Error("Organization slug is required or must be derivable from name");
+    throw new Error(
+      "Organization slug is required or must be derivable from name",
+    );
   }
 
   return prisma.$transaction(async (tx) => {
@@ -191,7 +197,9 @@ export async function createOrganizationWithOwner(
       });
 
       if (existingByName) {
-        throw new Error(`Organization name already exists: ${existingByName.name}`);
+        throw new Error(
+          `Organization name already exists: ${existingByName.name}`,
+        );
       }
 
       const existingBySlug = await tx.organization.findUnique({
@@ -200,7 +208,9 @@ export async function createOrganizationWithOwner(
       });
 
       if (existingBySlug) {
-        throw new Error(`Organization slug already exists: ${existingBySlug.slug}`);
+        throw new Error(
+          `Organization slug already exists: ${existingBySlug.slug}`,
+        );
       }
     } else {
       nextSlug = await getAvailableSlug(tx, baseSlug);
@@ -211,7 +221,7 @@ export async function createOrganizationWithOwner(
         name,
         slug: nextSlug,
         type: input.type ?? OrgType.OTHER,
-        status: input.status ?? OrgStatus.PENDING,
+        status: input.status ?? OrgStatus.APPROVED,
         creatorId: creatorUserId,
         website: input.website ?? null,
         description: input.description ?? null,
@@ -352,7 +362,9 @@ export class ForbiddenError extends Error {
 }
 
 export class LastOwnerError extends Error {
-  constructor(message = "Cannot remove or demote the last owner of the organization") {
+  constructor(
+    message = "Cannot remove or demote the last owner of the organization",
+  ) {
     super(message);
     this.name = "LastOwnerError";
   }
@@ -367,11 +379,16 @@ const ORGANIZATION_MEMBER_ROLES: ReadonlySet<OrganizationMemberRole> = new Set([
   "viewer",
 ]);
 
-export function isOrganizationMemberRole(value: string): value is OrganizationMemberRole {
+export function isOrganizationMemberRole(
+  value: string,
+): value is OrganizationMemberRole {
   return ORGANIZATION_MEMBER_ROLES.has(value as OrganizationMemberRole);
 }
 
-async function isOrgOwner(userId: string, organizationId: string): Promise<boolean> {
+async function isOrgOwner(
+  userId: string,
+  organizationId: string,
+): Promise<boolean> {
   const membership = await prisma.organizationMember.findUnique({
     where: { organizationId_userId: { organizationId, userId } },
     select: { role: true },
@@ -389,7 +406,9 @@ async function assertNotLastOwner(
   });
   if (ownerCount <= 1) {
     const targetMembership = await tx.organizationMember.findUnique({
-      where: { organizationId_userId: { organizationId, userId: userIdBeingChanged } },
+      where: {
+        organizationId_userId: { organizationId, userId: userIdBeingChanged },
+      },
       select: { role: true },
     });
     if (targetMembership?.role === "owner") {
@@ -421,7 +440,9 @@ export async function updateOrganization(
   options: UpdateOrganizationOptions = {},
 ) {
   if (!(await canManageOrganization(callerUserId, organizationId))) {
-    throw new ForbiddenError("You do not have permission to manage this organization");
+    throw new ForbiddenError(
+      "You do not have permission to manage this organization",
+    );
   }
 
   if (
@@ -453,8 +474,12 @@ export async function updateOrganization(
     const baseSource =
       patch.slug && patch.slug.trim()
         ? patch.slug.trim()
-        : (data.name as string | undefined) ?? existing.name;
-    const nextSlug = await getAvailableSlug(prisma, slugify(baseSource), existing.id);
+        : ((data.name as string | undefined) ?? existing.name);
+    const nextSlug = await getAvailableSlug(
+      prisma,
+      slugify(baseSource),
+      existing.id,
+    );
     data.slug = nextSlug;
   }
 
@@ -486,7 +511,9 @@ export async function addOrganizationMember(
     throw new Error(`Invalid role: ${role}`);
   }
   if (!(await canManageOrganization(callerUserId, organizationId))) {
-    throw new ForbiddenError("You do not have permission to manage this organization");
+    throw new ForbiddenError(
+      "You do not have permission to manage this organization",
+    );
   }
 
   const targetUser = await prisma.user.findUnique({
@@ -499,7 +526,9 @@ export async function addOrganizationMember(
 
   return prisma.$transaction(async (tx) => {
     return tx.organizationMember.upsert({
-      where: { organizationId_userId: { organizationId, userId: targetUserId } },
+      where: {
+        organizationId_userId: { organizationId, userId: targetUserId },
+      },
       update: { role },
       create: { organizationId, userId: targetUserId, role },
     });
@@ -512,14 +541,21 @@ export async function removeOrganizationMember(
   targetUserId: string,
 ) {
   const isSelfRemoval = callerUserId === targetUserId;
-  if (!isSelfRemoval && !(await canManageOrganization(callerUserId, organizationId))) {
-    throw new ForbiddenError("You do not have permission to manage this organization");
+  if (
+    !isSelfRemoval &&
+    !(await canManageOrganization(callerUserId, organizationId))
+  ) {
+    throw new ForbiddenError(
+      "You do not have permission to manage this organization",
+    );
   }
 
   await prisma.$transaction(async (tx) => {
     await assertNotLastOwner(tx, organizationId, targetUserId);
     await tx.organizationMember.delete({
-      where: { organizationId_userId: { organizationId, userId: targetUserId } },
+      where: {
+        organizationId_userId: { organizationId, userId: targetUserId },
+      },
     });
   });
 }
@@ -534,7 +570,9 @@ export async function updateOrganizationMemberRole(
     throw new Error(`Invalid role: ${role}`);
   }
   if (!(await canManageOrganization(callerUserId, organizationId))) {
-    throw new ForbiddenError("You do not have permission to manage this organization");
+    throw new ForbiddenError(
+      "You do not have permission to manage this organization",
+    );
   }
 
   return prisma.$transaction(async (tx) => {
@@ -542,7 +580,9 @@ export async function updateOrganizationMemberRole(
       await assertNotLastOwner(tx, organizationId, targetUserId);
     }
     return tx.organizationMember.update({
-      where: { organizationId_userId: { organizationId, userId: targetUserId } },
+      where: {
+        organizationId_userId: { organizationId, userId: targetUserId },
+      },
       data: { role },
     });
   });
@@ -553,7 +593,9 @@ export async function listOrganizationMembers(
   callerUserId: string,
 ) {
   if (!(await canManageOrganization(callerUserId, organizationId))) {
-    throw new ForbiddenError("You do not have permission to view this organization's members");
+    throw new ForbiddenError(
+      "You do not have permission to view this organization's members",
+    );
   }
 
   return prisma.organizationMember.findMany({

@@ -29,7 +29,7 @@ describe("organization.server", () => {
     mocks.txOrganizationMemberCreate.mockReset();
   });
 
-  it("creates pending orgs with an owner membership for public creation", async () => {
+  it("creates approved orgs with an owner membership for public creation", async () => {
     mocks.transaction.mockImplementation(async (callback) =>
       callback({
         organization: {
@@ -53,7 +53,7 @@ describe("organization.server", () => {
         data: expect.objectContaining({
           creatorId: "user_1",
           name: "Test Org",
-          status: OrgStatus.PENDING,
+          status: OrgStatus.APPROVED,
         }),
       }),
     );
@@ -132,7 +132,9 @@ describe("organization.server", () => {
         },
       }),
     );
-    mocks.txOrganizationFindFirst.mockResolvedValue({ name: "Open Philanthropy" });
+    mocks.txOrganizationFindFirst.mockResolvedValue({
+      name: "Open Philanthropy",
+    });
 
     await expect(
       createOrganizationWithOwner(

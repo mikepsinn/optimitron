@@ -3,7 +3,7 @@ import * as siteRegistry from "@/lib/site";
 import {
   SITE_VARIANT_OVERRIDE_COOKIE,
   SITE_VARIANT_OVERRIDE_HEADER,
-  buildTrialAbundanceSurveyUrl,
+  buildOrganizationSurveyUrl,
   getRequestSiteOrigin,
   getCanonicalHostForSiteKey,
   getEnabledStaticPathsForSite,
@@ -38,9 +38,7 @@ describe("site variant registry", () => {
 
   it("maps public domains to their audience-specific site variants", () => {
     expect(getSiteFromHost("warondisease.org").key).toBe("warOnDisease");
-    expect(getSiteFromHost("1percenttreaty.org").key).toBe(
-      "onePercentTreaty",
-    );
+    expect(getSiteFromHost("1percenttreaty.org").key).toBe("onePercentTreaty");
     expect(getSiteFromHost("trialabundancesurvey.org").key).toBe(
       "trialAbundanceSurvey",
     );
@@ -156,7 +154,9 @@ describe("site variant registry", () => {
   it("keeps Profile out of the War on Disease menu chrome", () => {
     const treatySections = getSiteConfig("onePercentTreaty").ui.nav.sections;
     const treatyAccount = treatySections.find((s) => s.id === "account");
-    expect(treatyAccount?.items.some((i) => i.href === ROUTES.profile)).toBe(true);
+    expect(treatyAccount?.items.some((i) => i.href === ROUTES.profile)).toBe(
+      true,
+    );
 
     const warItems = getSiteConfig("warOnDisease").ui.nav.sections.flatMap(
       (section) => section.items,
@@ -176,9 +176,7 @@ describe("site variant registry", () => {
   it("keeps treaty signing on-domain when the current site allows it", () => {
     expect(getTreatySignUrl(getSiteConfig("optimitron"))).toBe("/treaty");
     expect(getTreatySignUrl(getSiteConfig("warOnDisease"))).toBe("/treaty");
-    expect(getTreatySignUrl(getSiteConfig("onePercentTreaty"))).toBe(
-      "/treaty",
-    );
+    expect(getTreatySignUrl(getSiteConfig("onePercentTreaty"))).toBe("/treaty");
     expect(getTreatySignUrl(getSiteConfig("trialAbundanceSurvey"))).toBe(
       "https://1percenttreaty.org/treaty",
     );
@@ -201,7 +199,9 @@ describe("site variant registry", () => {
     expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/treaty")).toBe(
       "https://1percenttreaty.org/treaty",
     );
-    expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/not-real")).toBeNull();
+    expect(
+      siteRegistry.getSiteRouteRedirect?.(surveySite, "/not-real"),
+    ).toBeNull();
   });
 
   it("treats unknown disallowed routes as ordinary 404s", () => {
@@ -235,6 +235,8 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(treatySite, "/")).toBe(true);
     expect(isSiteRouteAllowed(treatySite, "/dashboard")).toBe(true);
     expect(isSiteRouteAllowed(treatySite, "/tasks")).toBe(true);
+    expect(isSiteRouteAllowed(treatySite, "/signatories")).toBe(true);
+    expect(isSiteRouteAllowed(treatySite, "/reasoning")).toBe(false);
     expect(isSiteRouteAllowed(treatySite, "/scoreboard")).toBe(false);
     expect(isSiteRouteAllowed(treatySite, "/search")).toBe(false);
   });
@@ -242,11 +244,13 @@ describe("site variant registry", () => {
   it("allows War on Disease footer trust routes without opening the whole platform", () => {
     const warSite = getSiteFromHost("warondisease.org");
 
+    expect(isSiteRouteAllowed(warSite, "/signatories")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/campaign")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/coalition")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/endorse")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/privacy")).toBe(true);
     expect(isSiteRouteAllowed(warSite, "/terms")).toBe(true);
+    expect(isSiteRouteAllowed(warSite, "/reasoning")).toBe(false);
     expect(isSiteRouteAllowed(warSite, "/search")).toBe(false);
   });
 
@@ -264,16 +268,23 @@ describe("site variant registry", () => {
     const dfdaSite = getSiteFromHost("dfda.earth");
 
     expect(isSiteRouteAllowed(dfdaSite, "/conditions")).toBe(true);
-    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions")).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions")).toBe(
+      true,
+    );
     expect(isSiteRouteAllowed(dfdaSite, "/conditions/asthma")).toBe(true);
-    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions/asthma")).toBe(true);
+    expect(
+      isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions/asthma"),
+    ).toBe(true);
     expect(isSiteRouteAllowed(dfdaSite, "/treatments/metformin")).toBe(true);
-    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/treatments/metformin")).toBe(true);
+    expect(
+      isSiteRouteAllowed(dfdaSite, "/agencies/dfda/treatments/metformin"),
+    ).toBe(true);
     expect(isSiteRouteAllowed(dfdaSite, "/treaty")).toBe(false);
   });
 
   it("filters static smoke paths by site capability", () => {
     const candidates = [
+      ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
       ROUTES.endorse,
@@ -288,7 +299,10 @@ describe("site variant registry", () => {
       getEnabledStaticPathsForSite(getSiteConfig("optimitron"), candidates),
     ).toEqual([ROUTES.donate, ROUTES.treaty]);
     expect(
-      getEnabledStaticPathsForSite(getSiteConfig("onePercentTreaty"), candidates),
+      getEnabledStaticPathsForSite(
+        getSiteConfig("onePercentTreaty"),
+        candidates,
+      ),
     ).toEqual([
       ROUTES.campaign,
       ROUTES.coalition,
@@ -296,6 +310,7 @@ describe("site variant registry", () => {
       ROUTES.endorse,
       ROUTES.impact,
       ROUTES.legal,
+      ROUTES.signatories,
       ROUTES.treaty,
       ROUTES.why,
     ]);
@@ -306,10 +321,21 @@ describe("site variant registry", () => {
     expect(ROUTES.treatments).toBe("/agencies/dfda/treatments");
   });
 
-  it("builds partner survey URLs on the Trial Abundance Survey domain", () => {
-    expect(buildTrialAbundanceSurveyUrl("trial-partner")).toBe(
-      "https://trialabundancesurvey.org/survey/trial-partner",
+  it("builds partner survey URLs on the War on Disease domain", () => {
+    expect(buildOrganizationSurveyUrl("trial-partner")).toBe(
+      "https://warondisease.org/survey/trial-partner",
     );
+    expect(
+      buildOrganizationSurveyUrl("trial-partner", {
+        referralCode: "mike psinn",
+      }),
+    ).toBe("https://warondisease.org/survey/trial-partner?ref=mike+psinn");
+  });
+
+  it("keeps War on Disease survey embeds free of full campaign chrome", () => {
+    expect(
+      getSiteConfig("warOnDisease").routePolicy.minimalChromePrefixes,
+    ).toContain(ROUTES.survey);
   });
 
   it("keeps Trial Abundance Survey partner copy direct", () => {
