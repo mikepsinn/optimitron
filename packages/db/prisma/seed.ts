@@ -2086,7 +2086,7 @@ async function seedTreatyTasks() {
     await createTaskWithImpact({
       task: {
         id: `icewad-grant-${slug}`,
-        taskKey: `program:icewad:grant:${slug}`,
+        taskKey: `icewad:grant:${slug}`,
         parentTaskId: treatyTask.id,
         assigneeOrganizationId: organization.id,
         title: "Fund the International Campaign to End War and Disease",

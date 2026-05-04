@@ -18,15 +18,9 @@ import { prisma } from "@/lib/prisma";
 import { buildTriggerContext, fireTaskTrigger } from "@/lib/triggers";
 import { getReferralInvitationFirstName } from "@/lib/referral-invitation-copy";
 
-const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
-
 type ReferralInvitationTaskClient =
   | Pick<PrismaClient, "task" | "taskComment" | "taskCommunicationEndpoint">
   | Pick<Prisma.TransactionClient, "task" | "taskComment" | "taskCommunicationEndpoint">;
-
-export function buildReferralInvitationTaskKey(inviteToken: string) {
-  return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
-}
 
 export function buildReferralInvitationTaskTitle(recipientName: string) {
   const firstName = getReferralInvitationFirstName(recipientName) || recipientName;

@@ -9,6 +9,7 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { GLOBAL_POPULATION_2024 } from "@optimitron/data/parameters";
 import { MAJORITY_OF_HUMANS_ON_EARTH_VALUE } from "@/lib/majority-humanity-target";
 import { getTaskPath, ROUTES } from "@/lib/routes";
+import { EARTH_OPTIMIZATION_PRIZE_ROOT_TASK_ID } from "@/lib/tasks/task-keys";
 
 const majorityTargetPct =
   (MAJORITY_OF_HUMANS_ON_EARTH_VALUE / GLOBAL_POPULATION_2024.value) * 100;
@@ -33,7 +34,7 @@ export function HowToWinSection() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <GameCTA href={getTaskPath("win-earth-optimization-prize")} variant="primary">
+          <GameCTA href={getTaskPath(EARTH_OPTIMIZATION_PRIZE_ROOT_TASK_ID)} variant="primary">
             Work the Top Task
           </GameCTA>
           <GameCTA href={ROUTES.scoreboard} variant="secondary">

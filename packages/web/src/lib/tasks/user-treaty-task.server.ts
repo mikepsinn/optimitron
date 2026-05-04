@@ -17,13 +17,15 @@ import { TaskCommentKind, TaskCommentSource, TaskStatus } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { buildTriggerContext, fireTaskTrigger } from "@/lib/triggers";
+import {
+  getUserTreatySubtaskKey as getUserTreatySubtaskKeyShared,
+  getUserTreatyTaskKey as getUserTreatyTaskKeyShared,
+} from "@/lib/tasks/task-keys";
 
 export const USER_TREATY_TASK_TITLE =
   "Get 4 billion people to vote on the 1% Treaty";
 export const PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE =
   "Promote to Humanity Manager";
-
-const USER_TREATY_TASK_KEY_PREFIX = "program:one-percent-treaty:user";
 
 export type UserTreatySubtaskKind =
   | "completeTraining"
@@ -58,14 +60,14 @@ const WISHONIA_WELCOME_COMMENT = [
 ].join("\n");
 
 export function getUserTreatyTaskKey(userId: string) {
-  return `${USER_TREATY_TASK_KEY_PREFIX}:${userId}`;
+  return getUserTreatyTaskKeyShared(userId);
 }
 
 export function getUserTreatySubtaskKey(
   userId: string,
   kind: UserTreatySubtaskKind,
 ) {
-  return `${getUserTreatyTaskKey(userId)}:${kind}`;
+  return getUserTreatySubtaskKeyShared(userId, kind);
 }
 
 export interface EnsureUserTreatyTaskResult {

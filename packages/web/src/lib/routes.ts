@@ -79,6 +79,7 @@ export const ROUTES = {
   profile: "/profile",
   dashboard: "/dashboard",
   tasks: "/tasks",
+  employees: "/employees",
   census: "/census",
   checkIn: "/check-in",
   settings: "/settings",
@@ -196,8 +197,8 @@ export const dihLink: NavItem = {
   label: AGENCIES.dih.dName,
   emoji: "🧬",
   description:
-    "Open the Optimitron agency for funding disease-focused institutes. The NIH, but pointed at measurable health instead of grant-page archaeology.",
-  tagline: "Fund institutes that turn disease queues into work queues",
+    "Create and fund disease-focused institutes by what humans actually need cured.",
+  tagline: "Fund institutes for diseases humans need cured",
   matchPrefixes: [ROUTES.dih],
   cta: "Open DIH",
 };
@@ -207,8 +208,8 @@ export const dfdaLink: NavItem = {
   label: AGENCIES.dfda.dName,
   emoji: "💊",
   description:
-    "Open the Optimitron agency for conditions, treatments, trials, and outcome labels. Drug evidence, minus the ritual paperwork fog machine.",
-  tagline: "Compare treatments before the brochure wins",
+    "Compare conditions, treatments, trials, and outcomes before the brochure wins.",
+  tagline: "Compare treatments by outcomes",
   matchPrefixes: [ROUTES.dfda],
   cta: "Open DFDA",
 };
@@ -377,8 +378,8 @@ export const dashboardLink: NavItem = {
   label: "Dashboard",
   emoji: "📊",
   description:
-    "Your referral link, your rank, and proof you did something other than argue about it on the internet. The rare human achievement of clicking a button.",
-  tagline: "Your referral link, your rank, your progress",
+    "Your referral link, your rank, your treaty tasks, and who still needs a reminder.",
+  tagline: "Your link, rank, tasks, and reminders",
 
   cta: "Open Dashboard",
 };
@@ -386,9 +387,9 @@ export const dashboardLink: NavItem = {
 export const treatyDashboardLink: NavItem = {
   ...dashboardLink,
   description:
-    "Assign humans Earth Optimization Tasks and track the assignments you created.",
+    "Invite humans to vote on the 1% Treaty and track who still needs a reminder.",
   label: "Dashboard",
-  tagline: "Assign and track Earth Optimization Tasks",
+  tagline: "Invite voters and track reminders",
 };
 
 export const tasksLink: NavItem = {
@@ -396,26 +397,27 @@ export const tasksLink: NavItem = {
   label: "Tasks",
   emoji: "🎯",
   description:
-    "Concrete tasks for actual humans, including the ones who run states and still need reminding. Claim what you can do. Track what others are supposed to do.",
-  tagline: "Claim what you can do. Track what others should do.",
+    "Find public tasks that move health, income, and treaty adoption. Claim one or remind the person responsible.",
+  tagline: "Claim tasks or remind the person responsible",
   cta: "Open Tasks",
 };
 
-export const treatyTasksLink: NavItem = {
-  ...tasksLink,
-  description:
-    "Track public leaders and the Earth Optimization Tasks assigned to humans who still need to vote.",
+export const presidentManagementLink: NavItem = {
+  href: ROUTES.employees,
   label: "President Management System",
-  tagline: "Track public leaders and treaty assignments",
+  emoji: "🪪",
+  description:
+    "You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.",
+  tagline: "Remind presidents to promote the general welfare",
+  cta: "Manage Presidents",
 };
 
 export const searchLink: NavItem = {
   href: ROUTES.search,
   label: "Search",
   emoji: "🔎",
-  description:
-    "Search pages, tasks, and the manual from one screen. Because spelunking through menus is not a serious information architecture.",
-  tagline: "Search pages, tasks, and manual docs from one place",
+  description: "Search pages, tasks, and the manual.",
+  tagline: "Search pages, tasks, and manual",
   matchPrefixes: [ROUTES.search],
   cta: "Search Site",
 };
@@ -478,8 +480,8 @@ export const inviteVoterLink: NavItem = {
   label: "Invite a Voter",
   emoji: "📨",
   description:
-    "Assign one human an Earth optimization task: vote on the 1% Treaty.",
-  tagline: "Assign one Earth optimization task",
+    "Help one human vote on the 1% Treaty.",
+  tagline: "Help someone vote",
   cta: "Invite",
 };
 
@@ -498,11 +500,12 @@ export const toolsLink: NavItem = {
   href: ROUTES.tools,
   label: "Tools",
   emoji: "🧰",
-  description: "Eighteen weapons for fixing civilisation. All free. Your move.",
-  tagline: "Every tool for fixing civilisation — all free",
+  description:
+    "Free tools for voting, evidence, budgets, policy, outreach, and task tracking.",
+  tagline: "Free tools for votes, tasks, budgets, and evidence",
   matchPrefixes: [ROUTES.tools],
 
-  cta: "Open Armory",
+  cta: "Open Tools",
 };
 
 export const efficiencyLink: NavItem = {
@@ -753,8 +756,8 @@ export const prizeLink: NavItem = {
   href: ROUTES.prize,
   label: "Prize",
   emoji: "🏆",
-  description: `A dominant assurance game with projected ${poolMultiple} return if thresholds are missed. Currently seeking a foundation host.`,
-  tagline: "Deposit, recruit, win or get ~4.2x back",
+  description: `Fund the prize pool, recruit players, and get up to ${poolMultiple} back if the world misses the target.`,
+  tagline: `Deposit, recruit, win or get ${poolMultiple} back`,
   cta: "Play the Game",
 };
 
@@ -808,8 +811,8 @@ export const contributeLink: NavItem = {
   label: "Contribute",
   emoji: "🤝",
   description:
-    "Four useful ways to help: vote, fund, code, or feed the machine real data.",
-  tagline: "Vote, fund, code, or feed the machine",
+    "Four useful ways to help: vote, fund, code, or add useful data.",
+  tagline: "Vote, fund, code, or add useful data",
 
   cta: "Contribute",
 };

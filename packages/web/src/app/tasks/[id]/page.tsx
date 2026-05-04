@@ -59,7 +59,10 @@ import {
   getTaskActivityTimeline,
   getTaskCommentFeed,
 } from "@/lib/tasks/task-comments.server";
-import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
+import {
+  isTreatySignerTaskKeyPrefix,
+  TREATY_PARENT_TASK_ID,
+} from "@/lib/tasks/task-keys";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
 function formatDueDate(value: Date) {
@@ -398,7 +401,7 @@ export default async function TaskDetailPage({
     taskUrl: getTaskPath(task.id),
   };
 
-  const isTreatySigner = task.taskKey?.startsWith("program:one-percent-treaty:signer:") ?? false;
+  const isTreatySigner = isTreatySignerTaskKeyPrefix(task.taskKey);
   const leaderName = task.assigneePerson?.displayName ?? targetLabel;
   const referralInvitation = task.referralInvitations[0] ?? null;
 

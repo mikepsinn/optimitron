@@ -4,11 +4,10 @@ import { LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer";
 import { RepresentedPersonForm } from "@/components/people/RepresentedPersonForm";
 import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner";
 import { Button } from "@/components/retroui/Button";
-import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
+import { PresidentManagementSystemSection } from "@/components/tasks/PresidentManagementSystemSection";
 import { TreatyContent } from "@/components/treaty/TreatyContent";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
@@ -43,10 +42,6 @@ export function TreatyTaskDashboardClient({
     router.refresh();
   };
 
-  const overdueCount = signerTasks.filter(
-    (t) => t.dueAt != null && t.dueAt.getTime() < Date.now(),
-  ).length;
-
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:py-12">
@@ -77,21 +72,13 @@ export function TreatyTaskDashboardClient({
           variant="treaty"
         />
 
-        <TreatyReminderComposer />
-
-        <RepresentedPersonForm onCreated={refreshPage} />
-
-        {treatyProgram ? (
-          <ProgramTaskSection
-            task={treatyProgram}
-            subtasks={signerTasks}
-            subtasksTitle={
-              overdueCount > 0
-                ? `↳ ${overdueCount} employees have overdue tasks`
-                : undefined
-            }
-          />
-        ) : null}
+        <PresidentManagementSystemSection
+          showIntro={false}
+          signerTasks={signerTasks}
+          treatyProgram={treatyProgram}
+        >
+          <RepresentedPersonForm onCreated={refreshPage} />
+        </PresidentManagementSystemSection>
 
         <section className="pt-10">
           <TreatyContent />
