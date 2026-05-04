@@ -22,13 +22,10 @@ import {
   STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
+  TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   TREATY_REDUCTION_PCT,
-  fmtRaw,
+  type Parameter,
 } from "@optimitron/data/parameters";
-
-const HOURS_PER_YEAR = 24 * 365;
-const SUFFERING_YEARS_VALUE =
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS.value / HOURS_PER_YEAR;
 import { ChaplinReference } from "@/components/donate/ChaplinReference";
 import { DonationImpactCalculator } from "@/components/donate/DonationImpactCalculator";
 import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
@@ -37,6 +34,18 @@ import { getRouteMetadata } from "@/lib/metadata";
 import { donateLink } from "@/lib/routes";
 
 export const metadata = getRouteMetadata(donateLink);
+
+const HOURS_PER_YEAR = 24 * 365;
+const SUFFERING_YEARS_VALUE =
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS.value / HOURS_PER_YEAR;
+const SUFFERING_YEARS_PARAM: Parameter = {
+  ...DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
+  value: SUFFERING_YEARS_VALUE,
+  unit: "years",
+  displayName: "Years of suffering and disability prevented",
+  description:
+    "DFDA trial capacity plus efficacy lag suffering burden, converted from hours to years.",
+};
 
 interface Step {
   n: number;
@@ -50,7 +59,10 @@ const STEPS: Step[] = [
     headline: (
       <>
         Earth approves about{" "}
-        <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} figures={2} />{" "}
+        <ParameterValue
+          param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
+          figures={2}
+        />{" "}
         new treatments per year.
       </>
     ),
@@ -61,7 +73,10 @@ const STEPS: Step[] = [
     headline: (
       <>
         Earth has about{" "}
-        <ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} figures={3} />{" "}
+        <ParameterValue
+          param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+          figures={3}
+        />{" "}
         known diseases with no treatment.
       </>
     ),
@@ -94,8 +109,8 @@ const STEPS: Step[] = [
     headline: (
       <>
         The bottleneck is trial slots:{" "}
-        <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} figures={2} />{" "}
-        per year worldwide.
+        <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} figures={2} /> per
+        year worldwide.
       </>
     ),
     body: (
@@ -148,7 +163,9 @@ const STEPS: Step[] = [
     n: 7,
     headline: (
       <>
-        The 443-year queue compresses to{" "}
+        The current queue compresses from{" "}
+        <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} figures={3} />{" "}
+        years to{" "}
         <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} figures={3} /> years.
       </>
     ),
@@ -160,8 +177,8 @@ const STEPS: Step[] = [
           figures={3}
         />{" "}
         years sooner. Add{" "}
-        <ParameterValue param={EFFICACY_LAG_YEARS} figures={2} /> years of removed
-        FDA efficacy lag →{" "}
+        <ParameterValue param={EFFICACY_LAG_YEARS} figures={2} /> years of
+        removed FDA efficacy lag →{" "}
         <ParameterValue
           param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS}
           figures={3}
@@ -174,8 +191,8 @@ const STEPS: Step[] = [
     n: 8,
     headline: (
       <>
-        <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} figures={3} /> people
-        die from disease every day.
+        <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} figures={3} />{" "}
+        people die from disease every day.
       </>
     ),
     body: (
@@ -186,12 +203,8 @@ const STEPS: Step[] = [
           figures={3}
         />{" "}
         deaths prevented and{" "}
-        <ParameterValue
-          param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
-          figures={3}
-          valueOverride={fmtRaw(SUFFERING_YEARS_VALUE, 3)}
-        />{" "}
-        years of suffering and disability prevented.
+        <ParameterValue param={SUFFERING_YEARS_PARAM} figures={3} /> years of
+        suffering and disability prevented.
       </>
     ),
   },
@@ -210,14 +223,13 @@ const STEPS: Step[] = [
     ),
     body: (
       <>
-        Earth owns{" "}
-        <ParameterValue param={GLOBAL_WARHEAD_COUNT} figures={3} /> nuclear
-        warheads.{" "}
+        Earth owns <ParameterValue param={GLOBAL_WARHEAD_COUNT} figures={3} />{" "}
+        nuclear warheads.{" "}
         <ParameterValue param={NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={2} />{" "}
         is enough for nuclear winter. We have{" "}
         <ParameterValue param={NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} />{" "}
-        apocalypses&apos; worth of weapons. Keep 121. Spend the other one
-        curing every disease.
+        apocalypses&apos; worth of weapons. Keep 121. Spend the other one curing
+        every disease.
       </>
     ),
   },
@@ -238,8 +250,17 @@ const STEPS: Step[] = [
       <>
         $0.014 per healthy life-year. Bed nets — currently the most
         cost-effective charity on Earth — are{" "}
-        <ParameterValue param={BED_NETS_COST_PER_DALY} display="withUnit" figures={2} />.
-        This is 6,300× better. If it works.
+        <ParameterValue
+          param={BED_NETS_COST_PER_DALY}
+          display="withUnit"
+          figures={2}
+        />
+        . This is{" "}
+        <ParameterValue
+          param={TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER}
+          figures={3}
+        />
+        × better. If it works.
       </>
     ),
   },

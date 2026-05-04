@@ -59,7 +59,8 @@ export function DonationImpactCalculator() {
   const [votesNeeded, setVotesNeeded] = useState(VOTES_DEFAULT);
   const [costPerVote, setCostPerVote] = useState(COST_PER_VOTE_DEFAULT);
   const [successProbability, setSuccessProbability] = useState(SUCCESS_DEFAULT);
-  const [treatyReductionPct, setTreatyReductionPct] = useState(REDUCTION_DEFAULT);
+  const [treatyReductionPct, setTreatyReductionPct] =
+    useState(REDUCTION_DEFAULT);
   const [draft, setDraft] = useState<Draft>({ field: "usd", value: "100" });
   const [frequency, setFrequency] = useState<DonationFrequency>("monthly");
   const [loading, setLoading] = useState(false);
@@ -177,7 +178,7 @@ export function DonationImpactCalculator() {
         <div className="space-y-6 border-b border-black p-5 sm:p-6 lg:border-b-0 lg:border-r">
           <h2 className="text-2xl font-semibold">Pick your donation</h2>
           <p className="text-sm leading-6 text-neutral-700">
-            Type in any box. The other three update.{" "}
+            Type in any box. The others update.{" "}
             <a
               href="#how-this-is-calculated"
               className="font-semibold underline underline-offset-2"
@@ -249,8 +250,8 @@ export function DonationImpactCalculator() {
               checkoutAmount * (1 - FEDERAL_TAX_BRACKET_RATE),
             ).toLocaleString()}{" "}
             if you itemize in a {Math.round(FEDERAL_TAX_BRACKET_RATE * 100)}%
-            bracket. Processed for {NONPROFIT.legalName} (EIN{" "}
-            {NONPROFIT.ein}), a U.S. 501(c)(3) public charity.
+            bracket. Processed for {NONPROFIT.legalName} (EIN {NONPROFIT.ein}),
+            a U.S. 501(c)(3) public charity.
           </p>
         </div>
 
@@ -388,7 +389,13 @@ function SliderRow({
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Row({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex items-baseline justify-between gap-3 py-1">
       <span className="text-neutral-700">{label}</span>
@@ -430,7 +437,8 @@ function formatQuantity(value: number): string {
 
 function formatPrice(value: number): string {
   if (!Number.isFinite(value) || value <= 0) return "—";
-  if (value >= 1) return value.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  if (value >= 1)
+    return value.toLocaleString("en-US", { maximumFractionDigits: 2 });
   if (value >= 0.01) return value.toFixed(2);
   return value.toPrecision(2);
 }
