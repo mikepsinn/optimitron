@@ -1,38 +1,105 @@
 "use client";
 
-import React from 'react';
-
 interface NeobrutalistLoaderProps {
   message?: string;
   submessage?: string;
   size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+interface NeobrutalistLoaderMarkProps {
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+export function NeobrutalistLoaderMark({
+  size = 'md',
+  className = '',
+}: NeobrutalistLoaderMarkProps) {
+  const sizeClasses = {
+    sm: 'h-16 w-16',
+    md: 'h-24 w-24',
+    lg: 'h-32 w-32',
+  };
+
+  const cargoClasses = {
+    sm: 'h-3 w-3',
+    md: 'h-4 w-4',
+    lg: 'h-5 w-5',
+  };
+
+  return (
+    <div
+      aria-label="Loading Earth Optimization System"
+      className={`relative ${sizeClasses[size]} ${className}`}
+      role="status"
+    >
+      <div className="absolute inset-0 border-4 border-foreground bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="absolute inset-[18%] rounded-full border-2 border-foreground" />
+        <div className="absolute left-1/2 top-[18%] h-[64%] w-[2px] -translate-x-1/2 bg-foreground/70" />
+        <div className="absolute left-[18%] top-1/2 h-[2px] w-[64%] -translate-y-1/2 bg-foreground/70" />
+        <div className="absolute left-[28%] top-[18%] h-[64%] w-[18%] rounded-full border-l-2 border-r-2 border-foreground/70" />
+        <div className="absolute right-[28%] top-[18%] h-[64%] w-[18%] rounded-full border-l-2 border-r-2 border-foreground/70" />
+
+        <div className="earth-os-orbit absolute inset-2">
+          <div
+            className={`absolute left-1/2 top-0 -translate-x-1/2 border-2 border-foreground bg-brutal-cyan shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${cargoClasses[size]}`}
+          />
+        </div>
+
+        <div className="absolute bottom-2 left-2 right-2 h-2 border-2 border-foreground bg-background">
+          <div className="earth-os-packet h-full w-1/3 bg-foreground" />
+        </div>
+      </div>
+
+      <style jsx>{`
+        .earth-os-orbit {
+          animation: earth-os-orbit 1.8s linear infinite;
+          transform-origin: center;
+        }
+
+        .earth-os-packet {
+          animation: earth-os-packet 1.2s steps(5, end) infinite;
+        }
+
+        @keyframes earth-os-orbit {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes earth-os-packet {
+          0% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(200%);
+          }
+          100% {
+            transform: translateX(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .earth-os-orbit,
+          .earth-os-packet {
+            animation: none;
+          }
+        }
+      `}</style>
+    </div>
+  );
 }
 
 export function NeobrutalistLoader({
   message = 'Booting Earth Optimization System',
   submessage = 'Thank you for your patience. Your civilization is very important to us.',
   size = 'md',
+  className = '',
 }: NeobrutalistLoaderProps) {
-  const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16',
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center py-12 gap-6">
-      {/* Animated Neobrutalist Squares */}
-      <div className="relative flex gap-2">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className={`${sizeClasses[size]} border-4 border-foreground bg-brutal-pink rounded-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
-            style={{
-              animation: `bounce 1.4s ease-in-out ${i * 0.16}s infinite`,
-            }}
-          />
-        ))}
-      </div>
+    <div className={`flex flex-col items-center justify-center gap-6 py-12 ${className}`}>
+      <NeobrutalistLoaderMark size={size} />
 
       {/* Loading Message */}
       {message && (
@@ -48,23 +115,6 @@ export function NeobrutalistLoader({
           {submessage}
         </p>
       )}
-
-      <style jsx>{`
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(0) rotate(0deg);
-          }
-          25% {
-            transform: translateY(-20px) rotate(-5deg);
-          }
-          50% {
-            transform: translateY(0) rotate(0deg);
-          }
-          75% {
-            transform: translateY(-10px) rotate(5deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

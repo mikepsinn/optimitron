@@ -5191,30 +5191,44 @@ export function createMcpServer(
         case "updateOrganization": {
           if (!userId) return authRequired(name, "This tool edits an existing organization.");
           const orgServer = await import("./organization.server");
-          const organizationId = (a.organizationId as string) ?? "";
+          if (typeof a.organizationId !== "string") return err("organizationId must be a string");
+          const organizationId = a.organizationId;
           if (!organizationId.trim()) return err("organizationId is required");
 
           const patch: Parameters<typeof orgServer.updateOrganization>[2] = {};
-          const nullable = (raw: unknown) => (raw === "" ? null : (raw as string));
-          if (typeof a.name === "string") patch.name = a.name;
-          if (a.slug !== undefined) {
-            patch.slug = a.slug === "" ? null : (a.slug as string);
+          if (a.name !== undefined) {
+            if (typeof a.name !== "string") return err("name must be a string");
+            patch.name = a.name;
+          }
+          if (a.type !== undefined && typeof a.type !== "string") {
+            return err("type must be a string");
           }
           if (typeof a.type === "string") {
             const orgType = OrgType[a.type as keyof typeof OrgType];
             if (!orgType) return err(`type must be one of: ${Object.keys(OrgType).join(", ")}`);
             patch.type = orgType;
           }
+          if (a.status !== undefined && typeof a.status !== "string") {
+            return err("status must be a string");
+          }
           if (typeof a.status === "string" && a.status !== "") {
             const orgStatus = OrgStatus[a.status as keyof typeof OrgStatus];
             if (!orgStatus) return err(`status must be one of: ${Object.keys(OrgStatus).join(", ")}`);
             patch.status = orgStatus;
           }
-          if (a.website !== undefined) patch.website = nullable(a.website);
-          if (a.description !== undefined) patch.description = nullable(a.description);
-          if (a.logo !== undefined) patch.logo = nullable(a.logo);
-          if (a.contactEmail !== undefined) patch.contactEmail = nullable(a.contactEmail);
-          if (a.jurisdictionId !== undefined) patch.jurisdictionId = nullable(a.jurisdictionId);
+          for (const fieldName of [
+            "slug",
+            "website",
+            "description",
+            "logo",
+            "contactEmail",
+            "jurisdictionId",
+          ] as const) {
+            const raw = a[fieldName];
+            if (raw === undefined) continue;
+            if (typeof raw !== "string") return err(`${fieldName} must be a string`);
+            patch[fieldName] = raw === "" ? null : raw;
+          }
 
           try {
             return await runAuditedEarthDataTool(

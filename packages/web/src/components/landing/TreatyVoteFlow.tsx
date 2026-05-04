@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
 import { TreatyPostVoteShareFlow } from "@/components/landing/TreatyPostVoteShareFlow";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { NeobrutalistLoaderMark } from "@/components/ui/neobrutalist-loader";
 import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import confetti from "canvas-confetti";
@@ -584,7 +585,11 @@ export function TreatyVoteFlow({
               className="py-2 sm:py-4"
               contentClassName="max-w-2xl justify-start pt-0 pb-6 sm:pt-0 sm:pb-12"
             >
-              <div className="space-y-4 text-center">
+              <div className="space-y-6 text-center">
+                <NeobrutalistLoaderMark
+                  size="sm"
+                  className="mx-auto text-[var(--treaty-ink)]"
+                />
                 <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
                   Saving your vote.
                 </p>
