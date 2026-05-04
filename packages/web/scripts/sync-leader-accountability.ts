@@ -25,13 +25,13 @@ import {
 } from "../src/lib/tasks/government-task-assignee";
 import { upsertImportedTaskBundle } from "../src/lib/tasks/import-task-bundle.server";
 import {
-  getActivityTaskKey,
-} from "../src/lib/tasks/leader-activity-keys";
+  buildAccountabilityTaskKey,
+  getTreatySignerTaskKey,
+} from "../src/lib/tasks/task-keys";
 import {
   buildActivityTaskBundle,
 } from "../src/lib/tasks/leader-accountability-network";
 import { listGovernmentLeaders } from "@optimitron/data";
-import { getTreatySignerTaskKey } from "../src/lib/tasks/task-keys";
 
 const SYNC_CONCURRENCY = 8;
 
@@ -109,7 +109,7 @@ async function syncLeaderAccountability(options: SyncOptions) {
       leader: getGovernmentTaskActorLabel(slot),
       activityCount: activities.length,
       activities: activities.map((a) => ({
-        taskKey: getActivityTaskKey(a.countryCode, a.activitySlug),
+        taskKey: buildAccountabilityTaskKey(a.countryCode, a.activitySlug),
         title: a.title,
         impactTier: a.impactTier,
         taxpayerCostUsd: a.taxpayerCostUsd,

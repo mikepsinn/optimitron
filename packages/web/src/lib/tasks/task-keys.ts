@@ -1,4 +1,27 @@
+/**
+ * Task-key central registry.
+ *
+ * Single source of truth for every `taskKey` prefix and builder used in the
+ * web package. New programs, system tasks, accountability tasks, and trigger
+ * idempotency keys all add their constants here — never inline a raw string
+ * like "program:one-percent-treaty:..." anywhere else, and never define a
+ * second copy of a prefix in a per-feature file.
+ *
+ * Naming convention:
+ *   - `<NAMESPACE>_TASK_KEY` for a fully-qualified single key.
+ *   - `<NAMESPACE>_TASK_KEY_PREFIX` for a parameterized namespace.
+ *   - `build<Thing>TaskKey(...)` for parameterized builders.
+ *   - `is<Thing>TaskKey(...)` for type guards / matchers.
+ */
+
 import { getTaskPath } from "@/lib/routes";
+
+// Earth Optimization Prize root
+
+export const EARTH_OPTIMIZATION_PRIZE_ROOT_TASK_ID = "win-earth-optimization-prize";
+export const EARTH_OPTIMIZATION_PRIZE_ROOT_TASK_KEY = "program:earth-optimization-prize:win";
+
+// 1% Treaty parent + signer subtree
 
 export const TREATY_PARENT_TASK_ID = "1-pct-treaty";
 export const TREATY_PARENT_TASK_KEY = "program:one-percent-treaty:ratify";
@@ -25,4 +48,100 @@ export function isTreatyParentTaskKey(taskKey: string | null | undefined) {
 
 export function isTreatySignerTaskKey(taskKey: string | null | undefined) {
   return taskKey != null && /^program:one-percent-treaty:signer:[a-z0-9-]+$/i.test(taskKey);
+}
+
+export function isTreatySignerTaskKeyPrefix(taskKey: string | null | undefined) {
+  return (
+    taskKey != null && taskKey.startsWith(`${TREATY_SIGNER_TASK_KEY_PREFIX}:`)
+  );
+}
+
+// Per-user Humanity Management Tree
+
+export const USER_TREATY_TASK_KEY_PREFIX = "program:one-percent-treaty:user";
+
+export function getUserTreatyTaskKey(userId: string) {
+  return `${USER_TREATY_TASK_KEY_PREFIX}:${userId}`;
+}
+
+export function getUserTreatySubtaskKey(userId: string, kind: string) {
+  return `${getUserTreatyTaskKey(userId)}:${kind}`;
+}
+
+// Signer reminder subtask
+
+export const SIGNER_REMINDER_TASK_KEY_PREFIX = "program:one-percent-treaty:reminder";
+
+export function buildSignerReminderTaskKey(countryCode: string, userId: string) {
+  return `${SIGNER_REMINDER_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${userId}`;
+}
+
+// Referral invitation task
+
+export const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
+
+export function buildReferralInvitationTaskKey(inviteToken: string) {
+  return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
+}
+
+// Accountability (per-leader-activity)
+
+export const ACCOUNTABILITY_TASK_KEY_PREFIX = "accountability";
+
+export function buildAccountabilityTaskKey(countryCode: string, activitySlug: string) {
+  return `${ACCOUNTABILITY_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${activitySlug}`;
+}
+
+// Optimize-Earth system tasks
+
+export const OPTIMIZE_EARTH_TASK_KEY_PREFIX = "system:optimize-earth";
+
+// Static optimize-earth subkeys (one row each in the seed/queue).
+export const OPTIMIZE_EARTH_WEAPONIZE_OVERDUE_TASK_LIST_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:weaponize-overdue-task-list`;
+export const OPTIMIZE_EARTH_CROSSLINK_PAGES_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:crosslink-task-government-politician-pages`;
+export const OPTIMIZE_EARTH_CONVERT_PITCH_PAGES_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:convert-pitch-pages-into-task-traffic`;
+export const OPTIMIZE_EARTH_DISCOVER_OFFICE_CHANNELS_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:discover-missing-signer-office-channels`;
+export const OPTIMIZE_EARTH_DISCOVER_PRESS_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:discover-country-journalist-and-coalition-targets`;
+export const OPTIMIZE_EARTH_GROUND_GENERATOR_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:ground-task-generation-in-existing-pages-and-manual`;
+export const OPTIMIZE_EARTH_GENERATE_GROWTH_TASKS_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:generate-growth-conversion-tasks`;
+export const OPTIMIZE_EARTH_GENERATE_CONTACT_DISCOVERY_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:generate-contact-discovery-tasks`;
+export const OPTIMIZE_EARTH_GENERATE_SYSTEM_IMPROVEMENT_KEY = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:generate-system-improvement-tasks`;
+
+// Action-follow-through dynamic subkeys (one tree per action).
+export const OPTIMIZE_EARTH_ACTION_FOLLOW_THROUGH_PREFIX = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:action-follow-through`;
+export const OPTIMIZE_EARTH_PUBLISH_BUDGET_BRIEF_PREFIX = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:publish-budget-brief`;
+export const OPTIMIZE_EARTH_ROUTE_PROOF_PAGES_PREFIX = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:route-proof-pages-into-funding`;
+export const OPTIMIZE_EARTH_SOURCE_COUNTERPARTIES_PREFIX = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:source-counterparties-and-price-ceiling`;
+export const OPTIMIZE_EARTH_PREPARE_APPROVAL_PACKET_PREFIX = `${OPTIMIZE_EARTH_TASK_KEY_PREFIX}:prepare-approval-packet`;
+
+/**
+ * Prefixes whose presence on a taskKey means the action-follow-through tree
+ * has already been spawned for that task — used to avoid recursive spawning.
+ */
+export const OPTIMIZE_EARTH_ACTION_FOLLOW_THROUGH_KEY_PREFIXES = [
+  `${OPTIMIZE_EARTH_ACTION_FOLLOW_THROUGH_PREFIX}:`,
+  `${OPTIMIZE_EARTH_PUBLISH_BUDGET_BRIEF_PREFIX}:`,
+  `${OPTIMIZE_EARTH_ROUTE_PROOF_PAGES_PREFIX}:`,
+  `${OPTIMIZE_EARTH_SOURCE_COUNTERPARTIES_PREFIX}:`,
+  `${OPTIMIZE_EARTH_PREPARE_APPROVAL_PACKET_PREFIX}:`,
+] as const;
+
+export function buildOptimizeEarthActionFollowThroughKey(taskSlug: string) {
+  return `${OPTIMIZE_EARTH_ACTION_FOLLOW_THROUGH_PREFIX}:${taskSlug}`;
+}
+
+export function buildOptimizeEarthPublishBudgetBriefKey(taskSlug: string) {
+  return `${OPTIMIZE_EARTH_PUBLISH_BUDGET_BRIEF_PREFIX}:${taskSlug}`;
+}
+
+export function buildOptimizeEarthRouteProofPagesKey(taskSlug: string) {
+  return `${OPTIMIZE_EARTH_ROUTE_PROOF_PAGES_PREFIX}:${taskSlug}`;
+}
+
+export function buildOptimizeEarthSourceCounterpartiesKey(taskSlug: string) {
+  return `${OPTIMIZE_EARTH_SOURCE_COUNTERPARTIES_PREFIX}:${taskSlug}`;
+}
+
+export function buildOptimizeEarthPrepareApprovalPacketKey(taskSlug: string) {
+  return `${OPTIMIZE_EARTH_PREPARE_APPROVAL_PACKET_PREFIX}:${taskSlug}`;
 }

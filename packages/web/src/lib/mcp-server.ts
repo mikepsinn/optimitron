@@ -598,6 +598,7 @@ type SummarizableTask = {
   difficulty?: string | null;
   taskKey?: string | null;
   dueAt?: Date | string | null;
+  isPublic?: boolean | null;
   parentTaskId?: string | null;
   impactStatement?: string | null;
   primaryEndpoint?: {
@@ -888,6 +889,7 @@ async function attachDirectTaskImpactEstimate(input: {
 }
 
 function summarizeTask(task: SummarizableTask) {
+  const visibility = formatTaskVisibility(task.isPublic);
   return {
     id: task.id,
     title: task.title,
@@ -897,6 +899,8 @@ function summarizeTask(task: SummarizableTask) {
     difficulty: task.difficulty,
     taskKey: task.taskKey,
     dueAt: task.dueAt,
+    isPublic: visibility === "PUBLIC",
+    visibility,
     parentTaskId: task.parentTaskId,
     impactStatement: task.impactStatement,
     primaryEndpoint: task.primaryEndpoint ?? null,
@@ -968,6 +972,29 @@ function parsePositiveNumber(value: unknown, fallback: number) {
 function parseFiniteNumber(value: unknown, fallback?: number) {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback ?? null;
   return value;
+}
+
+function formatTaskVisibility(isPublic: unknown) {
+  return isPublic === true ? "PUBLIC" : "PRIVATE";
+}
+
+function parseTaskVisibility(value: unknown) {
+  if (value == null || value === "") return undefined;
+  if (typeof value !== "string") {
+    throw new Error("visibility must be PUBLIC or PRIVATE.");
+  }
+
+  const normalized = value.trim().toUpperCase();
+  if (normalized === "PUBLIC") return true;
+  if (normalized === "PRIVATE") return false;
+  throw new Error("visibility must be PUBLIC or PRIVATE.");
+}
+
+function resolveCreateTaskIsPublic(input: Record<string, unknown>, assigneeOrganizationId?: string) {
+  const visibilityOverride = parseTaskVisibility(input.visibility);
+  if (visibilityOverride !== undefined) return visibilityOverride;
+  if (typeof input.isPublic === "boolean") return input.isPublic;
+  return Boolean(assigneeOrganizationId);
 }
 
 function firstFiniteNumber(values: unknown[], fallback?: number) {
@@ -2933,7 +2960,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a new private personal task. Private visibility is the default (isPublic=false), and private tasks default to ACTIVE so they can enter the queue immediately. " +
+      "Create a task. Visibility defaults to PUBLIC when assigneeOrganizationId is set and PRIVATE otherwise; pass visibility='PRIVATE' or 'PUBLIC' to override. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
       "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
@@ -3024,7 +3051,17 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Structured acceptance criteria. If omitted, createTask also extracts checklist bullets under a markdown 'Acceptance criteria' heading in description.",
         },
-        isPublic: { type: "boolean", description: "Visible in public views (default false)" },
+        visibility: {
+          type: "string",
+          enum: ["PUBLIC", "PRIVATE"],
+          description:
+            "Optional visibility override. Defaults to PUBLIC for organization-assigned tasks and PRIVATE otherwise.",
+        },
+        isPublic: {
+          type: "boolean",
+          description:
+            "Legacy boolean visibility alias. Prefer visibility='PUBLIC' or 'PRIVATE'. Ignored when visibility is supplied.",
+        },
         contextJson: TASK_CONTEXT_JSON_SCHEMA,
         sortOrder: { type: "number", description: "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score." },
       },
@@ -5031,7 +5068,19 @@ export function createMcpServer(
             }
           }
 
-          const isPublic = a.isPublic === true;
+          // Prisma's TaskCreateInput accepts FK relations (`parentTask: { connect }`)
+          // but rejects bare scalar FKs (`parentTaskId`) on null. The unchecked
+          // variant accepts scalars, but to stay compatible with both we just
+          // omit the FK fields entirely when no value was supplied.
+          const parentTaskId = (a.parentTaskId as string | undefined) || undefined;
+          const assigneePersonId = (a.assigneePersonId as string | undefined) || undefined;
+          const assigneeOrganizationId = (a.assigneeOrganizationId as string | undefined) || undefined;
+          let isPublic: boolean;
+          try {
+            isPublic = resolveCreateTaskIsPublic(a, assigneeOrganizationId);
+          } catch (error) {
+            return err(error instanceof Error ? error.message : "Invalid visibility value.");
+          }
           if (isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
             return err("Creating public tasks requires an admin user with the tasks:admin scope.");
           }
@@ -5041,13 +5090,6 @@ export function createMcpServer(
           const dueAt = a.due_at !== undefined || a.dueAt !== undefined
             ? parseTaskDate(a.due_at ?? a.dueAt)
             : null;
-          // Prisma's TaskCreateInput accepts FK relations (`parentTask: { connect }`)
-          // but rejects bare scalar FKs (`parentTaskId`) on null. The unchecked
-          // variant accepts scalars, but to stay compatible with both we just
-          // omit the FK fields entirely when no value was supplied.
-          const parentTaskId = (a.parentTaskId as string | undefined) || undefined;
-          const assigneePersonId = (a.assigneePersonId as string | undefined) || undefined;
-          const assigneeOrganizationId = (a.assigneeOrganizationId as string | undefined) || undefined;
           const data: Record<string, unknown> = {
             title: a.title as string,
             description: (a.description as string) ?? "",
@@ -5075,9 +5117,7 @@ export function createMcpServer(
             sortOrder: (a.sortOrder as number) ?? undefined,
             status: a.status
               ? TaskStatus[a.status as keyof typeof TaskStatus]
-              : isPublic
-                ? TaskStatus.DRAFT
-                : TaskStatus.ACTIVE,
+              : TaskStatus.ACTIVE,
           };
           data.ownerUserId = userId;
           const task = await prisma.$transaction(async (tx) => {
@@ -5149,6 +5189,8 @@ export function createMcpServer(
           const baseResult = scored[0] ?? { taskId: task.id, title: task.title, status: task.status };
           return ok({
             ...baseResult,
+            isPublic,
+            visibility: formatTaskVisibility(isPublic),
             missingFields,
             recommendation: missingFields.length === 0
               ? "Task created with full metadata."
@@ -6208,8 +6250,12 @@ export function createMcpServer(
           }
 
           const prisma = await getPrisma();
-          const { upsertSignerReminderTask, buildSignerReminderTaskKey } =
-            await import("./signer-reminder-tasks.server");
+          const { upsertSignerReminderTask } = await import(
+            "./signer-reminder-tasks.server"
+          );
+          const { buildSignerReminderTaskKey } = await import(
+            "./tasks/task-keys"
+          );
 
           // 1. Fetch parent signer task and the citizen's user record (for referralCode + personId).
           const [parentTask, callingUser] = await Promise.all([

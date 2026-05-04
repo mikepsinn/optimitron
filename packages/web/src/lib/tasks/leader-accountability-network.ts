@@ -25,7 +25,10 @@ import type {
   ImportedTaskBundle,
 } from "./opg-obg-adapters";
 import type { TreatySignerSlot } from "./treaty-signer-network";
-import { getActivityTaskKey } from "./leader-activity-keys";
+import {
+  ACCOUNTABILITY_TASK_KEY_PREFIX,
+  buildAccountabilityTaskKey,
+} from "./task-keys";
 
 // ---------------------------------------------------------------------------
 // Source artifacts
@@ -34,7 +37,7 @@ import { getActivityTaskKey } from "./leader-activity-keys";
 function buildActivitySourceArtifacts(
   activity: LeaderActivityRecord,
 ): ImportedSourceArtifactDraft[] {
-  const taskKey = getActivityTaskKey(activity.countryCode, activity.activitySlug);
+  const taskKey = buildAccountabilityTaskKey(activity.countryCode, activity.activitySlug);
   const artifacts: ImportedSourceArtifactDraft[] = [
     {
       artifactType: SourceArtifactType.EXTERNAL_SOURCE,
@@ -46,8 +49,8 @@ function buildActivitySourceArtifacts(
         countryCode: activity.countryCode,
         taxpayerCostUsd: activity.taxpayerCostUsd,
       },
-      sourceKey: `external:accountability:${activity.countryCode.toLowerCase()}:${activity.activitySlug}`,
-      sourceRef: `accountability:${activity.countryCode.toLowerCase()}:${activity.activitySlug}`,
+      sourceKey: `external:${buildAccountabilityTaskKey(activity.countryCode, activity.activitySlug)}`,
+      sourceRef: buildAccountabilityTaskKey(activity.countryCode, activity.activitySlug),
       sourceSystem: SourceSystem.EXTERNAL,
       sourceUrl: activity.sourceUrl,
       title: activity.title,
@@ -218,7 +221,7 @@ export function buildActivityTaskBundle(
   slot: TreatySignerSlot,
   activity: LeaderActivityRecord,
 ): ImportedTaskBundle {
-  const taskKey = getActivityTaskKey(activity.countryCode, activity.activitySlug);
+  const taskKey = buildAccountabilityTaskKey(activity.countryCode, activity.activitySlug);
   const completedAt = new Date(activity.completedAt);
 
   return {
@@ -275,7 +278,7 @@ export function buildActivityTaskBundle(
         : TaskImpactEstimateKind.FORECAST,
       frames: [buildActivityImpactFrame(activity)],
       methodologyKey: "leader-activity-audit",
-      parameterSetHash: `accountability:${taskKey}:v1`,
+      parameterSetHash: `${ACCOUNTABILITY_TASK_KEY_PREFIX}:${taskKey}:v1`,
       publicationStatus: TaskImpactPublicationStatus.PUBLISHED,
       sourceSystem: SourceSystem.EXTERNAL,
     },

@@ -154,7 +154,7 @@ describeIfDatabase("seedDatabase", () => {
     const grantTasks = await prisma.task.findMany({
       where: {
         deletedAt: null,
-        taskKey: { startsWith: "program:icewad:grant:" },
+        taskKey: { startsWith: "icewad:grant:" },
         assigneeOrganization: { slug: { in: foundationSlugs } },
       },
       select: {
@@ -179,7 +179,7 @@ describeIfDatabase("seedDatabase", () => {
             difficulty: "TRIVIAL",
             isPublic: true,
             status: "ACTIVE",
-            taskKey: `program:icewad:grant:${slug}`,
+            taskKey: `icewad:grant:${slug}`,
             title: "Fund the International Campaign to End War and Disease",
           }),
         ),

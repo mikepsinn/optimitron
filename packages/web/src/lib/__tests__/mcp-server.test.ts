@@ -129,8 +129,6 @@ vi.mock("../profile-identity.server", () => ({
 
 vi.mock("../signer-reminder-tasks.server", () => ({
   upsertSignerReminderTask: mocks.upsertSignerReminderTask,
-  buildSignerReminderTaskKey: (cc: string, uid: string) =>
-    `program:one-percent-treaty:reminder:${cc.toLowerCase()}:${uid}`,
 }));
 
 vi.mock("../triggers/admin", () => ({
@@ -1137,7 +1135,23 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("searchRepo fails fast when the MCP server has no GitHub token", async () => {
+      const fetchMock = vi.fn(async () => jsonResponse({ total_count: 0, items: [] }));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "searchRepo",
+        arguments: { query: "createTask", repo: "optimitron" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(JSON.stringify(parseToolBody(result))).toContain("GITHUB_PAT or GITHUB_TOKEN");
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
     it("getFileContent and listRepoFiles read through GitHub Contents API", async () => {
+      process.env.GITHUB_PAT = "ghp_secret";
       const source = "export const value = 42;\n";
       const fetchMock = vi.fn(async (url: string) => {
         if (url.includes("packages%2Fweb%2Fsrc%2Fvalue.ts")) {
@@ -1771,6 +1785,19 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task writes", () => {
+    it("createTask schema exposes an explicit visibility override", async () => {
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.listTools();
+      const createTask = result.tools.find((tool) => tool.name === "createTask");
+
+      expect(createTask?.inputSchema.properties).toMatchObject({
+        visibility: {
+          type: "string",
+          enum: ["PUBLIC", "PRIVATE"],
+        },
+      });
+    });
+
     describe("createTask required-field validation", () => {
       it("rejects when description is missing", async () => {
         const client = await setup("user-1", ALL_SCOPES);
@@ -2003,6 +2030,126 @@ describe("MCP server tool dispatch", () => {
           value: 100,
           p_success: 0.5,
           isPublic: true,
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toContain("admin user");
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
+    it("defaults organization-assigned tasks to public active visibility", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({
+          id: "created-task",
+          assigneeOrganizationId: "org-foundation-1",
+          assigneeOrganization: { name: "Test Foundation" },
+          isPublic: true,
+          contextJson: { executor_type: "Self", value: 5000, p_success: 0.05, cash_cost: 0 },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 250,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 0.5,
+            successProbabilityBase: 0.05,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 500, realEv: 250 }));
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Fund the campaign",
+          description: "Fund the campaign and tell the world the money did useful work.",
+          category: "GOVERNANCE",
+          acceptanceCriteria: ["The grant has been sent"],
+          impactStatement: "Public org tasks create accountability pressure.",
+          hours: 0.5,
+          value: 5000,
+          p_success: 0.05,
+          assigneeOrganizationId: "org-foundation-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      expect(data).toMatchObject({
+        assigneeOrganizationId: "org-foundation-1",
+        isPublic: true,
+        status: TaskStatus.ACTIVE,
+      });
+      expect(parseToolBody(result)).toMatchObject({
+        assigneeOrgName: "Test Foundation",
+        isPublic: true,
+        visibility: "PUBLIC",
+      });
+    });
+
+    it("allows explicit private visibility for organization-assigned tasks", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({
+          id: "created-task",
+          assigneeOrganizationId: "org-foundation-1",
+          assigneeOrganization: { name: "Test Foundation" },
+          isPublic: false,
+          contextJson: { executor_type: "Self", value: 100, p_success: 0.5, cash_cost: 0 },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 1,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Internal org task",
+          description: "An internal task assigned to an organization but not publicly visible.",
+          category: "GOVERNANCE",
+          acceptanceCriteria: ["The internal task remains private"],
+          impactStatement: "Some org work should not become public pressure.",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+          assigneeOrganizationId: "org-foundation-1",
+          visibility: "PRIVATE",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      expect(data).toMatchObject({
+        assigneeOrganizationId: "org-foundation-1",
+        isPublic: false,
+        status: TaskStatus.ACTIVE,
+      });
+      expect(parseToolBody(result)).toMatchObject({
+        isPublic: false,
+        visibility: "PRIVATE",
+      });
+    });
+
+    it("rejects explicit PUBLIC visibility for non-admin users", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN]);
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Public Earth task",
+          description: "A public task that should be rejected for non-admin users.",
+          category: "ENGINEERING",
+          acceptanceCriteria: ["Public visibility is rejected for non-admin users"],
+          impactStatement: "Verifies the admin gate on public task creation.",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+          visibility: "PUBLIC",
         },
       });
 

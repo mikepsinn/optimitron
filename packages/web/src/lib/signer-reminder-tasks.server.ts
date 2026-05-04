@@ -21,8 +21,7 @@ import type { Prisma, PrismaClient } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { TREATY_SIGN_URL } from "@/lib/campaigns/one-percent-treaty";
 import { buildTriggerContext, fireTaskTrigger } from "@/lib/triggers";
-
-const SIGNER_REMINDER_TASK_KEY_PREFIX = "program:one-percent-treaty:reminder";
+import { buildSignerReminderTaskKey } from "@/lib/tasks/task-keys";
 
 type SignerReminderTaskClient =
   | Pick<PrismaClient, "task" | "taskComment" | "taskCommunicationEndpoint">
@@ -35,10 +34,6 @@ export interface SignerForReminder {
   leaderName: string;
   governmentName: string;
   roleTitle: string | null;
-}
-
-export function buildSignerReminderTaskKey(countryCode: string, userId: string) {
-  return `${SIGNER_REMINDER_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${userId}`;
 }
 
 export function buildSignerReminderTaskTitle(signer: SignerForReminder) {

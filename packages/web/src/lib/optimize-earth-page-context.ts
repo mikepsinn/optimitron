@@ -2,6 +2,23 @@ import type { EarthNextActionDecision, TaskTreeNode } from "@optimitron/agent";
 import { ROUTES } from "./routes";
 import { slugify } from "./slugify";
 import { absoluteCanonicalSiteUrl } from "./site";
+import {
+  buildOptimizeEarthActionFollowThroughKey,
+  buildOptimizeEarthPrepareApprovalPacketKey,
+  buildOptimizeEarthPublishBudgetBriefKey,
+  buildOptimizeEarthRouteProofPagesKey,
+  buildOptimizeEarthSourceCounterpartiesKey,
+  OPTIMIZE_EARTH_ACTION_FOLLOW_THROUGH_KEY_PREFIXES,
+  OPTIMIZE_EARTH_CONVERT_PITCH_PAGES_KEY,
+  OPTIMIZE_EARTH_CROSSLINK_PAGES_KEY,
+  OPTIMIZE_EARTH_DISCOVER_OFFICE_CHANNELS_KEY,
+  OPTIMIZE_EARTH_DISCOVER_PRESS_KEY,
+  OPTIMIZE_EARTH_GENERATE_CONTACT_DISCOVERY_KEY,
+  OPTIMIZE_EARTH_GENERATE_GROWTH_TASKS_KEY,
+  OPTIMIZE_EARTH_GENERATE_SYSTEM_IMPROVEMENT_KEY,
+  OPTIMIZE_EARTH_GROUND_GENERATOR_KEY,
+  OPTIMIZE_EARTH_WEAPONIZE_OVERDUE_TASK_LIST_KEY,
+} from "./tasks/task-keys";
 
 const EARTH_OPTIMIZATION_PRIZE_URL =
   "https://manual.warondisease.org/knowledge/strategy/earth-optimization-prize.html";
@@ -9,14 +26,6 @@ const INCENTIVE_ALIGNMENT_BONDS_URL =
   "https://manual.warondisease.org/knowledge/appendix/incentive-alignment-bonds-paper.html";
 const EARTH_OPTIMIZATION_PROTOCOL_URL =
   "https://manual.warondisease.org/strategy/earth-optimization-protocol-v1";
-
-const ACTION_FOLLOW_THROUGH_TASK_PREFIXES = [
-  "system:optimize-earth:action-follow-through:",
-  "system:optimize-earth:publish-budget-brief:",
-  "system:optimize-earth:route-proof-pages-into-funding:",
-  "system:optimize-earth:source-counterparties-and-price-ceiling:",
-  "system:optimize-earth:prepare-approval-packet:",
-] as const;
 
 interface PageContext {
   filePath: string;
@@ -124,7 +133,7 @@ function growthChildren(parent: TaskTreeNode): TaskTreeNode[] {
         absoluteUrl(CORE_PAGE_CONTEXT.politicians.route),
       ],
       status: "DRAFT",
-      taskKey: "system:optimize-earth:weaponize-overdue-task-list",
+      taskKey: OPTIMIZE_EARTH_WEAPONIZE_OVERDUE_TASK_LIST_KEY,
       title: "Turn the overdue leader task list into a memetic share-and-pressure machine",
     },
     {
@@ -142,7 +151,7 @@ function growthChildren(parent: TaskTreeNode): TaskTreeNode[] {
         absoluteUrl(CORE_PAGE_CONTEXT.scoreboard.route),
       ],
       status: "DRAFT",
-      taskKey: "system:optimize-earth:crosslink-task-government-politician-pages",
+      taskKey: OPTIMIZE_EARTH_CROSSLINK_PAGES_KEY,
       title: "Cross-link task, government, politician, and scoreboard pages into one accountability funnel",
     },
     {
@@ -160,7 +169,7 @@ function growthChildren(parent: TaskTreeNode): TaskTreeNode[] {
         absoluteUrl(CORE_PAGE_CONTEXT.tasks.route),
       ],
       status: "DRAFT",
-      taskKey: "system:optimize-earth:convert-pitch-pages-into-task-traffic",
+      taskKey: OPTIMIZE_EARTH_CONVERT_PITCH_PAGES_KEY,
       title: "Turn existing pitch pages into direct traffic for overdue leader and politician tasks",
     },
   ];
@@ -181,7 +190,7 @@ function contactDiscoveryChildren(parent: TaskTreeNode): TaskTreeNode[] {
         absoluteUrl(CORE_PAGE_CONTEXT.governments.route),
       ],
       status: "DRAFT",
-      taskKey: "system:optimize-earth:discover-missing-signer-office-channels",
+      taskKey: OPTIMIZE_EARTH_DISCOVER_OFFICE_CHANNELS_KEY,
       title: "Discover missing office contact channels for the full signer roster",
     },
     {
@@ -198,7 +207,7 @@ function contactDiscoveryChildren(parent: TaskTreeNode): TaskTreeNode[] {
         absoluteUrl(CORE_PAGE_CONTEXT.scoreboard.route),
       ],
       status: "DRAFT",
-      taskKey: "system:optimize-earth:discover-country-journalist-and-coalition-targets",
+      taskKey: OPTIMIZE_EARTH_DISCOVER_PRESS_KEY,
       title: "Discover country-specific journalists and coalition targets from the actual treaty queue",
     },
   ];
@@ -223,7 +232,7 @@ function systemChildren(parent: TaskTreeNode): TaskTreeNode[] {
         "https://manual.warondisease.org",
       ],
       status: "DRAFT",
-      taskKey: "system:optimize-earth:ground-task-generation-in-existing-pages-and-manual",
+      taskKey: OPTIMIZE_EARTH_GROUND_GENERATOR_KEY,
       title: "Ground task generation in existing pages and the Wishonia/manual context",
     },
   ];
@@ -268,7 +277,9 @@ export function buildActionFollowThroughRoots(input: {
   }
   if (
     typeof task.taskKey === "string" &&
-    ACTION_FOLLOW_THROUGH_TASK_PREFIXES.some((prefix) => task.taskKey?.startsWith(prefix))
+    OPTIMIZE_EARTH_ACTION_FOLLOW_THROUGH_KEY_PREFIXES.some((prefix) =>
+      task.taskKey?.startsWith(prefix),
+    )
   ) {
     return [] as TaskTreeNode[];
   }
@@ -302,7 +313,7 @@ export function buildActionFollowThroughRoots(input: {
     roleTitle: "System Operator",
     sourceUrls: groundingRefs,
     status: "DRAFT",
-    taskKey: `system:optimize-earth:action-follow-through:${taskSlug}`,
+    taskKey: buildOptimizeEarthActionFollowThroughKey(taskSlug),
     title: `Unblock funding/procurement for ${task.title}`,
     children: [
       {
@@ -321,7 +332,7 @@ export function buildActionFollowThroughRoots(input: {
           ...(input.action.groundingRefs ?? []),
         ],
         status: "DRAFT",
-        taskKey: `system:optimize-earth:publish-budget-brief:${taskSlug}`,
+        taskKey: buildOptimizeEarthPublishBudgetBriefKey(taskSlug),
         title: `Publish the quantified budget brief for ${task.title}`,
       },
       {
@@ -340,7 +351,7 @@ export function buildActionFollowThroughRoots(input: {
           EARTH_OPTIMIZATION_PRIZE_URL,
         ],
         status: "DRAFT",
-        taskKey: `system:optimize-earth:route-proof-pages-into-funding:${taskSlug}`,
+        taskKey: buildOptimizeEarthRouteProofPagesKey(taskSlug),
         title: `Route proof-page traffic into funding for ${task.title}`,
       },
       {
@@ -358,7 +369,7 @@ export function buildActionFollowThroughRoots(input: {
           ...(input.action.groundingRefs ?? []),
         ],
         status: "DRAFT",
-        taskKey: `system:optimize-earth:source-counterparties-and-price-ceiling:${taskSlug}`,
+        taskKey: buildOptimizeEarthSourceCounterpartiesKey(taskSlug),
         title: `Source counterparties and set the price ceiling for ${task.title}`,
       },
       {
@@ -371,7 +382,7 @@ export function buildActionFollowThroughRoots(input: {
         roleTitle: "System Operator",
         sourceUrls: groundingRefs,
         status: "DRAFT",
-        taskKey: `system:optimize-earth:prepare-approval-packet:${taskSlug}`,
+        taskKey: buildOptimizeEarthPrepareApprovalPacketKey(taskSlug),
         title: `Prepare the approval packet for ${task.title}`,
       },
     ],
@@ -384,21 +395,21 @@ export function enrichOptimizeEarthBootstrapRoots(roots: TaskTreeNode[]) {
   return roots.map((root) => ({
     ...root,
     children: (root.children ?? []).map((child) => {
-      if (child.taskKey === "system:optimize-earth:generate-growth-conversion-tasks") {
+      if (child.taskKey === OPTIMIZE_EARTH_GENERATE_GROWTH_TASKS_KEY) {
         return {
           ...child,
           children: growthChildren(child),
         };
       }
 
-      if (child.taskKey === "system:optimize-earth:generate-contact-discovery-tasks") {
+      if (child.taskKey === OPTIMIZE_EARTH_GENERATE_CONTACT_DISCOVERY_KEY) {
         return {
           ...child,
           children: contactDiscoveryChildren(child),
         };
       }
 
-      if (child.taskKey === "system:optimize-earth:generate-system-improvement-tasks") {
+      if (child.taskKey === OPTIMIZE_EARTH_GENERATE_SYSTEM_IMPROVEMENT_KEY) {
         return {
           ...child,
           children: systemChildren(child),

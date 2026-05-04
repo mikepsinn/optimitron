@@ -15,7 +15,7 @@ import { getSiteFromHeaders } from "@/lib/site";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { getProfileIdentityData } from "@/lib/profile-identity.server";
-import type { TaskCardTask } from "@/components/tasks/task-card";
+import { selectTreatyPresidentManagementTasks } from "@/lib/tasks/president-management";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
@@ -81,23 +81,13 @@ export default async function DashboardPage({
       redirect(getSignInPath(ROUTES.dashboard));
     }
 
-    // Pull the same data shape `/tasks` uses for the signer leaderboard so
-    // we render the identical ProgramTaskSection (program card + signer
-    // SortableTaskList) here.
-    const prizeRoot = taskData.topLevelTasks.find(
-      (t) => t.id === "win-earth-optimization-prize",
-    );
-    const programChildren = (prizeRoot?.childTasks ?? []) as unknown as TaskCardTask[];
-    const treatyProgram = programChildren.find((p) => p.id === "1-pct-treaty") ?? null;
-    const signerTasks = (taskData.allTasks as TaskCardTask[]).filter((task) =>
-      task.taskKey?.startsWith("program:one-percent-treaty:signer:"),
-    );
+    const presidentManagement = selectTreatyPresidentManagementTasks(taskData);
 
     return (
       <TreatyTaskDashboardClient
         user={profileData.user}
-        treatyProgram={treatyProgram}
-        signerTasks={signerTasks}
+        treatyProgram={presidentManagement.treatyProgram}
+        signerTasks={presidentManagement.signerTasks}
       />
     );
   }

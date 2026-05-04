@@ -1,12 +1,17 @@
 import type { CreateTaskTriggerInput } from "../admin";
 import { HUMANITY_MANAGEMENT } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
+import {
+  REFERRAL_INVITATION_TASK_KEY_PREFIX,
+  SIGNER_REMINDER_TASK_KEY_PREFIX,
+  TREATY_PARENT_TASK_KEY,
+  TREATY_SIGNER_TASK_KEY_PREFIX,
+  USER_TREATY_TASK_KEY_PREFIX,
+} from "@/lib/tasks/task-keys";
 
 // ---------------------------------------------------------------------------
 // Pattern 1+2 — Per-user onboarding tree (1% Treaty)
 // ---------------------------------------------------------------------------
-
-const TREATY_PARENT_TASK_KEY = "program:one-percent-treaty:ratify";
 const USER_TREATY_TASK_TITLE = "Get {{params.majorityHumanity}} people to vote on the 1% Treaty";
 const USER_TREATY_TASK_ROLE_TITLE = "Humanity Manager, Earth Optimization Services, LLC";
 const PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE = "Promote to Humanity Manager";
@@ -72,7 +77,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
   eventName: "user.signup",
   triggerKind: "spawnTasks",
   enabled: true,
-  idempotencyKeyTemplate: "program:one-percent-treaty:user:{{user.id}}",
+  idempotencyKeyTemplate: `${USER_TREATY_TASK_KEY_PREFIX}:{{user.id}}`,
   notes:
     "Per-user onboarding tree spawned at signup. The hardcoded ensureUserTreatyTask path still owns the return contract for existing callers; these specs converge on the same taskKey rows and are the source blueprint for the next migration step. The parent root has no completionGate of its own — the HMT auto-verify lives in user-onboarding:treaty:hmt-gate and targets the completeTraining sibling.",
   spawnSpecs: [
@@ -202,7 +207,7 @@ const referralVoteInvitation: CreateTaskTriggerInput = {
   eventName: "referral.sent",
   triggerKind: "spawnTasks",
   enabled: true,
-  idempotencyKeyTemplate: "program:one-percent-treaty:referral-invitation:{{inviteToken}}",
+  idempotencyKeyTemplate: `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:{{inviteToken}}`,
   notes:
     "Spawns a follow-up task on the inviter's queue when they send a named referral. Backs createReferralInvitationTask. Caller pre-computes recipient.firstName, actionLink.url, actionLink.instructions and injects them as context tokens.",
   spawnSpecs: [
@@ -241,8 +246,7 @@ const treatySignerReminder: CreateTaskTriggerInput = {
   eventName: "mcp.claimSignerReminder",
   triggerKind: "spawnTasks",
   enabled: true,
-  idempotencyKeyTemplate:
-    "program:one-percent-treaty:reminder:{{signer.countryCode}}:{{user.id}}",
+  idempotencyKeyTemplate: `${SIGNER_REMINDER_TASK_KEY_PREFIX}:{{signer.countryCode}}:{{user.id}}`,
   notes:
     "Spawns a private reminder subtask under a parent signer task when a humanity-manager claims responsibility. Backs upsertSignerReminderTask. Caller pre-computes the action-link URL (a Google search for the signer's office contact) and the message instructions (containing the user's referralCode embedded in the treaty URL) and injects them as context.actionLink.{url,instructions}.",
   spawnSpecs: [
@@ -318,10 +322,10 @@ const hmtVerifyGate: CreateTaskTriggerInput = {
   // (share / phoneScript / assignFirstHuman / assignSecondHuman) live under
   // the same parent (the user's HMT root). When the gate is met against
   // those siblings, completeTraining auto-VERIFIES.
-  idempotencyKeyTemplate: "program:one-percent-treaty:user:{{user.id}}:completeTraining",
+  idempotencyKeyTemplate: `${USER_TREATY_TASK_KEY_PREFIX}:{{user.id}}:completeTraining`,
   eventFilter: {
     field: "task.taskKey",
-    matches: "^program:one-percent-treaty:user:.+:(signTreatyPersonally|shareReferralUrl|phoneScript|assignFirstHuman|assignSecondHuman)$",
+    matches: `^${USER_TREATY_TASK_KEY_PREFIX}:.+:(signTreatyPersonally|shareReferralUrl|phoneScript|assignFirstHuman|assignSecondHuman)$`,
   },
   completionGate: {
     kind: "allOf",
@@ -342,7 +346,7 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
   triggerKey: "treaty:signer",
   eventName: "dataset.recordChanged.signer",
   triggerKind: "spawnTasks",
-  idempotencyKeyTemplate: "program:one-percent-treaty:signer:{{slot.countryCode}}",
+  idempotencyKeyTemplate: `${TREATY_SIGNER_TASK_KEY_PREFIX}:{{slot.countryCode}}`,
   notes:
     "Spawns one signer task per slot during the treaty-signer dataset import. Caller (sync-treaty-signers) iterates the dataset and fires this trigger per slot.",
   enabled: false,

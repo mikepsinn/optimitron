@@ -45,6 +45,16 @@ function getToken() {
   return process.env.GITHUB_PAT ?? process.env.GITHUB_TOKEN ?? null;
 }
 
+function getRequiredToken() {
+  const token = getToken();
+  if (!token) {
+    throw new Error(
+      "GITHUB_PAT or GITHUB_TOKEN is required for MCP GitHub repo tools. Configure it in the MCP server environment.",
+    );
+  }
+  return token;
+}
+
 function normalizeRepo(repo: string) {
   const trimmed = repo.trim().replace(/^https:\/\/github\.com\//i, "");
   if (!trimmed) {
@@ -108,11 +118,11 @@ async function githubJson(pathname: string, options: { searchParams?: URLSearchP
     url.search = options.searchParams.toString();
   }
 
-  const token = getToken();
+  const token = getRequiredToken();
   const response = await fetch(url.toString(), {
     headers: {
       accept: "application/vnd.github.text-match+json",
-      ...(token ? { authorization: `Bearer ${token}` } : {}),
+      authorization: `Bearer ${token}`,
       "user-agent": "optimitron-mcp",
     },
   });
