@@ -582,8 +582,8 @@ export function TreatyVoteFlow({
         >
           {isWaitingForAuth ? (
             <TreatyFlowShell
-              className="py-2 sm:py-4"
-              contentClassName="max-w-2xl justify-start pt-0 pb-6 sm:pt-0 sm:pb-12"
+              className="py-6 sm:py-10"
+              contentClassName="max-w-2xl justify-center py-10 sm:py-12"
             >
               <div className="space-y-6 text-center">
                 <NeobrutalistLoaderMark
@@ -597,8 +597,8 @@ export function TreatyVoteFlow({
             </TreatyFlowShell>
           ) : (
             <TreatyFlowShell
-              className="py-2 sm:py-4"
-              contentClassName="max-w-2xl justify-start pt-0 pb-6 sm:pt-0 sm:pb-12"
+              className="py-6 sm:py-10"
+              contentClassName="max-w-2xl justify-center py-10 sm:py-12"
             >
               <div className="space-y-4">
                 <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
@@ -705,8 +705,8 @@ export function TreatyVoteFlow({
                             transform: "translateX(-50%)",
                           }}
                         >
-                          <div className="border border-[var(--treaty-ink)] bg-[#fffdf8] px-4 py-2">
-                            <p className="whitespace-nowrap text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink)]">
+                          <div className="border border-black bg-white px-4 py-2">
+                            <p className="whitespace-nowrap text-xs font-black uppercase tracking-[0.22em] text-black">
                               Slide me
                             </p>
                           </div>
@@ -727,7 +727,7 @@ export function TreatyVoteFlow({
                         >
                           <motion.div
                             animate={{ rotate: [-12, -18, -12], y: [0, 2, 0] }}
-                            className="flex h-8 w-8 items-center justify-center text-[var(--treaty-ink)]"
+                            className="flex h-8 w-8 items-center justify-center text-black"
                             transition={{
                               duration: 0.8,
                               ease: "easeInOut",
@@ -749,10 +749,10 @@ export function TreatyVoteFlow({
                     onChange={(e) =>
                       handleSliderChange(100 - Number(e.target.value))
                     }
-                    className="h-3 w-full cursor-pointer appearance-none rounded-none border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] slider-treaty"
+                    className="h-3 w-full cursor-pointer appearance-none rounded-none border border-black bg-white slider-treaty"
                     style={{
-                      background: `linear-gradient(to right, var(--treaty-ink) ${militaryAllocation}%, #d8c7a4 ${militaryAllocation}%)`,
-                      accentColor: "var(--treaty-ink)",
+                      background: `linear-gradient(to right, #000 ${militaryAllocation}%, #fff ${militaryAllocation}%)`,
+                      accentColor: "#000",
                     }}
                   />
                 </div>
@@ -795,13 +795,8 @@ export function TreatyVoteFlow({
             <TreatyFlowShell
               data-screen="choice"
               data-testid="treaty-vote-choice-card"
-              // justify-start beats the shell default (justify-center) via
-              // twMerge so the heading lands near the top of the viewport
-              // instead of centered, which previously left a half-empty
-              // viewport above the dropcap copy. Tight pt-0 because the
-              // section already has its own (reduced) py via className.
-              className="py-2 sm:py-4"
-              contentClassName="max-w-4xl justify-start space-y-5 pt-0 pb-6 sm:space-y-8 sm:pt-0 sm:pb-12"
+              className="overflow-y-auto py-6 sm:py-10"
+              contentClassName="max-w-4xl justify-center space-y-6 py-8 sm:space-y-8 sm:py-12"
             >
               {copyMode === "neutral" ? (
                 <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
@@ -871,18 +866,7 @@ export function TreatyVoteFlow({
                   : VOTE_SECTION.theQuestion}
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Button
-                  onClick={() => void handleAnswer("yes")}
-                  className={`${treatyPrimaryButtonClass} h-14 w-full text-lg sm:h-16 sm:text-xl`}
-                >
-                  {answer === "yes" ? (
-                    <CheckSquare className="h-6 w-6" />
-                  ) : (
-                    <Square className="h-6 w-6" />
-                  )}
-                  YES
-                </Button>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <Button
                   onClick={() => void handleAnswer("no")}
                   className={`${treatySecondaryButtonClass} h-14 w-full text-lg sm:h-16 sm:text-xl`}
@@ -893,6 +877,17 @@ export function TreatyVoteFlow({
                     <Square className="h-6 w-6" />
                   )}
                   NO
+                </Button>
+                <Button
+                  onClick={() => void handleAnswer("yes")}
+                  className={`${treatyPrimaryButtonClass} h-14 w-full text-lg sm:h-16 sm:text-xl`}
+                >
+                  {answer === "yes" ? (
+                    <CheckSquare className="h-6 w-6" />
+                  ) : (
+                    <Square className="h-6 w-6" />
+                  )}
+                  YES
                 </Button>
               </div>
             </TreatyFlowShell>
@@ -1001,7 +996,7 @@ export function TreatyVoteFlow({
       <style jsx global>{`
         input.slider-treaty {
           appearance: none;
-          accent-color: var(--treaty-ink);
+          accent-color: #000;
         }
 
         .slider-treaty::-webkit-slider-thumb {
