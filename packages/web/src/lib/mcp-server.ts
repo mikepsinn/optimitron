@@ -899,7 +899,8 @@ function summarizeTask(task: SummarizableTask) {
     difficulty: task.difficulty,
     taskKey: task.taskKey,
     dueAt: task.dueAt,
-    isPublic: visibility === "PUBLIC",
+    isPublic:
+      visibility === undefined ? undefined : visibility === TaskVisibility.PUBLIC,
     visibility,
     parentTaskId: task.parentTaskId,
     impactStatement: task.impactStatement,
@@ -922,6 +923,11 @@ const MS_PER_HOUR = 60 * 60 * 1000;
 
 type DeadlinePolicy = "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
 type DeadlineStatus = "none" | "future" | "start_now" | "overdue" | "missed" | "expired";
+
+enum TaskVisibility {
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
+}
 
 type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   assigneeOrganizationId?: string | null;
@@ -975,19 +981,21 @@ function parseFiniteNumber(value: unknown, fallback?: number) {
 }
 
 function formatTaskVisibility(isPublic: unknown) {
-  return isPublic === true ? "PUBLIC" : "PRIVATE";
+  if (isPublic === true) return TaskVisibility.PUBLIC;
+  if (isPublic === false) return TaskVisibility.PRIVATE;
+  return undefined;
 }
 
 function parseTaskVisibility(value: unknown) {
   if (value == null || value === "") return undefined;
   if (typeof value !== "string") {
-    throw new Error("visibility must be PUBLIC or PRIVATE.");
+    throw new Error(`visibility must be ${TaskVisibility.PUBLIC} or ${TaskVisibility.PRIVATE}.`);
   }
 
   const normalized = value.trim().toUpperCase();
-  if (normalized === "PUBLIC") return true;
-  if (normalized === "PRIVATE") return false;
-  throw new Error("visibility must be PUBLIC or PRIVATE.");
+  if (normalized === TaskVisibility.PUBLIC) return true;
+  if (normalized === TaskVisibility.PRIVATE) return false;
+  throw new Error(`visibility must be ${TaskVisibility.PUBLIC} or ${TaskVisibility.PRIVATE}.`);
 }
 
 function resolveCreateTaskIsPublic(input: Record<string, unknown>, assigneeOrganizationId?: string) {
@@ -3053,7 +3061,7 @@ const TASK_TOOL_DEFINITIONS = [
         },
         visibility: {
           type: "string",
-          enum: ["PUBLIC", "PRIVATE"],
+          enum: Object.values(TaskVisibility),
           description:
             "Optional visibility override. Defaults to PUBLIC for organization-assigned tasks and PRIVATE otherwise.",
         },

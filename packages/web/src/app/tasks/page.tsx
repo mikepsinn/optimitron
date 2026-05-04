@@ -10,6 +10,10 @@ import { ROUTES, tasksLink } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { getTasksPageData } from "@/lib/tasks.server";
 
+type TopLevelTaskCardTask = TaskCardTask & {
+  childTasks: TaskCardTask[];
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
@@ -28,6 +32,7 @@ export default async function TasksPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
   const data = await getTasksPageData(userId);
+  const topLevelTasks: TopLevelTaskCardTask[] = data.topLevelTasks;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -43,12 +48,12 @@ export default async function TasksPage() {
           </p>
         </header>
 
-        {data.topLevelTasks.map((root) => {
-          const childTasks = root.childTasks as unknown as TaskCardTask[];
+        {topLevelTasks.map((root) => {
+          const childTasks = root.childTasks;
           return (
             <section key={root.id} className="space-y-4">
               <SortableTaskList
-                tasks={[root as unknown as TaskCardTask]}
+                tasks={[root]}
                 defaultSortKey="cost"
                 defaultSortDir="desc"
                 pageSize={1}
