@@ -6,7 +6,7 @@ import {
 } from "@/lib/tasks/task-keys";
 
 interface TaskTreeRoot {
-  childTasks?: unknown;
+  childTasks?: TaskCardTask[] | null;
   id: string;
 }
 
@@ -22,7 +22,9 @@ export function selectTreatyPresidentManagementTasks(data: {
   const prizeRoot = data.topLevelTasks.find(
     (task) => task.id === EARTH_OPTIMIZATION_PRIZE_ROOT_TASK_ID,
   );
-  const programChildren = (prizeRoot?.childTasks ?? []) as TaskCardTask[];
+  const programChildren = Array.isArray(prizeRoot?.childTasks)
+    ? prizeRoot.childTasks
+    : [];
   const treatyProgram =
     programChildren.find((task) => task.id === TREATY_PARENT_TASK_ID) ?? null;
   const signerTasks = data.allTasks.filter((task) =>
@@ -34,4 +36,3 @@ export function selectTreatyPresidentManagementTasks(data: {
     treatyProgram,
   };
 }
-

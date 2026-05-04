@@ -297,6 +297,7 @@ export async function searchRepo(input: SearchRepoInput) {
 }
 
 const ALLOWED_METHODS = new Set(["GET", "POST", "PATCH", "PUT", "DELETE"]);
+const MUTATING_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
 export interface CallGitHubApiInput {
   /// Optional JSON body for non-GET requests. Strings are sent verbatim
@@ -348,7 +349,7 @@ export async function callGitHubApi(input: CallGitHubApiInput) {
     }
   }
 
-  const token = getToken();
+  const token = MUTATING_METHODS.has(method) ? getRequiredToken() : getToken();
   const headers: Record<string, string> = {
     accept: "application/vnd.github+json",
     "user-agent": "optimitron-mcp",

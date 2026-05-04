@@ -1010,6 +1010,27 @@ describe("MCP server tool dispatch", () => {
       expect(body[0]).toMatchObject({ id: "assigned", title: "Assigned to me" });
     });
 
+    it("does not invent private visibility when listTasks omits isPublic", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeOwnedTask({ id: "without-visibility", title: "Visibility not selected" }),
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listTasks",
+        arguments: { status: "ACTIVE", limit: 5 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result) as unknown as Array<Record<string, unknown>>;
+      expect(body[0]).toMatchObject({
+        id: "without-visibility",
+        title: "Visibility not selected",
+      });
+      expect(body[0]).not.toHaveProperty("isPublic");
+      expect(body[0]).not.toHaveProperty("visibility");
+    });
+
     it("enriches getTask output with executorType and markdown acceptance criteria when contextJson is missing them", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
         taskCommunicationCount: 0,
@@ -1148,6 +1169,60 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(JSON.stringify(parseToolBody(result))).toContain("GITHUB_PAT or GITHUB_TOKEN");
       expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("githubApi fails fast for mutating calls without a GitHub token", async () => {
+      const fetchMock = vi.fn(async () => jsonResponse({ number: 1 }));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "githubApi",
+        arguments: {
+          method: "POST",
+          path: "/repos/mikepsinn/optimitron/issues",
+          body: { title: "Create accountability task" },
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(JSON.stringify(parseToolBody(result))).toContain("GITHUB_PAT or GITHUB_TOKEN");
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("githubApi allows unauthenticated read-only calls without an Authorization header", async () => {
+      const fetchMock = vi.fn(async () =>
+        jsonResponse({ full_name: "mikepsinn/optimitron" }),
+      );
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "githubApi",
+        arguments: {
+          method: "GET",
+          path: "/repos/mikepsinn/optimitron",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        method: "GET",
+        ok: true,
+        status: 200,
+      });
+      const fetchCalls = fetchMock.mock.calls as unknown as Array<
+        [
+          string,
+          {
+            headers: Record<string, string>;
+            method: string;
+          },
+        ]
+      >;
+      const request = fetchCalls[0]![1];
+      expect(request.method).toBe("GET");
+      expect(request.headers.authorization).toBeUndefined();
     });
 
     it("getFileContent and listRepoFiles read through GitHub Contents API", async () => {
