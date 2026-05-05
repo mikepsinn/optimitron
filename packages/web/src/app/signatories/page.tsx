@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeaderboard";
+import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
 import { parsePositivePageParam } from "@/lib/pagination";
@@ -66,8 +67,7 @@ export default async function SignatoriesPage({
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base font-bold text-muted-foreground">
           Humans and organizations on one board, ranked by the verified YES
-          voters they recruited for one percent less war and one percent more
-          medicine.
+          voters they recruited to say that <TreatyTradeThesis />.
         </p>
       </header>
 

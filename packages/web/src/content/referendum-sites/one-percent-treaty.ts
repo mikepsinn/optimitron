@@ -1,6 +1,8 @@
 import {
+  DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   fmtParamValueOnly,
   fmtRaw,
 } from "@optimitron/data/parameters";
@@ -11,7 +13,14 @@ const reducedApocalypseCount = fmtRaw(
   NUCLEAR_WINTER_OVERKILL_FACTOR.value * 0.99,
 );
 const diseaseAcceleration = fmtParamValueOnly(DFDA_TRIAL_CAPACITY_MULTIPLIER);
+const statusQuoQueueYears = Math.round(
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS.value,
+).toLocaleString("en-US");
+const dfdaQueueYears = Math.round(
+  DFDA_QUEUE_CLEARANCE_YEARS.value,
+).toLocaleString("en-US");
 const campaignName = "International Campaign to End War and Disease";
+const treatyTradePosition = `humanity should trade one of its ${apocalypseCount} apocalypses of mass-murder capacity to compress the disease-eradication timeline from ${statusQuoQueueYears} years to ${dfdaQueueYears} years`;
 
 export const onePercentTreatyContent: ReferendumSiteContent = {
   key: "onePercentTreaty",
@@ -37,8 +46,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     },
     endorse: {
       title: "Sign as Organization — 1% Treaty",
-      description:
-        "Sign the 1% Treaty as an organization: one percent less for war, one percent more for medicine.",
+      description: `Sign the 1% Treaty as an organization: ${treatyTradePosition}.`,
     },
     signatories: {
       title: "Signatories — 1% Treaty",
@@ -47,8 +55,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     },
     supporters: {
       title: "Organizational Signatories — 1% Treaty",
-      description:
-        "Organizations that signed the 1% Treaty: one percent less for war, one percent more for medicine.",
+      description: `Organizations that signed the 1% Treaty: ${treatyTradePosition}.`,
     },
     why: {
       title: "Why — 1% Treaty",
@@ -123,15 +130,13 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     title: "Organizational Signatories",
     description: `Organizations that publicly signed the 1% Treaty through the ${campaignName}.`,
     emptyTitle: "No organizational signatories yet.",
-    emptyBody:
-      "Be the first organization willing to put one percent less war and one percent more medicine on the record.",
+    emptyBody: `Be the first organization willing to put this on the record: ${treatyTradePosition}.`,
     ctaLabel: "Sign as Organization",
   },
   endorse: {
     eyebrow: "Organizational signature",
     title: "Sign as an Organization",
-    description:
-      "Add your organization to the public signatory list. No donation required. No candidate endorsement. No ongoing obligation. Just one official position: one percent less for war, one percent more for medicine.",
+    description: `Have your organization publicly sign the 1% Treaty and join the ${campaignName}. No donation required. No candidate endorsement. Just one official position: ${treatyTradePosition}.`,
     signInTitle: "Sign in to sign",
     signInDescription:
       "Organization signatures use verified accounts so nobody signs your organization for you.",
