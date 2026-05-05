@@ -1,8 +1,6 @@
 import {
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
-  GLOBAL_GDP_2025,
-  type Parameter,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
@@ -14,6 +12,7 @@ import { RepresentedPersonConversionForm } from "@/components/people/Represented
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { formatCount } from "@/lib/format-count";
 import { getSiteMetadata } from "@/lib/metadata";
+import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
 import {
   getRepresentedPeopleGalleryData,
   type RepresentedPeopleSortKey,
@@ -27,21 +26,6 @@ const VALID_SORT_KEYS: RepresentedPeopleSortKey[] = [
   "alphabetical",
   "died-closest-to-cure",
 ];
-
-const GOVERNMENTS_PAID_TO_PROMOTE_WELFARE: Parameter = {
-  ...GLOBAL_GDP_2025,
-  value: 37_000_000_000_000,
-  parameterName: "GOVERNMENTS_PAID_TO_PROMOTE_WELFARE",
-  displayName: "Annual Government Spending to Promote the General Welfare",
-  description:
-    "Approximate annual amount humanity pays governments for the service of promoting the general welfare, expressed as roughly one-third of global GDP.",
-  formula: "GLOBAL_GDP_2025 * ~0.32",
-  latex: "\\$37T \\approx \\$115T \\times 0.32",
-  sourceType: "calculated",
-  confidence: "medium",
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "The 1% Treaty",
-};
 
 function parseSort(
   value: string | string[] | undefined,

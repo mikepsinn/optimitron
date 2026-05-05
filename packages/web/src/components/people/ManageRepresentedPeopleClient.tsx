@@ -285,7 +285,7 @@ export function ManageRepresentedPeopleClient({
           className="mt-5 inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background"
           href={ROUTES.people}
         >
-          Sign for someone
+          Register a plaintiff
         </Link>
       </section>
     );
