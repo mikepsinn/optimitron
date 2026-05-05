@@ -13,7 +13,7 @@
  *                                              --pattern '%@playwright.test'
  *
  * Deletion order respects foreign keys:
- *   1. Tasks assigned to test Persons (Task children CASCADE).
+ *   1. Tasks assigned to test Persons or created by test Users (Task children CASCADE).
  *   2. Users with a test email (CASCADEs Account/Session/TaskClaim/etc.).
  *   3. Persons with a test email (CASCADEs ReferendumVote/Subject/etc.).
  *
@@ -25,6 +25,7 @@ import { PrismaClient } from "./generated/prisma/client.js";
 import { loadDatabaseUrl } from "./db-cli.js";
 
 const DEFAULT_PATTERNS = ["%@example.test"];
+const SAMPLE_LIMIT = 10;
 
 interface CliOptions {
   execute: boolean;
@@ -38,6 +39,7 @@ export function parseArgs(argv: string[]): CliOptions {
 
   for (let i = 0; i < normalized.length; i += 1) {
     const arg = normalized[i];
+    if (arg === undefined) break;
     if (arg === "--execute") {
       options.execute = true;
     } else if (arg === "--json") {
@@ -79,6 +81,7 @@ interface SurveyCounts {
   testPersons: number;
   testUsers: number;
   tasksAssignedToTestPersons: number;
+  tasksCreatedByTestUsers: number;
   taskClaimsByTestUsers: number;
   taskCommentsByTestPersons: number;
   taskCommentsByTestUsers: number;
@@ -103,7 +106,10 @@ interface Survey {
   samples: SurveySamples;
 }
 
-async function survey(prisma: PrismaClient, patterns: string[]): Promise<Survey> {
+async function survey(
+  prisma: PrismaClient,
+  patterns: string[],
+): Promise<Survey> {
   const personEmailMatch = (alias: string) =>
     patterns.map((_, i) => `${alias}.email ILIKE $${i + 1}`).join(" OR ");
 
@@ -127,6 +133,7 @@ async function survey(prisma: PrismaClient, patterns: string[]): Promise<Survey>
 
   const [
     tasksAssigned,
+    tasksCreated,
     taskClaims,
     taskCommentsByPerson,
     taskCommentsByUser,
@@ -142,6 +149,7 @@ async function survey(prisma: PrismaClient, patterns: string[]): Promise<Survey>
     sampleTasks,
   ] = await Promise.all([
     countWhereIn(prisma, "Task", "assigneePersonId", personIdList),
+    countWhereIn(prisma, "Task", "createdByUserId", userIdList),
     countWhereIn(prisma, "TaskClaim", "userId", userIdList),
     countWhereIn(prisma, "TaskComment", "authorPersonId", personIdList),
     countWhereIn(prisma, "TaskComment", "authorUserId", userIdList),
@@ -156,15 +164,15 @@ async function survey(prisma: PrismaClient, patterns: string[]): Promise<Survey>
       Array<{ id: string; displayName: string; email: string | null }>
     >(
       `SELECT id, "displayName", email FROM "Person" p WHERE ${matchPerson}
-       ORDER BY "displayName" LIMIT 10`,
+       ORDER BY "displayName" LIMIT ${SAMPLE_LIMIT}`,
       ...params,
     ),
     prisma.$queryRawUnsafe<Array<{ id: string; email: string | null }>>(
       `SELECT id, email FROM "User" u WHERE ${matchUser}
-       ORDER BY email LIMIT 10`,
+       ORDER BY email LIMIT ${SAMPLE_LIMIT}`,
       ...params,
     ),
-    sampleTasksAssigned(prisma, personIdList),
+    sampleTargetedTasks(prisma, personIdList, userIdList),
   ]);
 
   return {
@@ -173,6 +181,7 @@ async function survey(prisma: PrismaClient, patterns: string[]): Promise<Survey>
       testPersons: personIdList.length,
       testUsers: userIdList.length,
       tasksAssignedToTestPersons: tasksAssigned,
+      tasksCreatedByTestUsers: tasksCreated,
       taskClaimsByTestUsers: taskClaims,
       taskCommentsByTestPersons: taskCommentsByPerson,
       taskCommentsByTestUsers: taskCommentsByUser,
@@ -205,19 +214,34 @@ async function countWhereIn(
   return rows[0]?.n ?? 0;
 }
 
-async function sampleTasksAssigned(
+async function sampleTargetedTasks(
   prisma: PrismaClient,
   personIds: string[],
+  userIds: string[],
 ): Promise<Array<{ id: string; title: string; taskKey: string | null }>> {
-  if (personIds.length === 0) return [];
-  const placeholders = personIds.map((_, i) => `$${i + 1}`).join(",");
+  const clauses: string[] = [];
+  const params: string[] = [];
+  if (personIds.length > 0) {
+    clauses.push(
+      `"assigneePersonId" IN (${personIds.map((_, i) => `$${params.length + i + 1}`).join(",")})`,
+    );
+    params.push(...personIds);
+  }
+  if (userIds.length > 0) {
+    clauses.push(
+      `"createdByUserId" IN (${userIds.map((_, i) => `$${params.length + i + 1}`).join(",")})`,
+    );
+    params.push(...userIds);
+  }
+  if (clauses.length === 0) return [];
+
   return prisma.$queryRawUnsafe<
     Array<{ id: string; title: string; taskKey: string | null }>
   >(
     `SELECT id, title, "taskKey" FROM "Task"
-     WHERE "assigneePersonId" IN (${placeholders})
-     ORDER BY "createdAt" DESC LIMIT 10`,
-    ...personIds,
+     WHERE ${clauses.join(" OR ")}
+     ORDER BY "createdAt" DESC LIMIT ${SAMPLE_LIMIT}`,
+    ...params,
   );
 }
 
@@ -229,13 +253,17 @@ async function deleteTestData(
   usersDeleted: number;
   personsDeleted: number;
 }> {
-  const matchPerson = patterns.map((_, i) => `email ILIKE $${i + 1}`).join(" OR ");
+  const matchPerson = patterns
+    .map((_, i) => `email ILIKE $${i + 1}`)
+    .join(" OR ");
   const matchUser = matchPerson;
 
   return prisma.$transaction(async (tx) => {
     const tasksDeleted = await tx.$executeRawUnsafe(
       `DELETE FROM "Task" WHERE "assigneePersonId" IN (
          SELECT id FROM "Person" WHERE ${matchPerson}
+       ) OR "createdByUserId" IN (
+         SELECT id FROM "User" WHERE ${matchUser}
        )`,
       ...patterns,
     );
@@ -253,25 +281,54 @@ async function deleteTestData(
 
 function renderReport(s: Survey, executed: boolean): string {
   const lines: string[] = [];
-  lines.push(executed ? "Test data cleanup — EXECUTED" : "Test data cleanup — DRY RUN");
+  lines.push(
+    executed ? "Test data cleanup — EXECUTED" : "Test data cleanup — DRY RUN",
+  );
   lines.push(`Patterns: ${s.patterns.join(", ")}`);
   lines.push("");
   lines.push("Targets");
   lines.push(`  Test persons:                       ${s.counts.testPersons}`);
   lines.push(`  Test users:                         ${s.counts.testUsers}`);
-  lines.push(`  Tasks assigned to test persons:     ${s.counts.tasksAssignedToTestPersons}`);
+  lines.push(
+    `  Tasks assigned to test persons:     ${s.counts.tasksAssignedToTestPersons}`,
+  );
+  lines.push(
+    `  Tasks created by test users:        ${s.counts.tasksCreatedByTestUsers}`,
+  );
   lines.push("");
-  lines.push("Cascade casualties (sample — every FK with ON DELETE CASCADE applies)");
-  lines.push(`  TaskClaim rows by test users:       ${s.counts.taskClaimsByTestUsers}`);
-  lines.push(`  TaskComments by test persons:       ${s.counts.taskCommentsByTestPersons}`);
-  lines.push(`  TaskComments by test users:         ${s.counts.taskCommentsByTestUsers}`);
-  lines.push(`  ReferendumVotes by test persons:    ${s.counts.referendumVotesByTestPersons}`);
-  lines.push(`  ReferendumVotes by test users:      ${s.counts.referendumVotesByTestUsers}`);
-  lines.push(`  OrganizationMembers (test users):   ${s.counts.organizationMembershipsByTestUsers}`);
-  lines.push(`  Notifications (test users):         ${s.counts.notificationsForTestUsers}`);
-  lines.push(`  EmailLogs (test users):             ${s.counts.emailLogsForTestUsers}`);
-  lines.push(`  ReferralInvitations (test users):   ${s.counts.referralInvitationsByTestUsers}`);
-  lines.push(`  ShareAttempts (test users):         ${s.counts.shareAttemptsByTestUsers}`);
+  lines.push(
+    "Cascade casualties (sample — every FK with ON DELETE CASCADE applies)",
+  );
+  lines.push(
+    `  TaskClaim rows by test users:       ${s.counts.taskClaimsByTestUsers}`,
+  );
+  lines.push(
+    `  TaskComments by test persons:       ${s.counts.taskCommentsByTestPersons}`,
+  );
+  lines.push(
+    `  TaskComments by test users:         ${s.counts.taskCommentsByTestUsers}`,
+  );
+  lines.push(
+    `  ReferendumVotes by test persons:    ${s.counts.referendumVotesByTestPersons}`,
+  );
+  lines.push(
+    `  ReferendumVotes by test users:      ${s.counts.referendumVotesByTestUsers}`,
+  );
+  lines.push(
+    `  OrganizationMembers (test users):   ${s.counts.organizationMembershipsByTestUsers}`,
+  );
+  lines.push(
+    `  Notifications (test users):         ${s.counts.notificationsForTestUsers}`,
+  );
+  lines.push(
+    `  EmailLogs (test users):             ${s.counts.emailLogsForTestUsers}`,
+  );
+  lines.push(
+    `  ReferralInvitations (test users):   ${s.counts.referralInvitationsByTestUsers}`,
+  );
+  lines.push(
+    `  ShareAttempts (test users):         ${s.counts.shareAttemptsByTestUsers}`,
+  );
   lines.push("");
   if (s.samples.persons.length > 0) {
     lines.push("Sample persons:");
@@ -301,7 +358,9 @@ function renderReport(s: Survey, executed: boolean): string {
 }
 
 function truncate(text: string, max: number): string {
-  return text.length > max ? `${text.slice(0, max - 1)}…` : text.padEnd(max, " ");
+  return text.length > max
+    ? `${text.slice(0, max - 1)}…`
+    : text.padEnd(max, " ");
 }
 
 export async function runCleanup(argv: string[]): Promise<void> {
@@ -329,7 +388,12 @@ export async function runCleanup(argv: string[]): Promise<void> {
     if (options.json) {
       process.stdout.write(
         `${JSON.stringify(
-          { executed: true, deleted: result, before: before.counts, after: after.counts },
+          {
+            executed: true,
+            deleted: result,
+            before: before.counts,
+            after: after.counts,
+          },
           null,
           2,
         )}\n`,
@@ -345,7 +409,9 @@ export async function runCleanup(argv: string[]): Promise<void> {
       out.push("Remaining matches");
       out.push(`  Test persons:  ${after.counts.testPersons}`);
       out.push(`  Test users:    ${after.counts.testUsers}`);
-      out.push(`  Test tasks:    ${after.counts.tasksAssignedToTestPersons}`);
+      out.push(
+        `  Test tasks:    ${after.counts.tasksAssignedToTestPersons + after.counts.tasksCreatedByTestUsers}`,
+      );
       out.push("");
       process.stdout.write(out.join("\n"));
     }
@@ -361,7 +427,9 @@ const isDirectInvocation =
 if (isDirectInvocation) {
   runCleanup(process.argv.slice(2)).catch((error: unknown) => {
     const message =
-      error instanceof Error ? error.message : "Unknown cleanup-test-data error";
+      error instanceof Error
+        ? error.message
+        : "Unknown cleanup-test-data error";
     process.stderr.write(`${message}\n`);
     process.exit(1);
   });
