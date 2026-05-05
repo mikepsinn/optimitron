@@ -4,20 +4,13 @@ import Link from "next/link";
 import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeaderboard";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
+import { parsePositivePageParam } from "@/lib/pagination";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
-
-function parsePage(value: string | string[] | undefined) {
-  const raw = Number.parseInt(
-    Array.isArray(value) ? (value[0] ?? "1") : (value ?? "1"),
-    10,
-  );
-  return Number.isFinite(raw) && raw > 0 ? raw : 1;
-}
 
 export async function generateMetadata() {
   const hdrs = await headers();
@@ -46,13 +39,13 @@ export default async function SignatoriesPage({
 
   const homeData = await getReferendumSiteHomeData(site, {
     currentUserId: session?.user?.id ?? null,
-    signersPage: parsePage(params.signersPage),
+    signersPage: parsePositivePageParam(params.signersPage),
   });
 
   if (!site.primaryReferendumSlug || !homeData) {
     return (
       <section className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <h1 className="text-3xl font-black uppercase">
+        <h1 className="text-4xl font-black uppercase sm:text-5xl md:text-6xl">
           {content.metadata.signatories.title}
         </h1>
         <p className="mt-4 font-bold text-muted-foreground">

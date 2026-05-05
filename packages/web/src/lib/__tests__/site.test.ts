@@ -233,25 +233,25 @@ describe("site variant registry", () => {
     const treatySite = getSiteFromHost("1percenttreaty.org");
 
     expect(isSiteRouteAllowed(treatySite, "/")).toBe(true);
-    expect(isSiteRouteAllowed(treatySite, "/dashboard")).toBe(true);
-    expect(isSiteRouteAllowed(treatySite, "/tasks")).toBe(true);
-    expect(isSiteRouteAllowed(treatySite, "/signatories")).toBe(true);
-    expect(isSiteRouteAllowed(treatySite, "/reasoning")).toBe(false);
-    expect(isSiteRouteAllowed(treatySite, "/scoreboard")).toBe(false);
-    expect(isSiteRouteAllowed(treatySite, "/search")).toBe(false);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.dashboard)).toBe(true);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.tasks)).toBe(true);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.signatories)).toBe(true);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.reasoning)).toBe(false);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.scoreboard)).toBe(false);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.search)).toBe(false);
   });
 
   it("allows War on Disease footer trust routes without opening the whole platform", () => {
     const warSite = getSiteFromHost("warondisease.org");
 
-    expect(isSiteRouteAllowed(warSite, "/signatories")).toBe(true);
-    expect(isSiteRouteAllowed(warSite, "/campaign")).toBe(true);
-    expect(isSiteRouteAllowed(warSite, "/coalition")).toBe(true);
-    expect(isSiteRouteAllowed(warSite, "/endorse")).toBe(true);
-    expect(isSiteRouteAllowed(warSite, "/privacy")).toBe(true);
-    expect(isSiteRouteAllowed(warSite, "/terms")).toBe(true);
-    expect(isSiteRouteAllowed(warSite, "/reasoning")).toBe(false);
-    expect(isSiteRouteAllowed(warSite, "/search")).toBe(false);
+    expect(isSiteRouteAllowed(warSite, ROUTES.signatories)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.campaign)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.coalition)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.endorse)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.privacy)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.terms)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.reasoning)).toBe(false);
+    expect(isSiteRouteAllowed(warSite, ROUTES.search)).toBe(false);
   });
 
   it("limits neutral survey hosts to voting and survey routes", () => {

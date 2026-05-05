@@ -15,6 +15,14 @@
 
 - If a local dev server is already running, do not disrupt it for routine verification; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.
 
+## UI Verification
+
+- After changing any user interface surface, capture screenshots of the affected pages or states before considering the work complete.
+- Inspect the screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and obvious responsive problems.
+- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, and explicitly ask them to review the screenshots.
+- If screenshots cannot be captured, state exactly why and do not commit the UI change until the human accepts that limitation.
+- Reuse an existing dev server for screenshot checks when available; do not disrupt a running server unless a clean run is genuinely needed.
+
 ## Documentation
 
 Detailed docs live in `docs/`. Read the relevant ones before working:
@@ -32,6 +40,8 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Do not leak implementation or planning terms into user copy: "site variant", "program graph", "initiative landing page", "approved organizations get", "route allowlist", etc.
 - Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.
 - For treaty/vote/referral copy, optimize for voting, sharing, embedding, and task completion, not explaining the whole system.
+- Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
+- When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
 
 
 ## Critical Architecture Rules

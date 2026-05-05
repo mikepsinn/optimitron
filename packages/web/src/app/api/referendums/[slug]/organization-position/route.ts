@@ -10,6 +10,8 @@ import { requireAuth } from "@/lib/auth-utils";
 import {
   canManageOrganization,
   createOrganizationWithOwner,
+  normalizeOrganizationHttpUrl,
+  normalizeOrganizationLogoUrl,
 } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 
@@ -89,13 +91,29 @@ export async function POST(
         body.newOrganization.type && body.newOrganization.type in OrgType
           ? (body.newOrganization.type as OrgType)
           : OrgType.NONPROFIT;
+      const logo = normalizeOrganizationLogoUrl(body.newOrganization.logo);
+      if (logo === false) {
+        return NextResponse.json(
+          { error: "Invalid logo URL" },
+          { status: 400 },
+        );
+      }
+      const website = normalizeOrganizationHttpUrl(
+        body.newOrganization.website,
+      );
+      if (website === false) {
+        return NextResponse.json(
+          { error: "Invalid website URL" },
+          { status: 400 },
+        );
+      }
       const org = await createOrganizationWithOwner(
         {
           name,
           type,
-          website: body.newOrganization.website ?? null,
+          website,
           description: body.newOrganization.description ?? null,
-          logo: body.newOrganization.logo ?? null,
+          logo,
           contactEmail: body.newOrganization.contactEmail ?? null,
           status: OrgStatus.APPROVED,
         },
@@ -137,7 +155,8 @@ export async function POST(
     ) {
       return NextResponse.json(
         {
-          error: "This organization's signatory record was removed by an admin.",
+          error:
+            "This organization's signatory record was removed by an admin.",
         },
         { status: 409 },
       );
@@ -168,7 +187,10 @@ export async function POST(
       },
     });
 
-    return NextResponse.json({ success: true, position: record }, { status: 201 });
+    return NextResponse.json(
+      { success: true, position: record },
+      { status: 201 },
+    );
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

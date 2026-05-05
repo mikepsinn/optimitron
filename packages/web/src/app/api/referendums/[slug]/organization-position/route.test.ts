@@ -20,10 +20,16 @@ vi.mock("@/lib/auth-utils", () => ({
   requireAuth: mocks.requireAuth,
 }));
 
-vi.mock("@/lib/organization.server", () => ({
-  canManageOrganization: mocks.canManageOrganization,
-  createOrganizationWithOwner: mocks.createOrganizationWithOwner,
-}));
+vi.mock("@/lib/organization.server", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/lib/organization.server")
+  >("@/lib/organization.server");
+  return {
+    ...actual,
+    canManageOrganization: mocks.canManageOrganization,
+    createOrganizationWithOwner: mocks.createOrganizationWithOwner,
+  };
+});
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -115,7 +121,9 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     );
 
     expect(res.status).toBe(404);
-    await expect(res.json()).resolves.toEqual({ error: "Referendum not found" });
+    await expect(res.json()).resolves.toEqual({
+      error: "Referendum not found",
+    });
     expect(mocks.referendumFindUnique).toHaveBeenCalledWith({
       where: { slug: "missing-ref" },
       select: { id: true, status: true, deletedAt: true },
@@ -135,7 +143,8 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      error: "This referendum is not currently accepting organization signatures",
+      error:
+        "This referendum is not currently accepting organization signatures",
     });
   });
 
@@ -159,7 +168,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
       {
         name: "The Useful Institute",
         type: OrgType.NONPROFIT,
-        website: "https://useful.example",
+        website: "https://useful.example/",
         description: "An organization with a spine.",
         logo: null,
         contactEmail: null,
@@ -191,6 +200,46 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
         status: OrganizationReferendumPositionStatus.APPROVED,
       },
     });
+  });
+
+  it("rejects unsafe logo URLs before creating a new organization", async () => {
+    const res = await POST(
+      makeRequest({
+        position: "YES",
+        newOrganization: {
+          name: "  The Useful Institute  ",
+          logo: "data:image/svg+xml,<svg onload=alert(1)>",
+        },
+      }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      error: "Invalid logo URL",
+    });
+    expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
+    expect(mocks.positionUpsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsafe website URLs before creating a new organization", async () => {
+    const res = await POST(
+      makeRequest({
+        position: "YES",
+        newOrganization: {
+          name: "  The Useful Institute  ",
+          website: "javascript:alert(1)",
+        },
+      }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      error: "Invalid website URL",
+    });
+    expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
+    expect(mocks.positionUpsert).not.toHaveBeenCalled();
   });
 
   it("lets an existing organization manager sign immediately", async () => {

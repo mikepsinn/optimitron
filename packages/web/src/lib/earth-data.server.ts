@@ -906,7 +906,7 @@ export async function suggestCorrection(input: unknown, db: DbClient = prisma) {
 export const signReferendumAsOrganizationInputSchema = z.object({
   contactEmail: optionalTrimmedString(320),
   description: optionalTrimmedString(MAX_TEXT_LENGTH),
-  logo: optionalTrimmedString(MAX_URL_LENGTH),
+  logo: optionalUrl,
   newOrganizationName: optionalTrimmedString(MAX_NAME_LENGTH),
   organizationId: optionalTrimmedString(200),
   position: enumInput(VotePosition, VotePosition.YES),
@@ -1001,7 +1001,7 @@ export async function signReferendumAsOrganization(
 export const upsertOrganizationInputSchema = z.object({
   contactEmail: optionalTrimmedString(320),
   description: optionalTrimmedString(MAX_TEXT_LENGTH),
-  logo: optionalTrimmedString(MAX_URL_LENGTH),
+  logo: optionalUrl,
   name: requiredTrimmedString(MAX_NAME_LENGTH),
   sourceRef: optionalTrimmedString(500),
   sourceUrl: optionalUrl,

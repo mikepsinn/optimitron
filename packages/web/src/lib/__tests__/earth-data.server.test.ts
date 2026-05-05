@@ -62,6 +62,7 @@ import {
   getPerson,
   recordRepresentedReferendumVote,
   signReferendumAsOrganization,
+  upsertOrganizationInputSchema,
   upsertMemorialPersonInputSchema,
 } from "../earth-data.server";
 
@@ -124,7 +125,9 @@ describe("earth-data server", () => {
         personId: "person-1",
         userId: "agent-user",
       }),
-    ).rejects.toThrow("Only the original representative can update this represented vote");
+    ).rejects.toThrow(
+      "Only the original representative can update this represented vote",
+    );
 
     expect(mocks.referendumVoteCreate).not.toHaveBeenCalled();
     expect(mocks.referendumVoteUpdate).not.toHaveBeenCalled();
@@ -221,6 +224,28 @@ describe("earth-data server", () => {
     expect(mocks.organizationPositionUpsert).not.toHaveBeenCalled();
   });
 
+  it("rejects unsafe organization logo URLs in shared signatory input", async () => {
+    await expect(
+      signReferendumAsOrganization({
+        logo: "data:image/svg+xml,<svg onload=alert(1)>",
+        newOrganizationName: "Unsafe Logo Org",
+        submittedByUserId: "manager-user",
+      }),
+    ).rejects.toThrow("Use an http(s) URL.");
+
+    expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
+    expect(mocks.organizationPositionUpsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsafe organization logo URLs in shared organization upserts", () => {
+    expect(() =>
+      upsertOrganizationInputSchema.parse({
+        logo: "javascript:alert(1)",
+        name: "Unsafe Logo Org",
+      }),
+    ).toThrow("Use an http(s) URL.");
+  });
+
   it("rejects private or sensitive memorial evidence through the shared writer", async () => {
     await expect(
       addMemorialEvidence({
@@ -228,7 +253,9 @@ describe("earth-data server", () => {
         memorialId: "memorial-1",
         sourceUrl: "https://example.org/source.pdf",
       }),
-    ).rejects.toThrow("Evidence tools only accept public non-sensitive sources");
+    ).rejects.toThrow(
+      "Evidence tools only accept public non-sensitive sources",
+    );
 
     await expect(
       addMemorialEvidence({
