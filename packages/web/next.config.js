@@ -6,7 +6,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const { REDIRECTS } = require("./src/lib/redirects");
 
 /** @type {import('next').NextConfig} */
-const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
+const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === "true";
 
 const nextConfig = {
   experimental: {
@@ -22,12 +22,12 @@ const nextConfig = {
       "@radix-ui/react-icons",
     ],
   },
-  transpilePackages: ['@optimitron/data'],
-  serverExternalPackages: ['@storacha/client', 'multiformats', 'pinata'],
+  transpilePackages: ["@optimitron/data"],
+  serverExternalPackages: ["@storacha/client", "multiformats", "pinata"],
   // Next.js matches dev origins against the request hostname, not a full URL.
-  allowedDevOrigins: ['1percenttreaty.local', 'warondisease.local'],
-  output: isStaticExport ? 'export' : undefined,
-  basePath: isStaticExport ? '/optimitron' : '',
+  allowedDevOrigins: ["1percenttreaty.local", "warondisease.local"],
+  output: isStaticExport ? "export" : undefined,
+  basePath: isStaticExport ? "/optimitron" : "",
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
   images: {
     unoptimized: true,
@@ -35,10 +35,6 @@ const nextConfig = {
   eslint: {
     // Skip ESLint during builds — run separately via `pnpm lint`
     ignoreDuringBuilds: true,
-  },
-  typescript: {
-    // Type checking is done via `pnpm typecheck`
-    ignoreBuildErrors: true,
   },
   webpack: (config, { isServer }) => {
     // MetaMask SDK bundles React Native code that references this package.
@@ -88,12 +84,9 @@ const nextConfig = {
       // NormalModuleReplacementPlugin rewrites node:X → X at resolve time
       const webpack = require("webpack");
       config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(
-          /^node:/,
-          (resource) => {
-            resource.request = resource.request.replace(/^node:/, "");
-          },
-        ),
+        new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+          resource.request = resource.request.replace(/^node:/, "");
+        }),
       );
     }
 
@@ -105,25 +98,28 @@ const nextConfig = {
   },
 };
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === "development";
 module.exports = isDev
   ? nextConfig
-  : withBundleAnalyzer(withSentryConfig(nextConfig, {
-      org: "wishonia-org",
-      project: "optimitron-web",
-      silent: !process.env.CI,
-      // widenClientFileUpload was OOMing CI: Sentry's post-build pass injects
-      // debug IDs into every widened client bundle in memory, and at ~800
-      // files we crossed the 6GB heap ceiling. Standard upload (server +
-      // server-side-rendered chunks) is enough to symbolicate the errors we
-      // actually see; client-only bundles can be re-enabled if needed once
-      // we trim the bundle. Re-enable behind an env flag if a CI runner with
-      // more RAM is configured.
-      widenClientFileUpload: process.env.SENTRY_WIDEN_CLIENT_UPLOAD === "true",
-      sourcemaps: {
-        disable: !process.env.SENTRY_AUTH_TOKEN,
-      },
-      release: {
-        create: !!process.env.SENTRY_AUTH_TOKEN,
-      },
-    }));
+  : withBundleAnalyzer(
+      withSentryConfig(nextConfig, {
+        org: "wishonia-org",
+        project: "optimitron-web",
+        silent: !process.env.CI,
+        // widenClientFileUpload was OOMing CI: Sentry's post-build pass injects
+        // debug IDs into every widened client bundle in memory, and at ~800
+        // files we crossed the 6GB heap ceiling. Standard upload (server +
+        // server-side-rendered chunks) is enough to symbolicate the errors we
+        // actually see; client-only bundles can be re-enabled if needed once
+        // we trim the bundle. Re-enable behind an env flag if a CI runner with
+        // more RAM is configured.
+        widenClientFileUpload:
+          process.env.SENTRY_WIDEN_CLIENT_UPLOAD === "true",
+        sourcemaps: {
+          disable: !process.env.SENTRY_AUTH_TOKEN,
+        },
+        release: {
+          create: !!process.env.SENTRY_AUTH_TOKEN,
+        },
+      }),
+    );
