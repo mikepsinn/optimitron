@@ -128,7 +128,22 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     );
   });
 
-  it("requires the caster to have a self YES vote first", async () => {
+  it("requires authentication", async () => {
+    mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
+
+    const res = await POST(
+      request({ displayName: "Grandma Kay", conditionName: "dementia" }),
+      params(),
+    );
+
+    expect(res.status).toBe(401);
+    await expect(res.json()).resolves.toEqual({
+      error: "Unauthorized",
+    });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+  });
+
+  it("does not require the caster to have a self YES vote first", async () => {
     mocks.voteFindFirst.mockResolvedValue(null);
 
     const res = await POST(
@@ -136,11 +151,8 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       params(),
     );
 
-    expect(res.status).toBe(403);
-    await expect(res.json()).resolves.toEqual({
-      error: "Vote YES yourself before dragging relatives to the polls.",
-    });
-    expect(mocks.personCreate).not.toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(mocks.personCreate).toHaveBeenCalled();
   });
 
   it("creates a represented person and represented YES vote", async () => {
@@ -151,6 +163,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         displayName: "Grandma Kay",
         imageUrl: "/img/grandma.jpg",
         lifeStatus: "LIVING",
+        originUrl: "https://warondisease.org/people?utm=family",
         publicComment: "She would trade one apocalypse for dementia research.",
         relationshipType: "grandchild-of",
       }),
@@ -225,6 +238,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       create: expect.objectContaining({
         answer: "YES",
         isPublic: true,
+        originUrl: "https://warondisease.org/people?utm=family",
         personId: "person_grandma",
         referendumId: "ref_1",
         userId: "user_1",
@@ -310,7 +324,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.personCreate).not.toHaveBeenCalled();
   });
 
-  it("requires country of death for deceased memorial votes", async () => {
+  it("accepts deceased memorial votes without country of death", async () => {
     const res = await POST(
       request({
         conditionName: "cancer",
@@ -321,14 +335,40 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       params(),
     );
 
-    expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchObject({
-      error: "Invalid represented person submission",
-      issues: expect.arrayContaining([
-        expect.objectContaining({ path: ["deathCountryCode"] }),
-      ]),
+    expect(res.status).toBe(200);
+    expect(mocks.memorialCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        deathCountryCode: null,
+      }),
+      select: { id: true },
     });
-    expect(mocks.personCreate).not.toHaveBeenCalled();
+  });
+
+  it("accepts deceased memorial votes without date or country", async () => {
+    const res = await POST(
+      request({
+        conditionName: "cancer",
+        displayName: "Aunt Jane",
+        lifeStatus: "DECEASED",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.personCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          deathDate: null,
+          lifeStatus: "DECEASED",
+        }),
+      }),
+    );
+    expect(mocks.memorialCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        deathCountryCode: null,
+      }),
+      select: { id: true },
+    });
   });
 
   it("rejects birth dates after death dates", async () => {

@@ -63,15 +63,14 @@ export default async function OGImage({
           fontWeight: 900,
         }}
       >
-        Sign for Someone
+        Sign for someone who can't
       </div>,
       { ...size },
     );
   }
 
   const isDeceased = data.person.lifeStatus === PersonLifeStatus.DECEASED;
-  const ghost = isDeceased ? "👻" : "";
-  const pageLabel = isDeceased ? "The Invisible Graveyard" : "Sign for Someone";
+  const pageLabel = "Signed by someone";
   const dates = (() => {
     const parts: string[] = [];
     if (data.person.birthDate) parts.push(formatDate(data.person.birthDate));
@@ -149,7 +148,6 @@ export default async function OGImage({
               letterSpacing: 2,
             }}
           >
-            {ghost ? `${ghost}  ` : ""}
             {pageLabel}
           </div>
           <div

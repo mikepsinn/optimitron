@@ -4,38 +4,17 @@ import { ROUTES } from "@/lib/routes";
 import type { RepresentedPersonCard } from "@/lib/represented-people.server";
 
 interface PersonFaceTileProps {
-  person: RepresentedPersonCard;
-  /**
-   * Tile index — used to rotate brutal-* background colors on the
-   * avatar-fallback variant so the wall-of-faces grid feels varied even
-   * before any actual photos are uploaded.
-   */
   index: number;
+  person: RepresentedPersonCard;
 }
 
-const FALLBACK_PALETTE = [
-  "bg-brutal-pink text-brutal-pink-foreground",
-  "bg-brutal-cyan text-brutal-cyan-foreground",
-  "bg-brutal-yellow text-brutal-yellow-foreground",
-  "bg-brutal-red text-brutal-red-foreground",
-  "bg-brutal-green text-brutal-green-foreground",
-] as const;
-
 function lifeStatusBadge(status: PersonLifeStatus): string {
-  if (status === PersonLifeStatus.DECEASED) return "Memorial signature 👻";
-  if (status === PersonLifeStatus.LIVING) return "Represented human";
+  if (status === PersonLifeStatus.DECEASED) return "Added for someone deceased";
+  if (status === PersonLifeStatus.LIVING) return "Added for someone living";
   return "Status unknown";
 }
 
-/**
- * Single tile in the wall of faces. Square aspect, photo-first.
- * Text appears on hover (desktop) or tap focus (mobile, via the same hover
- * styles when keyboard-focused). PRD Feature 2: *"A wall of faces. Photos
- * in a grid. No text until you hover/tap. Just faces. Let the scale of it
- * hit first."*
- */
-export function PersonFaceTile({ person, index }: PersonFaceTileProps) {
-  const fallbackPalette = FALLBACK_PALETTE[index % FALLBACK_PALETTE.length]!;
+export function PersonFaceTile({ person }: PersonFaceTileProps) {
   const initials =
     person.displayName
       .split(/\s+/u)
@@ -49,7 +28,7 @@ export function PersonFaceTile({ person, index }: PersonFaceTileProps) {
   return (
     <Wrapper
       {...wrapperProps}
-      aria-label={`${person.displayName} — ${lifeStatusBadge(person.lifeStatus)}`}
+      aria-label={`${person.displayName} - ${lifeStatusBadge(person.lifeStatus)}`}
       className="group relative block aspect-square overflow-hidden border border-border bg-muted text-card-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
     >
       {person.image ? (
@@ -60,9 +39,7 @@ export function PersonFaceTile({ person, index }: PersonFaceTileProps) {
           src={person.image}
         />
       ) : (
-        <div
-          className={`flex h-full w-full items-center justify-center text-5xl font-black uppercase ${fallbackPalette}`}
-        >
+        <div className="flex h-full w-full items-center justify-center border border-border bg-background text-5xl font-black uppercase text-foreground">
           {initials}
         </div>
       )}
@@ -84,11 +61,11 @@ export function PersonFaceTile({ person, index }: PersonFaceTileProps) {
         ) : null}
         {person.publicComment ? (
           <p className="line-clamp-3 text-xs font-bold leading-snug">
-            “{person.publicComment}”
+            &ldquo;{person.publicComment}&rdquo;
           </p>
         ) : null}
         <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] opacity-70">
-          Filed by {person.representedBy}
+          Added by {person.representedBy}
         </p>
       </div>
     </Wrapper>
