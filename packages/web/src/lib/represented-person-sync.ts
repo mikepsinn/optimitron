@@ -30,7 +30,8 @@ function acquireLock(ownerId: string): boolean {
     ownerId,
     expiresAt: now + LOCK_TTL_MS,
   });
-  return true;
+  const confirmed = storage.getPendingRepresentedPeopleSyncLock();
+  return confirmed?.ownerId === ownerId;
 }
 
 function releaseLock(ownerId: string): void {
@@ -42,6 +43,7 @@ function releaseLock(ownerId: string): void {
 
 function draftPayload(draft: PendingRepresentedPersonDraft) {
   return {
+    clientDraftId: draft.clientDraftId,
     conditionName: draft.conditionName ?? "",
     displayName: draft.displayName,
     isPublic: draft.isPublic,

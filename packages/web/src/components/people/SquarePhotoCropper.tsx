@@ -1,5 +1,6 @@
 "use client";
 
+import * as ReactDialog from "@radix-ui/react-dialog";
 import { Check, X } from "lucide-react";
 import type {
   ChangeEvent,
@@ -236,23 +237,26 @@ export function SquarePhotoCropper({
     naturalSize && frameSize > 0 ? getFit(naturalSize, frameSize, zoom) : null;
 
   return (
-    <div
-      aria-labelledby="square-photo-cropper-title"
-      aria-modal="true"
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-foreground/80 p-4 text-foreground"
-      role="dialog"
+    <ReactDialog.Root
+      open
+      onOpenChange={(open) => {
+        if (!open && !isCropping) onCancel();
+      }}
     >
-      <div className="w-full max-w-lg border border-foreground bg-background p-5 shadow-none sm:p-6">
+      <ReactDialog.Portal>
+        <ReactDialog.Overlay className="fixed inset-0 z-[120] bg-foreground/80" />
+        <ReactDialog.Content className="fixed left-1/2 top-1/2 z-[121] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-auto border border-foreground bg-background p-5 text-foreground shadow-none sm:p-6">
         <div className="flex items-start justify-between gap-4">
-          <h2
+          <ReactDialog.Title
+            asChild
             className="text-2xl font-black uppercase leading-tight"
             id="square-photo-cropper-title"
           >
-            {title}
-          </h2>
+            <h2>{title}</h2>
+          </ReactDialog.Title>
           <button
             aria-label="Cancel crop"
-            className="inline-flex min-h-10 items-center border border-border bg-background px-3 text-foreground disabled:opacity-40"
+            className="inline-flex min-h-10 items-center border border-foreground bg-background px-3 text-foreground disabled:opacity-40"
             disabled={isCropping}
             onClick={onCancel}
             type="button"
@@ -319,7 +323,7 @@ export function SquarePhotoCropper({
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
-            className="inline-flex min-h-12 items-center border border-border bg-background px-5 font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
+            className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
             disabled={isCropping}
             onClick={onCancel}
             type="button"
@@ -336,7 +340,8 @@ export function SquarePhotoCropper({
             {isCropping ? "Saving" : "Save"}
           </button>
         </div>
-      </div>
-    </div>
+        </ReactDialog.Content>
+      </ReactDialog.Portal>
+    </ReactDialog.Root>
   );
 }

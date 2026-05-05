@@ -654,6 +654,13 @@ export const peopleLink: NavItem = {
   cta: "Sign for Them",
 };
 
+export const peopleManageLink: NavItem = {
+  ...peopleLink,
+  href: ROUTES.peopleManage,
+  label: "Manage Plaintiffs",
+  cta: "Manage Plaintiffs",
+};
+
 export const questionsLink: NavItem = {
   href: ROUTES.questions,
   label: "Treaty Questions",
