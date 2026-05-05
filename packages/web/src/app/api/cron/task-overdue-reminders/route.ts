@@ -5,6 +5,7 @@ import {
   TaskCommunicationAudience,
   TaskCommunicationChannel,
   TaskCommunicationPurpose,
+  TaskCommunicationStatus,
   TaskStatus,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
@@ -119,6 +120,7 @@ async function processOverdueReminders(now: Date): Promise<ReminderResult> {
             some: {
               deletedAt: null,
               purpose: TaskCommunicationPurpose.REMINDER,
+              status: TaskCommunicationStatus.SENT,
             },
           },
         },

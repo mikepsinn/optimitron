@@ -246,7 +246,7 @@ describe("/api/cron/task-overdue-reminders", () => {
     expect(json).toEqual(expect.objectContaining({ sent: 0, skipped: 1 }));
   });
 
-  it("counts reminder comments even when the linked email did not send", async () => {
+  it("only counts sent reminder comments toward the one-reminder cap", async () => {
     mocks.taskCommentAggregate.mockResolvedValue({
       _count: { _all: 1 },
       _max: { createdAt: new Date("2026-04-01T00:00:00.000Z") },
@@ -262,6 +262,7 @@ describe("/api/cron/task-overdue-reminders", () => {
           communications: {
             some: expect.objectContaining({
               purpose: "REMINDER",
+              status: "SENT",
             }),
           },
           taskId: "task_1",
