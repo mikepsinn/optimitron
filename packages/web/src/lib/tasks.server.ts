@@ -937,10 +937,11 @@ async function requireTaskReviewer(userId: string) {
 function getTaskVisibilityWhere(input?: {
   assigneeOrganizationId?: string | null;
   assigneePersonId?: string | null;
+  personId?: string | null;
   status?: TaskStatus | null;
   taskId?: string | null;
   userId?: string | null;
-  visibility?: "public" | "created" | "accessible";
+  visibility?: "public" | "created" | "accessible" | "personal";
 }): Prisma.TaskWhereInput {
   const baseWhere: Prisma.TaskWhereInput = {
     assigneeOrganizationId: input?.assigneeOrganizationId ?? undefined,
@@ -963,6 +964,23 @@ function getTaskVisibilityWhere(input?: {
       ...baseWhere,
       createdByUserId: input.userId,
     };
+  }
+
+  // "personal" = anything I created OR anything assigned to my Person.
+  // Used by the MCP getMyQueue / getNextAction / getQueueAudit handlers
+  // so trigger-spawned tasks (assignee = me, creator = system) surface
+  // alongside tasks I authored myself.
+  if (visibility === "personal") {
+    if (!input?.userId) {
+      return { ...baseWhere, createdByUserId: "__unreachable__" };
+    }
+    const ors: Prisma.TaskWhereInput[] = [
+      { createdByUserId: input.userId },
+    ];
+    if (input.personId) {
+      ors.push({ assigneePersonId: input.personId });
+    }
+    return { ...baseWhere, OR: ors };
   }
 
   if (visibility === "accessible" && input?.userId) {
@@ -1190,13 +1208,15 @@ export async function listTasks(options?: {
   category?: TaskCategory | null;
   frameKey?: TaskImpactFrameKey | string | null;
   limit?: number | null;
+  personId?: string | null;
   status?: TaskStatus | null;
   userId?: string | null;
-  visibility?: "public" | "created" | "accessible";
+  visibility?: "public" | "created" | "accessible" | "personal";
 }) {
   const visibilityWhere = getTaskVisibilityWhere({
     assigneeOrganizationId: options?.assigneeOrganizationId,
     assigneePersonId: options?.assigneePersonId,
+    personId: options?.personId,
     status: options?.status,
     userId: options?.userId,
     visibility: options?.visibility,
