@@ -17,6 +17,10 @@ import {
 } from "@/lib/site";
 import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
 
+const INTERNATIONAL_CAMPAIGN_NAME =
+  "International Campaign to End War and Disease";
+const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
+
 describe("site variant registry", () => {
   it("uses local http origins for .local hosts", () => {
     expect(
@@ -119,8 +123,31 @@ describe("site variant registry", () => {
   });
 
   it("keeps site variant identity, UI, and initiative data in the site config", () => {
+    const warSite = getSiteConfig("warOnDisease");
     const treatySite = getSiteConfig("onePercentTreaty");
     const surveySite = getSiteConfig("trialAbundanceSurvey");
+
+    expect(warSite).toMatchObject({
+      name: INTERNATIONAL_CAMPAIGN_NAME,
+      shortName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
+      organizationName: INTERNATIONAL_CAMPAIGN_NAME,
+      emailBranding: {
+        fromName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
+        orgName: INTERNATIONAL_CAMPAIGN_NAME,
+      },
+      initiative: {
+        key: "warOnDisease",
+        name: INTERNATIONAL_CAMPAIGN_NAME,
+        shortName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
+      },
+    });
+    expect(warSite.alternateSiteNames).toEqual(
+      expect.arrayContaining(["War on Disease", INTERNATIONAL_CAMPAIGN_NAME]),
+    );
+    expect(warSite.ui.nav.brandLabel).toBe(INTERNATIONAL_CAMPAIGN_SHORT_NAME);
+    expect(warSite.ui.nav.desktopBrandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
+    expect(warSite.ui.nav.menuTitle).toBe(INTERNATIONAL_CAMPAIGN_NAME);
+    expect(warSite.ui.footer.brandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
 
     expect(treatySite.domains).toEqual(
       expect.arrayContaining(["1percenttreaty.org", "www.1percenttreaty.org"]),
@@ -355,7 +382,7 @@ describe("site variant registry", () => {
     expect(getSiteConfig("dfda").rootMetadata.title).toContain("DFDA");
     expect(getSiteConfig("dih").rootMetadata.title).toContain("DIH");
     expect(getSiteConfig("warOnDisease").rootMetadata.title).toContain(
-      "War on Disease",
+      INTERNATIONAL_CAMPAIGN_NAME,
     );
   });
 });
