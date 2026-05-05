@@ -375,6 +375,27 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.personCreate).not.toHaveBeenCalled();
   });
 
+  it("rejects unsafe origin URLs at the HTTP boundary", async () => {
+    const res = await POST(
+      request({
+        conditionName: "dementia",
+        displayName: "Grandma Kay",
+        lifeStatus: "LIVING",
+        originUrl: "javascript:alert(1)",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: "Invalid represented person submission",
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: ["originUrl"] }),
+      ]),
+    });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+  });
+
   it("rejects invalid enum values instead of silently normalizing them", async () => {
     const res = await POST(
       request({

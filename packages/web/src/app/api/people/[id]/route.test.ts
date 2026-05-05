@@ -118,6 +118,7 @@ describe("PATCH /api/people/[id]", () => {
       lifeStatus: "DECEASED",
       memorial: {
         causeCategory: "DISEASE",
+        civilianStatus: "CIVILIAN",
         deathCountryCode: "US",
         deletedAt: null,
         id: "memorial_1",
@@ -307,6 +308,31 @@ describe("PATCH /api/people/[id]", () => {
         submittedByUserId: "user_1",
       },
       data: { deletedAt: expect.any(Date) },
+    });
+  });
+
+  it("preserves existing civilian status when editing memorial details", async () => {
+    const res = await PATCH(
+      request({
+        displayName: "Aunt Jane",
+        lifeStatus: "DECEASED",
+        memorialMessage: "Updated memory.",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.memorialUpsert).toHaveBeenCalledWith({
+      where: { personId: "person_1" },
+      update: expect.objectContaining({
+        causeCategory: "DISEASE",
+        civilianStatus: "CIVILIAN",
+      }),
+      create: expect.objectContaining({
+        causeCategory: "DISEASE",
+        civilianStatus: "CIVILIAN",
+      }),
+      select: { id: true },
     });
   });
 });

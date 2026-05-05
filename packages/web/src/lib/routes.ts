@@ -658,6 +658,9 @@ export const peopleManageLink: NavItem = {
   ...peopleLink,
   href: ROUTES.peopleManage,
   label: "Manage Plaintiffs",
+  description:
+    "Edit the people you signed for: photos, dates, evidence, and what to say at the trial.",
+  tagline: "Edit the people you signed for",
   cta: "Manage Plaintiffs",
 };
 

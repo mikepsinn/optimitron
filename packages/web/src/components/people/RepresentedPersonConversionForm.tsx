@@ -143,6 +143,7 @@ export function RepresentedPersonConversionForm({
       setMode("saved");
       resetForm();
     } catch (caught) {
+      storage.addPendingRepresentedPerson(draft);
       setError(caught instanceof Error ? caught.message : "Could not save this person.");
       setMode("error");
     }

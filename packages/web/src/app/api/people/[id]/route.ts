@@ -281,6 +281,7 @@ export async function PATCH(
         memorial: {
           select: {
             causeCategory: true,
+            civilianStatus: true,
             deathCountryCode: true,
             deletedAt: true,
             id: true,
@@ -357,6 +358,8 @@ export async function PATCH(
       parsed.data.causeCategory ??
       activeMemorial?.causeCategory ??
       PersonDeathCauseCategory.UNKNOWN;
+    const finalCivilianStatus =
+      activeMemorial?.civilianStatus ?? PersonCivilianStatus.UNKNOWN;
     const finalMemorialMessage =
       parsed.data.memorialMessage ??
       existingSubmission?.memorialMessage ??
@@ -604,7 +607,7 @@ export async function PATCH(
         where: { personId: id },
         update: {
           causeCategory: finalCauseCategory,
-          civilianStatus: PersonCivilianStatus.UNKNOWN,
+          civilianStatus: finalCivilianStatus,
           deathCountryCode: finalDeathCountryCode,
           deletedAt: null,
           isPublic: finalIsPublic,
@@ -612,7 +615,7 @@ export async function PATCH(
         },
         create: {
           causeCategory: finalCauseCategory,
-          civilianStatus: PersonCivilianStatus.UNKNOWN,
+          civilianStatus: finalCivilianStatus,
           deathCountryCode: finalDeathCountryCode,
           isPublic: finalIsPublic,
           personId: id,
