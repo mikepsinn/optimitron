@@ -413,14 +413,15 @@ const overdueReminderCron: CreateTaskTriggerInput = {
     {
       kind: "overdue-reminder",
       sortOrder: 0,
-      subjectTemplate: "Reminder: {{task.title}}",
+      subjectTemplate: "Task overdue: {{task.title}}",
       // No Wishonia signature in the body — the resend.ts send helpers
       // append the canonical signature (with random title + tagline + sprite
       // avatar) to every outgoing email. Embedding a signature here would
       // double-sign.
       bodyTextTemplate:
-        "Your task '{{task.title}}' is past its due date. Earth's median life expectancy is not going to optimize itself.",
-      commentTemplate: "Automated overdue reminder.",
+        "This task is overdue: {{task.title}}.\n\nPlease mark it complete or post a status update.",
+      commentTemplate:
+        "This task is overdue.\n\nPlease mark it complete or post a status update.",
       channel: "EMAIL",
       audienceResolver: "ASSIGNEE",
       purpose: "REMINDER",

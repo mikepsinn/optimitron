@@ -9,6 +9,7 @@ const baseInput = {
   baseUrl: "https://warondisease.org",
   comment: {
     authorName: "Wishonia",
+    authorAvatarUrl: "/sprites/wishonia/smirk-smile.png",
     message: "Welcome. Get your network voting.",
   },
   task: {
@@ -21,15 +22,21 @@ const baseInput = {
 describe("buildTaskCommentNotificationEmail", () => {
   it("uses the bare task title as the subject (no author prefix — sender is in From header)", () => {
     const email = buildTaskCommentNotificationEmail(baseInput);
-    expect(email.subject).toBe("Get the rest of humanity to vote on the 1% Treaty");
+    expect(email.subject).toBe(
+      "Get the rest of humanity to vote on the 1% Treaty",
+    );
   });
 
-  it("renders the comment message without an inline author label", () => {
+  it("renders the comment as a comment card with author name and avatar", () => {
     const email = buildTaskCommentNotificationEmail(baseInput);
     expect(email.text).toContain("Welcome. Get your network voting.");
-    expect(email.text).not.toContain("Wishonia:");
+    expect(email.text).toContain("Wishonia commented:");
     expect(email.html).toContain("Welcome. Get your network voting.");
-    expect(email.html).not.toContain("Wishonia:");
+    expect(email.html).toContain("Wishonia commented");
+    expect(email.html).toContain(
+      "https://warondisease.org/sprites/wishonia/smirk-smile.png",
+    );
+    expect(email.html).toContain('alt="Wishonia"');
   });
 
   it("does not render the breadcrumb or task description (noise)", () => {
@@ -48,7 +55,9 @@ describe("buildTaskCommentNotificationEmail", () => {
 
   it("defaults the CTA to the in-app task URL with 'Open the task' label", () => {
     const email = buildTaskCommentNotificationEmail(baseInput);
-    expect(email.text).toContain("Open the task: https://warondisease.org/tasks/task_xyz");
+    expect(email.text).toContain(
+      "Open the task: https://warondisease.org/tasks/task_xyz",
+    );
     expect(email.html).toContain("https://warondisease.org/tasks/task_xyz");
     expect(email.html).toContain("Open the task");
   });
@@ -69,8 +78,34 @@ describe("buildTaskCommentNotificationEmail", () => {
     );
   });
 
+  it("renders a secondary CTA when provided", () => {
+    const email = buildTaskCommentNotificationEmail({
+      ...baseInput,
+      cta: {
+        label: "Mark task complete",
+        url: "https://warondisease.org/tasks/task_xyz#complete",
+      },
+      secondaryCta: {
+        label: "Open task",
+        url: "https://warondisease.org/tasks/task_xyz",
+      },
+    });
+
+    expect(email.text).toContain(
+      "Mark task complete: https://warondisease.org/tasks/task_xyz#complete",
+    );
+    expect(email.text).toContain(
+      "Open task: https://warondisease.org/tasks/task_xyz",
+    );
+    expect(email.html).toContain("Mark task complete");
+    expect(email.html).toContain("Open task");
+  });
+
   it("suppresses the CTA when explicitly null", () => {
-    const email = buildTaskCommentNotificationEmail({ ...baseInput, cta: null });
+    const email = buildTaskCommentNotificationEmail({
+      ...baseInput,
+      cta: null,
+    });
     expect(email.html).not.toContain("Open the task");
     expect(email.text).not.toContain("Open the task:");
   });
@@ -95,6 +130,36 @@ describe("buildTaskCommentNotificationEmail", () => {
     expect(email.text).not.toContain("Love,");
   });
 
+  it("renders a recipient reason when provided", () => {
+    const email = buildTaskCommentNotificationEmail({
+      ...baseInput,
+      recipientReason: "You're getting this because you created this task.",
+    });
+    expect(email.text).toContain(
+      "You're getting this because you created this task.",
+    );
+    expect(email.html).toContain(
+      "You&#39;re getting this because you created this task.",
+    );
+  });
+
+  it("renders a reply instruction only when provided", () => {
+    const withoutReply = buildTaskCommentNotificationEmail(baseInput);
+    expect(withoutReply.text).not.toContain("Reply to this email");
+    expect(withoutReply.html).not.toContain("Reply to this email");
+
+    const withReply = buildTaskCommentNotificationEmail({
+      ...baseInput,
+      replyInstruction: "Reply to this email to add a comment to the task.",
+    });
+    expect(withReply.text).toContain(
+      "Reply to this email to add a comment to the task.",
+    );
+    expect(withReply.html).toContain(
+      "Reply to this email to add a comment to the task.",
+    );
+  });
+
   it("emits a placeholder for the unsubscribe URL", () => {
     const email = buildTaskCommentNotificationEmail(baseInput);
     expect(email.html).toContain(COMMENT_NOTIFICATION_PLACEHOLDER);
@@ -106,7 +171,8 @@ describe("buildTaskCommentNotificationEmail", () => {
       ...baseInput,
       comment: {
         authorName: "<script>",
-        message: "click <a href=\"x\">here</a>",
+        authorAvatarUrl: 'https://x.test/avatar.png?q="<bad>"',
+        message: 'click <a href="x">here</a>',
       },
       cta: { label: "Click <here>", url: "https://x.test/?q=<bad>" },
       task: {
@@ -118,5 +184,8 @@ describe("buildTaskCommentNotificationEmail", () => {
     expect(email.html).toContain("&lt;a href=&quot;x&quot;&gt;here&lt;/a&gt;");
     expect(email.html).toContain("&lt;tag&gt;");
     expect(email.html).toContain("Click &lt;here&gt;");
+    expect(email.html).toContain(
+      "https://x.test/avatar.png?q=&quot;&lt;bad&gt;&quot;",
+    );
   });
 });

@@ -4,6 +4,7 @@ import { TaskCommentKind, TaskCommentSource } from "@optimitron/db/enums";
 const mocks = vi.hoisted(() => ({
   cooldownAllowed: vi.fn(),
   draftTaskNotification: vi.fn(),
+  getTaskEmailReplyInstruction: vi.fn(),
   getTaskAncestors: vi.fn(),
   personFindUnique: vi.fn(),
   resolveTaskRecipients: vi.fn(),
@@ -33,6 +34,10 @@ vi.mock("@/lib/tasks/task-communications.server", () => ({
 vi.mock("@/lib/tasks/task-notifications.server", () => ({
   draftTaskNotification: mocks.draftTaskNotification,
   sendDraftTaskNotification: mocks.sendDraftTaskNotification,
+}));
+
+vi.mock("@/lib/email/task-notification", () => ({
+  getTaskEmailReplyInstruction: mocks.getTaskEmailReplyInstruction,
 }));
 
 vi.mock("@/lib/tasks/task-recipient-rate-limit.server", async () => {
@@ -70,6 +75,9 @@ describe("postTaskCommentAndNotify", () => {
     });
     mocks.recipientWithinRateLimits.mockResolvedValue(true);
     mocks.cooldownAllowed.mockResolvedValue({ allowed: true });
+    mocks.getTaskEmailReplyInstruction.mockReturnValue(
+      "Reply to this email to add a comment to the task.",
+    );
     mocks.taskFindUnique.mockResolvedValue({
       deletedAt: null,
       description: "Vote on the 1% Treaty.",
@@ -114,12 +122,15 @@ describe("postTaskCommentAndNotify", () => {
         recipientEmail: "joe@example.com",
         senderUserId: "user_alice",
         subject: "Get Joe to vote on the 1% Treaty",
+        text: expect.stringContaining(
+          "Reply to this email to add a comment to the task.",
+        ),
       }),
     );
     expect(mocks.sendDraftTaskNotification).toHaveBeenCalled();
   });
 
-  it("puts admins in BCC instead of direct recipients", async () => {
+  it("sends admin monitoring copies as separate reason-labeled emails", async () => {
     mocks.resolveTaskRecipient.mockResolvedValue({
       email: "joe@example.com",
       personId: "person_2",
@@ -134,11 +145,17 @@ describe("postTaskCommentAndNotify", () => {
       {
         email: "admin1@example.com",
         isAdmin: true,
+        reason:
+          "You're getting this admin copy because task email monitoring is turned on.",
+        role: "admin_monitor",
         userId: "admin_1",
       },
       {
         email: "admin2@example.com",
         isAdmin: true,
+        reason:
+          "You're getting this admin copy because task email monitoring is turned on.",
+        role: "admin_monitor",
         userId: "admin_2",
       },
     ]);
@@ -153,7 +170,32 @@ describe("postTaskCommentAndNotify", () => {
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         recipientEmail: "joe@example.com",
-        bccEmails: ["admin1@example.com", "admin2@example.com"],
+        bccEmails: [],
+      }),
+    );
+    expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        audience: "OBSERVER",
+        bccEmails: [],
+        metadataJson: expect.objectContaining({
+          recipientReason:
+            "You're getting this admin copy because task email monitoring is turned on.",
+          recipientRole: "admin_monitor",
+        }),
+        recipientEmail: "admin1@example.com",
+        text: expect.stringContaining(
+          "You're getting this admin copy because task email monitoring is turned on.",
+        ),
+      }),
+    );
+    expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        audience: "OBSERVER",
+        bccEmails: [],
+        metadataJson: expect.objectContaining({
+          recipientRole: "admin_monitor",
+        }),
+        recipientEmail: "admin2@example.com",
       }),
     );
   });
@@ -221,7 +263,10 @@ describe("postTaskCommentAndNotify", () => {
   });
 
   it("skips notification when the per-task cooldown is active", async () => {
-    mocks.cooldownAllowed.mockResolvedValue({ allowed: false, retryAfter: new Date() });
+    mocks.cooldownAllowed.mockResolvedValue({
+      allowed: false,
+      retryAfter: new Date(),
+    });
 
     const result = await postTaskCommentAndNotify({
       authorUserId: "user_alice",
