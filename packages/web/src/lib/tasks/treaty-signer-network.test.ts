@@ -189,7 +189,8 @@ describe("treaty signer network", () => {
       baseDraft: buildBaseDraft(),
       slot,
     });
-    const factor = slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
+    const factor =
+      slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
     const frame = result.bundle.impactEstimate.frames[0];
     const annualRedirectMetric = frame?.metrics.find(
       (metric) => metric.metricKey === "annual_redirect_amount_usd",
@@ -198,28 +199,49 @@ describe("treaty signer network", () => {
       (metric) => metric.metricKey === "trial_capacity_multiplier",
     );
 
-    expect(result.bundle.task.taskKey).toBe("program:one-percent-treaty:signer:us");
+    expect(result.bundle.task.taskKey).toBe(
+      "program:one-percent-treaty:signer:us",
+    );
     expect(result.bundle.task.title).toBe("Sign the 1% Treaty");
-    expect(result.bundle.task.dueAt?.toISOString()).toBe(TREATY_DUE_AT.toISOString());
-    expect(result.bundle.task.description).toContain("United States Government");
+    expect(result.bundle.task.dueAt?.toISOString()).toBe(
+      TREATY_DUE_AT.toISOString(),
+    );
+    expect(result.bundle.task.description).toContain(
+      "United States Government",
+    );
 
     // Parent signer task's actionLink: assignee (head of state) clicks
     // through to sign the treaty. No third-person Wishonia template here —
-    // that template moves to the citizen-owned reminder subtask.
-    expect(result.bundle.task.contactUrl).toBe("https://1percenttreaty.org/treaty");
+    // that template moves to the citizen-created reminder subtask.
+    expect(result.bundle.task.contactUrl).toBe(
+      "https://1percenttreaty.org/treaty",
+    );
     expect(result.bundle.task.contactLabel).toBe("Sign the treaty");
     expect(result.bundle.task.contactTemplate).toBeNull();
-    expect(frame?.expectedDalysAvertedBase).toBeCloseTo(5_000_000_000 * factor, 3);
-    expect(frame?.delayEconomicValueUsdLostPerDayBase).toBeCloseTo(10_000_000 * factor, 3);
+    expect(frame?.expectedDalysAvertedBase).toBeCloseTo(
+      5_000_000_000 * factor,
+      3,
+    );
+    expect(frame?.delayEconomicValueUsdLostPerDayBase).toBeCloseTo(
+      10_000_000 * factor,
+      3,
+    );
     expect(
-      frame?.metrics.find((metric) => metric.metricKey === "contribution_lives_saved_per_pct_point")
-        ?.baseValue,
+      frame?.metrics.find(
+        (metric) =>
+          metric.metricKey === "contribution_lives_saved_per_pct_point",
+      )?.baseValue,
     ).toBeCloseTo(100_000_000 * factor, 3);
-    expect(annualRedirectMetric?.baseValue).toBeCloseTo(slot.militaryBudgetUsd * 0.01, 3);
+    expect(annualRedirectMetric?.baseValue).toBeCloseTo(
+      slot.militaryBudgetUsd * 0.01,
+      3,
+    );
     expect(unchangedMetric?.baseValue).toBe(12.3);
     expect(
       result.bundle.sourceArtifacts.some((artifact) =>
-        artifact.sourceKey.startsWith("external:sipri:military-expenditure-2024:"),
+        artifact.sourceKey.startsWith(
+          "external:sipri:military-expenditure-2024:",
+        ),
       ),
     ).toBe(true);
   });

@@ -12,8 +12,10 @@ import {
 // ---------------------------------------------------------------------------
 // Pattern 1+2 — Per-user onboarding tree (1% Treaty)
 // ---------------------------------------------------------------------------
-const USER_TREATY_TASK_TITLE = "Get {{params.majorityHumanity}} people to vote on the 1% Treaty";
-const USER_TREATY_TASK_ROLE_TITLE = "Humanity Manager, Earth Optimization Services, LLC";
+const USER_TREATY_TASK_TITLE =
+  "Get {{params.majorityHumanity}} people to vote on the 1% Treaty";
+const USER_TREATY_TASK_ROLE_TITLE =
+  "Humanity Manager, Earth Optimization Services, LLC";
 const PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE = "Promote to Humanity Manager";
 
 // Per-user HMT root description = the Promotion content from
@@ -59,7 +61,7 @@ const PHONE_SCRIPT_DESCRIPTION = [
   "",
   "Script (read out loud, edit to taste):",
   "",
-  "\"Hey [friend]. Quick favor.",
+  '"Hey [friend]. Quick favor.',
   "",
   "Humans spend {{params.militaryVsResearchRatio}} times more on weapons than on testing which medicines work. There's a treaty — the 1% Treaty — that redirects 1% of military spending into pragmatic clinical trials. Sixty million humans die every year, mostly from things we already know how to fix. The treaty would shorten the time to disease eradication from about {{params.statusQuoYears}} years to about {{params.dfdaYears}}.",
   "",
@@ -93,7 +95,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       dueDays: 0,
       claimPolicy: "ASSIGNED_ONLY",
       isPublic: false,
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: `fixed:${TREATY_PARENT_TASK_KEY}`,
     },
@@ -113,7 +115,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,
       dueDays: 0,
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
       contributesToGate: true,
@@ -128,7 +130,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,
       dueDays: 0,
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
       contributesToGate: true,
@@ -143,7 +145,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.02,
       dueDays: 0,
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
       contributesToGate: true,
@@ -158,7 +160,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.01,
       dueDays: 0,
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
       // Relative path. The middleware (getSiteRouteDisposition) redirects
@@ -177,7 +179,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.5,
       dueDays: 0,
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
       contributesToGate: true,
@@ -191,7 +193,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.25,
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
     },
@@ -227,7 +229,7 @@ const referralVoteInvitation: CreateTaskTriggerInput = {
       isPublic: false,
       skillTagTemplates: ["voting"],
       interestTagTemplates: ["one-percent-treaty", "war-on-disease"],
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "context.recipientPersonId",
       parentResolver: "context.parentTaskId",
       actionLinkUrlTemplate: "{{actionLink.url}}",
@@ -269,7 +271,7 @@ const treatySignerReminder: CreateTaskTriggerInput = {
         "war-on-disease",
         "country-{{signer.countryCodeLower}}",
       ],
-      ownerResolver: "actor",
+      creatorResolver: "actor",
       assigneePersonResolver: "actor",
       parentResolver: "context.parentTaskId",
       actionLinkUrlTemplate: "{{actionLink.url}}",
@@ -303,7 +305,7 @@ const treatyRatify: CreateTaskTriggerInput = {
       difficulty: "ADVANCED",
       claimPolicy: "ASSIGNED_ONLY",
       isPublic: true,
-      ownerResolver: "system",
+      creatorResolver: "system",
       parentResolver: "none",
     },
   ],
@@ -330,7 +332,13 @@ const hmtVerifyGate: CreateTaskTriggerInput = {
   completionGate: {
     kind: "allOf",
     inputScope: "siblings",
-    subtaskKinds: ["signTreatyPersonally", "shareReferralUrl", "phoneScript", "assignFirstHuman", "assignSecondHuman"],
+    subtaskKinds: [
+      "signTreatyPersonally",
+      "shareReferralUrl",
+      "phoneScript",
+      "assignFirstHuman",
+      "assignSecondHuman",
+    ],
     evidenceTemplate:
       "User publicly signed the treaty, shared their referral URL, made the phone call, and gave two named humans their 1% Treaty voting tasks.",
   },
@@ -355,7 +363,8 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
       kind: "root",
       isParent: true,
       sortOrder: 0,
-      titleTemplate: "{{slot.leaderName}} signs the 1% Treaty for {{slot.countryName}}",
+      titleTemplate:
+        "{{slot.leaderName}} signs the 1% Treaty for {{slot.countryName}}",
       descriptionTemplate:
         "Convince {{slot.leaderName}} ({{slot.role}} of {{slot.countryName}}) to sign the 1% Treaty. Recipients of the assignee's signature: their citizens.",
       roleTitleTemplate: "{{slot.role}} of {{slot.countryName}}",
@@ -363,7 +372,7 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
       difficulty: "INTERMEDIATE",
       claimPolicy: "OPEN_MANY",
       isPublic: true,
-      ownerResolver: "system",
+      creatorResolver: "system",
       parentResolver: `fixed:${TREATY_PARENT_TASK_KEY}`,
       // Relative path. The middleware (getSiteRouteDisposition) redirects
       // users on a variant without /treaty to the canonical onePercentTreaty

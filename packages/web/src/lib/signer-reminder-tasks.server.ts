@@ -69,9 +69,9 @@ export function buildSignerReminderConversionMessage(signer: SignerForReminder) 
 }
 
 export interface UpsertSignerReminderInput {
+  creatorUserId: string;
   now?: Date;
-  ownerUserId: string;
-  ownerPersonId: string | null;
+  creatorPersonId: string | null;
   referralCode: string;
   signer: SignerForReminder;
 }
@@ -83,7 +83,7 @@ export interface UpsertSignerReminderResult {
 }
 
 /**
- * Idempotent on (signer.countryCode, ownerUserId).
+ * Idempotent on (signer.countryCode, creatorUserId).
  *
  * Backed by the `treaty:signer-reminder` TaskTrigger blueprint. Caller
  * pre-computes the action-link URL (Google search for the signer's office)
@@ -95,12 +95,12 @@ export interface UpsertSignerReminderResult {
 export async function upsertSignerReminderTask(
   input: UpsertSignerReminderInput,
 ): Promise<UpsertSignerReminderResult> {
-  const taskKey = buildSignerReminderTaskKey(input.signer.countryCode, input.ownerUserId);
+  const taskKey = buildSignerReminderTaskKey(input.signer.countryCode, input.creatorUserId);
 
   const result = await fireTaskTrigger(
     "treaty:signer-reminder",
     buildTriggerContext({
-      user: { id: input.ownerUserId, referralCode: input.referralCode },
+      user: { id: input.creatorUserId, referralCode: input.referralCode },
       signer: {
         countryCode: input.signer.countryCode,
         countryCodeLower: input.signer.countryCode.toLowerCase(),
@@ -117,7 +117,7 @@ export async function upsertSignerReminderTask(
         }),
       },
     }),
-    { actorUserId: input.ownerUserId },
+    { actorUserId: input.creatorUserId },
   );
 
   if (result.result === "filteredOut" || result.result === "failed") {
@@ -138,7 +138,7 @@ export async function upsertSignerReminderTask(
     where: { id: parent.taskId },
     data: {
       assigneeAffiliationSnapshot: input.signer.governmentName,
-      assigneePersonId: input.ownerPersonId,
+      assigneePersonId: input.creatorPersonId,
       contextJson: {
         countryCode: input.signer.countryCode,
         kind: "signer_reminder",

@@ -31,7 +31,7 @@ import {
 interface FakeTask {
   id: string;
   deletedAt: Date | null;
-  ownerUserId?: string | null;
+  createdByUserId?: string | null;
   parentTaskId?: string | null;
   status?: string;
   taskKey?: string | null;
@@ -209,7 +209,7 @@ function seedSyntheticOnboardingTree(
     id: rootId,
     deletedAt: null,
     taskKey: getUserTreatyTaskKey(userId),
-    ownerUserId: userId,
+    createdByUserId: userId,
     parentTaskId: null,
     status: "ACTIVE",
     title: "Get 4 billion people to vote on the 1% Treaty",
@@ -229,7 +229,7 @@ function seedSyntheticOnboardingTree(
       id,
       deletedAt: null,
       taskKey: getUserTreatySubtaskKey(userId, kind),
-      ownerUserId: userId,
+      createdByUserId: userId,
       parentTaskId: rootId,
       status: "ACTIVE",
     });

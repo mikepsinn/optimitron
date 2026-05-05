@@ -1,7 +1,7 @@
 /**
  * Per-user 1% Treaty Humanity Management onboarding tree.
  *
- * The actual spawning is owned by the `user-onboarding:treaty` TaskTrigger
+ * The actual spawning is handled by the `user-onboarding:treaty` TaskTrigger
  * blueprint (seeded by `scripts/seed-task-triggers.ts`). This file is a
  * thin adapter that fires the trigger and reconstructs the legacy return
  * shape (`{ created, taskId, subtaskIds, subtaskStatuses }`) so existing
@@ -36,7 +36,10 @@ export type UserTreatySubtaskKind =
   | "assignSecondHuman";
 
 export type UserTreatySubtaskIds = Record<UserTreatySubtaskKind, string>;
-export type UserTreatySubtaskStatuses = Record<UserTreatySubtaskKind, TaskStatus>;
+export type UserTreatySubtaskStatuses = Record<
+  UserTreatySubtaskKind,
+  TaskStatus
+>;
 
 const REQUIRED_SUBTASK_KINDS: readonly UserTreatySubtaskKind[] = [
   "signTreatyPersonally",
@@ -86,12 +89,13 @@ export interface EnsureUserTreatyTaskResult {
  *
  * Throws if the trigger blueprint hasn't been seeded (run `db:seed:triggers`).
  */
-export async function ensureUserTreatyTask(input: {
-  now?: Date;
-  personId: string | null;
-  userId: string;
-},
-db: Prisma.TransactionClient | typeof prisma = prisma,
+export async function ensureUserTreatyTask(
+  input: {
+    now?: Date;
+    personId: string | null;
+    userId: string;
+  },
+  db: Prisma.TransactionClient | typeof prisma = prisma,
 ): Promise<EnsureUserTreatyTaskResult> {
   const result = await fireTaskTrigger(
     "user-onboarding:treaty",

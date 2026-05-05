@@ -8,7 +8,7 @@
  *      is the secret).
  *   2. Parse the JSON body into our normalized `InboundEmailEvent` shape.
  *   3. Dispatch to `processInboundReply()` which writes the TaskComment +
- *      TaskCommunication and notifies the task owner.
+ *      TaskCommunication and notifies the task creator/recipients.
  *
  * Returns 200 on accepted (incl. silent-skip cases like duplicate
  * providerMessageId, malformed To address) so the provider stops retrying.

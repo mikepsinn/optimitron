@@ -53,7 +53,7 @@ const overdueTasksResolver: IterationResolver = async (db) => {
       id: true,
       taskKey: true,
       title: true,
-      ownerUserId: true,
+      createdByUserId: true,
       assigneePersonId: true,
       assigneeOrganizationId: true,
       parentTaskId: true,

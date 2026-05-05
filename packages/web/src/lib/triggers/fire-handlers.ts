@@ -20,8 +20,8 @@ import {
 import {
   resolveAssigneeOrganizationId,
   resolveAssigneePersonId,
-  resolveOwnerUserId,
   resolveParentTaskId,
+  resolveTaskCreatorUserId,
   type ParentResolution,
 } from "./resolvers";
 import { render } from "./template";
@@ -69,16 +69,22 @@ export async function fireSpawnTasks(
     });
     const wasCreated = !preExisting;
 
-    const ownerUserId = await resolveOwnerUserId(spec.ownerResolver, {
-      db: tx,
-      context,
-      actorUserId,
-    });
-    const assigneePersonId = await resolveAssigneePersonId(spec.assigneePersonResolver, {
-      db: tx,
-      context,
-      actorUserId,
-    });
+    const createdByUserId = await resolveTaskCreatorUserId(
+      spec.creatorResolver,
+      {
+        db: tx,
+        context,
+        actorUserId,
+      },
+    );
+    const assigneePersonId = await resolveAssigneePersonId(
+      spec.assigneePersonResolver,
+      {
+        db: tx,
+        context,
+        actorUserId,
+      },
+    );
     const assigneeOrganizationId = await resolveAssigneeOrganizationId(
       spec.assigneeOrganizationResolver,
       { db: tx, context, actorUserId },
@@ -93,12 +99,15 @@ export async function fireSpawnTasks(
       spec.isParent && spec.parentResolver === "trigger.parentSpec"
         ? "none"
         : spec.parentResolver;
-    const parentRes: ParentResolution = await resolveParentTaskId(effectiveParentResolver, {
-      db: tx,
-      context,
-      actorUserId,
-      parentSpecTaskId: parentTaskId,
-    });
+    const parentRes: ParentResolution = await resolveParentTaskId(
+      effectiveParentResolver,
+      {
+        db: tx,
+        context,
+        actorUserId,
+        parentSpecTaskId: parentTaskId,
+      },
+    );
 
     const title = render(spec.titleTemplate, context).rendered;
     const description = render(spec.descriptionTemplate, context).rendered;
@@ -110,11 +119,18 @@ export async function fireSpawnTasks(
       : null;
 
     const now = new Date();
-    const dueAt = spec.dueDays != null ? new Date(now.getTime() + spec.dueDays * 86_400_000) : null;
+    const dueAt =
+      spec.dueDays != null
+        ? new Date(now.getTime() + spec.dueDays * 86_400_000)
+        : null;
     const availableAt =
-      spec.availableInDays != null ? new Date(now.getTime() + spec.availableInDays * 86_400_000) : null;
+      spec.availableInDays != null
+        ? new Date(now.getTime() + spec.availableInDays * 86_400_000)
+        : null;
 
-    const skillTags = spec.skillTagTemplates.map((t) => render(t, context).rendered).filter(Boolean);
+    const skillTags = spec.skillTagTemplates
+      .map((t) => render(t, context).rendered)
+      .filter(Boolean);
     const interestTags = spec.interestTagTemplates
       .map((t) => render(t, context).rendered)
       .filter(Boolean);
@@ -134,7 +150,6 @@ export async function fireSpawnTasks(
       isPublic: spec.isPublic,
       skillTags,
       interestTags,
-      ownerUserId,
       assigneePersonId,
       assigneeOrganizationId,
       parentTaskId: parentRes.parentTaskId,
@@ -149,6 +164,7 @@ export async function fireSpawnTasks(
 
     const baseCreate = {
       ...baseUpdate,
+      createdByUserId,
       taskKey,
       status: TaskStatus.ACTIVE,
     };
@@ -194,7 +210,9 @@ export async function fireSpawnTasks(
         : null;
       if (url) {
         await upsertPrimaryTaskCommunicationEndpoint(
-          tx as unknown as Parameters<typeof upsertPrimaryTaskCommunicationEndpoint>[0],
+          tx as unknown as Parameters<
+            typeof upsertPrimaryTaskCommunicationEndpoint
+          >[0],
           task.id,
           { url, label, instructions },
         );
@@ -226,7 +244,7 @@ export async function fireVerifyTask(
 ): Promise<FireResult> {
   const parentTask = await tx.task.findFirst({
     where: { taskKey: idempotencyKey, deletedAt: null },
-    select: { id: true, status: true, ownerUserId: true },
+    select: { createdByUserId: true, id: true, status: true },
   });
   if (!parentTask) {
     return finished("filteredOut", trigger.triggerKey, {
@@ -243,7 +261,13 @@ export async function fireVerifyTask(
       spawnedTaskKeys: [idempotencyKey],
     });
   }
-  const verified = await maybeVerifyByGate(tx, trigger, parentTask.id, context, actorUserId);
+  const verified = await maybeVerifyByGate(
+    tx,
+    trigger,
+    parentTask.id,
+    context,
+    actorUserId,
+  );
   if (!verified) {
     return finished("filteredOut", trigger.triggerKey, {
       triggerId: trigger.id,
@@ -291,16 +315,24 @@ async function maybeVerifyByGate(
   });
   const prefix = prefixSource?.taskKey ? `${prefixSource.taskKey}:` : "";
   const gateInputs: GateChild[] = inputs.map((c) => ({
-    spawnKind: c.taskKey?.startsWith(prefix) ? c.taskKey.slice(prefix.length) : (c.taskKey ?? ""),
+    spawnKind: c.taskKey?.startsWith(prefix)
+      ? c.taskKey.slice(prefix.length)
+      : (c.taskKey ?? ""),
     status: c.status,
   }));
   if (!isGateMet(trigger.completionGate, gateInputs)) return false;
 
   const evidenceTpl = gateEvidenceTemplate(trigger.completionGate);
-  const evidence = evidenceTpl ? render(evidenceTpl, context).rendered : "Completion gate met.";
+  const evidence = evidenceTpl
+    ? render(evidenceTpl, context).rendered
+    : "Completion gate met.";
   const now = new Date();
   const updated = await tx.task.updateMany({
-    where: { id: verifyTargetId, deletedAt: null, status: { not: TaskStatus.VERIFIED } },
+    where: {
+      id: verifyTargetId,
+      deletedAt: null,
+      status: { not: TaskStatus.VERIFIED },
+    },
     data: {
       completedAt: now,
       verifiedAt: now,
@@ -379,7 +411,8 @@ export async function fireSpawnCommunication(
     if (!dedupeKey) continue;
 
     if (priorSendCount < spec.minSendCount) continue;
-    if (spec.maxSendCount != null && priorSendCount > spec.maxSendCount) continue;
+    if (spec.maxSendCount != null && priorSendCount > spec.maxSendCount)
+      continue;
 
     if (spec.minHoursBetweenSends > 0 || spec.maxSendsPerTask > 0) {
       const window =
@@ -416,7 +449,9 @@ export async function fireSpawnCommunication(
 
     const subject = render(spec.subjectTemplate, context).rendered;
     const bodyText = render(spec.bodyTextTemplate, context).rendered;
-    const bodyHtml = spec.bodyHtmlTemplate ? render(spec.bodyHtmlTemplate, context).rendered : null;
+    const bodyHtml = spec.bodyHtmlTemplate
+      ? render(spec.bodyHtmlTemplate, context).rendered
+      : null;
     const commentMessage = spec.commentTemplate
       ? render(spec.commentTemplate, context).rendered
       : subject;
@@ -580,7 +615,9 @@ export async function dryRunFire(
   const taskKeys: string[] = [];
   if (trigger.triggerKind === "spawnTasks") {
     for (const spec of trigger.spawnSpecs) {
-      taskKeys.push(spec.isParent ? idempotencyKey : `${idempotencyKey}:${spec.kind}`);
+      taskKeys.push(
+        spec.isParent ? idempotencyKey : `${idempotencyKey}:${spec.kind}`,
+      );
     }
   }
   return {
@@ -595,7 +632,9 @@ export async function dryRunFire(
   };
 }
 
-function mapDeadlinePolicy(value: string | null | undefined): TaskDeadlinePolicy {
+function mapDeadlinePolicy(
+  value: string | null | undefined,
+): TaskDeadlinePolicy {
   switch (value) {
     case "SOFT":
       return TaskDeadlinePolicy.SOFT;

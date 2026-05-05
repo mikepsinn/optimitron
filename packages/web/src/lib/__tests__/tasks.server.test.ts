@@ -1,13 +1,10 @@
-import {
-  TaskClaimPolicy,
-  TaskClaimStatus,
-  TaskStatus,
-} from "@optimitron/db";
+import { TaskClaimPolicy, TaskClaimStatus, TaskStatus } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   grantWishes: vi.fn(),
   prisma: {
+    taskCreate: vi.fn(),
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskFindMany: vi.fn(),
@@ -34,6 +31,7 @@ vi.mock("@/lib/prisma", () => ({
       update: mocks.prisma.taskClaimUpdate,
     },
     task: {
+      create: mocks.prisma.taskCreate,
       findMany: mocks.prisma.taskFindMany,
     },
     user: {
@@ -46,7 +44,13 @@ vi.mock("@/lib/wishes.server", () => ({
   grantWishes: mocks.grantWishes,
 }));
 
-import { completeTaskClaim, listTasks, searchTasks, verifyTask } from "../tasks.server";
+import {
+  completeTaskClaim,
+  createTask,
+  listTasks,
+  searchTasks,
+  verifyTask,
+} from "../tasks.server";
 
 function createTransactionClient() {
   return {
@@ -72,7 +76,9 @@ function resetAllMocks() {
 }
 
 function lastTaskFindManyArgs() {
-  const calls = mocks.prisma.taskFindMany.mock.calls as Array<[Record<string, unknown>]>;
+  const calls = mocks.prisma.taskFindMany.mock.calls as Array<
+    [Record<string, unknown>]
+  >;
   return calls.at(-1)?.[0] ?? {};
 }
 
@@ -81,8 +87,9 @@ describe("tasks server", () => {
     resetAllMocks();
     mocks.prisma.taskFindMany.mockResolvedValue([]);
     mocks.prisma.transaction.mockImplementation(
-      async (callback: (tx: ReturnType<typeof createTransactionClient>) => unknown) =>
-        callback(createTransactionClient()),
+      async (
+        callback: (tx: ReturnType<typeof createTransactionClient>) => unknown,
+      ) => callback(createTransactionClient()),
     );
   });
 
@@ -154,12 +161,12 @@ describe("tasks server", () => {
     expect(args.where).not.toHaveProperty("OR");
   });
 
-  it("listTasks accessible visibility only includes public tasks plus the authenticated user's owned tasks", async () => {
+  it("listTasks accessible visibility only includes public tasks plus the authenticated user's created tasks", async () => {
     await listTasks({ userId: "user-a", visibility: "accessible" });
 
     expect(lastTaskFindManyArgs().where).toMatchObject({
       deletedAt: null,
-      OR: [{ isPublic: true }, { ownerUserId: "user-a" }],
+      OR: [{ isPublic: true }, { createdByUserId: "user-a" }],
     });
   });
 
@@ -178,7 +185,7 @@ describe("tasks server", () => {
     });
   });
 
-  it("searchTasks with a user searches public tasks plus that user's owned private tasks", async () => {
+  it("searchTasks with a user searches public tasks plus that user's created private tasks", async () => {
     await searchTasks("secret grant memo", { userId: "user-a" });
 
     const args = lastTaskFindManyArgs();
@@ -186,10 +193,60 @@ describe("tasks server", () => {
       AND: [
         expect.objectContaining({
           deletedAt: null,
-          OR: [{ isPublic: true }, { ownerUserId: "user-a" }],
+          OR: [{ isPublic: true }, { createdByUserId: "user-a" }],
         }),
         expect.any(Object),
       ],
     });
+  });
+
+  it("records the creator on private tasks created by the creator", async () => {
+    mocks.prisma.taskCreate.mockResolvedValue({
+      createdByUserId: "user_creator",
+      id: "task_1",
+      title: "Write docs",
+    });
+
+    await createTask("user_creator", {
+      description: "Write the setup instructions.",
+      isPublic: false,
+      title: "Write docs",
+    });
+
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          createdByUserId: "user_creator",
+          isPublic: false,
+        }),
+      }),
+    );
+  });
+
+  it("creates public assigned-only tasks for assignee-targeted work", async () => {
+    mocks.prisma.taskCreate.mockResolvedValue({
+      assigneePersonId: "person_target",
+      createdByUserId: "user_creator",
+      id: "task_2",
+      isPublic: true,
+      title: "Fix the site",
+    });
+
+    await createTask("user_creator", {
+      assigneePersonId: "person_target",
+      description: "The page should make the next action obvious.",
+      title: "Fix the site",
+    });
+
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          assigneePersonId: "person_target",
+          claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+          createdByUserId: "user_creator",
+          isPublic: true,
+        }),
+      }),
+    );
   });
 });

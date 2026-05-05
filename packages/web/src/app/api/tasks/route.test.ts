@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  createOwnedTask: vi.fn(),
+  createTask: vi.fn(),
   getServerSession: vi.fn(),
   listTasks: vi.fn(),
   requireAuth: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock("@/lib/auth-utils", () => ({
 }));
 
 vi.mock("@/lib/tasks.server", () => ({
-  createOwnedTask: mocks.createOwnedTask,
+  createTask: mocks.createTask,
   listTasks: mocks.listTasks,
 }));
 
@@ -28,19 +28,19 @@ import { GET, POST } from "./route";
 
 describe("tasks route", () => {
   beforeEach(() => {
-    mocks.createOwnedTask.mockReset();
+    mocks.createTask.mockReset();
     mocks.getServerSession.mockReset();
     mocks.listTasks.mockReset();
     mocks.requireAuth.mockReset();
   });
 
-  it("lists owned tasks when requested", async () => {
+  it("lists tasks created by the current user when requested", async () => {
     mocks.getServerSession.mockResolvedValue({ user: { id: "user_1" } });
     mocks.listTasks.mockResolvedValue([{ id: "task_1" }]);
 
     const response = await GET(
       new Request(
-        "http://localhost/api/tasks?visibility=owned&status=ACTIVE&frameKey=TWENTY_YEAR",
+        "http://localhost/api/tasks?visibility=created&status=ACTIVE&frameKey=TWENTY_YEAR",
       ),
     );
 
@@ -50,7 +50,7 @@ describe("tasks route", () => {
         frameKey: "TWENTY_YEAR",
         status: "ACTIVE",
         userId: "user_1",
-        visibility: "owned",
+        visibility: "created",
       }),
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
@@ -71,9 +71,13 @@ describe("tasks route", () => {
     await expect(response.json()).resolves.toEqual({ error: "Unauthorized" });
   });
 
-  it("creates an owned task for the authenticated user", async () => {
+  it("creates a task for the authenticated user", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.createOwnedTask.mockResolvedValue({ id: "task_1", title: "Write docs" });
+    mocks.createTask.mockResolvedValue({
+      createdByUserId: "user_1",
+      id: "task_1",
+      title: "Write docs",
+    });
 
     const response = await POST(
       new Request("http://localhost/api/tasks", {
@@ -88,7 +92,7 @@ describe("tasks route", () => {
     );
 
     expect(response.status).toBe(201);
-    expect(mocks.createOwnedTask).toHaveBeenCalledWith(
+    expect(mocks.createTask).toHaveBeenCalledWith(
       "user_1",
       expect.objectContaining({
         dueAt: expect.any(Date),
@@ -97,5 +101,46 @@ describe("tasks route", () => {
       }),
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
+  });
+
+  it("creates a public assigned task without letting the caller pick a creator", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_creator" });
+    mocks.createTask.mockResolvedValue({
+      assigneePersonId: "person_target",
+      createdByUserId: "user_creator",
+      id: "task_2",
+      isPublic: true,
+      title: "Fix the site",
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({
+          assigneePersonId: "person_target",
+          createdByUserId: "user_not_allowed",
+          description: "The donate calculator needs clearer labels.",
+          ownerUserId: "user_not_allowed",
+          title: "Fix the site",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.createTask).toHaveBeenCalledWith(
+      "user_creator",
+      expect.objectContaining({
+        assigneePersonId: "person_target",
+        description: "The donate calculator needs clearer labels.",
+        title: "Fix the site",
+      }),
+    );
+    expect(mocks.createTask.mock.calls[0]?.[1]).not.toHaveProperty(
+      "createdByUserId",
+    );
+    expect(mocks.createTask.mock.calls[0]?.[1]).not.toHaveProperty(
+      "ownerUserId",
+    );
   });
 });

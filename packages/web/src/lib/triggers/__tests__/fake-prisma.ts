@@ -26,7 +26,7 @@ export interface FakeTask {
   id: string;
   taskKey?: string | null;
   parentTaskId?: string | null;
-  ownerUserId?: string | null;
+  createdByUserId?: string | null;
   assigneePersonId?: string | null;
   assigneeOrganizationId?: string | null;
   title?: string;
@@ -120,7 +120,7 @@ export interface FakeSpawnSpec {
   actionLinkUrlTemplate: string | null;
   actionLinkLabelTemplate: string | null;
   actionLinkInstructionsTemplate: string | null;
-  ownerResolver: string;
+  creatorResolver: string;
   assigneePersonResolver: string;
   assigneeOrganizationResolver: string;
   parentResolver: string;
@@ -216,12 +216,21 @@ function matchScalar(actual: unknown, expected: unknown): boolean {
   if (typeof expected === "object" && expected !== null) {
     const e = expected as Record<string, unknown>;
     if ("in" in e && Array.isArray(e.in)) return e.in.includes(actual as never);
-    if ("notIn" in e && Array.isArray(e.notIn)) return !e.notIn.includes(actual as never);
+    if ("notIn" in e && Array.isArray(e.notIn))
+      return !e.notIn.includes(actual as never);
     if ("not" in e) return actual !== e.not;
-    if ("contains" in e && typeof e.contains === "string" && typeof actual === "string") {
+    if (
+      "contains" in e &&
+      typeof e.contains === "string" &&
+      typeof actual === "string"
+    ) {
       return actual.includes(e.contains);
     }
-    if ("startsWith" in e && typeof e.startsWith === "string" && typeof actual === "string") {
+    if (
+      "startsWith" in e &&
+      typeof e.startsWith === "string" &&
+      typeof actual === "string"
+    ) {
       return actual.startsWith(e.startsWith);
     }
     if ("gte" in e && actual instanceof Date && e.gte instanceof Date) {
@@ -288,18 +297,32 @@ export function createFakeTriggerDb() {
 
   const db: Record<string, unknown> = {
     task: {
-      create: vi.fn(async ({ data, select }: { data: Partial<FakeTask>; select?: Record<string, boolean> }) => {
-        const task: FakeTask = {
-          id: nextId("task"),
-          deletedAt: null,
-          status: TaskStatus.ACTIVE,
-          ...data,
-        } as FakeTask;
-        store.tasks.push(task);
-        return pickSelected(task, select);
-      }),
+      create: vi.fn(
+        async ({
+          data,
+          select,
+        }: {
+          data: Partial<FakeTask>;
+          select?: Record<string, boolean>;
+        }) => {
+          const task: FakeTask = {
+            id: nextId("task"),
+            deletedAt: null,
+            status: TaskStatus.ACTIVE,
+            ...data,
+          } as FakeTask;
+          store.tasks.push(task);
+          return pickSelected(task, select);
+        },
+      ),
       findUnique: vi.fn(
-        async ({ where, select }: { where: Record<string, unknown>; select?: Record<string, boolean> }) => {
+        async ({
+          where,
+          select,
+        }: {
+          where: Record<string, unknown>;
+          select?: Record<string, boolean>;
+        }) => {
           const task = store.tasks.find(
             (t) =>
               (where.id ? t.id === where.id : true) &&
@@ -309,14 +332,28 @@ export function createFakeTriggerDb() {
         },
       ),
       findFirst: vi.fn(
-        async ({ where, select }: { where: Record<string, unknown>; select?: Record<string, boolean> }) => {
+        async ({
+          where,
+          select,
+        }: {
+          where: Record<string, unknown>;
+          select?: Record<string, boolean>;
+        }) => {
           const task = store.tasks.find((t) => matchesRow(asRecord(t), where));
           return task ? pickSelected(task, select) : null;
         },
       ),
       findMany: vi.fn(
-        async ({ where, select }: { where?: Record<string, unknown>; select?: Record<string, boolean> } = {}) =>
-          store.tasks.filter((t) => matchesRow(asRecord(t), where)).map((t) => pickSelected(t, select)),
+        async ({
+          where,
+          select,
+        }: {
+          where?: Record<string, unknown>;
+          select?: Record<string, boolean>;
+        } = {}) =>
+          store.tasks
+            .filter((t) => matchesRow(asRecord(t), where))
+            .map((t) => pickSelected(t, select)),
       ),
       update: vi.fn(
         async ({
@@ -329,7 +366,8 @@ export function createFakeTriggerDb() {
           select?: Record<string, boolean>;
         }) => {
           const task = store.tasks.find((t) => t.id === where.id);
-          if (!task) throw new Error(`task not found: ${JSON.stringify(where)}`);
+          if (!task)
+            throw new Error(`task not found: ${JSON.stringify(where)}`);
           Object.assign(task, data);
           return pickSelected(task, select);
         },
@@ -388,8 +426,9 @@ export function createFakeTriggerDb() {
         store.comments.push(comment);
         return comment;
       }),
-      findFirst: vi.fn(async ({ where }: { where?: Record<string, unknown> } = {}) =>
-        store.comments.find((c) => matchesRow(c, where)) ?? null,
+      findFirst: vi.fn(
+        async ({ where }: { where?: Record<string, unknown> } = {}) =>
+          store.comments.find((c) => matchesRow(c, where)) ?? null,
       ),
     },
     taskCommunication: {
@@ -403,8 +442,9 @@ export function createFakeTriggerDb() {
         store.communications.push(comm);
         return comm;
       }),
-      count: vi.fn(async ({ where }: { where?: Record<string, unknown> } = {}) =>
-        store.communications.filter((c) => matchesRow(c, where)).length,
+      count: vi.fn(
+        async ({ where }: { where?: Record<string, unknown> } = {}) =>
+          store.communications.filter((c) => matchesRow(c, where)).length,
       ),
       update: vi.fn(
         async ({
@@ -432,7 +472,13 @@ export function createFakeTriggerDb() {
         return ep;
       }),
       findFirst: vi.fn(
-        async ({ where, select }: { where?: Record<string, unknown>; select?: Record<string, boolean> } = {}) => {
+        async ({
+          where,
+          select,
+        }: {
+          where?: Record<string, unknown>;
+          select?: Record<string, boolean>;
+        } = {}) => {
           const ep = store.endpoints.find((e) => matchesRow(e, where));
           return ep ? pickSelected(ep, select) : null;
         },
@@ -491,68 +537,91 @@ export function createFakeTriggerDb() {
         },
       ),
       findMany: vi.fn(
-        async ({ where, select }: { where?: Record<string, unknown>; select?: Record<string, boolean> } = {}) =>
-          store.triggers.filter((t) => matchesRow(asRecord(t), where)).map((t) => pickSelected(t, select)),
+        async ({
+          where,
+          select,
+        }: {
+          where?: Record<string, unknown>;
+          select?: Record<string, boolean>;
+        } = {}) =>
+          store.triggers
+            .filter((t) => matchesRow(asRecord(t), where))
+            .map((t) => pickSelected(t, select)),
       ),
-      create: vi.fn(async ({ data, include }: { data: Partial<FakeTrigger> & { spawnSpecs?: { create?: unknown[] }; communicationSpawnSpecs?: { create?: unknown[] } }; include?: unknown }) => {
-        const t: FakeTrigger = {
-          id: nextId("trigger"),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          deletedAt: null,
-          enabled: true,
-          eventFilter: null,
-          completionGate: null,
-          jurisdictionId: null,
-          notes: null,
-          metadata: null,
-          disabledReason: null,
-          createdByUserId: null,
-          updatedByUserId: null,
-          triggerKind: "spawnTasks",
-          ...(data as Partial<FakeTrigger>),
-        } as FakeTrigger;
-        store.triggers.push(t);
-        if (data.spawnSpecs?.create) {
-          for (const spec of data.spawnSpecs.create as Array<Partial<FakeSpawnSpec>>) {
-            store.spawnSpecs.push({
-              id: nextId("spec"),
-              triggerId: t.id,
-              isParent: false,
-              sortOrder: 0,
-              skillTagTemplates: [],
-              interestTagTemplates: [],
-              category: "OTHER",
-              difficulty: "TRIVIAL",
-              claimPolicy: "ASSIGNED_ONLY",
-              isPublic: false,
-              ownerResolver: "actor",
-              assigneePersonResolver: "none",
-              assigneeOrganizationResolver: "none",
-              parentResolver: "trigger.parentSpec",
-              contributesToGate: false,
-              ...spec,
-            } as FakeSpawnSpec);
+      create: vi.fn(
+        async ({
+          data,
+          include,
+        }: {
+          data: Partial<FakeTrigger> & {
+            spawnSpecs?: { create?: unknown[] };
+            communicationSpawnSpecs?: { create?: unknown[] };
+          };
+          include?: unknown;
+        }) => {
+          const t: FakeTrigger = {
+            id: nextId("trigger"),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+            enabled: true,
+            eventFilter: null,
+            completionGate: null,
+            jurisdictionId: null,
+            notes: null,
+            metadata: null,
+            disabledReason: null,
+            createdByUserId: null,
+            updatedByUserId: null,
+            triggerKind: "spawnTasks",
+            ...(data as Partial<FakeTrigger>),
+          } as FakeTrigger;
+          store.triggers.push(t);
+          if (data.spawnSpecs?.create) {
+            for (const spec of data.spawnSpecs.create as Array<
+              Partial<FakeSpawnSpec>
+            >) {
+              store.spawnSpecs.push({
+                id: nextId("spec"),
+                triggerId: t.id,
+                isParent: false,
+                sortOrder: 0,
+                skillTagTemplates: [],
+                interestTagTemplates: [],
+                category: "OTHER",
+                difficulty: "TRIVIAL",
+                claimPolicy: "ASSIGNED_ONLY",
+                isPublic: false,
+                creatorResolver: "actor",
+                assigneePersonResolver: "none",
+                assigneeOrganizationResolver: "none",
+                parentResolver: "trigger.parentSpec",
+                contributesToGate: false,
+                ...spec,
+              } as FakeSpawnSpec);
+            }
           }
-        }
-        if (data.communicationSpawnSpecs?.create) {
-          for (const spec of data.communicationSpawnSpecs.create as Array<Partial<FakeCommSpec>>) {
-            store.commSpecs.push({
-              id: nextId("commSpec"),
-              triggerId: t.id,
-              sortOrder: 0,
-              channel: "EMAIL",
-              audienceResolver: "ASSIGNEE",
-              purpose: "REMINDER",
-              minHoursBetweenSends: 0,
-              maxSendsPerTask: 0,
-              ...spec,
-            } as FakeCommSpec);
+          if (data.communicationSpawnSpecs?.create) {
+            for (const spec of data.communicationSpawnSpecs.create as Array<
+              Partial<FakeCommSpec>
+            >) {
+              store.commSpecs.push({
+                id: nextId("commSpec"),
+                triggerId: t.id,
+                sortOrder: 0,
+                channel: "EMAIL",
+                audienceResolver: "ASSIGNEE",
+                purpose: "REMINDER",
+                minHoursBetweenSends: 0,
+                maxSendsPerTask: 0,
+                ...spec,
+              } as FakeCommSpec);
+            }
           }
-        }
-        if (include) return loadTriggerWithIncludes(t);
-        return t;
-      }),
+          if (include) return loadTriggerWithIncludes(t);
+          return t;
+        },
+      ),
       update: vi.fn(
         async ({
           where,
@@ -573,59 +642,83 @@ export function createFakeTriggerDb() {
       ),
     },
     taskSpawnSpec: {
-      createMany: vi.fn(async ({ data }: { data: Array<Partial<FakeSpawnSpec> & { triggerId: string }> }) => {
-        for (const spec of data) {
-          store.spawnSpecs.push({
-            id: nextId("spec"),
-            isParent: false,
-            sortOrder: 0,
-            skillTagTemplates: [],
-            interestTagTemplates: [],
-            category: "OTHER",
-            difficulty: "TRIVIAL",
-            claimPolicy: "ASSIGNED_ONLY",
-            isPublic: false,
-            ownerResolver: "actor",
-            assigneePersonResolver: "none",
-            assigneeOrganizationResolver: "none",
-            parentResolver: "trigger.parentSpec",
-            contributesToGate: false,
-            ...spec,
-          } as FakeSpawnSpec);
-        }
-        return { count: data.length };
-      }),
+      createMany: vi.fn(
+        async ({
+          data,
+        }: {
+          data: Array<Partial<FakeSpawnSpec> & { triggerId: string }>;
+        }) => {
+          for (const spec of data) {
+            store.spawnSpecs.push({
+              id: nextId("spec"),
+              isParent: false,
+              sortOrder: 0,
+              skillTagTemplates: [],
+              interestTagTemplates: [],
+              category: "OTHER",
+              difficulty: "TRIVIAL",
+              claimPolicy: "ASSIGNED_ONLY",
+              isPublic: false,
+              creatorResolver: "actor",
+              assigneePersonResolver: "none",
+              assigneeOrganizationResolver: "none",
+              parentResolver: "trigger.parentSpec",
+              contributesToGate: false,
+              ...spec,
+            } as FakeSpawnSpec);
+          }
+          return { count: data.length };
+        },
+      ),
       deleteMany: vi.fn(async ({ where }: { where: { triggerId: string } }) => {
         const before = store.spawnSpecs.length;
-        store.spawnSpecs = store.spawnSpecs.filter((s) => s.triggerId !== where.triggerId);
+        store.spawnSpecs = store.spawnSpecs.filter(
+          (s) => s.triggerId !== where.triggerId,
+        );
         return { count: before - store.spawnSpecs.length };
       }),
     },
     taskCommunicationSpawnSpec: {
-      createMany: vi.fn(async ({ data }: { data: Array<Partial<FakeCommSpec> & { triggerId: string }> }) => {
-        for (const spec of data) {
-          store.commSpecs.push({
-            id: nextId("commSpec"),
-            sortOrder: 0,
-            channel: "EMAIL",
-            audienceResolver: "ASSIGNEE",
-            purpose: "REMINDER",
-            minHoursBetweenSends: 0,
-            maxSendsPerTask: 0,
-            ...spec,
-          } as FakeCommSpec);
-        }
-        return { count: data.length };
-      }),
+      createMany: vi.fn(
+        async ({
+          data,
+        }: {
+          data: Array<Partial<FakeCommSpec> & { triggerId: string }>;
+        }) => {
+          for (const spec of data) {
+            store.commSpecs.push({
+              id: nextId("commSpec"),
+              sortOrder: 0,
+              channel: "EMAIL",
+              audienceResolver: "ASSIGNEE",
+              purpose: "REMINDER",
+              minHoursBetweenSends: 0,
+              maxSendsPerTask: 0,
+              ...spec,
+            } as FakeCommSpec);
+          }
+          return { count: data.length };
+        },
+      ),
       deleteMany: vi.fn(async ({ where }: { where: { triggerId: string } }) => {
         const before = store.commSpecs.length;
-        store.commSpecs = store.commSpecs.filter((s) => s.triggerId !== where.triggerId);
+        store.commSpecs = store.commSpecs.filter(
+          (s) => s.triggerId !== where.triggerId,
+        );
         return { count: before - store.commSpecs.length };
       }),
     },
     taskTriggerFire: {
       findFirst: vi.fn(
-        async ({ where, orderBy: _orderBy }: { where: Record<string, unknown>; orderBy?: unknown } = {} as never) => {
+        async (
+          {
+            where,
+            orderBy: _orderBy,
+          }: {
+            where: Record<string, unknown>;
+            orderBy?: unknown;
+          } = {} as never,
+        ) => {
           const candidates = store.fires.filter((f) => matchesRow(f, where));
           // orderBy firedAt desc — return the most recent
           candidates.sort((a, b) => b.firedAt.getTime() - a.firedAt.getTime());
@@ -638,14 +731,20 @@ export function createFakeTriggerDb() {
           create,
           update,
         }: {
-          where: { triggerId_idempotencyKey: { triggerId: string; idempotencyKey: string } };
+          where: {
+            triggerId_idempotencyKey: {
+              triggerId: string;
+              idempotencyKey: string;
+            };
+          };
           create: Partial<FakeFire>;
           update: Partial<FakeFire>;
         }) => {
           const existing = store.fires.find(
             (f) =>
               f.triggerId === where.triggerId_idempotencyKey.triggerId &&
-              f.idempotencyKey === where.triggerId_idempotencyKey.idempotencyKey,
+              f.idempotencyKey ===
+                where.triggerId_idempotencyKey.idempotencyKey,
           );
           if (existing) {
             Object.assign(existing, update);
@@ -665,11 +764,14 @@ export function createFakeTriggerDb() {
       ),
     },
     person: {
-      findUnique: vi.fn(async ({ where }: { where: Record<string, unknown> }) => {
-        return store.persons.find((p) => matchesRow(p, where)) ?? null;
-      }),
-      findFirst: vi.fn(async ({ where }: { where?: Record<string, unknown> } = {}) =>
-        store.persons.find((p) => matchesRow(p, where)) ?? null,
+      findUnique: vi.fn(
+        async ({ where }: { where: Record<string, unknown> }) => {
+          return store.persons.find((p) => matchesRow(p, where)) ?? null;
+        },
+      ),
+      findFirst: vi.fn(
+        async ({ where }: { where?: Record<string, unknown> } = {}) =>
+          store.persons.find((p) => matchesRow(p, where)) ?? null,
       ),
       create: vi.fn(async ({ data }: { data: Partial<FakePerson> }) => {
         const p: FakePerson = {
@@ -682,7 +784,13 @@ export function createFakeTriggerDb() {
         return p;
       }),
       update: vi.fn(
-        async ({ where, data }: { where: { id: string }; data: Partial<FakePerson> }) => {
+        async ({
+          where,
+          data,
+        }: {
+          where: { id: string };
+          data: Partial<FakePerson>;
+        }) => {
           const p = store.persons.find((x) => x.id === where.id);
           if (!p) throw new Error("person not found");
           Object.assign(p, data);
@@ -692,13 +800,21 @@ export function createFakeTriggerDb() {
     },
     user: {
       findUnique: vi.fn(
-        async ({ where, select }: { where: { id: string }; select?: Record<string, boolean> }) => {
+        async ({
+          where,
+          select,
+        }: {
+          where: { id: string };
+          select?: Record<string, boolean>;
+        }) => {
           const u = store.users.find((x) => x.id === where.id);
           return u ? pickSelected(u, select) : null;
         },
       ),
     },
-    $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>): Promise<unknown> => fn(db)),
+    $transaction: vi.fn(
+      async (fn: (tx: unknown) => Promise<unknown>): Promise<unknown> => fn(db),
+    ),
   };
 
   // We type the returned db loosely — tests access individual delegates

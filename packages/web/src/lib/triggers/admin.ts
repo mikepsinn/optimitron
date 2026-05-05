@@ -1,10 +1,15 @@
-import { Prisma, TaskCategory, TaskClaimPolicy, TaskDifficulty } from "@optimitron/db";
+import {
+  Prisma,
+  TaskCategory,
+  TaskClaimPolicy,
+  TaskDifficulty,
+} from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import {
   validateAssigneeOrganizationResolver,
   validateAssigneePersonResolver,
   validateAudienceResolver,
-  validateOwnerResolver,
+  validateCreatorResolver,
   validateParentResolver,
 } from "./resolvers";
 import { validateTemplate } from "./template";
@@ -36,7 +41,7 @@ export interface SpawnSpecInput {
   actionLinkUrlTemplate?: string;
   actionLinkLabelTemplate?: string;
   actionLinkInstructionsTemplate?: string;
-  ownerResolver?: string;
+  creatorResolver?: string;
   assigneePersonResolver?: string;
   assigneeOrganizationResolver?: string;
   parentResolver?: string;
@@ -100,7 +105,9 @@ export interface AdminContext {
 /// bare PrismaClient that doesn't go through @/lib/env validation, so the
 /// admin functions stay reachable from contexts that don't need NEXTAUTH_SECRET.
 type AdminDb = {
-  $transaction: <T>(fn: (tx: Prisma.TransactionClient) => Promise<T>) => Promise<T>;
+  $transaction: <T>(
+    fn: (tx: Prisma.TransactionClient) => Promise<T>,
+  ) => Promise<T>;
 };
 
 export async function createTaskTrigger(
@@ -168,8 +175,10 @@ export async function updateTaskTrigger(
     if (input.notes !== undefined) data.notes = input.notes;
     if (input.enabled !== undefined) data.enabled = input.enabled;
     if (input.schedule !== undefined) data.schedule = input.schedule;
-    if (input.iterationSource !== undefined) data.iterationSource = input.iterationSource;
-    if (input.metadata !== undefined) data.metadata = input.metadata as Prisma.InputJsonValue;
+    if (input.iterationSource !== undefined)
+      data.iterationSource = input.iterationSource;
+    if (input.metadata !== undefined)
+      data.metadata = input.metadata as Prisma.InputJsonValue;
 
     const updated = await tx.taskTrigger.update({
       where: { triggerKey: input.triggerKey },
@@ -180,12 +189,17 @@ export async function updateTaskTrigger(
       await tx.taskSpawnSpec.deleteMany({ where: { triggerId: updated.id } });
       if (input.spawnSpecs.length > 0) {
         await tx.taskSpawnSpec.createMany({
-          data: input.spawnSpecs.map((s) => ({ ...toSpawnSpecCreate(s), triggerId: updated.id })),
+          data: input.spawnSpecs.map((s) => ({
+            ...toSpawnSpecCreate(s),
+            triggerId: updated.id,
+          })),
         });
       }
     }
     if (input.communicationSpawnSpecs !== undefined) {
-      await tx.taskCommunicationSpawnSpec.deleteMany({ where: { triggerId: updated.id } });
+      await tx.taskCommunicationSpawnSpec.deleteMany({
+        where: { triggerId: updated.id },
+      });
       if (input.communicationSpawnSpecs.length > 0) {
         await tx.taskCommunicationSpawnSpec.createMany({
           data: input.communicationSpawnSpecs.map((s) => ({
@@ -203,7 +217,10 @@ export async function updateTaskTrigger(
   });
 }
 
-export async function disableTaskTrigger(input: { triggerKey: string; disabledReason?: string }) {
+export async function disableTaskTrigger(input: {
+  triggerKey: string;
+  disabledReason?: string;
+}) {
   return prisma.taskTrigger.update({
     where: { triggerKey: input.triggerKey },
     data: { enabled: false, disabledReason: input.disabledReason ?? null },
@@ -235,12 +252,21 @@ export async function listTaskTriggers(input: {
       disabledReason: true,
       jurisdictionId: true,
       updatedAt: true,
-      _count: { select: { spawnSpecs: true, communicationSpawnSpecs: true, fires: true } },
+      _count: {
+        select: {
+          spawnSpecs: true,
+          communicationSpawnSpecs: true,
+          fires: true,
+        },
+      },
     },
   });
 }
 
-export async function getTaskTrigger(input: { triggerKey: string; recentFires?: number }) {
+export async function getTaskTrigger(input: {
+  triggerKey: string;
+  recentFires?: number;
+}) {
   const recentFires = Math.min(input.recentFires ?? 10, 100);
   const trigger = await prisma.taskTrigger.findUnique({
     where: { triggerKey: input.triggerKey },
@@ -257,15 +283,25 @@ export async function getTaskTrigger(input: { triggerKey: string; recentFires?: 
 // Validation
 // ---------------------------------------------------------------------------
 
-function validateTriggerInput(input: Partial<CreateTaskTriggerInput>, opts: { isCreate: boolean }) {
+function validateTriggerInput(
+  input: Partial<CreateTaskTriggerInput>,
+  opts: { isCreate: boolean },
+) {
   if (opts.isCreate) {
-    if (!input.triggerKey || !input.eventName || !input.idempotencyKeyTemplate) {
-      throw new Error("triggerKey, eventName, and idempotencyKeyTemplate are required");
+    if (
+      !input.triggerKey ||
+      !input.eventName ||
+      !input.idempotencyKeyTemplate
+    ) {
+      throw new Error(
+        "triggerKey, eventName, and idempotencyKeyTemplate are required",
+      );
     }
   }
   if (input.idempotencyKeyTemplate !== undefined) {
     const v = validateTemplate(input.idempotencyKeyTemplate);
-    if (!v.valid) throw new Error(`idempotencyKeyTemplate invalid: ${v.reason}`);
+    if (!v.valid)
+      throw new Error(`idempotencyKeyTemplate invalid: ${v.reason}`);
   }
   if (input.spawnSpecs) {
     for (const spec of input.spawnSpecs) {
@@ -294,13 +330,21 @@ function validateSpawnSpec(spec: SpawnSpecInput) {
   ]) {
     if (typeof tpl === "string") {
       const v = validateTemplate(tpl);
-      if (!v.valid) throw new Error(`spawnSpec(${spec.kind}) template invalid: ${v.reason}`);
+      if (!v.valid)
+        throw new Error(
+          `spawnSpec(${spec.kind}) template invalid: ${v.reason}`,
+        );
     }
   }
-  if (spec.ownerResolver && !validateOwnerResolver(spec.ownerResolver)) {
-    throw new Error(`spawnSpec(${spec.kind}) ownerResolver unknown: ${spec.ownerResolver}`);
+  if (spec.creatorResolver && !validateCreatorResolver(spec.creatorResolver)) {
+    throw new Error(
+      `spawnSpec(${spec.kind}) creatorResolver unknown: ${spec.creatorResolver}`,
+    );
   }
-  if (spec.assigneePersonResolver && !validateAssigneePersonResolver(spec.assigneePersonResolver)) {
+  if (
+    spec.assigneePersonResolver &&
+    !validateAssigneePersonResolver(spec.assigneePersonResolver)
+  ) {
     throw new Error(
       `spawnSpec(${spec.kind}) assigneePersonResolver unknown: ${spec.assigneePersonResolver}`,
     );
@@ -314,16 +358,24 @@ function validateSpawnSpec(spec: SpawnSpecInput) {
     );
   }
   if (spec.parentResolver && !validateParentResolver(spec.parentResolver)) {
-    throw new Error(`spawnSpec(${spec.kind}) parentResolver unknown: ${spec.parentResolver}`);
+    throw new Error(
+      `spawnSpec(${spec.kind}) parentResolver unknown: ${spec.parentResolver}`,
+    );
   }
   if (spec.category && !(spec.category in TaskCategory)) {
-    throw new Error(`spawnSpec(${spec.kind}) category invalid: ${spec.category}`);
+    throw new Error(
+      `spawnSpec(${spec.kind}) category invalid: ${spec.category}`,
+    );
   }
   if (spec.difficulty && !(spec.difficulty in TaskDifficulty)) {
-    throw new Error(`spawnSpec(${spec.kind}) difficulty invalid: ${spec.difficulty}`);
+    throw new Error(
+      `spawnSpec(${spec.kind}) difficulty invalid: ${spec.difficulty}`,
+    );
   }
   if (spec.claimPolicy && !(spec.claimPolicy in TaskClaimPolicy)) {
-    throw new Error(`spawnSpec(${spec.kind}) claimPolicy invalid: ${spec.claimPolicy}`);
+    throw new Error(
+      `spawnSpec(${spec.kind}) claimPolicy invalid: ${spec.claimPolicy}`,
+    );
   }
 }
 
@@ -338,17 +390,25 @@ function validateCommSpec(spec: CommunicationSpawnSpecInput) {
   ]) {
     if (typeof tpl === "string") {
       const v = validateTemplate(tpl);
-      if (!v.valid) throw new Error(`communicationSpawnSpec(${spec.kind}) template invalid: ${v.reason}`);
+      if (!v.valid)
+        throw new Error(
+          `communicationSpawnSpec(${spec.kind}) template invalid: ${v.reason}`,
+        );
     }
   }
-  if (spec.audienceResolver && !validateAudienceResolver(spec.audienceResolver)) {
+  if (
+    spec.audienceResolver &&
+    !validateAudienceResolver(spec.audienceResolver)
+  ) {
     throw new Error(
       `communicationSpawnSpec(${spec.kind}) audienceResolver unknown: ${spec.audienceResolver}`,
     );
   }
 }
 
-function toSpawnSpecCreate(spec: SpawnSpecInput): Prisma.TaskSpawnSpecCreateWithoutTriggerInput {
+function toSpawnSpecCreate(
+  spec: SpawnSpecInput,
+): Prisma.TaskSpawnSpecCreateWithoutTriggerInput {
   return {
     kind: spec.kind,
     isParent: spec.isParent ?? false,
@@ -358,19 +418,23 @@ function toSpawnSpecCreate(spec: SpawnSpecInput): Prisma.TaskSpawnSpecCreateWith
     impactStatementTemplate: spec.impactStatementTemplate ?? null,
     roleTitleTemplate: spec.roleTitleTemplate ?? null,
     category: spec.category ? TaskCategory[spec.category] : TaskCategory.OTHER,
-    difficulty: spec.difficulty ? TaskDifficulty[spec.difficulty] : TaskDifficulty.TRIVIAL,
+    difficulty: spec.difficulty
+      ? TaskDifficulty[spec.difficulty]
+      : TaskDifficulty.TRIVIAL,
     estimatedEffortHours: spec.estimatedEffortHours ?? null,
     dueDays: spec.dueDays ?? null,
     availableInDays: spec.availableInDays ?? null,
     deadlinePolicy: spec.deadlinePolicy ?? null,
-    claimPolicy: spec.claimPolicy ? TaskClaimPolicy[spec.claimPolicy] : TaskClaimPolicy.ASSIGNED_ONLY,
+    claimPolicy: spec.claimPolicy
+      ? TaskClaimPolicy[spec.claimPolicy]
+      : TaskClaimPolicy.ASSIGNED_ONLY,
     isPublic: spec.isPublic ?? false,
     skillTagTemplates: spec.skillTagTemplates ?? [],
     interestTagTemplates: spec.interestTagTemplates ?? [],
     actionLinkUrlTemplate: spec.actionLinkUrlTemplate ?? null,
     actionLinkLabelTemplate: spec.actionLinkLabelTemplate ?? null,
     actionLinkInstructionsTemplate: spec.actionLinkInstructionsTemplate ?? null,
-    ownerResolver: spec.ownerResolver ?? "actor",
+    creatorResolver: spec.creatorResolver ?? "actor",
     assigneePersonResolver: spec.assigneePersonResolver ?? "none",
     assigneeOrganizationResolver: spec.assigneeOrganizationResolver ?? "none",
     parentResolver: spec.parentResolver ?? "trigger.parentSpec",

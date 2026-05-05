@@ -43,7 +43,7 @@ describe("selectActionableTreatyTasks", () => {
       }),
     ];
     const { nextTasks } = selectActionableTreatyTasks({
-      ownedPrivateTasks: tasks,
+      createdPrivateTasks: tasks,
       treatyTaskId: PARENT_ID,
     });
     expect(nextTasks.map((t) => t.id)).toEqual(["sign-id", "share-id"]);
@@ -65,7 +65,7 @@ describe("selectActionableTreatyTasks", () => {
       }),
     ];
     const { completedTasks } = selectActionableTreatyTasks({
-      ownedPrivateTasks: tasks,
+      createdPrivateTasks: tasks,
       treatyTaskId: PARENT_ID,
     });
     expect(completedTasks.map((t) => t.id)).toEqual(["sign-id"]);
@@ -74,24 +74,45 @@ describe("selectActionableTreatyTasks", () => {
   it("orders the actionable next tasks by sortOrder ascending", () => {
     const tasks = [
       makeSubtask({ id: "phone", taskKey: "x:phoneScript", sortOrder: 20 }),
-      makeSubtask({ id: "sign", taskKey: "x:signTreatyPersonally", sortOrder: 0 }),
-      makeSubtask({ id: "share", taskKey: "x:shareReferralUrl", sortOrder: 10 }),
-      makeSubtask({ id: "first", taskKey: "x:assignFirstHuman", sortOrder: 30 }),
+      makeSubtask({
+        id: "sign",
+        taskKey: "x:signTreatyPersonally",
+        sortOrder: 0,
+      }),
+      makeSubtask({
+        id: "share",
+        taskKey: "x:shareReferralUrl",
+        sortOrder: 10,
+      }),
+      makeSubtask({
+        id: "first",
+        taskKey: "x:assignFirstHuman",
+        sortOrder: 30,
+      }),
     ];
     const { nextTasks } = selectActionableTreatyTasks({
-      ownedPrivateTasks: tasks,
+      createdPrivateTasks: tasks,
       treatyTaskId: PARENT_ID,
     });
-    expect(nextTasks.map((t) => t.id)).toEqual(["sign", "share", "phone", "first"]);
+    expect(nextTasks.map((t) => t.id)).toEqual([
+      "sign",
+      "share",
+      "phone",
+      "first",
+    ]);
   });
 
-  it("filters out the parent treaty task itself even if it appears in ownedPrivateTasks", () => {
+  it("filters out the parent treaty task itself even if it appears in createdPrivateTasks", () => {
     const tasks = [
       makeSubtask({ id: PARENT_ID, taskKey: "x:parent" }),
-      makeSubtask({ id: "sign", taskKey: "x:signTreatyPersonally", sortOrder: 0 }),
+      makeSubtask({
+        id: "sign",
+        taskKey: "x:signTreatyPersonally",
+        sortOrder: 0,
+      }),
     ];
     const { nextTasks } = selectActionableTreatyTasks({
-      ownedPrivateTasks: tasks,
+      createdPrivateTasks: tasks,
       treatyTaskId: PARENT_ID,
     });
     expect(nextTasks.map((t) => t.id)).toEqual(["sign"]);
@@ -112,7 +133,7 @@ describe("selectActionableTreatyTasks", () => {
       }),
     ];
     const { nextTasks, completedTasks } = selectActionableTreatyTasks({
-      ownedPrivateTasks: tasks,
+      createdPrivateTasks: tasks,
       treatyTaskId: PARENT_ID,
     });
     expect(nextTasks.map((t) => t.id)).toEqual(["sign"]);
@@ -121,11 +142,14 @@ describe("selectActionableTreatyTasks", () => {
 
   it("filters out tasks with a different parent (not in this treaty tree)", () => {
     const tasks = [
-      { ...makeSubtask({ id: "other", taskKey: "x:other" }), parentTaskId: "different-parent" },
+      {
+        ...makeSubtask({ id: "other", taskKey: "x:other" }),
+        parentTaskId: "different-parent",
+      },
       makeSubtask({ id: "sign", taskKey: "x:signTreatyPersonally" }),
     ];
     const { nextTasks } = selectActionableTreatyTasks({
-      ownedPrivateTasks: tasks,
+      createdPrivateTasks: tasks,
       treatyTaskId: PARENT_ID,
     });
     expect(nextTasks.map((t) => t.id)).toEqual(["sign"]);

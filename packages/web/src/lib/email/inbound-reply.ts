@@ -136,10 +136,10 @@ export async function processInboundReply(
     select: {
       id: true,
       title: true,
-      ownerUserId: true,
+      createdByUserId: true,
       assigneePersonId: true,
       assigneeOrganizationId: true,
-      owner: { select: { id: true, email: true } },
+      createdByUser: { select: { id: true, email: true } },
       assigneePerson: { select: { id: true, email: true } },
       assigneeOrganization: { select: { id: true, contactEmail: true } },
       communicationEndpoints: {
@@ -162,11 +162,11 @@ export async function processInboundReply(
   let isAuthorizedSender = false;
 
   if (senderEmail) {
+    const creatorEmail = task.createdByUser?.email?.toLowerCase() ?? null;
     if (
-      task.owner?.email &&
-      task.owner.email.toLowerCase() === senderEmail
+      creatorEmail === senderEmail
     ) {
-      authorUserId = task.owner.id;
+      authorUserId = task.createdByUser?.id ?? task.createdByUserId;
       isAuthorizedSender = true;
     } else if (
       task.assigneeOrganization?.contactEmail &&
@@ -268,15 +268,15 @@ export async function processInboundReply(
     throw e;
   }
 
-  // Notify the task owner so they don't have to poll the dashboard. Best-
+  // Notify the task creator so they don't have to poll the dashboard. Best-
   // effort — failures here don't block the inbound write.
-  if (task.ownerUserId) {
+  if (task.createdByUserId) {
     try {
-      const ownerEmail = await resolveOwnerEmail(task.ownerUserId, db);
-      if (ownerEmail) {
+      const creatorEmail = await resolveCreatorEmail(task.createdByUserId, db);
+      if (creatorEmail) {
         await sendTaskNotificationEmail({
           taskId,
-          recipientEmail: ownerEmail,
+          recipientEmail: creatorEmail,
           subject: `New reply on task: ${task.title ?? taskId}`,
           text:
             `${senderDisplayName ?? senderEmail ?? "Someone"} replied:\n\n${cleanBody}` +
@@ -284,9 +284,9 @@ export async function processInboundReply(
         });
       }
     } catch (e) {
-      // Swallow — the inbound write already succeeded; owner notification
+      // Swallow — the inbound write already succeeded; creator notification
       // is a nice-to-have. Log so the failure is visible.
-      console.error("[INBOUND REPLY] Owner notification failed", taskId, e);
+      console.error("[INBOUND REPLY] Creator notification failed", taskId, e);
     }
   }
 
@@ -297,7 +297,7 @@ export async function processInboundReply(
   };
 }
 
-async function resolveOwnerEmail(
+async function resolveCreatorEmail(
   userId: string,
   db: typeof prisma,
 ): Promise<string | null> {

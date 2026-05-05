@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
-import { BrutalCard } from "@/components/ui/brutal-card";
-import { StatCardGrid } from "@/components/ui/stat-card";
 import {
   getShareTemplate,
   DEFAULT_PEER_SHARE_TEMPLATE_ID,
@@ -40,13 +38,14 @@ export function SecretChainPitch({ citizenName, className }: SecretChainPitchPro
     }
   }
 
+  const stats = [
+    { value: "2³² = 4.29B", label: "Reach at 32 doublings" },
+    { value: "~11 days", label: "Handoff time to hit 4B in 1 year" },
+    { value: "~1.7 / sec", label: "Disease deaths, globally" },
+  ];
+
   return (
-    <BrutalCard
-      bgColor="yellow"
-      padding="lg"
-      shadowSize={8}
-      className={className}
-    >
+    <div className={`border border-black bg-white p-6 text-black sm:p-8 ${className ?? ""}`}>
       <p className="text-xs font-black uppercase tracking-widest">You are now node 1.</p>
       <h3 className="mt-2 text-3xl font-black uppercase leading-tight sm:text-4xl">
         Tell 2 people the most important secret in the world.
@@ -57,46 +56,30 @@ export function SecretChainPitch({ citizenName, className }: SecretChainPitchPro
         stalls is measurable.
       </p>
 
-      <StatCardGrid
-        className="mt-6"
-        columns={3}
-        stats={[
-          {
-            value: "2³² = 4.29B",
-            label: "Reach at 32 doublings",
-            size: "sm",
-            color: "pink",
-          },
-          {
-            value: "~11 days",
-            label: "Handoff time to hit 4B in 1 year",
-            size: "sm",
-            color: "cyan",
-          },
-          {
-            value: "~1.7 / sec",
-            label: "Disease deaths, globally",
-            size: "sm",
-            color: "default",
-          },
-        ]}
-      />
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <div key={stat.label} className="border border-black bg-white p-4">
+            <div className="text-2xl font-black sm:text-3xl">{stat.value}</div>
+            <div className="mt-2 text-xs font-bold uppercase">{stat.label}</div>
+          </div>
+        ))}
+      </div>
 
       <div className="mt-6">
         <p className="mb-2 text-xs font-black uppercase tracking-wider">
           Text this to your 2 people. They have to call you to hear the secret.
         </p>
-        <pre className="whitespace-pre-wrap break-words border-4 border-primary bg-background p-4 text-sm font-bold text-foreground">
+        <pre className="whitespace-pre-wrap break-words border border-black bg-white p-4 text-sm font-bold text-black">
           {renderedMessage}
         </pre>
         <Button
           onClick={() => void handleCopy()}
-          className="mt-3 w-full font-black uppercase"
+          className="mt-3 w-full justify-center border border-black bg-black font-black uppercase text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black"
           disabled={!renderedMessage}
         >
           {copied ? "Copied →" : "Copy Message"}
         </Button>
       </div>
-    </BrutalCard>
+    </div>
   );
 }

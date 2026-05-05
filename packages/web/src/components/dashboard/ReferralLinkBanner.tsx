@@ -3,6 +3,7 @@
 import { X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ReferralLinkEditorCard } from "@/components/dashboard/ReferralLinkEditor"
+import { getUserFramingVocabulary } from "@/lib/messaging"
 import type { SiteUserFraming } from "@/lib/site"
 import type { DashboardUser } from "@/types/dashboard"
 
@@ -37,6 +38,7 @@ export function ReferralLinkBanner({
   onRefresh,
   className,
   dismissible = true,
+  userFraming = "voter",
   variant = "default",
 }: ReferralLinkBannerProps) {
   const [dismissed, setDismissed] = useState(dismissible)
@@ -74,6 +76,7 @@ export function ReferralLinkBanner({
         baseUrl={getBaseUrlFromReferralLink(referralLink)}
         onUserChange={onUserChange}
         onRefresh={onRefresh}
+        description={getUserFramingVocabulary(userFraming).shareLinkPrompt}
         variant={variant}
         cardClassName={className}
       />

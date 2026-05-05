@@ -477,7 +477,7 @@ export default async function TaskDetailPage({
               taskTitle={task.title}
             />
           ) : null}
-          {!task.isPublic && userId && task.ownerUserId === userId ? (
+          {!task.isPublic && userId && task.createdByUserId === userId ? (
             <TaskDeleteButton taskId={task.id} taskTitle={task.title} />
           ) : null}
           <TaskHeroStats

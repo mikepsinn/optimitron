@@ -143,16 +143,16 @@ describe("resolveTaskRecipient", () => {
     expect(result).toBeNull();
   });
 
-  it("includes owner and admin recipients", async () => {
+  it("includes creator and admin recipients", async () => {
     mocks.taskFindUnique.mockResolvedValue({
       assigneeOrganization: null,
       assigneePerson: null,
       assigneePersonId: null,
       assigneeOrganizationId: null,
-      owner: {
+      createdByUser: {
         deletedAt: null,
-        email: "owner@example.com",
-        id: "owner_1",
+        email: "creator@example.com",
+        id: "creator_1",
       },
       communicationEndpoints: [],
       deletedAt: null,
@@ -160,12 +160,12 @@ describe("resolveTaskRecipient", () => {
     });
     mocks.userFindMany.mockResolvedValue([
       { id: "admin_1", email: "admin@example.com" },
-      { id: "owner_1", email: "owner@example.com" },
+      { id: "creator_1", email: "creator@example.com" },
     ]);
 
     const result = await resolveTaskRecipients("task_1");
     expect(result).toEqual([
-      { email: "owner@example.com", userId: "owner_1" },
+      { email: "creator@example.com", userId: "creator_1" },
       { email: "admin@example.com", isAdmin: true, userId: "admin_1" },
     ]);
   });
@@ -175,7 +175,7 @@ describe("resolveTaskRecipient", () => {
       assigneeOrganization: null,
       assigneePerson: null,
       communicationEndpoints: [],
-      owner: null,
+      createdByUser: null,
       deletedAt: null,
       id: "task_1",
     });
@@ -185,6 +185,8 @@ describe("resolveTaskRecipient", () => {
     ]);
 
     const result = await resolveTaskRecipients("task_1");
-    expect(result).toEqual([{ email: "admin@example.com", isAdmin: true, userId: "admin_1" }]);
+    expect(result).toEqual([
+      { email: "admin@example.com", isAdmin: true, userId: "admin_1" },
+    ]);
   });
 });

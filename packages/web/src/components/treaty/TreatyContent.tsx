@@ -47,11 +47,11 @@ export function TreatyContent() {
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-10">
-      <div className="mx-auto h-px w-24 bg-[#8e6b48]/40" />
+      <div className="mx-auto h-px w-24 bg-black/40" />
       <p className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
         {config.introText}
       </p>
-      <div className="mx-auto h-px w-24 bg-[#8e6b48]/40" />
+      <div className="mx-auto h-px w-24 bg-black/40" />
       {config.slides.map((slide, i) => (
         <ReactMarkdown
           key={i}
@@ -61,13 +61,13 @@ export function TreatyContent() {
           {slide}
         </ReactMarkdown>
       ))}
-      <div className="border-t border-[#8e6b48]/30 pt-10 text-center">
+      <div className="border-t border-black/30 pt-10 text-center">
         <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
           Next: the enforcement stack
         </p>
         <Link
           href={courtHref}
-          className="mt-3 inline-block text-xl font-bold text-[var(--treaty-ink)] underline decoration-[#8e6b48]/60 decoration-2 underline-offset-4 [font-family:var(--v0-font-libre-baskerville)] hover:decoration-[var(--treaty-ink)] sm:text-2xl"
+          className="mt-3 inline-block text-xl font-bold text-black underline decoration-black decoration-2 underline-offset-4 [font-family:var(--v0-font-libre-baskerville)] hover:text-black/70 sm:text-2xl"
         >
           Join the Court of Humanity →
         </Link>
@@ -76,7 +76,7 @@ export function TreatyContent() {
           off-ramp.
         </p>
       </div>
-      <div className="border-t border-[#8e6b48]/30 pt-12">
+      <div className="border-t border-black/30 pt-12">
         <ReferendumSiteInlineSign
           referendumSlug={TREATY_REFERENDUM_SLUG}
           showPrivacyToggle

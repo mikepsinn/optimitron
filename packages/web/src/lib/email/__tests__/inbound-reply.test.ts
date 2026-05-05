@@ -115,7 +115,7 @@ function makeInboundDb() {
       findUnique: vi.fn().mockResolvedValue({
         id: "task_1",
         title: "Task",
-        ownerUserId: null,
+        createdByUserId: null,
         owner: null,
         assigneePerson: { id: "person_1", email: "assignee@example.org" },
         assigneeOrganization: null,
@@ -156,7 +156,7 @@ describe("processInboundReply", () => {
     db.task.findUnique.mockResolvedValue({
       id: "task_1",
       title: "Task",
-      ownerUserId: null,
+      createdByUserId: null,
       owner: null,
       assigneePerson: null,
       assigneeOrganization: null,

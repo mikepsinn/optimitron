@@ -1,6 +1,7 @@
 import type { Prisma } from "@optimitron/db";
 import type { PrismaClient } from "@optimitron/db";
 import { findOrCreatePerson } from "@/lib/person.server";
+import { getWishoniaUserId } from "@/lib/wishonia.server";
 
 /**
  * Resolver registry. A `TaskSpawnSpec` references resolvers by string key;
@@ -10,7 +11,10 @@ import { findOrCreatePerson } from "@/lib/person.server";
  * authoring tools (createTaskTrigger MCP) validate against this list.
  */
 
-export type ResolverDb = Pick<Prisma.TransactionClient, "person" | "task" | "user">;
+export type ResolverDb = Pick<
+  Prisma.TransactionClient,
+  "person" | "task" | "user"
+>;
 
 export interface ResolveContext {
   db: ResolverDb;
@@ -22,21 +26,27 @@ export interface ResolveContext {
   actor?: { id: string; personId: string | null } | null;
 }
 
-// ---- ownerResolver ---------------------------------------------------------
+// ---- creatorResolver ---------------------------------------------------------
 
-const OWNER_RESOLVERS = new Set(["actor", "system"]);
+const CREATOR_RESOLVERS = new Set(["actor", "system"]);
 
-export async function resolveOwnerUserId(
+export async function resolveTaskCreatorUserId(
   resolver: string,
   ctx: ResolveContext,
 ): Promise<string | null> {
-  if (resolver === "system") return null;
-  if (resolver === "actor") return ctx.actorUserId;
+  if (resolver === "system") return getWishoniaUserId();
+  if (resolver === "actor") {
+    const contextUserId = lookup(ctx.context, "user.id");
+    if (ctx.actorUserId) return ctx.actorUserId;
+    return typeof contextUserId === "string"
+      ? contextUserId
+      : getWishoniaUserId();
+  }
   if (resolver.startsWith("context.")) {
     const value = lookup(ctx.context, resolver.slice("context.".length));
     return typeof value === "string" ? value : null;
   }
-  throw new Error(`Unknown ownerResolver: ${resolver}`);
+  throw new Error(`Unknown creatorResolver: ${resolver}`);
 }
 
 // ---- assigneePersonResolver -----------------------------------------------
@@ -59,24 +69,34 @@ export async function resolveAssigneePersonId(
     if (!ctx.actorUserId) return null;
     const personId =
       ctx.actor?.personId ??
-      (await ctx.db.user.findUnique({
-        where: { id: ctx.actorUserId },
-        select: { personId: true },
-      }))?.personId ??
+      (
+        await ctx.db.user.findUnique({
+          where: { id: ctx.actorUserId },
+          select: { personId: true },
+        })
+      )?.personId ??
       null;
     return personId;
   }
-  if (resolver === "context.recipient" || resolver === "context.recipientPersonId") {
-    const id = lookup(ctx.context, "recipient.personId") ?? lookup(ctx.context, "recipientPersonId");
+  if (
+    resolver === "context.recipient" ||
+    resolver === "context.recipientPersonId"
+  ) {
+    const id =
+      lookup(ctx.context, "recipient.personId") ??
+      lookup(ctx.context, "recipientPersonId");
     return typeof id === "string" ? id : null;
   }
   if (resolver === "lookup.byEmail") {
     const email = lookup(ctx.context, "recipient.email");
-    const displayName = lookup(ctx.context, "recipient.displayName") ?? lookup(ctx.context, "recipient.name");
+    const displayName =
+      lookup(ctx.context, "recipient.displayName") ??
+      lookup(ctx.context, "recipient.name");
     if (typeof email !== "string" || !email) return null;
     const person = await findOrCreatePerson(
       {
-        displayName: typeof displayName === "string" && displayName ? displayName : email,
+        displayName:
+          typeof displayName === "string" && displayName ? displayName : email,
         email,
       },
       ctx.db as PrismaClient,
@@ -101,15 +121,24 @@ export async function resolveAssigneePersonId(
 
 // ---- assigneeOrganizationResolver -----------------------------------------
 
-const ASSIGNEE_ORG_RESOLVERS = new Set(["context.organization", "context.organizationId", "none"]);
+const ASSIGNEE_ORG_RESOLVERS = new Set([
+  "context.organization",
+  "context.organizationId",
+  "none",
+]);
 
 export async function resolveAssigneeOrganizationId(
   resolver: string,
   ctx: ResolveContext,
 ): Promise<string | null> {
   if (resolver === "none") return null;
-  if (resolver === "context.organization" || resolver === "context.organizationId") {
-    const id = lookup(ctx.context, "organization.id") ?? lookup(ctx.context, "organizationId");
+  if (
+    resolver === "context.organization" ||
+    resolver === "context.organizationId"
+  ) {
+    const id =
+      lookup(ctx.context, "organization.id") ??
+      lookup(ctx.context, "organizationId");
     return typeof id === "string" ? id : null;
   }
   if (resolver.startsWith("context.")) {
@@ -157,7 +186,7 @@ export async function resolveParentTaskId(
 
 const AUDIENCE_RESOLVERS = new Set([
   "ASSIGNEE",
-  "OWNER",
+  "CREATOR",
   "WATCHERS",
   "context.recipientUserIds",
 ]);
@@ -168,14 +197,20 @@ export interface AudienceResolution {
 
 export async function resolveAudience(
   resolver: string,
-  ctx: ResolveContext & { task?: { id: string; ownerUserId: string | null; assigneeUserId?: string | null } | null },
+  ctx: ResolveContext & {
+    task?: {
+      id: string;
+      createdByUserId: string | null;
+      assigneeUserId?: string | null;
+    } | null;
+  },
 ): Promise<AudienceResolution> {
   if (resolver === "ASSIGNEE") {
     const userId = ctx.task?.assigneeUserId ?? null;
     return { recipientUserIds: userId ? [userId] : [] };
   }
-  if (resolver === "OWNER") {
-    const userId = ctx.task?.ownerUserId ?? null;
+  if (resolver === "CREATOR") {
+    const userId = ctx.task?.createdByUserId ?? null;
     return { recipientUserIds: userId ? [userId] : [] };
   }
   if (resolver === "WATCHERS") {
@@ -183,15 +218,19 @@ export async function resolveAudience(
   }
   if (resolver === "context.recipientUserIds") {
     const ids = lookup(ctx.context, "recipientUserIds");
-    return { recipientUserIds: Array.isArray(ids) ? ids.filter((v): v is string => typeof v === "string") : [] };
+    return {
+      recipientUserIds: Array.isArray(ids)
+        ? ids.filter((v): v is string => typeof v === "string")
+        : [],
+    };
   }
   throw new Error(`Unknown audienceResolver: ${resolver}`);
 }
 
 // ---- registry validation (used by createTaskTrigger MCP) ------------------
 
-export function validateOwnerResolver(key: string): boolean {
-  return OWNER_RESOLVERS.has(key) || key.startsWith("context.");
+export function validateCreatorResolver(key: string): boolean {
+  return CREATOR_RESOLVERS.has(key) || key.startsWith("context.");
 }
 export function validateAssigneePersonResolver(key: string): boolean {
   return ASSIGNEE_PERSON_RESOLVERS.has(key) || key.startsWith("context.");

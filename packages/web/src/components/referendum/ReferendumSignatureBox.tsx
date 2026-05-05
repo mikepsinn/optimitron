@@ -8,6 +8,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/retroui/Button";
 import { SecretChainPitch } from "@/components/referendum/SecretChainPitch";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
+import { REFERRAL_SHARE_LABEL } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
 import { getUserDisplayName } from "@/lib/user-display";
@@ -84,27 +85,20 @@ export function ReferendumSignatureBox({
 
   const referralUrl = buildShareUrl(session?.user);
   const isReader = variant === "reader";
-  const shellClass = isReader && showReaderShell
-    ? "rounded-[24px] border border-[#8e6b48]/25 bg-[#f7f1e4]/88 px-6 py-6 shadow-[0_12px_24px_rgba(58,42,25,0.08)]"
-    : "";
-  const titleClass = isReader
-    ? "text-[var(--treaty-ink)]"
-    : "text-white";
-  const bodyClass = isReader
-    ? "text-[#5f4830]"
-    : "text-white/70";
-  const referralLinkClass = isReader
-    ? "text-[#6b5337]"
-    : "text-white/40";
+  const shellClass =
+    isReader && showReaderShell
+      ? "border border-black bg-white px-6 py-6 text-black shadow-none"
+      : "";
+  const titleClass = isReader ? "text-[var(--treaty-ink)]" : "text-white";
+  const bodyClass = isReader ? "text-black" : "text-white/70";
+  const referralLinkClass = isReader ? "text-black" : "text-white/40";
   const buttonClass = isReader
-    ? "border-2 border-[#8e6b48]/35 bg-[var(--treaty-ink)] px-8 py-3 text-lg font-black uppercase text-[#f7f1e4] hover:bg-[#3a2a19] disabled:opacity-30"
+    ? "border border-black bg-black px-8 py-3 text-lg font-black uppercase text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black disabled:opacity-30"
     : "border-2 border-white/30 bg-white/10 px-8 py-3 text-lg font-black uppercase text-white disabled:opacity-30";
   const shareLabelClass = isReader
-    ? "text-[#6b5337]"
-    : "text-brutal-pink";
-  const errorClass = isReader
-    ? "text-[#b42318]"
-    : "text-brutal-red";
+    ? "text-black normal-case tracking-normal text-sm leading-6 font-bold"
+    : "text-white/80 normal-case tracking-normal text-sm leading-6 font-bold";
+  const errorClass = isReader ? "text-black" : "text-brutal-red";
   const shouldRedirectAfterSign =
     status === "authenticated" && signed && Boolean(postSignRedirectUrl);
 
@@ -136,14 +130,16 @@ export function ReferendumSignatureBox({
               ref: referralCode ?? undefined,
               ...(showPrivacyToggle ? { makePublic } : {}),
               originUrl:
-                typeof window !== "undefined" ? window.location.href : undefined,
+                typeof window !== "undefined"
+                  ? window.location.href
+                  : undefined,
             }),
           },
         );
         if (!response.ok) {
-          const body = (await response.json().catch(() => null)) as
-            | { error?: string }
-            | null;
+          const body = (await response.json().catch(() => null)) as {
+            error?: string;
+          } | null;
           throw new Error(body?.error ?? "Failed to record signature.");
         }
         clearPendingVote();
@@ -165,11 +161,26 @@ export function ReferendumSignatureBox({
   if (signed && status === "authenticated") {
     if (postSignRedirectUrl) {
       return (
-        <div className={cn("mx-auto flex max-w-md flex-col items-center gap-4", shellClass)}>
-          <p className={cn("text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
+        <div
+          className={cn(
+            "mx-auto flex max-w-md flex-col items-center gap-4",
+            shellClass,
+          )}
+        >
+          <p
+            className={cn(
+              "text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]",
+              titleClass,
+            )}
+          >
             {signedTitle}
           </p>
-          <p className={cn("text-center text-base font-bold [font-family:var(--v0-font-libre-baskerville)]", bodyClass)}>
+          <p
+            className={cn(
+              "text-center text-base font-bold [font-family:var(--v0-font-libre-baskerville)]",
+              bodyClass,
+            )}
+          >
             Taking you to the action dashboard...
           </p>
         </div>
@@ -183,10 +194,20 @@ export function ReferendumSignatureBox({
           shellClass,
         )}
       >
-        <p className={cn("text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
+        <p
+          className={cn(
+            "text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]",
+            titleClass,
+          )}
+        >
           {signedTitle}
         </p>
-        <p className={cn("text-center text-base font-bold [font-family:var(--v0-font-libre-baskerville)]", bodyClass)}>
+        <p
+          className={cn(
+            "text-center text-base font-bold [font-family:var(--v0-font-libre-baskerville)]",
+            bodyClass,
+          )}
+        >
           {signedBody}
         </p>
         {signedShare ? (
@@ -195,7 +216,7 @@ export function ReferendumSignatureBox({
           <>
             <SecretChainPitch citizenName={getUserDisplayName(session?.user)} />
             <ShareLinkButtons
-              label="Or blast your referral link"
+              label={REFERRAL_SHARE_LABEL}
               shareText={shareText}
               url={referralUrl}
               emailSubject={emailSubject}
@@ -246,7 +267,12 @@ export function ReferendumSignatureBox({
 
   return (
     <div className={cn("mx-auto w-full max-w-md", shellClass)}>
-      <p className={cn("mb-6 text-center text-xl font-bold [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
+      <p
+        className={cn(
+          "mb-6 text-center text-xl font-bold [font-family:var(--v0-font-libre-baskerville)]",
+          titleClass,
+        )}
+      >
         {resolvedTitle}
       </p>
       <Button
@@ -258,15 +284,17 @@ export function ReferendumSignatureBox({
       </Button>
       {showPrivacyToggle && status === "authenticated" ? (
         <div className="mt-4">
-          <label className={cn(
-            "flex cursor-pointer items-start gap-2 text-sm font-bold",
-            bodyClass,
-          )}>
+          <label
+            className={cn(
+              "flex cursor-pointer items-start gap-2 text-sm font-bold",
+              bodyClass,
+            )}
+          >
             <input
               type="checkbox"
               checked={makePublic}
               onChange={(e) => setMakePublic(e.target.checked)}
-              className="mt-1 h-4 w-4 cursor-pointer accent-brutal-pink"
+              className="mt-1 h-4 w-4 cursor-pointer accent-black"
             />
             <span>
               Display my name publicly on the signer list and leaderboards{" "}
@@ -274,14 +302,20 @@ export function ReferendumSignatureBox({
             </span>
           </label>
           {!makePublic ? (
-            <p className="mt-2 border-2 border-brutal-red bg-brutal-red px-3 py-2 text-xs font-black uppercase text-brutal-red-foreground">
-              Also hides your name from the referral leaderboard. You can reverse this in profile settings.
+            <p className="mt-2 border border-black bg-white px-3 py-2 text-xs font-black uppercase text-black">
+              Also hides your name from the referral leaderboard. You can
+              reverse this in profile settings.
             </p>
           ) : null}
         </div>
       ) : null}
       {error ? (
-        <p className={cn("mt-3 text-center text-xs font-bold uppercase", errorClass)}>
+        <p
+          className={cn(
+            "mt-3 text-center text-xs font-bold uppercase",
+            errorClass,
+          )}
+        >
           {error}
         </p>
       ) : null}

@@ -113,7 +113,7 @@ export function ShareLinkButtons({
                   : "Share via email"
                 : `${verbTitle} ${link.label}`
             }
-            className="inline-flex h-7 w-7 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
+            className="inline-flex h-7 w-7 items-center justify-center border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
             onClick={() => onShare?.()}
           >
             <link.icon className="h-3.5 w-3.5" />
@@ -122,7 +122,7 @@ export function ShareLinkButtons({
         <button
           type="button"
           title={copyState === "copied" ? "Copied!" : copyLabel}
-          className="inline-flex h-7 w-7 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
+          className="inline-flex h-7 w-7 items-center justify-center border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
           onClick={() => {
             onShare?.();
             void copyTextToClipboard(url)
@@ -147,7 +147,7 @@ export function ShareLinkButtons({
       {label ? (
         <p
           className={cn(
-            "text-xs font-black uppercase tracking-[0.18em] text-brutal-pink",
+            "text-xs font-black uppercase tracking-[0.18em] text-black",
             labelClassName,
           )}
         >
@@ -159,7 +159,7 @@ export function ShareLinkButtons({
           <Button
             key={link.label}
             asChild
-            className="font-black uppercase"
+            className="border border-black bg-white font-black uppercase text-black shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-black hover:text-white"
             size="sm"
             variant="outline"
           >
@@ -174,7 +174,7 @@ export function ShareLinkButtons({
           </Button>
         ))}
         <Button
-          className="font-black uppercase"
+          className="border border-black bg-white font-black uppercase text-black shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-black hover:text-white"
           size="sm"
           type="button"
           variant="outline"

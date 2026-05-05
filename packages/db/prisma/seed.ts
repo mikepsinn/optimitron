@@ -2340,12 +2340,13 @@ const WISHONIA_AFFILIATION =
   "World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation";
 const WISHONIA_IMAGE = "/sprites/wishonia/smirk-smile.png";
 const GRANDMA_KAY_SOURCE_REF = "memorial-example:grandma-kay";
+let cachedSeedWishoniaUserId: string | null = null;
 
 /**
  * Seed Wishonia as a regular user with a linked Person record. This lets her:
  * - Author task comments under her own user ID (no fake system-user hack)
  * - Be assigned tasks via `assigneePersonId`
- * - Own tasks via `ownerUserId`
+ * - Create tasks via `createdByUserId`
  * - Show up on /people/wishonia exactly like any public figure
  *
  * Idempotent. Safe to re-run.
@@ -2398,6 +2399,7 @@ async function seedWishoniaUser() {
   });
 
   console.log(`  ✓ Wishonia user (${user.id}) + person (${person.id}) handle=${person.handle}`);
+  cachedSeedWishoniaUserId = user.id;
   return { person, user };
 }
 
@@ -2486,7 +2488,8 @@ async function seedGrandmaKayExample() {
  * Requires `task.id` to be set for upsert-by-id behavior.
  */
 async function createTaskWithImpact(input: {
-  task: Parameters<typeof prisma.task.create>[0]["data"] & {
+  task: Omit<Parameters<typeof prisma.task.create>[0]["data"], "createdByUserId"> & {
+    createdByUserId?: string | null;
     id: string;
   };
   primaryEndpoint?: {
@@ -2520,15 +2523,23 @@ async function createTaskWithImpact(input: {
   const {
     assigneeOrganizationId,
     assigneePersonId,
+    createdByUserId,
     parentTaskId,
     ...taskScalars
   } = taskData as typeof taskData & {
     assigneeOrganizationId?: string | null;
     assigneePersonId?: string | null;
+    createdByUserId?: string | null;
     parentTaskId?: string | null;
   };
+  const resolvedCreatedByUserId =
+    createdByUserId?.trim() ||
+    cachedSeedWishoniaUserId ||
+    (await seedWishoniaUser()).user.id;
   const createRelations: Record<string, unknown> = {};
   const updateRelations: Record<string, unknown> = {};
+  createRelations.createdByUser = { connect: { id: resolvedCreatedByUserId } };
+  updateRelations.createdByUser = { connect: { id: resolvedCreatedByUserId } };
   if (assigneeOrganizationId) {
     createRelations.assigneeOrganization = { connect: { id: assigneeOrganizationId } };
     updateRelations.assigneeOrganization = { connect: { id: assigneeOrganizationId } };

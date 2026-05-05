@@ -28,7 +28,7 @@ export async function resolveTaskRecipients(
     prisma.task.findUnique({
       where: { id: taskId },
       select: {
-        owner: {
+        createdByUser: {
           select: {
             deletedAt: true,
             email: true,
@@ -132,15 +132,15 @@ export async function resolveTaskRecipients(
     });
   }
 
-  const ownerEmail =
-    task.owner && !task.owner.deletedAt
-      ? normalizeEmail(task.owner.email)
+  const creatorEmail =
+    task.createdByUser && !task.createdByUser.deletedAt
+      ? normalizeEmail(task.createdByUser.email)
       : null;
-  if (ownerEmail) {
-    if (task.owner?.id) {
+  if (creatorEmail) {
+    if (task.createdByUser?.id) {
       addRecipient({
-        email: ownerEmail,
-        userId: task.owner.id,
+        email: creatorEmail,
+        userId: task.createdByUser.id,
       });
     }
   }

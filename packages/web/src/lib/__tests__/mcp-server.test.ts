@@ -99,7 +99,8 @@ vi.mock("../tasks/agent-lease.server", () => ({
 
 vi.mock("../tasks/impact", () => ({}));
 vi.mock("../tasks/task-communication-endpoints.server", () => ({
-  upsertPrimaryTaskCommunicationEndpoint: mocks.upsertPrimaryTaskCommunicationEndpoint,
+  upsertPrimaryTaskCommunicationEndpoint:
+    mocks.upsertPrimaryTaskCommunicationEndpoint,
 }));
 vi.mock("../tasks/task-comments.server", () => ({
   countUserCommentsInWindow: mocks.countUserCommentsInWindow,
@@ -176,7 +177,9 @@ class ForbiddenError extends Error {
 }
 
 class LastOwnerError extends Error {
-  constructor(message = "Cannot remove or demote the last owner of the organization") {
+  constructor(
+    message = "Cannot remove or demote the last owner of the organization",
+  ) {
     super(message);
     this.name = "LastOwnerError";
   }
@@ -239,7 +242,8 @@ async function setup(
   options: { isAdmin?: boolean } = {},
 ) {
   const server = createMcpServer(userId, scopes, options);
-  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  const [clientTransport, serverTransport] =
+    InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
   const client = new Client({ name: "test-client", version: "1.0.0" });
   await client.connect(clientTransport);
@@ -252,7 +256,7 @@ function parseToolBody(result: unknown): Record<string, unknown> {
   return JSON.parse(content![0]!.text) as Record<string, unknown>;
 }
 
-function makeOwnedTask(overrides: Record<string, unknown> = {}) {
+function makeCreatedTask(overrides: Record<string, unknown> = {}) {
   return {
     id: "task-1",
     title: "Owned task",
@@ -260,7 +264,7 @@ function makeOwnedTask(overrides: Record<string, unknown> = {}) {
     status: TaskStatus.ACTIVE,
     category: "OUTREACH",
     difficulty: "TRIVIAL",
-    taskKey: "owned:1",
+    taskKey: "created:1",
     dueAt: null,
     parentTaskId: null,
     impactStatement: null,
@@ -276,7 +280,7 @@ function makeOwnedTask(overrides: Record<string, unknown> = {}) {
     assigneeOrganization: null,
     assigneePersonId: null,
     assigneeOrganizationId: null,
-    ownerUserId: "user-1",
+    createdByUserId: "user-1",
     ...overrides,
   };
 }
@@ -303,19 +307,22 @@ beforeEach(() => {
   delete process.env.GITHUB_TOKEN;
   delete process.env.GITHUB_REPO_ALLOWLIST;
   delete process.env.GITHUB_DEFAULT_REPO;
-  mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
-    callback({
-      task: {
-        create: mocks.taskCreate,
-        update: mocks.taskUpdate,
-      },
-      taskEdge: {
-        createMany: mocks.taskEdgeCreateMany,
-        updateMany: mocks.taskEdgeUpdateMany,
-      },
-      taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
-      taskImpactFrameEstimate: { create: mocks.taskImpactFrameEstimateCreate },
-    }),
+  mocks.transaction.mockImplementation(
+    async (callback: (tx: unknown) => Promise<unknown>) =>
+      callback({
+        task: {
+          create: mocks.taskCreate,
+          update: mocks.taskUpdate,
+        },
+        taskEdge: {
+          createMany: mocks.taskEdgeCreateMany,
+          updateMany: mocks.taskEdgeUpdateMany,
+        },
+        taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
+        taskImpactFrameEstimate: {
+          create: mocks.taskImpactFrameEstimateCreate,
+        },
+      }),
   );
   mocks.taskImpactEstimateSetCreate.mockResolvedValue({ id: "estimate-set-1" });
   mocks.taskImpactFrameEstimateCreate.mockResolvedValue({ id: "frame-1" });
@@ -339,9 +346,14 @@ beforeEach(() => {
   });
   mocks.referendumFindMany.mockResolvedValue([]);
   mocks.mcpToolCallAuditCreate.mockResolvedValue({ id: "audit-1" });
-  mocks.recordRepresentedReferendumVote.mockResolvedValue({ vote: { id: "vote-1" } });
+  mocks.recordRepresentedReferendumVote.mockResolvedValue({
+    vote: { id: "vote-1" },
+  });
   mocks.searchPeople.mockResolvedValue([]);
-  mocks.getPerson.mockResolvedValue({ id: "person-1", displayName: "Public Person" });
+  mocks.getPerson.mockResolvedValue({
+    id: "person-1",
+    displayName: "Public Person",
+  });
   mocks.upsertOrganization.mockResolvedValue({
     contactEmail: null,
     id: "org-1",
@@ -370,28 +382,45 @@ beforeEach(() => {
     type: OrgType.FOUNDATION,
     website: "https://survivalandflourishing.fund",
   });
-  mocks.taskUpdate.mockImplementation(async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => ({
-    id: where.id,
-    status: data.status ?? TaskStatus.ACTIVE,
-    title: data.title ?? "Updated task",
-  }));
-  mocks.taskCreate.mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({
-    id: "created-task",
-    status: data.status ?? TaskStatus.ACTIVE,
-    title: data.title,
-  }));
+  mocks.taskUpdate.mockImplementation(
+    async ({
+      data,
+      where,
+    }: {
+      data: Record<string, unknown>;
+      where: { id: string };
+    }) => ({
+      id: where.id,
+      status: data.status ?? TaskStatus.ACTIVE,
+      title: data.title ?? "Updated task",
+    }),
+  );
+  mocks.taskCreate.mockImplementation(
+    async ({ data }: { data: Record<string, unknown> }) => ({
+      id: "created-task",
+      status: data.status ?? TaskStatus.ACTIVE,
+      title: data.title,
+    }),
+  );
   mocks.taskEdgeCreateMany.mockResolvedValue({ count: 0 });
   mocks.taskEdgeUpdateMany.mockResolvedValue({ count: 0 });
   mocks.taskEdgeFindMany.mockResolvedValue([]);
   mocks.userFindUnique.mockResolvedValue({ personId: "person-1" });
   mocks.upsertPrimaryTaskCommunicationEndpoint.mockResolvedValue(null);
   mocks.countUserCommentsInWindow.mockResolvedValue(0);
-  mocks.postComment.mockResolvedValue({ id: "comment-1", taskId: "task-1", message: "Comment" });
+  mocks.postComment.mockResolvedValue({
+    id: "comment-1",
+    taskId: "task-1",
+    message: "Comment",
+  });
   mocks.notifyTaskCommentRecipients.mockResolvedValue({ sentCount: 1 });
   mocks.generateAndPostWishoniaReply.mockResolvedValue(null);
 });
 
-function jsonResponse(body: unknown, init: { status?: number; headers?: Record<string, string> } = {}) {
+function jsonResponse(
+  body: unknown,
+  init: { status?: number; headers?: Record<string, string> } = {},
+) {
   const status = init.status ?? 200;
   return {
     ok: status >= 200 && status < 300,
@@ -436,8 +465,12 @@ describe("MCP server tool dispatch", () => {
     const nonAdminClient = await setup("user-1", ALL_SCOPES);
     const adminClient = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
 
-    const nonAdminNames = (await nonAdminClient.listTools()).tools.map((tool) => tool.name);
-    const adminNames = (await adminClient.listTools()).tools.map((tool) => tool.name);
+    const nonAdminNames = (await nonAdminClient.listTools()).tools.map(
+      (tool) => tool.name,
+    );
+    const adminNames = (await adminClient.listTools()).tools.map(
+      (tool) => tool.name,
+    );
 
     expect(nonAdminNames).not.toContain("proposeTaskBundle");
     expect(nonAdminNames).not.toContain("setTaskImpact");
@@ -468,8 +501,12 @@ describe("MCP server tool dispatch", () => {
       { isAdmin: true },
     );
 
-    const writerNames = (await writerClient.listTools()).tools.map((tool) => tool.name);
-    const adminNames = (await adminClient.listTools()).tools.map((tool) => tool.name);
+    const writerNames = (await writerClient.listTools()).tools.map(
+      (tool) => tool.name,
+    );
+    const adminNames = (await adminClient.listTools()).tools.map(
+      (tool) => tool.name,
+    );
 
     expect(writerNames).toEqual(
       expect.arrayContaining([
@@ -652,7 +689,9 @@ describe("MCP server tool dispatch", () => {
   });
 
   it("audits failed Earth-data MCP writes without raw payloads", async () => {
-    mocks.reportContent.mockRejectedValueOnce(new Error("database unavailable"));
+    mocks.reportContent.mockRejectedValueOnce(
+      new Error("database unavailable"),
+    );
     const client = await setup("user-1", [
       McpScope.TASKS_PERSONAL,
       McpScope.EARTHDATA_WRITE,
@@ -675,7 +714,8 @@ describe("MCP server tool dispatch", () => {
           errorSummary: "database unavailable",
           inputHash: expect.any(String),
           inputSummaryJson: expect.not.objectContaining({
-            message: "This private note should not be copied into audit summaries.",
+            message:
+              "This private note should not be copied into audit summaries.",
           }),
           status: "FAILED",
           toolName: "reportContent",
@@ -723,7 +763,9 @@ describe("MCP server tool dispatch", () => {
         { allowStatusChange: false },
       );
       const body = parseToolBody(result);
-      expect((body.organization as Record<string, unknown>)?.slug).toBe("renamed-org");
+      expect((body.organization as Record<string, unknown>)?.slug).toBe(
+        "renamed-org",
+      );
     });
 
     it("updateOrganization passes allowStatusChange=true when caller has admin scope", async () => {
@@ -765,22 +807,29 @@ describe("MCP server tool dispatch", () => {
       ["logo", ["https://example.org/logo.png"]],
       ["contactEmail", { email: "hello@example.org" }],
       ["jurisdictionId", 99],
-    ])("updateOrganization rejects non-string %s values", async (field, value) => {
-      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+    ])(
+      "updateOrganization rejects non-string %s values",
+      async (field, value) => {
+        const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
-      const result = await client.callTool({
-        name: "updateOrganization",
-        arguments: { organizationId: "org-1", [field]: value },
-      });
+        const result = await client.callTool({
+          name: "updateOrganization",
+          arguments: { organizationId: "org-1", [field]: value },
+        });
 
-      expect(result.isError).toBe(true);
-      expect(parseToolBody(result)).toEqual({ error: `${field} must be a string` });
-      expect(mocks.updateOrganizationServer).not.toHaveBeenCalled();
-    });
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result)).toEqual({
+          error: `${field} must be a string`,
+        });
+        expect(mocks.updateOrganizationServer).not.toHaveBeenCalled();
+      },
+    );
 
     it("updateOrganization returns a clean error when the caller cannot manage the org", async () => {
       mocks.updateOrganizationServer.mockRejectedValueOnce(
-        new ForbiddenError("You do not have permission to manage this organization"),
+        new ForbiddenError(
+          "You do not have permission to manage this organization",
+        ),
       );
       const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
@@ -823,7 +872,11 @@ describe("MCP server tool dispatch", () => {
 
       const result = await client.callTool({
         name: "addOrganizationMember",
-        arguments: { organizationId: "org-1", userId: "user-2", role: "wizard" },
+        arguments: {
+          organizationId: "org-1",
+          userId: "user-2",
+          role: "wizard",
+        },
       });
 
       expect(result.isError).toBe(true);
@@ -832,7 +885,9 @@ describe("MCP server tool dispatch", () => {
 
     it("removeOrganizationMember surfaces the LastOwnerError as a clean error", async () => {
       mocks.removeOrganizationMember.mockRejectedValueOnce(
-        new LastOwnerError("Cannot remove or demote the last owner of the organization"),
+        new LastOwnerError(
+          "Cannot remove or demote the last owner of the organization",
+        ),
       );
       const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
@@ -930,7 +985,10 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mocks.softDeleteOrganization).toHaveBeenCalledWith("org-1", "admin-1");
+      expect(mocks.softDeleteOrganization).toHaveBeenCalledWith(
+        "org-1",
+        "admin-1",
+      );
       expect(parseToolBody(result)).toMatchObject({
         organizationId: "org-1",
         deleted: true,
@@ -974,13 +1032,15 @@ describe("MCP server tool dispatch", () => {
       const client = await setup("user-1", ALL_SCOPES);
 
       const tools = await client.listTools();
-      const listTasksTool = tools.tools.find((tool) => tool.name === "listTasks");
+      const listTasksTool = tools.tools.find(
+        (tool) => tool.name === "listTasks",
+      );
       expect(listTasksTool?.inputSchema.properties).toMatchObject({
         assignedToMe: expect.objectContaining({ type: "boolean" }),
       });
 
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({
+        makeCreatedTask({
           id: "assigned",
           title: "Assigned to me",
           assigneePersonId: "person-1",
@@ -1006,13 +1066,21 @@ describe("MCP server tool dispatch", () => {
           visibility: "accessible",
         }),
       );
-      const body = parseToolBody(result) as unknown as Array<Record<string, unknown>>;
-      expect(body[0]).toMatchObject({ id: "assigned", title: "Assigned to me" });
+      const body = parseToolBody(result) as unknown as Array<
+        Record<string, unknown>
+      >;
+      expect(body[0]).toMatchObject({
+        id: "assigned",
+        title: "Assigned to me",
+      });
     });
 
     it("does not invent private visibility when listTasks omits isPublic", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({ id: "without-visibility", title: "Visibility not selected" }),
+        makeCreatedTask({
+          id: "without-visibility",
+          title: "Visibility not selected",
+        }),
       ]);
 
       const client = await setup("user-1", ALL_SCOPES);
@@ -1022,7 +1090,9 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      const body = parseToolBody(result) as unknown as Array<Record<string, unknown>>;
+      const body = parseToolBody(result) as unknown as Array<
+        Record<string, unknown>
+      >;
       expect(body[0]).toMatchObject({
         id: "without-visibility",
         title: "Visibility not selected",
@@ -1034,7 +1104,7 @@ describe("MCP server tool dispatch", () => {
     it("enriches getTask output with executorType and markdown acceptance criteria when contextJson is missing them", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
         taskCommunicationCount: 0,
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "task-criteria",
           description: [
             "## Problem",
@@ -1068,7 +1138,10 @@ describe("MCP server tool dispatch", () => {
 
     it("getBlockers ignores soft-deleted dependency edges so it agrees with getTask visibility", async () => {
       const client = await setup("user-1", ALL_SCOPES);
-      await client.callTool({ name: "getBlockers", arguments: { taskId: "task-1" } });
+      await client.callTool({
+        name: "getBlockers",
+        arguments: { taskId: "task-1" },
+      });
 
       expect(mocks.taskEdgeFindMany).toHaveBeenCalledTimes(2);
       expect(mocks.taskEdgeFindMany.mock.calls[0]![0]).toMatchObject({
@@ -1135,16 +1208,22 @@ describe("MCP server tool dispatch", () => {
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
       const result = await client.callTool({
         name: "searchRepo",
-        arguments: { query: "TASK_TOOL_DEFINITIONS", repo: "optimitron", fileType: "ts" },
+        arguments: {
+          query: "TASK_TOOL_DEFINITIONS",
+          repo: "optimitron",
+          fileType: "ts",
+        },
       });
 
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
       expect(body).toMatchObject({ totalCount: 1 });
-      expect((body.results as Array<Record<string, unknown>>)[0]).toMatchObject({
-        path: "packages/web/src/lib/mcp-server.ts",
-        repo: "mikepsinn/optimitron",
-      });
+      expect((body.results as Array<Record<string, unknown>>)[0]).toMatchObject(
+        {
+          path: "packages/web/src/lib/mcp-server.ts",
+          repo: "mikepsinn/optimitron",
+        },
+      );
       expect(JSON.stringify(body)).not.toContain("ghp_secret");
       expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
@@ -1157,7 +1236,9 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("searchRepo fails fast when the MCP server has no GitHub token", async () => {
-      const fetchMock = vi.fn(async () => jsonResponse({ total_count: 0, items: [] }));
+      const fetchMock = vi.fn(async () =>
+        jsonResponse({ total_count: 0, items: [] }),
+      );
       vi.stubGlobal("fetch", fetchMock);
 
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
@@ -1167,7 +1248,9 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(JSON.stringify(parseToolBody(result))).toContain("GITHUB_PAT or GITHUB_TOKEN");
+      expect(JSON.stringify(parseToolBody(result))).toContain(
+        "GITHUB_PAT or GITHUB_TOKEN",
+      );
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
@@ -1186,7 +1269,9 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(JSON.stringify(parseToolBody(result))).toContain("GITHUB_PAT or GITHUB_TOKEN");
+      expect(JSON.stringify(parseToolBody(result))).toContain(
+        "GITHUB_PAT or GITHUB_TOKEN",
+      );
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
@@ -1316,14 +1401,20 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mocks.listSitePages).toHaveBeenCalledWith({ site: "warondisease.org" });
+      expect(mocks.listSitePages).toHaveBeenCalledWith({
+        site: "warondisease.org",
+      });
       const body = parseToolBody(result);
       const pages = body.pages as Array<Record<string, unknown>>;
       expect(pages.length).toBeGreaterThan(0);
-      expect(pages.every((page) => String(page.url).startsWith("https://warondisease.org/"))).toBe(
-        true,
-      );
-      expect(pages.some((page) => page.url === "https://warondisease.org/vote")).toBe(true);
+      expect(
+        pages.every((page) =>
+          String(page.url).startsWith("https://warondisease.org/"),
+        ),
+      ).toBe(true);
+      expect(
+        pages.some((page) => page.url === "https://warondisease.org/vote"),
+      ).toBe(true);
     }, 15_000);
 
     it("getPageContent returns markdown for an allowed Optimitron property URL", async () => {
@@ -1363,8 +1454,12 @@ describe("MCP server tool dispatch", () => {
       const publicClient = await setup(undefined, []);
       const adminClient = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
 
-      const publicNames = (await publicClient.listTools()).tools.map((tool) => tool.name);
-      const adminNames = (await adminClient.listTools()).tools.map((tool) => tool.name);
+      const publicNames = (await publicClient.listTools()).tools.map(
+        (tool) => tool.name,
+      );
+      const adminNames = (await adminClient.listTools()).tools.map(
+        (tool) => tool.name,
+      );
 
       expect(publicNames).toContain("listReferendums");
       expect(publicNames).not.toContain("createReferendum");
@@ -1473,8 +1568,12 @@ describe("MCP server tool dispatch", () => {
       const noScopeClient = await setup("user-1", [McpScope.TASKS_PERSONAL]);
       const writerClient = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
-      const noScopeNames = (await noScopeClient.listTools()).tools.map((tool) => tool.name);
-      const writerNames = (await writerClient.listTools()).tools.map((tool) => tool.name);
+      const noScopeNames = (await noScopeClient.listTools()).tools.map(
+        (tool) => tool.name,
+      );
+      const writerNames = (await writerClient.listTools()).tools.map(
+        (tool) => tool.name,
+      );
 
       expect(noScopeNames).not.toContain("upsertCourtCase");
       expect(writerNames).toEqual(
@@ -1558,7 +1657,10 @@ describe("MCP server tool dispatch", () => {
     it("returns structured authentication_required for personal tools when userId is missing", async () => {
       const client = await setup(undefined, ALL_SCOPES);
 
-      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
@@ -1567,7 +1669,9 @@ describe("MCP server tool dispatch", () => {
       expect(body.remediation).toMatchObject({
         remote_http: expect.objectContaining({
           authorizeEndpoint: expect.stringMatching(/oauth\/authorize$/),
-          resourceMetadata: expect.stringContaining("/.well-known/oauth-protected-resource/mcp"),
+          resourceMetadata: expect.stringContaining(
+            "/.well-known/oauth-protected-resource/mcp",
+          ),
         }),
       });
     });
@@ -1575,18 +1679,27 @@ describe("MCP server tool dispatch", () => {
     it("rejects anonymous calls to getMyQueue / getAIQueue / getQueueAudit with the same structured error", async () => {
       const client = await setup(undefined, ALL_SCOPES);
 
-      for (const tool of ["getMyQueue", "getAIQueue", "getQueueAudit"] as const) {
+      for (const tool of [
+        "getMyQueue",
+        "getAIQueue",
+        "getQueueAudit",
+      ] as const) {
         const result = await client.callTool({ name: tool, arguments: {} });
         expect(result.isError, `${tool} should error`).toBe(true);
         const body = parseToolBody(result);
-        expect(body.error, `${tool} error code`).toBe("authentication_required");
+        expect(body.error, `${tool} error code`).toBe(
+          "authentication_required",
+        );
       }
     });
 
     it("returns Insufficient scope when caller lacks the required scope", async () => {
       const client = await setup("user-1", []);
 
-      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
@@ -1597,16 +1710,23 @@ describe("MCP server tool dispatch", () => {
 
   describe("catch block", () => {
     it("surfaces the actual error message + stack when a handler throws", async () => {
-      mocks.listTasks.mockRejectedValue(new Error("Simulated DB failure: relation does not exist"));
+      mocks.listTasks.mockRejectedValue(
+        new Error("Simulated DB failure: relation does not exist"),
+      );
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
       expect(body.error).toBe("tool_execution_failed");
       expect(body.tool).toBe("getNextAction");
-      expect(body.message).toBe("Simulated DB failure: relation does not exist");
+      expect(body.message).toBe(
+        "Simulated DB failure: relation does not exist",
+      );
       expect(body.stack).toContain("Error: Simulated DB failure");
       expect(body.userId).toBe("user-1");
     });
@@ -1626,10 +1746,10 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("getNextAction happy path", () => {
-    it("returns the top-ranked owned task with its priority", async () => {
+    it("returns the top-ranked created task with its priority", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({ id: "task-a", title: "Lower priority" }),
-        makeOwnedTask({ id: "task-b", title: "Higher priority" }),
+        makeCreatedTask({ id: "task-a", title: "Lower priority" }),
+        makeCreatedTask({ id: "task-b", title: "Higher priority" }),
       ]);
       mocks.isTaskBlocked.mockReturnValue(false);
       mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
@@ -1637,28 +1757,43 @@ describe("MCP server tool dispatch", () => {
       );
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
 
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
-      expect(body.task).toMatchObject({ id: "task-b", title: "Higher priority" });
+      expect(body.task).toMatchObject({
+        id: "task-b",
+        title: "Higher priority",
+      });
       expect(body.priority).toBe(999);
       expect(body.sprintPriority).toBeUndefined();
-      expect((body.task as Record<string, unknown>).taskPriority).toBeUndefined();
-      expect(body.queueAudit).toMatchObject({ activeOwnedTasks: 2 });
+      expect(
+        (body.task as Record<string, unknown>).taskPriority,
+      ).toBeUndefined();
+      expect(body.queueAudit).toMatchObject({ activeCreatedTasks: 2 });
     });
 
     it("filters out blocked tasks before picking the top action", async () => {
-      const blocked = makeOwnedTask({ id: "blocked", blockerStatuses: [TaskStatus.ACTIVE] });
-      const open = makeOwnedTask({ id: "open" });
+      const blocked = makeCreatedTask({
+        id: "blocked",
+        blockerStatuses: [TaskStatus.ACTIVE],
+      });
+      const open = makeCreatedTask({ id: "open" });
       mocks.listTasks.mockResolvedValue([blocked, open]);
-      mocks.isTaskBlocked.mockImplementation(({ blockerStatuses }: { blockerStatuses: string[] }) =>
-        (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
+      mocks.isTaskBlocked.mockImplementation(
+        ({ blockerStatuses }: { blockerStatuses: string[] }) =>
+          (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
       );
       mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
 
       const body = parseToolBody(result);
       expect((body.task as { id: string }).id).toBe("open");
@@ -1670,19 +1805,29 @@ describe("MCP server tool dispatch", () => {
       mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
 
       const body = parseToolBody(result);
       expect(body.task).toBeNull();
       expect(body.priority).toBe(0);
-      expect(body.queueAudit).toMatchObject({ activeOwnedTasks: 0, unblockedTasks: 0 });
+      expect(body.queueAudit).toMatchObject({
+        activeCreatedTasks: 0,
+        unblockedTasks: 0,
+      });
     });
 
     it("returns a required-deadline task when it has reached latest-start time even if another task has higher priority", async () => {
       const dueSoon = new Date(Date.now() + 60 * 60 * 1000).toISOString();
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({ id: "big-upside", title: "Big upside task", estimatedEffortHours: 1 }),
-        makeOwnedTask({
+        makeCreatedTask({
+          id: "big-upside",
+          title: "Big upside task",
+          estimatedEffortHours: 1,
+        }),
+        makeCreatedTask({
           id: "taxes",
           title: "File taxes",
           dueAt: dueSoon,
@@ -1699,7 +1844,10 @@ describe("MCP server tool dispatch", () => {
       );
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
 
       const body = parseToolBody(result);
       expect(body.task).toMatchObject({
@@ -1717,9 +1865,21 @@ describe("MCP server tool dispatch", () => {
   describe("personal queues", () => {
     it("splits self-executed tasks from AI-agent-executed tasks", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({ id: "self", title: "Self task", contextJson: { executor_type: "Self" } }),
-        makeOwnedTask({ id: "default-self", title: "Default self task", contextJson: {} }),
-        makeOwnedTask({ id: "agent", title: "Agent task", contextJson: { executor_type: "AI Agent" } }),
+        makeCreatedTask({
+          id: "self",
+          title: "Self task",
+          contextJson: { executor_type: "Self" },
+        }),
+        makeCreatedTask({
+          id: "default-self",
+          title: "Default self task",
+          contextJson: {},
+        }),
+        makeCreatedTask({
+          id: "agent",
+          title: "Agent task",
+          contextJson: { executor_type: "AI Agent" },
+        }),
       ]);
       mocks.isTaskBlocked.mockReturnValue(false);
       mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
@@ -1727,11 +1887,21 @@ describe("MCP server tool dispatch", () => {
       );
 
       const client = await setup("user-1", ALL_SCOPES);
-      const myQueueResult = await client.callTool({ name: "getMyQueue", arguments: {} });
-      const aiQueueResult = await client.callTool({ name: "getAIQueue", arguments: {} });
+      const myQueueResult = await client.callTool({
+        name: "getMyQueue",
+        arguments: {},
+      });
+      const aiQueueResult = await client.callTool({
+        name: "getAIQueue",
+        arguments: {},
+      });
 
-      const myQueue = parseToolBody(myQueueResult).queue as Array<Record<string, unknown>>;
-      const aiQueue = parseToolBody(aiQueueResult).queue as Array<Record<string, unknown>>;
+      const myQueue = parseToolBody(myQueueResult).queue as Array<
+        Record<string, unknown>
+      >;
+      const aiQueue = parseToolBody(aiQueueResult).queue as Array<
+        Record<string, unknown>
+      >;
       expect(myQueue.map((task) => task.id)).toEqual(["self", "default-self"]);
       expect(aiQueue.map((task) => task.id)).toEqual(["agent"]);
       expect(myQueue[0]).toMatchObject({ priority: 100, executorType: "Self" });
@@ -1741,41 +1911,55 @@ describe("MCP server tool dispatch", () => {
 
     it("hides blocked tasks until all blockers are verified", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({ id: "blocked", blockerStatuses: [TaskStatus.ACTIVE] }),
-        makeOwnedTask({ id: "open", blockerStatuses: [TaskStatus.VERIFIED] }),
+        makeCreatedTask({
+          id: "blocked",
+          blockerStatuses: [TaskStatus.ACTIVE],
+        }),
+        makeCreatedTask({ id: "open", blockerStatuses: [TaskStatus.VERIFIED] }),
       ]);
-      mocks.isTaskBlocked.mockImplementation(({ blockerStatuses }: { blockerStatuses: string[] }) =>
-        (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
+      mocks.isTaskBlocked.mockImplementation(
+        ({ blockerStatuses }: { blockerStatuses: string[] }) =>
+          (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
       );
       mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getMyQueue", arguments: {} });
+      const result = await client.callTool({
+        name: "getMyQueue",
+        arguments: {},
+      });
 
-      const queue = parseToolBody(result).queue as Array<Record<string, unknown>>;
+      const queue = parseToolBody(result).queue as Array<
+        Record<string, unknown>
+      >;
       expect(queue.map((task) => task.id)).toEqual(["open"]);
     });
 
     it("hides tasks before availableAt and expired expiring opportunities", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({
+        makeCreatedTask({
           id: "future",
           availableAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
         }),
-        makeOwnedTask({
+        makeCreatedTask({
           id: "expired-grant",
           deadlinePolicy: "EXPIRES",
           dueAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         }),
-        makeOwnedTask({ id: "open" }),
+        makeCreatedTask({ id: "open" }),
       ]);
       mocks.isTaskBlocked.mockReturnValue(false);
       mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getMyQueue", arguments: {} });
+      const result = await client.callTool({
+        name: "getMyQueue",
+        arguments: {},
+      });
 
-      const queue = parseToolBody(result).queue as Array<Record<string, unknown>>;
+      const queue = parseToolBody(result).queue as Array<
+        Record<string, unknown>
+      >;
       expect(queue.map((task) => task.id)).toEqual(["open"]);
     });
   });
@@ -1783,48 +1967,70 @@ describe("MCP server tool dispatch", () => {
   describe("getQueueAudit happy path", () => {
     it("flags tasks with invalid priority inputs", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({ id: "good" }),
-        makeOwnedTask({ id: "bad" }),
+        makeCreatedTask({ id: "good" }),
+        makeCreatedTask({ id: "bad" }),
       ]);
       mocks.taskEdgeFindMany.mockResolvedValue([]);
       mocks.isTaskBlocked.mockReturnValue(false);
       mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
         makePriority(
           task.id === "bad"
-            ? { valid: false, validationNotes: ["missing estimatedEffortHours"] }
+            ? {
+                valid: false,
+                validationNotes: ["missing estimatedEffortHours"],
+              }
             : {},
         ),
       );
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getQueueAudit", arguments: {} });
+      const result = await client.callTool({
+        name: "getQueueAudit",
+        arguments: {},
+      });
 
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
-      expect(body.summary).toMatchObject({ activeOwnedTasks: 2, unblockedTasks: 2 });
+      expect(body.summary).toMatchObject({
+        activeCreatedTasks: 2,
+        unblockedTasks: 2,
+      });
       const issues = body.issues as Array<{ taskId: string; code: string }>;
-      expect(issues.some((i) => i.taskId === "bad" && i.code === "INVALID_SCORE")).toBe(true);
+      expect(
+        issues.some((i) => i.taskId === "bad" && i.code === "INVALID_SCORE"),
+      ).toBe(true);
     });
 
     it("flags blocked tasks and orphaned dependencies", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({ id: "blocked", blockerStatuses: [TaskStatus.ACTIVE] }),
-        makeOwnedTask({ id: "orphan" }),
+        makeCreatedTask({
+          id: "blocked",
+          blockerStatuses: [TaskStatus.ACTIVE],
+        }),
+        makeCreatedTask({ id: "orphan" }),
       ]);
       mocks.taskEdgeFindMany.mockResolvedValue([
         {
           fromTaskId: "deleted-dep",
           toTaskId: "orphan",
-          fromTask: { id: "deleted-dep", deletedAt: new Date(), status: TaskStatus.ACTIVE },
+          fromTask: {
+            id: "deleted-dep",
+            deletedAt: new Date(),
+            status: TaskStatus.ACTIVE,
+          },
         },
       ]);
-      mocks.isTaskBlocked.mockImplementation(({ blockerStatuses }: { blockerStatuses: string[] }) =>
-        (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
+      mocks.isTaskBlocked.mockImplementation(
+        ({ blockerStatuses }: { blockerStatuses: string[] }) =>
+          (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
       );
       mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getQueueAudit", arguments: {} });
+      const result = await client.callTool({
+        name: "getQueueAudit",
+        arguments: {},
+      });
 
       const body = parseToolBody(result);
       const codes = (body.issues as Array<{ code: string }>).map((i) => i.code);
@@ -1834,7 +2040,7 @@ describe("MCP server tool dispatch", () => {
 
     it("flags deadline-policy tasks that cannot be scheduled without an hour estimate", async () => {
       mocks.listTasks.mockResolvedValue([
-        makeOwnedTask({
+        makeCreatedTask({
           id: "taxes",
           dueAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           deadlinePolicy: "REQUIRED",
@@ -1846,7 +2052,10 @@ describe("MCP server tool dispatch", () => {
       mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({ name: "getQueueAudit", arguments: {} });
+      const result = await client.callTool({
+        name: "getQueueAudit",
+        arguments: {},
+      });
 
       const body = parseToolBody(result);
       const issues = body.issues as Array<{ code: string; taskId: string }>;
@@ -1863,7 +2072,9 @@ describe("MCP server tool dispatch", () => {
     it("createTask schema exposes an explicit visibility override", async () => {
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
       const result = await client.listTools();
-      const createTask = result.tools.find((tool) => tool.name === "createTask");
+      const createTask = result.tools.find(
+        (tool) => tool.name === "createTask",
+      );
 
       expect(createTask?.inputSchema.properties).toMatchObject({
         visibility: {
@@ -1889,7 +2100,9 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain("description is required");
+        expect(parseToolBody(result).error).toContain(
+          "description is required",
+        );
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -1927,7 +2140,9 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain("impactStatement is required");
+        expect(parseToolBody(result).error).toContain(
+          "impactStatement is required",
+        );
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -1946,7 +2161,9 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain("acceptanceCriteria is required");
+        expect(parseToolBody(result).error).toContain(
+          "acceptanceCriteria is required",
+        );
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -1973,9 +2190,14 @@ describe("MCP server tool dispatch", () => {
 
       it("response includes missingFields[] for soft-recommended fields", async () => {
         mocks.getTaskDetailData.mockResolvedValue({
-          task: makeOwnedTask({
+          task: makeCreatedTask({
             id: "created-task",
-            contextJson: { executor_type: "Self", value: 100, p_success: 0.5, cash_cost: 0 },
+            contextJson: {
+              executor_type: "Self",
+              value: 100,
+              p_success: 0.5,
+              cash_cost: 0,
+            },
             selectedImpactFrame: {
               expectedEconomicValueUsdBase: 50,
               estimatedCashCostUsdBase: 0,
@@ -1984,7 +2206,9 @@ describe("MCP server tool dispatch", () => {
             },
           }),
         });
-        mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+        mocks.computeTaskPriority.mockReturnValue(
+          makePriority({ priority: 50 }),
+        );
         const client = await setup("user-1", ALL_SCOPES);
         const result = await client.callTool({
           name: "createTask",
@@ -2016,7 +2240,7 @@ describe("MCP server tool dispatch", () => {
       it("accepts markdown 'Acceptance criteria' section in lieu of explicit array", async () => {
         // This is documented as the intended fallback in the createTask description.
         mocks.getTaskDetailData.mockResolvedValue({
-          task: makeOwnedTask({
+          task: makeCreatedTask({
             id: "created-task",
             contextJson: {
               executor_type: "Self",
@@ -2030,13 +2254,16 @@ describe("MCP server tool dispatch", () => {
             },
           }),
         });
-        mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+        mocks.computeTaskPriority.mockReturnValue(
+          makePriority({ priority: 50 }),
+        );
         const client = await setup("user-1", ALL_SCOPES);
         const result = await client.callTool({
           name: "createTask",
           arguments: {
             title: "markdown-only criteria",
-            description: "## Acceptance criteria\n- [ ] bullet one\n- [ ] bullet two\n",
+            description:
+              "## Acceptance criteria\n- [ ] bullet one\n- [ ] bullet two\n",
             category: "ENGINEERING",
             impactStatement: "y",
             hours: 1,
@@ -2057,7 +2284,7 @@ describe("MCP server tool dispatch", () => {
         // for updateTask paths. This test confirms a passed value
         // round-trips unchanged into the stored task contextJson.
         mocks.getTaskDetailData.mockResolvedValue({
-          task: makeOwnedTask({
+          task: makeCreatedTask({
             id: "created-task",
             contextJson: { executor_type: "Self", value: 100, p_success: 0.42 },
             selectedImpactFrame: {
@@ -2068,7 +2295,9 @@ describe("MCP server tool dispatch", () => {
             },
           }),
         });
-        mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 42 }));
+        mocks.computeTaskPriority.mockReturnValue(
+          makePriority({ priority: 42 }),
+        );
         const client = await setup("user-1", ALL_SCOPES);
         await client.callTool({
           name: "createTask",
@@ -2083,23 +2312,31 @@ describe("MCP server tool dispatch", () => {
             p_success: 0.42,
           },
         });
-        const ctx = (mocks.taskCreate.mock.calls[0]![0] as {
-          data: { contextJson?: { p_success?: number } };
-        }).data.contextJson;
+        const ctx = (
+          mocks.taskCreate.mock.calls[0]![0] as {
+            data: { contextJson?: { p_success?: number } };
+          }
+        ).data.contextJson;
         expect(ctx?.p_success).toBe(0.42);
       });
     });
 
     it("rejects public task creation for non-admin users even with tasks:admin", async () => {
-      const client = await setup("user-1", [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN]);
+      const client = await setup("user-1", [
+        McpScope.TASKS_PERSONAL,
+        McpScope.TASKS_ADMIN,
+      ]);
 
       const result = await client.callTool({
         name: "createTask",
         arguments: {
           title: "Public Earth task",
-          description: "A public task that should be rejected for non-admin users.",
+          description:
+            "A public task that should be rejected for non-admin users.",
           category: "ENGINEERING",
-          acceptanceCriteria: ["Public visibility is rejected for non-admin users"],
+          acceptanceCriteria: [
+            "Public visibility is rejected for non-admin users",
+          ],
           impactStatement: "Verifies the admin gate on public task creation.",
           hours: 1,
           value: 100,
@@ -2116,12 +2353,17 @@ describe("MCP server tool dispatch", () => {
 
     it("defaults organization-assigned tasks to public active visibility", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "created-task",
           assigneeOrganizationId: "org-foundation-1",
           assigneeOrganization: { name: "Test Foundation" },
           isPublic: true,
-          contextJson: { executor_type: "Self", value: 5000, p_success: 0.05, cash_cost: 0 },
+          contextJson: {
+            executor_type: "Self",
+            value: 5000,
+            p_success: 0.05,
+            cash_cost: 0,
+          },
           selectedImpactFrame: {
             expectedEconomicValueUsdBase: 250,
             estimatedCashCostUsdBase: 0,
@@ -2130,14 +2372,17 @@ describe("MCP server tool dispatch", () => {
           },
         }),
       });
-      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 500, realEv: 250 }));
+      mocks.computeTaskPriority.mockReturnValue(
+        makePriority({ priority: 500, realEv: 250 }),
+      );
 
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
       const result = await client.callTool({
         name: "createTask",
         arguments: {
           title: "Fund the campaign",
-          description: "Fund the campaign and tell the world the money did useful work.",
+          description:
+            "Fund the campaign and tell the world the money did useful work.",
           category: "GOVERNANCE",
           acceptanceCriteria: ["The grant has been sent"],
           impactStatement: "Public org tasks create accountability pressure.",
@@ -2149,7 +2394,9 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
       expect(data).toMatchObject({
         assigneeOrganizationId: "org-foundation-1",
         isPublic: true,
@@ -2164,12 +2411,17 @@ describe("MCP server tool dispatch", () => {
 
     it("allows explicit private visibility for organization-assigned tasks", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "created-task",
           assigneeOrganizationId: "org-foundation-1",
           assigneeOrganization: { name: "Test Foundation" },
           isPublic: false,
-          contextJson: { executor_type: "Self", value: 100, p_success: 0.5, cash_cost: 0 },
+          contextJson: {
+            executor_type: "Self",
+            value: 100,
+            p_success: 0.5,
+            cash_cost: 0,
+          },
           selectedImpactFrame: {
             expectedEconomicValueUsdBase: 50,
             estimatedCashCostUsdBase: 0,
@@ -2185,7 +2437,8 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Internal org task",
-          description: "An internal task assigned to an organization but not publicly visible.",
+          description:
+            "An internal task assigned to an organization but not publicly visible.",
           category: "GOVERNANCE",
           acceptanceCriteria: ["The internal task remains private"],
           impactStatement: "Some org work should not become public pressure.",
@@ -2198,7 +2451,9 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
       expect(data).toMatchObject({
         assigneeOrganizationId: "org-foundation-1",
         isPublic: false,
@@ -2211,15 +2466,21 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("rejects explicit PUBLIC visibility for non-admin users", async () => {
-      const client = await setup("user-1", [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN]);
+      const client = await setup("user-1", [
+        McpScope.TASKS_PERSONAL,
+        McpScope.TASKS_ADMIN,
+      ]);
 
       const result = await client.callTool({
         name: "createTask",
         arguments: {
           title: "Public Earth task",
-          description: "A public task that should be rejected for non-admin users.",
+          description:
+            "A public task that should be rejected for non-admin users.",
           category: "ENGINEERING",
-          acceptanceCriteria: ["Public visibility is rejected for non-admin users"],
+          acceptanceCriteria: [
+            "Public visibility is rejected for non-admin users",
+          ],
           impactStatement: "Verifies the admin gate on public task creation.",
           hours: 1,
           value: 100,
@@ -2236,9 +2497,11 @@ describe("MCP server tool dispatch", () => {
 
     it("createTask accepts personal task aliases and returns a numeric priority", async () => {
       const dueAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-      mocks.taskFindMany.mockResolvedValue([{ id: "blocker-1", isPublic: false, ownerUserId: "user-1" }]);
+      mocks.taskFindMany.mockResolvedValue([
+        { id: "blocker-1", isPublic: false, createdByUserId: "user-1" },
+      ]);
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "created-task",
           title: "Build product demo",
           estimatedEffortHours: 6,
@@ -2259,7 +2522,9 @@ describe("MCP server tool dispatch", () => {
           },
         }),
       });
-      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 7500, realEv: 45000 }));
+      mocks.computeTaskPriority.mockReturnValue(
+        makePriority({ priority: 7500, realEv: 45000 }),
+      );
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({
@@ -2311,7 +2576,12 @@ describe("MCP server tool dispatch", () => {
       );
       expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [expect.objectContaining({ fromTaskId: "blocker-1", toTaskId: "created-task" })],
+          data: [
+            expect.objectContaining({
+              fromTaskId: "blocker-1",
+              toTaskId: "created-task",
+            }),
+          ],
           skipDuplicates: true,
         }),
       );
@@ -2319,7 +2589,7 @@ describe("MCP server tool dispatch", () => {
 
     it("createTask copies markdown acceptance criteria into contextJson when the agent puts them in the description", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "created-task",
           contextJson: {
             executor_type: "Self",
@@ -2341,7 +2611,8 @@ describe("MCP server tool dispatch", () => {
         arguments: {
           title: "Add site inventory tools",
           category: "ENGINEERING",
-          impactStatement: "Lets agents discover and read site pages programmatically.",
+          impactStatement:
+            "Lets agents discover and read site pages programmatically.",
           description: [
             "## Problem",
             "",
@@ -2358,7 +2629,9 @@ describe("MCP server tool dispatch", () => {
         },
       });
 
-      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
       expect(data.contextJson).toMatchObject({
         acceptanceCriteria: [
           "The page inventory tool is discoverable",
@@ -2372,7 +2645,7 @@ describe("MCP server tool dispatch", () => {
       //   1. `parentTaskId: null` → "Unknown argument `parentTaskId`. Did you mean `parentTask`?"
       //   2. `sourceUrl: <anything>` → "Unknown argument `sourceUrl`" (no such column)
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "created-task",
           contextJson: {
             executor_type: "Self",
@@ -2396,9 +2669,12 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Without parent or assignee or sourceUrl column",
-          description: "Create a task with no parent, no assignee, and a sourceUrl that should be folded into contextJson.",
+          description:
+            "Create a task with no parent, no assignee, and a sourceUrl that should be folded into contextJson.",
           category: "ENGINEERING",
-          acceptanceCriteria: ["sourceUrl is folded into contextJson.sourceUrls"],
+          acceptanceCriteria: [
+            "sourceUrl is folded into contextJson.sourceUrls",
+          ],
           impactStatement: "Regression-test the prisma write shape.",
           hours: 1,
           value: 100,
@@ -2409,7 +2685,9 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(mocks.taskCreate).toHaveBeenCalledTimes(1);
-      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
       expect(data).not.toHaveProperty("parentTaskId");
       expect(data).not.toHaveProperty("assigneePersonId");
       expect(data).not.toHaveProperty("assigneeOrganizationId");
@@ -2422,13 +2700,18 @@ describe("MCP server tool dispatch", () => {
 
     it("createTask passes parentTaskId / assigneePersonId when supplied (the spread is conditional, not always-omit)", async () => {
       mocks.taskFindMany.mockResolvedValue([
-        { id: "parent-1", isPublic: false, ownerUserId: "user-1" },
+        { id: "parent-1", isPublic: false, createdByUserId: "user-1" },
       ]);
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "created-task",
           parentTaskId: "parent-1",
-          contextJson: { executor_type: "Self", value: 100, p_success: 0.5, cash_cost: 0 },
+          contextJson: {
+            executor_type: "Self",
+            value: 100,
+            p_success: 0.5,
+            cash_cost: 0,
+          },
           selectedImpactFrame: {
             expectedEconomicValueUsdBase: 50,
             estimatedCashCostUsdBase: 0,
@@ -2444,10 +2727,15 @@ describe("MCP server tool dispatch", () => {
         name: "createTask",
         arguments: {
           title: "Subtask with parent + assignee",
-          description: "A subtask attached to parent-1 and assigned to person-1.",
+          description:
+            "A subtask attached to parent-1 and assigned to person-1.",
           category: "ENGINEERING",
-          acceptanceCriteria: ["parentTaskId is set to parent-1", "assigneePersonId is set to person-1"],
-          impactStatement: "Verifies conditional-spread of FK fields in the create payload.",
+          acceptanceCriteria: [
+            "parentTaskId is set to parent-1",
+            "assigneePersonId is set to person-1",
+          ],
+          impactStatement:
+            "Verifies conditional-spread of FK fields in the create payload.",
           hours: 1,
           value: 100,
           p_success: 0.5,
@@ -2456,7 +2744,9 @@ describe("MCP server tool dispatch", () => {
         },
       });
 
-      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
       expect(data.parentTaskId).toBe("parent-1");
       expect(data.assigneePersonId).toBe("person-1");
     });
@@ -2464,9 +2754,9 @@ describe("MCP server tool dispatch", () => {
     it("updateTask replaces dependencies without losing retained soft-deleted edges", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({
-          task: makeOwnedTask({
+          task: makeCreatedTask({
             id: "task-1",
-            ownerUserId: "user-1",
+            createdByUserId: "user-1",
             contextJson: { executor_type: "Self" },
             selectedImpactFrame: {
               expectedEconomicValueUsdBase: 100,
@@ -2476,9 +2766,18 @@ describe("MCP server tool dispatch", () => {
             },
           }),
         })
-        .mockResolvedValueOnce({ task: makeOwnedTask({ id: "task-1", contextJson: { executor_type: "Self" } }) });
-      mocks.taskFindMany.mockResolvedValue([{ id: "new-blocker", isPublic: false, ownerUserId: "user-1" }]);
-      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 100 }));
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "task-1",
+            contextJson: { executor_type: "Self" },
+          }),
+        });
+      mocks.taskFindMany.mockResolvedValue([
+        { id: "new-blocker", isPublic: false, createdByUserId: "user-1" },
+      ]);
+      mocks.computeTaskPriority.mockReturnValue(
+        makePriority({ priority: 100 }),
+      );
 
       const client = await setup("user-1", ALL_SCOPES);
       await client.callTool({
@@ -2506,7 +2805,12 @@ describe("MCP server tool dispatch", () => {
       );
       expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [expect.objectContaining({ fromTaskId: "new-blocker", toTaskId: "task-1" })],
+          data: [
+            expect.objectContaining({
+              fromTaskId: "new-blocker",
+              toTaskId: "task-1",
+            }),
+          ],
           skipDuplicates: true,
         }),
       );
@@ -2514,8 +2818,8 @@ describe("MCP server tool dispatch", () => {
 
     it("addDependency stores downstream lift metadata on the edge", async () => {
       mocks.taskFindMany.mockResolvedValue([
-        { id: "blocked-task", isPublic: false, ownerUserId: "user-1" },
-        { id: "blocker-task", isPublic: false, ownerUserId: "user-1" },
+        { id: "blocked-task", isPublic: false, createdByUserId: "user-1" },
+        { id: "blocker-task", isPublic: false, createdByUserId: "user-1" },
       ]);
 
       const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
@@ -2526,7 +2830,9 @@ describe("MCP server tool dispatch", () => {
           blockerTaskId: "blocker-task",
           increases_p_success: 0.35,
           time_delta_days: 14,
-          assumptions: ["Drafting the evidence memo raises grant odds from 20% to 55%."],
+          assumptions: [
+            "Drafting the evidence memo raises grant odds from 20% to 55%.",
+          ],
           label: "Raises grant odds",
           calculationVersion: "edge-lift-v1",
         },
@@ -2547,7 +2853,9 @@ describe("MCP server tool dispatch", () => {
             probabilityDeltaBase: 0.35,
             timeDeltaDaysBase: 14,
             assumptionsJson: {
-              assumptions: ["Drafting the evidence memo raises grant odds from 20% to 55%."],
+              assumptions: [
+                "Drafting the evidence memo raises grant odds from 20% to 55%.",
+              ],
             },
             calculationVersion: "edge-lift-v1",
             notes: "Raises grant odds",
@@ -2640,7 +2948,10 @@ describe("MCP server tool dispatch", () => {
         where: { id: "user-1" },
         select: { personId: true },
       });
-      expect(body.user).toMatchObject({ id: "user-1", email: "test@example.com" });
+      expect(body.user).toMatchObject({
+        id: "user-1",
+        email: "test@example.com",
+      });
       expect(mocks.getProfileIdentityData).toHaveBeenCalledWith("user-1");
     });
 
@@ -2749,7 +3060,7 @@ describe("MCP server tool dispatch", () => {
     it("rejects non-signer task IDs (taskKey doesn't match the signer pattern)", async () => {
       mocks.taskFindUnique.mockResolvedValue({
         id: "some-other-task",
-        taskKey: "owned:1",
+        taskKey: "created:1",
         roleTitle: null,
         assigneePerson: null,
         assigneeOrganization: null,
@@ -2795,14 +3106,16 @@ describe("MCP server tool dispatch", () => {
         taskKey: "program:one-percent-treaty:reminder:va:user-1",
       });
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({
+        task: makeCreatedTask({
           id: "reminder-task-1",
           title: "Remind Raffaella Petrini to sign the 1% Treaty",
-          ownerUserId: "user-1",
+          createdByUserId: "user-1",
           parentTaskId: "1-pct-treaty-signer-va",
         }),
       });
-      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 999 }));
+      mocks.computeTaskPriority.mockReturnValue(
+        makePriority({ priority: 999 }),
+      );
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({
@@ -2824,8 +3137,8 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.upsertSignerReminderTask).toHaveBeenCalledTimes(1);
       const helperCall = mocks.upsertSignerReminderTask.mock.calls[0]![0];
       expect(helperCall).toMatchObject({
-        ownerPersonId: "person-1",
-        ownerUserId: "user-1",
+        creatorPersonId: "person-1",
+        creatorUserId: "user-1",
         referralCode: "MIKE-CFCFHP5W",
         signer: {
           countryCode: "va",
@@ -2846,7 +3159,10 @@ describe("MCP server tool dispatch", () => {
         taskKey: "program:one-percent-treaty:reminder:va:user-1",
       });
       mocks.getTaskDetailData.mockResolvedValue({
-        task: makeOwnedTask({ id: "reminder-task-1", ownerUserId: "user-1" }),
+        task: makeCreatedTask({
+          id: "reminder-task-1",
+          createdByUserId: "user-1",
+        }),
       });
       mocks.computeTaskPriority.mockReturnValue(makePriority());
 
@@ -2905,43 +3221,43 @@ describe("MCP server tool dispatch", () => {
       const parentKey = `program:one-percent-treaty:user:${userId}`;
       return [
         // Parent (huge realEv → always sorts first)
-        makeOwnedTask({
+        makeCreatedTask({
           id: `parent-${userId}`,
           title: "Get 4 billion people to vote on the 1% Treaty",
           taskKey: parentKey,
-          ownerUserId: userId,
+          createdByUserId: userId,
           parentTaskId: "1-pct-treaty",
         }),
         // Share referral URL (highest among subtasks)
-        makeOwnedTask({
+        makeCreatedTask({
           id: `share-${userId}`,
           title: "Share your 1% Treaty referral URL",
           taskKey: `${parentKey}:shareReferralUrl`,
-          ownerUserId: userId,
+          createdByUserId: userId,
           parentTaskId: `parent-${userId}`,
         }),
         // Assign first human
-        makeOwnedTask({
+        makeCreatedTask({
           id: `assign1-${userId}`,
           title: "Give your first human the 1% Treaty voting task",
           taskKey: `${parentKey}:assignFirstHuman`,
-          ownerUserId: userId,
+          createdByUserId: userId,
           parentTaskId: `parent-${userId}`,
         }),
         // Assign second human
-        makeOwnedTask({
+        makeCreatedTask({
           id: `assign2-${userId}`,
           title: "Give your second human the 1% Treaty voting task",
           taskKey: `${parentKey}:assignSecondHuman`,
-          ownerUserId: userId,
+          createdByUserId: userId,
           parentTaskId: `parent-${userId}`,
         }),
         // Humanity Management Training meta-task
-        makeOwnedTask({
+        makeCreatedTask({
           id: `training-${userId}`,
           title: "Humanity Management Training",
           taskKey: `${parentKey}:completeTraining`,
-          ownerUserId: userId,
+          createdByUserId: userId,
           parentTaskId: `parent-${userId}`,
         }),
       ];
@@ -2958,25 +3274,38 @@ describe("MCP server tool dispatch", () => {
       mocks.computeTaskPriority.mockImplementation(
         (input: { id: string; taskKey?: string }) => {
           const key = input.taskKey ?? "";
-          if (key.endsWith(":completeTraining")) return makePriority({ priority: 1, realEv: 0 });
-          if (key.endsWith(":shareReferralUrl")) return makePriority({ priority: 5_000, realEv: 100 });
-          if (key.endsWith(":assignFirstHuman")) return makePriority({ priority: 4_000, realEv: 100 });
-          if (key.endsWith(":assignSecondHuman")) return makePriority({ priority: 4_000, realEv: 100 });
+          if (key.endsWith(":completeTraining"))
+            return makePriority({ priority: 1, realEv: 0 });
+          if (key.endsWith(":shareReferralUrl"))
+            return makePriority({ priority: 5_000, realEv: 100 });
+          if (key.endsWith(":assignFirstHuman"))
+            return makePriority({ priority: 4_000, realEv: 100 });
+          if (key.endsWith(":assignSecondHuman"))
+            return makePriority({ priority: 4_000, realEv: 100 });
           // Parent treaty task: enormous expected value
           return makePriority({ priority: 9e14, realEv: 4.5e14 });
         },
       );
 
       const client = await setup(userId, ALL_SCOPES);
-      const result = await client.callTool({ name: "getMyQueue", arguments: { maxResults: 10 } });
+      const result = await client.callTool({
+        name: "getMyQueue",
+        arguments: { maxResults: 10 },
+      });
 
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
-      const queue = body.queue as Array<{ id: string; taskKey: string; title: string }>;
+      const queue = body.queue as Array<{
+        id: string;
+        taskKey: string;
+        title: string;
+      }>;
 
       expect(queue).toHaveLength(5);
       // Parent always at top because of its priority
-      expect(queue[0]?.taskKey).toBe(`program:one-percent-treaty:user:${userId}`);
+      expect(queue[0]?.taskKey).toBe(
+        `program:one-percent-treaty:user:${userId}`,
+      );
       // Training meta-task always at the bottom (auto-completes via the others)
       expect(queue[queue.length - 1]?.taskKey).toBe(
         `program:one-percent-treaty:user:${userId}:completeTraining`,
@@ -2998,21 +3327,26 @@ describe("MCP server tool dispatch", () => {
       // returns only what's still active (parent + training meta until the
       // training auto-verifies).
       const remainingActive = tasks.filter(
-        (t) => !t.taskKey.includes(":shareReferralUrl") &&
-               !t.taskKey.includes(":assignFirstHuman") &&
-               !t.taskKey.includes(":assignSecondHuman"),
+        (t) =>
+          !t.taskKey.includes(":shareReferralUrl") &&
+          !t.taskKey.includes(":assignFirstHuman") &&
+          !t.taskKey.includes(":assignSecondHuman"),
       );
       mocks.listTasks.mockResolvedValue(remainingActive);
       mocks.isTaskBlocked.mockReturnValue(false);
       mocks.computeTaskPriority.mockImplementation(
         (input: { id: string; taskKey?: string }) => {
-          if (input.taskKey?.endsWith(":completeTraining")) return makePriority({ priority: 1 });
+          if (input.taskKey?.endsWith(":completeTraining"))
+            return makePriority({ priority: 1 });
           return makePriority({ priority: 9e14 });
         },
       );
 
       const client = await setup(userId, ALL_SCOPES);
-      const result = await client.callTool({ name: "getMyQueue", arguments: {} });
+      const result = await client.callTool({
+        name: "getMyQueue",
+        arguments: {},
+      });
 
       const body = parseToolBody(result);
       const queue = body.queue as Array<{ id: string; taskKey: string }>;
@@ -3028,11 +3362,11 @@ describe("MCP server tool dispatch", () => {
     it("dynamic invitation tasks rank below the auto-spawned subtasks but above completed ones", async () => {
       const userId = "fresh-user-3";
       const baseline = makeAutoSpawnedTasks(userId);
-      const inviteTask = makeOwnedTask({
+      const inviteTask = makeCreatedTask({
         id: `invite-${userId}-alice`,
         title: "alice@example.com: vote on the 1% Treaty",
         taskKey: `program:one-percent-treaty:referral-invitation:invite-token-alice`,
-        ownerUserId: userId,
+        createdByUserId: userId,
         parentTaskId: `parent-${userId}`,
       });
       mocks.listTasks.mockResolvedValue([...baseline, inviteTask]);
@@ -3040,27 +3374,40 @@ describe("MCP server tool dispatch", () => {
       mocks.computeTaskPriority.mockImplementation(
         (input: { id: string; taskKey?: string }) => {
           const key = input.taskKey ?? "";
-          if (key.startsWith("program:one-percent-treaty:referral-invitation:")) {
+          if (
+            key.startsWith("program:one-percent-treaty:referral-invitation:")
+          ) {
             return makePriority({ priority: 200 });
           }
-          if (key.endsWith(":completeTraining")) return makePriority({ priority: 1 });
-          if (key.endsWith(":shareReferralUrl")) return makePriority({ priority: 5_000 });
-          if (key.endsWith(":assignFirstHuman")) return makePriority({ priority: 4_000 });
-          if (key.endsWith(":assignSecondHuman")) return makePriority({ priority: 4_000 });
+          if (key.endsWith(":completeTraining"))
+            return makePriority({ priority: 1 });
+          if (key.endsWith(":shareReferralUrl"))
+            return makePriority({ priority: 5_000 });
+          if (key.endsWith(":assignFirstHuman"))
+            return makePriority({ priority: 4_000 });
+          if (key.endsWith(":assignSecondHuman"))
+            return makePriority({ priority: 4_000 });
           return makePriority({ priority: 9e14 });
         },
       );
 
       const client = await setup(userId, ALL_SCOPES);
-      const result = await client.callTool({ name: "getMyQueue", arguments: { maxResults: 10 } });
+      const result = await client.callTool({
+        name: "getMyQueue",
+        arguments: { maxResults: 10 },
+      });
 
       const body = parseToolBody(result);
       const queue = body.queue as Array<{ taskKey: string }>;
       const inviteIndex = queue.findIndex((t) =>
         t.taskKey.startsWith("program:one-percent-treaty:referral-invitation:"),
       );
-      const trainingIndex = queue.findIndex((t) => t.taskKey.endsWith(":completeTraining"));
-      const assignIndex = queue.findIndex((t) => t.taskKey.endsWith(":assignFirstHuman"));
+      const trainingIndex = queue.findIndex((t) =>
+        t.taskKey.endsWith(":completeTraining"),
+      );
+      const assignIndex = queue.findIndex((t) =>
+        t.taskKey.endsWith(":assignFirstHuman"),
+      );
       // Invite ranks below assignFirstHuman (lower priority value) but above training meta
       expect(inviteIndex).toBeGreaterThan(assignIndex);
       expect(inviteIndex).toBeLessThan(trainingIndex);
@@ -3069,11 +3416,11 @@ describe("MCP server tool dispatch", () => {
     it("a signer-reminder subtask appears in the citizen's queue alongside the onboarding tasks", async () => {
       const userId = "fresh-user-4";
       const baseline = makeAutoSpawnedTasks(userId);
-      const reminderTask = makeOwnedTask({
+      const reminderTask = makeCreatedTask({
         id: `reminder-${userId}-va`,
         title: "Remind Raffaella Petrini to sign the 1% Treaty",
         taskKey: `program:one-percent-treaty:reminder:va:${userId}`,
-        ownerUserId: userId,
+        createdByUserId: userId,
         parentTaskId: "1-pct-treaty-signer-va",
       });
       mocks.listTasks.mockResolvedValue([...baseline, reminderTask]);
@@ -3084,16 +3431,23 @@ describe("MCP server tool dispatch", () => {
           if (key.startsWith("program:one-percent-treaty:reminder:")) {
             return makePriority({ priority: 50_000 });
           }
-          if (key.endsWith(":completeTraining")) return makePriority({ priority: 1 });
-          if (key.endsWith(":shareReferralUrl")) return makePriority({ priority: 5_000 });
-          if (key.endsWith(":assignFirstHuman")) return makePriority({ priority: 4_000 });
-          if (key.endsWith(":assignSecondHuman")) return makePriority({ priority: 4_000 });
+          if (key.endsWith(":completeTraining"))
+            return makePriority({ priority: 1 });
+          if (key.endsWith(":shareReferralUrl"))
+            return makePriority({ priority: 5_000 });
+          if (key.endsWith(":assignFirstHuman"))
+            return makePriority({ priority: 4_000 });
+          if (key.endsWith(":assignSecondHuman"))
+            return makePriority({ priority: 4_000 });
           return makePriority({ priority: 9e14 });
         },
       );
 
       const client = await setup(userId, ALL_SCOPES);
-      const result = await client.callTool({ name: "getMyQueue", arguments: { maxResults: 10 } });
+      const result = await client.callTool({
+        name: "getMyQueue",
+        arguments: { maxResults: 10 },
+      });
 
       const body = parseToolBody(result);
       const queue = body.queue as Array<{ id: string; taskKey: string }>;
@@ -3114,7 +3468,9 @@ describe("MCP server tool dispatch", () => {
       const nonAdmin = await setup("user-1", ALL_SCOPES);
       const admin = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
 
-      const nonAdminNames = (await nonAdmin.listTools()).tools.map((t) => t.name);
+      const nonAdminNames = (await nonAdmin.listTools()).tools.map(
+        (t) => t.name,
+      );
       const adminNames = (await admin.listTools()).tools.map((t) => t.name);
 
       expect(nonAdminNames).not.toContain("createTaskTrigger");
@@ -3185,11 +3541,15 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBeFalsy();
       expect(mocks.fireTaskTrigger).toHaveBeenCalledTimes(1);
-      const [triggerKey, context, options] = mocks.fireTaskTrigger.mock.calls[0]!;
+      const [triggerKey, context, options] =
+        mocks.fireTaskTrigger.mock.calls[0]!;
       expect(triggerKey).toBe("demo:flow");
       expect(context).toEqual({ user: { id: "abc" } });
       expect(options).toEqual({ dryRun: true, actorUserId: "user-1" });
-      const body = parseToolBody(result) as { spawnedTaskKeys?: string[]; reason?: string };
+      const body = parseToolBody(result) as {
+        spawnedTaskKeys?: string[];
+        reason?: string;
+      };
       expect(body.spawnedTaskKeys).toEqual(["demo:abc"]);
       expect(body.reason).toBe("dryRun");
     });
@@ -3207,7 +3567,9 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("non-admin callers may only use dryRun:true");
+      expect(String(body.error)).toContain(
+        "non-admin callers may only use dryRun:true",
+      );
     });
 
     it("fireTaskTrigger requires triggerKey", async () => {

@@ -28,7 +28,7 @@ const treatyMarkdownComponents = {
   a: ({ href, children }: { href?: string; children?: ReactNode }) => {
     const target = href ?? "#";
     const linkClass =
-      "font-black text-[#5e2e1f] underline decoration-[#8e6b48]/60 decoration-2 underline-offset-4 transition-colors hover:text-[var(--treaty-ink-soft)] hover:decoration-[var(--treaty-ink-soft)]";
+      "font-black text-black underline decoration-black decoration-2 underline-offset-4 transition-colors hover:text-black/70";
     if (target.startsWith("http")) {
       return (
         <a href={target} target="_blank" rel="noreferrer" className={linkClass}>
@@ -43,22 +43,22 @@ const treatyMarkdownComponents = {
     );
   },
   blockquote: ({ children }: { children?: ReactNode }) => (
-    <blockquote className="border-l-4 border-[#8e6b48] bg-[#efe4cf]/70 px-5 py-4 text-left text-base font-bold text-[#3a2a19] shadow-[6px_6px_0_rgba(58,42,25,0.08)]">
+    <blockquote className="border-l-4 border-black bg-white px-5 py-4 text-left text-base font-bold text-black">
       {children}
     </blockquote>
   ),
   ul: ({ children }: { children?: ReactNode }) => (
-    <ul className="list-disc space-y-3 pl-6 text-left text-base font-bold text-[#3a2a19] sm:text-lg">
+    <ul className="list-disc space-y-3 pl-6 text-left text-base font-bold text-black sm:text-lg">
       {children}
     </ul>
   ),
   ol: ({ children }: { children?: ReactNode }) => (
-    <ol className="list-decimal space-y-3 pl-6 text-left text-base font-bold text-[#3a2a19] sm:text-lg">
+    <ol className="list-decimal space-y-3 pl-6 text-left text-base font-bold text-black sm:text-lg">
       {children}
     </ol>
   ),
   li: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
-  hr: () => <hr className="border-t-2 border-[#8e6b48]/40" />,
+  hr: () => <hr className="border-t-2 border-black/40" />,
 };
 
 interface TreatySectionProps {

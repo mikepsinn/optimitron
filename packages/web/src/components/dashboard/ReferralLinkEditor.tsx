@@ -5,6 +5,7 @@ import { Check, Copy, Save } from "lucide-react"
 import { Card } from "@/components/retroui/Card"
 import { Button } from "@/components/retroui/Button"
 import { Input } from "@/components/retroui/Input"
+import { REFERRAL_SHARE_PROMPT } from "@/lib/messaging"
 import { buildReferralUrl } from "@/lib/url"
 import { cn } from "@/lib/utils"
 import type { DashboardUser } from "@/types/dashboard"
@@ -16,7 +17,7 @@ interface ReferralLinkEditorProps {
   baseUrl: string
   onUserChange: (user: DashboardUser) => void
   onRefresh?: () => void
-  title?: string
+  title?: string | null
   description?: string
   variant?: ReferralLinkEditorVariant
   className?: string
@@ -61,8 +62,8 @@ export function ReferralLinkEditorCard({
 }: ReferralLinkEditorCardProps) {
   const defaultCardClassName =
     variant === "treaty"
-      ? "border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-5 text-[var(--treaty-ink)] shadow-none sm:p-6"
-      : "border-4 border-primary bg-background p-5 shadow-sm sm:p-6"
+      ? "border border-black bg-white p-5 text-black shadow-none sm:p-6"
+      : "border border-black bg-white p-5 text-black shadow-none sm:p-6"
 
   return (
     <Card className={cn(defaultCardClassName, cardClassName)}>
@@ -76,8 +77,8 @@ export function ReferralLinkEditor({
   baseUrl,
   onUserChange,
   onRefresh,
-  title = "Share your link",
-  description,
+  title = null,
+  description = REFERRAL_SHARE_PROMPT,
   variant = "default",
   className,
 }: ReferralLinkEditorProps) {
@@ -95,6 +96,7 @@ export function ReferralLinkEditor({
   const savedUrl = buildReferralUrl(currentIdentifier, base)
   const linkPrefix = `${base}/vote/`
   const isTreaty = variant === "treaty"
+  const hasHeaderCopy = Boolean(title || description)
 
   useEffect(() => {
     setDraft(currentIdentifier)
@@ -192,35 +194,37 @@ export function ReferralLinkEditor({
 
   return (
     <div className={cn("space-y-4", className)}>
-      <div className="space-y-1">
-        <h3 className="text-lg font-black uppercase leading-tight">
-          {title}
-        </h3>
-        {description ? (
-          <p
-            className={cn(
-              "text-sm font-bold leading-6",
-              isTreaty ? "text-[var(--treaty-ink-soft)]" : "text-muted-foreground",
-            )}
-          >
-            {description}
-          </p>
-        ) : null}
-      </div>
+      {hasHeaderCopy ? (
+        <div className="space-y-1">
+          {title ? (
+            <h3 className="text-lg font-black uppercase leading-tight">
+              {title}
+            </h3>
+          ) : null}
+          {description ? (
+            <p
+              className={cn(
+                "text-sm font-bold leading-6",
+                isTreaty ? "text-black" : "text-muted-foreground",
+              )}
+            >
+              {description}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <div
           className={cn(
             "flex min-w-0 flex-1 items-center overflow-hidden bg-background",
-            isTreaty
-              ? "border border-[var(--treaty-ink)]"
-              : "border-4 border-primary",
+            "border border-black",
           )}
         >
           <span
             className={cn(
               "hidden min-w-0 shrink truncate px-3 py-3 text-sm font-black sm:block",
-              isTreaty ? "text-[var(--treaty-ink-soft)]" : "text-muted-foreground",
+              isTreaty ? "text-black" : "text-muted-foreground",
             )}
           >
             {linkPrefix}
@@ -228,7 +232,7 @@ export function ReferralLinkEditor({
           <span
             className={cn(
               "shrink-0 px-3 py-3 text-sm font-black sm:hidden",
-              isTreaty ? "text-[var(--treaty-ink-soft)]" : "text-muted-foreground",
+              isTreaty ? "text-black" : "text-muted-foreground",
             )}
           >
             /vote/
@@ -262,9 +266,7 @@ export function ReferralLinkEditor({
             }}
             className={cn(
               "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
-              isTreaty
-                ? "border border-[var(--treaty-ink)] text-[var(--treaty-ink)] hover:bg-[#efe4cf]"
-                : "border-4 border-primary",
+              "border border-black bg-white text-black hover:bg-black hover:text-white",
             )}
           >
             <Save className="h-4 w-4 stroke-[2.5px]" />
@@ -280,9 +282,7 @@ export function ReferralLinkEditor({
           disabled={saving}
           className={cn(
             "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
-            isTreaty
-              ? "border border-[var(--treaty-ink)] bg-[var(--treaty-ink)] text-[#fffaf0] hover:bg-[#3a2a19]"
-              : "border-4 border-primary bg-brutal-pink text-brutal-pink-foreground",
+            "border border-black bg-black text-white hover:bg-white hover:text-black",
           )}
         >
           {copied ? (
