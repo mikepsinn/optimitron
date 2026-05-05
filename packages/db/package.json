@@ -21,6 +21,7 @@
     "test:integration": "tsx src/run-local-db-tests.ts",
     "test:watch": "vitest",
     "db:cli": "tsx src/db-cli.ts",
+    "db:test-data": "tsx src/cleanup-test-data.ts",
     "audit:schema-usage": "tsx src/schema-usage-audit.ts",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate --schema prisma/schema.prisma",
