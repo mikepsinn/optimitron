@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { getSiteMetadata } from "@/lib/metadata";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
@@ -65,7 +66,9 @@ export default async function EndorsePage() {
           {content.endorse.title}
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-base font-bold text-muted-foreground">
-          {content.endorse.description}
+          Have your organization publicly sign the 1% Treaty and join the{" "}
+          {site.organizationName}. No donation required. No candidate
+          endorsement. Just one official position: <TreatyTradeThesis />.
         </p>
       </header>
 
