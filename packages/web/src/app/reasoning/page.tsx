@@ -65,28 +65,28 @@ export default async function ReasoningPage({
 
   if (!prepared) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white p-6 text-black">
-        <div className="max-w-xl border border-black p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-neutral-600">
+      <div className="flex min-h-screen items-center justify-center bg-background p-6 text-foreground">
+        <div className="max-w-xl border-2 border-foreground p-6">
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Not live yet
           </p>
-          <h1 className="mt-3 text-3xl font-semibold">
+          <h1 className="mt-3 text-3xl font-black uppercase">
             This persuasion flow is still loading.
           </h1>
-          <p className="mt-4 text-base leading-7 text-neutral-700">
+          <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
             Vote on the treaty now, then use your share link to bring in the
             next human.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href={ROUTES.vote}
-              className="border border-black bg-black px-4 py-2 text-sm font-semibold text-white"
+              className="border-2 border-foreground bg-foreground px-4 py-2 text-sm font-bold text-background"
             >
               Vote
             </Link>
             <Link
               href={ROUTES.dashboard}
-              className="border border-black px-4 py-2 text-sm font-semibold"
+              className="border-2 border-foreground px-4 py-2 text-sm font-bold"
             >
               Share
             </Link>

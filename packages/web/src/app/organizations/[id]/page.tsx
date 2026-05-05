@@ -63,13 +63,14 @@ export default async function OrganizationPage({
 
   const referralIdentifier = user.person?.handle ?? user.referralCode ?? null;
   const organizationSurveyUrl = buildOrganizationSurveyUrl(org.slug);
-  const surveyUrl = buildOrganizationSurveyUrl(org.slug, {
+  const memberSurveyUrl = buildOrganizationSurveyUrl(org.slug, {
     referralCode: referralIdentifier,
   });
+  const embedSurveyUrl = organizationSurveyUrl;
   const iframeTitle = `${org.name} Trial Abundance Survey`;
   const escapedIframeTitle = iframeTitle.replaceAll('"', "&quot;");
-  const iframeCode = `<iframe src="${surveyUrl}" title="${escapedIframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
-  const buttonCode = `<a href="${surveyUrl}" style="display:inline-block;border:1px solid #000;padding:12px 16px;color:#000;text-decoration:none;font-weight:700;">Take the Trial Abundance Survey</a>`;
+  const iframeCode = `<iframe src="${embedSurveyUrl}" title="${escapedIframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
+  const buttonCode = `<a href="${embedSurveyUrl}" style="display:inline-block;border:1px solid #000;padding:12px 16px;color:#000;text-decoration:none;font-weight:700;">Take the Trial Abundance Survey</a>`;
   const emailSubject = "Two questions about clinical trial funding";
   const emailBody = `Subject: ${emailSubject}
 
@@ -77,7 +78,7 @@ Hi,
 
 Can you take 30 seconds to answer two questions about clinical trial funding?
 
-${surveyUrl}
+${memberSurveyUrl}
 
 Responses from this link are credited to ${org.name}.`;
 
@@ -160,10 +161,10 @@ Responses from this link are credited to ${org.name}.`;
                     Member link
                   </p>
                   <a
-                    href={surveyUrl}
+                    href={memberSurveyUrl}
                     className="break-all text-sm font-bold underline"
                   >
-                    {surveyUrl}
+                    {memberSurveyUrl}
                   </a>
                 </div>
                 <div>
@@ -213,7 +214,7 @@ Responses from this link are credited to ${org.name}.`;
                   Preview
                 </p>
                 <iframe
-                  src={surveyUrl}
+                  src={embedSurveyUrl}
                   title={iframeTitle}
                   className="h-[520px] w-full border-2 border-foreground"
                 />
