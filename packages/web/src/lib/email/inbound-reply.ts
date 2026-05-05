@@ -2,7 +2,7 @@
  * Inbound email reply → TaskComment processor.
  *
  * Wired by `/api/webhooks/resend-inbound` (or equivalent route). Decodes the
- * `reply+{taskId}@reply.warondisease.org` address back to a taskId, strips
+ * `reply+{taskId}@{REPLY_EMAIL_DOMAIN}` address back to a taskId, strips
  * quoted prior messages from the body, authenticates the sender by matching
  * email to a known user, Person, Organization, or endpoint on the task, and
  * creates a TaskComment + TaskCommunication record.
@@ -28,7 +28,7 @@ import {
 export interface InboundEmailEvent {
   /// Sender as the provider parsed it. May be `Display Name <addr@host>`.
   from: string;
-  /// Recipient — should match `reply+{taskId}@reply.warondisease.org`.
+  /// Recipient — should match `reply+{taskId}@{REPLY_EMAIL_DOMAIN}`.
   to: string;
   subject: string;
   /// Plain-text body (preferred). Quoted prior messages are stripped here.
@@ -82,7 +82,9 @@ export function stripQuotedReply(body: string): string {
     }
   }
 
-  const lines = text.split("\n").filter((line) => !line.trimStart().startsWith(">"));
+  const lines = text
+    .split("\n")
+    .filter((line) => !line.trimStart().startsWith(">"));
   return lines.join("\n").trimEnd();
 }
 
@@ -109,7 +111,10 @@ export async function processInboundReply(
 ): Promise<ProcessInboundReplyResult> {
   const parsed = parseReplyAddress(event.to);
   if (!parsed) {
-    return { status: "skipped", reason: "to-address did not match reply pattern" };
+    return {
+      status: "skipped",
+      reason: "to-address did not match reply pattern",
+    };
   }
   const taskId = parsed.taskId;
 
@@ -163,9 +168,7 @@ export async function processInboundReply(
 
   if (senderEmail) {
     const creatorEmail = task.createdByUser?.email?.toLowerCase() ?? null;
-    if (
-      creatorEmail === senderEmail
-    ) {
+    if (creatorEmail === senderEmail) {
       authorUserId = task.createdByUser?.id ?? task.createdByUserId;
       isAuthorizedSender = true;
     } else if (

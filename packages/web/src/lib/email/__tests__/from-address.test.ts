@@ -21,14 +21,18 @@ describe("parseEmailFromHeader", () => {
   });
 
   it("strips RFC 5322 quoted display names", () => {
-    expect(parseEmailFromHeader('"Wishonia, PMO" <hello@example.com>')).toEqual({
-      address: "hello@example.com",
-      displayName: "Wishonia, PMO",
-    });
+    expect(parseEmailFromHeader('"Wishonia, PMO" <hello@example.com>')).toEqual(
+      {
+        address: "hello@example.com",
+        displayName: "Wishonia, PMO",
+      },
+    );
   });
 
   it("trims whitespace around address and display name", () => {
-    expect(parseEmailFromHeader("  Wishonia   <  hello@example.com  >  ")).toEqual({
+    expect(
+      parseEmailFromHeader("  Wishonia   <  hello@example.com  >  "),
+    ).toEqual({
       address: "hello@example.com",
       displayName: "Wishonia",
     });
@@ -47,8 +51,12 @@ describe("parseEmailFromHeader", () => {
   });
 
   it("returns null for malformed bare header-like input", () => {
-    expect(parseEmailFromHeader('"Wishonia" <hello@example.com> extra')).toBeNull();
-    expect(parseEmailFromHeader("hello@example.com\r\nBcc: bad@example.com")).toBeNull();
+    expect(
+      parseEmailFromHeader('"Wishonia" <hello@example.com> extra'),
+    ).toBeNull();
+    expect(
+      parseEmailFromHeader("hello@example.com\r\nBcc: bad@example.com"),
+    ).toBeNull();
   });
 
   it("returns null display name when only an angle-bracketed address is given", () => {
@@ -84,9 +92,12 @@ describe("formatEmailFromHeader", () => {
   });
 
   it("sanitizes parsed display names before formatting", () => {
-    expect(formatEmailFromHeader('"Wishonia\r\nTeam" <hello@example.com>', "Wishonia")).toBe(
-      "WishoniaTeam <hello@example.com>",
-    );
+    expect(
+      formatEmailFromHeader(
+        '"Wishonia\r\nTeam" <hello@example.com>',
+        "Wishonia",
+      ),
+    ).toBe("WishoniaTeam <hello@example.com>");
   });
 
   it("falls back when the parsed display name is empty after sanitizing", () => {
@@ -95,7 +106,9 @@ describe("formatEmailFromHeader", () => {
     );
   });
 
-  it("returns an empty string for malformed input", () => {
-    expect(formatEmailFromHeader("not-an-email", "Wishonia")).toBe("");
+  it("falls back to the system sender for malformed input", () => {
+    expect(formatEmailFromHeader("not-an-email", "Wishonia")).toBe(
+      "Earth Optimization Services <hello@updates.warondisease.org>",
+    );
   });
 });

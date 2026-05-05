@@ -5,6 +5,10 @@ import {
   NUCLEAR_WINTER_WARHEAD_THRESHOLD,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters";
+import {
+  WAR_ON_DISEASE_CANONICAL_DOMAIN,
+  WAR_ON_DISEASE_CANONICAL_ORIGIN,
+} from "@/lib/domains";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
@@ -60,6 +64,12 @@ const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
 
 export const OPTIMITRON_CANONICAL_ORIGIN = "https://optimitron.com";
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
+export {
+  WAR_ON_DISEASE_CANONICAL_DOMAIN,
+  WAR_ON_DISEASE_CANONICAL_ORIGIN,
+  WAR_ON_DISEASE_REPLY_DOMAIN,
+  WAR_ON_DISEASE_UPDATES_DOMAIN,
+} from "@/lib/domains";
 export const SITE_VARIANT_OVERRIDE_COOKIE = "optimitron_site_key";
 export const SITE_VARIANT_OVERRIDE_QUERY_PARAM = "site";
 
@@ -975,8 +985,12 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   key: "warOnDisease",
   chromeVariant: "referendum",
   userFraming: "manager",
-  canonicalOrigin: "https://warondisease.org",
-  domains: ["warondisease.org", "www.warondisease.org", "warondisease.local"],
+  canonicalOrigin: WAR_ON_DISEASE_CANONICAL_ORIGIN,
+  domains: [
+    WAR_ON_DISEASE_CANONICAL_DOMAIN,
+    `www.${WAR_ON_DISEASE_CANONICAL_DOMAIN}`,
+    "warondisease.local",
+  ],
   name: "War on Disease",
   shortName: "War on Disease",
   alternateSiteNames: [

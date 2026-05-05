@@ -5,7 +5,6 @@ import {
   TaskCommunicationAudience,
   TaskCommunicationChannel,
   TaskCommunicationPurpose,
-  TaskCommunicationStatus,
   TaskStatus,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
@@ -14,61 +13,35 @@ import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { checkTaskCommunicationCooldown } from "@/lib/tasks/task-communications.server";
 import {
+  getAppBaseUrl,
+  getTaskCompletionUrl,
+  getTaskEmailReplyInstruction,
+  getTaskUrl,
+} from "@/lib/email/task-notification";
+import { WISHONIA_AVATAR_PATH } from "@/lib/email/wishonia-signature";
+import {
+  buildTaskCommentNotificationEmail,
+  COMMENT_NOTIFICATION_PLACEHOLDER,
+} from "@/lib/tasks/task-comment-notification-email.server";
+import {
   draftTaskNotification,
   sendDraftTaskNotification,
 } from "@/lib/tasks/task-notifications.server";
 import {
-  buildOverdueReminderEmail,
-  MAX_COMMENTS_IN_REMINDER,
-  MAX_OVERDUE_SEND_COUNT,
-  OVERDUE_REMINDER_PLACEHOLDER,
+  buildOverdueReminderComment,
+  MAX_OVERDUE_REMINDER_COMMENTS,
 } from "@/lib/tasks/task-overdue-reminder.server";
 import { resolveTaskRecipient } from "@/lib/tasks/task-recipients.server";
 import { recipientWithinRateLimits } from "@/lib/tasks/task-recipient-rate-limit.server";
-import { getTaskAncestors } from "@/lib/tasks.server";
+import { getWishoniaUserId } from "@/lib/wishonia.server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const log = createLogger("task-overdue-reminders");
 
-const REMINDER_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
+const REMINDER_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_BATCH_SIZE = 50;
-
-async function loadRecentTaskComments(taskId: string) {
-  const comments = await prisma.taskComment.findMany({
-    where: {
-      deletedAt: null,
-      kind: { in: [TaskCommentKind.OUTBOUND_MESSAGE, TaskCommentKind.COMMENT, TaskCommentKind.STATUS_UPDATE] },
-      // Exclude AGENT-source rows — those are audit-log echoes of outbound
-      // emails written by sendDraftTaskNotification. Including them would
-      // duplicate the previous reminder body inside the next reminder.
-      source: { not: TaskCommentSource.AGENT },
-      taskId,
-    },
-    orderBy: [{ createdAt: "desc" }],
-    select: {
-      authorPerson: { select: { displayName: true } },
-      authorUser: {
-        select: {
-          person: { select: { displayName: true } },
-        },
-      },
-      createdAt: true,
-      message: true,
-    },
-    take: MAX_COMMENTS_IN_REMINDER,
-  });
-
-  return comments.reverse().map((c) => ({
-    authorName:
-      c.authorUser?.person?.displayName ??
-      c.authorPerson?.displayName ??
-      null,
-    createdAt: c.createdAt,
-    message: c.message,
-  }));
-}
 
 interface ReminderResult {
   failures: number;
@@ -78,7 +51,11 @@ interface ReminderResult {
 }
 
 function getStoredUnsubscribeUrl(metadata: unknown): string | null {
-  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
     return null;
   }
   const value = (metadata as Record<string, unknown>).unsubscribeUrl;
@@ -86,17 +63,24 @@ function getStoredUnsubscribeUrl(metadata: unknown): string | null {
 }
 
 function asMetadataObject(metadata: unknown): Record<string, unknown> {
-  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
     return {};
   }
   return metadata as Record<string, unknown>;
 }
 
 async function processOverdueReminders(now: Date): Promise<ReminderResult> {
+  const reminderEligibilityCutoff = new Date(
+    now.getTime() - REMINDER_INTERVAL_MS,
+  );
   const candidates = await prisma.task.findMany({
     where: {
       deletedAt: null,
-      dueAt: { lt: now, not: null },
+      dueAt: { lte: reminderEligibilityCutoff, not: null },
       status: TaskStatus.ACTIVE,
       OR: [
         { assigneePersonId: { not: null } },
@@ -127,26 +111,33 @@ async function processOverdueReminders(now: Date): Promise<ReminderResult> {
 
   for (const task of candidates) {
     try {
-      const sentSummary = await prisma.taskCommunication.aggregate({
+      const reminderCommentSummary = await prisma.taskComment.aggregate({
         where: {
           deletedAt: null,
-          purpose: TaskCommunicationPurpose.REMINDER,
-          status: TaskCommunicationStatus.SENT,
           taskId: task.id,
+          communications: {
+            some: {
+              deletedAt: null,
+              purpose: TaskCommunicationPurpose.REMINDER,
+            },
+          },
         },
         _count: { _all: true },
-        _max: { sentAt: true },
+        _max: { createdAt: true },
       });
 
-      const sendCount = sentSummary._count._all;
-      const lastSentAt = sentSummary._max.sentAt;
+      const reminderCommentCount = reminderCommentSummary._count._all;
+      const lastReminderCommentAt = reminderCommentSummary._max.createdAt;
 
-      if (sendCount >= MAX_OVERDUE_SEND_COUNT) {
+      if (reminderCommentCount >= MAX_OVERDUE_REMINDER_COMMENTS) {
         result.skipped += 1;
         continue;
       }
 
-      if (lastSentAt && now.getTime() - lastSentAt.getTime() < REMINDER_INTERVAL_MS) {
+      if (
+        lastReminderCommentAt &&
+        now.getTime() - lastReminderCommentAt.getTime() < REMINDER_INTERVAL_MS
+      ) {
         result.skipped += 1;
         continue;
       }
@@ -168,66 +159,92 @@ async function processOverdueReminders(now: Date): Promise<ReminderResult> {
         continue;
       }
 
-      const ancestors = await getTaskAncestors(task.id);
-      const comments = await loadRecentTaskComments(task.id);
-      const nextSendCount = sendCount + 1;
-      const message = buildOverdueReminderEmail({
-        ancestors,
-        comments,
+      const nextReminderCommentCount = reminderCommentCount + 1;
+      const reminder = buildOverdueReminderComment({
         now,
-        recipient,
-        sendCount: nextSendCount,
+        sendCount: nextReminderCommentCount,
         task,
       });
+      const message = buildTaskCommentNotificationEmail({
+        baseUrl: getAppBaseUrl(),
+        comment: {
+          authorAvatarUrl: WISHONIA_AVATAR_PATH,
+          authorName: "Wishonia",
+          message: reminder.message,
+        },
+        cta: {
+          label: "Mark task complete",
+          url: getTaskCompletionUrl(task.id),
+        },
+        recipientReason: recipient.reason ?? null,
+        replyInstruction: getTaskEmailReplyInstruction(),
+        secondaryCta: {
+          label: "Open task",
+          url: getTaskUrl(task.id),
+        },
+        task,
+      });
+      const draft = await draftTaskNotification({
+        audience: TaskCommunicationAudience.ASSIGNEE,
+        channel: TaskCommunicationChannel.EMAIL,
+        dedupeKey: `task-overdue-reminder:${task.id}:${nextReminderCommentCount}`,
+        emailScope: "task_notifications",
+        html: message.html,
+        bccEmails: [],
+        metadataJson: {
+          recipientReason: recipient.reason ?? null,
+          recipientRole: recipient.role ?? null,
+        } satisfies Prisma.InputJsonObject,
+        purpose: TaskCommunicationPurpose.REMINDER,
+        recipientEmail: recipient.email,
+        recipientOrganizationId: recipient.organizationId ?? null,
+        recipientPersonId: recipient.personId ?? null,
+        recipientUserId: recipient.userId ?? null,
+        skipWishoniaSignature: true,
+        step: nextReminderCommentCount,
+        subject: reminder.subject,
+        taskId: task.id,
+        text: message.text,
+      });
+
       const reminderComment = await prisma.taskComment.create({
         data: {
-          kind: TaskCommentKind.STATUS_UPDATE,
-          message: `Automated overdue reminder ${nextSendCount} queued for ${recipient.email}.`,
+          authorUserId: await getWishoniaUserId(),
+          kind: TaskCommentKind.COMMENT,
+          message: reminder.message,
           source: TaskCommentSource.SYSTEM,
           taskId: task.id,
         },
         select: { id: true },
       });
 
-      const draft = await draftTaskNotification({
-        audience: TaskCommunicationAudience.ASSIGNEE,
-        channel: TaskCommunicationChannel.EMAIL,
-        dedupeKey: `task-overdue-reminder:${task.id}:${nextSendCount}`,
-        emailScope: "task_notifications",
-        html: message.html,
-        purpose: TaskCommunicationPurpose.REMINDER,
-        recipientEmail: recipient.email,
-        recipientOrganizationId: recipient.organizationId ?? null,
-        recipientPersonId: recipient.personId ?? null,
-        recipientUserId: recipient.userId ?? null,
-        step: nextSendCount,
-        subject: message.subject,
-        taskCommentId: reminderComment.id,
-        taskId: task.id,
-        text: message.text,
-      });
-
       const unsubscribeUrl = getStoredUnsubscribeUrl(draft.metadataJson);
-      if (unsubscribeUrl && message.html.includes(OVERDUE_REMINDER_PLACEHOLDER)) {
-        const finalHtml = message.html.replaceAll(
-          OVERDUE_REMINDER_PLACEHOLDER,
+      let finalHtml = message.html;
+      let finalText = message.text;
+      if (
+        unsubscribeUrl &&
+        message.html.includes(COMMENT_NOTIFICATION_PLACEHOLDER)
+      ) {
+        finalHtml = message.html.replaceAll(
+          COMMENT_NOTIFICATION_PLACEHOLDER,
           unsubscribeUrl,
         );
-        const finalText = message.text.replaceAll(
-          OVERDUE_REMINDER_PLACEHOLDER,
+        finalText = message.text.replaceAll(
+          COMMENT_NOTIFICATION_PLACEHOLDER,
           unsubscribeUrl,
         );
-        await prisma.taskCommunication.update({
-          where: { id: draft.id },
-          data: {
-            metadataJson: {
-              ...asMetadataObject(draft.metadataJson),
-              html: finalHtml,
-              text: finalText,
-            } as Prisma.InputJsonObject,
-          },
-        });
       }
+      await prisma.taskCommunication.update({
+        where: { id: draft.id },
+        data: {
+          metadataJson: {
+            ...asMetadataObject(draft.metadataJson),
+            html: finalHtml,
+            text: finalText,
+          } as Prisma.InputJsonObject,
+          taskCommentId: reminderComment.id,
+        },
+      });
 
       const sendResult = await sendDraftTaskNotification({
         communicationId: draft.id,

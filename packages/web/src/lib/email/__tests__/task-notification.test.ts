@@ -4,6 +4,10 @@ import {
   getReplyEmailDomain,
   parseReplyAddress,
 } from "../task-notification";
+import {
+  WAR_ON_DISEASE_CANONICAL_DOMAIN,
+  WAR_ON_DISEASE_REPLY_DOMAIN,
+} from "@/lib/site";
 
 /**
  * Unit tests for the reply-address encoder/decoder. Pure functions, no DB
@@ -79,6 +83,7 @@ describe("reply-address encode/decode", () => {
 
 describe("reply domain env", () => {
   const originalReplyDomain = process.env.REPLY_EMAIL_DOMAIN;
+  const originalInboundSecret = process.env.RESEND_INBOUND_WEBHOOK_SECRET;
 
   afterEach(() => {
     if (originalReplyDomain !== undefined) {
@@ -86,18 +91,49 @@ describe("reply domain env", () => {
     } else {
       delete process.env.REPLY_EMAIL_DOMAIN;
     }
+    if (originalInboundSecret !== undefined) {
+      process.env.RESEND_INBOUND_WEBHOOK_SECRET = originalInboundSecret;
+    } else {
+      delete process.env.RESEND_INBOUND_WEBHOOK_SECRET;
+    }
     vi.resetModules();
   });
 
   it("falls back to the default reply domain when the env var is blank", async () => {
     process.env.REPLY_EMAIL_DOMAIN = "";
     vi.resetModules();
-    const { getReplyAddress, getReplyEmailDomain } = await import(
-      "../task-notification"
-    );
+    const { getReplyAddress, getReplyEmailDomain } =
+      await import("../task-notification");
 
-    expect(getReplyEmailDomain()).toBe("reply.warondisease.org");
-    expect(getReplyAddress("abc")).toBe("reply+abc@reply.warondisease.org");
+    expect(WAR_ON_DISEASE_CANONICAL_DOMAIN).toBe("warondisease.org");
+    expect(getReplyEmailDomain()).toBe(WAR_ON_DISEASE_REPLY_DOMAIN);
+    expect(getReplyAddress("abc")).toBe(
+      `reply+abc@${WAR_ON_DISEASE_REPLY_DOMAIN}`,
+    );
+  });
+
+  it("does not enable task email replies until both inbound secret and domain are configured", async () => {
+    delete process.env.RESEND_INBOUND_WEBHOOK_SECRET;
+    process.env.REPLY_EMAIL_DOMAIN = "reply.test";
+    vi.resetModules();
+    const { getConfiguredTaskReplyAddress, getTaskEmailReplyInstruction } =
+      await import("../task-notification");
+
+    expect(getConfiguredTaskReplyAddress("abc")).toBeNull();
+    expect(getTaskEmailReplyInstruction()).toBeNull();
+  });
+
+  it("returns a task reply address when inbound secret and domain are configured", async () => {
+    process.env.RESEND_INBOUND_WEBHOOK_SECRET = "secret_test";
+    process.env.REPLY_EMAIL_DOMAIN = "reply.test";
+    vi.resetModules();
+    const { getConfiguredTaskReplyAddress, getTaskEmailReplyInstruction } =
+      await import("../task-notification");
+
+    expect(getConfiguredTaskReplyAddress("abc")).toBe("reply+abc@reply.test");
+    expect(getTaskEmailReplyInstruction()).toBe(
+      "Reply to this email to add a comment to the task.",
+    );
   });
 });
 
@@ -125,7 +161,9 @@ describe("app-URL helpers", () => {
     const { getAppBaseUrl, getTaskUrl } = await import("../task-notification");
 
     expect(getAppBaseUrl()).toBe("https://staging.warondisease.org");
-    expect(getTaskUrl("abc")).toBe("https://staging.warondisease.org/tasks/abc");
+    expect(getTaskUrl("abc")).toBe(
+      "https://staging.warondisease.org/tasks/abc",
+    );
   });
 
   it("strips trailing slash from the configured base", async () => {
@@ -163,8 +201,10 @@ describe("sendTaskNotificationEmail", () => {
     delete process.env.RESEND_MOCK_SEND;
   });
   afterEach(() => {
-    if (originalApiKey !== undefined) process.env.RESEND_API_KEY = originalApiKey;
-    if (originalMockSend !== undefined) process.env.RESEND_MOCK_SEND = originalMockSend;
+    if (originalApiKey !== undefined)
+      process.env.RESEND_API_KEY = originalApiKey;
+    if (originalMockSend !== undefined)
+      process.env.RESEND_MOCK_SEND = originalMockSend;
   });
 
   it("returns disabled status when Resend is not configured", async () => {

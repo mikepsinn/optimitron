@@ -3,7 +3,12 @@ import { render } from "@react-email/components";
 import { Resend } from "resend";
 import { serverEnv } from "@/lib/env";
 import { canSendEmailToUser } from "@/lib/email/can-send.server";
-import { formatEmailFromHeader, parseEmailFromHeader } from "@/lib/email/from-address";
+import {
+  DEFAULT_UNSUBSCRIBE_EMAIL,
+  formatEmailFromHeader,
+  parseEmailFromHeader,
+} from "@/lib/email/from-address";
+import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
 import { isTransactionalScope } from "@/lib/email/scopes";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { appendWishoniaSignature } from "@/lib/email/wishonia-signature";
@@ -19,6 +24,12 @@ interface BaseMessage {
   /** When true, bypass the DB-backed suppression check (cron has already filtered). */
   skipSuppressionCheck?: boolean;
   bcc?: string[];
+  /// Optional Reply-To header. Task notifications use this for per-task reply
+  /// routing when inbound email has been explicitly configured.
+  replyTo?: string;
+  /// Comment-notification emails already attribute the visible comment author
+  /// in the body, so callers can suppress the generic Wishonia sign-off.
+  skipWishoniaSignature?: boolean;
   subject: string;
   to: string;
 }
@@ -39,9 +50,12 @@ interface ResendReactMessage extends BaseMessage {
 interface ExternalResendMessage {
   from?: string;
   /// Optional Reply-To header. Lets task notifications route inbound replies
-  /// to a per-task address (`reply+{taskId}@reply.warondisease.org`) without
+  /// to a per-task address without
   /// changing the From line that recipients see.
   replyTo?: string;
+  /// Comment-notification emails already attribute the visible comment author
+  /// in the body, so callers can suppress the generic Wishonia sign-off.
+  skipWishoniaSignature?: boolean;
   html: string;
   bcc?: string[];
   subject: string;
@@ -58,7 +72,9 @@ export type SendResult =
 let resendClient: Resend | null = null;
 
 function isMockSendEnabled() {
-  return serverEnv.RESEND_MOCK_SEND === "1" && serverEnv.NODE_ENV !== "production";
+  return (
+    serverEnv.RESEND_MOCK_SEND === "1" && serverEnv.NODE_ENV !== "production"
+  );
 }
 
 function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
@@ -70,16 +86,21 @@ function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
 }
 
 export function getEmailFromAddress() {
-  // Default sender is the platform brand. Per docs/questions.md system emails
-  // come from "Earth Optimization Services <noreply@warondisease.org>";
-  // share emails override via the per-message `from` field with
+  // Default sender is the platform brand; share emails override via the
+  // per-message `from` field with
   // formatShareEmailFromHeader (so the recipient's inbox foregrounds the
   // friend's name instead of a corporate brand they don't recognize).
-  return formatEmailFromHeader(serverEnv.EMAIL_FROM, "Earth Optimization Services");
+  return formatEmailFromHeader(
+    serverEnv.EMAIL_FROM,
+    "Earth Optimization Services",
+  );
 }
 
 export function isResendConfigured() {
-  return isMockSendEnabled() || Boolean(serverEnv.RESEND_API_KEY && getEmailFromAddress());
+  return (
+    isMockSendEnabled() ||
+    Boolean(serverEnv.RESEND_API_KEY && getEmailFromAddress())
+  );
 }
 
 function getResendClient() {
@@ -91,12 +112,16 @@ function getResendClient() {
   return resendClient;
 }
 
-function buildUnsubscribeHeaders(unsubscribeUrl: string | null): Record<string, string> | undefined {
+function buildUnsubscribeHeaders(
+  unsubscribeUrl: string | null,
+): Record<string, string> | undefined {
   if (!unsubscribeUrl) {
     return undefined;
   }
 
-  const mailtoAddr = parseEmailFromHeader(serverEnv.EMAIL_FROM)?.address ?? "unsubscribe@optimitron.com";
+  const mailtoAddr =
+    parseEmailFromHeader(serverEnv.EMAIL_FROM)?.address ??
+    DEFAULT_UNSUBSCRIBE_EMAIL;
   const mailto = `mailto:${mailtoAddr}?subject=unsubscribe`;
   return {
     "List-Unsubscribe": `<${unsubscribeUrl}>, <${mailto}>`,
@@ -116,7 +141,34 @@ function resolveUnsubscribeUrl(message: BaseMessage): string | null {
   });
 }
 
-export async function sendResendEmail(message: ResendMessage): Promise<SendResult> {
+function replaceUnsubscribePlaceholder<
+  T extends { html: string; text: string },
+>(message: T, unsubscribeUrl: string | null): T {
+  if (!unsubscribeUrl) {
+    return message;
+  }
+  if (
+    !message.html.includes(EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER) &&
+    !message.text.includes(EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER)
+  ) {
+    return message;
+  }
+  return {
+    ...message,
+    html: message.html.replaceAll(
+      EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER,
+      unsubscribeUrl,
+    ),
+    text: message.text.replaceAll(
+      EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER,
+      unsubscribeUrl,
+    ),
+  };
+}
+
+export async function sendResendEmail(
+  message: ResendMessage,
+): Promise<SendResult> {
   if (!isResendConfigured()) {
     return { status: "disabled" };
   }
@@ -139,12 +191,17 @@ export async function sendResendEmail(message: ResendMessage): Promise<SendResul
   /// human (e.g. a referrer inviting a friend) is the sender — Wishonia
   /// signing on top would double-attribute. The share-email path renders its
   /// own sender sign-off in the body via buildSenderSignature*.
-  const signed = message.from ? message : appendWishoniaSignature(message);
+  const body = replaceUnsubscribePlaceholder(message, unsubscribeUrl);
+  const signed =
+    body.from || body.skipWishoniaSignature
+      ? body
+      : appendWishoniaSignature(body);
   const resend = getResendClient();
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
     to: [message.to],
     ...(message.bcc?.length ? { bcc: message.bcc } : {}),
+    ...(message.replyTo ? { replyTo: message.replyTo } : {}),
     subject: message.subject,
     html: signed.html,
     text: signed.text,
@@ -162,7 +219,9 @@ export async function sendResendEmail(message: ResendMessage): Promise<SendResul
   };
 }
 
-export async function sendReactEmail(message: ResendReactMessage): Promise<SendResult> {
+export async function sendReactEmail(
+  message: ResendReactMessage,
+): Promise<SendResult> {
   if (!isResendConfigured()) {
     return { status: "disabled" };
   }
@@ -184,15 +243,22 @@ export async function sendReactEmail(message: ResendReactMessage): Promise<SendR
   const resend = getResendClient();
   const renderedHtml = await render(message.react);
   const renderedText = await render(message.react, { plainText: true });
+  const body = replaceUnsubscribePlaceholder(
+    { html: renderedHtml, text: renderedText },
+    unsubscribeUrl,
+  );
   /// See sendResendEmail for why we gate on `from`.
   const signed = message.from
-    ? { html: renderedHtml, text: renderedText }
-    : appendWishoniaSignature({ html: renderedHtml, text: renderedText });
+    ? body
+    : message.skipWishoniaSignature
+      ? body
+      : appendWishoniaSignature(body);
 
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
     to: [message.to],
     ...(message.bcc?.length ? { bcc: message.bcc } : {}),
+    ...(message.replyTo ? { replyTo: message.replyTo } : {}),
     subject: message.subject,
     html: signed.html,
     text: signed.text,
@@ -210,7 +276,9 @@ export async function sendReactEmail(message: ResendReactMessage): Promise<SendR
   };
 }
 
-export async function sendExternalResendEmail(message: ExternalResendMessage): Promise<SendResult> {
+export async function sendExternalResendEmail(
+  message: ExternalResendMessage,
+): Promise<SendResult> {
   if (!isResendConfigured()) {
     return { status: "disabled" };
   }
@@ -223,7 +291,11 @@ export async function sendExternalResendEmail(message: ExternalResendMessage): P
   }
 
   /// See sendResendEmail for why we gate on `from`.
-  const signed = message.from ? message : appendWishoniaSignature(message);
+  const body = replaceUnsubscribePlaceholder(message, unsubscribeUrl);
+  const signed =
+    body.from || body.skipWishoniaSignature
+      ? body
+      : appendWishoniaSignature(body);
   const resend = getResendClient();
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
