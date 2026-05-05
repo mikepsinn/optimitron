@@ -1,6 +1,6 @@
 ALTER TABLE "Task" ADD COLUMN "createdByUserId" TEXT;
 
-WITH system_user AS (
+WITH task_creator_backfill_user AS (
   SELECT "id"
   FROM "User"
   WHERE "deletedAt" IS NULL AND "isSystem" = TRUE
@@ -8,7 +8,7 @@ WITH system_user AS (
   LIMIT 1
 )
 UPDATE "Task"
-SET "createdByUserId" = (SELECT "id" FROM system_user)
+SET "createdByUserId" = (SELECT "id" FROM task_creator_backfill_user)
 WHERE "createdByUserId" IS NULL;
 
 DO $$
