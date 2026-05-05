@@ -44,7 +44,9 @@ export function parseArgs(argv: string[]): CliOptions {
       options.json = true;
     } else if (arg === "--pattern") {
       const next = normalized[i + 1];
-      if (!next) throw new Error("--pattern requires a value");
+      if (!next || next.startsWith("-")) {
+        throw new Error("--pattern requires a value");
+      }
       options.patterns.push(next);
       i += 1;
     } else if (arg === "--help" || arg === "-h") {
@@ -259,7 +261,7 @@ function renderReport(s: Survey, executed: boolean): string {
   lines.push(`  Test users:                         ${s.counts.testUsers}`);
   lines.push(`  Tasks assigned to test persons:     ${s.counts.tasksAssignedToTestPersons}`);
   lines.push("");
-  lines.push("Cascade casualties (deleted automatically by FK rules)");
+  lines.push("Cascade casualties (sample — every FK with ON DELETE CASCADE applies)");
   lines.push(`  TaskClaim rows by test users:       ${s.counts.taskClaimsByTestUsers}`);
   lines.push(`  TaskComments by test persons:       ${s.counts.taskCommentsByTestPersons}`);
   lines.push(`  TaskComments by test users:         ${s.counts.taskCommentsByTestUsers}`);
