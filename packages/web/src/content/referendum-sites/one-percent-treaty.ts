@@ -136,7 +136,6 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   endorse: {
     eyebrow: "Organizational signature",
     title: "Sign as an Organization",
-    description: `Have your organization publicly sign the 1% Treaty and join the ${campaignName}. No donation required. No candidate endorsement. Just one official position: ${treatyTradePosition}.`,
     signInTitle: "Sign in to sign",
     signInDescription:
       "Organization signatures use verified accounts so nobody signs your organization for you.",

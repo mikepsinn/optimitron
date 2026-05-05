@@ -49,7 +49,6 @@ export interface ReferendumSiteSupportersContent {
 }
 
 export interface ReferendumSiteEndorseContent {
-  description: string;
   eyebrow: string;
   existingSupportersLabel: string;
   signInDescription: string;
