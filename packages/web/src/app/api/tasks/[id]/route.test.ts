@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  deleteOwnedTask: vi.fn(),
+  deleteTaskCreatedByUser: vi.fn(),
   getServerSession: vi.fn(),
   getTaskDetailData: vi.fn(),
   requireAuth: vi.fn(),
-  updateOwnedTask: vi.fn(),
+  updateTaskCreatedByUser: vi.fn(),
 }));
 
 vi.mock("next-auth", () => ({
@@ -21,50 +21,64 @@ vi.mock("@/lib/auth-utils", () => ({
 }));
 
 vi.mock("@/lib/tasks.server", () => ({
-  deleteOwnedTask: mocks.deleteOwnedTask,
+  deleteTaskCreatedByUser: mocks.deleteTaskCreatedByUser,
   getTaskDetailData: mocks.getTaskDetailData,
-  updateOwnedTask: mocks.updateOwnedTask,
+  updateTaskCreatedByUser: mocks.updateTaskCreatedByUser,
 }));
 
 import { DELETE, GET, PATCH } from "./route";
 
 describe("task detail route", () => {
   beforeEach(() => {
-    mocks.deleteOwnedTask.mockReset();
+    mocks.deleteTaskCreatedByUser.mockReset();
     mocks.getServerSession.mockReset();
     mocks.getTaskDetailData.mockReset();
     mocks.requireAuth.mockReset();
-    mocks.updateOwnedTask.mockReset();
+    mocks.updateTaskCreatedByUser.mockReset();
   });
 
   it("returns 404 when the task is not accessible", async () => {
     mocks.getServerSession.mockResolvedValue(null);
     mocks.getTaskDetailData.mockResolvedValue(null);
 
-    const response = await GET(new Request("http://localhost/api/tasks/task_1"), {
-      params: Promise.resolve({ id: "task_1" }),
-    });
+    const response = await GET(
+      new Request("http://localhost/api/tasks/task_1"),
+      {
+        params: Promise.resolve({ id: "task_1" }),
+      },
+    );
 
     expect(response.status).toBe(404);
-    await expect(response.json()).resolves.toEqual({ error: "Task not found." });
+    await expect(response.json()).resolves.toEqual({
+      error: "Task not found.",
+    });
   });
 
   it("returns detail data for an accessible task", async () => {
     mocks.getServerSession.mockResolvedValue({ user: { id: "user_1" } });
-    mocks.getTaskDetailData.mockResolvedValue({ task: { id: "task_1" }, viewer: null });
-
-    const response = await GET(new Request("http://localhost/api/tasks/task_1"), {
-      params: Promise.resolve({ id: "task_1" }),
+    mocks.getTaskDetailData.mockResolvedValue({
+      task: { id: "task_1" },
+      viewer: null,
     });
+
+    const response = await GET(
+      new Request("http://localhost/api/tasks/task_1"),
+      {
+        params: Promise.resolve({ id: "task_1" }),
+      },
+    );
 
     expect(response.status).toBe(200);
     expect(mocks.getTaskDetailData).toHaveBeenCalledWith("task_1", "user_1");
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
-  it("updates an owned task for the authenticated user", async () => {
+  it("updates a task created by the authenticated user", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.updateOwnedTask.mockResolvedValue({ id: "task_1", title: "Updated" });
+    mocks.updateTaskCreatedByUser.mockResolvedValue({
+      id: "task_1",
+      title: "Updated",
+    });
 
     const response = await PATCH(
       new Request("http://localhost/api/tasks/task_1", {
@@ -81,7 +95,7 @@ describe("task detail route", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mocks.updateOwnedTask).toHaveBeenCalledWith(
+    expect(mocks.updateTaskCreatedByUser).toHaveBeenCalledWith(
       "task_1",
       "user_1",
       expect.objectContaining({
@@ -92,9 +106,12 @@ describe("task detail route", () => {
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
-  it("deletes an owned task for the authenticated user", async () => {
+  it("deletes a task created by the authenticated user", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.deleteOwnedTask.mockResolvedValue({ id: "task_1", deleted: true });
+    mocks.deleteTaskCreatedByUser.mockResolvedValue({
+      id: "task_1",
+      deleted: true,
+    });
 
     const response = await DELETE(
       new Request("http://localhost/api/tasks/task_1", { method: "DELETE" }),
@@ -102,7 +119,10 @@ describe("task detail route", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mocks.deleteOwnedTask).toHaveBeenCalledWith("task_1", "user_1");
+    expect(mocks.deleteTaskCreatedByUser).toHaveBeenCalledWith(
+      "task_1",
+      "user_1",
+    );
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
@@ -119,7 +139,9 @@ describe("task detail route", () => {
 
   it("returns 404 when delete target does not exist", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.deleteOwnedTask.mockRejectedValue(new Error("Task not found."));
+    mocks.deleteTaskCreatedByUser.mockRejectedValue(
+      new Error("Task not found."),
+    );
 
     const response = await DELETE(
       new Request("http://localhost/api/tasks/task_x", { method: "DELETE" }),
@@ -131,7 +153,7 @@ describe("task detail route", () => {
 
   it("returns 400 when delete is rejected (e.g. public task)", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.deleteOwnedTask.mockRejectedValue(
+    mocks.deleteTaskCreatedByUser.mockRejectedValue(
       new Error("Public tasks can't be self-deleted. Ask an admin."),
     );
 

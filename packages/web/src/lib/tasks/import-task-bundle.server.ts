@@ -2,6 +2,7 @@ import { Prisma } from "@optimitron/db";
 import { upsertTrustedOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import { upsertPrimaryTaskCommunicationEndpoint } from "@/lib/tasks/task-communication-endpoints.server";
+import { getWishoniaUserId } from "@/lib/wishonia.server";
 import type {
   ImportedImpactEstimateDraft,
   ImportedImpactFrameDraft,
@@ -13,9 +14,9 @@ import type {
 interface UpsertImportedTaskBundleOptions {
   assigneeOrganizationId?: string | null;
   assigneePersonId?: string | null;
+  createdByUserId?: string | null;
   isPublic?: boolean;
   jurisdictionId?: string | null;
-  ownerUserId?: string | null;
   parentTaskId?: string | null;
   taskId?: string | null;
   verifiedByUserId?: string | null;
@@ -397,6 +398,11 @@ export async function upsertImportedTaskBundle(
   bundle: ImportedTaskBundle,
   options?: UpsertImportedTaskBundleOptions,
 ) {
+  const createdByUserId =
+    options?.createdByUserId?.trim() ||
+    options?.verifiedByUserId?.trim() ||
+    await getWishoniaUserId();
+
   return prisma.$transaction(async (tx) => {
     const assigneeOrganization =
       options?.assigneeOrganizationId?.trim()
@@ -426,6 +432,7 @@ export async function upsertImportedTaskBundle(
         category: bundle.task.category,
         claimPolicy: bundle.task.claimPolicy,
         contextJson: toJsonValue(bundle.task.contextJson),
+        createdByUserId,
         deletedAt: null,
         description: bundle.task.description,
         difficulty: bundle.task.difficulty,
@@ -435,7 +442,6 @@ export async function upsertImportedTaskBundle(
         interestTags: bundle.task.interestTags,
         isPublic: options?.isPublic ?? true,
         jurisdictionId: options?.jurisdictionId ?? null,
-        ownerUserId: options?.ownerUserId ?? null,
         roleTitle: bundle.task.roleTitle,
         parentTaskId: options?.parentTaskId ?? null,
         skillTags: bundle.task.skillTags,
@@ -460,7 +466,6 @@ export async function upsertImportedTaskBundle(
         interestTags: bundle.task.interestTags,
         isPublic: options?.isPublic ?? true,
         jurisdictionId: options?.jurisdictionId ?? null,
-        ownerUserId: options?.ownerUserId ?? undefined,
         roleTitle: bundle.task.roleTitle,
         parentTaskId: options?.parentTaskId ?? null,
         skillTags: bundle.task.skillTags,

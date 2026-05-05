@@ -26,10 +26,7 @@ import type {
   ImportedSourceArtifactDraft,
 } from "./opg-obg-adapters";
 import type { PolicyModelRunImportDraft } from "./policy-model-run-to-imported-task-bundle";
-import {
-  getTreatySignerTaskKey,
-  TREATY_SIGNER_TASK_TITLE,
-} from "./task-keys";
+import { getTreatySignerTaskKey, TREATY_SIGNER_TASK_TITLE } from "./task-keys";
 export const TREATY_DUE_AT = new Date("2024-12-31T00:00:00.000Z");
 
 const SCALEABLE_FRAME_KEYS = [
@@ -185,10 +182,15 @@ function scaleImpactFrame(
   const scaledFrame = { ...frame };
 
   for (const key of SCALEABLE_FRAME_KEYS) {
-    scaledFrame[key] = scaleNumber(frame[key], factor) as ImportedImpactFrameDraft[typeof key];
+    scaledFrame[key] = scaleNumber(
+      frame[key],
+      factor,
+    ) as ImportedImpactFrameDraft[typeof key];
   }
 
-  scaledFrame.metrics = frame.metrics.map((metric) => scaleImportedMetric(metric, factor));
+  scaledFrame.metrics = frame.metrics.map((metric) =>
+    scaleImportedMetric(metric, factor),
+  );
   return scaledFrame;
 }
 
@@ -196,7 +198,9 @@ function upsertMetric(
   metrics: ImportedImpactMetricDraft[],
   nextMetric: ImportedImpactMetricDraft,
 ) {
-  const existingIndex = metrics.findIndex((metric) => metric.metricKey === nextMetric.metricKey);
+  const existingIndex = metrics.findIndex(
+    (metric) => metric.metricKey === nextMetric.metricKey,
+  );
   if (existingIndex >= 0) {
     metrics.splice(existingIndex, 1, nextMetric);
     return;
@@ -206,7 +210,8 @@ function upsertMetric(
 }
 
 function buildSignerImpactMetrics(slot: TreatySignerSlot) {
-  const militaryShareRatio = slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
+  const militaryShareRatio =
+    slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
   const redirectAmountUsd = slot.militaryBudgetUsd * 0.01;
 
   return [
@@ -270,7 +275,8 @@ export function buildTreatySignerImportDraft(input: {
   slot: TreatySignerSlot;
 }): PolicyModelRunImportDraft {
   const slot = input.slot;
-  const factor = slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
+  const factor =
+    slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
   const redirectAmountUsd = slot.militaryBudgetUsd * 0.01;
   const cloned = structuredClone(input.baseDraft);
   const taskKey = getTreatySignerTaskKey(slot);
@@ -302,7 +308,7 @@ export function buildTreatySignerImportDraft(input: {
   // The parent signer task's action link is the assignee's *own* action target —
   // a head of state clicks through to sign the treaty. Wishonia-voice nudge
   // template (third-person about the signer) does NOT belong on this task; it
-  // moves to the citizen-owned reminder subtask in claimSignerReminder.
+  // moves to the citizen-created reminder subtask in claimSignerReminder.
   // The runtime fallback in task-communication-action.ts no longer fires for
   // these tasks because contactUrl is now stored.
   cloned.bundle.task.contactLabel = TREATY_SIGN_LABEL;
@@ -326,9 +332,12 @@ export function buildTreatySignerImportDraft(input: {
   cloned.bundle.task.taskKey = taskKey;
   cloned.bundle.task.title = TREATY_SIGNER_TASK_TITLE;
   const existingContext =
-    (cloned.bundle.task.contextJson as { assigneeProfile?: Record<string, unknown> } | null) ?? {};
+    (cloned.bundle.task.contextJson as {
+      assigneeProfile?: Record<string, unknown>;
+    } | null) ?? {};
   const existingAssigneeProfile =
-    (existingContext.assigneeProfile as Record<string, unknown> | undefined) ?? {};
+    (existingContext.assigneeProfile as Record<string, unknown> | undefined) ??
+    {};
 
   cloned.bundle.task.contextJson = {
     ...cloned.bundle.task.contextJson,
@@ -360,18 +369,21 @@ export function buildTreatySignerImportDraft(input: {
     countryIso3: slot.countryIso3,
     militaryBudgetShareRatio: factor,
     militaryBudgetUsd: slot.militaryBudgetUsd,
-    treatySignerScalingMethod: "scaled-by-share-of-2024-global-military-spending",
+    treatySignerScalingMethod:
+      "scaled-by-share-of-2024-global-military-spending",
   };
-  cloned.bundle.impactEstimate.frames = cloned.bundle.impactEstimate.frames.map((frame) => {
-    const scaledFrame = scaleImpactFrame(frame, factor);
-    const addedMetrics = buildSignerImpactMetrics(slot);
+  cloned.bundle.impactEstimate.frames = cloned.bundle.impactEstimate.frames.map(
+    (frame) => {
+      const scaledFrame = scaleImpactFrame(frame, factor);
+      const addedMetrics = buildSignerImpactMetrics(slot);
 
-    for (const metric of addedMetrics) {
-      upsertMetric(scaledFrame.metrics, metric);
-    }
+      for (const metric of addedMetrics) {
+        upsertMetric(scaledFrame.metrics, metric);
+      }
 
-    return scaledFrame;
-  });
+      return scaledFrame;
+    },
+  );
   cloned.bundle.sourceArtifacts = uniqueArtifacts([
     ...cloned.bundle.sourceArtifacts,
     ...buildTreatySignerSourceArtifacts(slot),

@@ -54,7 +54,7 @@ describe("createReferralInvitationTask", () => {
           url: "https://example.test/vote",
         },
         inviteToken: "token_1",
-        ownerUserId: "user_1",
+        creatorUserId: "user_1",
         parentTaskId: "training_root",
         recipientName: "Recipient Human",
         recipientPersonId: "person_recipient",

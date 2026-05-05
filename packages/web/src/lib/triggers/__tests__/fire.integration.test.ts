@@ -74,7 +74,7 @@ describe("triggers/fire integration", () => {
               isParent: true,
               titleTemplate: "Hello {{user.name}}",
               descriptionTemplate: "root for {{user.id}}",
-              ownerResolver: "actor",
+              creatorResolver: "actor",
               parentResolver: "none",
             },
             {
@@ -82,7 +82,7 @@ describe("triggers/fire integration", () => {
               sortOrder: 0,
               titleTemplate: "Step 1",
               descriptionTemplate: "First task",
-              ownerResolver: "actor",
+              creatorResolver: "actor",
               parentResolver: "trigger.parentSpec",
             },
             {
@@ -90,7 +90,7 @@ describe("triggers/fire integration", () => {
               sortOrder: 1,
               titleTemplate: "Step 2",
               descriptionTemplate: "Second task",
-              ownerResolver: "actor",
+              creatorResolver: "actor",
               parentResolver: "trigger.parentSpec",
             },
           ],
@@ -115,13 +115,17 @@ describe("triggers/fire integration", () => {
       expect(root).toBeTruthy();
       expect(root?.title).toBe("Hello Mike");
       expect(root?.parentTaskId ?? null).toBeNull();
-      expect(root?.ownerUserId).toBe("u_42");
+      expect(root?.createdByUserId).toBe("u_42");
 
-      const step1 = store.tasks.find((t) => t.taskKey === "demo:user:u_42:step1");
+      const step1 = store.tasks.find(
+        (t) => t.taskKey === "demo:user:u_42:step1",
+      );
       expect(step1?.parentTaskId).toBe(root?.id);
       expect(step1?.sortOrder).toBe(0);
 
-      const step2 = store.tasks.find((t) => t.taskKey === "demo:user:u_42:step2");
+      const step2 = store.tasks.find(
+        (t) => t.taskKey === "demo:user:u_42:step2",
+      );
       expect(step2?.parentTaskId).toBe(root?.id);
       expect(step2?.sortOrder).toBe(1);
 
@@ -143,7 +147,7 @@ describe("triggers/fire integration", () => {
               isParent: true,
               titleTemplate: "Original title",
               descriptionTemplate: "...",
-              ownerResolver: "actor",
+              creatorResolver: "actor",
               parentResolver: "none",
             },
           ],
@@ -152,8 +156,12 @@ describe("triggers/fire integration", () => {
       );
 
       const ctx = { user: { id: "u_42" } };
-      const first = await fireTaskTrigger("demo:onboarding2", ctx, { actorUserId: "u_42" });
-      const second = await fireTaskTrigger("demo:onboarding2", ctx, { actorUserId: "u_42" });
+      const first = await fireTaskTrigger("demo:onboarding2", ctx, {
+        actorUserId: "u_42",
+      });
+      const second = await fireTaskTrigger("demo:onboarding2", ctx, {
+        actorUserId: "u_42",
+      });
 
       expect(first.result).toBe("spawned");
       // Per the new caching policy, spawnTasks ALWAYS re-executes (lazy
@@ -161,7 +169,9 @@ describe("triggers/fire integration", () => {
       // by taskKey so we don't get duplicates.
       expect(second.result).toBe("spawned");
 
-      const matching = store.tasks.filter((t) => t.taskKey === "demo2:user:u_42");
+      const matching = store.tasks.filter(
+        (t) => t.taskKey === "demo2:user:u_42",
+      );
       expect(matching).toHaveLength(1);
     });
 
@@ -213,7 +223,7 @@ describe("triggers/fire integration", () => {
         actionLinkUrlTemplate: null,
         actionLinkLabelTemplate: null,
         actionLinkInstructionsTemplate: null,
-        ownerResolver: "actor",
+        creatorResolver: "actor",
         assigneePersonResolver: "none",
         assigneeOrganizationResolver: "none",
         parentResolver: "trigger.parentSpec",
@@ -241,7 +251,7 @@ describe("triggers/fire integration", () => {
               isParent: true,
               titleTemplate: "Restore me",
               descriptionTemplate: "...",
-              ownerResolver: "actor",
+              creatorResolver: "actor",
               parentResolver: "none",
             },
           ],
@@ -266,7 +276,9 @@ describe("triggers/fire integration", () => {
       );
 
       expect(result.result).toBe("spawned");
-      expect(store.tasks.filter((t) => t.taskKey === "restore:u_restore")).toHaveLength(1);
+      expect(
+        store.tasks.filter((t) => t.taskKey === "restore:u_restore"),
+      ).toHaveLength(1);
       expect(task!.deletedAt).toBeNull();
       expect(task!.status).toBe(TaskStatus.ACTIVE);
     });
@@ -282,7 +294,7 @@ describe("triggers/fire integration", () => {
           title: "User HMT root",
           description: "...",
           status: TaskStatus.ACTIVE,
-          ownerUserId: "u_42",
+          createdByUserId: "u_42",
         },
       });
       const parentId = (parent as { id: string }).id;
@@ -295,7 +307,7 @@ describe("triggers/fire integration", () => {
             title: k,
             description: "...",
             status: k === "complete" ? TaskStatus.ACTIVE : TaskStatus.VERIFIED,
-            ownerUserId: "u_42",
+            createdByUserId: "u_42",
           },
         });
         created[k] = (t as { id: string }).id;
@@ -326,19 +338,28 @@ describe("triggers/fire integration", () => {
 
       expect(result.result).toBe("verified");
 
-      const completeTask = store.tasks.find((t) => t.taskKey === "u:42:complete");
+      const completeTask = store.tasks.find(
+        (t) => t.taskKey === "u:42:complete",
+      );
       expect(completeTask?.status).toBe(TaskStatus.VERIFIED);
       expect(completeTask?.verifiedByUserId).toBe("u_42");
       expect(completeTask?.completionEvidence).toBe("Gate met for 42.");
 
       // STATUS_UPDATE comment posted on the verified task
-      const evidenceComment = store.comments.find((c) => c.taskId === completeTask?.id);
+      const evidenceComment = store.comments.find(
+        (c) => c.taskId === completeTask?.id,
+      );
       expect(evidenceComment?.message).toBe("Gate met for 42.");
     });
 
     it("returns filteredOut when gate not yet met (sibling not VERIFIED)", async () => {
       const parent = await db.task.create({
-        data: { taskKey: "u:99", title: "root", description: "...", status: TaskStatus.ACTIVE },
+        data: {
+          taskKey: "u:99",
+          title: "root",
+          description: "...",
+          status: TaskStatus.ACTIVE,
+        },
       });
       const parentId = (parent as { id: string }).id;
       // share + invite1 done, invite2 still ACTIVE
@@ -375,10 +396,14 @@ describe("triggers/fire integration", () => {
         { actorUserId: "u_admin" },
       );
 
-      const result = await fireTaskTrigger("demo:hmt-partial", { user: { id: "99" } });
+      const result = await fireTaskTrigger("demo:hmt-partial", {
+        user: { id: "99" },
+      });
       expect(result.result).toBe("filteredOut");
 
-      const completeTask = store.tasks.find((t) => t.taskKey === "u:99:complete");
+      const completeTask = store.tasks.find(
+        (t) => t.taskKey === "u:99:complete",
+      );
       expect(completeTask?.status).toBe(TaskStatus.ACTIVE);
     });
   });
@@ -428,7 +453,7 @@ describe("triggers/fire integration", () => {
           title: "Target",
           description: "...",
           status: TaskStatus.ACTIVE,
-          ownerUserId: "u_owner",
+          createdByUserId: "u_CREATOR",
         },
       });
       await createTaskTrigger(
@@ -507,7 +532,9 @@ describe("triggers/fire integration", () => {
       // Fire once → priorSendCount=0 → "FIRST"
       await fireTaskTrigger("demo:escalate-2", { task: { id: taskId } });
       // Fire again → priorSendCount=1 → "SECOND"
-      const second = await fireTaskTrigger("demo:escalate-2", { task: { id: taskId } });
+      const second = await fireTaskTrigger("demo:escalate-2", {
+        task: { id: taskId },
+      });
       expect(second.result).toBe("communicated");
       const subjects = store.communications.map(
         (c) => (c.metadataJson as { subject?: string })?.subject,
@@ -520,7 +547,9 @@ describe("triggers/fire integration", () => {
       await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
       await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
       await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
-      const fourth = await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
+      const fourth = await fireTaskTrigger("demo:escalate-3", {
+        task: { id: taskId },
+      });
       expect(fourth.result).toBe("communicated");
       const subjects = store.communications.map(
         (c) => (c.metadataJson as { subject?: string })?.subject,

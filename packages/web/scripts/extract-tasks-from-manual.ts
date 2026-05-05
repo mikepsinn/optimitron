@@ -15,6 +15,7 @@ import {
 } from "../src/lib/manual-search.server";
 import { findOrCreatePerson } from "../src/lib/person.server";
 import { prisma } from "../src/lib/prisma";
+import { getWishoniaUserId } from "../src/lib/wishonia.server";
 
 const MIN_SECTION_TEXT_LENGTH = 300;
 const GEMINI_MODEL =
@@ -210,6 +211,7 @@ async function upsertSectionTasks(
   entry: ManualSearchEntry,
   extracted: z.infer<typeof ExtractedSectionSchema>,
 ) {
+  const createdByUserId = await getWishoniaUserId();
   const sourceRef = getSourceRef(entry);
   const sourceHash = hashEntry(entry);
   const sourceUrl = entry.url ?? entry.path ?? null;
@@ -280,6 +282,7 @@ async function upsertSectionTasks(
       assigneeAffiliationSnapshot: extracted.parentTask.currentAffiliation ?? null,
       category: extracted.parentTask.category,
       claimPolicy: extracted.parentTask.claimPolicy,
+      createdByUserId,
       contextJson: {
         sourceRef,
         sourceSystem: "manual",
@@ -354,6 +357,7 @@ async function upsertSectionTasks(
         assigneeAffiliationSnapshot: atomicTask.currentAffiliation ?? null,
         category: atomicTask.category,
         claimPolicy: atomicTask.claimPolicy,
+        createdByUserId,
         contextJson: {
           sourceRef,
           sourceSystem: "manual",

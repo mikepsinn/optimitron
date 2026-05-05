@@ -42,7 +42,7 @@ export function buildReferralInvitationTaskCompletionMessage(recipientName: stri
 export async function createReferralInvitationTask(input: {
   endpoint: { instructions: string; url: string };
   inviteToken: string;
-  ownerUserId: string;
+  creatorUserId: string;
   parentTaskId?: string | null;
   recipientName: string;
   recipientPersonId?: string | null;
@@ -56,7 +56,7 @@ db: Prisma.TransactionClient | typeof prisma = prisma,
   const result = await fireTaskTrigger(
     "referral:vote-invitation",
     buildTriggerContext({
-      user: { id: input.ownerUserId },
+      user: { id: input.creatorUserId },
       recipient: {
         firstName,
         displayName: input.recipientName,
@@ -70,7 +70,7 @@ db: Prisma.TransactionClient | typeof prisma = prisma,
         instructions: input.endpoint.instructions,
       },
     }),
-    { actorUserId: input.ownerUserId, db },
+    { actorUserId: input.creatorUserId, db },
   );
 
   if (result.result === "filteredOut" || result.result === "failed") {

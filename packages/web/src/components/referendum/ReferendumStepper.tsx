@@ -250,7 +250,7 @@ export const readerMarkdownComponents = {
   a: ({ href, children }: { href?: string; children?: ReactNode }) => {
     const target = href ?? "#";
     const linkClass =
-      "font-black text-[#5e2e1f] underline decoration-[#8e6b48]/60 decoration-2 underline-offset-4 transition-colors hover:text-[var(--treaty-ink-soft)] hover:decoration-[var(--treaty-ink-soft)]";
+      "font-black text-black underline decoration-black decoration-2 underline-offset-4 transition-colors hover:text-black/70";
     if (target.startsWith("http")) {
       return (
         <a href={target} target="_blank" rel="noreferrer" className={linkClass}>
@@ -265,22 +265,22 @@ export const readerMarkdownComponents = {
     );
   },
   blockquote: ({ children }: { children?: ReactNode }) => (
-    <blockquote className="border-l-4 border-[#8e6b48] bg-[#efe4cf]/70 px-5 py-4 text-left text-base font-bold text-[#3a2a19] shadow-[6px_6px_0_rgba(58,42,25,0.08)]">
+    <blockquote className="border-l-4 border-black bg-white px-5 py-4 text-left text-base font-bold text-black">
       {children}
     </blockquote>
   ),
   ul: ({ children }: { children?: ReactNode }) => (
-    <ul className="list-disc space-y-3 pl-6 text-left text-base font-bold text-[#3a2a19] sm:text-lg">
+    <ul className="list-disc space-y-3 pl-6 text-left text-base font-bold text-black sm:text-lg">
       {children}
     </ul>
   ),
   ol: ({ children }: { children?: ReactNode }) => (
-    <ol className="list-decimal space-y-3 pl-6 text-left text-base font-bold text-[#3a2a19] sm:text-lg">
+    <ol className="list-decimal space-y-3 pl-6 text-left text-base font-bold text-black sm:text-lg">
       {children}
     </ol>
   ),
   li: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
-  hr: () => <hr className="border-t-2 border-[#8e6b48]/40" />,
+  hr: () => <hr className="border-t-2 border-black/40" />,
 };
 
 export interface ReferendumStepperProps {
@@ -550,10 +550,10 @@ export function ReferendumStepper({
     "absolute left-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70";
   const narratorClass = isStepperMode
     ? "absolute bottom-0 right-0 z-20 cursor-pointer"
-    : "fixed bottom-5 right-5 z-30 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-[#3a2a19]/20 bg-[#f7f1e4]/90 text-[#3a2a19] shadow-[6px_6px_0_rgba(35,24,13,0.15)] backdrop-blur-sm transition-colors hover:bg-[#fff9ef]";
+    : "fixed bottom-5 right-5 z-30 flex h-14 w-14 cursor-pointer items-center justify-center border border-black bg-white text-black transition-colors hover:bg-black hover:text-white";
   const imageToggleClass = isStepperMode
     ? "absolute bottom-4 left-4 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-white/20 bg-white/10 text-white/40 transition-colors hover:bg-white/20 hover:text-white/70"
-    : "fixed bottom-4 left-4 z-30 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[#3a2a19]/20 bg-[#f7f1e4]/85 text-[#3a2a19]/70 shadow-[4px_4px_0_rgba(35,24,13,0.12)] backdrop-blur-sm transition-colors hover:bg-[#fff9ef] hover:text-[#3a2a19]";
+    : "fixed bottom-4 left-4 z-30 flex h-8 w-8 cursor-pointer items-center justify-center border border-black bg-white text-black transition-colors hover:bg-black hover:text-white";
   const documentComponents = isStepperMode
     ? stepperMarkdownComponents
     : readerMarkdownComponents;
@@ -666,13 +666,13 @@ export function ReferendumStepper({
       ) : (
         <div className="relative min-h-full px-6 pb-40 pt-24 sm:px-8">
           <div className="mx-auto w-full max-w-4xl">
-            <div className="mx-auto mb-10 h-px w-24 bg-[#8e6b48]/40" />
+            <div className="mx-auto mb-10 h-px w-24 bg-black/40" />
             <div className="mx-auto w-full max-w-2xl space-y-10">
               <div className="space-y-8">
                 <p className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
                   {introText}
                 </p>
-                <div className="mx-auto h-px w-24 bg-[#8e6b48]/40" />
+                <div className="mx-auto h-px w-24 bg-black/40" />
               </div>
               {slides.map((slide, i) => (
                 <ReactMarkdown
@@ -683,7 +683,7 @@ export function ReferendumStepper({
                   {slide}
                 </ReactMarkdown>
               ))}
-              <div className="border-t border-[#8e6b48]/30 pt-12">
+              <div className="border-t border-black/30 pt-12">
                 {signatureContent}
               </div>
             </div>

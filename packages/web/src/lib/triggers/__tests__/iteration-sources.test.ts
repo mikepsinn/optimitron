@@ -38,7 +38,7 @@ describe("triggers/iteration-sources", () => {
         id: "t1",
         taskKey: "demo:1",
         title: "Demo",
-        ownerUserId: "u1",
+        createdByUserId: "u1",
         assigneePersonId: null,
         assigneeOrganizationId: null,
         parentTaskId: null,

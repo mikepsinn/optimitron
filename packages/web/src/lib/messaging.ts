@@ -15,6 +15,12 @@ export const POINT_NAME = "VOTE" as const;
 export const POINT = `${POINT_NAME} Point` as const;
 export const POINTS = `${POINT_NAME} Points` as const;
 
+export const REFERRAL_SHARE_LABEL =
+  "Immediately share this link with everyone you do not want to suffer and die from horrible diseases." as const;
+
+export const REFERRAL_SHARE_PROMPT =
+  `${REFERRAL_SHARE_LABEL} It will significantly reduce the probability that they will suffer and die from horrible diseases.` as const;
+
 // ---------------------------------------------------------------------------
 // User-framing vocabulary (variant-aware)
 //
@@ -75,7 +81,7 @@ const MANAGER_VOCAB: UserFramingVocabulary = {
     longName: "Earth Optimization Services LLC",
   },
   recruitCtaShort: "Hire two humanity managers",
-  shareLinkPrompt: `This is your hiring link. Share it to hire humanity managers and earn ${POINTS}.`,
+  shareLinkPrompt: REFERRAL_SHARE_PROMPT,
   earnPerRecruit: `Each humanity manager you hire earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per humanity manager hired`,
   verifyAndEarn: `Verify with World ID, then share your link. Each humanity manager you hire earns you 1 ${POINT}.`,
@@ -98,7 +104,7 @@ const VOTER_VOCAB: UserFramingVocabulary = {
     longName: "Earth Optimization Services LLC",
   },
   recruitCtaShort: "Recruit verified voters",
-  shareLinkPrompt: `This is your referral code. Share it to recruit voters and earn ${POINTS}.`,
+  shareLinkPrompt: REFERRAL_SHARE_PROMPT,
   earnPerRecruit: `Every verified voter you bring in earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per verified voter recruited`,
   verifyAndEarn: `Verify with World ID, then share your link. Each verified voter who uses it earns you 1 ${POINT}.`,

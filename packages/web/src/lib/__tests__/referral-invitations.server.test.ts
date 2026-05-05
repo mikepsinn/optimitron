@@ -125,7 +125,7 @@ describe("createReferralInvitation", () => {
     );
     expect(mocks.createReferralInvitationTask).toHaveBeenCalledWith(
       expect.objectContaining({
-        ownerUserId: "user_1",
+        creatorUserId: "user_1",
         parentTaskId: "training_root",
         recipientPersonId: "person_recipient",
       }),

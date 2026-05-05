@@ -1558,7 +1558,7 @@ model User {
   sentReferralInvitations            ReferralInvitation[]             @relation("ReferralInvitationReferrer")
   surveyResponses                    SurveyResponse[]                 @relation("UserSurveyResponses")
   taskClaims                         TaskClaim[]                      @relation("UserTaskClaims")
-  ownedTasks                         Task[]                           @relation("TaskOwner")
+  createdTasks                       Task[]                           @relation("TaskCreator")
   verifiedTasks                      Task[]                           @relation("TaskVerifiedByUser")
   verifiedTaskClaims                 TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
   verifiedTaskMilestones             TaskMilestone[]                  @relation("TaskMilestoneVerifiedByUser")
@@ -4358,7 +4358,7 @@ model CourtCase {
   /// Whether the case can be shown publicly
   isPublic Boolean @default(false)
 
-  /// User or agent owner who drafted the case
+  /// User or agent creator who drafted the case
   createdByUserId String?
 
   /// Optional nominal plaintiff, e.g. Humanity
@@ -5256,8 +5256,8 @@ model Task {
   /// User who verified this task's completion
   verifiedByUserId String?
 
-  /// Optional user who owns this task in personal/project task views
-  ownerUserId String?
+  /// User who created this task
+  createdByUserId String
 
   /// Current published impact estimate set used by APIs and ranking
   currentImpactEstimateSetId String? @unique
@@ -5353,7 +5353,7 @@ model Task {
   assigneePerson            Person?                     @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
   assigneeOrganization      Organization?               @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
   verifiedByUser            User?                       @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
-  owner                     User?                       @relation("TaskOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  createdByUser             User                        @relation("TaskCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
   currentImpactEstimateSet  TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
   impactEstimateSets        TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
   claims                    TaskClaim[]                 @relation("TaskClaims")
@@ -5377,14 +5377,14 @@ model Task {
   @@index([assigneePersonId])
   @@index([assigneeOrganizationId])
   @@index([verifiedByUserId])
-  @@index([ownerUserId])
+  @@index([createdByUserId])
   @@index([claimPolicy, status])
   @@index([category])
   @@index([difficulty])
   @@index([availableAt])
   @@index([dueAt])
   @@index([deadlinePolicy, dueAt])
-  @@index([ownerUserId, status, availableAt])
+  @@index([createdByUserId, status, availableAt])
   @@index([isPublic])
   @@index([deletedAt])
 }
@@ -6596,9 +6596,9 @@ model TaskSpawnSpec {
   actionLinkInstructionsTemplate String?
 
   // -- Resolvers (string keys → runtime registry) --
-  /// Who owns the spawned task.
+  /// Who created the spawned task.
   ///   "actor" | "context.<path>" | "system"
-  ownerResolver String @default("actor")
+  creatorResolver String @default("actor")
 
   /// Who is assigned (Person row).
   ///   "actor" | "context.recipient" | "lookup.byEmail" | "lookup.byHandle" | "none"
@@ -6659,7 +6659,7 @@ model TaskCommunicationSpawnSpec {
   /// "EMAIL" | "IN_APP" | "PUSH" | future channels — string for forward-compat.
   channel String @default("EMAIL")
 
-  /// "ASSIGNEE" | "OWNER" | "WATCHERS" | "context.recipientUserIds" — resolver key.
+  /// "ASSIGNEE" | "CREATOR" | "WATCHERS" | "context.recipientUserIds" — resolver key.
   audienceResolver String @default("ASSIGNEE")
 
   /// "REMINDER" | "ANNOUNCEMENT" | "STATUS_UPDATE" — string for forward-compat.

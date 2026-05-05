@@ -243,7 +243,7 @@ const taskListSelect = {
   interestTags: true,
   isPublic: true,
   maxClaims: true,
-  ownerUserId: true,
+  createdByUserId: true,
   sortOrder: true,
   outgoingEdges: {
     where: {
@@ -407,8 +407,12 @@ const taskDetailSelect = {
 } satisfies Prisma.TaskSelect;
 
 type TaskListItem = Prisma.TaskGetPayload<{ select: typeof taskListSelect }>;
-type TaskDetailItem = Prisma.TaskGetPayload<{ select: typeof taskDetailSelect }>;
-type TaskSearchItem = Prisma.TaskGetPayload<{ select: typeof taskSearchSelect }>;
+type TaskDetailItem = Prisma.TaskGetPayload<{
+  select: typeof taskDetailSelect;
+}>;
+type TaskSearchItem = Prisma.TaskGetPayload<{
+  select: typeof taskSearchSelect;
+}>;
 type TaskViewer = Awaited<ReturnType<typeof getTaskViewer>>;
 
 export interface TaskSearchResult {
@@ -426,11 +430,16 @@ export interface TaskSearchResult {
 
 function countActiveClaims(task: TaskListItem | TaskDetailItem) {
   return task.claims.filter((claim) =>
-    ACTIVE_CLAIM_STATUSES.includes(claim.status as (typeof ACTIVE_CLAIM_STATUSES)[number]),
+    ACTIVE_CLAIM_STATUSES.includes(
+      claim.status as (typeof ACTIVE_CLAIM_STATUSES)[number],
+    ),
   ).length;
 }
 
-function hasViewerClaim(task: TaskListItem | TaskDetailItem, userId: string | null) {
+function hasViewerClaim(
+  task: TaskListItem | TaskDetailItem,
+  userId: string | null,
+) {
   if (!userId) {
     return false;
   }
@@ -453,7 +462,11 @@ function getPrimaryTaskSourceArtifact(task: TaskListItem | TaskDetailItem) {
 }
 
 function normalizeTaskContextJson(contextJson: Prisma.JsonValue) {
-  if (contextJson == null || typeof contextJson !== "object" || Array.isArray(contextJson)) {
+  if (
+    contextJson == null ||
+    typeof contextJson !== "object" ||
+    Array.isArray(contextJson)
+  ) {
     return contextJson;
   }
 
@@ -467,11 +480,14 @@ function normalizeTaskContextJson(contextJson: Prisma.JsonValue) {
   return record;
 }
 
-function normalizeSourceArtifact<T extends { sourceRef: string | null; sourceUrl: string | null }>(artifact: T) {
+function normalizeSourceArtifact<
+  T extends { sourceRef: string | null; sourceUrl: string | null },
+>(artifact: T) {
   return {
     ...artifact,
     sourceRef:
-      typeof artifact.sourceRef === "string" && /^https?:\/\//i.test(artifact.sourceRef)
+      typeof artifact.sourceRef === "string" &&
+      /^https?:\/\//i.test(artifact.sourceRef)
         ? canonicalizeSiteUrl(artifact.sourceRef)
         : artifact.sourceRef,
     sourceUrl: canonicalizeSiteUrl(artifact.sourceUrl),
@@ -488,7 +504,9 @@ function getPrimaryTaskCommunicationEndpoint(
   );
 }
 
-function getEndpointUrl(endpoint: ReturnType<typeof getPrimaryTaskCommunicationEndpoint>) {
+function getEndpointUrl(
+  endpoint: ReturnType<typeof getPrimaryTaskCommunicationEndpoint>,
+) {
   if (!endpoint) {
     return null;
   }
@@ -517,7 +535,9 @@ function mapTaskSearchResult(
   const snippet = [
     task.description,
     task.roleTitle,
-    assigneeParts.length > 0 ? `Assigned to ${assigneeParts.join(" / ")}` : null,
+    assigneeParts.length > 0
+      ? `Assigned to ${assigneeParts.join(" / ")}`
+      : null,
   ]
     .filter((value): value is string => Boolean(value?.trim()))
     .join(" ");
@@ -578,9 +598,12 @@ function buildParentInheritedImpactFrame(
     estimatedCashCostUsdBase: null,
     estimatedCashCostUsdHigh: null,
     estimatedCashCostUsdLow: null,
-    estimatedEffortHoursBase: task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursBase,
-    estimatedEffortHoursHigh: task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursHigh,
-    estimatedEffortHoursLow: task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursLow,
+    estimatedEffortHoursBase:
+      task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursBase,
+    estimatedEffortHoursHigh:
+      task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursHigh,
+    estimatedEffortHoursLow:
+      task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursLow,
     frameSlug: `${parentFrame.frameSlug}-parent-share`,
     metrics: [],
   });
@@ -602,7 +625,8 @@ function buildDownstreamUnlockedImpactFrame(
       return [];
     }
 
-    const weightedFrames: NonNullable<TaskImpactSelection["selectedFrame"]>[] = [];
+    const weightedFrames: NonNullable<TaskImpactSelection["selectedFrame"]>[] =
+      [];
     const probabilityDelta =
       edge.probabilityDeltaBase != null && edge.probabilityDeltaBase > 0
         ? edge.probabilityDeltaBase
@@ -629,9 +653,12 @@ function buildDownstreamUnlockedImpactFrame(
         delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,
         delayDalysLostPerDayHigh: frame.delayDalysLostPerDayHigh,
         delayDalysLostPerDayLow: frame.delayDalysLostPerDayLow,
-        delayEconomicValueUsdLostPerDayBase: frame.delayEconomicValueUsdLostPerDayBase,
-        delayEconomicValueUsdLostPerDayHigh: frame.delayEconomicValueUsdLostPerDayHigh,
-        delayEconomicValueUsdLostPerDayLow: frame.delayEconomicValueUsdLostPerDayLow,
+        delayEconomicValueUsdLostPerDayBase:
+          frame.delayEconomicValueUsdLostPerDayBase,
+        delayEconomicValueUsdLostPerDayHigh:
+          frame.delayEconomicValueUsdLostPerDayHigh,
+        delayEconomicValueUsdLostPerDayLow:
+          frame.delayEconomicValueUsdLostPerDayLow,
         estimatedCashCostUsdBase: null,
         estimatedCashCostUsdHigh: null,
         estimatedCashCostUsdLow: null,
@@ -644,9 +671,13 @@ function buildDownstreamUnlockedImpactFrame(
         expectedDalysAvertedBase:
           (frame.delayDalysLostPerDayBase ?? 0) * timeDeltaDays,
         expectedDalysAvertedHigh:
-          frame.delayDalysLostPerDayHigh == null ? null : frame.delayDalysLostPerDayHigh * timeDeltaDays,
+          frame.delayDalysLostPerDayHigh == null
+            ? null
+            : frame.delayDalysLostPerDayHigh * timeDeltaDays,
         expectedDalysAvertedLow:
-          frame.delayDalysLostPerDayLow == null ? null : frame.delayDalysLostPerDayLow * timeDeltaDays,
+          frame.delayDalysLostPerDayLow == null
+            ? null
+            : frame.delayDalysLostPerDayLow * timeDeltaDays,
         expectedEconomicValueUsdBase:
           (frame.delayEconomicValueUsdLostPerDayBase ?? 0) * timeDeltaDays,
         expectedEconomicValueUsdHigh:
@@ -679,11 +710,17 @@ function buildDownstreamUnlockedImpactFrame(
     estimatedCashCostUsdHigh: null,
     estimatedCashCostUsdLow: null,
     estimatedEffortHoursBase:
-      task.estimatedEffortHours ?? downstreamFrames[0]?.estimatedEffortHoursBase ?? null,
+      task.estimatedEffortHours ??
+      downstreamFrames[0]?.estimatedEffortHoursBase ??
+      null,
     estimatedEffortHoursHigh:
-      task.estimatedEffortHours ?? downstreamFrames[0]?.estimatedEffortHoursHigh ?? null,
+      task.estimatedEffortHours ??
+      downstreamFrames[0]?.estimatedEffortHoursHigh ??
+      null,
     estimatedEffortHoursLow:
-      task.estimatedEffortHours ?? downstreamFrames[0]?.estimatedEffortHoursLow ?? null,
+      task.estimatedEffortHours ??
+      downstreamFrames[0]?.estimatedEffortHoursLow ??
+      null,
     frameSlug: `downstream-unlocked-${task.id}`,
     metrics: [],
   });
@@ -721,8 +758,13 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     options?.frameKey ?? DEFAULT_TASK_IMPACT_FRAME,
   );
   const inheritedParentFrame =
-    directImpactSelection.selectedFrame == null ? buildParentInheritedImpactFrame(task, options) : null;
-  const downstreamUnlockedFrame = buildDownstreamUnlockedImpactFrame(task, options);
+    directImpactSelection.selectedFrame == null
+      ? buildParentInheritedImpactFrame(task, options)
+      : null;
+  const downstreamUnlockedFrame = buildDownstreamUnlockedImpactFrame(
+    task,
+    options,
+  );
   const selectedImpactFrame = sumImpactFrameSummaries(
     [
       directImpactSelection.selectedFrame,
@@ -731,15 +773,23 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     ].filter((frame): frame is NonNullable<typeof frame> => frame != null),
     directImpactSelection.selectedFrame
       ? {
-          customFrameLabel: directImpactSelection.selectedFrame.customFrameLabel,
-          estimatedCashCostUsdBase: task.actualCashCostUsd ?? directImpactSelection.selectedFrame.estimatedCashCostUsdBase,
-          estimatedEffortHoursBase: task.estimatedEffortHours ?? directImpactSelection.selectedFrame.estimatedEffortHoursBase,
+          customFrameLabel:
+            directImpactSelection.selectedFrame.customFrameLabel,
+          estimatedCashCostUsdBase:
+            task.actualCashCostUsd ??
+            directImpactSelection.selectedFrame.estimatedCashCostUsdBase,
+          estimatedEffortHoursBase:
+            task.estimatedEffortHours ??
+            directImpactSelection.selectedFrame.estimatedEffortHoursBase,
           frameKey: directImpactSelection.selectedFrame.frameKey,
           frameSlug: directImpactSelection.selectedFrame.frameSlug,
           metrics: directImpactSelection.selectedFrame.metrics,
         }
       : {
-          customFrameLabel: inheritedParentFrame?.customFrameLabel ?? downstreamUnlockedFrame?.customFrameLabel ?? null,
+          customFrameLabel:
+            inheritedParentFrame?.customFrameLabel ??
+            downstreamUnlockedFrame?.customFrameLabel ??
+            null,
           estimatedCashCostUsdBase: task.actualCashCostUsd ?? null,
           estimatedCashCostUsdHigh: null,
           estimatedCashCostUsdLow: null,
@@ -775,16 +825,20 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
       ? task.childTasks.map((childTask) => decorateTask(childTask, options))
       : undefined;
 
-  const blockerStatuses = task.incomingEdges.map((edge) => edge.fromTask.status as TaskStatus);
+  const blockerStatuses = task.incomingEdges.map(
+    (edge) => edge.fromTask.status as TaskStatus,
+  );
   const normalizedSourceArtifacts = task.sourceArtifacts.map((entry) => ({
     ...entry,
     sourceArtifact: normalizeSourceArtifact(entry.sourceArtifact),
   }));
   const normalizedPrimarySourceArtifact =
-    normalizedSourceArtifacts.find((entry) => entry.isPrimary)?.sourceArtifact ??
+    normalizedSourceArtifacts.find((entry) => entry.isPrimary)
+      ?.sourceArtifact ??
     normalizedSourceArtifacts[0]?.sourceArtifact ??
     null;
-  const primaryCommunicationEndpoint = getPrimaryTaskCommunicationEndpoint(task);
+  const primaryCommunicationEndpoint =
+    getPrimaryTaskCommunicationEndpoint(task);
   const primaryEndpointUrl = getEndpointUrl(primaryCommunicationEndpoint);
   const primaryEndpoint = primaryCommunicationEndpoint
     ? {
@@ -812,7 +866,12 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
       selectedFrame: selectedImpactFrame,
       selectedMetrics:
         selectedImpactFrame?.metrics != null
-          ? Object.fromEntries(selectedImpactFrame.metrics.map((metric) => [metric.metricKey, metric]))
+          ? Object.fromEntries(
+              selectedImpactFrame.metrics.map((metric) => [
+                metric.metricKey,
+                metric,
+              ]),
+            )
           : directImpactSelection.metricsByKey,
       ...derivedImpact,
     },
@@ -881,7 +940,7 @@ function getTaskVisibilityWhere(input?: {
   status?: TaskStatus | null;
   taskId?: string | null;
   userId?: string | null;
-  visibility?: "public" | "owned" | "accessible";
+  visibility?: "public" | "created" | "accessible";
 }): Prisma.TaskWhereInput {
   const baseWhere: Prisma.TaskWhereInput = {
     assigneeOrganizationId: input?.assigneeOrganizationId ?? undefined,
@@ -892,24 +951,24 @@ function getTaskVisibilityWhere(input?: {
   };
 
   const visibility = input?.visibility ?? "public";
-  if (visibility === "owned") {
+  if (visibility === "created") {
     if (!input?.userId) {
       return {
         ...baseWhere,
-        ownerUserId: "__unreachable__",
+        createdByUserId: "__unreachable__",
       };
     }
 
     return {
       ...baseWhere,
-      ownerUserId: input.userId,
+      createdByUserId: input.userId,
     };
   }
 
   if (visibility === "accessible" && input?.userId) {
     return {
       ...baseWhere,
-      OR: [{ isPublic: true }, { ownerUserId: input.userId }],
+      OR: [{ isPublic: true }, { createdByUserId: input.userId }],
     };
   }
 
@@ -919,7 +978,9 @@ function getTaskVisibilityWhere(input?: {
   };
 }
 
-function sortTasksForAccountability<T extends ReturnType<typeof decorateTask>>(tasks: T[]) {
+function sortTasksForAccountability<T extends ReturnType<typeof decorateTask>>(
+  tasks: T[],
+) {
   return [...tasks].sort((left, right) => {
     const rightScore = scoreTaskForAccountability(right);
     const leftScore = scoreTaskForAccountability(left);
@@ -934,7 +995,9 @@ function sortTasksForAccountability<T extends ReturnType<typeof decorateTask>>(t
       return rightVerifiedAt - leftVerifiedAt;
     }
 
-    return (right.completedAt?.getTime() ?? 0) - (left.completedAt?.getTime() ?? 0);
+    return (
+      (right.completedAt?.getTime() ?? 0) - (left.completedAt?.getTime() ?? 0)
+    );
   });
 }
 
@@ -1129,7 +1192,7 @@ export async function listTasks(options?: {
   limit?: number | null;
   status?: TaskStatus | null;
   userId?: string | null;
-  visibility?: "public" | "owned" | "accessible";
+  visibility?: "public" | "created" | "accessible";
 }) {
   const visibilityWhere = getTaskVisibilityWhere({
     assigneeOrganizationId: options?.assigneeOrganizationId,
@@ -1334,16 +1397,22 @@ export async function getPersonTaskProfileData(
   );
 
   return {
-    openTasks: decoratedTasks.filter((task) => task.status !== TaskStatus.VERIFIED),
+    openTasks: decoratedTasks.filter(
+      (task) => task.status !== TaskStatus.VERIFIED,
+    ),
     person,
     tasks: decoratedTasks,
-    verifiedTasks: decoratedTasks.filter((task) => task.status === TaskStatus.VERIFIED),
+    verifiedTasks: decoratedTasks.filter(
+      (task) => task.status === TaskStatus.VERIFIED,
+    ),
   };
 }
 
-export async function createOwnedTask(
-  ownerUserId: string,
+export async function createTask(
+  creatorUserId: string,
   input: {
+    assigneeOrganizationId?: string | null;
+    assigneePersonId?: string | null;
     category?: TaskCategory | null;
     claimPolicy?: TaskClaimPolicy | null;
     description?: string | null;
@@ -1362,6 +1431,10 @@ export async function createOwnedTask(
 ) {
   const title = input.title.trim();
   const description = input.description?.trim() ?? "";
+  const assigneeOrganizationId = input.assigneeOrganizationId?.trim() || null;
+  const assigneePersonId = input.assigneePersonId?.trim() || null;
+  const isAssignedTask = Boolean(assigneeOrganizationId || assigneePersonId);
+  const claimPolicy = input.claimPolicy ?? TaskClaimPolicy.ASSIGNED_ONLY;
   const endpointData = input.primaryEndpoint
     ? buildPrimaryTaskCommunicationEndpointCreateData(input.primaryEndpoint)
     : null;
@@ -1371,7 +1444,7 @@ export async function createOwnedTask(
   }
 
   if (
-    input.claimPolicy === TaskClaimPolicy.OPEN_MANY &&
+    claimPolicy === TaskClaimPolicy.OPEN_MANY &&
     input.maxClaims != null &&
     input.maxClaims < 1
   ) {
@@ -1380,8 +1453,10 @@ export async function createOwnedTask(
 
   return prisma.task.create({
     data: {
+      assigneeOrganizationId,
+      assigneePersonId,
       category: input.category ?? TaskCategory.OTHER,
-      claimPolicy: input.claimPolicy ?? TaskClaimPolicy.ASSIGNED_ONLY,
+      claimPolicy,
       ...(endpointData
         ? {
             communicationEndpoints: {
@@ -1394,12 +1469,12 @@ export async function createOwnedTask(
       dueAt: input.dueAt ?? null,
       estimatedEffortHours: input.estimatedEffortHours ?? null,
       interestTags: input.interestTags?.filter(Boolean) ?? [],
-      isPublic: input.isPublic ?? false,
+      isPublic: input.isPublic ?? isAssignedTask,
       maxClaims:
-        (input.claimPolicy ?? TaskClaimPolicy.ASSIGNED_ONLY) === TaskClaimPolicy.OPEN_MANY
-          ? input.maxClaims ?? null
+        claimPolicy === TaskClaimPolicy.OPEN_MANY
+          ? (input.maxClaims ?? null)
           : null,
-      ownerUserId,
+      createdByUserId: creatorUserId,
       roleTitle: input.roleTitle?.trim() || null,
       skillTags: input.skillTags?.filter(Boolean) ?? [],
       status: input.status ?? TaskStatus.ACTIVE,
@@ -1409,9 +1484,9 @@ export async function createOwnedTask(
   });
 }
 
-export async function updateOwnedTask(
+export async function updateTaskCreatedByUser(
   taskId: string,
-  ownerUserId: string,
+  creatorUserId: string,
   input: {
     category?: TaskCategory | null;
     claimPolicy?: TaskClaimPolicy | null;
@@ -1432,8 +1507,8 @@ export async function updateOwnedTask(
   const existingTask = await prisma.task.findFirst({
     where: {
       deletedAt: null,
+      createdByUserId: creatorUserId,
       id: taskId,
-      ownerUserId,
     },
     select: {
       claimPolicy: true,
@@ -1467,7 +1542,8 @@ export async function updateOwnedTask(
       data: {
         category: input.category ?? undefined,
         claimPolicy: input.claimPolicy ?? undefined,
-        description: input.description == null ? undefined : input.description.trim(),
+        description:
+          input.description == null ? undefined : input.description.trim(),
         difficulty: input.difficulty ?? undefined,
         dueAt: input.dueAt ?? undefined,
         estimatedEffortHours: input.estimatedEffortHours ?? undefined,
@@ -1475,11 +1551,12 @@ export async function updateOwnedTask(
         isPublic: input.isPublic ?? undefined,
         maxClaims:
           nextClaimPolicy === TaskClaimPolicy.OPEN_MANY
-            ? input.maxClaims ?? undefined
+            ? (input.maxClaims ?? undefined)
             : input.claimPolicy
               ? null
               : undefined,
-        roleTitle: input.roleTitle == null ? undefined : input.roleTitle.trim() || null,
+        roleTitle:
+          input.roleTitle == null ? undefined : input.roleTitle.trim() || null,
         skillTags: input.skillTags?.filter(Boolean) ?? undefined,
         status: input.status ?? undefined,
         title,
@@ -1487,7 +1564,11 @@ export async function updateOwnedTask(
     });
 
     if (shouldUpdateEndpoint) {
-      await upsertPrimaryTaskCommunicationEndpoint(tx, taskId, input.primaryEndpoint ?? {});
+      await upsertPrimaryTaskCommunicationEndpoint(
+        tx,
+        taskId,
+        input.primaryEndpoint ?? {},
+      );
     }
 
     return tx.task.findUniqueOrThrow({
@@ -1497,11 +1578,14 @@ export async function updateOwnedTask(
   });
 }
 
-// Soft-delete a task the user owns. Mirrors the MCP deleteTask handler:
-// owner-scoped, refuses public tasks (those need admin), sets deletedAt.
-export async function deleteOwnedTask(taskId: string, ownerUserId: string) {
+// Soft-delete a task the user created. Mirrors the MCP deleteTask handler:
+// creator-scoped, refuses public tasks (those need admin), sets deletedAt.
+export async function deleteTaskCreatedByUser(
+  taskId: string,
+  creatorUserId: string,
+) {
   const existing = await prisma.task.findFirst({
-    where: { deletedAt: null, id: taskId, ownerUserId },
+    where: { createdByUserId: creatorUserId, deletedAt: null, id: taskId },
     select: { id: true, isPublic: true },
   });
 
@@ -1569,7 +1653,10 @@ export async function claimTask(taskId: string, userId: string) {
       },
     });
 
-    if (task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE && activeClaimCount > 0) {
+    if (
+      task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE &&
+      activeClaimCount > 0
+    ) {
       throw new Error("This task already has an active claimant.");
     }
 
@@ -1705,7 +1792,9 @@ export async function verifyTask(
       }
 
       if (!claim.completionEvidence?.trim()) {
-        throw new Error("Claim completion evidence is required before verification.");
+        throw new Error(
+          "Claim completion evidence is required before verification.",
+        );
       }
 
       const verifiedClaim = await tx.taskClaim.update({
@@ -1790,37 +1879,36 @@ export async function reassignTask(
 ) {
   await requireTaskReviewer(reviewerUserId);
 
-  const assigneeOrganization =
-    input.organizationId?.trim()
-      ? await prisma.organization.findUniqueOrThrow({
-          where: { id: input.organizationId.trim() },
+  const assigneeOrganization = input.organizationId?.trim()
+    ? await prisma.organization.findUniqueOrThrow({
+        where: { id: input.organizationId.trim() },
+      })
+    : input.organizationName?.trim()
+      ? await upsertTrustedOrganization({
+          name: input.organizationName.trim(),
+          type: input.organizationType ?? undefined,
         })
-      : input.organizationName?.trim()
-        ? await upsertTrustedOrganization({
-            name: input.organizationName.trim(),
-            type: input.organizationType ?? undefined,
-          })
-        : null;
+      : null;
 
   const shouldResolvePerson =
     Boolean(input.personId?.trim()) ||
     Boolean(input.displayName?.trim()) ||
     Boolean(input.email?.trim());
 
-  const assigneePerson =
-    !shouldResolvePerson
-      ? null
-      : input.personId?.trim()
-        ? await prisma.person.findUniqueOrThrow({
-            where: { id: input.personId.trim() },
-          })
-        : await findOrCreatePerson({
-            currentAffiliation: input.currentAffiliation ?? assigneeOrganization?.name ?? null,
-            displayName: input.displayName?.trim() || "",
-            email: input.email ?? null,
-            isPublicFigure: true,
-            roleTitle: input.roleTitle ?? null,
-          });
+  const assigneePerson = !shouldResolvePerson
+    ? null
+    : input.personId?.trim()
+      ? await prisma.person.findUniqueOrThrow({
+          where: { id: input.personId.trim() },
+        })
+      : await findOrCreatePerson({
+          currentAffiliation:
+            input.currentAffiliation ?? assigneeOrganization?.name ?? null,
+          displayName: input.displayName?.trim() || "",
+          email: input.email ?? null,
+          isPublicFigure: true,
+          roleTitle: input.roleTitle ?? null,
+        });
 
   return prisma.task.update({
     where: { id: taskId },

@@ -10,9 +10,9 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth-utils";
 import {
-  deleteOwnedTask,
+  deleteTaskCreatedByUser,
   getTaskDetailData,
-  updateOwnedTask,
+  updateTaskCreatedByUser,
 } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
@@ -63,7 +63,10 @@ export async function GET(
     return NextResponse.json({ data, success: true });
   } catch (error) {
     console.error("[TASKS] Failed to load task detail:", error);
-    return NextResponse.json({ error: "Failed to load task detail." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to load task detail." },
+      { status: 500 },
+    );
   }
 }
 
@@ -76,7 +79,7 @@ export async function PATCH(
     const { id } = await context.params;
     const parsed = UpdateTaskBodySchema.parse(await request.json());
     const { dueAt, ...rest } = parsed;
-    const task = await updateOwnedTask(id, userId, {
+    const task = await updateTaskCreatedByUser(id, userId, {
       ...rest,
       dueAt: dueAt == null ? dueAt : new Date(dueAt),
     });
@@ -88,7 +91,10 @@ export async function PATCH(
     }
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: "Invalid task payload." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid task payload." },
+        { status: 400 },
+      );
     }
 
     if (error instanceof Error) {
@@ -97,7 +103,10 @@ export async function PATCH(
     }
 
     console.error("[TASKS] Failed to update task:", error);
-    return NextResponse.json({ error: "Failed to update task." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update task." },
+      { status: 500 },
+    );
   }
 }
 
@@ -108,7 +117,7 @@ export async function DELETE(
   try {
     const { userId } = await requireAuth();
     const { id } = await context.params;
-    const result = await deleteOwnedTask(id, userId);
+    const result = await deleteTaskCreatedByUser(id, userId);
     return NextResponse.json({ data: result, success: true });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
@@ -121,6 +130,9 @@ export async function DELETE(
     }
 
     console.error("[TASKS] Failed to delete task:", error);
-    return NextResponse.json({ error: "Failed to delete task." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete task." },
+      { status: 500 },
+    );
   }
 }

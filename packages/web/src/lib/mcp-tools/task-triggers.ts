@@ -45,8 +45,14 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object" as const,
       properties: {
-        triggerKey: { type: "string", description: "Stable unique key, e.g. 'user-onboarding:treaty'." },
-        eventName: { type: "string", description: "Event that fires this trigger." },
+        triggerKey: {
+          type: "string",
+          description: "Stable unique key, e.g. 'user-onboarding:treaty'.",
+        },
+        eventName: {
+          type: "string",
+          description: "Event that fires this trigger.",
+        },
         triggerKind: {
           type: "string",
           enum: ["spawnTasks", "verifyTask", "spawnCommunication"],
@@ -54,17 +60,28 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
         },
         idempotencyKeyTemplate: {
           type: "string",
-          description: "Template producing a unique key per logical fire, e.g. 'user-onboarding:treaty:{{user.id}}'.",
+          description:
+            "Template producing a unique key per logical fire, e.g. 'user-onboarding:treaty:{{user.id}}'.",
         },
-        eventFilter: { type: "object", description: "Optional JSON filter (equals/matches/and/or/not/exists)." },
+        eventFilter: {
+          type: "object",
+          description:
+            "Optional JSON filter (equals/matches/and/or/not/exists).",
+        },
         completionGate: {
           type: "object",
           description:
             "Optional gate spec (allOf/anyOf/count/always). Add inputScope: 'siblings' to gate against the verify target's siblings instead of its children.",
         },
-        jurisdictionId: { type: "string", description: "Optional jurisdiction scope." },
+        jurisdictionId: {
+          type: "string",
+          description: "Optional jurisdiction scope.",
+        },
         notes: { type: "string", description: "Free-form notes." },
-        enabled: { type: "boolean", description: "Defaults to false for MCP-authored triggers." },
+        enabled: {
+          type: "boolean",
+          description: "Defaults to false for MCP-authored triggers.",
+        },
         schedule: {
           type: "string",
           description:
@@ -83,7 +100,10 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
           items: {
             type: "object",
             properties: {
-              kind: { type: "string", description: "Suffix used in spawned taskKey." },
+              kind: {
+                type: "string",
+                description: "Suffix used in spawned taskKey.",
+              },
               isParent: { type: "boolean" },
               sortOrder: { type: "number" },
               titleTemplate: { type: "string" },
@@ -95,15 +115,21 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
               estimatedEffortHours: { type: "number" },
               dueDays: { type: "number" },
               availableInDays: { type: "number" },
-              deadlinePolicy: { type: "string", enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"] },
+              deadlinePolicy: {
+                type: "string",
+                enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"],
+              },
               claimPolicy: { type: "string" },
               isPublic: { type: "boolean" },
               skillTagTemplates: { type: "array", items: { type: "string" } },
-              interestTagTemplates: { type: "array", items: { type: "string" } },
+              interestTagTemplates: {
+                type: "array",
+                items: { type: "string" },
+              },
               actionLinkUrlTemplate: { type: "string" },
               actionLinkLabelTemplate: { type: "string" },
               actionLinkInstructionsTemplate: { type: "string" },
-              ownerResolver: { type: "string" },
+              creatorResolver: { type: "string" },
               assigneePersonResolver: { type: "string" },
               assigneeOrganizationResolver: { type: "string" },
               parentResolver: { type: "string" },
@@ -114,7 +140,8 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
         },
         communicationSpawnSpecs: {
           type: "array",
-          description: "For triggerKind=spawnCommunication: one spec per outbound message.",
+          description:
+            "For triggerKind=spawnCommunication: one spec per outbound message.",
           items: {
             type: "object",
             properties: {
@@ -142,7 +169,12 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
                   "Inclusive upper bound on the prior-send count. null = open-ended (this spec keeps firing once minSendCount is reached, until maxSendsPerTask runs out).",
               },
             },
-            required: ["kind", "subjectTemplate", "bodyTextTemplate", "dedupeKeyTemplate"],
+            required: [
+              "kind",
+              "subjectTemplate",
+              "bodyTextTemplate",
+              "dedupeKeyTemplate",
+            ],
           },
         },
       },
@@ -158,14 +190,20 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
       properties: {
         triggerKey: { type: "string" },
         eventName: { type: "string" },
-        triggerKind: { type: "string", enum: ["spawnTasks", "verifyTask", "spawnCommunication"] },
+        triggerKind: {
+          type: "string",
+          enum: ["spawnTasks", "verifyTask", "spawnCommunication"],
+        },
         idempotencyKeyTemplate: { type: "string" },
         eventFilter: { type: "object" },
         completionGate: { type: "object" },
         jurisdictionId: { type: "string" },
         notes: { type: "string" },
         enabled: { type: "boolean" },
-        schedule: { type: "string", description: "Cron expression. See createTaskTrigger." },
+        schedule: {
+          type: "string",
+          description: "Cron expression. See createTaskTrigger.",
+        },
         iterationSource: {
           type: "string",
           enum: ["none", "overdue-tasks"],
@@ -211,12 +249,16 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
   },
   {
     name: "getTaskTrigger",
-    description: "Get full details of a TaskTrigger by triggerKey, including all spec rows and the most recent fires.",
+    description:
+      "Get full details of a TaskTrigger by triggerKey, including all spec rows and the most recent fires.",
     inputSchema: {
       type: "object" as const,
       properties: {
         triggerKey: { type: "string" },
-        recentFires: { type: "number", description: "How many recent fires to include. Default 10, max 100." },
+        recentFires: {
+          type: "number",
+          description: "How many recent fires to include. Default 10, max 100.",
+        },
       },
       required: ["triggerKey"],
     },
@@ -229,8 +271,15 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
       type: "object" as const,
       properties: {
         triggerKey: { type: "string" },
-        context: { type: "object", description: "Arbitrary event context. Templates and resolvers read from this." },
-        dryRun: { type: "boolean", description: "Default false. True = render-only, no writes." },
+        context: {
+          type: "object",
+          description:
+            "Arbitrary event context. Templates and resolvers read from this.",
+        },
+        dryRun: {
+          type: "boolean",
+          description: "Default false. True = render-only, no writes.",
+        },
       },
       required: ["triggerKey", "context"],
     },
@@ -241,7 +290,9 @@ const TASK_TRIGGER_TOOL_NAME_SET = new Set<string>(
   Object.keys(TASK_TRIGGER_TOOL_SCOPES),
 );
 
-export function isTaskTriggerToolName(name: string): name is TaskTriggerToolName {
+export function isTaskTriggerToolName(
+  name: string,
+): name is TaskTriggerToolName {
   return TASK_TRIGGER_TOOL_NAME_SET.has(name);
 }
 
@@ -277,13 +328,17 @@ export async function handleTaskTriggerToolCall({
 
     case "disableTaskTrigger": {
       const { disableTaskTrigger } = await import("../triggers/admin");
-      const result = await disableTaskTrigger(args as Parameters<typeof disableTaskTrigger>[0]);
+      const result = await disableTaskTrigger(
+        args as Parameters<typeof disableTaskTrigger>[0],
+      );
       return ok(result);
     }
 
     case "listTaskTriggers": {
       const { listTaskTriggers } = await import("../triggers/admin");
-      const result = await listTaskTriggers(args as Parameters<typeof listTaskTriggers>[0]);
+      const result = await listTaskTriggers(
+        args as Parameters<typeof listTaskTriggers>[0],
+      );
       return ok(result);
     }
 
@@ -291,7 +346,8 @@ export async function handleTaskTriggerToolCall({
       const { getTaskTrigger } = await import("../triggers/admin");
       const triggerKey = args.triggerKey as string;
       if (!triggerKey) return err("triggerKey is required");
-      const recentFires = typeof args.recentFires === "number" ? args.recentFires : 10;
+      const recentFires =
+        typeof args.recentFires === "number" ? args.recentFires : 10;
       const result = await getTaskTrigger({ triggerKey, recentFires });
       if (!result) return err(`TaskTrigger not found: ${triggerKey}`);
       return ok(result);

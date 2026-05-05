@@ -184,7 +184,7 @@ export async function createReferralInvitation(input: {
         id: linkedTaskId,
         deletedAt: null,
         OR: [
-          { ownerUserId: input.referrerUserId },
+          { createdByUserId: input.referrerUserId },
           { isPublic: true },
         ],
       },
@@ -266,7 +266,7 @@ export async function createReferralInvitation(input: {
             url: inviteUrl,
           },
           inviteToken,
-          ownerUserId: input.referrerUserId,
+          creatorUserId: input.referrerUserId,
           parentTaskId: userTreatyTask?.taskId ?? null,
           recipientName,
           recipientPersonId: recipientPerson?.id ?? null,

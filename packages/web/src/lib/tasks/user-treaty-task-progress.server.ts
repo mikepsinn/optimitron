@@ -67,8 +67,8 @@ export async function markUserTreatyPersonalSignComplete(
   const updated = await db.task.updateMany({
     where: {
       deletedAt: null,
+      createdByUserId: input.userId,
       id: signTaskId,
-      ownerUserId: input.userId,
       status: { not: TaskStatus.VERIFIED },
     },
     data: {
@@ -123,8 +123,8 @@ export async function markUserTreatyReferralShareComplete(
   const updated = await db.task.updateMany({
     where: {
       deletedAt: null,
+      createdByUserId: input.userId,
       id: shareTaskId,
-      ownerUserId: input.userId,
       status: { not: TaskStatus.VERIFIED },
     },
     data: {
@@ -177,8 +177,8 @@ export async function markUserTreatyPhoneCallComplete(
   const updated = await db.task.updateMany({
     where: {
       deletedAt: null,
+      createdByUserId: input.userId,
       id: phoneTaskId,
-      ownerUserId: input.userId,
       status: { not: TaskStatus.VERIFIED },
     },
     data: {
@@ -246,8 +246,8 @@ export async function markNextHumanAssignmentSubtaskComplete(
   const tasks = await db.task.findMany({
     where: {
       deletedAt: null,
+      createdByUserId: input.userId,
       id: { in: assignmentTaskIds },
-      ownerUserId: input.userId,
     },
     select: { id: true, status: true },
   });
@@ -261,8 +261,8 @@ export async function markNextHumanAssignmentSubtaskComplete(
   const updated = await db.task.updateMany({
     where: {
       deletedAt: null,
+      createdByUserId: input.userId,
       id: targetTask.id,
-      ownerUserId: input.userId,
       status: { not: TaskStatus.VERIFIED },
     },
     data: {

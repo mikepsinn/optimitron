@@ -10,11 +10,13 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth-utils";
-import { createOwnedTask, listTasks } from "@/lib/tasks.server";
+import { createTask, listTasks } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
 
 const CreateTaskBodySchema = z.object({
+  assigneeOrganizationId: z.string().nullish(),
+  assigneePersonId: z.string().nullish(),
   category: z.nativeEnum(TaskCategory).nullish(),
   claimPolicy: z.nativeEnum(TaskClaimPolicy).nullish(),
   contactLabel: z.string().nullish(),
@@ -52,7 +54,9 @@ export async function GET(request: Request) {
         ? TaskImpactFrameKey[rawFrameKey as keyof typeof TaskImpactFrameKey]
         : null;
     const visibility =
-      rawVisibility === "owned" || rawVisibility === "accessible" ? rawVisibility : "public";
+      rawVisibility === "created" || rawVisibility === "accessible"
+        ? rawVisibility
+        : "public";
 
     const tasks = await listTasks({
       assigneeOrganizationId,
@@ -66,7 +70,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ data: tasks, success: true });
   } catch (error) {
     console.error("[TASKS] Failed to list tasks:", error);
-    return NextResponse.json({ error: "Failed to list tasks." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to list tasks." },
+      { status: 500 },
+    );
   }
 }
 
@@ -75,7 +82,7 @@ export async function POST(request: Request) {
     const { userId } = await requireAuth();
     const parsed = CreateTaskBodySchema.parse(await request.json());
     const { dueAt, ...rest } = parsed;
-    const task = await createOwnedTask(userId, {
+    const task = await createTask(userId, {
       ...rest,
       dueAt: dueAt == null ? null : new Date(dueAt),
     });
@@ -87,7 +94,10 @@ export async function POST(request: Request) {
     }
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: "Invalid task payload." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid task payload." },
+        { status: 400 },
+      );
     }
 
     if (error instanceof Error) {
@@ -95,6 +105,9 @@ export async function POST(request: Request) {
     }
 
     console.error("[TASKS] Failed to create task:", error);
-    return NextResponse.json({ error: "Failed to create task." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create task." },
+      { status: 500 },
+    );
   }
 }

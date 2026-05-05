@@ -6,6 +6,7 @@ import {
   type Prisma,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { getWishoniaUserId } from "@/lib/wishonia.server";
 import {
   TREATY_DUE_AT,
 } from "./treaty-signer-network";
@@ -20,10 +21,13 @@ type DbClient = Prisma.TransactionClient | typeof prisma;
 
 export async function ensureTreatyParentTask(
   input: {
+    createdByUserId?: string | null;
     jurisdictionId?: string | null;
   },
   db: DbClient = prisma,
 ) {
+  const createdByUserId = input.createdByUserId?.trim() || await getWishoniaUserId();
+
   return db.task.upsert({
     where: {
       taskKey: TREATY_PARENT_TASK_KEY,
@@ -47,6 +51,7 @@ export async function ensureTreatyParentTask(
       id: TREATY_PARENT_TASK_ID,
       category: TaskCategory.GOVERNANCE,
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId,
       description:
         "Coordinate signature and ratification of the 1% Treaty across national leaders, then keep public pressure on every outstanding signer until the treaty is real.",
       difficulty: TaskDifficulty.EXPERT,

@@ -1,7 +1,7 @@
 import type { TaskCardTask } from "@/components/tasks/task-card";
 
 /**
- * Pure helper that splits the user's owned 1% Treaty subtasks into the two
+ * Pure helper that splits the user's created 1% Treaty subtasks into the two
  * lists the TreatyTaskDashboardClient renders: actionable next tasks (what
  * the user clicks through), and the completed ribbon (what they've already
  * verified).
@@ -15,7 +15,7 @@ import type { TaskCardTask } from "@/components/tasks/task-card";
  * not a queue entry.
  */
 export function selectActionableTreatyTasks(input: {
-  ownedPrivateTasks: ReadonlyArray<{
+  createdPrivateTasks: ReadonlyArray<{
     id: string;
     parentTaskId?: string | null;
     status?: string | null;
@@ -27,7 +27,7 @@ export function selectActionableTreatyTasks(input: {
   const sortBySortOrder = (a: TaskCardTask, b: TaskCardTask) =>
     (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
 
-  const userTreatySubtasks = input.ownedPrivateTasks.filter(
+  const userTreatySubtasks = input.createdPrivateTasks.filter(
     (task) =>
       task.id !== input.treatyTaskId &&
       task.parentTaskId === input.treatyTaskId &&
