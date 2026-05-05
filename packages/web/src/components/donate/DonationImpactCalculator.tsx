@@ -376,14 +376,14 @@ export function DonationImpactCalculator() {
             </Row>
           </div>
 
-          <details
-            id="how-this-is-calculated"
-            className="scroll-mt-8 border-t border-black pt-4 text-sm"
-          >
+          <details className="border-t border-black pt-4 text-sm">
             <summary className="cursor-pointer font-semibold">
               Live derivation
             </summary>
-            <div className="mt-4 space-y-3">
+            <div
+              id="how-this-is-calculated"
+              className="mt-4 scroll-mt-8 space-y-3"
+            >
               <DerivationRow
                 formula={`${formatNumber(votesNeeded)} people × $${costPerVote.toFixed(2)}`}
                 label="Campaign cost"

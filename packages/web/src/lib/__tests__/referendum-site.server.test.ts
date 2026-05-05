@@ -4,6 +4,7 @@ import {
   OrgStatus,
   VotePosition,
 } from "@optimitron/db";
+import { VOTER_LIVES_SAVED } from "@optimitron/data/parameters";
 
 const mocks = vi.hoisted(() => ({
   getTaskDetailData: vi.fn(),
@@ -40,6 +41,7 @@ import {
   buildApprovedOrganizationPositionWhere,
   getReferendumSiteHomeData,
   getReferendumSiteSupportersData,
+  type PublicSignatoriesPage,
 } from "@/lib/referendum-site.server";
 import { getSiteConfig } from "@/lib/site";
 
@@ -55,6 +57,7 @@ describe("referendum-site.server", () => {
     mocks.getTaskDetailData.mockResolvedValue(null);
     mocks.referendumVoteFindMany.mockResolvedValue([]);
     mocks.referendumVoteGroupBy.mockResolvedValue([]);
+    mocks.organizationPositionFindMany.mockResolvedValue([]);
   });
 
   it("requires approved orgs and approved YES positions in signatory queries", () => {
@@ -79,7 +82,9 @@ describe("referendum-site.server", () => {
     mocks.referendumVoteCount.mockResolvedValue(12);
     mocks.organizationPositionCount.mockResolvedValue(3);
 
-    const data = await getReferendumSiteHomeData(getSiteConfig("onePercentTreaty"));
+    const data = await getReferendumSiteHomeData(
+      getSiteConfig("onePercentTreaty"),
+    );
 
     expect(data?.individualCount).toBe(12);
     expect(data?.organizationCount).toBe(3);
@@ -165,18 +170,97 @@ describe("referendum-site.server", () => {
       },
     ]);
 
-    const data = await getReferendumSiteHomeData(getSiteConfig("onePercentTreaty"), {
-      currentUserId: "user_c",
-    });
+    const data = await getReferendumSiteHomeData(
+      getSiteConfig("onePercentTreaty"),
+      {
+        currentUserId: "user_c",
+      },
+    );
+    const publicSignatories = (
+      data as { publicSignatories?: PublicSignatoriesPage } | null
+    )?.publicSignatories;
 
-    expect(data?.publicSigners.currentUserSigner).toMatchObject({
+    expect(publicSignatories?.currentUserSigner).toMatchObject({
       user: { id: "user_c" },
       rank: 3,
     });
-    expect(data?.publicSigners.signers.map((entry) => entry.user.id)).toEqual([
-      "user_b",
-      "user_a",
-      "user_c",
+    expect(
+      publicSignatories?.signatories
+        .filter((entry) => entry.kind === "human")
+        .map((entry) => entry.user.id),
+    ).toEqual(["user_b", "user_a", "user_c"]);
+  });
+
+  it("ranks organizational signatories beside humans by verified voters recruited", async () => {
+    mocks.referendumFindUnique.mockResolvedValue({
+      id: "ref_4",
+      title: "1% Treaty",
+      description: "desc",
+    });
+    mocks.referendumVoteCount.mockResolvedValue(4);
+    mocks.organizationPositionCount.mockResolvedValue(1);
+    mocks.referendumVoteFindMany.mockResolvedValue([
+      {
+        id: "vote_a",
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        userId: "user_a",
+        user: {
+          id: "user_a",
+          name: "A",
+          username: "a",
+          image: null,
+          email: "a@example.com",
+          person: null,
+        },
+      },
     ]);
+    mocks.referendumVoteGroupBy
+      .mockResolvedValueOnce([
+        {
+          referredByUserId: "user_a",
+          _count: { referredByUserId: 2 },
+        },
+      ])
+      .mockResolvedValueOnce([
+        {
+          organizationId: "org_b",
+          _count: { organizationId: 3 },
+        },
+      ]);
+    mocks.organizationPositionFindMany.mockResolvedValue([
+      {
+        id: "position_b",
+        createdAt: new Date("2026-01-02T00:00:00.000Z"),
+        organizationId: "org_b",
+        statement: "We signed.",
+        organization: {
+          id: "org_b",
+          name: "B Org",
+          slug: "b-org",
+          website: "https://b.example",
+          logo: null,
+          description: "B org description",
+        },
+      },
+    ]);
+
+    const data = await getReferendumSiteHomeData(
+      getSiteConfig("onePercentTreaty"),
+    );
+    const publicSignatories = (
+      data as { publicSignatories?: PublicSignatoriesPage } | null
+    )?.publicSignatories;
+
+    expect(
+      publicSignatories?.signatories.map((entry) =>
+        entry.kind === "organization" ? entry.organization.id : entry.user.id,
+      ),
+    ).toEqual(["org_b", "user_a"]);
+    expect(publicSignatories?.totalCount).toBe(2);
+    expect(publicSignatories?.signatories[0]).toMatchObject({
+      kind: "organization",
+      referredYesCount: 3,
+      livesSaved: VOTER_LIVES_SAVED.value * 3,
+    });
   });
 });

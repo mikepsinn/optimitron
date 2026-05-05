@@ -62,8 +62,8 @@ export default async function EmbedPage({
 
   if (!prepared) {
     return (
-      <div className="border border-black bg-white p-4 text-black">
-        <p className="text-sm font-semibold">
+      <div className="border-2 border-foreground bg-background p-4 text-foreground">
+        <p className="text-sm font-bold text-muted-foreground">
           This persuasion flow is not live yet.
         </p>
       </div>

@@ -170,7 +170,7 @@ interface CreateOrganizationOptions {
 export async function createOrganizationWithOwner(
   input: CreateOrganizationInput,
   creatorUserId: string,
-  options: CreateOrganizationOptions = {},
+  options: CreateOrganizationOptions = { rejectDuplicates: true },
 ) {
   const name = input.name.trim();
   if (!name) {

@@ -32,6 +32,7 @@ export const PUBLIC_SIGNERS_PAGE_SIZE = 48;
 export interface PublicSignerEntry {
   id: string;
   createdAt: Date;
+  kind?: "human";
   rank: number;
   referredYesCount: number;
   livesSaved: number;
@@ -42,6 +43,42 @@ export interface PublicSignerEntry {
 export interface PublicSignersPage {
   currentUserSigner: PublicSignerEntry | null;
   signers: PublicSignerEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface PublicHumanSignatoryEntry extends PublicSignerEntry {
+  kind: "human";
+}
+
+export interface PublicOrganizationSignatoryEntry {
+  id: string;
+  createdAt: Date;
+  kind: "organization";
+  rank: number;
+  referredYesCount: number;
+  livesSaved: number;
+  hoursPrevented: number;
+  statement: string | null;
+  organization: {
+    description: string | null;
+    id: string;
+    logo: string | null;
+    name: string;
+    slug: string;
+    website: string | null;
+  };
+}
+
+export type PublicSignatoryEntry =
+  | PublicHumanSignatoryEntry
+  | PublicOrganizationSignatoryEntry;
+
+export interface PublicSignatoriesPage {
+  currentUserSigner: PublicHumanSignatoryEntry | null;
+  signatories: PublicSignatoryEntry[];
   totalCount: number;
   page: number;
   pageSize: number;
@@ -72,6 +109,7 @@ export interface ReferendumSiteHomeData extends ReferendumSiteContext {
   organizationCount: number;
   treatyMarkdown: string;
   publicSigners: PublicSignersPage;
+  publicSignatories: PublicSignatoriesPage;
 }
 
 export type ReferendumSiteSupporterRecord =
@@ -156,6 +194,8 @@ export async function getReferendumSiteHomeData(
     organizationCount,
     allPublicSigners,
     referrerCounts,
+    allOrganizationSignatories,
+    organizationReferrerCounts,
   ] = await Promise.all([
     prisma.referendumVote.count({
       where: buildOfficialReferendumVoteWhere({
@@ -198,6 +238,30 @@ export async function getReferendumSiteHomeData(
       },
       _count: { referredByUserId: true },
     }),
+    prisma.organizationReferendumPosition.findMany({
+      where: buildApprovedOrganizationPositionWhere(context.referendum.id),
+      include: {
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            website: true,
+            logo: true,
+            description: true,
+          },
+        },
+      },
+      orderBy: [{ updatedAt: "desc" }],
+    }),
+    prisma.referendumVote.groupBy({
+      by: ["organizationId"],
+      where: {
+        ...publicSignersWhere,
+        organizationId: { not: null },
+      },
+      _count: { organizationId: true },
+    }),
   ]);
 
   const publicSignersTotal = allPublicSigners.length;
@@ -207,6 +271,15 @@ export async function getReferendumSiteHomeData(
       referredCountByUserId.set(
         row.referredByUserId,
         row._count.referredByUserId,
+      );
+    }
+  }
+  const referredCountByOrganizationId = new Map<string, number>();
+  for (const row of organizationReferrerCounts) {
+    if (row.organizationId) {
+      referredCountByOrganizationId.set(
+        row.organizationId,
+        row._count.organizationId,
       );
     }
   }
@@ -220,6 +293,7 @@ export async function getReferendumSiteHomeData(
       return {
         id: row.id,
         createdAt: row.createdAt,
+        kind: "human" as const,
         referredYesCount,
         livesSaved: VOTER_LIVES_SAVED.value * multiplier,
         hoursPrevented: VOTER_SUFFERING_HOURS_PREVENTED.value * multiplier,
@@ -238,6 +312,41 @@ export async function getReferendumSiteHomeData(
       rank: index + 1,
     }));
 
+  const organizationSignatoryEntries: PublicOrganizationSignatoryEntry[] =
+    allOrganizationSignatories.map((row) => {
+      const referredYesCount =
+        referredCountByOrganizationId.get(row.organizationId) ?? 0;
+      return {
+        id: row.id,
+        createdAt: row.createdAt,
+        kind: "organization",
+        referredYesCount,
+        livesSaved: VOTER_LIVES_SAVED.value * referredYesCount,
+        hoursPrevented:
+          VOTER_SUFFERING_HOURS_PREVENTED.value * referredYesCount,
+        rank: 0,
+        statement: row.statement,
+        organization: row.organization,
+      };
+    });
+
+  const rankedSignatories: PublicSignatoryEntry[] = [
+    ...(ranked as PublicHumanSignatoryEntry[]),
+    ...organizationSignatoryEntries,
+  ]
+    .sort((a, b) => {
+      if (b.referredYesCount !== a.referredYesCount) {
+        return b.referredYesCount - a.referredYesCount;
+      }
+      return a.createdAt.getTime() - b.createdAt.getTime();
+    })
+    .map((entry, index) => ({
+      ...entry,
+      rank: index + 1,
+    }));
+
+  const publicSignatoriesTotal = rankedSignatories.length;
+
   const totalPages = Math.max(
     1,
     Math.ceil(publicSignersTotal / PUBLIC_SIGNERS_PAGE_SIZE),
@@ -247,7 +356,23 @@ export async function getReferendumSiteHomeData(
 
   const signerRows = ranked.slice(skip, skip + PUBLIC_SIGNERS_PAGE_SIZE);
   const currentUserSigner = options.currentUserId
-    ? ranked.find((entry) => entry.user.id === options.currentUserId) ?? null
+    ? (ranked.find((entry) => entry.user.id === options.currentUserId) ?? null)
+    : null;
+  const signatoriesTotalPages = Math.max(
+    1,
+    Math.ceil(publicSignatoriesTotal / PUBLIC_SIGNERS_PAGE_SIZE),
+  );
+  const signatoriesPage = Math.min(requestedPage, signatoriesTotalPages);
+  const signatoriesSkip = (signatoriesPage - 1) * PUBLIC_SIGNERS_PAGE_SIZE;
+  const signatoryRows = rankedSignatories.slice(
+    signatoriesSkip,
+    signatoriesSkip + PUBLIC_SIGNERS_PAGE_SIZE,
+  );
+  const currentUserSignatory = options.currentUserId
+    ? (rankedSignatories.find(
+        (entry): entry is PublicHumanSignatoryEntry =>
+          entry.kind === "human" && entry.user.id === options.currentUserId,
+      ) ?? null)
     : null;
 
   const treatyParentTask =
@@ -263,10 +388,13 @@ export async function getReferendumSiteHomeData(
         : null,
     lateEmployeeTasks:
       site.key === "onePercentTreaty"
-        ? ((treatyParentTask?.task.childTasks ?? []) as unknown as TaskCardTask[])
+        ? ((treatyParentTask?.task.childTasks ??
+            []) as unknown as TaskCardTask[])
         : [],
     fullTasksHref:
-      site.key === "onePercentTreaty" ? getTreatyParentTaskHref() : ROUTES.tasks,
+      site.key === "onePercentTreaty"
+        ? getTreatyParentTaskHref()
+        : ROUTES.tasks,
     individualCount,
     representedHumanCount,
     memorialVoteCount,
@@ -282,6 +410,14 @@ export async function getReferendumSiteHomeData(
       page,
       pageSize: PUBLIC_SIGNERS_PAGE_SIZE,
       totalPages,
+    },
+    publicSignatories: {
+      currentUserSigner: currentUserSignatory,
+      signatories: signatoryRows,
+      totalCount: publicSignatoriesTotal,
+      page: signatoriesPage,
+      pageSize: PUBLIC_SIGNERS_PAGE_SIZE,
+      totalPages: signatoriesTotalPages,
     },
   };
 }

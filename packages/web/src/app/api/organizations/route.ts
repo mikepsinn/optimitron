@@ -48,10 +48,18 @@ export async function POST(req: NextRequest) {
       jurisdictionId?: string;
     };
     const name = body.name?.trim();
+    const website = normalizeOrganizationWebsite(body.website);
 
     if (!name) {
       return NextResponse.json(
         { error: "Organization name is required" },
+        { status: 400 },
+      );
+    }
+
+    if (website === false) {
+      return NextResponse.json(
+        { error: "Invalid website URL" },
         { status: 400 },
       );
     }
@@ -66,7 +74,7 @@ export async function POST(req: NextRequest) {
         name,
         type,
         status: OrgStatus.APPROVED,
-        website: body.website ?? null,
+        website,
         description: body.description ?? null,
         contactEmail: userEmail ?? null,
         jurisdictionId: body.jurisdictionId ?? null,
@@ -84,5 +92,24 @@ export async function POST(req: NextRequest) {
       { error: "Failed to create organization" },
       { status: 500 },
     );
+  }
+}
+
+function normalizeOrganizationWebsite(
+  raw: string | undefined,
+): string | null | false {
+  const trimmed = raw?.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return false;
+    }
+    parsed.hash = "";
+    parsed.hostname = parsed.hostname.toLowerCase();
+    return parsed.toString();
+  } catch {
+    return false;
   }
 }

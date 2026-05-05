@@ -146,6 +146,32 @@ describe("organization.server", () => {
     expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
   });
 
+  it("rejects duplicate organization names by default", async () => {
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback({
+        organization: {
+          create: mocks.txOrganizationCreate,
+          findFirst: mocks.txOrganizationFindFirst,
+          findUnique: mocks.txOrganizationFindUnique,
+        },
+        organizationMember: {
+          create: mocks.txOrganizationMemberCreate,
+        },
+      }),
+    );
+    mocks.txOrganizationFindFirst.mockResolvedValue({
+      name: "Open Philanthropy",
+    });
+
+    await expect(
+      createOrganizationWithOwner(
+        { name: "Open Philanthropy", type: OrgType.FOUNDATION },
+        "user_1",
+      ),
+    ).rejects.toThrow("Organization name already exists: Open Philanthropy");
+    expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
+  });
+
   it("keeps the trusted upsert path explicitly auto-approved", async () => {
     const db = {
       organization: {
