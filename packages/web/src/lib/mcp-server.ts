@@ -208,6 +208,18 @@ async function getPrisma() {
   return prisma;
 }
 
+// Personal-queue handlers need both the userId (creator filter) and the
+// linked Person id (assignee filter) so trigger-spawned tasks assigned to
+// the user surface alongside tasks they authored.
+async function loadSessionPersonId(userId: string): Promise<string | null> {
+  const prisma = await getPrisma();
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { personId: true },
+  });
+  return user?.personId ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -2822,7 +2834,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getMyQueue",
     description:
-      "Get the authenticated user's available private self-work queue sorted by computed priority. Hidden rows include completed tasks, blocked tasks, future available_at tasks, AI Agent tasks, and expired EXPIRES opportunities. Use this for the user's own next actions.",
+      "Get the authenticated user's available private self-work queue sorted by computed priority. Returns tasks the user created OR has been assigned to (via assigneePersonId). Hidden rows include completed tasks, blocked tasks, future available_at tasks, AI Agent tasks, and expired EXPIRES opportunities. Use this for the user's own next actions.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5642,7 +5654,7 @@ export function createMcpServer(
             if (!userId)
               return authRequired(
                 "getMyQueue",
-                "It returns the tasks you created ranked by task priority.",
+                "It returns your personal queue — tasks you created plus tasks assigned to you — ranked by priority.",
               );
 
             const { tasks, ranking } = await getTaskFunctions();
@@ -5651,13 +5663,15 @@ export function createMcpServer(
               a.buybackRate,
               DEFAULT_PERSONAL_BUYBACK_RATE,
             );
-            const createdTasks = await tasks.listTasks({
+            const personId = await loadSessionPersonId(userId);
+            const personalTasks = await tasks.listTasks({
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
-              visibility: "created",
+              personId,
+              visibility: "personal",
             });
-            const selfTasks = (createdTasks as unknown[]).filter((task) =>
+            const selfTasks = (personalTasks as unknown[]).filter((task) =>
               isSelfExecutableTask(task as PersonalQueueTaskRecord),
             );
             const queue = buildPersonalQueueRows(
@@ -5687,13 +5701,15 @@ export function createMcpServer(
               a.buybackRate,
               DEFAULT_PERSONAL_BUYBACK_RATE,
             );
-            const createdTasks = await tasks.listTasks({
+            const personId = await loadSessionPersonId(userId);
+            const personalTasks = await tasks.listTasks({
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
-              visibility: "created",
+              personId,
+              visibility: "personal",
             });
-            const assignedTasks = (createdTasks as unknown[]).filter((task) =>
+            const assignedTasks = (personalTasks as unknown[]).filter((task) =>
               isAIExecutableTask(task as PersonalQueueTaskRecord),
             );
             const queue = buildPersonalQueueRows(
@@ -5714,7 +5730,7 @@ export function createMcpServer(
             if (!userId)
               return authRequired(
                 "getQueueAudit",
-                "It audits the validity of your created-task queue and needs to know which user's queue to inspect.",
+                "It audits the validity of your personal queue and needs to know which user's queue to inspect.",
               );
 
             const prisma = await getPrisma();
@@ -5723,11 +5739,13 @@ export function createMcpServer(
               a.buybackRate,
               DEFAULT_PERSONAL_BUYBACK_RATE,
             );
+            const personId = await loadSessionPersonId(userId);
             const createdTasks = (await tasks.listTasks({
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
-              visibility: "created",
+              personId,
+              visibility: "personal",
             })) as PersonalQueueTaskRecord[];
             const rankedRows = buildPersonalQueueRows(
               createdTasks,
@@ -5882,13 +5900,15 @@ export function createMcpServer(
               a.buybackRate,
               DEFAULT_PERSONAL_BUYBACK_RATE,
             );
-            const createdTasks = await tasks.listTasks({
+            const personId = await loadSessionPersonId(userId);
+            const personalTasks = await tasks.listTasks({
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
-              visibility: "created",
+              personId,
+              visibility: "personal",
             });
-            const selfTasks = (createdTasks as unknown[]).filter((task) =>
+            const selfTasks = (personalTasks as unknown[]).filter((task) =>
               isSelfExecutableTask(task as PersonalQueueTaskRecord),
             );
             const queue = buildPersonalQueueRows(
@@ -5921,7 +5941,7 @@ export function createMcpServer(
               task: topAction,
               priority: topAction?.priority ?? 0,
               queueAudit: {
-                activeCreatedTasks: createdTasks.length,
+                activeCreatedTasks: personalTasks.length,
                 unblockedTasks: queue.length,
               },
             });
