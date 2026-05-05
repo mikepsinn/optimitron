@@ -17,6 +17,8 @@ import { Textarea } from "@/components/retroui/Textarea";
 import { ROUTES } from "@/lib/routes";
 import { SquarePhotoCropper } from "./SquarePhotoCropper";
 
+const MAX_EVIDENCE_ITEMS = 8;
+
 interface EditableEvidence {
   description: string;
   evidenceKind: PersonMemorialEvidenceKind;
@@ -232,6 +234,14 @@ export function ManageRepresentedPeopleClient({
   }
 
   async function uploadEvidence(person: EditableRepresentedPerson, file: File) {
+    if (person.evidence.length >= MAX_EVIDENCE_ITEMS) {
+      setErrorById((prev) => ({
+        ...prev,
+        [person.id]: `You can add up to ${MAX_EVIDENCE_ITEMS} evidence files.`,
+      }));
+      return;
+    }
+
     setUploadingId(person.id);
     setErrorById((prev) => ({ ...prev, [person.id]: "" }));
     try {

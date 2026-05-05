@@ -178,9 +178,20 @@ const representedPersonSubmissionSchema = z
     isPublic: z.unknown().transform((value) => value !== false),
     lifeStatus: lifeStatusInputSchema,
     memorialMessage: cleanStringSchema(MAX_MEMORIAL_MESSAGE_LENGTH),
-    originUrl: cleanStringSchema(MAX_ORIGIN_URL_LENGTH).transform((value) =>
-      value ? value : null,
-    ),
+    originUrl: cleanStringSchema(MAX_ORIGIN_URL_LENGTH)
+      .transform((value) => (value ? value : null))
+      .refine(
+        (value) => {
+          if (value === null) return true;
+          try {
+            const url = new URL(value);
+            return url.protocol === "http:" || url.protocol === "https:";
+          } catch {
+            return false;
+          }
+        },
+        { message: "Use a valid http(s) URL." },
+      ),
     publicComment: cleanStringSchema(MAX_COMMENT_LENGTH),
     relationshipType: cleanStringSchema(MAX_RELATIONSHIP_LENGTH).transform((value) =>
       slugify(value),
