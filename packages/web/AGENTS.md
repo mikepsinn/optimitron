@@ -32,6 +32,8 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 - **Reuse an existing dev server when available.** The wrapper checks `BASE_URL`, `http://127.0.0.1:3001`, and `http://localhost:3001` first and reuses that server before falling back to a production build.
 - **Do not build just to run e2e** if a suitable dev server is already running.
 - **Protect an existing dev server from routine churn.** Reuse it for small verification steps; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.
+- **Screenshot every UI change before committing.** After changing pages, components, layouts, visual styling, or user-facing states, capture screenshots of the affected surface, inspect them for layout/text/styling problems, then tell the human where the screenshots are and ask them to review before committing.
+- **If screenshot verification is blocked, say why.** Do not commit UI changes without screenshots unless the human explicitly accepts the limitation.
 - **Do not freeze long-form copy in E2E.** Browser tests should assert behavior, route transitions, data contracts, analytics-critical parameters, accessibility roles, and the presence/absence of coarse UI states. Avoid exact prose, magic-number, or paragraph-level assertions unless the wording itself is the contract being tested. Put exact copy parity in focused unit/doc tests, seeded-template tests, or screenshot review instead.
 
 ## Off-Limits

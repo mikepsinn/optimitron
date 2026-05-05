@@ -68,7 +68,7 @@ export default async function OrganizationPage({
   });
   const embedSurveyUrl = organizationSurveyUrl;
   const iframeTitle = `${org.name} Trial Abundance Survey`;
-  const escapedIframeTitle = iframeTitle.replaceAll('"', "&quot;");
+  const escapedIframeTitle = escapeHtml(iframeTitle);
   const iframeCode = `<iframe src="${embedSurveyUrl}" title="${escapedIframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
   const buttonCode = `<a href="${embedSurveyUrl}" style="display:inline-block;border:1px solid #000;padding:12px 16px;color:#000;text-decoration:none;font-weight:700;">Take the Trial Abundance Survey</a>`;
   const emailSubject = "Two questions about clinical trial funding";
@@ -266,4 +266,13 @@ Responses from this link are credited to ${org.name}.`;
       </div>
     </section>
   );
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }

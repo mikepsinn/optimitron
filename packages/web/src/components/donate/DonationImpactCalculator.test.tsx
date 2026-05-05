@@ -3,6 +3,7 @@
  */
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { Simulate } from "react-dom/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
@@ -56,11 +57,39 @@ describe("DonationImpactCalculator", () => {
 
     const details = container.querySelector("details");
     expect(details?.getAttribute("id")).toBeNull();
-    expect(
-      container.querySelectorAll("#how-this-is-calculated"),
-    ).toHaveLength(1);
+    expect(container.querySelectorAll("#how-this-is-calculated")).toHaveLength(
+      1,
+    );
     expect(
       container.querySelector("details #how-this-is-calculated"),
     ).not.toBeNull();
+  });
+
+  it("keeps assumption number inputs editable while range state changes", async () => {
+    await act(async () => {
+      root.render(<DonationImpactCalculator />);
+    });
+
+    const numberInput = container.querySelector<HTMLInputElement>(
+      'input[type="number"]',
+    );
+    const rangeInput = container.querySelector<HTMLInputElement>(
+      'input[type="range"]',
+    );
+    expect(numberInput).not.toBeNull();
+    expect(rangeInput).not.toBeNull();
+
+    await act(async () => {
+      numberInput!.focus();
+      numberInput!.value = "";
+      Simulate.change(numberInput!);
+    });
+
+    await act(async () => {
+      rangeInput!.value = "280000000";
+      Simulate.change(rangeInput!);
+    });
+
+    expect(numberInput!.value).toBe("");
   });
 });

@@ -172,6 +172,62 @@ describe("organization.server", () => {
     expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
   });
 
+  it("rejects unsafe organization logo URLs before creating records", async () => {
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback({
+        organization: {
+          create: mocks.txOrganizationCreate,
+          findFirst: mocks.txOrganizationFindFirst,
+          findUnique: mocks.txOrganizationFindUnique,
+        },
+        organizationMember: {
+          create: mocks.txOrganizationMemberCreate,
+        },
+      }),
+    );
+    mocks.txOrganizationFindFirst.mockResolvedValue(null);
+    mocks.txOrganizationFindUnique.mockResolvedValue(null);
+
+    await expect(
+      createOrganizationWithOwner(
+        {
+          logo: "javascript:alert(1)",
+          name: "Unsafe Logo Org",
+        },
+        "user_1",
+      ),
+    ).rejects.toThrow("Invalid organization logo URL");
+    expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsafe organization website URLs before creating records", async () => {
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback({
+        organization: {
+          create: mocks.txOrganizationCreate,
+          findFirst: mocks.txOrganizationFindFirst,
+          findUnique: mocks.txOrganizationFindUnique,
+        },
+        organizationMember: {
+          create: mocks.txOrganizationMemberCreate,
+        },
+      }),
+    );
+    mocks.txOrganizationFindFirst.mockResolvedValue(null);
+    mocks.txOrganizationFindUnique.mockResolvedValue(null);
+
+    await expect(
+      createOrganizationWithOwner(
+        {
+          name: "Unsafe Website Org",
+          website: "javascript:alert(1)",
+        },
+        "user_1",
+      ),
+    ).rejects.toThrow("Invalid organization website URL");
+    expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
+  });
+
   it("keeps the trusted upsert path explicitly auto-approved", async () => {
     const db = {
       organization: {

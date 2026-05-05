@@ -179,27 +179,27 @@ export function DonationImpactCalculator() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border border-black">
+    <form onSubmit={handleSubmit} className="border-2 border-foreground">
       {canceled ? (
-        <div className="border-b border-black p-4 text-sm">
+        <div className="border-b-2 border-foreground p-4 text-sm font-bold">
           Checkout canceled. Nothing was charged.
         </div>
       ) : null}
 
       <div className="grid gap-0 lg:grid-cols-2">
-        <div className="space-y-6 border-b border-black p-5 sm:p-6 lg:border-b-0 lg:border-r">
-          <h2 className="text-2xl font-semibold">Pick your donation</h2>
-          <p className="text-sm leading-6 text-neutral-700">
+        <div className="space-y-6 border-b-2 border-foreground p-5 sm:p-6 lg:border-b-0 lg:border-r-2">
+          <h2 className="text-2xl font-black uppercase">Pick your donation</h2>
+          <p className="text-sm font-bold leading-6 text-muted-foreground">
             Type in any box. The others update.{" "}
             <a
               href="#how-this-is-calculated"
-              className="font-semibold underline underline-offset-2"
+              className="font-bold underline underline-offset-2"
             >
               See how this is calculated ↓
             </a>
           </p>
-          <div className="border border-black p-3 text-sm leading-6">
-            <p className="font-semibold">
+          <div className="border-2 border-foreground p-3 text-sm font-bold leading-6">
+            <p>
               At the default assumptions, $1 buys about{" "}
               {formatQuantity(livesPerDollar)} expected lives and{" "}
               {formatQuantity(sufferingYearsPerDollar)} years of suffering and
@@ -210,13 +210,13 @@ export function DonationImpactCalculator() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {(Object.keys(FIELD_LABELS) as Field[]).map((field) => (
               <label key={field} className="block">
-                <span className="text-xs font-semibold uppercase tracking-wide text-neutral-700">
+                <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                   {FIELD_LABELS[field]}
                 </span>
                 <input
                   type="text"
                   inputMode="decimal"
-                  className="mt-1 w-full border border-black px-3 py-3 text-2xl font-semibold tabular-nums outline-none focus:ring-2 focus:ring-black"
+                  className="mt-1 w-full border-2 border-foreground bg-background px-3 py-3 text-2xl font-bold tabular-nums outline-none focus:ring-2 focus:ring-foreground"
                   value={displayFor(field)}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleFieldChange(field, e.target.value)
@@ -227,7 +227,7 @@ export function DonationImpactCalculator() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-700">
+            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
               Frequency
             </p>
             <div className="mt-2 grid grid-cols-2 gap-2">
@@ -249,13 +249,15 @@ export function DonationImpactCalculator() {
           </div>
 
           {error ? (
-            <div className="border border-black p-3 text-sm">{error}</div>
+            <div className="border-2 border-foreground p-3 text-sm font-bold">
+              {error}
+            </div>
           ) : null}
 
           <button
             type="submit"
             disabled={loading || !hasValidAmount}
-            className="w-full border border-black bg-black px-5 py-4 text-base font-semibold text-white transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full border-2 border-foreground bg-foreground px-5 py-4 text-base font-bold text-background transition hover:bg-background hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading
               ? "Opening Stripe..."
@@ -264,7 +266,7 @@ export function DonationImpactCalculator() {
                 : `Donate $${checkoutAmount.toLocaleString()}${frequency === "monthly" ? "/mo" : ""}`}
           </button>
 
-          <p className="text-xs leading-5 text-neutral-600">
+          <p className="text-xs font-bold leading-5 text-muted-foreground">
             Estimated out-of-pocket after federal deduction: $
             {Math.round(
               checkoutAmount * (1 - FEDERAL_TAX_BRACKET_RATE),
@@ -277,22 +279,22 @@ export function DonationImpactCalculator() {
 
         <div className="space-y-6 p-5 sm:p-6">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-2xl font-semibold">Adjust the model</h2>
+            <h2 className="text-2xl font-black uppercase">Adjust the model</h2>
             <button
               type="button"
               onClick={reset}
-              className="text-xs font-semibold uppercase tracking-wide underline"
+              className="text-xs font-bold uppercase tracking-wide underline"
             >
               Reset
             </button>
           </div>
-          <p className="text-sm leading-6 text-neutral-700">
+          <p className="text-sm font-bold leading-6 text-muted-foreground">
             Don&apos;t trust an assumption? Drag it. Every box on the left
             recomputes.
           </p>
-          <div className="border border-black p-3 text-sm leading-6">
-            <p className="font-semibold">Published campaign model</p>
-            <p className="text-neutral-700">
+          <div className="border-2 border-foreground p-3 text-sm font-bold leading-6">
+            <p>Published campaign model</p>
+            <p className="text-muted-foreground">
               If it works: $
               {formatPrice(
                 TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG.value,
@@ -355,7 +357,7 @@ export function DonationImpactCalculator() {
             onChange={setTreatyReductionPct}
           />
 
-          <div className="border-t border-black pt-4 text-sm leading-6">
+          <div className="border-t-2 border-foreground pt-4 text-sm font-bold leading-6">
             <Row label="Lives saved per $1">
               {formatQuantity(livesPerDollar)}
             </Row>
@@ -376,8 +378,8 @@ export function DonationImpactCalculator() {
             </Row>
           </div>
 
-          <details className="border-t border-black pt-4 text-sm">
-            <summary className="cursor-pointer font-semibold">
+          <details className="border-t-2 border-foreground pt-4 text-sm font-bold">
+            <summary className="cursor-pointer font-bold">
               Live derivation
             </summary>
             <div
@@ -426,7 +428,7 @@ export function DonationImpactCalculator() {
 
       <Dialog open={largeGiftOpen} onOpenChange={setLargeGiftOpen}>
         <Dialog.Content title="Large gift">
-          <div className="space-y-4 p-5 text-sm leading-6">
+          <div className="space-y-4 p-5 text-sm font-bold leading-6">
             <p>
               Card checkout is capped at $
               {STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}. This order wants
@@ -437,7 +439,7 @@ export function DonationImpactCalculator() {
               href={`mailto:${NONPROFIT.donationsEmail}?subject=${encodeURIComponent(
                 `Large donation inquiry: $${checkoutAmount.toLocaleString()}`,
               )}`}
-              className="inline-block border border-black bg-black px-4 py-2 font-semibold text-white"
+              className="inline-block border-2 border-foreground bg-foreground px-4 py-2 font-bold text-background"
             >
               Email transfer instructions
             </a>
@@ -473,14 +475,17 @@ function SliderRow({
   value: number;
   onChange: (next: number) => void;
 }) {
+  const [rawInput, setRawInput] = useState<string | null>(null);
   const scaledValue = value * inputScale;
   const scaledStep = step * inputScale;
-  const inputValue =
+  const computedInputValue =
     scaledStep >= 1
       ? String(Math.round(scaledValue))
       : String(Number(scaledValue.toFixed(3)));
+  const inputValue = rawInput ?? computedInputValue;
 
   function handleNumberInput(raw: string) {
+    setRawInput(raw);
     if (!raw.trim()) return;
     const parsed = Number(raw);
     if (!Number.isFinite(parsed)) return;
@@ -490,8 +495,8 @@ function SliderRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <label className="text-sm font-semibold">{label}</label>
-        <label className="flex shrink-0 items-center border border-black bg-white px-2 py-1 text-sm font-semibold tabular-nums">
+        <label className="text-sm font-bold">{label}</label>
+        <label className="flex shrink-0 items-center border-2 border-foreground bg-background px-2 py-1 text-sm font-bold tabular-nums">
           <span className="sr-only">{label}</span>
           {prefix ? <span>{prefix}</span> : null}
           <input
@@ -501,6 +506,7 @@ function SliderRow({
             step={scaledStep}
             value={inputValue}
             onChange={(e) => handleNumberInput(e.target.value)}
+            onBlur={() => setRawInput(null)}
             className="w-24 bg-transparent text-right outline-none"
           />
           {suffix ? <span className="pl-1">{suffix}</span> : null}
@@ -513,10 +519,10 @@ function SliderRow({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-black"
+        className="w-full accent-foreground"
         aria-label={label}
       />
-      <p className="text-xs leading-5 text-neutral-600">
+      <p className="text-xs font-bold leading-5 text-muted-foreground">
         {valueText}. {footnote}
       </p>
     </div>
@@ -532,8 +538,8 @@ function Row({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3 py-1">
-      <span className="text-neutral-700">{label}</span>
-      <span className="font-semibold tabular-nums">{children}</span>
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-bold tabular-nums">{children}</span>
     </div>
   );
 }
@@ -548,20 +554,24 @@ function DerivationRow({
   value: string;
 }) {
   return (
-    <div className="border border-black p-3">
+    <div className="border-2 border-foreground p-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="font-semibold">{label}</span>
-        <span className="font-semibold tabular-nums">{value}</span>
+        <span className="font-bold">{label}</span>
+        <span className="font-bold tabular-nums">{value}</span>
       </div>
-      <p className="mt-1 text-xs leading-5 text-neutral-600">{formula}</p>
+      <p className="mt-1 text-xs font-bold leading-5 text-muted-foreground">
+        {formula}
+      </p>
     </div>
   );
 }
 
 function toggleClass(active: boolean) {
   return [
-    "border border-black px-4 py-2 text-sm font-semibold transition",
-    active ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100",
+    "border-2 border-foreground px-4 py-2 text-sm font-bold transition",
+    active
+      ? "bg-foreground text-background"
+      : "bg-background text-foreground hover:bg-muted",
   ].join(" ");
 }
 

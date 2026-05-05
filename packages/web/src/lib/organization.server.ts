@@ -5,6 +5,49 @@ import { slugify } from "@/lib/slugify";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
 
+export function normalizeOrganizationHttpUrl(
+  raw: string | null | undefined,
+): string | null | false {
+  const trimmed = raw?.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return false;
+    }
+    parsed.hash = "";
+    parsed.hostname = parsed.hostname.toLowerCase();
+    return parsed.toString();
+  } catch {
+    return false;
+  }
+}
+
+export function normalizeOrganizationLogoUrl(raw: string | null | undefined) {
+  return normalizeOrganizationHttpUrl(raw);
+}
+
+function assertValidOrganizationLogoUrl(
+  raw: string | null | undefined,
+): string | null {
+  const normalized = normalizeOrganizationLogoUrl(raw);
+  if (normalized === false) {
+    throw new Error("Invalid organization logo URL");
+  }
+  return normalized;
+}
+
+function assertValidOrganizationWebsiteUrl(
+  raw: string | null | undefined,
+): string | null {
+  const normalized = normalizeOrganizationHttpUrl(raw);
+  if (normalized === false) {
+    throw new Error("Invalid organization website URL");
+  }
+  return normalized;
+}
+
 interface OrganizationDraftInput {
   contactEmail?: string | null;
   description?: string | null;
@@ -44,6 +87,14 @@ export async function findOrCreateOrganization(
   db: DbClient = prisma,
 ) {
   const name = input.name.trim();
+  const normalizedLogo =
+    input.logo === undefined
+      ? undefined
+      : assertValidOrganizationLogoUrl(input.logo);
+  const normalizedWebsite =
+    input.website === undefined
+      ? undefined
+      : assertValidOrganizationWebsiteUrl(input.website);
 
   if (!name) {
     throw new Error("Organization name is required");
@@ -70,14 +121,14 @@ export async function findOrCreateOrganization(
           contactEmail: input.contactEmail ?? existingBySourceRef.contactEmail,
           deletedAt: null,
           description: input.description ?? existingBySourceRef.description,
-          logo: input.logo ?? existingBySourceRef.logo,
+          logo: normalizedLogo ?? existingBySourceRef.logo,
           name,
           slug: nextSlug,
           sourceRef: normalizedSourceRef,
           sourceUrl: input.sourceUrl ?? existingBySourceRef.sourceUrl,
           status: OrgStatus.APPROVED,
           type: desiredType,
-          website: input.website ?? existingBySourceRef.website,
+          website: normalizedWebsite ?? existingBySourceRef.website,
         },
       });
     }
@@ -104,13 +155,13 @@ export async function findOrCreateOrganization(
         contactEmail: input.contactEmail ?? existingByName.contactEmail,
         deletedAt: null,
         description: input.description ?? existingByName.description,
-        logo: input.logo ?? existingByName.logo,
+        logo: normalizedLogo ?? existingByName.logo,
         slug: nextSlug,
         sourceRef: normalizedSourceRef ?? existingByName.sourceRef,
         sourceUrl: input.sourceUrl ?? existingByName.sourceUrl,
         status: OrgStatus.APPROVED,
         type: input.type ?? existingByName.type,
-        website: input.website ?? existingByName.website,
+        website: normalizedWebsite ?? existingByName.website,
       },
     });
   }
@@ -121,14 +172,14 @@ export async function findOrCreateOrganization(
     data: {
       contactEmail: input.contactEmail ?? null,
       description: input.description ?? null,
-      logo: input.logo ?? null,
+      logo: normalizedLogo ?? null,
       name,
       slug: nextSlug,
       sourceRef: normalizedSourceRef,
       sourceUrl: input.sourceUrl ?? null,
       status: OrgStatus.APPROVED,
       type: desiredType,
-      website: input.website ?? null,
+      website: normalizedWebsite ?? null,
     },
   });
 }
@@ -173,6 +224,8 @@ export async function createOrganizationWithOwner(
   options: CreateOrganizationOptions = { rejectDuplicates: true },
 ) {
   const name = input.name.trim();
+  const logo = assertValidOrganizationLogoUrl(input.logo);
+  const website = assertValidOrganizationWebsiteUrl(input.website);
   if (!name) {
     throw new Error("Organization name is required");
   }
@@ -223,9 +276,9 @@ export async function createOrganizationWithOwner(
         type: input.type ?? OrgType.OTHER,
         status: input.status ?? OrgStatus.APPROVED,
         creatorId: creatorUserId,
-        website: input.website ?? null,
+        website,
         description: input.description ?? null,
-        logo: input.logo ?? null,
+        logo,
         contactEmail: input.contactEmail ?? null,
         jurisdictionId: input.jurisdictionId ?? null,
       },
@@ -485,9 +538,13 @@ export async function updateOrganization(
 
   if (patch.type !== undefined) data.type = patch.type;
   if (patch.status !== undefined) data.status = patch.status;
-  if (patch.website !== undefined) data.website = patch.website;
+  if (patch.website !== undefined) {
+    data.website = assertValidOrganizationWebsiteUrl(patch.website);
+  }
   if (patch.description !== undefined) data.description = patch.description;
-  if (patch.logo !== undefined) data.logo = patch.logo;
+  if (patch.logo !== undefined) {
+    data.logo = assertValidOrganizationLogoUrl(patch.logo);
+  }
   if (patch.contactEmail !== undefined) data.contactEmail = patch.contactEmail;
   if (patch.jurisdictionId !== undefined) {
     data.jurisdiction = patch.jurisdictionId

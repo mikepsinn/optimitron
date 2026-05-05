@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
-import { canManageOrganization } from "@/lib/organization.server";
+import {
+  canManageOrganization,
+  normalizeOrganizationHttpUrl,
+  normalizeOrganizationLogoUrl,
+} from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 
 async function requireManagerOrAdmin(userId: string, organizationId: string) {
@@ -82,15 +86,33 @@ export async function PATCH(
       logo?: string | null;
       contactEmail?: string | null;
     };
+    const logo =
+      body.logo === undefined
+        ? undefined
+        : normalizeOrganizationLogoUrl(body.logo);
+    const website =
+      body.website === undefined
+        ? undefined
+        : normalizeOrganizationHttpUrl(body.website);
+
+    if (logo === false) {
+      return NextResponse.json({ error: "Invalid logo URL" }, { status: 400 });
+    }
+    if (website === false) {
+      return NextResponse.json(
+        { error: "Invalid website URL" },
+        { status: 400 },
+      );
+    }
 
     const updated = await prisma.organization.update({
       where: { id },
       data: {
         name: body.name?.trim() || undefined,
-        website: body.website === undefined ? undefined : body.website,
+        website,
         description:
           body.description === undefined ? undefined : body.description,
-        logo: body.logo === undefined ? undefined : body.logo,
+        logo,
         contactEmail:
           body.contactEmail === undefined ? undefined : body.contactEmail,
       },

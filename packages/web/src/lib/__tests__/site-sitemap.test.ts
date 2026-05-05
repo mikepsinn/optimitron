@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ROUTES } from "@/lib/routes";
 import { getSiteConfig } from "@/lib/site";
 import { getSitemapForSite } from "@/lib/site-sitemap";
 
@@ -15,22 +16,33 @@ describe("site sitemap routing", () => {
     const paths = pathsFor("onePercentTreaty");
 
     expect(paths).toEqual(
-      expect.arrayContaining(["/", "/signatories", "/treaty", "/vote", "/why"]),
+      expect.arrayContaining([
+        "/",
+        ROUTES.signatories,
+        ROUTES.treaty,
+        ROUTES.vote,
+        ROUTES.why,
+      ]),
     );
-    expect(paths).not.toContain("/campaign");
-    expect(paths).not.toContain("/reasoning");
-    expect(paths).not.toContain("/scoreboard");
-    expect(paths).not.toContain("/agencies/dfda/conditions");
+    expect(paths).not.toContain(ROUTES.campaign);
+    expect(paths).not.toContain(ROUTES.reasoning);
+    expect(paths).not.toContain(ROUTES.scoreboard);
+    expect(paths).not.toContain(`${ROUTES.agencies}/dfda/conditions`);
   });
 
   it("keeps the neutral survey sitemap neutral and small", () => {
     const paths = pathsFor("trialAbundanceSurvey");
 
     expect(paths).toEqual(
-      expect.arrayContaining(["/", "/survey", "/vote", "/organizations"]),
+      expect.arrayContaining([
+        "/",
+        ROUTES.survey,
+        ROUTES.vote,
+        ROUTES.organizations,
+      ]),
     );
-    expect(paths).not.toContain("/why");
-    expect(paths).not.toContain("/governments");
+    expect(paths).not.toContain(ROUTES.why);
+    expect(paths).not.toContain(ROUTES.governments);
   });
 
   it("adds DFDA medical index and detail routes to the DFDA sitemap", () => {
@@ -44,8 +56,8 @@ describe("site sitemap routing", () => {
     );
     expect(paths).toContain("/conditions");
     expect(paths).toContain("/treatments");
-    expect(paths).not.toContain("/agencies/dfda/conditions");
-    expect(paths).not.toContain("/agencies/dfda/treatments");
+    expect(paths).not.toContain(`${ROUTES.agencies}/dfda/conditions`);
+    expect(paths).not.toContain(`${ROUTES.agencies}/dfda/treatments`);
     expect(paths.some((path) => path.startsWith("/conditions/"))).toBe(true);
     expect(paths.some((path) => path.startsWith("/treatments/"))).toBe(true);
   });
