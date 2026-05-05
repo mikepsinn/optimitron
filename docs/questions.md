@@ -479,8 +479,8 @@ Buttons: **[ Skip ]** ・ **[ Submit ]**
 
 Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses per-send. The chosen mode determines which email variant the recipient gets throughout the sequence. Internal names may remain `TASK_NOTIFICATION` and `SINCERE`.
 
-**From address for all system emails:** Earth Optimization Services <noreply@warondisease.org>
-**From address for share emails:** [Sender name] via Earth Optimization Services <noreply@warondisease.org>
+**From address for all system emails:** Earth Optimization Services <hello@updates.warondisease.org>
+**From address for share emails:** [Sender name] via Earth Optimization Services <hello@updates.warondisease.org>
 
 **Unsubscribe:** required on every email, one-click, no guilt trip on the unsub page.
 

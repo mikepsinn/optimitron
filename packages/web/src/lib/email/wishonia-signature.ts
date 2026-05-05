@@ -14,6 +14,8 @@
 
 import { getEmailBaseUrl } from "@/lib/email/email-urls";
 
+export const WISHONIA_AVATAR_PATH = "/sprites/wishonia/smirk-smile.png";
+
 export const WISHONIA_TITLES: readonly string[] = [
   "Chief Optimization Officer",
   "Director of Not Dying",
@@ -56,8 +58,10 @@ export interface WishoniaSignatureSelection {
  * sampled separately so the 15×11=165 combinations are all reachable.
  */
 export function selectWishoniaSignature(): WishoniaSignatureSelection {
-  const title = WISHONIA_TITLES[Math.floor(Math.random() * WISHONIA_TITLES.length)]!;
-  const tagline = WISHONIA_TAGLINES[Math.floor(Math.random() * WISHONIA_TAGLINES.length)]!;
+  const title =
+    WISHONIA_TITLES[Math.floor(Math.random() * WISHONIA_TITLES.length)]!;
+  const tagline =
+    WISHONIA_TAGLINES[Math.floor(Math.random() * WISHONIA_TAGLINES.length)]!;
   return { title, tagline };
 }
 
@@ -102,7 +106,7 @@ export function buildWishoniaSignatureHtml(
   selection: WishoniaSignatureSelection = selectWishoniaSignature(),
   baseUrl: string = getEmailBaseUrl(),
 ): string {
-  const avatar = `${baseUrl.replace(/\/+$/, "")}/sprites/wishonia/smirk-smile.png`;
+  const avatar = `${baseUrl.replace(/\/+$/, "")}${WISHONIA_AVATAR_PATH}`;
   // Inline styles — most email clients strip <style> blocks.
   return `
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px 0 0 0;border-collapse:collapse;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
@@ -140,9 +144,9 @@ function escapeHtml(value: string): string {
  * The Resend send helpers call this exactly once, immediately before
  * dispatch.
  */
-export function appendWishoniaSignature<T extends { html: string; text: string }>(
-  message: T,
-): T {
+export function appendWishoniaSignature<
+  T extends { html: string; text: string },
+>(message: T): T {
   const selection = selectWishoniaSignature();
   return {
     ...message,

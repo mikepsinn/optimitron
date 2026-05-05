@@ -32,13 +32,13 @@ External URL/form details such as `openedAt` and `submittedAt` live in `TaskComm
 
 ## TaskCommentKind semantics
 
-| Kind | When to use |
-|---|---|
-| `COMMENT` | Default. A user-authored discussion comment about the task. |
-| `OUTBOUND_MESSAGE` | Readable copy of a message Optimitron/Wishonia/an agent sent to the assignee or another party. Always paired with a `TaskCommunication` that owns the envelope. |
-| `INBOUND_MESSAGE` | A reply or unsolicited message from the assignee or external party (email reply, web form, or manual import). May be paired with a `TaskCommunication(status=RECEIVED)`. |
-| `STATUS_UPDATE` | A status announcement on the task ("the senator's office confirmed they will support"). Posted by a user or an agent; may link to a `TaskCommunication` if it was the result of one. |
-| `SYSTEM_NOTE` | Automated narration ("Wishonia notes the task has been overdue 30 days"). Authored by the system user. |
+| Kind               | When to use                                                                                                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `COMMENT`          | Default. A user-authored discussion comment about the task.                                                                                                                          |
+| `OUTBOUND_MESSAGE` | Readable copy of a message Optimitron/Wishonia/an agent sent to the assignee or another party. Always paired with a `TaskCommunication` that owns the envelope.                      |
+| `INBOUND_MESSAGE`  | A reply or unsolicited message from the assignee or external party (email reply, web form, or manual import). May be paired with a `TaskCommunication(status=RECEIVED)`.             |
+| `STATUS_UPDATE`    | A status announcement on the task ("the senator's office confirmed they will support"). Posted by a user or an agent; may link to a `TaskCommunication` if it was the result of one. |
+| `SYSTEM_NOTE`      | Automated narration ("Wishonia notes the task has been overdue 30 days"). Authored by the system user.                                                                               |
 
 ## Author identity
 
@@ -60,15 +60,19 @@ When a task has multiple `TaskCommunicationEndpoint` rows, the engine selects th
 
 ## Inbound email guardrails
 
-The `TaskCommunication.direction` enum supports `INBOUND`, but Optimitron does NOT currently receive inbound email. Implementing inbound is a separate multi-week project that requires:
+Optimitron has a guarded inbound reply path at `/api/webhooks/resend-inbound`. It decodes `reply+{taskId}@{REPLY_EMAIL_DOMAIN}`, authenticates the sender against the task creator, assignee, organization contact, or task contact endpoint, strips quoted text, and writes a `TaskComment(kind=INBOUND_MESSAGE)` plus `TaskCommunication(status=RECEIVED)`.
 
-- DKIM/SPF/DMARC verification on every inbound message (otherwise anyone can spoof a reply into a task thread).
-- Threading via `References` and `In-Reply-To` headers, linking the inbound message back to the originating outbound `TaskCommunication`.
+Do not surface "reply by email" unless both of these are true:
+
+- `RESEND_INBOUND_WEBHOOK_SECRET` and `REPLY_EMAIL_DOMAIN` are configured for the deployment.
+- The inbound provider routes that domain to `/api/webhooks/resend-inbound` with the matching signature secret.
+
+Still-required production guardrails before broad rollout:
+
+- DKIM/SPF/DMARC verification on every inbound message where the provider exposes it.
+- Stronger threading via `References` and `In-Reply-To` headers, linking the inbound message back to the originating outbound `TaskCommunication`.
 - Spam filtering and disposable-address detection.
-- Loop prevention so an auto-responder on the recipient side does not infinitely bounce against our inbound handler.
-- Routing setup with the inbound provider (Resend Inbound, CloudMailin, or AWS SES Inbound).
-
-Until those guardrails exist, do not surface "task replies via email" as a user-facing capability. Manual `INBOUND_MESSAGE` comments via admin tooling are the temporary substitute.
+- Loop prevention so an auto-responder on the recipient side does not infinitely bounce against the inbound handler.
 
 ## Activity vs TaskCommunication
 
@@ -76,6 +80,6 @@ Until those guardrails exist, do not surface "task replies via email" as a user-
 
 - `TaskCommunication` owns the envelope: channel, recipient, endpoint, provider IDs, status, metadata. The single source of truth for "this message went out / came in".
 - `TaskComment` owns the readable thread: who said what, when, in what context.
-- `Activity` is a feed-friendly *summary* that points at the above via foreign keys. An `ActivityType.CONTACTED_ASSIGNEE` row carries the headline and a link to the `TaskCommunication` row that holds the substance.
+- `Activity` is a feed-friendly _summary_ that points at the above via foreign keys. An `ActivityType.CONTACTED_ASSIGNEE` row carries the headline and a link to the `TaskCommunication` row that holds the substance.
 
 Never copy a message body into all three. The body lives in `TaskComment.body`; the envelope lives in `TaskCommunication`; `Activity` carries only enough text to render a one-line feed entry.

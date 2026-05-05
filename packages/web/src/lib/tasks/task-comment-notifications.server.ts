@@ -10,6 +10,7 @@ import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { checkTaskCommunicationCooldown } from "@/lib/tasks/task-communications.server";
 import type { SenderSignature } from "@/lib/email/wishonia-signature";
+import { getTaskEmailReplyInstruction } from "@/lib/email/task-notification";
 import {
   buildTaskCommentNotificationEmail,
   COMMENT_NOTIFICATION_PLACEHOLDER,
@@ -52,47 +53,61 @@ export type PostTaskCommentResult =
   | { commentId: string; status: "failed"; reason: string };
 
 function asMetadataObject(metadata: unknown): Record<string, unknown> {
-  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
     return {};
   }
   return metadata as Record<string, unknown>;
 }
 
 function getStoredUnsubscribeUrl(metadata: unknown): string | null {
-  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
     return null;
   }
   const value = (metadata as Record<string, unknown>).unsubscribeUrl;
   return typeof value === "string" && value.trim() ? value : null;
 }
 
-async function resolveAuthorName(input: {
+async function resolveAuthor(input: {
   authorNameOverride?: string | null;
   authorPersonId?: string | null;
   authorUserId?: string | null;
-}): Promise<string | null> {
+}): Promise<{ avatarUrl: string | null; name: string | null }> {
   const override = input.authorNameOverride?.trim();
-  if (override) return override;
+  if (override) return { avatarUrl: null, name: override };
 
   if (input.authorUserId) {
     const user = await prisma.user.findUnique({
       where: { id: input.authorUserId },
       select: {
-        person: { select: { displayName: true } },
+        person: { select: { displayName: true, image: true } },
       },
     });
-    return user?.person?.displayName ?? null;
+    return {
+      avatarUrl: user?.person?.image ?? null,
+      name: user?.person?.displayName ?? null,
+    };
   }
 
   if (input.authorPersonId) {
     const person = await prisma.person.findUnique({
       where: { id: input.authorPersonId },
-      select: { displayName: true },
+      select: { displayName: true, image: true },
     });
-    return person?.displayName ?? null;
+    return {
+      avatarUrl: person?.image ?? null,
+      name: person?.displayName ?? null,
+    };
   }
 
-  return null;
+  return { avatarUrl: null, name: null };
 }
 
 /**
@@ -115,13 +130,20 @@ export async function notifyTaskCommentRecipients(input: {
   const { commentId, taskId, message } = input;
   const now = new Date();
 
-  const recipients = await resolveTaskRecipients(taskId);
+  const recipients = await resolveTaskRecipients(taskId, {
+    includeAdminMonitors: true,
+    includeCreator: true,
+  });
   if (recipients.length === 0) {
     return { commentId, status: "skipped", reason: "no_recipient" };
   }
 
   const filteredRecipients = recipients.filter((recipient) => {
-    if (input.authorPersonId && recipient.personId && recipient.personId === input.authorPersonId) {
+    if (
+      input.authorPersonId &&
+      recipient.personId &&
+      recipient.personId === input.authorPersonId
+    ) {
       return false;
     }
     if (input.authorUserId && recipient.userId === input.authorUserId) {
@@ -146,56 +168,59 @@ export async function notifyTaskCommentRecipients(input: {
     return { commentId, status: "skipped", reason: "task_missing" };
   }
 
-  const authorName = await resolveAuthorName({
+  const author = await resolveAuthor({
     authorNameOverride: input.authorNameOverride ?? null,
     authorPersonId: input.authorPersonId ?? null,
     authorUserId: input.authorUserId ?? null,
-  });
-
-  const email = buildTaskCommentNotificationEmail({
-    comment: { authorName, message },
-    cta: input.cta,
-    senderSignature: input.senderSignature,
-    task,
   });
 
   try {
     let sentCount = 0;
     let skippedReason: string | null = null;
 
-    const directRecipients = filteredRecipients.filter((recipient) => !recipient.isAdmin);
-    const admins = filteredRecipients.filter((recipient) => recipient.isAdmin);
-    const recipientsToNotify =
-      directRecipients.length > 0 ? directRecipients : admins;
-    const adminBccEmails = admins.map((recipient) => recipient.email);
-    let bccApplied = false;
-
-    for (let index = 0; index < recipientsToNotify.length; index += 1) {
-      const recipient = recipientsToNotify[index];
-      const bccEmails =
-        admins.length > 0 && !bccApplied
-          ? adminBccEmails.filter((email) => email !== recipient.email)
-          : [];
-
+    for (const recipient of filteredRecipients) {
       if (!(await recipientWithinRateLimits(recipient.email, now))) {
         skippedReason = "rate_limited";
         continue;
       }
 
+      const email = buildTaskCommentNotificationEmail({
+        comment: {
+          authorAvatarUrl: author.avatarUrl,
+          authorName: author.name,
+          message,
+        },
+        cta: input.cta,
+        recipientReason: recipient.reason ?? null,
+        replyInstruction: getTaskEmailReplyInstruction(),
+        senderSignature: input.senderSignature,
+        task,
+      });
+
       const draft = await draftTaskNotification({
-        audience: TaskCommunicationAudience.ASSIGNEE,
+        audience:
+          recipient.role === "admin_monitor"
+            ? TaskCommunicationAudience.OBSERVER
+            : recipient.role === "creator"
+              ? TaskCommunicationAudience.SENDER
+              : TaskCommunicationAudience.ASSIGNEE,
         channel: TaskCommunicationChannel.EMAIL,
         dedupeKey: `task-comment-notification:${commentId}:${recipient.email}`,
         emailScope: "task_notifications",
         html: email.html,
         purpose: TaskCommunicationPurpose.STATUS_UPDATE,
         recipientEmail: recipient.email,
-        bccEmails,
+        bccEmails: [],
+        metadataJson: {
+          recipientReason: recipient.reason ?? null,
+          recipientRole: recipient.role ?? null,
+        } satisfies Prisma.InputJsonObject,
         recipientOrganizationId: recipient.organizationId ?? null,
         recipientPersonId: recipient.personId ?? null,
         recipientUserId: recipient.userId ?? null,
         senderPersonId: input.authorPersonId ?? null,
         senderUserId: input.authorUserId ?? null,
+        skipWishoniaSignature: true,
         subject: email.subject,
         // Reuse the comment we already created so sendDraftTaskNotification
         // doesn't write a second AGENT-source audit row for the same send.
@@ -205,14 +230,23 @@ export async function notifyTaskCommentRecipients(input: {
       });
 
       const unsubscribeUrl = getStoredUnsubscribeUrl(draft.metadataJson);
-      if (unsubscribeUrl && email.html.includes(COMMENT_NOTIFICATION_PLACEHOLDER)) {
+      if (
+        unsubscribeUrl &&
+        email.html.includes(COMMENT_NOTIFICATION_PLACEHOLDER)
+      ) {
         await prisma.taskCommunication.update({
           where: { id: draft.id },
           data: {
             metadataJson: {
               ...asMetadataObject(draft.metadataJson),
-              html: email.html.replaceAll(COMMENT_NOTIFICATION_PLACEHOLDER, unsubscribeUrl),
-              text: email.text.replaceAll(COMMENT_NOTIFICATION_PLACEHOLDER, unsubscribeUrl),
+              html: email.html.replaceAll(
+                COMMENT_NOTIFICATION_PLACEHOLDER,
+                unsubscribeUrl,
+              ),
+              text: email.text.replaceAll(
+                COMMENT_NOTIFICATION_PLACEHOLDER,
+                unsubscribeUrl,
+              ),
             } as Prisma.InputJsonObject,
           },
         });
@@ -228,10 +262,6 @@ export async function notifyTaskCommentRecipients(input: {
         sentCount += 1;
       } else if (!skippedReason) {
         skippedReason = sendResult.status;
-      }
-
-      if (admins.length > 0) {
-        bccApplied = true;
       }
     }
 

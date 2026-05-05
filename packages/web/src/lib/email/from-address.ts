@@ -1,4 +1,8 @@
 import { serverEnv } from "@/lib/env";
+import { WAR_ON_DISEASE_UPDATES_DOMAIN } from "@/lib/domains";
+
+export const DEFAULT_SYSTEM_EMAIL_FROM = `Earth Optimization Services <hello@${WAR_ON_DISEASE_UPDATES_DOMAIN}>`;
+export const DEFAULT_UNSUBSCRIBE_EMAIL = `unsubscribe@${WAR_ON_DISEASE_UPDATES_DOMAIN}`;
 
 export interface ParsedEmailFromHeader {
   address: string;
@@ -31,7 +35,11 @@ export function parseEmailFromHeader(
 
 /** The bare email address from `EMAIL_FROM`, or null when unset/malformed. */
 export function getConfiguredFromAddress(): string | null {
-  return parseEmailFromHeader(serverEnv.EMAIL_FROM)?.address ?? null;
+  return (
+    parseEmailFromHeader(serverEnv.EMAIL_FROM)?.address ??
+    parseEmailFromHeader(DEFAULT_SYSTEM_EMAIL_FROM)?.address ??
+    null
+  );
 }
 
 /** Format a From header while guaranteeing a display name. */
@@ -39,7 +47,9 @@ export function formatEmailFromHeader(
   raw: string | null | undefined,
   fallbackDisplayName: string,
 ): string {
-  const parsed = parseEmailFromHeader(raw);
+  const parsed =
+    parseEmailFromHeader(raw) ??
+    parseEmailFromHeader(DEFAULT_SYSTEM_EMAIL_FROM);
   if (!parsed) return "";
 
   const displayName = sanitizeDisplayName(
@@ -51,13 +61,13 @@ export function formatEmailFromHeader(
 
 /**
  * Build the share-email From header in the form:
- *   `<senderName> via Earth Optimization Services <noreply@warondisease.org>`
+ *   `<senderName> via Earth Optimization Services <hello@updates.warondisease.org>`
  *
  * Used when a user-authored email goes out under the platform's mail domain
  * but the inbox should foreground the named sender (so the recipient sees
  * a friend's name, not a brand they don't recognize). Per docs/questions.md.
  *
- * Returns "" if EMAIL_FROM is unset/malformed (caller bails out gracefully).
+ * Falls back to the platform system sender if EMAIL_FROM is unset/malformed.
  */
 export function formatShareEmailFromHeader(senderName: string): string {
   const address = getConfiguredFromAddress();
