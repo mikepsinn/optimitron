@@ -4,9 +4,8 @@ export type PageParamValue =
   | undefined;
 
 export function parsePositivePageParam(value: PageParamValue) {
-  const raw = Number.parseInt(
-    Array.isArray(value) ? (value[0] ?? "1") : (value ?? "1"),
-    10,
-  );
-  return Number.isFinite(raw) && raw > 0 ? raw : 1;
+  const candidate = Array.isArray(value) ? value[0] : value;
+  const normalized = candidate?.trim() ?? "";
+  if (!/^[1-9]\d*$/.test(normalized)) return 1;
+  return Number(normalized);
 }

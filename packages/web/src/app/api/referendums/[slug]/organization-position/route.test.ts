@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   OrganizationReferendumPositionStatus,
   OrgStatus,
@@ -85,6 +85,10 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
       position: VotePosition.YES,
       status: OrganizationReferendumPositionStatus.APPROVED,
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("returns 401 when unauthenticated", async () => {
@@ -175,6 +179,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
         status: OrgStatus.APPROVED,
       },
       "user_1",
+      { rejectDuplicates: false },
     );
     expect(mocks.positionUpsert).toHaveBeenCalledWith({
       where: {

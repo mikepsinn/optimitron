@@ -18,6 +18,7 @@ interface VoteCounterSplitProps {
    * passive when memorial linkage isn't desired.
    */
   linkMemorialToPeople?: boolean;
+  showMemorialIcon?: boolean;
   className?: string;
 }
 
@@ -25,12 +26,11 @@ interface VoteCounterSplitProps {
  * Vote counter rendered in the PRD-mandated split format (TODO.md:1213-1217).
  *
  *   Living votes:     12,847
- *   Memorial votes:    3,291  👻
+ *   Memorial votes:    3,291
  *   Total voices:     16,138
  *
- * The ghost emoji is required next to the memorial line — PRD: "The ghost
- * emoji is not optional. WISHONIA insists." Use this anywhere a campaign
- * total is surfaced so the dead remain visible alongside the living.
+ * Keep the memorial row visible anywhere a campaign total is surfaced so the
+ * dead remain visible alongside the living.
  */
 export function VoteCounterSplit({
   className = "",
@@ -38,13 +38,19 @@ export function VoteCounterSplit({
   linkMemorialToPeople = false,
   memorialVotes,
   representedVotes,
+  showMemorialIcon = true,
 }: VoteCounterSplitProps) {
   const total = liveVotes + memorialVotes + (representedVotes ?? 0);
 
   const memorialLine = (
     <span className="font-bold">
-      {formatCount(memorialVotes)}{" "}
-      <span aria-hidden="true">👻</span>
+      {formatCount(memorialVotes)}
+      {showMemorialIcon ? (
+        <>
+          {" "}
+          <span aria-hidden="true">👻</span>
+        </>
+      ) : null}
     </span>
   );
 

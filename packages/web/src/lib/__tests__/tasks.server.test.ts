@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   grantWishes: vi.fn(),
   prisma: {
     taskCreate: vi.fn(),
+    taskFindFirst: vi.fn(),
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskFindMany: vi.fn(),
@@ -32,6 +33,7 @@ vi.mock("@/lib/prisma", () => ({
     },
     task: {
       create: mocks.prisma.taskCreate,
+      findFirst: mocks.prisma.taskFindFirst,
       findMany: mocks.prisma.taskFindMany,
     },
     user: {
@@ -49,6 +51,7 @@ import {
   createTask,
   listTasks,
   searchTasks,
+  updateTaskCreatedByUser,
   verifyTask,
 } from "../tasks.server";
 
@@ -209,6 +212,7 @@ describe("tasks server", () => {
 
     await createTask("user_creator", {
       description: "Write the setup instructions.",
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       isPublic: false,
       title: "Write docs",
     });
@@ -248,5 +252,71 @@ describe("tasks server", () => {
         }),
       }),
     );
+  });
+
+  it("forces assigned tasks to assigned-only even when open claiming is requested", async () => {
+    mocks.prisma.taskCreate.mockResolvedValue({
+      assigneePersonId: "person_target",
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: "user_creator",
+      id: "task_3",
+      title: "Review the paper",
+    });
+
+    await createTask("user_creator", {
+      assigneePersonId: "person_target",
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      title: "Review the paper",
+    });
+
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          assigneePersonId: "person_target",
+          claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+          isPublic: true,
+          maxClaims: null,
+        }),
+      }),
+    );
+  });
+
+  it("defaults unassigned tasks to public open-single tasks", async () => {
+    mocks.prisma.taskCreate.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      createdByUserId: "user_creator",
+      id: "task_4",
+      isPublic: true,
+      title: "Claimable work",
+    });
+
+    await createTask("user_creator", {
+      title: "Claimable work",
+    });
+
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+          isPublic: true,
+        }),
+      }),
+    );
+  });
+
+  it("blocks creators from unpublishing public tasks", async () => {
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      id: "task_public",
+      isPublic: true,
+    });
+
+    await expect(
+      updateTaskCreatedByUser("task_public", "user_creator", {
+        isPublic: false,
+      }),
+    ).rejects.toThrow("Public tasks can't be unpublished. Ask an admin.");
+
+    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
   });
 });

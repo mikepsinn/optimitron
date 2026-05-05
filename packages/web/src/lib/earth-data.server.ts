@@ -950,6 +950,7 @@ export async function signReferendumAsOrganization(
         website: data.website,
       },
       data.submittedByUserId,
+      { rejectDuplicates: false },
     );
     organizationId = organization.id;
   }

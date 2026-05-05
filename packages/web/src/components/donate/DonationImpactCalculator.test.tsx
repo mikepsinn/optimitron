@@ -11,16 +11,16 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/components/retroui/Dialog", () => {
-  function Dialog({ children }: { children: React.ReactNode }) {
-    return <div>{children}</div>;
-  }
-  Dialog.Content = function DialogContent({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) {
-    return <div>{children}</div>;
-  };
+  const Dialog = Object.assign(
+    function Dialog({ children }: { children: React.ReactNode }) {
+      return <div>{children}</div>;
+    },
+    {
+      Content({ children }: { children: React.ReactNode }) {
+        return <div>{children}</div>;
+      },
+    },
+  );
   return { Dialog };
 });
 

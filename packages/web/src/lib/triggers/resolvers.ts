@@ -33,20 +33,30 @@ const CREATOR_RESOLVERS = new Set(["actor", "system"]);
 export async function resolveTaskCreatorUserId(
   resolver: string,
   ctx: ResolveContext,
-): Promise<string | null> {
+): Promise<string> {
   if (resolver === "system") return getWishoniaUserId();
   if (resolver === "actor") {
-    const contextUserId = lookup(ctx.context, "user.id");
     if (ctx.actorUserId) return ctx.actorUserId;
-    return typeof contextUserId === "string"
-      ? contextUserId
-      : getWishoniaUserId();
+    const contextUserId = lookup(ctx.context, "user.id");
+    return validateUserId(contextUserId, ctx);
   }
   if (resolver.startsWith("context.")) {
     const value = lookup(ctx.context, resolver.slice("context.".length));
-    return typeof value === "string" ? value : null;
+    return validateUserId(value, ctx);
   }
-  throw new Error(`Unknown creatorResolver: ${resolver}`);
+  return getWishoniaUserId();
+}
+
+async function validateUserId(
+  value: unknown,
+  ctx: ResolveContext,
+): Promise<string> {
+  if (typeof value !== "string" || !value) return getWishoniaUserId();
+  const user = await ctx.db.user.findUnique({
+    where: { id: value },
+    select: { id: true },
+  });
+  return user?.id ?? getWishoniaUserId();
 }
 
 // ---- assigneePersonResolver -----------------------------------------------

@@ -174,6 +174,7 @@ export interface FakePerson {
 
 export interface FakeUser {
   id: string;
+  email?: string | null;
   personId: string | null;
   referralCode: string | null;
   [key: string]: unknown;
@@ -804,10 +805,14 @@ export function createFakeTriggerDb() {
           where,
           select,
         }: {
-          where: { id: string };
+          where: { email?: string; id?: string };
           select?: Record<string, boolean>;
         }) => {
-          const u = store.users.find((x) => x.id === where.id);
+          const u = store.users.find(
+            (x) =>
+              (where.id ? x.id === where.id : true) &&
+              (where.email ? x.email === where.email : true),
+          );
           return u ? pickSelected(u, select) : null;
         },
       ),

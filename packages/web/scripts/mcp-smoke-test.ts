@@ -170,7 +170,14 @@ async function callTool(
   const text = await res.text();
   // Streamable HTTP returns SSE: each event is "event: message\ndata: <json>\n\n"
   const dataLine = text.split("\n").find((l) => l.startsWith("data:"));
-  if (!dataLine) {
+  const contentType = res.headers.get("content-type") ?? "";
+  const payload = text.trim();
+  const rawJson =
+    dataLine?.slice(5).trim() ||
+    (contentType.includes("application/json") || payload.startsWith("{")
+      ? payload
+      : "");
+  if (!rawJson) {
     record(
       `Tool call: ${name}`,
       false,
@@ -179,7 +186,7 @@ async function callTool(
     return null;
   }
   try {
-    const parsed = JSON.parse(dataLine.slice(5).trim()) as McpToolResponse;
+    const parsed = JSON.parse(rawJson) as McpToolResponse;
     const inner = parsed.result?.content?.[0]?.text;
     const isError = parsed.result?.isError === true;
     if (isError) {

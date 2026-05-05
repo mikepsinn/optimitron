@@ -2532,14 +2532,17 @@ async function createTaskWithImpact(input: {
     createdByUserId?: string | null;
     parentTaskId?: string | null;
   };
+  const explicitCreatedByUserId = createdByUserId?.trim() || null;
   const resolvedCreatedByUserId =
-    createdByUserId?.trim() ||
+    explicitCreatedByUserId ||
     cachedSeedWishoniaUserId ||
     (await seedWishoniaUser()).user.id;
   const createRelations: Record<string, unknown> = {};
   const updateRelations: Record<string, unknown> = {};
   createRelations.createdByUser = { connect: { id: resolvedCreatedByUserId } };
-  updateRelations.createdByUser = { connect: { id: resolvedCreatedByUserId } };
+  if (explicitCreatedByUserId) {
+    updateRelations.createdByUser = { connect: { id: explicitCreatedByUserId } };
+  }
   if (assigneeOrganizationId) {
     createRelations.assigneeOrganization = { connect: { id: assigneeOrganizationId } };
     updateRelations.assigneeOrganization = { connect: { id: assigneeOrganizationId } };

@@ -59,9 +59,10 @@ export function SignatoriesLeaderboard({
           <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
             Allowing billions of people to suffer and die from disease so
             humanity can preserve its 122-apocalypse mass-murder capacity is a
-            conscious act of barbaric mass cruelty. Like slavery, it will be allowed to continue until
-            enough people are brave enough to publicly state that it is morally
-            wrong and incredibly stupid. These are those people.
+            conscious act of barbaric mass cruelty. Like slavery, it will be
+            allowed to continue until enough people are brave enough to publicly
+            state that it is morally wrong and incredibly stupid. These are
+            those people.
           </p>
           {voteCounterSplit ? (
             <VoteCounterSplit
@@ -70,30 +71,31 @@ export function SignatoriesLeaderboard({
               linkMemorialToPeople
               memorialVotes={voteCounterSplit.memorialVotes}
               representedVotes={voteCounterSplit.representedVotes}
+              showMemorialIcon={false}
             />
           ) : null}
         </div>
 
         <div className="overflow-hidden border-2 border-foreground bg-background text-foreground">
           <div className="hidden border-b-2 border-foreground px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground sm:grid sm:grid-cols-[minmax(0,1.8fr)_minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.8fr)] sm:gap-4">
-            <span>✍️ SIGNATORY</span>
+            <span>Signatory</span>
             <ImpactExplainer
-              className="inline-flex items-center justify-end gap-1 rounded-sm text-right text-inherit hover:text-foreground"
+              className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
               label="Explain inverse kills impact math"
               showFullAnalysisLink={false}
             >
-              <span>💀 INVERSE KILLS</span>
+              <span>Inverse kills</span>
               <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
             </ImpactExplainer>
             <ImpactExplainer
-              className="inline-flex items-center justify-end gap-1 rounded-sm text-right text-inherit hover:text-foreground"
+              className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
               label="Explain hours of suffering prevented impact math"
               showFullAnalysisLink={false}
             >
-              <span>⏳ HOURS OF SUFFERING PREVENTED</span>
+              <span>Hours of suffering prevented</span>
               <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
             </ImpactExplainer>
-            <span className="text-right">👥 VOTERS RECRUITED</span>
+            <span className="text-right">Voters recruited</span>
           </div>
 
           <ol>
@@ -170,7 +172,7 @@ function SignatoryRow({
     : entry.organization.logo;
   const href = isHuman
     ? getUserDisplayHref(entry.user)
-    : entry.organization.website;
+    : getSafeHttpUrl(entry.organization.website);
   const initials =
     name
       .split(/\s+/)
@@ -196,7 +198,7 @@ function SignatoryRow({
           {editHref ? (
             <Link
               href={editHref}
-              className="inline-flex items-center rounded-full border border-foreground bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-foreground transition-colors hover:bg-muted"
+              className="inline-flex items-center border border-foreground bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-foreground transition-colors hover:bg-muted"
             >
               Edit Profile
             </Link>
@@ -242,7 +244,7 @@ function SignatoryRow({
           showFullAnalysisLink={false}
         >
           <span className="sm:hidden">
-            💀 {fmtRaw(entry.livesSaved)} Inverse Kills
+            {fmtRaw(entry.livesSaved)} Inverse kills
           </span>
           <span className="hidden sm:inline">{fmtRaw(entry.livesSaved)}</span>
         </ImpactExplainer>
@@ -252,7 +254,7 @@ function SignatoryRow({
           showFullAnalysisLink={false}
         >
           <span className="sm:hidden">
-            ⏳ {fmtRaw(entry.hoursPrevented)} Hours of Suffering Prevented
+            {fmtRaw(entry.hoursPrevented)} Hours of suffering prevented
           </span>
           <span className="hidden sm:inline">
             {fmtRaw(entry.hoursPrevented)}
@@ -260,7 +262,7 @@ function SignatoryRow({
         </ImpactExplainer>
         <div className="inline-flex min-h-[4.75rem] w-full items-center justify-center bg-background px-2 py-2 text-center text-[10px] font-black uppercase leading-tight tracking-[0.08em] text-foreground sm:min-h-0 sm:block sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-right sm:text-lg sm:tracking-normal">
           <span className="sm:hidden">
-            👥 {entry.referredYesCount.toLocaleString()} Voters Recruited
+            {entry.referredYesCount.toLocaleString()} Voters recruited
           </span>
           <span className="hidden sm:inline">
             {entry.referredYesCount.toLocaleString()}
@@ -273,4 +275,16 @@ function SignatoryRow({
   return (
     <li className="border-t-2 border-foreground first:border-t-0">{inner}</li>
   );
+}
+
+function getSafeHttpUrl(value: string | null | undefined) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
 }

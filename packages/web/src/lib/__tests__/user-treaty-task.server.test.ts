@@ -61,14 +61,15 @@ function pickSelected<T extends Record<string, unknown>>(
 
 function matchesTask(task: FakeTask, where: Record<string, unknown>) {
   for (const [key, value] of Object.entries(where)) {
-    if (key === "deletedAt" && value === null && task.deletedAt !== null) return false;
+    if (key === "deletedAt" && value === null && task.deletedAt !== null)
+      return false;
     if (key === "id") {
       if (typeof value === "string" && task.id !== value) return false;
       if (
         typeof value === "object" &&
         value &&
         "in" in value &&
-        !((value as { in: string[] }).in.includes(task.id))
+        !(value as { in: string[] }).in.includes(task.id)
       ) {
         return false;
       }
@@ -80,13 +81,18 @@ function matchesTask(task: FakeTask, where: Record<string, unknown>) {
         typeof value === "object" &&
         value &&
         "in" in value &&
-        !((value as { in: string[] }).in.includes(task.taskKey ?? ""))
+        !(value as { in: string[] }).in.includes(task.taskKey ?? "")
       ) {
         return false;
       }
       continue;
     }
-    if (key === "status" && typeof value === "object" && value && "not" in value) {
+    if (
+      key === "status" &&
+      typeof value === "object" &&
+      value &&
+      "not" in value
+    ) {
       if (task.status === (value as { not: string }).not) return false;
       continue;
     }
@@ -97,7 +103,8 @@ function matchesTask(task: FakeTask, where: Record<string, unknown>) {
 
 function matchesComment(comment: FakeComment, where: Record<string, unknown>) {
   for (const [key, value] of Object.entries(where)) {
-    if (key === "deletedAt" && value === null && comment.deletedAt !== null) return false;
+    if (key === "deletedAt" && value === null && comment.deletedAt !== null)
+      return false;
     if (key === "message" && typeof value === "object" && value) {
       if (
         "contains" in value &&
@@ -107,7 +114,9 @@ function matchesComment(comment: FakeComment, where: Record<string, unknown>) {
       }
       if (
         "startsWith" in value &&
-        !comment.message.startsWith((value as { startsWith: string }).startsWith)
+        !comment.message.startsWith(
+          (value as { startsWith: string }).startsWith,
+        )
       ) {
         return false;
       }
@@ -119,7 +128,7 @@ function matchesComment(comment: FakeComment, where: Record<string, unknown>) {
         typeof value === "object" &&
         value &&
         "in" in value &&
-        !((value as { in: string[] }).in.includes(comment.taskId))
+        !(value as { in: string[] }).in.includes(comment.taskId)
       ) {
         return false;
       }
@@ -141,7 +150,11 @@ function createFakeTaskDb() {
   const db = {
     task: {
       create: vi.fn(async ({ data }) => {
-        const task = { id: `task_${++nextTask}`, deletedAt: null, ...data } as FakeTask;
+        const task = {
+          id: `task_${++nextTask}`,
+          deletedAt: null,
+          ...data,
+        } as FakeTask;
         tasks.push(task);
         return task;
       }),
@@ -174,7 +187,11 @@ function createFakeTaskDb() {
     },
     taskComment: {
       create: vi.fn(async ({ data }) => {
-        const comment = { id: `comment_${++nextComment}`, deletedAt: null, ...data } as FakeComment;
+        const comment = {
+          id: `comment_${++nextComment}`,
+          deletedAt: null,
+          ...data,
+        } as FakeComment;
         comments.push(comment);
         return { id: comment.id };
       }),
@@ -182,9 +199,11 @@ function createFakeTaskDb() {
         const comment = comments.find((c) => matchesComment(c, where ?? {}));
         return comment ? { id: comment.id } : null;
       }),
-      count: vi.fn(async ({ where }: { where?: Record<string, unknown> } = {}) => {
-        return comments.filter((c) => matchesComment(c, where ?? {})).length;
-      }),
+      count: vi.fn(
+        async ({ where }: { where?: Record<string, unknown> } = {}) => {
+          return comments.filter((c) => matchesComment(c, where ?? {})).length;
+        },
+      ),
     },
   };
   return { comments, db: db as never, tasks };
@@ -290,15 +309,26 @@ describe("user treaty task tree", () => {
       makeFireResult(seeded.rootId, seeded.subtaskIds, "user_1", true),
     );
 
-    const result = await ensureUserTreatyTask({ personId: "person_1", userId: "user_1" });
+    const result = await ensureUserTreatyTask({
+      personId: "person_1",
+      userId: "user_1",
+    });
 
     expect(result.created).toBe(true);
     expect(result.taskId).toBe(seeded.rootId);
-    expect(result.subtaskIds.shareReferralUrl).toBe(seeded.subtaskIds.shareReferralUrl);
+    expect(result.subtaskIds.shareReferralUrl).toBe(
+      seeded.subtaskIds.shareReferralUrl,
+    );
     expect(result.subtaskIds.phoneScript).toBe(seeded.subtaskIds.phoneScript);
-    expect(result.subtaskIds.assignFirstHuman).toBe(seeded.subtaskIds.assignFirstHuman);
-    expect(result.subtaskIds.assignSecondHuman).toBe(seeded.subtaskIds.assignSecondHuman);
-    expect(result.subtaskIds.completeTraining).toBe(seeded.subtaskIds.completeTraining);
+    expect(result.subtaskIds.assignFirstHuman).toBe(
+      seeded.subtaskIds.assignFirstHuman,
+    );
+    expect(result.subtaskIds.assignSecondHuman).toBe(
+      seeded.subtaskIds.assignSecondHuman,
+    );
+    expect(result.subtaskIds.completeTraining).toBe(
+      seeded.subtaskIds.completeTraining,
+    );
     expect(result.subtaskStatuses.shareReferralUrl).toBe(TaskStatus.ACTIVE);
   });
 
@@ -309,7 +339,10 @@ describe("user treaty task tree", () => {
       makeFireResult(seeded.rootId, seeded.subtaskIds, "user_2", false),
     );
 
-    const result = await ensureUserTreatyTask({ personId: "person_2", userId: "user_2" });
+    const result = await ensureUserTreatyTask({
+      personId: "person_2",
+      userId: "user_2",
+    });
     expect(result.created).toBe(false);
   });
 
@@ -372,14 +405,17 @@ describe("user treaty task tree", () => {
 
     expect(result).toBe(true);
     const share = tasks.find(
-      (t) => t.taskKey === getUserTreatySubtaskKey("user_3", "shareReferralUrl"),
+      (t) =>
+        t.taskKey === getUserTreatySubtaskKey("user_3", "shareReferralUrl"),
     );
     expect(share?.status).toBe("VERIFIED");
 
     // Status update comment posted on the share task.
     expect(
       comments.some(
-        (c) => c.taskId === seeded.subtaskIds.shareReferralUrl && c.message.includes("Shared"),
+        (c) =>
+          c.taskId === seeded.subtaskIds.shareReferralUrl &&
+          c.message.includes("Shared"),
       ),
     ).toBe(true);
 
@@ -394,6 +430,35 @@ describe("user treaty task tree", () => {
       }),
       expect.objectContaining({ actorUserId: "user_3", db }),
     );
+  });
+
+  it("markUserTreatyReferralShareComplete returns false without side effects when the share task is not updated", async () => {
+    const { db, tasks, comments } = createFakeTaskDb();
+    const seeded = seedSyntheticOnboardingTree(tasks, "user_noop");
+    const shareTask = tasks.find(
+      (t) =>
+        t.taskKey === getUserTreatySubtaskKey("user_noop", "shareReferralUrl"),
+    );
+    if (shareTask) {
+      shareTask.createdByUserId = "someone_else";
+    }
+    fireMocks.fireTaskTrigger.mockResolvedValue(
+      makeFireResult(seeded.rootId, seeded.subtaskIds, "user_noop", false),
+    );
+
+    const result = await markUserTreatyReferralShareComplete(
+      {
+        channel: "copy-link",
+        personId: "person_noop",
+        taskId: seeded.subtaskIds.shareReferralUrl,
+        userId: "user_noop",
+      },
+      db,
+    );
+
+    expect(result).toBe(false);
+    expect(comments).toHaveLength(0);
+    expect(fireMocks.fireTaskTriggersForEvent).not.toHaveBeenCalled();
   });
 
   it("markUserTreatyPhoneCallComplete VERIFIES the phone task and fires the HMT gate in the same db context", async () => {
@@ -415,8 +480,10 @@ describe("user treaty task tree", () => {
 
     expect(result).toBe(true);
     expect(
-      tasks.find((t) => t.taskKey === getUserTreatySubtaskKey("user_phone", "phoneScript"))
-        ?.status,
+      tasks.find(
+        (t) =>
+          t.taskKey === getUserTreatySubtaskKey("user_phone", "phoneScript"),
+      )?.status,
     ).toBe("VERIFIED");
     expect(fireMocks.fireTaskTriggersForEvent).toHaveBeenCalledWith(
       "task.statusChanged.VERIFIED",
@@ -448,12 +515,16 @@ describe("user treaty task tree", () => {
     );
 
     expect(
-      tasks.find((t) => t.taskKey === getUserTreatySubtaskKey("user_4", "assignFirstHuman"))
-        ?.status,
+      tasks.find(
+        (t) =>
+          t.taskKey === getUserTreatySubtaskKey("user_4", "assignFirstHuman"),
+      )?.status,
     ).toBe("VERIFIED");
     expect(
-      tasks.find((t) => t.taskKey === getUserTreatySubtaskKey("user_4", "assignSecondHuman"))
-        ?.status,
+      tasks.find(
+        (t) =>
+          t.taskKey === getUserTreatySubtaskKey("user_4", "assignSecondHuman"),
+      )?.status,
     ).toBe("ACTIVE");
 
     expect(fireMocks.fireTaskTriggersForEvent).toHaveBeenCalledWith(

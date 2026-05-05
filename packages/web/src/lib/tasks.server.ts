@@ -1434,7 +1434,16 @@ export async function createTask(
   const assigneeOrganizationId = input.assigneeOrganizationId?.trim() || null;
   const assigneePersonId = input.assigneePersonId?.trim() || null;
   const isAssignedTask = Boolean(assigneeOrganizationId || assigneePersonId);
-  const claimPolicy = input.claimPolicy ?? TaskClaimPolicy.ASSIGNED_ONLY;
+  const defaultClaimPolicy =
+    input.isPublic === false
+      ? TaskClaimPolicy.ASSIGNED_ONLY
+      : TaskClaimPolicy.OPEN_SINGLE;
+  const resolvedClaimPolicy = isAssignedTask
+    ? TaskClaimPolicy.ASSIGNED_ONLY
+    : (input.claimPolicy ?? defaultClaimPolicy);
+  const isPublic =
+    resolvedClaimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY ||
+    (input.isPublic ?? isAssignedTask);
   const endpointData = input.primaryEndpoint
     ? buildPrimaryTaskCommunicationEndpointCreateData(input.primaryEndpoint)
     : null;
@@ -1444,7 +1453,7 @@ export async function createTask(
   }
 
   if (
-    claimPolicy === TaskClaimPolicy.OPEN_MANY &&
+    resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY &&
     input.maxClaims != null &&
     input.maxClaims < 1
   ) {
@@ -1456,7 +1465,7 @@ export async function createTask(
       assigneeOrganizationId,
       assigneePersonId,
       category: input.category ?? TaskCategory.OTHER,
-      claimPolicy,
+      claimPolicy: resolvedClaimPolicy,
       ...(endpointData
         ? {
             communicationEndpoints: {
@@ -1469,9 +1478,9 @@ export async function createTask(
       dueAt: input.dueAt ?? null,
       estimatedEffortHours: input.estimatedEffortHours ?? null,
       interestTags: input.interestTags?.filter(Boolean) ?? [],
-      isPublic: input.isPublic ?? isAssignedTask,
+      isPublic,
       maxClaims:
-        claimPolicy === TaskClaimPolicy.OPEN_MANY
+        resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY
           ? (input.maxClaims ?? null)
           : null,
       createdByUserId: creatorUserId,
@@ -1513,11 +1522,16 @@ export async function updateTaskCreatedByUser(
     select: {
       claimPolicy: true,
       id: true,
+      isPublic: true,
     },
   });
 
   if (!existingTask) {
     throw new Error("Task not found.");
+  }
+
+  if (existingTask.isPublic && input.isPublic === false) {
+    throw new Error("Public tasks can't be unpublished. Ask an admin.");
   }
 
   const nextClaimPolicy = input.claimPolicy ?? existingTask.claimPolicy;

@@ -5,7 +5,11 @@ import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import { getOrganizationPath, getSignInPath, ROUTES } from "@/lib/routes";
 import { buildOrganizationSurveyUrl } from "@/lib/site";
-import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
+import {
+  getUserDisplayHandle,
+  getUserDisplayName,
+  userDisplaySelect,
+} from "@/lib/user-display";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +65,7 @@ export default async function OrganizationPage({
     );
   }
 
-  const referralIdentifier = user.person?.handle ?? user.referralCode ?? null;
+  const referralIdentifier = getUserDisplayHandle(user);
   const organizationSurveyUrl = buildOrganizationSurveyUrl(org.slug);
   const memberSurveyUrl = buildOrganizationSurveyUrl(org.slug, {
     referralCode: referralIdentifier,
