@@ -68,6 +68,7 @@ export const ROUTES = {
   coalition: "/coalition",
   organizations: "/organizations",
   people: "/people",
+  peopleManage: "/people/manage",
   questions: "/questions",
   survey: "/survey",
   // The Game
@@ -645,12 +646,12 @@ export const treatyVoteLink: NavItem = {
 
 export const peopleLink: NavItem = {
   href: ROUTES.people,
-  label: "Sign for Someone",
+  label: "Sign for Someone Who Can't",
   emoji: "👥",
   description:
-    "Sign the 1% Treaty for sick, dead, offline, or incapacitated humans who cannot sign it themselves. Direct signatures stay separate.",
-  tagline: "Sign when they cannot",
-  cta: "Sign for Someone",
+    "Sign the 1% Treaty for someone who can no longer sign it themselves.",
+  tagline: "Sign for someone who can't",
+  cta: "Sign for Them",
 };
 
 export const questionsLink: NavItem = {

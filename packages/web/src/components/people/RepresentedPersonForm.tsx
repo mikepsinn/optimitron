@@ -18,6 +18,7 @@ import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildPeopleUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
+import { SquarePhotoCropper } from "./SquarePhotoCropper";
 
 const CONFLICT_CAUSE_CATEGORIES = new Set<PersonDeathCauseCategory>([
   PersonDeathCauseCategory.ARMED_CONFLICT,
@@ -130,6 +131,7 @@ export function RepresentedPersonForm({
   const [memorialEvidence, setMemorialEvidence] = useState<EvidenceDraft[]>([]);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [photoCropFile, setPhotoCropFile] = useState<File | null>(null);
   const [evidenceUploading, setEvidenceUploading] = useState(false);
   const [evidenceError, setEvidenceError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -226,6 +228,12 @@ export function RepresentedPersonForm({
     const file = event.target.files?.[0];
     if (!file) return;
     setPhotoError(null);
+    setPhotoCropFile(file);
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  }
+
+  async function uploadCroppedPhoto(file: File) {
+    setPhotoError(null);
     setPhotoUploading(true);
     try {
       const { publicUrl } = await uploadFileViaPresign({
@@ -233,13 +241,13 @@ export function RepresentedPersonForm({
         kind: "person-photo",
       });
       setImageUrl(publicUrl);
+      setPhotoCropFile(null);
     } catch (caught) {
-      setPhotoError(
-        caught instanceof Error ? caught.message : "Upload failed.",
-      );
+      const message = caught instanceof Error ? caught.message : "Upload failed.";
+      setPhotoError(message);
+      throw new Error(message);
     } finally {
       setPhotoUploading(false);
-      if (photoInputRef.current) photoInputRef.current.value = "";
     }
   }
 
@@ -402,6 +410,7 @@ export function RepresentedPersonForm({
       setPublicComment("");
       setMemorialMessage("");
       setConsentCourtEvidence(false);
+      setPhotoCropFile(null);
       onCreated?.();
     } catch (caught) {
       setStatus("error");
@@ -417,15 +426,22 @@ export function RepresentedPersonForm({
       : "border-t border-border pt-5";
 
   return (
-    <div className={cn(shellClass, className)}>
+    <>
+      {photoCropFile ? (
+        <SquarePhotoCropper
+          file={photoCropFile}
+          onCancel={() => setPhotoCropFile(null)}
+          onCrop={uploadCroppedPhoto}
+        />
+      ) : null}
+      <div className={cn(shellClass, className)}>
       <div className="space-y-4">
         <div>
           <h2 className="text-xl font-black uppercase tracking-[0.08em]">
-            Sign for someone
+            Sign for someone who can't
           </h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            Add someone who cannot sign the 1% Treaty themselves. Direct treaty
-            signatures stay separate.
+            If they cannot sign the 1% Treaty for themselves, carry their name.
           </p>
         </div>
 
@@ -1074,7 +1090,7 @@ export function RepresentedPersonForm({
           />
           <span>
             {lifeStatus === PersonLifeStatus.DECEASED
-              ? "I consent to this memorial being displayed publicly on the Sign for Someone page."
+              ? "Show this memorial publicly."
               : "Show this card publicly."}
           </span>
         </label>
@@ -1089,9 +1105,7 @@ export function RepresentedPersonForm({
               }
             />
             <span>
-              I consent to this record being used as evidence in any future
-              legal proceeding, including the Court of Humanity, seeking
-              accountability for preventable deaths.
+              This can be used as evidence in future accountability work.
             </span>
           </label>
         ) : null}
@@ -1100,15 +1114,13 @@ export function RepresentedPersonForm({
           className="min-h-12 w-full border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0"
           disabled={
             disabled ||
-            displayName.trim() === "" ||
-            (lifeStatus === PersonLifeStatus.DECEASED &&
-              (dateOfDeath.trim() === "" || deathCountryCode.trim() === ""))
+            displayName.trim() === ""
           }
           onClick={() => void submit()}
           type="button"
         >
           <UserPlus className="mr-2 h-5 w-5" aria-hidden="true" />
-          {status === "saving" ? "Filing…" : "Sign the treaty for them"}
+          {status === "saving" ? "Saving..." : "Sign for them"}
         </Button>
 
         {error ? (
@@ -1122,7 +1134,7 @@ export function RepresentedPersonForm({
             {efficacyLagNotices.length > 0 ? (
               <div className="space-y-3 border border-foreground bg-background p-4">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-                  Efficacy lag flagged 👻
+                  Efficacy lag flagged
                 </p>
                 {efficacyLagNotices.map((notice) => (
                   <p
@@ -1135,9 +1147,7 @@ export function RepresentedPersonForm({
               </div>
             ) : null}
             <p className="text-base font-bold leading-7">
-              You just put <strong>{submittedDisplayName}</strong> on the treaty
-              record. Now sign for everyone else the button cannot reach. The
-              more names in this database, the harder it is to ignore.
+              You signed for <strong>{submittedDisplayName}</strong>.
             </p>
             <Button
               className="min-h-12 w-full border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0"
@@ -1150,7 +1160,7 @@ export function RepresentedPersonForm({
               type="button"
             >
               <UserPlus className="mr-2 h-5 w-5" aria-hidden="true" />
-              Add another human
+              Sign for another human
             </Button>
             {shareText ? (
               <div className="space-y-2">
@@ -1168,6 +1178,7 @@ export function RepresentedPersonForm({
           </div>
         ) : null}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

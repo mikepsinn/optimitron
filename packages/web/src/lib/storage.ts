@@ -13,6 +13,8 @@ const STORAGE_KEYS = {
   signupLandingUrl: "signup_landing_url",
   pendingWishocracy: "pendingWishocracy",
   pendingTreatyVote: "pending_treaty_vote",
+  pendingRepresentedPeople: "pending_represented_people",
+  pendingRepresentedPeopleSyncLock: "pending_represented_people_sync_lock",
   voteStatusCache: "vote_status_cache",
   chatApiKey: "opto-chat-api-key",
   chatProvider: "opto-chat-provider",
@@ -57,6 +59,25 @@ export type PendingCourtOfHumanityVoteState = {
   answer: string;
   referredBy: string | null;
   timestamp: string;
+};
+
+export type PendingRepresentedPersonDraft = {
+  clientDraftId: string;
+  conditionName?: string;
+  displayName: string;
+  isPublic: boolean;
+  lifeStatus?: "DECEASED" | "LIVING" | "UNKNOWN";
+  originUrl?: string;
+  publicComment?: string;
+  referendumSlug: string;
+  relationshipType?: string;
+  timestamp: string;
+  version: 1;
+};
+
+export type PendingRepresentedPeopleSyncLock = {
+  expiresAt: number;
+  ownerId: string;
 };
 
 type PendingWishocracyState = {
@@ -202,6 +223,47 @@ export const storage = {
   setPendingTreatyVote: (data: PendingTreatyVoteState) =>
     setStorageItem(STORAGE_KEYS.pendingTreatyVote, data),
   removePendingTreatyVote: () => removeStorageItem(STORAGE_KEYS.pendingTreatyVote),
+
+  getPendingRepresentedPeople: () =>
+    getStorageItem<PendingRepresentedPersonDraft[]>(
+      STORAGE_KEYS.pendingRepresentedPeople,
+    ) ?? [],
+  setPendingRepresentedPeople: (data: PendingRepresentedPersonDraft[]) =>
+    setStorageItem(STORAGE_KEYS.pendingRepresentedPeople, data),
+  addPendingRepresentedPerson: (draft: PendingRepresentedPersonDraft) => {
+    const drafts =
+      getStorageItem<PendingRepresentedPersonDraft[]>(
+        STORAGE_KEYS.pendingRepresentedPeople,
+      ) ?? [];
+    setStorageItem(STORAGE_KEYS.pendingRepresentedPeople, [
+      ...drafts.filter((item) => item.clientDraftId !== draft.clientDraftId),
+      draft,
+    ]);
+  },
+  removePendingRepresentedPeople: (clientDraftIds: string[]) => {
+    const ids = new Set(clientDraftIds);
+    const drafts =
+      getStorageItem<PendingRepresentedPersonDraft[]>(
+        STORAGE_KEYS.pendingRepresentedPeople,
+      ) ?? [];
+    const remaining = drafts.filter((draft) => !ids.has(draft.clientDraftId));
+    if (remaining.length > 0) {
+      setStorageItem(STORAGE_KEYS.pendingRepresentedPeople, remaining);
+    } else {
+      removeStorageItem(STORAGE_KEYS.pendingRepresentedPeople);
+    }
+  },
+  clearPendingRepresentedPeople: () =>
+    removeStorageItem(STORAGE_KEYS.pendingRepresentedPeople),
+  getPendingRepresentedPeopleSyncLock: () =>
+    getStorageItem<PendingRepresentedPeopleSyncLock>(
+      STORAGE_KEYS.pendingRepresentedPeopleSyncLock,
+    ),
+  setPendingRepresentedPeopleSyncLock: (
+    lock: PendingRepresentedPeopleSyncLock,
+  ) => setStorageItem(STORAGE_KEYS.pendingRepresentedPeopleSyncLock, lock),
+  clearPendingRepresentedPeopleSyncLock: () =>
+    removeStorageItem(STORAGE_KEYS.pendingRepresentedPeopleSyncLock),
 
   getDeclarationSigned: () =>
     getStorageItem<DeclarationSignedState>(STORAGE_KEYS.declarationSigned),

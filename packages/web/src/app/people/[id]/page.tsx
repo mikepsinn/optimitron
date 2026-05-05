@@ -32,31 +32,28 @@ export async function generateMetadata({
   if (representedData) {
     const isDeceased =
       representedData.person.lifeStatus === PersonLifeStatus.DECEASED;
-    const ghost = isDeceased ? "👻 " : "";
     const condition = representedData.memorial?.conditionLabel ?? null;
     const lag = representedData.memorial?.efficacyLag ?? null;
     const baseDescription =
       representedData.vote.publicComment ??
       representedData.memorial?.memorialMessage ??
-      (isDeceased
-        ? `${representedData.person.displayName} is in the Invisible Graveyard.`
-        : `${representedData.person.displayName}'s represented 1% Treaty signature.`);
+      `${representedData.person.displayName} was added by someone who represented them on the 1% Treaty.`;
     const description = lag
       ? `${baseDescription} ${lag.interventionName} was approved ${lag.approvalDate.getUTCFullYear()}.`
       : condition && isDeceased
         ? `${representedData.person.displayName} died of ${condition}. ${baseDescription}`
         : baseDescription;
     return {
-      title: `${ghost}${representedData.person.displayName} | ${isDeceased ? "The Invisible Graveyard" : peopleLink.label}`,
+      title: `${representedData.person.displayName} | ${peopleLink.label}`,
       description,
       openGraph: {
-        title: `${ghost}${representedData.person.displayName}`,
+        title: representedData.person.displayName,
         description,
         type: "profile",
       },
       twitter: {
         card: "summary_large_image",
-        title: `${ghost}${representedData.person.displayName}`,
+        title: representedData.person.displayName,
         description,
       },
     };
@@ -89,8 +86,8 @@ function getFallbackInitials(value: string) {
 }
 
 function getRepresentedLifeStatusLabel(status: PersonLifeStatus) {
-  if (status === PersonLifeStatus.DECEASED) return "Memorial signature 👻";
-  if (status === PersonLifeStatus.LIVING) return "Represented human";
+  if (status === PersonLifeStatus.DECEASED) return "Added for someone deceased";
+  if (status === PersonLifeStatus.LIVING) return "Added for someone living";
   return "Status unknown";
 }
 
@@ -180,7 +177,7 @@ function RepresentedPersonProfile({
         <section className="grid gap-5 md:grid-cols-3">
           <div className="border border-border bg-card p-5 text-card-foreground">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-              Filed by
+              Added by
             </p>
             <p className="mt-2 text-2xl font-black">{representedBy}</p>
           </div>
@@ -268,8 +265,8 @@ function RepresentedPersonProfile({
             </h2>
             <p className="font-bold leading-7 text-muted-foreground">
               At least one submitter has consented to court-evidence use of this
-              memorial. The structured filing is available as JSON for the Court
-              of Humanity (or any future legal proceeding) to ingest.
+              memorial. The evidence package is available as JSON for the Court
+              of Humanity or any future legal proceeding.
             </p>
             <a
               className="inline-block border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background"
@@ -284,8 +281,8 @@ function RepresentedPersonProfile({
         <section className="border border-border bg-card p-5 text-card-foreground">
           <p className="font-bold leading-7 text-muted-foreground">
             This is not a direct treaty signature. Direct counts only include
-            living humans signing for themselves. This page exists because
-            budgets look different when the dead and sick get faces.
+            living people signing for themselves. This page is for someone
+            represented by another person.
           </p>
         </section>
       </div>

@@ -19,7 +19,6 @@ import {
 import { findCanonicalConditionGlobalVariable } from "@/lib/global-variable-lookup.server";
 import { prisma } from "@/lib/prisma";
 import { ensurePersonForUser } from "@/lib/person.server";
-import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import { slugify } from "@/lib/slugify";
 import { ensureSubjectForPerson } from "@/lib/subject.server";
 
@@ -37,6 +36,7 @@ const CONFLICT_CAUSE_CATEGORIES = new Set<PersonDeathCauseCategory>([
   PersonDeathCauseCategory.STATE_VIOLENCE,
   PersonDeathCauseCategory.TERRORISM,
 ]);
+const MAX_ORIGIN_URL_LENGTH = 2048;
 const PUBLIC_TEXT_URL_PATTERN =
   /(?:https?:\/\/|www\.|(?:^|\s)[a-z0-9][a-z0-9.-]*\.(?:ai|biz|co|com|gov|info|io|net|org|ru|uk|us|xyz)\b)/i;
 
@@ -174,6 +174,9 @@ const representedPersonSubmissionSchema = z
     isPublic: z.unknown().transform((value) => value !== false),
     lifeStatus: lifeStatusInputSchema,
     memorialMessage: cleanStringSchema(MAX_MEMORIAL_MESSAGE_LENGTH),
+    originUrl: cleanStringSchema(MAX_ORIGIN_URL_LENGTH).transform((value) =>
+      value ? value : null,
+    ),
     publicComment: cleanStringSchema(MAX_COMMENT_LENGTH),
     relationshipType: cleanStringSchema(MAX_RELATIONSHIP_LENGTH).transform((value) =>
       slugify(value),
@@ -198,22 +201,6 @@ const representedPersonSubmissionSchema = z
         code: z.ZodIssueCode.custom,
         message: "Name is required.",
         path: ["displayName"],
-      });
-    }
-
-    if (data.lifeStatus === PersonLifeStatus.DECEASED && !data.dateOfDeath) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Date of death is required for memorial votes.",
-        path: ["dateOfDeath"],
-      });
-    }
-
-    if (data.lifeStatus === PersonLifeStatus.DECEASED && !data.deathCountryCode) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Country of death is required for memorial votes.",
-        path: ["deathCountryCode"],
       });
     }
 
@@ -298,6 +285,7 @@ export async function POST(
       lifeStatus,
       memorialEvidence,
       memorialMessage,
+      originUrl,
       publicComment,
       relationshipType,
       responsibleParties,
@@ -377,24 +365,6 @@ export async function POST(
     }
 
     const casterPerson = await ensurePersonForUser(userId);
-    const selfYesVote = await prisma.referendumVote.findFirst({
-      where: {
-        ...buildOfficialReferendumVoteWhere({
-          answer: VotePosition.YES,
-          referendumId: referendum.id,
-        }),
-        personId: casterPerson.id,
-        userId,
-      },
-      select: { id: true },
-    });
-
-    if (!selfYesVote) {
-      return NextResponse.json(
-        { error: "Vote YES yourself before dragging relatives to the polls." },
-        { status: 403 },
-      );
-    }
 
     const result = await prisma.$transaction(async (tx) => {
       const person = await tx.person.create({
@@ -544,11 +514,13 @@ export async function POST(
           answer: VotePosition.YES,
           deletedAt: null,
           isPublic,
+          ...(originUrl ? { originUrl } : {}),
           publicComment: publicComment || null,
         },
         create: {
           answer: VotePosition.YES,
           isPublic,
+          originUrl: originUrl || null,
           personId: person.id,
           publicComment: publicComment || null,
           referendumId: referendum.id,
