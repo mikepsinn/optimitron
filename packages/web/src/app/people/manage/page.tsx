@@ -6,16 +6,13 @@ import { ManageRepresentedPeopleClient } from "@/components/people/ManageReprese
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
-import { getSignInPath, peopleLink, ROUTES } from "@/lib/routes";
+import { getSignInPath, peopleManageLink, ROUTES } from "@/lib/routes";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 const MANAGE_PAGE_SIZE = 5;
 
 export const metadata = getRouteMetadata({
-  ...peopleLink,
-  href: ROUTES.peopleManage,
-  label: "Manage People",
-  cta: "Manage People",
+  ...peopleManageLink,
 });
 
 function dateInputValue(value: Date | null): string {
@@ -219,13 +216,13 @@ export default async function ManagePeoplePage({
             className="text-xs font-black uppercase tracking-[0.16em] underline underline-offset-4"
             href={ROUTES.people}
           >
-            Back to people
+            Back to plaintiffs
           </Link>
           <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
-            People you signed for
+            Your Plaintiffs
           </h1>
           <p className="max-w-3xl text-lg font-bold leading-8 text-muted-foreground">
-            Add a photo, relationship, status, public note, or evidence.
+            Open a plaintiff to edit photo, status, notes, or evidence.
           </p>
         </header>
 

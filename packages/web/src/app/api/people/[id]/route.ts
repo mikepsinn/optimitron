@@ -26,6 +26,9 @@ const MAX_RELATIONSHIP_LENGTH = 48;
 const MAX_EVIDENCE_ITEMS = 8;
 const MAX_EVIDENCE_TITLE_LENGTH = 120;
 const MAX_EVIDENCE_DESCRIPTION_LENGTH = 500;
+const MAX_CLIENT_DRAFT_ID_LENGTH = 120;
+const PUBLIC_TEXT_URL_PATTERN =
+  /(?:https?:\/\/|www\.|(?:^|\s)[a-z0-9][a-z0-9.-]*\.(?:ai|biz|co|com|gov|info|io|net|org|ru|uk|us|xyz)\b)/i;
 
 function normalizePublicText(value: unknown, maxLength: number) {
   if (typeof value !== "string") return "";
@@ -36,23 +39,41 @@ function cleanStringSchema(maxLength: number) {
   return z.unknown().transform((value) => normalizePublicText(value, maxLength));
 }
 
-const nullableDateInputSchema = z
+function optionalCleanStringSchema(maxLength: number) {
+  return z
+    .unknown()
+    .optional()
+    .transform((value) =>
+      value === undefined ? undefined : normalizePublicText(value, maxLength),
+    );
+}
+
+const optionalNullableDateInputSchema = z
   .unknown()
+  .optional()
   .transform((value) => {
+    if (value === undefined) return undefined;
     if (typeof value !== "string" || !value.trim()) return null;
     return new Date(`${value.trim()}T00:00:00.000Z`);
   })
-  .pipe(z.date().nullable());
+  .pipe(z.date().nullable().optional());
 
-const countryCodeSchema = z
+const optionalCountryCodeSchema = z
   .unknown()
+  .optional()
+  .transform((value) => {
+    if (value === undefined) return undefined;
+    return typeof value === "string" ? value.trim().toUpperCase() : "";
+  })
   .transform((value) =>
-    typeof value === "string" ? value.trim().toUpperCase() : "",
+    value === undefined ? undefined : value ? value : null,
   )
-  .transform((value) => (value ? value : null))
-  .refine((value) => value === null || /^[A-Z]{2}$/.test(value), {
-    message: "Use a two-letter country code.",
-  });
+  .refine(
+    (value) => value === undefined || value === null || /^[A-Z]{2}$/.test(value),
+    {
+      message: "Use a two-letter country code.",
+    },
+  );
 
 const allowedImageHostPattern = (() => {
   const r2Public = process.env.R2_PUBLIC_URL?.replace(/\/$/, "");
@@ -65,13 +86,17 @@ const allowedImageHostPattern = (() => {
   }
 })();
 
-const siteLocalImageSchema = z
+const optionalSiteLocalImageSchema = z
   .unknown()
-  .transform((value) => normalizePublicText(value, 500))
-  .transform((value) => (value ? value : null))
+  .optional()
+  .transform((value) => {
+    if (value === undefined) return undefined;
+    const normalized = normalizePublicText(value, 500);
+    return normalized ? normalized : null;
+  })
   .refine(
     (value) => {
-      if (value === null) return true;
+      if (value === undefined || value === null) return true;
       if (value.startsWith("/") && !value.startsWith("//")) return true;
       if (allowedImageHostPattern && allowedImageHostPattern.test(value)) {
         return true;
@@ -84,21 +109,32 @@ const siteLocalImageSchema = z
     },
   );
 
-const lifeStatusInputSchema = z.preprocess((value) => {
-  if (typeof value !== "string" || !value.trim()) {
-    return PersonLifeStatus.UNKNOWN;
-  }
-  return value.trim();
-}, schemas.PersonLifeStatusSchema);
+const optionalLifeStatusInputSchema = z
+  .unknown()
+  .optional()
+  .transform((value) => {
+    if (value === undefined) return undefined;
+    if (typeof value !== "string" || !value.trim()) {
+      return PersonLifeStatus.UNKNOWN;
+    }
+    return value.trim();
+  })
+  .pipe(schemas.PersonLifeStatusSchema.optional());
 
-const causeCategoryInputSchema = z.preprocess((value) => {
-  if (typeof value !== "string" || !value.trim()) {
-    return PersonDeathCauseCategory.UNKNOWN;
-  }
-  return value.trim();
-}, schemas.PersonDeathCauseCategorySchema);
+const optionalCauseCategoryInputSchema = z
+  .unknown()
+  .optional()
+  .transform((value) => {
+    if (value === undefined) return undefined;
+    if (typeof value !== "string" || !value.trim()) {
+      return PersonDeathCauseCategory.UNKNOWN;
+    }
+    return value.trim();
+  })
+  .pipe(schemas.PersonDeathCauseCategorySchema.optional());
 
 const memorialEvidenceInputSchema = z.object({
+  id: optionalCleanStringSchema(MAX_CLIENT_DRAFT_ID_LENGTH),
   evidenceKind: z.preprocess((value) => {
     if (typeof value !== "string" || !value.trim()) {
       return PersonMemorialEvidenceKind.OTHER;
@@ -131,33 +167,46 @@ const memorialEvidenceInputSchema = z.object({
 
 const updatePersonSchema = z
   .object({
-    birthDate: nullableDateInputSchema,
-    causeCategory: causeCategoryInputSchema,
-    conditionName: cleanStringSchema(MAX_CONDITION_LENGTH),
-    consentCourtEvidence: z.unknown().transform((value) => value === true),
-    dateOfDeath: nullableDateInputSchema,
-    deathCountryCode: countryCodeSchema,
-    displayName: cleanStringSchema(MAX_NAME_LENGTH),
-    imageUrl: siteLocalImageSchema,
-    isPublic: z.unknown().transform((value) => value !== false),
-    lifeStatus: lifeStatusInputSchema,
+    birthDate: optionalNullableDateInputSchema,
+    causeCategory: optionalCauseCategoryInputSchema,
+    conditionName: optionalCleanStringSchema(MAX_CONDITION_LENGTH),
+    consentCourtEvidence: z
+      .unknown()
+      .optional()
+      .transform((value) => (value === undefined ? undefined : value === true)),
+    dateOfDeath: optionalNullableDateInputSchema,
+    deathCountryCode: optionalCountryCodeSchema,
+    displayName: optionalCleanStringSchema(MAX_NAME_LENGTH),
+    imageUrl: optionalSiteLocalImageSchema,
+    isPublic: z
+      .unknown()
+      .optional()
+      .transform((value) => (value === undefined ? undefined : value !== false)),
+    lifeStatus: optionalLifeStatusInputSchema,
     memorialEvidence: z
       .unknown()
+      .optional()
       .transform((value) =>
-        Array.isArray(value) ? value.slice(0, MAX_EVIDENCE_ITEMS) : [],
+        value === undefined
+          ? undefined
+          : Array.isArray(value)
+            ? value.slice(0, MAX_EVIDENCE_ITEMS)
+            : [],
       )
-      .pipe(z.array(memorialEvidenceInputSchema)),
-    memorialMessage: cleanStringSchema(MAX_MEMORIAL_MESSAGE_LENGTH),
-    publicComment: cleanStringSchema(MAX_COMMENT_LENGTH),
+      .pipe(z.array(memorialEvidenceInputSchema).optional()),
+    memorialMessage: optionalCleanStringSchema(MAX_MEMORIAL_MESSAGE_LENGTH),
+    publicComment: optionalCleanStringSchema(MAX_COMMENT_LENGTH),
     referendumSlug: cleanStringSchema(80).transform((value) =>
       value ? value : TREATY_REFERENDUM_SLUG,
     ),
-    relationshipType: cleanStringSchema(MAX_RELATIONSHIP_LENGTH).transform(
-      (value) => slugify(value),
+    relationshipType: optionalCleanStringSchema(
+      MAX_RELATIONSHIP_LENGTH,
+    ).transform((value) =>
+      value === undefined ? undefined : value ? slugify(value) : "",
     ),
   })
   .superRefine((data, ctx) => {
-    if (!data.displayName) {
+    if (data.displayName !== undefined && !data.displayName) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Name is required.",
@@ -173,15 +222,19 @@ const updatePersonSchema = z
       });
     }
 
-    if (
-      data.memorialEvidence.length > 0 &&
-      data.lifeStatus !== PersonLifeStatus.DECEASED
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Evidence uploads are only for memorials.",
-        path: ["memorialEvidence"],
-      });
+    for (const field of [
+      "displayName",
+      "conditionName",
+      "publicComment",
+      "memorialMessage",
+    ] as const) {
+      if (data[field] && PUBLIC_TEXT_URL_PATTERN.test(data[field])) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Remove URLs and spam bait from the public card.",
+          path: [field],
+        });
+      }
     }
   });
 
@@ -210,7 +263,40 @@ export async function PATCH(
 
     const existingPerson = await prisma.person.findUnique({
       where: { id },
-      select: { createdByUserId: true, id: true },
+      select: {
+        birthDate: true,
+        conditions: {
+          where: { deletedAt: null },
+          orderBy: { createdAt: "asc" },
+          select: { conditionName: true, id: true },
+          take: 1,
+        },
+        createdByUserId: true,
+        deathDate: true,
+        displayName: true,
+        id: true,
+        image: true,
+        isPublic: true,
+        lifeStatus: true,
+        memorial: {
+          select: {
+            causeCategory: true,
+            deathCountryCode: true,
+            deletedAt: true,
+            id: true,
+            submissions: {
+              where: { deletedAt: null, submittedByUserId: userId },
+              orderBy: { createdAt: "desc" },
+              select: {
+                consentCourtEvidence: true,
+                id: true,
+                memorialMessage: true,
+              },
+              take: 1,
+            },
+          },
+        },
+      },
     });
     if (!existingPerson || existingPerson.createdByUserId !== userId) {
       return NextResponse.json({ error: "Person not found" }, { status: 404 });
@@ -232,7 +318,7 @@ export async function PATCH(
         userId,
         voteSource: ReferendumVoteSource.REPRESENTED,
       },
-      select: { id: true },
+      select: { id: true, publicComment: true },
     });
     if (!representedVote) {
       return NextResponse.json(
@@ -241,33 +327,126 @@ export async function PATCH(
       );
     }
 
-    const {
-      birthDate,
-      causeCategory,
-      conditionName,
-      consentCourtEvidence,
-      dateOfDeath,
-      deathCountryCode,
-      displayName,
-      imageUrl,
-      isPublic,
-      lifeStatus,
-      memorialEvidence,
-      memorialMessage,
-      publicComment,
-      relationshipType,
-    } = parsed.data;
+    const activeMemorial =
+      existingPerson.memorial && !existingPerson.memorial.deletedAt
+        ? existingPerson.memorial
+        : null;
+    const existingSubmission = activeMemorial?.submissions[0] ?? null;
+    const existingCondition = existingPerson.conditions[0] ?? null;
+    const finalLifeStatus = parsed.data.lifeStatus ?? existingPerson.lifeStatus;
+    const finalIsPublic = parsed.data.isPublic ?? existingPerson.isPublic;
+    const finalDisplayName =
+      parsed.data.displayName ?? existingPerson.displayName;
+    const finalBirthDate =
+      parsed.data.birthDate === undefined
+        ? existingPerson.birthDate
+        : parsed.data.birthDate;
+    const finalDateOfDeath =
+      finalLifeStatus === PersonLifeStatus.DECEASED
+        ? parsed.data.dateOfDeath === undefined
+          ? existingPerson.deathDate
+          : parsed.data.dateOfDeath
+        : null;
+    const finalDeathCountryCode =
+      finalLifeStatus === PersonLifeStatus.DECEASED
+        ? parsed.data.deathCountryCode === undefined
+          ? activeMemorial?.deathCountryCode ?? null
+          : parsed.data.deathCountryCode
+        : null;
+    const finalCauseCategory =
+      parsed.data.causeCategory ??
+      activeMemorial?.causeCategory ??
+      PersonDeathCauseCategory.UNKNOWN;
+    const finalMemorialMessage =
+      parsed.data.memorialMessage ??
+      existingSubmission?.memorialMessage ??
+      "";
+    const finalConsentCourtEvidence =
+      parsed.data.consentCourtEvidence ??
+      existingSubmission?.consentCourtEvidence ??
+      false;
+    const finalPublicComment =
+      parsed.data.publicComment ?? representedVote.publicComment ?? "";
+    const finalImageUrl =
+      parsed.data.imageUrl === undefined
+        ? existingPerson.image
+        : parsed.data.imageUrl;
+    const nextConditionName = parsed.data.conditionName;
+    const nextRelationshipType = parsed.data.relationshipType;
+    const nextMemorialEvidence = parsed.data.memorialEvidence;
+    const newEvidenceCount =
+      nextMemorialEvidence?.filter((evidence) => !evidence.id).length ?? 0;
+
+    if (!finalDisplayName) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [{ message: "Name is required.", path: ["displayName"] }],
+        },
+        { status: 400 },
+      );
+    }
+
+    if (
+      finalBirthDate &&
+      finalDateOfDeath &&
+      finalBirthDate > finalDateOfDeath
+    ) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [
+            {
+              message: "Birth date must be before date of death.",
+              path: ["birthDate"],
+            },
+          ],
+        },
+        { status: 400 },
+      );
+    }
+
+    if (newEvidenceCount > 0 && finalLifeStatus !== PersonLifeStatus.DECEASED) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [
+            {
+              message: "Evidence uploads are only for memorials.",
+              path: ["memorialEvidence"],
+            },
+          ],
+        },
+        { status: 400 },
+      );
+    }
+
+    if (newEvidenceCount > 0 && !finalIsPublic) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [
+            {
+              message: "Evidence uploads require a public memorial.",
+              path: ["memorialEvidence"],
+            },
+          ],
+        },
+        { status: 400 },
+      );
+    }
 
     const result = await prisma.$transaction(async (tx) => {
+      const now = new Date();
       const person = await tx.person.update({
         where: { id },
         data: {
-          birthDate,
-          deathDate: dateOfDeath,
-          displayName,
-          image: imageUrl,
-          isPublic,
-          lifeStatus,
+          birthDate: finalBirthDate,
+          deathDate: finalDateOfDeath,
+          displayName: finalDisplayName,
+          image: finalImageUrl,
+          isPublic: finalIsPublic,
+          lifeStatus: finalLifeStatus,
         },
         select: {
           displayName: true,
@@ -279,56 +458,84 @@ export async function PATCH(
       });
 
       await ensureSubjectForPerson(tx, {
-        displayName,
+        displayName: finalDisplayName,
         id: person.id,
       });
 
       let condition: { id: string } | null = null;
-      if (conditionName) {
+      if (nextConditionName !== undefined) {
+        if (!nextConditionName) {
+          if (existingCondition) {
+            await tx.personCondition.update({
+              where: { id: existingCondition.id },
+              data: { deletedAt: now },
+            });
+          }
+        } else {
+          const canonicalCondition = await findCanonicalConditionGlobalVariable(
+            tx,
+            nextConditionName,
+          );
+          const primaryCode = canonicalCondition?.externalCodes[0] ?? null;
+          const conditionData = {
+            conditionCode: primaryCode?.code ?? null,
+            conditionCodeSystem: primaryCode?.codeSystem ?? null,
+            conditionName: nextConditionName,
+            deletedAt: null,
+            globalVariableId: canonicalCondition?.id ?? null,
+            isPublic: finalIsPublic,
+            reportedByUserId: userId,
+            status:
+              finalLifeStatus === PersonLifeStatus.DECEASED
+                ? PersonConditionStatus.CAUSE_OF_DEATH
+                : PersonConditionStatus.ACTIVE,
+          };
+          condition = existingCondition
+            ? await tx.personCondition.update({
+                where: { id: existingCondition.id },
+                data: conditionData,
+                select: { id: true },
+              })
+            : await tx.personCondition.create({
+                data: { ...conditionData, personId: id },
+                select: { id: true },
+              });
+        }
+      } else if (existingCondition) {
         const canonicalCondition = await findCanonicalConditionGlobalVariable(
           tx,
-          conditionName,
+          existingCondition.conditionName,
         );
         const primaryCode = canonicalCondition?.externalCodes[0] ?? null;
-        const existingCondition = await tx.personCondition.findFirst({
-          where: { deletedAt: null, personId: id },
-          orderBy: { createdAt: "asc" },
-          select: { id: true },
-        });
         const conditionData = {
           conditionCode: primaryCode?.code ?? null,
           conditionCodeSystem: primaryCode?.codeSystem ?? null,
-          conditionName,
+          conditionName: existingCondition.conditionName,
           globalVariableId: canonicalCondition?.id ?? null,
-          isPublic,
+          isPublic: finalIsPublic,
           reportedByUserId: userId,
           status:
-            lifeStatus === PersonLifeStatus.DECEASED
+            finalLifeStatus === PersonLifeStatus.DECEASED
               ? PersonConditionStatus.CAUSE_OF_DEATH
               : PersonConditionStatus.ACTIVE,
         };
-        condition = existingCondition
-          ? await tx.personCondition.update({
-              where: { id: existingCondition.id },
-              data: conditionData,
-              select: { id: true },
-            })
-          : await tx.personCondition.create({
-              data: { ...conditionData, personId: id },
-              select: { id: true },
-            });
+        condition = await tx.personCondition.update({
+          where: { id: existingCondition.id },
+          data: conditionData,
+          select: { id: true },
+        });
       }
 
       await tx.referendumVote.update({
         where: { id: representedVote.id },
         data: {
           answer: VotePosition.YES,
-          isPublic,
-          publicComment: publicComment || null,
+          isPublic: finalIsPublic,
+          publicComment: finalPublicComment || null,
         },
       });
 
-      if (relationshipType) {
+      if (nextRelationshipType !== undefined) {
         const casterPerson = await ensurePersonForUser(userId, {}, tx);
         const existingRelationship = await tx.personRelationship.findFirst({
           where: {
@@ -339,97 +546,200 @@ export async function PATCH(
           },
           select: { id: true },
         });
-        const relationshipData = {
-          createdByUserId: userId,
-          isPublic,
-          objectPersonId: id,
-          relationshipType,
-          subjectPersonId: casterPerson.id,
-        };
-        if (existingRelationship) {
-          await tx.personRelationship.update({
-            where: { id: existingRelationship.id },
-            data: relationshipData,
-          });
+        if (!nextRelationshipType) {
+          if (existingRelationship) {
+            await tx.personRelationship.update({
+              where: { id: existingRelationship.id },
+              data: { deletedAt: now },
+            });
+          }
         } else {
-          await tx.personRelationship.create({ data: relationshipData });
+          const relationshipData = {
+            createdByUserId: userId,
+            deletedAt: null,
+            isPublic: finalIsPublic,
+            objectPersonId: id,
+            relationshipType: nextRelationshipType,
+            subjectPersonId: casterPerson.id,
+          };
+          if (existingRelationship) {
+            await tx.personRelationship.update({
+              where: { id: existingRelationship.id },
+              data: relationshipData,
+            });
+          } else {
+            await tx.personRelationship.create({ data: relationshipData });
+          }
         }
       }
 
       let memorialId: string | null = null;
-      if (
-        lifeStatus === PersonLifeStatus.DECEASED ||
-        dateOfDeath ||
-        deathCountryCode ||
-        memorialMessage ||
-        memorialEvidence.length > 0
-      ) {
-        const memorial = await tx.personMemorial.upsert({
+      if (finalLifeStatus !== PersonLifeStatus.DECEASED) {
+        const existingMemorial = await tx.personMemorial.findUnique({
           where: { personId: id },
-          update: {
-            causeCategory,
-            civilianStatus: PersonCivilianStatus.UNKNOWN,
-            deathCountryCode,
-            isPublic,
-            primaryPersonConditionId: condition?.id ?? undefined,
-          },
-          create: {
-            causeCategory,
-            civilianStatus: PersonCivilianStatus.UNKNOWN,
-            deathCountryCode,
-            isPublic,
-            personId: id,
-            primaryPersonConditionId: condition?.id ?? null,
-          },
           select: { id: true },
         });
-        memorialId = memorial.id;
-
-        const existingSubmission = await tx.personMemorialSubmission.findFirst({
-          where: { memorialId, submittedByUserId: userId },
-          select: { id: true },
-        });
-        const now = new Date();
-        const submissionData = {
-          consentCourtEvidence,
-          consentCourtEvidenceAt: consentCourtEvidence ? now : null,
-          consentPublicDisplay: isPublic,
-          consentPublicDisplayAt: isPublic ? now : null,
-          isPublic,
-          memorialMessage: memorialMessage || null,
-        };
-        if (existingSubmission) {
-          await tx.personMemorialSubmission.update({
-            where: { id: existingSubmission.id },
-            data: submissionData,
+        if (existingMemorial) {
+          await tx.personMemorial.update({
+            where: { id: existingMemorial.id },
+            data: { deletedAt: now },
           });
-        } else {
-          await tx.personMemorialSubmission.create({
-            data: {
-              ...submissionData,
-              memorialId,
-              submittedByUserId: userId,
-            },
+          await tx.personMemorialSubmission.updateMany({
+            where: { deletedAt: null, memorialId: existingMemorial.id },
+            data: { deletedAt: now },
+          });
+          await tx.personMemorialEvidence.updateMany({
+            where: { deletedAt: null, memorialId: existingMemorial.id },
+            data: { deletedAt: now },
+          });
+          await tx.personMemorialResponsibleParty.updateMany({
+            where: { deletedAt: null, memorialId: existingMemorial.id },
+            data: { deletedAt: now },
           });
         }
-
-        for (const evidence of memorialEvidence) {
-          await tx.personMemorialEvidence.create({
-            data: {
-              containsSensitiveData: false,
-              description: evidence.description || null,
-              evidenceKind: evidence.evidenceKind,
-              isPublic: true,
-              memorialId,
-              sourceUrl: evidence.sourceUrl,
-              submittedByUserId: userId,
-              title: evidence.title || null,
-            },
-          });
-        }
+        return { memorialId, person: { ...person, evidence: [] } };
       }
 
-      return { memorialId, person };
+      const memorial = await tx.personMemorial.upsert({
+        where: { personId: id },
+        update: {
+          causeCategory: finalCauseCategory,
+          civilianStatus: PersonCivilianStatus.UNKNOWN,
+          deathCountryCode: finalDeathCountryCode,
+          deletedAt: null,
+          isPublic: finalIsPublic,
+          primaryPersonConditionId: condition?.id ?? null,
+        },
+        create: {
+          causeCategory: finalCauseCategory,
+          civilianStatus: PersonCivilianStatus.UNKNOWN,
+          deathCountryCode: finalDeathCountryCode,
+          isPublic: finalIsPublic,
+          personId: id,
+          primaryPersonConditionId: condition?.id ?? null,
+        },
+        select: { id: true },
+      });
+      memorialId = memorial.id;
+
+      const existingMemorialSubmission =
+        await tx.personMemorialSubmission.findFirst({
+          where: { deletedAt: null, memorialId, submittedByUserId: userId },
+          select: { id: true },
+        });
+      const submissionData = {
+        consentCourtEvidence: finalConsentCourtEvidence,
+        consentCourtEvidenceAt: finalConsentCourtEvidence ? now : null,
+        consentPublicDisplay: finalIsPublic,
+        consentPublicDisplayAt: finalIsPublic ? now : null,
+        isPublic: finalIsPublic,
+        memorialMessage: finalMemorialMessage || null,
+      };
+      if (existingMemorialSubmission) {
+        await tx.personMemorialSubmission.update({
+          where: { id: existingMemorialSubmission.id },
+          data: submissionData,
+        });
+      } else {
+        await tx.personMemorialSubmission.create({
+          data: {
+            ...submissionData,
+            memorialId,
+            submittedByUserId: userId,
+          },
+        });
+      }
+
+      if (nextMemorialEvidence !== undefined) {
+        const existingEvidence = await tx.personMemorialEvidence.findMany({
+          where: { deletedAt: null, memorialId, submittedByUserId: userId },
+          select: { id: true, sourceUrl: true },
+        });
+        const existingEvidenceById = new Map(
+          existingEvidence.map((evidence) => [evidence.id, evidence]),
+        );
+        const existingEvidenceBySourceUrl = new Map(
+          existingEvidence
+            .filter((evidence) => evidence.sourceUrl)
+            .map((evidence) => [evidence.sourceUrl!, evidence]),
+        );
+        const keptEvidenceIds = new Set<string>();
+        const seenSourceUrls = new Set<string>();
+
+        for (const evidence of nextMemorialEvidence) {
+          if (seenSourceUrls.has(evidence.sourceUrl)) continue;
+          seenSourceUrls.add(evidence.sourceUrl);
+          const existing =
+            (evidence.id ? existingEvidenceById.get(evidence.id) : null) ??
+            existingEvidenceBySourceUrl.get(evidence.sourceUrl) ??
+            null;
+          const evidenceData = {
+            containsSensitiveData: false,
+            description: evidence.description || null,
+            evidenceKind: evidence.evidenceKind,
+            isPublic: finalIsPublic,
+            memorialId,
+            sourceUrl: evidence.sourceUrl,
+            submittedByUserId: userId,
+            title: evidence.title || null,
+          };
+          const savedEvidence = existing
+            ? await tx.personMemorialEvidence.update({
+                where: { id: existing.id },
+                data: { ...evidenceData, deletedAt: null },
+                select: { id: true },
+              })
+            : await tx.personMemorialEvidence.create({
+                data: evidenceData,
+                select: { id: true },
+              });
+          keptEvidenceIds.add(savedEvidence.id);
+        }
+
+        await tx.personMemorialEvidence.updateMany({
+          where: {
+            deletedAt: null,
+            memorialId,
+            submittedByUserId: userId,
+            ...(keptEvidenceIds.size > 0
+              ? { id: { notIn: Array.from(keptEvidenceIds) } }
+              : {}),
+          },
+          data: { deletedAt: now },
+        });
+      } else {
+        await tx.personMemorialEvidence.updateMany({
+          where: { deletedAt: null, memorialId, submittedByUserId: userId },
+          data: { isPublic: finalIsPublic },
+        });
+      }
+
+      const evidence = await tx.personMemorialEvidence.findMany({
+        where: { deletedAt: null, memorialId, submittedByUserId: userId },
+        orderBy: { createdAt: "desc" },
+        select: {
+          description: true,
+          evidenceKind: true,
+          id: true,
+          sourceUrl: true,
+          title: true,
+        },
+        take: MAX_EVIDENCE_ITEMS,
+      });
+
+      return {
+        memorialId,
+        person: {
+          ...person,
+          evidence: evidence.map((item) => ({
+            description: item.description ?? "",
+            evidenceKind: item.evidenceKind,
+            id: item.id,
+            sourceUrl: item.sourceUrl ?? "",
+            title: item.title ?? "",
+          })),
+        },
+      };
     });
 
     return NextResponse.json(result);

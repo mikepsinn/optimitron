@@ -38,6 +38,7 @@ export function RepresentedPersonConversionForm({
   const [mode, setMode] = useState<FormMode>("idle");
   const [error, setError] = useState<string | null>(null);
   const [savedNames, setSavedNames] = useState<string[]>([]);
+  const [syncAttempt, setSyncAttempt] = useState(0);
   const syncStartedRef = useRef(false);
 
   const hasName = displayName.trim().length > 0;
@@ -63,33 +64,43 @@ export function RepresentedPersonConversionForm({
     setMode("syncing");
     setError(null);
 
-    void syncPendingRepresentedPeople().then((result) => {
-      if (result.skippedBecauseLocked) {
-        setMode("idle");
-        syncStartedRef.current = false;
-        return;
-      }
+    void syncPendingRepresentedPeople()
+      .then((result) => {
+        if (result.skippedBecauseLocked) {
+          window.setTimeout(() => {
+            syncStartedRef.current = false;
+            setMode("idle");
+            setSyncAttempt((current) => current + 1);
+          }, 1_000);
+          return;
+        }
 
-      if (result.syncedDrafts.length > 0) {
-        setSavedNames(result.syncedDrafts.map((draft) => draft.displayName));
-      }
+        if (result.syncedDrafts.length > 0) {
+          setSavedNames(result.syncedDrafts.map((draft) => draft.displayName));
+        }
 
-      if (result.failedDrafts.length > 0) {
-        const first = result.failedDrafts[0]!;
-        setDisplayName(first.displayName);
+        if (result.failedDrafts.length > 0) {
+          const first = result.failedDrafts[0]!;
+          setDisplayName(first.displayName);
+          setError("I could not save that person yet. The draft is still here.");
+          setMode("error");
+          return;
+        }
+
+        if (result.syncedDrafts.length > 0) {
+          router.refresh();
+        }
+
+        setMode(result.syncedDrafts.length > 0 ? "saved" : "idle");
+      })
+      .catch(() => {
         setError("I could not save that person yet. The draft is still here.");
         setMode("error");
+      })
+      .finally(() => {
         syncStartedRef.current = false;
-        return;
-      }
-
-      if (result.syncedDrafts.length > 0) {
-        router.refresh();
-      }
-
-      setMode(result.syncedDrafts.length > 0 ? "saved" : "idle");
-    });
-  }, [isAuthenticated, router]);
+      });
+  }, [isAuthenticated, router, syncAttempt]);
 
   function resetForm() {
     setDisplayName("");

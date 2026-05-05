@@ -36,6 +36,7 @@ const CONFLICT_CAUSE_CATEGORIES = new Set<PersonDeathCauseCategory>([
   PersonDeathCauseCategory.STATE_VIOLENCE,
   PersonDeathCauseCategory.TERRORISM,
 ]);
+const MAX_CLIENT_DRAFT_ID_LENGTH = 120;
 const MAX_ORIGIN_URL_LENGTH = 2048;
 const PUBLIC_TEXT_URL_PATTERN =
   /(?:https?:\/\/|www\.|(?:^|\s)[a-z0-9][a-z0-9.-]*\.(?:ai|biz|co|com|gov|info|io|net|org|ru|uk|us|xyz)\b)/i;
@@ -163,6 +164,9 @@ const representedPersonSubmissionSchema = z
     causeCategory: causeCategoryInputSchema,
     circumstances: cleanStringSchema(MAX_CIRCUMSTANCES_LENGTH),
     civilianStatus: civilianStatusInputSchema,
+    clientDraftId: cleanStringSchema(MAX_CLIENT_DRAFT_ID_LENGTH).transform(
+      (value) => (value ? value : null),
+    ),
     conditionName: cleanStringSchema(MAX_CONDITION_LENGTH),
     conflictId: cleanStringSchema(48).transform((value) => (value ? value : null)),
     conflictNameOverride: cleanStringSchema(MAX_CONFLICT_NAME_OVERRIDE_LENGTH),
@@ -273,6 +277,7 @@ export async function POST(
       causeCategory,
       circumstances,
       civilianStatus,
+      clientDraftId,
       conditionName,
       conflictId,
       conflictNameOverride,
@@ -365,10 +370,24 @@ export async function POST(
     }
 
     const casterPerson = await ensurePersonForUser(userId);
+    const sourceRef = clientDraftId
+      ? `represented-person-draft:${userId}:${clientDraftId}`
+      : null;
 
     const result = await prisma.$transaction(async (tx) => {
-      const person = await tx.person.create({
-        data: {
+      const existingDraftPerson = sourceRef
+        ? await tx.person.findUnique({
+            where: { sourceRef },
+            select: {
+              displayName: true,
+              handle: true,
+              id: true,
+              isPublic: true,
+              lifeStatus: true,
+            },
+          })
+        : null;
+      const personData = {
           birthDate,
           createdByUserId: userId,
           deathDate: dateOfDeath,
@@ -376,7 +395,22 @@ export async function POST(
           image: imageUrl,
           isPublic,
           lifeStatus,
-        },
+          ...(sourceRef ? { sourceRef } : {}),
+        };
+      const person = existingDraftPerson
+        ? await tx.person.update({
+            where: { id: existingDraftPerson.id },
+            data: personData,
+            select: {
+              displayName: true,
+              handle: true,
+              id: true,
+              isPublic: true,
+              lifeStatus: true,
+            },
+          })
+        : await tx.person.create({
+            data: personData,
         select: {
           displayName: true,
           handle: true,
@@ -384,14 +418,14 @@ export async function POST(
           isPublic: true,
           lifeStatus: true,
         },
-      });
+          });
       await ensureSubjectForPerson(tx, {
         displayName,
         id: person.id,
       });
 
       let condition: { id: string } | null = null;
-      if (conditionName) {
+      if (!existingDraftPerson && conditionName) {
         const canonicalCondition = await findCanonicalConditionGlobalVariable(
           tx,
           conditionName,
@@ -417,7 +451,7 @@ export async function POST(
       }
 
       let efficacyLagMatches: EfficacyLagMatch[] = [];
-      if (lifeStatus === PersonLifeStatus.DECEASED) {
+      if (!existingDraftPerson && lifeStatus === PersonLifeStatus.DECEASED) {
         const consentTimestamp = new Date();
         const memorial = await tx.personMemorial.create({
           data: {
@@ -491,7 +525,7 @@ export async function POST(
         }
       }
 
-      if (relationshipType) {
+      if (!existingDraftPerson && relationshipType) {
         await tx.personRelationship.create({
           data: {
             createdByUserId: userId,

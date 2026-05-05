@@ -34,19 +34,29 @@ const draft = {
 } as const;
 
 describe("represented person sync", () => {
+  let lock: { expiresAt: number; ownerId: string } | null;
+
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    vi.useRealTimers();
+    lock = null;
     mocks.clearPendingRepresentedPeopleSyncLock.mockReset();
     mocks.getPendingRepresentedPeople.mockReset();
     mocks.getPendingRepresentedPeopleSyncLock.mockReset();
     mocks.removePendingRepresentedPeople.mockReset();
     mocks.setPendingRepresentedPeopleSyncLock.mockReset();
+    mocks.getPendingRepresentedPeopleSyncLock.mockImplementation(() => lock);
+    mocks.setPendingRepresentedPeopleSyncLock.mockImplementation((value) => {
+      lock = value;
+    });
+    mocks.clearPendingRepresentedPeopleSyncLock.mockImplementation(() => {
+      lock = null;
+    });
   });
 
   it("posts and clears successful drafts", async () => {
     mocks.getPendingRepresentedPeople.mockReturnValue([draft]);
-    mocks.getPendingRepresentedPeopleSyncLock.mockReturnValue(null);
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     vi.stubGlobal("fetch", fetchMock);
 
@@ -58,7 +68,7 @@ describe("represented person sync", () => {
       "/api/referendums/one-percent-treaty/represented-people",
       expect.objectContaining({
         method: "POST",
-        body: expect.stringContaining("Grandma Kay"),
+        body: expect.stringContaining("draft_1"),
       }),
     );
     expect(mocks.removePendingRepresentedPeople).toHaveBeenCalledWith([
@@ -69,7 +79,6 @@ describe("represented person sync", () => {
 
   it("keeps failed drafts in local storage", async () => {
     mocks.getPendingRepresentedPeople.mockReturnValue([draft]);
-    mocks.getPendingRepresentedPeopleSyncLock.mockReturnValue(null);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
 
     const result = await syncPendingRepresentedPeople();
@@ -80,10 +89,12 @@ describe("represented person sync", () => {
   });
 
   it("skips sync when another tab owns an active lock", async () => {
-    mocks.getPendingRepresentedPeopleSyncLock.mockReturnValue({
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-05T12:00:00.000Z"));
+    lock = {
       ownerId: "other-tab",
       expiresAt: Date.now() + 10_000,
-    });
+    };
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 

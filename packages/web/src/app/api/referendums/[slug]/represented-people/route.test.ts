@@ -6,6 +6,8 @@ const mocks = vi.hoisted(() => ({
   ensurePersonForUser: vi.fn(),
   voteFindFirst: vi.fn(),
   personCreate: vi.fn(),
+  personFindUnique: vi.fn(),
+  personUpdate: vi.fn(),
   conditionCreate: vi.fn(),
   memorialCreate: vi.fn(),
   memorialEvidenceCreate: vi.fn(),
@@ -40,7 +42,11 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.voteFindFirst,
       upsert: mocks.voteUpsert,
     },
-    person: { create: mocks.personCreate },
+    person: {
+      create: mocks.personCreate,
+      findUnique: mocks.personFindUnique,
+      update: mocks.personUpdate,
+    },
     personCondition: { create: mocks.conditionCreate },
     personMemorial: { create: mocks.memorialCreate },
     personMemorialSubmission: { create: mocks.memorialSubmissionCreate },
@@ -84,6 +90,14 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       lifeStatus: "LIVING",
       isPublic: true,
     });
+    mocks.personFindUnique.mockResolvedValue(null);
+    mocks.personUpdate.mockResolvedValue({
+      id: "person_grandma",
+      displayName: "Grandma Kay",
+      handle: null,
+      lifeStatus: "LIVING",
+      isPublic: true,
+    });
     mocks.conditionCreate.mockResolvedValue({ id: "condition_1" });
     mocks.globalVariableFindFirst.mockResolvedValue(null);
     mocks.memorialCreate.mockResolvedValue({ id: "memorial_1" });
@@ -106,7 +120,11 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     mocks.efficacyLagEvidenceUpsert.mockResolvedValue({});
     mocks.transaction.mockImplementation(async (callback) =>
       callback({
-        person: { create: mocks.personCreate },
+        person: {
+          create: mocks.personCreate,
+          findUnique: mocks.personFindUnique,
+          update: mocks.personUpdate,
+        },
         personCondition: {
           create: mocks.conditionCreate,
           findMany: mocks.conditionFindMany,
@@ -252,6 +270,61 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         voteSource: true,
       },
     });
+  });
+
+  it("uses clientDraftId as the represented-person idempotency key", async () => {
+    mocks.personFindUnique.mockResolvedValue({
+      id: "person_existing",
+      displayName: "Grandma Kay",
+      handle: null,
+      isPublic: true,
+      lifeStatus: "UNKNOWN",
+    });
+    mocks.personUpdate.mockResolvedValue({
+      id: "person_existing",
+      displayName: "Grandma Kay",
+      handle: null,
+      isPublic: true,
+      lifeStatus: "UNKNOWN",
+    });
+
+    const res = await POST(
+      request({
+        clientDraftId: "draft_1",
+        conditionName: "dementia",
+        displayName: "Grandma Kay",
+        relationshipType: "grandchild-of",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.personFindUnique).toHaveBeenCalledWith({
+      where: { sourceRef: "represented-person-draft:user_1:draft_1" },
+      select: {
+        displayName: true,
+        handle: true,
+        id: true,
+        isPublic: true,
+        lifeStatus: true,
+      },
+    });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+    expect(mocks.conditionCreate).not.toHaveBeenCalled();
+    expect(mocks.relationshipCreate).not.toHaveBeenCalled();
+    expect(mocks.voteUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          personId: "person_existing",
+        }),
+        where: {
+          referendumId_personId: {
+            referendumId: "ref_1",
+            personId: "person_existing",
+          },
+        },
+      }),
+    );
   });
 
   it("links represented conditions to canonical medical variables when available", async () => {
