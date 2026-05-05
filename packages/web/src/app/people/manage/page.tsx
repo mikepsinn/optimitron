@@ -1,10 +1,17 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
+  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  WAR_DEATHS_SINCE_1900,
+} from "@optimitron/data/parameters";
 import { PersonConditionStatus, ReferendumVoteSource } from "@optimitron/db";
 import { ManageRepresentedPeopleClient } from "@/components/people/ManageRepresentedPeopleClient";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
+import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
 import { prisma } from "@/lib/prisma";
 import { getSignInPath, peopleManageLink, ROUTES } from "@/lib/routes";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
@@ -47,29 +54,40 @@ function ManagePagination({
 
   return (
     <nav
-      aria-label="People you signed for pages"
-      className="flex flex-wrap items-center justify-between gap-3 border border-border bg-card p-4 text-card-foreground"
+      aria-label="Your plaintiffs pages"
+      className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-1 py-4 text-foreground"
     >
-      <p className="text-sm font-black uppercase tracking-[0.14em] text-muted-foreground">
-        Showing {first}-{last} of {totalCount}
+      <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+        {first}-{last} of {totalCount}
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {currentPage > 1 ? (
           <Link
-            className="inline-flex min-h-11 items-center border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+            className="inline-flex min-h-10 items-center border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
             href={pageUrl(currentPage - 1)}
           >
-            Newer
+            Previous
           </Link>
-        ) : null}
+        ) : (
+          <span className="inline-flex min-h-10 items-center border border-border bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground opacity-50">
+            Previous
+          </span>
+        )}
+        <span className="px-2 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </span>
         {currentPage < totalPages ? (
           <Link
-            className="inline-flex min-h-11 items-center border border-foreground bg-foreground px-4 text-xs font-black uppercase tracking-[0.14em] text-background"
+            className="inline-flex min-h-10 items-center border border-foreground bg-foreground px-4 text-xs font-black uppercase tracking-[0.14em] text-background"
             href={pageUrl(currentPage + 1)}
           >
-            Older
+            Next
           </Link>
-        ) : null}
+        ) : (
+          <span className="inline-flex min-h-10 items-center border border-border bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground opacity-50">
+            Next
+          </span>
+        )}
       </div>
     </nav>
   );
@@ -211,26 +229,62 @@ export default async function ManagePeoplePage({
   return (
     <main className="min-h-screen bg-background text-foreground [font-family:var(--v0-font-libre-baskerville)]">
       <section className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:py-14">
-        <header className="space-y-4">
-          <Link
-            className="text-xs font-black uppercase tracking-[0.16em] underline underline-offset-4"
-            href={ROUTES.people}
-          >
-            Back to plaintiffs
-          </Link>
-          <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
-            Your Plaintiffs
-          </h1>
-          <p className="max-w-3xl text-lg font-bold leading-8 text-muted-foreground">
-            Open a plaintiff to edit photo, status, notes, or evidence.
-          </p>
+        <header className="space-y-5">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="space-y-2">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                Humanity v. Government
+              </p>
+              <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
+                Your Plaintiffs
+              </h1>
+            </div>
+            <Link
+              className="inline-flex min-h-11 items-center border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+              href={ROUTES.people}
+            >
+              Register another plaintiff
+            </Link>
+          </div>
+          <div className="space-y-4 border border-foreground bg-background p-5 text-lg font-bold leading-8 text-foreground">
+            <p>
+              These are the plaintiffs you registered for the Court of Humanity
+              class action against the governments of Earth.
+            </p>
+            <p>
+              Humanity pays governments{" "}
+              <ParameterValue
+                className="font-black"
+                figures={2}
+                param={GOVERNMENTS_PAID_TO_PROMOTE_WELFARE}
+              />{" "}
+              a year to promote the general welfare. Over the last century,
+              they spent{" "}
+              <ParameterValue
+                className="font-black"
+                figures={2}
+                param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
+              />{" "}
+              murdering{" "}
+              <ParameterValue
+                className="font-black"
+                figures={2}
+                param={WAR_DEATHS_SINCE_1900}
+              />{" "}
+              humans. That money could have funded{" "}
+              <ParameterValue
+                className="font-black"
+                figures={2}
+                param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
+              />{" "}
+              years of clinical trials at current government spending.
+            </p>
+            <p>
+              Edit each plaintiff so the complaint has names, evidence, and
+              consent instead of spreadsheet fog.
+            </p>
+          </div>
         </header>
-
-        <ManagePagination
-          currentPage={currentPage}
-          totalCount={totalCount}
-          totalPages={totalPages}
-        />
 
         <ManageRepresentedPeopleClient
           people={editablePeople}
