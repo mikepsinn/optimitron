@@ -417,7 +417,7 @@ export function DonationImpactCalculator() {
                 value={`${formatQuantity(derived.vsBedNetsMultiplier)}×`}
               />
               <DerivationRow
-                formula={`${formatQuantity(derived.sufferingHours)} suffering hours ÷ 8,760`}
+                formula={`${formatQuantity(derived.sufferingHours)} suffering hours ÷ ${HOURS_PER_YEAR.toLocaleString()}`}
                 label="Years of suffering prevented"
                 value={formatQuantity(sufferingYears)}
               />

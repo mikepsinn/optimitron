@@ -10,9 +10,15 @@ vi.mock("@/lib/auth-utils", () => ({
   requireAuth: mocks.requireAuth,
 }));
 
-vi.mock("@/lib/organization.server", () => ({
-  createOrganizationWithOwner: mocks.createOrganizationWithOwner,
-}));
+vi.mock("@/lib/organization.server", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/lib/organization.server")
+  >("@/lib/organization.server");
+  return {
+    ...actual,
+    createOrganizationWithOwner: mocks.createOrganizationWithOwner,
+  };
+});
 
 import { POST } from "./route";
 
@@ -68,6 +74,7 @@ describe("organizations route", () => {
         website: "https://example.org/",
       }),
       "user_1",
+      { rejectDuplicates: false },
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });

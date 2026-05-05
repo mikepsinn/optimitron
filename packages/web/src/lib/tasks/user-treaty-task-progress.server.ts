@@ -7,9 +7,7 @@ import {
   getUserTreatySubtaskKey,
 } from "@/lib/tasks/user-treaty-task.server";
 
-type UserTreatyTaskProgressClient =
-  | Prisma.TransactionClient
-  | typeof prisma;
+type UserTreatyTaskProgressClient = Prisma.TransactionClient | typeof prisma;
 
 async function fireVerifiedSubtaskEvent(
   db: UserTreatyTaskProgressClient,
@@ -112,11 +110,14 @@ export async function markUserTreatyReferralShareComplete(
   db: UserTreatyTaskProgressClient = prisma,
 ): Promise<boolean> {
   const now = input.now ?? new Date();
-  const treatyTask = await ensureUserTreatyTask({
-    now,
-    personId: input.personId ?? null,
-    userId: input.userId,
-  }, db);
+  const treatyTask = await ensureUserTreatyTask(
+    {
+      now,
+      personId: input.personId ?? null,
+      userId: input.userId,
+    },
+    db,
+  );
   const shareTaskId = treatyTask.subtaskIds.shareReferralUrl;
   if (input.taskId && input.taskId !== shareTaskId) return false;
 
@@ -137,17 +138,17 @@ export async function markUserTreatyReferralShareComplete(
     },
   });
 
-  if (updated.count > 0) {
-    await db.taskComment.create({
-      data: {
-        authorUserId: input.userId,
-        kind: TaskCommentKind.STATUS_UPDATE,
-        message: `Shared the 1% Treaty referral URL via ${input.channel ?? "training"}.`,
-        source: TaskCommentSource.WEB,
-        taskId: shareTaskId,
-      },
-    });
-  }
+  if (updated.count === 0) return false;
+
+  await db.taskComment.create({
+    data: {
+      authorUserId: input.userId,
+      kind: TaskCommentKind.STATUS_UPDATE,
+      message: `Shared the 1% Treaty referral URL via ${input.channel ?? "training"}.`,
+      source: TaskCommentSource.WEB,
+      taskId: shareTaskId,
+    },
+  });
 
   await fireVerifiedSubtaskEvent(db, {
     kind: "shareReferralUrl",
@@ -167,11 +168,14 @@ export async function markUserTreatyPhoneCallComplete(
   db: UserTreatyTaskProgressClient = prisma,
 ): Promise<boolean> {
   const now = input.now ?? new Date();
-  const treatyTask = await ensureUserTreatyTask({
-    now,
-    personId: input.personId ?? null,
-    userId: input.userId,
-  }, db);
+  const treatyTask = await ensureUserTreatyTask(
+    {
+      now,
+      personId: input.personId ?? null,
+      userId: input.userId,
+    },
+    db,
+  );
   const phoneTaskId = treatyTask.subtaskIds.phoneScript;
 
   const updated = await db.task.updateMany({
@@ -184,8 +188,7 @@ export async function markUserTreatyPhoneCallComplete(
     data: {
       actualEffortSeconds: 10 * 60,
       completedAt: now,
-      completionEvidence:
-        `Called ${input.recipientName} through referral invitation ${input.invitationId}.`,
+      completionEvidence: `Called ${input.recipientName} through referral invitation ${input.invitationId}.`,
       status: TaskStatus.VERIFIED,
       verifiedAt: now,
       verifiedByUserId: input.userId,
@@ -198,8 +201,7 @@ export async function markUserTreatyPhoneCallComplete(
     data: {
       authorUserId: input.userId,
       kind: TaskCommentKind.STATUS_UPDATE,
-      message:
-        `Called ${input.recipientName}. Phone-call training task verified for referral invitation ${input.invitationId}.`,
+      message: `Called ${input.recipientName}. Phone-call training task verified for referral invitation ${input.invitationId}.`,
       source: TaskCommentSource.WEB,
       taskId: phoneTaskId,
     },
@@ -223,11 +225,14 @@ export async function markNextHumanAssignmentSubtaskComplete(
   db: UserTreatyTaskProgressClient = prisma,
 ): Promise<boolean> {
   const now = input.now ?? new Date();
-  const treatyTask = await ensureUserTreatyTask({
-    now,
-    personId: input.personId ?? null,
-    userId: input.userId,
-  }, db);
+  const treatyTask = await ensureUserTreatyTask(
+    {
+      now,
+      personId: input.personId ?? null,
+      userId: input.userId,
+    },
+    db,
+  );
   const assignmentTaskIds = [
     treatyTask.subtaskIds.assignFirstHuman,
     treatyTask.subtaskIds.assignSecondHuman,
@@ -268,8 +273,7 @@ export async function markNextHumanAssignmentSubtaskComplete(
     data: {
       actualEffortSeconds: 5 * 60,
       completedAt: now,
-      completionEvidence:
-        `${input.recipientName} was given the treaty voting task through referral invitation ${input.invitationId}.`,
+      completionEvidence: `${input.recipientName} was given the treaty voting task through referral invitation ${input.invitationId}.`,
       status: TaskStatus.VERIFIED,
       verifiedAt: now,
       verifiedByUserId: input.userId,
@@ -282,8 +286,7 @@ export async function markNextHumanAssignmentSubtaskComplete(
     data: {
       authorUserId: input.userId,
       kind: TaskCommentKind.STATUS_UPDATE,
-      message:
-        `Gave ${input.recipientName} the treaty voting task through referral invitation ${input.invitationId}.`,
+      message: `Gave ${input.recipientName} the treaty voting task through referral invitation ${input.invitationId}.`,
       source: TaskCommentSource.WEB,
       taskId: targetTask.id,
     },

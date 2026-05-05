@@ -54,6 +54,12 @@ async function reset() {
   store.fires.length = 0;
   store.persons.length = 0;
   store.users.length = 0;
+  store.users.push({
+    id: "wishonia_user",
+    email: "wishonia@gmail.com",
+    personId: null,
+    referralCode: null,
+  });
   emailMocks.sendTaskNotificationEmail.mockClear();
 }
 
@@ -173,6 +179,38 @@ describe("triggers/fire integration", () => {
         (t) => t.taskKey === "demo2:user:u_42",
       );
       expect(matching).toHaveLength(1);
+    });
+
+    it("falls back to Wishonia when a context creator id is not a real user", async () => {
+      await createTaskTrigger(
+        {
+          triggerKey: "demo:creator-fallback",
+          eventName: "user.signup",
+          enabled: true,
+          idempotencyKeyTemplate: "creator:{{user.id}}",
+          spawnSpecs: [
+            {
+              kind: "root",
+              isParent: true,
+              titleTemplate: "Fallback",
+              descriptionTemplate: "...",
+              creatorResolver: "context.user.id",
+              parentResolver: "none",
+            },
+          ],
+        },
+        { actorUserId: "u_admin" },
+      );
+
+      const result = await fireTaskTrigger("demo:creator-fallback", {
+        user: { id: "missing_user" },
+      });
+
+      expect(result.result).toBe("spawned");
+      const task = store.tasks.find(
+        (t) => t.taskKey === "creator:missing_user",
+      );
+      expect(task?.createdByUserId).toBe("wishonia_user");
     });
 
     it("lazy backfill: adding a new spec spawns a new task on next fire", async () => {

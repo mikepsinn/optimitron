@@ -145,7 +145,7 @@ The task tree has a single root: `win-earth-optimization-prize` (taskKey `progra
 
 The goal is to get 8 billion humans to complete the tasks on this site. Every UI decision optimizes for task completion, not decoration.
 
-- **Reuse existing primitives.** Before inlining a card, section, stat, or button, check `components/retroui/*` and `components/ui/*`. Extend an existing primitive before creating a new one. Never recreate what `BrutalCard`, `SectionContainer`, `StatCard`, etc. already do.
+- **Migrate toward the War on Disease treaty style.** New or touched public UI should use the simple black-and-white style used by the `warondisease.org` variant: white paper, black ink, thin black rules, square corners, restrained typography, and no decorative color. Reuse existing primitives only when they render in that style; otherwise simplify the surface instead of adding neobrutalist chrome.
 - **Big, clear, legible.** Headings `text-4xl sm:text-5xl md:text-6xl font-black uppercase`. Body `text-base font-bold` minimum. Hero numbers (death counters, cost, time) as large as the viewport allows.
 - **Cut ruthlessly.** For every page ask: **what can I remove, hide, or collapse that would increase the chance a human actually completes the task on this page?** Delete it. Collapse secondary info into accordions or sub-pages. One primary CTA per screen, visible without scrolling.
 - **No blather.** No "welcome to", "let's take a moment", "in this section we'll", "we're excited to". State the fact, state the action, stop. Every word load-bearing. If deleting it doesn't hurt, delete it. Max one adjective per noun. Numbers beat adjectives. A shocking fact beats a paragraph explaining the fact.
@@ -180,72 +180,47 @@ The goal is to get 8 billion humans to complete the tasks on this site. Every UI
 
 **Scope:** write the minimum tests that would have caught the bug you just fixed or the regression the change could plausibly introduce. One `describe` per module, one `it` per behavior. Tests read like documentation — name them after behavior, not implementation.
 
-## Color Rules (enforced)
+## Visual Style Rules (enforced)
 
 Contrast audit: `pnpm --filter @optimitron/web exec playwright test e2e/contrast-audit.spec.ts --project=default`.
 
-**Approved only:**
-- **Brutal tokens:** `brutal-pink`, `brutal-cyan`, `brutal-yellow`, `brutal-red`, `brutal-green` (+ `-foreground` variants)
-- **Semantic:** `primary`, `foreground`, `background`, `muted`, `muted-foreground`, `primary-foreground`, `secondary`, `accent`, `destructive`, `border`, `card`, `popover`, `ring`, `input`, `chart-*`
-- **Fundamentals:** `black`, `white`, `transparent`, `current`, `inherit` — no opacity modifiers
-- **Shadows:** `rgba(0,0,0,1)` only, hard offset
+**Default style:** black-and-white treaty/editorial UI. Use semantic tokens and the treaty CSS variables already used by `warondisease.org`: `background`, `foreground`, `border`, `input`, `ring`, `card`, `popover`, `muted`, `muted-foreground`, `primary`, `primary-foreground`, `current`, `inherit`, `transparent`, `var(--treaty-paper)`, `var(--treaty-ink)`, `var(--treaty-ink-soft)`, and `var(--treaty-ink-muted)`.
 
-**Every `bg-brutal-*` element MUST set the matching `text-brutal-*-foreground` on the same element.** Children inside colored sections must never use `text-foreground`/`text-white` — let them inherit. `SectionContainer` and `BrutalCard` enforce this via `bgColor`; use them instead of raw divs. **Foreground tokens vary by theme** — never guess, always use the matching `*-foreground` token.
-
-**`bgColor="foreground"` inverts the color context** — `text-foreground` / `text-muted-foreground` become invisible. Any component inside an inverted section that uses those explicit tokens MUST wrap itself in `bg-background text-foreground` to create its own context. Prefer non-inverted `bgColor` unless you control every child's text color.
+**Migration rule:** when touching public UI, remove neobrutalist styling instead of copying it forward. Replace `brutal-*` fills, oversized hard shadows, colored panels, gradients, thick novelty borders, and rounded cards with the black-and-white treaty tokens above. Admin-only status chips, charts, game/demo/Sierra screens, and email-client markup may keep their own specialized colors when the color carries functional meaning.
 
 **Never use:**
-- Opacity modifiers on black/white (`text-black/50`, `bg-white/70`) → `text-muted-foreground` / `text-foreground`
-- Hardcoded `bg-white` / `text-white` → `bg-background` / `text-primary-foreground`
-- Hardcoded `bg-black` / `text-black` → `bg-foreground` / `text-foreground`
-- Tailwind color scales (`bg-emerald-100`, `text-gray-500`) → brutal-* or semantic
-- Hardcoded hex (`#ef4444`, `#666`, `#f5f5f5`) → CSS custom properties
-- Soft shadows (`rgba(0,0,0,0.3)`) → hard only
-- Opacity on brutal tokens (`bg-brutal-red/10`) → washed-out pastels; use solid or `bg-muted`. Exception: `hover:bg-brutal-pink/80` for interactive darken.
-- **Exception:** `emails/` may use inline hex (email-client requirement).
+- Opacity modifiers on black/white (`text-black/50`, `bg-white/70`) -> `text-muted-foreground` / `text-foreground`
+- Hardcoded `bg-white` / `text-white` / `bg-black` / `text-black` in components -> `bg-background`, `bg-foreground`, `text-foreground`, or `text-background`
+- Tailwind color scales (`bg-emerald-100`, `text-gray-500`) -> semantic or treaty tokens
+- Hardcoded hex (`#ef4444`, `#666`, `#f5f5f5`) -> CSS custom properties
+- Beige/cream/sand/tan backgrounds
+- Gradients, bokeh/orb decoration, illustrative SVG backgrounds, and ornamental color blocks
+- New `brutal-*` tokens on public treaty/campaign surfaces
+- Hard offset shadows and soft shadows on public treaty/campaign surfaces
+- Rounded cards and large radii; use square corners (`rounded-none`) unless an existing form primitive requires a tiny control radius
+- **Exception:** `emails/` may use inline hex because email clients require it.
 
-## Design Primitives — Never Inline
+## Design Primitives
 
-Reference implementation: `E:\code\dih-neobrutalist`.
+Reference implementation: the current `warondisease.org` variant and its treaty document surfaces.
 
-| Instead of... | Use... |
-|---|---|
-| `<section className="bg-white py-24">` | `<SectionContainer bgColor="background">` |
-| `<h2 className="text-3xl font-black uppercase">` | `<SectionHeader title size="md" />` |
-| `<div className="max-w-7xl mx-auto px-4">` | `<Container size="xl">` |
-| Inline card with `border-4 border-black shadow-[...]` | `<BrutalCard bgColor shadowSize>` |
-| Inline stat block | `<StatCard value label color>` |
-| Inline CTA section | `<CTASection heading bgColor>` |
-| Inline comparison | `<ComparisonCard left right>` |
-| Inline numbered step | `<NumberedStepCard step title description>` |
-| Manual stat grid | `<StatCardGrid stats columns>` |
+Use primitives for behavior and accessibility, not for inherited decoration. Prefer simple semantic markup with `bg-background text-foreground border-foreground` when the existing primitive would add color, hard shadows, arcade motion, or neobrutalist framing.
 
-### RetroUI (`components/retroui/`) — compound pattern
+### RetroUI (`components/retroui/`)
 
-`<Card.Header>` not `<CardHeader>`. Import and use:
-```tsx
-import { Card } from "@/components/retroui/Card"
-<Card><Card.Header><Card.Title>T</Card.Title></Card.Header><Card.Content>c</Card.Content></Card>
-```
-
-- **Inputs:** `Button`, `Input`, `Textarea`, `Label`, `Checkbox`, `Radio`, `Select`, `Switch`, `Slider`, `Toggle`, `ToggleGroup`
-- **Surfaces:** `Card`, `Dialog`, `Drawer`, `Popover`, `Menu`, `ContextMenu`, `Tooltip`, `Sonner`
-- **Data/feedback:** `Table`, `Accordion`, `Tab`, `Alert`, `Badge`, `Avatar`, `Progress`, `Breadcrumb`, `Calendar`, `Carousel`, `Command`, `TableOfContents`, `Text`, `Loader`
-- **Charts (Recharts):** `AreaChart`, `BarChart`, `LineChart`, `PieChart` under `charts/`
+Use existing RetroUI controls for forms, dialogs, menus, tooltips, tables, accordions, tabs, alerts, avatars, progress, breadcrumbs, calendars, carousels, commands, loaders, and charts when they already fit the black-and-white token system. Keep the compound pattern: `<Card.Header>`, not `<CardHeader>`.
 
 ### Domain primitives (`components/ui/`)
 
-`StatCard`/`StatCardGrid`, `SectionHeader`, `SectionContainer`, `ComparisonCard`, `BrutalCard`, `Container`, `GameCTA`, `NumberedStepCard`, `IconCard`/`IconBoxCard`, `FeaturedInfoCard`, `StatBar`, `ArcadeTag`, `CTASection`, `CheckmarkList`. Plus `ParameterValue` under `components/shared/` (inline parameter with hover popover).
+Use domain primitives only when they help structure the page without adding colored neobrutalist styling. Avoid `BrutalCard`, colored `StatCard` variants, `ArcadeTag`, hard-shadow CTA blocks, and other legacy brutal/demo styling on public treaty/campaign pages. When touching those pages, migrate toward unframed sections, thin bordered tables, simple counters, and document-like layouts.
 
 ### Styling conventions
 
-- **Borders:** RetroUI `border-2`; custom domain `border-4 border-primary`. Never `border-black`.
-- **Shadows:** RetroUI `shadow-md` (maps to hard offset via custom props); custom explicit `shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`. Never soft.
-- **Hover:** RetroUI buttons push-down (`hover:translate-y-1 active:translate-y-2`, shadow shrinks). Custom BrutalCard hover-OUT (`hover:translate-x-[-2px] hover:translate-y-[-2px]`, shadow grows).
+- **Borders:** use `border` or `border-2` with `border-foreground`/`border-border`. Avoid `border-4` unless the existing surface is explicitly admin/game/demo.
+- **Shadows:** no shadows by default. Do not add hard-offset or soft shadows to treaty/campaign UI.
+- **Hover:** keep it quiet: underline links, invert black/white buttons, or use `bg-muted`. Avoid push-down arcade motion.
 - **Typography:** headings `font-black uppercase`; body `font-bold` (700) minimum — never `font-medium/normal/light`; subtle text `text-muted-foreground font-bold`.
-- **Sections** alternate brutal tokens (`bg-brutal-pink`, `bg-brutal-cyan`, `bg-brutal-yellow`, `bg-foreground`). Text on colored bg uses the matching foreground variant.
-
-**Do NOT use:** `rounded-xl`/`-2xl` (use `rounded-md` or `rounded-none`), `shadow-sm`/`-lg`, `font-medium/normal/light`, `bg-gray-*` (use `bg-muted`/`bg-background`), gradients.
+- **Sections:** use white/background bands and black rules. Do not alternate colored brutal sections on public treaty/campaign pages.
 
 ## Environment Variables
 

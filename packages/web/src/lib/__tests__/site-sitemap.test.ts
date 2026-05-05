@@ -43,6 +43,7 @@ describe("site sitemap routing", () => {
     );
     expect(paths).not.toContain(ROUTES.why);
     expect(paths).not.toContain(ROUTES.governments);
+    expect(paths.length).toBeLessThanOrEqual(5);
   });
 
   it("adds DFDA medical index and detail routes to the DFDA sitemap", () => {

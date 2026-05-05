@@ -87,18 +87,24 @@ export function ReferendumSignatureBox({
   const isReader = variant === "reader";
   const shellClass =
     isReader && showReaderShell
-      ? "border border-black bg-white px-6 py-6 text-black shadow-none"
+      ? "border-2 border-foreground bg-background px-6 py-6 text-foreground shadow-none"
       : "";
-  const titleClass = isReader ? "text-[var(--treaty-ink)]" : "text-white";
-  const bodyClass = isReader ? "text-black" : "text-white/70";
-  const referralLinkClass = isReader ? "text-black" : "text-white/40";
+  const titleClass = isReader
+    ? "text-[var(--treaty-ink)]"
+    : "text-primary-foreground";
+  const bodyClass = isReader
+    ? "text-[var(--treaty-ink)]"
+    : "text-primary-foreground";
+  const referralLinkClass = isReader
+    ? "text-[var(--treaty-ink-muted)]"
+    : "text-primary-foreground";
   const buttonClass = isReader
-    ? "border border-black bg-black px-8 py-3 text-lg font-black uppercase text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black disabled:opacity-30"
-    : "border-2 border-white/30 bg-white/10 px-8 py-3 text-lg font-black uppercase text-white disabled:opacity-30";
+    ? "border-2 border-foreground bg-foreground px-8 py-3 text-lg font-black uppercase text-background shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-background hover:text-foreground disabled:opacity-30"
+    : "border-2 border-primary-foreground bg-transparent px-8 py-3 text-lg font-black uppercase text-primary-foreground disabled:opacity-30";
   const shareLabelClass = isReader
-    ? "text-black normal-case tracking-normal text-sm leading-6 font-bold"
-    : "text-white/80 normal-case tracking-normal text-sm leading-6 font-bold";
-  const errorClass = isReader ? "text-black" : "text-brutal-red";
+    ? "text-[var(--treaty-ink)] normal-case tracking-normal text-sm leading-6 font-bold"
+    : "text-primary-foreground normal-case tracking-normal text-sm leading-6 font-bold";
+  const errorClass = isReader ? "text-[var(--treaty-ink)]" : "text-brutal-red";
   const shouldRedirectAfterSign =
     status === "authenticated" && signed && Boolean(postSignRedirectUrl);
 
@@ -302,7 +308,7 @@ export function ReferendumSignatureBox({
             </span>
           </label>
           {!makePublic ? (
-            <p className="mt-2 border border-black bg-white px-3 py-2 text-xs font-black uppercase text-black">
+            <p className="mt-2 border-2 border-foreground bg-background px-3 py-2 text-xs font-black uppercase text-foreground">
               Also hides your name from the referral leaderboard. You can
               reverse this in profile settings.
             </p>

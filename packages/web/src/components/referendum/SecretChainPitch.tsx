@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/retroui/Button";
 import {
   getShareTemplate,
   DEFAULT_PEER_SHARE_TEMPLATE_ID,
@@ -17,7 +16,10 @@ export interface SecretChainPitchProps {
 // One-screen post-vote pitch. "Secret" framing lives here + welcome email step 0.
 // Do not add this block to any other surface — the hook loses potency if repeated.
 
-export function SecretChainPitch({ citizenName, className }: SecretChainPitchProps) {
+export function SecretChainPitch({
+  citizenName,
+  className,
+}: SecretChainPitchProps) {
   const template = getShareTemplate(DEFAULT_PEER_SHARE_TEMPLATE_ID);
   const renderedMessage = template
     ? renderTemplate(template.body, {
@@ -45,20 +47,27 @@ export function SecretChainPitch({ citizenName, className }: SecretChainPitchPro
   ];
 
   return (
-    <div className={`border border-black bg-white p-6 text-black sm:p-8 ${className ?? ""}`}>
-      <p className="text-xs font-black uppercase tracking-widest">You are now node 1.</p>
+    <div
+      className={`border-2 border-foreground bg-background p-6 text-foreground sm:p-8 ${className ?? ""}`}
+    >
+      <p className="text-xs font-black uppercase tracking-widest">
+        You are now node 1.
+      </p>
       <h3 className="mt-2 text-3xl font-black uppercase leading-tight sm:text-4xl">
         Tell 2 people the most important secret in the world.
       </h3>
       <p className="mt-4 text-base font-bold leading-snug">
-        They tell 2. 32 doublings later, 4.29 billion humans have voted — ~75% of the
-        world&apos;s adults. Disease kills ~1.7 people every second. Every minute the chain
-        stalls is measurable.
+        They tell 2. 32 doublings later, 4.29 billion humans have voted — ~75%
+        of the world&apos;s adults. Disease kills ~1.7 people every second.
+        Every minute the chain stalls is measurable.
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {stats.map((stat) => (
-          <div key={stat.label} className="border border-black bg-white p-4">
+          <div
+            key={stat.label}
+            className="border-2 border-foreground bg-background p-4"
+          >
             <div className="text-2xl font-black sm:text-3xl">{stat.value}</div>
             <div className="mt-2 text-xs font-bold uppercase">{stat.label}</div>
           </div>
@@ -69,16 +78,17 @@ export function SecretChainPitch({ citizenName, className }: SecretChainPitchPro
         <p className="mb-2 text-xs font-black uppercase tracking-wider">
           Text this to your 2 people. They have to call you to hear the secret.
         </p>
-        <pre className="whitespace-pre-wrap break-words border border-black bg-white p-4 text-sm font-bold text-black">
+        <pre className="whitespace-pre-wrap break-words border-2 border-foreground bg-background p-4 text-sm font-bold text-foreground">
           {renderedMessage}
         </pre>
-        <Button
+        <button
+          type="button"
           onClick={() => void handleCopy()}
-          className="mt-3 w-full justify-center border border-black bg-black font-black uppercase text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black"
+          className="mt-3 w-full border-2 border-foreground bg-foreground px-4 py-2 font-black uppercase text-background hover:bg-background hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
           disabled={!renderedMessage}
         >
           {copied ? "Copied →" : "Copy Message"}
-        </Button>
+        </button>
       </div>
     </div>
   );

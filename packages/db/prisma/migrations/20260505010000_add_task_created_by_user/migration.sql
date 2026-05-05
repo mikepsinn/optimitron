@@ -1,24 +1,20 @@
 ALTER TABLE "Task" ADD COLUMN "createdByUserId" TEXT;
 
-WITH fallback_user AS (
+WITH system_user AS (
   SELECT "id"
   FROM "User"
-  WHERE "deletedAt" IS NULL
-  ORDER BY "isSystem" ASC, "isAdmin" DESC, "createdAt" ASC
+  WHERE "deletedAt" IS NULL AND "isSystem" = TRUE
+  ORDER BY "createdAt" ASC
   LIMIT 1
 )
 UPDATE "Task"
-SET "createdByUserId" = COALESCE(
-  "ownerUserId",
-  "verifiedByUserId",
-  (SELECT "id" FROM fallback_user)
-)
+SET "createdByUserId" = (SELECT "id" FROM system_user)
 WHERE "createdByUserId" IS NULL;
 
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM "Task" WHERE "createdByUserId" IS NULL) THEN
-    RAISE EXCEPTION 'Cannot backfill Task.createdByUserId because Task rows exist but no User fallback exists.';
+    RAISE EXCEPTION 'Cannot backfill Task.createdByUserId because Task rows exist but no system User exists.';
   END IF;
 END $$;
 

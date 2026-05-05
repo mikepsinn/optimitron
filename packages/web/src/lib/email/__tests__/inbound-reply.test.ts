@@ -2,6 +2,24 @@ import { Prisma } from "@optimitron/db";
 import { describe, expect, it, vi } from "vitest";
 import { processInboundReply, stripQuotedReply } from "../inbound-reply";
 
+const notificationMocks = vi.hoisted(() => ({
+  sendTaskNotificationEmail: vi.fn().mockResolvedValue({
+    replyTo: "reply+task_1@reply.test",
+    status: "sent",
+  }),
+}));
+
+vi.mock("@/lib/email/task-notification", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/lib/email/task-notification")
+  >("@/lib/email/task-notification");
+  return {
+    ...actual,
+    getTaskUrl: (taskId: string) => `https://warondisease.org/tasks/${taskId}`,
+    sendTaskNotificationEmail: notificationMocks.sendTaskNotificationEmail,
+  };
+});
+
 /**
  * Unit tests for the inbound-reply quote stripper. Pure function — covers
  * the email-client conventions that show up in Gmail, Apple Mail, Outlook
@@ -67,7 +85,13 @@ describe("stripQuotedReply", () => {
   });
 
   it("strips signature delimiter '-- '", () => {
-    const body = ["Real reply.", "", "-- ", "John Doe", "Foundation Director"].join("\n");
+    const body = [
+      "Real reply.",
+      "",
+      "-- ",
+      "John Doe",
+      "Foundation Director",
+    ].join("\n");
     expect(stripQuotedReply(body)).toBe("Real reply.");
   });
 
@@ -85,7 +109,9 @@ describe("stripQuotedReply", () => {
   });
 });
 
-function inboundEvent(overrides: Partial<Parameters<typeof processInboundReply>[0]> = {}) {
+function inboundEvent(
+  overrides: Partial<Parameters<typeof processInboundReply>[0]> = {},
+) {
   return {
     from: "Assignee <assignee@example.org>",
     to: "reply+task_1@reply.warondisease.org",
@@ -116,7 +142,7 @@ function makeInboundDb() {
         id: "task_1",
         title: "Task",
         createdByUserId: null,
-        owner: null,
+        createdByUser: null,
         assigneePerson: { id: "person_1", email: "assignee@example.org" },
         assigneeOrganization: null,
         communicationEndpoints: [],
@@ -157,7 +183,7 @@ describe("processInboundReply", () => {
       id: "task_1",
       title: "Task",
       createdByUserId: null,
-      owner: null,
+      createdByUser: null,
       assigneePerson: null,
       assigneeOrganization: null,
       communicationEndpoints: [{ email: "contact@example.org" }],
@@ -179,6 +205,47 @@ describe("processInboundReply", () => {
         message: "Done.",
       }),
     });
+  });
+
+  it("accepts replies from the task creator and sends the creator notification", async () => {
+    const db = makeInboundDb();
+    db.task.findUnique.mockResolvedValue({
+      id: "task_1",
+      title: "Task",
+      createdByUserId: "user_creator",
+      createdByUser: { id: "user_creator", email: "creator@example.org" },
+      assigneePerson: null,
+      assigneeOrganization: null,
+      communicationEndpoints: [],
+    });
+    db.user.findUnique.mockResolvedValue({ email: "creator@example.org" });
+    notificationMocks.sendTaskNotificationEmail.mockClear();
+
+    const result = await processInboundReply(
+      inboundEvent({
+        from: "Creator <creator@example.org>",
+        providerMessageId: "provider_msg_creator",
+      }),
+      db as never,
+    );
+
+    expect(result).toMatchObject({
+      status: "created",
+      taskCommentId: "comment_1",
+      taskCommunicationId: "comm_1",
+    });
+    expect(db.taskComment.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        authorUserId: "user_creator",
+        message: "Done.",
+      }),
+    });
+    expect(notificationMocks.sendTaskNotificationEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipientEmail: "creator@example.org",
+        taskId: "task_1",
+      }),
+    );
   });
 
   it("collapses a concurrent duplicate when the provider message insert loses the race", async () => {

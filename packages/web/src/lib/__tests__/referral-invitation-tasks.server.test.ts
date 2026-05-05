@@ -40,7 +40,9 @@ describe("createReferralInvitationTask", () => {
         },
       ],
       spawnedTaskIds: ["task_1"],
-      spawnedTaskKeys: ["program:one-percent-treaty:referral-invitation:token_1"],
+      spawnedTaskKeys: [
+        "program:one-percent-treaty:referral-invitation:token_1",
+      ],
       triggerKey: "referral:vote-invitation",
     });
     mocks.tx.task.update.mockResolvedValue({ id: "task_1" });
@@ -70,6 +72,7 @@ describe("createReferralInvitationTask", () => {
         inviteToken: "token_1",
         parentTaskId: "training_root",
         recipient: expect.objectContaining({ firstName: "Recipient" }),
+        user: { id: "user_1" },
       }),
       expect.objectContaining({ actorUserId: "user_1", db: mocks.tx }),
     );

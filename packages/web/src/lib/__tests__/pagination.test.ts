@@ -7,6 +7,8 @@ describe("parsePositivePageParam", () => {
     ["", 1],
     ["0", 1],
     ["-1", 1],
+    ["2abc", 1],
+    [" 2 ", 2],
     ["abc", 1],
     [["3"], 3],
     [[undefined], 1],

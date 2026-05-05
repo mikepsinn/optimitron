@@ -1,58 +1,58 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { Check, Copy, Save } from "lucide-react"
-import { Card } from "@/components/retroui/Card"
-import { Button } from "@/components/retroui/Button"
-import { Input } from "@/components/retroui/Input"
-import { REFERRAL_SHARE_PROMPT } from "@/lib/messaging"
-import { buildReferralUrl } from "@/lib/url"
-import { cn } from "@/lib/utils"
-import type { DashboardUser } from "@/types/dashboard"
+import { useEffect, useRef, useState } from "react";
+import { Check, Copy, Save } from "lucide-react";
+import { Card } from "@/components/retroui/Card";
+import { Button } from "@/components/retroui/Button";
+import { Input } from "@/components/retroui/Input";
+import { REFERRAL_SHARE_PROMPT } from "@/lib/messaging";
+import { buildReferralUrl } from "@/lib/url";
+import { cn } from "@/lib/utils";
+import type { DashboardUser } from "@/types/dashboard";
 
-type ReferralLinkEditorVariant = "default" | "treaty"
+type ReferralLinkEditorVariant = "default" | "treaty";
 
 interface ReferralLinkEditorProps {
-  user: DashboardUser
-  baseUrl: string
-  onUserChange: (user: DashboardUser) => void
-  onRefresh?: () => void
-  title?: string | null
-  description?: string
-  variant?: ReferralLinkEditorVariant
-  className?: string
+  user: DashboardUser;
+  baseUrl: string;
+  onUserChange: (user: DashboardUser) => void;
+  onRefresh?: () => void;
+  title?: string | null;
+  description?: string;
+  variant?: ReferralLinkEditorVariant;
+  className?: string;
 }
 
 interface ReferralLinkEditorCardProps extends ReferralLinkEditorProps {
-  cardClassName?: string
+  cardClassName?: string;
 }
 
 function sanitizeLinkName(value: string) {
-  return value.replace(/[^a-zA-Z0-9_-]/g, "")
+  return value.replace(/[^a-zA-Z0-9_-]/g, "");
 }
 
 function getReferralIdentifier(user: DashboardUser) {
-  return user.handle?.trim() || user.referralCode
+  return user.handle?.trim() || user.referralCode;
 }
 
 function normalizeBaseUrl(baseUrl: string) {
-  return baseUrl.replace(/\/$/u, "")
+  return baseUrl.replace(/\/$/u, "");
 }
 
 async function copyToClipboard(text: string) {
   if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text)
-    return
+    await navigator.clipboard.writeText(text);
+    return;
   }
 
-  const textarea = document.createElement("textarea")
-  textarea.value = text
-  textarea.style.position = "fixed"
-  textarea.style.opacity = "0"
-  document.body.appendChild(textarea)
-  textarea.select()
-  document.execCommand("copy")
-  document.body.removeChild(textarea)
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
 }
 
 export function ReferralLinkEditorCard({
@@ -61,15 +61,13 @@ export function ReferralLinkEditorCard({
   ...props
 }: ReferralLinkEditorCardProps) {
   const defaultCardClassName =
-    variant === "treaty"
-      ? "border border-black bg-white p-5 text-black shadow-none sm:p-6"
-      : "border border-black bg-white p-5 text-black shadow-none sm:p-6"
+    "border border-black bg-white p-5 text-black shadow-none sm:p-6";
 
   return (
     <Card className={cn(defaultCardClassName, cardClassName)}>
       <ReferralLinkEditor variant={variant} {...props} />
     </Card>
-  )
+  );
 }
 
 export function ReferralLinkEditor({
@@ -82,114 +80,114 @@ export function ReferralLinkEditor({
   variant = "default",
   className,
 }: ReferralLinkEditorProps) {
-  const currentIdentifier = getReferralIdentifier(user)
-  const [draft, setDraft] = useState(currentIdentifier)
-  const [saving, setSaving] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const copiedTimeoutRef = useRef<number | null>(null)
-  const base = normalizeBaseUrl(baseUrl)
-  const trimmedDraft = draft.trim()
-  const dirty = trimmedDraft !== currentIdentifier
-  const displayedIdentifier = trimmedDraft || currentIdentifier
-  const displayedUrl = buildReferralUrl(displayedIdentifier, base)
-  const savedUrl = buildReferralUrl(currentIdentifier, base)
-  const linkPrefix = `${base}/vote/`
-  const isTreaty = variant === "treaty"
-  const hasHeaderCopy = Boolean(title || description)
+  const currentIdentifier = getReferralIdentifier(user);
+  const [draft, setDraft] = useState(currentIdentifier);
+  const [saving, setSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const copiedTimeoutRef = useRef<number | null>(null);
+  const base = normalizeBaseUrl(baseUrl);
+  const trimmedDraft = draft.trim();
+  const dirty = trimmedDraft !== currentIdentifier;
+  const displayedIdentifier = trimmedDraft || currentIdentifier;
+  const displayedUrl = buildReferralUrl(displayedIdentifier, base);
+  const savedUrl = buildReferralUrl(currentIdentifier, base);
+  const linkPrefix = `${base}/vote/`;
+  const isTreaty = variant === "treaty";
+  const hasHeaderCopy = Boolean(title || description);
 
   useEffect(() => {
-    setDraft(currentIdentifier)
-    setError(null)
-    setCopied(false)
-  }, [currentIdentifier])
+    setDraft(currentIdentifier);
+    setError(null);
+    setCopied(false);
+  }, [currentIdentifier]);
 
   useEffect(() => {
     return () => {
       if (copiedTimeoutRef.current) {
-        window.clearTimeout(copiedTimeoutRef.current)
+        window.clearTimeout(copiedTimeoutRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   function validateDraft() {
     if (trimmedDraft.length < 3 || trimmedDraft.length > 24) {
-      return "Use 3-24 characters."
+      return "Use 3-24 characters.";
     }
     if (!/^[a-zA-Z0-9_-]+$/u.test(trimmedDraft)) {
-      return "Letters, numbers, hyphens, and underscores only."
+      return "Letters, numbers, hyphens, and underscores only.";
     }
-    return null
+    return null;
   }
 
   async function markCopied() {
     if (copiedTimeoutRef.current) {
-      window.clearTimeout(copiedTimeoutRef.current)
+      window.clearTimeout(copiedTimeoutRef.current);
     }
-    setCopied(true)
+    setCopied(true);
     copiedTimeoutRef.current = window.setTimeout(() => {
-      setCopied(false)
-      copiedTimeoutRef.current = null
-    }, 2000)
+      setCopied(false);
+      copiedTimeoutRef.current = null;
+    }, 2000);
   }
 
   async function saveLinkName(options: { copyAfter?: boolean } = {}) {
     if (!dirty) {
       if (options.copyAfter) {
-        await copyToClipboard(savedUrl)
-        await markCopied()
+        await copyToClipboard(savedUrl);
+        await markCopied();
       }
-      return
+      return;
     }
 
-    const validationError = validateDraft()
+    const validationError = validateDraft();
     if (validationError) {
-      setError(validationError)
-      return
+      setError(validationError);
+      return;
     }
 
     try {
-      setSaving(true)
-      setError(null)
+      setSaving(true);
+      setError(null);
       const response = await fetch("/api/dashboard/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ handle: trimmedDraft }),
-      })
+      });
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null)
-        throw new Error(data?.error || "Failed to update link")
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || "Failed to update link");
       }
 
-      const normalizedHandle = trimmedDraft.toLowerCase()
+      const normalizedHandle = trimmedDraft.toLowerCase();
       onUserChange({
         ...user,
         handle: normalizedHandle,
         person: user.person
           ? { ...user.person, handle: normalizedHandle }
           : user.person,
-      })
-      onRefresh?.()
+      });
+      onRefresh?.();
 
       if (options.copyAfter) {
-        await copyToClipboard(buildReferralUrl(normalizedHandle, base))
-        await markCopied()
+        await copyToClipboard(buildReferralUrl(normalizedHandle, base));
+        await markCopied();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update link")
+      setError(err instanceof Error ? err.message : "Failed to update link");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function copyLink() {
     if (dirty) {
-      await saveLinkName({ copyAfter: true })
-      return
+      await saveLinkName({ copyAfter: true });
+      return;
     }
-    await copyToClipboard(displayedUrl)
-    await markCopied()
+    await copyToClipboard(displayedUrl);
+    await markCopied();
   }
 
   return (
@@ -242,12 +240,12 @@ export function ReferralLinkEditor({
             aria-invalid={Boolean(error)}
             value={draft}
             onChange={(event) => {
-              setDraft(sanitizeLinkName(event.target.value))
-              setError(null)
+              setDraft(sanitizeLinkName(event.target.value));
+              setError(null);
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                void saveLinkName()
+                void saveLinkName();
               }
             }}
             className="min-h-12 min-w-[9rem] flex-1 border-0 bg-transparent px-0 font-mono text-base font-black shadow-none focus:shadow-none"
@@ -262,7 +260,7 @@ export function ReferralLinkEditor({
             variant="outline"
             disabled={saving}
             onClick={() => {
-              void saveLinkName()
+              void saveLinkName();
             }}
             className={cn(
               "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
@@ -277,7 +275,7 @@ export function ReferralLinkEditor({
         <Button
           type="button"
           onClick={() => {
-            void copyLink()
+            void copyLink();
           }}
           disabled={saving}
           className={cn(
@@ -294,7 +292,9 @@ export function ReferralLinkEditor({
         </Button>
       </div>
 
-      {error ? <p className="text-sm font-bold text-destructive">{error}</p> : null}
+      {error ? (
+        <p className="text-sm font-bold text-destructive">{error}</p>
+      ) : null}
     </div>
-  )
+  );
 }

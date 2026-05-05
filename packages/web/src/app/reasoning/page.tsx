@@ -70,7 +70,7 @@ export default async function ReasoningPage({
           <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Not live yet
           </p>
-          <h1 className="mt-3 text-3xl font-black uppercase">
+          <h1 className="mt-3 text-4xl font-black uppercase sm:text-5xl md:text-6xl">
             This persuasion flow is still loading.
           </h1>
           <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">

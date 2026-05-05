@@ -14,6 +14,12 @@ import { createTask, listTasks } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
 
+const TASK_VISIBILITY_FILTER = {
+  ACCESSIBLE: "accessible",
+  CREATED: "created",
+  PUBLIC: "public",
+} as const;
+
 const CreateTaskBodySchema = z.object({
   assigneeOrganizationId: z.string().nullish(),
   assigneePersonId: z.string().nullish(),
@@ -54,9 +60,10 @@ export async function GET(request: Request) {
         ? TaskImpactFrameKey[rawFrameKey as keyof typeof TaskImpactFrameKey]
         : null;
     const visibility =
-      rawVisibility === "created" || rawVisibility === "accessible"
+      rawVisibility === TASK_VISIBILITY_FILTER.CREATED ||
+      rawVisibility === TASK_VISIBILITY_FILTER.ACCESSIBLE
         ? rawVisibility
-        : "public";
+        : TASK_VISIBILITY_FILTER.PUBLIC;
 
     const tasks = await listTasks({
       assigneeOrganizationId,

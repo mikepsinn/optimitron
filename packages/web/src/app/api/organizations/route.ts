@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
-import { createOrganizationWithOwner } from "@/lib/organization.server";
+import {
+  createOrganizationWithOwner,
+  normalizeOrganizationHttpUrl,
+} from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import { OrgStatus, OrgType } from "@optimitron/db";
 
@@ -48,7 +51,7 @@ export async function POST(req: NextRequest) {
       jurisdictionId?: string;
     };
     const name = body.name?.trim();
-    const website = normalizeOrganizationWebsite(body.website);
+    const website = normalizeOrganizationHttpUrl(body.website);
 
     if (!name) {
       return NextResponse.json(
@@ -80,6 +83,7 @@ export async function POST(req: NextRequest) {
         jurisdictionId: body.jurisdictionId ?? null,
       },
       userId,
+      { rejectDuplicates: false },
     );
 
     return NextResponse.json({ success: true, organization }, { status: 201 });
@@ -92,24 +96,5 @@ export async function POST(req: NextRequest) {
       { error: "Failed to create organization" },
       { status: 500 },
     );
-  }
-}
-
-function normalizeOrganizationWebsite(
-  raw: string | undefined,
-): string | null | false {
-  const trimmed = raw?.trim();
-  if (!trimmed) return null;
-
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-      return false;
-    }
-    parsed.hash = "";
-    parsed.hostname = parsed.hostname.toLowerCase();
-    return parsed.toString();
-  } catch {
-    return false;
   }
 }

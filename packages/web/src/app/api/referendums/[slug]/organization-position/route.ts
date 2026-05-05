@@ -118,6 +118,7 @@ export async function POST(
           status: OrgStatus.APPROVED,
         },
         userId,
+        { rejectDuplicates: false },
       );
       organizationId = org.id;
     } else if (body.organizationId) {
