@@ -3,7 +3,7 @@
  *
  * Wraps `sendExternalResendEmail` with the reply-to-routing token so inbound
  * replies land at the correct task. The address format is
- * `reply+{taskId}@{REPLY_EMAIL_DOMAIN}` (default `reply.warondisease.org`).
+ * `reply+{taskId}@{REPLY_EMAIL_DOMAIN}`.
  *
  * `getReplyAddress` and `parseReplyAddress` are kept side-by-side as a single
  * source of truth on the address shape — change the encoding here and the
@@ -11,36 +11,62 @@
  */
 import { sendExternalResendEmail, type SendResult } from "@/lib/email/resend";
 import { serverEnv } from "@/lib/env";
+import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@/lib/domains";
+import { getSiteConfig, type SiteKey } from "@/lib/site";
 
-const DEFAULT_REPLY_DOMAIN = "reply.warondisease.org";
-const DEFAULT_BASE_URL = "https://warondisease.org";
+const TASK_EMAIL_SITE_KEY: SiteKey = "warOnDisease";
+
+function getTaskEmailSiteOrigin() {
+  return getSiteConfig(TASK_EMAIL_SITE_KEY).canonicalOrigin;
+}
 
 export function getReplyEmailDomain(): string {
-  return serverEnv.REPLY_EMAIL_DOMAIN ?? DEFAULT_REPLY_DOMAIN;
+  return serverEnv.REPLY_EMAIL_DOMAIN ?? WAR_ON_DISEASE_REPLY_DOMAIN;
 }
 
 export function getReplyAddress(taskId: string): string {
   return `reply+${taskId}@${getReplyEmailDomain()}`;
 }
 
+export function getConfiguredTaskReplyAddress(taskId: string): string | null {
+  if (
+    !serverEnv.RESEND_INBOUND_WEBHOOK_SECRET ||
+    !serverEnv.REPLY_EMAIL_DOMAIN
+  ) {
+    return null;
+  }
+  return `reply+${taskId}@${serverEnv.REPLY_EMAIL_DOMAIN}`;
+}
+
+export function getTaskEmailReplyInstruction(): string | null {
+  return serverEnv.RESEND_INBOUND_WEBHOOK_SECRET && serverEnv.REPLY_EMAIL_DOMAIN
+    ? "Reply to this email to add a comment to the task."
+    : null;
+}
+
 /**
  * Resolve the canonical app base URL for outbound email links. Reads in
  * priority order: NEXT_PUBLIC_BASE_URL (explicit, also available server-side
  * since NEXT_PUBLIC_ vars are inlined into the runtime), NEXTAUTH_URL (set
- * per deployment), then a hardcoded production fallback. Always returned
+ * per deployment), then the War on Disease canonical origin. Always returned
  * without a trailing slash so callers can append `/path` directly.
  */
 export function getAppBaseUrl(): string {
   const raw =
     process.env.NEXT_PUBLIC_BASE_URL ??
     serverEnv.NEXTAUTH_URL ??
-    DEFAULT_BASE_URL;
+    getTaskEmailSiteOrigin();
   return raw.replace(/\/$/, "");
 }
 
 /** Build the URL where a task can be viewed in the app. */
 export function getTaskUrl(taskId: string): string {
   return `${getAppBaseUrl()}/tasks/${taskId}`;
+}
+
+/** Build the URL that opens the task page at its completion form. */
+export function getTaskCompletionUrl(taskId: string): string {
+  return `${getTaskUrl(taskId)}#complete`;
 }
 
 /**
@@ -50,7 +76,9 @@ export function getTaskUrl(taskId: string): string {
  * Tolerates: case-insensitive domain match, surrounding whitespace, and
  * RFC-5322 angle brackets (`<addr@host>` style).
  */
-export function parseReplyAddress(rawAddress: string): { taskId: string } | null {
+export function parseReplyAddress(
+  rawAddress: string,
+): { taskId: string } | null {
   if (!rawAddress) return null;
   const trimmed = rawAddress.trim();
   // Strip optional angle brackets: `Display Name <addr@host>` → `addr@host`
@@ -75,7 +103,7 @@ export interface SendTaskNotificationEmailInput {
   text: string;
   html?: string;
   /// Per-message From override. Falls back to platform default
-  /// (`Earth Optimization Services <noreply@warondisease.org>`).
+  /// (`Earth Optimization Services <hello@updates.warondisease.org>`).
   from?: string;
 }
 
@@ -98,7 +126,8 @@ export async function sendTaskNotificationEmail(
       subject: input.subject,
       text: input.text,
       // Resend requires html — fall back to a minimal wrapper around text.
-      html: input.html ?? `<p>${escapeHtml(input.text).replace(/\n/g, "<br>")}</p>`,
+      html:
+        input.html ?? `<p>${escapeHtml(input.text).replace(/\n/g, "<br>")}</p>`,
       replyTo,
       from: input.from,
     });

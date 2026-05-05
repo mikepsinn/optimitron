@@ -17,7 +17,7 @@ export function TaskCompleteForm({ taskId }: TaskCompleteFormProps) {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="space-y-3">
+    <div id="complete" className="scroll-mt-32 space-y-3">
       <Textarea
         value={completionEvidence}
         onChange={(event) => setCompletionEvidence(event.target.value)}
@@ -36,12 +36,14 @@ export function TaskCompleteForm({ taskId }: TaskCompleteFormProps) {
                 method: "POST",
               })
                 .then(async (response) => {
-                  const payload = (await response.json().catch(() => null)) as
-                    | { error?: string }
-                    | null;
+                  const payload = (await response.json().catch(() => null)) as {
+                    error?: string;
+                  } | null;
 
                   if (!response.ok) {
-                    throw new Error(payload?.error ?? "Unable to submit completion.");
+                    throw new Error(
+                      payload?.error ?? "Unable to submit completion.",
+                    );
                   }
 
                   setCompletionEvidence("");

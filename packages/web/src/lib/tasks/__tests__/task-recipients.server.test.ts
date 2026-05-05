@@ -67,6 +67,8 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "user@example.com",
       personId: "person_1",
+      reason: "You're getting this because this task is assigned to you.",
+      role: "assignee_user",
       userId: "user_1",
     });
   });
@@ -92,6 +94,8 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "person@example.com",
       personId: "person_1",
+      reason: "You're getting this because this task is assigned to you.",
+      role: "assignee_person",
     });
   });
 
@@ -111,6 +115,9 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "org@example.com",
       organizationId: "org_1",
+      reason:
+        "You're getting this because this task is assigned to your organization.",
+      role: "assignee_organization",
     });
   });
 
@@ -128,6 +135,40 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "endpoint@example.com",
       endpointId: "endpoint_1",
+      reason:
+        "You're getting this because this email address is listed as the task contact.",
+      role: "endpoint",
+    });
+  });
+
+  it("accepts primary mailto endpoints that carry an email address", async () => {
+    mocks.taskFindUnique.mockResolvedValue({
+      assigneeOrganization: null,
+      assigneePerson: null,
+      communicationEndpoints: [
+        { email: "mailto@example.com", id: "endpoint_mailto" },
+      ],
+      deletedAt: null,
+      id: "task_1",
+    });
+    const result = await resolveTaskRecipient("task_1");
+    expect(mocks.taskFindUnique).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          communicationEndpoints: expect.objectContaining({
+            where: expect.objectContaining({
+              kind: { in: ["EMAIL", "MAILTO"] },
+            }),
+          }),
+        }),
+      }),
+    );
+    expect(result).toEqual({
+      email: "mailto@example.com",
+      endpointId: "endpoint_mailto",
+      reason:
+        "You're getting this because this email address is listed as the task contact.",
+      role: "endpoint",
     });
   });
 
@@ -143,7 +184,7 @@ describe("resolveTaskRecipient", () => {
     expect(result).toBeNull();
   });
 
-  it("includes creator and admin recipients", async () => {
+  it("does not fall back to creator or admin recipients", async () => {
     mocks.taskFindUnique.mockResolvedValue({
       assigneeOrganization: null,
       assigneePerson: null,
@@ -164,29 +205,74 @@ describe("resolveTaskRecipient", () => {
     ]);
 
     const result = await resolveTaskRecipients("task_1");
-    expect(result).toEqual([
-      { email: "creator@example.com", userId: "creator_1" },
-      { email: "admin@example.com", isAdmin: true, userId: "admin_1" },
-    ]);
+    expect(result).toEqual([]);
+    expect(mocks.userFindMany).not.toHaveBeenCalled();
   });
 
-  it("deduplicates admin recipients by email", async () => {
+  it("includes creator and admin monitor recipients only when requested", async () => {
     mocks.taskFindUnique.mockResolvedValue({
       assigneeOrganization: null,
       assigneePerson: null,
+      assigneePersonId: null,
+      assigneeOrganizationId: null,
+      createdByUser: {
+        deletedAt: null,
+        email: "creator@example.com",
+        id: "creator_1",
+      },
       communicationEndpoints: [],
-      createdByUser: null,
       deletedAt: null,
       id: "task_1",
     });
     mocks.userFindMany.mockResolvedValue([
-      { id: "admin_1", email: "Admin@Example.com" },
-      { id: "admin_2", email: "admin@example.com" },
+      { id: "admin_1", email: "admin@example.com" },
+      { id: "creator_1", email: "creator@example.com" },
     ]);
+
+    const result = await resolveTaskRecipients("task_1", {
+      includeAdminMonitors: true,
+      includeCreator: true,
+    });
+    expect(result).toEqual([
+      {
+        email: "creator@example.com",
+        reason: "You're getting this because you created this task.",
+        role: "creator",
+        userId: "creator_1",
+      },
+      {
+        email: "admin@example.com",
+        isAdmin: true,
+        reason:
+          "You're getting this admin copy because task email monitoring is turned on.",
+        role: "admin_monitor",
+        userId: "admin_1",
+      },
+    ]);
+  });
+
+  it("deduplicates direct assignee and endpoint recipients by email", async () => {
+    mocks.taskFindUnique.mockResolvedValue({
+      assigneeOrganization: null,
+      assigneePerson: {
+        deletedAt: null,
+        email: "same@example.com",
+        id: "person_1",
+        user: null,
+      },
+      communicationEndpoints: [{ id: "endpoint_1", email: "Same@Example.com" }],
+      deletedAt: null,
+      id: "task_1",
+    });
 
     const result = await resolveTaskRecipients("task_1");
     expect(result).toEqual([
-      { email: "admin@example.com", isAdmin: true, userId: "admin_1" },
+      {
+        email: "same@example.com",
+        personId: "person_1",
+        reason: "You're getting this because this task is assigned to you.",
+        role: "assignee_person",
+      },
     ]);
   });
 });
