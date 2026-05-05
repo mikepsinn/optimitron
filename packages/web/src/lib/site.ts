@@ -274,6 +274,8 @@ const NO_FOOTER_COMPLIANCE_NOTICE = null;
 /// separate concern from operator-metadata disclosure to crawlers.
 const INTERNATIONAL_CAMPAIGN_ORG_NAME =
   "International Campaign to End War and Disease";
+const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
+const WAR_ON_DISEASE_LEGACY_NAME = "War on Disease";
 
 function siteAssetPath(directory: string, filename: string) {
   return `/site-assets/${directory}/${filename}`;
@@ -536,10 +538,10 @@ const DIH_UI: SiteVariantUiConfig = {
 const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
   nav: {
     brandHref: ROUTES.home,
-    brandLabel: "War on Disease",
-    desktopBrandLabel: "War on Disease",
+    brandLabel: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
+    desktopBrandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     menuEnabled: true,
-    menuTitle: "War on Disease",
+    menuTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     quickAction: inviteVoterLink,
     searchEnabled: false,
     sections: warOnDiseaseNavSections,
@@ -547,7 +549,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
   },
   footer: {
     brandHref: ROUTES.home,
-    brandLabel: "War on Disease",
+    brandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     brandDescription: `Is it OK if we trade ${apocalypseSlice} of our ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}?`,
     bottomText: "",
     columns: [
@@ -991,11 +993,11 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     `www.${WAR_ON_DISEASE_CANONICAL_DOMAIN}`,
     "warondisease.local",
   ],
-  name: "War on Disease",
-  shortName: "War on Disease",
+  name: INTERNATIONAL_CAMPAIGN_ORG_NAME,
+  shortName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
   alternateSiteNames: [
-    "War on Disease",
-    "International Campaign to End War and Disease",
+    WAR_ON_DISEASE_LEGACY_NAME,
+    INTERNATIONAL_CAMPAIGN_ORG_NAME,
   ],
   description: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
@@ -1011,17 +1013,17 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   publicContactUrl: PUBLIC_CONTACT_URL,
   legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
-    fromName: "War on Disease",
+    fromName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
     primaryColor: "#ff6b9d",
     secondaryColor: "#00d4ff",
-    orgName: "War on Disease",
+    orgName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   },
   footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "warOnDisease",
-    name: "War on Disease",
-    shortName: "War on Disease",
+    name: INTERNATIONAL_CAMPAIGN_ORG_NAME,
+    shortName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
     description:
       "Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%. The budget does not reflect this.",
     eyebrow: "Disease Eradication",
@@ -1036,22 +1038,22 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
   rootMetadata: {
-    title: "War on Disease",
+    title: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     description: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
-    openGraphTitle: "War on Disease",
+    openGraphTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     openGraphDescription: `Trade ${apocalypseSlice} of your ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}. Your species will find this controversial.`,
     openGraphImage: {
       url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "War on Disease social image",
+      alt: `${INTERNATIONAL_CAMPAIGN_ORG_NAME} social image`,
     },
-    twitterTitle: "War on Disease",
+    twitterTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     twitterDescription: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount}. That is ${apocalypseCount} apocalypses, in case the first ${apocalypseCount - 1} do not take.`,
     twitterImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     keywords: [
-      "War on Disease",
-      "International Campaign to End War and Disease",
+      WAR_ON_DISEASE_LEGACY_NAME,
+      INTERNATIONAL_CAMPAIGN_ORG_NAME,
       "1% Treaty",
       "disease eradication",
       "clinical trials",
