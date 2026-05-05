@@ -1,6 +1,7 @@
 /**
- * /reasoning/embed — signed embed surface using the same runtime prep as
- * the hosted route. Only the outer chrome and org-token gating differ.
+ * /reasoning/embed — embeddable reasoning surface using the same runtime prep
+ * as the hosted route. Signed org tokens add attribution; missing or invalid
+ * tokens fall back to neutral public context so embeds keep propagating.
  */
 
 import { headers } from "next/headers";
@@ -25,24 +26,16 @@ export default async function EmbedPage({
 }) {
   const params = (await searchParams) ?? {};
   const token = firstString(params.token);
-  const verification = verifyOrgContextToken(token);
-
-  if (!verification.ok) {
-    return (
-      <div className="p-4 border-4 border-primary bg-brutal-red text-brutal-red-foreground">
-        <p className="font-black uppercase">
-          Embed denied: {verification.reason}
-        </p>
-      </div>
-    );
-  }
+  const verification = token ? verifyOrgContextToken(token) : null;
+  const organizationId = verification?.ok ? verification.organizationId : null;
+  const orgContextToken = verification?.ok ? token : null;
 
   const hdrs = await headers();
   const prepared = await prepareReasoningSession({
     hostRaw: hdrs.get("host"),
-    organizationId: verification.organizationId,
-    orgContextVerified: true,
-    orgContextToken: token,
+    organizationId,
+    orgContextVerified: Boolean(verification?.ok),
+    orgContextToken,
     localeKey: (
       await resolveLocale({
         urlLocale: firstString(params.locale),
