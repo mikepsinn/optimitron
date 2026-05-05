@@ -12,8 +12,9 @@
  *   pnpm --filter @optimitron/db db:reassign-personal-tasks --execute  # apply
  *
  * Buckets:
- *   1. `taskKey LIKE 'notion-import:%'`         → set createdByUserId AND
- *                                                 assigneePersonId to Mike.
+ *   1. Wishonia-created Notion imports that are unassigned or already
+ *      assigned to Mike                              → set createdByUserId AND
+ *                                                       assigneePersonId to Mike.
  *   2. `assigneePersonId = Mike.personId`       → set createdByUserId to Mike
  *      (the trigger-spawned onboarding tasks; assignee already correct).
  *   3. Playwright vote-flow residue titles      → delete (orphaned fixtures
@@ -28,6 +29,8 @@ import { PrismaClient } from "./generated/prisma/client.js";
 import { loadDatabaseUrl } from "./db-cli.js";
 
 const MIKE_EMAIL = "m@thinkbynumbers.org";
+const WISHONIA_EMAIL = "wishonia@gmail.com";
+const SAMPLE_LIMIT = 8;
 
 const PLAYWRIGHT_RESIDUE_TITLE_PATTERNS: readonly string[] = [
   "Invite % to vote on the 1% Treaty",
@@ -68,13 +71,16 @@ function usage(): string {
   ].join("\n");
 }
 
-interface MikeIdentity {
+interface UserIdentity {
   userId: string;
   personId: string;
   displayName: string;
 }
 
-async function loadMike(prisma: PrismaClient): Promise<MikeIdentity> {
+async function loadUserIdentity(
+  prisma: PrismaClient,
+  email: string,
+): Promise<UserIdentity> {
   const rows = await prisma.$queryRaw<
     Array<{
       userId: string;
@@ -84,16 +90,23 @@ async function loadMike(prisma: PrismaClient): Promise<MikeIdentity> {
   >`SELECT u.id AS "userId", u."personId", p."displayName"
     FROM "User" u
     LEFT JOIN "Person" p ON p.id = u."personId"
-    WHERE u.email = ${MIKE_EMAIL}`;
+    WHERE u.email = ${email}`;
   const row = rows[0];
-  if (!row) throw new Error(`User ${MIKE_EMAIL} not found.`);
-  if (!row.personId)
-    throw new Error(`User ${MIKE_EMAIL} has no Person record.`);
+  if (!row) throw new Error(`User ${email} not found.`);
+  if (!row.personId) throw new Error(`User ${email} has no Person record.`);
   return {
     userId: row.userId,
     personId: row.personId,
-    displayName: row.displayName ?? MIKE_EMAIL,
+    displayName: row.displayName ?? email,
   };
+}
+
+async function loadMike(prisma: PrismaClient): Promise<UserIdentity> {
+  return loadUserIdentity(prisma, MIKE_EMAIL);
+}
+
+async function loadWishonia(prisma: PrismaClient): Promise<UserIdentity> {
+  return loadUserIdentity(prisma, WISHONIA_EMAIL);
 }
 
 interface SurveyCounts {
@@ -119,50 +132,64 @@ interface Survey {
 
 async function survey(
   prisma: PrismaClient,
-  mike: MikeIdentity,
+  mike: UserIdentity,
+  wishonia: UserIdentity,
 ): Promise<Survey> {
-  const [notion, onboarding, residue, notionSample, onboardingSample, residueSample] =
-    await Promise.all([
-      countRows(
-        prisma,
-        `SELECT COUNT(*)::int AS n FROM "Task"
-         WHERE "taskKey" LIKE 'notion-import:%'
-           AND "deletedAt" IS NULL`,
-      ),
-      countRows(
-        prisma,
-        `SELECT COUNT(*)::int AS n FROM "Task"
+  const notionClause = notionImportClause(1);
+  const residueClause = playwrightResidueClause(1);
+  const notionParams = [wishonia.userId, mike.personId];
+  const residueParams = [wishonia.userId, ...PLAYWRIGHT_RESIDUE_TITLE_PATTERNS];
+  const [
+    notion,
+    onboarding,
+    residue,
+    notionSample,
+    onboardingSample,
+    residueSample,
+  ] = await Promise.all([
+    countRows(
+      prisma,
+      `SELECT COUNT(*)::int AS n FROM "Task"
+         WHERE ${notionClause}`,
+      notionParams,
+    ),
+    countRows(
+      prisma,
+      `SELECT COUNT(*)::int AS n FROM "Task"
          WHERE "assigneePersonId" = $1
            AND ("createdByUserId" IS NULL OR "createdByUserId" <> $2)
            AND "deletedAt" IS NULL`,
-        [mike.personId, mike.userId],
-      ),
-      countRows(
-        prisma,
-        `SELECT COUNT(*)::int AS n FROM "Task" WHERE ${playwrightResidueClause()}`,
-      ),
-      sampleRows(
-        prisma,
-        `SELECT id, title, "taskKey" FROM "Task"
-         WHERE "taskKey" LIKE 'notion-import:%' AND "deletedAt" IS NULL
-         ORDER BY "createdAt" DESC LIMIT 8`,
-      ),
-      sampleRows(
-        prisma,
-        `SELECT id, title, "taskKey" FROM "Task"
+      [mike.personId, mike.userId],
+    ),
+    countRows(
+      prisma,
+      `SELECT COUNT(*)::int AS n FROM "Task" WHERE ${residueClause}`,
+      residueParams,
+    ),
+    sampleRows(
+      prisma,
+      `SELECT id, title, "taskKey" FROM "Task"
+         WHERE ${notionClause}
+         ORDER BY "createdAt" DESC LIMIT ${SAMPLE_LIMIT}`,
+      notionParams,
+    ),
+    sampleRows(
+      prisma,
+      `SELECT id, title, "taskKey" FROM "Task"
          WHERE "assigneePersonId" = $1
            AND ("createdByUserId" IS NULL OR "createdByUserId" <> $2)
            AND "deletedAt" IS NULL
-         ORDER BY "createdAt" DESC LIMIT 8`,
-        [mike.personId, mike.userId],
-      ),
-      sampleRows(
-        prisma,
-        `SELECT id, title, "taskKey" FROM "Task"
-         WHERE ${playwrightResidueClause()}
-         ORDER BY "createdAt" DESC LIMIT 8`,
-      ),
-    ]);
+         ORDER BY "createdAt" DESC LIMIT ${SAMPLE_LIMIT}`,
+      [mike.personId, mike.userId],
+    ),
+    sampleRows(
+      prisma,
+      `SELECT id, title, "taskKey" FROM "Task"
+         WHERE ${residueClause}
+         ORDER BY "createdAt" DESC LIMIT ${SAMPLE_LIMIT}`,
+      residueParams,
+    ),
+  ]);
   return {
     counts: {
       notionTasks: notion,
@@ -177,11 +204,29 @@ async function survey(
   };
 }
 
-function playwrightResidueClause(): string {
+function notionImportClause(startIndex: number): string {
+  const createdBy = `$${startIndex}`;
+  const assignee = `$${startIndex + 1}`;
+  return [
+    `"taskKey" LIKE 'notion-import:%'`,
+    `"createdByUserId" = ${createdBy}`,
+    `("assigneePersonId" IS NULL OR "assigneePersonId" = ${assignee})`,
+    `"deletedAt" IS NULL`,
+  ].join(" AND ");
+}
+
+function playwrightResidueClause(startIndex: number): string {
+  const createdBy = `$${startIndex}`;
   const ors = PLAYWRIGHT_RESIDUE_TITLE_PATTERNS.map(
-    (p) => `title LIKE '${p.replace(/'/g, "''")}'`,
+    (_, i) => `title LIKE $${startIndex + i + 1}`,
   ).join(" OR ");
-  return `"deletedAt" IS NULL AND (${ors})`;
+  return [
+    `"deletedAt" IS NULL`,
+    `"createdByUserId" = ${createdBy}`,
+    `"taskKey" IS NULL`,
+    `"assigneePersonId" IS NULL`,
+    `(${ors})`,
+  ].join(" AND ");
 }
 
 async function countRows(
@@ -189,7 +234,10 @@ async function countRows(
   sql: string,
   params: unknown[] = [],
 ): Promise<number> {
-  const rows = await prisma.$queryRawUnsafe<Array<{ n: number }>>(sql, ...params);
+  const rows = await prisma.$queryRawUnsafe<Array<{ n: number }>>(
+    sql,
+    ...params,
+  );
   return rows[0]?.n ?? 0;
 }
 
@@ -203,21 +251,25 @@ async function sampleRows(
 
 async function applyMigration(
   prisma: PrismaClient,
-  mike: MikeIdentity,
+  mike: UserIdentity,
+  wishonia: UserIdentity,
 ): Promise<{
   notionUpdated: number;
   onboardingUpdated: number;
   residueDeleted: number;
 }> {
+  const notionClause = notionImportClause(3);
+  const residueClause = playwrightResidueClause(1);
   return prisma.$transaction(async (tx) => {
     const notionUpdated = await tx.$executeRawUnsafe(
       `UPDATE "Task"
          SET "createdByUserId" = $1,
              "assigneePersonId" = $2,
              "updatedAt" = NOW()
-       WHERE "taskKey" LIKE 'notion-import:%'
-         AND "deletedAt" IS NULL`,
+       WHERE ${notionClause}`,
       mike.userId,
+      mike.personId,
+      wishonia.userId,
       mike.personId,
     );
     const onboardingUpdated = await tx.$executeRawUnsafe(
@@ -231,30 +283,50 @@ async function applyMigration(
       mike.personId,
     );
     const residueDeleted = await tx.$executeRawUnsafe(
-      `DELETE FROM "Task" WHERE ${playwrightResidueClause()}`,
+      `DELETE FROM "Task" WHERE ${residueClause}`,
+      wishonia.userId,
+      ...PLAYWRIGHT_RESIDUE_TITLE_PATTERNS,
     );
     return { notionUpdated, onboardingUpdated, residueDeleted };
   });
 }
 
-function renderReport(s: Survey, mike: MikeIdentity, executed: boolean): string {
+function renderReport(
+  s: Survey,
+  mike: UserIdentity,
+  executed: boolean,
+): string {
   const lines: string[] = [];
-  lines.push(executed ? "Personal-task migration — EXECUTED" : "Personal-task migration — DRY RUN");
-  lines.push(`Target: ${mike.displayName} (User ${mike.userId} / Person ${mike.personId})`);
+  lines.push(
+    executed
+      ? "Personal-task migration — EXECUTED"
+      : "Personal-task migration — DRY RUN",
+  );
+  lines.push(
+    `Target: ${mike.displayName} (User ${mike.userId} / Person ${mike.personId})`,
+  );
   lines.push("");
-  lines.push("Bucket A — Notion-imported tasks (taskKey LIKE 'notion-import:%')");
-  lines.push(`  Will set createdByUserId AND assigneePersonId to Mike: ${s.counts.notionTasks}`);
+  lines.push(
+    "Bucket A — Wishonia-created Notion imports assigned to Mike or unassigned",
+  );
+  lines.push(
+    `  Will set createdByUserId AND assigneePersonId to Mike: ${s.counts.notionTasks}`,
+  );
   for (const t of s.samples.notion) {
     lines.push(`    ${t.id}  ${truncate(t.title, 60)}`);
   }
   lines.push("");
-  lines.push("Bucket B — Tasks already assigned to Mike but with wrong createdByUserId");
+  lines.push(
+    "Bucket B — Tasks already assigned to Mike but with wrong createdByUserId",
+  );
   lines.push(`  Will set createdByUserId to Mike: ${s.counts.onboardingTasks}`);
   for (const t of s.samples.onboarding) {
     lines.push(`    ${t.id}  ${truncate(t.title, 60)}`);
   }
   lines.push("");
-  lines.push("Bucket C — Playwright vote-flow residue (orphaned fixtures)");
+  lines.push(
+    "Bucket C — Playwright vote-flow residue (Wishonia-created orphaned fixtures)",
+  );
   lines.push(`  Will be deleted: ${s.counts.playwrightResidue}`);
   for (const t of s.samples.residue) {
     lines.push(`    ${t.id}  ${truncate(t.title, 60)}`);
@@ -276,7 +348,8 @@ export async function runReassign(argv: string[]): Promise<void> {
   });
   try {
     const mike = await loadMike(prisma);
-    const before = await survey(prisma, mike);
+    const wishonia = await loadWishonia(prisma);
+    const before = await survey(prisma, mike, wishonia);
 
     if (!options.execute) {
       process.stdout.write(
@@ -287,8 +360,8 @@ export async function runReassign(argv: string[]): Promise<void> {
       return;
     }
 
-    const result = await applyMigration(prisma, mike);
-    const after = await survey(prisma, mike);
+    const result = await applyMigration(prisma, mike, wishonia);
+    const after = await survey(prisma, mike, wishonia);
 
     if (options.json) {
       process.stdout.write(
@@ -313,9 +386,13 @@ export async function runReassign(argv: string[]): Promise<void> {
       out.push(`  Residue tasks deleted:      ${result.residueDeleted}`);
       out.push("");
       out.push("Remaining matches");
-      out.push(`  Notion (still wrong creator):   ${after.counts.notionTasks === result.notionUpdated ? 0 : after.counts.notionTasks}`);
-      out.push(`  Onboarding (still wrong):       ${after.counts.onboardingTasks}`);
-      out.push(`  Residue (still present):        ${after.counts.playwrightResidue}`);
+      out.push(`  Notion (still wrong creator):   ${after.counts.notionTasks}`);
+      out.push(
+        `  Onboarding (still wrong):       ${after.counts.onboardingTasks}`,
+      );
+      out.push(
+        `  Residue (still present):        ${after.counts.playwrightResidue}`,
+      );
       process.stdout.write(`${out.join("\n")}\n`);
     }
   } finally {
@@ -325,9 +402,7 @@ export async function runReassign(argv: string[]): Promise<void> {
 
 const isDirectInvocation =
   typeof process.argv[1] === "string" &&
-  process.argv[1]
-    .replace(/\\/g, "/")
-    .endsWith("/reassign-personal-tasks.ts");
+  process.argv[1].replace(/\\/g, "/").endsWith("/reassign-personal-tasks.ts");
 
 if (isDirectInvocation) {
   runReassign(process.argv.slice(2)).catch((error: unknown) => {

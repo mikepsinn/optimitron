@@ -2762,7 +2762,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getQueueAudit",
     description:
-      "Start here before trusting a personal task queue. Audits active private tasks created by this user for missing estimates, blocked dependencies, impossible priority inputs, required/expiring deadline risks, and other data issues. A life-planning agent should repair or clarify high-severity issues before relying on getNextAction.",
+      "Start here before trusting a personal task queue. Audits active private tasks created by this user or assigned to their Person for missing estimates, blocked dependencies, impossible priority inputs, required/expiring deadline risks, and other data issues. A life-planning agent should repair or clarify high-severity issues before relying on getNextAction.",
     inputSchema: { type: "object" as const, properties: {} },
     outputSchema: {
       type: "object",
@@ -2772,11 +2772,18 @@ const TASK_TOOL_DEFINITIONS = [
           properties: {
             activeCreatedTasks: {
               type: "number",
-              description: "Count of active tasks created by this user.",
+              description:
+                "Compatibility count of active personal-queue tasks created by this user.",
+            },
+            activePersonalTasks: {
+              type: "number",
+              description:
+                "Count of active tasks created by this user or assigned to their Person.",
             },
             unblockedTasks: {
               type: "number",
-              description: "How many created tasks are currently unblocked.",
+              description:
+                "How many personal-queue tasks are currently unblocked.",
             },
             issueCount: {
               type: "number",
@@ -2817,7 +2824,12 @@ const TASK_TOOL_DEFINITIONS = [
       {
         input: {},
         output: {
-          summary: { activeCreatedTasks: 6, unblockedTasks: 3, issueCount: 1 },
+          summary: {
+            activeCreatedTasks: 4,
+            activePersonalTasks: 6,
+            unblockedTasks: 3,
+            issueCount: 1,
+          },
           issues: [
             {
               code: "MISSING_ESTIMATES",
@@ -3131,6 +3143,7 @@ const TASK_TOOL_DEFINITIONS = [
           type: "object",
           properties: {
             activeCreatedTasks: { type: "number" },
+            activePersonalTasks: { type: "number" },
             unblockedTasks: { type: "number" },
           },
         },
@@ -5740,27 +5753,30 @@ export function createMcpServer(
               DEFAULT_PERSONAL_BUYBACK_RATE,
             );
             const personId = await loadSessionPersonId(userId);
-            const createdTasks = (await tasks.listTasks({
+            const personalTasks = (await tasks.listTasks({
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
               personId,
               visibility: "personal",
             })) as PersonalQueueTaskRecord[];
+            const activeCreatedTasks = personalTasks.filter(
+              (task) => task.createdByUserId === userId,
+            ).length;
             const rankedRows = buildPersonalQueueRows(
-              createdTasks,
+              personalTasks,
               ranking,
               buybackRate,
               {
-                limit: createdTasks.length,
+                limit: personalTasks.length,
               },
             );
             const unblockedCount = buildPersonalQueueRows(
-              createdTasks,
+              personalTasks,
               ranking,
               buybackRate,
               {
-                limit: createdTasks.length,
+                limit: personalTasks.length,
                 requireUnblocked: true,
               },
             ).length;
@@ -5773,7 +5789,7 @@ export function createMcpServer(
               taskId?: string;
             }> = [];
 
-            const taskIds = createdTasks.map((task) => task.id);
+            const taskIds = personalTasks.map((task) => task.id);
             const dependencyEdges = await prisma.taskEdge.findMany({
               where: { toTaskId: { in: taskIds }, deletedAt: null },
               select: {
@@ -5791,7 +5807,7 @@ export function createMcpServer(
               }
             }
 
-            for (const task of createdTasks) {
+            for (const task of personalTasks) {
               const row = rowById.get(task.id);
               if (!row) continue;
 
@@ -5880,7 +5896,8 @@ export function createMcpServer(
 
             return ok({
               summary: {
-                activeCreatedTasks: createdTasks.length,
+                activeCreatedTasks,
+                activePersonalTasks: personalTasks.length,
                 unblockedTasks: unblockedCount,
                 issueCount: issues.length,
               },
@@ -5941,7 +5958,12 @@ export function createMcpServer(
               task: topAction,
               priority: topAction?.priority ?? 0,
               queueAudit: {
-                activeCreatedTasks: personalTasks.length,
+                activeCreatedTasks: personalTasks.filter(
+                  (task) =>
+                    (task as PersonalQueueTaskRecord).createdByUserId ===
+                    userId,
+                ).length,
+                activePersonalTasks: personalTasks.length,
                 unblockedTasks: queue.length,
               },
             });
