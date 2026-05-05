@@ -15,11 +15,24 @@
 
 - If a local dev server is already running, do not disrupt it for routine verification; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.
 
+## Branch and Pull Request Workflow
+
+- Feature branches must start with `feature/`, followed by a short kebab-case description of the feature or fix. Example: `feature/international-campaign-site-name`.
+- If work starts on `main`, create the `feature/...` branch before editing. If already on a non-main branch, continue there unless the human asks to rename or split the work.
+- When implementation is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the human explicitly asked not to commit or push.
+- After every push, watch GitHub Actions, deployment checks, and pull request review comments. Fix valid failures or comments, push again, and watch again.
+- If a review comment is mistaken, stale, or non-actionable, mark it resolved when tooling allows. Do not make unnecessary code changes just to satisfy an invalid comment.
+
 ## UI Verification
 
 - After changing any user interface surface, capture screenshots of the affected pages or states before considering the work complete.
+- For meaningful UI changes, capture before/after screenshots when feasible: before from production, main, or the current unchanged page; after from the branch, preview deployment, or local dev server. Assume screenshots may contain sensitive or production-derived data unless proven otherwise.
 - Inspect the screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and obvious responsive problems.
-- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, and explicitly ask them to review the screenshots.
+- Also generate a local side-by-side HTML review file for before/after screenshots when feasible, especially for visual redesigns or copy/layout changes. Put it under `packages/web/output/playwright/` and organize it by page/viewport with `before` and `after` columns. If a true before image is not practical, make an after-only review page and say so. This is often easier to scan than separate image links.
+- Do not commit screenshot image artifacts to the repo unless the human explicitly asks and the screenshots are confirmed sanitized. Keep local artifacts under `packages/web/output/playwright/` while working.
+- Do not upload screenshots into pull request comments by default when they may contain sensitive data. Instead, include the preview URL if safe, exact local screenshot/HTML paths, and your own visual-inspection notes.
+- When reporting screenshots in chat, provide a clickable local file link to the HTML review page and the plain filesystem path so the human can copy/paste it into a browser if the chat renderer does not open it.
+- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, and explicitly ask them to review the screenshots unless they explicitly waived screenshots for that change.
 - If screenshots cannot be captured, state exactly why and do not commit the UI change until the human accepts that limitation.
 - Reuse an existing dev server for screenshot checks when available; do not disrupt a running server unless a clean run is genuinely needed.
 
@@ -32,6 +45,7 @@
 ## Documentation
 
 Detailed docs live in `docs/`. Read the relevant ones before working:
+
 - `docs/TYPE_SYSTEM.md` — How types flow from Prisma → all packages
 - `docs/h2ewd.md` — Wishonia/H2EWD voice for public-facing persuasion copy
 
@@ -49,7 +63,6 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
 - When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
 
-
 ## Critical Architecture Rules
 
 ### 1. Type System — Single Source of Truth
@@ -57,6 +70,7 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 The Prisma schema (`packages/db/prisma/schema.prisma`) is the canonical source for all data models.
 
 **How types flow:**
+
 ```
 schema.prisma → @optimitron/db exports:
   ├── Prisma client (for web/API layer ONLY)
@@ -65,11 +79,13 @@ schema.prisma → @optimitron/db exports:
 ```
 
 **DO:**
+
 - Import PLAIN TypeScript interfaces from `@optimitron/db` (type-only imports)
 - Use `import type { Measurement, GlobalVariable } from '@optimitron/db'`
 - Keep Prisma schema as the single source of truth
 
 **DO NOT:**
+
 - Import `@prisma/client` in library packages (optimizer, wishocracy, opg, obg, data)
 - Define duplicate interfaces in library packages that mirror DB models
 - Create separate "db-types" packages — the types live in `@optimitron/db`
@@ -83,6 +99,7 @@ They MUST work in the browser (for PGlite/local-first).
 ### 3. Domain Agnosticism
 
 `@optimitron/optimizer` is **completely domain-agnostic**. NEVER reference:
+
 - "drugs", "supplements", "treatments", "patients"
 - "policies", "budgets", "politicians", "government"
 - Use: "predictor", "outcome", "variable", "measurement", "effect size"
@@ -91,13 +108,13 @@ Domain-specific naming belongs in opg/obg/wishocracy/data/web.
 
 ### 4. Naming Conventions
 
-| Convention | Example |
-|-----------|---------|
-| FK field names match target model | `globalVariableId` not `variableId` |
-| Predictor/outcome terminology | `predictorGlobalVariableId` not `causeVariableId` |
-| Outcome not effect in properties | `outcomeBaselineAverage` (but `effectSize` stays — Cohen's d) |
-| Enums over magic strings | Prisma enforces valid values |
-| deletedAt on all models | Soft deletes for cr-sqlite sync |
+| Convention                        | Example                                                       |
+| --------------------------------- | ------------------------------------------------------------- |
+| FK field names match target model | `globalVariableId` not `variableId`                           |
+| Predictor/outcome terminology     | `predictorGlobalVariableId` not `causeVariableId`             |
+| Outcome not effect in properties  | `outcomeBaselineAverage` (but `effectSize` stays — Cohen's d) |
+| Enums over magic strings          | Prisma enforces valid values                                  |
+| deletedAt on all models           | Soft deletes for cr-sqlite sync                               |
 
 ### 5. Dependency Graph
 
@@ -116,6 +133,7 @@ web ← everything
 ### Papers (Algorithm Source of Truth)
 
 Before implementing any algorithm, read the relevant paper:
+
 - Optimizer → [dFDA Spec](https://dfda-spec.warondisease.org)
 - Wishocracy → [Wishocracy](https://wishocracy.warondisease.org)
 - OPG → [Optimal Policy Generator](https://opg.warondisease.org)
