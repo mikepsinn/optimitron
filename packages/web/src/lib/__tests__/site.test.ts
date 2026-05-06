@@ -14,6 +14,7 @@ import {
   getTreatySignUrl,
   isLocalHost,
   isSiteRouteAllowed,
+  WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
 } from "@/lib/site";
 import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
 
@@ -144,6 +145,13 @@ describe("site variant registry", () => {
     expect(warSite.ui.nav.desktopBrandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.nav.menuTitle).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.footer.brandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
+    expect(warSite.description).toBe(WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION);
+    expect(warSite.ui.footer.brandDescription).toBe(warSite.description);
+    expect(warSite.rootMetadata.description).toBe(warSite.description);
+    expect(warSite.rootMetadata.openGraphDescription).toBe(
+      warSite.description,
+    );
+    expect(warSite.rootMetadata.twitterDescription).toBe(warSite.description);
     expect(warSite.domains).toEqual(
       expect.arrayContaining([
         "1percenttreaty.org",
