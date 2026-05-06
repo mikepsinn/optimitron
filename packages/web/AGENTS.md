@@ -40,6 +40,25 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 - **If screenshot verification is blocked, say why.** Do not commit UI changes without screenshots unless the human explicitly accepts the limitation.
 - **Do not freeze long-form copy in E2E.** Browser tests should assert behavior, route transitions, data contracts, analytics-critical parameters, accessibility roles, and the presence/absence of coarse UI states. Avoid exact prose, magic-number, or paragraph-level assertions unless the wording itself is the contract being tested. Put exact copy parity in focused unit/doc tests, seeded-template tests, or screenshot review instead.
 
+## Mike UI Complaint Checklist
+
+Before calling a public or authenticated UI "done," inspect it as if the human is about to open the page and ask why it is making the desired action harder.
+
+- **Goal first.** Identify the one action the page should maximize. Put that action before browsing, explanation, counters, filters, dashboards, FAQs, or legal framing.
+- **No useless top clutter.** Remove or demote counters, filter boxes, sort controls, explanatory cards, "older" buttons, and status text that do not help the next user action.
+- **Do not require auth to understand or start.** Let anonymous visitors fill the conversion form first when possible; persist the draft and ask for auth only when the action must be verified.
+- **Do not leak our planning conversation into copy.** Avoid phrases like "details can come later," "add details now," "record," "manage people," or other internal narration unless the user explicitly asks for that wording.
+- **Use the user's frame, not generic product mush.** If the page is about plaintiffs, court evidence, Humanity v. Government, or the 1% Treaty, say that. Do not retreat to vague labels like "humans on the record" or "people already represented" when the stronger frame is known.
+- **Preserve sharp copy.** When moving existing/user-provided language into another place such as an FAQ, keep it as close to exact as grammar allows. Do not blandly paraphrase it.
+- **Cite loaded numbers.** Use parameter/citation components for major numeric claims wherever available instead of hardcoded unsupported numbers.
+- **One click should do the obvious thing.** Post-submit CTAs should deep-link to the specific thing just created. Photo boxes should open photo upload/crop. Do not send users to an index where they must find and click the same item again.
+- **Use normal app language.** Buttons and dialog labels should sound like the familiar control they are: "Upload photo," "Crop photo," "Cancel," "Save," "Delete." Avoid awkward labels like "Crop square photo."
+- **Do not show giant forms by default.** Use tables/cards for scanning and dialogs or expansion for editing. Forms should appear when the user chooses to edit a specific item.
+- **Mobile is not optional.** Tables must not clip off-screen. Use responsive cards or a proven responsive table primitive. Pagination belongs where users expect it, usually below the list.
+- **Remove columns nobody cares about.** Do not include evidence counts, implementation fields, or other low-value columns just because the data exists.
+- **Use proven UI libraries for tricky interactions.** Cropping, dragging, zooming, sliders, dialogs, and tables should rely on established primitives before hand-rolled behavior.
+- **Test-looking data is a design problem.** If fake/test records appear in screenshots or production-like views, either clean them up safely or design the list so low-quality records do not dominate the first impression.
+
 ## Off-Limits
 
 - Library package internals (`packages/optimizer/src/*`, `packages/wishocracy/src/*`, etc.)
