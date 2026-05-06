@@ -34,7 +34,8 @@
 - Do not commit screenshot image artifacts to the repo unless the human explicitly asks and the screenshots are confirmed sanitized. Keep local artifacts under `packages/web/output/playwright/` while working.
 - Do not upload screenshots into pull request comments by default when they may contain sensitive data. Instead, include the preview URL if safe, exact local screenshot/HTML paths, and your own visual-inspection notes.
 - When reporting screenshots in chat, provide a clickable local file link to the HTML review page and the plain filesystem path so the human can copy/paste it into a browser if the chat renderer does not open it.
-- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, and explicitly ask them to review the screenshots unless they explicitly waived screenshots for that change.
+- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, provide the local HTML review file path, and explicitly ask them to review the screenshots unless they explicitly waived screenshots for that change.
+- Do not commit UI changes until the human explicitly approves the screenshot/HTML review, unless they explicitly waive review or explicitly instruct you to commit immediately despite the screenshot-review rule.
 - If screenshots cannot be captured, state exactly why and do not commit the UI change until the human accepts that limitation.
 - Reuse an existing dev server for screenshot checks when available; do not disrupt a running server unless a clean run is genuinely needed.
 
