@@ -34,6 +34,13 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+function cssVariableColor(name: string, fallback: string) {
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
+  return value || fallback;
+}
+
 async function cropImageToFile(input: {
   area: Area;
   fileName: string;
@@ -46,7 +53,7 @@ async function cropImageToFile(input: {
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Could not crop this image.");
 
-  context.fillStyle = "#fff";
+  context.fillStyle = cssVariableColor("--treaty-paper", "white");
   context.fillRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
@@ -183,8 +190,9 @@ export function SquarePhotoCropper({
                 showGrid={false}
                 style={{
                   cropAreaStyle: {
-                    border: "1px solid #000",
-                    boxShadow: "0 0 0 9999px rgb(0 0 0 / 0.35)",
+                    border: "1px solid var(--treaty-ink)",
+                    boxShadow:
+                      "0 0 0 9999px color-mix(in srgb, var(--treaty-ink) 35%, transparent)",
                   },
                 }}
                 zoom={zoom}
