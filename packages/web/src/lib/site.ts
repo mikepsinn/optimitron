@@ -1,8 +1,6 @@
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
-  GLOBAL_WARHEAD_COUNT,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
-  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters";
 import {
@@ -45,20 +43,11 @@ import {
 // Campaign-copy numbers sourced from the parameter manifest so marketing
 // strings stay synced when sources update (FAS warhead count, DFDA queue
 // math, etc.). The manifest holds the precise figure plus citation; we
-// round for prose. TREATY_FRACTION is the canonical 1% reallocation.
-const TREATY_FRACTION = 0.01;
-const warheadCount = Math.round(GLOBAL_WARHEAD_COUNT.value).toLocaleString(
-  "en-US",
-);
-const nuclearWinterThreshold = Math.round(
-  NUCLEAR_WINTER_WARHEAD_THRESHOLD.value,
-);
+// round for prose.
 const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
-const apocalypseSlice = (
-  NUCLEAR_WINTER_OVERKILL_FACTOR.value * TREATY_FRACTION
-).toFixed(2);
 const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
+export const WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION = `Let's trade one apocalypse out of humanity's ${apocalypseCount}-apocalypse mass-murder capacity for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`;
 
 export const OPTIMITRON_CANONICAL_ORIGIN = "https://optimitron.com";
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
@@ -486,8 +475,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
   footer: {
     brandHref: ROUTES.home,
     brandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    brandDescription:
-      "The campaign behind Humanity v. Government and the 1% Treaty.",
+    brandDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
     bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
     columns: [
       {
@@ -873,7 +861,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     WAR_ON_DISEASE_LEGACY_NAME,
     INTERNATIONAL_CAMPAIGN_ORG_NAME,
   ],
-  description: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
+  description: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_WAR_ON_DISEASE_ID,
   contentKey: "onePercentTreaty",
@@ -913,9 +901,9 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   primaryTaskKey: null,
   rootMetadata: {
     title: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    description: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
+    description: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
     openGraphTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    openGraphDescription: `Trade ${apocalypseSlice} of your ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}. Your species will find this controversial.`,
+    openGraphDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
     openGraphImage: {
       url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
       width: 1200,
@@ -923,7 +911,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       alt: `${INTERNATIONAL_CAMPAIGN_ORG_NAME} social image`,
     },
     twitterTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    twitterDescription: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount}. That is ${apocalypseCount} apocalypses, in case the first ${apocalypseCount - 1} do not take.`,
+    twitterDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
     twitterImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     keywords: [
       WAR_ON_DISEASE_LEGACY_NAME,
