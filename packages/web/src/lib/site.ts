@@ -21,6 +21,7 @@ import {
   endorseLink,
   exploreLinks,
   footerAppLinks,
+  humanityVGovernmentLink,
   inviteVoterLink,
   legalLink,
   navSections,
@@ -64,11 +65,7 @@ export const SITE_VARIANT_OVERRIDE_QUERY_PARAM = "site";
 // Per-host site configuration (generic Site* / referendum-microsite layer)
 // ---------------------------------------------------------------------------
 
-export type SiteKey =
-  | "optimitron"
-  | "dfda"
-  | "dih"
-  | "warOnDisease";
+export type SiteKey = "optimitron" | "dfda" | "dih" | "warOnDisease";
 
 export const SITE_VARIANT_OVERRIDE_HEADER = "x-optimitron-site-key";
 
@@ -493,7 +490,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
       },
       {
         title: "Reference",
-        items: [whyLink, courtLink],
+        items: [whyLink, courtLink, humanityVGovernmentLink],
       },
     ],
   },
@@ -728,11 +725,7 @@ const DIH_CONFIG: SiteConfig = {
   chromeVariant: "platform",
   userFraming: "voter",
   canonicalOrigin: "https://dih.earth",
-  domains: [
-    "dih.earth",
-    "www.dih.earth",
-    "dih.local",
-  ],
+  domains: ["dih.earth", "www.dih.earth", "dih.local"],
   name: "DIH",
   shortName: "DIH",
   alternateSiteNames: [
@@ -925,6 +918,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     canonicalPrefixes: [
       ROUTES.treaty,
       ROUTES.court,
+      ROUTES.humanityVGovernment,
       ROUTES.tasks,
       ROUTES.people,
       ROUTES.plaintiffs,
@@ -950,6 +944,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     publicPrefixes: [
       ROUTES.treaty,
       ROUTES.court,
+      ROUTES.humanityVGovernment,
       ROUTES.tasks,
       ROUTES.people,
       ROUTES.plaintiffs,
@@ -984,11 +979,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.profile,
       ROUTES.settings,
     ],
-    minimalChromePrefixes: [
-      ROUTES.vote,
-      ROUTES.questions,
-      ROUTES.survey,
-    ],
+    minimalChromePrefixes: [ROUTES.vote, ROUTES.questions, ROUTES.survey],
   },
   assets: WAR_ON_DISEASE_ASSETS,
   sitemap: {

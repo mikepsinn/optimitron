@@ -17,7 +17,7 @@ import {
   getRepresentedPeopleGalleryData,
   type RepresentedPeopleSortKey,
 } from "@/lib/represented-people.server";
-import { plaintiffsLink, ROUTES } from "@/lib/routes";
+import { humanityVGovernmentLink, plaintiffsLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
 const VALID_SORT_KEYS: RepresentedPeopleSortKey[] = [
@@ -168,7 +168,14 @@ export default async function PlaintiffsPage({
           <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
             Please list everyone you love who can no longer sign the 1% Treaty
             because of death, disease, or both, so they may be presented as
-            evidence in the class action lawsuit Humanity v. Government.
+            evidence in the class action lawsuit{" "}
+            <Link
+              className="underline underline-offset-4"
+              href={ROUTES.humanityVGovernment}
+            >
+              {humanityVGovernmentLink.label}
+            </Link>
+            .
           </p>
         </header>
 
@@ -226,7 +233,13 @@ export default async function PlaintiffsPage({
                 Public plaintiffs
               </p>
               <h2 className="text-3xl font-black uppercase leading-tight">
-                Plaintiffs in Humanity v. Government
+                Plaintiffs in{" "}
+                <Link
+                  className="underline underline-offset-4"
+                  href={ROUTES.humanityVGovernment}
+                >
+                  {humanityVGovernmentLink.label}
+                </Link>
               </h2>
             </div>
           </div>
@@ -329,9 +342,15 @@ export default async function PlaintiffsPage({
               Know a victim of war or disease?
             </summary>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Add them to the plaintiff list for Humanity v. Government, the
-              class action against the governments of Earth. Governments were
-              hired to promote the general welfare. They spent{" "}
+              Add them to the plaintiff list for{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.humanityVGovernment}
+              >
+                {humanityVGovernmentLink.label}
+              </Link>
+              , the class action against the governments of Earth. Governments
+              were hired to promote the general welfare. They spent{" "}
               <ParameterValue
                 className="font-black"
                 param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}

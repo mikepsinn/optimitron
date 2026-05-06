@@ -49,9 +49,7 @@ describe("site variant registry", () => {
     );
     expect(getSiteFromHost("dfda.earth").key).toBe("dfda");
     expect(getSiteFromHost("dih.earth").key).toBe("dih");
-    expect(getSiteFromHost("acceleratedmedicine.org").key).toBe(
-      "warOnDisease",
-    );
+    expect(getSiteFromHost("acceleratedmedicine.org").key).toBe("warOnDisease");
     expect(getSiteFromHost("optimitron.com").key).toBe("optimitron");
   });
 
@@ -148,10 +146,13 @@ describe("site variant registry", () => {
     expect(warSite.description).toBe(WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION);
     expect(warSite.ui.footer.brandDescription).toBe(warSite.description);
     expect(warSite.rootMetadata.description).toBe(warSite.description);
-    expect(warSite.rootMetadata.openGraphDescription).toBe(
-      warSite.description,
-    );
+    expect(warSite.rootMetadata.openGraphDescription).toBe(warSite.description);
     expect(warSite.rootMetadata.twitterDescription).toBe(warSite.description);
+    expect(
+      warSite.ui.footer.columns
+        .flatMap((column) => column.items)
+        .some((item) => item.href === ROUTES.humanityVGovernment),
+    ).toBe(true);
     expect(warSite.domains).toEqual(
       expect.arrayContaining([
         "1percenttreaty.org",
@@ -251,6 +252,7 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(warSite, ROUTES.signatories)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.campaign)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.coalition)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.humanityVGovernment)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.endorse)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.privacy)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.terms)).toBe(true);
@@ -293,10 +295,7 @@ describe("site variant registry", () => {
       getEnabledStaticPathsForSite(getSiteConfig("optimitron"), candidates),
     ).toEqual([ROUTES.donate, ROUTES.treaty]);
     expect(
-      getEnabledStaticPathsForSite(
-        getSiteConfig("warOnDisease"),
-        candidates,
-      ),
+      getEnabledStaticPathsForSite(getSiteConfig("warOnDisease"), candidates),
     ).toEqual(expect.arrayContaining(candidates));
   });
 

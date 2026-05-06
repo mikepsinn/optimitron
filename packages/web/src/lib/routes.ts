@@ -56,6 +56,7 @@ export const ROUTES = {
   // The Treaty
   treaty: "/treaty",
   court: "/court",
+  humanityVGovernment: "/humanity-v-government",
   vote: "/vote",
   why: "/why",
   legal: "/legal",
@@ -624,6 +625,19 @@ export const courtLink: NavItem = {
   cta: "Join the Court",
 };
 
+export const HUMANITY_V_GOVERNMENT_MANUAL_URL =
+  "https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html";
+
+export const humanityVGovernmentLink: NavItem = {
+  href: ROUTES.humanityVGovernment,
+  label: "Humanity v. Government",
+  emoji: "⚖️",
+  description:
+    "Governments were hired to promote the general welfare. They chose war instead. Now there's a legal theory for that.",
+  tagline: "The case against government harm",
+  cta: "Read the Case",
+};
+
 export const readTreatyLink: NavItem = {
   ...treatyLink,
   label: "Read the Treaty",
@@ -660,8 +674,7 @@ export const plaintiffsLink: NavItem = {
   href: ROUTES.plaintiffs,
   label: "Plaintiffs",
   emoji: "👥",
-  description:
-    "Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in Humanity v. Government.",
+  description: `Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in ${humanityVGovernmentLink.label}.`,
   tagline: "Sign for someone who can't",
   cta: "Sign for Them",
 };
@@ -670,7 +683,7 @@ export const plaintiffsManageLink: NavItem = {
   ...plaintiffsLink,
   href: ROUTES.plaintiffsManage,
   label: "Your Plaintiffs",
-  description: "Edit the plaintiffs you registered for Humanity v. Government.",
+  description: `Edit the plaintiffs you registered for ${humanityVGovernmentLink.label}.`,
   tagline: "Edit your plaintiffs",
   cta: "Your Plaintiffs",
 };
