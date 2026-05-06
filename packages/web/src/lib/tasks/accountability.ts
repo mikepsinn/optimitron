@@ -265,7 +265,7 @@ export interface TaskShareTokenInput {
   citizenName?: string | null;
   /** Now, overridable for tests. Defaults to `new Date()`. */
   now?: Date;
-  /** Full treaty URL with referral param. Defaults to "1percenttreaty.org". */
+  /** Full treaty URL with referral param. Defaults to warondisease.org/treaty. */
   treatyUrl?: string;
 }
 
@@ -347,7 +347,7 @@ export function buildTaskShareTokens(
     citizen_name: input.citizenName?.trim() || "A citizen",
     mil_synonym: milSynonym,
     task_title: input.taskTitle,
-    treaty_url: input.treatyUrl || "1percenttreaty.org",
+    treaty_url: input.treatyUrl || "warondisease.org/treaty",
     days_overdue: delayDays > 0 ? delayDays.toLocaleString("en-US") : "",
     deaths_from_delay:
       deathsFromDelay != null ? formatCompactCount(deathsFromDelay) : "",

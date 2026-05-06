@@ -12,8 +12,8 @@ function pathsFor(siteKey: Parameters<typeof getSiteConfig>[0]) {
 }
 
 describe("site sitemap routing", () => {
-  it("keeps treaty sitemaps focused on treaty routes", () => {
-    const paths = pathsFor("onePercentTreaty");
+  it("keeps the campaign sitemap focused on campaign routes", () => {
+    const paths = pathsFor("warOnDisease");
 
     expect(paths).toEqual(
       expect.arrayContaining([
@@ -22,28 +22,12 @@ describe("site sitemap routing", () => {
         ROUTES.treaty,
         ROUTES.vote,
         ROUTES.why,
+        ROUTES.donate,
+        ROUTES.employees,
       ]),
     );
-    expect(paths).not.toContain(ROUTES.campaign);
     expect(paths).not.toContain(ROUTES.reasoning);
     expect(paths).not.toContain(ROUTES.scoreboard);
-    expect(paths).not.toContain(`${ROUTES.agencies}/dfda/conditions`);
-  });
-
-  it("keeps the neutral survey sitemap neutral and small", () => {
-    const paths = pathsFor("trialAbundanceSurvey");
-
-    expect(paths).toEqual(
-      expect.arrayContaining([
-        "/",
-        ROUTES.survey,
-        ROUTES.vote,
-        ROUTES.organizations,
-      ]),
-    );
-    expect(paths).not.toContain(ROUTES.why);
-    expect(paths).not.toContain(ROUTES.governments);
-    expect(paths.length).toBeLessThanOrEqual(5);
   });
 
   it("adds DFDA medical index and detail routes to the DFDA sitemap", () => {

@@ -16,12 +16,6 @@ const lumberghCopy: MagicLinkCopy = {
 const magicLinkCopyBySite: Record<SiteKey, MagicLinkCopy> = {
   optimitron: lumberghCopy,
   warOnDisease: lumberghCopy,
-  onePercentTreaty: lumberghCopy,
-  trialAbundanceSurvey: {
-    buttonLabel: "Sign in",
-    intro: "Sign in to Trial Abundance Survey.",
-    notRequested: "If you didn't request this, you can ignore it.",
-  },
   dfda: {
     buttonLabel: "Sign in",
     intro: "Sign in to dFDA.",

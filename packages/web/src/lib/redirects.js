@@ -7,9 +7,22 @@
  *
  * Plain JS (not TS) so next.config.js can require() it without a build step.
  *
- * @type {Array<{ source: string; destination: string; permanent: boolean }>}
+ * @type {Array<{
+ *   source: string;
+ *   destination: string;
+ *   permanent: boolean;
+ *   has?: Array<{ type: "host"; value: string }>;
+ * }>}
  */
 const REDIRECTS = [
+  // Campaign domain consolidation: one public campaign site, paths preserved.
+  { source: "/:path*", has: [{ type: "host", value: "1percenttreaty.org" }], destination: "https://warondisease.org/:path*", permanent: true },
+  { source: "/:path*", has: [{ type: "host", value: "www.1percenttreaty.org" }], destination: "https://warondisease.org/:path*", permanent: true },
+  { source: "/:path*", has: [{ type: "host", value: "trialabundancesurvey.org" }], destination: "https://warondisease.org/:path*", permanent: true },
+  { source: "/:path*", has: [{ type: "host", value: "www.trialabundancesurvey.org" }], destination: "https://warondisease.org/:path*", permanent: true },
+  { source: "/:path*", has: [{ type: "host", value: "acceleratedmedicine.org" }], destination: "https://warondisease.org/:path*", permanent: true },
+  { source: "/:path*", has: [{ type: "host", value: "www.acceleratedmedicine.org" }], destination: "https://warondisease.org/:path*", permanent: true },
+
   // Optimized Governance — old top-level paths → new /agencies/* paths
   { source: "/wishocracy", destination: "/agencies/dcongress/wishocracy", permanent: true },
   { source: "/alignment", destination: "/agencies/dfec/alignment", permanent: true },

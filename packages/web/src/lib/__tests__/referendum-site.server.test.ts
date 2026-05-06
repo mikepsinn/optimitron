@@ -83,7 +83,7 @@ describe("referendum-site.server", () => {
     mocks.organizationPositionCount.mockResolvedValue(3);
 
     const data = await getReferendumSiteHomeData(
-      getSiteConfig("onePercentTreaty"),
+      getSiteConfig("warOnDisease"),
     );
 
     expect(data?.individualCount).toBe(12);
@@ -101,7 +101,7 @@ describe("referendum-site.server", () => {
     });
     mocks.organizationPositionFindMany.mockResolvedValue([]);
 
-    await getReferendumSiteSupportersData(getSiteConfig("onePercentTreaty"));
+    await getReferendumSiteSupportersData(getSiteConfig("warOnDisease"));
 
     expect(mocks.organizationPositionFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -171,7 +171,7 @@ describe("referendum-site.server", () => {
     ]);
 
     const data = await getReferendumSiteHomeData(
-      getSiteConfig("onePercentTreaty"),
+      getSiteConfig("warOnDisease"),
       {
         currentUserId: "user_c",
       },
@@ -245,7 +245,7 @@ describe("referendum-site.server", () => {
     ]);
 
     const data = await getReferendumSiteHomeData(
-      getSiteConfig("onePercentTreaty"),
+      getSiteConfig("warOnDisease"),
     );
     const publicSignatories = (
       data as { publicSignatories?: PublicSignatoriesPage } | null

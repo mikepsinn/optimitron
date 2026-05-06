@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -11,17 +12,28 @@ import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { ManageRepresentedPeopleClient } from "@/components/people/ManageRepresentedPeopleClient";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
-import { getRouteMetadata } from "@/lib/metadata";
+import { getSiteMetadata } from "@/lib/metadata";
 import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
 import { prisma } from "@/lib/prisma";
 import { getSignInPath, plaintiffsManageLink, ROUTES } from "@/lib/routes";
+import { getSiteFromHeaders } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 const MANAGE_PAGE_SIZE = 5;
 
-export const metadata = getRouteMetadata({
-  ...plaintiffsManageLink,
-});
+export async function generateMetadata() {
+  const hdrs = await headers();
+  const site = getSiteFromHeaders(hdrs);
+  return getSiteMetadata(
+    site,
+    {
+      title: `${plaintiffsManageLink.label} | ${site.name}`,
+      description: plaintiffsManageLink.description,
+    },
+    ROUTES.plaintiffsManage,
+    { robots: { index: false, follow: false } },
+  );
+}
 
 function dateInputValue(value: Date | null): string {
   return value ? value.toISOString().slice(0, 10) : "";

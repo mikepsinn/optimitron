@@ -25,30 +25,32 @@ describe("site variant registry", () => {
   it("uses local http origins for .local hosts", () => {
     expect(
       getRequestSiteOrigin({
-        host: "1percenttreaty.local:3001",
+        host: "warondisease.local:3001",
       }),
-    ).toBe("http://1percenttreaty.local:3001");
+    ).toBe("http://warondisease.local:3001");
   });
 
   it("prefers forwarded host and proto when present", () => {
     expect(
       getRequestSiteOrigin({
         host: "localhost:3001",
-        forwardedHost: "1percenttreaty.org",
+        forwardedHost: "warondisease.org",
         forwardedProto: "https",
       }),
-    ).toBe("https://1percenttreaty.org");
+    ).toBe("https://warondisease.org");
   });
 
   it("maps public domains to their audience-specific site variants", () => {
     expect(getSiteFromHost("warondisease.org").key).toBe("warOnDisease");
-    expect(getSiteFromHost("1percenttreaty.org").key).toBe("onePercentTreaty");
+    expect(getSiteFromHost("1percenttreaty.org").key).toBe("warOnDisease");
     expect(getSiteFromHost("trialabundancesurvey.org").key).toBe(
-      "trialAbundanceSurvey",
+      "warOnDisease",
     );
     expect(getSiteFromHost("dfda.earth").key).toBe("dfda");
     expect(getSiteFromHost("dih.earth").key).toBe("dih");
-    expect(getSiteFromHost("acceleratedmedicine.org").key).toBe("dih");
+    expect(getSiteFromHost("acceleratedmedicine.org").key).toBe(
+      "warOnDisease",
+    );
     expect(getSiteFromHost("optimitron.com").key).toBe("optimitron");
   });
 
@@ -77,10 +79,10 @@ describe("site variant registry", () => {
       getSiteFromHeaders(
         new Headers({
           host: "localhost:3001",
-          cookie: `${SITE_VARIANT_OVERRIDE_COOKIE}=trialAbundanceSurvey`,
+          cookie: `${SITE_VARIANT_OVERRIDE_COOKIE}=warOnDisease`,
         }),
       ).key,
-    ).toBe("trialAbundanceSurvey");
+    ).toBe("warOnDisease");
     expect(
       getSiteFromHeaders(
         new Headers({
@@ -91,12 +93,12 @@ describe("site variant registry", () => {
     ).toBe("warOnDisease");
   });
 
-  it("uses the treaty home for War on Disease and the DIH home for Accelerated Medicine", () => {
+  it("uses the treaty home for War on Disease and legacy campaign domains", () => {
     expect(getSiteFromHost("warondisease.org").pageVariants.home).toBe(
       "onePercentTreatyLanding",
     );
     expect(getSiteFromHost("acceleratedmedicine.org").pageVariants.home).toBe(
-      "initiativeLanding",
+      "onePercentTreatyLanding",
     );
   });
 
@@ -105,27 +107,21 @@ describe("site variant registry", () => {
     // user's current origin. Useful for in-app links where same-origin nav
     // is the right behaviour.
     expect(getTreatySignUrl(getSiteConfig("warOnDisease"))).toBe("/treaty");
-    expect(getTreatySignUrl(getSiteConfig("onePercentTreaty"))).toBe("/treaty");
     // optimitron has restrictToAllowlist=false, so every route is allowed.
     expect(getTreatySignUrl(getSiteConfig("optimitron"))).toBe("/treaty");
-    // Sites without /treaty fall back to the canonical 1percenttreaty.org
+    // Sites without /treaty fall back to the canonical campaign host
     // origin so callers that need an absolute URL up-front (outbound emails,
     // OG previews where middleware doesn't run) get the right destination.
     expect(getTreatySignUrl(getSiteConfig("dfda"))).toBe(
-      "https://1percenttreaty.org/treaty",
+      "https://warondisease.org/treaty",
     );
     expect(getTreatySignUrl(getSiteConfig("dih"))).toBe(
-      "https://1percenttreaty.org/treaty",
-    );
-    expect(getTreatySignUrl(getSiteConfig("trialAbundanceSurvey"))).toBe(
-      "https://1percenttreaty.org/treaty",
+      "https://warondisease.org/treaty",
     );
   });
 
   it("keeps site variant identity, UI, and initiative data in the site config", () => {
     const warSite = getSiteConfig("warOnDisease");
-    const treatySite = getSiteConfig("onePercentTreaty");
-    const surveySite = getSiteConfig("trialAbundanceSurvey");
 
     expect(warSite).toMatchObject({
       name: INTERNATIONAL_CAMPAIGN_NAME,
@@ -148,21 +144,13 @@ describe("site variant registry", () => {
     expect(warSite.ui.nav.desktopBrandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.nav.menuTitle).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.footer.brandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
-
-    expect(treatySite.domains).toEqual(
-      expect.arrayContaining(["1percenttreaty.org", "www.1percenttreaty.org"]),
+    expect(warSite.domains).toEqual(
+      expect.arrayContaining([
+        "1percenttreaty.org",
+        "trialabundancesurvey.org",
+        "acceleratedmedicine.org",
+      ]),
     );
-    expect(treatySite.initiative).toMatchObject({
-      key: "onePercentTreaty",
-      name: "1% Treaty",
-      primaryPath: "/treaty",
-      parentKey: "warOnDisease",
-    });
-    expect(treatySite.ui.nav.brandLabel).toBe("1% Treaty");
-    expect(surveySite.initiative).toMatchObject({
-      key: "trialAbundanceSurvey",
-      primaryPath: "/survey",
-    });
   });
 
   it("keeps the voter invite action on campaign navs", () => {
@@ -172,69 +160,52 @@ describe("site variant registry", () => {
     expect(getSiteConfig("warOnDisease").ui.nav.quickAction?.href).toBe(
       DASHBOARD_INVITE_HREF,
     );
-    expect(getSiteConfig("onePercentTreaty").ui.nav.quickAction?.href).toBe(
-      DASHBOARD_INVITE_HREF,
-    );
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 
-  it("keeps Profile out of the War on Disease menu chrome", () => {
-    const treatySections = getSiteConfig("onePercentTreaty").ui.nav.sections;
-    const treatyAccount = treatySections.find((s) => s.id === "account");
-    expect(treatyAccount?.items.some((i) => i.href === ROUTES.profile)).toBe(
-      true,
-    );
-
+  it("keeps Profile out of the War on Disease menu chrome and links president management", () => {
     const warItems = getSiteConfig("warOnDisease").ui.nav.sections.flatMap(
       (section) => section.items,
     );
     expect(warItems.some((item) => item.href === ROUTES.profile)).toBe(false);
+    expect(warItems.some((item) => item.href === ROUTES.employees)).toBe(true);
   });
 
   it("assigns the manager framing to campaign sites and voter framing to reference sites", () => {
-    expect(getSiteConfig("onePercentTreaty").userFraming).toBe("manager");
     expect(getSiteConfig("warOnDisease").userFraming).toBe("manager");
     expect(getSiteConfig("optimitron").userFraming).toBe("manager");
     expect(getSiteConfig("dfda").userFraming).toBe("voter");
     expect(getSiteConfig("dih").userFraming).toBe("voter");
-    expect(getSiteConfig("trialAbundanceSurvey").userFraming).toBe("voter");
   });
 
   it("keeps treaty signing on-domain when the current site allows it", () => {
     expect(getTreatySignUrl(getSiteConfig("optimitron"))).toBe("/treaty");
     expect(getTreatySignUrl(getSiteConfig("warOnDisease"))).toBe("/treaty");
-    expect(getTreatySignUrl(getSiteConfig("onePercentTreaty"))).toBe("/treaty");
-    expect(getTreatySignUrl(getSiteConfig("trialAbundanceSurvey"))).toBe(
-      "https://1percenttreaty.org/treaty",
+    expect(getTreatySignUrl(getSiteConfig("dfda"))).toBe(
+      "https://warondisease.org/treaty",
     );
   });
 
   it("redirects known routes on the wrong host to their canonical site", () => {
-    const treatySite = getSiteFromHost("1percenttreaty.org");
-    const surveySite = getSiteFromHost("trialabundancesurvey.org");
+    const campaignSite = getSiteFromHost("1percenttreaty.org");
+    const dfdaSite = getSiteFromHost("dfda.earth");
 
     expect(typeof siteRegistry.getSiteRouteRedirect).toBe("function");
-    expect(siteRegistry.getSiteRouteRedirect?.(treatySite, "/scoreboard")).toBe(
-      "https://optimitron.com/scoreboard",
+    expect(
+      siteRegistry.getSiteRouteRedirect?.(campaignSite, "/scoreboard"),
+    ).toBe("https://optimitron.com/scoreboard");
+    expect(siteRegistry.getSiteRouteRedirect?.(dfdaSite, "/treaty")).toBe(
+      "https://warondisease.org/treaty",
     );
     expect(
-      siteRegistry.getSiteRouteRedirect?.(treatySite, "/conditions/asthma"),
-    ).toBe("https://dfda.earth/conditions/asthma");
-    expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/why")).toBe(
-      "https://1percenttreaty.org/why",
-    );
-    expect(siteRegistry.getSiteRouteRedirect?.(surveySite, "/treaty")).toBe(
-      "https://1percenttreaty.org/treaty",
-    );
-    expect(
-      siteRegistry.getSiteRouteRedirect?.(surveySite, "/not-real"),
+      siteRegistry.getSiteRouteRedirect?.(campaignSite, "/not-real"),
     ).toBeNull();
   });
 
   it("treats unknown disallowed routes as ordinary 404s", () => {
-    const surveySite = getSiteFromHost("trialabundancesurvey.org");
+    const dfdaSite = getSiteFromHost("dfda.earth");
 
-    expect(getSiteRouteDisposition(surveySite, "/not-real")).toEqual({
+    expect(getSiteRouteDisposition(dfdaSite, "/not-real")).toEqual({
       type: "notFound",
     });
   });
@@ -245,8 +216,6 @@ describe("site variant registry", () => {
       "dfda",
       "dih",
       "warOnDisease",
-      "onePercentTreaty",
-      "trialAbundanceSurvey",
     ] as const) {
       const site = getSiteConfig(siteKey);
       expect(site.routePolicy.publicPrefixes).not.toContain("_coalition-404");
@@ -256,7 +225,7 @@ describe("site variant registry", () => {
     }
   });
 
-  it("keeps the treaty host closed to unrelated Optimitron routes", () => {
+  it("keeps the campaign host closed to unrelated Optimitron routes", () => {
     const treatySite = getSiteFromHost("1percenttreaty.org");
 
     expect(isSiteRouteAllowed(treatySite, "/")).toBe(true);
@@ -279,16 +248,6 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(warSite, ROUTES.terms)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.reasoning)).toBe(false);
     expect(isSiteRouteAllowed(warSite, ROUTES.search)).toBe(false);
-  });
-
-  it("limits neutral survey hosts to voting and survey routes", () => {
-    const surveySite = getSiteFromHost("trialabundancesurvey.org");
-
-    expect(isSiteRouteAllowed(surveySite, "/")).toBe(true);
-    expect(isSiteRouteAllowed(surveySite, "/survey/test-org")).toBe(true);
-    expect(isSiteRouteAllowed(surveySite, "/vote")).toBe(true);
-    expect(isSiteRouteAllowed(surveySite, "/why")).toBe(false);
-    expect(isSiteRouteAllowed(surveySite, "/governments")).toBe(false);
   });
 
   it("exposes medical pages on DFDA without exposing treaty campaign pages", () => {
@@ -327,20 +286,10 @@ describe("site variant registry", () => {
     ).toEqual([ROUTES.donate, ROUTES.treaty]);
     expect(
       getEnabledStaticPathsForSite(
-        getSiteConfig("onePercentTreaty"),
+        getSiteConfig("warOnDisease"),
         candidates,
       ),
-    ).toEqual([
-      ROUTES.campaign,
-      ROUTES.coalition,
-      ROUTES.donate,
-      ROUTES.endorse,
-      ROUTES.impact,
-      ROUTES.legal,
-      ROUTES.signatories,
-      ROUTES.treaty,
-      ROUTES.why,
-    ]);
+    ).toEqual(expect.arrayContaining(candidates));
   });
 
   it("keeps Optimitron medical links canonical under DFDA", () => {
@@ -365,20 +314,7 @@ describe("site variant registry", () => {
     ).toContain(ROUTES.survey);
   });
 
-  it("keeps Trial Abundance Survey partner copy direct", () => {
-    const surveySite = getSiteConfig("trialAbundanceSurvey");
-
-    expect(surveySite.ui.footer.bottomText).not.toContain(
-      "Approved organization",
-    );
-    expect(surveySite.ui.footer.bottomText).toContain("your organization");
-    expect(surveySite.ui.footer.bottomText).toContain("your audience");
-  });
-
   it("keeps root metadata isolated per domain variant", () => {
-    expect(getSiteConfig("trialAbundanceSurvey").rootMetadata.title).toContain(
-      "Trial Abundance Survey",
-    );
     expect(getSiteConfig("dfda").rootMetadata.title).toContain("DFDA");
     expect(getSiteConfig("dih").rootMetadata.title).toContain("DIH");
     expect(getSiteConfig("warOnDisease").rootMetadata.title).toContain(

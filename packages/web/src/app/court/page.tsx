@@ -25,7 +25,7 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
   const site = getSiteFromHeaders(hdrs);
   const referralCode = typeof params.ref === "string" ? params.ref : null;
   const dashboardUrl =
-    site.key === "onePercentTreaty" ? "/dashboard?welcome=1" : undefined;
+    site.primaryReferendumSlug ? "/dashboard?welcome=1" : undefined;
   const referendumContent = await getReferendumPageContent(COURT_OF_HUMANITY_SLUG);
 
   return (

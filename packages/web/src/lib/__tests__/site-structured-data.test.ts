@@ -7,7 +7,7 @@ const INTERNATIONAL_CAMPAIGN_NAME =
 
 describe("buildSiteStructuredData", () => {
   it("emits organization and website JSON-LD for the site variant", () => {
-    const site = getSiteConfig("onePercentTreaty");
+    const site = getSiteConfig("warOnDisease");
     const payload = buildSiteStructuredData(site);
     const graph = payload["@graph"];
 
@@ -18,15 +18,13 @@ describe("buildSiteStructuredData", () => {
     const website = graph.find((node) => node["@type"] === "WebSite");
 
     expect(organization).toMatchObject({
-      // The 1% Treaty site shares the campaign brand with WoD; the legal
-      // entity (Earth Optimization Services LLC) lives on legalEntityName.
       name: INTERNATIONAL_CAMPAIGN_NAME,
       url: "https://optimitron.com",
       email: "hello@warondisease.org",
     });
     expect(website).toMatchObject({
-      name: "1% Treaty",
-      url: "https://1percenttreaty.org",
+      name: INTERNATIONAL_CAMPAIGN_NAME,
+      url: "https://warondisease.org",
     });
     expect(website?.publisher).toEqual({
       "@id": "https://optimitron.com#organization",

@@ -13,7 +13,12 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { REDIRECTS } = require("../src/lib/redirects") as {
-  REDIRECTS: Array<{ source: string; destination: string; permanent: boolean }>;
+  REDIRECTS: Array<{
+    destination: string;
+    has?: Array<{ type: "host"; value: string }>;
+    permanent: boolean;
+    source: string;
+  }>;
 };
 
 const __filename = fileURLToPath(import.meta.url);

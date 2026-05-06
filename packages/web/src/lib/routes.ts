@@ -965,7 +965,14 @@ export const toolSections: NavSection[] = [
   {
     id: "player",
     label: "Player",
-    items: [tasksLink, transmitLink, dashboardLink, censusLink, checkInLink],
+    items: [
+      tasksLink,
+      presidentManagementLink,
+      transmitLink,
+      dashboardLink,
+      censusLink,
+      checkInLink,
+    ],
   },
 ];
 
@@ -975,6 +982,7 @@ export const footerAppLinks: NavItem[] = [
   alignmentLink,
   dashboardLink,
   tasksLink,
+  presidentManagementLink,
   profileLink,
   censusLink,
   settingsLink,

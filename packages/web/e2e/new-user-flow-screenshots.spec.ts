@@ -44,13 +44,6 @@ const VARIANTS: readonly VariantConfig[] = [
     treatyFlow: true,
   },
   {
-    slug: "one-percent-treaty",
-    label: "1percenttreaty.org",
-    host: "1percenttreaty.org",
-    siteKey: "onePercentTreaty",
-    treatyFlow: true,
-  },
-  {
     slug: "dfda",
     label: "dfda.earth",
     host: "dfda.earth",

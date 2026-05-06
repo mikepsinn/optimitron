@@ -37,7 +37,6 @@ import {
   presidentManagementLink,
   treatyVoteLink,
   trialEmbedLink,
-  trialSurveyLink,
   whyLink,
   type NavItem,
   type NavSection,
@@ -80,9 +79,7 @@ export type SiteKey =
   | "optimitron"
   | "dfda"
   | "dih"
-  | "warOnDisease"
-  | "onePercentTreaty"
-  | "trialAbundanceSurvey";
+  | "warOnDisease";
 
 export const SITE_VARIANT_OVERRIDE_HEADER = "x-optimitron-site-key";
 
@@ -265,11 +262,9 @@ const NO_FOOTER_COMPLIANCE_NOTICE = null;
 
 /// Public-facing campaign brand for sites operated by the campaign.
 /// Distinct from `EARTH_OPTIMIZATION_SERVICES_LLC` (the legal entity, used
-/// in compliance surfaces). Used by WoD, 1pt, and the Trial Abundance
-/// Survey — all three point `organizationName` at this so SEO + footer
-/// attribution carry the campaign brand instead of the LLC name. The
-/// survey's neutral UX (no campaign branding in the embedded form) is a
-/// separate concern from operator-metadata disclosure to crawlers.
+/// in compliance surfaces). Legacy campaign domains redirect into the War on
+/// Disease site; SEO + footer attribution should carry the campaign brand
+/// instead of the LLC name.
 const INTERNATIONAL_CAMPAIGN_ORG_NAME =
   "International Campaign to End War and Disease";
 const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
@@ -341,60 +336,12 @@ const WAR_ON_DISEASE_ASSETS = copiedSiteAssets({
   themeColor: "#ff6b9d",
 });
 
-const ONE_PERCENT_TREATY_ASSETS = copiedSiteAssets({
-  appleTouchIcon: "treaty-icon-square.png",
-  directory: "treaty",
-  favicon: "1-percent-treaty-favicon.png",
-  icon32: "1-percent-treaty-favicon.png",
-  icon192: "treaty-icon-square.png",
-  icon512: "treaty-icon-square.png",
-  maskableIcon: "treaty-icon-square.png",
-  themeColor: "#ff6b9d",
-});
-
-const TRIAL_ABUNDANCE_SURVEY_ASSETS = copiedSiteAssets({
-  directory: "survey",
-  icon16: "favicon-16x16.png",
-  themeColor: "#000000",
-});
-
 // Hidden until the public signatory list has enough real organizations to be
 // useful. Keep the route and route object alive so restoring the link is one
 // flag flip, not archaeology.
 const SHOW_ORGANIZATIONAL_SIGNATORIES_LINK = false;
 const organizationalSignatoryLinks: NavItem[] =
   SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [coalitionLink] : [];
-
-const onePercentNavSections: NavSection[] = [
-  {
-    id: "primary",
-    label: "Primary",
-    primary: true,
-    items: [
-      treatyVoteLink,
-      treatyDashboardLink,
-      plaintiffsLink,
-      presidentManagementLink,
-    ],
-  },
-  {
-    id: "learn",
-    label: "Learn",
-    items: [
-      readTreatyLink,
-      whyLink,
-      plaintiffsLink,
-      ...organizationalSignatoryLinks,
-      endorseLink,
-      legalLink,
-    ],
-  },
-  {
-    id: "account",
-    label: "Account",
-    items: [profileLink],
-  },
-];
 
 const warOnDiseaseShareLink: NavItem = {
   ...treatyDashboardLink,
@@ -413,18 +360,10 @@ const warOnDiseaseNavSections: NavSection[] = [
       warOnDiseaseShareLink,
       donateLink,
       plaintiffsLink,
+      presidentManagementLink,
       readTreatyLink,
       whyLink,
     ],
-  },
-];
-
-const trialSurveyNavSections: NavSection[] = [
-  {
-    id: "primary",
-    label: "Primary",
-    primary: true,
-    items: [trialSurveyLink, trialEmbedLink],
   },
 ];
 
@@ -558,6 +497,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
           readTreatyLink,
           warOnDiseaseShareLink,
           plaintiffsLink,
+          presidentManagementLink,
           ...organizationalSignatoryLinks,
           endorseLink,
           donateLink,
@@ -568,72 +508,6 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
         items: [whyLink, courtLink],
       },
     ],
-  },
-};
-
-const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
-  nav: {
-    brandHref: ROUTES.home,
-    brandLabel: "1% Treaty",
-    desktopBrandLabel: "1% Treaty",
-    menuEnabled: true,
-    menuTitle: "1% Treaty",
-    quickAction: inviteVoterLink,
-    searchEnabled: false,
-    sections: onePercentNavSections,
-    signInCallbackUrl: ROUTES.dashboard,
-  },
-  footer: {
-    brandHref: ROUTES.home,
-    brandLabel: "1% Treaty",
-    brandDescription:
-      "Move one percent of the murder budget to the medicine budget. Your species will find this controversial.",
-    bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
-    columns: [
-      {
-        title: "Campaign",
-        items: [
-          treatyVoteLink,
-          readTreatyLink,
-          treatyDashboardLink,
-          plaintiffsLink,
-          presidentManagementLink,
-          donateLink,
-        ],
-      },
-      {
-        title: "Proof",
-        items: [
-          whyLink,
-          courtLink,
-          plaintiffsLink,
-          ...organizationalSignatoryLinks,
-          endorseLink,
-          legalLink,
-        ],
-      },
-    ],
-  },
-};
-
-const TRIAL_ABUNDANCE_SURVEY_UI: SiteVariantUiConfig = {
-  nav: {
-    brandHref: ROUTES.home,
-    brandLabel: "Trial Abundance Survey",
-    desktopBrandLabel: "Trial Abundance Survey",
-    menuEnabled: true,
-    menuTitle: "Trial Abundance Survey",
-    searchEnabled: false,
-    sections: trialSurveyNavSections,
-    signInCallbackUrl: ROUTES.dashboard,
-  },
-  footer: {
-    brandHref: ROUTES.home,
-    brandLabel: "Trial Abundance Survey",
-    brandDescription: "A two-question survey about clinical trial funding.",
-    bottomText:
-      "Use your organization link so responses from your audience get credited correctly.",
-    columns: [{ title: "Survey", items: [trialSurveyLink, trialEmbedLink] }],
   },
 };
 
@@ -741,7 +615,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     restrictToAllowlist: false,
     publicPrefixes: [],
     operationalPrefixes: [],
-    minimalChromePrefixes: [ROUTES.vote, ROUTES.questions, ROUTES.donate],
+    minimalChromePrefixes: [ROUTES.vote, ROUTES.questions],
   },
   assets: OPTIMITRON_ASSETS,
   sitemap: {
@@ -870,9 +744,6 @@ const DIH_CONFIG: SiteConfig = {
     "dih.earth",
     "www.dih.earth",
     "dih.local",
-    "acceleratedmedicine.org",
-    "www.acceleratedmedicine.org",
-    "acceleratedmedicine.local",
   ],
   name: "DIH",
   shortName: "DIH",
@@ -989,6 +860,12 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     WAR_ON_DISEASE_CANONICAL_DOMAIN,
     `www.${WAR_ON_DISEASE_CANONICAL_DOMAIN}`,
     "warondisease.local",
+    "1percenttreaty.org",
+    "www.1percenttreaty.org",
+    "trialabundancesurvey.org",
+    "www.trialabundancesurvey.org",
+    "acceleratedmedicine.org",
+    "www.acceleratedmedicine.org",
   ],
   name: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   shortName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
@@ -1057,7 +934,30 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     ],
   },
   routePolicy: {
-    canonicalPrefixes: [],
+    canonicalPrefixes: [
+      ROUTES.treaty,
+      ROUTES.court,
+      ROUTES.tasks,
+      ROUTES.people,
+      ROUTES.plaintiffs,
+      ROUTES.employees,
+      ROUTES.governments,
+      ROUTES.declaration,
+      ROUTES.endorse,
+      ROUTES.signatories,
+      ROUTES.campaign,
+      ROUTES.coalition,
+      ROUTES.why,
+      ROUTES.legal,
+      ROUTES.privacy,
+      ROUTES.terms,
+      ROUTES.impact,
+      ROUTES.organizations,
+      ROUTES.survey,
+      ROUTES.donate,
+      ROUTES.vote,
+      ROUTES.questions,
+    ],
     restrictToAllowlist: true,
     publicPrefixes: [
       ROUTES.treaty,
@@ -1065,6 +965,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.tasks,
       ROUTES.people,
       ROUTES.plaintiffs,
+      ROUTES.employees,
       ROUTES.governments,
       ROUTES.declaration,
       ROUTES.endorse,
@@ -1082,6 +983,8 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       "/treatments",
       ROUTES.conditions,
       ROUTES.treatments,
+      ROUTES.dih,
+      ROUTES.wishocracy,
       ROUTES.donate,
     ],
     operationalPrefixes: [
@@ -1096,7 +999,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     minimalChromePrefixes: [
       ROUTES.vote,
       ROUTES.questions,
-      ROUTES.donate,
       ROUTES.survey,
     ],
   },
@@ -1111,261 +1013,14 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   },
 };
 
-const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
-  key: "onePercentTreaty",
-  chromeVariant: "referendum",
-  userFraming: "manager",
-  canonicalOrigin: "https://1percenttreaty.org",
-  domains: [
-    "1percenttreaty.org",
-    "www.1percenttreaty.org",
-    "1percenttreaty.local",
-  ],
-  name: "1% Treaty",
-  shortName: "1% Treaty",
-  alternateSiteNames: ["1 Percent Treaty"],
-  description:
-    "Move one percent of the murder budget to the medicine budget. Your species will find this controversial.",
-  ogImage: "/site-assets/treaty/treaty-og-1200x630.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_ONE_PERCENT_TREATY_ID,
-  contentKey: "onePercentTreaty",
-  // Same campaign brand as warondisease.org. Legal entity stays in
-  // legalEntityName for compliance surfaces.
-  organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-  organizationUrl: ORGANIZATION_URL,
-  organizationLogoPath: ORGANIZATION_LOGO_PATH,
-  publicContactEmail: PUBLIC_CONTACT_EMAIL,
-  publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
-  emailBranding: {
-    fromName: "1% Treaty",
-    primaryColor: "#ff6b9d",
-    secondaryColor: "#00d4ff",
-    orgName: "1% Treaty",
-  },
-  footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
-  sameAs: ORGANIZATION_SAME_AS,
-  initiative: {
-    key: "onePercentTreaty",
-    name: "1% Treaty",
-    shortName: "1% Treaty",
-    description:
-      "One percent off the weapons budget. The other 99% is still available for weapons. Your species will find this radical.",
-    eyebrow: "Referendum",
-    primaryPath: ROUTES.treaty,
-    parentKey: "warOnDisease",
-    rootTaskKey: null,
-  },
-  homeActions: [
-    { href: ROUTES.vote, label: "Vote Now", variant: "primary" },
-    { href: ROUTES.treaty, label: "Read the Treaty", variant: "outline" },
-  ],
-  primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
-  primaryTaskKey: null,
-  rootMetadata: {
-    title: "1% Treaty",
-    description:
-      "Move one percent of the murder budget to the medicine budget. Your species will find this controversial.",
-    openGraphTitle: "1% Treaty",
-    openGraphDescription:
-      "Your species spends 604 times more on weapons than on testing which medicines work. The treaty starts denting the ratio. Baby steps.",
-    openGraphImage: {
-      url: "/site-assets/treaty/treaty-og-1200x630.png",
-      width: 1200,
-      height: 630,
-      alt: "1% Treaty social image",
-    },
-    twitterTitle: "1% Treaty",
-    twitterDescription: `Nuclear winter takes about ${nuclearWinterThreshold} warheads. You have ${warheadCount} — ${apocalypseCount} apocalypses. Sacrifice ${apocalypseSlice} of them to eradicate disease in ${dfdaYears} years instead of ${statusQuoYears}.`,
-    twitterImage: "/site-assets/treaty/treaty-og-1200x630.png",
-    keywords: [
-      "1% Treaty",
-      "1 Percent Treaty",
-      "Earth Optimization Game",
-      "budget optimization",
-      "policy analysis",
-      "public outcomes",
-    ],
-  },
-  routePolicy: {
-    canonicalPrefixes: [
-      ROUTES.treaty,
-      ROUTES.court,
-      ROUTES.people,
-      ROUTES.plaintiffs,
-      ROUTES.employees,
-      ROUTES.governments,
-      ROUTES.declaration,
-      ROUTES.endorse,
-      ROUTES.signatories,
-      ROUTES.campaign,
-      ROUTES.coalition,
-      ROUTES.why,
-      ROUTES.legal,
-      ROUTES.impact,
-      ROUTES.vote,
-      ROUTES.questions,
-    ],
-    restrictToAllowlist: true,
-    publicPrefixes: [
-      ROUTES.treaty,
-      ROUTES.court,
-      ROUTES.tasks,
-      ROUTES.people,
-      ROUTES.plaintiffs,
-      ROUTES.employees,
-      ROUTES.governments,
-      ROUTES.declaration,
-      ROUTES.endorse,
-      ROUTES.signatories,
-      ROUTES.campaign,
-      ROUTES.coalition,
-      ROUTES.why,
-      ROUTES.legal,
-      ROUTES.impact,
-      ROUTES.organizations,
-      ROUTES.donate,
-    ],
-    operationalPrefixes: [
-      "/r",
-      ROUTES.vote,
-      ROUTES.questions,
-      "/auth",
-      ROUTES.dashboard,
-      ROUTES.profile,
-      ROUTES.settings,
-    ],
-    minimalChromePrefixes: [ROUTES.vote, ROUTES.donate],
-  },
-  assets: ONE_PERCENT_TREATY_ASSETS,
-  sitemap: {
-    includePublicRoutes: true,
-  },
-  ui: ONE_PERCENT_TREATY_UI,
-  pageVariants: {
-    home: "onePercentTreatyLanding",
-    dashboard: "treatyTaskDashboard",
-  },
-};
-
-const TRIAL_ABUNDANCE_SURVEY_CONFIG: SiteConfig = {
-  key: "trialAbundanceSurvey",
-  chromeVariant: "platform",
-  // Partner-embed neutral; no recruit copy renders here. The frame is unused
-  // in practice but typed so the SiteConfig shape stays exhaustive.
-  userFraming: "voter",
-  canonicalOrigin: "https://trialabundancesurvey.org",
-  domains: [
-    "trialabundancesurvey.org",
-    "www.trialabundancesurvey.org",
-    "trialabundancesurvey.local",
-  ],
-  name: "Trial Abundance Survey",
-  shortName: "Trial Abundance Survey",
-  alternateSiteNames: ["Trial Abundance Survey"],
-  description:
-    "A two-question survey organizations can use to ask their communities about clinical trial funding.",
-  ogImage: "/site-assets/survey/survey-og-1200x630.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_TRIAL_ABUNDANCE_SURVEY_ID,
-  contentKey: null,
-  // The trial-abundance survey is operated by the same campaign — neutral
-  // SURVEY UX (intentional, so partners can embed it without political
-  // branding) is distinct from operator-metadata disclosure. Crawlers,
-  // journalists, and due-diligence-doing partners get truthful attribution.
-  organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-  organizationUrl: ORGANIZATION_URL,
-  organizationLogoPath: ORGANIZATION_LOGO_PATH,
-  publicContactEmail: PUBLIC_CONTACT_EMAIL,
-  publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
-  emailBranding: {
-    fromName: "Trial Abundance Survey",
-    primaryColor: "#000000",
-    secondaryColor: "#ffffff",
-    orgName: "Trial Abundance Survey",
-  },
-  footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
-  sameAs: ORGANIZATION_SAME_AS,
-  initiative: {
-    key: "trialAbundanceSurvey",
-    name: "Trial Abundance Survey",
-    shortName: "Trial Abundance Survey",
-    description:
-      "A two-question survey about whether governments should fund more pragmatic clinical trials.",
-    eyebrow: "Partner Survey",
-    primaryPath: ROUTES.survey,
-    parentKey: "onePercentTreaty",
-    rootTaskKey: null,
-  },
-  homeActions: [
-    { href: ROUTES.survey, label: "Take Survey", variant: "primary" },
-    { href: ROUTES.organizations, label: "Embed Survey", variant: "outline" },
-  ],
-  primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
-  primaryTaskKey: null,
-  rootMetadata: {
-    title: "Trial Abundance Survey",
-    description:
-      "A two-question survey organizations can embed to ask their communities about clinical trial funding.",
-    openGraphTitle: "Trial Abundance Survey",
-    openGraphDescription:
-      "Ask your community whether governments should fund more pragmatic clinical trials.",
-    openGraphImage: {
-      url: "/site-assets/survey/survey-og-1200x630.png",
-      width: 1200,
-      height: 630,
-      alt: "Trial Abundance Survey",
-    },
-    twitterTitle: "Trial Abundance Survey",
-    twitterDescription: "A two-question survey about clinical trial funding.",
-    twitterImage: "/site-assets/survey/survey-og-1200x630.png",
-    keywords: [
-      "Trial Abundance Survey",
-      "clinical trial survey",
-      "nonprofit survey",
-      "embeddable survey",
-    ],
-  },
-  routePolicy: {
-    canonicalPrefixes: [ROUTES.survey],
-    restrictToAllowlist: true,
-    publicPrefixes: [
-      ROUTES.survey,
-      ROUTES.vote,
-      ROUTES.questions,
-      ROUTES.organizations,
-    ],
-    operationalPrefixes: [
-      "/auth",
-      ROUTES.dashboard,
-      ROUTES.profile,
-      ROUTES.settings,
-    ],
-    minimalChromePrefixes: [ROUTES.survey, ROUTES.vote, ROUTES.questions],
-  },
-  assets: TRIAL_ABUNDANCE_SURVEY_ASSETS,
-  sitemap: {
-    includePublicRoutes: true,
-  },
-  ui: TRIAL_ABUNDANCE_SURVEY_UI,
-  pageVariants: {
-    home: "initiativeLanding",
-    dashboard: "treatyTaskDashboard",
-  },
-};
-
 const SITE_CONFIGS: Record<SiteKey, SiteConfig> = {
   optimitron: OPTIMITRON_CONFIG,
   dfda: DFDA_CONFIG,
   dih: DIH_CONFIG,
   warOnDisease: WAR_ON_DISEASE_CONFIG,
-  onePercentTreaty: ONE_PERCENT_TREATY_CONFIG,
-  trialAbundanceSurvey: TRIAL_ABUNDANCE_SURVEY_CONFIG,
 };
 
 const SITE_CONFIG_ORDER: readonly SiteKey[] = [
-  "onePercentTreaty",
-  "trialAbundanceSurvey",
   "dfda",
   "dih",
   "warOnDisease",
@@ -1389,12 +1044,12 @@ export function getCanonicalHostForSiteKey(key: SiteKey): string {
 }
 
 const TREATY_SIGN_PATH = ROUTES.treaty;
-const TREATY_SIGN_FALLBACK_URL = "https://1percenttreaty.org/treaty";
+const TREATY_SIGN_FALLBACK_URL = `${WAR_ON_DISEASE_CANONICAL_ORIGIN}${ROUTES.treaty}`;
 
 // Returns the URL where the user should publicly sign the 1% Treaty from the
 // given site. Stays on-domain when the site allows /treaty, falls through to
-// the canonical 1percenttreaty.org otherwise. Send the user across domains as
-// a last resort; most who leave do not come back.
+// the canonical War on Disease host otherwise. Send the user across domains
+// as a last resort; most who leave do not come back.
 export function getTreatySignUrl(site: SiteConfig): string {
   if (!site.routePolicy.restrictToAllowlist) return TREATY_SIGN_PATH;
   const matches = (prefix: string) =>
@@ -1461,8 +1116,11 @@ function getCookieValue(cookieHeader: string | null | undefined, name: string) {
 export function isOnePercentTreatyHost(
   host: string | null | undefined,
 ): boolean {
-  if (!host) return false;
-  return HOST_TO_SITE_KEY[normalizeHost(host)] === "onePercentTreaty";
+  const normalized = normalizeHost(host);
+  return (
+    normalized === "1percenttreaty.org" ||
+    normalized === "www.1percenttreaty.org"
+  );
 }
 
 function matchesPrefix(pathname: string, prefix: string) {

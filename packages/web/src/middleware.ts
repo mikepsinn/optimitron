@@ -16,7 +16,7 @@ import { resolveLocalSiteVariantOverride } from "@/lib/site-dev-override";
 const LOCAL_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 export function isMicrositeAllowed(pathname: string): boolean {
-  return isSiteRouteAllowed(getSiteFromHost("1percenttreaty.org"), pathname);
+  return isSiteRouteAllowed(getSiteFromHost("warondisease.org"), pathname);
 }
 
 function syncLocalSiteVariantCookie(

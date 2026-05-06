@@ -230,7 +230,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
       },
     ],
   },
-  impactUrl: "https://impact.acceleratedmedicine.org",
+  impactUrl: "https://warondisease.org/impact",
   notFound: {
     title: "This page is not here.",
     description:

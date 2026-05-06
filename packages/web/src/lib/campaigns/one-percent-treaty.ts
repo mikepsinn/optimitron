@@ -26,7 +26,7 @@ interface TreatyCopyInput {
  * a reminder subtask append `?ref=<their-referralCode>` so attribution flows
  * back to them when the signer signs.
  */
-export const TREATY_SIGN_URL = "https://1percenttreaty.org/treaty";
+export const TREATY_SIGN_URL = "https://warondisease.org/treaty";
 export const TREATY_SIGN_LABEL = "Sign the treaty";
 
 export function buildTreatySignerContactTemplate() {

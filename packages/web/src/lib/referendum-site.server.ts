@@ -20,6 +20,7 @@ import {
   getTreatyParentTaskHref,
   TREATY_PARENT_TASK_ID,
 } from "@/lib/tasks/task-keys";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { userDisplaySelect, type UserForDisplay } from "@/lib/user-display";
 import {
   buildMemorialReferendumVoteWhere,
@@ -375,34 +376,30 @@ export async function getReferendumSiteHomeData(
       ) ?? null)
     : null;
 
-  const treatyParentTask =
-    site.key === "onePercentTreaty"
-      ? await getTaskDetailData(TREATY_PARENT_TASK_ID, null)
-      : null;
+  const isTreatyCampaignSite =
+    site.primaryReferendumSlug === TREATY_REFERENDUM_SLUG;
+  const treatyParentTask = isTreatyCampaignSite
+    ? await getTaskDetailData(TREATY_PARENT_TASK_ID, null)
+    : null;
 
   return {
     ...context,
     lateEmployeeProgramTask:
-      site.key === "onePercentTreaty"
+      isTreatyCampaignSite
         ? ((treatyParentTask?.task ?? null) as TaskCardTask | null)
         : null,
     lateEmployeeTasks:
-      site.key === "onePercentTreaty"
+      isTreatyCampaignSite
         ? ((treatyParentTask?.task.childTasks ??
             []) as unknown as TaskCardTask[])
         : [],
-    fullTasksHref:
-      site.key === "onePercentTreaty"
-        ? getTreatyParentTaskHref()
-        : ROUTES.tasks,
+    fullTasksHref: isTreatyCampaignSite ? getTreatyParentTaskHref() : ROUTES.tasks,
     individualCount,
     representedHumanCount,
     memorialVoteCount,
     organizationCount,
     treatyMarkdown:
-      site.key === "onePercentTreaty"
-        ? shareableSnippets.onePercentTreatyText.markdown
-        : "",
+      isTreatyCampaignSite ? shareableSnippets.onePercentTreatyText.markdown : "",
     publicSigners: {
       currentUserSigner,
       signers: signerRows,

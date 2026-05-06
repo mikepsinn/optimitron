@@ -177,7 +177,7 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                 appearance="minimal"
                 className="w-[min(calc(100vw-1.5rem),24rem)] overflow-y-auto sm:max-w-sm"
               >
-                <SheetTitle className="mb-4 border-b-2 border-foreground pb-3 text-lg font-black uppercase tracking-tight">
+                <SheetTitle className="mb-4 border-b-2 border-foreground pb-3 pr-10 text-lg font-black uppercase tracking-tight">
                   {config.menuTitle}
                 </SheetTitle>
                 <SheetDescription className="sr-only">

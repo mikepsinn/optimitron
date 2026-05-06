@@ -14,21 +14,21 @@ import { getSiteConfig } from "@/lib/site";
 
 describe("site-specific SEO assets", () => {
   it("builds a per-site manifest instead of reusing the Optimitron public manifest", () => {
-    const site = getSiteConfig("trialAbundanceSurvey");
+    const site = getSiteConfig("warOnDisease");
     const manifest = getSiteManifest(site);
 
-    expect(manifest.name).toBe("Trial Abundance Survey");
-    expect(manifest.short_name).toBe("Trial Abundance Survey");
+    expect(manifest.name).toBe("International Campaign to End War and Disease");
+    expect(manifest.short_name).toBe("IC2EWD");
     expect(manifest.description).toBe(site.rootMetadata.description);
     expect(manifest.theme_color).toBe(site.emailBranding.primaryColor);
     expect(manifest.icons).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          src: "/site-assets/survey/android-chrome-192x192.png",
+          src: "/site-assets/warondisease/warondisease-android-chrome-192x192.png",
           sizes: "192x192",
         }),
         expect.objectContaining({
-          src: "/site-assets/survey/android-chrome-512x512.png",
+          src: "/site-assets/warondisease/warondisease-android-chrome-512x512.png",
           sizes: "512x512",
         }),
       ]),
@@ -55,11 +55,11 @@ describe("site-specific SEO assets", () => {
   });
 
   it("emits robots data on the canonical host without indexing private account routes", () => {
-    const site = getSiteConfig("onePercentTreaty");
+    const site = getSiteConfig("warOnDisease");
     const robots = getSiteRobots(site);
 
-    expect(robots.host).toBe("https://1percenttreaty.org");
-    expect(robots.sitemap).toEqual(["https://1percenttreaty.org/sitemap.xml"]);
+    expect(robots.host).toBe("https://warondisease.org");
+    expect(robots.sitemap).toEqual(["https://warondisease.org/sitemap.xml"]);
     expect(robots.rules).toEqual(
       expect.objectContaining({
         userAgent: "*",
@@ -77,16 +77,16 @@ describe("site-specific SEO assets", () => {
   });
 
   it("redirects legacy root asset paths to the active site's copied assets", () => {
-    const surveySite = getSiteConfig("trialAbundanceSurvey");
+    const surveySite = getSiteConfig("warOnDisease");
 
     expect(getSiteStaticAssetRedirectPath(surveySite, "/favicon.ico")).toBe(
-      "/site-assets/survey/favicon.ico",
+      "/site-assets/warondisease/warondisease-favicon.png",
     );
     expect(getSiteStaticAssetRedirectPath(surveySite, "/manifest.json")).toBe(
-      "/manifest.webmanifest?site=trialAbundanceSurvey",
+      "/manifest.webmanifest?site=warOnDisease",
     );
     expect(getSiteStaticAssetRedirectPath(surveySite, "/og-image.jpg")).toBe(
-      "/site-assets/survey/survey-og-1200x630.png",
+      "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     );
     expect(
       getSiteStaticAssetRedirectPath(
@@ -120,8 +120,6 @@ describe("site-specific SEO assets", () => {
       "dfda",
       "dih",
       "warOnDisease",
-      "onePercentTreaty",
-      "trialAbundanceSurvey",
     ] as const) {
       const site = getSiteConfig(siteKey);
       const paths = [

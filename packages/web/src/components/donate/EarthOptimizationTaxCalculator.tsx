@@ -9,7 +9,6 @@ import {
 } from "@optimitron/data/parameters";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
-import { Select } from "@/components/retroui/Select";
 import { STATES } from "@/lib/tax-optimizer/brackets";
 import {
   compareDonationStrategies,
@@ -171,18 +170,17 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
         </FieldGroup>
 
         <FieldGroup label="State of residence" className="sm:col-span-2">
-          <Select value={stateCode} onValueChange={setStateCode}>
-            <Select.Trigger className="w-full">
-              <Select.Value placeholder="Pick a state" />
-            </Select.Trigger>
-            <Select.Content>
-              {STATES.map((state) => (
-                <Select.Item key={state.code} value={state.code}>
-                  {state.name}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
+          <select
+            value={stateCode}
+            onChange={(event) => setStateCode(event.target.value)}
+            className="h-10 w-full border border-foreground bg-background px-3 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-foreground"
+          >
+            {STATES.map((state) => (
+              <option key={state.code} value={state.code}>
+                {state.name}
+              </option>
+            ))}
+          </select>
         </FieldGroup>
       </div>
 
