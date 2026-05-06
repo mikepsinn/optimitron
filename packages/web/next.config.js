@@ -37,6 +37,20 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   webpack: (config, { isServer }) => {
+    // wagmi/connectors re-exports optional wallet connectors whose peer
+    // packages are intentionally not installed. WalletConnect and injected
+    // wallets are the only connectors configured in this app.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@base-org/account": false,
+      "@coinbase/wallet-sdk": false,
+      "@metamask/connect-evm": false,
+      "@safe-global/safe-apps-provider": false,
+      "@safe-global/safe-apps-sdk": false,
+      porto: false,
+      "porto/internal": false,
+    };
+
     // MetaMask SDK bundles React Native code that references this package.
     config.resolve.fallback = {
       ...config.resolve.fallback,

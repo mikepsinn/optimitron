@@ -15,14 +15,23 @@ import { z } from "zod";
 /*  Schema                                                             */
 /* ------------------------------------------------------------------ */
 
+const blankToUndefined = (value: unknown): unknown =>
+  typeof value === "string" && value.trim() === "" ? undefined : value;
+
 const optionalNonEmptyString = z.preprocess(
-  (value) =>
-    typeof value === "string" && value.trim() === "" ? undefined : value,
+  blankToUndefined,
   z.string().trim().min(1).optional(),
 );
 
+const optionalUrl = z.preprocess(
+  blankToUndefined,
+  z.string().trim().url().optional(),
+);
+
 const serverSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
 
   // ── Auth ──────────────────────────────────────────────────────────
   NEXTAUTH_SECRET: z.string().min(1, "NEXTAUTH_SECRET is required"),
@@ -106,9 +115,9 @@ const serverSchema = z.object({
   // The runtime presign route reads these to issue PUT URLs scoped to the
   // bucket; the bucket's public hostname is served from R2_PUBLIC_URL.
   // For dev-only media uploads (legacy), see also CLOUDFLARE_TOKEN above.
-  R2_ENDPOINT: z.string().url().optional(),
+  R2_ENDPOINT: optionalUrl,
   R2_BUCKET: z.string().optional(),
-  R2_PUBLIC_URL: z.string().url().optional(),
+  R2_PUBLIC_URL: optionalUrl,
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),
 });
@@ -146,7 +155,9 @@ export function getServerEnv(): ServerEnv {
     const formatted = parsed.error.flatten().fieldErrors;
     console.error("Invalid server environment variables:", formatted);
     throw new Error(
-      `Missing or invalid server environment variables:\n${Object.entries(formatted)
+      `Missing or invalid server environment variables:\n${Object.entries(
+        formatted,
+      )
         .map(([k, v]) => `  ${k}: ${(v ?? []).join(", ")}`)
         .join("\n")}`,
     );
@@ -162,15 +173,19 @@ export function getClientEnv(): ClientEnv {
 
   const parsed = clientSchema.safeParse({
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
-    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:
+      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
     NEXT_PUBLIC_WORLD_ID_ENABLED: process.env.NEXT_PUBLIC_WORLD_ID_ENABLED,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   });
   if (!parsed.success) {
     const formatted = parsed.error.flatten().fieldErrors;
     console.error("Invalid client environment variables:", formatted);
     throw new Error(
-      `Missing or invalid client environment variables:\n${Object.entries(formatted)
+      `Missing or invalid client environment variables:\n${Object.entries(
+        formatted,
+      )
         .map(([k, v]) => `  ${k}: ${(v ?? []).join(", ")}`)
         .join("\n")}`,
     );
