@@ -293,7 +293,7 @@ describeIfDatabase("seedDatabase", () => {
         expect.objectContaining({
           slug: "court-of-humanity",
           kind: ReferendumKind.MEMBERSHIP,
-          question: expect.stringContaining("legal right to seek justice"),
+          question: expect.stringContaining("same right to sue"),
           bodyMarkdown: expect.stringContaining("sovereign immunity"),
           contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         }),

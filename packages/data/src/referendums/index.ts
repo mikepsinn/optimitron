@@ -5,4 +5,7 @@
  * `shareableSnippets.*` for trivial migration when the QMD pipeline
  * catches up.
  */
-export { COURT_OF_HUMANITY_TEXT } from "./court-of-humanity";
+export {
+  COURT_OF_HUMANITY_QUESTION,
+  COURT_OF_HUMANITY_TEXT,
+} from "./court-of-humanity";

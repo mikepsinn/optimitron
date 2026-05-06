@@ -21,7 +21,7 @@ interface ReferendumStepperPageProps {
   /**
    * Override the default signature UI. Defaults to `<TreatyVoteFlow />`
    * (slider + YES/NO + auth) for the 1% Treaty. Other referendums (e.g.
-   * Court of Humanity) pass a binary "join" component instead.
+   * Court of Humanity) pass a generic binary vote component instead.
    */
   signatureSlot?: (mode: "stepper" | "reader") => ReactNode;
 }
@@ -40,7 +40,9 @@ export function ReferendumStepperPage({
   const slides = bodyMarkdown ? splitIntoSlides(bodyMarkdown) : config.slides;
   const defaultSignatureSlot = (mode: "stepper" | "reader") =>
     config.slug === TREATY_REFERENDUM_SLUG ? (
-      <TreatyVoteFlow authCallbackUrl={authCallbackUrl ?? config.authCallbackUrl} />
+      <TreatyVoteFlow
+        authCallbackUrl={authCallbackUrl ?? config.authCallbackUrl}
+      />
     ) : (
       <ReferendumSiteInlineSign
         referendumSlug={config.slug}
@@ -48,7 +50,7 @@ export function ReferendumStepperPage({
         authCallbackUrl={authCallbackUrl}
         postSignRedirectUrl={postSignRedirectUrl}
         variant={mode}
-        showReaderShell={mode === "reader"}
+        showReaderShell={false}
       />
     );
 

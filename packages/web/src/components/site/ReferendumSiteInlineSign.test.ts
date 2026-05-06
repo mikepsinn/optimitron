@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 import React from "react";
+import { REFERENDUM_ANSWER } from "@/config/referendums";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 
 const storageMocks = vi.hoisted(() => ({
@@ -10,6 +11,11 @@ const storageMocks = vi.hoisted(() => ({
 
 vi.mock("@/components/referendum/ReferendumSignatureBox", () => ({
   ReferendumSignatureBox: () => null,
+}));
+vi.mock("@/components/referendum/ReferendumStepper", () => ({
+  ReferendumStepper: () => null,
+  splitIntoSlides: (markdown: string) =>
+    markdown.split(/\n\n+/).filter(Boolean),
 }));
 vi.mock("@/components/landing/TreatyReminderComposer", () => ({
   TreatyReminderComposer: () => null,
@@ -29,14 +35,15 @@ describe("ReferendumSiteInlineSign", () => {
 
   it("passes Court membership labels, referral attribution, and share URL behavior", async () => {
     (globalThis as typeof globalThis & { React: typeof React }).React = React;
-    const { ReferendumSiteInlineSign } = await import(
-      "./ReferendumSiteInlineSign"
-    );
+    const { ReferendumSiteInlineSign } =
+      await import("./ReferendumSiteInlineSign");
 
-    const element = (ReferendumSiteInlineSign as unknown as (props: {
-      referendumSlug: string;
-      referralCode?: string | null;
-    }) => ReactElement)({
+    const element = (
+      ReferendumSiteInlineSign as unknown as (props: {
+        referendumSlug: string;
+        referralCode?: string | null;
+      }) => ReactElement
+    )({
       referendumSlug: COURT_OF_HUMANITY_SLUG,
       referralCode: "alice",
     });
@@ -62,25 +69,26 @@ describe("ReferendumSiteInlineSign", () => {
   it("falls back to the stored signup referral when no current URL ref is passed", async () => {
     storageMocks.getSignupReferral.mockReturnValue("stored-ref");
     (globalThis as typeof globalThis & { React: typeof React }).React = React;
-    const { ReferendumSiteInlineSign } = await import(
-      "./ReferendumSiteInlineSign"
-    );
+    const { ReferendumSiteInlineSign } =
+      await import("./ReferendumSiteInlineSign");
 
-    const element = (ReferendumSiteInlineSign as unknown as (props: {
-      referendumSlug: string;
-      referralCode?: string | null;
-    }) => ReactElement)({
+    const element = (
+      ReferendumSiteInlineSign as unknown as (props: {
+        referendumSlug: string;
+        referralCode?: string | null;
+      }) => ReactElement
+    )({
       referendumSlug: COURT_OF_HUMANITY_SLUG,
       referralCode: null,
     });
 
     expect(element.props.referralCode).toBe("stored-ref");
 
-    element.props.storePendingVote("Example Member");
+    element.props.storePendingVote("Example Member", REFERENDUM_ANSWER.NO);
 
     expect(storageMocks.setPendingCourtOfHumanityVote).toHaveBeenCalledWith(
       expect.objectContaining({
-        answer: "YES",
+        answer: REFERENDUM_ANSWER.NO,
         referredBy: "stored-ref",
       }),
     );

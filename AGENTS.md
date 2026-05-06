@@ -24,6 +24,7 @@
 - When implementation is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the human explicitly asked not to commit or push.
 - After every push, watch GitHub Actions, deployment checks, and pull request review comments. Fix valid failures or comments, push again, and watch again.
 - If a review comment is mistaken, stale, or non-actionable, mark it resolved when tooling allows. Do not make unnecessary code changes just to satisfy an invalid comment.
+- Once checks are green and there are no unresolved valid review complaints, merge the pull request when the human has asked you to finish or merge the work.
 
 ## UI Verification
 
@@ -31,10 +32,12 @@
 - For meaningful UI changes, capture before/after screenshots when feasible: before from production, main, or the current unchanged page; after from the branch, preview deployment, or local dev server. Assume screenshots may contain sensitive or production-derived data unless proven otherwise.
 - Inspect the screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and obvious responsive problems.
 - Also generate a local side-by-side HTML review file for before/after screenshots when feasible, especially for visual redesigns or copy/layout changes. Put it under `packages/web/output/playwright/` and organize it by page/viewport with `before` and `after` columns. If a true before image is not practical, make an after-only review page and say so. This is often easier to scan than separate image links.
+- Always write or copy the current review page to `packages/web/output/playwright/review/latest.html` so the human can bookmark one stable local file and refresh it after each UI change. Copy referenced screenshot assets beside `latest.html` or rewrite image paths relative to that stable file, then verify the stable page has no broken image references. Keep branch-specific or timestamped review files only as local working artifacts when useful.
 - Do not commit screenshot image artifacts to the repo unless the human explicitly asks and the screenshots are confirmed sanitized. Keep local artifacts under `packages/web/output/playwright/` while working.
-- Do not upload screenshots into pull request comments by default when they may contain sensitive data. Instead, include the preview URL if safe, exact local screenshot/HTML paths, and your own visual-inspection notes.
-- When reporting screenshots in chat, provide a clickable local file link to the HTML review page and the plain filesystem path so the human can copy/paste it into a browser if the chat renderer does not open it.
-- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, and explicitly ask them to review the screenshots unless they explicitly waived screenshots for that change.
+- Do not upload screenshots, screenshot HTML, or local screenshot/HTML paths into pull request bodies or comments by default. Public PRs should only say that screenshots were captured and inspected locally, plus any non-sensitive visual-inspection notes.
+- When reporting screenshots in chat, provide a clickable local file link to the HTML review page and the plain filesystem path so the human can copy/paste it into a browser if the chat renderer does not open it. This chat is the default place to share local review artifact paths.
+- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, provide the local HTML review file path in chat, and explicitly ask them to review the screenshots unless they explicitly waived screenshots for that change.
+- Do not commit UI changes until the human explicitly approves the screenshot/HTML review, unless they explicitly waive review or explicitly instruct you to commit immediately despite the screenshot-review rule.
 - If screenshots cannot be captured, state exactly why and do not commit the UI change until the human accepts that limitation.
 - Reuse an existing dev server for screenshot checks when available; do not disrupt a running server unless a clean run is genuinely needed.
 
@@ -43,6 +46,10 @@
 - Public treaty/campaign UI should migrate toward the simple black-and-white style used by the `warondisease.org` variant: white paper, black ink, thin black rules, square corners, restrained typography, and no decorative color.
 - Use semantic/treaty tokens such as `bg-background`, `text-foreground`, `border-foreground`, `text-muted-foreground`, and `var(--treaty-*)`.
 - Do not add neobrutalist styling to public UI: avoid `brutal-*` color fills, hard shadows, gradients, rounded cards, beige/cream backgrounds, thick novelty borders, and decorative emoji/icons unless the user explicitly asks for them.
+- Keep UI minimal. Do not add wrapper boxes, divider lines, shadows, icons, labels, helper text, or other extra elements unless they clarify the action, improve scanning, or solve a real usability problem.
+- Make actionable things look actionable. If a link starts or completes a user task, especially an external workflow, render it as a clear button or command control, not only as inline text. Use plain inline links for references, citations, navigation, and secondary reading.
+- If the user is expected to copy an exact value into another site, email, form, wallet, bank portal, legal document, or message, provide a compact copy affordance near that value. Do not make users manually select long IDs, addresses, URLs, legal names, account numbers, or template language.
+- Keep affordances proportional: primary task actions get buttons; exact reusable values get copy buttons; explanatory text stays text.
 
 ## Documentation
 

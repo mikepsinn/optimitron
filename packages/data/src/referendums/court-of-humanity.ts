@@ -17,10 +17,11 @@
  * Treaty body (`onePercentTreatyText`) intentionally stays in the
  * auto-generated file because the QMD pipeline already produces it.
  */
-export const COURT_OF_HUMANITY_TEXT = {
-  markdown: `*Should every person have the legal right to seek justice against any government that kills, injures, or harms them or their family?*
+export const COURT_OF_HUMANITY_QUESTION =
+  "If a government kills, injures, or harms you or your family, should you have the same right to sue it that you would have if a corporation did the same?";
 
-This is the question your species never put to itself. The reason is structural: the people who would have called the vote are the people who would have lost it.
+export const COURT_OF_HUMANITY_TEXT = {
+  markdown: `This is the question your species never put to itself. The reason is structural: the people who would have called the vote are the people who would have lost it.
 
 WHEREAS, if a hospital kills your mother through negligence, you can sue. If a drug company hides safety data, you can sue. If a private security contractor shoots a child by accident, you can sue. If a government does the exact same thing, you cannot;
 

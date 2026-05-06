@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { Button } from "@/components/retroui/Button";
+import { REFERENDUM_ANSWER, type ReferendumAnswer } from "@/config/referendums";
 import { SecretChainPitch } from "@/components/referendum/SecretChainPitch";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { REFERRAL_SHARE_LABEL } from "@/lib/messaging";
@@ -26,7 +26,10 @@ export interface ReferendumSignatureBoxProps {
   authCallbackUrl?: string;
   postSignRedirectUrl?: string;
   referralCode?: string | null;
-  storePendingVote: (name: string) => void;
+  storePendingVote: (
+    name: string | undefined,
+    answer: ReferendumAnswer,
+  ) => void;
   clearPendingVote: () => void;
   shareText: string;
   emailSubject: string;
@@ -68,7 +71,6 @@ export function ReferendumSignatureBox({
   signedShare,
   variant = "stepper",
   showReaderShell = true,
-  submitLabel = "Sign",
   submittingLabel = "...",
   authTitle = "Finish Signing",
   emailButtonLabel = "Email Me a Link to Finish Signing",
@@ -79,7 +81,12 @@ export function ReferendumSignatureBox({
   const router = useRouter();
   const { data: session, status } = useSession();
   const [signing, setSigning] = useState(false);
+  const [submittingAnswer, setSubmittingAnswer] =
+    useState<ReferendumAnswer | null>(null);
   const [signed, setSigned] = useState(false);
+  const [signedAnswer, setSignedAnswer] = useState<ReferendumAnswer | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [makePublic, setMakePublic] = useState(true);
 
@@ -99,14 +106,17 @@ export function ReferendumSignatureBox({
     ? "text-[var(--treaty-ink-muted)]"
     : "text-primary-foreground";
   const buttonClass = isReader
-    ? "border-2 border-foreground bg-foreground px-8 py-3 text-lg font-black uppercase text-background shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-background hover:text-foreground disabled:opacity-30"
-    : "border-2 border-primary-foreground bg-transparent px-8 py-3 text-lg font-black uppercase text-primary-foreground disabled:opacity-30";
+    ? "border-2 border-foreground bg-background px-8 py-3 text-lg font-black uppercase text-foreground shadow-none transition-colors hover:bg-muted disabled:opacity-30"
+    : "border-2 border-foreground bg-background px-8 py-3 text-lg font-black uppercase text-foreground transition-colors hover:bg-muted disabled:opacity-30";
   const shareLabelClass = isReader
     ? "text-[var(--treaty-ink)] normal-case tracking-normal text-sm leading-6 font-bold"
     : "text-primary-foreground normal-case tracking-normal text-sm leading-6 font-bold";
   const errorClass = isReader ? "text-[var(--treaty-ink)]" : "text-brutal-red";
   const shouldRedirectAfterSign =
-    status === "authenticated" && signed && Boolean(postSignRedirectUrl);
+    status === "authenticated" &&
+    signed &&
+    signedAnswer === REFERENDUM_ANSWER.YES &&
+    Boolean(postSignRedirectUrl);
 
   useEffect(() => {
     if (!shouldRedirectAfterSign || !postSignRedirectUrl) return;
@@ -118,11 +128,10 @@ export function ReferendumSignatureBox({
     return () => window.clearTimeout(timeoutId);
   }, [postSignRedirectUrl, router, shouldRedirectAfterSign]);
 
-  async function handleSubmit() {
+  async function handleSubmit(answer: ReferendumAnswer) {
     setSigning(true);
+    setSubmittingAnswer(answer);
     setError(null);
-
-    storePendingVote("");
 
     if (status === "authenticated") {
       try {
@@ -132,7 +141,7 @@ export function ReferendumSignatureBox({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              answer: "YES",
+              answer,
               ref: referralCode ?? undefined,
               ...(showPrivacyToggle ? { makePublic } : {}),
               originUrl:
@@ -148,6 +157,7 @@ export function ReferendumSignatureBox({
           } | null;
           throw new Error(body?.error ?? "Failed to record signature.");
         }
+        storePendingVote(undefined, answer);
         clearPendingVote();
       } catch (signError) {
         setError(
@@ -156,15 +166,40 @@ export function ReferendumSignatureBox({
             : "Failed to sign. Try again.",
         );
         setSigning(false);
+        setSubmittingAnswer(null);
         return;
       }
+    } else {
+      storePendingVote(undefined, answer);
     }
 
     setSigning(false);
+    setSubmittingAnswer(null);
+    setSignedAnswer(answer);
     setSigned(true);
   }
 
   if (signed && status === "authenticated") {
+    if (signedAnswer === REFERENDUM_ANSWER.NO) {
+      return (
+        <div
+          className={cn(
+            "mx-auto flex max-w-md flex-col items-center gap-4",
+            shellClass,
+          )}
+        >
+          <p
+            className={cn(
+              "text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]",
+              titleClass,
+            )}
+          >
+            Vote recorded: No
+          </p>
+        </div>
+      );
+    }
+
     if (postSignRedirectUrl) {
       return (
         <div
@@ -254,11 +289,25 @@ export function ReferendumSignatureBox({
           referralCode={referralCode}
           compact
           variant={isReader ? "document" : "default"}
-          title={authTitle}
-          subtitle={authPromptText}
+          title={
+            signedAnswer === REFERENDUM_ANSWER.NO ? "Finish Voting" : authTitle
+          }
+          subtitle={
+            signedAnswer === REFERENDUM_ANSWER.NO
+              ? "Verify your identity to record your referendum vote."
+              : authPromptText
+          }
           googleButtonLabel="Finish with Google"
-          emailButtonLabel={emailButtonLabel}
-          emailPendingButtonLabel={emailPendingButtonLabel}
+          emailButtonLabel={
+            signedAnswer === REFERENDUM_ANSWER.NO
+              ? "Email Me a Link to Finish Voting"
+              : emailButtonLabel
+          }
+          emailPendingButtonLabel={
+            signedAnswer === REFERENDUM_ANSWER.NO
+              ? "Sending Finish-Voting Link..."
+              : emailPendingButtonLabel
+          }
         />
       </div>
     );
@@ -273,21 +322,34 @@ export function ReferendumSignatureBox({
 
   return (
     <div className={cn("mx-auto w-full max-w-md", shellClass)}>
-      <p
-        className={cn(
-          "mb-6 text-center text-xl font-bold [font-family:var(--v0-font-libre-baskerville)]",
-          titleClass,
-        )}
-      >
-        {resolvedTitle}
-      </p>
-      <Button
-        onClick={() => void handleSubmit()}
-        disabled={signing}
-        className={cn(buttonClass, "w-full")}
-      >
-        {signing ? submittingLabel : submitLabel}
-      </Button>
+      {!isReader && resolvedTitle ? (
+        <p
+          className={cn(
+            "mb-6 text-center text-xl font-bold [font-family:var(--v0-font-libre-baskerville)]",
+            titleClass,
+          )}
+        >
+          {resolvedTitle}
+        </p>
+      ) : null}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => void handleSubmit(REFERENDUM_ANSWER.NO)}
+          disabled={signing}
+          className={buttonClass}
+        >
+          {submittingAnswer === REFERENDUM_ANSWER.NO ? "..." : "No"}
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleSubmit(REFERENDUM_ANSWER.YES)}
+          disabled={signing}
+          className={buttonClass}
+        >
+          {submittingAnswer === REFERENDUM_ANSWER.YES ? submittingLabel : "Yes"}
+        </button>
+      </div>
       {showPrivacyToggle && status === "authenticated" ? (
         <div className="mt-4">
           <label
@@ -300,7 +362,7 @@ export function ReferendumSignatureBox({
               type="checkbox"
               checked={makePublic}
               onChange={(e) => setMakePublic(e.target.checked)}
-              className="mt-1 h-4 w-4 cursor-pointer accent-black"
+              className="mt-1 h-4 w-4 cursor-pointer accent-foreground"
             />
             <span>
               Display my name publicly on the signer list and leaderboards{" "}
