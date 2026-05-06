@@ -83,11 +83,13 @@ export async function generateMetadata() {
 
 function PersonDirectoryCard({ person }: { person: PeopleDirectoryPerson }) {
   const topTask = person.openTaskPreview[0] ?? null;
-  const tags = [
-    person.isPublicFigure ? "Public official" : null,
-    person.countryCode,
+  const verifiedTask = person.verifiedTaskPreview[0] ?? null;
+  const tags: string[] = [];
+  if (person.isPublicFigure) tags.push("Public official");
+  if (person.countryCode) tags.push(person.countryCode);
+  tags.push(
     `${person.publicTaskCount} task${person.publicTaskCount === 1 ? "" : "s"}`,
-  ].filter(Boolean);
+  );
 
   return (
     <article className="border border-border bg-card p-4 text-card-foreground">
@@ -140,16 +142,16 @@ function PersonDirectoryCard({ person }: { person: PeopleDirectoryPerson }) {
             {formatCategory(topTask.category)}
           </p>
         </section>
-      ) : person.verifiedTaskPreview[0] ? (
+      ) : verifiedTask ? (
         <section className="mt-4 border-t border-border pt-4">
           <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
             Verified work
           </p>
           <Link
             className="mt-2 block font-black leading-6 underline-offset-4 hover:underline"
-            href={`${ROUTES.tasks}/${person.verifiedTaskPreview[0].id}`}
+            href={`${ROUTES.tasks}/${verifiedTask.id}`}
           >
-            {person.verifiedTaskPreview[0].title}
+            {verifiedTask.title}
           </Link>
         </section>
       ) : null}

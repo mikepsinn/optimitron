@@ -26,6 +26,15 @@ const VALID_SORT_KEYS: RepresentedPeopleSortKey[] = [
   "alphabetical",
   "died-closest-to-cure",
 ];
+const PLAINTIFFS_PAGE_SIZE = 24;
+const FILTER_PARAM_KEYS = new Set([
+  "cause",
+  "conditionId",
+  "conflictId",
+  "country",
+  "efficacyLag",
+  "sort",
+]);
 
 function parseSort(
   value: string | string[] | undefined,
@@ -112,7 +121,7 @@ export default async function PlaintiffsPage({
           efficacyLagOnly,
         },
         page,
-        pageSize: 24,
+        pageSize: PLAINTIFFS_PAGE_SIZE,
         sort,
       })
     : null;
@@ -129,11 +138,16 @@ export default async function PlaintiffsPage({
     sort !== "recent" ||
     currentPage > 1,
   );
-  const showBrowseTools = hasActiveBrowseState || filteredCount >= 24;
+  const showBrowseTools =
+    hasActiveBrowseState || filteredCount >= PLAINTIFFS_PAGE_SIZE;
   const filterParams = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     const flat = Array.isArray(value) ? value[0] : value;
-    if (typeof flat === "string" && flat.length > 0 && key !== "page") {
+    if (
+      FILTER_PARAM_KEYS.has(key) &&
+      typeof flat === "string" &&
+      flat.length > 0
+    ) {
       filterParams.set(key, flat);
     }
   }
@@ -141,7 +155,7 @@ export default async function PlaintiffsPage({
     const next = new URLSearchParams(filterParams);
     if (target > 1) next.set("page", String(target));
     const qs = next.toString();
-    return qs ? `?${qs}` : "?";
+    return qs ? `?${qs}` : ROUTES.plaintiffs;
   };
 
   return (

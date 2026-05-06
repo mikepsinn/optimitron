@@ -50,6 +50,11 @@ export interface PeopleDirectoryData {
   totalPages: number;
 }
 
+const ACTIVE_TASK_PREVIEW_LIMIT = 3;
+const DEFAULT_PAGE_SIZE = 36;
+const MAX_PAGE_SIZE = 60;
+const VERIFIED_TASK_PREVIEW_LIMIT = 2;
+
 const ROLE_FILTERS = {
   all: null,
   communications: [TaskCategory.COMMUNICATION, TaskCategory.CREATIVE],
@@ -66,6 +71,47 @@ const publicAssignedTaskWhere = {
   deletedAt: null,
   isPublic: true,
 } satisfies Prisma.TaskWhereInput;
+
+async function getTaskPreviewsByPerson(
+  personIds: string[],
+  status: TaskStatus,
+  limit: number,
+) {
+  if (personIds.length === 0) {
+    return new Map<
+      string,
+      Array<{
+        category: TaskCategory;
+        id: string;
+        skillTags: string[];
+        title: string;
+      }>
+    >();
+  }
+
+  const entries = await Promise.all(
+    personIds.map(async (personId) => {
+      const tasks = await prisma.task.findMany({
+        orderBy: { createdAt: "desc" },
+        select: {
+          category: true,
+          id: true,
+          skillTags: true,
+          title: true,
+        },
+        take: limit,
+        where: {
+          ...publicAssignedTaskWhere,
+          assigneePersonId: personId,
+          status,
+        },
+      });
+      return [personId, tasks] as const;
+    }),
+  );
+
+  return new Map(entries);
+}
 
 function buildRoleWhere(
   role: PeopleDirectoryRole,
@@ -135,7 +181,7 @@ export function parsePeopleDirectoryRole(
 }
 
 export async function getPeopleDirectoryData({
-  limit = 36,
+  limit = DEFAULT_PAGE_SIZE,
   page = 1,
   query = "",
   role = "all",
@@ -163,7 +209,7 @@ export async function getPeopleDirectoryData({
   if (roleWhere) clauses.push(roleWhere);
 
   const where = { AND: clauses } satisfies Prisma.PersonWhereInput;
-  const take = Math.min(Math.max(limit, 1), 60);
+  const take = Math.min(Math.max(limit, 1), MAX_PAGE_SIZE);
   const totalCount = await prisma.person.count({ where });
   const totalPages = Math.max(1, Math.ceil(totalCount / take));
   const currentPage = Math.min(Math.max(page, 1), totalPages);
@@ -180,18 +226,6 @@ export async function getPeopleDirectoryData({
           assignedTasks: { where: publicAssignedTaskWhere },
         },
       },
-      assignedTasks: {
-        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-        select: {
-          category: true,
-          id: true,
-          skillTags: true,
-          status: true,
-          title: true,
-        },
-        take: 8,
-        where: publicAssignedTaskWhere,
-      },
       countryCode: true,
       currentAffiliation: true,
       displayName: true,
@@ -206,6 +240,19 @@ export async function getPeopleDirectoryData({
     take,
     where,
   });
+  const personIds = people.map((person) => person.id);
+  const [activeTasksByPerson, verifiedTasksByPerson] = await Promise.all([
+    getTaskPreviewsByPerson(
+      personIds,
+      TaskStatus.ACTIVE,
+      ACTIVE_TASK_PREVIEW_LIMIT,
+    ),
+    getTaskPreviewsByPerson(
+      personIds,
+      TaskStatus.VERIFIED,
+      VERIFIED_TASK_PREVIEW_LIMIT,
+    ),
+  ]);
 
   return {
     page: currentPage,
@@ -219,25 +266,23 @@ export async function getPeopleDirectoryData({
       id: person.id,
       image: person.image,
       isPublicFigure: person.isPublicFigure,
-      openTaskPreview: person.assignedTasks
-        .filter((task) => task.status === TaskStatus.ACTIVE)
-        .slice(0, 3)
-        .map((task) => ({
+      openTaskPreview: (activeTasksByPerson.get(person.id) ?? []).map(
+        (task) => ({
           category: task.category,
           id: task.id,
           skillTags: task.skillTags,
           title: task.title,
-        })),
+        }),
+      ),
       publicTaskCount: person._count.assignedTasks,
       sourceUrl: person.sourceUrl,
-      verifiedTaskPreview: person.assignedTasks
-        .filter((task) => task.status === TaskStatus.VERIFIED)
-        .slice(0, 2)
-        .map((task) => ({
+      verifiedTaskPreview: (verifiedTasksByPerson.get(person.id) ?? []).map(
+        (task) => ({
           category: task.category,
           id: task.id,
           title: task.title,
-        })),
+        }),
+      ),
     })),
     query: query.trim(),
     role,
