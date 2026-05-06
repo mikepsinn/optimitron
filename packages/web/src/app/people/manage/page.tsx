@@ -151,7 +151,7 @@ export default async function ManagePeoplePage({
           causeCategory: true,
           deathCountryCode: true,
           evidence: {
-            where: { deletedAt: null, isPublic: true },
+            where: { deletedAt: null, submittedByUserId: userId },
             orderBy: { createdAt: "desc" },
             select: {
               description: true,

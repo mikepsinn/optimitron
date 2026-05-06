@@ -245,7 +245,16 @@ export async function PATCH(
   try {
     const { userId } = await requireAuth();
     const { id } = await params;
-    const body = (await request.json()) as Record<string, unknown>;
+    let body: Record<string, unknown>;
+    try {
+      const rawBody = (await request.json()) as unknown;
+      body =
+        rawBody && typeof rawBody === "object" && !Array.isArray(rawBody)
+          ? (rawBody as Record<string, unknown>)
+          : {};
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
     const parsed = updatePersonSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -290,6 +299,9 @@ export async function PATCH(
               orderBy: { createdAt: "desc" },
               select: {
                 consentCourtEvidence: true,
+                consentCourtEvidenceAt: true,
+                consentPublicDisplay: true,
+                consentPublicDisplayAt: true,
                 id: true,
                 memorialMessage: true,
               },
@@ -630,11 +642,21 @@ export async function PATCH(
           where: { deletedAt: null, memorialId, submittedByUserId: userId },
           select: { id: true },
         });
+      const consentCourtEvidenceAt = finalConsentCourtEvidence
+        ? existingSubmission?.consentCourtEvidence
+          ? existingSubmission.consentCourtEvidenceAt ?? now
+          : now
+        : null;
+      const consentPublicDisplayAt = finalIsPublic
+        ? existingSubmission?.consentPublicDisplay
+          ? existingSubmission.consentPublicDisplayAt ?? now
+          : now
+        : null;
       const submissionData = {
         consentCourtEvidence: finalConsentCourtEvidence,
-        consentCourtEvidenceAt: finalConsentCourtEvidence ? now : null,
+        consentCourtEvidenceAt,
         consentPublicDisplay: finalIsPublic,
-        consentPublicDisplayAt: finalIsPublic ? now : null,
+        consentPublicDisplayAt,
         isPublic: finalIsPublic,
         memorialMessage: finalMemorialMessage || null,
       };
