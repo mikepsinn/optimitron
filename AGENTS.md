@@ -43,6 +43,7 @@
 - Public treaty/campaign UI should migrate toward the simple black-and-white style used by the `warondisease.org` variant: white paper, black ink, thin black rules, square corners, restrained typography, and no decorative color.
 - Use semantic/treaty tokens such as `bg-background`, `text-foreground`, `border-foreground`, `text-muted-foreground`, and `var(--treaty-*)`.
 - Do not add neobrutalist styling to public UI: avoid `brutal-*` color fills, hard shadows, gradients, rounded cards, beige/cream backgrounds, thick novelty borders, and decorative emoji/icons unless the user explicitly asks for them.
+- Keep UI minimal. Do not add wrapper boxes, divider lines, shadows, icons, labels, helper text, or other extra elements unless they clarify the action, improve scanning, or solve a real usability problem.
 
 ## Documentation
 

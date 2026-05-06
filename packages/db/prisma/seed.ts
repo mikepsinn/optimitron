@@ -54,7 +54,10 @@ import {
   getUSWishocraticCatalogRecords,
   listGovernmentLeaders,
 } from "@optimitron/data";
-import { COURT_OF_HUMANITY_TEXT } from "@optimitron/data/referendums";
+import {
+  COURT_OF_HUMANITY_QUESTION,
+  COURT_OF_HUMANITY_TEXT,
+} from "@optimitron/data/referendums";
 import {
   getAllConditions,
   getAllTreatments,
@@ -1519,8 +1522,7 @@ async function seedReferendums() {
   const courtReferendumData = buildReferendumData({
     title: "The Court of Humanity",
     slug: COURT_OF_HUMANITY_REFERENDUM_SLUG,
-    question:
-      "Should every person have the legal right to seek justice against any government that kills, injures, or harms them or their family?",
+    question: COURT_OF_HUMANITY_QUESTION,
     kind: ReferendumKind.MEMBERSHIP,
     description:
       "Join the decentralized court where 8 billion humans are the jury and sovereign immunity is abolished.",

@@ -6,10 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 import { ChevronDown, Play, Pause, Image, ImageOff } from "lucide-react";
-import {
-  WishoniaCharacter,
-  preloadTier0,
-} from "@optimitron/wishonia-widget";
+import { WishoniaCharacter, preloadTier0 } from "@optimitron/wishonia-widget";
 
 const SPRITE_PATH = "/sprites/wishonia/";
 const SPRITE_FORMAT = "png" as const;
@@ -390,7 +387,11 @@ export function ReferendumStepper({
 
       preloadSlideAudio(slideIndex + 1);
 
-      const result = await getSlideAudio(text, audioBasePath, audioManifestPath);
+      const result = await getSlideAudio(
+        text,
+        audioBasePath,
+        audioManifestPath,
+      );
       if (requestId !== playRequestId.current) return;
 
       if (!result) {
@@ -530,6 +531,8 @@ export function ReferendumStepper({
   }, [mode, stopAudio]);
 
   useEffect(() => {
+    if (mode !== "stepper") return;
+
     const { body, documentElement } = document;
     const previousBodyOverflow = body.style.overflow;
     const previousHtmlOverflow = documentElement.style.overflow;
@@ -541,7 +544,7 @@ export function ReferendumStepper({
       body.style.overflow = previousBodyOverflow;
       documentElement.style.overflow = previousHtmlOverflow;
     };
-  }, []);
+  }, [mode]);
 
   const isStepperMode = mode === "stepper";
   const bgImageIndex = bgImages.length > 0 ? currentIndex % bgImages.length : 0;
@@ -666,13 +669,12 @@ export function ReferendumStepper({
       ) : (
         <div className="relative min-h-full px-6 pb-40 pt-24 sm:px-8">
           <div className="mx-auto w-full max-w-4xl">
-            <div className="mx-auto mb-10 h-px w-24 bg-black/40" />
             <div className="mx-auto w-full max-w-2xl space-y-10">
               <div className="space-y-8">
                 <p className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
                   {introText}
                 </p>
-                <div className="mx-auto h-px w-24 bg-black/40" />
+                <div className="mx-auto max-w-md">{signatureContent}</div>
               </div>
               {slides.map((slide, i) => (
                 <ReactMarkdown
@@ -683,9 +685,6 @@ export function ReferendumStepper({
                   {slide}
                 </ReactMarkdown>
               ))}
-              <div className="border-t border-black/30 pt-12">
-                {signatureContent}
-              </div>
             </div>
           </div>
         </div>
@@ -693,48 +692,48 @@ export function ReferendumStepper({
 
       {/* Narration playback temporarily disabled — re-enable by flipping this to true. */}
       {false && (
-      <button
-        onClick={togglePlayback}
-        className={narratorClass}
-        aria-label={isPlaying ? "Pause narration" : "Play narration"}
-      >
-        {isStepperMode ? (
-          <>
-            {currentIndex === 0 && !isPlaying && (
-              <span className="pointer-events-none absolute bottom-full right-6 mb-1 whitespace-nowrap text-xs font-bold text-white/60 [font-family:var(--v0-font-libre-baskerville)] sm:text-sm">
-                Tap to hear me ↓
-              </span>
-            )}
-            <div className="sm:hidden">
-              <WishoniaCharacter
-                size={110}
-                spritePath={SPRITE_PATH}
-                spriteFormat={SPRITE_FORMAT}
-                analyserNode={analyserNode}
-              />
-            </div>
-            <div className="hidden sm:block">
-              <WishoniaCharacter
-                size={140}
-                spritePath={SPRITE_PATH}
-                spriteFormat={SPRITE_FORMAT}
-                analyserNode={analyserNode}
-              />
-            </div>
-            <div className="absolute bottom-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white/30 bg-black/50">
-              {isPlaying ? (
-                <Pause className="h-3 w-3 text-white" />
-              ) : (
-                <Play className="ml-0.5 h-3 w-3 text-white" />
+        <button
+          onClick={togglePlayback}
+          className={narratorClass}
+          aria-label={isPlaying ? "Pause narration" : "Play narration"}
+        >
+          {isStepperMode ? (
+            <>
+              {currentIndex === 0 && !isPlaying && (
+                <span className="pointer-events-none absolute bottom-full right-6 mb-1 whitespace-nowrap text-xs font-bold text-white/60 [font-family:var(--v0-font-libre-baskerville)] sm:text-sm">
+                  Tap to hear me ↓
+                </span>
               )}
-            </div>
-          </>
-        ) : isPlaying ? (
-          <Pause className="h-5 w-5" />
-        ) : (
-          <Play className="ml-0.5 h-5 w-5" />
-        )}
-      </button>
+              <div className="sm:hidden">
+                <WishoniaCharacter
+                  size={110}
+                  spritePath={SPRITE_PATH}
+                  spriteFormat={SPRITE_FORMAT}
+                  analyserNode={analyserNode}
+                />
+              </div>
+              <div className="hidden sm:block">
+                <WishoniaCharacter
+                  size={140}
+                  spritePath={SPRITE_PATH}
+                  spriteFormat={SPRITE_FORMAT}
+                  analyserNode={analyserNode}
+                />
+              </div>
+              <div className="absolute bottom-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white/30 bg-black/50">
+                {isPlaying ? (
+                  <Pause className="h-3 w-3 text-white" />
+                ) : (
+                  <Play className="ml-0.5 h-3 w-3 text-white" />
+                )}
+              </div>
+            </>
+          ) : isPlaying ? (
+            <Pause className="h-5 w-5" />
+          ) : (
+            <Play className="ml-0.5 h-5 w-5" />
+          )}
+        </button>
       )}
 
       {hasBgImages && (

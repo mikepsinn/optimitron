@@ -42,15 +42,12 @@ export function ReferendumSiteInlineSign({
   const signedBody =
     config.slug === TREATY_REFERENDUM_SLUG ? (
       <>
-        For each person you get to sign with your link, you will be personally
-        {" "}to blame for saving{" "}
-        <ParameterValue param={VOTER_LIVES_SAVED} figures={2} />
-        {" "}lives and preventing{" "}
-        <ParameterValue
-          param={VOTER_SUFFERING_HOURS_PREVENTED}
-          figures={2}
-        />
-        {" "}hours of suffering.
+        For each person you get to sign with your link, you will be personally{" "}
+        to blame for saving{" "}
+        <ParameterValue param={VOTER_LIVES_SAVED} figures={2} /> lives and
+        preventing{" "}
+        <ParameterValue param={VOTER_SUFFERING_HOURS_PREVENTED} figures={2} />{" "}
+        hours of suffering.
       </>
     ) : (
       config.signedBody
@@ -70,11 +67,13 @@ export function ReferendumSiteInlineSign({
       referendumSlug={config.slug}
       title={title ?? config.title}
       authPromptText={config.authPromptText}
-      authCallbackUrl={authCallbackUrl ?? postSignRedirectUrl ?? config.authCallbackUrl}
+      authCallbackUrl={
+        authCallbackUrl ?? postSignRedirectUrl ?? config.authCallbackUrl
+      }
       postSignRedirectUrl={postSignRedirectUrl}
       referralCode={effectiveReferralCode}
-      storePendingVote={(name) =>
-        config.storePendingVote(name, effectiveReferralCode)
+      storePendingVote={(name, answer) =>
+        config.storePendingVote(name, effectiveReferralCode, answer)
       }
       clearPendingVote={() => config.clearPendingVote()}
       shareText={config.shareText}

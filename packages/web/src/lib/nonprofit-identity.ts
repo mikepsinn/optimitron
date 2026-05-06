@@ -40,19 +40,28 @@ export interface NonprofitIdentity {
     contactPhone: string;
   };
   /**
-   * The Giving Block widget id. Custodial crypto donations — auto-converts to
-   * USD, auto-generates IRS Form 8283 receipts, supports 50+ coins. Empty
-   * string hides the crypto card. Register at https://thegivingblock.com/
-   * after the determination letter is issued.
+   * Endaoment public org URL — gates the stock and crypto cards on the donate
+   * page. Endaoment is a 501(c)(3) that operates a multi-asset donation
+   * platform: cash, appreciated stock, crypto (50+ coins), and DAF assets all
+   * land at the same URL, are auto-converted to USD, and they handle the IRS
+   * Form 8283 receipt for the donor. Empty string hides both stock and crypto
+   * cards.
+   *
+   * The org URL is shown to donors as a CTA link, NOT embedded as an iframe
+   * — Endaoment has no widget product. Format: `https://app.endaoment.org/orgs/<EIN>`.
    *
    * Self-custody (MetaMask, multi-sig) intentionally NOT supported here:
    * single-key wallets are a governance failure for a nonprofit.
    */
-  givingBlockWidgetId: string;
+  endaomentOrgUrl: string;
   /**
-   * DAF Direct widget org id (configured at https://www.dafdirect.org/ after
-   * registering the org). Empty hides the one-click DAF widget — we still
-   * show the manual DAF instructions card with EIN + legal name.
+   * DAF Direct widget settings string (configured at https://www.dafdirect.org/
+   * after registering the org). Format: `EIN_sizecode_uuid`, e.g.
+   * `412555651_2111_80243cc6-…`. The script reads this verbatim into
+   * `window._dafdirect_settings`. To re-customize widget options (size, fields)
+   * regenerate via the DAF Direct portal and replace the whole string. Empty
+   * hides the one-click DAF widget — we still show the manual DAF instructions
+   * card with EIN + legal name.
    */
   dafDirectOrgId: string;
 }
@@ -81,10 +90,17 @@ export const NONPROFIT: NonprofitIdentity = {
     accountName: "",
     contactPhone: "",
   },
-  // TODO: register at https://thegivingblock.com/ and paste the widget id.
-  givingBlockWidgetId: "",
-  // TODO: register at https://www.dafdirect.org/ and paste the org id.
-  dafDirectOrgId: "",
+  // Public Endaoment page (auto-imported from IRS data; claim flow submitted
+  // 2026-05-03, awaiting approval). Donors can give cash/stock/crypto/DAF here
+  // immediately — funds accrue in Endaoment escrow until the claim is approved
+  // and disbursements to Mercury checking 5090 are unlocked. TGB rejected IAM
+  // for being under their $250K/yr revenue floor; Endaoment has no minimum.
+  endaomentOrgUrl: "https://app.endaoment.org/orgs/41-2555651",
+  // Registered at https://www.dafdirect.org/ on 2026-05-03.
+  // Settings string format: `EIN_sizecode_uuid` — the JS reads it into
+  // window._dafdirect_settings verbatim. Regenerate from the portal to change
+  // widget size/options.
+  dafDirectOrgId: "412555651_2111_80243cc6-06aa-462e-9f2e-c4b98a98967e",
 };
 
 /** "Accelerated Medicine Foundation Inc, dba Institute for Accelerated Medicine" — for tax/legal copy. */
@@ -97,9 +113,11 @@ export const NONPROFIT_LEGAL_NAME_WITH_EIN = `${NONPROFIT.legalName} (EIN ${NONP
 export function formatNonprofitAddress(): string {
   const a = NONPROFIT.mailingAddress;
   if (!a.line1) return "";
-  const parts = [a.line1, a.line2, `${a.city}, ${a.state} ${a.postalCode}`].filter(
-    Boolean,
-  );
+  const parts = [
+    a.line1,
+    a.line2,
+    `${a.city}, ${a.state} ${a.postalCode}`,
+  ].filter(Boolean);
   return parts.join(", ");
 }
 

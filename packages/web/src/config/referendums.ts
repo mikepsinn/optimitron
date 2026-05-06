@@ -7,7 +7,10 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
-import { COURT_OF_HUMANITY_TEXT } from "@optimitron/data/referendums";
+import {
+  COURT_OF_HUMANITY_QUESTION,
+  COURT_OF_HUMANITY_TEXT,
+} from "@optimitron/data/referendums";
 import { splitIntoSlides } from "@/components/referendum/ReferendumStepper";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { DECLARATION_SLUG } from "@/lib/declaration";
@@ -23,6 +26,7 @@ type ReferendumShareUser = {
 };
 
 export type ReferendumFlowKind = "declaration" | "treaty" | "membership";
+export type ReferendumAnswer = "YES" | "NO";
 
 export interface ReferendumActionConfig {
   submitLabel: string;
@@ -53,7 +57,11 @@ export interface ReferendumConfig {
   signedBody: string;
   action: ReferendumActionConfig;
   showPrivacyToggle?: boolean;
-  storePendingVote: (name: string, referralCode: string | null) => void;
+  storePendingVote: (
+    name: string,
+    referralCode: string | null,
+    answer: ReferendumAnswer,
+  ) => void;
   clearPendingVote: () => void;
   syncPending: (session?: Session | null) => Promise<void>;
 }
@@ -190,13 +198,15 @@ const declarationConfig: ReferendumConfig = {
   signedBody:
     "Share your link. Every signature is one more reason your government will pretend it always supported this.",
   action: signAction,
-  storePendingVote: (name) => {
-    storage.setDeclarationSigned({
-      signedAt: new Date().toISOString(),
-      name,
-    });
+  storePendingVote: (name, _referralCode, answer) => {
+    if (answer === "YES") {
+      storage.setDeclarationSigned({
+        signedAt: new Date().toISOString(),
+        name,
+      });
+    }
     storage.setPendingDeclarationVote({
-      answer: "YES",
+      answer,
       timestamp: new Date().toISOString(),
     });
   },
@@ -227,12 +237,11 @@ const treatyConfig: ReferendumConfig = {
     "I just signed the 1% Treaty to redirect 1% of military spending to curing disease. Sign it too:",
   emailSubject: "I signed the 1% Treaty",
   signedTitle: "Thank you for ending war and disease!",
-  signedBody:
-    `For each person you get to sign with your link, you will be personally to blame for saving ${fmtRaw(VOTER_LIVES_SAVED.value, 2)} lives and preventing ${fmtRaw(VOTER_SUFFERING_HOURS_PREVENTED.value, 2)} hours of suffering.`,
+  signedBody: `For each person you get to sign with your link, you will be personally to blame for saving ${fmtRaw(VOTER_LIVES_SAVED.value, 2)} lives and preventing ${fmtRaw(VOTER_SUFFERING_HOURS_PREVENTED.value, 2)} hours of suffering.`,
   action: signAction,
-  storePendingVote: (_name, referralCode) =>
+  storePendingVote: (_name, referralCode, answer) =>
     storage.setPendingTreatyVote({
-      answer: "YES",
+      answer,
       referredBy: referralCode,
       inviteToken: null,
       timestamp: new Date().toISOString(),
@@ -281,8 +290,7 @@ const treatyConfig: ReferendumConfig = {
 const courtOfHumanityConfig: ReferendumConfig = {
   slug: COURT_OF_HUMANITY_SLUG,
   kind: "membership",
-  introText:
-    "Please join the Court of Humanity by quickly skimming and signing below.",
+  introText: COURT_OF_HUMANITY_QUESTION,
   slides: splitIntoSlides(COURT_OF_HUMANITY_TEXT.markdown),
   title: "Joined this day, {date}, in the year of our ongoing confusion.",
   authPromptText:
@@ -296,9 +304,9 @@ const courtOfHumanityConfig: ReferendumConfig = {
     "For each human you bring into the Court with your link, the jury grows by one and sovereign immunity weakens by an amount your governments' lawyers will quietly notice.",
   action: joinAction,
   showPrivacyToggle: true,
-  storePendingVote: (_name, referralCode) =>
+  storePendingVote: (_name, referralCode, answer) =>
     storage.setPendingCourtOfHumanityVote({
-      answer: "YES",
+      answer,
       referredBy: referralCode,
       timestamp: new Date().toISOString(),
     }),
