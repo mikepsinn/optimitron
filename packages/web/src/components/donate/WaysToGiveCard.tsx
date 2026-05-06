@@ -54,12 +54,12 @@ const METHODS: GivingMethod[] = [
               receipt for DAF grants — your DAF sponsor will provide grant
               confirmation.
             </p>
-            {NONPROFIT.endaomentOrgUrl ? (
-              <ExternalActionButton href={NONPROFIT.endaomentOrgUrl}>
-                Give through Endaoment
-              </ExternalActionButton>
-            ) : null}
           </>
+        ) : null}
+        {NONPROFIT.endaomentOrgUrl ? (
+          <ExternalActionButton href={NONPROFIT.endaomentOrgUrl}>
+            Give through Endaoment
+          </ExternalActionButton>
         ) : null}
       </>
     ),

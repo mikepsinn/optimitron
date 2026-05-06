@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 import React from "react";
+import { REFERENDUM_ANSWER } from "@/config/referendums";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 
 const storageMocks = vi.hoisted(() => ({
@@ -10,6 +11,11 @@ const storageMocks = vi.hoisted(() => ({
 
 vi.mock("@/components/referendum/ReferendumSignatureBox", () => ({
   ReferendumSignatureBox: () => null,
+}));
+vi.mock("@/components/referendum/ReferendumStepper", () => ({
+  ReferendumStepper: () => null,
+  splitIntoSlides: (markdown: string) =>
+    markdown.split(/\n\n+/).filter(Boolean),
 }));
 vi.mock("@/components/landing/TreatyReminderComposer", () => ({
   TreatyReminderComposer: () => null,
@@ -78,11 +84,11 @@ describe("ReferendumSiteInlineSign", () => {
 
     expect(element.props.referralCode).toBe("stored-ref");
 
-    element.props.storePendingVote("Example Member", "NO");
+    element.props.storePendingVote("Example Member", REFERENDUM_ANSWER.NO);
 
     expect(storageMocks.setPendingCourtOfHumanityVote).toHaveBeenCalledWith(
       expect.objectContaining({
-        answer: "NO",
+        answer: REFERENDUM_ANSWER.NO,
         referredBy: "stored-ref",
       }),
     );

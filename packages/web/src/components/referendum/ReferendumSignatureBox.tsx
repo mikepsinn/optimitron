@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
-import type { ReferendumAnswer } from "@/config/referendums";
+import { REFERENDUM_ANSWER, type ReferendumAnswer } from "@/config/referendums";
 import { SecretChainPitch } from "@/components/referendum/SecretChainPitch";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { REFERRAL_SHARE_LABEL } from "@/lib/messaging";
@@ -26,7 +26,10 @@ export interface ReferendumSignatureBoxProps {
   authCallbackUrl?: string;
   postSignRedirectUrl?: string;
   referralCode?: string | null;
-  storePendingVote: (name: string, answer: ReferendumAnswer) => void;
+  storePendingVote: (
+    name: string | undefined,
+    answer: ReferendumAnswer,
+  ) => void;
   clearPendingVote: () => void;
   shareText: string;
   emailSubject: string;
@@ -112,7 +115,7 @@ export function ReferendumSignatureBox({
   const shouldRedirectAfterSign =
     status === "authenticated" &&
     signed &&
-    signedAnswer === "YES" &&
+    signedAnswer === REFERENDUM_ANSWER.YES &&
     Boolean(postSignRedirectUrl);
 
   useEffect(() => {
@@ -129,8 +132,6 @@ export function ReferendumSignatureBox({
     setSigning(true);
     setSubmittingAnswer(answer);
     setError(null);
-
-    storePendingVote("", answer);
 
     if (status === "authenticated") {
       try {
@@ -156,6 +157,7 @@ export function ReferendumSignatureBox({
           } | null;
           throw new Error(body?.error ?? "Failed to record signature.");
         }
+        storePendingVote(undefined, answer);
         clearPendingVote();
       } catch (signError) {
         setError(
@@ -167,6 +169,8 @@ export function ReferendumSignatureBox({
         setSubmittingAnswer(null);
         return;
       }
+    } else {
+      storePendingVote(undefined, answer);
     }
 
     setSigning(false);
@@ -176,7 +180,7 @@ export function ReferendumSignatureBox({
   }
 
   if (signed && status === "authenticated") {
-    if (signedAnswer === "NO") {
+    if (signedAnswer === REFERENDUM_ANSWER.NO) {
       return (
         <div
           className={cn(
@@ -285,20 +289,22 @@ export function ReferendumSignatureBox({
           referralCode={referralCode}
           compact
           variant={isReader ? "document" : "default"}
-          title={signedAnswer === "NO" ? "Finish Voting" : authTitle}
+          title={
+            signedAnswer === REFERENDUM_ANSWER.NO ? "Finish Voting" : authTitle
+          }
           subtitle={
-            signedAnswer === "NO"
+            signedAnswer === REFERENDUM_ANSWER.NO
               ? "Verify your identity to record your referendum vote."
               : authPromptText
           }
           googleButtonLabel="Finish with Google"
           emailButtonLabel={
-            signedAnswer === "NO"
+            signedAnswer === REFERENDUM_ANSWER.NO
               ? "Email Me a Link to Finish Voting"
               : emailButtonLabel
           }
           emailPendingButtonLabel={
-            signedAnswer === "NO"
+            signedAnswer === REFERENDUM_ANSWER.NO
               ? "Sending Finish-Voting Link..."
               : emailPendingButtonLabel
           }
@@ -329,19 +335,19 @@ export function ReferendumSignatureBox({
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={() => void handleSubmit("NO")}
+          onClick={() => void handleSubmit(REFERENDUM_ANSWER.NO)}
           disabled={signing}
           className={buttonClass}
         >
-          {submittingAnswer === "NO" ? "..." : "No"}
+          {submittingAnswer === REFERENDUM_ANSWER.NO ? "..." : "No"}
         </button>
         <button
           type="button"
-          onClick={() => void handleSubmit("YES")}
+          onClick={() => void handleSubmit(REFERENDUM_ANSWER.YES)}
           disabled={signing}
           className={buttonClass}
         >
-          {submittingAnswer === "YES" ? submittingLabel : "Yes"}
+          {submittingAnswer === REFERENDUM_ANSWER.YES ? submittingLabel : "Yes"}
         </button>
       </div>
       {showPrivacyToggle && status === "authenticated" ? (

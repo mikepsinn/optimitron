@@ -26,7 +26,12 @@ type ReferendumShareUser = {
 };
 
 export type ReferendumFlowKind = "declaration" | "treaty" | "membership";
-export type ReferendumAnswer = "YES" | "NO";
+export const REFERENDUM_ANSWER = {
+  YES: "YES",
+  NO: "NO",
+} as const;
+export type ReferendumAnswer =
+  (typeof REFERENDUM_ANSWER)[keyof typeof REFERENDUM_ANSWER];
 
 export interface ReferendumActionConfig {
   submitLabel: string;
@@ -58,7 +63,7 @@ export interface ReferendumConfig {
   action: ReferendumActionConfig;
   showPrivacyToggle?: boolean;
   storePendingVote: (
-    name: string,
+    name: string | undefined,
     referralCode: string | null,
     answer: ReferendumAnswer,
   ) => void;
@@ -199,7 +204,7 @@ const declarationConfig: ReferendumConfig = {
     "Share your link. Every signature is one more reason your government will pretend it always supported this.",
   action: signAction,
   storePendingVote: (name, _referralCode, answer) => {
-    if (answer === "YES") {
+    if (answer === REFERENDUM_ANSWER.YES) {
       storage.setDeclarationSigned({
         signedAt: new Date().toISOString(),
         name,
