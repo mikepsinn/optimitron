@@ -13,9 +13,8 @@ interface VoteCounterSplitProps {
    */
   representedVotes?: number;
   /**
-   * If true, wrap the memorial line in a Link to /people so people can scroll
-   * through the Invisible Graveyard. Default false to keep the component
-   * passive when memorial linkage isn't desired.
+   * If true, wrap the memorial line in a Link to the plaintiffs page. Default
+   * false to keep the component passive when memorial linkage isn't desired.
    */
   linkMemorialToPeople?: boolean;
   showMemorialIcon?: boolean;
@@ -62,7 +61,9 @@ export function VoteCounterSplit({
         <dt className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
           Living votes
         </dt>
-        <dd className="text-2xl font-black tabular-nums">{formatCount(liveVotes)}</dd>
+        <dd className="text-2xl font-black tabular-nums">
+          {formatCount(liveVotes)}
+        </dd>
       </div>
       {representedVotes !== undefined ? (
         <div className="flex items-baseline justify-between gap-3 border-b border-border pb-2">
@@ -80,7 +81,10 @@ export function VoteCounterSplit({
         </dt>
         <dd className="text-2xl font-black tabular-nums">
           {linkMemorialToPeople ? (
-            <Link className="underline-offset-4 hover:underline" href={ROUTES.plaintiffs}>
+            <Link
+              className="underline-offset-4 hover:underline"
+              href={ROUTES.plaintiffs}
+            >
               {memorialLine}
             </Link>
           ) : (
@@ -92,7 +96,9 @@ export function VoteCounterSplit({
         <dt className="text-xs font-black uppercase tracking-[0.16em]">
           Total voices
         </dt>
-        <dd className="text-3xl font-black tabular-nums">{formatCount(total)}</dd>
+        <dd className="text-3xl font-black tabular-nums">
+          {formatCount(total)}
+        </dd>
       </div>
     </dl>
   );

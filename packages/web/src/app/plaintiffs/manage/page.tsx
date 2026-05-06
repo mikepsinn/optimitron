@@ -7,6 +7,7 @@ import {
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { PersonConditionStatus, ReferendumVoteSource } from "@optimitron/db";
+import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { ManageRepresentedPeopleClient } from "@/components/people/ManageRepresentedPeopleClient";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
@@ -205,7 +206,8 @@ export default async function ManagePeoplePage({
     const submission = person.memorial?.submissions[0] ?? null;
     return {
       birthDate: dateInputValue(person.birthDate),
-      causeCategory: person.memorial?.causeCategory ?? "UNKNOWN",
+      causeCategory:
+        person.memorial?.causeCategory ?? PersonDeathCauseCategory.UNKNOWN,
       conditionName: primaryCondition?.conditionName ?? "",
       dateOfDeath: dateInputValue(person.deathDate),
       deathCountryCode: person.memorial?.deathCountryCode ?? "",
