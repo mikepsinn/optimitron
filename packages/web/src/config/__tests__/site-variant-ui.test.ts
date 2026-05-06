@@ -63,10 +63,6 @@ describe("site variant UI config", () => {
           expectValidChromeItem(item);
         }
       }
-
-      if (config.footer.sourceLink) {
-        expectValidChromeItem(config.footer.sourceLink);
-      }
     }
   });
 

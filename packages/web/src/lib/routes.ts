@@ -646,10 +646,10 @@ export const treatyVoteLink: NavItem = {
 
 export const peopleLink: NavItem = {
   href: ROUTES.people,
-  label: "Sign for Someone Who Can't",
+  label: "Plaintiffs",
   emoji: "👥",
   description:
-    "Sign the 1% Treaty for someone who can no longer sign it themselves.",
+    "Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in Humanity v. Government.",
   tagline: "Sign for someone who can't",
   cta: "Sign for Them",
 };
@@ -657,11 +657,10 @@ export const peopleLink: NavItem = {
 export const peopleManageLink: NavItem = {
   ...peopleLink,
   href: ROUTES.peopleManage,
-  label: "Manage Plaintiffs",
-  description:
-    "Edit the people you signed for: photos, dates, evidence, and what to say at the trial.",
-  tagline: "Edit the people you signed for",
-  cta: "Manage Plaintiffs",
+  label: "Your Plaintiffs",
+  description: "Edit the plaintiffs you registered for Humanity v. Government.",
+  tagline: "Edit your plaintiffs",
+  cta: "Your Plaintiffs",
 };
 
 export const questionsLink: NavItem = {

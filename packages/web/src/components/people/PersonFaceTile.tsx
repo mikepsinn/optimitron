@@ -9,9 +9,13 @@ interface PersonFaceTileProps {
 }
 
 function lifeStatusBadge(status: PersonLifeStatus): string {
-  if (status === PersonLifeStatus.DECEASED) return "Added for someone deceased";
-  if (status === PersonLifeStatus.LIVING) return "Added for someone living";
-  return "Status unknown";
+  if (status === PersonLifeStatus.DECEASED) {
+    return "Plaintiff who can no longer sign";
+  }
+  if (status === PersonLifeStatus.LIVING) {
+    return "Plaintiff represented by another human";
+  }
+  return "Plaintiff in Humanity v. Government";
 }
 
 export function PersonFaceTile({ person }: PersonFaceTileProps) {

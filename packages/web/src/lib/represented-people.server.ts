@@ -235,7 +235,9 @@ export async function getRepresentedPeopleGalleryData(
   if (!referendum) return null;
 
   const personFilterWhere = buildPersonFilterWhere(filters);
-  const personWhereForVote = personFilterWhere ? { person: personFilterWhere } : {};
+  const personWhereForVote = personFilterWhere
+    ? { person: personFilterWhere }
+    : {};
 
   const publicRepresentedWhere: Prisma.ReferendumVoteWhereInput = {
     ...buildRepresentedReferendumVoteWhere({
@@ -271,7 +273,14 @@ export async function getRepresentedPeopleGalleryData(
       case "oldest":
         return { createdAt: "asc" as const };
       case "recent":
-        return { createdAt: "desc" as const };
+        return [
+          {
+            person: {
+              image: { sort: "desc" as const, nulls: "last" as const },
+            },
+          },
+          { createdAt: "desc" as const },
+        ];
       case "died-closest-to-cure":
         return { createdAt: "desc" as const }; // overridden by in-memory sort
     }
@@ -338,7 +347,8 @@ export async function getRepresentedPeopleGalleryData(
       lifeStatus: vote.person.lifeStatus,
       personId: vote.person.id,
       publicComment:
-        vote.person.memorial?.submissions[0]?.memorialMessage ?? vote.publicComment,
+        vote.person.memorial?.submissions[0]?.memorialMessage ??
+        vote.publicComment,
       representedBy: getUserDisplayName(vote.user),
       voteId: vote.id,
     })),
@@ -421,7 +431,10 @@ export async function getRepresentedPersonProfileData(
           id: true,
           responsibleParties: {
             where: { deletedAt: null, isPublic: true },
-            orderBy: [{ isPrimary: "desc" as const }, { createdAt: "asc" as const }],
+            orderBy: [
+              { isPrimary: "desc" as const },
+              { createdAt: "asc" as const },
+            ],
             select: { name: true },
             take: 3,
           },
@@ -458,7 +471,9 @@ export async function getRepresentedPersonProfileData(
   const relationship =
     person.relationshipsAsObject.find(
       (candidate) => candidate.createdByUserId === vote.user.id,
-    ) ?? person.relationshipsAsObject[0] ?? null;
+    ) ??
+    person.relationshipsAsObject[0] ??
+    null;
 
   return {
     conditions: person.conditions,
@@ -475,15 +490,19 @@ export async function getRepresentedPersonProfileData(
     memorial: person.memorial
       ? (() => {
           const topCondition =
-            person.conditions.find((c) => c.status === PersonConditionStatusEnum.CAUSE_OF_DEATH)
-              ?.conditionName ?? person.conditions[0]?.conditionName ?? null;
+            person.conditions.find(
+              (c) => c.status === PersonConditionStatusEnum.CAUSE_OF_DEATH,
+            )?.conditionName ??
+            person.conditions[0]?.conditionName ??
+            null;
           const lag = person.memorial.efficacyLagEvidence[0];
           const lagTimeline = lag?.interventionApprovalTimeline ?? null;
           const publicSubmission = person.memorial.submissions.find(
             (s) => s.consentPublicDisplay && s.isPublic,
           );
           const hasCourtEvidenceConsent = person.memorial.submissions.some(
-            (s) => s.consentCourtEvidence && s.consentPublicDisplay && s.isPublic,
+            (s) =>
+              s.consentCourtEvidence && s.consentPublicDisplay && s.isPublic,
           );
           return {
             causeCategory: person.memorial.causeCategory,

@@ -86,9 +86,13 @@ function getFallbackInitials(value: string) {
 }
 
 function getRepresentedLifeStatusLabel(status: PersonLifeStatus) {
-  if (status === PersonLifeStatus.DECEASED) return "Added for someone deceased";
-  if (status === PersonLifeStatus.LIVING) return "Added for someone living";
-  return "Status unknown";
+  if (status === PersonLifeStatus.DECEASED) {
+    return "Plaintiff who can no longer sign";
+  }
+  if (status === PersonLifeStatus.LIVING) {
+    return "Plaintiff represented by another human";
+  }
+  return "Plaintiff in Humanity v. Government";
 }
 
 function formatRelationship(value: string | null) {
@@ -127,6 +131,11 @@ function RepresentedPersonProfile({
     vote.publicComment && vote.publicComment !== memorial?.memorialMessage
       ? vote.publicComment
       : null;
+  const summaryCards = [
+    { label: "Registered by", value: representedBy },
+    relationship ? { label: "Relationship", value: relationship } : null,
+    { label: "Case", value: "Humanity v. Government" },
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return (
     <main className="min-h-screen bg-background pb-20 text-foreground [font-family:var(--v0-font-libre-baskerville)]">
@@ -175,30 +184,17 @@ function RepresentedPersonProfile({
         </header>
 
         <section className="grid gap-5 md:grid-cols-3">
-          <div className="border border-border bg-card p-5 text-card-foreground">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-              Added by
-            </p>
-            <p className="mt-2 text-2xl font-black">{representedBy}</p>
-          </div>
-          <div className="border border-border bg-card p-5 text-card-foreground">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-              Relationship
-            </p>
-            <p className="mt-2 text-2xl font-black">
-              {relationship ?? "Not specified"}
-            </p>
-          </div>
-          <div className="border border-border bg-card p-5 text-card-foreground">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-              Signature type
-            </p>
-            <p className="mt-2 text-2xl font-black">
-              {person.lifeStatus === PersonLifeStatus.DECEASED
-                ? "Memorial"
-                : "Represented"}
-            </p>
-          </div>
+          {summaryCards.map((card) => (
+            <div
+              className="border border-border bg-card p-5 text-card-foreground"
+              key={card.label}
+            >
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                {card.label}
+              </p>
+              <p className="mt-2 text-2xl font-black">{card.value}</p>
+            </div>
+          ))}
         </section>
 
         {conditions.length > 0 ? (
@@ -264,26 +260,31 @@ function RepresentedPersonProfile({
               Evidence package
             </h2>
             <p className="font-bold leading-7 text-muted-foreground">
-              At least one submitter has consented to court-evidence use of this
-              memorial. The evidence package is available as JSON for the Court
-              of Humanity or any future legal proceeding.
+              At least one submitter has consented to use this plaintiff as
+              evidence in Humanity v. Government or a future legal proceeding.
             </p>
             <a
               className="inline-block border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background"
               download={`${person.handle ?? person.id}-evidence-package.json`}
               href={`/api/people/${person.handle ?? person.id}/evidence-package`}
             >
-              Download evidence package (JSON)
+              Download evidence package
             </a>
           </section>
         ) : null}
 
         <section className="border border-border bg-card p-5 text-card-foreground">
           <p className="font-bold leading-7 text-muted-foreground">
-            This is not a direct treaty signature. Direct counts only include
-            living people signing for themselves. This page is for someone
-            represented by another person.
+            This plaintiff was registered as evidence in Humanity v. Government.
+            The claim is simple: governments were hired to promote the general
+            welfare and spent the repair money on war.
           </p>
+          <Link
+            className="mt-4 inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background"
+            href={ROUTES.people}
+          >
+            Register another plaintiff
+          </Link>
         </section>
       </div>
     </main>

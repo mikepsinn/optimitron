@@ -112,6 +112,7 @@ export default async function PeoplePage({
           efficacyLagOnly,
         },
         page,
+        pageSize: 24,
         sort,
       })
     : null;
@@ -121,12 +122,12 @@ export default async function PeoplePage({
   const currentPage = data?.page ?? 1;
   const hasActiveBrowseState = Boolean(
     causeCategory ||
-      conditionGlobalVariableId ||
-      conflictId ||
-      countryCode ||
-      efficacyLagOnly ||
-      sort !== "recent" ||
-      currentPage > 1,
+    conditionGlobalVariableId ||
+    conflictId ||
+    countryCode ||
+    efficacyLagOnly ||
+    sort !== "recent" ||
+    currentPage > 1,
   );
   const showBrowseTools = hasActiveBrowseState || filteredCount >= 24;
   const filterParams = new URLSearchParams();
@@ -153,7 +154,7 @@ export default async function PeoplePage({
           <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
             Please list everyone you love who can no longer sign the 1% Treaty
             because of death, disease, or both, so they may be presented as
-            evidence in the Court of Humanity.
+            evidence in the class action lawsuit Humanity v. Government.
           </p>
         </header>
 
@@ -208,10 +209,10 @@ export default async function PeoplePage({
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="space-y-2">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-                Names entered as evidence
+                Public plaintiffs
               </p>
               <h2 className="text-3xl font-black uppercase leading-tight">
-                Plaintiffs in the Court of Humanity
+                Plaintiffs in Humanity v. Government
               </h2>
             </div>
           </div>
@@ -219,10 +220,12 @@ export default async function PeoplePage({
           {showBrowseTools ? (
             <>
               <PeopleFilterBar />
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-                Showing {formatCount(people.length)} of{" "}
-                {formatCount(filteredCount)}
-              </p>
+              {hasActiveBrowseState ? (
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                  Showing {formatCount(people.length)} of{" "}
+                  {formatCount(filteredCount)}
+                </p>
+              ) : null}
             </>
           ) : null}
 
@@ -241,10 +244,10 @@ export default async function PeoplePage({
             ) : (
               <article className="col-span-3 border border-border bg-card p-8 text-card-foreground sm:col-span-4 md:col-span-6 lg:col-span-7 xl:col-span-8">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-                  No names yet
+                  No public plaintiffs yet
                 </p>
                 <p className="mt-4 text-lg font-bold leading-8">
-                  Add the first person above.
+                  Add the first plaintiff above.
                 </p>
               </article>
             )}
@@ -303,26 +306,8 @@ export default async function PeoplePage({
               The Invisible Graveyard
             </summary>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              <strong>{formatCount(data?.deadPersonVoteCount ?? 0)}</strong>{" "}
-              humans are no longer alive.{" "}
-              <strong>{formatCount(data?.representedHumanCount ?? 0)}</strong>{" "}
-              more are alive but could not sign it themselves.{" "}
-              <strong>{formatCount(data?.officialVoteCount ?? 0)}</strong>{" "}
-              humans signed directly.
-            </p>
-            <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Dead humans do not count toward direct signature totals. They
-              count toward making preventable death harder to hide.
-            </p>
-          </details>
-          <details className="border border-border bg-card p-4 text-card-foreground">
-            <summary className="cursor-pointer text-lg font-black uppercase">
-              Why is this separate from treaty signatures?
-            </summary>
-            <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Direct treaty signatures stay separate. Represented humans become
-              public evidence that the treaty is for actual people, not
-              spreadsheet fog.
+              Dead humans cannot click a treaty button. Their names still count
+              toward making preventable death harder to hide.
             </p>
           </details>
           <details className="border border-border bg-card p-4 text-card-foreground">
@@ -330,9 +315,9 @@ export default async function PeoplePage({
               Know a victim of war or disease?
             </summary>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Add them to the plaintiff list for the Court of Humanity class
-              action against the governments of Earth. Governments were hired to
-              promote the general welfare. They spent{" "}
+              Add them to the plaintiff list for Humanity v. Government, the
+              class action against the governments of Earth. Governments were
+              hired to promote the general welfare. They spent{" "}
               <ParameterValue
                 className="font-black"
                 param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
