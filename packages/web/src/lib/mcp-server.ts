@@ -561,6 +561,15 @@ function optionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+function requiredString(value: unknown, fieldName: string) {
+  return (
+    optionalString(value) ??
+    err(
+      `${fieldName} is required. Use searchTasks, listTasks, getMyQueue, or getNextAction to find a task id, then call this tool with {"${fieldName}":"<task-id>"}.`,
+    )
+  );
+}
+
 function mergeTaskContextJson(input: {
   baseContextJson?: unknown;
   patchContextJson?: unknown;
@@ -3257,7 +3266,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getTask",
     description:
-      "Get full details for a single task including impact estimates, milestones, dependencies, and evidence.",
+      "Get full details for one task by taskId. If you do not have a taskId yet, call searchTasks, listTasks, getMyQueue, or getNextAction first.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6304,8 +6313,10 @@ export function createMcpServer(
           // ── getTask ────────────────────────────────────────────
           case "getTask": {
             const { tasks } = await getTaskFunctions();
+            const taskId = requiredString(a.taskId, "taskId");
+            if (typeof taskId !== "string") return taskId;
             const result = await tasks.getTaskDetailData(
-              a.taskId as string,
+              taskId,
               userId ?? null,
             );
             if (!result) return err("Task not found");

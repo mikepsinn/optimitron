@@ -51,9 +51,11 @@ export interface PeopleDirectoryData {
 }
 
 const ACTIVE_TASK_PREVIEW_LIMIT = 3;
-const DEFAULT_PAGE_SIZE = 36;
-const MAX_PAGE_SIZE = 60;
+const DEFAULT_PAGE_SIZE = 10;
+const MAX_PAGE_SIZE = 20;
 const VERIFIED_TASK_PREVIEW_LIMIT = 2;
+const TASK_PREVIEW_LIMIT =
+  ACTIVE_TASK_PREVIEW_LIMIT + VERIFIED_TASK_PREVIEW_LIMIT;
 
 const ROLE_FILTERS = {
   all: null,
@@ -72,46 +74,10 @@ const publicAssignedTaskWhere = {
   isPublic: true,
 } satisfies Prisma.TaskWhereInput;
 
-async function getTaskPreviewsByPerson(
-  personIds: string[],
-  status: TaskStatus,
-  limit: number,
-) {
-  if (personIds.length === 0) {
-    return new Map<
-      string,
-      Array<{
-        category: TaskCategory;
-        id: string;
-        skillTags: string[];
-        title: string;
-      }>
-    >();
-  }
-
-  const entries = await Promise.all(
-    personIds.map(async (personId) => {
-      const tasks = await prisma.task.findMany({
-        orderBy: { createdAt: "desc" },
-        select: {
-          category: true,
-          id: true,
-          skillTags: true,
-          title: true,
-        },
-        take: limit,
-        where: {
-          ...publicAssignedTaskWhere,
-          assigneePersonId: personId,
-          status,
-        },
-      });
-      return [personId, tasks] as const;
-    }),
-  );
-
-  return new Map(entries);
-}
+const publicDirectoryTaskWhere = {
+  ...publicAssignedTaskWhere,
+  status: { in: [TaskStatus.ACTIVE, TaskStatus.VERIFIED] },
+} satisfies Prisma.TaskWhereInput;
 
 function buildRoleWhere(
   role: PeopleDirectoryRole,
@@ -126,7 +92,7 @@ function buildRoleWhere(
     ? {
         assignedTasks: {
           some: {
-            ...publicAssignedTaskWhere,
+            ...publicDirectoryTaskWhere,
             category: { in: [...categories] },
           },
         },
@@ -148,7 +114,7 @@ function buildSearchWhere(query: string): Prisma.PersonWhereInput | null {
       {
         assignedTasks: {
           some: {
-            ...publicAssignedTaskWhere,
+            ...publicDirectoryTaskWhere,
             OR: [
               { title: { contains: q, mode: "insensitive" } },
               { description: { contains: q, mode: "insensitive" } },
@@ -194,12 +160,7 @@ export async function getPeopleDirectoryData({
   const clauses: Prisma.PersonWhereInput[] = [
     { deletedAt: null },
     { lifeStatus: { not: PersonLifeStatus.DECEASED } },
-    {
-      OR: [
-        { isPublicFigure: true },
-        { assignedTasks: { some: publicAssignedTaskWhere } },
-      ],
-    },
+    { assignedTasks: { some: publicDirectoryTaskWhere } },
   ];
 
   const searchWhere = buildSearchWhere(query);
@@ -215,16 +176,24 @@ export async function getPeopleDirectoryData({
   const currentPage = Math.min(Math.max(page, 1), totalPages);
 
   const people = await prisma.person.findMany({
-    orderBy: [
-      { isPublicFigure: "desc" },
-      { assignedTasks: { _count: "desc" } },
-      { displayName: "asc" },
-    ],
+    orderBy: [{ isPublicFigure: "desc" }, { displayName: "asc" }],
     select: {
       _count: {
         select: {
-          assignedTasks: { where: publicAssignedTaskWhere },
+          assignedTasks: { where: publicDirectoryTaskWhere },
         },
+      },
+      assignedTasks: {
+        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+        select: {
+          category: true,
+          id: true,
+          skillTags: true,
+          status: true,
+          title: true,
+        },
+        take: TASK_PREVIEW_LIMIT,
+        where: publicDirectoryTaskWhere,
       },
       countryCode: true,
       currentAffiliation: true,
@@ -240,19 +209,6 @@ export async function getPeopleDirectoryData({
     take,
     where,
   });
-  const personIds = people.map((person) => person.id);
-  const [activeTasksByPerson, verifiedTasksByPerson] = await Promise.all([
-    getTaskPreviewsByPerson(
-      personIds,
-      TaskStatus.ACTIVE,
-      ACTIVE_TASK_PREVIEW_LIMIT,
-    ),
-    getTaskPreviewsByPerson(
-      personIds,
-      TaskStatus.VERIFIED,
-      VERIFIED_TASK_PREVIEW_LIMIT,
-    ),
-  ]);
 
   return {
     page: currentPage,
@@ -266,23 +222,25 @@ export async function getPeopleDirectoryData({
       id: person.id,
       image: person.image,
       isPublicFigure: person.isPublicFigure,
-      openTaskPreview: (activeTasksByPerson.get(person.id) ?? []).map(
-        (task) => ({
+      openTaskPreview: person.assignedTasks
+        .filter((task) => task.status === TaskStatus.ACTIVE)
+        .slice(0, ACTIVE_TASK_PREVIEW_LIMIT)
+        .map((task) => ({
           category: task.category,
           id: task.id,
           skillTags: task.skillTags,
           title: task.title,
-        }),
-      ),
+        })),
       publicTaskCount: person._count.assignedTasks,
       sourceUrl: person.sourceUrl,
-      verifiedTaskPreview: (verifiedTasksByPerson.get(person.id) ?? []).map(
-        (task) => ({
+      verifiedTaskPreview: person.assignedTasks
+        .filter((task) => task.status === TaskStatus.VERIFIED)
+        .slice(0, VERIFIED_TASK_PREVIEW_LIMIT)
+        .map((task) => ({
           category: task.category,
           id: task.id,
           title: task.title,
-        }),
-      ),
+        })),
     })),
     query: query.trim(),
     role,

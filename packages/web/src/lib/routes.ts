@@ -650,9 +650,8 @@ export const peopleLink: NavItem = {
   href: ROUTES.people,
   label: "People",
   emoji: "👥",
-  description:
-    "Find the humans who can move tasks forward, remind them, and see the work assigned to them.",
-  tagline: "Find humans with tasks",
+  description: "Coordinate with the people who can help end war and disease.",
+  tagline: "Coordinate people with tasks",
   cta: "Find People",
 };
 

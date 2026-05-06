@@ -1136,6 +1136,20 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("returns a clean getTask error when taskId is missing", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getTask",
+        arguments: {},
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toMatchObject({
+        error: expect.stringContaining("taskId is required"),
+      });
+      expect(mocks.getTaskDetailData).not.toHaveBeenCalled();
+    });
+
     it("getBlockers ignores soft-deleted dependency edges so it agrees with getTask visibility", async () => {
       const client = await setup("user-1", ALL_SCOPES);
       await client.callTool({
