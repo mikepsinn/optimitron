@@ -272,7 +272,7 @@ export async function ConditionPage({
           ) : null}
           <Link
             className="mt-5 inline-block border-2 border-background bg-background px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-foreground"
-            href={`${ROUTES.people}?cause=DISEASE`}
+            href={`${ROUTES.plaintiffs}?cause=DISEASE`}
           >
             See the names →
           </Link>

@@ -658,7 +658,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
 
           <Link
             className="mt-6 inline-block border-2 border-background bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground"
-            href={`${ROUTES.people}?country=${gov.code}`}
+            href={`${ROUTES.plaintiffs}?country=${gov.code}`}
           >
             See the names →
           </Link>

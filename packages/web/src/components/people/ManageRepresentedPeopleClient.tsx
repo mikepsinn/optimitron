@@ -261,7 +261,7 @@ export function ManageRepresentedPeopleClient({
       setEditingId(null);
       setDeleteCandidateId(null);
       if (remainingRows.length === 0 && currentPage > 1) {
-        router.replace(`${ROUTES.peopleManage}?page=${currentPage - 1}`);
+        router.replace(`${ROUTES.plaintiffsManage}?page=${currentPage - 1}`);
       } else {
         router.refresh();
       }
@@ -372,7 +372,7 @@ export function ManageRepresentedPeopleClient({
         </p>
         <Link
           className="mt-5 inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background"
-          href={ROUTES.people}
+          href={ROUTES.plaintiffs}
         >
           Register a plaintiff
         </Link>

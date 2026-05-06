@@ -194,7 +194,7 @@ export function RepresentedPersonConversionForm({
             ) : null}
           </div>
           <AuthForm
-            callbackUrl={ROUTES.people}
+            callbackUrl={ROUTES.plaintiffs}
             compact
             hideContainer
             title="Verify"
@@ -224,8 +224,8 @@ export function RepresentedPersonConversionForm({
   if (mode === "saved") {
     const names = savedPeople.map((person) => person.displayName).join(", ");
     const addDetailsHref = savedPeople[0]?.personId
-      ? `${ROUTES.peopleManage}?edit=${encodeURIComponent(savedPeople[0].personId)}`
-      : ROUTES.peopleManage;
+      ? `${ROUTES.plaintiffsManage}?edit=${encodeURIComponent(savedPeople[0].personId)}`
+      : ROUTES.plaintiffsManage;
     return (
       <section className={shellClass} data-testid="represented-person-saved">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">

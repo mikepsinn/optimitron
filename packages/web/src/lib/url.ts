@@ -108,7 +108,12 @@ export function buildReferendumReferralUrl(
   return identifier ? `${base}?ref=${identifier}` : base;
 }
 
-/** Build the public people gallery URL for the current site. */
+/** Build the public people directory URL for the current site. */
 export function buildPeopleUrl(baseUrl: string = getBaseUrl()): string {
   return `${baseUrl}${ROUTES.people}`;
+}
+
+/** Build the public plaintiff gallery URL for the current site. */
+export function buildPlaintiffsUrl(baseUrl: string = getBaseUrl()): string {
+  return `${baseUrl}${ROUTES.plaintiffs}`;
 }
