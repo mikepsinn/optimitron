@@ -52,6 +52,22 @@ export function PeopleFilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+  const selectedSort =
+    (searchParams.get("sort") as RepresentedPeopleSortKey | null) ?? "recent";
+  const selectedCause = searchParams.get("cause") ?? "";
+  const selectedCondition = searchParams.get("conditionId") ?? "";
+  const selectedConflict = searchParams.get("conflictId") ?? "";
+  const selectedCountry = searchParams.get("country") ?? "";
+  const efficacyOnly = searchParams.get("efficacyLag") === "1";
+  const hasFilter =
+    Boolean(
+      selectedCause ||
+      selectedCondition ||
+      selectedConflict ||
+      selectedCountry ||
+      efficacyOnly,
+    ) || selectedSort !== "recent";
+  const [isOpen, setIsOpen] = useState(hasFilter);
 
   const [conditionOptions, setConditionOptions] = useState<ConditionOption[]>(
     [],
@@ -100,6 +116,12 @@ export function PeopleFilterBar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (hasFilter) {
+      setIsOpen(true);
+    }
+  }, [hasFilter]);
+
   function applyFilter(name: string, value: string) {
     const next = new URLSearchParams(searchParams.toString());
     if (value) next.set(name, value);
@@ -116,27 +138,12 @@ export function PeopleFilterBar() {
     });
   }
 
-  const selectedSort =
-    (searchParams.get("sort") as RepresentedPeopleSortKey | null) ?? "recent";
-  const selectedCause = searchParams.get("cause") ?? "";
-  const selectedCondition = searchParams.get("conditionId") ?? "";
-  const selectedConflict = searchParams.get("conflictId") ?? "";
-  const selectedCountry = searchParams.get("country") ?? "";
-  const efficacyOnly = searchParams.get("efficacyLag") === "1";
-  const hasFilter =
-    Boolean(
-      selectedCause ||
-      selectedCondition ||
-      selectedConflict ||
-      selectedCountry ||
-      efficacyOnly,
-    ) || selectedSort !== "recent";
-
   return (
     <section className="flex justify-end text-card-foreground">
       <details
         className="group relative w-full sm:w-auto"
-        {...(hasFilter ? { open: true } : {})}
+        onToggle={(event) => setIsOpen(event.currentTarget.open)}
+        open={isOpen}
       >
         <summary className="ml-auto inline-flex min-h-10 cursor-pointer list-none items-center gap-2 border border-border bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground hover:bg-muted [&::-webkit-details-marker]:hidden">
           <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
@@ -286,7 +293,7 @@ export function PeopleFilterBar() {
                   }
                   type="checkbox"
                 />
-                Only show efficacy-lag flagged 👻
+                Only show efficacy-lag evidence
               </label>
             </div>
           </div>

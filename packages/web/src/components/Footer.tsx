@@ -13,7 +13,9 @@ function FooterColumnLinks({ column }: { column: SiteFooterColumn }) {
     <ul className="space-y-2">
       {column.items.map((link) => (
         <li key={link.href}>
-          <NavItemLink item={link} variant="footer" external={link.external} />
+          <NavItemLink item={link} variant="footer" external={link.external}>
+            {link.label}
+          </NavItemLink>
         </li>
       ))}
     </ul>
@@ -26,8 +28,8 @@ export default function Footer({ siteKey = "optimitron" }: FooterProps) {
   const year = new Date().getFullYear();
   const bottomText =
     config.bottomText.trim().length > 0
-      ? config.bottomText.replace("{year}", String(year))
-      : `© ${year} ${site.organizationName}.`;
+      ? config.bottomText.replaceAll("{year}", String(year))
+      : `\u00a9 ${year} ${site.organizationName}.`;
 
   return (
     <footer className="border-t-2 border-foreground bg-background text-foreground">
@@ -94,11 +96,11 @@ export default function Footer({ siteKey = "optimitron" }: FooterProps) {
             >
               Privacy
             </Link>
-            <span aria-hidden="true">·</span>
+            <span aria-hidden="true">{"\u00b7"}</span>
             <Link href={ROUTES.terms} className="underline hover:no-underline">
               Terms
             </Link>
-            <span aria-hidden="true">·</span>
+            <span aria-hidden="true">{"\u00b7"}</span>
             <Link href={ROUTES.legal} className="underline hover:no-underline">
               Legal
             </Link>
