@@ -974,9 +974,7 @@ function getTaskVisibilityWhere(input?: {
     if (!input?.userId) {
       return { ...baseWhere, createdByUserId: "__unreachable__" };
     }
-    const ors: Prisma.TaskWhereInput[] = [
-      { createdByUserId: input.userId },
-    ];
+    const ors: Prisma.TaskWhereInput[] = [{ createdByUserId: input.userId }];
     if (input.personId) {
       ors.push({ assigneePersonId: input.personId });
     }
@@ -1108,23 +1106,28 @@ export async function getTasksPageData(
 }
 
 export async function getTaskDetailData(
-  taskId: string,
+  taskId: string | null | undefined,
   userId?: string | null,
   options?: {
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
+  const normalizedTaskId = typeof taskId === "string" ? taskId.trim() : "";
+  if (!normalizedTaskId) {
+    return null;
+  }
+
   const [task, viewer, taskCommunicationCount] = await Promise.all([
     prisma.task.findFirst({
       where: getTaskVisibilityWhere({
-        taskId,
+        taskId: normalizedTaskId,
         userId,
         visibility: "accessible",
       }),
       select: taskDetailSelect,
     }),
     userId ? getTaskViewer(userId) : Promise.resolve(null),
-    countTaskCommunications(taskId),
+    countTaskCommunications(normalizedTaskId),
   ]);
 
   if (!task) {
@@ -1137,7 +1140,7 @@ export async function getTaskDetailData(
       : await prisma.taskClaim.findUnique({
           where: {
             taskId_userId: {
-              taskId,
+              taskId: normalizedTaskId,
               userId,
             },
           },

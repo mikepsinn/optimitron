@@ -81,94 +81,103 @@ export async function generateMetadata() {
   );
 }
 
-function PersonDirectoryCard({ person }: { person: PeopleDirectoryPerson }) {
+function PersonDirectoryRow({ person }: { person: PeopleDirectoryPerson }) {
   const topTask = person.openTaskPreview[0] ?? null;
   const verifiedTask = person.verifiedTaskPreview[0] ?? null;
-  const tags: string[] = [];
-  if (person.isPublicFigure) tags.push("Public official");
-  if (person.countryCode) tags.push(person.countryCode);
-  tags.push(
-    `${person.publicTaskCount} task${person.publicTaskCount === 1 ? "" : "s"}`,
-  );
+  const roleText = [
+    person.isPublicFigure ? "Public official" : null,
+    person.countryCode,
+  ]
+    .filter(Boolean)
+    .join(" / ");
+  const taskCount = `${person.publicTaskCount.toLocaleString()} task${
+    person.publicTaskCount === 1 ? "" : "s"
+  }`;
+  const metadata = [roleText || "Person", taskCount];
+  const taskHref = topTask
+    ? `${ROUTES.tasks}/${topTask.id}`
+    : verifiedTask
+      ? `${ROUTES.tasks}/${verifiedTask.id}`
+      : null;
+  const taskLabel = topTask ? "Next task" : verifiedTask ? "Verified work" : "";
+  const task = topTask ?? verifiedTask;
 
   return (
-    <article className="border border-border bg-card p-4 text-card-foreground">
-      <div className="flex items-start gap-4">
-        <Avatar className="h-16 w-16 shrink-0 border border-border bg-background">
-          <Avatar.Image
-            alt={person.displayName}
-            src={person.image ?? undefined}
-          />
-          <Avatar.Fallback className="bg-background text-lg font-black">
-            {getFallbackInitials(person.displayName)}
-          </Avatar.Fallback>
-        </Avatar>
-        <div className="min-w-0 flex-1 space-y-2">
-          <div>
-            <h2 className="break-words text-xl font-black leading-tight">
-              <Link
-                className="underline-offset-4 hover:underline"
-                href={person.href}
-              >
-                {person.displayName}
-              </Link>
-            </h2>
-            {person.headline || person.affiliation ? (
-              <p className="mt-1 break-words text-sm font-bold leading-6 text-muted-foreground">
-                {person.headline ?? person.affiliation}
-              </p>
-            ) : null}
-          </div>
-          {tags.length > 0 ? (
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-              {tags.join(" / ")}
+    <article className="grid gap-4 border-b border-border bg-background px-4 py-4 text-foreground lg:grid-cols-[minmax(240px,1.35fr)_minmax(140px,0.65fr)_minmax(260px,1.35fr)_minmax(104px,auto)] lg:items-center">
+      <div className="flex min-w-0 items-start gap-3">
+        <Link className="shrink-0" href={person.href}>
+          <Avatar className="h-12 w-12 border border-border bg-background">
+            <Avatar.Image
+              alt={person.displayName}
+              src={person.image ?? undefined}
+            />
+            <Avatar.Fallback className="bg-background text-sm font-black">
+              {getFallbackInitials(person.displayName)}
+            </Avatar.Fallback>
+          </Avatar>
+        </Link>
+        <div className="min-w-0">
+          <h2 className="break-words text-base font-black leading-6">
+            <Link
+              className="underline-offset-4 hover:underline"
+              href={person.href}
+            >
+              {person.displayName}
+            </Link>
+          </h2>
+          {person.headline || person.affiliation ? (
+            <p className="mt-1 break-words text-sm font-bold leading-6 text-muted-foreground">
+              {person.headline ?? person.affiliation}
             </p>
           ) : null}
         </div>
       </div>
 
-      {topTask ? (
-        <section className="mt-4 border-t border-border pt-4">
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-            Next task
-          </p>
-          <Link
-            className="mt-2 block font-black leading-6 underline-offset-4 hover:underline"
-            href={`${ROUTES.tasks}/${topTask.id}`}
-          >
-            {topTask.title}
-          </Link>
-          <p className="mt-2 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-            {formatCategory(topTask.category)}
-          </p>
-        </section>
-      ) : verifiedTask ? (
-        <section className="mt-4 border-t border-border pt-4">
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-            Verified work
-          </p>
-          <Link
-            className="mt-2 block font-black leading-6 underline-offset-4 hover:underline"
-            href={`${ROUTES.tasks}/${verifiedTask.id}`}
-          >
-            {verifiedTask.title}
-          </Link>
-        </section>
-      ) : null}
+      <div className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground lg:text-sm lg:font-bold lg:normal-case lg:tracking-normal">
+        <p className="lg:hidden">{metadata.join(" / ")}</p>
+        <div className="hidden lg:block">
+          {metadata.map((item) => (
+            <p key={item}>{item}</p>
+          ))}
+        </div>
+      </div>
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="min-w-0">
+        {task && taskHref ? (
+          <>
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+              {taskLabel}
+            </p>
+            <Link
+              className="mt-1 block break-words text-sm font-black leading-6 underline-offset-4 hover:underline"
+              href={taskHref}
+            >
+              {task.title}
+            </Link>
+            <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+              {formatCategory(task.category)}
+            </p>
+          </>
+        ) : (
+          <p className="text-sm font-bold text-muted-foreground">
+            No public task preview.
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-wrap gap-2 lg:justify-end">
         <Link
-          className="inline-flex min-h-11 items-center border border-foreground bg-foreground px-4 text-xs font-black uppercase tracking-[0.14em] text-background"
+          className="inline-flex min-h-10 items-center border border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground"
           href={person.href}
         >
-          Open profile
+          Profile
         </Link>
-        {topTask ? (
+        {taskHref ? (
           <Link
-            className="inline-flex min-h-11 items-center border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
-            href={`${ROUTES.tasks}/${topTask.id}`}
+            className="inline-flex min-h-10 items-center border border-foreground bg-foreground px-3 text-xs font-black uppercase tracking-[0.14em] text-background"
+            href={taskHref}
           >
-            Open task
+            Task
           </Link>
         ) : null}
       </div>
@@ -201,13 +210,12 @@ export default async function PeoplePage({
               Decentralized to-do list for humanity
             </p>
             <h1 className="max-w-4xl text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
-              Find people who can move work forward.
+              Coordinate the humans who can end war and disease.
             </h1>
             <p className="max-w-4xl text-lg font-bold leading-8 text-muted-foreground">
-              Search for officials, lawyers, clinical researchers, organizers,
-              funders, and other humans with tasks. Open a profile, see the work
-              assigned to them, and remind the right person to do the right
-              thing.
+              Find officials, lawyers, clinical researchers, organizers,
+              funders, and other people with public tasks. Open a profile, see
+              what they were asked to do, and remind them.
             </p>
           </div>
 
@@ -236,7 +244,7 @@ export default async function PeoplePage({
               <input name="role" type="hidden" value={role} />
             ) : null}
             <Input
-              className="min-h-12 border-border bg-background text-base font-bold"
+              className="min-h-12 border-foreground bg-background text-base font-bold text-foreground placeholder:text-muted-foreground"
               defaultValue={data.query}
               name="q"
               placeholder="Name, role, skill, organization, jurisdiction, or task"
@@ -277,17 +285,23 @@ export default async function PeoplePage({
                 Directory
               </p>
               <h2 className="mt-1 text-2xl font-black uppercase">
-                {data.totalCount.toLocaleString()} useful human
-                {data.totalCount === 1 ? "" : "s"}
+                {data.totalCount.toLocaleString()}{" "}
+                {data.totalCount === 1 ? "person" : "people"} with tasks
               </h2>
             </div>
           </div>
 
           {data.people.length > 0 ? (
             <>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="overflow-hidden border border-border bg-background">
+                <div className="hidden border-b border-border px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground lg:grid lg:grid-cols-[minmax(240px,1.35fr)_minmax(140px,0.65fr)_minmax(260px,1.35fr)_minmax(104px,auto)]">
+                  <span>Person</span>
+                  <span>Role</span>
+                  <span>Task</span>
+                  <span className="text-right">Open</span>
+                </div>
                 {data.people.map((person) => (
-                  <PersonDirectoryCard key={person.id} person={person} />
+                  <PersonDirectoryRow key={person.id} person={person} />
                 ))}
               </div>
               {data.totalPages > 1 ? (
@@ -339,10 +353,8 @@ export default async function PeoplePage({
               ) : null}
             </>
           ) : (
-            <article className="border border-border bg-card p-6 text-card-foreground">
-              <p className="text-lg font-black uppercase">
-                No useful humans found.
-              </p>
+            <article className="border border-border bg-background p-6 text-foreground">
+              <p className="text-lg font-black uppercase">No people found.</p>
               <p className="mt-3 max-w-3xl font-bold leading-7 text-muted-foreground">
                 Try a broader search, pick another role, or open the task list
                 and find work that needs an assignee.
