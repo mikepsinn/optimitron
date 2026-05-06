@@ -1,21 +1,11 @@
 import Link from "next/link";
-import { PersonLifeStatus } from "@optimitron/db/enums";
+import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
 import { ROUTES } from "@/lib/routes";
 import type { RepresentedPersonCard } from "@/lib/represented-people.server";
 
 interface PersonFaceTileProps {
   index: number;
   person: RepresentedPersonCard;
-}
-
-function lifeStatusBadge(status: PersonLifeStatus): string {
-  if (status === PersonLifeStatus.DECEASED) {
-    return "Plaintiff who can no longer sign";
-  }
-  if (status === PersonLifeStatus.LIVING) {
-    return "Plaintiff represented by another human";
-  }
-  return "Plaintiff in Humanity v. Government";
 }
 
 export function PersonFaceTile({ person }: PersonFaceTileProps) {
@@ -32,7 +22,7 @@ export function PersonFaceTile({ person }: PersonFaceTileProps) {
   return (
     <Wrapper
       {...wrapperProps}
-      aria-label={`${person.displayName} - ${lifeStatusBadge(person.lifeStatus)}`}
+      aria-label={`${person.displayName} - ${getRepresentedLifeStatusLabel(person.lifeStatus)}`}
       className="group relative block aspect-square overflow-hidden border border-border bg-muted text-card-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
     >
       {person.image ? (
@@ -53,7 +43,7 @@ export function PersonFaceTile({ person }: PersonFaceTileProps) {
         className="pointer-events-none absolute inset-0 flex translate-y-full flex-col justify-end gap-1 bg-foreground/90 p-3 text-background opacity-0 transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
       >
         <p className="text-[0.65rem] font-black uppercase tracking-[0.16em]">
-          {lifeStatusBadge(person.lifeStatus)}
+          {getRepresentedLifeStatusLabel(person.lifeStatus)}
         </p>
         <p className="line-clamp-2 text-base font-black uppercase leading-tight">
           {person.displayName}

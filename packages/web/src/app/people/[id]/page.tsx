@@ -15,6 +15,7 @@ import {
 } from "@/lib/tasks/accountability";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
+import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
 import { peopleLink, ROUTES } from "@/lib/routes";
 import {
   getRepresentedPersonProfileData,
@@ -83,16 +84,6 @@ function getFallbackInitials(value: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
-}
-
-function getRepresentedLifeStatusLabel(status: PersonLifeStatus) {
-  if (status === PersonLifeStatus.DECEASED) {
-    return "Plaintiff who can no longer sign";
-  }
-  if (status === PersonLifeStatus.LIVING) {
-    return "Plaintiff represented by another human";
-  }
-  return "Plaintiff in Humanity v. Government";
 }
 
 function formatRelationship(value: string | null) {

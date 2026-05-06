@@ -177,6 +177,7 @@ function buildPersonFilterWhere(
 }
 
 const galleryVoteSelect = {
+  createdAt: true,
   id: true,
   publicComment: true,
   person: {
@@ -262,10 +263,10 @@ export async function getRepresentedPeopleGalleryData(
     ],
   };
 
-  // Sort handling. The "died-closest-to-cure" sort is a nested aggregation
-  // Prisma can't express in orderBy, so we hydrate the filtered rows, sort
-  // in-memory, and then paginate. For other sorts we let Prisma do the work.
-  const isSpecialSort = sort === "died-closest-to-cure";
+  // Sort handling. Prisma can't express the efficacy-lag aggregation or a
+  // relation-field nulls-last order, so those sorts hydrate the filtered rows,
+  // sort in-memory, and then paginate.
+  const isInMemorySort = sort === "died-closest-to-cure" || sort === "recent";
   const orderBy = (() => {
     switch (sort) {
       case "alphabetical":
@@ -273,14 +274,7 @@ export async function getRepresentedPeopleGalleryData(
       case "oldest":
         return { createdAt: "asc" as const };
       case "recent":
-        return [
-          {
-            person: {
-              image: { sort: "desc" as const, nulls: "last" as const },
-            },
-          },
-          { createdAt: "desc" as const },
-        ];
+        return { createdAt: "desc" as const };
       case "died-closest-to-cure":
         return { createdAt: "desc" as const }; // overridden by in-memory sort
     }
@@ -310,14 +304,20 @@ export async function getRepresentedPeopleGalleryData(
     prisma.referendumVote.findMany({
       where: filteredVoteWhere,
       orderBy,
-      ...(isSpecialSort ? {} : { skip: gallerySkip, take: pageSize }),
+      ...(isInMemorySort ? {} : { skip: gallerySkip, take: pageSize }),
       select: galleryVoteSelect,
     }),
   ]);
 
-  const sortedVotes = isSpecialSort
+  const sortedVotes = isInMemorySort
     ? [...rawVotes]
         .sort((a, b) => {
+          if (sort === "recent") {
+            const imagePresence =
+              Number(Boolean(b.person.image)) - Number(Boolean(a.person.image));
+            if (imagePresence !== 0) return imagePresence;
+            return b.createdAt.getTime() - a.createdAt.getTime();
+          }
           const aDays =
             a.person.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays ??
             Number.POSITIVE_INFINITY;
