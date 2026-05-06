@@ -8,7 +8,11 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
-import { postRepresentedPersonDraft, syncPendingRepresentedPeople } from "@/lib/represented-person-sync";
+import {
+  postRepresentedPersonDraft,
+  syncPendingRepresentedPeople,
+  type SyncedRepresentedPerson,
+} from "@/lib/represented-person-sync";
 import { ROUTES } from "@/lib/routes";
 import { storage, type PendingRepresentedPersonDraft } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
@@ -16,11 +20,25 @@ import { cn } from "@/lib/utils";
 
 type FormMode = "idle" | "auth" | "saving" | "saved" | "syncing" | "error";
 
+interface SavedRepresentedPerson {
+  displayName: string;
+  personId?: string;
+}
+
 function createDraftId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
   }
   return `represented-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function savedPersonFromSync(
+  person: SyncedRepresentedPerson,
+): SavedRepresentedPerson {
+  return {
+    displayName: person.displayName,
+    personId: person.personId,
+  };
 }
 
 interface RepresentedPersonConversionFormProps {
@@ -37,7 +55,7 @@ export function RepresentedPersonConversionForm({
   const [displayName, setDisplayName] = useState("");
   const [mode, setMode] = useState<FormMode>("idle");
   const [error, setError] = useState<string | null>(null);
-  const [savedNames, setSavedNames] = useState<string[]>([]);
+  const [savedPeople, setSavedPeople] = useState<SavedRepresentedPerson[]>([]);
   const [syncAttempt, setSyncAttempt] = useState(0);
   const syncStartedRef = useRef(false);
 
@@ -75,8 +93,8 @@ export function RepresentedPersonConversionForm({
           return;
         }
 
-        if (result.syncedDrafts.length > 0) {
-          setSavedNames(result.syncedDrafts.map((draft) => draft.displayName));
+        if (result.syncedPeople.length > 0) {
+          setSavedPeople(result.syncedPeople.map(savedPersonFromSync));
         }
 
         if (result.failedDrafts.length > 0) {
@@ -127,18 +145,18 @@ export function RepresentedPersonConversionForm({
 
     if (!isAuthenticated) {
       storage.addPendingRepresentedPerson(draft);
-      setSavedNames([draft.displayName]);
+      setSavedPeople([{ displayName: draft.displayName }]);
       setMode("auth");
       resetForm();
       return;
     }
 
     try {
-      const ok = await postRepresentedPersonDraft(draft);
-      if (!ok) {
+      const person = await postRepresentedPersonDraft(draft);
+      if (!person) {
         throw new Error("Could not save this person.");
       }
-      setSavedNames([draft.displayName]);
+      setSavedPeople([savedPersonFromSync(person)]);
       router.refresh();
       setMode("saved");
       resetForm();
@@ -163,7 +181,7 @@ export function RepresentedPersonConversionForm({
               Name saved
             </p>
             <h2 className="text-3xl font-black uppercase leading-tight">
-              Verify to sign for {savedNames[0] ?? "them"}.
+              Verify to sign for {savedPeople[0]?.displayName ?? "them"}.
             </h2>
             <p className="font-bold leading-7 text-muted-foreground">
               We saved the name in this browser. Verify once to finish the
@@ -204,7 +222,10 @@ export function RepresentedPersonConversionForm({
   }
 
   if (mode === "saved") {
-    const names = savedNames.join(", ");
+    const names = savedPeople.map((person) => person.displayName).join(", ");
+    const addDetailsHref = savedPeople[0]?.personId
+      ? `${ROUTES.peopleManage}?edit=${encodeURIComponent(savedPeople[0].personId)}`
+      : ROUTES.peopleManage;
     return (
       <section className={shellClass} data-testid="represented-person-saved">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
@@ -217,7 +238,7 @@ export function RepresentedPersonConversionForm({
           <Button
             className="border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background shadow-none hover:translate-x-0 hover:translate-y-0"
             onClick={() => {
-              setSavedNames([]);
+              setSavedPeople([]);
               setMode("idle");
             }}
             type="button"
@@ -226,9 +247,9 @@ export function RepresentedPersonConversionForm({
           </Button>
           <Link
             className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground"
-            href={ROUTES.peopleManage}
+            href={addDetailsHref}
           >
-            Edit record
+            Add details
           </Link>
         </div>
       </section>

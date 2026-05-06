@@ -107,6 +107,11 @@ export default async function ManagePeoplePage({
   const referendumSlug = TREATY_REFERENDUM_SLUG;
   const params = (await searchParams) ?? {};
   const requestedPage = parsePage(params.page);
+  const editParam = Array.isArray(params.edit) ? params.edit[0] : params.edit;
+  const initialEditingId =
+    typeof editParam === "string" && editParam.trim()
+      ? editParam.trim()
+      : null;
   const representedPeopleWhere = {
     createdByUserId: userId,
     deletedAt: null,
@@ -287,6 +292,7 @@ export default async function ManagePeoplePage({
         </header>
 
         <ManageRepresentedPeopleClient
+          initialEditingId={initialEditingId}
           people={editablePeople}
           referendumSlug={referendumSlug}
         />

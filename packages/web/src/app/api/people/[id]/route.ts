@@ -779,3 +779,137 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { userId } = await requireAuth();
+    const { id } = await params;
+
+    const existingPerson = await prisma.person.findUnique({
+      where: { id },
+      select: {
+        createdByUserId: true,
+        deletedAt: true,
+        id: true,
+        memorial: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (
+      !existingPerson ||
+      existingPerson.deletedAt ||
+      existingPerson.createdByUserId !== userId
+    ) {
+      return NextResponse.json({ error: "Person not found" }, { status: 404 });
+    }
+
+    const representedVote = await prisma.referendumVote.findFirst({
+      where: {
+        deletedAt: null,
+        personId: id,
+        userId,
+        voteSource: ReferendumVoteSource.REPRESENTED,
+      },
+      select: { id: true },
+    });
+    if (!representedVote) {
+      return NextResponse.json(
+        { error: "Only the original representative can delete this person." },
+        { status: 403 },
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const now = new Date();
+      await tx.person.update({
+        where: { id },
+        data: {
+          deletedAt: now,
+          isPublic: false,
+        },
+      });
+      await tx.referendumVote.updateMany({
+        where: {
+          deletedAt: null,
+          personId: id,
+          userId,
+          voteSource: ReferendumVoteSource.REPRESENTED,
+        },
+        data: {
+          deletedAt: now,
+          isPublic: false,
+        },
+      });
+      await tx.personCondition.updateMany({
+        where: { deletedAt: null, personId: id },
+        data: {
+          deletedAt: now,
+          isPublic: false,
+        },
+      });
+      await tx.personRelationship.updateMany({
+        where: {
+          deletedAt: null,
+          OR: [
+            { createdByUserId: userId, objectPersonId: id },
+            { createdByUserId: userId, subjectPersonId: id },
+          ],
+        },
+        data: {
+          deletedAt: now,
+          isPublic: false,
+        },
+      });
+
+      const memorialId = existingPerson.memorial?.id ?? null;
+      if (memorialId) {
+        await tx.personMemorial.update({
+          where: { id: memorialId },
+          data: {
+            deletedAt: now,
+            isPublic: false,
+          },
+        });
+        await tx.personMemorialSubmission.updateMany({
+          where: { deletedAt: null, memorialId, submittedByUserId: userId },
+          data: {
+            consentPublicDisplay: false,
+            deletedAt: now,
+            isPublic: false,
+          },
+        });
+        await tx.personMemorialEvidence.updateMany({
+          where: { deletedAt: null, memorialId, submittedByUserId: userId },
+          data: {
+            deletedAt: now,
+            isPublic: false,
+          },
+        });
+        await tx.personMemorialResponsibleParty.updateMany({
+          where: { deletedAt: null, memorialId },
+          data: {
+            deletedAt: now,
+            isPublic: false,
+          },
+        });
+      }
+    });
+
+    return NextResponse.json({ deleted: true, personId: id });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    console.error("Failed to delete represented person", error);
+    return NextResponse.json(
+      { error: "Failed to delete represented person" },
+      { status: 500 },
+    );
+  }
+}

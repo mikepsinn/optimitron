@@ -7,8 +7,8 @@ import {
   PersonLifeStatus,
   PersonMemorialEvidenceKind,
 } from "@optimitron/db/enums";
-import { Upload, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Trash2, Upload, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Checkbox } from "@/components/retroui/Checkbox";
 import { Input } from "@/components/retroui/Input";
@@ -46,6 +46,7 @@ export interface EditableRepresentedPerson {
 }
 
 interface ManageRepresentedPeopleClientProps {
+  initialEditingId?: string | null;
   people: EditableRepresentedPerson[];
   referendumSlug: string;
 }
@@ -107,24 +108,50 @@ function initials(name: string) {
   return letters.toUpperCase() || "??";
 }
 
+function PersonThumb({ person }: { person: EditableRepresentedPerson }) {
+  return (
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-border bg-background text-sm font-black uppercase">
+      {person.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          alt=""
+          className="h-full w-full object-cover"
+          src={person.imageUrl}
+        />
+      ) : (
+        initials(person.displayName)
+      )}
+    </div>
+  );
+}
+
 export function ManageRepresentedPeopleClient({
+  initialEditingId = null,
   people,
   referendumSlug,
 }: ManageRepresentedPeopleClientProps) {
   const [rows, setRows] = useState(people);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(initialEditingId);
   const [errorById, setErrorById] = useState<Record<string, string>>({});
   const [photoCropDraft, setPhotoCropDraft] = useState<{
     file: File;
     personId: string;
   } | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setRows(people);
   }, [people]);
+
+  useEffect(() => {
+    if (initialEditingId) {
+      setEditingId(initialEditingId);
+    }
+  }, [initialEditingId]);
 
   const editingPerson = editingId
     ? rows.find((person) => person.id === editingId) ?? null
@@ -200,6 +227,41 @@ export function ManageRepresentedPeopleClient({
     }
   }
 
+  async function deletePerson(person: EditableRepresentedPerson) {
+    if (deletingId) return;
+    const confirmed = window.confirm(
+      `Delete "${person.displayName}"? This removes the plaintiff from your list.`,
+    );
+    if (!confirmed) return;
+
+    setDeletingId(person.id);
+    setSavedId(null);
+    setErrorById((prev) => ({ ...prev, [person.id]: "" }));
+    try {
+      const response = await fetch(`/api/people/${person.id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        throw new Error(payload.error ?? "Could not delete this plaintiff.");
+      }
+      setRows((prev) => prev.filter((row) => row.id !== person.id));
+      setEditingId(null);
+    } catch (caught) {
+      setErrorById((prev) => ({
+        ...prev,
+        [person.id]:
+          caught instanceof Error
+            ? caught.message
+            : "Could not delete this plaintiff.",
+      }));
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   async function uploadPhoto(person: EditableRepresentedPerson, file: File) {
     setUploadingId(person.id);
     setErrorById((prev) => ({ ...prev, [person.id]: "" }));
@@ -220,6 +282,15 @@ export function ManageRepresentedPeopleClient({
     } finally {
       setUploadingId(null);
     }
+  }
+
+  function openPhotoPicker() {
+    photoInputRef.current?.click();
+  }
+
+  function selectPhotoFile(personId: string, file: File | undefined) {
+    if (!file) return;
+    setPhotoCropDraft({ file, personId });
   }
 
   async function uploadCroppedPhoto(file: File) {
@@ -293,7 +364,45 @@ export function ManageRepresentedPeopleClient({
 
   return (
     <section className="space-y-4">
-      <div className="overflow-hidden border border-border bg-card text-card-foreground">
+      <div className="space-y-3 md:hidden">
+        {rows.map((person) => (
+          <article
+            className="border border-border bg-card p-4 text-card-foreground"
+            key={person.id}
+          >
+            <div className="flex items-start gap-3">
+              <PersonThumb person={person} />
+              <div className="min-w-0 flex-1">
+                <p className="break-words font-black">{person.displayName}</p>
+                {person.conditionName ? (
+                  <p className="mt-1 break-words text-sm font-bold text-muted-foreground">
+                    {person.conditionName}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            <dl className="mt-4 grid grid-cols-2 gap-2 text-xs font-black uppercase tracking-[0.12em]">
+              <div>
+                <dt className="text-muted-foreground">Status</dt>
+                <dd className="mt-1">{lifeStatusLabel(person.lifeStatus)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Public</dt>
+                <dd className="mt-1">{person.isPublic ? "Yes" : "No"}</dd>
+              </div>
+            </dl>
+            <Button
+              className="mt-4 min-h-11 w-full border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0"
+              onClick={() => setEditingId(person.id)}
+              type="button"
+            >
+              Edit
+            </Button>
+          </article>
+        ))}
+      </div>
+
+      <div className="hidden overflow-hidden border border-border bg-card text-card-foreground md:block">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-left">
             <thead>
@@ -301,7 +410,6 @@ export function ManageRepresentedPeopleClient({
                 <th className="px-4 py-3">Plaintiff</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Public</th>
-                <th className="px-4 py-3">Evidence</th>
                 <th className="px-4 py-3 text-right">Edit</th>
               </tr>
             </thead>
@@ -310,18 +418,7 @@ export function ManageRepresentedPeopleClient({
                 <tr className="border-b border-border last:border-b-0" key={person.id}>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-border bg-background text-sm font-black uppercase">
-                        {person.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            alt=""
-                            className="h-full w-full object-cover"
-                            src={person.imageUrl}
-                          />
-                        ) : (
-                          initials(person.displayName)
-                        )}
-                      </div>
+                      <PersonThumb person={person} />
                       <div>
                         <p className="font-black">{person.displayName}</p>
                         {person.conditionName ? (
@@ -337,9 +434,6 @@ export function ManageRepresentedPeopleClient({
                   </td>
                   <td className="px-4 py-3 text-sm font-black uppercase tracking-[0.12em]">
                     {person.isPublic ? "Yes" : "No"}
-                  </td>
-                  <td className="px-4 py-3 text-sm font-black uppercase tracking-[0.12em]">
-                    {person.evidence.length}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Button
@@ -392,7 +486,15 @@ export function ManageRepresentedPeopleClient({
 
                 <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
                   <div className="space-y-3">
-                    <div className="aspect-square border border-border bg-background">
+                    <button
+                      aria-label={
+                        editingPerson.imageUrl ? "Change photo" : "Upload photo"
+                      }
+                      className="group relative aspect-square w-full cursor-pointer overflow-hidden border border-border bg-background text-foreground"
+                      disabled={uploadingId === editingPerson.id}
+                      onClick={openPhotoPicker}
+                      type="button"
+                    >
                       {editingPerson.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -401,31 +503,34 @@ export function ManageRepresentedPeopleClient({
                           src={editingPerson.imageUrl}
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center p-4 text-center text-3xl font-black uppercase">
-                          No photo
+                        <div className="flex h-full w-full items-center justify-center p-4 text-center text-2xl font-black uppercase">
+                          Upload photo
                         </div>
                       )}
-                    </div>
-                    <label className="inline-flex min-h-11 cursor-pointer items-center border border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.14em]">
+                    </button>
+                    <button
+                      className="inline-flex min-h-11 cursor-pointer items-center border border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-40"
+                      disabled={uploadingId === editingPerson.id}
+                      onClick={openPhotoPicker}
+                      type="button"
+                    >
                       <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
                       {uploadingId === editingPerson.id ? "Uploading" : "Upload photo"}
-                      <input
-                        accept="image/jpeg,image/png,image/webp,image/gif"
-                        className="hidden"
-                        disabled={uploadingId === editingPerson.id}
-                        onChange={(event) => {
-                          const file = event.target.files?.[0];
-                          if (file) {
-                            setPhotoCropDraft({
-                              file,
-                              personId: editingPerson.id,
-                            });
-                          }
-                          event.target.value = "";
-                        }}
-                        type="file"
-                      />
-                    </label>
+                    </button>
+                    <input
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="hidden"
+                      disabled={uploadingId === editingPerson.id}
+                      onChange={(event) => {
+                        selectPhotoFile(
+                          editingPerson.id,
+                          event.target.files?.[0],
+                        );
+                        event.target.value = "";
+                      }}
+                      ref={photoInputRef}
+                      type="file"
+                    />
                   </div>
 
                   <div className="space-y-4">
@@ -735,6 +840,7 @@ export function ManageRepresentedPeopleClient({
                         className="min-h-12 border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0 disabled:opacity-40"
                         disabled={
                           savingId === editingPerson.id ||
+                          deletingId === editingPerson.id ||
                           !editingPerson.displayName.trim()
                         }
                         onClick={() => void savePerson(editingPerson)}
@@ -744,6 +850,18 @@ export function ManageRepresentedPeopleClient({
                           ? "Saving..."
                           : "Save changes"}
                       </Button>
+                      <button
+                        className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 text-sm font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
+                        disabled={
+                          savingId === editingPerson.id ||
+                          deletingId === editingPerson.id
+                        }
+                        onClick={() => void deletePerson(editingPerson)}
+                        type="button"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                        {deletingId === editingPerson.id ? "Deleting" : "Delete"}
+                      </button>
                       {savedId === editingPerson.id ? (
                         <p className="text-sm font-black uppercase tracking-[0.14em]">
                           Saved

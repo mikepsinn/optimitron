@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   conditionCreate: vi.fn(),
   conditionUpdate: vi.fn(),
+  conditionUpdateMany: vi.fn(),
   ensurePersonForUser: vi.fn(),
   globalVariableFindFirst: vi.fn(),
   memorialEvidenceCreate: vi.fn(),
@@ -23,11 +24,13 @@ const mocks = vi.hoisted(() => ({
   relationshipCreate: vi.fn(),
   relationshipFindFirst: vi.fn(),
   relationshipUpdate: vi.fn(),
+  relationshipUpdateMany: vi.fn(),
   requireAuth: vi.fn(),
   subjectUpsert: vi.fn(),
   transaction: vi.fn(),
   voteFindFirst: vi.fn(),
   voteUpdate: vi.fn(),
+  voteUpdateMany: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -51,12 +54,18 @@ vi.mock("@/lib/subject.server", () => ({
   ensureSubjectForPerson: mocks.subjectUpsert,
 }));
 
-import { PATCH } from "./route";
+import { DELETE, PATCH } from "./route";
 
 function request(body: Record<string, unknown>) {
   return new Request("http://localhost/api/people/person_1", {
     method: "PATCH",
     body: JSON.stringify(body),
+  });
+}
+
+function deleteRequest() {
+  return new Request("http://localhost/api/people/person_1", {
+    method: "DELETE",
   });
 }
 
@@ -78,6 +87,7 @@ function tx() {
     personCondition: {
       create: mocks.conditionCreate,
       update: mocks.conditionUpdate,
+      updateMany: mocks.conditionUpdateMany,
     },
     personMemorial: {
       findUnique: mocks.memorialFindUnique,
@@ -103,8 +113,12 @@ function tx() {
       create: mocks.relationshipCreate,
       findFirst: mocks.relationshipFindFirst,
       update: mocks.relationshipUpdate,
+      updateMany: mocks.relationshipUpdateMany,
     },
-    referendumVote: { update: mocks.voteUpdate },
+    referendumVote: {
+      update: mocks.voteUpdate,
+      updateMany: mocks.voteUpdateMany,
+    },
     subject: { upsert: mocks.subjectUpsert },
   };
 }
@@ -373,6 +387,145 @@ describe("PATCH /api/people/[id]", () => {
         consentPublicDisplay: true,
         consentPublicDisplayAt: new Date("2024-01-02T00:00:00.000Z"),
       }),
+    });
+  });
+});
+
+describe("DELETE /api/people/[id]", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.personFindUnique.mockResolvedValue({
+      createdByUserId: "user_1",
+      deletedAt: null,
+      id: "person_1",
+      memorial: { id: "memorial_1" },
+    });
+    mocks.voteFindFirst.mockResolvedValue({ id: "vote_1" });
+    mocks.transaction.mockImplementation(async (callback) => callback(tx()));
+  });
+
+  it("returns 401 when not signed in", async () => {
+    mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
+
+    const res = await DELETE(deleteRequest(), params());
+
+    expect(res.status).toBe(401);
+    await expect(res.json()).resolves.toEqual({ error: "Unauthorized" });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("returns 404 when the person is not owned by the user", async () => {
+    mocks.personFindUnique.mockResolvedValue({
+      createdByUserId: "user_2",
+      deletedAt: null,
+      id: "person_1",
+      memorial: null,
+    });
+
+    const res = await DELETE(deleteRequest(), params());
+
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toEqual({ error: "Person not found" });
+    expect(mocks.voteFindFirst).not.toHaveBeenCalled();
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("returns 403 when the represented vote is not owned by the user", async () => {
+    mocks.voteFindFirst.mockResolvedValue(null);
+
+    const res = await DELETE(deleteRequest(), params());
+
+    expect(res.status).toBe(403);
+    await expect(res.json()).resolves.toEqual({
+      error: "Only the original representative can delete this person.",
+    });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("soft-deletes the represented plaintiff and owned related rows", async () => {
+    const res = await DELETE(deleteRequest(), params());
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({
+      deleted: true,
+      personId: "person_1",
+    });
+    expect(mocks.personUpdate).toHaveBeenCalledWith({
+      where: { id: "person_1" },
+      data: {
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
+    });
+    expect(mocks.voteUpdateMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        personId: "person_1",
+        userId: "user_1",
+        voteSource: "REPRESENTED",
+      },
+      data: {
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
+    });
+    expect(mocks.conditionUpdateMany).toHaveBeenCalledWith({
+      where: { deletedAt: null, personId: "person_1" },
+      data: {
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
+    });
+    expect(mocks.relationshipUpdateMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        OR: [
+          { createdByUserId: "user_1", objectPersonId: "person_1" },
+          { createdByUserId: "user_1", subjectPersonId: "person_1" },
+        ],
+      },
+      data: {
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
+    });
+    expect(mocks.memorialUpdate).toHaveBeenCalledWith({
+      where: { id: "memorial_1" },
+      data: {
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
+    });
+    expect(mocks.memorialSubmissionUpdateMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        memorialId: "memorial_1",
+        submittedByUserId: "user_1",
+      },
+      data: {
+        consentPublicDisplay: false,
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
+    });
+    expect(mocks.memorialEvidenceUpdateMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        memorialId: "memorial_1",
+        submittedByUserId: "user_1",
+      },
+      data: {
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
+    });
+    expect(mocks.memorialResponsiblePartyUpdateMany).toHaveBeenCalledWith({
+      where: { deletedAt: null, memorialId: "memorial_1" },
+      data: {
+        deletedAt: expect.any(Date),
+        isPublic: false,
+      },
     });
   });
 });
