@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   personCreate: vi.fn(),
   personFindUnique: vi.fn(),
   personUpdate: vi.fn(),
+  personUpsert: vi.fn(),
   conditionCreate: vi.fn(),
   memorialCreate: vi.fn(),
   memorialEvidenceCreate: vi.fn(),
@@ -46,6 +47,7 @@ vi.mock("@/lib/prisma", () => ({
       create: mocks.personCreate,
       findUnique: mocks.personFindUnique,
       update: mocks.personUpdate,
+      upsert: mocks.personUpsert,
     },
     personCondition: { create: mocks.conditionCreate },
     personMemorial: { create: mocks.memorialCreate },
@@ -65,6 +67,13 @@ function request(body: Record<string, unknown>) {
   return new Request("http://localhost/api/referendums/one-percent-treaty/represented-people", {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+function invalidJsonRequest() {
+  return new Request("http://localhost/api/referendums/one-percent-treaty/represented-people", {
+    method: "POST",
+    body: "{",
   });
 }
 
@@ -98,6 +107,13 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       lifeStatus: "LIVING",
       isPublic: true,
     });
+    mocks.personUpsert.mockResolvedValue({
+      id: "person_grandma",
+      displayName: "Grandma Kay",
+      handle: null,
+      lifeStatus: "LIVING",
+      isPublic: true,
+    });
     mocks.conditionCreate.mockResolvedValue({ id: "condition_1" });
     mocks.globalVariableFindFirst.mockResolvedValue(null);
     mocks.memorialCreate.mockResolvedValue({ id: "memorial_1" });
@@ -124,6 +140,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
           create: mocks.personCreate,
           findUnique: mocks.personFindUnique,
           update: mocks.personUpdate,
+          upsert: mocks.personUpsert,
         },
         personCondition: {
           create: mocks.conditionCreate,
@@ -158,6 +175,14 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     await expect(res.json()).resolves.toEqual({
       error: "Unauthorized",
     });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 for malformed JSON", async () => {
+    const res = await POST(invalidJsonRequest(), params());
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ error: "Invalid JSON" });
     expect(mocks.personCreate).not.toHaveBeenCalled();
   });
 
@@ -287,6 +312,13 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       isPublic: true,
       lifeStatus: "UNKNOWN",
     });
+    mocks.personUpsert.mockResolvedValue({
+      id: "person_existing",
+      displayName: "Grandma Kay",
+      handle: null,
+      isPublic: true,
+      lifeStatus: "UNKNOWN",
+    });
 
     const res = await POST(
       request({
@@ -310,6 +342,24 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       },
     });
     expect(mocks.personCreate).not.toHaveBeenCalled();
+    expect(mocks.personUpsert).toHaveBeenCalledWith({
+      where: { sourceRef: "represented-person-draft:user_1:draft_1" },
+      create: expect.objectContaining({
+        displayName: "Grandma Kay",
+        sourceRef: "represented-person-draft:user_1:draft_1",
+      }),
+      update: expect.objectContaining({
+        displayName: "Grandma Kay",
+        sourceRef: "represented-person-draft:user_1:draft_1",
+      }),
+      select: {
+        displayName: true,
+        handle: true,
+        id: true,
+        isPublic: true,
+        lifeStatus: true,
+      },
+    });
     expect(mocks.conditionCreate).not.toHaveBeenCalled();
     expect(mocks.relationshipCreate).not.toHaveBeenCalled();
     expect(mocks.voteUpsert).toHaveBeenCalledWith(

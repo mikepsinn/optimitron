@@ -60,6 +60,13 @@ function request(body: Record<string, unknown>) {
   });
 }
 
+function invalidJsonRequest() {
+  return new Request("http://localhost/api/people/person_1", {
+    method: "PATCH",
+    body: "{",
+  });
+}
+
 function params(id = "person_1") {
   return { params: Promise.resolve({ id }) };
 }
@@ -125,6 +132,9 @@ describe("PATCH /api/people/[id]", () => {
         submissions: [
           {
             consentCourtEvidence: true,
+            consentCourtEvidenceAt: new Date("2024-01-01T00:00:00.000Z"),
+            consentPublicDisplay: true,
+            consentPublicDisplayAt: new Date("2024-01-02T00:00:00.000Z"),
             id: "submission_1",
             memorialMessage: "She taught everyone to fix broken things.",
           },
@@ -168,6 +178,14 @@ describe("PATCH /api/people/[id]", () => {
         expect.objectContaining({ path: ["displayName"] }),
       ]),
     });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 for malformed JSON", async () => {
+    const res = await PATCH(invalidJsonRequest(), params());
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ error: "Invalid JSON" });
     expect(mocks.transaction).not.toHaveBeenCalled();
   });
 
@@ -333,6 +351,28 @@ describe("PATCH /api/people/[id]", () => {
         civilianStatus: "CIVILIAN",
       }),
       select: { id: true },
+    });
+  });
+
+  it("preserves consent timestamps when consent values do not change", async () => {
+    const res = await PATCH(
+      request({
+        displayName: "Aunt Jane",
+        lifeStatus: "DECEASED",
+        memorialMessage: "Updated memory.",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.memorialSubmissionUpdate).toHaveBeenCalledWith({
+      where: { id: "submission_1" },
+      data: expect.objectContaining({
+        consentCourtEvidence: true,
+        consentCourtEvidenceAt: new Date("2024-01-01T00:00:00.000Z"),
+        consentPublicDisplay: true,
+        consentPublicDisplayAt: new Date("2024-01-02T00:00:00.000Z"),
+      }),
     });
   });
 });

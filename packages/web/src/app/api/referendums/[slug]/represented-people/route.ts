@@ -267,7 +267,16 @@ export async function POST(
   try {
     const { userId } = await requireAuth();
     const { slug } = await params;
-    const body = (await request.json()) as Record<string, unknown>;
+    let body: Record<string, unknown>;
+    try {
+      const rawBody = (await request.json()) as unknown;
+      body =
+        rawBody && typeof rawBody === "object" && !Array.isArray(rawBody)
+          ? (rawBody as Record<string, unknown>)
+          : {};
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
 
     const parsed = representedPersonSubmissionSchema.safeParse(body);
     if (!parsed.success) {
@@ -399,36 +408,32 @@ export async function POST(
           })
         : null;
       const personData = {
-          birthDate,
-          createdByUserId: userId,
-          deathDate: dateOfDeath,
-          displayName,
-          image: imageUrl,
-          isPublic,
-          lifeStatus,
-          ...(sourceRef ? { sourceRef } : {}),
-        };
-      const person = existingDraftPerson
-        ? await tx.person.update({
-            where: { id: existingDraftPerson.id },
-            data: personData,
-            select: {
-              displayName: true,
-              handle: true,
-              id: true,
-              isPublic: true,
-              lifeStatus: true,
-            },
+        birthDate,
+        createdByUserId: userId,
+        deathDate: dateOfDeath,
+        displayName,
+        image: imageUrl,
+        isPublic,
+        lifeStatus,
+        ...(sourceRef ? { sourceRef } : {}),
+      };
+      const personSelect = {
+        displayName: true,
+        handle: true,
+        id: true,
+        isPublic: true,
+        lifeStatus: true,
+      } as const;
+      const person = sourceRef
+        ? await tx.person.upsert({
+            where: { sourceRef },
+            create: personData,
+            update: personData,
+            select: personSelect,
           })
         : await tx.person.create({
             data: personData,
-        select: {
-          displayName: true,
-          handle: true,
-          id: true,
-          isPublic: true,
-          lifeStatus: true,
-        },
+            select: personSelect,
           });
       await ensureSubjectForPerson(tx, {
         displayName,
