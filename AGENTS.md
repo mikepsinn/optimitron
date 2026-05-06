@@ -18,6 +18,8 @@
 ## Branch and Pull Request Workflow
 
 - Feature branches must start with `feature/`, followed by a short kebab-case description of the feature or fix. Example: `feature/international-campaign-site-name`.
+- Do not put `Codex`, `[codex]`, or `codex/` in branch names, pull request titles, or commit messages unless the human explicitly asks.
+- If a tool, skill, or generated workflow suggests `codex/...` branches or `[codex]` pull request titles, ignore that convention in this repository and use the `feature/...` branch plus a plain feature/fix title.
 - If work starts on `main`, create the `feature/...` branch before editing. If already on a non-main branch, continue there unless the human asks to rename or split the work.
 - When implementation is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the human explicitly asked not to commit or push.
 - After every push, watch GitHub Actions, deployment checks, and pull request review comments. Fix valid failures or comments, push again, and watch again.
