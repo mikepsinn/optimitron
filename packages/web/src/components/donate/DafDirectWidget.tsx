@@ -28,8 +28,8 @@ interface DafDirectWidgetProps {
  * <script> tag, so we let it append directly into a wrapping div ref. React
  * literal <script> children won't execute, hence the imperative effect.
  *
- * Reserved dimensions match size code 2111 (250 × 327 px) to prevent layout
- * jumps before the iframe paints.
+ * If the vendor script fails to paint, the wrapper stays collapsed instead of
+ * leaving a blank reserved widget area.
  */
 export function DafDirectWidget({ settings }: DafDirectWidgetProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -62,7 +62,7 @@ export function DafDirectWidget({ settings }: DafDirectWidgetProps) {
     <div
       ref={containerRef}
       aria-label="DAF Direct giving widget"
-      className="mt-2 inline-block min-h-[327px] min-w-[250px]"
+      className="mt-2 inline-block"
     />
   );
 }

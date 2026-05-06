@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
+import type { ReferendumAnswer } from "@/config/referendums";
 import { SecretChainPitch } from "@/components/referendum/SecretChainPitch";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { REFERRAL_SHARE_LABEL } from "@/lib/messaging";
@@ -17,7 +18,6 @@ type ReferralUser = {
   handle?: string | null;
   referralCode?: string | null;
 };
-type ReferendumAnswer = "YES" | "NO";
 
 export interface ReferendumSignatureBoxProps {
   referendumSlug: string;
@@ -103,8 +103,8 @@ export function ReferendumSignatureBox({
     ? "text-[var(--treaty-ink-muted)]"
     : "text-primary-foreground";
   const buttonClass = isReader
-    ? "border-2 border-black bg-white px-8 py-3 text-lg font-black uppercase text-black shadow-none transition-colors hover:bg-neutral-100 disabled:opacity-30"
-    : "border-2 border-black bg-white px-8 py-3 text-lg font-black uppercase text-black transition-colors hover:bg-neutral-100 disabled:opacity-30";
+    ? "border-2 border-foreground bg-background px-8 py-3 text-lg font-black uppercase text-foreground shadow-none transition-colors hover:bg-muted disabled:opacity-30"
+    : "border-2 border-foreground bg-background px-8 py-3 text-lg font-black uppercase text-foreground transition-colors hover:bg-muted disabled:opacity-30";
   const shareLabelClass = isReader
     ? "text-[var(--treaty-ink)] normal-case tracking-normal text-sm leading-6 font-bold"
     : "text-primary-foreground normal-case tracking-normal text-sm leading-6 font-bold";
@@ -356,7 +356,7 @@ export function ReferendumSignatureBox({
               type="checkbox"
               checked={makePublic}
               onChange={(e) => setMakePublic(e.target.checked)}
-              className="mt-1 h-4 w-4 cursor-pointer accent-black"
+              className="mt-1 h-4 w-4 cursor-pointer accent-foreground"
             />
             <span>
               Display my name publicly on the signer list and leaderboards{" "}
