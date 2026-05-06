@@ -9,5 +9,5 @@ export function getRepresentedLifeStatusLabel(
   if (status === PersonLifeStatus.LIVING) {
     return "Plaintiff represented by another human";
   }
-  return "Plaintiff in Humanity v. Government";
+  return "Plaintiff in the case";
 }

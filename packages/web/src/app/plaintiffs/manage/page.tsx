@@ -15,7 +15,12 @@ import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
 import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
 import { prisma } from "@/lib/prisma";
-import { getSignInPath, plaintiffsManageLink, ROUTES } from "@/lib/routes";
+import {
+  getSignInPath,
+  humanityVGovernmentLink,
+  plaintiffsManageLink,
+  ROUTES,
+} from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
@@ -250,7 +255,12 @@ export default async function ManagePeoplePage({
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="space-y-2">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-                Humanity v. Government
+                <Link
+                  className="underline underline-offset-4"
+                  href={ROUTES.humanityVGovernment}
+                >
+                  {humanityVGovernmentLink.label}
+                </Link>
               </p>
               <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
                 Your Plaintiffs
@@ -265,8 +275,14 @@ export default async function ManagePeoplePage({
           </div>
           <div className="space-y-4 border border-foreground bg-background p-5 text-lg font-bold leading-8 text-foreground">
             <p>
-              These are the plaintiffs you registered for Humanity v.
-              Government, the Court of Humanity class action.
+              These are the plaintiffs you registered for{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.humanityVGovernment}
+              >
+                {humanityVGovernmentLink.label}
+              </Link>
+              , the Court of Humanity class action.
             </p>
             <p>
               Humanity pays governments{" "}

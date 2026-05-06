@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { PersonLifeStatus } from "@optimitron/db/enums";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -17,7 +18,12 @@ import {
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
-import { peopleLink, plaintiffsLink, ROUTES } from "@/lib/routes";
+import {
+  humanityVGovernmentLink,
+  peopleLink,
+  plaintiffsLink,
+  ROUTES,
+} from "@/lib/routes";
 import {
   getRepresentedPersonProfileData,
   type RepresentedPersonProfileData,
@@ -142,8 +148,18 @@ function RepresentedPersonProfile({
   const summaryCards = [
     { label: "Registered by", value: representedBy },
     relationship ? { label: "Relationship", value: relationship } : null,
-    { label: "Case", value: "Humanity v. Government" },
-  ].filter(Boolean) as Array<{ label: string; value: string }>;
+    {
+      label: "Case",
+      value: (
+        <Link
+          className="underline underline-offset-4"
+          href={ROUTES.humanityVGovernment}
+        >
+          {humanityVGovernmentLink.label}
+        </Link>
+      ),
+    },
+  ].filter(Boolean) as Array<{ label: string; value: ReactNode }>;
 
   return (
     <main className="min-h-screen bg-background pb-20 text-foreground [font-family:var(--v0-font-libre-baskerville)]">
@@ -272,7 +288,14 @@ function RepresentedPersonProfile({
             </h2>
             <p className="font-bold leading-7 text-muted-foreground">
               At least one submitter has consented to use this plaintiff as
-              evidence in Humanity v. Government or a future legal proceeding.
+              evidence in{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.humanityVGovernment}
+              >
+                {humanityVGovernmentLink.label}
+              </Link>{" "}
+              or a future legal proceeding.
             </p>
             <a
               className="inline-block border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background"
@@ -286,8 +309,14 @@ function RepresentedPersonProfile({
 
         <section className="border border-border bg-card p-5 text-card-foreground">
           <p className="font-bold leading-7 text-muted-foreground">
-            This plaintiff was registered as evidence in Humanity v. Government.
-            The claim is simple: governments were hired to promote the general
+            This plaintiff was registered as evidence in{" "}
+            <Link
+              className="underline underline-offset-4"
+              href={ROUTES.humanityVGovernment}
+            >
+              {humanityVGovernmentLink.label}
+            </Link>
+            . The claim is simple: governments were hired to promote the general
             welfare and spent the repair money on war.
           </p>
           <Link
