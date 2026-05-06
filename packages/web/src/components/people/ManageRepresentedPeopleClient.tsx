@@ -10,7 +10,6 @@ import {
 } from "@optimitron/db/enums";
 import { Trash2, Upload, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/retroui/Button";
 import { Checkbox } from "@/components/retroui/Checkbox";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
@@ -137,6 +136,9 @@ export function ManageRepresentedPeopleClient({
   const [rows, setRows] = useState(people);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteCandidateId, setDeleteCandidateId] = useState<string | null>(
+    null,
+  );
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(initialEditingId);
@@ -159,6 +161,9 @@ export function ManageRepresentedPeopleClient({
 
   const editingPerson = editingId
     ? rows.find((person) => person.id === editingId) ?? null
+    : null;
+  const deleteCandidate = deleteCandidateId
+    ? rows.find((person) => person.id === deleteCandidateId) ?? null
     : null;
 
   useEffect(() => {
@@ -233,10 +238,6 @@ export function ManageRepresentedPeopleClient({
 
   async function deletePerson(person: EditableRepresentedPerson) {
     if (deletingId) return;
-    const confirmed = window.confirm(
-      `Delete "${person.displayName}"? This removes the plaintiff from your list.`,
-    );
-    if (!confirmed) return;
 
     setDeletingId(person.id);
     setSavedId(null);
@@ -254,6 +255,7 @@ export function ManageRepresentedPeopleClient({
       const remainingRows = rows.filter((row) => row.id !== person.id);
       setRows(remainingRows);
       setEditingId(null);
+      setDeleteCandidateId(null);
       if (remainingRows.length === 0 && currentPage > 1) {
         router.replace(`${ROUTES.peopleManage}?page=${currentPage - 1}`);
       } else {
@@ -401,13 +403,13 @@ export function ManageRepresentedPeopleClient({
                 <dd className="mt-1">{person.isPublic ? "Yes" : "No"}</dd>
               </div>
             </dl>
-            <Button
-              className="mt-4 min-h-11 w-full border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0"
+            <button
+              className="mt-4 min-h-11 w-full border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
               onClick={() => setEditingId(person.id)}
               type="button"
             >
               Edit
-            </Button>
+            </button>
           </article>
         ))}
       </div>
@@ -446,13 +448,13 @@ export function ManageRepresentedPeopleClient({
                     {person.isPublic ? "Yes" : "No"}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Button
-                      className="min-h-11 border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0"
+                    <button
+                      className="min-h-11 border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
                       onClick={() => setEditingId(person.id)}
                       type="button"
                     >
                       Edit
-                    </Button>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -846,8 +848,8 @@ export function ManageRepresentedPeopleClient({
                     </label>
 
                     <div className="flex flex-wrap items-center gap-3">
-                      <Button
-                        className="min-h-12 border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0 disabled:opacity-40"
+                      <button
+                        className="min-h-12 border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background disabled:opacity-40"
                         disabled={
                           savingId === editingPerson.id ||
                           deletingId === editingPerson.id ||
@@ -859,14 +861,14 @@ export function ManageRepresentedPeopleClient({
                         {savingId === editingPerson.id
                           ? "Saving..."
                           : "Save changes"}
-                      </Button>
+                      </button>
                       <button
                         className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 text-sm font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
                         disabled={
                           savingId === editingPerson.id ||
                           deletingId === editingPerson.id
                         }
-                        onClick={() => void deletePerson(editingPerson)}
+                        onClick={() => setDeleteCandidateId(editingPerson.id)}
                         type="button"
                       >
                         <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -887,6 +889,57 @@ export function ManageRepresentedPeopleClient({
                 </div>
               </>
             ) : null}
+          </ReactDialog.Content>
+        </ReactDialog.Portal>
+      </ReactDialog.Root>
+
+      <ReactDialog.Root
+        open={Boolean(deleteCandidate)}
+        onOpenChange={(open) => {
+          if (!open && !deletingId) setDeleteCandidateId(null);
+        }}
+      >
+        <ReactDialog.Portal>
+          <ReactDialog.Overlay className="fixed inset-0 z-[130] bg-foreground/80" />
+          <ReactDialog.Content
+            className="fixed left-1/2 top-1/2 z-[131] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background p-5 text-foreground shadow-none sm:p-6"
+            role="alertdialog"
+          >
+            <ReactDialog.Title asChild>
+              <h2 className="text-2xl font-black uppercase leading-tight">
+                {deleteCandidate
+                  ? `Delete "${deleteCandidate.displayName}"?`
+                  : "Delete plaintiff?"}
+              </h2>
+            </ReactDialog.Title>
+            <ReactDialog.Description className="mt-3 text-base font-bold leading-7 text-muted-foreground">
+              This removes the plaintiff from your list.
+            </ReactDialog.Description>
+            {deleteCandidate && errorById[deleteCandidate.id] ? (
+              <p className="mt-3 text-sm font-black">
+                {errorById[deleteCandidate.id]}
+              </p>
+            ) : null}
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <button
+                className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 text-sm font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
+                disabled={Boolean(deletingId)}
+                onClick={() => setDeleteCandidateId(null)}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.12em] text-background disabled:opacity-40"
+                disabled={!deleteCandidate || Boolean(deletingId)}
+                onClick={() => {
+                  if (deleteCandidate) void deletePerson(deleteCandidate);
+                }}
+                type="button"
+              >
+                {deletingId ? "Deleting" : "Delete"}
+              </button>
+            </div>
           </ReactDialog.Content>
         </ReactDialog.Portal>
       </ReactDialog.Root>

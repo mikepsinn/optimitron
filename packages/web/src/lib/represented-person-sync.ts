@@ -61,6 +61,25 @@ function draftPayload(draft: PendingRepresentedPersonDraft) {
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseRepresentedPersonPostResponse(value: unknown): {
+  displayName?: string;
+  personId: string;
+} | null {
+  if (!isRecord(value) || !isRecord(value.person)) return null;
+
+  const { displayName, id } = value.person;
+  if (typeof id !== "string" || id.trim() === "") return null;
+
+  return {
+    displayName: typeof displayName === "string" ? displayName : undefined,
+    personId: id,
+  };
+}
+
 export async function postRepresentedPersonDraft(
   draft: PendingRepresentedPersonDraft,
 ): Promise<SyncedRepresentedPerson | null> {
@@ -73,15 +92,14 @@ export async function postRepresentedPersonDraft(
     },
   );
   if (!response.ok) return null;
-  const payload = (await response.json().catch(() => null)) as {
-    person?: { displayName?: string; id?: string };
-  } | null;
-  const personId = payload?.person?.id;
-  if (!personId) return null;
+  const payload = parseRepresentedPersonPostResponse(
+    await response.json().catch(() => null),
+  );
+  if (!payload) return null;
   return {
-    displayName: payload?.person?.displayName ?? draft.displayName,
+    displayName: payload.displayName ?? draft.displayName,
     draft,
-    personId,
+    personId: payload.personId,
   };
 }
 
