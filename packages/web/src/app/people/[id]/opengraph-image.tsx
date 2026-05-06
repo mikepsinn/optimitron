@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 import { PersonLifeStatus } from "@optimitron/db/enums";
+import { headers } from "next/headers";
+import { toAbsoluteOgImageSrc } from "@/lib/og-image";
 import { getRepresentedPersonProfileData } from "@/lib/represented-people.server";
+import { getRequestSiteOrigin } from "@/lib/site";
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
@@ -80,6 +83,13 @@ export default async function OGImage({
   const condition = data.memorial?.conditionLabel ?? null;
   const lag = data.memorial?.efficacyLag ?? null;
   const country = data.memorial?.deathCountryCode ?? null;
+  const requestHeaders = await headers();
+  const imageBaseOrigin = getRequestSiteOrigin({
+    forwardedHost: requestHeaders.get("x-forwarded-host"),
+    forwardedProto: requestHeaders.get("x-forwarded-proto"),
+    host: requestHeaders.get("host"),
+  });
+  const personImageSrc = toAbsoluteOgImageSrc(data.person.image, imageBaseOrigin);
 
   return new ImageResponse(
     <div
@@ -107,11 +117,11 @@ export default async function OGImage({
           backgroundColor: "#1a1a1a",
         }}
       >
-        {data.person.image ? (
+        {personImageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={data.person.displayName}
-            src={data.person.image}
+            src={personImageSrc}
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
