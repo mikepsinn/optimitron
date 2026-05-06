@@ -7,12 +7,12 @@ export const runtime = "nodejs";
 
 /**
  * Trust-the-user attestation that they publicly signed the 1% Treaty at
- * 1percenttreaty.org. Verifies their `signTreatyPersonally` HMT subtask
+ * warondisease.org. Verifies their `signTreatyPersonally` HMT subtask
  * so the gate can evaluate.
  *
  * Mirrors the existing pattern for `phoneScript` and `shareReferralUrl`:
  * the user clicks through, we trust the click, the rest of the tree
- * cascades. A future signature webhook from 1percenttreaty.org could
+ * cascades. A future signature webhook from warondisease.org could
  * replace the trust step with proof; until then this is the contract.
  */
 export async function POST() {

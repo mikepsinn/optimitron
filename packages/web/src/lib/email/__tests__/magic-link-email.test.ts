@@ -27,23 +27,20 @@ describe("sendMagicLinkEmail", () => {
     mocks.sendResendEmail.mockResolvedValue({ status: "sent" });
   });
 
-  it("uses neutral partner copy for Trial Abundance Survey sign-ins", async () => {
+  it("uses War on Disease copy for legacy Trial Abundance Survey sign-ins", async () => {
     await sendMagicLinkEmail({
       identifier: "partner@example.org",
       theme: {},
-      url: "https://trialabundancesurvey.local/api/auth/callback/email?token=abc",
+      url: "https://trialabundancesurvey.org/api/auth/callback/email?token=abc",
     } as never);
 
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
-        subject: "Sign in to trialabundancesurvey.local",
-        text: expect.stringContaining("Sign in to Trial Abundance Survey."),
-        html: expect.stringContaining("Sign in to Trial Abundance Survey."),
+        subject: "Sign in to trialabundancesurvey.org",
+        text: expect.stringContaining("Yeahhh, here's your sign-in link. Mmkay."),
+        html: expect.stringContaining("Yeahhh, here&#39;s your sign-in link. Mmkay."),
       }),
     );
-    const message = mocks.sendResendEmail.mock.calls[0]?.[0];
-    expect(message.text).not.toContain("Yeahhh");
-    expect(message.html).not.toContain("Yeahhh");
   });
 
   it("keeps Lumbergh copy for War on Disease sign-ins", async () => {

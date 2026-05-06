@@ -4789,7 +4789,7 @@ const TASK_TOOL_DEFINITIONS = [
         site: {
           type: "string",
           description:
-            "Optional domain filter, e.g. optimitron.com, warondisease.org, 1percenttreaty.org, trialabundancesurvey.org, dfda.earth, dih.earth, or manual.warondisease.org.",
+            "Optional domain filter, e.g. optimitron.com, warondisease.org, dfda.earth, dih.earth, or manual.warondisease.org.",
         },
       },
     },

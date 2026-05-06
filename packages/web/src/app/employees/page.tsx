@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
-import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { PresidentManagementSystemSection } from "@/components/tasks/PresidentManagementSystemSection";
 import { authOptions } from "@/lib/auth";
-import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
+import { getSiteMetadata } from "@/lib/metadata";
 import { presidentManagementLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { getTasksPageData } from "@/lib/tasks.server";
@@ -14,14 +13,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
 
-  if (site.primaryReferendumSlug) {
-    const content = getOptionalReferendumSiteContent(site.contentKey);
-    if (content) {
-      return getSiteMetadata(site, content.metadata.tasks, ROUTES.employees);
-    }
-  }
-
-  return getRouteMetadata(presidentManagementLink);
+  return getSiteMetadata(
+    site,
+    {
+      title: `${presidentManagementLink.label} | ${site.name}`,
+      description: presidentManagementLink.description,
+    },
+    ROUTES.employees,
+  );
 }
 
 export default async function PresidentManagementPage() {

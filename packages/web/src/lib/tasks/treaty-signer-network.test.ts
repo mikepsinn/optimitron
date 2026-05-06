@@ -214,7 +214,7 @@ describe("treaty signer network", () => {
     // through to sign the treaty. No third-person Wishonia template here —
     // that template moves to the citizen-created reminder subtask.
     expect(result.bundle.task.contactUrl).toBe(
-      "https://1percenttreaty.org/treaty",
+      "https://warondisease.org/treaty",
     );
     expect(result.bundle.task.contactLabel).toBe("Sign the treaty");
     expect(result.bundle.task.contactTemplate).toBeNull();

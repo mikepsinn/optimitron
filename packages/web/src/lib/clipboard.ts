@@ -2,7 +2,7 @@
  * Copy text to the clipboard with a fallback for non-secure contexts.
  *
  * `navigator.clipboard` is only available on HTTPS and `http://localhost` —
- * custom dev hosts like `1percenttreaty.local` are not secure contexts and
+ * custom dev hosts like `warondisease.local` are not secure contexts and
  * `navigator.clipboard` is `undefined` there. Calling `.writeText` directly
  * throws a TypeError before a promise is returned, so `.catch` never runs.
  *

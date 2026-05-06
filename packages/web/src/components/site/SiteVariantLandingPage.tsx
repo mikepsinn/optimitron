@@ -1,7 +1,6 @@
 import { Container } from "@/components/ui/container";
 import { GameCTA } from "@/components/ui/game-cta";
 import { SectionContainer } from "@/components/ui/section-container";
-import { SectionHeader } from "@/components/ui/section-header";
 import type { SiteConfig } from "@/lib/site";
 
 export function SiteVariantLandingPage({ site }: { site: SiteConfig }) {
@@ -34,16 +33,6 @@ export function SiteVariantLandingPage({ site }: { site: SiteConfig }) {
           </div>
         </div>
       </Container>
-
-      {site.key === "trialAbundanceSurvey" ? (
-        <Container size="md" className="mt-14">
-          <SectionHeader
-            title="Put This Survey On Your Site"
-            subtitle="Claim your organization link, embed it where your humans already are, and see which verified responses came from your audience. No new form stack. No spreadsheet archaeology."
-            size="sm"
-          />
-        </Container>
-      ) : null}
     </SectionContainer>
   );
 }

@@ -34,8 +34,8 @@ async function fireVerifiedSubtaskEvent(
 /**
  * Verify the user's `signTreatyPersonally` HMT subtask. Trust-the-user:
  * called when the dashboard records that they clicked through to
- * `1percenttreaty.org/treaty` to publicly sign. There's no callback from
- * 1percenttreaty.org back to us (yet — it's a future signature webhook),
+ * `warondisease.org/treaty` to publicly sign. There's no callback from
+ * warondisease.org back to us (yet — it's a future signature webhook),
  * so we mirror the `phoneScript` pattern: the user attests by clicking,
  * we mark the subtask done, the gate evaluates, completeTraining
  * auto-VERIFIES once all five siblings are green.
@@ -73,7 +73,7 @@ export async function markUserTreatyPersonalSignComplete(
       actualEffortSeconds: 30,
       completedAt: now,
       completionEvidence:
-        "User reported publicly signing the 1% Treaty at 1percenttreaty.org.",
+        "User reported publicly signing the 1% Treaty at warondisease.org.",
       status: TaskStatus.VERIFIED,
       verifiedAt: now,
       verifiedByUserId: input.userId,

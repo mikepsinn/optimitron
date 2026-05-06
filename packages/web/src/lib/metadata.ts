@@ -9,8 +9,6 @@ import {
   getSiteTwitterImage,
 } from "./site-assets";
 
-const SITE_NAME = "Optimitron";
-
 /**
  * Generate Next.js Metadata from a NavItem definition.
  * Single source of truth — routes.ts descriptions drive both nav UI and page <head>.
@@ -19,7 +17,7 @@ export function getRouteMetadata(
   item: NavItem,
   overrides?: Partial<Metadata>,
 ): Metadata {
-  const title = `${item.label} | ${SITE_NAME}`;
+  const title = item.label;
   const description = item.description ?? "";
   const { alternates, openGraph, ...restOverrides } = overrides ?? {};
 
@@ -62,7 +60,7 @@ export function getSiteMetadata(
   } = metadataOverrides ?? {};
 
   return {
-    title: page.title,
+    title: { absolute: page.title },
     description: page.description,
     metadataBase: new URL(site.canonicalOrigin),
     alternates: {
@@ -97,7 +95,7 @@ export function getRootSiteMetadata(
   const root = site.rootMetadata;
 
   return {
-    title: root.title,
+    title: { absolute: root.title },
     description: root.description,
     metadataBase: new URL(site.canonicalOrigin),
     alternates: {
@@ -131,7 +129,10 @@ export function getRootLayoutMetadata(site: SiteConfig): Metadata {
     applicationName: site.name,
     creator: site.organizationName,
     publisher: site.organizationName,
-    title: metadata.title,
+    title: {
+      default: metadata.title,
+      template: `%s | ${site.name}`,
+    },
     description: metadata.description,
     keywords: metadata.keywords,
     openGraph: {

@@ -39,7 +39,7 @@ describe("local site variant override", () => {
   it("clears the local cookie when the query override asks for the host default", () => {
     expect(
       resolveLocalSiteVariantOverride({
-        cookieSiteKey: "onePercentTreaty",
+        cookieSiteKey: "warOnDisease",
         host: "localhost:3001",
         querySiteKey: "reset",
       }),

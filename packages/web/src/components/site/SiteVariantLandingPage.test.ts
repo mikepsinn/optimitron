@@ -8,10 +8,10 @@ const source = readFileSync(
 );
 
 describe("SiteVariantLandingPage copy", () => {
-  it("speaks directly to survey partner organizations", () => {
+  it("does not hardcode retired survey-partner copy", () => {
     expect(source).not.toContain("Approved organizations get");
-    expect(source).toContain("your organization");
-    expect(source).toContain("your audience");
-    expect(source).toContain("No new form stack");
+    expect(source).not.toContain("No new form stack");
+    expect(source).toContain("initiative.description");
+    expect(source).toContain("site.homeActions");
   });
 });

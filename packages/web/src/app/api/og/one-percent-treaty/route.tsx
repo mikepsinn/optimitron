@@ -320,7 +320,7 @@ export async function GET() {
                 textTransform: "uppercase",
               }}
             >
-              1percenttreaty.org
+              warondisease.org
             </div>
           </div>
         </div>

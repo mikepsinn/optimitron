@@ -25,7 +25,7 @@ const nextConfig = {
   transpilePackages: ["@optimitron/data"],
   serverExternalPackages: ["@storacha/client", "multiformats", "pinata"],
   // Next.js matches dev origins against the request hostname, not a full URL.
-  allowedDevOrigins: ["1percenttreaty.local", "warondisease.local"],
+  allowedDevOrigins: ["warondisease.local"],
   output: isStaticExport ? "export" : undefined,
   basePath: isStaticExport ? "/optimitron" : "",
   outputFileTracingRoot: path.resolve(__dirname, "../.."),

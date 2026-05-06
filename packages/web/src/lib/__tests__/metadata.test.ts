@@ -12,12 +12,13 @@ describe("metadata helpers", () => {
   it("adds a canonical path for route metadata", () => {
     const metadata = getRouteMetadata(aboutLink);
 
+    expect(metadata.title).toBe("About");
     expect(metadata.alternates?.canonical).toBe("/about");
-    expect(metadata.openGraph?.title).toBe("About | Optimitron");
+    expect(metadata.openGraph?.title).toBe("About");
   });
 
   it("builds site metadata with host-specific canonicals", () => {
-    const site = getSiteConfig("onePercentTreaty");
+    const site = getSiteConfig("warOnDisease");
     const metadata = getSiteMetadata(
       site,
       {
@@ -28,25 +29,35 @@ describe("metadata helpers", () => {
       { robots: { index: true, follow: true } },
     );
 
-    expect(metadata.metadataBase?.toString()).toBe("https://1percenttreaty.org/");
+    expect(metadata.metadataBase?.toString()).toBe("https://warondisease.org/");
     expect(metadata.alternates?.canonical).toBe("/why");
-    expect(metadata.openGraph?.siteName).toBe("1% Treaty");
+    expect(metadata.openGraph?.siteName).toBe(
+      "International Campaign to End War and Disease",
+    );
     expect(metadata.twitter?.images).toEqual([
-      "/site-assets/treaty/treaty-og-1200x630.png",
+      "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     ]);
     expect(metadata.robots).toEqual({ index: true, follow: true });
   });
 
   it("builds root metadata from the selected site config", () => {
     const treatyMetadata = getRootSiteMetadata(
-      getSiteConfig("onePercentTreaty"),
+      getSiteConfig("warOnDisease"),
     );
     const optimitronMetadata = getRootSiteMetadata(getSiteConfig("optimitron"));
 
-    expect(treatyMetadata.title).toBe("1% Treaty");
-    expect(treatyMetadata.openGraph?.siteName).toBe("1% Treaty");
-    expect(treatyMetadata.twitter?.title).toBe("1% Treaty");
-    expect(optimitronMetadata.title).toContain("Optimitron");
+    expect(treatyMetadata.title).toEqual({
+      absolute: "International Campaign to End War and Disease",
+    });
+    expect(treatyMetadata.openGraph?.siteName).toBe(
+      "International Campaign to End War and Disease",
+    );
+    expect(treatyMetadata.twitter?.title).toBe(
+      "International Campaign to End War and Disease",
+    );
+    expect(optimitronMetadata.title).toEqual({
+      absolute: expect.stringContaining("Optimitron"),
+    });
     expect(optimitronMetadata.openGraph?.images).toEqual([
       expect.objectContaining({ url: "/og-image.jpg" }),
     ]);
@@ -54,27 +65,30 @@ describe("metadata helpers", () => {
 
   it("builds root layout metadata with isolated manifest, icons, and social image", () => {
     const metadata = getRootLayoutMetadata(
-      getSiteConfig("trialAbundanceSurvey"),
+      getSiteConfig("warOnDisease"),
     );
 
     expect(metadata.manifest).toBe(
-      "/manifest.webmanifest?site=trialAbundanceSurvey",
+      "/manifest.webmanifest?site=warOnDisease",
     );
+    expect(metadata.title).toEqual({
+      default: "International Campaign to End War and Disease",
+      template: "%s | International Campaign to End War and Disease",
+    });
     expect(metadata.icons).toEqual(
       expect.objectContaining({
-        shortcut:
-          "/site-assets/survey/favicon.ico",
+        shortcut: "/site-assets/warondisease/warondisease-favicon.png",
         apple:
-          "/site-assets/survey/apple-touch-icon.png",
+          "/site-assets/warondisease/warondisease-apple-touch-icon.png",
       }),
     );
     expect(metadata.openGraph?.images).toEqual([
       expect.objectContaining({
-        url: "/site-assets/survey/survey-og-1200x630.png",
+        url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
       }),
     ]);
     expect(metadata.twitter?.images).toEqual([
-      "/site-assets/survey/survey-og-1200x630.png",
+      "/site-assets/warondisease/war-on-disease-og-1200x630.png",
     ]);
   });
 });

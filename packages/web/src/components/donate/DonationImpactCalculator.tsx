@@ -19,6 +19,7 @@ import {
 import { Dialog } from "@/components/retroui/Dialog";
 import { NONPROFIT } from "@/lib/nonprofit-identity";
 import type { DonationFrequency } from "@/lib/stripe";
+import { DonationCalculationNarrative } from "./DonationCalculationNarrative";
 import { deriveDonationImpact } from "./donation-impact-calc";
 
 const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
@@ -188,9 +189,14 @@ export function DonationImpactCalculator() {
 
       <div className="grid gap-0 lg:grid-cols-2">
         <div className="space-y-6 border-b-2 border-foreground p-5 sm:p-6 lg:border-b-0 lg:border-r-2">
-          <h2 className="text-2xl font-black uppercase">Pick your donation</h2>
+          <h2 className="text-2xl font-black uppercase">
+            How much death and suffering do you want to prevent?
+          </h2>
           <p className="text-sm font-bold leading-6 text-muted-foreground">
-            Type in any box. The others update.{" "}
+            Enter a donation amount, a lives-saved target, or years of
+            suffering prevented. The other boxes recalculate from the treaty
+            campaign model. These are probability-adjusted estimates, not a
+            receipt from the universe.{" "}
             <a
               href="#how-this-is-calculated"
               className="font-bold underline underline-offset-2"
@@ -289,8 +295,8 @@ export function DonationImpactCalculator() {
             </button>
           </div>
           <p className="text-sm font-bold leading-6 text-muted-foreground">
-            Don&apos;t trust an assumption? Drag it. Every box on the left
-            recomputes.
+            Don&apos;t trust an assumption? Drag it. The math doesn&apos;t care.
+            Every box on the left recomputes.
           </p>
           <div className="border-2 border-foreground p-3 text-sm font-bold leading-6">
             <p>Published campaign model</p>
@@ -308,6 +314,16 @@ export function DonationImpactCalculator() {
               ).toLocaleString()}
               × bed nets. Bed nets are $
               {formatPrice(BED_NETS_COST_PER_DALY.value)}/DALY.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              Assuming a 99% chance humanity fumbles this, this model still
+              estimates the treaty campaign is{" "}
+              {Math.round(
+                TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER.value,
+              ).toLocaleString()}
+              × more cost-effective than bed nets per healthy life-year. If
+              that sounds insane, good. Change the assumptions or attack the
+              citations below.
             </p>
           </div>
 
@@ -383,7 +399,7 @@ export function DonationImpactCalculator() {
               Live derivation
             </summary>
             <div
-              id="how-this-is-calculated"
+              id="formula-view"
               className="mt-4 scroll-mt-8 space-y-3"
             >
               <DerivationRow
@@ -425,6 +441,18 @@ export function DonationImpactCalculator() {
           </details>
         </div>
       </div>
+
+      <DonationCalculationNarrative
+        costPerVote={costPerVote}
+        derived={derived}
+        onCostPerVoteChange={setCostPerVote}
+        onSuccessProbabilityChange={setSuccessProbability}
+        onTreatyReductionPctChange={setTreatyReductionPct}
+        onVotesNeededChange={setVotesNeeded}
+        successProbability={successProbability}
+        treatyReductionPct={treatyReductionPct}
+        votesNeeded={votesNeeded}
+      />
 
       <Dialog open={largeGiftOpen} onOpenChange={setLargeGiftOpen}>
         <Dialog.Content title="Large gift">

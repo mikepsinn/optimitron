@@ -155,7 +155,7 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       sortOrder: 30,
       titleTemplate: "Sign the 1% Treaty publicly",
       descriptionTemplate:
-        "Voting on this site is private. Signing on 1percenttreaty.org is public. You can't credibly ask a friend to do something you haven't publicly committed to yourself.",
+        "Voting on this site is private. Signing on warondisease.org is public. You can't credibly ask a friend to do something you haven't publicly committed to yourself.",
       category: "OTHER",
       difficulty: "TRIVIAL",
       estimatedEffortHours: 0.01,
@@ -164,8 +164,8 @@ const userOnboardingTreaty: CreateTaskTriggerInput = {
       assigneePersonResolver: "actor",
       parentResolver: "trigger.parentSpec",
       // Relative path. The middleware (getSiteRouteDisposition) redirects
-      // users on a variant without /treaty to the canonical onePercentTreaty
-      // origin automatically — see getSiteRouteRedirect in lib/site.ts.
+      // users on a variant without /treaty to the canonical War on Disease
+      // origin automatically. See getSiteRouteRedirect in lib/site.ts.
       actionLinkUrlTemplate: ROUTES.treaty,
       actionLinkLabelTemplate: "Sign the treaty",
       contributesToGate: true,
@@ -375,8 +375,8 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
       creatorResolver: "system",
       parentResolver: `fixed:${TREATY_PARENT_TASK_KEY}`,
       // Relative path. The middleware (getSiteRouteDisposition) redirects
-      // users on a variant without /treaty to the canonical onePercentTreaty
-      // origin automatically — see getSiteRouteRedirect in lib/site.ts.
+      // users on a variant without /treaty to the canonical War on Disease
+      // origin automatically. See getSiteRouteRedirect in lib/site.ts.
       actionLinkUrlTemplate: ROUTES.treaty,
       actionLinkLabelTemplate: "Sign the treaty",
     },

@@ -32,7 +32,7 @@ export default async function TreatyPage({ searchParams }: TreatyPageProps) {
   const site = getSiteFromHeaders(hdrs);
   const referralCode = typeof params.ref === "string" ? params.ref : null;
   const treatyDashboardUrl =
-    site.key === "onePercentTreaty" ? "/dashboard?welcome=1" : undefined;
+    site.primaryReferendumSlug ? "/dashboard?welcome=1" : undefined;
   const referendumContent = await getReferendumPageContent(TREATY_REFERENDUM_SLUG);
 
   return (

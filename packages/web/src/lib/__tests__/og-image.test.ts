@@ -13,8 +13,8 @@ describe("toAbsoluteOgImageSrc", () => {
 
   it("prefixes local asset paths with the request origin", () => {
     expect(
-      toAbsoluteOgImageSrc("/img/grandma.jpg", "https://1percenttreaty.org"),
-    ).toBe("https://1percenttreaty.org/img/grandma.jpg");
+      toAbsoluteOgImageSrc("/img/grandma.jpg", "https://warondisease.org"),
+    ).toBe("https://warondisease.org/img/grandma.jpg");
   });
 
   it("upgrades protocol-relative URLs to https", () => {

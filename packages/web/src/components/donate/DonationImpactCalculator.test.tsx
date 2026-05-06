@@ -13,11 +13,17 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/components/retroui/Dialog", () => {
   const Dialog = Object.assign(
     function Dialog({ children }: { children: React.ReactNode }) {
-      return <div>{children}</div>;
+      return <>{children}</>;
     },
     {
-      Content({ children }: { children: React.ReactNode }) {
-        return <div>{children}</div>;
+      Content() {
+        return null;
+      },
+      Trigger({ children }: { children: React.ReactNode }) {
+        return <>{children}</>;
+      },
+      Close({ children }: { children: React.ReactNode }) {
+        return <>{children}</>;
       },
     },
   );
@@ -61,8 +67,9 @@ describe("DonationImpactCalculator", () => {
       1,
     );
     expect(
-      container.querySelector("details #how-this-is-calculated"),
+      container.querySelector("section#how-this-is-calculated"),
     ).not.toBeNull();
+    expect(container.querySelector("details #how-this-is-calculated")).toBeNull();
   });
 
   it("keeps assumption number inputs editable while range state changes", async () => {

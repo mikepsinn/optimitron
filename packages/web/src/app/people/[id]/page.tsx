@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PersonLifeStatus } from "@optimitron/db/enums";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
@@ -21,6 +22,7 @@ import {
   getRepresentedPersonProfileData,
   type RepresentedPersonProfileData,
 } from "@/lib/represented-people.server";
+import { getSiteFromHeaders } from "@/lib/site";
 
 export async function generateMetadata({
   params,
@@ -28,6 +30,8 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+  const hdrs = await headers();
+  const site = getSiteFromHeaders(hdrs);
   const representedData = await getRepresentedPersonProfileData(id);
 
   if (representedData) {
@@ -45,11 +49,15 @@ export async function generateMetadata({
         ? `${representedData.person.displayName} died of ${condition}. ${baseDescription}`
         : baseDescription;
     return {
-      title: `${representedData.person.displayName} | ${plaintiffsLink.label}`,
+      title: {
+        absolute: `${representedData.person.displayName} | ${site.name}`,
+      },
       description,
+      metadataBase: new URL(site.canonicalOrigin),
       openGraph: {
         title: representedData.person.displayName,
         description,
+        siteName: site.name,
         type: "profile",
       },
       twitter: {
@@ -64,17 +72,26 @@ export async function generateMetadata({
 
   if (!data) {
     return {
-      title: "Person | Optimitron",
+      title: { absolute: `Person | ${site.name}` },
+      metadataBase: new URL(site.canonicalOrigin),
     };
   }
 
   const isOfficial = isPublicOfficialPerson(data.person);
 
   return {
-    title: `${data.person.displayName} | Optimitron`,
+    title: { absolute: `${data.person.displayName} | ${site.name}` },
     description: isOfficial
       ? `${data.person.displayName}'s employee performance review.`
       : `${data.person.displayName}'s public task profile.`,
+    metadataBase: new URL(site.canonicalOrigin),
+    openGraph: {
+      siteName: site.name,
+      title: data.person.displayName,
+      description: isOfficial
+        ? `${data.person.displayName}'s employee performance review.`
+        : `${data.person.displayName}'s public task profile.`,
+    },
   };
 }
 
