@@ -2,6 +2,7 @@
 
 import * as ReactDialog from "@radix-ui/react-dialog";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   PersonDeathCauseCategory,
   PersonLifeStatus,
@@ -46,6 +47,7 @@ export interface EditableRepresentedPerson {
 }
 
 interface ManageRepresentedPeopleClientProps {
+  currentPage: number;
   initialEditingId?: string | null;
   people: EditableRepresentedPerson[];
   referendumSlug: string;
@@ -126,10 +128,12 @@ function PersonThumb({ person }: { person: EditableRepresentedPerson }) {
 }
 
 export function ManageRepresentedPeopleClient({
+  currentPage,
   initialEditingId = null,
   people,
   referendumSlug,
 }: ManageRepresentedPeopleClientProps) {
+  const router = useRouter();
   const [rows, setRows] = useState(people);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -247,8 +251,14 @@ export function ManageRepresentedPeopleClient({
         };
         throw new Error(payload.error ?? "Could not delete this plaintiff.");
       }
-      setRows((prev) => prev.filter((row) => row.id !== person.id));
+      const remainingRows = rows.filter((row) => row.id !== person.id);
+      setRows(remainingRows);
       setEditingId(null);
+      if (remainingRows.length === 0 && currentPage > 1) {
+        router.replace(`${ROUTES.peopleManage}?page=${currentPage - 1}`);
+      } else {
+        router.refresh();
+      }
     } catch (caught) {
       setErrorById((prev) => ({
         ...prev,

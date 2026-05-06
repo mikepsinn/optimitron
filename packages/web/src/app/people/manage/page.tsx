@@ -292,6 +292,7 @@ export default async function ManagePeoplePage({
         </header>
 
         <ManageRepresentedPeopleClient
+          currentPage={currentPage}
           initialEditingId={initialEditingId}
           people={editablePeople}
           referendumSlug={referendumSlug}
