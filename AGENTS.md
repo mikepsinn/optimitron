@@ -24,6 +24,7 @@
 - When implementation is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the human explicitly asked not to commit or push.
 - After every push, watch GitHub Actions, deployment checks, and pull request review comments. Fix valid failures or comments, push again, and watch again.
 - If a review comment is mistaken, stale, or non-actionable, mark it resolved when tooling allows. Do not make unnecessary code changes just to satisfy an invalid comment.
+- Once checks are green and there are no unresolved valid review complaints, merge the pull request when the human has asked you to finish or merge the work.
 
 ## UI Verification
 

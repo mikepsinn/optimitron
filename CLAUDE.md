@@ -143,9 +143,10 @@ The task tree has a single root: `win-earth-optimization-prize` (taskKey `progra
 1. **Use feature branches for implementation.** New implementation branches start with `feature/`, followed by a short kebab-case description. Example: `feature/international-campaign-site-name`.
 2. **Ship through pull requests.** When feature work is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the user explicitly asked not to commit or push.
 3. **Watch the PR after every push.** Check GitHub Actions, deployment checks, and review comments. Fix valid failures/comments, push again, and watch again. If a comment is mistaken, stale, or non-actionable, mark it resolved when tooling allows instead of changing code unnecessarily.
-4. **Respect review-only turns.** If the user asks only for analysis, review, or a proposed copy/design, do not commit or push until they approve implementation or publishing.
-5. **Library packages stay runtime-safe.** No Prisma / runtime DB in `optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`.
-6. **Zod only at real boundaries** — HTTP, form, MCP, OAuth. Not internal helpers.
+4. **Merge only when clean.** Once checks are green and there are no unresolved valid review complaints, merge the pull request when the user has asked you to finish or merge the work.
+5. **Respect review-only turns.** If the user asks only for analysis, review, or a proposed copy/design, do not commit or push until they approve implementation or publishing.
+6. **Library packages stay runtime-safe.** No Prisma / runtime DB in `optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`.
+7. **Zod only at real boundaries** — HTTP, form, MCP, OAuth. Not internal helpers.
 
 ## UI/UX Rules
 
