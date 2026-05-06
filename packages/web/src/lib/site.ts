@@ -23,7 +23,6 @@ import {
   endorseLink,
   exploreLinks,
   footerAppLinks,
-  githubLink,
   inviteVoterLink,
   legalLink,
   navSections,
@@ -193,7 +192,6 @@ export interface SiteFooterConfig {
   brandHref: string;
   brandLabel: string;
   columns: SiteFooterColumn[];
-  sourceLink?: NavItem;
 }
 
 export interface SiteVariantUiConfig {
@@ -476,7 +474,6 @@ const OPTIMITRON_UI: SiteVariantUiConfig = {
     brandDescription: "The Earth Optimization Machine.",
     bottomText:
       "© 4237 Wishonia. All rights reserved in this and 6,412 adjacent timelines. Unauthorized reproduction of the general welfare is encouraged and, frankly, overdue.",
-    sourceLink: githubLink,
     columns: [
       { title: "App", items: footerAppLinks },
       { title: "Analysis", items: exploreLinks },
@@ -550,8 +547,9 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
   footer: {
     brandHref: ROUTES.home,
     brandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    brandDescription: `Is it OK if we trade ${apocalypseSlice} of our ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}?`,
-    bottomText: "",
+    brandDescription:
+      "The campaign behind Humanity v. Government and the 1% Treaty.",
+    bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
     columns: [
       {
         title: "Campaign",
@@ -590,8 +588,7 @@ const ONE_PERCENT_TREATY_UI: SiteVariantUiConfig = {
     brandLabel: "1% Treaty",
     brandDescription:
       "Move one percent of the murder budget to the medicine budget. Your species will find this controversial.",
-    bottomText:
-      "© 4237 Wishonia. Reproduction of the general welfare is encouraged and, at this point, somewhat urgent.",
+    bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
     columns: [
       {
         title: "Campaign",

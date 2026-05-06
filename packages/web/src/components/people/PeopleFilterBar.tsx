@@ -1,6 +1,7 @@
 "use client";
 
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
+import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/retroui/Button";
@@ -132,16 +133,20 @@ export function PeopleFilterBar() {
     ) || selectedSort !== "recent";
 
   return (
-    <section className="border border-border bg-card p-4 text-card-foreground">
-      <details className="group" {...(hasFilter ? { open: true } : {})}>
-        <summary className="inline-flex min-h-9 cursor-pointer list-none items-center gap-2 border border-border bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground marker:hidden hover:bg-muted">
-          <span>Filter and sort</span>
+    <section className="flex justify-end text-card-foreground">
+      <details
+        className="group relative w-full sm:w-auto"
+        {...(hasFilter ? { open: true } : {})}
+      >
+        <summary className="ml-auto inline-flex min-h-10 cursor-pointer list-none items-center gap-2 border border-border bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground hover:bg-muted [&::-webkit-details-marker]:hidden">
+          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+          <span>Filter</span>
           {hasFilter ? (
             <span className="text-muted-foreground">Active</span>
           ) : null}
         </summary>
 
-        <div className="mt-4 space-y-4">
+        <div className="mt-3 space-y-4 border border-border bg-card p-4 sm:absolute sm:right-0 sm:z-20 sm:w-[min(44rem,calc(100vw-2rem))]">
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
               Find a human

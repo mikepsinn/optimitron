@@ -160,10 +160,10 @@ export function ManageRepresentedPeopleClient({
   }, [initialEditingId]);
 
   const editingPerson = editingId
-    ? rows.find((person) => person.id === editingId) ?? null
+    ? (rows.find((person) => person.id === editingId) ?? null)
     : null;
   const deleteCandidate = deleteCandidateId
-    ? rows.find((person) => person.id === deleteCandidateId) ?? null
+    ? (rows.find((person) => person.id === deleteCandidateId) ?? null)
     : null;
 
   useEffect(() => {
@@ -174,7 +174,9 @@ export function ManageRepresentedPeopleClient({
 
   function updatePerson(id: string, patch: Partial<EditableRepresentedPerson>) {
     setRows((prev) =>
-      prev.map((person) => (person.id === id ? patchPerson(person, patch) : person)),
+      prev.map((person) =>
+        person.id === id ? patchPerson(person, patch) : person,
+      ),
     );
   }
 
@@ -229,7 +231,9 @@ export function ManageRepresentedPeopleClient({
       setErrorById((prev) => ({
         ...prev,
         [person.id]:
-          caught instanceof Error ? caught.message : "Could not save this person.",
+          caught instanceof Error
+            ? caught.message
+            : "Could not save this person.",
       }));
     } finally {
       setSavingId(null);
@@ -351,7 +355,9 @@ export function ManageRepresentedPeopleClient({
       setErrorById((prev) => ({
         ...prev,
         [person.id]:
-          caught instanceof Error ? caught.message : "Could not upload evidence.",
+          caught instanceof Error
+            ? caught.message
+            : "Could not upload evidence.",
       }));
     } finally {
       setUploadingId(null);
@@ -427,7 +433,10 @@ export function ManageRepresentedPeopleClient({
             </thead>
             <tbody>
               {rows.map((person) => (
-                <tr className="border-b border-border last:border-b-0" key={person.id}>
+                <tr
+                  className="border-b border-border last:border-b-0"
+                  key={person.id}
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <PersonThumb person={person} />
@@ -515,19 +524,17 @@ export function ManageRepresentedPeopleClient({
                           src={editingPerson.imageUrl}
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center p-4 text-center text-2xl font-black uppercase">
-                          Upload photo
+                        <div className="flex h-full w-full items-center justify-center p-4 text-center text-5xl font-black uppercase">
+                          {initials(editingPerson.displayName)}
                         </div>
                       )}
-                    </button>
-                    <button
-                      className="inline-flex min-h-11 cursor-pointer items-center border border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-40"
-                      disabled={uploadingId === editingPerson.id}
-                      onClick={openPhotoPicker}
-                      type="button"
-                    >
-                      <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
-                      {uploadingId === editingPerson.id ? "Uploading" : "Upload photo"}
+                      <span className="absolute inset-x-0 bottom-0 bg-foreground px-3 py-2 text-center text-xs font-black uppercase tracking-[0.14em] text-background">
+                        {uploadingId === editingPerson.id
+                          ? "Uploading"
+                          : editingPerson.imageUrl
+                            ? "Change photo"
+                            : "Upload photo"}
+                      </span>
                     </button>
                     <input
                       accept="image/jpeg,image/png,image/webp,image/gif"
@@ -569,13 +576,18 @@ export function ManageRepresentedPeopleClient({
                           className="min-h-12 w-full border border-border bg-background px-3 font-bold text-foreground"
                           onChange={(event) =>
                             updatePerson(editingPerson.id, {
-                              lifeStatus: event.target.value as PersonLifeStatus,
+                              lifeStatus: event.target
+                                .value as PersonLifeStatus,
                             })
                           }
                           value={editingPerson.lifeStatus}
                         >
-                          <option value={PersonLifeStatus.UNKNOWN}>Unknown</option>
-                          <option value={PersonLifeStatus.LIVING}>Living</option>
+                          <option value={PersonLifeStatus.UNKNOWN}>
+                            Unknown
+                          </option>
+                          <option value={PersonLifeStatus.LIVING}>
+                            Living
+                          </option>
                           <option value={PersonLifeStatus.DECEASED}>
                             No longer alive
                           </option>
@@ -583,7 +595,7 @@ export function ManageRepresentedPeopleClient({
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs font-black uppercase">
-                          Birth date optional
+                          Birth date
                         </Label>
                         <Input
                           className="border-border bg-background font-bold"
@@ -628,7 +640,7 @@ export function ManageRepresentedPeopleClient({
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs font-black uppercase">
-                          Cause kind
+                          Cause category
                         </Label>
                         <select
                           className="min-h-12 w-full border border-border bg-background px-3 font-bold text-foreground"
@@ -646,16 +658,22 @@ export function ManageRepresentedPeopleClient({
                           <option value={PersonDeathCauseCategory.DISEASE}>
                             Disease
                           </option>
-                          <option value={PersonDeathCauseCategory.ARMED_CONFLICT}>
+                          <option
+                            value={PersonDeathCauseCategory.ARMED_CONFLICT}
+                          >
                             Armed conflict
                           </option>
-                          <option value={PersonDeathCauseCategory.STATE_VIOLENCE}>
+                          <option
+                            value={PersonDeathCauseCategory.STATE_VIOLENCE}
+                          >
                             State violence
                           </option>
                           <option value={PersonDeathCauseCategory.TERRORISM}>
                             Terrorism
                           </option>
-                          <option value={PersonDeathCauseCategory.OTHER_PREVENTABLE}>
+                          <option
+                            value={PersonDeathCauseCategory.OTHER_PREVENTABLE}
+                          >
                             Other preventable
                           </option>
                           <option value={PersonDeathCauseCategory.OTHER}>
@@ -669,7 +687,7 @@ export function ManageRepresentedPeopleClient({
                       <div className="grid gap-3 border border-border bg-background p-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <Label className="text-xs font-black uppercase">
-                            Date of death optional
+                            Date of death
                           </Label>
                           <Input
                             className="border-border bg-background font-bold"
@@ -684,7 +702,7 @@ export function ManageRepresentedPeopleClient({
                         </div>
                         <div className="space-y-2">
                           <Label className="text-xs font-black uppercase">
-                            Country of death optional
+                            Country of death
                           </Label>
                           <Input
                             className="border-border bg-background font-bold uppercase"
@@ -723,13 +741,16 @@ export function ManageRepresentedPeopleClient({
                             }
                           />
                           <span>
-                            This can be used as evidence in future accountability
-                            work.
+                            This can be used as evidence in future
+                            accountability work.
                           </span>
                         </label>
                         <div className="space-y-3 sm:col-span-2">
                           <label className="inline-flex min-h-11 cursor-pointer items-center border border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.14em]">
-                            <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
+                            <Upload
+                              className="mr-2 h-4 w-4"
+                              aria-hidden="true"
+                            />
                             {uploadingId === editingPerson.id
                               ? "Uploading"
                               : "Add evidence file"}
@@ -739,7 +760,8 @@ export function ManageRepresentedPeopleClient({
                               disabled={uploadingId === editingPerson.id}
                               onChange={(event) => {
                                 const file = event.target.files?.[0];
-                                if (file) void uploadEvidence(editingPerson, file);
+                                if (file)
+                                  void uploadEvidence(editingPerson, file);
                                 event.target.value = "";
                               }}
                               type="file"
@@ -762,23 +784,35 @@ export function ManageRepresentedPeopleClient({
                                     }
                                     value={evidence.evidenceKind}
                                   >
-                                    <option value={PersonMemorialEvidenceKind.PHOTO}>
+                                    <option
+                                      value={PersonMemorialEvidenceKind.PHOTO}
+                                    >
                                       Photo
                                     </option>
-                                    <option value={PersonMemorialEvidenceKind.DOCUMENT}>
+                                    <option
+                                      value={
+                                        PersonMemorialEvidenceKind.DOCUMENT
+                                      }
+                                    >
                                       Document
                                     </option>
                                     <option
-                                      value={PersonMemorialEvidenceKind.NEWS_ARTICLE}
+                                      value={
+                                        PersonMemorialEvidenceKind.NEWS_ARTICLE
+                                      }
                                     >
                                       News article
                                     </option>
                                     <option
-                                      value={PersonMemorialEvidenceKind.DEATH_RECORD}
+                                      value={
+                                        PersonMemorialEvidenceKind.DEATH_RECORD
+                                      }
                                     >
                                       Death record
                                     </option>
-                                    <option value={PersonMemorialEvidenceKind.OTHER}>
+                                    <option
+                                      value={PersonMemorialEvidenceKind.OTHER}
+                                    >
                                       Other
                                     </option>
                                   </select>
@@ -872,7 +906,9 @@ export function ManageRepresentedPeopleClient({
                         type="button"
                       >
                         <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                        {deletingId === editingPerson.id ? "Deleting" : "Delete"}
+                        {deletingId === editingPerson.id
+                          ? "Deleting"
+                          : "Delete"}
                       </button>
                       {savedId === editingPerson.id ? (
                         <p className="text-sm font-black uppercase tracking-[0.14em]">

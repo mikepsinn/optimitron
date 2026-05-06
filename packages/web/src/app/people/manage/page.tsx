@@ -109,9 +109,7 @@ export default async function ManagePeoplePage({
   const requestedPage = parsePage(params.page);
   const editParam = Array.isArray(params.edit) ? params.edit[0] : params.edit;
   const initialEditingId =
-    typeof editParam === "string" && editParam.trim()
-      ? editParam.trim()
-      : null;
+    typeof editParam === "string" && editParam.trim() ? editParam.trim() : null;
   const representedPeopleWhere = {
     createdByUserId: userId,
     deletedAt: null,
@@ -138,10 +136,7 @@ export default async function ManagePeoplePage({
       birthDate: true,
       conditions: {
         where: { deletedAt: null },
-        orderBy: [
-          { status: "desc" as const },
-          { createdAt: "asc" as const },
-        ],
+        orderBy: [{ status: "desc" as const }, { createdAt: "asc" as const }],
         select: { conditionName: true, status: true },
         take: 3,
       },
@@ -200,7 +195,8 @@ export default async function ManagePeoplePage({
   const editablePeople = people.map((person) => {
     const primaryCondition =
       person.conditions.find(
-        (condition) => condition.status === PersonConditionStatus.CAUSE_OF_DEATH,
+        (condition) =>
+          condition.status === PersonConditionStatus.CAUSE_OF_DEATH,
       ) ??
       person.conditions[0] ??
       null;
@@ -253,8 +249,8 @@ export default async function ManagePeoplePage({
           </div>
           <div className="space-y-4 border border-foreground bg-background p-5 text-lg font-bold leading-8 text-foreground">
             <p>
-              These are the plaintiffs you registered for the Court of Humanity
-              class action against the governments of Earth.
+              These are the plaintiffs you registered for Humanity v.
+              Government, the Court of Humanity class action.
             </p>
             <p>
               Humanity pays governments{" "}
@@ -263,8 +259,8 @@ export default async function ManagePeoplePage({
                 figures={2}
                 param={GOVERNMENTS_PAID_TO_PROMOTE_WELFARE}
               />{" "}
-              a year to promote the general welfare. Over the last century,
-              they spent{" "}
+              a year to promote the general welfare. Over the last century, they
+              spent{" "}
               <ParameterValue
                 className="font-black"
                 figures={2}
@@ -285,8 +281,8 @@ export default async function ManagePeoplePage({
               years of clinical trials at current government spending.
             </p>
             <p>
-              Edit each plaintiff so the complaint has names, evidence, and
-              consent instead of spreadsheet fog.
+              Open a plaintiff to add the photo, disease or cause, relationship,
+              public note, or evidence.
             </p>
           </div>
         </header>
