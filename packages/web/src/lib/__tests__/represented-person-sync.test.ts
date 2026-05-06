@@ -21,7 +21,10 @@ vi.mock("@/lib/storage", () => ({
   },
 }));
 
-import { syncPendingRepresentedPeople } from "../represented-person-sync";
+import {
+  postRepresentedPersonDraft,
+  syncPendingRepresentedPeople,
+} from "../represented-person-sync";
 
 const draft = {
   clientDraftId: "draft_1",
@@ -57,12 +60,20 @@ describe("represented person sync", () => {
 
   it("posts and clears successful drafts", async () => {
     mocks.getPendingRepresentedPeople.mockReturnValue([draft]);
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        person: { displayName: "Grandma Kay", id: "person_1" },
+      }),
+      ok: true,
+    });
     vi.stubGlobal("fetch", fetchMock);
 
     const result = await syncPendingRepresentedPeople();
 
     expect(result.syncedDrafts).toEqual([draft]);
+    expect(result.syncedPeople).toEqual([
+      { displayName: "Grandma Kay", draft, personId: "person_1" },
+    ]);
     expect(result.failedDrafts).toEqual([]);
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/referendums/one-percent-treaty/represented-people",
@@ -84,8 +95,25 @@ describe("represented person sync", () => {
     const result = await syncPendingRepresentedPeople();
 
     expect(result.syncedDrafts).toEqual([]);
+    expect(result.syncedPeople).toEqual([]);
     expect(result.failedDrafts).toEqual([draft]);
     expect(mocks.removePendingRepresentedPeople).not.toHaveBeenCalled();
+  });
+
+  it("returns the created person id from a successful post", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        person: { displayName: "Grandma Kay", id: "person_1" },
+      }),
+      ok: true,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(postRepresentedPersonDraft(draft)).resolves.toEqual({
+      displayName: "Grandma Kay",
+      draft,
+      personId: "person_1",
+    });
   });
 
   it("skips sync when another tab owns an active lock", async () => {
@@ -101,6 +129,7 @@ describe("represented person sync", () => {
     const result = await syncPendingRepresentedPeople();
 
     expect(result.skippedBecauseLocked).toBe(true);
+    expect(result.syncedPeople).toEqual([]);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

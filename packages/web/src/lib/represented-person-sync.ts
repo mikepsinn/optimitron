@@ -11,6 +11,13 @@ export interface RepresentedPersonSyncResult {
   failedDrafts: PendingRepresentedPersonDraft[];
   skippedBecauseLocked: boolean;
   syncedDrafts: PendingRepresentedPersonDraft[];
+  syncedPeople: SyncedRepresentedPerson[];
+}
+
+export interface SyncedRepresentedPerson {
+  displayName: string;
+  draft: PendingRepresentedPersonDraft;
+  personId: string;
 }
 
 function createOwnerId(): string {
@@ -56,7 +63,7 @@ function draftPayload(draft: PendingRepresentedPersonDraft) {
 
 export async function postRepresentedPersonDraft(
   draft: PendingRepresentedPersonDraft,
-): Promise<boolean> {
+): Promise<SyncedRepresentedPerson | null> {
   const response = await fetch(
     `/api/referendums/${draft.referendumSlug}/represented-people`,
     {
@@ -65,7 +72,17 @@ export async function postRepresentedPersonDraft(
       body: JSON.stringify(draftPayload(draft)),
     },
   );
-  return response.ok;
+  if (!response.ok) return null;
+  const payload = (await response.json().catch(() => null)) as {
+    person?: { displayName?: string; id?: string };
+  } | null;
+  const personId = payload?.person?.id;
+  if (!personId) return null;
+  return {
+    displayName: payload?.person?.displayName ?? draft.displayName,
+    draft,
+    personId,
+  };
 }
 
 export async function syncPendingRepresentedPeople(): Promise<RepresentedPersonSyncResult> {
@@ -75,19 +92,22 @@ export async function syncPendingRepresentedPeople(): Promise<RepresentedPersonS
       failedDrafts: [],
       skippedBecauseLocked: true,
       syncedDrafts: [],
+      syncedPeople: [],
     };
   }
 
   const syncedDrafts: PendingRepresentedPersonDraft[] = [];
+  const syncedPeople: SyncedRepresentedPerson[] = [];
   const failedDrafts: PendingRepresentedPersonDraft[] = [];
 
   try {
     const drafts = storage.getPendingRepresentedPeople();
     for (const draft of drafts) {
       try {
-        const ok = await postRepresentedPersonDraft(draft);
-        if (ok) {
+        const person = await postRepresentedPersonDraft(draft);
+        if (person) {
           syncedDrafts.push(draft);
+          syncedPeople.push(person);
         } else {
           failedDrafts.push(draft);
         }
@@ -106,6 +126,7 @@ export async function syncPendingRepresentedPeople(): Promise<RepresentedPersonS
       failedDrafts,
       skippedBecauseLocked: false,
       syncedDrafts,
+      syncedPeople,
     };
   } finally {
     releaseLock(ownerId);
