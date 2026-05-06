@@ -16,7 +16,7 @@ import {
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
-import { peopleLink, ROUTES } from "@/lib/routes";
+import { peopleLink, plaintiffsLink, ROUTES } from "@/lib/routes";
 import {
   getRepresentedPersonProfileData,
   type RepresentedPersonProfileData,
@@ -45,7 +45,7 @@ export async function generateMetadata({
         ? `${representedData.person.displayName} died of ${condition}. ${baseDescription}`
         : baseDescription;
     return {
-      title: `${representedData.person.displayName} | ${peopleLink.label}`,
+      title: `${representedData.person.displayName} | ${plaintiffsLink.label}`,
       description,
       openGraph: {
         title: representedData.person.displayName,
@@ -132,8 +132,11 @@ function RepresentedPersonProfile({
     <main className="min-h-screen bg-background pb-20 text-foreground [font-family:var(--v0-font-libre-baskerville)]">
       <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:py-14">
         <nav className="text-sm font-black uppercase tracking-[0.14em]">
-          <Link className="underline underline-offset-4" href={ROUTES.people}>
-            {peopleLink.label}
+          <Link
+            className="underline underline-offset-4"
+            href={ROUTES.plaintiffs}
+          >
+            {plaintiffsLink.label}
           </Link>
           <span className="mx-2 text-muted-foreground">/</span>
           <span className="text-muted-foreground">{person.displayName}</span>
@@ -272,7 +275,7 @@ function RepresentedPersonProfile({
           </p>
           <Link
             className="mt-4 inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background"
-            href={ROUTES.people}
+            href={ROUTES.plaintiffs}
           >
             Register another plaintiff
           </Link>
@@ -325,8 +328,8 @@ export default async function PersonDetailPage({
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8">
         <header className="space-y-4">
           <nav className="text-sm font-bold">
-            <Link className="underline underline-offset-4" href={ROUTES.tasks}>
-              Tasks
+            <Link className="underline underline-offset-4" href={ROUTES.people}>
+              {peopleLink.label}
             </Link>
             <span className="mx-2 text-muted-foreground">/</span>
             <span className="text-muted-foreground">{person.displayName}</span>

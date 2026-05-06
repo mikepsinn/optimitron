@@ -69,6 +69,8 @@ export const ROUTES = {
   organizations: "/organizations",
   people: "/people",
   peopleManage: "/people/manage",
+  plaintiffs: "/plaintiffs",
+  plaintiffsManage: "/plaintiffs/manage",
   questions: "/questions",
   survey: "/survey",
   // The Game
@@ -646,6 +648,16 @@ export const treatyVoteLink: NavItem = {
 
 export const peopleLink: NavItem = {
   href: ROUTES.people,
+  label: "People",
+  emoji: "👥",
+  description:
+    "Find the humans who can move tasks forward, remind them, and see the work assigned to them.",
+  tagline: "Find humans with tasks",
+  cta: "Find People",
+};
+
+export const plaintiffsLink: NavItem = {
+  href: ROUTES.plaintiffs,
   label: "Plaintiffs",
   emoji: "👥",
   description:
@@ -654,14 +666,16 @@ export const peopleLink: NavItem = {
   cta: "Sign for Them",
 };
 
-export const peopleManageLink: NavItem = {
-  ...peopleLink,
-  href: ROUTES.peopleManage,
+export const plaintiffsManageLink: NavItem = {
+  ...plaintiffsLink,
+  href: ROUTES.plaintiffsManage,
   label: "Your Plaintiffs",
   description: "Edit the plaintiffs you registered for Humanity v. Government.",
   tagline: "Edit your plaintiffs",
   cta: "Your Plaintiffs",
 };
+
+export const peopleManageLink = plaintiffsManageLink;
 
 export const questionsLink: NavItem = {
   href: ROUTES.questions,
@@ -851,7 +865,7 @@ export const navSections: NavSection[] = [
     id: "primary",
     label: "Primary",
     primary: true,
-    items: [prizeLink, tasksLink, dashboardLink],
+    items: [prizeLink, tasksLink, peopleLink, dashboardLink],
   },
   {
     id: "track",

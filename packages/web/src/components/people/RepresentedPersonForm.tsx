@@ -16,7 +16,7 @@ import { Textarea } from "@/components/retroui/Textarea";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
-import { buildPeopleUrl } from "@/lib/url";
+import { buildPlaintiffsUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import { SquarePhotoCropper } from "./SquarePhotoCropper";
 
@@ -364,7 +364,7 @@ export function RepresentedPersonForm({
 
       const personName = payload.person?.displayName ?? displayName.trim();
       const condition = conditionName.trim();
-      const peopleUrl = buildPeopleUrl(requestOrigin);
+      const peopleUrl = buildPlaintiffsUrl(requestOrigin);
       const isDeceased = lifeStatus === PersonLifeStatus.DECEASED;
       const ghost = isDeceased ? "👻 " : "";
       const text = isDeceased

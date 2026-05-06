@@ -80,7 +80,7 @@ export function VoteCounterSplit({
         </dt>
         <dd className="text-2xl font-black tabular-nums">
           {linkMemorialToPeople ? (
-            <Link className="underline-offset-4 hover:underline" href={ROUTES.people}>
+            <Link className="underline-offset-4 hover:underline" href={ROUTES.plaintiffs}>
               {memorialLine}
             </Link>
           ) : (

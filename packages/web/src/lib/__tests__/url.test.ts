@@ -3,6 +3,7 @@ import {
   buildAlignmentUrl,
   buildInviteReferralUrl,
   buildPeopleUrl,
+  buildPlaintiffsUrl,
   buildReferralUrl,
   buildUserAlignmentUrl,
   buildUserInviteReferralUrl,
@@ -61,6 +62,12 @@ describe("url helpers", () => {
   it("builds people gallery links from the provided base URL", () => {
     expect(buildPeopleUrl("https://warondisease.org")).toBe(
       `https://warondisease.org${ROUTES.people}`,
+    );
+  });
+
+  it("builds plaintiff gallery links from the provided base URL", () => {
+    expect(buildPlaintiffsUrl("https://warondisease.org")).toBe(
+      `https://warondisease.org${ROUTES.plaintiffs}`,
     );
   });
 });

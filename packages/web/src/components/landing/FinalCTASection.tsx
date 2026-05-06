@@ -30,7 +30,7 @@ export function FinalCTASection() {
         <Link
           aria-label="Open the Invisible Graveyard"
           className="mb-8 block transition-opacity hover:opacity-90"
-          href={ROUTES.people}
+          href={ROUTES.plaintiffs}
         >
           <LiveDeathTicker surface="dark" />
         </Link>
