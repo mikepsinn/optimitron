@@ -27,13 +27,10 @@ function normalizeEmail(email?: string | null) {
   return email?.trim().toLowerCase() || null;
 }
 
-async function resolveAssignmentRecipient(taskId: string): Promise<
-  | {
-      recipient: AssignmentRecipient;
-      task: { description: string; id: string; title: string };
-    }
-  | null
-> {
+async function resolveAssignmentRecipient(taskId: string): Promise<{
+  recipient: AssignmentRecipient;
+  task: { description: string; id: string; title: string };
+} | null> {
   const task = await prisma.task.findUnique({
     where: { id: taskId },
     select: {
@@ -129,21 +126,21 @@ export async function notifyTaskAssigneeOfAssignment(input: {
   senderUserId?: string | null;
   taskId: string;
 }) {
-  const resolved = await resolveAssignmentRecipient(input.taskId);
-  if (!resolved) {
-    return { reason: "no_assignee_email", status: "skipped" as const };
-  }
-
-  const { recipient, task } = resolved;
-  const email = buildTaskAssignmentNotificationEmail({
-    description: task.description,
-    id: task.id,
-    recipientName: recipient.name,
-    replyInstruction: getTaskEmailReplyInstruction(),
-    title: task.title,
-  });
-
   try {
+    const resolved = await resolveAssignmentRecipient(input.taskId);
+    if (!resolved) {
+      return { reason: "no_assignee_email", status: "skipped" as const };
+    }
+
+    const { recipient, task } = resolved;
+    const email = buildTaskAssignmentNotificationEmail({
+      description: task.description,
+      id: task.id,
+      recipientName: recipient.name,
+      replyInstruction: getTaskEmailReplyInstruction(),
+      title: task.title,
+    });
+
     const draft = await draftTaskNotification({
       audience: TaskCommunicationAudience.ASSIGNEE,
       channel: TaskCommunicationChannel.EMAIL,

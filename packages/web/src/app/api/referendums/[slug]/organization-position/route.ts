@@ -220,17 +220,24 @@ export async function POST(
       },
     });
 
-    const task =
-      position === VotePosition.YES
-        ? await ensureOrganizationTreatyActivationTask(
-            {
-              organizationId,
-              organizationName: organization.name,
-              organizationSlug: organization.slug,
-            },
-            userId,
-          )
-        : null;
+    let task: { id: string } | null = null;
+    if (position === VotePosition.YES) {
+      try {
+        task = await ensureOrganizationTreatyActivationTask(
+          {
+            organizationId,
+            organizationName: organization.name,
+            organizationSlug: organization.slug,
+          },
+          userId,
+        );
+      } catch (error) {
+        console.error(
+          "Error creating organization treaty activation task:",
+          error,
+        );
+      }
+    }
 
     return NextResponse.json(
       {

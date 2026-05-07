@@ -20,7 +20,11 @@ function clean(value?: string | null) {
   return value?.trim() || null;
 }
 
-export function clampAdminLimit(value?: number | null, fallback = 50, max = 200) {
+export function clampAdminLimit(
+  value?: number | null,
+  fallback = 50,
+  max = 200,
+) {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
   return Math.max(1, Math.min(Math.floor(value), max));
 }
@@ -162,19 +166,17 @@ function buildCommunicationWhere(
 ): Prisma.TaskCommunicationWhereInput {
   const q = clean(filters.q);
   const email = clean(filters.email)?.toLowerCase();
+  const organizationId = clean(filters.organizationId);
+  const personId = clean(filters.personId);
+  const taskId = clean(filters.taskId);
+  const userId = clean(filters.userId);
   const and: Prisma.TaskCommunicationWhereInput[] = [];
   const where: Prisma.TaskCommunicationWhereInput = {
     channel: TaskCommunicationChannel.EMAIL,
-    ...(clean(filters.taskId) ? { taskId: clean(filters.taskId)! } : {}),
-    ...(clean(filters.userId)
-      ? { recipientUserId: clean(filters.userId)! }
-      : {}),
-    ...(clean(filters.personId)
-      ? { recipientPersonId: clean(filters.personId)! }
-      : {}),
-    ...(clean(filters.organizationId)
-      ? { recipientOrganizationId: clean(filters.organizationId)! }
-      : {}),
+    ...(taskId ? { taskId } : {}),
+    ...(userId ? { recipientUserId: userId } : {}),
+    ...(personId ? { recipientPersonId: personId } : {}),
+    ...(organizationId ? { recipientOrganizationId: organizationId } : {}),
   };
 
   if (email) {
@@ -342,14 +344,15 @@ export async function listAdminTaskEmailCommunications(
   filters: AdminCommunicationFilters,
 ) {
   const limit = clampAdminLimit(filters.limit);
+  const where = buildCommunicationWhere(filters);
   const [communications, total] = await Promise.all([
     prisma.taskCommunication.findMany({
-      where: buildCommunicationWhere(filters),
+      where,
       orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
       select: taskCommunicationSelect,
       take: limit,
     }),
-    prisma.taskCommunication.count({ where: buildCommunicationWhere(filters) }),
+    prisma.taskCommunication.count({ where }),
   ]);
 
   return {
@@ -361,14 +364,15 @@ export async function listAdminTaskEmailCommunications(
 
 export async function listAdminEmailLogs(filters: AdminCommunicationFilters) {
   const limit = clampAdminLimit(filters.limit);
+  const where = buildEmailLogWhere(filters);
   const [emailLogs, total] = await Promise.all([
     prisma.emailLog.findMany({
-      where: buildEmailLogWhere(filters),
+      where,
       orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
       select: emailLogSelect,
       take: limit,
     }),
-    prisma.emailLog.count({ where: buildEmailLogWhere(filters) }),
+    prisma.emailLog.count({ where }),
   ]);
 
   return {

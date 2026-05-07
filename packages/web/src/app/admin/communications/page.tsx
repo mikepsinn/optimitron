@@ -27,10 +27,12 @@ function clean(value?: string | null) {
 
 function formatDate(value?: string | null) {
   if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
   return new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function getLimit(value?: string) {
@@ -74,7 +76,13 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function EmptyRow({ colSpan, children }: { children: string; colSpan: number }) {
+function EmptyRow({
+  colSpan,
+  children,
+}: {
+  children: string;
+  colSpan: number;
+}) {
   return (
     <tr>
       <td
@@ -146,7 +154,9 @@ export default async function AdminCommunicationsPage({
 
       <form className="mb-10 grid gap-3 border-2 border-foreground p-4 text-sm font-bold md:grid-cols-6">
         <label className="md:col-span-2">
-          <span className="mb-1 block text-xs font-black uppercase">Search</span>
+          <span className="mb-1 block text-xs font-black uppercase">
+            Search
+          </span>
           <input
             className="w-full border-2 border-foreground bg-background px-3 py-2"
             defaultValue={clean(params.q)}
@@ -164,7 +174,9 @@ export default async function AdminCommunicationsPage({
           />
         </label>
         <label>
-          <span className="mb-1 block text-xs font-black uppercase">Task ID</span>
+          <span className="mb-1 block text-xs font-black uppercase">
+            Task ID
+          </span>
           <input
             className="w-full border-2 border-foreground bg-background px-3 py-2"
             defaultValue={clean(params.taskId)}
@@ -263,7 +275,9 @@ export default async function AdminCommunicationsPage({
                       {formatDate(communication.sentAt)}
                     </div>
                   </div>
-                  <div className="text-base">{communication.subject ?? "-"}</div>
+                  <div className="text-base">
+                    {communication.subject ?? "-"}
+                  </div>
                   <div className="mt-2">
                     <Link
                       href={`/tasks/${communication.taskId}`}
@@ -316,7 +330,9 @@ export default async function AdminCommunicationsPage({
               </thead>
               <tbody>
                 {communications.communications.length === 0 ? (
-                  <EmptyRow colSpan={6}>No task emails match this search.</EmptyRow>
+                  <EmptyRow colSpan={6}>
+                    No task emails match this search.
+                  </EmptyRow>
                 ) : (
                   communications.communications.map((communication) => (
                     <tr
@@ -448,7 +464,9 @@ export default async function AdminCommunicationsPage({
               </thead>
               <tbody>
                 {emailLogs.emailLogs.length === 0 ? (
-                  <EmptyRow colSpan={6}>No email logs match this search.</EmptyRow>
+                  <EmptyRow colSpan={6}>
+                    No email logs match this search.
+                  </EmptyRow>
                 ) : (
                   emailLogs.emailLogs.map((log) => (
                     <tr
@@ -545,9 +563,7 @@ export default async function AdminCommunicationsPage({
           </div>
 
           <div>
-            <h2 className="mb-3 text-xl font-black uppercase">
-              Organizations
-            </h2>
+            <h2 className="mb-3 text-xl font-black uppercase">Organizations</h2>
             <ul className="space-y-2">
               {directory.organizations.map((organization) => (
                 <li

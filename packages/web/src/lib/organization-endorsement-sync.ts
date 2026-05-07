@@ -120,6 +120,7 @@ export async function syncPendingOrganizationEndorsements(): Promise<Organizatio
       try {
         const organization = await postOrganizationEndorsementDraft(draft);
         if (organization) {
+          storage.removePendingOrganizationEndorsements([draft.clientDraftId]);
           syncedDrafts.push(draft);
           syncedOrganizations.push(organization);
         } else {
@@ -128,12 +129,6 @@ export async function syncPendingOrganizationEndorsements(): Promise<Organizatio
       } catch {
         failedDrafts.push(draft);
       }
-    }
-
-    if (syncedDrafts.length > 0) {
-      storage.removePendingOrganizationEndorsements(
-        syncedDrafts.map((draft) => draft.clientDraftId),
-      );
     }
 
     return {

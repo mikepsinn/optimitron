@@ -96,6 +96,30 @@ describe("createFeedbackTask", () => {
     );
   });
 
+  it("drops unsafe direct-post page URLs before creating metadata", async () => {
+    mocks.userFindFirst.mockResolvedValue({
+      id: "admin-1",
+      personId: "person-admin-1",
+    });
+
+    await createFeedbackTask({
+      message: "The URL field should not persist script URLs.",
+      pageUrl: "javascript:alert(1)",
+    });
+
+    expect(mocks.createTask.mock.calls[0]?.[1].description).not.toContain(
+      "javascript:",
+    );
+    expect(mocks.taskUpdate).toHaveBeenCalledWith({
+      where: { id: "task-feedback-1" },
+      data: {
+        contextJson: expect.objectContaining({
+          pageUrl: null,
+        }),
+      },
+    });
+  });
+
   it("rejects empty feedback", async () => {
     await expect(createFeedbackTask({ message: "  " })).rejects.toThrow(
       "Feedback is required.",

@@ -200,7 +200,7 @@ test("landing: treaty dashboard shows parameter values", async ({ page }) => {
   await heading.scrollIntoViewIfNeeded();
   await expect(heading).toBeVisible({ timeout: 10_000 });
 
-  for (const value of ["6650", "443", "122", "12.3", "36"]) {
+  for (const value of [/^6650$/, /^443$/, /^122$/, /^12\.3$/, /^36$/]) {
     await expect(page.getByRole("button", { name: value }).first()).toBeVisible(
       { timeout: 5_000 },
     );

@@ -91,77 +91,79 @@ export default async function FeedbackPage({
         </section>
       ) : null}
 
-      <form action={submitFeedback} className="mt-8 space-y-5">
-        <div aria-hidden="true" className="absolute -left-[10000px] top-auto">
-          <label htmlFor={FEEDBACK_HONEYPOT_FIELD}>Company website</label>
-          <input
-            autoComplete="off"
-            id={FEEDBACK_HONEYPOT_FIELD}
-            name={FEEDBACK_HONEYPOT_FIELD}
-            tabIndex={-1}
-            type="text"
-          />
-        </div>
-        <div>
-          <label
-            className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-muted-foreground"
-            htmlFor="message"
-          >
-            What should change?
-          </label>
-          <textarea
-            className="min-h-48 w-full border-2 border-foreground bg-background px-4 py-3 font-bold leading-7 text-foreground"
-            id="message"
-            maxLength={8000}
-            minLength={3}
-            name="message"
-            placeholder="Site improvements, missing tasks, copy complaints, confusing pages, irritating emails, better strategy, all useful."
-            required
-          />
-        </div>
+      {!sent ? (
+        <form action={submitFeedback} className="mt-8 space-y-5">
+          <div aria-hidden="true" className="absolute -left-[10000px] top-auto">
+            <label htmlFor={FEEDBACK_HONEYPOT_FIELD}>Company website</label>
+            <input
+              autoComplete="off"
+              id={FEEDBACK_HONEYPOT_FIELD}
+              name={FEEDBACK_HONEYPOT_FIELD}
+              tabIndex={-1}
+              type="text"
+            />
+          </div>
+          <div>
+            <label
+              className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-muted-foreground"
+              htmlFor="message"
+            >
+              What should change?
+            </label>
+            <textarea
+              className="min-h-48 w-full border-2 border-foreground bg-background px-4 py-3 font-bold leading-7 text-foreground"
+              id="message"
+              maxLength={8000}
+              minLength={3}
+              name="message"
+              placeholder="Site improvements, missing tasks, copy complaints, confusing pages, irritating emails, better strategy, all useful."
+              required
+            />
+          </div>
 
-        <div>
-          <label
-            className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-muted-foreground"
-            htmlFor="pageUrl"
-          >
-            Page URL
-          </label>
-          <input
-            className="w-full border-2 border-foreground bg-background px-4 py-3 font-bold text-foreground"
-            defaultValue={pageUrl}
-            id="pageUrl"
-            maxLength={1000}
-            name="pageUrl"
-            placeholder="https://warondisease.org/..."
-            type="url"
-          />
-        </div>
+          <div>
+            <label
+              className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-muted-foreground"
+              htmlFor="pageUrl"
+            >
+              Page URL
+            </label>
+            <input
+              className="w-full border-2 border-foreground bg-background px-4 py-3 font-bold text-foreground"
+              defaultValue={pageUrl}
+              id="pageUrl"
+              maxLength={1000}
+              name="pageUrl"
+              placeholder="https://warondisease.org/..."
+              type="url"
+            />
+          </div>
 
-        <div>
-          <label
-            className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-muted-foreground"
-            htmlFor="contactEmail"
-          >
-            Email
-          </label>
-          <input
-            className="w-full border-2 border-foreground bg-background px-4 py-3 font-bold text-foreground"
-            id="contactEmail"
-            maxLength={254}
-            name="contactEmail"
-            placeholder="Optional, if you want a reply"
-            type="email"
-          />
-        </div>
+          <div>
+            <label
+              className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-muted-foreground"
+              htmlFor="contactEmail"
+            >
+              Email
+            </label>
+            <input
+              className="w-full border-2 border-foreground bg-background px-4 py-3 font-bold text-foreground"
+              id="contactEmail"
+              maxLength={254}
+              name="contactEmail"
+              placeholder="Optional, if you want a reply"
+              type="email"
+            />
+          </div>
 
-        <button
-          className="w-full border-2 border-foreground bg-foreground px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground sm:w-auto"
-          type="submit"
-        >
-          Send Feedback
-        </button>
-      </form>
+          <button
+            className="w-full border-2 border-foreground bg-foreground px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground sm:w-auto"
+            type="submit"
+          >
+            Send Feedback
+          </button>
+        </form>
+      ) : null}
     </main>
   );
 }

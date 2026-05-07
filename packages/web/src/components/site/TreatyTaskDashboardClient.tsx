@@ -118,7 +118,7 @@ function DashboardAction({
     </>
   );
   const className =
-    "flex min-h-28 w-full items-start gap-3 border border-[var(--treaty-ink)]/40 bg-transparent p-4 text-left text-[var(--treaty-ink)] shadow-none transition-colors hover:bg-white";
+    "flex min-h-28 w-full items-start gap-3 border border-[var(--treaty-ink)]/40 bg-transparent p-4 text-left text-[var(--treaty-ink)] shadow-none transition-colors hover:bg-background";
 
   if (href) {
     return (

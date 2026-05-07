@@ -264,6 +264,32 @@ describe("tasks server", () => {
     });
   });
 
+  it("keeps assigned task creation successful if assignment notification fails", async () => {
+    mocks.prisma.taskCreate.mockResolvedValue({
+      assigneePersonId: "person_target",
+      createdByUserId: "user_creator",
+      id: "task_notification_failed",
+      isPublic: true,
+      title: "Fix the site",
+    });
+    mocks.notifyTaskAssigneeOfAssignment.mockRejectedValue(
+      new Error("notification failed"),
+    );
+
+    await expect(
+      createTask("user_creator", {
+        assigneePersonId: "person_target",
+        description: "The page should make the next action obvious.",
+        title: "Fix the site",
+      }),
+    ).resolves.toMatchObject({ id: "task_notification_failed" });
+
+    expect(mocks.notifyTaskAssigneeOfAssignment).toHaveBeenCalledWith({
+      senderUserId: "user_creator",
+      taskId: "task_notification_failed",
+    });
+  });
+
   it("forces assigned tasks to assigned-only even when open claiming is requested", async () => {
     mocks.prisma.taskCreate.mockResolvedValue({
       assigneePersonId: "person_target",

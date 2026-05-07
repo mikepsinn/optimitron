@@ -1,8 +1,4 @@
-import {
-  TaskCategory,
-  TaskDifficulty,
-  type Prisma,
-} from "@optimitron/db";
+import { TaskCategory, TaskDifficulty, type Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { createTask } from "@/lib/tasks.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
@@ -47,15 +43,27 @@ function clean(value: string | null | undefined, maxLength: number) {
 }
 
 function makeTitle(message: string) {
-  const firstLine = message
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 72);
+  const firstLine = message.replace(/\s+/g, " ").trim().slice(0, 72);
   return `Review site feedback: ${firstLine || "No summary"}`;
 }
 
 function cleanEmail(value: string | null | undefined) {
   return clean(value, MAX_EMAIL_LENGTH);
+}
+
+function cleanHttpUrl(value: string | null | undefined) {
+  const cleaned = clean(value, MAX_URL_LENGTH);
+  if (!cleaned) return null;
+
+  try {
+    const parsed = new URL(cleaned);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+    return parsed.toString();
+  } catch {
+    return null;
+  }
 }
 
 function assertHoneypotIsEmpty(input: CreateFeedbackTaskInput) {
@@ -107,7 +115,9 @@ function buildFeedbackTaskDescription(input: {
     input.pageUrl ? `Page URL: ${input.pageUrl}` : null,
     input.contactEmail ? `Contact email: ${input.contactEmail}` : null,
     input.submitterEmail ? `Signed-in email: ${input.submitterEmail}` : null,
-    input.submitterUserId ? `Signed-in user ID: ${input.submitterUserId}` : null,
+    input.submitterUserId
+      ? `Signed-in user ID: ${input.submitterUserId}`
+      : null,
     "",
     "Triage:",
     "- If valid, turn it into the smallest useful site/task/email improvement.",
@@ -129,7 +139,7 @@ export async function createFeedbackTask(input: CreateFeedbackTaskInput) {
   const contactEmail = cleanEmail(input.contactEmail);
   const contactEmailNormalized = contactEmail?.toLowerCase() ?? null;
   const submitterEmail = cleanEmail(input.submitterEmail);
-  const pageUrl = clean(input.pageUrl, MAX_URL_LENGTH);
+  const pageUrl = cleanHttpUrl(input.pageUrl);
   const submitterUserId = clean(input.submitterUserId, 128);
   const owner = await getFeedbackTaskOwner();
   const metadata = {

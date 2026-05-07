@@ -11,6 +11,7 @@
  *   pnpm --filter @optimitron/web exec playwright test e2e/treaty-vote-login.spec.ts
  */
 import { test, expect, type Page } from "@playwright/test";
+import { DEMO_EMAIL, DEMO_PASSWORD } from "./utils/auth";
 
 async function completeSliderAndVote(page: Page) {
   // Scope to #vote — the landing page has another range slider in a separate
@@ -88,8 +89,8 @@ test("signed-in user can sign out from the dashboard", async ({ page }) => {
     "/api/auth/callback/credentials",
     {
       form: {
-        email: "demo@thinkbynumbers.org",
-        password: "demo1234",
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
         csrfToken,
         json: "true",
       },

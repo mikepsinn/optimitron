@@ -16,11 +16,9 @@ import { buildCourtReferralUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 /**
- * Treaty body + public signature box, styled to match the /treaty reader mode
- * exactly. Designed for the post-vote dashboard so committed signers can read
- * what they signed and pull quotes when recruiting. Reuses
- * `readerMarkdownComponents` and `ReferendumSiteInlineSign` so the visual
- * stays in lockstep with /treaty — single source of truth for both surfaces.
+ * Treaty body plus public signature box, styled to match /treaty reader mode.
+ * Reuses the referendum reader and inline sign controls so treaty rendering
+ * stays consistent across surfaces.
  */
 interface TreatyContentProps {
   bodyMarkdown?: string | null;
@@ -43,10 +41,9 @@ export function TreatyContent({
   const config = getReferendumConfig(TREATY_REFERENDUM_SLUG);
 
   useEffect(() => {
-    const currentReferralCode =
-      typeof window === "undefined"
-        ? null
-        : new URLSearchParams(window.location.search).get("ref");
+    const currentReferralCode = new URLSearchParams(window.location.search).get(
+      "ref",
+    );
 
     if (currentReferralCode) {
       storage.setSignupReferral(currentReferralCode);
@@ -71,9 +68,9 @@ export function TreatyContent({
         {introText ?? config.introText}
       </p>
       <div className="mx-auto h-px w-24 bg-[var(--treaty-ink-muted)]" />
-      {slides.map((slide, i) => (
+      {slides.map((slide) => (
         <ReactMarkdown
-          key={i}
+          key={`${slide.length}:${slide.slice(0, 80)}`}
           remarkPlugins={[remarkGfm]}
           components={readerMarkdownComponents}
         >
@@ -87,9 +84,9 @@ export function TreatyContent({
           </p>
           <Link
             href={courtHref}
-            className="mt-3 inline-block text-xl font-bold text-[var(--treaty-ink)] underline decoration-[var(--treaty-ink)] decoration-2 underline-offset-4 [font-family:var(--v0-font-libre-baskerville)] hover:text-[var(--treaty-ink-soft)] sm:text-2xl"
+            className="mt-4 inline-flex border border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] transition-colors hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)] sm:text-base"
           >
-            Join the Court of Humanity →
+            Join the Court of Humanity
           </Link>
           <p className="mt-3 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-base">
             The treaty is the off-ramp. The Court is the road that produces the

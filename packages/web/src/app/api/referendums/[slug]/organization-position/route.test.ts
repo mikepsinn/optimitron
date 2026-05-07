@@ -381,6 +381,28 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     );
   });
 
+  it("keeps the signature when the activation task side effect fails", async () => {
+    mocks.ensureOrganizationTreatyActivationTask.mockRejectedValue(
+      new Error("email provider exploded"),
+    );
+
+    const res = await POST(
+      makeRequest({
+        position: "YES",
+        organizationId: "org_existing",
+      }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(201);
+    await expect(res.json()).resolves.toMatchObject({
+      organizationId: "org_existing",
+      taskId: null,
+      success: true,
+    });
+    expect(mocks.positionUpsert).toHaveBeenCalled();
+  });
+
   it("does not create an outreach task for non-YES positions", async () => {
     const res = await POST(
       makeRequest({

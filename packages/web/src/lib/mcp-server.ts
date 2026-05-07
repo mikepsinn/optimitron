@@ -3314,6 +3314,12 @@ const TASK_TOOL_DEFINITIONS = [
       "Admin-only: list task email communications and email logs sent to a user, person, organization, or raw email address.",
     inputSchema: {
       type: "object" as const,
+      anyOf: [
+        { required: ["email"] },
+        { required: ["organizationId"] },
+        { required: ["personId"] },
+        { required: ["userId"] },
+      ],
       properties: {
         email: {
           type: "string",
@@ -6462,9 +6468,8 @@ export function createMcpServer(
           case "listTaskEmails": {
             const taskId = requiredString(a.taskId, "taskId");
             if (typeof taskId !== "string") return taskId;
-            const adminCommunications = await import(
-              "./admin-communications.server"
-            );
+            const adminCommunications =
+              await import("./admin-communications.server");
             const filters = {
               email: optionalString(a.email),
               limit: parseQueueLimit(a.limit, 50, 200),
@@ -6503,9 +6508,8 @@ export function createMcpServer(
                 "Pass at least one recipient filter: email, userId, personId, or organizationId.",
               );
             }
-            const adminCommunications = await import(
-              "./admin-communications.server"
-            );
+            const adminCommunications =
+              await import("./admin-communications.server");
             const [communications, emailLogs] = await Promise.all([
               adminCommunications.listAdminTaskEmailCommunications(filters),
               adminCommunications.listAdminEmailLogs(filters),
@@ -6520,9 +6524,8 @@ export function createMcpServer(
           }
 
           case "listEmailLogs": {
-            const adminCommunications = await import(
-              "./admin-communications.server"
-            );
+            const adminCommunications =
+              await import("./admin-communications.server");
             return ok(
               await adminCommunications.listAdminEmailLogs({
                 email: optionalString(a.email),

@@ -36,6 +36,9 @@ describe("buildTaskAssignmentNotificationEmail", () => {
       "Mark complete: https://warondisease.org/tasks/task_iam#complete",
     );
     expect(email.text).toContain(
+      "Reply to this email to add a comment to the task.",
+    );
+    expect(email.text).toContain(
       "We are building a decentralized to-do list for humanity",
     );
     expect(email.text).toContain("https://warondisease.org/feedback");

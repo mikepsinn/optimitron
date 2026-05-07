@@ -81,7 +81,8 @@ describe("notifyTaskAssigneeOfAssignment", () => {
         recipientOrganizationId: "org_iam",
         recipientUserId: null,
         senderUserId: "demo-user-id",
-        subject: "New task: Share the Clinical Trial Abundance Survey with your members",
+        subject:
+          "New task: Share the Clinical Trial Abundance Survey with your members",
         taskId: "task_iam",
       }),
     );
@@ -128,6 +129,20 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     ).resolves.toEqual({
       reason: "no_assignee_email",
       status: "skipped",
+    });
+
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("returns a failed result instead of throwing when lookup fails", async () => {
+    mocks.taskFindUnique.mockRejectedValue(new Error("database paused"));
+
+    await expect(
+      notifyTaskAssigneeOfAssignment({ taskId: "task_iam" }),
+    ).resolves.toEqual({
+      reason: "database paused",
+      status: "failed",
     });
 
     expect(mocks.draftTaskNotification).not.toHaveBeenCalled();

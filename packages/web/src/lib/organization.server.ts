@@ -71,18 +71,10 @@ export async function ensureOrganizationTreatyActivationTask(
   creatorUserId: string,
   db: DbClient = prisma,
 ) {
-  const organizationName = input.organizationName?.trim();
-  const organizationSlug = input.organizationSlug?.trim();
-  const organization =
-    organizationName && organizationSlug
-      ? {
-          name: organizationName,
-          slug: organizationSlug,
-        }
-      : await db.organization.findUnique({
-          where: { id: input.organizationId },
-          select: { name: true, slug: true },
-        });
+  const organization = await db.organization.findUnique({
+    where: { id: input.organizationId },
+    select: { name: true, slug: true },
+  });
 
   if (!organization) {
     throw new Error("Organization not found");
