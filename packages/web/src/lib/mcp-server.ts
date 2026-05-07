@@ -1095,12 +1095,18 @@ function parseTaskVisibility(value: unknown) {
 
 function resolveCreateTaskIsPublic(
   input: Record<string, unknown>,
-  assigneeOrganizationId?: string,
+  assigneeOrganizationId: string | undefined,
+  hasAdminAccess: boolean,
 ) {
   const visibilityOverride = parseTaskVisibility(input.visibility);
   if (visibilityOverride !== undefined) return visibilityOverride;
   if (typeof input.isPublic === "boolean") return input.isPublic;
-  return Boolean(assigneeOrganizationId);
+  // Org-assigned tasks default public for admin scope (intentional for
+  // public-facing campaigns: leader/president/treaty-activation tasks).
+  // Non-admin scope defaults private — Wishonia and other agents creating
+  // outreach to organizations should not silently expose those tasks to
+  // the public feed; the recipient still gets the email and can act on it.
+  return hasAdminAccess && Boolean(assigneeOrganizationId);
 }
 
 function firstFiniteNumber(values: unknown[], fallback?: number) {
@@ -6722,7 +6728,11 @@ export function createMcpServer(
               (a.assigneeOrganizationId as string | undefined) || undefined;
             let isPublic: boolean;
             try {
-              isPublic = resolveCreateTaskIsPublic(a, assigneeOrganizationId);
+              isPublic = resolveCreateTaskIsPublic(
+                a,
+                assigneeOrganizationId,
+                hasAdminTaskWriteAccess(scopes, isAdmin),
+              );
             } catch (error) {
               return err(
                 error instanceof Error

@@ -18,6 +18,16 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 
 ## What's shipped (2026-05-07)
 
+**MCP-driven outreach pipeline (continuing PR #58):**
+
+- MCP `createTask` now fires the assignment email on creation. Best-effort
+  via the existing `notifyTaskAssigneeOfAssignment` helper, mirroring the
+  web-side call site. `packages/web/src/lib/mcp-server.ts:6543`.
+- Non-admin MCP scope creating an org-assigned task no longer errors —
+  defaults to `isPublic: false` so Wishonia's outreach to organizations is
+  not auto-broadcast on the public Earth feed. Admin scope keeps the public
+  default for leader/president/treaty-activation tasks.
+
 **Campaign-organization flow follow-ups (PR #58):**
 
 - Feedback rate-limit returns `FeedbackRejectedError(rate_limited)` instead of 500.
@@ -189,21 +199,18 @@ MCP `createTask` already creates `Task` rows but does **not** fire the assignmen
 to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/mcp-server.ts`,
 `packages/web/src/lib/email/inbound-reply.ts`, `packages/web/src/lib/tasks/task-assignment-notifications.server.ts`.
 
-- **Wire `notifyTaskAssigneeOfAssignment`** into MCP `createTask` after the
-  `prisma.task.create` `$transaction` at `mcp-server.ts:6832`. Mirror the call site at
-  `tasks.server.ts:1524`. Best-effort: `try`/`catch`, log, do not fail the tool.
+- ~~**Wire `notifyTaskAssigneeOfAssignment`**~~ — done.
 - ~~**Pass `from` override**~~ — done. `notifyTaskAssigneeOfAssignment` now resolves
   `senderUserId` → `Person.displayName` and passes
-  `formatShareEmailFromHeader(senderName)` through `sendDraftTaskNotification`. Once the
-  MCP wiring above lands, MCP-driven sends inherit it for free.
+  `formatShareEmailFromHeader(senderName)` through `sendDraftTaskNotification`.
+- ~~**Default `isPublic: false` for non-admin MCP-created assignee-organization tasks**~~ — done.
+  `resolveCreateTaskIsPublic` now returns `false` when the caller lacks admin scope and no
+  explicit visibility was passed. Non-admin scope can now create org-assigned tasks (was
+  previously blocked by the `isPublic && !admin` check).
 - **Fan out inbound replies to all watchers**, not just the creator. Replace the
   bespoke `resolveCreatorEmail` block at `email/inbound-reply.ts:274` with
   `notifyTaskCommentRecipients({ commentId, ... })` — the helper already filters the author
   out and notifies creator + assignee + endpoints + admin monitors.
-- **Default `isPublic: false`** for non-admin MCP-created assignee-organization tasks.
-  Currently defaults to `true` when org-assigned (`mcp-server.ts:1094`
-  `resolveCreateTaskIsPublic`). Admin-scope keeps current behavior for leader/president tasks
-  that are intentionally public. Comment visibility rides the same flag.
 - **Integration test** at `packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
   `createOrganization` → `createTask` → assert email queued + `from` set + `replyTo` set.
   Then synthesize an `InboundEmailEvent` matching the `replyTo` and assert `processInboundReply`
@@ -330,11 +337,28 @@ exist; they are not wired into the funnel.
 
 **Blocked on out-of-band work** (do not start engineering until these are resolved):
 
-1. Legal wrapper (Cayman foundation or BVI entity) for the treasury multisig.
-2. Securities posture (Reg D 506(c) accredited path, or a defensible non-security framing).
+1. **Two-entity legal structure** (working assumption, 2026-05-07). The site presents two
+   separate funding tracks:
+   - **Accelerated Medicine Foundation** (existing US 501(c)(3)) hosts a charitable prize
+     pool. Donations tax-deductible. Accepts stock cleanly through a brokerage. Grants out
+     to outreach campaigns with verified-vote outcome metrics. This unlocks foundation /
+     ESG-mandated / large-individual donor capital that the assurance contract structurally
+     cannot reach (no clawback on completed gifts).
+   - **Earth Optimization Services LLC** (new) operates the dominant-assurance contract:
+     deposits, Aave yield, refund-or-payout. LLC structure avoids the 501(c)(3) "completed
+     gift" rule and avoids the lobbying-substantial-activity test (which lives at the LLC
+     side anyway because the IAB lobbying mechanism does too).
+   - **Constraints to enforce:** AMF cannot grant in ways that benefit EOS owners
+     (self-dealing); the two pools must be operationally separable; lobbying activity stays
+     LLC-side. UI on `/prize` should label the two tracks clearly so donors pick the
+     vehicle that matches their tax + risk profile.
+2. Securities posture for the LLC pool (Reg D 506(c) accredited path, or a defensible
+   non-security framing).
 3. Contract audit + Base mainnet deployment. Contracts currently target Sepolia.
-4. Multisig + emergency-pause governance. 3-of-5 default.
-5. Aave mainnet integration verified end-to-end with small real capital.
+4. Multisig + emergency-pause governance. 3-of-5 default. Same multisig holds both pools or
+   separate? Default to separate so AMF's 501(c)(3) audit trail is clean.
+5. Aave mainnet integration verified end-to-end with small real capital (LLC side only —
+   AMF charitable pool is cash + stock, not yield-bearing).
 6. Seed deposits ($100K–$500K from creator + aligned co-funders) — non-empty contract is a
    precondition for credibility.
 
@@ -344,15 +368,11 @@ exist; they are not wired into the funnel.
 - Add `VoteTokenBalanceCard` to `TreatyTaskDashboardClient.tsx` with a link to `/prize`.
 - Day-7 + day-30 reminder emails referencing the user's VOTE balance and prize milestones.
 - Referrer leaderboard on `/prize` (social proof).
-- **Accept share/equity donations** in addition to USDC cash. Listed-company governance
-  + tax counsel both require the recipient to be a tax-qualifying entity in the donor's
-  jurisdiction (US: 501(c)(3) or a DAF sleeve; EU: registered public-benefit body), so this
-  follows the legal wrapper above. Once the wrapper is chosen, stand up a DTC-eligible
-  brokerage account, publish a valuation methodology, and decide hold-vs-liquidate per
-  donation. Likely low volume in cycle one (private founder-led companies, small B-corps,
-  crypto treasuries already used to non-cash assets) but high signal value: a company
-  pledging its own equity is unusually committed, and the headline is a fundraising
-  multiplier in itself.
+- **Accept share/equity donations** through the AMF 501(c)(3) sleeve. Stand up a
+  DTC-eligible brokerage account, publish a valuation methodology, and decide
+  hold-vs-liquidate per donation. Volume likely small in cycle one (private founder-led
+  companies, small B-corps, crypto treasuries already used to non-cash assets) but high
+  signal: a company pledging its own equity is unusually committed.
 - "Track-now, mint-retroactively" framing if engineering ships before contracts go live, so
   the referral-attribution data is collected from day one.
 - No schema changes.
