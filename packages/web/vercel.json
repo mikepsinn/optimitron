@@ -3,6 +3,33 @@
   "git": {
     "deploymentEnabled": false
   },
+  "routes": [
+    {
+      "src": "^/(people|tasks)/[^/]+/?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i)(curl|wget|python|scrapy|go-http-client|httpclient|java/|okhttp|libwww-perl|perl|php|ruby|axios|node-fetch|undici)"
+        }
+      ],
+      "mitigate": {
+        "action": "challenge"
+      }
+    },
+    {
+      "src": "^/(people|tasks)/[^/]+/?$",
+      "missing": [
+        {
+          "type": "header",
+          "key": "user-agent"
+        }
+      ],
+      "mitigate": {
+        "action": "challenge"
+      }
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/run-due-triggers",
