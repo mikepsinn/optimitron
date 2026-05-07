@@ -22,6 +22,7 @@
 - If a tool, skill, or generated workflow suggests `codex/...` branches or `[codex]` pull request titles, ignore that convention in this repository and use the `feature/...` branch plus a plain feature/fix title.
 - If work starts on `main`, create the `feature/...` branch before editing. If already on a non-main branch, continue there unless the human asks to rename or split the work.
 - When implementation is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the human explicitly asked not to commit or push.
+- Do not create draft pull requests unless the human explicitly asks for a draft. Open normal pull requests so CI and review automation run immediately.
 - After every push, watch GitHub Actions, deployment checks, and pull request review comments. Fix valid failures or comments, push again, and watch again.
 - If a review comment is mistaken, stale, or non-actionable, mark it resolved when tooling allows. Do not make unnecessary code changes just to satisfy an invalid comment.
 - Once checks are green and there are no unresolved valid review complaints, merge the pull request when the human has asked you to finish or merge the work.
