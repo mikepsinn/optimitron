@@ -53,6 +53,7 @@ const mocks = vi.hoisted(() => ({
   getProfileIdentityData: vi.fn(),
   updateUserProfile: vi.fn(),
   createOrganizationWithOwner: vi.fn(),
+  uploadImageFromUrl: vi.fn(),
   updateOrganizationServer: vi.fn(),
   addOrganizationMember: vi.fn(),
   removeOrganizationMember: vi.fn(),
@@ -205,6 +206,10 @@ vi.mock("../organization.server", () => ({
   isOrganizationMemberRole: (value: string) => VALID_MEMBER_ROLES.has(value),
   ForbiddenError,
   LastOwnerError,
+}));
+
+vi.mock("../image-upload-from-url.server", () => ({
+  uploadImageFromUrl: mocks.uploadImageFromUrl,
 }));
 
 vi.mock("../prisma", () => ({
@@ -571,6 +576,7 @@ describe("MCP server tool dispatch", () => {
     expect(writerNames).toEqual(
       expect.arrayContaining([
         "createOrganization",
+        "uploadImageFromUrl",
         "upsertMemorialPerson",
         "addMemorialEvidence",
         "recordInterventionExperience",
@@ -707,6 +713,49 @@ describe("MCP server tool dispatch", () => {
     expect(parseToolBody(result)).toEqual({
       error: "Organization name already exists: Open Philanthropy",
     });
+  });
+
+  it("uploadImageFromUrl imports a remote organization logo through MCP", async () => {
+    mocks.uploadImageFromUrl.mockResolvedValueOnce({
+      contentType: "image/webp",
+      key: "organizations/logos/2026-05-07/logo.webp",
+      publicUrl: "https://assets.example.org/organizations/logos/logo.webp",
+      sizeBytes: 1234,
+      sourceUrl: "https://example.org/logo.png",
+    });
+    const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+    const result = await client.callTool({
+      name: "uploadImageFromUrl",
+      arguments: {
+        filename: "institute-logo.png",
+        kind: "organization-square-logo",
+        url: "https://example.org/logo.png",
+      },
+    });
+
+    expect(result.isError).toBeFalsy();
+    expect(mocks.uploadImageFromUrl).toHaveBeenCalledWith({
+      filename: "institute-logo.png",
+      kind: "organization-square-logo",
+      url: "https://example.org/logo.png",
+    });
+    expect(parseToolBody(result)).toEqual({
+      contentType: "image/webp",
+      key: "organizations/logos/2026-05-07/logo.webp",
+      publicUrl: "https://assets.example.org/organizations/logos/logo.webp",
+      sizeBytes: 1234,
+      sourceUrl: "https://example.org/logo.png",
+    });
+    expect(mocks.mcpToolCallAuditCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: "SUCCEEDED",
+          toolName: "uploadImageFromUrl",
+          userId: "user-1",
+        }),
+      }),
+    );
   });
 
   it("audits successful Earth-data MCP writes without storing raw payloads", async () => {

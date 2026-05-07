@@ -96,6 +96,10 @@ export function buildImageUploadKey(input: {
   )}.${config.outputExtension}`;
 }
 
+export function getImageUploadMaxInputBytes(kind: ImageUploadKind) {
+  return KIND_CONFIG[kind].maxInputBytes;
+}
+
 export async function normalizeImageUpload(
   file: File,
   { kind }: NormalizeImageUploadInput,
