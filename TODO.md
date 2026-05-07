@@ -18,6 +18,38 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 
 ## What's shipped (2026-05-07)
 
+**Campaign-organization flow follow-ups (PR #58):**
+
+- Feedback rate-limit returns `FeedbackRejectedError(rate_limited)` instead of 500.
+  `packages/web/src/lib/feedback.server.ts:117`.
+- `getBaseUrl()` trailing-slash normalized in organization activation task URLs.
+  `packages/web/src/lib/organization.server.ts:82`.
+- Pending-org-endorsement sync: lock loss mid-batch returns `skippedBecauseLocked`
+  instead of error-stating remaining drafts. `AbortController` (12s) on the post
+  fetch keeps it < 15s lock TTL.
+  `packages/web/src/lib/organization-endorsement-sync.ts`.
+- Assignment-email From now reads `<Creator> via International Campaign to End War
+  and Disease <hello@updates.warondisease.org>`. Orgs see who actually assigned
+  the task; reply-routing via `reply+{taskId}@…` unchanged.
+  `packages/web/src/lib/tasks/task-assignment-notifications.server.ts:125`.
+- Inbound-reply tests cover the org-contactEmail → `TaskComment(authorOrganizationId)`
+  path so the round-trip is documented.
+  `packages/web/src/lib/email/__tests__/inbound-reply.test.ts`.
+
+**`/endorse` rewrite:**
+
+- Calculator moved above the join form. Header is one prompt + one data sentence
+  citing `GLOBAL_DISEASE_DEATHS_DAILY`. Result split into two columns: "If you
+  act" (lives saved, suffering prevented) vs "If you do not" (preventable deaths
+  allowed, suffering allowed) — same magnitude, opposite framing.
+- Cut the `ORGANIZATION_BENEFITS` aside, the duplicated `ImpactStat` block, and
+  the multi-paragraph "Why bother?" section. Three-step "embed iframe / send
+  one email / post once" replaces the bullets.
+  `packages/web/src/app/endorse/page.tsx`,
+  `packages/web/src/app/endorse/OrganizationImpactCalculator.tsx`.
+
+
+
 **Acquisition funnel (warondisease.org):**
 
 - Landing renders embedded `TreatyVoteFlow`; auth is inline; no pre-vote friction.
@@ -160,9 +192,10 @@ to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/m
 - **Wire `notifyTaskAssigneeOfAssignment`** into MCP `createTask` after the
   `prisma.task.create` `$transaction` at `mcp-server.ts:6832`. Mirror the call site at
   `tasks.server.ts:1524`. Best-effort: `try`/`catch`, log, do not fail the tool.
-- **Pass `from` override** so emails come from the creator ("Mike P. Sinn via International
-  Campaign to End War and Disease"), not the campaign address. Resolve via
-  `formatShareEmailFromHeader(creator.displayName)` from `email/from-address.ts:74`.
+- ~~**Pass `from` override**~~ — done. `notifyTaskAssigneeOfAssignment` now resolves
+  `senderUserId` → `Person.displayName` and passes
+  `formatShareEmailFromHeader(senderName)` through `sendDraftTaskNotification`. Once the
+  MCP wiring above lands, MCP-driven sends inherit it for free.
 - **Fan out inbound replies to all watchers**, not just the creator. Replace the
   bespoke `resolveCreatorEmail` block at `email/inbound-reply.ts:274` with
   `notifyTaskCommentRecipients({ commentId, ... })` — the helper already filters the author
@@ -174,8 +207,23 @@ to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/m
 - **Integration test** at `packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
   `createOrganization` → `createTask` → assert email queued + `from` set + `replyTo` set.
   Then synthesize an `InboundEmailEvent` matching the `replyTo` and assert `processInboundReply`
-  writes a `TaskComment` and notifies non-author recipients.
+  writes a `TaskComment` and notifies non-author recipients. (The org-contactEmail leg of
+  the inbound side is already covered by `inbound-reply.test.ts`; the gap is the integration
+  glue.)
 - **No schema changes.**
+
+**Open design decisions (resolved 2026-05-07, do not re-litigate):**
+
+- **One recipient, not all org members.** Resolution stays `contactEmail` → first
+  owner/admin (`task-assignment-notifications.server.ts:71-96`). Tasks are accountability;
+  blasting all members turns them into newsletters and dilutes ownership. Other members
+  arrive via the comment thread when the contact loops them in.
+- **Auto-send on assignment, no confirmation step.** Confirmation adds a `DRAFT` task
+  state and a second MCP tool that the agent has to remember to call. Add only when a
+  real misfire shows up.
+- **Privacy: keep treaty activation tasks `isPublic: true`.** This is a public-facing
+  campaign; visible peer pressure is part of the asset. Default-private only kicks in
+  for non-admin MCP scope (the bullet above).
 
 ### P1 — Round-progress visualization
 
