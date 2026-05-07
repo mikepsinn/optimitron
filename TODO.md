@@ -196,8 +196,17 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
 - **Seed `Humanity v. Government` as a `CourtCase` row.** Status `OPEN`, `juryReferendumId` = `one-percent-treaty` referendum, primary respondent = synthetic "Governments of Earth" `Subject`, nominal plaintiff = synthetic "Humanity" `Subject`. Three counts as `CourtCaseClaim` rows (Direct Killing, Regulatory Delay, Misallocation) with manual-section URLs as evidence citations. Harms as `CourtCaseHarm` rows linked to parameter constants (310M war deaths, 102M efficacy-lag deaths, etc.). Settlement remedy = "Ratify the 1% Treaty" with `enforcementTaskId` pointing at the existing singleton ratification task.
 - ~~**Live treaty voters auto-register as plaintiffs**~~ — done. Hooked into the
   `/api/referendums/[slug]/vote` route after the YES upsert. Memorial/posthumous
-  registration was already wired in the represented-people route. Backfill script for
-  pre-existing voters still needed (one-time `packages/web/scripts/backfill-court-plaintiffs.ts`).
+  registration was already wired in the represented-people route.
+- ~~**Backfill pre-existing voters as plaintiffs**~~ — script shipped at
+  `packages/web/scripts/backfill-court-plaintiffs.ts`. Walks every YES vote on the
+  treaty referendum and registers each as a `NAMED_PLAINTIFF` on the case via the
+  existing idempotent `ensureHumanityVGovernmentPlaintiffParty` helper. Run once per
+  deploy where pre-existing voters need to be backfilled:
+  `pnpm --dir packages/web tsx scripts/backfill-court-plaintiffs.ts`. Dry-run with
+  `--dry-run`. Without this, `getHumanityVGovernmentPlaintiffCount` only sees voters
+  who voted *after* the auto-register hook shipped, so the live counter on
+  `/humanity-v-government` reads artificially low — a credibility rupture on the
+  case page's headline number.
 - **Surface implicit class membership in the dashboard.** Every signed-in user is
   structurally already a plaintiff in *Humanity v. Government* (Rule 23(b)(3)-style
   automatic class membership for living humans harmed by government failure to
