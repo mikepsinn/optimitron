@@ -131,10 +131,14 @@ export default async function PrivacyPage() {
                 display the details you submitted, related public counts, and
                 referral impact. Public plaintiff and memorial pages may show
                 the person's name, photo, relationship, life or death status,
-                public comments, memorial details, evidence, responsible-party
-                claims, and condition or cause when the form asks for public
-                display and you confirm it. We do not intentionally publish your
-                private email address unless you put it into a public field.
+                public comments, memorial details, evidence, and
+                responsible-party claims. They may also show a condition or
+                cause when the form asks for public display and you confirm it.
+                For living people or people whose status is unknown, we publish
+                a health condition only when you confirm you have consent or
+                legal authority to disclose it. We do not intentionally publish
+                your private email address unless you put it into a public
+                field.
               </p>
             </section>
 
