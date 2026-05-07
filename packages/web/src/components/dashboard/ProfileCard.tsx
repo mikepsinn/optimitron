@@ -175,7 +175,7 @@ export function ProfileCard({
                 {editForm.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    alt=""
+                    alt={`${editForm.name || user.email || "User"} profile photo`}
                     className="h-full w-full object-cover"
                     src={editForm.image}
                   />
@@ -209,7 +209,7 @@ export function ProfileCard({
                   {avatarUploading ? "Uploading..." : "Upload photo"}
                 </Button>
                 {avatarError ? (
-                  <p className="text-xs font-bold text-red-600">
+                  <p className="text-xs font-bold text-destructive">
                     {avatarError}
                   </p>
                 ) : null}
@@ -358,7 +358,7 @@ export function ProfileCard({
         </div>
 
         {formError && (
-          <p className="text-sm font-bold text-red-600">{formError}</p>
+          <p className="text-sm font-bold text-destructive">{formError}</p>
         )}
       </Card.Content>
     </Card>

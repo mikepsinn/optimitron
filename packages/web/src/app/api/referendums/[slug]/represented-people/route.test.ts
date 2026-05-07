@@ -284,6 +284,18 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.personCreate).not.toHaveBeenCalled();
   });
 
+  it("rejects unsupported referendum slugs before creating a Humanity v Government plaintiff", async () => {
+    const res = await POST(
+      request({ displayName: "Grandma Kay", conditionName: "dementia" }),
+      params("random-referendum"),
+    );
+
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toEqual({ error: "Not found" });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+    expect(mocks.courtCasePartyUpsert).not.toHaveBeenCalled();
+  });
+
   it("rejects represented people without permission or authority confirmation", async () => {
     const res = await POST(
       request(
@@ -697,7 +709,9 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         lifeStatus: "DECEASED",
         memorialMessage: "She taught everyone to fix broken things.",
         relationshipType: "nephew-of",
-        responsiblePartyName: "FDA approval lag",
+        responsibleParties: [
+          { jurisdictionCode: null, name: "FDA approval lag", roleSlug: "" },
+        ],
       }),
       params(),
     );

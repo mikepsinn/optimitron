@@ -23,6 +23,7 @@ import {
 } from "@/lib/represented-person-privacy";
 import { slugify } from "@/lib/slugify";
 import { ensureSubjectForPerson } from "@/lib/subject.server";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 const MAX_NAME_LENGTH = 80;
 const MAX_CONDITION_LENGTH = 80;
@@ -225,16 +226,12 @@ const representedPersonSubmissionSchema = z
     relationshipType: cleanStringSchema(MAX_RELATIONSHIP_LENGTH).transform(
       (value) => slugify(value),
     ),
-    // New: structured multi-government attribution. Front-end sends an array;
-    // legacy clients posting `responsiblePartyName` keep working via the
-    // backward-compat fallback below.
     responsibleParties: z
       .unknown()
       .transform((value) =>
         Array.isArray(value) ? value.slice(0, MAX_RESPONSIBLE_PARTIES) : [],
       )
       .pipe(z.array(responsiblePartyInputSchema)),
-    responsiblePartyName: cleanStringSchema(MAX_RESPONSIBLE_PARTY_LENGTH),
     showConditionPublicly: booleanInputSchema,
     memorialEvidence: z
       .unknown()
@@ -342,9 +339,14 @@ const representedPersonSubmissionSchema = z
 
 export async function POST(
   request: Request,
-  _context: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
+    const { slug } = await params;
+    if (slug !== TREATY_REFERENDUM_SLUG) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     const { userId } = await requireAuth();
     let body: Record<string, unknown>;
     try {
@@ -394,7 +396,6 @@ export async function POST(
       publicDisplayAcknowledged,
       relationshipType,
       responsibleParties,
-      responsiblePartyName,
       showConditionPublicly,
       wasChild,
     } = parsed.data;
@@ -421,23 +422,12 @@ export async function POST(
       .filter(Boolean)
       .join(" — ");
 
-    // Combine the legacy single responsiblePartyName field with the new
-    // responsibleParties array. First entry becomes primary; cap total.
-    const partiesFromLegacy = responsiblePartyName
-      ? [
-          {
-            jurisdictionCode: null as string | null,
-            name: responsiblePartyName,
-            roleSlug: "",
-          },
-        ]
-      : [];
     const dedupedParties: Array<{
       jurisdictionCode: string | null;
       name: string;
       roleSlug: string;
     }> = [];
-    for (const party of [...responsibleParties, ...partiesFromLegacy]) {
+    for (const party of responsibleParties) {
       if (!party.jurisdictionCode && !party.name) continue;
       const key = `${party.jurisdictionCode ?? ""}::${party.name.toLowerCase()}`;
       if (

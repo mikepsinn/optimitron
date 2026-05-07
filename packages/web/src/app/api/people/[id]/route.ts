@@ -6,8 +6,6 @@ import {
   PersonDeathCauseCategory,
   PersonLifeStatus,
   PersonMemorialEvidenceKind,
-  ReferendumVoteSource,
-  VotePosition,
   schemas,
 } from "@optimitron/db";
 import { z } from "zod";
@@ -648,20 +646,6 @@ export async function PATCH(
         });
       }
 
-      await tx.referendumVote.updateMany({
-        where: {
-          deletedAt: null,
-          personId: id,
-          userId,
-          voteSource: ReferendumVoteSource.REPRESENTED,
-        },
-        data: {
-          answer: VotePosition.YES,
-          isPublic: finalIsPublic,
-          publicComment: finalPublicComment || null,
-        },
-      });
-
       if (nextRelationshipType !== undefined) {
         const casterPerson = await ensurePersonForUser(userId, {}, tx);
         const existingRelationship = await tx.personRelationship.findFirst({
@@ -945,18 +929,6 @@ export async function DELETE(
       const now = new Date();
       await tx.person.update({
         where: { id },
-        data: {
-          deletedAt: now,
-          isPublic: false,
-        },
-      });
-      await tx.referendumVote.updateMany({
-        where: {
-          deletedAt: null,
-          personId: id,
-          userId,
-          voteSource: ReferendumVoteSource.REPRESENTED,
-        },
         data: {
           deletedAt: now,
           isPublic: false,

@@ -17,6 +17,7 @@ const KIND_CONFIG = {
     maxInputBytes: 4 * 1024 * 1024,
     maxOutputHeight: 1600,
     maxOutputWidth: 1600,
+    maxInputPixels: 16_000_000,
     outputContentType: "image/jpeg",
     outputExtension: "jpg",
     outputQuality: 84,
@@ -27,6 +28,7 @@ const KIND_CONFIG = {
     maxInputBytes: 4 * 1024 * 1024,
     maxOutputHeight: 1024,
     maxOutputWidth: 1024,
+    maxInputPixels: 12_000_000,
     outputContentType: "image/webp",
     outputExtension: "webp",
     outputQuality: 90,
@@ -37,6 +39,7 @@ const KIND_CONFIG = {
     maxInputBytes: 4 * 1024 * 1024,
     maxOutputHeight: 800,
     maxOutputWidth: 2000,
+    maxInputPixels: 16_000_000,
     outputContentType: "image/webp",
     outputExtension: "webp",
     outputQuality: 84,
@@ -47,6 +50,7 @@ const KIND_CONFIG = {
     maxInputBytes: 4 * 1024 * 1024,
     maxOutputHeight: 1024,
     maxOutputWidth: 1024,
+    maxInputPixels: 12_000_000,
     outputContentType: "image/jpeg",
     outputExtension: "jpg",
     outputQuality: 84,
@@ -59,6 +63,7 @@ const KIND_CONFIG = {
     maxInputBytes: number;
     maxOutputHeight: number;
     maxOutputWidth: number;
+    maxInputPixels: number;
     outputContentType: "image/jpeg" | "image/webp";
     outputExtension: "jpg" | "webp";
     outputQuality: number;
@@ -113,13 +118,33 @@ export async function normalizeImageUpload(
     throw new Error("Could not read this image.");
   }
 
+  let metadata: sharp.Metadata;
   try {
-    let image = sharp(source, { failOn: "none" }).rotate().resize({
-      fit: "inside",
-      height: config.maxOutputHeight,
-      withoutEnlargement: true,
-      width: config.maxOutputWidth,
-    });
+    metadata = await sharp(source, { failOn: "none" }).metadata();
+  } catch {
+    throw new Error("Could not read this image.");
+  }
+
+  if (
+    typeof metadata.width === "number" &&
+    typeof metadata.height === "number" &&
+    metadata.width * metadata.height > config.maxInputPixels
+  ) {
+    throw new Error("Image has too many pixels.");
+  }
+
+  try {
+    let image = sharp(source, {
+      failOn: "none",
+      limitInputPixels: config.maxInputPixels,
+    })
+      .rotate()
+      .resize({
+        fit: "inside",
+        height: config.maxOutputHeight,
+        withoutEnlargement: true,
+        width: config.maxOutputWidth,
+      });
 
     if (config.flattenBackground) {
       image = image.flatten({ background: config.flattenBackground });

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
 import { ActivityType, OrgStatus } from "@optimitron/db";
+import {
+  normalizeOrganizationHttpUrl,
+  normalizeOrganizationImageUrl,
+} from "@/lib/organization.server";
 
 async function requireAdmin() {
   const { userId, userEmail } = await requireAuth();
@@ -46,14 +50,48 @@ export async function PATCH(
     if (body.name) updateData.name = body.name;
     if (body.slug) updateData.slug = body.slug;
     if (body.squareLogoUrl !== undefined) {
-      updateData.squareLogoUrl = body.squareLogoUrl;
+      const squareLogoUrl = normalizeOrganizationImageUrl(body.squareLogoUrl);
+      if (squareLogoUrl === false) {
+        return NextResponse.json(
+          { error: "Invalid square logo URL" },
+          { status: 400 },
+        );
+      }
+      updateData.squareLogoUrl = squareLogoUrl;
     }
     if (body.wordmarkLogoUrl !== undefined) {
-      updateData.wordmarkLogoUrl = body.wordmarkLogoUrl;
+      const wordmarkLogoUrl = normalizeOrganizationImageUrl(
+        body.wordmarkLogoUrl,
+      );
+      if (wordmarkLogoUrl === false) {
+        return NextResponse.json(
+          { error: "Invalid wordmark logo URL" },
+          { status: 400 },
+        );
+      }
+      updateData.wordmarkLogoUrl = wordmarkLogoUrl;
     }
-    if (body.donationUrl !== undefined) updateData.donationUrl = body.donationUrl;
+    if (body.donationUrl !== undefined) {
+      const donationUrl = normalizeOrganizationHttpUrl(body.donationUrl);
+      if (donationUrl === false) {
+        return NextResponse.json(
+          { error: "Invalid donation URL" },
+          { status: 400 },
+        );
+      }
+      updateData.donationUrl = donationUrl;
+    }
     if (body.contactEmail) updateData.contactEmail = body.contactEmail;
-    if (body.website) updateData.website = body.website;
+    if (body.website !== undefined) {
+      const website = normalizeOrganizationHttpUrl(body.website);
+      if (website === false) {
+        return NextResponse.json(
+          { error: "Invalid website URL" },
+          { status: 400 },
+        );
+      }
+      updateData.website = website;
+    }
     if (body.description) updateData.description = body.description;
 
     const updated = await prisma.organization.update({

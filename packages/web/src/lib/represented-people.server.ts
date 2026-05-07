@@ -396,9 +396,7 @@ export async function getRepresentedPeopleGalleryData(
 
 export async function getRepresentedPersonProfileData(
   handleOrId: string,
-  referendumSlug = TREATY_REFERENDUM_SLUG,
 ): Promise<RepresentedPersonProfileData | null> {
-  void referendumSlug;
   const basePlaintiffPartyWhere = {
     case: { slug: HUMANITY_V_GOVERNMENT_CASE_SLUG },
     deletedAt: null,

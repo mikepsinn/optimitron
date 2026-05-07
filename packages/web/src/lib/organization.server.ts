@@ -336,12 +336,6 @@ export async function createOrganizationWithOwner(
 
 const MANAGE_ROLES = new Set(["owner", "admin"]);
 
-/**
- * Returns true if the user can manage the given organization. Lazily backfills
- * an "owner" membership row when the user is the org's creator but has no
- * membership row yet — this keeps legacy orgs first-class without requiring a
- * data migration.
- */
 export async function canManageOrganization(
   userId: string,
   organizationId: string,
@@ -357,33 +351,7 @@ export async function canManageOrganization(
     return true;
   }
 
-  if (membership) {
-    return false;
-  }
-
-  // No membership row — check creator fallback and backfill if applicable.
-  const org = await prisma.organization.findUnique({
-    where: { id: organizationId },
-    select: { creatorId: true },
-  });
-
-  if (!org || org.creatorId !== userId) {
-    return false;
-  }
-
-  await prisma.organizationMember.upsert({
-    where: {
-      organizationId_userId: { organizationId, userId },
-    },
-    update: {},
-    create: {
-      organizationId,
-      userId,
-      role: "owner",
-    },
-  });
-
-  return true;
+  return false;
 }
 
 export async function getManageableOrganizationsForUser(userId: string) {

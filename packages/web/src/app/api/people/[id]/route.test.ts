@@ -333,6 +333,7 @@ describe("PATCH /api/people/[id]", () => {
       }),
     );
     expect(mocks.voteUpdate).not.toHaveBeenCalled();
+    expect(mocks.voteUpdateMany).not.toHaveBeenCalled();
   });
 
   it("returns 404 when the owned person is not a court case plaintiff", async () => {
@@ -655,18 +656,7 @@ describe("DELETE /api/people/[id]", () => {
         isPublic: false,
       },
     });
-    expect(mocks.voteUpdateMany).toHaveBeenCalledWith({
-      where: {
-        deletedAt: null,
-        personId: "person_1",
-        userId: "user_1",
-        voteSource: "REPRESENTED",
-      },
-      data: {
-        deletedAt: expect.any(Date),
-        isPublic: false,
-      },
-    });
+    expect(mocks.voteUpdateMany).not.toHaveBeenCalled();
     expect(mocks.courtCasePartyUpdateMany).toHaveBeenCalledWith({
       where: expect.objectContaining({
         case: expect.objectContaining({

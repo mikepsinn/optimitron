@@ -154,7 +154,7 @@ export function OrganizationProfileEditor({
             {form.squareLogoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                alt=""
+                alt={`${form.name || organization.name} square logo`}
                 className="h-full w-full object-cover"
                 src={form.squareLogoUrl}
               />
@@ -220,7 +220,7 @@ export function OrganizationProfileEditor({
           {form.wordmarkLogoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              alt=""
+              alt={`${form.name || organization.name} wordmark`}
               className="max-h-24 max-w-full object-contain"
               src={form.wordmarkLogoUrl}
             />

@@ -43,6 +43,26 @@ describe("normalizeImageUpload", () => {
     ).rejects.toThrow("Unsupported image type");
   });
 
+  it("rejects images that exceed the decoded pixel limit", async () => {
+    const source = await sharp({
+      create: {
+        width: 5000,
+        height: 5000,
+        channels: 3,
+        background: { r: 255, g: 255, b: 255 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await expect(
+      normalizeImageUpload(
+        new File([source], "huge.png", { type: "image/png" }),
+        { kind: "person-photo" },
+      ),
+    ).rejects.toThrow("too many pixels");
+  });
+
   it("normalizes organization square logos to transparent WebP uploads", async () => {
     const source = await sharp({
       create: {
