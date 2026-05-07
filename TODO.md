@@ -18,6 +18,15 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 
 ## What's shipped (2026-05-07)
 
+**Live vote counter on landing:**
+
+- `VoteCounterSplit` now renders above the `TreatyVoteFlow` on the landing
+  page, hidden when total voices is 0 so a brand-new site doesn't show
+  empty rails. Uses the same `individualCount` / `memorialVoteCount` /
+  `representedHumanCount` already loaded by `ReferendumSiteHomeData`, so
+  no new server query.
+  `packages/web/src/components/site/OnePercentTreatyLandingPage.tsx`.
+
 **MCP-driven outreach pipeline (continuing PR #58):**
 
 - MCP `createTask` now fires the assignment email on creation. Best-effort
@@ -190,13 +199,11 @@ country-leader pairing has nowhere to land.
 - **Test:** end-to-end vitest exercising signup → 5-subtask completion → Stage-2 spawn →
   dashboard reorder.
 
-### P0 — Live vote/plaintiff counter on landing and `/court`
+### P0 — Live plaintiff counter on `/court`
 
-`VoteCounterSplit` already exists but only renders on `/signatories`. The landing page shows
-no signal of momentum. Recruits respond to "X people have voted today" more than to abstract
-math. Drop the component into `OnePercentTreatyLandingPage.tsx` above or beside the vote flow,
-and onto `/court` as the live plaintiff count.
-Server-side count via existing `prisma.referendumVote.count` calls in `lib/dashboard.server.ts:117`.
+`VoteCounterSplit` is now on the landing page (above) and `/signatories`. The remaining
+slot is `/court` once the page renders. Wire to the same `voteCounterSplit` shape used by
+`SignatoriesLeaderboard`, framed as the live plaintiff count alongside the case caption.
 
 ### P0 — MCP-driven outreach pipeline (createTask → email → reply → comment)
 
