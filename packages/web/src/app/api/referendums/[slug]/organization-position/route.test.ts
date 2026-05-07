@@ -174,7 +174,9 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
         type: OrgType.NONPROFIT,
         website: "https://useful.example/",
         description: "An organization with a spine.",
-        logo: null,
+        donationUrl: null,
+        squareLogoUrl: null,
+        wordmarkLogoUrl: null,
         contactEmail: null,
         status: OrgStatus.APPROVED,
       },
@@ -207,13 +209,13 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     });
   });
 
-  it("rejects unsafe logo URLs before creating a new organization", async () => {
+  it("rejects unsafe square logo URLs before creating a new organization", async () => {
     const res = await POST(
       makeRequest({
         position: "YES",
         newOrganization: {
           name: "  The Useful Institute  ",
-          logo: "data:image/svg+xml,<svg onload=alert(1)>",
+          squareLogoUrl: "data:image/svg+xml,<svg onload=alert(1)>",
         },
       }),
       makeParams(),
@@ -221,7 +223,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      error: "Invalid logo URL",
+      error: "Invalid square logo URL",
     });
     expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
     expect(mocks.positionUpsert).not.toHaveBeenCalled();

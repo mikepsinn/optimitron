@@ -2155,7 +2155,9 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
         type: { type: "string" },
         website: { type: "string" },
         description: { type: "string" },
-        logo: { type: "string" },
+        donationUrl: { type: "string" },
+        squareLogoUrl: { type: "string" },
+        wordmarkLogoUrl: { type: "string" },
         contactEmail: { type: "string" },
         referendumSlug: { type: "string" },
         position: { type: "string", enum: ["YES", "NO", "ABSTAIN"] },
@@ -3494,6 +3496,10 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description: "Display name shown across the app.",
         },
+        image: {
+          type: ["string", "null"],
+          description: "Profile avatar image URL.",
+        },
         handle: {
           type: ["string", "null"],
           description:
@@ -3574,7 +3580,18 @@ const TASK_TOOL_DEFINITIONS = [
           enum: ["PENDING", "APPROVED", "REJECTED"],
           description: "Organization status. Defaults to APPROVED.",
         },
-        logo: { type: "string", description: "Logo image URL" },
+        donationUrl: {
+          type: "string",
+          description: "Direct support or donation page URL",
+        },
+        squareLogoUrl: {
+          type: "string",
+          description: "Square logo mark URL",
+        },
+        wordmarkLogoUrl: {
+          type: "string",
+          description: "Horizontal wordmark logo URL",
+        },
         jurisdictionId: {
           type: "string",
           description: "Optional jurisdiction ID",
@@ -3858,7 +3875,18 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description: "Mission or provenance note",
         },
-        logo: { type: "string", description: "Logo image URL" },
+        donationUrl: {
+          type: "string",
+          description: "Direct support or donation page URL",
+        },
+        squareLogoUrl: {
+          type: "string",
+          description: "Square logo mark URL",
+        },
+        wordmarkLogoUrl: {
+          type: "string",
+          description: "Horizontal wordmark logo URL",
+        },
         sourceRef: {
           type: "string",
           description: "Stable source reference for idempotent imports",
@@ -3874,7 +3902,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateOrganization",
     description:
-      "Edit an existing Organization. Caller must be an owner/admin of the org (or its legacy creator). status and jurisdictionId changes additionally require platform-admin privileges.",
+      "Edit an existing Organization. Caller must be an owner/admin of the org. status and jurisdictionId changes additionally require platform-admin privileges.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -3921,9 +3949,18 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description: "Mission or provenance note (empty string clears)",
         },
-        logo: {
+        donationUrl: {
           type: "string",
-          description: "Logo image URL (empty string clears)",
+          description:
+            "Direct support or donation page URL (empty string clears)",
+        },
+        squareLogoUrl: {
+          type: "string",
+          description: "Square logo mark URL (empty string clears)",
+        },
+        wordmarkLogoUrl: {
+          type: "string",
+          description: "Horizontal wordmark logo URL (empty string clears)",
         },
         contactEmail: {
           type: "string",
@@ -6694,21 +6731,26 @@ export function createMcpServer(
                 const organization = await earthData.upsertOrganization({
                   contactEmail: (a.contactEmail as string) ?? null,
                   description: (a.description as string) ?? null,
-                  logo: (a.logo as string) ?? null,
+                  donationUrl: (a.donationUrl as string) ?? null,
                   name: a.name as string,
                   sourceRef: (a.sourceRef as string) ?? null,
                   sourceUrl: (a.sourceUrl as string) ?? null,
+                  squareLogoUrl: (a.squareLogoUrl as string) ?? null,
                   type: enumValue(OrgType, a.type, OrgType.OTHER),
                   website: (a.website as string) ?? null,
+                  wordmarkLogoUrl: (a.wordmarkLogoUrl as string) ?? null,
                 });
                 return {
                   organization: {
                     contactEmail: organization.contactEmail,
+                    donationUrl: organization.donationUrl,
                     id: organization.id,
                     name: organization.name,
                     slug: organization.slug,
+                    squareLogoUrl: organization.squareLogoUrl,
                     type: organization.type,
                     website: organization.website,
+                    wordmarkLogoUrl: organization.wordmarkLogoUrl,
                   },
                 };
               },
@@ -6761,7 +6803,9 @@ export function createMcpServer(
               "slug",
               "website",
               "description",
-              "logo",
+              "donationUrl",
+              "squareLogoUrl",
+              "wordmarkLogoUrl",
               "contactEmail",
               "jurisdictionId",
             ] as const) {
@@ -6797,14 +6841,16 @@ export function createMcpServer(
                     organization: {
                       contactEmail: organization.contactEmail,
                       description: organization.description,
+                      donationUrl: organization.donationUrl,
                       id: organization.id,
                       jurisdictionId: organization.jurisdictionId,
-                      logo: organization.logo,
                       name: organization.name,
                       slug: organization.slug,
+                      squareLogoUrl: organization.squareLogoUrl,
                       status: organization.status,
                       type: organization.type,
                       website: organization.website,
+                      wordmarkLogoUrl: organization.wordmarkLogoUrl,
                     },
                   };
                 },
@@ -7099,6 +7145,7 @@ export function createMcpServer(
                 handle: "handle" in a ? (a.handle as string | null) : undefined,
                 headline:
                   "headline" in a ? (a.headline as string | null) : undefined,
+                image: "image" in a ? (a.image as string | null) : undefined,
                 website:
                   "website" in a ? (a.website as string | null) : undefined,
                 coverImage:
@@ -7170,12 +7217,14 @@ export function createMcpServer(
                     {
                       contactEmail: (a.contactEmail as string) ?? null,
                       description: (a.description as string) ?? null,
+                      donationUrl: (a.donationUrl as string) ?? null,
                       jurisdictionId: (a.jurisdictionId as string) ?? null,
-                      logo: (a.logo as string) ?? null,
                       name: orgName,
                       slug: (a.slug as string) ?? null,
+                      squareLogoUrl: (a.squareLogoUrl as string) ?? null,
                       status,
                       website: (a.website as string) ?? null,
+                      wordmarkLogoUrl: (a.wordmarkLogoUrl as string) ?? null,
                       type: orgType,
                     },
                     userId,
@@ -7187,12 +7236,15 @@ export function createMcpServer(
                       contactEmail: organization.contactEmail,
                       createdAt: organization.createdAt,
                       description: organization.description,
+                      donationUrl: organization.donationUrl,
                       id: organization.id,
                       name: organization.name,
                       slug: organization.slug,
+                      squareLogoUrl: organization.squareLogoUrl,
                       status: organization.status,
                       type: organization.type,
                       website: organization.website,
+                      wordmarkLogoUrl: organization.wordmarkLogoUrl,
                     },
                   };
                 },

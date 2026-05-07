@@ -68,9 +68,11 @@ export async function getMemorialAttributionsByGovernment(): Promise<
 
   for (const memorial of memorials) {
     const attributedCodes = new Set<string>();
-    if (memorial.deathCountryCode) attributedCodes.add(memorial.deathCountryCode);
+    if (memorial.deathCountryCode)
+      attributedCodes.add(memorial.deathCountryCode);
     for (const party of memorial.responsibleParties) {
-      if (party.jurisdiction?.code) attributedCodes.add(party.jurisdiction.code);
+      if (party.jurisdiction?.code)
+        attributedCodes.add(party.jurisdiction.code);
     }
     if (attributedCodes.size === 0) continue;
 
@@ -110,6 +112,7 @@ export async function getMemorialAttributionsForCondition(
           some: {
             deletedAt: null,
             globalVariableId,
+            isPublic: true,
             status: PersonConditionStatus.CAUSE_OF_DEATH,
           },
         },
@@ -127,7 +130,8 @@ export async function getMemorialAttributionsForCondition(
 
   return {
     memorialCount: memorials.length,
-    efficacyLagCount: memorials.filter((m) => m.efficacyLagEvidence.length > 0).length,
+    efficacyLagCount: memorials.filter((m) => m.efficacyLagEvidence.length > 0)
+      .length,
   };
 }
 
@@ -138,10 +142,12 @@ export async function getMemorialAttributionsForCondition(
  */
 export async function getMemorialAttributionsForGovernment(
   countryCode: string,
-): Promise<MemorialAttributionSummary & {
-  topEfficacyLagConditions: Array<{ conditionName: string; count: number }>;
-  attributedMemorialIds: string[];
-}> {
+): Promise<
+  MemorialAttributionSummary & {
+    topEfficacyLagConditions: Array<{ conditionName: string; count: number }>;
+    attributedMemorialIds: string[];
+  }
+> {
   const memorials = await prisma.personMemorial.findMany({
     where: {
       deletedAt: null,

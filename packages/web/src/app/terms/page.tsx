@@ -1,14 +1,12 @@
 import { headers } from "next/headers";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { Container } from "@/components/ui/container";
-import { SectionContainer } from "@/components/ui/section-container";
 import { getSiteMetadata } from "@/lib/metadata";
 import { ROUTES, termsLink } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
-const UPDATED_AT = "May 2, 2026";
+const UPDATED_AT = "May 6, 2026";
 const SECTION_HEADING_CLASS =
-  "mb-4 text-2xl font-black uppercase text-brutal-pink";
+  "mb-4 text-2xl font-black uppercase text-foreground";
 
 export async function generateMetadata() {
   const hdrs = await headers();
@@ -32,12 +30,7 @@ export default async function TermsPage() {
   const websiteLabel = new URL(site.canonicalOrigin).hostname;
 
   return (
-    <SectionContainer
-      bgColor="background"
-      borderPosition="none"
-      padding="lg"
-      className="min-h-screen"
-    >
+    <main className="min-h-screen bg-background py-12 text-foreground sm:py-16">
       <Container size="md">
         <h1 className="mb-8 text-center text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl">
           Terms of Service
@@ -47,7 +40,7 @@ export default async function TermsPage() {
           Last updated {UPDATED_AT}
         </p>
 
-        <BrutalCard padding="lg">
+        <article className="border border-foreground bg-background p-5 sm:p-8">
           <div className="space-y-8 text-foreground">
             <section>
               <h2 className={SECTION_HEADING_CLASS}>1. Agreement</h2>
@@ -69,10 +62,13 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>3. Accounts and Identity</h2>
+              <h2 className={SECTION_HEADING_CLASS}>
+                3. Accounts and Identity
+              </h2>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
                 <li>
-                  Use accurate information when you create an account or sign in.
+                  Use accurate information when you create an account or sign
+                  in.
                 </li>
                 <li>
                   Do not impersonate a person, organization, government, or
@@ -115,14 +111,49 @@ export default async function TermsPage() {
               <p className="font-bold leading-relaxed">
                 You are responsible for what you submit. If you submit a public
                 signature, vote, endorsement, organization profile, task update,
-                or similar material, you allow us to host, display, reproduce,
-                and share it in connection with the site and the campaign. Do
-                not submit material you do not have the right to share.
+                plaintiff card, memorial, evidence file, comment, or similar
+                material, you allow us to host, display, reproduce, and share it
+                in connection with the site and the campaign. Do not submit
+                material you do not have the right to share.
               </p>
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>6. Site Materials</h2>
+              <h2 className={SECTION_HEADING_CLASS}>
+                6. Plaintiffs, Represented People, and Memorials
+              </h2>
+              <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
+                <li>
+                  Do not add a living person, or a person whose status is
+                  unknown, unless you have their permission or legal authority
+                  to represent them.
+                </li>
+                <li>
+                  Do not publicly disclose a living or unknown-status person's
+                  health condition unless you have consent or legal authority to
+                  make that disclosure.
+                </li>
+                <li>
+                  If you add a deceased person, use a good-faith family,
+                  personal-representative, or comparable basis for submitting
+                  their memorial.
+                </li>
+                <li>
+                  Only upload public evidence you have the right to share. Do
+                  not upload private medical records, confidential files, or
+                  anything you know should not be public.
+                </li>
+                <li>
+                  Claims about governments, agencies, organizations, conflicts,
+                  causes of death, or responsible parties must be made in good
+                  faith. We may remove or limit public display of contested,
+                  unsafe, misleading, or unlawful material.
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className={SECTION_HEADING_CLASS}>7. Site Materials</h2>
               <p className="font-bold leading-relaxed">
                 You may link to and share public campaign materials as long as
                 you do not mislead people, remove attribution, or imply that we
@@ -132,7 +163,9 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>7. Donations and Payments</h2>
+              <h2 className={SECTION_HEADING_CLASS}>
+                8. Donations and Payments
+              </h2>
               <p className="font-bold leading-relaxed">
                 Donations and payments are voluntary. They may be nonrefundable
                 unless required by law or the applicable payment processor. We
@@ -142,7 +175,9 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>8. Do Not Break the Site</h2>
+              <h2 className={SECTION_HEADING_CLASS}>
+                9. Do Not Break the Site
+              </h2>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
                 <li>
                   Do not attack, scrape, overload, reverse engineer, or bypass
@@ -160,7 +195,7 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>9. Moderation</h2>
+              <h2 className={SECTION_HEADING_CLASS}>10. Moderation</h2>
               <p className="font-bold leading-relaxed">
                 We may remove content, block activity, suspend accounts, or
                 refuse service when we believe activity is fraudulent, abusive,
@@ -169,7 +204,9 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>10. No Professional Advice</h2>
+              <h2 className={SECTION_HEADING_CLASS}>
+                11. No Professional Advice
+              </h2>
               <p className="font-bold leading-relaxed">
                 The site contains campaign, policy, medical, legal, financial,
                 and technical information. It is general information, not
@@ -180,7 +217,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                11. Availability and Disclaimers
+                12. Availability and Disclaimers
               </h2>
               <p className="font-bold leading-relaxed">
                 The site is provided as is and as available. It may change,
@@ -192,7 +229,7 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>12. Other Legal Terms</h2>
+              <h2 className={SECTION_HEADING_CLASS}>13. Other Legal Terms</h2>
               <p className="font-bold leading-relaxed">
                 These terms do not limit rights that cannot be waived under
                 applicable law. If part of these terms is unenforceable, the
@@ -203,15 +240,15 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>13. Contact</h2>
-              <div className="mt-4 border-4 border-primary bg-brutal-yellow p-4 text-brutal-yellow-foreground">
+              <h2 className={SECTION_HEADING_CLASS}>14. Contact</h2>
+              <div className="mt-4 border border-foreground bg-background p-4 text-foreground">
                 <p className="font-black">{legalEntityName}</p>
                 <p className="font-bold">Email: {contactEmail}</p>
                 <p className="font-bold">Website: {websiteLabel}</p>
               </div>
             </section>
           </div>
-        </BrutalCard>
+        </article>
 
         <p className="mt-8 text-center text-sm font-bold text-muted-foreground">
           See also:{" "}
@@ -220,6 +257,6 @@ export default async function TermsPage() {
           </a>
         </p>
       </Container>
-    </SectionContainer>
+    </main>
   );
 }

@@ -4,7 +4,7 @@
  *
  * Order of preference:
  *   1. Person.handle (the readable URL we want)
- *   2. Person.id (cuid fallback for old data without a handle)
+ *   2. Person.id when no handle is available
  *
  * The `/people/[id]` route accepts both forms — handle lookup first, then cuid.
  */

@@ -601,13 +601,15 @@ describe("MCP server tool dispatch", () => {
       {
         contactEmail: null,
         description: null,
+        donationUrl: null,
         jurisdictionId: null,
-        logo: null,
         name: "Survival and Flourishing Fund",
         slug: null,
+        squareLogoUrl: null,
         status: OrgStatus.APPROVED,
         type: OrgType.FOUNDATION,
         website: "https://survivalandflourishing.fund",
+        wordmarkLogoUrl: null,
       },
       "user-1",
       { rejectDuplicates: true },
@@ -730,14 +732,16 @@ describe("MCP server tool dispatch", () => {
       mocks.updateOrganizationServer.mockResolvedValueOnce({
         contactEmail: "hello@example.org",
         description: "Updated mission",
+        donationUrl: null,
         id: "org-1",
         jurisdictionId: null,
-        logo: null,
         name: "Renamed Org",
         slug: "renamed-org",
+        squareLogoUrl: null,
         status: OrgStatus.APPROVED,
         type: OrgType.NONPROFIT,
         website: "https://example.org",
+        wordmarkLogoUrl: null,
       });
       const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
@@ -772,14 +776,16 @@ describe("MCP server tool dispatch", () => {
       mocks.updateOrganizationServer.mockResolvedValueOnce({
         contactEmail: null,
         description: null,
+        donationUrl: null,
         id: "org-1",
         jurisdictionId: null,
-        logo: null,
         name: "Org",
         slug: "org",
+        squareLogoUrl: null,
         status: OrgStatus.APPROVED,
         type: OrgType.NONPROFIT,
         website: null,
+        wordmarkLogoUrl: null,
       });
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
 
@@ -804,7 +810,9 @@ describe("MCP server tool dispatch", () => {
       ["slug", { value: "renamed-org" }],
       ["website", 42],
       ["description", false],
-      ["logo", ["https://example.org/logo.png"]],
+      ["donationUrl", 42],
+      ["squareLogoUrl", ["https://example.org/logo.png"]],
+      ["wordmarkLogoUrl", { url: "https://example.org/wordmark.png" }],
       ["contactEmail", { email: "hello@example.org" }],
       ["jurisdictionId", 99],
     ])(
@@ -3003,6 +3011,21 @@ describe("MCP server tool dispatch", () => {
       });
       const body = parseToolBody(result);
       expect(body.user).toMatchObject({ id: "user-1" });
+    });
+
+    it("exposes image in the updateMyProfile input schema", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const tools = await client.listTools();
+      const updateMyProfile = tools.tools.find(
+        (tool) => tool.name === "updateMyProfile",
+      );
+
+      expect(updateMyProfile?.inputSchema.properties).toMatchObject({
+        image: {
+          type: ["string", "null"],
+        },
+      });
     });
 
     it("updateMyProfile maps a ProfileValidationError to a clean tool error", async () => {

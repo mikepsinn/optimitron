@@ -65,26 +65,34 @@ const optionalUrl = optionalTrimmedString(MAX_URL_LENGTH).refine(
   "Use an http(s) URL.",
 );
 
-const optionalDate = z
-  .unknown()
-  .transform((value) => {
-    if (value instanceof Date) return value;
-    if (typeof value !== "string" || !value.trim()) return null;
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? null : date;
-  });
+const optionalDate = z.unknown().transform((value) => {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+  if (typeof value !== "string" || !value.trim()) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+});
 
 const optionalCountryCode = z
   .unknown()
-  .transform((value) => (typeof value === "string" ? value.trim().toUpperCase() : ""))
+  .transform((value) =>
+    typeof value === "string" ? value.trim().toUpperCase() : "",
+  )
   .transform((value) => (value ? value : null))
   .refine((value) => value === null || /^[A-Z]{2}$/.test(value), {
     message: "Use a two-letter country code.",
   });
 
-function enumInput<T extends Record<string, string>>(values: T, fallback: T[keyof T]) {
+function enumInput<T extends Record<string, string>>(
+  values: T,
+  fallback: T[keyof T],
+) {
   return z.unknown().transform((value) => {
-    if (typeof value === "string" && Object.values(values).includes(value as T[keyof T])) {
+    if (
+      typeof value === "string" &&
+      Object.values(values).includes(value as T[keyof T])
+    ) {
       return value as T[keyof T];
     }
     return fallback;
@@ -96,7 +104,10 @@ function nullishJson(value: unknown): Prisma.InputJsonValue | undefined {
   return value as Prisma.InputJsonValue;
 }
 
-function daysBetween(start: Date | null | undefined, end: Date | null | undefined) {
+function daysBetween(
+  start: Date | null | undefined,
+  end: Date | null | undefined,
+) {
   if (!start || !end) return null;
   return Math.round((end.getTime() - start.getTime()) / 86_400_000);
 }
@@ -122,7 +133,10 @@ function isUniqueConstraintError(error: unknown): boolean {
 }
 
 export const sourceArtifactInputSchema = z.object({
-  artifactType: enumInput(SourceArtifactType, SourceArtifactType.EXTERNAL_SOURCE),
+  artifactType: enumInput(
+    SourceArtifactType,
+    SourceArtifactType.EXTERNAL_SOURCE,
+  ),
   contentHash: optionalTrimmedString(128),
   externalKey: optionalTrimmedString(300),
   payloadJson: z.unknown().optional(),
@@ -136,7 +150,10 @@ export const sourceArtifactInputSchema = z.object({
 
 export type SourceArtifactInput = z.infer<typeof sourceArtifactInputSchema>;
 
-export async function upsertSourceArtifact(input: unknown, db: DbClient = prisma) {
+export async function upsertSourceArtifact(
+  input: unknown,
+  db: DbClient = prisma,
+) {
   const data = sourceArtifactInputSchema.parse(input);
   return db.sourceArtifact.upsert({
     where: { sourceKey: data.sourceKey },
@@ -172,7 +189,14 @@ export const resolveGlobalVariableInputSchema = z.object({
   codeSystem: optionalTrimmedString(80),
   description: optionalTrimmedString(MAX_TEXT_LENGTH),
   kind: z
-    .enum(["condition", "intervention", "outcome", "side_effect", "policy", "other"])
+    .enum([
+      "condition",
+      "intervention",
+      "outcome",
+      "side_effect",
+      "policy",
+      "other",
+    ])
     .default("other"),
   name: requiredTrimmedString(MAX_NAME_LENGTH),
   sourceArtifactId: optionalTrimmedString(200),
@@ -180,7 +204,9 @@ export const resolveGlobalVariableInputSchema = z.object({
   variableCategoryName: optionalTrimmedString(120),
 });
 
-export type ResolveGlobalVariableInput = z.infer<typeof resolveGlobalVariableInputSchema>;
+export type ResolveGlobalVariableInput = z.infer<
+  typeof resolveGlobalVariableInputSchema
+>;
 
 async function getVariableDefaults(
   db: DbClient,
@@ -210,7 +236,9 @@ async function getVariableDefaults(
   });
 
   if (!category?.defaultUnitId) {
-    throw new Error(`Variable category is not seeded or has no default unit: ${categoryName}`);
+    throw new Error(
+      `Variable category is not seeded or has no default unit: ${categoryName}`,
+    );
   }
 
   return { ...category, defaultUnitId: category.defaultUnitId };
@@ -268,16 +296,22 @@ export async function resolveGlobalVariable(
   const defaults = await getVariableDefaults(db, data);
   const variable = await db.globalVariable.create({
     data: {
-      combinationOperation: defaults.combinationOperation ?? CombinationOperation.MEAN,
+      combinationOperation:
+        defaults.combinationOperation ?? CombinationOperation.MEAN,
       defaultUnitId: defaults.defaultUnitId,
       description: data.description,
       durationOfAction: defaults.durationOfAction,
       fillingType: FillingType.NONE,
       name: data.name,
       onsetDelay: defaults.onsetDelay,
-      outcome: data.kind === "intervention" || data.kind === "policy" ? false : defaults.outcome,
+      outcome:
+        data.kind === "intervention" || data.kind === "policy"
+          ? false
+          : defaults.outcome,
       predictorOnly:
-        data.kind === "intervention" || data.kind === "policy" ? true : defaults.predictorOnly,
+        data.kind === "intervention" || data.kind === "policy"
+          ? true
+          : defaults.predictorOnly,
       informationalUrl: data.sourceUrl,
       valence:
         data.kind === "side_effect" || data.kind === "condition"
@@ -345,8 +379,14 @@ export async function upsertConflict(input: unknown, db: DbClient = prisma) {
 export const upsertMemorialPersonInputSchema = z
   .object({
     birthDate: optionalDate,
-    causeCategory: enumInput(PersonDeathCauseCategory, PersonDeathCauseCategory.UNKNOWN),
-    civilianStatus: enumInput(PersonCivilianStatus, PersonCivilianStatus.UNKNOWN),
+    causeCategory: enumInput(
+      PersonDeathCauseCategory,
+      PersonDeathCauseCategory.UNKNOWN,
+    ),
+    civilianStatus: enumInput(
+      PersonCivilianStatus,
+      PersonCivilianStatus.UNKNOWN,
+    ),
     conditionCode: optionalTrimmedString(80),
     conditionCodeSystem: optionalTrimmedString(80),
     conditionName: optionalTrimmedString(MAX_NAME_LENGTH),
@@ -368,16 +408,22 @@ export const upsertMemorialPersonInputSchema = z
     responsiblePartyName: optionalTrimmedString(MAX_NAME_LENGTH),
     sourceArtifactId: optionalTrimmedString(200),
     sourceKey: optionalTrimmedString(500),
-    sourceKind: z.enum(["PERSONAL_TESTIMONY", "PUBLIC_IMPORT"]).default("PERSONAL_TESTIMONY"),
+    sourceKind: z
+      .enum(["PERSONAL_TESTIMONY", "PUBLIC_IMPORT"])
+      .default("PERSONAL_TESTIMONY"),
     sourceRef: optionalTrimmedString(500),
     sourceUrl: optionalUrl,
     submittedByUserId: optionalTrimmedString(200),
-    wasChild: z.unknown().transform((value) =>
-      typeof value === "boolean" ? value : null,
-    ),
+    wasChild: z
+      .unknown()
+      .transform((value) => (typeof value === "boolean" ? value : null)),
   })
   .superRefine((data, ctx) => {
-    if (data.birthDate && data.dateOfDeath && data.birthDate > data.dateOfDeath) {
+    if (
+      data.birthDate &&
+      data.dateOfDeath &&
+      data.birthDate > data.dateOfDeath
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Birth date must be before death date.",
@@ -391,24 +437,37 @@ export const upsertMemorialPersonInputSchema = z
         path: ["dateOfDeath"],
       });
     }
-    if (data.lifeStatus === PersonLifeStatus.DECEASED && !data.deathCountryCode) {
+    if (
+      data.lifeStatus === PersonLifeStatus.DECEASED &&
+      !data.deathCountryCode
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "deathCountryCode is required for deceased-person memorials.",
         path: ["deathCountryCode"],
       });
     }
-    if (data.sourceKind === "PUBLIC_IMPORT" && !data.sourceArtifactId && !data.sourceUrl) {
+    if (
+      data.sourceKind === "PUBLIC_IMPORT" &&
+      !data.sourceArtifactId &&
+      !data.sourceUrl
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Agent/imported casualty records require sourceUrl or sourceArtifactId.",
+        message:
+          "Agent/imported casualty records require sourceUrl or sourceArtifactId.",
         path: ["sourceUrl"],
       });
     }
-    if (data.sourceKind === "PUBLIC_IMPORT" && !data.sourceKey && !data.sourceRef) {
+    if (
+      data.sourceKind === "PUBLIC_IMPORT" &&
+      !data.sourceKey &&
+      !data.sourceRef
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Agent/imported casualty records require sourceKey or sourceRef for idempotency.",
+        message:
+          "Agent/imported casualty records require sourceKey or sourceRef for idempotency.",
         path: ["sourceKey"],
       });
     }
@@ -421,7 +480,9 @@ export const upsertMemorialPersonInputSchema = z
     }
   });
 
-export type UpsertMemorialPersonInput = z.infer<typeof upsertMemorialPersonInputSchema>;
+export type UpsertMemorialPersonInput = z.infer<
+  typeof upsertMemorialPersonInputSchema
+>;
 
 export async function upsertMemorialPerson(
   input: unknown,
@@ -436,7 +497,9 @@ export async function upsertMemorialPerson(
       !data.sourceArtifactId && (data.sourceUrl || sourceKey)
         ? await upsertSourceArtifact(
             {
-              sourceKey: sourceKey ?? `memorial:${slugify(data.displayName)}:${Date.now()}`,
+              sourceKey:
+                sourceKey ??
+                `memorial:${slugify(data.displayName)}:${Date.now()}`,
               sourceUrl: data.sourceUrl,
               title: data.displayName,
             },
@@ -479,7 +542,10 @@ export async function upsertMemorialPerson(
           },
         });
 
-    await ensureSubjectForPerson(tx, { displayName: person.displayName, id: person.id });
+    await ensureSubjectForPerson(tx, {
+      displayName: person.displayName,
+      id: person.id,
+    });
 
     const conflict =
       data.conflictId || data.conflictName
@@ -511,11 +577,13 @@ export async function upsertMemorialPerson(
         : await findCanonicalConditionGlobalVariable(tx, data.conditionName);
       const primaryCode =
         canonicalCondition && "externalCodes" in canonicalCondition
-          ? canonicalCondition.externalCodes?.[0] ?? null
+          ? (canonicalCondition.externalCodes?.[0] ?? null)
           : null;
       const conditionOr = [
         { conditionName: data.conditionName },
-        ...(canonicalCondition ? [{ globalVariableId: canonicalCondition.id }] : []),
+        ...(canonicalCondition
+          ? [{ globalVariableId: canonicalCondition.id }]
+          : []),
       ];
 
       condition =
@@ -587,10 +655,16 @@ export async function upsertMemorialPerson(
       });
 
       const consentTimestamp = new Date();
-      if (data.submittedByUserId || data.memorialMessage || data.publicComment) {
+      if (
+        data.submittedByUserId ||
+        data.memorialMessage ||
+        data.publicComment
+      ) {
         const submissionData = {
           consentCourtEvidence: data.consentCourtEvidence,
-          consentCourtEvidenceAt: data.consentCourtEvidence ? consentTimestamp : null,
+          consentCourtEvidenceAt: data.consentCourtEvidence
+            ? consentTimestamp
+            : null,
           consentPublicDisplay: data.isPublic,
           consentPublicDisplayAt: data.isPublic ? consentTimestamp : null,
           isPublic: data.isPublic,
@@ -639,7 +713,9 @@ export async function upsertMemorialPerson(
               evidenceData.sourceArtifactId
                 ? { sourceArtifactId: evidenceData.sourceArtifactId }
                 : undefined,
-              evidenceData.sourceUrl ? { sourceUrl: evidenceData.sourceUrl } : undefined,
+              evidenceData.sourceUrl
+                ? { sourceUrl: evidenceData.sourceUrl }
+                : undefined,
             ].filter((item): item is NonNullable<typeof item> => item != null),
           },
           select: { id: true },
@@ -667,14 +743,15 @@ export async function upsertMemorialPerson(
           sourceArtifactId: sourceArtifact?.id ?? data.sourceArtifactId,
           sourceUrl: data.sourceUrl,
         };
-        const existingResponsibleParty = await tx.personMemorialResponsibleParty.findFirst({
-          where: {
-            deletedAt: null,
-            memorialId: memorial.id,
-            name: data.responsiblePartyName,
-          },
-          select: { id: true },
-        });
+        const existingResponsibleParty =
+          await tx.personMemorialResponsibleParty.findFirst({
+            where: {
+              deletedAt: null,
+              memorialId: memorial.id,
+              name: data.responsiblePartyName,
+            },
+            select: { id: true },
+          });
         if (existingResponsibleParty) {
           await tx.personMemorialResponsibleParty.update({
             where: { id: existingResponsibleParty.id },
@@ -692,7 +769,11 @@ export async function upsertMemorialPerson(
     }
 
     if (data.relationshipType && data.submittedByUserId) {
-      const casterPerson = await ensurePersonForUser(data.submittedByUserId, {}, tx);
+      const casterPerson = await ensurePersonForUser(
+        data.submittedByUserId,
+        {},
+        tx,
+      );
       const relationshipType = slugify(data.relationshipType);
       const existingRelationship = await tx.personRelationship.findFirst({
         where: {
@@ -724,7 +805,11 @@ export async function upsertMemorialPerson(
       }
     }
 
-    let vote: { id: string; answer: VotePosition; voteSource: ReferendumVoteSource } | null = null;
+    let vote: {
+      id: string;
+      answer: VotePosition;
+      voteSource: ReferendumVoteSource;
+    } | null = null;
     if (data.recordTreatyVote && data.submittedByUserId) {
       const referendumSlug = data.referendumSlug ?? TREATY_REFERENDUM_SLUG;
       const referendum = await tx.referendum.findFirst({
@@ -780,7 +865,10 @@ export const addMemorialEvidenceInputSchema = z
   .object({
     containsSensitiveData: z.unknown().transform((value) => value === true),
     description: optionalTrimmedString(MAX_TEXT_LENGTH),
-    evidenceKind: enumInput(PersonMemorialEvidenceKind, PersonMemorialEvidenceKind.OTHER),
+    evidenceKind: enumInput(
+      PersonMemorialEvidenceKind,
+      PersonMemorialEvidenceKind.OTHER,
+    ),
     isPublic: z.unknown().transform((value) => value !== false),
     memorialId: requiredTrimmedString(200),
     sourceArtifactId: optionalTrimmedString(200),
@@ -818,7 +906,9 @@ export async function addMemorialEvidence(
     data.sourceArtifactId == null && data.sourceUrl
       ? await upsertSourceArtifact(
           {
-            sourceKey: data.sourceKey ?? `memorial-evidence:${data.memorialId}:${data.sourceUrl}`,
+            sourceKey:
+              data.sourceKey ??
+              `memorial-evidence:${data.memorialId}:${data.sourceUrl}`,
             sourceUrl: data.sourceUrl,
             title: data.title,
           },
@@ -892,7 +982,10 @@ export async function reportContent(input: unknown, db: DbClient = prisma) {
 }
 
 export async function suggestCorrection(input: unknown, db: DbClient = prisma) {
-  const raw = input && typeof input === "object" ? (input as Record<string, unknown>) : {};
+  const raw =
+    input && typeof input === "object"
+      ? (input as Record<string, unknown>)
+      : {};
   const data = reportContentInputSchema.parse({
     ...raw,
     reasonType: raw.reasonType || "correction",
@@ -906,17 +999,19 @@ export async function suggestCorrection(input: unknown, db: DbClient = prisma) {
 export const signReferendumAsOrganizationInputSchema = z.object({
   contactEmail: optionalTrimmedString(320),
   description: optionalTrimmedString(MAX_TEXT_LENGTH),
-  logo: optionalUrl,
+  donationUrl: optionalUrl,
   newOrganizationName: optionalTrimmedString(MAX_NAME_LENGTH),
   organizationId: optionalTrimmedString(200),
   position: enumInput(VotePosition, VotePosition.YES),
   referendumSlug: optionalTrimmedString(200),
   sourceRef: optionalTrimmedString(500),
   sourceUrl: optionalUrl,
+  squareLogoUrl: optionalUrl,
   statement: optionalTrimmedString(MAX_TEXT_LENGTH),
   submittedByUserId: requiredTrimmedString(200),
   type: enumInput(OrgType, OrgType.NONPROFIT),
   website: optionalUrl,
+  wordmarkLogoUrl: optionalUrl,
 });
 
 export async function signReferendumAsOrganization(
@@ -925,7 +1020,10 @@ export async function signReferendumAsOrganization(
 ) {
   const data = signReferendumAsOrganizationInputSchema.parse(input);
   const referendum = await db.referendum.findFirst({
-    where: { deletedAt: null, slug: data.referendumSlug ?? TREATY_REFERENDUM_SLUG },
+    where: {
+      deletedAt: null,
+      slug: data.referendumSlug ?? TREATY_REFERENDUM_SLUG,
+    },
     select: { id: true, status: true },
   });
   if (!referendum) throw new Error("Referendum not found");
@@ -935,19 +1033,25 @@ export async function signReferendumAsOrganization(
 
   let organizationId = data.organizationId;
   if (organizationId) {
-    const canManage = await canManageOrganization(data.submittedByUserId, organizationId);
+    const canManage = await canManageOrganization(
+      data.submittedByUserId,
+      organizationId,
+    );
     if (!canManage) throw new Error("User cannot manage this organization");
   } else {
-    if (!data.newOrganizationName) throw new Error("newOrganizationName is required");
+    if (!data.newOrganizationName)
+      throw new Error("newOrganizationName is required");
     const organization = await createOrganizationWithOwner(
       {
         contactEmail: data.contactEmail,
         description: data.description,
-        logo: data.logo,
+        donationUrl: data.donationUrl,
         name: data.newOrganizationName,
+        squareLogoUrl: data.squareLogoUrl,
         status: OrgStatus.APPROVED,
         type: data.type,
         website: data.website,
+        wordmarkLogoUrl: data.wordmarkLogoUrl,
       },
       data.submittedByUserId,
       { rejectDuplicates: false },
@@ -968,7 +1072,9 @@ export async function signReferendumAsOrganization(
     existing?.deletedAt ||
     existing?.status === OrganizationReferendumPositionStatus.REJECTED
   ) {
-    throw new Error("This organization's signatory record was removed by an admin");
+    throw new Error(
+      "This organization's signatory record was removed by an admin",
+    );
   }
 
   const record = await db.organizationReferendumPosition.upsert({
@@ -1002,12 +1108,14 @@ export async function signReferendumAsOrganization(
 export const upsertOrganizationInputSchema = z.object({
   contactEmail: optionalTrimmedString(320),
   description: optionalTrimmedString(MAX_TEXT_LENGTH),
-  logo: optionalUrl,
+  donationUrl: optionalUrl,
   name: requiredTrimmedString(MAX_NAME_LENGTH),
   sourceRef: optionalTrimmedString(500),
   sourceUrl: optionalUrl,
+  squareLogoUrl: optionalUrl,
   type: enumInput(OrgType, OrgType.OTHER),
   website: optionalUrl,
+  wordmarkLogoUrl: optionalUrl,
 });
 
 export async function upsertOrganization(
@@ -1044,11 +1152,17 @@ export async function upsertInterventionApprovalTimeline(
   const data = interventionApprovalTimelineInputSchema.parse(input);
   const intervention =
     data.interventionGlobalVariableId == null
-      ? await resolveGlobalVariable({ kind: "intervention", name: data.interventionName }, db)
+      ? await resolveGlobalVariable(
+          { kind: "intervention", name: data.interventionName },
+          db,
+        )
       : null;
   const condition =
     data.conditionGlobalVariableId == null
-      ? await resolveGlobalVariable({ kind: "condition", name: data.conditionName }, db)
+      ? await resolveGlobalVariable(
+          { kind: "condition", name: data.conditionName },
+          db,
+        )
       : null;
   const sourceArtifact =
     data.sourceArtifactId == null && (data.sourceKey || data.sourceUrl)
@@ -1064,7 +1178,10 @@ export async function upsertInterventionApprovalTimeline(
         )
       : null;
 
-  const efficacyLagDays = daysBetween(data.firstEvidenceDate, data.approvalDate);
+  const efficacyLagDays = daysBetween(
+    data.firstEvidenceDate,
+    data.approvalDate,
+  );
   const existing = await db.interventionApprovalTimeline.findFirst({
     where: {
       deletedAt: null,
@@ -1078,14 +1195,16 @@ export async function upsertInterventionApprovalTimeline(
     approvalDate: data.approvalDate,
     approvalDescription: data.approvalDescription,
     brandName: data.brandName,
-    conditionGlobalVariableId: data.conditionGlobalVariableId ?? condition?.id ?? null,
+    conditionGlobalVariableId:
+      data.conditionGlobalVariableId ?? condition?.id ?? null,
     conditionName: data.conditionName,
     efficacyLagDays,
     estimatedDeathsDuringLag: data.estimatedDeathsDuringLag ?? null,
     estimatedLivesSavedPerYear: data.estimatedLivesSavedPerYear ?? null,
     firstEvidenceDate: data.firstEvidenceDate,
     firstEvidenceDescription: data.firstEvidenceDescription,
-    interventionGlobalVariableId: data.interventionGlobalVariableId ?? intervention?.id ?? null,
+    interventionGlobalVariableId:
+      data.interventionGlobalVariableId ?? intervention?.id ?? null,
     interventionName: data.interventionName,
     jurisdictionId: data.jurisdictionId,
     regulatorName: data.regulatorName,
@@ -1094,7 +1213,10 @@ export async function upsertInterventionApprovalTimeline(
     deletedAt: null,
   };
   return existing
-    ? db.interventionApprovalTimeline.update({ where: { id: existing.id }, data: payload })
+    ? db.interventionApprovalTimeline.update({
+        where: { id: existing.id },
+        data: payload,
+      })
     : db.interventionApprovalTimeline.create({ data: payload });
 }
 
@@ -1103,13 +1225,19 @@ export const variableRelationshipEvidenceEstimateInputSchema = z.object({
   contextGlobalVariableId: optionalTrimmedString(200),
   evidenceGrade: z.string().optional().nullable(),
   evidenceGradeValue: z.unknown().optional(),
-  metricKind: enumInput(VariableEvidenceMetricKind, VariableEvidenceMetricKind.OTHER),
+  metricKind: enumInput(
+    VariableEvidenceMetricKind,
+    VariableEvidenceMetricKind.OTHER,
+  ),
   outcomeGlobalVariableId: requiredTrimmedString(200),
   participants: z.number().int().optional().nullable(),
   predictorGlobalVariableId: requiredTrimmedString(200),
   rationale: optionalTrimmedString(MAX_TEXT_LENGTH),
   sourceArtifactId: optionalTrimmedString(200),
-  sourceType: enumInput(VariableRelationshipEvidenceSourceType, VariableRelationshipEvidenceSourceType.OTHER),
+  sourceType: enumInput(
+    VariableRelationshipEvidenceSourceType,
+    VariableRelationshipEvidenceSourceType.OTHER,
+  ),
   sourceUrl: optionalUrl,
   studies: z.number().int().optional().nullable(),
   unitId: optionalTrimmedString(200),
@@ -1148,7 +1276,10 @@ export async function upsertVariableRelationshipEvidenceEstimate(
     deletedAt: null,
   };
   return existing
-    ? db.variableRelationshipEvidenceEstimate.update({ where: { id: existing.id }, data: payload })
+    ? db.variableRelationshipEvidenceEstimate.update({
+        where: { id: existing.id },
+        data: payload,
+      })
     : db.variableRelationshipEvidenceEstimate.create({ data: payload });
 }
 
@@ -1166,7 +1297,10 @@ export const recordInterventionExperienceInputSchema = z.object({
       z.object({
         outcomeGlobalVariableId: requiredTrimmedString(200),
         publicComment: optionalTrimmedString(500),
-        rating: enumInput(InterventionOutcomeRating, InterventionOutcomeRating.UNKNOWN),
+        rating: enumInput(
+          InterventionOutcomeRating,
+          InterventionOutcomeRating.UNKNOWN,
+        ),
         unitId: optionalTrimmedString(200),
         value: z.number().optional().nullable(),
       }),
@@ -1177,9 +1311,9 @@ export const recordInterventionExperienceInputSchema = z.object({
     .array(
       z.object({
         actionTaken: optionalTrimmedString(500),
-        isSerious: z.unknown().transform((value) =>
-          typeof value === "boolean" ? value : null,
-        ),
+        isSerious: z
+          .unknown()
+          .transform((value) => (typeof value === "boolean" ? value : null)),
         publicComment: optionalTrimmedString(500),
         severity: enumInput(
           InterventionSideEffectSeverity,
@@ -1191,7 +1325,10 @@ export const recordInterventionExperienceInputSchema = z.object({
     .default([]),
   sourceArtifactId: optionalTrimmedString(200),
   startedAt: optionalDate,
-  status: enumInput(InterventionExperienceStatus, InterventionExperienceStatus.UNKNOWN),
+  status: enumInput(
+    InterventionExperienceStatus,
+    InterventionExperienceStatus.UNKNOWN,
+  ),
   subjectId: optionalTrimmedString(200),
 });
 
@@ -1206,7 +1343,12 @@ export async function recordInterventionExperience(
       : await ensureSubjectForUser(tx, {
           ...(await tx.user.findUniqueOrThrow({
             where: { id: data.reportedByUserId },
-            select: { countryCode: true, email: true, id: true, personId: true },
+            select: {
+              countryCode: true,
+              email: true,
+              id: true,
+              personId: true,
+            },
           })),
         });
 
@@ -1268,11 +1410,15 @@ export async function castReferendumVote(input: {
 }) {
   const person = await ensurePersonForUser(input.userId);
   const referendum = await prisma.referendum.findFirst({
-    where: { deletedAt: null, slug: input.referendumSlug ?? TREATY_REFERENDUM_SLUG },
+    where: {
+      deletedAt: null,
+      slug: input.referendumSlug ?? TREATY_REFERENDUM_SLUG,
+    },
     select: { id: true, status: true },
   });
   if (!referendum) throw new Error("Referendum not found");
-  if (referendum.status !== ReferendumStatus.ACTIVE) throw new Error("Referendum is not active");
+  if (referendum.status !== ReferendumStatus.ACTIVE)
+    throw new Error("Referendum is not active");
   const vote = await prisma.referendumVote.upsert({
     where: {
       referendumId_personId: {
@@ -1310,11 +1456,15 @@ export async function recordRepresentedReferendumVote(input: {
   userId: string;
 }) {
   const referendum = await prisma.referendum.findFirst({
-    where: { deletedAt: null, slug: input.referendumSlug ?? TREATY_REFERENDUM_SLUG },
+    where: {
+      deletedAt: null,
+      slug: input.referendumSlug ?? TREATY_REFERENDUM_SLUG,
+    },
     select: { id: true, status: true },
   });
   if (!referendum) throw new Error("Referendum not found");
-  if (referendum.status !== ReferendumStatus.ACTIVE) throw new Error("Referendum is not active");
+  if (referendum.status !== ReferendumStatus.ACTIVE)
+    throw new Error("Referendum is not active");
   const existingVote = await prisma.referendumVote.findUnique({
     where: {
       referendumId_personId: {
@@ -1331,10 +1481,14 @@ export async function recordRepresentedReferendumVote(input: {
 
   if (existingVote) {
     if (existingVote.voteSource !== ReferendumVoteSource.REPRESENTED) {
-      throw new Error("Cannot overwrite an official self vote with a represented vote");
+      throw new Error(
+        "Cannot overwrite an official self vote with a represented vote",
+      );
     }
     if (existingVote.userId !== input.userId) {
-      throw new Error("Only the original representative can update this represented vote");
+      throw new Error(
+        "Only the original representative can update this represented vote",
+      );
     }
   }
 
@@ -1362,7 +1516,9 @@ export async function recordRepresentedReferendumVote(input: {
         })
         .catch((error: unknown) => {
           if (isUniqueConstraintError(error)) {
-            throw new Error("A vote for this person already exists. Reload and try again.");
+            throw new Error(
+              "A vote for this person already exists. Reload and try again.",
+            );
           }
           throw error;
         });
@@ -1403,7 +1559,10 @@ export async function searchPeople(input: {
   });
 }
 
-export async function getPerson(input: { idOrHandle: string; publicOnly?: boolean }) {
+export async function getPerson(input: {
+  idOrHandle: string;
+  publicOnly?: boolean;
+}) {
   const idOrHandle = input.idOrHandle.trim();
   if (!idOrHandle) throw new Error("idOrHandle is required");
   const publicOnly = input.publicOnly !== false;
@@ -1518,7 +1677,10 @@ export async function getPerson(input: { idOrHandle: string; publicOnly?: boolea
   });
 }
 
-export async function searchOrganizations(input: { limit?: number; query?: string | null }) {
+export async function searchOrganizations(input: {
+  limit?: number;
+  query?: string | null;
+}) {
   const query = input.query?.trim();
   return prisma.organization.findMany({
     where: {
@@ -1544,7 +1706,10 @@ export async function runEfficacyLagMatcher(input: { limit?: number } = {}) {
     where: {
       deletedAt: null,
       person: { deathDate: { not: null }, deletedAt: null },
-      primaryPersonCondition: { globalVariableId: { not: null }, deletedAt: null },
+      primaryPersonCondition: {
+        globalVariableId: { not: null },
+        deletedAt: null,
+      },
     },
     include: {
       person: { select: { deathDate: true, displayName: true } },
@@ -1598,7 +1763,11 @@ export async function runEfficacyLagMatcher(input: { limit?: number } = {}) {
   return { matchedEvidenceRows: createdOrUpdated };
 }
 
-async function updateVisibility(targetType: string, targetId: string, visible: boolean) {
+async function updateVisibility(
+  targetType: string,
+  targetId: string,
+  visible: boolean,
+) {
   const data = visible
     ? { deletedAt: null, isPublic: true }
     : { deletedAt: new Date(), isPublic: false };
@@ -1611,16 +1780,25 @@ async function updateVisibility(targetType: string, targetId: string, visible: b
       return prisma.personMemorial.update({ where: { id: targetId }, data });
     case "PersonMemorialEvidence":
     case "personMemorialEvidence":
-      return prisma.personMemorialEvidence.update({ where: { id: targetId }, data });
+      return prisma.personMemorialEvidence.update({
+        where: { id: targetId },
+        data,
+      });
     case "PersonMemorialResponsibleParty":
     case "personMemorialResponsibleParty":
-      return prisma.personMemorialResponsibleParty.update({ where: { id: targetId }, data });
+      return prisma.personMemorialResponsibleParty.update({
+        where: { id: targetId },
+        data,
+      });
     case "ReferendumVote":
     case "referendumVote":
       return prisma.referendumVote.update({ where: { id: targetId }, data });
     case "InterventionExperience":
     case "interventionExperience":
-      return prisma.interventionExperience.update({ where: { id: targetId }, data });
+      return prisma.interventionExperience.update({
+        where: { id: targetId },
+        data,
+      });
     case "OrganizationReferendumPosition":
     case "organizationReferendumPosition":
       return prisma.organizationReferendumPosition.update({
@@ -1640,11 +1818,17 @@ async function updateVisibility(targetType: string, targetId: string, visible: b
   }
 }
 
-export async function hideContent(input: { targetId: string; targetType: string }) {
+export async function hideContent(input: {
+  targetId: string;
+  targetType: string;
+}) {
   return updateVisibility(input.targetType, input.targetId, false);
 }
 
-export async function restoreContent(input: { targetId: string; targetType: string }) {
+export async function restoreContent(input: {
+  targetId: string;
+  targetType: string;
+}) {
   return updateVisibility(input.targetType, input.targetId, true);
 }
 

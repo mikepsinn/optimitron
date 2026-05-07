@@ -1,7 +1,7 @@
 import {
+  CourtCasePartyRole,
   PersonConditionStatus as PersonConditionStatusEnum,
   PersonLifeStatus,
-  ReferendumVoteSource,
   VotePosition,
   type PersonConditionStatus,
   type PersonDeathCauseCategory,
@@ -9,12 +9,9 @@ import {
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { getPersonHref } from "@/lib/person-href";
-import {
-  buildMemorialReferendumVoteWhere,
-  buildOfficialReferendumVoteWhere,
-  buildRepresentedReferendumVoteWhere,
-} from "@/lib/referendum-vote-classification.server";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import { buildApprovedOrganizationPositionWhere } from "@/lib/referendum-site.server";
+import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
@@ -27,7 +24,7 @@ export interface RepresentedPersonCard {
   personId: string;
   publicComment: string | null;
   representedBy: string;
-  voteId: string;
+  partyId: string;
 }
 
 export type RepresentedPeopleSortKey =
@@ -106,7 +103,7 @@ export interface RepresentedPersonProfileData {
   } | null;
   relationshipType: string | null;
   representedBy: string;
-  vote: {
+  filing: {
     createdAt: Date;
     publicComment: string | null;
   };
@@ -156,7 +153,7 @@ function buildPersonFilterWhere(
         some: {
           deletedAt: null,
           globalVariableId: filters.conditionGlobalVariableId,
-          status: PersonConditionStatusEnum.CAUSE_OF_DEATH,
+          isPublic: true,
         },
       },
     });
@@ -176,45 +173,49 @@ function buildPersonFilterWhere(
   return { AND: clauses };
 }
 
-const galleryVoteSelect = {
+const galleryPartySelect = {
   createdAt: true,
   id: true,
-  publicComment: true,
-  person: {
+  createdBy: { select: userDisplaySelect },
+  subject: {
     select: {
-      conditions: {
-        where: { deletedAt: null, isPublic: true },
-        orderBy: { createdAt: "asc" as const },
-        select: { conditionName: true },
-        take: 1,
-      },
-      displayName: true,
-      memorial: {
+      person: {
         select: {
-          efficacyLagEvidence: {
-            where: { deletedAt: null },
-            orderBy: { diedBeforeApprovalDays: "asc" as const },
-            select: { diedBeforeApprovalDays: true },
-            take: 1,
-          },
-          submissions: {
-            where: publicMemorialSubmissionWhere,
+          bio: true,
+          conditions: {
+            where: { deletedAt: null, isPublic: true },
             orderBy: { createdAt: "asc" as const },
-            select: {
-              memorialMessage: true,
-            },
+            select: { conditionName: true },
             take: 1,
           },
+          displayName: true,
+          memorial: {
+            select: {
+              efficacyLagEvidence: {
+                where: { deletedAt: null },
+                orderBy: { diedBeforeApprovalDays: "asc" as const },
+                select: { diedBeforeApprovalDays: true },
+                take: 1,
+              },
+              submissions: {
+                where: publicMemorialSubmissionWhere,
+                orderBy: { createdAt: "asc" as const },
+                select: {
+                  memorialMessage: true,
+                },
+                take: 1,
+              },
+            },
+          },
+          handle: true,
+          id: true,
+          image: true,
+          lifeStatus: true,
         },
       },
-      handle: true,
-      id: true,
-      image: true,
-      lifeStatus: true,
     },
   },
-  user: { select: userDisplaySelect },
-} satisfies Prisma.ReferendumVoteSelect;
+} satisfies Prisma.CourtCasePartySelect;
 
 export async function getRepresentedPeopleGalleryData(
   referendumSlug = TREATY_REFERENDUM_SLUG,
@@ -228,40 +229,54 @@ export async function getRepresentedPeopleGalleryData(
   );
   const page = Math.max(options.page ?? 1, 1);
 
-  const referendum = await prisma.referendum.findUnique({
-    where: { slug: referendumSlug, deletedAt: null },
-    select: { id: true },
-  });
-
-  if (!referendum) return null;
+  const [referendum, courtCase] = await Promise.all([
+    prisma.referendum.findUnique({
+      where: { slug: referendumSlug, deletedAt: null },
+      select: { id: true },
+    }),
+    prisma.courtCase.findUnique({
+      where: { slug: HUMANITY_V_GOVERNMENT_CASE_SLUG },
+      select: { id: true },
+    }),
+  ]);
 
   const personFilterWhere = buildPersonFilterWhere(filters);
-  const personWhereForVote = personFilterWhere
-    ? { person: personFilterWhere }
-    : {};
-
-  const publicRepresentedWhere: Prisma.ReferendumVoteWhereInput = {
-    ...buildRepresentedReferendumVoteWhere({
-      answer: VotePosition.YES,
-      publicOnly: true,
-      referendumId: referendum.id,
-    }),
-  };
-  const publicDeadPersonWhere: Prisma.ReferendumVoteWhereInput =
-    buildMemorialReferendumVoteWhere({
-      answer: VotePosition.YES,
-      publicOnly: true,
-      referendumId: referendum.id,
-    });
-
-  // Filtered visible-vote where: union of represented+memorial, narrowed by
-  // person-level filters when present.
-  const filteredVoteWhere: Prisma.ReferendumVoteWhereInput = {
+  const visiblePersonWhere: Prisma.PersonWhereInput = {
     AND: [
-      { OR: [publicRepresentedWhere, publicDeadPersonWhere] },
-      ...(personFilterWhere ? [personWhereForVote] : []),
+      { deletedAt: null, isPublic: true },
+      publicRepresentedPersonVisibilityWhere,
+      ...(personFilterWhere ? [personFilterWhere] : []),
     ],
   };
+  const plaintiffPartyWhere = (
+    personWhere: Prisma.PersonWhereInput = visiblePersonWhere,
+  ): Prisma.CourtCasePartyWhereInput => ({
+    caseId: courtCase?.id ?? "__missing_humanity_v_government_case__",
+    deletedAt: null,
+    isPublic: true,
+    role: CourtCasePartyRole.NAMED_PLAINTIFF,
+    subject: {
+      deletedAt: null,
+      person: personWhere,
+    },
+  });
+  const filteredPartyWhere = plaintiffPartyWhere();
+  const publicRepresentedPersonPartyWhere = plaintiffPartyWhere({
+    AND: [
+      { deletedAt: null, isPublic: true },
+      {
+        lifeStatus: { in: [PersonLifeStatus.UNKNOWN, PersonLifeStatus.LIVING] },
+      },
+      ...(personFilterWhere ? [personFilterWhere] : []),
+    ],
+  });
+  const publicDeadPersonPartyWhere = plaintiffPartyWhere({
+    AND: [
+      { deletedAt: null, isPublic: true },
+      publicDeceasedPersonVisibilityWhere,
+      ...(personFilterWhere ? [personFilterWhere] : []),
+    ],
+  });
 
   // Sort handling. Prisma can't express the efficacy-lag aggregation or a
   // relation-field nulls-last order, so those sorts hydrate the filtered rows,
@@ -270,7 +285,7 @@ export async function getRepresentedPeopleGalleryData(
   const orderBy = (() => {
     switch (sort) {
       case "alphabetical":
-        return { person: { displayName: "asc" as const } };
+        return { subject: { person: { displayName: "asc" as const } } };
       case "oldest":
         return { createdAt: "asc" as const };
       case "recent":
@@ -287,48 +302,63 @@ export async function getRepresentedPeopleGalleryData(
     representedHumanCount,
     deadPersonVoteCount,
     filteredCount,
-    rawVotes,
+    rawParties,
   ] = await Promise.all([
-    prisma.referendumVote.count({
-      where: buildOfficialReferendumVoteWhere({
-        answer: VotePosition.YES,
-        referendumId: referendum.id,
-      }),
-    }),
-    prisma.organizationReferendumPosition.count({
-      where: buildApprovedOrganizationPositionWhere(referendum.id),
-    }),
-    prisma.referendumVote.count({ where: publicRepresentedWhere }),
-    prisma.referendumVote.count({ where: publicDeadPersonWhere }),
-    prisma.referendumVote.count({ where: filteredVoteWhere }),
-    prisma.referendumVote.findMany({
-      where: filteredVoteWhere,
-      orderBy,
-      ...(isInMemorySort ? {} : { skip: gallerySkip, take: pageSize }),
-      select: galleryVoteSelect,
-    }),
+    referendum
+      ? prisma.referendumVote.count({
+          where: buildOfficialReferendumVoteWhere({
+            answer: VotePosition.YES,
+            referendumId: referendum.id,
+          }),
+        })
+      : 0,
+    referendum
+      ? prisma.organizationReferendumPosition.count({
+          where: buildApprovedOrganizationPositionWhere(referendum.id),
+        })
+      : 0,
+    courtCase
+      ? prisma.courtCaseParty.count({
+          where: publicRepresentedPersonPartyWhere,
+        })
+      : 0,
+    courtCase
+      ? prisma.courtCaseParty.count({ where: publicDeadPersonPartyWhere })
+      : 0,
+    courtCase ? prisma.courtCaseParty.count({ where: filteredPartyWhere }) : 0,
+    courtCase
+      ? prisma.courtCaseParty.findMany({
+          where: filteredPartyWhere,
+          orderBy,
+          ...(isInMemorySort ? {} : { skip: gallerySkip, take: pageSize }),
+          select: galleryPartySelect,
+        })
+      : [],
   ]);
 
-  const sortedVotes = isInMemorySort
-    ? [...rawVotes]
+  const sortedParties = isInMemorySort
+    ? [...rawParties]
         .sort((a, b) => {
+          const aPerson = a.subject.person;
+          const bPerson = b.subject.person;
+          if (!aPerson || !bPerson) return 0;
           if (sort === "recent") {
             const imagePresence =
-              Number(Boolean(b.person.image)) - Number(Boolean(a.person.image));
+              Number(Boolean(bPerson.image)) - Number(Boolean(aPerson.image));
             if (imagePresence !== 0) return imagePresence;
             return b.createdAt.getTime() - a.createdAt.getTime();
           }
           const aDays =
-            a.person.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays ??
+            aPerson.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays ??
             Number.POSITIVE_INFINITY;
           const bDays =
-            b.person.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays ??
+            bPerson.memorial?.efficacyLagEvidence[0]?.diedBeforeApprovalDays ??
             Number.POSITIVE_INFINITY;
           if (aDays === bDays) return 0;
           return aDays < bDays ? -1 : 1;
         })
         .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
-    : rawVotes;
+    : rawParties;
 
   const totalPages = Math.max(1, Math.ceil(filteredCount / pageSize));
 
@@ -339,20 +369,25 @@ export async function getRepresentedPeopleGalleryData(
     organizationCount,
     page,
     pageSize,
-    people: sortedVotes.map((vote) => ({
-      conditionName: vote.person.conditions[0]?.conditionName ?? null,
-      displayName: vote.person.displayName,
-      href: getPersonHref(vote.person),
-      image: vote.person.image,
-      lifeStatus: vote.person.lifeStatus,
-      personId: vote.person.id,
-      publicComment:
-        vote.person.memorial?.submissions[0]?.memorialMessage ??
-        vote.publicComment,
-      representedBy: getUserDisplayName(vote.user),
-      voteId: vote.id,
-    })),
-    referendumId: referendum.id,
+    people: sortedParties.flatMap((party) => {
+      const person = party.subject.person;
+      if (!person) return [];
+      return [
+        {
+          conditionName: person.conditions[0]?.conditionName ?? null,
+          displayName: person.displayName,
+          href: getPersonHref(person),
+          image: person.image,
+          lifeStatus: person.lifeStatus,
+          personId: person.id,
+          publicComment:
+            person.memorial?.submissions[0]?.memorialMessage ?? person.bio,
+          representedBy: getUserDisplayName(party.createdBy),
+          partyId: party.id,
+        },
+      ];
+    }),
+    referendumId: referendum?.id ?? "",
     representedHumanCount,
     sort,
     totalPages,
@@ -361,14 +396,15 @@ export async function getRepresentedPeopleGalleryData(
 
 export async function getRepresentedPersonProfileData(
   handleOrId: string,
-  referendumSlug = TREATY_REFERENDUM_SLUG,
 ): Promise<RepresentedPersonProfileData | null> {
-  const baseVoteWhere = {
-    answer: VotePosition.YES,
+  const basePlaintiffPartyWhere = {
+    case: {
+      deletedAt: null,
+      slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+    },
     deletedAt: null,
     isPublic: true,
-    referendum: { slug: referendumSlug },
-    voteSource: ReferendumVoteSource.REPRESENTED,
+    role: CourtCasePartyRole.NAMED_PLAINTIFF,
   };
 
   const person = await prisma.person.findFirst({
@@ -378,7 +414,13 @@ export async function getRepresentedPersonProfileData(
       AND: [
         { OR: [{ handle: handleOrId }, { id: handleOrId }] },
         publicRepresentedPersonVisibilityWhere,
-        { referendumVotes: { some: baseVoteWhere } },
+        {
+          subject: {
+            courtCaseParties: {
+              some: basePlaintiffPartyWhere,
+            },
+          },
+        },
       ],
     },
     select: {
@@ -453,24 +495,27 @@ export async function getRepresentedPersonProfileData(
           },
         },
       },
-      referendumVotes: {
-        where: baseVoteWhere,
-        orderBy: { createdAt: "desc" as const },
+      subject: {
         select: {
-          createdAt: true,
-          publicComment: true,
-          user: { select: userDisplaySelect },
+          courtCaseParties: {
+            where: basePlaintiffPartyWhere,
+            orderBy: { createdAt: "desc" as const },
+            select: {
+              createdAt: true,
+              createdBy: { select: userDisplaySelect },
+            },
+            take: 1,
+          },
         },
-        take: 1,
       },
     },
   });
 
-  const vote = person?.referendumVotes[0];
-  if (!person || !vote) return null;
+  const party = person?.subject?.courtCaseParties[0];
+  if (!person || !party) return null;
   const relationship =
     person.relationshipsAsObject.find(
-      (candidate) => candidate.createdByUserId === vote.user.id,
+      (candidate) => candidate.createdByUserId === party.createdBy?.id,
     ) ??
     person.relationshipsAsObject[0] ??
     null;
@@ -526,10 +571,10 @@ export async function getRepresentedPersonProfileData(
         })()
       : null,
     relationshipType: relationship?.relationshipType ?? null,
-    representedBy: getUserDisplayName(vote.user),
-    vote: {
-      createdAt: vote.createdAt,
-      publicComment: vote.publicComment,
+    representedBy: getUserDisplayName(party.createdBy),
+    filing: {
+      createdAt: party.createdAt,
+      publicComment: person.bio,
     },
   };
 }

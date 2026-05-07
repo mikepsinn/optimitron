@@ -171,9 +171,9 @@ const taskListSelect = {
     select: {
       contactEmail: true,
       id: true,
-      logo: true,
       name: true,
       slug: true,
+      squareLogoUrl: true,
       type: true,
       website: true,
     },

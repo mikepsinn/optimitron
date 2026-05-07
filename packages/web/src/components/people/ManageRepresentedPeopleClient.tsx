@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/retroui/Checkbox";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
+import { uploadImageViaBackend } from "@/lib/image-upload.client";
 import { ROUTES } from "@/lib/routes";
 import { SquarePhotoCropper } from "./SquarePhotoCropper";
 
@@ -28,20 +29,24 @@ interface EditableEvidence {
 }
 
 export interface EditableRepresentedPerson {
+  authorityConfirmed: boolean;
   birthDate: string;
   causeCategory: PersonDeathCauseCategory;
+  conditionIsPublic: boolean;
   conditionName: string;
   consentCourtEvidence: boolean;
   dateOfDeath: string;
   deathCountryCode: string;
   displayName: string;
   evidence: EditableEvidence[];
+  healthDisclosureConfirmed: boolean;
   id: string;
   imageUrl: string;
   isPublic: boolean;
   lifeStatus: PersonLifeStatus;
   memorialMessage: string;
   publicComment: string;
+  publicDisplayAcknowledged: boolean;
   relationshipType: string;
 }
 
@@ -56,6 +61,16 @@ async function uploadFileViaPresign(input: {
   file: File;
   kind: "person-photo" | "memorial-evidence";
 }): Promise<{ publicUrl: string }> {
+  if (input.kind === "person-photo") {
+    return uploadImageViaBackend({ file: input.file, kind: "person-photo" });
+  }
+  if (input.file.type.startsWith("image/")) {
+    return uploadImageViaBackend({
+      file: input.file,
+      kind: "memorial-evidence-image",
+    });
+  }
+
   const presignRes = await fetch("/api/uploads/presign", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -107,6 +122,21 @@ function initials(name: string) {
       ? `${words[0]![0] ?? ""}${words[1]![0] ?? ""}`
       : name.trim().slice(0, 2);
   return letters.toUpperCase() || "??";
+}
+
+function canSavePerson(person: EditableRepresentedPerson) {
+  const isLivingOrUnknown = person.lifeStatus !== PersonLifeStatus.DECEASED;
+  const wantsPublicCondition =
+    isLivingOrUnknown &&
+    person.conditionName.trim() !== "" &&
+    person.conditionIsPublic;
+
+  return (
+    person.displayName.trim() !== "" &&
+    person.authorityConfirmed &&
+    (!person.isPublic || person.publicDisplayAcknowledged) &&
+    (!wantsPublicCondition || person.healthDisclosureConfirmed)
+  );
 }
 
 function PersonThumb({ person }: { person: EditableRepresentedPerson }) {
@@ -210,8 +240,17 @@ export function ManageRepresentedPeopleClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...person,
+          healthDisclosureConfirmed:
+            person.lifeStatus !== PersonLifeStatus.DECEASED &&
+            person.conditionIsPublic &&
+            person.healthDisclosureConfirmed,
           referendumSlug,
           memorialEvidence: person.evidence,
+          publicDisplayAcknowledged:
+            person.isPublic && person.publicDisplayAcknowledged,
+          showConditionPublicly:
+            person.lifeStatus !== PersonLifeStatus.DECEASED &&
+            person.conditionIsPublic,
         }),
       });
       if (!response.ok) {
@@ -574,12 +613,19 @@ export function ManageRepresentedPeopleClient({
                         </Label>
                         <select
                           className="min-h-12 w-full border border-border bg-background px-3 font-bold text-foreground"
-                          onChange={(event) =>
+                          onChange={(event) => {
+                            const nextLifeStatus = event.target
+                              .value as PersonLifeStatus;
                             updatePerson(editingPerson.id, {
-                              lifeStatus: event.target
-                                .value as PersonLifeStatus,
-                            })
-                          }
+                              lifeStatus: nextLifeStatus,
+                              ...(nextLifeStatus === PersonLifeStatus.DECEASED
+                                ? {
+                                    conditionIsPublic: false,
+                                    healthDisclosureConfirmed: false,
+                                  }
+                                : {}),
+                            });
+                          }}
                           value={editingPerson.lifeStatus}
                         >
                           <option value={PersonLifeStatus.UNKNOWN}>
@@ -617,6 +663,12 @@ export function ManageRepresentedPeopleClient({
                           onChange={(event) =>
                             updatePerson(editingPerson.id, {
                               conditionName: event.target.value,
+                              ...(event.target.value.trim()
+                                ? {}
+                                : {
+                                    conditionIsPublic: false,
+                                    healthDisclosureConfirmed: false,
+                                  }),
                             })
                           }
                           placeholder="Dementia"
@@ -811,6 +863,13 @@ export function ManageRepresentedPeopleClient({
                                       Death record
                                     </option>
                                     <option
+                                      value={
+                                        PersonMemorialEvidenceKind.WITNESS_STATEMENT
+                                      }
+                                    >
+                                      Witness statement
+                                    </option>
+                                    <option
                                       value={PersonMemorialEvidenceKind.OTHER}
                                     >
                                       Other
@@ -875,11 +934,91 @@ export function ManageRepresentedPeopleClient({
                         onCheckedChange={(value) =>
                           updatePerson(editingPerson.id, {
                             isPublic: value === true,
+                            publicDisplayAcknowledged: false,
+                            ...(value === true
+                              ? {}
+                              : {
+                                  conditionIsPublic: false,
+                                  healthDisclosureConfirmed: false,
+                                }),
                           })
                         }
                       />
                       <span>Show this person publicly.</span>
                     </label>
+
+                    <label className="flex items-start gap-3 text-sm font-bold leading-6">
+                      <Checkbox
+                        checked={editingPerson.authorityConfirmed}
+                        onCheckedChange={(value) =>
+                          updatePerson(editingPerson.id, {
+                            authorityConfirmed: value === true,
+                          })
+                        }
+                      />
+                      <span>
+                        I have permission or legal authority to edit this
+                        person, or they are deceased and I am their family
+                        member or personal representative.
+                      </span>
+                    </label>
+
+                    {editingPerson.isPublic ? (
+                      <label className="flex items-start gap-3 text-sm font-bold leading-6">
+                        <Checkbox
+                          checked={editingPerson.publicDisplayAcknowledged}
+                          onCheckedChange={(value) =>
+                            updatePerson(editingPerson.id, {
+                              publicDisplayAcknowledged: value === true,
+                            })
+                          }
+                        />
+                        <span>
+                          I understand public plaintiff cards, photos, comments,
+                          memorial details, and evidence may be visible to
+                          anyone.
+                        </span>
+                      </label>
+                    ) : null}
+
+                    {editingPerson.lifeStatus !== PersonLifeStatus.DECEASED &&
+                    editingPerson.conditionName.trim() &&
+                    editingPerson.isPublic ? (
+                      <div className="space-y-3 border border-border bg-background p-3">
+                        <label className="flex items-start gap-3 text-sm font-bold leading-6">
+                          <Checkbox
+                            checked={editingPerson.conditionIsPublic}
+                            onCheckedChange={(value) =>
+                              updatePerson(editingPerson.id, {
+                                conditionIsPublic: value === true,
+                                healthDisclosureConfirmed:
+                                  value === true
+                                    ? editingPerson.healthDisclosureConfirmed
+                                    : false,
+                              })
+                            }
+                          />
+                          <span>Show this health condition publicly.</span>
+                        </label>
+                        {editingPerson.conditionIsPublic ? (
+                          <label className="flex items-start gap-3 text-sm font-bold leading-6">
+                            <Checkbox
+                              checked={editingPerson.healthDisclosureConfirmed}
+                              onCheckedChange={(value) =>
+                                updatePerson(editingPerson.id, {
+                                  healthDisclosureConfirmed: value === true,
+                                })
+                              }
+                            />
+                            <span>
+                              This person is living or their status is unknown.
+                              I have consent or legal authority to publicly show
+                              their health condition.
+                            </span>
+                          </label>
+                        ) : null}
+                      </div>
+                    ) : null}
 
                     <div className="flex flex-wrap items-center gap-3">
                       <button
@@ -887,7 +1026,7 @@ export function ManageRepresentedPeopleClient({
                         disabled={
                           savingId === editingPerson.id ||
                           deletingId === editingPerson.id ||
-                          !editingPerson.displayName.trim()
+                          !canSavePerson(editingPerson)
                         }
                         onClick={() => void savePerson(editingPerson)}
                         type="button"

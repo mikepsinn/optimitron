@@ -24,7 +24,7 @@ export function DevSiteVariantSwitcher({
   const currentSite = sites.find((site) => site.key === currentSiteKey);
 
   return (
-    <details className="fixed bottom-3 left-3 z-[100] print:hidden">
+    <details className="fixed bottom-3 right-3 z-[100] max-sm:hidden print:hidden">
       <summary className="cursor-pointer border border-foreground bg-background px-3 py-2 text-xs font-bold text-foreground shadow-sm">
         Site: {currentSite?.label ?? currentSiteKey}
       </summary>

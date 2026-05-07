@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   memorialUpsert: vi.fn(),
   personFindUnique: vi.fn(),
   personUpdate: vi.fn(),
+  courtCasePartyUpdateMany: vi.fn(),
   referendumFindUnique: vi.fn(),
   relationshipCreate: vi.fn(),
   relationshipFindFirst: vi.fn(),
@@ -56,10 +57,21 @@ vi.mock("@/lib/subject.server", () => ({
 
 import { DELETE, PATCH } from "./route";
 
-function request(body: Record<string, unknown>) {
+function request(
+  body: Record<string, unknown>,
+  options: { includeDefaultAcknowledgements?: boolean } = {},
+) {
+  const withAcknowledgements =
+    options.includeDefaultAcknowledgements === false
+      ? body
+      : {
+          authorityConfirmed: true,
+          publicDisplayAcknowledged: true,
+          ...body,
+        };
   return new Request("http://localhost/api/people/person_1", {
     method: "PATCH",
-    body: JSON.stringify(body),
+    body: JSON.stringify(withAcknowledgements),
   });
 }
 
@@ -84,6 +96,7 @@ function tx() {
   return {
     globalVariable: { findFirst: mocks.globalVariableFindFirst },
     person: { update: mocks.personUpdate },
+    courtCaseParty: { updateMany: mocks.courtCasePartyUpdateMany },
     personCondition: {
       create: mocks.conditionCreate,
       update: mocks.conditionUpdate,
@@ -129,10 +142,13 @@ describe("PATCH /api/people/[id]", () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.personFindUnique.mockResolvedValue({
       birthDate: null,
-      conditions: [{ conditionName: "cancer", id: "condition_1" }],
+      conditions: [
+        { conditionName: "cancer", id: "condition_1", isPublic: true },
+      ],
       createdByUserId: "user_1",
       deathDate: new Date("2020-01-02T00:00:00.000Z"),
       displayName: "Aunt Jane",
+      bio: "old note",
       id: "person_1",
       image: null,
       isPublic: true,
@@ -153,6 +169,10 @@ describe("PATCH /api/people/[id]", () => {
             memorialMessage: "She taught everyone to fix broken things.",
           },
         ],
+      },
+      subject: {
+        courtCaseParties: [{ id: "party_1" }],
+        id: "subject_1",
       },
     });
     mocks.referendumFindUnique.mockResolvedValue({ id: "ref_1" });
@@ -200,6 +220,28 @@ describe("PATCH /api/people/[id]", () => {
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({ error: "Invalid JSON" });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("rejects represented person updates without permission or authority confirmation", async () => {
+    const res = await PATCH(
+      request(
+        {
+          displayName: "Aunt Jane",
+          lifeStatus: "DECEASED",
+        },
+        { includeDefaultAcknowledgements: false },
+      ),
+      params(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: "Invalid person update",
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: ["authorityConfirmed"] }),
+      ]),
+    });
     expect(mocks.transaction).not.toHaveBeenCalled();
   });
 
@@ -266,6 +308,110 @@ describe("PATCH /api/people/[id]", () => {
       data: { deletedAt: expect.any(Date) },
     });
     expect(mocks.memorialUpsert).not.toHaveBeenCalled();
+  });
+
+  it("allows the creator to edit a plaintiff even when no represented referendum vote exists", async () => {
+    mocks.voteFindFirst.mockResolvedValue(null);
+
+    const res = await PATCH(
+      request({
+        displayName: "Aunt Jane",
+        lifeStatus: "LIVING",
+        publicComment: "Updated public note.",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.personUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          bio: "Updated public note.",
+          displayName: "Aunt Jane",
+          lifeStatus: "LIVING",
+        }),
+      }),
+    );
+    expect(mocks.voteUpdate).not.toHaveBeenCalled();
+    expect(mocks.voteUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("returns 404 when the owned person is not a court case plaintiff", async () => {
+    mocks.personFindUnique.mockResolvedValue({
+      birthDate: null,
+      conditions: [],
+      createdByUserId: "user_1",
+      deathDate: null,
+      displayName: "User Profile",
+      bio: null,
+      id: "person_1",
+      image: null,
+      isPublic: true,
+      lifeStatus: "LIVING",
+      memorial: null,
+      subject: {
+        courtCaseParties: [],
+        id: "subject_1",
+      },
+    });
+
+    const res = await PATCH(
+      request({
+        displayName: "User Profile",
+        lifeStatus: "LIVING",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toEqual({ error: "Person not found" });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("makes living represented conditions private by default", async () => {
+    const res = await PATCH(
+      request({
+        conditionName: "dementia",
+        displayName: "Grandma Kay",
+        lifeStatus: "LIVING",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.conditionUpdate).toHaveBeenCalledWith({
+      where: { id: "condition_1" },
+      data: expect.objectContaining({
+        conditionName: "dementia",
+        isPublic: false,
+        status: "ACTIVE",
+      }),
+      select: { id: true },
+    });
+  });
+
+  it("keeps living represented conditions public only with explicit health disclosure confirmation", async () => {
+    const res = await PATCH(
+      request({
+        conditionName: "dementia",
+        displayName: "Grandma Kay",
+        healthDisclosureConfirmed: true,
+        lifeStatus: "LIVING",
+        showConditionPublicly: true,
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.conditionUpdate).toHaveBeenCalledWith({
+      where: { id: "condition_1" },
+      data: expect.objectContaining({
+        conditionName: "dementia",
+        isPublic: true,
+        status: "ACTIVE",
+      }),
+      select: { id: true },
+    });
   });
 
   it("updates existing evidence and creates only new evidence rows", async () => {
@@ -389,6 +535,34 @@ describe("PATCH /api/people/[id]", () => {
       }),
     });
   });
+
+  it("rejects public self-serve hospital record evidence", async () => {
+    const res = await PATCH(
+      request({
+        displayName: "Aunt Jane",
+        lifeStatus: "DECEASED",
+        memorialEvidence: [
+          {
+            evidenceKind: "HOSPITAL_RECORD",
+            sourceUrl: "https://cdn.warondisease.org/evidence/record.pdf",
+            title: "Record",
+          },
+        ],
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: "Invalid person update",
+      issues: expect.arrayContaining([
+        expect.objectContaining({
+          path: ["memorialEvidence", 0, "evidenceKind"],
+        }),
+      ]),
+    });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
 });
 
 describe("DELETE /api/people/[id]", () => {
@@ -400,6 +574,10 @@ describe("DELETE /api/people/[id]", () => {
       deletedAt: null,
       id: "person_1",
       memorial: { id: "memorial_1" },
+      subject: {
+        courtCaseParties: [{ id: "party_1" }],
+        id: "subject_1",
+      },
     });
     mocks.voteFindFirst.mockResolvedValue({ id: "vote_1" });
     mocks.transaction.mockImplementation(async (callback) => callback(tx()));
@@ -431,15 +609,35 @@ describe("DELETE /api/people/[id]", () => {
     expect(mocks.transaction).not.toHaveBeenCalled();
   });
 
-  it("returns 403 when the represented vote is not owned by the user", async () => {
+  it("allows the creator to delete a plaintiff even when no represented referendum vote exists", async () => {
     mocks.voteFindFirst.mockResolvedValue(null);
 
     const res = await DELETE(deleteRequest(), params());
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
-      error: "Only the original representative can delete this person.",
+      deleted: true,
+      personId: "person_1",
     });
+    expect(mocks.transaction).toHaveBeenCalled();
+  });
+
+  it("returns 404 when the owned person is not a court case plaintiff", async () => {
+    mocks.personFindUnique.mockResolvedValue({
+      createdByUserId: "user_1",
+      deletedAt: null,
+      id: "person_1",
+      memorial: null,
+      subject: {
+        courtCaseParties: [],
+        id: "subject_1",
+      },
+    });
+
+    const res = await DELETE(deleteRequest(), params());
+
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toEqual({ error: "Person not found" });
     expect(mocks.transaction).not.toHaveBeenCalled();
   });
 
@@ -458,13 +656,17 @@ describe("DELETE /api/people/[id]", () => {
         isPublic: false,
       },
     });
-    expect(mocks.voteUpdateMany).toHaveBeenCalledWith({
-      where: {
+    expect(mocks.voteUpdateMany).not.toHaveBeenCalled();
+    expect(mocks.courtCasePartyUpdateMany).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        case: expect.objectContaining({
+          slug: "humanity-v-government",
+        }),
+        createdByUserId: "user_1",
         deletedAt: null,
-        personId: "person_1",
-        userId: "user_1",
-        voteSource: "REPRESENTED",
-      },
+        role: "NAMED_PLAINTIFF",
+        subjectId: "subject_1",
+      }),
       data: {
         deletedAt: expect.any(Date),
         isPublic: false,

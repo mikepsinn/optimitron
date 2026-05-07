@@ -46,9 +46,9 @@ export async function generateMetadata({
     const condition = representedData.memorial?.conditionLabel ?? null;
     const lag = representedData.memorial?.efficacyLag ?? null;
     const baseDescription =
-      representedData.vote.publicComment ??
+      representedData.filing.publicComment ??
       representedData.memorial?.memorialMessage ??
-      `${representedData.person.displayName} was added by someone who represented them on the 1% Treaty.`;
+      `${representedData.person.displayName} was registered as a plaintiff in Humanity v Government.`;
     const description = lag
       ? `${baseDescription} ${lag.interventionName} was approved ${lag.approvalDate.getUTCFullYear()}.`
       : condition && isDeceased
@@ -135,15 +135,15 @@ function RepresentedPersonProfile({
     person,
     relationshipType,
     representedBy,
-    vote,
+    filing,
   } = data;
   const fallbackInitials = getFallbackInitials(person.displayName);
   const relationship = formatRelationship(relationshipType);
   const birthDate = formatDate(person.birthDate);
   const deathDate = formatDate(person.deathDate);
-  const voteComment =
-    vote.publicComment && vote.publicComment !== memorial?.memorialMessage
-      ? vote.publicComment
+  const filingComment =
+    filing.publicComment && filing.publicComment !== memorial?.memorialMessage
+      ? filing.publicComment
       : null;
   const summaryCards = [
     { label: "Registered by", value: representedBy },
@@ -247,10 +247,10 @@ function RepresentedPersonProfile({
           </section>
         ) : null}
 
-        {voteComment ? (
+        {filingComment ? (
           <section className="border-y border-border py-6">
             <p className="text-2xl font-black leading-10">
-              &ldquo;{voteComment}&rdquo;
+              &ldquo;{filingComment}&rdquo;
             </p>
           </section>
         ) : null}

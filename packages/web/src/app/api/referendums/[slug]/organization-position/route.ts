@@ -11,7 +11,7 @@ import {
   canManageOrganization,
   createOrganizationWithOwner,
   normalizeOrganizationHttpUrl,
-  normalizeOrganizationLogoUrl,
+  normalizeOrganizationImageUrl,
 } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 
@@ -20,7 +20,9 @@ interface NewOrganizationInput {
   type?: string | null;
   website?: string | null;
   description?: string | null;
-  logo?: string | null;
+  donationUrl?: string | null;
+  squareLogoUrl?: string | null;
+  wordmarkLogoUrl?: string | null;
   contactEmail?: string | null;
 }
 
@@ -91,10 +93,21 @@ export async function POST(
         body.newOrganization.type && body.newOrganization.type in OrgType
           ? (body.newOrganization.type as OrgType)
           : OrgType.NONPROFIT;
-      const logo = normalizeOrganizationLogoUrl(body.newOrganization.logo);
-      if (logo === false) {
+      const squareLogoUrl = normalizeOrganizationImageUrl(
+        body.newOrganization.squareLogoUrl,
+      );
+      if (squareLogoUrl === false) {
         return NextResponse.json(
-          { error: "Invalid logo URL" },
+          { error: "Invalid square logo URL" },
+          { status: 400 },
+        );
+      }
+      const wordmarkLogoUrl = normalizeOrganizationImageUrl(
+        body.newOrganization.wordmarkLogoUrl,
+      );
+      if (wordmarkLogoUrl === false) {
+        return NextResponse.json(
+          { error: "Invalid wordmark logo URL" },
           { status: 400 },
         );
       }
@@ -107,13 +120,24 @@ export async function POST(
           { status: 400 },
         );
       }
+      const donationUrl = normalizeOrganizationHttpUrl(
+        body.newOrganization.donationUrl,
+      );
+      if (donationUrl === false) {
+        return NextResponse.json(
+          { error: "Invalid donation URL" },
+          { status: 400 },
+        );
+      }
       const org = await createOrganizationWithOwner(
         {
           name,
           type,
           website,
+          donationUrl,
           description: body.newOrganization.description ?? null,
-          logo,
+          squareLogoUrl,
+          wordmarkLogoUrl,
           contactEmail: body.newOrganization.contactEmail ?? null,
           status: OrgStatus.APPROVED,
         },

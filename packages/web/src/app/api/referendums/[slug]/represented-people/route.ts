@@ -5,9 +5,6 @@ import {
   PersonDeathCauseCategory,
   PersonLifeStatus,
   PersonMemorialEvidenceKind,
-  ReferendumStatus,
-  ReferendumVoteSource,
-  VotePosition,
   schemas,
 } from "@optimitron/db";
 import { z } from "zod";
@@ -17,10 +14,16 @@ import {
   type EfficacyLagMatch,
 } from "@/lib/efficacy-lag-matcher.server";
 import { findCanonicalConditionGlobalVariable } from "@/lib/global-variable-lookup.server";
+import { ensureHumanityVGovernmentPlaintiffParty } from "@/lib/humanity-v-government-case.server";
 import { prisma } from "@/lib/prisma";
 import { ensurePersonForUser } from "@/lib/person.server";
+import {
+  isSelfServeMemorialEvidenceKindAllowed,
+  shouldPublishRepresentedCondition,
+} from "@/lib/represented-person-privacy";
 import { slugify } from "@/lib/slugify";
 import { ensureSubjectForPerson } from "@/lib/subject.server";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 const MAX_NAME_LENGTH = 80;
 const MAX_CONDITION_LENGTH = 80;
@@ -47,7 +50,9 @@ function normalizePublicText(value: unknown, maxLength: number) {
 }
 
 function cleanStringSchema(maxLength: number) {
-  return z.unknown().transform((value) => normalizePublicText(value, maxLength));
+  return z
+    .unknown()
+    .transform((value) => normalizePublicText(value, maxLength));
 }
 
 const nullableDateInputSchema = z
@@ -60,7 +65,9 @@ const nullableDateInputSchema = z
 
 const countryCodeSchema = z
   .unknown()
-  .transform((value) => (typeof value === "string" ? value.trim().toUpperCase() : ""))
+  .transform((value) =>
+    typeof value === "string" ? value.trim().toUpperCase() : "",
+  )
   .transform((value) => (value ? value : null))
   .refine((value) => value === null || /^[A-Z]{2}$/.test(value), {
     message: "Use a two-letter country code.",
@@ -85,14 +92,19 @@ const siteLocalImageSchema = z
     (value) => {
       if (value === null) return true;
       if (value.startsWith("/") && !value.startsWith("//")) return true;
-      if (allowedImageHostPattern && allowedImageHostPattern.test(value)) return true;
+      if (allowedImageHostPattern && allowedImageHostPattern.test(value))
+        return true;
       return false;
     },
-    { message: "Use a site-local image path or an upload URL from this site's storage." },
+    {
+      message:
+        "Use a site-local image path or an upload URL from this site's storage.",
+    },
   );
 
 const lifeStatusInputSchema = z.preprocess((value) => {
-  if (typeof value !== "string" || !value.trim()) return PersonLifeStatus.UNKNOWN;
+  if (typeof value !== "string" || !value.trim())
+    return PersonLifeStatus.UNKNOWN;
   return value.trim();
 }, schemas.PersonLifeStatusSchema);
 
@@ -104,7 +116,8 @@ const causeCategoryInputSchema = z.preprocess((value) => {
 }, schemas.PersonDeathCauseCategorySchema);
 
 const civilianStatusInputSchema = z.preprocess((value) => {
-  if (typeof value !== "string" || !value.trim()) return PersonCivilianStatus.UNKNOWN;
+  if (typeof value !== "string" || !value.trim())
+    return PersonCivilianStatus.UNKNOWN;
   return value.trim();
 }, schemas.PersonCivilianStatusSchema);
 
@@ -114,13 +127,16 @@ const wasChildInputSchema = z.preprocess((value) => {
   return null;
 }, z.boolean().nullable());
 
+const booleanInputSchema = z.unknown().transform((value) => value === true);
+
 const MAX_EVIDENCE_ITEMS = 8;
 const MAX_EVIDENCE_TITLE_LENGTH = 120;
 const MAX_EVIDENCE_DESCRIPTION_LENGTH = 500;
 
 const memorialEvidenceInputSchema = z.object({
   evidenceKind: z.preprocess((value) => {
-    if (typeof value !== "string" || !value.trim()) return PersonMemorialEvidenceKind.OTHER;
+    if (typeof value !== "string" || !value.trim())
+      return PersonMemorialEvidenceKind.OTHER;
     return value.trim();
   }, schemas.PersonMemorialEvidenceKindSchema),
   sourceUrl: cleanStringSchema(500).refine(
@@ -141,7 +157,8 @@ const memorialEvidenceInputSchema = z.object({
     .unknown()
     .optional()
     .refine((value) => value == null || value === false, {
-      message: "Evidence uploads must be public. Do not upload private or sensitive files.",
+      message:
+        "Evidence uploads must be public. Do not upload private or sensitive files.",
     })
     .transform(() => false),
 });
@@ -149,18 +166,27 @@ const memorialEvidenceInputSchema = z.object({
 const responsiblePartyInputSchema = z.object({
   jurisdictionCode: z
     .unknown()
-    .transform((value) => (typeof value === "string" ? value.trim().toUpperCase() : ""))
+    .transform((value) =>
+      typeof value === "string" ? value.trim().toUpperCase() : "",
+    )
     .transform((value) => (value ? value : null))
-    .refine((value) => value === null || /^[A-Z]{2,8}(?:-[A-Z0-9]{1,3})?$/.test(value), {
-      message: "Use a valid ISO jurisdiction code.",
-    }),
+    .refine(
+      (value) =>
+        value === null || /^[A-Z]{2,8}(?:-[A-Z0-9]{1,3})?$/.test(value),
+      {
+        message: "Use a valid ISO jurisdiction code.",
+      },
+    ),
   name: cleanStringSchema(MAX_RESPONSIBLE_PARTY_LENGTH),
-  roleSlug: cleanStringSchema(48).transform((value) => (value ? slugify(value) : "")),
+  roleSlug: cleanStringSchema(48).transform((value) =>
+    value ? slugify(value) : "",
+  ),
 });
 
 const representedPersonSubmissionSchema = z
   .object({
     birthDate: nullableDateInputSchema,
+    authorityConfirmed: booleanInputSchema,
     causeCategory: causeCategoryInputSchema,
     circumstances: cleanStringSchema(MAX_CIRCUMSTANCES_LENGTH),
     civilianStatus: civilianStatusInputSchema,
@@ -168,7 +194,9 @@ const representedPersonSubmissionSchema = z
       (value) => (value ? value : null),
     ),
     conditionName: cleanStringSchema(MAX_CONDITION_LENGTH),
-    conflictId: cleanStringSchema(48).transform((value) => (value ? value : null)),
+    conflictId: cleanStringSchema(48).transform((value) =>
+      value ? value : null,
+    ),
     conflictNameOverride: cleanStringSchema(MAX_CONFLICT_NAME_OVERRIDE_LENGTH),
     consentCourtEvidence: z.unknown().transform((value) => value === true),
     dateOfDeath: nullableDateInputSchema,
@@ -177,6 +205,7 @@ const representedPersonSubmissionSchema = z
     imageUrl: siteLocalImageSchema,
     isPublic: z.unknown().transform((value) => value !== false),
     lifeStatus: lifeStatusInputSchema,
+    healthDisclosureConfirmed: booleanInputSchema,
     memorialMessage: cleanStringSchema(MAX_MEMORIAL_MESSAGE_LENGTH),
     originUrl: cleanStringSchema(MAX_ORIGIN_URL_LENGTH)
       .transform((value) => (value ? value : null))
@@ -193,24 +222,57 @@ const representedPersonSubmissionSchema = z
         { message: "Use a valid http(s) URL." },
       ),
     publicComment: cleanStringSchema(MAX_COMMENT_LENGTH),
-    relationshipType: cleanStringSchema(MAX_RELATIONSHIP_LENGTH).transform((value) =>
-      slugify(value),
+    publicDisplayAcknowledged: booleanInputSchema,
+    relationshipType: cleanStringSchema(MAX_RELATIONSHIP_LENGTH).transform(
+      (value) => slugify(value),
     ),
-    // New: structured multi-government attribution. Front-end sends an array;
-    // legacy clients posting `responsiblePartyName` keep working via the
-    // backward-compat fallback below.
     responsibleParties: z
       .unknown()
-      .transform((value) => (Array.isArray(value) ? value.slice(0, MAX_RESPONSIBLE_PARTIES) : []))
+      .transform((value) =>
+        Array.isArray(value) ? value.slice(0, MAX_RESPONSIBLE_PARTIES) : [],
+      )
       .pipe(z.array(responsiblePartyInputSchema)),
-    responsiblePartyName: cleanStringSchema(MAX_RESPONSIBLE_PARTY_LENGTH),
+    showConditionPublicly: booleanInputSchema,
     memorialEvidence: z
       .unknown()
-      .transform((value) => (Array.isArray(value) ? value.slice(0, MAX_EVIDENCE_ITEMS) : []))
+      .transform((value) =>
+        Array.isArray(value) ? value.slice(0, MAX_EVIDENCE_ITEMS) : [],
+      )
       .pipe(z.array(memorialEvidenceInputSchema)),
     wasChild: wasChildInputSchema,
   })
   .superRefine((data, ctx) => {
+    if (!data.authorityConfirmed) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Confirm you have permission or authority to add this person.",
+        path: ["authorityConfirmed"],
+      });
+    }
+
+    if (data.isPublic && !data.publicDisplayAcknowledged) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "Confirm you understand this public card can be visible to anyone.",
+        path: ["publicDisplayAcknowledged"],
+      });
+    }
+
+    if (
+      data.lifeStatus !== PersonLifeStatus.DECEASED &&
+      data.conditionName &&
+      data.showConditionPublicly &&
+      !data.healthDisclosureConfirmed
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "Confirm you have consent or authority to publicly show this health condition.",
+        path: ["healthDisclosureConfirmed"],
+      });
+    }
+
     if (!data.displayName) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -219,7 +281,11 @@ const representedPersonSubmissionSchema = z
       });
     }
 
-    if (data.birthDate && data.dateOfDeath && data.birthDate > data.dateOfDeath) {
+    if (
+      data.birthDate &&
+      data.dateOfDeath &&
+      data.birthDate > data.dateOfDeath
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Birth date must be before date of death.",
@@ -241,6 +307,17 @@ const representedPersonSubmissionSchema = z
           message: "Evidence uploads require a public memorial.",
           path: ["memorialEvidence"],
         });
+      }
+      for (let index = 0; index < data.memorialEvidence.length; index++) {
+        const evidence = data.memorialEvidence[index]!;
+        if (!isSelfServeMemorialEvidenceKindAllowed(evidence.evidenceKind)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "Do not upload hospital records here. Use a public death record, public document, news article, photo, or witness statement.",
+            path: ["memorialEvidence", index, "evidenceKind"],
+          });
+        }
       }
     }
 
@@ -265,8 +342,12 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
     const { slug } = await params;
+    if (slug !== TREATY_REFERENDUM_SLUG) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const { userId } = await requireAuth();
     let body: Record<string, unknown>;
     try {
       const rawBody = (await request.json()) as unknown;
@@ -308,13 +389,14 @@ export async function POST(
       imageUrl,
       isPublic,
       lifeStatus,
+      healthDisclosureConfirmed,
       memorialEvidence,
       memorialMessage,
-      originUrl,
       publicComment,
+      publicDisplayAcknowledged,
       relationshipType,
       responsibleParties,
-      responsiblePartyName,
+      showConditionPublicly,
       wasChild,
     } = parsed.data;
 
@@ -324,7 +406,10 @@ export async function POST(
     let resolvedConflictId: string | null = null;
     if (conflictId) {
       const match = await prisma.conflict.findFirst({
-        where: { deletedAt: null, OR: [{ id: conflictId }, { slug: conflictId }] },
+        where: {
+          deletedAt: null,
+          OR: [{ id: conflictId }, { slug: conflictId }],
+        },
         select: { id: true },
       });
       resolvedConflictId = match?.id ?? null;
@@ -337,20 +422,19 @@ export async function POST(
       .filter(Boolean)
       .join(" — ");
 
-    // Combine the legacy single responsiblePartyName field with the new
-    // responsibleParties array. First entry becomes primary; cap total.
-    const partiesFromLegacy = responsiblePartyName
-      ? [{ jurisdictionCode: null as string | null, name: responsiblePartyName, roleSlug: "" }]
-      : [];
     const dedupedParties: Array<{
       jurisdictionCode: string | null;
       name: string;
       roleSlug: string;
     }> = [];
-    for (const party of [...responsibleParties, ...partiesFromLegacy]) {
+    for (const party of responsibleParties) {
       if (!party.jurisdictionCode && !party.name) continue;
       const key = `${party.jurisdictionCode ?? ""}::${party.name.toLowerCase()}`;
-      if (dedupedParties.some((p) => `${p.jurisdictionCode ?? ""}::${p.name.toLowerCase()}` === key)) {
+      if (
+        dedupedParties.some(
+          (p) => `${p.jurisdictionCode ?? ""}::${p.name.toLowerCase()}` === key,
+        )
+      ) {
         continue;
       }
       dedupedParties.push(party);
@@ -371,28 +455,21 @@ export async function POST(
           select: { id: true, code: true, name: true },
         })
       : [];
-    const jurisdictionByCode = new Map(jurisdictionRows.map((r) => [r.code, r]));
-
-    const referendum = await prisma.referendum.findUnique({
-      where: { slug, deletedAt: null },
-      select: { id: true, slug: true, status: true },
-    });
-
-    if (!referendum) {
-      return NextResponse.json({ error: "Referendum not found" }, { status: 404 });
-    }
-
-    if (referendum.status !== ReferendumStatus.ACTIVE) {
-      return NextResponse.json(
-        { error: "This referendum is not currently accepting votes" },
-        { status: 400 },
-      );
-    }
+    const jurisdictionByCode = new Map(
+      jurisdictionRows.map((r) => [r.code, r]),
+    );
 
     const casterPerson = await ensurePersonForUser(userId);
     const sourceRef = clientDraftId
       ? `represented-person-draft:${userId}:${clientDraftId}`
       : null;
+    const conditionIsPublic = shouldPublishRepresentedCondition({
+      healthDisclosureConfirmed,
+      isPublic,
+      lifeStatus,
+      publicDisplayAcknowledged,
+      showConditionPublicly,
+    });
 
     const result = await prisma.$transaction(async (tx) => {
       const existingDraftPerson = sourceRef
@@ -408,6 +485,7 @@ export async function POST(
           })
         : null;
       const personData = {
+        bio: publicComment || null,
         birthDate,
         createdByUserId: userId,
         deathDate: dateOfDeath,
@@ -435,7 +513,7 @@ export async function POST(
             data: personData,
             select: personSelect,
           });
-      await ensureSubjectForPerson(tx, {
+      const subject = await ensureSubjectForPerson(tx, {
         displayName,
         id: person.id,
       });
@@ -454,7 +532,7 @@ export async function POST(
             conditionCodeSystem: primaryCode?.codeSystem ?? null,
             conditionName,
             globalVariableId: canonicalCondition?.id ?? null,
-            isPublic,
+            isPublic: conditionIsPublic,
             personId: person.id,
             reportedByUserId: userId,
             status:
@@ -473,7 +551,9 @@ export async function POST(
           data: {
             causeCategory,
             circumstances: circumstancesText || null,
-            civilianStatus: isConflictCause ? civilianStatus : PersonCivilianStatus.UNKNOWN,
+            civilianStatus: isConflictCause
+              ? civilianStatus
+              : PersonCivilianStatus.UNKNOWN,
             conflictId: resolvedConflictId,
             deathCountryCode,
             isPublic,
@@ -487,9 +567,12 @@ export async function POST(
         await tx.personMemorialSubmission.create({
           data: {
             consentCourtEvidence,
-            consentCourtEvidenceAt: consentCourtEvidence ? consentTimestamp : null,
-            consentPublicDisplay: isPublic,
-            consentPublicDisplayAt: isPublic ? consentTimestamp : null,
+            consentCourtEvidenceAt: consentCourtEvidence
+              ? consentTimestamp
+              : null,
+            consentPublicDisplay: isPublic && publicDisplayAcknowledged,
+            consentPublicDisplayAt:
+              isPublic && publicDisplayAcknowledged ? consentTimestamp : null,
             isPublic,
             memorialId: memorial.id,
             memorialMessage: memorialMessage || publicComment || null,
@@ -500,7 +583,7 @@ export async function POST(
         for (let i = 0; i < dedupedParties.length; i++) {
           const party = dedupedParties[i]!;
           const jurisdictionRow = party.jurisdictionCode
-            ? jurisdictionByCode.get(party.jurisdictionCode) ?? null
+            ? (jurisdictionByCode.get(party.jurisdictionCode) ?? null)
             : null;
           // Prefer the canonical jurisdiction name when we matched one — keeps
           // the public attribution consistent regardless of typed casing.
@@ -535,9 +618,15 @@ export async function POST(
         // PRD Feature 3: cross-reference death against approval-lag windows.
         // Best-effort — failures should not block memorial creation.
         try {
-          efficacyLagMatches = await matchEfficacyLagForMemorial(tx, memorial.id);
+          efficacyLagMatches = await matchEfficacyLagForMemorial(
+            tx,
+            memorial.id,
+          );
         } catch (matchError) {
-          console.error("Efficacy-lag matcher failed", { memorialId: memorial.id, matchError });
+          console.error("Efficacy-lag matcher failed", {
+            memorialId: memorial.id,
+            matchError,
+          });
         }
       }
 
@@ -553,40 +642,14 @@ export async function POST(
         });
       }
 
-      const vote = await tx.referendumVote.upsert({
-        where: {
-          referendumId_personId: {
-            referendumId: referendum.id,
-            personId: person.id,
-          },
-        },
-        update: {
-          answer: VotePosition.YES,
-          deletedAt: null,
-          isPublic,
-          ...(originUrl ? { originUrl } : {}),
-          publicComment: publicComment || null,
-        },
-        create: {
-          answer: VotePosition.YES,
-          isPublic,
-          originUrl: originUrl || null,
-          personId: person.id,
-          publicComment: publicComment || null,
-          referendumId: referendum.id,
-          userId,
-          voteSource: ReferendumVoteSource.REPRESENTED,
-        },
-        select: {
-          answer: true,
-          id: true,
-          personId: true,
-          userId: true,
-          voteSource: true,
-        },
+      const party = await ensureHumanityVGovernmentPlaintiffParty(tx, {
+        createdByUserId: userId,
+        displayName,
+        isPublic,
+        subjectId: subject.id,
       });
 
-      return { efficacyLagMatches, person, vote };
+      return { efficacyLagMatches, party, person };
     });
 
     return NextResponse.json(result);

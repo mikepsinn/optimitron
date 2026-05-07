@@ -224,10 +224,10 @@ describe("earth-data server", () => {
     expect(mocks.organizationPositionUpsert).not.toHaveBeenCalled();
   });
 
-  it("rejects unsafe organization logo URLs in shared signatory input", async () => {
+  it("rejects unsafe organization square logo URLs in shared signatory input", async () => {
     await expect(
       signReferendumAsOrganization({
-        logo: "data:image/svg+xml,<svg onload=alert(1)>",
+        squareLogoUrl: "data:image/svg+xml,<svg onload=alert(1)>",
         newOrganizationName: "Unsafe Logo Org",
         submittedByUserId: "manager-user",
       }),
@@ -237,10 +237,10 @@ describe("earth-data server", () => {
     expect(mocks.organizationPositionUpsert).not.toHaveBeenCalled();
   });
 
-  it("rejects unsafe organization logo URLs in shared organization upserts", () => {
+  it("rejects unsafe organization square logo URLs in shared organization upserts", () => {
     expect(() =>
       upsertOrganizationInputSchema.parse({
-        logo: "javascript:alert(1)",
+        squareLogoUrl: "javascript:alert(1)",
         name: "Unsafe Logo Org",
       }),
     ).toThrow("Use an http(s) URL.");
@@ -277,6 +277,16 @@ describe("earth-data server", () => {
     });
 
     expect(parsed.recordTreatyVote).toBe(false);
+  });
+
+  it("normalizes invalid Date instances before they can reach Prisma", () => {
+    const parsed = upsertMemorialPersonInputSchema.parse({
+      birthDate: new Date("not a real date"),
+      displayName: "Living plaintiff",
+      lifeStatus: "LIVING",
+    });
+
+    expect(parsed.birthDate).toBeNull();
   });
 
   it("filters getPerson to public person data by default", async () => {

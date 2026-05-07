@@ -62,15 +62,19 @@ export type PendingCourtOfHumanityVoteState = {
 };
 
 export type PendingRepresentedPersonDraft = {
+  authorityConfirmed?: boolean;
   clientDraftId: string;
   conditionName?: string;
   displayName: string;
+  healthDisclosureConfirmed?: boolean;
   isPublic: boolean;
   lifeStatus?: "DECEASED" | "LIVING" | "UNKNOWN";
   originUrl?: string;
   publicComment?: string;
+  publicDisplayAcknowledged?: boolean;
   referendumSlug: string;
   relationshipType?: string;
+  showConditionPublicly?: boolean;
   timestamp: string;
   version: 1;
 };
@@ -170,21 +174,25 @@ export const storage = {
   clearSignupName: () => removeStorageItem(STORAGE_KEYS.signupName),
 
   getSignupReferral: () => getStringItem(STORAGE_KEYS.signupReferral),
-  setSignupReferral: (code: string) => setStringItem(STORAGE_KEYS.signupReferral, code),
+  setSignupReferral: (code: string) =>
+    setStringItem(STORAGE_KEYS.signupReferral, code),
   clearSignupReferral: () => removeStorageItem(STORAGE_KEYS.signupReferral),
 
   getSignupShareAttempt: () => getStringItem(STORAGE_KEYS.signupShareAttempt),
   setSignupShareAttempt: (shareAttemptId: string) =>
     setStringItem(STORAGE_KEYS.signupShareAttempt, shareAttemptId),
-  clearSignupShareAttempt: () => removeStorageItem(STORAGE_KEYS.signupShareAttempt),
+  clearSignupShareAttempt: () =>
+    removeStorageItem(STORAGE_KEYS.signupShareAttempt),
 
   getSignupInviteToken: () => getStringItem(STORAGE_KEYS.signupInviteToken),
   setSignupInviteToken: (inviteToken: string) =>
     setStringItem(STORAGE_KEYS.signupInviteToken, inviteToken),
-  clearSignupInviteToken: () => removeStorageItem(STORAGE_KEYS.signupInviteToken),
+  clearSignupInviteToken: () =>
+    removeStorageItem(STORAGE_KEYS.signupInviteToken),
 
   getSignupSubscribe: () => getBooleanItem(STORAGE_KEYS.signupSubscribe),
-  setSignupSubscribe: (subscribe: boolean) => setBooleanItem(STORAGE_KEYS.signupSubscribe, subscribe),
+  setSignupSubscribe: (subscribe: boolean) =>
+    setBooleanItem(STORAGE_KEYS.signupSubscribe, subscribe),
   clearSignupSubscribe: () => removeStorageItem(STORAGE_KEYS.signupSubscribe),
 
   /// Returns the FIRST landing URL stored for this browser. Setter is
@@ -211,18 +219,22 @@ export const storage = {
   setChatApiKey: (key: string) => setStringItem(STORAGE_KEYS.chatApiKey, key),
 
   getChatProvider: () => getStringItem(STORAGE_KEYS.chatProvider),
-  setChatProvider: (provider: string) => setStringItem(STORAGE_KEYS.chatProvider, provider),
+  setChatProvider: (provider: string) =>
+    setStringItem(STORAGE_KEYS.chatProvider, provider),
 
-  getPendingWishocracy: () => getStorageItem<PendingWishocracyState>(STORAGE_KEYS.pendingWishocracy),
+  getPendingWishocracy: () =>
+    getStorageItem<PendingWishocracyState>(STORAGE_KEYS.pendingWishocracy),
   setPendingWishocracy: (data: PendingWishocracyState) =>
     setStorageItem(STORAGE_KEYS.pendingWishocracy, data),
-  removePendingWishocracy: () => removeStorageItem(STORAGE_KEYS.pendingWishocracy),
+  removePendingWishocracy: () =>
+    removeStorageItem(STORAGE_KEYS.pendingWishocracy),
 
   getPendingTreatyVote: () =>
     getStorageItem<PendingTreatyVoteState>(STORAGE_KEYS.pendingTreatyVote),
   setPendingTreatyVote: (data: PendingTreatyVoteState) =>
     setStorageItem(STORAGE_KEYS.pendingTreatyVote, data),
-  removePendingTreatyVote: () => removeStorageItem(STORAGE_KEYS.pendingTreatyVote),
+  removePendingTreatyVote: () =>
+    removeStorageItem(STORAGE_KEYS.pendingTreatyVote),
 
   getPendingRepresentedPeople: () =>
     getStorageItem<PendingRepresentedPersonDraft[]>(
@@ -269,10 +281,13 @@ export const storage = {
     getStorageItem<DeclarationSignedState>(STORAGE_KEYS.declarationSigned),
   setDeclarationSigned: (data: DeclarationSignedState) =>
     setStorageItem(STORAGE_KEYS.declarationSigned, data),
-  removeDeclarationSigned: () => removeStorageItem(STORAGE_KEYS.declarationSigned),
+  removeDeclarationSigned: () =>
+    removeStorageItem(STORAGE_KEYS.declarationSigned),
 
   getPendingDeclarationVote: () =>
-    getStorageItem<PendingDeclarationVoteState>(STORAGE_KEYS.pendingDeclarationVote),
+    getStorageItem<PendingDeclarationVoteState>(
+      STORAGE_KEYS.pendingDeclarationVote,
+    ),
   setPendingDeclarationVote: (data: PendingDeclarationVoteState) =>
     setStorageItem(STORAGE_KEYS.pendingDeclarationVote, data),
   removePendingDeclarationVote: () =>
@@ -287,7 +302,8 @@ export const storage = {
   removePendingCourtOfHumanityVote: () =>
     removeStorageItem(STORAGE_KEYS.pendingCourtOfHumanityVote),
 
-  getVoteStatusCache: () => getStorageItem<VoteStatusCache>(STORAGE_KEYS.voteStatusCache),
+  getVoteStatusCache: () =>
+    getStorageItem<VoteStatusCache>(STORAGE_KEYS.voteStatusCache),
   setVoteStatusCache: (data: VoteStatusCache) =>
     setStorageItem(STORAGE_KEYS.voteStatusCache, data),
   clearVoteStatusCache: () => removeStorageItem(STORAGE_KEYS.voteStatusCache),
@@ -295,14 +311,14 @@ export const storage = {
   getTreatyFlowVariant: () => getStringItem(STORAGE_KEYS.treatyFlowVariant),
   setTreatyFlowVariant: (variant: string) =>
     setStringItem(STORAGE_KEYS.treatyFlowVariant, variant),
-  clearTreatyFlowVariant: () => removeStorageItem(STORAGE_KEYS.treatyFlowVariant),
+  clearTreatyFlowVariant: () =>
+    removeStorageItem(STORAGE_KEYS.treatyFlowVariant),
 
   getReasoningState: () =>
     getStorageItem<ReasoningPersistedState>(STORAGE_KEYS.reasoningState),
   setReasoningState: (data: ReasoningPersistedState) =>
     setStorageItem(STORAGE_KEYS.reasoningState, data),
-  clearReasoningState: () =>
-    removeStorageItem(STORAGE_KEYS.reasoningState),
+  clearReasoningState: () => removeStorageItem(STORAGE_KEYS.reasoningState),
 };
 
 /**

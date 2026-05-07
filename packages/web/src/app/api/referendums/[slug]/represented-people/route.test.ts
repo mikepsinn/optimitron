@@ -25,6 +25,8 @@ const mocks = vi.hoisted(() => ({
   conditionFindMany: vi.fn(),
   approvalTimelineFindMany: vi.fn(),
   efficacyLagEvidenceUpsert: vi.fn(),
+  courtCaseUpsert: vi.fn(),
+  courtCasePartyUpsert: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -52,29 +54,50 @@ vi.mock("@/lib/prisma", () => ({
     personCondition: { create: mocks.conditionCreate },
     personMemorial: { create: mocks.memorialCreate },
     personMemorialSubmission: { create: mocks.memorialSubmissionCreate },
-    personMemorialResponsibleParty: { create: mocks.memorialResponsiblePartyCreate },
+    personMemorialResponsibleParty: {
+      create: mocks.memorialResponsiblePartyCreate,
+    },
     personRelationship: { create: mocks.relationshipCreate },
     globalVariable: { findFirst: mocks.globalVariableFindFirst },
     subject: { upsert: mocks.subjectUpsert },
     conflict: { findFirst: mocks.conflictFindFirst },
     jurisdiction: { findMany: mocks.jurisdictionFindMany },
+    courtCase: { upsert: mocks.courtCaseUpsert },
+    courtCaseParty: { upsert: mocks.courtCasePartyUpsert },
   },
 }));
 
 import { POST } from "./route";
 
-function request(body: Record<string, unknown>) {
-  return new Request("http://localhost/api/referendums/one-percent-treaty/represented-people", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+function request(
+  body: Record<string, unknown>,
+  options: { includeDefaultAcknowledgements?: boolean } = {},
+) {
+  const withAcknowledgements =
+    options.includeDefaultAcknowledgements === false
+      ? body
+      : {
+          authorityConfirmed: true,
+          publicDisplayAcknowledged: true,
+          ...body,
+        };
+  return new Request(
+    "http://localhost/api/referendums/one-percent-treaty/represented-people",
+    {
+      method: "POST",
+      body: JSON.stringify(withAcknowledgements),
+    },
+  );
 }
 
 function invalidJsonRequest() {
-  return new Request("http://localhost/api/referendums/one-percent-treaty/represented-people", {
-    method: "POST",
-    body: "{",
-  });
+  return new Request(
+    "http://localhost/api/referendums/one-percent-treaty/represented-people",
+    {
+      method: "POST",
+      body: "{",
+    },
+  );
 }
 
 function params(slug = "one-percent-treaty") {
@@ -91,7 +114,10 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       status: "ACTIVE",
       deletedAt: null,
     });
-    mocks.ensurePersonForUser.mockResolvedValue({ id: "person_user", isPublic: true });
+    mocks.ensurePersonForUser.mockResolvedValue({
+      id: "person_user",
+      isPublic: true,
+    });
     mocks.voteFindFirst.mockResolvedValue({ id: "self_vote", answer: "YES" });
     mocks.personCreate.mockResolvedValue({
       id: "person_grandma",
@@ -134,8 +160,20 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     mocks.conditionFindMany.mockResolvedValue([]);
     mocks.approvalTimelineFindMany.mockResolvedValue([]);
     mocks.efficacyLagEvidenceUpsert.mockResolvedValue({});
+    mocks.courtCaseUpsert.mockResolvedValue({
+      id: "case_hvg",
+      slug: "humanity-v-government",
+    });
+    mocks.courtCasePartyUpsert.mockResolvedValue({
+      id: "party_grandma",
+      caseId: "case_hvg",
+      subjectId: "subject_person",
+      role: "NAMED_PLAINTIFF",
+    });
     mocks.transaction.mockImplementation(async (callback) =>
       callback({
+        courtCase: { upsert: mocks.courtCaseUpsert },
+        courtCaseParty: { upsert: mocks.courtCasePartyUpsert },
         person: {
           create: mocks.personCreate,
           findUnique: mocks.personFindUnique,
@@ -152,15 +190,76 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         },
         personMemorialEvidence: { create: mocks.memorialEvidenceCreate },
         personMemorialSubmission: { create: mocks.memorialSubmissionCreate },
-        personMemorialResponsibleParty: { create: mocks.memorialResponsiblePartyCreate },
+        personMemorialResponsibleParty: {
+          create: mocks.memorialResponsiblePartyCreate,
+        },
         personRelationship: { create: mocks.relationshipCreate },
         globalVariable: { findFirst: mocks.globalVariableFindFirst },
         subject: { upsert: mocks.subjectUpsert },
         referendumVote: { upsert: mocks.voteUpsert },
-        interventionApprovalTimeline: { findMany: mocks.approvalTimelineFindMany },
+        interventionApprovalTimeline: {
+          findMany: mocks.approvalTimelineFindMany,
+        },
         personEfficacyLagEvidence: { upsert: mocks.efficacyLagEvidenceUpsert },
       }),
     );
+  });
+
+  it("creates a named Humanity v Government plaintiff without creating a referendum vote", async () => {
+    const res = await POST(
+      request({
+        displayName: "Grandma Kay",
+        conditionName: "dementia",
+        publicComment: "She deserved better.",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.voteUpsert).not.toHaveBeenCalled();
+    expect(mocks.courtCaseUpsert).toHaveBeenCalledWith({
+      where: { slug: "humanity-v-government" },
+      update: expect.objectContaining({
+        deletedAt: null,
+        isPublic: true,
+        title: "Humanity v Government",
+      }),
+      create: expect.objectContaining({
+        isPublic: true,
+        slug: "humanity-v-government",
+        title: "Humanity v Government",
+      }),
+      select: { id: true, slug: true },
+    });
+    expect(mocks.courtCasePartyUpsert).toHaveBeenCalledWith({
+      where: {
+        caseId_role_subjectId: {
+          caseId: "case_hvg",
+          role: "NAMED_PLAINTIFF",
+          subjectId: "subject_person",
+        },
+      },
+      update: expect.objectContaining({
+        createdByUserId: "user_1",
+        deletedAt: null,
+        displayNameSnapshot: "Grandma Kay",
+        isPublic: true,
+        role: "NAMED_PLAINTIFF",
+      }),
+      create: expect.objectContaining({
+        caseId: "case_hvg",
+        createdByUserId: "user_1",
+        displayNameSnapshot: "Grandma Kay",
+        isPublic: true,
+        role: "NAMED_PLAINTIFF",
+        subjectId: "subject_person",
+      }),
+      select: { id: true },
+    });
+    await expect(res.json()).resolves.toMatchObject({
+      person: { id: "person_grandma" },
+      party: { id: "party_grandma" },
+    });
   });
 
   it("requires authentication", async () => {
@@ -186,6 +285,37 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.personCreate).not.toHaveBeenCalled();
   });
 
+  it("rejects unsupported referendum slugs before creating a Humanity v Government plaintiff", async () => {
+    const res = await POST(
+      request({ displayName: "Grandma Kay", conditionName: "dementia" }),
+      params("random-referendum"),
+    );
+
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toEqual({ error: "Not found" });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+    expect(mocks.courtCasePartyUpsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects represented people without permission or authority confirmation", async () => {
+    const res = await POST(
+      request(
+        { displayName: "Grandma Kay", conditionName: "dementia" },
+        { includeDefaultAcknowledgements: false },
+      ),
+      params(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: "Invalid represented person submission",
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: ["authorityConfirmed"] }),
+      ]),
+    });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+  });
+
   it("does not require the caster to have a self YES vote first", async () => {
     mocks.voteFindFirst.mockResolvedValue(null);
 
@@ -198,7 +328,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.personCreate).toHaveBeenCalled();
   });
 
-  it("creates a represented person and represented YES vote", async () => {
+  it("creates a plaintiff person and court case party", async () => {
     const res = await POST(
       request({
         birthDate: "1938-04-12",
@@ -216,18 +346,17 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
       efficacyLagMatches: [],
+      party: {
+        id: "party_grandma",
+        caseId: "case_hvg",
+        subjectId: "subject_person",
+        role: "NAMED_PLAINTIFF",
+      },
       person: {
         id: "person_grandma",
         displayName: "Grandma Kay",
         lifeStatus: "LIVING",
         isPublic: true,
-      },
-      vote: {
-        id: "represented_vote",
-        answer: "YES",
-        personId: "person_grandma",
-        userId: "user_1",
-        voteSource: "REPRESENTED",
       },
     });
     const personCreateData = mocks.personCreate.mock.calls[0]?.[0]?.data;
@@ -244,6 +373,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       data: expect.objectContaining({
         conditionName: "dementia",
         globalVariableId: null,
+        isPublic: false,
         personId: "person_grandma",
         reportedByUserId: "user_1",
         status: "ACTIVE",
@@ -267,34 +397,61 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         subjectType: "PERSON",
       }),
     });
-    expect(mocks.voteUpsert).toHaveBeenCalledWith({
-      where: {
-        referendumId_personId: {
-          referendumId: "ref_1",
-          personId: "person_grandma",
-        },
-      },
-      update: expect.objectContaining({
-        answer: "YES",
-        publicComment: "She would trade one apocalypse for dementia research.",
+    expect(mocks.voteUpsert).not.toHaveBeenCalled();
+    expect(mocks.courtCasePartyUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          createdByUserId: "user_1",
+          displayNameSnapshot: "Grandma Kay",
+          isPublic: true,
+          subjectId: "subject_person",
+        }),
       }),
-      create: expect.objectContaining({
-        answer: "YES",
+    );
+  });
+
+  it("publishes a living represented person's condition only with explicit health disclosure confirmation", async () => {
+    const res = await POST(
+      request({
+        conditionName: "dementia",
+        displayName: "Grandma Kay",
+        healthDisclosureConfirmed: true,
+        lifeStatus: "LIVING",
+        showConditionPublicly: true,
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.conditionCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        conditionName: "dementia",
         isPublic: true,
-        originUrl: "https://warondisease.org/people?utm=family",
-        personId: "person_grandma",
-        referendumId: "ref_1",
-        userId: "user_1",
-        voteSource: "REPRESENTED",
+        status: "ACTIVE",
       }),
-      select: {
-        answer: true,
-        id: true,
-        personId: true,
-        userId: true,
-        voteSource: true,
-      },
+      select: { id: true },
     });
+  });
+
+  it("rejects public living health disclosure without health authority confirmation", async () => {
+    const res = await POST(
+      request({
+        conditionName: "dementia",
+        displayName: "Grandma Kay",
+        lifeStatus: "LIVING",
+        showConditionPublicly: true,
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: "Invalid represented person submission",
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: ["healthDisclosureConfirmed"] }),
+      ]),
+    });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
   });
 
   it("uses clientDraftId as the represented-person idempotency key", async () => {
@@ -362,15 +519,17 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     });
     expect(mocks.conditionCreate).not.toHaveBeenCalled();
     expect(mocks.relationshipCreate).not.toHaveBeenCalled();
-    expect(mocks.voteUpsert).toHaveBeenCalledWith(
+    expect(mocks.voteUpsert).not.toHaveBeenCalled();
+    expect(mocks.courtCasePartyUpsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({
-          personId: "person_existing",
+          subjectId: "subject_person",
         }),
         where: {
-          referendumId_personId: {
-            referendumId: "ref_1",
-            personId: "person_existing",
+          caseId_role_subjectId: {
+            caseId: "case_hvg",
+            role: "NAMED_PLAINTIFF",
+            subjectId: "subject_person",
           },
         },
       }),
@@ -399,6 +558,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         conditionCodeSystem: "ICD-10",
         conditionName: "Alzheimer's Disease",
         globalVariableId: "gv_alzheimers",
+        isPublic: false,
       }),
       select: { id: true },
     });
@@ -550,7 +710,9 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         lifeStatus: "DECEASED",
         memorialMessage: "She taught everyone to fix broken things.",
         relationshipType: "nephew-of",
-        responsiblePartyName: "FDA approval lag",
+        responsibleParties: [
+          { jurisdictionCode: null, name: "FDA approval lag", roleSlug: "" },
+        ],
       }),
       params(),
     );
@@ -573,6 +735,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.conditionCreate).toHaveBeenCalledWith({
       data: expect.objectContaining({
         conditionName: "cancer",
+        isPublic: true,
         status: "CAUSE_OF_DEATH",
       }),
       select: { id: true },
@@ -627,7 +790,8 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
           {
             description: "News report",
             evidenceKind: "NEWS_ARTICLE",
-            sourceUrl: "https://cdn.warondisease.org/memorial-evidence/source.pdf",
+            sourceUrl:
+              "https://cdn.warondisease.org/memorial-evidence/source.pdf",
             title: "Source",
           },
         ],
@@ -663,7 +827,8 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
           {
             containsSensitiveData: true,
             evidenceKind: "DOCUMENT",
-            sourceUrl: "https://cdn.warondisease.org/memorial-evidence/private.pdf",
+            sourceUrl:
+              "https://cdn.warondisease.org/memorial-evidence/private.pdf",
           },
         ],
       }),
@@ -676,6 +841,38 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       issues: expect.arrayContaining([
         expect.objectContaining({
           path: ["memorialEvidence", 0, "containsSensitiveData"],
+        }),
+      ]),
+    });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+  });
+
+  it("rejects public self-serve hospital record evidence", async () => {
+    const res = await POST(
+      request({
+        causeCategory: "DISEASE",
+        conditionName: "cancer",
+        dateOfDeath: "2020-01-02",
+        deathCountryCode: "us",
+        displayName: "Aunt Jane",
+        lifeStatus: "DECEASED",
+        memorialEvidence: [
+          {
+            evidenceKind: "HOSPITAL_RECORD",
+            sourceUrl:
+              "https://cdn.warondisease.org/memorial-evidence/record.pdf",
+          },
+        ],
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: "Invalid represented person submission",
+      issues: expect.arrayContaining([
+        expect.objectContaining({
+          path: ["memorialEvidence", 0, "evidenceKind"],
         }),
       ]),
     });
@@ -695,7 +892,8 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         memorialEvidence: [
           {
             evidenceKind: "DOCUMENT",
-            sourceUrl: "https://cdn.warondisease.org/memorial-evidence/source.pdf",
+            sourceUrl:
+              "https://cdn.warondisease.org/memorial-evidence/source.pdf",
           },
         ],
       }),

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  storage,
-  type PendingRepresentedPersonDraft,
-} from "@/lib/storage";
+import { storage, type PendingRepresentedPersonDraft } from "@/lib/storage";
 
 const LOCK_TTL_MS = 15_000;
 
@@ -50,14 +47,18 @@ function releaseLock(ownerId: string): void {
 
 function draftPayload(draft: PendingRepresentedPersonDraft) {
   return {
+    authorityConfirmed: draft.authorityConfirmed === true,
     clientDraftId: draft.clientDraftId,
     conditionName: draft.conditionName ?? "",
     displayName: draft.displayName,
-    isPublic: draft.isPublic,
+    healthDisclosureConfirmed: draft.healthDisclosureConfirmed === true,
+    isPublic: draft.isPublic === true,
     lifeStatus: draft.lifeStatus ?? "UNKNOWN",
     originUrl: draft.originUrl,
     publicComment: draft.publicComment ?? "",
+    publicDisplayAcknowledged: draft.publicDisplayAcknowledged === true,
     relationshipType: draft.relationshipType ?? "",
+    showConditionPublicly: draft.showConditionPublicly === true,
   };
 }
 

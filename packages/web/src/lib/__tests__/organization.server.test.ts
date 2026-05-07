@@ -2,6 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OrgStatus, OrgType } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
+  organizationFindUnique: vi.fn(),
+  organizationMemberFindUnique: vi.fn(),
+  organizationMemberUpsert: vi.fn(),
   transaction: vi.fn(),
   txOrganizationCreate: vi.fn(),
   txOrganizationFindFirst: vi.fn(),
@@ -12,10 +15,18 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     $transaction: mocks.transaction,
+    organization: {
+      findUnique: mocks.organizationFindUnique,
+    },
+    organizationMember: {
+      findUnique: mocks.organizationMemberFindUnique,
+      upsert: mocks.organizationMemberUpsert,
+    },
   },
 }));
 
 import {
+  canManageOrganization,
   createOrganizationWithOwner,
   upsertTrustedOrganization,
 } from "@/lib/organization.server";
@@ -27,6 +38,9 @@ describe("organization.server", () => {
     mocks.txOrganizationFindFirst.mockReset();
     mocks.txOrganizationFindUnique.mockReset();
     mocks.txOrganizationMemberCreate.mockReset();
+    mocks.organizationFindUnique.mockReset();
+    mocks.organizationMemberFindUnique.mockReset();
+    mocks.organizationMemberUpsert.mockReset();
   });
 
   it("creates approved orgs with an owner membership for public creation", async () => {
@@ -172,7 +186,7 @@ describe("organization.server", () => {
     expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
   });
 
-  it("rejects unsafe organization logo URLs before creating records", async () => {
+  it("rejects unsafe organization square logo URLs before creating records", async () => {
     mocks.transaction.mockImplementation(async (callback) =>
       callback({
         organization: {
@@ -191,12 +205,12 @@ describe("organization.server", () => {
     await expect(
       createOrganizationWithOwner(
         {
-          logo: "javascript:alert(1)",
+          squareLogoUrl: "javascript:alert(1)",
           name: "Unsafe Logo Org",
         },
         "user_1",
       ),
-    ).rejects.toThrow("Invalid organization logo URL");
+    ).rejects.toThrow("Invalid organization square logo URL");
     expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
   });
 
@@ -247,5 +261,15 @@ describe("organization.server", () => {
         }),
       }),
     );
+  });
+
+  it("does not treat creatorId as organization management permission without a membership row", async () => {
+    mocks.organizationMemberFindUnique.mockResolvedValue(null);
+    mocks.organizationFindUnique.mockResolvedValue({ creatorId: "user_1" });
+
+    await expect(canManageOrganization("user_1", "org_1")).resolves.toBe(false);
+
+    expect(mocks.organizationFindUnique).not.toHaveBeenCalled();
+    expect(mocks.organizationMemberUpsert).not.toHaveBeenCalled();
   });
 });

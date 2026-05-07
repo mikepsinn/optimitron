@@ -55,9 +55,9 @@ describe("PATCH /api/organizations/[id]", () => {
     vi.restoreAllMocks();
   });
 
-  it("rejects unsafe logo URLs before updating records", async () => {
+  it("rejects unsafe square logo URLs before updating records", async () => {
     const response = await PATCH(
-      makeRequest({ logo: "javascript:alert(1)" }) as never,
+      makeRequest({ squareLogoUrl: "javascript:alert(1)" }) as never,
       {
         params: Promise.resolve({ id: "org_1" }),
       },
@@ -65,7 +65,22 @@ describe("PATCH /api/organizations/[id]", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "Invalid logo URL",
+      error: "Invalid square logo URL",
+    });
+    expect(mocks.organizationUpdate).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsafe wordmark logo URLs before updating records", async () => {
+    const response = await PATCH(
+      makeRequest({ wordmarkLogoUrl: "data:image/svg+xml,<svg></svg>" }) as never,
+      {
+        params: Promise.resolve({ id: "org_1" }),
+      },
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "Invalid wordmark logo URL",
     });
     expect(mocks.organizationUpdate).not.toHaveBeenCalled();
   });
@@ -83,5 +98,32 @@ describe("PATCH /api/organizations/[id]", () => {
       error: "Invalid website URL",
     });
     expect(mocks.organizationUpdate).not.toHaveBeenCalled();
+  });
+
+  it("updates organization brand and donation URLs", async () => {
+    const response = await PATCH(
+      makeRequest({
+        donationUrl: "https://example.org/donate",
+        squareLogoUrl:
+          "https://static.warondisease.org/organizations/logos/2026-05-07/logo.webp",
+        wordmarkLogoUrl:
+          "https://static.warondisease.org/organizations/wordmarks/2026-05-07/wordmark.webp",
+      }) as never,
+      {
+        params: Promise.resolve({ id: "org_1" }),
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.organizationUpdate).toHaveBeenCalledWith({
+      where: { id: "org_1" },
+      data: expect.objectContaining({
+        donationUrl: "https://example.org/donate",
+        squareLogoUrl:
+          "https://static.warondisease.org/organizations/logos/2026-05-07/logo.webp",
+        wordmarkLogoUrl:
+          "https://static.warondisease.org/organizations/wordmarks/2026-05-07/wordmark.webp",
+      }),
+    });
   });
 });

@@ -27,11 +27,15 @@ import {
 } from "../represented-person-sync";
 
 const draft = {
+  authorityConfirmed: true,
   clientDraftId: "draft_1",
   displayName: "Grandma Kay",
+  healthDisclosureConfirmed: false,
   isPublic: true,
   originUrl: "https://warondisease.org/people",
+  publicDisplayAcknowledged: true,
   referendumSlug: "one-percent-treaty",
+  showConditionPublicly: false,
   timestamp: "2026-05-05T12:00:00.000Z",
   version: 1,
 } as const;
@@ -114,6 +118,59 @@ describe("represented person sync", () => {
       draft,
       personId: "person_1",
     });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/referendums/one-percent-treaty/represented-people",
+      expect.objectContaining({
+        body: expect.stringContaining('"authorityConfirmed":true'),
+      }),
+    );
+  });
+
+  it("posts the public display and health disclosure flags from the pending draft", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        person: { displayName: "Grandma Kay", id: "person_1" },
+      }),
+      ok: true,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await postRepresentedPersonDraft({
+      ...draft,
+      conditionName: "dementia",
+      healthDisclosureConfirmed: true,
+      showConditionPublicly: true,
+    });
+
+    const body = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body as string,
+    ) as Record<string, unknown>;
+    expect(body).toMatchObject({
+      authorityConfirmed: true,
+      healthDisclosureConfirmed: true,
+      publicDisplayAcknowledged: true,
+      showConditionPublicly: true,
+    });
+  });
+
+  it("normalizes stored draft privacy flags to explicit booleans", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        person: { displayName: "Grandma Kay", id: "person_1" },
+      }),
+      ok: true,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await postRepresentedPersonDraft({
+      ...draft,
+      isPublic: "yes" as never,
+    });
+
+    const body = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body as string,
+    ) as Record<string, unknown>;
+    expect(body.isPublic).toBe(false);
   });
 
   it("skips sync when another tab owns an active lock", async () => {
