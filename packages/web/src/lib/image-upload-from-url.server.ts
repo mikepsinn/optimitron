@@ -1,4 +1,7 @@
 import { lookup } from "node:dns/promises";
+import * as http from "node:http";
+import type { IncomingHttpHeaders, IncomingMessage } from "node:http";
+import * as https from "node:https";
 import net from "node:net";
 import {
   buildImageUploadKey,
@@ -52,11 +55,14 @@ function extensionForContentType(contentType: string) {
 }
 
 function filenameFromUrl(url: URL, contentType: string) {
-  const pathnameName = decodeURIComponent(
-    url.pathname.split("/").filter(Boolean).pop() ?? "",
-  )
-    .replace(/[?#].*$/, "")
-    .trim();
+  const rawName = url.pathname.split("/").filter(Boolean).pop() ?? "";
+  let decodedName = rawName;
+  try {
+    decodedName = decodeURIComponent(rawName);
+  } catch {
+    decodedName = rawName;
+  }
+  const pathnameName = decodedName.replace(/[?#].*$/, "").trim();
   if (/\.[a-z0-9]{2,5}$/i.test(pathnameName)) return pathnameName;
   return `remote-image.${extensionForContentType(contentType)}`;
 }
@@ -118,7 +124,14 @@ function isPrivateIp(address: string) {
   return false;
 }
 
-async function assertPublicImageUrl(url: URL) {
+interface PublicImageTarget {
+  address: string;
+  family?: number;
+  hostHeader: string;
+  servername?: string;
+}
+
+async function assertPublicImageUrl(url: URL): Promise<PublicImageTarget> {
   const hostname = validationHostname(url.hostname);
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     throw new Error("Image URL must use http or https.");
@@ -134,7 +147,11 @@ async function assertPublicImageUrl(url: URL) {
     if (isPrivateIp(hostname)) {
       throw new Error("Image URL host is not allowed.");
     }
-    return;
+    return {
+      address: hostname,
+      family: net.isIP(hostname),
+      hostHeader: url.host,
+    };
   }
 
   const addresses = await lookup(hostname, { all: true });
@@ -144,10 +161,57 @@ async function assertPublicImageUrl(url: URL) {
   ) {
     throw new Error("Image URL host is not allowed.");
   }
+  const target = addresses[0];
+  return {
+    address: target.address,
+    family: target.family,
+    hostHeader: url.host,
+    servername: hostname,
+  };
+}
+
+function headerValue(headers: IncomingHttpHeaders, name: string) {
+  const value = headers[name.toLowerCase()];
+  if (Array.isArray(value)) return value[0] ?? null;
+  return typeof value === "string" ? value : null;
+}
+
+function requestPinnedUrl(
+  url: URL,
+  target: PublicImageTarget,
+): Promise<IncomingMessage> {
+  const isHttps = url.protocol === "https:";
+  const commonOptions: http.RequestOptions = {
+    family: target.family,
+    headers: {
+      Accept: "image/webp,image/png,image/jpeg,image/gif,*/*;q=0.8",
+      Host: target.hostHeader,
+      "User-Agent": "Optimitron image importer",
+    },
+    hostname: target.address,
+    method: "GET",
+    path: `${url.pathname}${url.search}`,
+    port: url.port ? Number(url.port) : isHttps ? 443 : 80,
+    protocol: url.protocol,
+  };
+
+  return new Promise((resolve, reject) => {
+    const request = isHttps
+      ? https.request(
+          { ...commonOptions, servername: target.servername },
+          resolve,
+        )
+      : http.request(commonOptions, resolve);
+    request.setTimeout(FETCH_TIMEOUT_MS, () => {
+      request.destroy(new Error("Image URL request timed out."));
+    });
+    request.on("error", reject);
+    request.end();
+  });
 }
 
 async function fetchWithRedirects(startUrl: URL): Promise<{
-  response: Response;
+  response: IncomingMessage;
   sourceUrl: URL;
 }> {
   let currentUrl = startUrl;
@@ -156,31 +220,14 @@ async function fetchWithRedirects(startUrl: URL): Promise<{
     redirectCount <= MAX_REDIRECTS;
     redirectCount += 1
   ) {
-    await assertPublicImageUrl(currentUrl);
+    const target = await assertPublicImageUrl(currentUrl);
+    const response = await requestPinnedUrl(currentUrl, target);
+    const status = response.statusCode ?? 0;
+    const location = headerValue(response.headers, "location");
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-    let response: Response;
-    try {
-      response = await fetch(currentUrl, {
-        headers: {
-          Accept:
-            "image/avif,image/webp,image/png,image/jpeg,image/gif,*/*;q=0.8",
-          "User-Agent": "Optimitron image importer",
-        },
-        redirect: "manual",
-        signal: controller.signal,
-      });
-    } finally {
-      clearTimeout(timeout);
-    }
-
-    if (
-      response.status >= 300 &&
-      response.status < 400 &&
-      response.headers.has("location")
-    ) {
-      currentUrl = new URL(response.headers.get("location") ?? "", currentUrl);
+    if (status >= 300 && status < 400 && location) {
+      response.resume();
+      currentUrl = new URL(location, currentUrl);
       continue;
     }
 
@@ -190,40 +237,48 @@ async function fetchWithRedirects(startUrl: URL): Promise<{
   throw new Error("Image URL redirected too many times.");
 }
 
-async function readResponseBuffer(response: Response, maxBytes: number) {
-  const contentLength = Number(response.headers.get("content-length") ?? 0);
+async function readResponseBuffer(
+  response: IncomingMessage,
+  maxBytes: number,
+) {
+  const contentLength = Number(
+    headerValue(response.headers, "content-length") ?? 0,
+  );
   if (Number.isFinite(contentLength) && contentLength > maxBytes) {
     throw new Error(
       `Image must be ${Math.round(maxBytes / 1024 / 1024)} MB or smaller.`,
     );
   }
 
-  const reader = response.body?.getReader();
-  if (!reader) {
-    const buffer = Buffer.from(await response.arrayBuffer());
-    if (buffer.byteLength > maxBytes) {
-      throw new Error(
-        `Image must be ${Math.round(maxBytes / 1024 / 1024)} MB or smaller.`,
-      );
-    }
-    return buffer;
-  }
+  return new Promise<Buffer>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    let totalBytes = 0;
+    let sizeError: Error | null = null;
+    const timeout = setTimeout(() => {
+      response.destroy(new Error("Image URL response timed out."));
+    }, FETCH_TIMEOUT_MS);
 
-  const chunks: Buffer[] = [];
-  let totalBytes = 0;
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = Buffer.from(value);
-    totalBytes += chunk.byteLength;
-    if (totalBytes > maxBytes) {
-      throw new Error(
-        `Image must be ${Math.round(maxBytes / 1024 / 1024)} MB or smaller.`,
-      );
-    }
-    chunks.push(chunk);
-  }
-  return Buffer.concat(chunks);
+    response.on("data", (value: Buffer | string) => {
+      const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value);
+      totalBytes += chunk.byteLength;
+      if (totalBytes > maxBytes) {
+        sizeError = new Error(
+          `Image must be ${Math.round(maxBytes / 1024 / 1024)} MB or smaller.`,
+        );
+        response.destroy(sizeError);
+        return;
+      }
+      chunks.push(chunk);
+    });
+    response.on("end", () => {
+      clearTimeout(timeout);
+      resolve(Buffer.concat(chunks));
+    });
+    response.on("error", (error) => {
+      clearTimeout(timeout);
+      reject(sizeError ?? error);
+    });
+  });
 }
 
 export async function uploadImageFromUrl({
@@ -239,14 +294,17 @@ export async function uploadImageFromUrl({
   }
 
   const { response, sourceUrl } = await fetchWithRedirects(parsedUrl);
-  if (!response.ok) {
-    throw new Error(`Image URL returned HTTP ${response.status}.`);
+  const status = response.statusCode ?? 0;
+  if (status < 200 || status >= 300) {
+    response.resume();
+    throw new Error(`Image URL returned HTTP ${status}.`);
   }
 
   const remoteContentType = contentTypeBase(
-    response.headers.get("content-type"),
+    headerValue(response.headers, "content-type"),
   );
   if (!ALLOWED_REMOTE_IMAGE_TYPES.has(remoteContentType)) {
+    response.resume();
     throw new Error("Remote URL must return a supported image type.");
   }
 

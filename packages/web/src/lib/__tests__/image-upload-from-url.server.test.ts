@@ -1,3 +1,6 @@
+import { EventEmitter } from "node:events";
+import type { IncomingMessage } from "node:http";
+import { Readable } from "node:stream";
 import sharp from "sharp";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImageUploadKind } from "../image-upload-types";
@@ -9,6 +12,8 @@ const ORG_WORDMARK_LOGO_KIND =
 const PERSON_PHOTO_KIND = "person-photo" satisfies ImageUploadKind;
 
 const mocks = vi.hoisted(() => ({
+  httpRequest: vi.fn(),
+  httpsRequest: vi.fn(),
   lookup: vi.fn(),
   uploadObject: vi.fn(),
 }));
@@ -17,6 +22,23 @@ vi.mock("node:dns/promises", () => ({
   lookup: mocks.lookup,
 }));
 
+vi.mock("node:http", async () => {
+  const actual = await vi.importActual<typeof import("node:http")>("node:http");
+  return {
+    ...actual,
+    request: mocks.httpRequest,
+  };
+});
+
+vi.mock("node:https", async () => {
+  const actual =
+    await vi.importActual<typeof import("node:https")>("node:https");
+  return {
+    ...actual,
+    request: mocks.httpsRequest,
+  };
+});
+
 vi.mock("../object-storage.server", () => ({
   uploadObject: mocks.uploadObject,
 }));
@@ -24,9 +46,10 @@ vi.mock("../object-storage.server", () => ({
 import { uploadImageFromUrl } from "../image-upload-from-url.server";
 
 beforeEach(() => {
+  mocks.httpRequest.mockReset();
+  mocks.httpsRequest.mockReset();
   mocks.lookup.mockReset();
   mocks.uploadObject.mockReset();
-  vi.unstubAllGlobals();
   mocks.lookup.mockResolvedValue([{ address: "93.184.216.34", family: 4 }]);
   mocks.uploadObject.mockResolvedValue({
     publicUrl: "https://assets.example.org/organizations/logos/logo.webp",
@@ -46,20 +69,63 @@ async function tinyPng() {
     .toBuffer();
 }
 
+function responseFromBody(
+  body: Buffer | string | null,
+  {
+    headers = {},
+    status = 200,
+  }: { headers?: Record<string, string>; status?: number } = {},
+) {
+  const stream = Readable.from(body === null ? [] : [body]) as IncomingMessage;
+  stream.statusCode = status;
+  stream.headers = headers;
+  return stream;
+}
+
+type StubRequest = EventEmitter & {
+  destroy(error?: Error): void;
+  end(): void;
+  setTimeout(timeout: number, callback: () => void): void;
+};
+
+function requestStub(onEnd: (request: StubRequest) => void) {
+  const request = new EventEmitter() as StubRequest;
+  request.destroy = (error?: Error) => {
+    if (error) request.emit("error", error);
+  };
+  request.end = () => {
+    onEnd(request);
+  };
+  request.setTimeout = () => undefined;
+  return request;
+}
+
+function mockHttpsResponse(response: IncomingMessage) {
+  mocks.httpsRequest.mockImplementationOnce((_options, responseHandler) =>
+    requestStub(() => {
+      responseHandler(response);
+    }),
+  );
+}
+
+function mockHttpsError(error: Error) {
+  mocks.httpsRequest.mockImplementationOnce(() =>
+    requestStub((request) => {
+      request.emit("error", error);
+    }),
+  );
+}
+
 describe("uploadImageFromUrl", () => {
   it("fetches, normalizes, and uploads public organization images", async () => {
     const image = await tinyPng();
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        new Response(image, {
-          headers: {
-            "content-length": String(image.byteLength),
-            "content-type": "image/png",
-          },
-          status: 200,
-        }),
-      ),
+    mockHttpsResponse(
+      responseFromBody(image, {
+        headers: {
+          "content-length": String(image.byteLength),
+          "content-type": "image/png",
+        },
+      }),
     );
 
     const result = await uploadImageFromUrl({
@@ -78,6 +144,18 @@ describe("uploadImageFromUrl", () => {
       sourceUrl: "https://example.org/assets/logo.png",
     });
     expect(mocks.lookup).toHaveBeenCalledWith("example.org", { all: true });
+    expect(mocks.httpsRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Accept: "image/webp,image/png,image/jpeg,image/gif,*/*;q=0.8",
+          Host: "example.org",
+        }),
+        hostname: "93.184.216.34",
+        path: "/assets/logo.png",
+        servername: "example.org",
+      }),
+      expect.any(Function),
+    );
     expect(mocks.uploadObject).toHaveBeenCalledWith(
       expect.objectContaining({
         contentType: "image/webp",
@@ -87,9 +165,6 @@ describe("uploadImageFromUrl", () => {
   });
 
   it("rejects local/private hosts before fetching", async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal("fetch", fetchMock);
-
     await expect(
       uploadImageFromUrl({
         kind: ORG_SQUARE_LOGO_KIND,
@@ -97,14 +172,12 @@ describe("uploadImageFromUrl", () => {
       }),
     ).rejects.toThrow("Image URL host is not allowed");
 
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mocks.httpRequest).not.toHaveBeenCalled();
+    expect(mocks.httpsRequest).not.toHaveBeenCalled();
     expect(mocks.uploadObject).not.toHaveBeenCalled();
   });
 
   it("rejects bracketed IPv6 loopback URLs before fetching", async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal("fetch", fetchMock);
-
     await expect(
       uploadImageFromUrl({
         kind: PERSON_PHOTO_KIND,
@@ -112,14 +185,12 @@ describe("uploadImageFromUrl", () => {
       }),
     ).rejects.toThrow("Image URL host is not allowed");
 
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mocks.httpRequest).not.toHaveBeenCalled();
+    expect(mocks.httpsRequest).not.toHaveBeenCalled();
     expect(mocks.uploadObject).not.toHaveBeenCalled();
   });
 
   it("rejects IPv6 documentation-range URLs before fetching", async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal("fetch", fetchMock);
-
     await expect(
       uploadImageFromUrl({
         kind: PERSON_PHOTO_KIND,
@@ -127,13 +198,12 @@ describe("uploadImageFromUrl", () => {
       }),
     ).rejects.toThrow("Image URL host is not allowed");
 
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mocks.httpRequest).not.toHaveBeenCalled();
+    expect(mocks.httpsRequest).not.toHaveBeenCalled();
     expect(mocks.uploadObject).not.toHaveBeenCalled();
   });
 
   it("rejects hostnames that resolve to private addresses", async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal("fetch", fetchMock);
     mocks.lookup.mockResolvedValueOnce([{ address: "10.0.0.4", family: 4 }]);
 
     await expect(
@@ -143,19 +213,16 @@ describe("uploadImageFromUrl", () => {
       }),
     ).rejects.toThrow("Image URL host is not allowed");
 
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mocks.httpRequest).not.toHaveBeenCalled();
+    expect(mocks.httpsRequest).not.toHaveBeenCalled();
     expect(mocks.uploadObject).not.toHaveBeenCalled();
   });
 
   it("rejects non-image responses", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        new Response("hello", {
-          headers: { "content-type": "text/html" },
-          status: 200,
-        }),
-      ),
+    mockHttpsResponse(
+      responseFromBody("hello", {
+        headers: { "content-type": "text/html" },
+      }),
     );
 
     await expect(
@@ -169,14 +236,11 @@ describe("uploadImageFromUrl", () => {
   });
 
   it("rejects non-OK HTTP responses", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        new Response(null, {
-          headers: { "content-type": "image/png" },
-          status: 404,
-        }),
-      ),
+    mockHttpsResponse(
+      responseFromBody(null, {
+        headers: { "content-type": "image/png" },
+        status: 404,
+      }),
     );
 
     await expect(
@@ -189,11 +253,8 @@ describe("uploadImageFromUrl", () => {
     expect(mocks.uploadObject).not.toHaveBeenCalled();
   });
 
-  it("propagates fetch network errors", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new TypeError("network error")),
-    );
+  it("propagates request network errors", async () => {
+    mockHttpsError(new TypeError("network error"));
 
     await expect(
       uploadImageFromUrl({
