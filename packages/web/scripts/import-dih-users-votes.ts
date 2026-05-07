@@ -80,6 +80,25 @@ interface ExportedVote {
   updatedAt: string;
 }
 
+interface ExportedWishocraticAllocation {
+  id: string;
+  userId: string;
+  categoryA: string;
+  categoryB: string;
+  allocationA: number;
+  allocationB: number;
+  createdAt: string;
+}
+
+interface ExportedWishocraticCategorySelection {
+  id: string;
+  userId: string;
+  categoryId: string;
+  selected: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface ExportedReferralInvitation {
   id: string;
   referrerId: string;
@@ -101,33 +120,76 @@ interface ExportedReferralInvitation {
 interface ExportPayload {
   exportedAt: string;
   source: string;
-  counts: { users: number; votes: number; referralInvitations: number };
+  counts: {
+    users: number;
+    votes: number;
+    referralInvitations: number;
+    wishocraticAllocations?: number;
+    wishocraticCategorySelections?: number;
+  };
   users: ExportedUser[];
   votes: ExportedVote[];
   referralInvitations: ExportedReferralInvitation[];
+  wishocraticAllocations?: ExportedWishocraticAllocation[];
+  wishocraticCategorySelections?: ExportedWishocraticCategorySelection[];
 }
 
 interface ImportSummary {
   users: {
+    /** New destination User rows created. */
     created: number;
-    updated: number;
-    skipped: number;
+    /** Existing destination users matched by email — left alone. */
+    skippedAlreadyInDestination: number;
+    /** Source rows with no email at all — bad data, dropped. */
+    skippedNoEmail: number;
     errors: number;
     /** New users whose source referralCode collides with an existing dest user. */
     referralCodeCollisions: number;
   };
-  votes: { created: number; updated: number; skipped: number; errors: number };
+  votes: {
+    created: number;
+    /** Source vote already has a destination ReferendumVote for this person — left alone. */
+    skippedAlreadyVoted: number;
+    /** Source vote has no userId, or its userId didn't map to a known dest user. */
+    skippedNoUser: number;
+    errors: number;
+  };
   referralInvitations: {
     created: number;
     skipped: number;
     errors: number;
   };
+  wishocraticAllocations: {
+    /** WishocraticAllocation rows that would be created. Includes both
+     *  source-table-derived rows AND rows synthesized from each Vote's
+     *  militaryAllocationPercent (Military / Pragmatic Clinical Trials pair). */
+    created: number;
+    /** Pairs already in destination — left alone (skip-on-conflict). */
+    skipped: number;
+    /** Source rows whose category strings don't map to a destination
+     *  WishocraticItem (e.g., destination doesn't have that category). */
+    skippedUnknownItem: number;
+    /** Votes whose militaryAllocationPercent is null. */
+    voteAllocationsNull: number;
+    errors: number;
+  };
+  wishocraticItemInclusions: {
+    created: number;
+    skipped: number;
+    skippedUnknownItem: number;
+    errors: number;
+  };
 }
+
+const MILITARY_ITEM_ID = "MILITARY_OPERATIONS";
+const CLINICAL_TRIALS_ITEM_ID = "PRAGMATIC_CLINICAL_TRIALS";
 
 interface PreImportState {
   users: number;
   treatyVotes: number;
   referralInvitations: number;
+  wishocraticAllocations: number;
+  wishocraticItemInclusions: number;
   treatyReferendumId: string | null;
 }
 
@@ -139,7 +201,13 @@ async function captureDestinationState(): Promise<PreImportState> {
   const referendumId =
     referendum && !referendum.deletedAt ? referendum.id : null;
 
-  const [users, treatyVotes, referralInvitations] = await Promise.all([
+  const [
+    users,
+    treatyVotes,
+    referralInvitations,
+    wishocraticAllocations,
+    wishocraticItemInclusions,
+  ] = await Promise.all([
     prisma.user.count({ where: { isSystem: false } }),
     referendumId
       ? prisma.referendumVote.count({
@@ -147,8 +215,17 @@ async function captureDestinationState(): Promise<PreImportState> {
         })
       : Promise.resolve(0),
     prisma.referralInvitation.count(),
+    prisma.wishocraticAllocation.count({ where: { deletedAt: null } }),
+    prisma.wishocraticItemInclusion.count({ where: { deletedAt: null } }),
   ]);
-  return { users, treatyVotes, referralInvitations, treatyReferendumId: referendumId };
+  return {
+    users,
+    treatyVotes,
+    referralInvitations,
+    wishocraticAllocations,
+    wishocraticItemInclusions,
+    treatyReferendumId: referendumId,
+  };
 }
 
 interface ImportOptions {
@@ -190,8 +267,8 @@ async function importUsers(
 }> {
   const summary: ImportSummary["users"] = {
     created: 0,
-    updated: 0,
-    skipped: 0,
+    skippedAlreadyInDestination: 0,
+    skippedNoEmail: 0,
     errors: 0,
     referralCodeCollisions: 0,
   };
@@ -199,7 +276,7 @@ async function importUsers(
 
   for (const exportedUser of payload.users) {
     if (!exportedUser.email) {
-      summary.skipped += 1;
+      summary.skippedNoEmail += 1;
       continue;
     }
     try {
@@ -212,64 +289,55 @@ async function importUsers(
         select: { id: true },
       });
 
-      // Dry-run path: do the same lookups so we can report what *would*
-      // happen against the live destination DB, but skip every write.
-      if (options.dryRun) {
-        if (existing) {
-          summary.updated += 1;
-          oldToNew.set(exportedUser.id, existing.id);
-        } else {
-          summary.created += 1;
-          const referralCodeTaken = await prisma.user.findUnique({
-            where: { referralCode: exportedUser.referralCode },
-            select: { id: true },
-          });
-          if (referralCodeTaken) summary.referralCodeCollisions += 1;
-          // Use the source id as a placeholder mapping during dry-run so
-          // downstream vote / invitation projections can still resolve
-          // referrers and detect skips. The actual import will rewrite it.
-          oldToNew.set(exportedUser.id, exportedUser.id);
-        }
+      // Skip-on-conflict semantic: existing destination users keep their
+      // current User + Person state. Source data is older and could
+      // clobber isAdmin, emailVerified, isPublic, etc. that the
+      // destination has consciously set. We only need the id mapping so
+      // downstream votes / allocations / inclusions can attach to the
+      // existing user — but we won't overwrite anything.
+      if (existing) {
+        summary.skippedAlreadyInDestination += 1;
+        oldToNew.set(exportedUser.id, existing.id);
         continue;
       }
 
-      const userData = {
-        email: exportedUser.email,
-        emailVerified: parseDate(exportedUser.emailVerified),
-        newsletterSubscribed: exportedUser.newsletterSubscribed,
-        countryCode,
-        isAdmin: exportedUser.isAdmin,
-      };
-
-      let user: { id: string };
-      if (existing) {
-        user = await prisma.user.update({
-          where: { id: existing.id },
-          data: userData,
-          select: { id: true },
-        });
-        summary.updated += 1;
-      } else {
-        // Keep the source referralCode when free; otherwise fall back to
-        // the dest default so old /vote/<code> links keep working for as
-        // many migrated users as possible.
+      if (options.dryRun) {
+        summary.created += 1;
         const referralCodeTaken = await prisma.user.findUnique({
           where: { referralCode: exportedUser.referralCode },
           select: { id: true },
         });
         if (referralCodeTaken) summary.referralCodeCollisions += 1;
-        user = await prisma.user.create({
-          data: {
-            ...userData,
-            ...(referralCodeTaken
-              ? {}
-              : { referralCode: exportedUser.referralCode }),
-            createdAt: parseDate(exportedUser.createdAt) ?? new Date(),
-          },
-          select: { id: true },
-        });
-        summary.created += 1;
+        // Use the source id as a placeholder mapping during dry-run so
+        // downstream vote / invitation projections can still resolve
+        // referrers and detect skips. The actual import will rewrite it.
+        oldToNew.set(exportedUser.id, exportedUser.id);
+        continue;
       }
+
+      // Keep the source referralCode when free; otherwise fall back to
+      // the dest default so old /vote/<code> links keep working for as
+      // many migrated users as possible.
+      const referralCodeTaken = await prisma.user.findUnique({
+        where: { referralCode: exportedUser.referralCode },
+        select: { id: true },
+      });
+      if (referralCodeTaken) summary.referralCodeCollisions += 1;
+      const user = await prisma.user.create({
+        data: {
+          email: exportedUser.email,
+          emailVerified: parseDate(exportedUser.emailVerified),
+          newsletterSubscribed: exportedUser.newsletterSubscribed,
+          countryCode,
+          isAdmin: exportedUser.isAdmin,
+          ...(referralCodeTaken
+            ? {}
+            : { referralCode: exportedUser.referralCode }),
+          createdAt: parseDate(exportedUser.createdAt) ?? new Date(),
+        },
+        select: { id: true },
+      });
+      summary.created += 1;
 
       const displayName =
         exportedUser.name?.trim() ||
@@ -321,8 +389,8 @@ async function importVotes(
 ): Promise<ImportSummary["votes"]> {
   const summary: ImportSummary["votes"] = {
     created: 0,
-    updated: 0,
-    skipped: 0,
+    skippedAlreadyVoted: 0,
+    skippedNoUser: 0,
     errors: 0,
   };
 
@@ -343,12 +411,12 @@ async function importVotes(
 
   for (const vote of payload.votes) {
     if (!vote.userId) {
-      summary.skipped += 1;
+      summary.skippedNoUser += 1;
       continue;
     }
     const newUserId = oldToNew.get(vote.userId);
     if (!newUserId) {
-      summary.skipped += 1;
+      summary.skippedNoUser += 1;
       continue;
     }
     try {
@@ -366,7 +434,7 @@ async function importVotes(
         if (!personId) {
           // The user doesn't exist in dest yet (dry-run didn't create it),
           // so we can't confirm whether the vote upsert would create or
-          // update. Project as "would create new" since the user write
+          // skip. Project as "would create new" since the user write
           // would also create.
           summary.created += 1;
           continue;
@@ -380,13 +448,29 @@ async function importVotes(
           },
           select: { id: true },
         });
-        if (existing) summary.updated += 1;
+        if (existing) summary.skippedAlreadyVoted += 1;
         else summary.created += 1;
         continue;
       }
 
       if (!personId) {
-        summary.skipped += 1;
+        summary.skippedNoUser += 1;
+        continue;
+      }
+      // Skip-on-conflict: if a destination vote already exists for this
+      // (referendum, person), keep the destination value. Source data is
+      // older — we don't want to flip a YES to NO or vice versa.
+      const alreadyVoted = await prisma.referendumVote.findUnique({
+        where: {
+          referendumId_personId: {
+            referendumId: referendum.id,
+            personId,
+          },
+        },
+        select: { id: true },
+      });
+      if (alreadyVoted) {
+        summary.skippedAlreadyVoted += 1;
         continue;
       }
       const referredByUserId = vote.referredByUserId
@@ -394,46 +478,224 @@ async function importVotes(
         : null;
       const answer =
         vote.answer === "YES" ? VotePosition.YES : VotePosition.NO;
-      const data = {
-        userId: newUserId,
-        personId,
-        referendumId: referendum.id,
-        answer,
-        voteSource: ReferendumVoteSource.SELF,
-        referredByUserId,
-        isPublic: true,
-        originUrl: vote.sourceUrl,
-        createdAt: parseDate(vote.createdAt) ?? new Date(),
-      };
-      const result = await prisma.referendumVote.upsert({
-        where: {
-          referendumId_personId: {
-            referendumId: referendum.id,
-            personId,
-          },
+      await prisma.referendumVote.create({
+        data: {
+          userId: newUserId,
+          personId,
+          referendumId: referendum.id,
+          answer,
+          voteSource: ReferendumVoteSource.SELF,
+          referredByUserId,
+          isPublic: true,
+          originUrl: vote.sourceUrl,
+          createdAt: parseDate(vote.createdAt) ?? new Date(),
         },
-        create: data,
-        update: {
-          // On re-import, refresh the answer + originUrl + referrer if the
-          // source has more recent data, but don't reset the createdAt
-          // (first-vote-wins semantics in the destination).
-          answer: data.answer,
-          originUrl: data.originUrl,
-          referredByUserId: data.referredByUserId,
-        },
-        select: { id: true, createdAt: true },
       });
-      const isNew =
-        Math.abs(result.createdAt.getTime() - data.createdAt.getTime()) < 1000;
-      if (isNew) {
-        summary.created += 1;
-      } else {
-        summary.updated += 1;
-      }
+      summary.created += 1;
     } catch (error) {
       summary.errors += 1;
       console.error(
         `[import:vote] vote ${vote.id} (user ${vote.userId}):`,
+        error,
+      );
+    }
+  }
+
+  return summary;
+}
+
+async function loadKnownWishocraticItemIds(): Promise<Set<string>> {
+  const items = await prisma.wishocraticItem.findMany({
+    where: { deletedAt: null },
+    select: { id: true },
+  });
+  return new Set(items.map((i) => i.id));
+}
+
+async function importWishocraticAllocations(
+  payload: ExportPayload,
+  oldToNew: Map<string, string>,
+  knownItemIds: Set<string>,
+  options: ImportOptions,
+): Promise<ImportSummary["wishocraticAllocations"]> {
+  const summary: ImportSummary["wishocraticAllocations"] = {
+    created: 0,
+    skipped: 0,
+    skippedUnknownItem: 0,
+    voteAllocationsNull: 0,
+    errors: 0,
+  };
+
+  // Synthesize a Military / Pragmatic-Clinical-Trials allocation pair from
+  // each Vote's militaryAllocationPercent. The destination has a more
+  // structured pairwise allocation system, but the source's per-vote
+  // single-percent input maps cleanly to the (Military, Clinical Trials)
+  // pair: allocationA = mil%, allocationB = 100 - mil%.
+  const haveMilItem = knownItemIds.has(MILITARY_ITEM_ID);
+  const haveTrialsItem = knownItemIds.has(CLINICAL_TRIALS_ITEM_ID);
+
+  for (const vote of payload.votes) {
+    if (vote.militaryAllocationPercent == null) {
+      summary.voteAllocationsNull += 1;
+      continue;
+    }
+    if (!haveMilItem || !haveTrialsItem) {
+      summary.skippedUnknownItem += 1;
+      continue;
+    }
+    if (!vote.userId) continue;
+    const newUserId = oldToNew.get(vote.userId);
+    if (!newUserId) continue;
+    try {
+      const existing = await prisma.wishocraticAllocation.findUnique({
+        where: {
+          userId_itemAId_itemBId: {
+            userId: newUserId,
+            itemAId: MILITARY_ITEM_ID,
+            itemBId: CLINICAL_TRIALS_ITEM_ID,
+          },
+        },
+        select: { id: true },
+      });
+      if (options.dryRun) {
+        if (existing) summary.skipped += 1;
+        else summary.created += 1;
+        continue;
+      }
+      if (existing) {
+        summary.skipped += 1;
+        continue;
+      }
+      const allocationA = Math.max(
+        0,
+        Math.min(100, vote.militaryAllocationPercent),
+      );
+      const allocationB = 100 - allocationA;
+      await prisma.wishocraticAllocation.create({
+        data: {
+          userId: newUserId,
+          itemAId: MILITARY_ITEM_ID,
+          itemBId: CLINICAL_TRIALS_ITEM_ID,
+          allocationA,
+          allocationB,
+          createdAt: parseDate(vote.createdAt) ?? new Date(),
+        },
+      });
+      summary.created += 1;
+    } catch (error) {
+      summary.errors += 1;
+      console.error(
+        `[import:vote-alloc] vote ${vote.id} (user ${vote.userId}):`,
+        error,
+      );
+    }
+  }
+
+  // Pairwise allocations from the source's WishocraticAllocation table.
+  // Source categoryA/B strings already match destination WishocraticItem
+  // IDs, so the migration is direct — just verify the items exist.
+  for (const allocation of payload.wishocraticAllocations ?? []) {
+    const newUserId = oldToNew.get(allocation.userId);
+    if (!newUserId) continue;
+    if (
+      !knownItemIds.has(allocation.categoryA) ||
+      !knownItemIds.has(allocation.categoryB)
+    ) {
+      summary.skippedUnknownItem += 1;
+      continue;
+    }
+    try {
+      const existing = await prisma.wishocraticAllocation.findUnique({
+        where: {
+          userId_itemAId_itemBId: {
+            userId: newUserId,
+            itemAId: allocation.categoryA,
+            itemBId: allocation.categoryB,
+          },
+        },
+        select: { id: true },
+      });
+      if (options.dryRun) {
+        if (existing) summary.skipped += 1;
+        else summary.created += 1;
+        continue;
+      }
+      if (existing) {
+        summary.skipped += 1;
+        continue;
+      }
+      await prisma.wishocraticAllocation.create({
+        data: {
+          userId: newUserId,
+          itemAId: allocation.categoryA,
+          itemBId: allocation.categoryB,
+          allocationA: allocation.allocationA,
+          allocationB: allocation.allocationB,
+          createdAt: parseDate(allocation.createdAt) ?? new Date(),
+        },
+      });
+      summary.created += 1;
+    } catch (error) {
+      summary.errors += 1;
+      console.error(
+        `[import:alloc] allocation ${allocation.id} (user ${allocation.userId}):`,
+        error,
+      );
+    }
+  }
+
+  return summary;
+}
+
+async function importWishocraticItemInclusions(
+  payload: ExportPayload,
+  oldToNew: Map<string, string>,
+  knownItemIds: Set<string>,
+  options: ImportOptions,
+): Promise<ImportSummary["wishocraticItemInclusions"]> {
+  const summary: ImportSummary["wishocraticItemInclusions"] = {
+    created: 0,
+    skipped: 0,
+    skippedUnknownItem: 0,
+    errors: 0,
+  };
+
+  for (const selection of payload.wishocraticCategorySelections ?? []) {
+    const newUserId = oldToNew.get(selection.userId);
+    if (!newUserId) continue;
+    if (!knownItemIds.has(selection.categoryId)) {
+      summary.skippedUnknownItem += 1;
+      continue;
+    }
+    try {
+      const existing = await prisma.wishocraticItemInclusion.findUnique({
+        where: {
+          userId_itemId: { userId: newUserId, itemId: selection.categoryId },
+        },
+        select: { id: true },
+      });
+      if (options.dryRun) {
+        if (existing) summary.skipped += 1;
+        else summary.created += 1;
+        continue;
+      }
+      if (existing) {
+        summary.skipped += 1;
+        continue;
+      }
+      await prisma.wishocraticItemInclusion.create({
+        data: {
+          userId: newUserId,
+          itemId: selection.categoryId,
+          included: selection.selected,
+          createdAt: parseDate(selection.createdAt) ?? new Date(),
+        },
+      });
+      summary.created += 1;
+    } catch (error) {
+      summary.errors += 1;
+      console.error(
+        `[import:inclusion] selection ${selection.id} (user ${selection.userId}):`,
         error,
       );
     }
@@ -530,12 +792,15 @@ async function main() {
 
   const before = await captureDestinationState();
   console.log(
-    `   Destination before: ${before.users} users, ${before.treatyVotes} treaty votes, ${before.referralInvitations} invitations${
+    `   Destination before: ${before.users} users, ${before.treatyVotes} treaty votes, ${before.referralInvitations} invitations, ${before.wishocraticAllocations} allocations, ${before.wishocraticItemInclusions} inclusions${
       before.treatyReferendumId
         ? ""
         : "  ⚠️  treaty referendum NOT FOUND — vote import will fail"
     }`,
   );
+
+  const knownItemIds = await loadKnownWishocraticItemIds();
+  console.log(`   Known WishocraticItem IDs: ${knownItemIds.size}`);
 
   const { summary: userSummary, oldUserIdToNew } = await importUsers(
     payload,
@@ -547,6 +812,18 @@ async function main() {
     oldUserIdToNew,
     options,
   );
+  const allocationSummary = await importWishocraticAllocations(
+    payload,
+    oldUserIdToNew,
+    knownItemIds,
+    options,
+  );
+  const inclusionSummary = await importWishocraticItemInclusions(
+    payload,
+    oldUserIdToNew,
+    knownItemIds,
+    options,
+  );
 
   const after = options.dryRun ? before : await captureDestinationState();
 
@@ -555,6 +832,8 @@ async function main() {
       users: userSummary,
       votes: voteSummary,
       referralInvitations: invitationSummary,
+      wishocraticAllocations: allocationSummary,
+      wishocraticItemInclusions: inclusionSummary,
     },
     null,
     2,
@@ -566,23 +845,52 @@ async function main() {
       treatyVotes: before.treatyVotes + voteSummary.created,
       referralInvitations:
         before.referralInvitations + invitationSummary.created,
+      wishocraticAllocations:
+        before.wishocraticAllocations + allocationSummary.created,
+      wishocraticItemInclusions:
+        before.wishocraticItemInclusions + inclusionSummary.created,
     };
     console.log(
-      `\n📊 Projected destination after real run: ${projected.users} users (+${userSummary.created}), ${projected.treatyVotes} treaty votes (+${voteSummary.created}), ${projected.referralInvitations} invitations (+${invitationSummary.created}).`,
+      `\n📊 Projected destination after real run: ${projected.users} users (+${userSummary.created}), ${projected.treatyVotes} treaty votes (+${voteSummary.created}), ${projected.referralInvitations} invitations (+${invitationSummary.created}), ${projected.wishocraticAllocations} allocations (+${allocationSummary.created}), ${projected.wishocraticItemInclusions} inclusions (+${inclusionSummary.created}).`,
     );
+    if (allocationSummary.skippedUnknownItem > 0) {
+      console.log(
+        `   ⚠️  ${allocationSummary.skippedUnknownItem} allocations would be skipped because their categoryA/B doesn't match a destination WishocraticItem.`,
+      );
+    }
+    if (inclusionSummary.skippedUnknownItem > 0) {
+      console.log(
+        `   ⚠️  ${inclusionSummary.skippedUnknownItem} inclusions would be skipped because their categoryId doesn't match a destination WishocraticItem.`,
+      );
+    }
+    if (allocationSummary.voteAllocationsNull > 0) {
+      console.log(
+        `   ℹ️  ${allocationSummary.voteAllocationsNull} votes have no militaryAllocationPercent (NULL in source) — no Military/Trials pair created for them.`,
+      );
+    }
     if (userSummary.referralCodeCollisions > 0) {
       console.log(
         `   ⚠️  ${userSummary.referralCodeCollisions} new users will get a fresh referralCode (source code already taken in destination). Old /vote/<code> links for those users will not resolve.`,
       );
     }
-    if (userSummary.skipped > 0) {
+    if (userSummary.skippedAlreadyInDestination > 0) {
       console.log(
-        `   ⚠️  ${userSummary.skipped} source users have no email and will be skipped.`,
+        `   ℹ️  ${userSummary.skippedAlreadyInDestination} users already exist in destination (matched by email) — left untouched.`,
       );
     }
-    if (voteSummary.skipped > 0) {
+    if (userSummary.skippedNoEmail > 0) {
       console.log(
-        `   ⚠️  ${voteSummary.skipped} source votes have no userId mapping and will be skipped.`,
+        `   ⚠️  ${userSummary.skippedNoEmail} source users have no email — bad data, dropped.`,
+      );
+    }
+    if (voteSummary.skippedAlreadyVoted > 0) {
+      console.log(
+        `   ℹ️  ${voteSummary.skippedAlreadyVoted} votes skipped — destination user already has a treaty vote on file.`,
+      );
+    }
+    if (voteSummary.skippedNoUser > 0) {
+      console.log(
+        `   ⚠️  ${voteSummary.skippedNoUser} votes have no userId mapping — bad data, dropped.`,
       );
     }
     if (invitationSummary.skipped > 0) {
@@ -592,7 +900,7 @@ async function main() {
     }
   } else {
     console.log(
-      `\n📊 Destination after: ${after.users} users (+${after.users - before.users}), ${after.treatyVotes} treaty votes (+${after.treatyVotes - before.treatyVotes}), ${after.referralInvitations} invitations (+${after.referralInvitations - before.referralInvitations}).`,
+      `\n📊 Destination after: ${after.users} users (+${after.users - before.users}), ${after.treatyVotes} treaty votes (+${after.treatyVotes - before.treatyVotes}), ${after.referralInvitations} invitations (+${after.referralInvitations - before.referralInvitations}), ${after.wishocraticAllocations} allocations (+${after.wishocraticAllocations - before.wishocraticAllocations}), ${after.wishocraticItemInclusions} inclusions (+${after.wishocraticItemInclusions - before.wishocraticItemInclusions}).`,
     );
     console.log(
       "\n✅ Import complete. Run `scripts/backfill-court-plaintiffs.ts` next to register imported YES voters as plaintiffs.",
