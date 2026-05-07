@@ -9,6 +9,7 @@ import {
   readerMarkdownComponents,
   splitIntoSlides,
 } from "@/components/referendum/ReferendumStepper";
+import { Button } from "@/components/retroui/Button";
 import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
@@ -82,12 +83,16 @@ export function TreatyContent({
           <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
             Next: the enforcement stack
           </p>
-          <Link
-            href={courtHref}
-            className="mt-4 inline-flex border border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] transition-colors hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)] sm:text-base"
+          <Button
+            asChild
+            className="mt-4 inline-flex border border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] shadow-none transition-colors hover:translate-y-0 hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)] active:translate-x-0 active:translate-y-0 sm:text-base"
+            size="md"
+            variant="outline"
           >
-            Join the Court of Humanity
-          </Link>
+            <Link href={courtHref} aria-label="Join the Court of Humanity">
+              Join the Court of Humanity
+            </Link>
+          </Button>
           <p className="mt-3 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-base">
             The treaty is the off-ramp. The Court is the road that produces the
             off-ramp.
