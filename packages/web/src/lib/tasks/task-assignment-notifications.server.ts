@@ -70,7 +70,7 @@ async function resolveAssignmentRecipient(taskId: string): Promise<{
 
   if (task.assigneeOrganization) {
     const member = task.assigneeOrganization.members.find((candidate) =>
-      normalizeEmail(candidate.user.email),
+      Boolean(normalizeEmail(candidate.user.email)),
     );
     const email =
       normalizeEmail(task.assigneeOrganization.contactEmail) ??

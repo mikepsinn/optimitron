@@ -7,32 +7,30 @@ import {
   TaskStatus,
   type Prisma,
 } from "@optimitron/db";
+import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 import { prisma } from "@/lib/prisma";
 import { issueOrgContextToken } from "@/lib/organization-context-token.server";
+import { NONPROFIT_COALITION_STRATEGY_URL } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import { getBaseUrl } from "@/lib/url";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
-
-export const NONPROFIT_COALITION_STRATEGY_URL =
-  "https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy";
-
-const WAR_ON_DISEASE_ORIGIN = "https://warondisease.org";
-const ORGANIZATION_ACTIVATION_TASK_TITLE =
-  "Share the Clinical Trial Abundance Survey with your members";
 
 function getOrganizationActivationTaskKey(organizationId: string) {
   return `organization:${organizationId}:share-1-percent-treaty-survey`;
 }
 
 function buildOrganizationActivationTaskDescription(input: {
+  baseUrl: string;
   organizationId: string;
   organizationName: string;
   organizationSlug: string;
+  organizationToolsUrl: string;
+  surveyUrl: string;
 }) {
-  const organizationToolsUrl = `${WAR_ON_DISEASE_ORIGIN}/organizations/${input.organizationId}`;
-  const surveyUrl = `${WAR_ON_DISEASE_ORIGIN}/survey/${input.organizationSlug}`;
-  const legalUrl = `${WAR_ON_DISEASE_ORIGIN}/endorse#organization-legal-notes`;
+  const { organizationToolsUrl, surveyUrl } = input;
+  const legalUrl = `${input.baseUrl}/endorse#organization-legal-notes`;
 
   return `Your organization joined the International Campaign to End War and Disease by publicly supporting the 1% Treaty. Now use the reach your members already trust: place the Clinical Trial Abundance Survey link on your site and share it once with your list.
 
@@ -81,16 +79,22 @@ export async function ensureOrganizationTreatyActivationTask(
   }
 
   const taskKey = getOrganizationActivationTaskKey(input.organizationId);
+  const baseUrl = getBaseUrl();
+  const organizationToolsUrl = `${baseUrl}/organizations/${input.organizationId}`;
+  const surveyUrl = `${baseUrl}/survey/${organization.slug}`;
   const description = buildOrganizationActivationTaskDescription({
+    baseUrl,
     organizationId: input.organizationId,
     organizationName: organization.name,
     organizationSlug: organization.slug,
+    organizationToolsUrl,
+    surveyUrl,
   });
   const contextJson = {
     organizationId: input.organizationId,
     organizationName: organization.name,
-    organizationToolsUrl: `${WAR_ON_DISEASE_ORIGIN}/organizations/${input.organizationId}`,
-    surveyUrl: `${WAR_ON_DISEASE_ORIGIN}/survey/${organization.slug}`,
+    organizationToolsUrl,
+    surveyUrl,
   } satisfies Prisma.InputJsonValue;
 
   const task = await db.task.upsert({

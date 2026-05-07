@@ -118,6 +118,37 @@ describe("organization endorsement sync", () => {
     expect(mocks.removePendingOrganizationEndorsements).not.toHaveBeenCalled();
   });
 
+  it("renews the sync lock before each draft post", async () => {
+    const secondDraft = {
+      ...draft,
+      clientDraftId: "org_draft_2",
+      organizationName: "Second Coalition",
+    };
+    mocks.getPendingOrganizationEndorsements.mockReturnValue([
+      draft,
+      secondDraft,
+    ]);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ organizationId: "org_1" }),
+        ok: true,
+      }),
+    );
+
+    await syncPendingOrganizationEndorsements();
+
+    expect(mocks.setPendingOrganizationEndorsementsSyncLock).toHaveBeenCalledTimes(
+      3,
+    );
+    expect(mocks.removePendingOrganizationEndorsements).toHaveBeenCalledWith([
+      "org_draft_1",
+    ]);
+    expect(mocks.removePendingOrganizationEndorsements).toHaveBeenCalledWith([
+      "org_draft_2",
+    ]);
+  });
+
   it("returns the created organization id from a successful post", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       json: vi.fn().mockResolvedValue({ organizationId: "org_1" }),

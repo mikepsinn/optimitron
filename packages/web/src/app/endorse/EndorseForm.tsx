@@ -72,6 +72,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
     SavedOrganization[]
   >([]);
   const [syncAttempt, setSyncAttempt] = useState(0);
+  const currentDraftIdRef = useRef<string | null>(null);
   const syncStartedRef = useRef(false);
 
   const isAuthenticated =
@@ -118,6 +119,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
 
         if (result.failedDrafts.length > 0) {
           const first = result.failedDrafts[0]!;
+          currentDraftIdRef.current = first.clientDraftId;
           setEntryMode("new");
           setName(first.organizationName);
           setWebsite(first.website ?? "");
@@ -148,11 +150,13 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
   function resetNewOrganizationFields() {
     setName("");
     setWebsite("");
+    currentDraftIdRef.current = null;
   }
 
   function buildDraft(): PendingOrganizationEndorsementDraft {
+    currentDraftIdRef.current ??= createDraftId();
     return {
-      clientDraftId: createDraftId(),
+      clientDraftId: currentDraftIdRef.current,
       organizationName: name.trim(),
       originUrl:
         typeof window !== "undefined" ? window.location.href : undefined,
@@ -246,6 +250,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
       setFormMode("saved");
     } catch (err) {
       if (draft) {
+        currentDraftIdRef.current = draft.clientDraftId;
         storage.addPendingOrganizationEndorsement(draft);
       }
       setError(

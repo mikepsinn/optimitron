@@ -49,6 +49,19 @@ function releaseLock(ownerId: string): void {
   }
 }
 
+function renewLock(ownerId: string): boolean {
+  const existing = storage.getPendingOrganizationEndorsementsSyncLock();
+  if (!existing || existing.ownerId !== ownerId) {
+    return false;
+  }
+  storage.setPendingOrganizationEndorsementsSyncLock({
+    ownerId,
+    expiresAt: Date.now() + LOCK_TTL_MS,
+  });
+  const confirmed = storage.getPendingOrganizationEndorsementsSyncLock();
+  return confirmed?.ownerId === ownerId;
+}
+
 function draftPayload(draft: PendingOrganizationEndorsementDraft) {
   return {
     newOrganization: {
@@ -117,6 +130,10 @@ export async function syncPendingOrganizationEndorsements(): Promise<Organizatio
   try {
     const drafts = storage.getPendingOrganizationEndorsements();
     for (const draft of drafts) {
+      if (!renewLock(ownerId)) {
+        failedDrafts.push(draft);
+        continue;
+      }
       try {
         const organization = await postOrganizationEndorsementDraft(draft);
         if (organization) {

@@ -6,6 +6,9 @@ import { getWishoniaUserId } from "@/lib/wishonia.server";
 const MAX_FEEDBACK_LENGTH = 8_000;
 const MAX_URL_LENGTH = 1_000;
 const MAX_EMAIL_LENGTH = 254;
+const FEEDBACK_TASK_TITLE_PREFIX = "Review site feedback:";
+const FEEDBACK_GLOBAL_BURST_LIMIT = 20;
+const FEEDBACK_GLOBAL_BURST_WINDOW_MS = 10 * 60 * 1000;
 export const FEEDBACK_HONEYPOT_FIELD = "companyWebsite";
 
 type FeedbackRejectionCode = "honeypot";
@@ -44,7 +47,7 @@ function clean(value: string | null | undefined, maxLength: number) {
 
 function makeTitle(message: string) {
   const firstLine = message.replace(/\s+/g, " ").trim().slice(0, 72);
-  return `Review site feedback: ${firstLine || "No summary"}`;
+  return `${FEEDBACK_TASK_TITLE_PREFIX} ${firstLine || "No summary"}`;
 }
 
 function cleanEmail(value: string | null | undefined) {
@@ -99,6 +102,22 @@ async function getFeedbackTaskOwner() {
   };
 }
 
+async function assertFeedbackWithinRateLimits(now = new Date()) {
+  const cutoff = new Date(now.getTime() - FEEDBACK_GLOBAL_BURST_WINDOW_MS);
+  const recentFeedbackTasks = await prisma.task.count({
+    where: {
+      createdAt: { gte: cutoff },
+      deletedAt: null,
+      isPublic: false,
+      title: { startsWith: FEEDBACK_TASK_TITLE_PREFIX },
+    },
+  });
+
+  if (recentFeedbackTasks >= FEEDBACK_GLOBAL_BURST_LIMIT) {
+    throw new Error("Feedback is temporarily rate limited.");
+  }
+}
+
 function buildFeedbackTaskDescription(input: {
   contactEmail: string | null;
   message: string;
@@ -135,6 +154,7 @@ export async function createFeedbackTask(input: CreateFeedbackTaskInput) {
   if (!message || message.length < 3) {
     throw new Error("Feedback is required.");
   }
+  await assertFeedbackWithinRateLimits();
 
   const contactEmail = cleanEmail(input.contactEmail);
   const contactEmailNormalized = contactEmail?.toLowerCase() ?? null;

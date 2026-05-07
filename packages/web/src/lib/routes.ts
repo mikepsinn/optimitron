@@ -629,6 +629,9 @@ export const courtLink: NavItem = {
 export const HUMANITY_V_GOVERNMENT_MANUAL_URL =
   "https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html";
 
+export const NONPROFIT_COALITION_STRATEGY_URL =
+  "https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy";
+
 export const humanityVGovernmentLink: NavItem = {
   href: ROUTES.humanityVGovernment,
   label: "Humanity v. Government",

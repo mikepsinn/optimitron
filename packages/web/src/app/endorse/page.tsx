@@ -13,14 +13,11 @@ import { TreatyContent } from "@/components/treaty/TreatyContent";
 import type { ReferendumSiteLegalSection } from "@/content/referendum-sites/types";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { getSiteMetadata } from "@/lib/metadata";
-import {
-  getManageableOrganizationsForUser,
-  NONPROFIT_COALITION_STRATEGY_URL,
-} from "@/lib/organization.server";
+import { getManageableOrganizationsForUser } from "@/lib/organization.server";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
+import { NONPROFIT_COALITION_STRATEGY_URL, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
-import { ROUTES } from "@/lib/routes";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,

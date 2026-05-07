@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   createTask: vi.fn(),
   getWishoniaUserId: vi.fn(),
+  taskCount: vi.fn(),
   taskUpdate: vi.fn(),
   userFindFirst: vi.fn(),
 }));
@@ -11,6 +12,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../prisma", () => ({
   prisma: {
     task: {
+      count: mocks.taskCount,
       update: mocks.taskUpdate,
     },
     user: {
@@ -32,6 +34,7 @@ import { createFeedbackTask } from "../feedback.server";
 beforeEach(() => {
   for (const fn of Object.values(mocks)) fn.mockReset();
   mocks.createTask.mockResolvedValue({ id: "task-feedback-1" });
+  mocks.taskCount.mockResolvedValue(0);
   mocks.taskUpdate.mockResolvedValue({});
 });
 
@@ -137,6 +140,20 @@ describe("createFeedbackTask", () => {
       }),
     ).rejects.toMatchObject({ code: "honeypot" });
 
+    expect(mocks.createTask).not.toHaveBeenCalled();
+    expect(mocks.taskCount).not.toHaveBeenCalled();
+  });
+
+  it("rate limits public feedback bursts before creating a task", async () => {
+    mocks.taskCount.mockResolvedValue(20);
+
+    await expect(
+      createFeedbackTask({
+        message: "The feedback endpoint should not flood tasks.",
+      }),
+    ).rejects.toThrow("Feedback is temporarily rate limited.");
+
+    expect(mocks.taskCount).toHaveBeenCalledOnce();
     expect(mocks.createTask).not.toHaveBeenCalled();
   });
 });
