@@ -244,39 +244,6 @@ to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/m
   campaign; visible peer pressure is part of the asset. Default-private only kicks in
   for non-admin MCP scope (the bullet above).
 
-### P1 — Round-progress visualization
-
-Humans see "vote → magic link → done" with no signal of where they are in the 32-round chain.
-Add a small visualization on `/dashboard` and on the post-vote share screen that shows:
-
-- Their direct referrals (assignFirstHuman + assignSecondHuman + ?ref= conversions).
-- Their downstream chain depth (recursive count via `User.referredByUserId`).
-- "Current round" inferred from total verified-vote count vs. `2^round` thresholds.
-
-Even a stub component that just shows "You + 2 direct + N downstream" is more concrete than
-the abstract math currently in the phone script.
-
-### P1 — Hardcoded-stats audit
-
-`*Linked` infrastructure is shipped but not enforced. Numbers like "60 million", "150,000",
-"4 billion" still appear as literals across landing + email + component copy. Each is a
-credibility leak (no source link) and a drift risk.
-
-- Grep for canonical literals in `packages/web/src/components/landing/`,
-  `packages/web/src/lib/email/`, and `packages/web/src/lib/tasks/`. Replace with `*Linked`
-  via the trigger framework, or with `<ParameterValue>` in JSX.
-- Add a vitest that fails if the trigger blueprint or treaty-share-flow components contain
-  literal numerals matching `\b(604|443|36|122|150,000|60 million|4 billion)\b`.
-- Known offender: `WISHONIA_WELCOME_COMMENT` in `lib/tasks/user-treaty-task.server.ts` (verify
-  it's still used; if dead code, delete instead).
-
-### P1 — Mortality stat in magic-link email
-
-S1's mortality-stat line never landed in `magic-link-render.ts`. One sentence between the
-button and the anti-phishing line: "About 150,000 humans will die from disease today. The
-treaty you're about to vote on shortens that timeline." Variant-aware: only on
-`warOnDisease` + `optimitron`. Test in `magic-link-email.test.ts`.
-
 ### P1 — Email threading (Message-ID, In-Reply-To, References)
 
 Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/email/resend.ts:209,266,309`). Inbound captures `inReplyTo` into `TaskCommunication.metadataJson.inReplyTo` but it is never consumed. Mail clients won't visually thread the conversation; in-app `parentCommentId` never gets set on inbound replies. Replies feel orphaned in both surfaces.
@@ -289,55 +256,6 @@ Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/emai
 - **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
   on the new `TaskComment`, so the in-app feed nests correctly.
 - **No schema changes.** All metadata fits in the existing `metadataJson` field.
-
-### P2 — Earth Optimization Day annual trigger (Aug 4)
-
-Annual ritual: every Humanity Manager gets a one-day task to share their referral URL across
-every channel they own. Already capable in principle via TaskTrigger `schedule` +
-`iterationSource`.
-
-- New blueprint file `packages/web/src/lib/triggers/blueprints/earth-optimization-day.ts`
-  (separate from one-percent-treaty so it outlives the treaty campaign).
-- Trigger key `program:earth-optimization-day:annual`, schedule `0 9 4 8 *`,
-  iterationSource `users.activeHumanityManagers` (add if missing).
-- Per-user task spawned under HMT root with year-suffixed kind for idempotency.
-- Action-link to a new `/earth-optimization-day` page bundling pre-filled share buttons.
-
-### P2 — HMT graduation quiz
-
-Gate Stage-2 promotion behind a 7/9-correct quiz that confirms the user can articulate the
-case before recruiting. Each question backed by a parameter export so the answer key links
-to the manual.
-
-- Question bank in `packages/data/src/quizzes/humanity-management-training-quiz.ts`.
-- New page `/humanity-management-training/quiz` (or `/dashboard/quiz`); randomize order;
-  no cooldown on retake.
-- New HMT subtask `passQuiz` (sortOrder 60) gating Stage-2 trigger.
-- Two missing parameters to add: `PRE_WWII_US_MIL_SPEND_GDP_PCT`,
-  `POST_WWII_US_MIL_SPEND_GDP_PCT`.
-
-### P2 — Agent profile pre-creation (image + draft-approve)
-
-Wishonia should be able to pre-build org and public-official profiles from public data, then email the subject with an approve / edit / decline action — instead of asking the subject to fill out a blank form. Lowers friction at first contact. Two new MCP capabilities. **Minimal schema change: 2 new enums.**
-
-- **Image upload via URL.** New MCP tool
-  `setOrganizationLogo({ organizationId, sourceUrl, kind: "wide" | "square" })`. Backend
-  fetches the URL itself, blocks SSRF (private IPs, link-local), caps Content-Length (10 MB),
-  validates MIME post-download, resizes to canonical dimensions (1200×630 wide, 512×512
-  square), and stores on whatever blob provider is wired up. Verify provider before
-  implementation. Agent never handles bytes.
-- **Draft-approve flow.** Add `Organization.draftStatus` and `Person.draftStatus` enum
-  (`AWAITING_SUBJECT_APPROVAL | APPROVED | DECLINED | DELETED_BY_REQUEST`). Default to
-  `APPROVED` for human-created records to avoid migration disruption.
-- Add `Person.subjectKind` enum (`ORGANIZATION_AGENT | PUBLIC_OFFICIAL | PRIVATE_INDIVIDUAL`).
-  MCP `createPerson` refuses `PRIVATE_INDIVIDUAL` from non-admin scope. For public officials,
-  every agent-created field requires a `sourceUrl` — no inferred political stances without a
-  citation, mitigates GDPR Art. 9 + defamation exposure.
-- Approve / edit / decline / delete email template in Wishonia voice. Token-signed URLs, no
-  auth required for the first action (one-click delete-my-profile is the GDPR Art. 17 escape
-  hatch baked into every email).
-- Auto-approve after 30 days only for `PUBLIC_OFFICIAL` subjects (sitting senators, named
-  regulators). Never for orgs or private individuals — those must opt in.
 
 ### P2 — Prize wire-up into the post-vote funnel (BLOCKED on legal + mainnet)
 
@@ -452,26 +370,12 @@ exist; they are not wired into the funnel.
 
 ## Open questions
 
-- Stage 3 after the user's leader signs: another role-play promotion, or just keep the
-  parent task running with referral-chain visualization? Not blocking Stage 2.
-- Is the "Late employee program" task section currently rendering on the LANDING page
-  (pre-signup)? If yes, pull it — assigning tasks before commitment is friction. Verify
-  before touching.
-- HMT graduation quiz: gate or optional? Default to gating (P2); optional with a graduation
-  badge is the soft fallback if funnel data shows excessive drop-off.
 - **"Two Questions on the Same Ballot" (court-of-humanity manual section): does the treaty
   vote stay as a single question that is rhetorically read as both a treaty-yes and a
   verdict-yes, or do we surface them as two coupled questions on the ballot UI?** The single-
   question version preserves all existing voter records and copy; the two-question version
   is more legible but requires referendum-schema work and breaks attribution math. Default to
   single-question with dual framing in copy until funnel data argues otherwise.
-- Sortition mechanism for case-level adjudication (selecting 100–1000 verified humans per
-  case via VRF) — needed only when the Court adjudicates cases beyond `Humanity v. Government`.
-  Not on the 4B critical path. Park.
-- Public-official `Person` records: where does the `subjectKind: PUBLIC_OFFICIAL` sourcing
-  come from? `government-leaders.ts` already has 193 leaders with verified contact data —
-  extend to include `sourceUrl` per field, then the agent's role is just keeping it current,
-  not inventing it.
 
 ## Long-tail (parked, not 4B-blocking)
 

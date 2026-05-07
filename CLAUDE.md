@@ -142,7 +142,7 @@ The task tree has a single root: `win-earth-optimization-prize` (taskKey `progra
 
 1. **Use feature branches for implementation.** New implementation branches start with `feature/`, followed by a short kebab-case description. Example: `feature/international-campaign-site-name`.
 2. **Ship through pull requests.** When feature work is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the user explicitly asked not to commit or push.
-3. **Watch the PR after every push.** Check GitHub Actions, deployment checks, and review comments. Fix valid failures/comments, push again, and watch again. If a comment is mistaken, stale, or non-actionable, mark it resolved when tooling allows instead of changing code unnecessarily.
+3. **Watch the PR after every push.** Check GitHub Actions, deployment checks, and review comments. Fix valid failures/comments, push again, and watch again. **Triage review comments critically — do not blindly comply with bot reviewers (Codex, Copilot, CodeRabbit, Vercel Agent Review).** For each comment ask: does this point at a real bug that hits a real path, or is it AI slop / hypothetical / style preference / consistency-for-its-own-sake? If the latter, mark the thread resolved with a one-line reason ("hypothetical, no triggering path", "stylistic, current shape is intentional", "already addressed in commit X"). If the former, fix it and mark resolved. Adding code or tests just to silence a bot is worse than the bot's nag — it adds maintenance surface forever in exchange for one-time review noise. The same rule applies to suggestions to extract constants, add symmetry assertions, normalize naming, or split functions for "readability": do them only when they improve the codebase, not because a bot mentioned them.
 4. **Merge only when clean.** Once checks are green and there are no unresolved valid review complaints, merge the pull request when the user has asked you to finish or merge the work.
 5. **Respect review-only turns.** If the user asks only for analysis, review, or a proposed copy/design, do not commit or push until they approve implementation or publishing.
 6. **Library packages stay runtime-safe.** No Prisma / runtime DB in `optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`.
@@ -178,6 +178,8 @@ The goal is to get 8 billion humans to complete the tasks on this site. Every UI
 - ❌ Framework passthroughs (wrappers that just call `findUnique`)
 - ❌ UI rendering snapshots — brittle, low signal
 - ❌ Tests that transcribe the implementation line-by-line
+- ❌ Tests added "for symmetry" with another test, "for documentation", "for consistency", or because a bot reviewer asked. If the test would not catch a bug or guard a regression in code we actually ship, do not write it. Maintenance cost is forever; signal is zero.
+- ❌ Tests that mock the entire surface they're supposedly testing. If you mock `notifyTaskAssigneeOfAssignment` and then assert `notifyTaskAssigneeOfAssignment` was called, the test only verifies you can call the mock. Test the boundary, not the wiring.
 
 **Non-flaky or don't bother:**
 
