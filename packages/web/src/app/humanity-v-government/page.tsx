@@ -67,6 +67,48 @@ export default async function HumanityVGovernmentPage() {
         </Link>
       </section>
 
+      <section className="mt-6 border-2 border-foreground bg-background p-5">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+          Multiply your claim
+        </p>
+        <h2 className="mt-2 text-2xl font-black uppercase leading-tight text-foreground sm:text-3xl">
+          Register every deceased family member you can name.
+        </h2>
+        <p className="mt-3 text-base font-bold leading-7 text-foreground">
+          Each registered estate is another named plaintiff with its own{" "}
+          <span className="font-black">$10.6M–$25.2M</span> share of the demanded
+          recovery. A descendant or next-of-kin files the wrongful-death claim
+          on behalf of the estate. This is how every real corporate class
+          action handles deceased victims.
+        </p>
+        <ul className="mt-4 space-y-2 text-sm font-bold leading-6 text-muted-foreground">
+          <li>
+            <span className="font-black text-foreground">4 grandparents</span>{" "}
+            registered = ~$42M–$100M added to your family claim.
+          </li>
+          <li>
+            <span className="font-black text-foreground">
+              + parents, aunts, uncles, siblings
+            </span>{" "}
+            who died of preventable disease or war = each an additional
+            $10.6M–$25.2M.
+          </li>
+          <li>
+            <span className="font-black text-foreground">
+              The dead have no juror function
+            </span>{" "}
+            — only living humans render the verdict — but they remain
+            plaintiffs whose estates are entitled to recovery.
+          </li>
+        </ul>
+        <Link
+          className="mt-5 inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground"
+          href={ROUTES.plaintiffs}
+        >
+          Register a deceased plaintiff
+        </Link>
+      </section>
+
       <section className="mt-10">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
           The case caption
@@ -238,23 +280,6 @@ export default async function HumanityVGovernmentPage() {
       <div className="mt-10">
         <DamagesSensitivityCalculator />
       </div>
-
-      <section className="mt-10 border-2 border-foreground bg-background p-5">
-        <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          File on behalf of the dead
-        </h2>
-        <p className="mt-2 text-base font-bold leading-7 text-foreground">
-          A descendant or next-of-kin can file a wrongful-death claim on behalf
-          of an estate. Each registered estate is another named plaintiff with
-          its own $10.6M–$25.2M share. Four grandparents = four estates.
-        </p>
-        <Link
-          className="mt-4 inline-block border-2 border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
-          href={ROUTES.plaintiffs}
-        >
-          Register a deceased plaintiff
-        </Link>
-      </section>
 
     </main>
   );
