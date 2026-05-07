@@ -198,6 +198,13 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
   `/api/referendums/[slug]/vote` route after the YES upsert. Memorial/posthumous
   registration was already wired in the represented-people route. Backfill script for
   pre-existing voters still needed (one-time `packages/web/scripts/backfill-court-plaintiffs.ts`).
+- ~~**`/humanity-v-government` renders the live case**~~ — done. Replaces the redirect
+  with case caption, three counts (310M / 102M / 262M), demanded-recovery tier
+  ($10.6M NPV / $25.2M cohort headline; floor + treble alternatives), live plaintiff
+  count via new `getHumanityVGovernmentPlaintiffCount` helper, jury-summons
+  framing for next juror, and "register estate of [deceased]" CTA pointing at
+  `/plaintiffs/manage`. Single primary CTA: render the verdict via `/vote`.
+  `packages/web/src/app/humanity-v-government/page.tsx`.
 - **Add the 193 governments as `CourtCaseParty` rows of role `RESPONDENT`.** Capacity flips from `IN_DEFAULT` to `SETTLED_VIA_TREATY` as ratifications come in (drive from `government-leaders.ts` + ratification status). The page becomes narratively alive — every news event of a country ratifying is a defendant accepting the settlement.
 - **Build `/court` page.** Currently empty (`packages/web/src/app/court/page.tsx`). Render: case caption, three counts with body-count numbers, live plaintiff count, three columns of defendants (settled / served / in-default), settlement progress bar, single CTA "Register as plaintiff = sign the treaty." Reuse `VoteCounterSplit` component for the plaintiff count.
 - **Update `/humanity-v-government` page** to render the local case rather than redirecting to the manual. Manual stays as the doctrinal long-form; site presents the case in operational form.
