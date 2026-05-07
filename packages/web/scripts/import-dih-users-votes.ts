@@ -108,13 +108,47 @@ interface ExportPayload {
 }
 
 interface ImportSummary {
-  users: { created: number; updated: number; skipped: number; errors: number };
+  users: {
+    created: number;
+    updated: number;
+    skipped: number;
+    errors: number;
+    /** New users whose source referralCode collides with an existing dest user. */
+    referralCodeCollisions: number;
+  };
   votes: { created: number; updated: number; skipped: number; errors: number };
   referralInvitations: {
     created: number;
     skipped: number;
     errors: number;
   };
+}
+
+interface PreImportState {
+  users: number;
+  treatyVotes: number;
+  referralInvitations: number;
+  treatyReferendumId: string | null;
+}
+
+async function captureDestinationState(): Promise<PreImportState> {
+  const referendum = await prisma.referendum.findUnique({
+    where: { slug: TREATY_REFERENDUM_SLUG },
+    select: { id: true, deletedAt: true },
+  });
+  const referendumId =
+    referendum && !referendum.deletedAt ? referendum.id : null;
+
+  const [users, treatyVotes, referralInvitations] = await Promise.all([
+    prisma.user.count({ where: { isSystem: false } }),
+    referendumId
+      ? prisma.referendumVote.count({
+          where: { referendumId, deletedAt: null },
+        })
+      : Promise.resolve(0),
+    prisma.referralInvitation.count(),
+  ]);
+  return { users, treatyVotes, referralInvitations, treatyReferendumId: referendumId };
 }
 
 interface ImportOptions {
@@ -159,6 +193,7 @@ async function importUsers(
     updated: 0,
     skipped: 0,
     errors: 0,
+    referralCodeCollisions: 0,
   };
   const oldToNew = new Map<string, string>();
 
@@ -167,29 +202,44 @@ async function importUsers(
       summary.skipped += 1;
       continue;
     }
-    if (options.dryRun) {
-      summary.created += 1;
-      continue;
-    }
     try {
       const countryCode = looksLikeCountryCode(exportedUser.country)
         ? exportedUser.country!
         : null;
+
+      const existing = await prisma.user.findUnique({
+        where: { email: exportedUser.email },
+        select: { id: true },
+      });
+
+      // Dry-run path: do the same lookups so we can report what *would*
+      // happen against the live destination DB, but skip every write.
+      if (options.dryRun) {
+        if (existing) {
+          summary.updated += 1;
+          oldToNew.set(exportedUser.id, existing.id);
+        } else {
+          summary.created += 1;
+          const referralCodeTaken = await prisma.user.findUnique({
+            where: { referralCode: exportedUser.referralCode },
+            select: { id: true },
+          });
+          if (referralCodeTaken) summary.referralCodeCollisions += 1;
+          // Use the source id as a placeholder mapping during dry-run so
+          // downstream vote / invitation projections can still resolve
+          // referrers and detect skips. The actual import will rewrite it.
+          oldToNew.set(exportedUser.id, exportedUser.id);
+        }
+        continue;
+      }
+
       const userData = {
         email: exportedUser.email,
         emailVerified: parseDate(exportedUser.emailVerified),
         newsletterSubscribed: exportedUser.newsletterSubscribed,
         countryCode,
         isAdmin: exportedUser.isAdmin,
-        // Keep the source referralCode so existing /vote/<code> links keep
-        // working post-migration. If a destination user already has a
-        // different referralCode we leave it alone (uniqueness wins).
       };
-
-      const existing = await prisma.user.findUnique({
-        where: { email: exportedUser.email },
-        select: { id: true },
-      });
 
       let user: { id: string };
       if (existing) {
@@ -200,12 +250,14 @@ async function importUsers(
         });
         summary.updated += 1;
       } else {
-        // Try to keep the source referralCode when creating new users.
-        // If it's already taken in the destination, fall back to default.
+        // Keep the source referralCode when free; otherwise fall back to
+        // the dest default so old /vote/<code> links keep working for as
+        // many migrated users as possible.
         const referralCodeTaken = await prisma.user.findUnique({
           where: { referralCode: exportedUser.referralCode },
           select: { id: true },
         });
+        if (referralCodeTaken) summary.referralCodeCollisions += 1;
         user = await prisma.user.create({
           data: {
             ...userData,
@@ -219,7 +271,6 @@ async function importUsers(
         summary.created += 1;
       }
 
-      // Mirror display fields onto Person.
       const displayName =
         exportedUser.name?.trim() ||
         exportedUser.username?.trim() ||
@@ -228,8 +279,6 @@ async function importUsers(
         displayName,
         image: exportedUser.image ?? null,
       });
-      // After ensurePersonForUser, we can fill optional Person fields
-      // that the helper doesn't manage.
       const userWithPerson = await prisma.user.findUnique({
         where: { id: user.id },
         select: { personId: true },
@@ -302,17 +351,40 @@ async function importVotes(
       summary.skipped += 1;
       continue;
     }
-    if (options.dryRun) {
-      summary.created += 1;
-      continue;
-    }
     try {
+      // For dry-run, look up via email (the dest user might not exist yet
+      // since we skipped the user-side create). For real run, the dest
+      // user already exists so the personId lookup succeeds.
       const personId = (
         await prisma.user.findUnique({
           where: { id: newUserId },
           select: { personId: true },
         })
       )?.personId;
+
+      if (options.dryRun) {
+        if (!personId) {
+          // The user doesn't exist in dest yet (dry-run didn't create it),
+          // so we can't confirm whether the vote upsert would create or
+          // update. Project as "would create new" since the user write
+          // would also create.
+          summary.created += 1;
+          continue;
+        }
+        const existing = await prisma.referendumVote.findUnique({
+          where: {
+            referendumId_personId: {
+              referendumId: referendum.id,
+              personId,
+            },
+          },
+          select: { id: true },
+        });
+        if (existing) summary.updated += 1;
+        else summary.created += 1;
+        continue;
+      }
+
       if (!personId) {
         summary.skipped += 1;
         continue;
@@ -387,14 +459,11 @@ async function importReferralInvitations(
       summary.skipped += 1;
       continue;
     }
-    if (options.dryRun) {
-      summary.created += 1;
-      continue;
-    }
     try {
       // Idempotency: by inviteToken if present, else by (referrer + name +
       // createdAt) — close-enough fingerprint. Skip if a matching row
-      // already exists.
+      // already exists. Same lookup runs in dry-run so we report whether
+      // each invitation would actually be inserted.
       const existing = invitation.inviteToken
         ? await prisma.referralInvitation.findUnique({
             where: { inviteToken: invitation.inviteToken },
@@ -410,6 +479,10 @@ async function importReferralInvitations(
           });
       if (existing) {
         summary.skipped += 1;
+        continue;
+      }
+      if (options.dryRun) {
+        summary.created += 1;
         continue;
       }
       await prisma.referralInvitation.create({
@@ -443,9 +516,7 @@ async function importReferralInvitations(
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   console.log(
-    `📥 Importing dih-neobrutalist users + votes + invitations from ${options.inputFile}${
-      options.dryRun ? " (dry-run)" : ""
-    }`,
+    `📥 ${options.dryRun ? "Dry-run" : "Importing"}: ${options.inputFile}`,
   );
   const sizeMB = (statSync(options.inputFile).size / 1024 / 1024).toFixed(2);
   console.log(`   Source size: ${sizeMB} MB`);
@@ -454,7 +525,16 @@ async function main() {
     readFileSync(options.inputFile, "utf8"),
   ) as ExportPayload;
   console.log(
-    `   Counts: ${payload.counts.users} users, ${payload.counts.votes} votes, ${payload.counts.referralInvitations} invitations`,
+    `   Source counts: ${payload.counts.users} users, ${payload.counts.votes} votes, ${payload.counts.referralInvitations} invitations`,
+  );
+
+  const before = await captureDestinationState();
+  console.log(
+    `   Destination before: ${before.users} users, ${before.treatyVotes} treaty votes, ${before.referralInvitations} invitations${
+      before.treatyReferendumId
+        ? ""
+        : "  ⚠️  treaty referendum NOT FOUND — vote import will fail"
+    }`,
   );
 
   const { summary: userSummary, oldUserIdToNew } = await importUsers(
@@ -468,23 +548,58 @@ async function main() {
     options,
   );
 
+  const after = options.dryRun ? before : await captureDestinationState();
+
+  console.log("\n" + JSON.stringify(
+    {
+      users: userSummary,
+      votes: voteSummary,
+      referralInvitations: invitationSummary,
+    },
+    null,
+    2,
+  ));
+
+  if (options.dryRun) {
+    const projected = {
+      users: before.users + userSummary.created,
+      treatyVotes: before.treatyVotes + voteSummary.created,
+      referralInvitations:
+        before.referralInvitations + invitationSummary.created,
+    };
+    console.log(
+      `\n📊 Projected destination after real run: ${projected.users} users (+${userSummary.created}), ${projected.treatyVotes} treaty votes (+${voteSummary.created}), ${projected.referralInvitations} invitations (+${invitationSummary.created}).`,
+    );
+    if (userSummary.referralCodeCollisions > 0) {
+      console.log(
+        `   ⚠️  ${userSummary.referralCodeCollisions} new users will get a fresh referralCode (source code already taken in destination). Old /vote/<code> links for those users will not resolve.`,
+      );
+    }
+    if (userSummary.skipped > 0) {
+      console.log(
+        `   ⚠️  ${userSummary.skipped} source users have no email and will be skipped.`,
+      );
+    }
+    if (voteSummary.skipped > 0) {
+      console.log(
+        `   ⚠️  ${voteSummary.skipped} source votes have no userId mapping and will be skipped.`,
+      );
+    }
+    if (invitationSummary.skipped > 0) {
+      console.log(
+        `   ⚠️  ${invitationSummary.skipped} source invitations would be skipped (already present, or referrer not mapped).`,
+      );
+    }
+  } else {
+    console.log(
+      `\n📊 Destination after: ${after.users} users (+${after.users - before.users}), ${after.treatyVotes} treaty votes (+${after.treatyVotes - before.treatyVotes}), ${after.referralInvitations} invitations (+${after.referralInvitations - before.referralInvitations}).`,
+    );
+    console.log(
+      "\n✅ Import complete. Run `scripts/backfill-court-plaintiffs.ts` next to register imported YES voters as plaintiffs.",
+    );
+  }
+
   await prisma.$disconnect();
-
-  console.log(
-    JSON.stringify(
-      {
-        users: userSummary,
-        votes: voteSummary,
-        referralInvitations: invitationSummary,
-      },
-      null,
-      2,
-    ),
-  );
-
-  console.log(
-    "\n✅ Import complete. Run `scripts/backfill-court-plaintiffs.ts` next to register imported YES voters as plaintiffs.",
-  );
 }
 
 const isMain =
