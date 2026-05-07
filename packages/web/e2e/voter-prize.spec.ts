@@ -44,22 +44,19 @@ test("prize: deposit form has wallet connect and amount presets", async ({
 });
 
 // ---------------------------------------------------------------------------
-// 2. Referendum vote page (unauthenticated — verifies page loads)
+// 2. Vote page (unauthenticated — verifies page loads)
 // ---------------------------------------------------------------------------
 
-test("referendum: vote page loads and shows sign-in for unauthenticated", async ({
-  page,
-}) => {
-  const response = await page.goto("/referendum/1-percent-treaty");
+test("referendum: vote page loads for unauthenticated", async ({ page }) => {
+  const response = await page.goto("/vote");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
   }
   await page.waitForLoadState("domcontentloaded");
 
-  // Unauthenticated users see sign-in link
-  const signInLink = page.locator('a[href*="/auth/signin"]');
-  expect(await signInLink.count()).toBeGreaterThan(0);
+  await expect(page.getByTestId("treaty-vote-slider-card")).toBeVisible();
+  await expect(page.getByRole("slider")).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------

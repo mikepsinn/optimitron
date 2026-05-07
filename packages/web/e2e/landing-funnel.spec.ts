@@ -47,23 +47,22 @@ async function voteYes(page: import("@playwright/test").Page) {
 // Helper: sign in via credentials API (from voter-prize.spec.ts pattern)
 // ---------------------------------------------------------------------------
 
-async function signInViaApi(request: import("@playwright/test").APIRequestContext) {
+async function signInViaApi(
+  request: import("@playwright/test").APIRequestContext,
+) {
   const csrfResponse = await request.get("/api/auth/csrf");
   if (csrfResponse.status() >= 500) return false;
 
   const { csrfToken } = (await csrfResponse.json()) as { csrfToken: string };
 
-  const signInResponse = await request.post(
-    "/api/auth/callback/credentials",
-    {
-      form: {
-        email: "demo@thinkbynumbers.org",
-        password: "demo1234",
-        csrfToken,
-        json: "true",
-      },
+  const signInResponse = await request.post("/api/auth/callback/credentials", {
+    form: {
+      email: "demo@thinkbynumbers.org",
+      password: "demo1234",
+      csrfToken,
+      json: "true",
     },
-  );
+  });
 
   return signInResponse.status() < 400;
 }
@@ -88,17 +87,17 @@ test("vote page: slider -> vote -> auth card appears", async ({ page }) => {
   await completeSlider(page);
 
   // Wait for reality check + question
-  await expect(
-    page.locator("text=Should all nations").first(),
-  ).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator("text=Should all nations").first()).toBeVisible({
+    timeout: 10_000,
+  });
 
   // Vote YES
   await voteYes(page);
 
   // Auth card should appear (has "Verify" or "Sign In" text)
-  await expect(
-    page.locator("text=/verify|sign in/i").first(),
-  ).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator("text=/verify|sign in/i").first()).toBeVisible({
+    timeout: 10_000,
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -184,10 +183,10 @@ test("vote page: authenticated user reaches training after voting", async ({
 });
 
 // ---------------------------------------------------------------------------
-// 4. VoteValueReveal shows parameter values
+// 4. Landing dashboard shows parameter values
 // ---------------------------------------------------------------------------
 
-test("landing: VoteValueReveal shows parameter values", async ({ page }) => {
+test("landing: treaty dashboard shows parameter values", async ({ page }) => {
   const response = await page.goto("/");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
@@ -195,39 +194,32 @@ test("landing: VoteValueReveal shows parameter values", async ({ page }) => {
   }
   await page.waitForLoadState("domcontentloaded");
 
-  // Scroll to VoteValueReveal — look for the heading
-  const heading = page.locator("text=What Your Vote Could Be Worth").first();
+  const heading = page
+    .getByRole("heading", { name: /President Management System/i })
+    .first();
   await heading.scrollIntoViewIfNeeded();
   await expect(heading).toBeVisible({ timeout: 10_000 });
 
-  // Verify key parameter values are rendered (not hardcoded "100,000")
-  // VOTE_TOKEN_POTENTIAL_VALUE is ~$193k, so look for "$" + large number
-  const voteValue = page.locator("text=/\\$\\d{2,3}k|\\$\\d{3},\\d{3}/").first();
-  await expect(voteValue).toBeVisible({ timeout: 5_000 });
-
-  // Verify annual return is visible (from PRIZE_POOL_ANNUAL_RETURN ~17.4%)
-  await expect(
-    page.locator("text=/17\\.\\d%|Annual/").first(),
-  ).toBeVisible({ timeout: 5_000 });
+  for (const value of ["6650", "443", "122", "12.3", "36"]) {
+    await expect(page.getByRole("button", { name: value }).first()).toBeVisible(
+      { timeout: 5_000 },
+    );
+  }
 
   // Verify "See the Full Math" CTA exists and links to /prize
   const mathCta = page.locator('a:has-text("See the Full Math")');
   await expect(mathCta).toBeVisible();
   await expect(mathCta).toHaveAttribute("href", "/prize");
 
-  // Verify "Earn VOTE Points" CTA exists and links to #vote
-  const earnCta = page.locator('a:has-text("Earn VOTE Points")');
-  await expect(earnCta).toBeVisible();
-  await expect(earnCta).toHaveAttribute("href", "#vote");
+  const playCta = page.locator('a[href="#vote"]').first();
+  await expect(playCta).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
 // 5. Vote flow captures referral code
 // ---------------------------------------------------------------------------
 
-test("landing: vote flow captures referral code from URL", async ({
-  page,
-}) => {
+test("landing: vote flow captures referral code from URL", async ({ page }) => {
   const response = await page.goto("/vote?ref=testuser");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
