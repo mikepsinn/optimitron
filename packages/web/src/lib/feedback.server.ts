@@ -11,7 +11,7 @@ const FEEDBACK_GLOBAL_BURST_LIMIT = 20;
 const FEEDBACK_GLOBAL_BURST_WINDOW_MS = 10 * 60 * 1000;
 export const FEEDBACK_HONEYPOT_FIELD = "companyWebsite";
 
-type FeedbackRejectionCode = "honeypot";
+type FeedbackRejectionCode = "honeypot" | "rate_limited";
 
 export class FeedbackRejectedError extends Error {
   readonly code: FeedbackRejectionCode;
@@ -114,7 +114,10 @@ async function assertFeedbackWithinRateLimits(now = new Date()) {
   });
 
   if (recentFeedbackTasks >= FEEDBACK_GLOBAL_BURST_LIMIT) {
-    throw new Error("Feedback is temporarily rate limited.");
+    throw new FeedbackRejectedError(
+      "rate_limited",
+      "Feedback is temporarily rate limited.",
+    );
   }
 }
 

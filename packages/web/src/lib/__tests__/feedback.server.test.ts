@@ -151,7 +151,10 @@ describe("createFeedbackTask", () => {
       createFeedbackTask({
         message: "The feedback endpoint should not flood tasks.",
       }),
-    ).rejects.toThrow("Feedback is temporarily rate limited.");
+    ).rejects.toMatchObject({
+      code: "rate_limited",
+      message: "Feedback is temporarily rate limited.",
+    });
 
     expect(mocks.taskCount).toHaveBeenCalledOnce();
     expect(mocks.createTask).not.toHaveBeenCalled();

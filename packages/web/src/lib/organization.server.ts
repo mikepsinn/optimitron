@@ -79,7 +79,7 @@ export async function ensureOrganizationTreatyActivationTask(
   }
 
   const taskKey = getOrganizationActivationTaskKey(input.organizationId);
-  const baseUrl = getBaseUrl();
+  const baseUrl = getBaseUrl().replace(/\/+$/, "");
   const organizationToolsUrl = `${baseUrl}/organizations/${input.organizationId}`;
   const surveyUrl = `${baseUrl}/survey/${organization.slug}`;
   const description = buildOrganizationActivationTaskDescription({

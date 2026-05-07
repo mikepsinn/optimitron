@@ -6,6 +6,7 @@ import {
 } from "@/lib/storage";
 
 const LOCK_TTL_MS = 15_000;
+const POST_TIMEOUT_MS = 12_000;
 
 export interface SyncedOrganizationEndorsement {
   draft: PendingOrganizationEndorsementDraft;
@@ -93,23 +94,33 @@ function parsePostResponse(
 export async function postOrganizationEndorsementDraft(
   draft: PendingOrganizationEndorsementDraft,
 ): Promise<SyncedOrganizationEndorsement | null> {
-  const response = await fetch(
-    `/api/referendums/${encodeURIComponent(draft.referendumSlug)}/organization-position`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(draftPayload(draft)),
-    },
-  );
-  if (!response.ok) return null;
-  const payload = parsePostResponse(await response.json().catch(() => null));
-  if (!payload) return null;
-  return {
-    draft,
-    organizationId: payload.organizationId,
-    organizationName: draft.organizationName,
-    taskId: payload.taskId ?? null,
-  };
+  const controller =
+    typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timeout = controller
+    ? setTimeout(() => controller.abort(), POST_TIMEOUT_MS)
+    : null;
+  try {
+    const response = await fetch(
+      `/api/referendums/${encodeURIComponent(draft.referendumSlug)}/organization-position`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draftPayload(draft)),
+        signal: controller?.signal,
+      },
+    );
+    if (!response.ok) return null;
+    const payload = parsePostResponse(await response.json().catch(() => null));
+    if (!payload) return null;
+    return {
+      draft,
+      organizationId: payload.organizationId,
+      organizationName: draft.organizationName,
+      taskId: payload.taskId ?? null,
+    };
+  } finally {
+    if (timeout !== null) clearTimeout(timeout);
+  }
 }
 
 export async function syncPendingOrganizationEndorsements(): Promise<OrganizationEndorsementSyncResult> {
@@ -126,13 +137,14 @@ export async function syncPendingOrganizationEndorsements(): Promise<Organizatio
   const syncedDrafts: PendingOrganizationEndorsementDraft[] = [];
   const syncedOrganizations: SyncedOrganizationEndorsement[] = [];
   const failedDrafts: PendingOrganizationEndorsementDraft[] = [];
+  let skippedBecauseLocked = false;
 
   try {
     const drafts = storage.getPendingOrganizationEndorsements();
     for (const draft of drafts) {
       if (!renewLock(ownerId)) {
-        failedDrafts.push(draft);
-        continue;
+        skippedBecauseLocked = true;
+        break;
       }
       try {
         const organization = await postOrganizationEndorsementDraft(draft);
@@ -150,7 +162,7 @@ export async function syncPendingOrganizationEndorsements(): Promise<Organizatio
 
     return {
       failedDrafts,
-      skippedBecauseLocked: false,
+      skippedBecauseLocked,
       syncedDrafts,
       syncedOrganizations,
     };
