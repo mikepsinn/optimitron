@@ -49,6 +49,10 @@ import {
   isTaskTriggerToolName,
 } from "./mcp-tools/task-triggers";
 import { slugify } from "./slugify";
+import {
+  IMAGE_UPLOAD_KINDS,
+  isImageUploadKind,
+} from "./image-upload-types";
 import type {
   RankableTask,
   TaskPriorityInput,
@@ -57,8 +61,14 @@ import type {
 
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 
+const UPLOAD_IMAGE_FROM_URL_TOOL_NAME = "uploadImageFromUrl" as const;
+
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   createOrganization: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
+  [UPLOAD_IMAGE_FROM_URL_TOOL_NAME]: [
+    McpScope.EARTHDATA_WRITE,
+    McpScope.TASKS_ADMIN,
+  ],
   createTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   proposeTaskBundle: [McpScope.TASKS_ADMIN],
   promoteTask: [McpScope.TASKS_ADMIN],
@@ -258,6 +268,7 @@ function getMcpBaseUrl(): string {
 
 const AUDITED_EARTH_DATA_TOOLS = new Set([
   "createOrganization",
+  UPLOAD_IMAGE_FROM_URL_TOOL_NAME,
   "upsertOrganization",
   "updateOrganization",
   "deleteOrganization",
@@ -2170,8 +2181,16 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
         website: { type: "string" },
         description: { type: "string" },
         donationUrl: { type: "string" },
-        squareLogoUrl: { type: "string" },
-        wordmarkLogoUrl: { type: "string" },
+        squareLogoUrl: {
+          type: "string",
+          description:
+            "Square logo mark URL. Use uploadImageFromUrl with kind=organization-square-logo first when starting from a remote public image URL.",
+        },
+        wordmarkLogoUrl: {
+          type: "string",
+          description:
+            "Horizontal wordmark logo URL. Use uploadImageFromUrl with kind=organization-wordmark-logo first when starting from a remote public image URL.",
+        },
         contactEmail: { type: "string" },
         referendumSlug: { type: "string" },
         position: { type: "string", enum: ["YES", "NO", "ABSTAIN"] },
@@ -3569,7 +3588,11 @@ const TASK_TOOL_DEFINITIONS = [
           description: "Current organization/affiliation.",
         },
         countryCode: { type: "string", description: "ISO-3166 country code." },
-        image: { type: "string", description: "Avatar image URL." },
+        image: {
+          type: "string",
+          description:
+            "Avatar image URL. Use uploadImageFromUrl with kind=person-photo first when starting from a remote public image URL.",
+        },
         isPublicFigure: {
           type: "boolean",
           description: "Marks this person as a public-facing profile.",
@@ -3646,6 +3669,33 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: UPLOAD_IMAGE_FROM_URL_TOOL_NAME,
+    description:
+      "Fetch a public image URL, normalize it through the same image pipeline used by the web app, upload it to object storage, and return the canonical public URL. Use this before createOrganization/updateOrganization when you have a remote square logo, wordmark, or person photo URL.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        url: {
+          type: "string",
+          description:
+            "Public http(s) image URL. Local/private network hosts are rejected.",
+        },
+        kind: {
+          type: "string",
+          enum: [...IMAGE_UPLOAD_KINDS],
+          description:
+            "Upload target. Organization logos usually use organization-square-logo and organization-wordmark-logo.",
+        },
+        filename: {
+          type: "string",
+          description:
+            "Optional filename to use before normalization. Defaults to the URL path filename.",
+        },
+      },
+      required: ["url", "kind"],
+    },
+  },
+  {
     name: "createOrganization",
     description:
       "Create an approved organization for task assignment. Uses post-moderation: create now, reject later if needed.",
@@ -3696,11 +3746,13 @@ const TASK_TOOL_DEFINITIONS = [
         },
         squareLogoUrl: {
           type: "string",
-          description: "Square logo mark URL",
+          description:
+            "Square logo mark URL. Use uploadImageFromUrl with kind=organization-square-logo first when starting from a remote public image URL.",
         },
         wordmarkLogoUrl: {
           type: "string",
-          description: "Horizontal wordmark logo URL",
+          description:
+            "Horizontal wordmark logo URL. Use uploadImageFromUrl with kind=organization-wordmark-logo first when starting from a remote public image URL.",
         },
         jurisdictionId: {
           type: "string",
@@ -3991,11 +4043,13 @@ const TASK_TOOL_DEFINITIONS = [
         },
         squareLogoUrl: {
           type: "string",
-          description: "Square logo mark URL",
+          description:
+            "Square logo mark URL. Use uploadImageFromUrl with kind=organization-square-logo first when starting from a remote public image URL.",
         },
         wordmarkLogoUrl: {
           type: "string",
-          description: "Horizontal wordmark logo URL",
+          description:
+            "Horizontal wordmark logo URL. Use uploadImageFromUrl with kind=organization-wordmark-logo first when starting from a remote public image URL.",
         },
         sourceRef: {
           type: "string",
@@ -4066,11 +4120,13 @@ const TASK_TOOL_DEFINITIONS = [
         },
         squareLogoUrl: {
           type: "string",
-          description: "Square logo mark URL (empty string clears)",
+          description:
+            "Square logo mark URL (empty string clears). Use uploadImageFromUrl with kind=organization-square-logo first when starting from a remote public image URL.",
         },
         wordmarkLogoUrl: {
           type: "string",
-          description: "Horizontal wordmark logo URL (empty string clears)",
+          description:
+            "Horizontal wordmark logo URL (empty string clears). Use uploadImageFromUrl with kind=organization-wordmark-logo first when starting from a remote public image URL.",
         },
         contactEmail: {
           type: "string",
@@ -7377,6 +7433,52 @@ export function createMcpServer(
                 return err(e.message);
               }
               throw e;
+            }
+          }
+
+          case UPLOAD_IMAGE_FROM_URL_TOOL_NAME: {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool uploads an image into the site media bucket.",
+              );
+            if (typeof a.url !== "string" || !a.url.trim()) {
+              return err("url is required");
+            }
+            const url = a.url.trim();
+            const kind = a.kind;
+            if (!isImageUploadKind(kind)) {
+              return err(
+                "kind must be one of: memorial-evidence-image, organization-square-logo, organization-wordmark-logo, person-photo",
+              );
+            }
+            if (a.filename !== undefined && typeof a.filename !== "string") {
+              return err("filename must be a string");
+            }
+
+            const { uploadImageFromUrl } = await import(
+              "./image-upload-from-url.server"
+            );
+            try {
+              return await runAuditedEarthDataTool(
+                name,
+                a,
+                {
+                  clientId: options.clientId,
+                  oauthGrantId: options.oauthGrantId,
+                  userId,
+                },
+                () =>
+                  uploadImageFromUrl({
+                    filename:
+                      typeof a.filename === "string" ? a.filename : null,
+                    kind,
+                    url,
+                  }),
+              );
+            } catch (error) {
+              if (error instanceof Error) return err(error.message);
+              throw error;
             }
           }
 

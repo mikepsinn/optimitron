@@ -5,19 +5,17 @@ import {
   buildImageUploadKey,
   normalizeImageUpload,
 } from "@/lib/image-upload.server";
-import type { ImageUploadKind } from "@/lib/image-upload-types";
+import {
+  IMAGE_UPLOAD_KINDS,
+  type ImageUploadKind,
+} from "@/lib/image-upload-types";
 import {
   ObjectStorageNotConfiguredError,
   uploadObject,
 } from "@/lib/object-storage.server";
 
 const uploadImageSchema = z.object({
-  kind: z.enum([
-    "memorial-evidence-image",
-    "organization-square-logo",
-    "organization-wordmark-logo",
-    "person-photo",
-  ]),
+  kind: z.enum(IMAGE_UPLOAD_KINDS),
 });
 
 export async function POST(request: Request) {
