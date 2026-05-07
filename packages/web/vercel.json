@@ -5,7 +5,7 @@
   },
   "routes": [
     {
-      "src": "^/(people|tasks)/[^/]+/?$",
+      "src": "^/(?:people/(?!manage(?:/|$))[^/]+|tasks/[^/]+)(?:/opengraph-image)?/?$",
       "has": [
         {
           "type": "header",
@@ -18,7 +18,20 @@
       }
     },
     {
-      "src": "^/(people|tasks)/[^/]+/?$",
+      "src": "^/(?:people/(?!manage(?:/|$))[^/]+|tasks/[^/]+)(?:/opengraph-image)?/?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "^\\s*$"
+        }
+      ],
+      "mitigate": {
+        "action": "challenge"
+      }
+    },
+    {
+      "src": "^/(?:people/(?!manage(?:/|$))[^/]+|tasks/[^/]+)(?:/opengraph-image)?/?$",
       "missing": [
         {
           "type": "header",
