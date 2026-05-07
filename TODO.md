@@ -197,6 +197,19 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
 - ~~**Live treaty voters auto-register as plaintiffs**~~ — done. Hooked into the
   `/api/referendums/[slug]/vote` route after the YES upsert. Memorial/posthumous
   registration was already wired in the represented-people route.
+- **dih-neobrutalist user / vote / referral migration.** Two-script
+  pipeline. (1) Source side: `dih-neobrutalist/scripts/export-users-votes.ts`
+  uses Prisma to dump users + votes + referral invitations as JSON to
+  `backups/users-votes-export-<timestamp>.json`. (2) Destination side:
+  `packages/web/scripts/import-dih-users-votes.ts <export.json>` reads the
+  JSON and idempotently maps each row into the current schema (User by
+  email, ReferendumVote by (referendumId, personId), ReferralInvitation by
+  inviteToken). Source `User.name`/`username`/`image`/`bio`/etc. land on
+  `Person`; source `referralCode` is preserved when free in destination.
+  Run order on deploy: import → backfill-court-plaintiffs (so imported YES
+  voters register on Humanity v. Government). Both scripts schema-zero;
+  both support `--dry-run`. Source-side script lives in the source repo
+  (cross-repo cross-DB read), so it commits there separately.
 - ~~**Backfill pre-existing voters as plaintiffs**~~ — script shipped at
   `packages/web/scripts/backfill-court-plaintiffs.ts`. Walks every YES vote on the
   treaty referendum and registers each as a `NAMED_PLAINTIFF` on the case via the
