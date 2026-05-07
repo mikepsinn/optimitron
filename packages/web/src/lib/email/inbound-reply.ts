@@ -19,11 +19,8 @@ import {
 } from "@optimitron/db";
 import { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
-import {
-  getTaskUrl,
-  parseReplyAddress,
-  sendTaskNotificationEmail,
-} from "@/lib/email/task-notification";
+import { parseReplyAddress } from "@/lib/email/task-notification";
+import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
 
 export interface InboundEmailEvent {
   /// Sender as the provider parsed it. May be `Display Name <addr@host>`.
@@ -271,26 +268,22 @@ export async function processInboundReply(
     throw e;
   }
 
-  // Notify the task creator so they don't have to poll the dashboard. Best-
-  // effort — failures here don't block the inbound write.
-  if (task.createdByUserId) {
-    try {
-      const creatorEmail = await resolveCreatorEmail(task.createdByUserId, db);
-      if (creatorEmail) {
-        await sendTaskNotificationEmail({
-          taskId,
-          recipientEmail: creatorEmail,
-          subject: `New reply on task: ${task.title ?? taskId}`,
-          text:
-            `${senderDisplayName ?? senderEmail ?? "Someone"} replied:\n\n${cleanBody}` +
-            `\n\n---\nView the task: ${getTaskUrl(taskId)}`,
-        });
-      }
-    } catch (e) {
-      // Swallow — the inbound write already succeeded; creator notification
-      // is a nice-to-have. Log so the failure is visible.
-      console.error("[INBOUND REPLY] Creator notification failed", taskId, e);
-    }
+  // Fan out to every watcher (creator + assignee + endpoints + admin monitors)
+  // via the shared comment-notification helper, which already filters the
+  // author out and applies cooldowns / rate-limits. Best-effort — failures
+  // here don't block the inbound write.
+  try {
+    await notifyTaskCommentRecipients({
+      authorOrganizationId,
+      authorPersonId,
+      authorUserId,
+      authorNameOverride: authorNameSnapshot,
+      commentId: created.commentId,
+      message: cleanBody,
+      taskId,
+    });
+  } catch (e) {
+    console.error("[INBOUND REPLY] Watcher fan-out failed", taskId, e);
   }
 
   return {
@@ -298,15 +291,4 @@ export async function processInboundReply(
     taskCommentId: created.commentId,
     taskCommunicationId: created.communicationId,
   };
-}
-
-async function resolveCreatorEmail(
-  userId: string,
-  db: typeof prisma,
-): Promise<string | null> {
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    select: { email: true },
-  });
-  return user?.email ?? null;
 }

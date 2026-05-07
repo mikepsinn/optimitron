@@ -27,6 +27,12 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
   defaults to `isPublic: false` so Wishonia's outreach to organizations is
   not auto-broadcast on the public Earth feed. Admin scope keeps the public
   default for leader/president/treaty-activation tasks.
+- Inbound email replies fan out to all watchers (creator + assignee +
+  endpoints + admin monitors) via `notifyTaskCommentRecipients` instead of
+  notifying only the creator. The helper now also filters out the
+  authoring organization so an org reply does not echo back to the org.
+  `packages/web/src/lib/email/inbound-reply.ts`,
+  `packages/web/src/lib/tasks/task-comment-notifications.server.ts`.
 
 **Campaign-organization flow follow-ups (PR #58):**
 
@@ -207,10 +213,9 @@ to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/m
   `resolveCreateTaskIsPublic` now returns `false` when the caller lacks admin scope and no
   explicit visibility was passed. Non-admin scope can now create org-assigned tasks (was
   previously blocked by the `isPublic && !admin` check).
-- **Fan out inbound replies to all watchers**, not just the creator. Replace the
-  bespoke `resolveCreatorEmail` block at `email/inbound-reply.ts:274` with
-  `notifyTaskCommentRecipients({ commentId, ... })` — the helper already filters the author
-  out and notifies creator + assignee + endpoints + admin monitors.
+- ~~**Fan out inbound replies to all watchers**~~ — done. The helper now also filters
+  out an authoring organization so the org's contactEmail does not get its own reply
+  echoed back.
 - **Integration test** at `packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
   `createOrganization` → `createTask` → assert email queued + `from` set + `replyTo` set.
   Then synthesize an `InboundEmailEvent` matching the `replyTo` and assert `processInboundReply`

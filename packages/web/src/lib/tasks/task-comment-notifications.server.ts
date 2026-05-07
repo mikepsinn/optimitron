@@ -117,6 +117,7 @@ async function resolveAuthor(input: {
  * reply counts, and you only want the notification side-effect.
  */
 export async function notifyTaskCommentRecipients(input: {
+  authorOrganizationId?: string | null;
   authorPersonId?: string | null;
   authorUserId?: string | null;
   authorNameOverride?: string | null;
@@ -147,6 +148,13 @@ export async function notifyTaskCommentRecipients(input: {
       return false;
     }
     if (input.authorUserId && recipient.userId === input.authorUserId) {
+      return false;
+    }
+    if (
+      input.authorOrganizationId &&
+      recipient.organizationId &&
+      recipient.organizationId === input.authorOrganizationId
+    ) {
       return false;
     }
     return true;
