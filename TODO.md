@@ -61,6 +61,33 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 - `recordShareAttempt(tx, ...)` in `packages/web/src/lib/share-attempts.server.ts` is the
   single write path; computes `templateHash` + `renderedHash`.
 
+**Court of Humanity scaffolding:**
+
+- Schema exists: `CourtCase`, `CourtCaseParty`, `CourtCaseClaim`, `CourtCaseHarm`,
+  `CourtCaseEvidence`, `CourtCaseRemedy` at `packages/db/prisma/schema.prisma:4342+`. All
+  status enums in place. `juryReferendumId`, `enforcementTaskId`, and `Subject`-based
+  party identity already wired.
+- MCP tools exist for every case operation: `addCourtCaseClaim/Evidence/Harm/Party/Remedy`,
+  `upsertCourtCase`, `getCourtCase`, `openCourtCaseJuryVote`. See `packages/web/src/lib/court-data.server.ts`.
+- Routes exist: `/court` (empty page), `/humanity-v-government` (currently redirects to
+  the manual at `manual.warondisease.org/knowledge/appendix/humanity-v-government.html`).
+- Posthumous-plaintiff registration already implemented — see
+  `routes.ts:678` "Sign the 1% Treaty for someone who can no longer sign it themselves".
+- **What's missing:** the seeded `Humanity v. Government` case row, the plaintiff backfill,
+  the live `/court` rendering, and the dual treaty-vote / verdict-vote framing. P0 below.
+
+**MCP-driven outreach pipeline (partial):**
+
+- Outbound email infrastructure: Resend, with `replyTo: reply+{taskId}@{REPLY_EMAIL_DOMAIN}`
+  auto-injected per task. `packages/web/src/lib/email/task-notification.ts:27`.
+- Inbound webhook: Resend Inbound Parse + svix-verified signature, quote-stripping, sender
+  authentication, writes `TaskComment` (`source: EMAIL_REPLY`) + `TaskCommunication`
+  (`direction: INBOUND`). `packages/web/src/app/api/webhooks/resend-inbound/route.ts`.
+- Web-side `createTask` already triggers assignment email via `notifyTaskAssigneeOfAssignment`.
+  MCP-side `createTask` does **not** (P0 gap below).
+- `Task.isPublic` exists with sensible defaults. `TaskComment.visibility` (`PUBLIC | INTERNAL`)
+  modeled. Trigger framework supports `spawnCommunication` for fully-automated emission.
+
 **Diagnostics:**
 
 - New-user funnel screenshot harness for warondisease + optimitron + dfda variants.
@@ -73,11 +100,28 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 
 Ordered by funnel-stage impact. P0 = ship next; P1 = right after; P2 = before launch.
 
+### P0 — Court of Humanity integration on `/court`
+
+The Court is the integrating institution that gives every other piece of the system a coherent purpose. Plaintiff = treaty signer = juror, one action, three roles. The treaty referendum IS the verdict vote. The 1% Treaty IS the settlement offer. Damages numbers are the same as the prize math. **Zero schema changes — every model already exists; only wiring + page-rendering work remains.**
+
+Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.html`. Indictment text: `manual.warondisease.org/knowledge/appendix/humanity-v-government.html`. Damages parameters: `manual.warondisease.org/knowledge/appendix/parameters-and-calculations.html`.
+
+- **Schema is already in place.** `CourtCase`, `CourtCaseParty`, `CourtCaseClaim`, `CourtCaseHarm`, `CourtCaseEvidence`, `CourtCaseRemedy` at `packages/db/prisma/schema.prisma:4342+`. `juryReferendumId` field already links a case to a `Referendum`. `enforcementTaskId` field already links a remedy to a `Task`. MCP tools already exist for all six entities (`addCourtCaseClaim/Evidence/Harm/Party/Remedy`, `upsertCourtCase`, `getCourtCase`, `openCourtCaseJuryVote`).
+- **Seed `Humanity v. Government` as a `CourtCase` row.** Status `OPEN`, `juryReferendumId` = `one-percent-treaty` referendum, primary respondent = synthetic "Governments of Earth" `Subject`, nominal plaintiff = synthetic "Humanity" `Subject`. Three counts as `CourtCaseClaim` rows (Direct Killing, Regulatory Delay, Misallocation) with manual-section URLs as evidence citations. Harms as `CourtCaseHarm` rows linked to parameter constants (310M war deaths, 102M efficacy-lag deaths, etc.). Settlement remedy = "Ratify the 1% Treaty" with `enforcementTaskId` pointing at the existing singleton ratification task.
+- **Backfill: every existing treaty voter becomes a `CourtCaseParty`** of role `PLAINTIFF`, capacity `INDIVIDUAL`, `subjectId` = the voter's `Person.subjectId`. One-time migration script in `packages/web/scripts/backfill-court-plaintiffs.ts`. Idempotent. Run once, then add a hook to `recordReferendumVote` so future voters auto-register.
+- **Add the 193 governments as `CourtCaseParty` rows of role `RESPONDENT`.** Capacity flips from `IN_DEFAULT` to `SETTLED_VIA_TREATY` as ratifications come in (drive from `government-leaders.ts` + ratification status). The page becomes narratively alive — every news event of a country ratifying is a defendant accepting the settlement.
+- **Build `/court` page.** Currently empty (`packages/web/src/app/court/page.tsx`). Render: case caption, three counts with body-count numbers, live plaintiff count, three columns of defendants (settled / served / in-default), settlement progress bar, single CTA "Register as plaintiff = sign the treaty." Reuse `VoteCounterSplit` component for the plaintiff count.
+- **Update `/humanity-v-government` page** to render the local case rather than redirecting to the manual. Manual stays as the doctrinal long-form; site presents the case in operational form.
+- **Reframe the post-vote share flow.** `TreatyPostVoteShareFlow.tsx` adds plaintiff-number framing alongside the existing impact framing: "You are now plaintiff #N in Humanity v. Government. The verdict needs more jurors." The recruitment ask becomes "register fellow plaintiffs," not "share the petition."
+- **Test:** vitest covering case-creation, plaintiff-backfill, and the auto-register-on-vote hook; e2e screenshot covering `/court` with seeded data.
+
 ### P0 — Stage 2: President Manager promotion
 
 After a user finishes HMT, the funnel currently dead-ends. They get promoted in language but no
 new task. The roster of 193 leaders exists but the per-slot trigger is **disabled**, so the
 country-leader pairing has nowhere to land.
+
+**Reframe in the Court frame:** the Stage-2 task is no longer "find your country's leader and ask them to sign a petition." It is "your country's defendant has not accepted the settlement; demand they do." Same engineering work; copy and incentive structure shift to plaintiff-vs-defendant framing. Coordinate with the Court integration above so language is consistent.
 
 - **Enable `treaty:signer` blueprint.** Currently `enabled: false` at
   `packages/web/src/lib/triggers/blueprints/one-percent-treaty.ts:360`. Flip to `true` once
@@ -98,12 +142,40 @@ country-leader pairing has nowhere to land.
 - **Test:** end-to-end vitest exercising signup → 5-subtask completion → Stage-2 spawn →
   dashboard reorder.
 
-### P0 — Live vote counter on landing
+### P0 — Live vote/plaintiff counter on landing and `/court`
 
 `VoteCounterSplit` already exists but only renders on `/signatories`. The landing page shows
 no signal of momentum. Recruits respond to "X people have voted today" more than to abstract
-math. Drop the component into `OnePercentTreatyLandingPage.tsx` above or beside the vote flow.
+math. Drop the component into `OnePercentTreatyLandingPage.tsx` above or beside the vote flow,
+and onto `/court` as the live plaintiff count.
 Server-side count via existing `prisma.referendumVote.count` calls in `lib/dashboard.server.ts:117`.
+
+### P0 — MCP-driven outreach pipeline (createTask → email → reply → comment)
+
+MCP `createTask` already creates `Task` rows but does **not** fire the assignment email. Web
+`createTask` does. This blocks Wishonia (the autonomous agent) from running its own outreach
+to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/mcp-server.ts`,
+`packages/web/src/lib/email/inbound-reply.ts`, `packages/web/src/lib/tasks/task-assignment-notifications.server.ts`.
+
+- **Wire `notifyTaskAssigneeOfAssignment`** into MCP `createTask` after the
+  `prisma.task.create` `$transaction` at `mcp-server.ts:6832`. Mirror the call site at
+  `tasks.server.ts:1524`. Best-effort: `try`/`catch`, log, do not fail the tool.
+- **Pass `from` override** so emails come from the creator ("Mike P. Sinn via International
+  Campaign to End War and Disease"), not the campaign address. Resolve via
+  `formatShareEmailFromHeader(creator.displayName)` from `email/from-address.ts:74`.
+- **Fan out inbound replies to all watchers**, not just the creator. Replace the
+  bespoke `resolveCreatorEmail` block at `email/inbound-reply.ts:274` with
+  `notifyTaskCommentRecipients({ commentId, ... })` — the helper already filters the author
+  out and notifies creator + assignee + endpoints + admin monitors.
+- **Default `isPublic: false`** for non-admin MCP-created assignee-organization tasks.
+  Currently defaults to `true` when org-assigned (`mcp-server.ts:1094`
+  `resolveCreateTaskIsPublic`). Admin-scope keeps current behavior for leader/president tasks
+  that are intentionally public. Comment visibility rides the same flag.
+- **Integration test** at `packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
+  `createOrganization` → `createTask` → assert email queued + `from` set + `replyTo` set.
+  Then synthesize an `InboundEmailEvent` matching the `replyTo` and assert `processInboundReply`
+  writes a `TaskComment` and notifies non-author recipients.
+- **No schema changes.**
 
 ### P1 — Round-progress visualization
 
@@ -138,6 +210,19 @@ button and the anti-phishing line: "About 150,000 humans will die from disease t
 treaty you're about to vote on shortens that timeline." Variant-aware: only on
 `warOnDisease` + `optimitron`. Test in `magic-link-email.test.ts`.
 
+### P1 — Email threading (Message-ID, In-Reply-To, References)
+
+Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/email/resend.ts:209,266,309`). Inbound captures `inReplyTo` into `TaskCommunication.metadataJson.inReplyTo` but it is never consumed. Mail clients won't visually thread the conversation; in-app `parentCommentId` never gets set on inbound replies. Replies feel orphaned in both surfaces.
+
+- **Generate stable `Message-ID`** per outbound `TaskCommunication`:
+  `<task-{taskId}-comm-{communicationId}@{REPLY_EMAIL_DOMAIN}>`. Pass via Resend's `headers`.
+  Persist on `TaskCommunication.metadataJson.messageId`.
+- **Set `In-Reply-To` and `References`** on subsequent sends in the thread by reading the
+  most recent outbound `TaskCommunication` for the task.
+- **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
+  on the new `TaskComment`, so the in-app feed nests correctly.
+- **No schema changes.** All metadata fits in the existing `metadataJson` field.
+
 ### P2 — Earth Optimization Day annual trigger (Aug 4)
 
 Annual ritual: every Humanity Manager gets a one-day task to share their referral URL across
@@ -163,6 +248,57 @@ to the manual.
 - New HMT subtask `passQuiz` (sortOrder 60) gating Stage-2 trigger.
 - Two missing parameters to add: `PRE_WWII_US_MIL_SPEND_GDP_PCT`,
   `POST_WWII_US_MIL_SPEND_GDP_PCT`.
+
+### P2 — Agent profile pre-creation (image + draft-approve)
+
+Wishonia should be able to pre-build org and public-official profiles from public data, then email the subject with an approve / edit / decline action — instead of asking the subject to fill out a blank form. Lowers friction at first contact. Two new MCP capabilities. **Minimal schema change: 2 new enums.**
+
+- **Image upload via URL.** New MCP tool
+  `setOrganizationLogo({ organizationId, sourceUrl, kind: "wide" | "square" })`. Backend
+  fetches the URL itself, blocks SSRF (private IPs, link-local), caps Content-Length (10 MB),
+  validates MIME post-download, resizes to canonical dimensions (1200×630 wide, 512×512
+  square), and stores on whatever blob provider is wired up. Verify provider before
+  implementation. Agent never handles bytes.
+- **Draft-approve flow.** Add `Organization.draftStatus` and `Person.draftStatus` enum
+  (`AWAITING_SUBJECT_APPROVAL | APPROVED | DECLINED | DELETED_BY_REQUEST`). Default to
+  `APPROVED` for human-created records to avoid migration disruption.
+- Add `Person.subjectKind` enum (`ORGANIZATION_AGENT | PUBLIC_OFFICIAL | PRIVATE_INDIVIDUAL`).
+  MCP `createPerson` refuses `PRIVATE_INDIVIDUAL` from non-admin scope. For public officials,
+  every agent-created field requires a `sourceUrl` — no inferred political stances without a
+  citation, mitigates GDPR Art. 9 + defamation exposure.
+- Approve / edit / decline / delete email template in Wishonia voice. Token-signed URLs, no
+  auth required for the first action (one-click delete-my-profile is the GDPR Art. 17 escape
+  hatch baked into every email).
+- Auto-approve after 30 days only for `PUBLIC_OFFICIAL` subjects (sitting senators, named
+  regulators). Never for orgs or private individuals — those must opt in.
+
+### P2 — Prize wire-up into the post-vote funnel (BLOCKED on legal + mainnet)
+
+CLAUDE.md states `/prize` is "the most important feature on the site; every other page should
+funnel toward it." Currently disconnected — zero mentions of VOTE / earn / prize / USDC in
+`TreatyPostVoteShareFlow.tsx` or `TreatyTaskDashboardClient.tsx`. The backend mint logic
+(`syncReferralVoteTokenMintsForVerifiedVoter`) and the `VoteTokenBalanceCard` component both
+exist; they are not wired into the funnel.
+
+**Blocked on out-of-band work** (do not start engineering until these are resolved):
+
+1. Legal wrapper (Cayman foundation or BVI entity) for the treasury multisig.
+2. Securities posture (Reg D 506(c) accredited path, or a defensible non-security framing).
+3. Contract audit + Base mainnet deployment. Contracts currently target Sepolia.
+4. Multisig + emergency-pause governance. 3-of-5 default.
+5. Aave mainnet integration verified end-to-end with small real capital.
+6. Seed deposits ($100K–$500K from creator + aligned co-funders) — non-empty contract is a
+   precondition for credibility.
+
+**Once unblocked** (~2 days of engineering):
+
+- Surface VOTE earning ratio in `TreatyPostVoteShareFlow.tsx` alongside impact framing.
+- Add `VoteTokenBalanceCard` to `TreatyTaskDashboardClient.tsx` with a link to `/prize`.
+- Day-7 + day-30 reminder emails referencing the user's VOTE balance and prize milestones.
+- Referrer leaderboard on `/prize` (social proof).
+- "Track-now, mint-retroactively" framing if engineering ships before contracts go live, so
+  the referral-attribution data is collected from day one.
+- No schema changes.
 
 ## Architecture Guardrails (durable — do not violate)
 
@@ -234,6 +370,19 @@ to the manual.
   before touching.
 - HMT graduation quiz: gate or optional? Default to gating (P2); optional with a graduation
   badge is the soft fallback if funnel data shows excessive drop-off.
+- **"Two Questions on the Same Ballot" (court-of-humanity manual section): does the treaty
+  vote stay as a single question that is rhetorically read as both a treaty-yes and a
+  verdict-yes, or do we surface them as two coupled questions on the ballot UI?** The single-
+  question version preserves all existing voter records and copy; the two-question version
+  is more legible but requires referendum-schema work and breaks attribution math. Default to
+  single-question with dual framing in copy until funnel data argues otherwise.
+- Sortition mechanism for case-level adjudication (selecting 100–1000 verified humans per
+  case via VRF) — needed only when the Court adjudicates cases beyond `Humanity v. Government`.
+  Not on the 4B critical path. Park.
+- Public-official `Person` records: where does the `subjectKind: PUBLIC_OFFICIAL` sourcing
+  come from? `government-leaders.ts` already has 193 leaders with verified contact data —
+  extend to include `sourceUrl` per field, then the agent's role is just keeping it current,
+  not inventing it.
 
 ## Long-tail (parked, not 4B-blocking)
 
