@@ -49,18 +49,26 @@ import {
   isTaskTriggerToolName,
 } from "./mcp-tools/task-triggers";
 import { slugify } from "./slugify";
+import {
+  IMAGE_UPLOAD_KINDS,
+  isImageUploadKind,
+} from "./image-upload-types";
 import type {
   RankableTask,
   TaskPriorityInput,
   TaskPriorityResult,
 } from "./tasks/rank-tasks";
-import type { ImageUploadKind } from "./image-upload-types";
 
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 
+const UPLOAD_IMAGE_FROM_URL_TOOL_NAME = "uploadImageFromUrl" as const;
+
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   createOrganization: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
-  uploadImageFromUrl: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
+  [UPLOAD_IMAGE_FROM_URL_TOOL_NAME]: [
+    McpScope.EARTHDATA_WRITE,
+    McpScope.TASKS_ADMIN,
+  ],
   createTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   proposeTaskBundle: [McpScope.TASKS_ADMIN],
   promoteTask: [McpScope.TASKS_ADMIN],
@@ -258,7 +266,7 @@ function getMcpBaseUrl(): string {
 
 const AUDITED_EARTH_DATA_TOOLS = new Set([
   "createOrganization",
-  "uploadImageFromUrl",
+  UPLOAD_IMAGE_FROM_URL_TOOL_NAME,
   "upsertOrganization",
   "updateOrganization",
   "deleteOrganization",
@@ -3653,7 +3661,7 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
-    name: "uploadImageFromUrl",
+    name: UPLOAD_IMAGE_FROM_URL_TOOL_NAME,
     description:
       "Fetch a public image URL, normalize it through the same image pipeline used by the web app, upload it to object storage, and return the canonical public URL. Use this before createOrganization/updateOrganization when you have a remote square logo, wordmark, or person photo URL.",
     inputSchema: {
@@ -3666,12 +3674,7 @@ const TASK_TOOL_DEFINITIONS = [
         },
         kind: {
           type: "string",
-          enum: [
-            "memorial-evidence-image",
-            "organization-square-logo",
-            "organization-wordmark-logo",
-            "person-photo",
-          ],
+          enum: [...IMAGE_UPLOAD_KINDS],
           description:
             "Upload target. Organization logos usually use organization-square-logo and organization-wordmark-logo.",
         },
@@ -7401,7 +7404,7 @@ export function createMcpServer(
             }
           }
 
-          case "uploadImageFromUrl": {
+          case UPLOAD_IMAGE_FROM_URL_TOOL_NAME: {
             if (!userId)
               return authRequired(
                 name,
@@ -7410,16 +7413,9 @@ export function createMcpServer(
             if (typeof a.url !== "string" || !a.url.trim()) {
               return err("url is required");
             }
-            if (typeof a.kind !== "string") {
-              return err("kind is required");
-            }
-            const allowedKinds = new Set<ImageUploadKind>([
-              "memorial-evidence-image",
-              "organization-square-logo",
-              "organization-wordmark-logo",
-              "person-photo",
-            ]);
-            if (!allowedKinds.has(a.kind as ImageUploadKind)) {
+            const url = a.url.trim();
+            const kind = a.kind;
+            if (!isImageUploadKind(kind)) {
               return err(
                 "kind must be one of: memorial-evidence-image, organization-square-logo, organization-wordmark-logo, person-photo",
               );
@@ -7444,8 +7440,8 @@ export function createMcpServer(
                   uploadImageFromUrl({
                     filename:
                       typeof a.filename === "string" ? a.filename : null,
-                    kind: a.kind as ImageUploadKind,
-                    url: a.url as string,
+                    kind,
+                    url,
                   }),
               );
             } catch (error) {

@@ -109,6 +109,8 @@ function isPrivateIp(address: string) {
       lower === "::1" ||
       lower.startsWith("fc") ||
       lower.startsWith("fd") ||
+      lower.startsWith("2001:db8") ||
+      lower.startsWith("2001:0db8") ||
       /^fe[89ab]/.test(lower) ||
       lower.startsWith("ff")
     );
