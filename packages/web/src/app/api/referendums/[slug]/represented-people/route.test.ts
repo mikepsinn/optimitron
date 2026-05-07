@@ -240,6 +240,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
         },
       },
       update: expect.objectContaining({
+        createdByUserId: "user_1",
         deletedAt: null,
         displayNameSnapshot: "Grandma Kay",
         isPublic: true,

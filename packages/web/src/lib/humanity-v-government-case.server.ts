@@ -43,6 +43,7 @@ export async function ensureHumanityVGovernmentPlaintiffParty(
       },
     },
     update: {
+      createdByUserId: input.createdByUserId,
       deletedAt: null,
       displayNameSnapshot: input.displayName,
       isPublic: input.isPublic,

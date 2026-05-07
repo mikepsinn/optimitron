@@ -153,6 +153,26 @@ describe("represented person sync", () => {
     });
   });
 
+  it("normalizes stored draft privacy flags to explicit booleans", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        person: { displayName: "Grandma Kay", id: "person_1" },
+      }),
+      ok: true,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await postRepresentedPersonDraft({
+      ...draft,
+      isPublic: "yes" as never,
+    });
+
+    const body = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body as string,
+    ) as Record<string, unknown>;
+    expect(body.isPublic).toBe(false);
+  });
+
   it("skips sync when another tab owns an active lock", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-05-05T12:00:00.000Z"));

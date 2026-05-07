@@ -3013,6 +3013,21 @@ describe("MCP server tool dispatch", () => {
       expect(body.user).toMatchObject({ id: "user-1" });
     });
 
+    it("exposes image in the updateMyProfile input schema", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const tools = await client.listTools();
+      const updateMyProfile = tools.tools.find(
+        (tool) => tool.name === "updateMyProfile",
+      );
+
+      expect(updateMyProfile?.inputSchema.properties).toMatchObject({
+        image: {
+          type: ["string", "null"],
+        },
+      });
+    });
+
     it("updateMyProfile maps a ProfileValidationError to a clean tool error", async () => {
       mocks.updateUserProfile.mockRejectedValue(
         new ProfileValidationError(

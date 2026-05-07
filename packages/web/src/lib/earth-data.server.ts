@@ -66,7 +66,9 @@ const optionalUrl = optionalTrimmedString(MAX_URL_LENGTH).refine(
 );
 
 const optionalDate = z.unknown().transform((value) => {
-  if (value instanceof Date) return value;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
   if (typeof value !== "string" || !value.trim()) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;

@@ -26,6 +26,7 @@ const REQUIRED_ENV = [
   "R2_SECRET_ACCESS_KEY",
   "R2_ENDPOINT",
   "R2_BUCKET",
+  "R2_PUBLIC_URL",
 ] as const;
 
 const PNG_1X1_TRANSPARENT = Buffer.from(
@@ -75,6 +76,7 @@ async function main() {
   const kind = parseUploadKind();
   const bucket = env("R2_BUCKET");
   const endpoint = env("R2_ENDPOINT");
+  env("R2_PUBLIC_URL");
   const sourceFile = new File([PNG_1X1_TRANSPARENT], "r2-smoke.png", {
     type: "image/png",
   });

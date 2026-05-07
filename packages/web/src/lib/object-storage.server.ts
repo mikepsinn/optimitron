@@ -112,7 +112,7 @@ export async function presignUpload({
 
 /**
  * Public URL for an existing object key. Use when the key was generated
- * outside the presign flow (e.g. legacy uploads or admin tooling).
+ * outside the presign flow, such as server-side uploads or admin tooling.
  */
 export function publicUrl(key: string): string {
   const config = loadConfig();

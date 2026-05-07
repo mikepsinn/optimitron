@@ -279,6 +279,16 @@ describe("earth-data server", () => {
     expect(parsed.recordTreatyVote).toBe(false);
   });
 
+  it("normalizes invalid Date instances before they can reach Prisma", () => {
+    const parsed = upsertMemorialPersonInputSchema.parse({
+      birthDate: new Date("not a real date"),
+      displayName: "Living plaintiff",
+      lifeStatus: "LIVING",
+    });
+
+    expect(parsed.birthDate).toBeNull();
+  });
+
   it("filters getPerson to public person data by default", async () => {
     await getPerson({ idOrHandle: "person-1" });
 

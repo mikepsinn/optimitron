@@ -224,8 +224,8 @@ Responses from this link are credited to ${org.name}.`;
             </div>
           ) : (
             <p className="text-sm font-bold text-muted-foreground">
-              This organization is not approved yet. New organizations are
-              approved automatically; this one may be legacy or admin-created.
+              This organization must be approved before the embed kit is
+              available.
             </p>
           )}
         </div>

@@ -3496,6 +3496,10 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description: "Display name shown across the app.",
         },
+        image: {
+          type: ["string", "null"],
+          description: "Profile avatar image URL.",
+        },
         handle: {
           type: ["string", "null"],
           description:
@@ -3898,7 +3902,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateOrganization",
     description:
-      "Edit an existing Organization. Caller must be an owner/admin of the org (or its legacy creator). status and jurisdictionId changes additionally require platform-admin privileges.",
+      "Edit an existing Organization. Caller must be an owner/admin of the org. status and jurisdictionId changes additionally require platform-admin privileges.",
     inputSchema: {
       type: "object" as const,
       properties: {

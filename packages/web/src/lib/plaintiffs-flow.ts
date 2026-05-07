@@ -5,7 +5,8 @@ import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 export function getPlaintiffsReferendumSlug(
   site: Pick<SiteConfig, "primaryReferendumSlug">,
 ) {
-  return site.primaryReferendumSlug ?? TREATY_REFERENDUM_SLUG;
+  const slug = site.primaryReferendumSlug?.trim();
+  return slug ? slug : TREATY_REFERENDUM_SLUG;
 }
 
 export function getRepresentedPersonDetailsHref(

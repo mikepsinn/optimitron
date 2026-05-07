@@ -11,6 +11,12 @@ describe("plaintiffs flow", () => {
     );
   });
 
+  it("uses the treaty referendum when the current site has a blank primary referendum", () => {
+    expect(getPlaintiffsReferendumSlug({ primaryReferendumSlug: "  " })).toBe(
+      "one-percent-treaty",
+    );
+  });
+
   it("keeps site-specific primary referendums when present", () => {
     expect(
       getPlaintiffsReferendumSlug({
@@ -32,5 +38,18 @@ describe("plaintiffs flow", () => {
         { personId: "person_2" },
       ]),
     ).toBe("/plaintiffs/manage");
+  });
+
+  it("sends empty or null saved plaintiff ids to the manage list", () => {
+    expect(getRepresentedPersonDetailsHref([])).toBe("/plaintiffs/manage");
+    expect(getRepresentedPersonDetailsHref([{ personId: null }])).toBe(
+      "/plaintiffs/manage",
+    );
+  });
+
+  it("encodes the single saved plaintiff id in the edit link", () => {
+    expect(getRepresentedPersonDetailsHref([{ personId: "person id+1" }])).toBe(
+      "/plaintiffs/manage?edit=person%20id%2B1",
+    );
   });
 });

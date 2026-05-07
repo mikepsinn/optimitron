@@ -11,6 +11,7 @@ import { PrivacyToggle } from "@/components/dashboard/PrivacyToggle";
 import { OrganizationSelector } from "@/components/dashboard/OrganizationSelector";
 import { SquarePhotoCropper } from "@/components/people/SquarePhotoCropper";
 import { uploadImageViaBackend } from "@/lib/image-upload.client";
+import { getUserPersonHref } from "@/lib/person-href";
 import type { DashboardUser } from "@/types/dashboard";
 import Link from "next/link";
 
@@ -59,8 +60,10 @@ export function ProfileCard({
     setOrigin(window.location.origin);
   }, []);
 
+  const publicProfileHref = getUserPersonHref(user);
   const publicProfileUrl =
-    origin && user.handle ? `${origin}/u/${user.handle}` : null;
+    origin && publicProfileHref ? `${origin}${publicProfileHref}` : null;
+  const isBusy = isSaving || avatarUploading || avatarCropFile !== null;
 
   const handleCopyUrl = () => {
     if (!publicProfileUrl) return;
@@ -70,6 +73,8 @@ export function ProfileCard({
   };
 
   const saveProfile = async () => {
+    if (avatarUploading || avatarCropFile) return;
+
     try {
       setIsSaving(true);
       setFormError(null);
@@ -88,8 +93,19 @@ export function ProfileCard({
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to update profile");
+        const text = await res.text().catch(() => "");
+        let message = text || "Failed to update profile";
+        if (text) {
+          try {
+            const data = JSON.parse(text) as { error?: unknown };
+            if (typeof data.error === "string" && data.error.trim()) {
+              message = data.error;
+            }
+          } catch {
+            message = text;
+          }
+        }
+        throw new Error(message);
       }
 
       onUserChange({
@@ -187,7 +203,7 @@ export function ProfileCard({
                 <input
                   accept="image/jpeg,image/png,image/webp,image/gif"
                   className="hidden"
-                  disabled={avatarUploading || isSaving}
+                  disabled={isBusy}
                   onChange={(event) => {
                     const file = event.target.files?.[0];
                     if (file) setAvatarCropFile(file);
@@ -200,7 +216,7 @@ export function ProfileCard({
                 />
                 <Button
                   className="border border-foreground bg-background"
-                  disabled={avatarUploading || isSaving}
+                  disabled={isBusy}
                   onClick={() => avatarInputRef.current?.click()}
                   type="button"
                   variant="outline"
@@ -305,7 +321,7 @@ export function ProfileCard({
             onChange={(value) => setEditForm({ ...editForm, isPublic: value })}
           />
 
-          {editForm.isPublic && publicProfileUrl && (
+          {editForm.isPublic && publicProfileHref && publicProfileUrl && (
             <div className="mt-4 p-4 bg-muted/30 border-4 border-primary border-dashed rounded-lg animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center justify-between mb-2">
                 <Label className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-1">
@@ -313,7 +329,7 @@ export function ProfileCard({
                   Public Profile URL
                 </Label>
                 <Link
-                  href={`/u/${user.handle}`}
+                  href={publicProfileHref}
                   target="_blank"
                   className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
                 >
@@ -350,7 +366,7 @@ export function ProfileCard({
         <div className="flex items-center justify-end pt-4 border-t-2 border-primary">
           <Button
             onClick={saveProfile}
-            disabled={isSaving}
+            disabled={isBusy}
             className="border-4 border-primary bg-brutal-pink w-full sm:w-auto"
           >
             {isSaving ? "Saving..." : "Update Profile"}

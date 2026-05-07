@@ -702,131 +702,135 @@ export function RepresentedPersonForm({
             </div>
           ) : null}
 
-          {showConflictFields ? (
+          {isDeceased ? (
             <div className="space-y-4 border border-dashed border-border p-4">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-                Conflict details
-              </p>
+              {showConflictFields ? (
+                <>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                    Conflict details
+                  </p>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label
-                    className="text-xs font-black uppercase"
-                    htmlFor="represented-conflict"
-                  >
-                    Specific conflict
-                  </Label>
-                  <select
-                    className="min-h-12 w-full border border-border bg-background px-3 font-bold text-foreground"
-                    disabled={disabled}
-                    id="represented-conflict"
-                    onChange={(event) => {
-                      setConflictId(event.target.value);
-                      if (event.target.value) setConflictNameOverride("");
-                    }}
-                    value={conflictId}
-                  >
-                    <option value="">Select or "Other"</option>
-                    {conflictOptions.map((conflict) => (
-                      <option key={conflict.id} value={conflict.id}>
-                        {conflict.name}
-                      </option>
-                    ))}
-                  </select>
-                  {!conflictId ? (
-                    <Input
-                      className="mt-2 border-border bg-background font-bold"
-                      disabled={disabled}
-                      onChange={(event) =>
-                        setConflictNameOverride(event.target.value)
-                      }
-                      placeholder="Or name the conflict"
-                      value={conflictNameOverride}
-                    />
-                  ) : null}
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    className="text-xs font-black uppercase"
-                    htmlFor="represented-civilian-status"
-                  >
-                    Civilian status
-                  </Label>
-                  <select
-                    className="min-h-12 w-full border border-border bg-background px-3 font-bold text-foreground"
-                    disabled={disabled}
-                    id="represented-civilian-status"
-                    onChange={(event) =>
-                      setCivilianStatus(
-                        event.target.value as PersonCivilianStatus,
-                      )
-                    }
-                    value={civilianStatus}
-                  >
-                    <option value={PersonCivilianStatus.UNKNOWN}>
-                      Unknown
-                    </option>
-                    <option value={PersonCivilianStatus.CIVILIAN}>
-                      Civilian
-                    </option>
-                    <option value={PersonCivilianStatus.COMBATANT}>
-                      Combatant
-                    </option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs font-black uppercase">
-                  Were they a child?
-                </Label>
-                <div className="flex gap-3">
-                  {(["unknown", "yes", "no"] as const).map((value) => (
-                    <label
-                      className="flex items-center gap-2 text-sm font-bold"
-                      key={value}
-                    >
-                      <input
-                        checked={wasChild === value}
-                        className="h-4 w-4"
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label
+                        className="text-xs font-black uppercase"
+                        htmlFor="represented-conflict"
+                      >
+                        Specific conflict
+                      </Label>
+                      <select
+                        className="min-h-12 w-full border border-border bg-background px-3 font-bold text-foreground"
                         disabled={disabled}
-                        name="represented-was-child"
-                        onChange={() => setWasChild(value)}
-                        type="radio"
-                        value={value}
-                      />
-                      {value === "unknown"
-                        ? "Unknown"
-                        : value === "yes"
-                          ? "Yes"
-                          : "No"}
-                    </label>
-                  ))}
-                </div>
-              </div>
+                        id="represented-conflict"
+                        onChange={(event) => {
+                          setConflictId(event.target.value);
+                          if (event.target.value) setConflictNameOverride("");
+                        }}
+                        value={conflictId}
+                      >
+                        <option value="">Select or "Other"</option>
+                        {conflictOptions.map((conflict) => (
+                          <option key={conflict.id} value={conflict.id}>
+                            {conflict.name}
+                          </option>
+                        ))}
+                      </select>
+                      {!conflictId ? (
+                        <Input
+                          className="mt-2 border-border bg-background font-bold"
+                          disabled={disabled}
+                          onChange={(event) =>
+                            setConflictNameOverride(event.target.value)
+                          }
+                          placeholder="Or name the conflict"
+                          value={conflictNameOverride}
+                        />
+                      ) : null}
+                    </div>
 
-              <div className="space-y-2">
-                <Label
-                  className="text-xs font-black uppercase"
-                  htmlFor="represented-circumstances"
-                >
-                  What happened?
-                </Label>
-                <Textarea
-                  className="min-h-24 border-border bg-background font-bold"
-                  disabled={disabled}
-                  id="represented-circumstances"
-                  maxLength={1000}
-                  onChange={(event) => setCircumstances(event.target.value)}
-                  placeholder="Brief, factual description. Names of witnesses can go here too."
-                  value={circumstances}
-                />
-                <p className="text-xs font-bold text-muted-foreground">
-                  Up to 1000 characters. Used in future accountability evidence
-                  if you consent below.
-                </p>
-              </div>
+                    <div className="space-y-2">
+                      <Label
+                        className="text-xs font-black uppercase"
+                        htmlFor="represented-civilian-status"
+                      >
+                        Civilian status
+                      </Label>
+                      <select
+                        className="min-h-12 w-full border border-border bg-background px-3 font-bold text-foreground"
+                        disabled={disabled}
+                        id="represented-civilian-status"
+                        onChange={(event) =>
+                          setCivilianStatus(
+                            event.target.value as PersonCivilianStatus,
+                          )
+                        }
+                        value={civilianStatus}
+                      >
+                        <option value={PersonCivilianStatus.UNKNOWN}>
+                          Unknown
+                        </option>
+                        <option value={PersonCivilianStatus.CIVILIAN}>
+                          Civilian
+                        </option>
+                        <option value={PersonCivilianStatus.COMBATANT}>
+                          Combatant
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-black uppercase">
+                      Were they a child?
+                    </Label>
+                    <div className="flex gap-3">
+                      {(["unknown", "yes", "no"] as const).map((value) => (
+                        <label
+                          className="flex items-center gap-2 text-sm font-bold"
+                          key={value}
+                        >
+                          <input
+                            checked={wasChild === value}
+                            className="h-4 w-4"
+                            disabled={disabled}
+                            name="represented-was-child"
+                            onChange={() => setWasChild(value)}
+                            type="radio"
+                            value={value}
+                          />
+                          {value === "unknown"
+                            ? "Unknown"
+                            : value === "yes"
+                              ? "Yes"
+                              : "No"}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      className="text-xs font-black uppercase"
+                      htmlFor="represented-circumstances"
+                    >
+                      What happened?
+                    </Label>
+                    <Textarea
+                      className="min-h-24 border-border bg-background font-bold"
+                      disabled={disabled}
+                      id="represented-circumstances"
+                      maxLength={1000}
+                      onChange={(event) => setCircumstances(event.target.value)}
+                      placeholder="Brief, factual description. Names of witnesses can go here too."
+                      value={circumstances}
+                    />
+                    <p className="text-xs font-bold text-muted-foreground">
+                      Up to 1000 characters. Used in future accountability
+                      evidence if you consent below.
+                    </p>
+                  </div>
+                </>
+              ) : null}
 
               <div className="space-y-2">
                 <div className="flex items-baseline justify-between gap-3">

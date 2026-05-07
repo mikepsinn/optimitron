@@ -52,7 +52,7 @@ function draftPayload(draft: PendingRepresentedPersonDraft) {
     conditionName: draft.conditionName ?? "",
     displayName: draft.displayName,
     healthDisclosureConfirmed: draft.healthDisclosureConfirmed === true,
-    isPublic: draft.isPublic,
+    isPublic: draft.isPublic === true,
     lifeStatus: draft.lifeStatus ?? "UNKNOWN",
     originUrl: draft.originUrl,
     publicComment: draft.publicComment ?? "",
