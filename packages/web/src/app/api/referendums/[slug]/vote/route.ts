@@ -18,6 +18,8 @@ import {
 } from "@/lib/referral-invitations.server";
 import { createLogger } from "@/lib/logger";
 import { ensurePersonForUser } from "@/lib/person.server";
+import { ensureSubjectForPerson } from "@/lib/subject.server";
+import { ensureHumanityVGovernmentPlaintiffParty } from "@/lib/humanity-v-government-case.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
@@ -215,6 +217,35 @@ export async function POST(
         log.error("Treaty humanity-management task sync error", taskError);
       }
 
+      // Auto-register YES voters as plaintiffs on Humanity v. Government.
+      // Plaintiff = treaty signer = juror, one click. The case row is upserted
+      // by ensureHumanityVGovernmentPlaintiffParty so we don't need a separate
+      // seed; first plaintiff in creates the case. Skipped for NO/ABSTAIN since
+      // dissenting voters do not register a plaintiff claim.
+      if (answer === "YES") {
+        try {
+          // Re-read person.isPublic so the plaintiff visibility reflects the
+          // makePublic toggle that may have just fired above.
+          const refreshedPerson = await prisma.person.findUnique({
+            where: { id: person.id },
+            select: { displayName: true, isPublic: true },
+          });
+          await prisma.$transaction(async (tx) => {
+            const subject = await ensureSubjectForPerson(tx, {
+              id: person.id,
+              displayName: refreshedPerson?.displayName ?? person.displayName,
+            });
+            await ensureHumanityVGovernmentPlaintiffParty(tx, {
+              createdByUserId: userId,
+              displayName: refreshedPerson?.displayName ?? person.displayName,
+              isPublic: refreshedPerson?.isPublic ?? false,
+              subjectId: subject.id,
+            });
+          });
+        } catch (plaintiffError) {
+          log.error("Plaintiff registration error", plaintiffError);
+        }
+      }
     }
 
     return NextResponse.json({
