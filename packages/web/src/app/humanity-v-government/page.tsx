@@ -12,6 +12,7 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { formatCount } from "@/lib/format-count";
 import { getHumanityVGovernmentPlaintiffCount } from "@/lib/humanity-v-government-case.server";
 import { HUMANITY_V_GOVERNMENT_MANUAL_URL, ROUTES } from "@/lib/routes";
+import { DamagesSensitivityCalculator } from "./DamagesSensitivityCalculator";
 
 export const dynamic = "force-dynamic";
 
@@ -233,6 +234,10 @@ export default async function HumanityVGovernmentPage() {
           Read the full damages analysis →
         </a>
       </section>
+
+      <div className="mt-10">
+        <DamagesSensitivityCalculator />
+      </div>
 
       <section className="mt-10 border-2 border-foreground bg-background p-5">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">

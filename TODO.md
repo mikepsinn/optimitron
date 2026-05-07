@@ -198,6 +198,15 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
   `/api/referendums/[slug]/vote` route after the YES upsert. Memorial/posthumous
   registration was already wired in the represented-people route. Backfill script for
   pre-existing voters still needed (one-time `packages/web/scripts/backfill-court-plaintiffs.ts`).
+- **Surface implicit class membership in the dashboard.** Every signed-in user is
+  structurally already a plaintiff in *Humanity v. Government* (Rule 23(b)(3)-style
+  automatic class membership for living humans harmed by government failure to
+  address disease/war). The current model only formalizes the claim on YES vote.
+  Add a dashboard line for users who haven't voted yet: "You are a potential
+  plaintiff in *Humanity v. Government*. Render your verdict to formalize your
+  claim. Your share: $10.6M–$25.2M." Schema-zero — pure UI surfacing of state we
+  already track. Keeps the opt-in-via-voting default but makes the implicit class
+  visible so users understand what they're in by default.
 - **Family-registration as primary CTA on `/humanity-v-government`.** Lost-prosperity
   primary theory is per-representative-person ($25.2M cohort / $10.6M NPV), so each
   registered deceased relative adds another full $25.2M to the family claim. Average
