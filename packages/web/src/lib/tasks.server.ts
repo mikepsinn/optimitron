@@ -16,6 +16,7 @@ import { canonicalizeSiteUrl } from "@/lib/site";
 import { userDisplaySelect } from "@/lib/user-display";
 import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
+import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 import {
   buildPrimaryTaskCommunicationEndpointCreateData,
   type PrimaryTaskCommunicationEndpointInput,
@@ -1483,7 +1484,7 @@ export async function createTask(
     throw new Error("maxClaims must be at least 1 for OPEN_MANY tasks.");
   }
 
-  return prisma.task.create({
+  const task = await prisma.task.create({
     data: {
       assigneeOrganizationId,
       assigneePersonId,
@@ -1514,6 +1515,15 @@ export async function createTask(
     },
     select: taskDetailSelect,
   });
+
+  if (isAssignedTask) {
+    await notifyTaskAssigneeOfAssignment({
+      senderUserId: creatorUserId,
+      taskId: task.id,
+    });
+  }
+
+  return task;
 }
 
 export async function updateTaskCreatedByUser(

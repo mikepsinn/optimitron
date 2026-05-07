@@ -96,7 +96,8 @@ describe("sendResendEmail", () => {
 
     const payload = mocks.emailSend.mock.calls[0]?.[0];
     expect(payload).toMatchObject({
-      from: "Earth Optimization Services <hello@updates.warondisease.org>",
+      from:
+        "International Campaign to End War and Disease <hello@updates.warondisease.org>",
       headers: {
         "List-Unsubscribe": expect.stringContaining(
           "mailto:unsubscribe@updates.warondisease.org",

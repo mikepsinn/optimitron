@@ -61,7 +61,13 @@ export default async function AdminReferendumPositionsPage({
         <h1 className="text-2xl font-black uppercase">
           Referendum positions ({statusFilter.toLowerCase()})
         </h1>
-        <nav className="flex gap-2 text-xs font-bold uppercase">
+        <nav className="flex flex-wrap gap-2 text-xs font-bold uppercase">
+          <Link
+            href="/admin/communications"
+            className="border-2 border-foreground px-3 py-1"
+          >
+            communications
+          </Link>
           {Object.values(OrganizationReferendumPositionStatus).map((s) => (
             <Link
               key={s}

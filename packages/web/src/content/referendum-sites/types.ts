@@ -76,6 +76,7 @@ export interface ReferendumSiteWhyContent {
 export interface ReferendumSiteLegalSection {
   bullets?: string[];
   heading: string;
+  links?: ReferendumSiteNavItem[];
   paragraphs: string[];
 }
 

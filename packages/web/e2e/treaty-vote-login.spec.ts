@@ -45,16 +45,30 @@ test("treaty vote -> demo login -> lands on training (not /auth/signin)", async 
   await completeSliderAndVote(page);
 
   // AuthForm renders the demo button in non-prod. Click it.
-  const demoButton = page.locator(
-    "button:has-text('Try Demo')",
-  );
+  const demoButton = page.locator("button:has-text('Try Demo')");
   await expect(demoButton).toBeVisible({ timeout: 10_000 });
   await demoButton.click();
+
+  const authOutcome = await Promise.race([
+    page
+      .waitForURL(/\/dashboard(\?|#|$)/, { timeout: 15_000 })
+      .then(() => "dashboard" as const)
+      .catch(() => "timeout" as const),
+    page
+      .getByText(/Demo account not available/i)
+      .waitFor({ state: "visible", timeout: 15_000 })
+      .then(() => "demo-missing" as const)
+      .catch(() => "timeout" as const),
+  ]);
+
+  if (authOutcome === "demo-missing") {
+    test.skip(true, "Demo credentials not available");
+    return;
+  }
 
   // Primary assertion: browser lands on dashboard, not /auth/signin.
   // This is the bug the user reported: avatar set, but server session
   // missing user.id, so gated pages bounced them back to login.
-  await page.waitForURL(/\/dashboard(\?|#|$)/, { timeout: 15_000 });
   expect(page.url()).toMatch(/\/dashboard(\?|#|$)/);
   expect(page.url()).not.toMatch(/\/auth\/signin/);
 });
@@ -74,7 +88,7 @@ test("signed-in user can sign out from the dashboard", async ({ page }) => {
     "/api/auth/callback/credentials",
     {
       form: {
-        email: "demo@optimitron.org",
+        email: "demo@thinkbynumbers.org",
         password: "demo1234",
         csrfToken,
         json: "true",

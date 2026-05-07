@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { serverEnv } from "@/lib/env";
 import { canSendEmailToUser } from "@/lib/email/can-send.server";
 import {
+  CAMPAIGN_EMAIL_FROM_NAME,
   DEFAULT_UNSUBSCRIBE_EMAIL,
   formatEmailFromHeader,
   parseEmailFromHeader,
@@ -37,7 +38,7 @@ interface BaseMessage {
 interface ResendMessage extends BaseMessage {
   html: string;
   text: string;
-  /// Per-message From override (e.g. share emails: "Mike via Earth Optimization Services"
+  /// Per-message From override (e.g. share emails: "Mike via International Campaign to End War and Disease"
   /// from formatShareEmailFromHeader). Omit to use the default system address.
   from?: string;
 }
@@ -92,7 +93,7 @@ export function getEmailFromAddress() {
   // friend's name instead of a corporate brand they don't recognize).
   return formatEmailFromHeader(
     serverEnv.EMAIL_FROM,
-    "Earth Optimization Services",
+    CAMPAIGN_EMAIL_FROM_NAME,
   );
 }
 

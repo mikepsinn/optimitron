@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   grantWishes: vi.fn(),
+  notifyTaskAssigneeOfAssignment: vi.fn(),
   prisma: {
     taskCreate: vi.fn(),
     taskFindFirst: vi.fn(),
@@ -46,6 +47,10 @@ vi.mock("@/lib/wishes.server", () => ({
   grantWishes: mocks.grantWishes,
 }));
 
+vi.mock("@/lib/tasks/task-assignment-notifications.server", () => ({
+  notifyTaskAssigneeOfAssignment: mocks.notifyTaskAssigneeOfAssignment,
+}));
+
 import {
   completeTaskClaim,
   createTask,
@@ -70,6 +75,7 @@ function createTransactionClient() {
 
 function resetAllMocks() {
   mocks.grantWishes.mockReset();
+  mocks.notifyTaskAssigneeOfAssignment.mockReset();
 
   for (const group of [mocks.prisma, mocks.tx]) {
     for (const mockFn of Object.values(group)) {
@@ -252,6 +258,10 @@ describe("tasks server", () => {
         }),
       }),
     );
+    expect(mocks.notifyTaskAssigneeOfAssignment).toHaveBeenCalledWith({
+      senderUserId: "user_creator",
+      taskId: "task_2",
+    });
   });
 
   it("forces assigned tasks to assigned-only even when open claiming is requested", async () => {
@@ -279,6 +289,10 @@ describe("tasks server", () => {
         }),
       }),
     );
+    expect(mocks.notifyTaskAssigneeOfAssignment).toHaveBeenCalledWith({
+      senderUserId: "user_creator",
+      taskId: "task_3",
+    });
   });
 
   it("defaults unassigned tasks to public open-single tasks", async () => {
@@ -302,6 +316,7 @@ describe("tasks server", () => {
         }),
       }),
     );
+    expect(mocks.notifyTaskAssigneeOfAssignment).not.toHaveBeenCalled();
   });
 
   it("blocks creators from unpublishing public tasks", async () => {

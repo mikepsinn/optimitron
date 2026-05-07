@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_REDUCTION_PCT,
 } from "@optimitron/data/parameters";
@@ -12,7 +15,7 @@ import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
 import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getSiteMetadata } from "@/lib/metadata";
-import { donateLink, ROUTES } from "@/lib/routes";
+import { donateLink, onePercentTreatyPaperLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
 
@@ -69,20 +72,45 @@ export default function DonatePage() {
                 figures={1}
                 param={TREATY_REDUCTION_PCT}
               />{" "}
-              of that spending to clinical trials.
+              of that spending to high-efficiency pragmatic clinical trials.
             </p>
             <p>
-              The current queue to not die is{" "}
+              Under the current system, only{" "}
+              <ParameterValue
+                className="font-black"
+                figures={2}
+                param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
+              />{" "}
+              diseases get their first effective treatment each year while{" "}
+              <ParameterValue
+                className="font-black"
+                figures={3}
+                param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+              />{" "}
+              diseases are still waiting. That is why the disease-eradication
+              timeline is{" "}
               <ParameterValue
                 className="font-black"
                 figures={3}
                 param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
               />{" "}
-              years long. The proposal is simple: <TreatyTradeThesis />.
+              years. The proposal is simple: <TreatyTradeThesis />.
             </p>
             <p>
               Your donation helps reach the humans needed to prove humanity
               wants this.
+            </p>
+            <p>
+              For the full economic analysis, read the{" "}
+              <Link
+                className="underline underline-offset-4 hover:no-underline"
+                href={onePercentTreatyPaperLink.href}
+                rel="noreferrer"
+                target="_blank"
+              >
+                1% Treaty impact analysis
+              </Link>
+              .
             </p>
           </div>
         </section>

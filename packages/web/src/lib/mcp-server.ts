@@ -122,6 +122,9 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   voteTaskComment: [McpScope.TASKS_PERSONAL],
   deleteTaskComment: [McpScope.TASKS_PERSONAL],
   getTaskComments: [McpScope.TASKS_PERSONAL],
+  listTaskEmails: [McpScope.TASKS_ADMIN],
+  listRecipientEmails: [McpScope.TASKS_ADMIN],
+  listEmailLogs: [McpScope.TASKS_ADMIN],
   getMyQueue: [McpScope.TASKS_PERSONAL],
   getAIQueue: [McpScope.TASKS_PERSONAL],
   getNextAction: [McpScope.TASKS_PERSONAL],
@@ -154,6 +157,9 @@ const ADMIN_ONLY_TOOLS = new Set([
   "getFileContent",
   "listRepoFiles",
   "githubApi",
+  "listTaskEmails",
+  "listRecipientEmails",
+  "listEmailLogs",
   ...TASK_TRIGGER_ADMIN_TOOL_NAMES,
   "hideContent",
   "restoreContent",
@@ -3278,6 +3284,96 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "listTaskEmails",
+    description:
+      "Admin-only: list task email communications and linked email logs for one task.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Task ID." },
+        email: {
+          type: "string",
+          description: "Optional recipient email filter.",
+        },
+        q: {
+          type: "string",
+          description:
+            "Optional search across subject, recipient, task title, and provider email address.",
+        },
+        limit: {
+          type: "number",
+          description: "Max rows to return (default 50, max 200).",
+        },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
+    name: "listRecipientEmails",
+    description:
+      "Admin-only: list task email communications and email logs sent to a user, person, organization, or raw email address.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        email: {
+          type: "string",
+          description: "Recipient email address.",
+        },
+        organizationId: {
+          type: "string",
+          description: "Recipient organization ID.",
+        },
+        personId: {
+          type: "string",
+          description: "Recipient person ID.",
+        },
+        userId: {
+          type: "string",
+          description: "Recipient user ID.",
+        },
+        q: {
+          type: "string",
+          description:
+            "Optional search across subject, recipient, task title, and provider email address.",
+        },
+        limit: {
+          type: "number",
+          description: "Max rows to return (default 50, max 200).",
+        },
+      },
+    },
+  },
+  {
+    name: "listEmailLogs",
+    description:
+      "Admin-only: list provider-level email logs, optionally filtered by task, recipient email, user, person, organization, or search text.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        email: { type: "string", description: "Recipient email address." },
+        organizationId: {
+          type: "string",
+          description: "Recipient organization ID through task communications.",
+        },
+        personId: {
+          type: "string",
+          description: "Recipient person ID through task communications.",
+        },
+        q: {
+          type: "string",
+          description:
+            "Optional search across subject, recipient, task title, template, and provider message id.",
+        },
+        taskId: { type: "string", description: "Linked task ID." },
+        userId: { type: "string", description: "Recipient user ID." },
+        limit: {
+          type: "number",
+          description: "Max rows to return (default 50, max 200).",
+        },
+      },
+    },
+  },
+  {
     name: "listOrganizations",
     description:
       "List organizations (for example to create task targets), optionally including active/target-filtered tasks.",
@@ -6361,6 +6457,83 @@ export function createMcpServer(
               task: enrichTaskForMcp(result.task),
               taskCommunicationCount: result.taskCommunicationCount,
             });
+          }
+
+          case "listTaskEmails": {
+            const taskId = requiredString(a.taskId, "taskId");
+            if (typeof taskId !== "string") return taskId;
+            const adminCommunications = await import(
+              "./admin-communications.server"
+            );
+            const filters = {
+              email: optionalString(a.email),
+              limit: parseQueueLimit(a.limit, 50, 200),
+              q: optionalString(a.q),
+              taskId,
+            };
+            const [communications, emailLogs] = await Promise.all([
+              adminCommunications.listAdminTaskEmailCommunications(filters),
+              adminCommunications.listAdminEmailLogs(filters),
+            ]);
+            return ok({
+              communications: communications.communications,
+              communicationTotal: communications.total,
+              emailLogs: emailLogs.emailLogs,
+              emailLogTotal: emailLogs.total,
+              limit: communications.limit,
+            });
+          }
+
+          case "listRecipientEmails": {
+            const filters = {
+              email: optionalString(a.email),
+              limit: parseQueueLimit(a.limit, 50, 200),
+              organizationId: optionalString(a.organizationId),
+              personId: optionalString(a.personId),
+              q: optionalString(a.q),
+              userId: optionalString(a.userId),
+            };
+            if (
+              !filters.email &&
+              !filters.organizationId &&
+              !filters.personId &&
+              !filters.userId
+            ) {
+              return err(
+                "Pass at least one recipient filter: email, userId, personId, or organizationId.",
+              );
+            }
+            const adminCommunications = await import(
+              "./admin-communications.server"
+            );
+            const [communications, emailLogs] = await Promise.all([
+              adminCommunications.listAdminTaskEmailCommunications(filters),
+              adminCommunications.listAdminEmailLogs(filters),
+            ]);
+            return ok({
+              communications: communications.communications,
+              communicationTotal: communications.total,
+              emailLogs: emailLogs.emailLogs,
+              emailLogTotal: emailLogs.total,
+              limit: communications.limit,
+            });
+          }
+
+          case "listEmailLogs": {
+            const adminCommunications = await import(
+              "./admin-communications.server"
+            );
+            return ok(
+              await adminCommunications.listAdminEmailLogs({
+                email: optionalString(a.email),
+                limit: parseQueueLimit(a.limit, 50, 200),
+                organizationId: optionalString(a.organizationId),
+                personId: optionalString(a.personId),
+                q: optionalString(a.q),
+                taskId: optionalString(a.taskId),
+                userId: optionalString(a.userId),
+              }),
+            );
           }
 
           // ── createTask ────────────────────────────────────────

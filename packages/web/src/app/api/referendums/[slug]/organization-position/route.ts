@@ -10,6 +10,7 @@ import { requireAuth } from "@/lib/auth-utils";
 import {
   canManageOrganization,
   createOrganizationWithOwner,
+  ensureOrganizationTreatyActivationTask,
   normalizeOrganizationHttpUrl,
   normalizeOrganizationImageUrl,
 } from "@/lib/organization.server";
@@ -47,7 +48,7 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userEmail, userId } = await requireAuth();
     const { slug } = await params;
     const body = (await request.json()) as Body;
 
@@ -79,6 +80,11 @@ export async function POST(
       );
     }
 
+    let organization: {
+      id: string;
+      name?: string | null;
+      slug?: string | null;
+    };
     let organizationId: string;
 
     if (body.newOrganization) {
@@ -138,12 +144,13 @@ export async function POST(
           description: body.newOrganization.description ?? null,
           squareLogoUrl,
           wordmarkLogoUrl,
-          contactEmail: body.newOrganization.contactEmail ?? null,
+          contactEmail: body.newOrganization.contactEmail ?? userEmail ?? null,
           status: OrgStatus.APPROVED,
         },
         userId,
         { rejectDuplicates: false },
       );
+      organization = org;
       organizationId = org.id;
     } else if (body.organizationId) {
       const canManage = await canManageOrganization(
@@ -157,6 +164,7 @@ export async function POST(
         );
       }
       organizationId = body.organizationId;
+      organization = { id: organizationId };
     } else {
       return NextResponse.json(
         { error: "Provide organizationId or newOrganization" },
@@ -212,8 +220,25 @@ export async function POST(
       },
     });
 
+    const task =
+      position === VotePosition.YES
+        ? await ensureOrganizationTreatyActivationTask(
+            {
+              organizationId,
+              organizationName: organization.name,
+              organizationSlug: organization.slug,
+            },
+            userId,
+          )
+        : null;
+
     return NextResponse.json(
-      { success: true, position: record },
+      {
+        success: true,
+        organizationId,
+        position: record,
+        taskId: task?.id ?? null,
+      },
       { status: 201 },
     );
   } catch (error) {

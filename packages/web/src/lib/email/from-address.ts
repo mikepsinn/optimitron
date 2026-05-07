@@ -1,7 +1,9 @@
 import { serverEnv } from "@/lib/env";
 import { WAR_ON_DISEASE_UPDATES_DOMAIN } from "@/lib/domains";
 
-export const DEFAULT_SYSTEM_EMAIL_FROM = `Earth Optimization Services <hello@${WAR_ON_DISEASE_UPDATES_DOMAIN}>`;
+export const CAMPAIGN_EMAIL_FROM_NAME =
+  "International Campaign to End War and Disease";
+export const DEFAULT_SYSTEM_EMAIL_FROM = `${CAMPAIGN_EMAIL_FROM_NAME} <hello@${WAR_ON_DISEASE_UPDATES_DOMAIN}>`;
 export const DEFAULT_UNSUBSCRIBE_EMAIL = `unsubscribe@${WAR_ON_DISEASE_UPDATES_DOMAIN}`;
 
 export interface ParsedEmailFromHeader {
@@ -61,7 +63,7 @@ export function formatEmailFromHeader(
 
 /**
  * Build the share-email From header in the form:
- *   `<senderName> via Earth Optimization Services <hello@updates.warondisease.org>`
+ *   `<senderName> via International Campaign to End War and Disease <hello@updates.warondisease.org>`
  *
  * Used when a user-authored email goes out under the platform's mail domain
  * but the inbox should foreground the named sender (so the recipient sees
@@ -73,7 +75,7 @@ export function formatShareEmailFromHeader(senderName: string): string {
   const address = getConfiguredFromAddress();
   if (!address) return "";
   const safeSender = sanitizeDisplayName(senderName, "A voter");
-  const displayName = `${safeSender} via Earth Optimization Services`;
+  const displayName = `${safeSender} via ${CAMPAIGN_EMAIL_FROM_NAME}`;
   return `${displayName} <${address}>`;
 }
 

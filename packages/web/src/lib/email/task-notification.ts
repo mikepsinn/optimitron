@@ -102,8 +102,8 @@ export interface SendTaskNotificationEmailInput {
   subject: string;
   text: string;
   html?: string;
-  /// Per-message From override. Falls back to platform default
-  /// (`Earth Optimization Services <hello@updates.warondisease.org>`).
+  /// Per-message From override. Falls back to the campaign default
+  /// (`International Campaign to End War and Disease <hello@updates.warondisease.org>`).
   from?: string;
 }
 

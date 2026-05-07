@@ -20,17 +20,20 @@ import {
   donateLink,
   endorseLink,
   exploreLinks,
+  feedbackLink,
   footerAppLinks,
   humanityVGovernmentLink,
   inviteVoterLink,
-  legalLink,
   navSections,
+  onePercentTreatyPaperLink,
   paperLinks,
+  peopleLink,
   plaintiffsLink,
   privacyLink,
   profileLink,
   readTreatyLink,
   termsLink,
+  tasksLink,
   treatmentsLink,
   treatyDashboardLink,
   presidentManagementLink,
@@ -336,6 +339,20 @@ const warOnDiseaseShareLink: NavItem = {
   cta: "Share",
 };
 
+const warOnDiseaseFundLink: NavItem = {
+  ...donateLink,
+  label: "Fund the Campaign",
+  tagline: "Fund the campaign",
+  cta: "Fund the Campaign",
+};
+
+const warOnDiseaseImpactAnalysisLink: NavItem = {
+  ...onePercentTreatyPaperLink,
+  label: "Impact Analysis",
+  tagline: "Read the economic analysis",
+  cta: "Read Impact Analysis",
+};
+
 const warOnDiseaseNavSections: NavSection[] = [
   {
     id: "primary",
@@ -344,7 +361,7 @@ const warOnDiseaseNavSections: NavSection[] = [
     items: [
       treatyVoteLink,
       warOnDiseaseShareLink,
-      donateLink,
+      warOnDiseaseFundLink,
       plaintiffsLink,
       presidentManagementLink,
       readTreatyLink,
@@ -476,21 +493,35 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
     columns: [
       {
-        title: "Campaign",
+        title: "Do Something",
         items: [
           treatyVoteLink,
-          readTreatyLink,
-          warOnDiseaseShareLink,
           plaintiffsLink,
-          presidentManagementLink,
-          ...organizationalSignatoryLinks,
-          endorseLink,
-          donateLink,
+          warOnDiseaseFundLink,
+          feedbackLink,
         ],
       },
       {
-        title: "Reference",
-        items: [whyLink, courtLink, humanityVGovernmentLink],
+        title: "Tell Someone Else",
+        items: [
+          warOnDiseaseShareLink,
+          presidentManagementLink,
+          peopleLink,
+          tasksLink,
+        ],
+      },
+      {
+        title: "Learn Something",
+        items: [
+          readTreatyLink,
+          humanityVGovernmentLink,
+          warOnDiseaseImpactAnalysisLink,
+          courtLink,
+        ],
+      },
+      {
+        title: "Your Organization",
+        items: [endorseLink, ...organizationalSignatoryLinks],
       },
     ],
   },
@@ -939,6 +970,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.donate,
       ROUTES.vote,
       ROUTES.questions,
+      ROUTES.feedback,
     ],
     restrictToAllowlist: true,
     publicPrefixes: [
@@ -969,6 +1001,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.dih,
       ROUTES.wishocracy,
       ROUTES.donate,
+      ROUTES.feedback,
     ],
     operationalPrefixes: [
       "/r",

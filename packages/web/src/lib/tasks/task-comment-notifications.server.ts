@@ -34,7 +34,7 @@ export interface PostTaskCommentInput {
   /// invite URL ("Take 30 seconds to end war and disease").
   cta?: CommentNotificationCta | null;
   /// Per-message From override. Used by share emails to foreground the
-  /// sender's name (e.g. "Mike via Earth Optimization Services").
+  /// sender's name (e.g. "Mike via International Campaign to End War and Disease").
   from?: string | null;
   kind?: TaskCommentKind;
   message: string;

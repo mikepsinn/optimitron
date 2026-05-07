@@ -57,7 +57,7 @@ async function signInViaApi(request: import("@playwright/test").APIRequestContex
     "/api/auth/callback/credentials",
     {
       form: {
-        email: "demo@optimitron.org",
+        email: "demo@thinkbynumbers.org",
         password: "demo1234",
         csrfToken,
         json: "true",

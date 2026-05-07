@@ -100,10 +100,6 @@ export default function Footer({ siteKey = "optimitron" }: FooterProps) {
             <Link href={ROUTES.terms} className="underline hover:no-underline">
               Terms
             </Link>
-            <span aria-hidden="true">{"\u00b7"}</span>
-            <Link href={ROUTES.legal} className="underline hover:no-underline">
-              Legal
-            </Link>
           </nav>
         </div>
       </div>
