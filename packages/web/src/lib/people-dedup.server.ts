@@ -60,6 +60,16 @@ function endOfUtcDay(d: Date) {
   );
 }
 
+function getNamePrefilterToken(canonicalName: string): string {
+  const tokens = canonicalName
+    .split(" ")
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3)
+    .sort((a, b) => b.length - a.length);
+
+  return tokens[0] ?? canonicalName;
+}
+
 /**
  * Find existing `Person` rows that look like duplicates of the given
  * registration draft. Returns up to {@link MAX_CANDIDATES} matches.
@@ -86,7 +96,7 @@ export async function findCandidateDuplicateDeceasedPersons(
 
   const where: Prisma.PersonWhereInput = {
     deletedAt: null,
-    displayName: { equals: input.displayName.trim(), mode: "insensitive" },
+    displayName: { contains: getNamePrefilterToken(canonical), mode: "insensitive" },
   };
 
   if (input.deathDate) {

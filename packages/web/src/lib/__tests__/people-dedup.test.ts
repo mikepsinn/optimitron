@@ -96,6 +96,21 @@ describe("findCandidateDuplicateDeceasedPersons", () => {
     });
   });
 
+  it("uses a canonical token prefilter instead of exact display-name equality", async () => {
+    const db = makeFakeDb([]);
+    await findCandidateDuplicateDeceasedPersons(
+      { displayName: "St Jude" },
+      db,
+    );
+    const call = (
+      db as unknown as { person: { findMany: ReturnType<typeof vi.fn> } }
+    ).person.findMany.mock.calls[0]![0] as {
+      where: { displayName?: { contains?: string; equals?: string } };
+    };
+    expect(call.where.displayName).toMatchObject({ contains: "jude" });
+    expect(call.where.displayName?.equals).toBeUndefined();
+  });
+
   it("restricts to deceased rows when no deathDate is supplied", async () => {
     const db = makeFakeDb([]);
     await findCandidateDuplicateDeceasedPersons(
