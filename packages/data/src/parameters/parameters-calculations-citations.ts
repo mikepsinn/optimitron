@@ -114,7 +114,7 @@ export const ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR: Parameter = {
   sourceUrl: "https://www.cato.org/policy-analysis/terrorism-immigration-risk-analysis",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const ANTIDEPRESSANT_TRIAL_EXCLUSION_RATE: Parameter = {
@@ -1504,7 +1504,7 @@ export const GLOBAL_MILITARY_SPENDING_ANNUAL_2005: Parameter = {
   sourceUrl: "https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-world-military-expenditure-2024",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const GLOBAL_MILITARY_SPENDING_ANNUAL_2024: Parameter = {
@@ -2025,7 +2025,7 @@ export const PENTAGON_UNACCOUNTED_FUNDS: Parameter = {
   sourceUrl: "https://thecommunemag.com/the-pentagon-misplaced-2-46-trillion-an-in-depth-look-at-the-financial-audit-failures",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const PHARMA_DRUG_DEVELOPMENT_COST_CURRENT: Parameter = {
@@ -5942,7 +5942,7 @@ export const GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR: Parameter = {
   formula: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / GLOBAL_MILITARY_SPENDING_ANNUAL_2005)^(1/19) - 1",
   latex: "\\begin{gathered}\ng_{mil,20yr} \\\\\n= \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const GLOBAL_POLITICAL_REFORM_INVESTMENT: Parameter = {
@@ -6038,7 +6038,7 @@ export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_BASELINE: Parameter = {
   latex: "\\begin{gathered}\nCost_{war,pp,baseline} = \\frac{Cost_{war,cum,baseline}}{Pop_{global}} = \\frac{\\$3220T}{8B} = \\$402K\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,baseline} = C \\times ((1 + g)^{80} - 1) / g\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
   confidenceInterval: [325414.89910474705, 488688.71969801374],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_FLAT: Parameter = {
@@ -6526,7 +6526,7 @@ export const PEACE_DIVIDEND_LIFETIME_PER_PERSON: Parameter = {
   latex: "\\begin{gathered}\nSavings_{pp,LT} = \\frac{Savings_{LT}}{Pop_{global}} = \\frac{\\$2320T}{8B} = \\$290K\n\\\\[0.5em]\n\\text{where } Savings_{LT} = Cost_{war,cum,baseline} - Cost_{war,cum,treaty} = \\$3220T - \\$899T = \\$2320T\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,baseline} = C \\times ((1 + g)^{80} - 1) / g\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,treaty} = C \\times (1 - Reduce_{treaty}) \\times 80\n\\end{gathered}",
   confidenceInterval: [234509.93169185508, 352173.05227955227],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const PEACE_DIVIDEND_LIFETIME_PER_PERSON_COMPOUNDED: Parameter = {
@@ -6701,7 +6701,7 @@ export const PENTAGON_UNACCOUNTED_CLINICAL_TRIAL_YEARS: Parameter = {
   latex: "\\begin{gathered}\nYears_{pentagon,trials} \\\\\n= \\frac{Funds_{pentagon,unaccounted}}{Spending_{trials,gov}} \\\\\n= \\frac{\\$2.46T}{\\$4.5B} \\\\\n= 547\n\\end{gathered}",
   confidenceInterval: [410.0, 808.7477993719046],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const PENTAGON_UNACCOUNTED_FALSE_CLAIMS_ANALOG_EXPOSURE: Parameter = {
@@ -8084,7 +8084,7 @@ export const US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT: Parameter = {
   formula: "1 - (US_MILITARY_SPENDING_1939 / US_MILITARY_SPENDING_2024)",
   latex: "\\begin{gathered}\nPct_{1939<2024} \\\\\n= 1 - \\frac{Spending_{US,1939}}{Spending_{US,2024}} \\\\\n= 1 - \\frac{\\$29B}{\\$886B} \\\\\n= 96.7\\%\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const US_CONGRESS_FULL_ADVOCACY_COST: Parameter = {
@@ -10588,7 +10588,7 @@ export const TREATY_REDIRECTED_SPENDING_INFINITE_ROI: Parameter = {
   formula: "COMBINED_DIVIDENDS ÷ 0 = ∞",
   latex: "\\begin{gathered}\n\\text{ROI} \\\\\n= \\frac{\\text{Annual Benefits}}{\\text{New Spending}} \\\\\n= \\frac{\\$172B}{0} \\\\\n= \\infty\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
-  manualPageTitle: "A 1% Treaty",
+  manualPageTitle: "The 1% Treaty",
 };
 
 export const TREATY_REDUCTION_PCT: Parameter = {
