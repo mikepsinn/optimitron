@@ -57,7 +57,7 @@ const mockedFindUnique = vi.mocked(prisma.user.findUnique);
 
 const fullIdentityRow = {
   createdAt: new Date("2026-01-01T00:00:00Z"),
-  email: "demo@optimitron.org",
+  email: "demo@thinkbynumbers.org",
   id: "user_123",
   newsletterSubscribed: false,
   personId: "person_123",
@@ -85,7 +85,7 @@ describe("authOptions.callbacks.jwt", () => {
 
     const token = await callJwt({
       token: {},
-      user: { id: "user_123", email: "demo@optimitron.org" },
+      user: { id: "user_123", email: "demo@thinkbynumbers.org" },
       trigger: "signIn",
     });
 
@@ -100,12 +100,12 @@ describe("authOptions.callbacks.jwt", () => {
 
     const token = await callJwt({
       token: {},
-      user: { id: "user_123", email: "demo@optimitron.org" },
+      user: { id: "user_123", email: "demo@thinkbynumbers.org" },
       trigger: "signIn",
     });
 
     expect(token.id).toBe("user_123");
-    expect(token.email).toBe("demo@optimitron.org");
+    expect(token.email).toBe("demo@thinkbynumbers.org");
     // Person.displayName is the canonical source for token.name
     expect(token.name).toBe("Demo Person");
     expect(token.personId).toBe("person_123");
@@ -120,7 +120,7 @@ describe("authOptions.callbacks.jwt", () => {
     // This is the steady-state case: user only flows through on sign-in;
     // later requests just decode the existing JWT and pass it back.
     const token = await callJwt({
-      token: { id: "user_123", email: "demo@optimitron.org" },
+      token: { id: "user_123", email: "demo@thinkbynumbers.org" },
     });
 
     expect(token.id).toBe("user_123");

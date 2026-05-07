@@ -10,6 +10,7 @@ import {
 const mocks = vi.hoisted(() => ({
   canManageOrganization: vi.fn(),
   createOrganizationWithOwner: vi.fn(),
+  ensureOrganizationTreatyActivationTask: vi.fn(),
   positionFindUnique: vi.fn(),
   positionUpsert: vi.fn(),
   referendumFindUnique: vi.fn(),
@@ -28,6 +29,8 @@ vi.mock("@/lib/organization.server", async () => {
     ...actual,
     canManageOrganization: mocks.canManageOrganization,
     createOrganizationWithOwner: mocks.createOrganizationWithOwner,
+    ensureOrganizationTreatyActivationTask:
+      mocks.ensureOrganizationTreatyActivationTask,
   };
 });
 
@@ -75,7 +78,13 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     mocks.canManageOrganization.mockResolvedValue(true);
     mocks.createOrganizationWithOwner.mockResolvedValue({
       id: "org_new",
+      name: "New Organization",
+      slug: "new-organization",
       status: OrgStatus.APPROVED,
+    });
+    mocks.ensureOrganizationTreatyActivationTask.mockResolvedValue({
+      id: "task_1",
+      title: "Share the Clinical Trial Abundance Survey with your members",
     });
     mocks.positionFindUnique.mockResolvedValue(null);
     mocks.positionUpsert.mockResolvedValue({
@@ -153,6 +162,13 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
   });
 
   it("creates a new organization and YES position as approved", async () => {
+    mocks.createOrganizationWithOwner.mockResolvedValue({
+      id: "org_new",
+      name: "The Useful Institute",
+      slug: "the-useful-institute",
+      status: OrgStatus.APPROVED,
+    });
+
     const res = await POST(
       makeRequest({
         position: "yes",
@@ -168,6 +184,11 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     );
 
     expect(res.status).toBe(201);
+    await expect(res.json()).resolves.toMatchObject({
+      organizationId: "org_new",
+      taskId: "task_1",
+      success: true,
+    });
     expect(mocks.createOrganizationWithOwner).toHaveBeenCalledWith(
       {
         name: "The Useful Institute",
@@ -182,6 +203,14 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
       },
       "user_1",
       { rejectDuplicates: false },
+    );
+    expect(mocks.ensureOrganizationTreatyActivationTask).toHaveBeenCalledWith(
+      {
+        organizationId: "org_new",
+        organizationName: "The Useful Institute",
+        organizationSlug: "the-useful-institute",
+      },
+      "user_1",
     );
     expect(mocks.positionUpsert).toHaveBeenCalledWith({
       where: {
@@ -207,6 +236,59 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
         status: OrganizationReferendumPositionStatus.APPROVED,
       },
     });
+  });
+
+  it("uses the signed-in demo email when Institute for Accelerated Medicine creates an organization", async () => {
+    mocks.requireAuth.mockResolvedValue({
+      userEmail: "demo@thinkbynumbers.org",
+      userId: "demo-user-id",
+    });
+    mocks.createOrganizationWithOwner.mockResolvedValue({
+      id: "org_iam",
+      name: "Institute for Accelerated Medicine",
+      slug: "institute-for-accelerated-medicine",
+      status: OrgStatus.APPROVED,
+    });
+    mocks.ensureOrganizationTreatyActivationTask.mockResolvedValue({
+      id: "task_iam",
+      title: "Share the Clinical Trial Abundance Survey with your members",
+    });
+
+    const res = await POST(
+      makeRequest({
+        position: "YES",
+        newOrganization: {
+          name: "Institute for Accelerated Medicine",
+          website: "https://acceleratedmedicine.org",
+        },
+      }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(201);
+    await expect(res.json()).resolves.toMatchObject({
+      organizationId: "org_iam",
+      taskId: "task_iam",
+      success: true,
+    });
+    expect(mocks.createOrganizationWithOwner).toHaveBeenCalledWith(
+      expect.objectContaining({
+        contactEmail: "demo@thinkbynumbers.org",
+        name: "Institute for Accelerated Medicine",
+        status: OrgStatus.APPROVED,
+        website: "https://acceleratedmedicine.org/",
+      }),
+      "demo-user-id",
+      { rejectDuplicates: false },
+    );
+    expect(mocks.ensureOrganizationTreatyActivationTask).toHaveBeenCalledWith(
+      {
+        organizationId: "org_iam",
+        organizationName: "Institute for Accelerated Medicine",
+        organizationSlug: "institute-for-accelerated-medicine",
+      },
+      "demo-user-id",
+    );
   });
 
   it("rejects unsafe square logo URLs before creating a new organization", async () => {
@@ -268,11 +350,24 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     );
 
     expect(res.status).toBe(201);
+    await expect(res.json()).resolves.toMatchObject({
+      organizationId: "org_existing",
+      taskId: "task_1",
+      success: true,
+    });
     expect(mocks.canManageOrganization).toHaveBeenCalledWith(
       "user_1",
       "org_existing",
     );
     expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
+    expect(mocks.ensureOrganizationTreatyActivationTask).toHaveBeenCalledWith(
+      {
+        organizationId: "org_existing",
+        organizationName: undefined,
+        organizationSlug: undefined,
+      },
+      "user_1",
+    );
     expect(mocks.positionUpsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({
@@ -284,6 +379,46 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
         }),
       }),
     );
+  });
+
+  it("keeps the signature when the activation task side effect fails", async () => {
+    mocks.ensureOrganizationTreatyActivationTask.mockRejectedValue(
+      new Error("email provider exploded"),
+    );
+
+    const res = await POST(
+      makeRequest({
+        position: "YES",
+        organizationId: "org_existing",
+      }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(201);
+    await expect(res.json()).resolves.toMatchObject({
+      organizationId: "org_existing",
+      taskId: null,
+      success: true,
+    });
+    expect(mocks.positionUpsert).toHaveBeenCalled();
+  });
+
+  it("does not create an outreach task for non-YES positions", async () => {
+    const res = await POST(
+      makeRequest({
+        position: "ABSTAIN",
+        organizationId: "org_existing",
+      }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(201);
+    await expect(res.json()).resolves.toMatchObject({
+      organizationId: "org_existing",
+      taskId: null,
+      success: true,
+    });
+    expect(mocks.ensureOrganizationTreatyActivationTask).not.toHaveBeenCalled();
   });
 
   it("does not let a non-manager sign for an existing organization", async () => {

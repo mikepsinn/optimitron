@@ -21,19 +21,35 @@ export default async function OrganizationsPage() {
           Organizations
         </p>
         <h1 className="text-3xl font-black uppercase text-foreground sm:text-4xl">
-          Organization Signatory Tools
+          Organization Campaign Tools
         </h1>
         <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
-          Give your audience a treaty survey link. You get credited for every
-          verified signature it produces.
+          Share the treaty survey from an official organization link. Responses
+          are credited to your organization without making a candidate
+          endorsement.
         </p>
+        {organizations.length > 0 ? (
+          <Link
+            href={ROUTES.endorse}
+            className="mt-6 inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+          >
+            Create Organization
+          </Link>
+        ) : null}
       </header>
 
       {organizations.length === 0 ? (
-        <p className="font-bold text-muted-foreground">
-          No organization signatories are connected to your account yet. Sign as
-          an organization first.
-        </p>
+        <div className="border-2 border-foreground bg-background p-5">
+          <p className="font-bold text-muted-foreground">
+            No organizations are connected to your account yet.
+          </p>
+          <Link
+            href={ROUTES.endorse}
+            className="mt-4 inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+          >
+            Create Organization
+          </Link>
+        </div>
       ) : (
         <ul className="space-y-3">
           {organizations.map((organization) => (

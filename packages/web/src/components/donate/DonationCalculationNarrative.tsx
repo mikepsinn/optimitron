@@ -116,9 +116,9 @@ export function DonationCalculationNarrative({
             </>
           }
         >
-          There is a queue to not die, and it is longer than any queue humans
-          have ever voluntarily stood in, which is saying something because you
-          invented Disneyland.
+          That backlog is the treatment queue, and it is longer than any queue
+          humans have ever voluntarily stood in, which is saying something
+          because you invented Disneyland.
         </NarrativeStep>
 
         <NarrativeStep
@@ -209,7 +209,10 @@ export function DonationCalculationNarrative({
               <ParameterValue
                 className="font-black"
                 figures={3}
-                param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }}
+                param={{
+                  ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
+                  unit: "USD",
+                }}
               />{" "}
               per patient.
             </>
@@ -246,16 +249,16 @@ export function DonationCalculationNarrative({
             </>
           }
         >
-          No grant committees deciding which diseases are fashionable this
-          year. The patient subsidy follows the patient. That is{" "}
+          No grant committees deciding which diseases are fashionable this year.
+          The patient subsidy follows the patient. That is{" "}
           <ParameterValue
             className="font-black"
             display="withUnit"
             figures={3}
             param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
           />{" "}
-          current global capacity: more trials, more disease coverage, same
-          pool of compounds.
+          current global capacity: more trials, more disease coverage, same pool
+          of compounds.
         </NarrativeStep>
 
         <NarrativeStep
@@ -332,8 +335,8 @@ export function DonationCalculationNarrative({
             figures={3}
             param={GLOBAL_DISEASE_DEATHS_PER_MINUTE}
           />{" "}
-          every minute. Every minute of delay, 104 humans permanently stop.
-          With the current live assumptions, the model estimates{" "}
+          every minute. Every minute of delay, 104 humans permanently stop. With
+          the current live assumptions, the model estimates{" "}
           <strong>{formatQuantity(derived.livesSaved)}</strong> expected deaths
           prevented and <strong>{formatQuantity(sufferingYears)}</strong> years
           of suffering and disability prevented.
@@ -362,7 +365,7 @@ export function DonationCalculationNarrative({
                 suffix="%"
                 value={treatyReductionPct}
               />{" "}
-              to clinical trials.
+              to high-efficiency pragmatic clinical trials.
             </>
           }
         >
@@ -373,8 +376,7 @@ export function DonationCalculationNarrative({
             param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
           />{" "}
           times less than military spending. Your chance of dying from disease
-          is 100%. Your current budget does not reflect this.{" "}
-          Earth owns{" "}
+          is 100%. Your current budget does not reflect this. Earth owns{" "}
           <ParameterValue
             className="font-black"
             figures={3}
@@ -427,9 +429,9 @@ export function DonationCalculationNarrative({
         >
           That makes the campaign cost{" "}
           <strong>${formatNumber(derived.campaignCostUsd)}</strong>. Everyone
-          thinks this is crazy because everyone else thinks this is crazy.
-          Right now every human who wants less war and disease assumes they are
-          the weird one. The referendum is the moment they find out they are
+          thinks this is crazy because everyone else thinks this is crazy. Right
+          now every human who wants less war and disease assumes they are the
+          weird one. The referendum is the moment they find out they are
           everyone.
         </NarrativeStep>
 

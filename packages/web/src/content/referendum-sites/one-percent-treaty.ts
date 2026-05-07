@@ -45,8 +45,8 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
         "The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.",
     },
     endorse: {
-      title: "Sign as Organization — 1% Treaty",
-      description: `Sign the 1% Treaty as an organization: ${treatyTradePosition}.`,
+      title: "Join as Organization — 1% Treaty",
+      description: `Join the ${campaignName} as an organization: ${treatyTradePosition}.`,
     },
     signatories: {
       title: "Signatories — 1% Treaty",
@@ -54,8 +54,8 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
         "Organizations and humans who publicly signed the 1% Treaty.",
     },
     supporters: {
-      title: "Organizational Signatories — 1% Treaty",
-      description: `Organizations that signed the 1% Treaty: ${treatyTradePosition}.`,
+      title: "Organizational Supporters — 1% Treaty",
+      description: `Organizations that publicly support the 1% Treaty: ${treatyTradePosition}.`,
     },
     why: {
       title: "Why — 1% Treaty",
@@ -65,7 +65,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     legal: {
       title: "Legal — 1% Treaty",
       description:
-        "For boards and counsel: joining is not lobbying, not election campaigning, and not domestic legislation.",
+        "For organizations: signing is not a candidate endorsement, not a donation, and not support for any specific domestic legislation.",
     },
     impact: {
       title: "Impact — 1% Treaty",
@@ -75,11 +75,10 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   },
   navItems: [
     { label: "Treaty", href: "/treaty" },
-    { label: "Sign as Organization", href: "/endorse" },
+    { label: "Join as Organization", href: "/endorse" },
     { label: "Signatories", href: "/signatories" },
     { label: "Tasks", href: "/tasks" },
     { label: "Why", href: "/why" },
-    { label: "Legal", href: "/legal" },
   ],
   home: {
     eyebrow: "1% Treaty",
@@ -90,7 +89,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     ],
     intro: "",
     primaryCtaLabel: "Read and sign the treaty",
-    secondaryCtaLabel: "Sign as Organization",
+    secondaryCtaLabel: "Join as Organization",
     treatyEyebrow: "Treaty text",
     signTitle: "Sign the treaty now",
     signBody:
@@ -126,21 +125,21 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     fullDashboardLabel: "Open your Earth Optimization dashboard",
   },
   supporters: {
-    eyebrow: "Organizational signatories",
-    title: "Organizational Signatories",
-    description: `Organizations that publicly signed the 1% Treaty through the ${campaignName}.`,
-    emptyTitle: "No organizational signatories yet.",
+    eyebrow: "Organizational supporters",
+    title: "Organizational Supporters",
+    description: `Organizations that publicly support the 1% Treaty through the ${campaignName}.`,
+    emptyTitle: "No organizational supporters yet.",
     emptyBody: `Be the first organization willing to put this on the record: ${treatyTradePosition}.`,
-    ctaLabel: "Sign as Organization",
+    ctaLabel: "Join as Organization",
   },
   endorse: {
-    eyebrow: "Organizational signature",
-    title: "Sign as an Organization",
-    signInTitle: "Sign in to sign",
+    eyebrow: "Your Organization Can",
+    title: "End War And Disease One Day Sooner",
+    signInTitle: "Verify organization",
     signInDescription:
-      "Organization signatures use verified accounts so nobody signs your organization for you.",
-    signInLabel: "Sign in",
-    existingSupportersLabel: "organizational signatories",
+      "Organization support uses verified accounts so nobody joins the campaign in your organization's name.",
+    signInLabel: "Verify",
+    existingSupportersLabel: "organizational supporters",
   },
   why: {
     eyebrow: "The case",
@@ -180,53 +179,47 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     ctaLabel: "Read and sign the treaty",
   },
   legal: {
-    eyebrow: "For boards and counsel",
-    title: "Legal analysis for organizational signatories",
+    eyebrow: "For organizations",
+    title: "Legal notes for organizations",
     sections: [
       {
         heading: "Summary",
         paragraphs: [
-          "Signing the 1% Treaty as an organization is not lobbying under U.S. tax law, does not involve participation in an election campaign, and does not constitute support for any specific domestic legislation. It is an expression of institutional support for an international policy principle.",
+          "Joining means your organization publicly supports the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.",
+          "It is not a donation, candidate endorsement, party activity, ballot measure position, or support for a pending bill.",
         ],
       },
       {
-        heading: "Why this is not lobbying",
+        heading: "Organizations already do this",
         paragraphs: [
-          "Under IRC §4911 and Treasury Regulations, lobbying requires a communication that refers to specific legislation and expresses a view on it. The 1% Treaty is not pending legislation in any jurisdiction. It is a proposed international framework principle. Publicly expressing support for a policy idea does not meet the definition of a lobbying communication.",
+          'Civil-society coalitions helped turn landmines and nuclear weapons from "politically impossible" into treaty text. The International Campaign to Ban Landmines helped bring about the Mine Ban Treaty. ICAN helped drive the Treaty on the Prohibition of Nuclear Weapons. The 1% Treaty asks organizations to do the same normal thing: publicly support a humanitarian treaty, not a candidate or party.',
+        ],
+        links: [
+          {
+            label: "Landmine Treaty Precedent",
+            href: "https://icblcmc.org/about-icbl",
+          },
+          {
+            label: "Nuclear Treaty Precedent",
+            href: "https://www.nobelprize.org/prizes/peace/2017/ican/facts/",
+          },
         ],
       },
       {
-        heading: "Why this is not election campaign activity",
-        paragraphs: [
-          "501(c)(3) organizations may not participate in, or intervene in, any political campaign on behalf of or in opposition to any candidate for public office. Joining this campaign names no candidate, takes no position for or against any candidate, and does not coordinate with any candidate campaign. It is policy advocacy in the broad sense permitted to charitable organizations.",
-        ],
-      },
-      {
-        heading: "Historical precedent",
-        paragraphs: [
-          "Charitable organizations have long signed international policy declarations — from the Universal Declaration of Human Rights to more recent global health frameworks — without implicating their tax-exempt status. The 1% Treaty signature follows the same pattern.",
-        ],
-      },
-      {
-        heading: "What signing commits your organization to",
+        heading: "What joining does",
         paragraphs: [],
         bullets: [
-          "Public display of your organization's name and logo on the organizational signatories page.",
-          "A single optional public statement (up to a few sentences) that appears beside your logo.",
+          "Public display of your organization's name with other public supporters.",
+          "Access to your organization's member link, website button, iframe, and outreach starter.",
           "No ongoing obligations. No financial contributions. No signatures on unrelated documents.",
         ],
       },
       {
-        heading: "Withdrawal",
+        heading: "Treaty text",
         paragraphs: [
-          "An organization may withdraw its signature at any time by contacting the site administrator. Removal is processed within seven days.",
+          "The treaty is short. The full text is collapsed on the organization signup page so your organization can read it without leaving.",
         ],
-      },
-      {
-        heading: "Full treaty text",
-        paragraphs: [
-          "The canonical treaty text is available at /treaty. Counsel should review the full text before signing.",
-        ],
+        links: [],
       },
     ],
   },

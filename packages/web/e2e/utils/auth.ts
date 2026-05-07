@@ -1,6 +1,6 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 
-export const DEMO_EMAIL = "demo@optimitron.org";
+export const DEMO_EMAIL = "demo@thinkbynumbers.org";
 export const DEMO_PASSWORD = "demo1234";
 
 export interface TestCredentials {

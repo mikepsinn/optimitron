@@ -5,30 +5,46 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getReferendumConfig } from "@/config/referendums";
-import { readerMarkdownComponents } from "@/components/referendum/ReferendumStepper";
+import {
+  readerMarkdownComponents,
+  splitIntoSlides,
+} from "@/components/referendum/ReferendumStepper";
+import { Button } from "@/components/retroui/Button";
 import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildCourtReferralUrl } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 /**
- * Treaty body + public signature box, styled to match the /treaty reader mode
- * exactly. Designed for the post-vote dashboard so committed signers can read
- * what they signed and pull quotes when recruiting. Reuses
- * `readerMarkdownComponents` and `ReferendumSiteInlineSign` so the visual
- * stays in lockstep with /treaty — single source of truth for both surfaces.
+ * Treaty body plus public signature box, styled to match /treaty reader mode.
+ * Reuses the referendum reader and inline sign controls so treaty rendering
+ * stays consistent across surfaces.
  */
-export function TreatyContent() {
+interface TreatyContentProps {
+  bodyMarkdown?: string | null;
+  className?: string;
+  introText?: string | null;
+  showCourtCta?: boolean;
+  showInlineSign?: boolean;
+}
+
+export function TreatyContent({
+  bodyMarkdown = null,
+  className,
+  introText,
+  showCourtCta = true,
+  showInlineSign = true,
+}: TreatyContentProps = {}) {
   const [courtReferralCode, setCourtReferralCode] = useState<string | null>(
     null,
   );
   const config = getReferendumConfig(TREATY_REFERENDUM_SLUG);
 
   useEffect(() => {
-    const currentReferralCode =
-      typeof window === "undefined"
-        ? null
-        : new URLSearchParams(window.location.search).get("ref");
+    const currentReferralCode = new URLSearchParams(window.location.search).get(
+      "ref",
+    );
 
     if (currentReferralCode) {
       storage.setSignupReferral(currentReferralCode);
@@ -40,48 +56,57 @@ export function TreatyContent() {
   }, []);
 
   if (!config) return null;
+  const slides = bodyMarkdown ? splitIntoSlides(bodyMarkdown) : config.slides;
   const courtHref = buildCourtReferralUrl(
     { referralCode: courtReferralCode },
     "",
   );
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-10">
+    <div className={cn("mx-auto w-full max-w-2xl space-y-10", className)}>
       <div className="mx-auto h-px w-24 bg-[var(--treaty-ink-muted)]" />
       <p className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
-        {config.introText}
+        {introText ?? config.introText}
       </p>
       <div className="mx-auto h-px w-24 bg-[var(--treaty-ink-muted)]" />
-      {config.slides.map((slide, i) => (
+      {slides.map((slide) => (
         <ReactMarkdown
-          key={i}
+          key={`${slide.length}:${slide.slice(0, 80)}`}
           remarkPlugins={[remarkGfm]}
           components={readerMarkdownComponents}
         >
           {slide}
         </ReactMarkdown>
       ))}
-      <div className="border-t border-[var(--treaty-ink-muted)] pt-10 text-center">
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
-          Next: the enforcement stack
-        </p>
-        <Link
-          href={courtHref}
-          className="mt-3 inline-block text-xl font-bold text-[var(--treaty-ink)] underline decoration-[var(--treaty-ink)] decoration-2 underline-offset-4 [font-family:var(--v0-font-libre-baskerville)] hover:text-[var(--treaty-ink-soft)] sm:text-2xl"
-        >
-          Join the Court of Humanity →
-        </Link>
-        <p className="mt-3 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-base">
-          The treaty is the off-ramp. The Court is the road that produces the
-          off-ramp.
-        </p>
-      </div>
-      <div className="border-t border-[var(--treaty-ink-muted)] pt-12">
-        <ReferendumSiteInlineSign
-          referendumSlug={TREATY_REFERENDUM_SLUG}
-          showPrivacyToggle
-        />
-      </div>
+      {showCourtCta ? (
+        <div className="border-t border-[var(--treaty-ink-muted)] pt-10 text-center">
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
+            Next: the enforcement stack
+          </p>
+          <Button
+            asChild
+            className="mt-4 inline-flex border border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] shadow-none transition-colors hover:translate-y-0 hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)] active:translate-x-0 active:translate-y-0 sm:text-base"
+            size="md"
+            variant="outline"
+          >
+            <Link href={courtHref} aria-label="Join the Court of Humanity">
+              Join the Court of Humanity
+            </Link>
+          </Button>
+          <p className="mt-3 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-base">
+            The treaty is the off-ramp. The Court is the road that produces the
+            off-ramp.
+          </p>
+        </div>
+      ) : null}
+      {showInlineSign ? (
+        <div className="border-t border-[var(--treaty-ink-muted)] pt-12">
+          <ReferendumSiteInlineSign
+            referendumSlug={TREATY_REFERENDUM_SLUG}
+            showPrivacyToggle
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

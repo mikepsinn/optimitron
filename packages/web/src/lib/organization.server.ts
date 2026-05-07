@@ -1,9 +1,137 @@
-import { OrgStatus, OrgType, type Prisma } from "@optimitron/db";
+import {
+  OrgStatus,
+  OrgType,
+  TaskCategory,
+  TaskClaimPolicy,
+  TaskDifficulty,
+  TaskStatus,
+  type Prisma,
+} from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { issueOrgContextToken } from "@/lib/organization-context-token.server";
 import { slugify } from "@/lib/slugify";
+import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
+
+export const NONPROFIT_COALITION_STRATEGY_URL =
+  "https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy";
+
+const WAR_ON_DISEASE_ORIGIN = "https://warondisease.org";
+const ORGANIZATION_ACTIVATION_TASK_TITLE =
+  "Share the Clinical Trial Abundance Survey with your members";
+
+function getOrganizationActivationTaskKey(organizationId: string) {
+  return `organization:${organizationId}:share-1-percent-treaty-survey`;
+}
+
+function buildOrganizationActivationTaskDescription(input: {
+  organizationId: string;
+  organizationName: string;
+  organizationSlug: string;
+}) {
+  const organizationToolsUrl = `${WAR_ON_DISEASE_ORIGIN}/organizations/${input.organizationId}`;
+  const surveyUrl = `${WAR_ON_DISEASE_ORIGIN}/survey/${input.organizationSlug}`;
+  const legalUrl = `${WAR_ON_DISEASE_ORIGIN}/endorse#organization-legal-notes`;
+
+  return `Your organization joined the International Campaign to End War and Disease by publicly supporting the 1% Treaty. Now use the reach your members already trust: place the Clinical Trial Abundance Survey link on your site and share it once with your list.
+
+Why this task exists:
+- Members get a simple way to review the treaty and record their response.
+- Responses from your organization link are credited to ${input.organizationName}.
+- This is a policy survey, not a candidate endorsement.
+
+Do this:
+1. Open your organization tools page: ${organizationToolsUrl}
+2. Copy the member survey link, website button, or iframe.
+3. Put one of them on your website or in a newsletter.
+4. Ask members to review the treaty and record their response.
+
+Done when:
+- The survey is linked or embedded where members can find it.
+- At least one email, newsletter item, or social post sends members to the survey.
+- The organization URL stays intact so responses are credited to ${input.organizationName}.
+
+Clinical Trial Abundance Survey URL:
+${surveyUrl}
+
+Why organizations should share this:
+${NONPROFIT_COALITION_STRATEGY_URL}
+
+Legal notes:
+${legalUrl}`;
+}
+
+export async function ensureOrganizationTreatyActivationTask(
+  input: {
+    organizationId: string;
+    organizationName?: string | null;
+    organizationSlug?: string | null;
+  },
+  creatorUserId: string,
+  db: DbClient = prisma,
+) {
+  const organization = await db.organization.findUnique({
+    where: { id: input.organizationId },
+    select: { name: true, slug: true },
+  });
+
+  if (!organization) {
+    throw new Error("Organization not found");
+  }
+
+  const taskKey = getOrganizationActivationTaskKey(input.organizationId);
+  const description = buildOrganizationActivationTaskDescription({
+    organizationId: input.organizationId,
+    organizationName: organization.name,
+    organizationSlug: organization.slug,
+  });
+  const contextJson = {
+    organizationId: input.organizationId,
+    organizationName: organization.name,
+    organizationToolsUrl: `${WAR_ON_DISEASE_ORIGIN}/organizations/${input.organizationId}`,
+    surveyUrl: `${WAR_ON_DISEASE_ORIGIN}/survey/${organization.slug}`,
+  } satisfies Prisma.InputJsonValue;
+
+  const task = await db.task.upsert({
+    where: { taskKey },
+    update: {
+      assigneeOrganizationId: input.organizationId,
+      contextJson,
+      deletedAt: null,
+      description,
+      status: TaskStatus.ACTIVE,
+      title: ORGANIZATION_ACTIVATION_TASK_TITLE,
+    },
+    create: {
+      assigneeOrganizationId: input.organizationId,
+      category: TaskCategory.OUTREACH,
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      contextJson,
+      createdByUserId: creatorUserId,
+      description,
+      difficulty: TaskDifficulty.BEGINNER,
+      estimatedEffortHours: 1,
+      interestTags: ["1% Treaty", "organization", "member survey"],
+      isPublic: true,
+      roleTitle: "Organization supporter",
+      skillTags: ["email", "website", "member outreach"],
+      status: TaskStatus.ACTIVE,
+      taskKey,
+      title: ORGANIZATION_ACTIVATION_TASK_TITLE,
+    },
+    select: { id: true, title: true },
+  });
+
+  if (db === prisma) {
+    await notifyTaskAssigneeOfAssignment({
+      senderUserId: creatorUserId,
+      taskId: task.id,
+    });
+  }
+
+  return task;
+}
 
 export function normalizeOrganizationHttpUrl(
   raw: string | null | undefined,

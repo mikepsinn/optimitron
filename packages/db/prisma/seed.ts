@@ -2416,24 +2416,49 @@ async function upsertSeedTaskCommunicationEndpoint(
 // ---------------------------------------------------------------------------
 // Demo User — for hackathon judges and demo recordings
 // ---------------------------------------------------------------------------
-// Email: demo@optimitron.org  Password: demo1234
+// Email: demo@thinkbynumbers.org  Password: demo1234
 
 async function seedDemoUser() {
   console.log("👤 Seeding demo user...");
+
+  const DEMO_EMAIL = "demo@thinkbynumbers.org";
+  const LEGACY_DEMO_EMAIL = "demo@optimitron.org";
 
   // Pre-hashed bcrypt(12) of "demo1234"
   const DEMO_PASSWORD_HASH =
     "$2b$12$Hy27qJOTykSezth61xRCJ..sMPVvzWxs9wZEEsEsYn9o3GaUYkGCa";
 
   try {
+    const existingDemoUser = await prisma.user.findUnique({
+      where: { email: DEMO_EMAIL },
+      select: { id: true },
+    });
+    if (!existingDemoUser) {
+      await prisma.user.updateMany({
+        where: { email: LEGACY_DEMO_EMAIL },
+        data: { email: DEMO_EMAIL },
+      });
+    }
+
+    const existingDemoPerson = await prisma.person.findUnique({
+      where: { email: DEMO_EMAIL },
+      select: { id: true },
+    });
+    if (!existingDemoPerson) {
+      await prisma.person.updateMany({
+        where: { email: LEGACY_DEMO_EMAIL },
+        data: { email: DEMO_EMAIL },
+      });
+    }
+
     const user = await prisma.user.upsert({
-      where: { email: "demo@optimitron.org" },
+      where: { email: DEMO_EMAIL },
       update: {
         password: DEMO_PASSWORD_HASH,
         emailVerified: new Date(),
       },
       create: {
-        email: "demo@optimitron.org",
+        email: DEMO_EMAIL,
         password: DEMO_PASSWORD_HASH,
         emailVerified: new Date(),
         referralCode: "DEMO",
@@ -2442,13 +2467,13 @@ async function seedDemoUser() {
 
     // Person owns the public-display fields (handle / displayName / image).
     const person = await prisma.person.upsert({
-      where: { email: "demo@optimitron.org" },
+      where: { email: DEMO_EMAIL },
       update: {
         displayName: "Demo User",
         handle: "demo",
       },
       create: {
-        email: "demo@optimitron.org",
+        email: DEMO_EMAIL,
         displayName: "Demo User",
         handle: "demo",
       },
@@ -2460,20 +2485,28 @@ async function seedDemoUser() {
         data: { personId: person.id },
       });
     }
-    console.log("  ✓ demo@optimitron.org / demo1234");
+    console.log("  ✓ demo@thinkbynumbers.org / demo1234");
   } catch (err) {
     // If schema is out of sync, try raw SQL fallback. Display fields live
     // on Person now, so the User row carries only auth-level columns.
     console.log("  ⚠ upsert failed, trying raw SQL...");
     await prisma.$executeRawUnsafe(`
+      UPDATE "User"
+      SET email = 'demo@thinkbynumbers.org'
+      WHERE email = 'demo@optimitron.org'
+        AND NOT EXISTS (
+          SELECT 1 FROM "User" WHERE email = 'demo@thinkbynumbers.org'
+        )
+    `);
+    await prisma.$executeRawUnsafe(`
       INSERT INTO "User" (id, email, password, "referralCode", "emailVerified", "createdAt", "updatedAt")
-      VALUES ('demo-user-id', 'demo@optimitron.org', $1, 'DEMO', NOW(), NOW(), NOW())
+      VALUES ('demo-user-id', 'demo@thinkbynumbers.org', $1, 'DEMO', NOW(), NOW(), NOW())
       ON CONFLICT (email) DO UPDATE SET
         password = $1,
         "emailVerified" = NOW(),
         "updatedAt" = NOW()
     `, DEMO_PASSWORD_HASH);
-    console.log("  ✓ demo@optimitron.org / demo1234 (via raw SQL)");
+    console.log("  ✓ demo@thinkbynumbers.org / demo1234 (via raw SQL)");
   }
 }
 

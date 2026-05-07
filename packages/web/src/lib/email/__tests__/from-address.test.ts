@@ -108,7 +108,7 @@ describe("formatEmailFromHeader", () => {
 
   it("falls back to the system sender for malformed input", () => {
     expect(formatEmailFromHeader("not-an-email", "Wishonia")).toBe(
-      "Earth Optimization Services <hello@updates.warondisease.org>",
+      "International Campaign to End War and Disease <hello@updates.warondisease.org>",
     );
   });
 });

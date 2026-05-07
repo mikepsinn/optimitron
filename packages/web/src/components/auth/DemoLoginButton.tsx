@@ -23,7 +23,7 @@ export function DemoLoginButton({
 
     try {
       const result = await signIn("credentials", {
-        email: "demo@optimitron.org",
+        email: "demo@thinkbynumbers.org",
         password: "demo1234",
         callbackUrl,
         redirect: false,

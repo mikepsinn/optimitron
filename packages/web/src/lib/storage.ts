@@ -13,6 +13,9 @@ const STORAGE_KEYS = {
   signupLandingUrl: "signup_landing_url",
   pendingWishocracy: "pendingWishocracy",
   pendingTreatyVote: "pending_treaty_vote",
+  pendingOrganizationEndorsements: "pending_organization_endorsements",
+  pendingOrganizationEndorsementsSyncLock:
+    "pending_organization_endorsements_sync_lock",
   pendingRepresentedPeople: "pending_represented_people",
   pendingRepresentedPeopleSyncLock: "pending_represented_people_sync_lock",
   voteStatusCache: "vote_status_cache",
@@ -37,6 +40,23 @@ export type PendingTreatyVoteState = {
   organizationId: string | null;
   orgContextToken?: string | null;
   inviteToken?: string | null;
+};
+
+export type PendingOrganizationEndorsementDraft = {
+  clientDraftId: string;
+  description?: string;
+  organizationName: string;
+  originUrl?: string;
+  referendumSlug: string;
+  statement?: string;
+  timestamp: string;
+  version: 1;
+  website?: string;
+};
+
+export type PendingOrganizationEndorsementsSyncLock = {
+  expiresAt: number;
+  ownerId: string;
 };
 
 export type VoteStatusCache = {
@@ -235,6 +255,51 @@ export const storage = {
     setStorageItem(STORAGE_KEYS.pendingTreatyVote, data),
   removePendingTreatyVote: () =>
     removeStorageItem(STORAGE_KEYS.pendingTreatyVote),
+
+  getPendingOrganizationEndorsements: () =>
+    getStorageItem<PendingOrganizationEndorsementDraft[]>(
+      STORAGE_KEYS.pendingOrganizationEndorsements,
+    ) ?? [],
+  setPendingOrganizationEndorsements: (
+    data: PendingOrganizationEndorsementDraft[],
+  ) => setStorageItem(STORAGE_KEYS.pendingOrganizationEndorsements, data),
+  addPendingOrganizationEndorsement: (
+    draft: PendingOrganizationEndorsementDraft,
+  ) => {
+    const drafts =
+      getStorageItem<PendingOrganizationEndorsementDraft[]>(
+        STORAGE_KEYS.pendingOrganizationEndorsements,
+      ) ?? [];
+    setStorageItem(STORAGE_KEYS.pendingOrganizationEndorsements, [
+      ...drafts.filter((item) => item.clientDraftId !== draft.clientDraftId),
+      draft,
+    ]);
+  },
+  removePendingOrganizationEndorsements: (clientDraftIds: string[]) => {
+    const ids = new Set(clientDraftIds);
+    const drafts =
+      getStorageItem<PendingOrganizationEndorsementDraft[]>(
+        STORAGE_KEYS.pendingOrganizationEndorsements,
+      ) ?? [];
+    const remaining = drafts.filter((draft) => !ids.has(draft.clientDraftId));
+    if (remaining.length > 0) {
+      setStorageItem(STORAGE_KEYS.pendingOrganizationEndorsements, remaining);
+    } else {
+      removeStorageItem(STORAGE_KEYS.pendingOrganizationEndorsements);
+    }
+  },
+  clearPendingOrganizationEndorsements: () =>
+    removeStorageItem(STORAGE_KEYS.pendingOrganizationEndorsements),
+  getPendingOrganizationEndorsementsSyncLock: () =>
+    getStorageItem<PendingOrganizationEndorsementsSyncLock>(
+      STORAGE_KEYS.pendingOrganizationEndorsementsSyncLock,
+    ),
+  setPendingOrganizationEndorsementsSyncLock: (
+    lock: PendingOrganizationEndorsementsSyncLock,
+  ) =>
+    setStorageItem(STORAGE_KEYS.pendingOrganizationEndorsementsSyncLock, lock),
+  clearPendingOrganizationEndorsementsSyncLock: () =>
+    removeStorageItem(STORAGE_KEYS.pendingOrganizationEndorsementsSyncLock),
 
   getPendingRepresentedPeople: () =>
     getStorageItem<PendingRepresentedPersonDraft[]>(

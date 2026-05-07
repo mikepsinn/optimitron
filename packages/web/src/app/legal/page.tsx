@@ -1,51 +1,26 @@
-import { headers } from "next/headers";
-import { getSiteMetadata } from "@/lib/metadata";
-import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
-import { getSiteFromHeaders } from "@/lib/site";
+import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 
-export async function generateMetadata() {
-  const hdrs = await headers();
-  const site = getSiteFromHeaders(hdrs);
-  const content = requireReferendumSiteContent(site);
-  return getSiteMetadata(site, content.metadata.legal, ROUTES.legal);
-}
+export const dynamic = "force-dynamic";
 
-export default async function LegalPage() {
-  const hdrs = await headers();
-  const site = getSiteFromHeaders(hdrs);
-  const content = requireReferendumSiteContent(site);
+type LegalPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
-  return (
-    <article className="mx-auto max-w-3xl px-4 py-16 [font-family:var(--v0-font-source-serif-4)]">
-      <header className="mb-10 border-b-2 border-foreground pb-6">
-        <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          {content.legal.eyebrow}
-        </p>
-        <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-          {content.legal.title}
-        </h1>
-      </header>
+export default async function LegalPage({ searchParams }: LegalPageProps) {
+  const params = (await searchParams) ?? {};
+  const redirectSearchParams = new URLSearchParams();
 
-      <section className="prose prose-neutral max-w-none text-base font-bold text-foreground">
-        {content.legal.sections.map((section) => (
-          <div key={section.heading}>
-            <h2 className="mt-8 text-xl font-black uppercase">
-              {section.heading}
-            </h2>
-            {section.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-            {section.bullets?.length ? (
-              <ul className="ml-6 list-disc space-y-2">
-                {section.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-        ))}
-      </section>
-    </article>
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === "string") {
+      redirectSearchParams.set(key, value);
+    } else if (Array.isArray(value)) {
+      value.forEach((item) => redirectSearchParams.append(key, item));
+    }
+  }
+
+  const queryString = redirectSearchParams.toString();
+  redirect(
+    `${ROUTES.endorse}${queryString ? `?${queryString}` : ""}#organization-legal-notes`,
   );
 }

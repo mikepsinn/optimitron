@@ -70,6 +70,8 @@ const mocks = vi.hoisted(() => ({
   fireTaskTriggersForEvent: vi.fn().mockResolvedValue([]),
   listSitePages: vi.fn(),
   getPageContent: vi.fn(),
+  listAdminTaskEmailCommunications: vi.fn(),
+  listAdminEmailLogs: vi.fn(),
 }));
 
 vi.mock("../triggers", () => ({
@@ -147,6 +149,11 @@ vi.mock("../triggers/fire", () => ({
 vi.mock("../site-inventory.server", () => ({
   listSitePages: mocks.listSitePages,
   getPageContent: mocks.getPageContent,
+}));
+
+vi.mock("../admin-communications.server", () => ({
+  listAdminTaskEmailCommunications: mocks.listAdminTaskEmailCommunications,
+  listAdminEmailLogs: mocks.listAdminEmailLogs,
 }));
 
 vi.mock("../earth-data.server", () => ({
@@ -477,6 +484,9 @@ describe("MCP server tool dispatch", () => {
     expect(nonAdminNames).not.toContain("addDependency");
     expect(nonAdminNames).not.toContain("acquireLease");
     expect(nonAdminNames).not.toContain("logAgentRun");
+    expect(nonAdminNames).not.toContain("listTaskEmails");
+    expect(nonAdminNames).not.toContain("listRecipientEmails");
+    expect(nonAdminNames).not.toContain("listEmailLogs");
     expect(nonAdminNames).toContain("createTask");
 
     expect(adminNames).toContain("proposeTaskBundle");
@@ -484,6 +494,56 @@ describe("MCP server tool dispatch", () => {
     expect(adminNames).toContain("addDependency");
     expect(adminNames).toContain("acquireLease");
     expect(adminNames).toContain("logAgentRun");
+    expect(adminNames).toContain("listTaskEmails");
+    expect(adminNames).toContain("listRecipientEmails");
+    expect(adminNames).toContain("listEmailLogs");
+  });
+
+  it("lets admins list task email communications over MCP", async () => {
+    mocks.listAdminTaskEmailCommunications.mockResolvedValue({
+      communications: [{ id: "communication-1" }],
+      limit: 2,
+      total: 1,
+    });
+    mocks.listAdminEmailLogs.mockResolvedValue({
+      emailLogs: [{ id: "email-log-1" }],
+      limit: 2,
+      total: 1,
+    });
+    const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+    const result = await client.callTool({
+      name: "listTaskEmails",
+      arguments: {
+        email: "team@example.org",
+        limit: 2,
+        taskId: "task-1",
+      },
+    });
+
+    const body = parseToolBody(result);
+    expect(mocks.listAdminTaskEmailCommunications).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: "team@example.org",
+        limit: 2,
+        taskId: "task-1",
+      }),
+    );
+    expect(body.communicationTotal).toBe(1);
+    expect(body.emailLogTotal).toBe(1);
+  });
+
+  it("requires a recipient filter before listing recipient emails over MCP", async () => {
+    const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+    const result = await client.callTool({
+      name: "listRecipientEmails",
+      arguments: {},
+    });
+
+    const body = parseToolBody(result);
+    expect(body.error).toContain("Pass at least one recipient filter");
+    expect(mocks.listAdminTaskEmailCommunications).not.toHaveBeenCalled();
   });
 
   it("exposes Earth-data write tools to authenticated earthdata writers and moderation tools only to admins", async () => {

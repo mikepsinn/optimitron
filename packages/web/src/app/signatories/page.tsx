@@ -101,7 +101,7 @@ export default async function SignatoriesPage({
                 href={ROUTES.endorse}
                 className="inline-block border-2 border-foreground bg-background px-6 py-3 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background"
               >
-                Sign as Organization
+                Join as Organization
               </Link>
             </div>
           </div>

@@ -101,6 +101,7 @@ export const ROUTES = {
   video: "/video",
   tools: "/tools",
   contribute: "/contribute",
+  feedback: "/feedback",
   fund: "/fund",
   donate: "/donate",
   signIn: "/auth/signin",
@@ -703,21 +704,22 @@ export const questionsLink: NavItem = {
 
 export const whyLink: NavItem = {
   href: ROUTES.why,
-  label: "Why",
+  label: "The Case",
   emoji: "🧠",
   description:
-    "What happens when one percent of the murder budget becomes medicine budget.",
+    "The core numbers behind the 1% Treaty: disease, war spending, trial capacity, and why one apocalypse is enough to trade.",
   tagline: "The numbers behind the treaty",
-  cta: "Read Why",
+  cta: "Read the Case",
 };
 
 export const endorseLink: NavItem = {
   href: ROUTES.endorse,
-  label: "Sign as Organization",
+  label: "Join as Organization",
   emoji: "✍️",
-  description: "Sign the 1% Treaty as an organization.",
-  tagline: "Sign as an organization",
-  cta: "Sign as Organization",
+  description:
+    "Join the International Campaign to End War and Disease as an organization.",
+  tagline: "Join as an organization",
+  cta: "Join as Organization",
 };
 
 export const campaignPartnersLink: NavItem = {
@@ -746,8 +748,8 @@ export const legalLink: NavItem = {
   label: "Legal",
   emoji: "⚖️",
   description:
-    "Legal notes for boards and counsel reviewing organizational signatures.",
-  tagline: "For boards and counsel",
+    "Legal notes for organizations reviewing nonpartisan treaty support.",
+  tagline: "For organizations",
   cta: "Read Legal Notes",
 };
 
@@ -1002,6 +1004,15 @@ export const footerAppLinks: NavItem[] = [
   transmitLink,
   aboutLink,
 ];
+
+export const feedbackLink: NavItem = {
+  href: ROUTES.feedback,
+  label: "Feedback",
+  emoji: "!",
+  description:
+    "Tell us what is confusing, irritating, broken, or missing so this becomes a better to-do list for humanity.",
+  cta: "Send Feedback",
+};
 
 /** All internal nav links (explore + top-level + footer app links) */
 export const allNavLinks: NavItem[] = [

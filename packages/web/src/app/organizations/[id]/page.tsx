@@ -2,7 +2,10 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { OrganizationProfileEditor } from "@/components/organizations/OrganizationProfileEditor";
 import { getCurrentUser } from "@/lib/auth-utils";
-import { canManageOrganization } from "@/lib/organization.server";
+import {
+  canManageOrganization,
+  NONPROFIT_COALITION_STRATEGY_URL,
+} from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import { getOrganizationPath, getSignInPath, ROUTES } from "@/lib/routes";
 import { buildOrganizationSurveyUrl } from "@/lib/site";
@@ -72,20 +75,22 @@ export default async function OrganizationPage({
     referralCode: referralIdentifier,
   });
   const embedSurveyUrl = organizationSurveyUrl;
-  const iframeTitle = `${org.name} Trial Abundance Survey`;
+  const iframeTitle = `${org.name} Clinical Trial Abundance Survey`;
   const escapedIframeTitle = escapeHtml(iframeTitle);
   const iframeCode = `<iframe src="${embedSurveyUrl}" title="${escapedIframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
-  const buttonCode = `<a href="${embedSurveyUrl}" style="display:inline-block;border:1px solid #000;padding:12px 16px;color:#000;text-decoration:none;font-weight:700;">Take the Trial Abundance Survey</a>`;
-  const emailSubject = "Two questions about clinical trial funding";
+  const buttonCode = `<a href="${embedSurveyUrl}" style="display:inline-block;border:1px solid #000;padding:12px 16px;color:#000;text-decoration:none;font-weight:700;">Take the Clinical Trial Abundance Survey</a>`;
+  const emailSubject = "30 seconds on clinical trial abundance";
   const emailBody = `Subject: ${emailSubject}
 
 Hi,
 
-Can you take 30 seconds to answer two questions about clinical trial funding?
+${org.name} joined the International Campaign to End War and Disease by publicly supporting the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.
+
+Please review the treaty question and record your response here:
 
 ${memberSurveyUrl}
 
-Responses from this link are credited to ${org.name}.`;
+Responses from this link are credited to ${org.name}. This is a policy survey, not a candidate endorsement.`;
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
@@ -108,6 +113,41 @@ Responses from this link are credited to ${org.name}.`;
       </header>
 
       <div className="space-y-10">
+        {org.status === "APPROVED" ? (
+          <div className="border-2 border-foreground bg-background p-5">
+            <h2 className="mb-3 text-lg font-black uppercase text-foreground">
+              Member survey
+            </h2>
+            <p className="text-sm font-bold leading-7 text-muted-foreground">
+              Your organization has trusted reach. Use it once: share the
+              Clinical Trial Abundance Survey link, or place the button or
+              iframe on your website, so your audience can review the treaty
+              question and record its response.
+            </p>
+            <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm font-bold leading-7 text-foreground">
+              <li>
+                Share the member link in an email, newsletter, or social post.
+              </li>
+              <li>
+                Embed the website button or iframe on a page your members see.
+              </li>
+              <li>
+                Keep the organization URL intact so responses are credited here.
+              </li>
+            </ol>
+            <p className="mt-4 text-sm font-bold leading-7 text-muted-foreground">
+              For the case behind this, read{" "}
+              <a
+                href={NONPROFIT_COALITION_STRATEGY_URL}
+                className="underline underline-offset-4"
+              >
+                why organizations should share this
+              </a>
+              .
+            </p>
+          </div>
+        ) : null}
+
         <div>
           <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Profile
@@ -148,13 +188,13 @@ Responses from this link are credited to ${org.name}.`;
 
         <div>
           <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            Trial Abundance Survey
+            Clinical Trial Abundance Survey
           </h2>
           {org.status === "APPROVED" ? (
             <div className="space-y-4">
               <p className="text-sm font-bold text-muted-foreground">
                 Use the member link for email and social posts. Use the iframe
-                for a website page. Both credit {org.name}; the member link also
+                for your website. Both credit {org.name}; the member link also
                 credits your referral code.
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -236,9 +276,9 @@ Responses from this link are credited to ${org.name}.`;
           </h2>
           {org.referendumPositions.length === 0 ? (
             <p className="text-sm font-bold text-muted-foreground">
-              No treaty signature yet.{" "}
+              This organization has not joined the campaign yet.{" "}
               <Link href={ROUTES.endorse} className="underline">
-                Sign as an organization
+                Join as an organization
               </Link>
               .
             </p>
