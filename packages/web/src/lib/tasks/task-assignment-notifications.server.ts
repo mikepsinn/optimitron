@@ -6,12 +6,14 @@ import {
 import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { formatShareEmailFromHeader } from "@/lib/email/from-address";
 import { getTaskEmailReplyInstruction } from "@/lib/email/task-notification";
 import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignment-notification-email.server";
 import {
   draftTaskNotification,
   sendDraftTaskNotification,
 } from "@/lib/tasks/task-notifications.server";
+import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const log = createLogger("task-assignment-notifications");
 
@@ -25,6 +27,19 @@ type AssignmentRecipient = {
 
 function normalizeEmail(email?: string | null) {
   return email?.trim().toLowerCase() || null;
+}
+
+async function resolveSenderDisplayName(
+  senderUserId: string | null | undefined,
+): Promise<string | null> {
+  if (!senderUserId) return null;
+  const user = await prisma.user.findUnique({
+    where: { id: senderUserId },
+    select: userDisplaySelect,
+  });
+  if (!user) return null;
+  const name = getUserDisplayName(user);
+  return name === "Anonymous" ? null : name;
 }
 
 async function resolveAssignmentRecipient(taskId: string): Promise<{
@@ -133,6 +148,7 @@ export async function notifyTaskAssigneeOfAssignment(input: {
     }
 
     const { recipient, task } = resolved;
+    const senderName = await resolveSenderDisplayName(input.senderUserId);
     const email = buildTaskAssignmentNotificationEmail({
       description: task.description,
       id: task.id,
@@ -156,6 +172,7 @@ export async function notifyTaskAssigneeOfAssignment(input: {
       recipientOrganizationId: recipient.organizationId,
       recipientPersonId: recipient.personId,
       recipientUserId: recipient.userId,
+      senderName,
       senderUserId: input.senderUserId ?? null,
       subject: email.subject,
       taskId: task.id,
@@ -164,6 +181,7 @@ export async function notifyTaskAssigneeOfAssignment(input: {
 
     return sendDraftTaskNotification({
       communicationId: draft.id,
+      from: senderName ? formatShareEmailFromHeader(senderName) : null,
       senderUserId: input.senderUserId ?? null,
     });
   } catch (error) {

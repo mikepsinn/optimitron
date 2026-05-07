@@ -248,6 +248,57 @@ describe("processInboundReply", () => {
     );
   });
 
+  it("credits the assignee organization when the contactEmail replies", async () => {
+    const db = makeInboundDb();
+    db.task.findUnique.mockResolvedValue({
+      id: "task_iam",
+      title: "Join the International Campaign to End War and Disease",
+      createdByUserId: "user_creator",
+      createdByUser: { id: "user_creator", email: "creator@example.org" },
+      assigneePerson: null,
+      assigneeOrganization: {
+        id: "org_iam",
+        contactEmail: "test@thinkbynumbers.org",
+      },
+      communicationEndpoints: [],
+    });
+    db.user.findUnique.mockResolvedValue({ email: "creator@example.org" });
+    notificationMocks.sendTaskNotificationEmail.mockClear();
+
+    const result = await processInboundReply(
+      inboundEvent({
+        from: "Institute for Accelerated Medicine <test@thinkbynumbers.org>",
+        to: "reply+task_iam@reply.warondisease.org",
+        text: "We posted the survey link to our member newsletter.",
+        providerMessageId: "provider_msg_iam_reply",
+      }),
+      db as never,
+    );
+
+    expect(result).toMatchObject({
+      status: "created",
+      taskCommentId: "comment_1",
+      taskCommunicationId: "comm_1",
+    });
+    expect(db.taskComment.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        authorOrganizationId: "org_iam",
+        authorUserId: null,
+        authorPersonId: null,
+        kind: "INBOUND_MESSAGE",
+        source: "EMAIL_REPLY",
+        message: "We posted the survey link to our member newsletter.",
+        taskId: "task_iam",
+      }),
+    });
+    expect(notificationMocks.sendTaskNotificationEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipientEmail: "creator@example.org",
+        taskId: "task_iam",
+      }),
+    );
+  });
+
   it("collapses a concurrent duplicate when the provider message insert loses the race", async () => {
     const db = makeInboundDb();
     db.$transaction.mockRejectedValue(
