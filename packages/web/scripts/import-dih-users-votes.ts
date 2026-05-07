@@ -4,6 +4,7 @@ import { pathToFileURL } from "url";
 import {
   ReferendumStatus,
   ReferendumVoteSource,
+  ReferralInvitationStatus,
   VotePosition,
 } from "@optimitron/db";
 import { ensurePersonForUser } from "../src/lib/person.server";
@@ -134,6 +135,10 @@ interface ExportPayload {
   wishocraticCategorySelections?: ExportedWishocraticCategorySelection[];
 }
 
+const REFERRAL_INVITATION_STATUS_VALUES = new Set<string>(
+  Object.values(ReferralInvitationStatus),
+);
+
 interface ImportSummary {
   users: {
     /** New destination User rows created. */
@@ -258,6 +263,20 @@ function parseDate(value: string | null): Date | null {
   return Number.isFinite(date.getTime()) ? date : null;
 }
 
+function parseVoteAnswer(answer: ExportedVote["answer"]): VotePosition | null {
+  if (answer === "YES") return VotePosition.YES;
+  if (answer === "NO") return VotePosition.NO;
+  return null;
+}
+
+function parseReferralInvitationStatus(
+  status: string,
+): ReferralInvitationStatus | null {
+  return REFERRAL_INVITATION_STATUS_VALUES.has(status)
+    ? (status as ReferralInvitationStatus)
+    : null;
+}
+
 async function importUsers(
   payload: ExportPayload,
   options: ImportOptions,
@@ -329,7 +348,7 @@ async function importUsers(
           emailVerified: parseDate(exportedUser.emailVerified),
           newsletterSubscribed: exportedUser.newsletterSubscribed,
           countryCode,
-          isAdmin: exportedUser.isAdmin,
+          isAdmin: false,
           ...(referralCodeTaken
             ? {}
             : { referralCode: exportedUser.referralCode }),
@@ -476,8 +495,14 @@ async function importVotes(
       const referredByUserId = vote.referredByUserId
         ? oldToNew.get(vote.referredByUserId) ?? null
         : null;
-      const answer =
-        vote.answer === "YES" ? VotePosition.YES : VotePosition.NO;
+      const answer = parseVoteAnswer(vote.answer);
+      if (!answer) {
+        summary.errors += 1;
+        console.error(
+          `[import:vote] vote ${vote.id}: unknown answer ${String(vote.answer)}`,
+        );
+        continue;
+      }
       await prisma.referendumVote.create({
         data: {
           userId: newUserId,
@@ -747,6 +772,14 @@ async function importReferralInvitations(
         summary.created += 1;
         continue;
       }
+      const status = parseReferralInvitationStatus(invitation.status);
+      if (!status) {
+        summary.errors += 1;
+        console.error(
+          `[import:invite] invitation ${invitation.id}: unknown status ${String(invitation.status)}`,
+        );
+        continue;
+      }
       await prisma.referralInvitation.create({
         data: {
           referrerId,
@@ -754,7 +787,7 @@ async function importReferralInvitations(
           inviteeContact: invitation.inviteeContact ?? null,
           inviteToken: invitation.inviteToken ?? null,
           messageText: invitation.messageText ?? null,
-          status: invitation.status as never,
+          status,
           votedAt: parseDate(invitation.votedAt),
           copiedAt: parseDate(invitation.copiedAt),
           sentAt: parseDate(invitation.sentAt),

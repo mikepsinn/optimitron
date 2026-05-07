@@ -15,8 +15,6 @@ import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { appendWishoniaSignature } from "@/lib/email/wishonia-signature";
 import type { EmailScope } from "@/lib/email/scopes";
 
-const DEFAULT_EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
-
 interface BaseMessage {
   /** The recipient's `User.id` — required so we can check suppression + build the unsubscribe URL. */
   userId: string;
@@ -199,7 +197,7 @@ function resolveBcc(message: { bcc?: string[] | null; to: string }) {
 function resolveMonitorBcc() {
   const configured = serverEnv.EMAIL_MONITOR_BCC?.trim();
   if (!configured) {
-    return DEFAULT_EMAIL_MONITOR_BCC;
+    return null;
   }
 
   const lowered = configured.toLowerCase();

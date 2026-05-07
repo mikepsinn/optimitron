@@ -16,8 +16,9 @@ function makeEntry(
   lastModified: Date,
   priority: number,
 ): SitemapEntry {
+  const origin = site.canonicalOrigin.replace(/\/+$/, "");
   return {
-    url: `${site.canonicalOrigin}${path}`,
+    url: `${origin}${path.startsWith("/") ? path : `/${path}`}`,
     lastModified,
     changeFrequency: "daily",
     priority,

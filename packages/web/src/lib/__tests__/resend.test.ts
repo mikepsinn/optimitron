@@ -152,7 +152,7 @@ describe("sendResendEmail", () => {
     });
   });
 
-  it("BCCs the default monitor address on normal Resend emails", async () => {
+  it("does not BCC a monitor address unless EMAIL_MONITOR_BCC is configured", async () => {
     await sendResendEmail({
       html: "<p>Hello</p>",
       scope: "task_notifications",
@@ -162,9 +162,11 @@ describe("sendResendEmail", () => {
       userId: "user_1",
     });
 
-    expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
-      bcc: ["m@thinkbynumbers.org"],
-    });
+    const payload = mocks.emailSend.mock.calls[0]?.[0] as Record<
+      string,
+      unknown
+    >;
+    expect(payload.bcc).toBeUndefined();
   });
 
   it("merges configured monitor BCC with per-message BCCs", async () => {
@@ -187,6 +189,25 @@ describe("sendResendEmail", () => {
 
   it("disables monitor BCC when EMAIL_MONITOR_BCC is explicitly false", async () => {
     mocks.serverEnv.EMAIL_MONITOR_BCC = "false";
+
+    await sendResendEmail({
+      html: "<p>Hello</p>",
+      scope: "task_notifications",
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    const payload = mocks.emailSend.mock.calls[0]?.[0] as Record<
+      string,
+      unknown
+    >;
+    expect(payload.bcc).toBeUndefined();
+  });
+
+  it("disables monitor BCC when EMAIL_MONITOR_BCC is explicitly 0", async () => {
+    mocks.serverEnv.EMAIL_MONITOR_BCC = "0";
 
     await sendResendEmail({
       html: "<p>Hello</p>",
