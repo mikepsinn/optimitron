@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
@@ -11,16 +10,17 @@ import {
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { formatCount } from "@/lib/format-count";
 import { getHumanityVGovernmentPlaintiffCount } from "@/lib/humanity-v-government-case.server";
-import { HUMANITY_V_GOVERNMENT_MANUAL_URL, ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import {
+  HUMANITY_V_GOVERNMENT_MANUAL_URL,
+  ROUTES,
+  humanityVGovernmentLink,
+} from "@/lib/routes";
 import { DamagesSensitivityCalculator } from "./DamagesSensitivityCalculator";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Humanity v Government — The Case",
-  description:
-    "Three counts of negligent mass homicide. Demanded recovery $10.6M–$25.2M per plaintiff. The verdict is the 1% Treaty referendum.",
-};
+export const metadata = getRouteMetadata(humanityVGovernmentLink);
 
 const CASE_CAPTION = {
   plaintiff: "Humanity",

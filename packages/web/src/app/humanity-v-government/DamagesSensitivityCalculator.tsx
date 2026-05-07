@@ -1,6 +1,16 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import {
+  CORPORATE_ANALOG_FALSE_CLAIMS_TREBLE_MULTIPLIER,
+  CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_DEATHS,
+  CORPORATE_DAMAGES_PENTAGON_FCA_PENALTY_INCREMENT,
+  EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
+  GLOBAL_POPULATION_2024,
+  VALUE_OF_STATISTICAL_LIFE,
+  WAR_DEATHS_SINCE_1900,
+  WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE,
+} from "@optimitron/data/parameters";
 
 /**
  * Sensitivity calculator for the Humanity v. Government damages tiers.
@@ -8,8 +18,10 @@ import { useId, useMemo, useState } from "react";
  * Lets the reader stress-test the three most-disputed inputs (Value of
  * Statistical Life, war-deaths-since-1900, efficacy-lag deaths total) and
  * watch the floor and FCA treble per-capita numbers update live. Default
- * values match the canonical parameters in
- * `packages/data/src/parameters/parameters-calculations-citations.ts`.
+ * values + non-tunable floor components are imported directly from
+ * `@optimitron/data/parameters` so this calculator stays in sync with the
+ * canonical numbers — change a parameter once, every surface that uses it
+ * (case page, calculator, manual cross-references) updates.
  *
  * The lost-prosperity primary theory headline ($25.2M cohort / $10.6M NPV)
  * is *not* tunable here — its inputs are downstream of multiple manual
@@ -18,17 +30,26 @@ import { useId, useMemo, useState } from "react";
  * surface a critic targets, so they're what the slider exposes.
  */
 
-const GLOBAL_POPULATION = 8_000_000_000; // GLOBAL_POPULATION_2024
-const PROPERTY_ENV_USD = 50_000_000_000_000; // war property ($45T) + env ($5T)
-const EXCESS_MILITARY_USD = 135_000_000_000_000; // WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE
-const PENTAGON_FCA_USD = 4_920_000_000_000; // CORPORATE_DAMAGES_PENTAGON_FCA_PENALTY_INCREMENT
-const NEVER_DEVELOPED_DEATHS = 300_000_000; // CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_DEATHS
-const FCA_TREBLE = 3; // CORPORATE_ANALOG_FALSE_CLAIMS_TREBLE_MULTIPLIER
+const GLOBAL_POPULATION = GLOBAL_POPULATION_2024.value;
+// Property + Environmental Destruction is the manual's $50T floor sub-
+// component (cumulative property destruction $45T + environmental
+// destruction $5T since 1900). The constants live in the parameter file
+// as separate war-cost rows; their sum is the floor input. We keep the
+// $50T literal here with a citation, rather than importing two narrower
+// constants and re-summing — drift on this one is bounded because the
+// sum is what the manual uses in the floor formula.
+const PROPERTY_ENV_USD = 50_000_000_000_000;
+const EXCESS_MILITARY_USD =
+  WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE.value;
+const PENTAGON_FCA_USD =
+  CORPORATE_DAMAGES_PENTAGON_FCA_PENALTY_INCREMENT.value;
+const NEVER_DEVELOPED_DEATHS =
+  CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_DEATHS.value;
+const FCA_TREBLE = CORPORATE_ANALOG_FALSE_CLAIMS_TREBLE_MULTIPLIER.value;
 
-// Defaults from the manual.
-const DEFAULT_VSL = 10_000_000;
-const DEFAULT_WAR_DEATHS = 310_000_000;
-const DEFAULT_LAG_DEATHS = 102_000_000;
+const DEFAULT_VSL = VALUE_OF_STATISTICAL_LIFE.value;
+const DEFAULT_WAR_DEATHS = WAR_DEATHS_SINCE_1900.value;
+const DEFAULT_LAG_DEATHS = EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL.value;
 
 function formatUSDLarge(value: number) {
   if (value >= 1e15) return `$${(value / 1e15).toFixed(2)}Q`;

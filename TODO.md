@@ -327,6 +327,44 @@ to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/m
   campaign; visible peer pressure is part of the asset. Default-private only kicks in
   for non-admin MCP scope (the bullet above).
 
+### P1 — "Delegate or decline" path on assigned task emails
+
+Every assignment email today gives the recipient two options: do the task or
+ignore it. Ignoring is the path of least resistance, so most low-priority
+assignments quietly orphan. Adding a third path — *delegate to someone better-
+fit* — turns an opt-out into a recruitment event: every "not for me" becomes
+either an existing Person picking it up or a new Person joining the network.
+
+**Framing (consistent with HMT corporate-promotion voice):** "Don't want to or
+can't do this? Good news. You have been promoted to Humanity Manager at Earth
+Optimization Services LLC. Delegate this task to someone better-fit. Add their
+email or pick from people you already know on the platform." The promotion
+is real — the EOS LLC half of the prize structure is the operational arm of
+the campaign, and "Humanity Manager" is the canonical role for any user
+routing other humans toward verdict-rendering work.
+
+**Implementation, schema-zero:**
+
+- Email template change (`task-assignment-notification-email.server.ts`): add
+  a "Delegate this task" section under the primary CTA with a deep link to
+  the task page (or a dedicated `/tasks/[id]/delegate` route).
+- New POST `/api/tasks/[id]/delegate` taking either `{ personId }` (existing
+  Person) or `{ name, email }` (new Person). Caller must be the current
+  assignee.
+- For the existing-Person case: swap `assigneePersonId` immediately, write a
+  `TaskComment(kind: SYSTEM, source: AGENT)` audit row ("Alice delegated to
+  Bob"), fire `notifyTaskAssigneeOfAssignment` for the new assignee.
+- For the new-Person case: do NOT swap immediately. Send the new person a
+  confirmation email ("Alice thinks you should handle X — click to accept or
+  decline"). On accept, create the User if needed, swap assignment, audit.
+  This avoids the spam/harassment attack where someone weaponizes
+  delegation against a target.
+- Rate-limit per delegator (same shape as the feedback `FeedbackRejectedError(rate_limited)`
+  we shipped) — N delegations per 10 minutes.
+- Front-end form on the task page: search-existing-people dropdown
+  (reusing the dedup pre-search helper from the plaintiff-dedup work) +
+  "or add a new person" input with name + email.
+
 ### P1 — Email threading (Message-ID, In-Reply-To, References)
 
 Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/email/resend.ts:209,266,309`). Inbound captures `inReplyTo` into `TaskCommunication.metadataJson.inReplyTo` but it is never consumed. Mail clients won't visually thread the conversation; in-app `parentCommentId` never gets set on inbound replies. Replies feel orphaned in both surfaces.

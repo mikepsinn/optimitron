@@ -135,21 +135,42 @@ export async function POST(
           { status: 400 },
         );
       }
-      const org = await createOrganizationWithOwner(
-        {
+      // Idempotency window for the AbortController retry race in
+      // organization-endorsement-sync.ts. If our 12s fetch timeout fires
+      // after the server already wrote the Organization but before the
+      // client parsed the response, the client retries with the same draft.
+      // `rejectDuplicates: false` is intentional cross-user (two real orgs
+      // can share a name), so the only safe place to dedup is "same user,
+      // same name, recent" — that's this user's own retry, never a
+      // collision with another user's submission.
+      const RETRY_WINDOW_MS = 5 * 60 * 1000;
+      const recentOwn = await prisma.organization.findFirst({
+        where: {
+          creatorId: userId,
           name,
-          type,
-          website,
-          donationUrl,
-          description: body.newOrganization.description ?? null,
-          squareLogoUrl,
-          wordmarkLogoUrl,
-          contactEmail: body.newOrganization.contactEmail ?? userEmail ?? null,
-          status: OrgStatus.APPROVED,
+          deletedAt: null,
+          createdAt: { gte: new Date(Date.now() - RETRY_WINDOW_MS) },
         },
-        userId,
-        { rejectDuplicates: false },
-      );
+        select: { id: true, name: true, slug: true },
+      });
+      const org =
+        recentOwn ??
+        (await createOrganizationWithOwner(
+          {
+            name,
+            type,
+            website,
+            donationUrl,
+            description: body.newOrganization.description ?? null,
+            squareLogoUrl,
+            wordmarkLogoUrl,
+            contactEmail:
+              body.newOrganization.contactEmail ?? userEmail ?? null,
+            status: OrgStatus.APPROVED,
+          },
+          userId,
+          { rejectDuplicates: false },
+        ));
       organization = org;
       organizationId = org.id;
     } else if (body.organizationId) {
