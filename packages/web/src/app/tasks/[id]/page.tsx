@@ -5,6 +5,7 @@ import {
   TaskClaimStatus,
   TaskStatus,
 } from "@optimitron/db";
+import { unstable_cache } from "next/cache";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { type TaskCardTask } from "@/components/tasks/task-card";
@@ -64,6 +65,28 @@ import {
   TREATY_PARENT_TASK_ID,
 } from "@/lib/tasks/task-keys";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
+
+const PUBLIC_TASK_DETAIL_REVALIDATE_SECONDS = 60;
+
+const getCachedPublicTaskPageData = unstable_cache(
+  async (id: string) => {
+    const [data, commentFeed, activityTimeline, ancestors] = await Promise.all([
+      getTaskDetailData(id, null),
+      getTaskCommentFeed({
+        taskId: id,
+        sort: "new",
+        limit: 100,
+        currentUserId: null,
+      }),
+      getTaskActivityTimeline(id, 50),
+      getTaskAncestors(id),
+    ]);
+
+    return { data, commentFeed, activityTimeline, ancestors };
+  },
+  ["public-task-detail-page"],
+  { revalidate: PUBLIC_TASK_DETAIL_REVALIDATE_SECONDS },
+);
 
 function formatDueDate(value: Date) {
   return value.toLocaleDateString("en-US", {
@@ -270,6 +293,7 @@ export async function generateMetadata({
   return {
     title: `${task.title} | ${tasksLink.label} | Optimitron`,
     description,
+    robots: { index: true, follow: true },
     openGraph: {
       title: task.title,
       description,
@@ -291,19 +315,29 @@ export default async function TaskDetailPage({
   const { id } = await params;
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
+  const publicPageData = userId
+    ? null
+    : await getCachedPublicTaskPageData(id);
   const [data, commentFeed, activityTimeline, wishoniaUserId, ancestors, viewerIsAdmin] =
-    await Promise.all([
-      getTaskDetailData(id, userId),
-      getTaskCommentFeed({ taskId: id, sort: "new", limit: 100, currentUserId: userId }),
-      getTaskActivityTimeline(id, 50),
-      getWishoniaUserId().catch(() => null),
-      getTaskAncestors(id),
-      userId
-        ? prisma.user
+    userId
+      ? await Promise.all([
+          getTaskDetailData(id, userId),
+          getTaskCommentFeed({ taskId: id, sort: "new", limit: 100, currentUserId: userId }),
+          getTaskActivityTimeline(id, 50),
+          getWishoniaUserId().catch(() => null),
+          getTaskAncestors(id),
+          prisma.user
             .findUnique({ where: { id: userId }, select: { isAdmin: true } })
-            .then((u) => u?.isAdmin ?? false)
-        : Promise.resolve(false),
-    ]);
+            .then((u) => u?.isAdmin ?? false),
+        ])
+      : [
+          publicPageData?.data ?? null,
+          publicPageData?.commentFeed ?? { comments: [], total: 0 },
+          publicPageData?.activityTimeline ?? [],
+          await getWishoniaUserId().catch(() => null),
+          publicPageData?.ancestors ?? [],
+          false,
+        ];
 
   if (!data) {
     notFound();
