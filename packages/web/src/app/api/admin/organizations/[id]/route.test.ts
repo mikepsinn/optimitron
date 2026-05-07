@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
   activityCreate: vi.fn(),
@@ -29,15 +30,18 @@ vi.mock("@/lib/prisma", () => ({
 
 import { PATCH } from "./route";
 
-function makeRequest(body: Record<string, unknown>) {
-  return new Request("http://localhost/api/admin/organizations/org_1", {
+type PatchContext = Parameters<typeof PATCH>[1];
+type PatchRequest = Parameters<typeof PATCH>[0];
+
+function makeRequest(body: Record<string, unknown>): PatchRequest {
+  return new NextRequest("http://localhost/api/admin/organizations/org_1", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
-function params() {
+function params(): PatchContext {
   return { params: Promise.resolve({ id: "org_1" }) };
 }
 
@@ -62,7 +66,7 @@ describe("PATCH /api/admin/organizations/[id]", () => {
       makeRequest({
         donationUrl: "javascript:alert(1)",
         squareLogoUrl: "data:image/svg+xml,<svg></svg>",
-      }) as never,
+      }),
       params(),
     );
 
@@ -82,7 +86,7 @@ describe("PATCH /api/admin/organizations/[id]", () => {
         website: "HTTPS://Example.ORG/#top",
         wordmarkLogoUrl:
           "HTTPS://Static.WarOnDisease.ORG/wordmark.webp#tracking",
-      }) as never,
+      }),
       params(),
     );
 

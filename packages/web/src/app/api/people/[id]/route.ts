@@ -188,12 +188,7 @@ const updatePersonSchema = z
     deathCountryCode: optionalCountryCodeSchema,
     displayName: optionalCleanStringSchema(MAX_NAME_LENGTH),
     imageUrl: optionalSiteLocalImageSchema,
-    isPublic: z
-      .unknown()
-      .optional()
-      .transform((value) =>
-        value === undefined ? undefined : value !== false,
-      ),
+    isPublic: z.boolean().optional(),
     lifeStatus: optionalLifeStatusInputSchema,
     healthDisclosureConfirmed: optionalBooleanInputSchema,
     memorialEvidence: z

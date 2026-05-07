@@ -398,7 +398,10 @@ export async function getRepresentedPersonProfileData(
   handleOrId: string,
 ): Promise<RepresentedPersonProfileData | null> {
   const basePlaintiffPartyWhere = {
-    case: { slug: HUMANITY_V_GOVERNMENT_CASE_SLUG },
+    case: {
+      deletedAt: null,
+      slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+    },
     deletedAt: null,
     isPublic: true,
     role: CourtCasePartyRole.NAMED_PLAINTIFF,
