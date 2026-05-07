@@ -199,14 +199,16 @@ function hasAdminTaskWriteAccess(
 // ---------------------------------------------------------------------------
 
 async function getTaskFunctions() {
-  const [tasks, ranking, impact, endpoints, lease] = await Promise.all([
-    import("./tasks.server"),
-    import("./tasks/rank-tasks"),
-    import("./tasks/impact"),
-    import("./tasks/task-communication-endpoints.server"),
-    import("./tasks/agent-lease.server"),
-  ]);
-  return { tasks, ranking, impact, endpoints, lease };
+  const [tasks, ranking, impact, endpoints, lease, assignmentNotifications] =
+    await Promise.all([
+      import("./tasks.server"),
+      import("./tasks/rank-tasks"),
+      import("./tasks/impact"),
+      import("./tasks/task-communication-endpoints.server"),
+      import("./tasks/agent-lease.server"),
+      import("./tasks/task-assignment-notifications.server"),
+    ]);
+  return { tasks, ranking, impact, endpoints, lease, assignmentNotifications };
 }
 
 async function getPrisma() {
@@ -6547,7 +6549,8 @@ export function createMcpServer(
                 "This tool needs an identified user to attribute writes or fetch personal data.",
               );
 
-            const { endpoints, ranking, tasks } = await getTaskFunctions();
+            const { endpoints, ranking, tasks, assignmentNotifications } =
+              await getTaskFunctions();
             const prisma = await getPrisma();
 
             const economics = resolveTaskEconomics(a);
@@ -6830,6 +6833,25 @@ export function createMcpServer(
               });
               return created;
             });
+
+            // Mirror the web-side createTask call site so MCP-driven task
+            // creation also fires the assignment email. Best-effort — never
+            // fail the tool because the email layer flinched.
+            if (assigneePersonId || assigneeOrganizationId) {
+              try {
+                await assignmentNotifications.notifyTaskAssigneeOfAssignment({
+                  senderUserId: userId,
+                  taskId: task.id,
+                });
+              } catch (error) {
+                console.error(
+                  "[mcp] notifyTaskAssigneeOfAssignment failed",
+                  task.id,
+                  error,
+                );
+              }
+            }
+
             const fresh = await tasks.getTaskDetailData(task.id, userId);
             const scored = fresh
               ? buildPersonalQueueRows(

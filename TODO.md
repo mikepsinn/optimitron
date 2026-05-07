@@ -344,6 +344,15 @@ exist; they are not wired into the funnel.
 - Add `VoteTokenBalanceCard` to `TreatyTaskDashboardClient.tsx` with a link to `/prize`.
 - Day-7 + day-30 reminder emails referencing the user's VOTE balance and prize milestones.
 - Referrer leaderboard on `/prize` (social proof).
+- **Accept share/equity donations** in addition to USDC cash. Listed-company governance
+  + tax counsel both require the recipient to be a tax-qualifying entity in the donor's
+  jurisdiction (US: 501(c)(3) or a DAF sleeve; EU: registered public-benefit body), so this
+  follows the legal wrapper above. Once the wrapper is chosen, stand up a DTC-eligible
+  brokerage account, publish a valuation methodology, and decide hold-vs-liquidate per
+  donation. Likely low volume in cycle one (private founder-led companies, small B-corps,
+  crypto treasuries already used to non-cash assets) but high signal value: a company
+  pledging its own equity is unusually committed, and the headline is a fundraising
+  multiplier in itself.
 - "Track-now, mint-retroactively" framing if engineering ships before contracts go live, so
   the referral-attribution data is collected from day one.
 - No schema changes.
