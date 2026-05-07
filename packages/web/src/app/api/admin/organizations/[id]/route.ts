@@ -45,7 +45,13 @@ export async function PATCH(
     }
     if (body.name) updateData.name = body.name;
     if (body.slug) updateData.slug = body.slug;
-    if (body.logo !== undefined) updateData.logo = body.logo;
+    if (body.squareLogoUrl !== undefined) {
+      updateData.squareLogoUrl = body.squareLogoUrl;
+    }
+    if (body.wordmarkLogoUrl !== undefined) {
+      updateData.wordmarkLogoUrl = body.wordmarkLogoUrl;
+    }
+    if (body.donationUrl !== undefined) updateData.donationUrl = body.donationUrl;
     if (body.contactEmail) updateData.contactEmail = body.contactEmail;
     if (body.website) updateData.website = body.website;
     if (body.description) updateData.description = body.description;

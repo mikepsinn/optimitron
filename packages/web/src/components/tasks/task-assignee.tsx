@@ -13,7 +13,7 @@ interface TaskAssigneeProps {
   } | null;
   organization?: {
     name: string;
-    logo: string | null;
+    squareLogoUrl: string | null;
   } | null;
   roleTitle?: string | null;
   affiliationSnapshot?: string | null;
@@ -41,7 +41,7 @@ export function TaskAssignee({
   if (!person && !organization) return null;
 
   const displayLabel = person?.displayName ?? organization?.name ?? "Unknown";
-  const imageSrc = person?.image ?? organization?.logo ?? undefined;
+  const imageSrc = person?.image ?? organization?.squareLogoUrl ?? undefined;
   const initials = getFallbackInitials(displayLabel);
   const affiliation = affiliationSnapshot ?? organization?.name ?? person?.currentAffiliation;
   const personHref = person ? getPersonHref(person) : null;

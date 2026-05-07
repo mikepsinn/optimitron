@@ -46,15 +46,17 @@ beforeEach(() => {
   // Run the transaction callback inline against a tx that delegates to the
   // mocked top-level prisma client. Keeps the assertion focus on which model
   // and field set the writer touches, not on transaction internals.
-  mocks.$transaction.mockImplementation(async (fn: (tx: unknown) => unknown) => {
-    return fn({
-      person: { update: mocks.personUpdate },
-      user: {
-        findUniqueOrThrow: mocks.userFindUniqueOrThrow,
-        update: mocks.userUpdate,
-      },
-    });
-  });
+  mocks.$transaction.mockImplementation(
+    async (fn: (tx: unknown) => unknown) => {
+      return fn({
+        person: { update: mocks.personUpdate },
+        user: {
+          findUniqueOrThrow: mocks.userFindUniqueOrThrow,
+          update: mocks.userUpdate,
+        },
+      });
+    },
+  );
 
   mocks.userFindUniqueOrThrow.mockResolvedValue({ personId: "person_1" });
 
@@ -71,6 +73,7 @@ describe("updateUserProfile", () => {
       handle: "ada",
       headline: "engineer",
       website: "https://ada.dev",
+      image: "https://static.warondisease.org/people/photos/ada.jpg",
       coverImage: "https://img/cover.png",
       isPublic: true,
     });
@@ -83,6 +86,7 @@ describe("updateUserProfile", () => {
         bio: "hi",
         headline: "engineer",
         website: "https://ada.dev",
+        image: "https://static.warondisease.org/people/photos/ada.jpg",
         coverImage: "https://img/cover.png",
         isPublic: true,
       },

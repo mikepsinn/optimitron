@@ -5112,8 +5112,14 @@ model Organization {
   /// Organization website URL
   website String?
 
-  /// Logo image URL
-  logo String?
+  /// Square logo mark used in compact app UI
+  squareLogoUrl String?
+
+  /// Horizontal logo / wordmark used in wide public presentation
+  wordmarkLogoUrl String?
+
+  /// Direct support or donation page URL
+  donationUrl String?
 
   /// Source URL used when this organization was imported from external data
   sourceUrl String?

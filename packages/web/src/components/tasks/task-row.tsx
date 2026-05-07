@@ -352,7 +352,11 @@ export function TaskRow({
     <Avatar className="h-8 w-8 shrink-0 border-2 border-foreground bg-muted">
       <Avatar.Image
         alt={targetLabel}
-        src={task.assigneePerson?.image ?? task.assigneeOrganization?.logo ?? undefined}
+        src={
+          task.assigneePerson?.image ??
+          task.assigneeOrganization?.squareLogoUrl ??
+          undefined
+        }
       />
       <Avatar.Fallback className="bg-brutal-pink text-xs font-black text-background">
         {fallbackInitials || "?"}

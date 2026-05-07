@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  CourtCasePartyRole,
   PersonCivilianStatus,
   PersonConditionStatus,
   PersonDeathCauseCategory,
@@ -12,8 +13,13 @@ import {
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";
 import { findCanonicalConditionGlobalVariable } from "@/lib/global-variable-lookup.server";
+import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
+import {
+  isSelfServeMemorialEvidenceKindAllowed,
+  shouldPublishRepresentedCondition,
+} from "@/lib/represented-person-privacy";
 import { slugify } from "@/lib/slugify";
 import { ensureSubjectForPerson } from "@/lib/subject.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
@@ -36,7 +42,9 @@ function normalizePublicText(value: unknown, maxLength: number) {
 }
 
 function cleanStringSchema(maxLength: number) {
-  return z.unknown().transform((value) => normalizePublicText(value, maxLength));
+  return z
+    .unknown()
+    .transform((value) => normalizePublicText(value, maxLength));
 }
 
 function optionalCleanStringSchema(maxLength: number) {
@@ -69,7 +77,8 @@ const optionalCountryCodeSchema = z
     value === undefined ? undefined : value ? value : null,
   )
   .refine(
-    (value) => value === undefined || value === null || /^[A-Z]{2}$/.test(value),
+    (value) =>
+      value === undefined || value === null || /^[A-Z]{2}$/.test(value),
     {
       message: "Use a two-letter country code.",
     },
@@ -133,6 +142,11 @@ const optionalCauseCategoryInputSchema = z
   })
   .pipe(schemas.PersonDeathCauseCategorySchema.optional());
 
+const optionalBooleanInputSchema = z
+  .unknown()
+  .optional()
+  .transform((value) => (value === undefined ? undefined : value === true));
+
 const memorialEvidenceInputSchema = z.object({
   id: optionalCleanStringSchema(MAX_CLIENT_DRAFT_ID_LENGTH),
   evidenceKind: z.preprocess((value) => {
@@ -168,12 +182,10 @@ const memorialEvidenceInputSchema = z.object({
 const updatePersonSchema = z
   .object({
     birthDate: optionalNullableDateInputSchema,
+    authorityConfirmed: optionalBooleanInputSchema,
     causeCategory: optionalCauseCategoryInputSchema,
     conditionName: optionalCleanStringSchema(MAX_CONDITION_LENGTH),
-    consentCourtEvidence: z
-      .unknown()
-      .optional()
-      .transform((value) => (value === undefined ? undefined : value === true)),
+    consentCourtEvidence: optionalBooleanInputSchema,
     dateOfDeath: optionalNullableDateInputSchema,
     deathCountryCode: optionalCountryCodeSchema,
     displayName: optionalCleanStringSchema(MAX_NAME_LENGTH),
@@ -181,8 +193,11 @@ const updatePersonSchema = z
     isPublic: z
       .unknown()
       .optional()
-      .transform((value) => (value === undefined ? undefined : value !== false)),
+      .transform((value) =>
+        value === undefined ? undefined : value !== false,
+      ),
     lifeStatus: optionalLifeStatusInputSchema,
+    healthDisclosureConfirmed: optionalBooleanInputSchema,
     memorialEvidence: z
       .unknown()
       .optional()
@@ -196,6 +211,7 @@ const updatePersonSchema = z
       .pipe(z.array(memorialEvidenceInputSchema).optional()),
     memorialMessage: optionalCleanStringSchema(MAX_MEMORIAL_MESSAGE_LENGTH),
     publicComment: optionalCleanStringSchema(MAX_COMMENT_LENGTH),
+    publicDisplayAcknowledged: optionalBooleanInputSchema,
     referendumSlug: cleanStringSchema(80).transform((value) =>
       value ? value : TREATY_REFERENDUM_SLUG,
     ),
@@ -204,8 +220,29 @@ const updatePersonSchema = z
     ).transform((value) =>
       value === undefined ? undefined : value ? slugify(value) : "",
     ),
+    showConditionPublicly: optionalBooleanInputSchema,
   })
   .superRefine((data, ctx) => {
+    if (data.authorityConfirmed !== true) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "Confirm you have permission or authority to edit this person.",
+        path: ["authorityConfirmed"],
+      });
+    }
+
+    data.memorialEvidence?.forEach((evidence, index) => {
+      if (!isSelfServeMemorialEvidenceKindAllowed(evidence.evidenceKind)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "Do not upload hospital records here. Use a public death record, public document, news article, photo, or witness statement.",
+          path: ["memorialEvidence", index, "evidenceKind"],
+        });
+      }
+    });
+
     if (data.displayName !== undefined && !data.displayName) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -214,7 +251,11 @@ const updatePersonSchema = z
       });
     }
 
-    if (data.birthDate && data.dateOfDeath && data.birthDate > data.dateOfDeath) {
+    if (
+      data.birthDate &&
+      data.dateOfDeath &&
+      data.birthDate > data.dateOfDeath
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Birth date must be before date of death.",
@@ -277,12 +318,13 @@ export async function PATCH(
         conditions: {
           where: { deletedAt: null },
           orderBy: { createdAt: "asc" },
-          select: { conditionName: true, id: true },
+          select: { conditionName: true, id: true, isPublic: true },
           take: 1,
         },
         createdByUserId: true,
         deathDate: true,
         displayName: true,
+        bio: true,
         id: true,
         image: true,
         isPublic: true,
@@ -309,36 +351,34 @@ export async function PATCH(
             },
           },
         },
+        subject: {
+          select: {
+            courtCaseParties: {
+              where: {
+                case: {
+                  deletedAt: null,
+                  slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+                },
+                createdByUserId: userId,
+                deletedAt: null,
+                role: CourtCasePartyRole.NAMED_PLAINTIFF,
+              },
+              select: { id: true },
+              take: 1,
+            },
+            id: true,
+          },
+        },
       },
     });
-    if (!existingPerson || existingPerson.createdByUserId !== userId) {
+    if (
+      !existingPerson ||
+      existingPerson.createdByUserId !== userId ||
+      !existingPerson.subject?.courtCaseParties[0]
+    ) {
       return NextResponse.json({ error: "Person not found" }, { status: 404 });
     }
-
-    const referendum = await prisma.referendum.findUnique({
-      where: { slug: parsed.data.referendumSlug, deletedAt: null },
-      select: { id: true },
-    });
-    if (!referendum) {
-      return NextResponse.json({ error: "Referendum not found" }, { status: 404 });
-    }
-
-    const representedVote = await prisma.referendumVote.findFirst({
-      where: {
-        deletedAt: null,
-        personId: id,
-        referendumId: referendum.id,
-        userId,
-        voteSource: ReferendumVoteSource.REPRESENTED,
-      },
-      select: { id: true, publicComment: true },
-    });
-    if (!representedVote) {
-      return NextResponse.json(
-        { error: "Only the original representative can edit this person." },
-        { status: 403 },
-      );
-    }
+    const existingSubjectId = existingPerson.subject.id;
 
     const activeMemorial =
       existingPerson.memorial && !existingPerson.memorial.deletedAt
@@ -363,7 +403,7 @@ export async function PATCH(
     const finalDeathCountryCode =
       finalLifeStatus === PersonLifeStatus.DECEASED
         ? parsed.data.deathCountryCode === undefined
-          ? activeMemorial?.deathCountryCode ?? null
+          ? (activeMemorial?.deathCountryCode ?? null)
           : parsed.data.deathCountryCode
         : null;
     const finalCauseCategory =
@@ -373,15 +413,13 @@ export async function PATCH(
     const finalCivilianStatus =
       activeMemorial?.civilianStatus ?? PersonCivilianStatus.UNKNOWN;
     const finalMemorialMessage =
-      parsed.data.memorialMessage ??
-      existingSubmission?.memorialMessage ??
-      "";
+      parsed.data.memorialMessage ?? existingSubmission?.memorialMessage ?? "";
     const finalConsentCourtEvidence =
       parsed.data.consentCourtEvidence ??
       existingSubmission?.consentCourtEvidence ??
       false;
     const finalPublicComment =
-      parsed.data.publicComment ?? representedVote.publicComment ?? "";
+      parsed.data.publicComment ?? existingPerson.bio ?? "";
     const finalImageUrl =
       parsed.data.imageUrl === undefined
         ? existingPerson.image
@@ -391,6 +429,20 @@ export async function PATCH(
     const nextMemorialEvidence = parsed.data.memorialEvidence;
     const newEvidenceCount =
       nextMemorialEvidence?.filter((evidence) => !evidence.id).length ?? 0;
+    const publicDisplayAcknowledged =
+      finalIsPublic && parsed.data.publicDisplayAcknowledged === true;
+    const requestedConditionPublic = parsed.data.showConditionPublicly === true;
+    const hasConditionAfterUpdate =
+      nextConditionName === undefined
+        ? Boolean(existingCondition)
+        : Boolean(nextConditionName);
+    const finalConditionIsPublic = shouldPublishRepresentedCondition({
+      healthDisclosureConfirmed: parsed.data.healthDisclosureConfirmed === true,
+      isPublic: finalIsPublic,
+      lifeStatus: finalLifeStatus,
+      publicDisplayAcknowledged,
+      showConditionPublicly: requestedConditionPublic,
+    });
 
     if (!finalDisplayName) {
       return NextResponse.json(
@@ -414,6 +466,43 @@ export async function PATCH(
             {
               message: "Birth date must be before date of death.",
               path: ["birthDate"],
+            },
+          ],
+        },
+        { status: 400 },
+      );
+    }
+
+    if (finalIsPublic && !publicDisplayAcknowledged) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [
+            {
+              message:
+                "Confirm you understand this public card can be visible to anyone.",
+              path: ["publicDisplayAcknowledged"],
+            },
+          ],
+        },
+        { status: 400 },
+      );
+    }
+
+    if (
+      finalLifeStatus !== PersonLifeStatus.DECEASED &&
+      hasConditionAfterUpdate &&
+      requestedConditionPublic &&
+      parsed.data.healthDisclosureConfirmed !== true
+    ) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [
+            {
+              message:
+                "Confirm you have consent or authority to publicly show this health condition.",
+              path: ["healthDisclosureConfirmed"],
             },
           ],
         },
@@ -457,6 +546,7 @@ export async function PATCH(
         where: { id },
         data: {
           birthDate: finalBirthDate,
+          bio: finalPublicComment || null,
           deathDate: finalDateOfDeath,
           displayName: finalDisplayName,
           image: finalImageUrl,
@@ -475,6 +565,23 @@ export async function PATCH(
       await ensureSubjectForPerson(tx, {
         displayName: finalDisplayName,
         id: person.id,
+      });
+
+      await tx.courtCaseParty.updateMany({
+        where: {
+          case: {
+            deletedAt: null,
+            slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+          },
+          createdByUserId: userId,
+          deletedAt: null,
+          role: CourtCasePartyRole.NAMED_PLAINTIFF,
+          subjectId: existingSubjectId,
+        },
+        data: {
+          displayNameSnapshot: finalDisplayName,
+          isPublic: finalIsPublic,
+        },
       });
 
       let condition: { id: string } | null = null;
@@ -498,7 +605,7 @@ export async function PATCH(
             conditionName: nextConditionName,
             deletedAt: null,
             globalVariableId: canonicalCondition?.id ?? null,
-            isPublic: finalIsPublic,
+            isPublic: finalConditionIsPublic,
             reportedByUserId: userId,
             status:
               finalLifeStatus === PersonLifeStatus.DECEASED
@@ -527,7 +634,7 @@ export async function PATCH(
           conditionCodeSystem: primaryCode?.codeSystem ?? null,
           conditionName: existingCondition.conditionName,
           globalVariableId: canonicalCondition?.id ?? null,
-          isPublic: finalIsPublic,
+          isPublic: finalConditionIsPublic,
           reportedByUserId: userId,
           status:
             finalLifeStatus === PersonLifeStatus.DECEASED
@@ -541,8 +648,13 @@ export async function PATCH(
         });
       }
 
-      await tx.referendumVote.update({
-        where: { id: representedVote.id },
+      await tx.referendumVote.updateMany({
+        where: {
+          deletedAt: null,
+          personId: id,
+          userId,
+          voteSource: ReferendumVoteSource.REPRESENTED,
+        },
         data: {
           answer: VotePosition.YES,
           isPublic: finalIsPublic,
@@ -644,18 +756,18 @@ export async function PATCH(
         });
       const consentCourtEvidenceAt = finalConsentCourtEvidence
         ? existingSubmission?.consentCourtEvidence
-          ? existingSubmission.consentCourtEvidenceAt ?? now
+          ? (existingSubmission.consentCourtEvidenceAt ?? now)
           : now
         : null;
-      const consentPublicDisplayAt = finalIsPublic
+      const consentPublicDisplayAt = publicDisplayAcknowledged
         ? existingSubmission?.consentPublicDisplay
-          ? existingSubmission.consentPublicDisplayAt ?? now
+          ? (existingSubmission.consentPublicDisplayAt ?? now)
           : now
         : null;
       const submissionData = {
         consentCourtEvidence: finalConsentCourtEvidence,
         consentCourtEvidenceAt,
-        consentPublicDisplay: finalIsPublic,
+        consentPublicDisplay: publicDisplayAcknowledged,
         consentPublicDisplayAt,
         isPublic: finalIsPublic,
         memorialMessage: finalMemorialMessage || null,
@@ -799,31 +911,35 @@ export async function DELETE(
             id: true,
           },
         },
+        subject: {
+          select: {
+            courtCaseParties: {
+              where: {
+                case: {
+                  deletedAt: null,
+                  slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+                },
+                createdByUserId: userId,
+                deletedAt: null,
+                role: CourtCasePartyRole.NAMED_PLAINTIFF,
+              },
+              select: { id: true },
+              take: 1,
+            },
+            id: true,
+          },
+        },
       },
     });
     if (
       !existingPerson ||
       existingPerson.deletedAt ||
-      existingPerson.createdByUserId !== userId
+      existingPerson.createdByUserId !== userId ||
+      !existingPerson.subject?.courtCaseParties[0]
     ) {
       return NextResponse.json({ error: "Person not found" }, { status: 404 });
     }
-
-    const representedVote = await prisma.referendumVote.findFirst({
-      where: {
-        deletedAt: null,
-        personId: id,
-        userId,
-        voteSource: ReferendumVoteSource.REPRESENTED,
-      },
-      select: { id: true },
-    });
-    if (!representedVote) {
-      return NextResponse.json(
-        { error: "Only the original representative can delete this person." },
-        { status: 403 },
-      );
-    }
+    const existingSubjectId = existingPerson.subject.id;
 
     await prisma.$transaction(async (tx) => {
       const now = new Date();
@@ -840,6 +956,22 @@ export async function DELETE(
           personId: id,
           userId,
           voteSource: ReferendumVoteSource.REPRESENTED,
+        },
+        data: {
+          deletedAt: now,
+          isPublic: false,
+        },
+      });
+      await tx.courtCaseParty.updateMany({
+        where: {
+          case: {
+            deletedAt: null,
+            slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+          },
+          createdByUserId: userId,
+          deletedAt: null,
+          role: CourtCasePartyRole.NAMED_PLAINTIFF,
+          subjectId: existingSubjectId,
         },
         data: {
           deletedAt: now,

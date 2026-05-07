@@ -29,7 +29,13 @@ function loadConfig(): ObjectStorageConfig {
   const endpoint = serverEnv.R2_ENDPOINT;
   const bucket = serverEnv.R2_BUCKET;
   const publicBaseUrl = serverEnv.R2_PUBLIC_URL;
-  if (!accessKeyId || !secretAccessKey || !endpoint || !bucket || !publicBaseUrl) {
+  if (
+    !accessKeyId ||
+    !secretAccessKey ||
+    !endpoint ||
+    !bucket ||
+    !publicBaseUrl
+  ) {
     throw new ObjectStorageNotConfiguredError();
   }
   cachedConfig = {
@@ -69,6 +75,17 @@ export interface PresignUploadResult {
   uploadUrl: string;
 }
 
+export interface UploadObjectInput {
+  body: Buffer | Uint8Array;
+  contentLength?: number;
+  contentType: string;
+  key: string;
+}
+
+export interface UploadObjectResult {
+  publicUrl: string;
+}
+
 const PRESIGN_EXPIRY_SECONDS = 60 * 5;
 
 export async function presignUpload({
@@ -100,6 +117,27 @@ export async function presignUpload({
 export function publicUrl(key: string): string {
   const config = loadConfig();
   return `${config.publicBaseUrl}/${key}`;
+}
+
+export async function uploadObject({
+  body,
+  contentLength,
+  contentType,
+  key,
+}: UploadObjectInput): Promise<UploadObjectResult> {
+  const { client, config } = getClient();
+  await client.send(
+    new PutObjectCommand({
+      Body: body,
+      Bucket: config.bucket,
+      ContentLength: contentLength ?? body.byteLength,
+      ContentType: contentType,
+      Key: key,
+    }),
+  );
+  return {
+    publicUrl: `${config.publicBaseUrl}/${key}`,
+  };
 }
 
 export function isObjectStorageConfigured(): boolean {

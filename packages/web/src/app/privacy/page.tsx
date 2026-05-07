@@ -1,14 +1,12 @@
 import { headers } from "next/headers";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { Container } from "@/components/ui/container";
-import { SectionContainer } from "@/components/ui/section-container";
 import { getSiteMetadata } from "@/lib/metadata";
 import { privacyLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
-const UPDATED_AT = "May 2, 2026";
+const UPDATED_AT = "May 6, 2026";
 const SECTION_HEADING_CLASS =
-  "mb-4 text-2xl font-black uppercase text-brutal-pink";
+  "mb-4 text-2xl font-black uppercase text-foreground";
 
 export async function generateMetadata() {
   const hdrs = await headers();
@@ -32,12 +30,7 @@ export default async function PrivacyPage() {
   const websiteLabel = new URL(site.canonicalOrigin).hostname;
 
   return (
-    <SectionContainer
-      bgColor="background"
-      borderPosition="none"
-      padding="lg"
-      className="min-h-screen"
-    >
+    <main className="min-h-screen bg-background py-12 text-foreground sm:py-16">
       <Container size="md">
         <h1 className="mb-8 text-center text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl">
           Privacy Policy
@@ -47,7 +40,7 @@ export default async function PrivacyPage() {
           Last updated {UPDATED_AT}
         </p>
 
-        <BrutalCard padding="lg">
+        <article className="border border-foreground bg-background p-5 sm:p-8">
           <div className="space-y-8 text-foreground">
             <section>
               <h2 className={SECTION_HEADING_CLASS}>1. Who We Are</h2>
@@ -59,7 +52,9 @@ export default async function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>2. Information We Collect</h2>
+              <h2 className={SECTION_HEADING_CLASS}>
+                2. Information We Collect
+              </h2>
               <p className="mb-4 font-bold leading-relaxed">
                 We collect information you give us directly, information created
                 by your use of the site, and limited technical data needed to
@@ -81,6 +76,12 @@ export default async function PrivacyPage() {
                   text.
                 </li>
                 <li>
+                  Plaintiff, represented-person, and memorial details you
+                  submit, such as names, photos, relationships, life or death
+                  status, health condition or cause of death, comments, memorial
+                  details, evidence files, and claims about responsible parties.
+                </li>
+                <li>
                   Donation records if you donate. Payment processors handle card
                   details; we receive transaction status, amount, and related
                   contact details.
@@ -96,7 +97,9 @@ export default async function PrivacyPage() {
             <section>
               <h2 className={SECTION_HEADING_CLASS}>3. How We Use It</h2>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
-                <li>Operate accounts, dashboards, voting, referrals, and forms.</li>
+                <li>
+                  Operate accounts, dashboards, voting, referrals, and forms.
+                </li>
                 <li>
                   Count support, prevent duplicate or fraudulent activity, and
                   detect abuse.
@@ -123,10 +126,15 @@ export default async function PrivacyPage() {
               <p className="font-bold leading-relaxed">
                 Some parts of this site are built for public persuasion and
                 public records. If you sign, vote, endorse, publish a profile,
-                submit an organization, or share a public referral link, the
-                site may display the details you submitted, related public
-                counts, and referral impact. We do not intentionally publish
-                your private email address unless you put it into a public field.
+                submit an organization, add a plaintiff or memorial, upload
+                public evidence, or share a public referral link, the site may
+                display the details you submitted, related public counts, and
+                referral impact. Public plaintiff and memorial pages may show
+                the person's name, photo, relationship, life or death status,
+                public comments, memorial details, evidence, responsible-party
+                claims, and condition or cause when the form asks for public
+                display and you confirm it. We do not intentionally publish your
+                private email address unless you put it into a public field.
               </p>
             </section>
 
@@ -159,7 +167,9 @@ export default async function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>6. Cookies and Analytics</h2>
+              <h2 className={SECTION_HEADING_CLASS}>
+                6. Cookies and Analytics
+              </h2>
               <p className="font-bold leading-relaxed">
                 We use cookies and similar technologies for sign-in sessions,
                 preferences, abuse prevention, analytics, and basic site
@@ -174,8 +184,9 @@ export default async function PrivacyPage() {
                 We keep information for as long as needed to operate the site,
                 maintain campaign records, prevent fraud, resolve disputes,
                 comply with law, and keep security logs. Public campaign records
-                may stay visible after an account is closed unless we agree or
-                are required to remove them.
+                and plaintiff or memorial records may stay visible after an
+                account is closed unless we agree or are required to remove
+                them.
               </p>
             </section>
 
@@ -233,14 +244,14 @@ export default async function PrivacyPage() {
                 We may update this policy by posting a new version here. The
                 date above shows when it was last changed.
               </p>
-              <div className="mt-4 border-4 border-primary bg-brutal-yellow p-4 text-brutal-yellow-foreground">
+              <div className="mt-4 border border-foreground bg-background p-4 text-foreground">
                 <p className="font-black">{legalEntityName}</p>
                 <p className="font-bold">Email: {contactEmail}</p>
                 <p className="font-bold">Website: {websiteLabel}</p>
               </div>
             </section>
           </div>
-        </BrutalCard>
+        </article>
 
         <p className="mt-8 text-center text-sm font-bold text-muted-foreground">
           See also:{" "}
@@ -249,6 +260,6 @@ export default async function PrivacyPage() {
           </a>
         </p>
       </Container>
-    </SectionContainer>
+    </main>
   );
 }

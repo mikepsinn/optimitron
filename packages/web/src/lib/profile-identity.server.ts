@@ -24,6 +24,7 @@ export interface UpdateProfileInput {
   bio?: string;
   handle?: string | null;
   headline?: string | null;
+  image?: string | null;
   website?: string | null;
   coverImage?: string | null;
   isPublic?: boolean;
@@ -83,8 +84,7 @@ export async function updateUserProfile(
   userId: string,
   input: UpdateProfileInput,
 ): Promise<ProfileIdentityData | null> {
-  const handle =
-    "handle" in input ? normalizeHandle(input.handle) : undefined;
+  const handle = "handle" in input ? normalizeHandle(input.handle) : undefined;
 
   if (handle && handle.length > 0) {
     const collision = await prisma.person.findFirst({
@@ -114,11 +114,16 @@ export async function updateUserProfile(
       await tx.person.update({
         where: { id: userRecord.personId },
         data: {
-          ...(typeof input.name === "string" ? { displayName: input.name } : {}),
+          ...(typeof input.name === "string"
+            ? { displayName: input.name }
+            : {}),
           ...(handle !== undefined ? { handle } : {}),
           ...(typeof input.bio === "string" ? { bio: input.bio } : {}),
           ...(typeof input.headline === "string" || input.headline === null
             ? { headline: input.headline }
+            : {}),
+          ...(typeof input.image === "string" || input.image === null
+            ? { image: input.image }
             : {}),
           ...(typeof input.website === "string" || input.website === null
             ? { website: input.website }

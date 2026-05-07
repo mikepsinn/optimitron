@@ -121,7 +121,9 @@ export default async function TaskOpengraphImage({
         .join("") || "?"
     : "?";
   const rawAssigneeImage =
-    task.assigneePerson?.image ?? task.assigneeOrganization?.logo ?? null;
+    task.assigneePerson?.image ??
+    task.assigneeOrganization?.squareLogoUrl ??
+    null;
   const assigneeImageDataUri = await loadLocalImageAsDataUri(rawAssigneeImage);
 
   return new ImageResponse(

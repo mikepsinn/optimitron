@@ -33,9 +33,9 @@ export interface TaskCardTask {
   assigneeOrganization: {
     contactEmail?: string | null;
     id: string;
-    logo: string | null;
     name: string;
     slug: string;
+    squareLogoUrl: string | null;
     type: string;
     website?: string | null;
   } | null;
@@ -247,7 +247,7 @@ export function TaskCard({
               <Avatar className="h-14 w-14 border-4 border-foreground bg-muted">
                 <Avatar.Image
                   alt={targetLabel}
-                  src={task.assigneePerson?.image ?? task.assigneeOrganization?.logo ?? undefined}
+                  src={task.assigneePerson?.image ?? task.assigneeOrganization?.squareLogoUrl ?? undefined}
                 />
                 <Avatar.Fallback className="bg-brutal-pink font-black text-background">
                   {fallbackInitials || "?"}

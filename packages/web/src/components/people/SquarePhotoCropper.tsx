@@ -13,14 +13,23 @@ interface SquarePhotoCropperProps {
   file: File;
   onCancel: () => void;
   onCrop: (file: File) => Promise<void> | void;
+  outputType?: "image/jpeg" | "image/webp";
   title?: string;
+  transparentBackground?: boolean;
 }
 
-function croppedFileName(fileName: string) {
+function extensionForType(type: "image/jpeg" | "image/webp") {
+  return type === "image/webp" ? "webp" : "jpg";
+}
+
+function croppedFileName(
+  fileName: string,
+  outputType: "image/jpeg" | "image/webp",
+) {
   const dotIndex = fileName.lastIndexOf(".");
   const baseName =
     dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName || "portrait";
-  return `${baseName}-square.jpg`;
+  return `${baseName}-square.${extensionForType(outputType)}`;
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -45,6 +54,8 @@ async function cropImageToFile(input: {
   area: Area;
   fileName: string;
   imageUrl: string;
+  outputType: "image/jpeg" | "image/webp";
+  transparentBackground: boolean;
 }): Promise<File> {
   const image = await loadImage(input.imageUrl);
   const canvas = document.createElement("canvas");
@@ -53,8 +64,10 @@ async function cropImageToFile(input: {
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Could not crop this image.");
 
-  context.fillStyle = cssVariableColor("--treaty-paper", "white");
-  context.fillRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+  if (!input.transparentBackground) {
+    context.fillStyle = cssVariableColor("--treaty-paper", "white");
+    context.fillRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+  }
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
   context.drawImage(
@@ -78,14 +91,14 @@ async function cropImageToFile(input: {
           reject(new Error("Could not crop this image."));
         }
       },
-      "image/jpeg",
+      input.outputType,
       0.92,
     );
   });
 
-  return new File([blob], croppedFileName(input.fileName), {
+  return new File([blob], croppedFileName(input.fileName, input.outputType), {
     lastModified: Date.now(),
-    type: "image/jpeg",
+    type: input.outputType,
   });
 }
 
@@ -93,7 +106,9 @@ export function SquarePhotoCropper({
   file,
   onCancel,
   onCrop,
+  outputType = "image/jpeg",
   title = "Crop photo",
+  transparentBackground = false,
 }: SquarePhotoCropperProps) {
   const [imageUrl, setImageUrl] = useState("");
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
@@ -133,6 +148,8 @@ export function SquarePhotoCropper({
           area: croppedAreaPixels,
           fileName: file.name,
           imageUrl,
+          outputType,
+          transparentBackground,
         }),
       );
     } catch (caught) {

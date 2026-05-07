@@ -85,7 +85,11 @@ const memorialInclude = {
     select: {
       birthDate: true,
       conditions: {
-        where: { deletedAt: null, status: PersonConditionStatus.CAUSE_OF_DEATH },
+        where: {
+          deletedAt: null,
+          isPublic: true,
+          status: PersonConditionStatus.CAUSE_OF_DEATH,
+        },
         orderBy: { createdAt: "asc" as const },
         select: {
           conditionCode: true,
@@ -174,9 +178,13 @@ const memorialInclude = {
   },
 } satisfies Prisma.PersonMemorialInclude;
 
-function calculateAgeYears(birth: Date | null, death: Date | null): number | null {
+function calculateAgeYears(
+  birth: Date | null,
+  death: Date | null,
+): number | null {
   if (!birth || !death) return null;
-  const years = (death.getTime() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+  const years =
+    (death.getTime() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
   if (!Number.isFinite(years) || years < 0) return null;
   return Math.floor(years);
 }
@@ -193,7 +201,9 @@ function formatRelationship(slug: string | null): string | null {
  * PersonRelationship. Witnesses are PersonMemorialEvidence rows with
  * evidenceKind = WITNESS_STATEMENT. PRD: TODO.md:1312-1329.
  */
-export async function buildEvidencePackage(memorialId: string): Promise<EvidencePackage> {
+export async function buildEvidencePackage(
+  memorialId: string,
+): Promise<EvidencePackage> {
   const memorial = await prisma.personMemorial.findUnique({
     where: { id: memorialId, deletedAt: null },
     include: memorialInclude,
@@ -219,7 +229,10 @@ export async function buildEvidencePackage(memorialId: string): Promise<Evidence
   const relationshipByUserId = new Map<string, string | null>();
   for (const rel of memorial.person.relationshipsAsObject) {
     if (rel.createdByUserId) {
-      relationshipByUserId.set(rel.createdByUserId, formatRelationship(rel.relationshipType));
+      relationshipByUserId.set(
+        rel.createdByUserId,
+        formatRelationship(rel.relationshipType),
+      );
     }
   }
 
@@ -229,7 +242,7 @@ export async function buildEvidencePackage(memorialId: string): Promise<Evidence
     return {
       name: userPerson?.displayName ?? "Submitter",
       relationship: submitterUserId
-        ? relationshipByUserId.get(submitterUserId) ?? null
+        ? (relationshipByUserId.get(submitterUserId) ?? null)
         : null,
       submittedAt: submission.createdAt.toISOString(),
       consentCourtEvidence: submission.consentCourtEvidence,
@@ -284,7 +297,10 @@ export async function buildEvidencePackage(memorialId: string): Promise<Evidence
       name: decedentName,
       birthDate: memorial.person.birthDate?.toISOString() ?? null,
       deathDate: memorial.person.deathDate?.toISOString() ?? null,
-      ageYears: calculateAgeYears(memorial.person.birthDate, memorial.person.deathDate),
+      ageYears: calculateAgeYears(
+        memorial.person.birthDate,
+        memorial.person.deathDate,
+      ),
       civilianStatus: civilianStatusLabel,
       wasChild: memorial.wasChild,
     },

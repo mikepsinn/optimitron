@@ -17,6 +17,7 @@ import {
   getRepresentedPeopleGalleryData,
   type RepresentedPeopleSortKey,
 } from "@/lib/represented-people.server";
+import { getPlaintiffsReferendumSlug } from "@/lib/plaintiffs-flow";
 import { humanityVGovernmentLink, plaintiffsLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
@@ -111,20 +112,19 @@ export default async function PlaintiffsPage({
   );
   const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
 
-  const data = site.primaryReferendumSlug
-    ? await getRepresentedPeopleGalleryData(site.primaryReferendumSlug, {
-        filters: {
-          causeCategory,
-          conditionGlobalVariableId,
-          conflictId,
-          countryCode,
-          efficacyLagOnly,
-        },
-        page,
-        pageSize: PLAINTIFFS_PAGE_SIZE,
-        sort,
-      })
-    : null;
+  const referendumSlug = getPlaintiffsReferendumSlug(site);
+  const data = await getRepresentedPeopleGalleryData(referendumSlug, {
+    filters: {
+      causeCategory,
+      conditionGlobalVariableId,
+      conflictId,
+      countryCode,
+      efficacyLagOnly,
+    },
+    page,
+    pageSize: PLAINTIFFS_PAGE_SIZE,
+    sort,
+  });
   const people = data?.people ?? [];
   const filteredCount = data?.filteredCount ?? 0;
   const totalPages = data?.totalPages ?? 1;
@@ -163,12 +163,12 @@ export default async function PlaintiffsPage({
       <section className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:py-14">
         <header className="space-y-6">
           <h1 className="max-w-4xl text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
-            Sign the treaty for someone who can't.
+            Register plaintiffs for Humanity v Government.
           </h1>
           <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
-            Please list everyone you love who can no longer sign the 1% Treaty
-            because of death, disease, or both, so they may be presented as
-            evidence in the class action lawsuit{" "}
+            Please list everyone you love who was harmed by war, disease, or
+            government failure, so they may be presented as evidence in the
+            class action lawsuit{" "}
             <Link
               className="underline underline-offset-4"
               href={ROUTES.humanityVGovernment}
@@ -179,7 +179,7 @@ export default async function PlaintiffsPage({
           </p>
         </header>
 
-        <RepresentedPersonConversionForm />
+        <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
 
         <section className="max-w-5xl space-y-4 text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
           <p>
@@ -264,7 +264,7 @@ export default async function PlaintiffsPage({
               people.map((person, index) => (
                 <PersonFaceTile
                   index={index}
-                  key={person.voteId}
+                  key={person.partyId}
                   person={person}
                 />
               ))
@@ -318,14 +318,13 @@ export default async function PlaintiffsPage({
               Who belongs here?
             </summary>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Some humans cannot sign the treaty themselves. Dementia, severe
-              illness, disability, no internet, captivity, and death are all
-              terrible UX.
+              Some humans cannot represent themselves. Dementia, severe illness,
+              disability, no internet, captivity, and death are all terrible UX.
             </p>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
               Add a relative, patient, friend, neighbor, or dead human with
-              unfinished business. Use this for someone who cannot sign the 1%
-              Treaty themselves.
+              unfinished business. Use this for someone who belongs in Humanity
+              v Government.
             </p>
           </details>
           <details className="border border-border bg-card p-4 text-card-foreground">
@@ -333,8 +332,8 @@ export default async function PlaintiffsPage({
               The Invisible Graveyard
             </summary>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Dead humans cannot click a treaty button. Their names still count
-              toward making preventable death harder to hide.
+              Dead humans cannot file paperwork. Their names still count toward
+              making preventable death harder to hide.
             </p>
           </details>
           <details className="border border-border bg-card p-4 text-card-foreground">

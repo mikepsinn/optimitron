@@ -24,16 +24,17 @@ export function normalizeOrganizationHttpUrl(
   }
 }
 
-export function normalizeOrganizationLogoUrl(raw: string | null | undefined) {
+export function normalizeOrganizationImageUrl(raw: string | null | undefined) {
   return normalizeOrganizationHttpUrl(raw);
 }
 
-function assertValidOrganizationLogoUrl(
+function assertValidOrganizationImageUrl(
   raw: string | null | undefined,
+  label = "organization image URL",
 ): string | null {
-  const normalized = normalizeOrganizationLogoUrl(raw);
+  const normalized = normalizeOrganizationImageUrl(raw);
   if (normalized === false) {
-    throw new Error("Invalid organization logo URL");
+    throw new Error(`Invalid ${label}`);
   }
   return normalized;
 }
@@ -51,12 +52,14 @@ function assertValidOrganizationWebsiteUrl(
 interface OrganizationDraftInput {
   contactEmail?: string | null;
   description?: string | null;
-  logo?: string | null;
+  donationUrl?: string | null;
   name: string;
   sourceRef?: string | null;
   sourceUrl?: string | null;
+  squareLogoUrl?: string | null;
   type?: OrgType | null;
   website?: string | null;
+  wordmarkLogoUrl?: string | null;
 }
 
 async function getAvailableSlug(
@@ -87,14 +90,28 @@ export async function findOrCreateOrganization(
   db: DbClient = prisma,
 ) {
   const name = input.name.trim();
-  const normalizedLogo =
-    input.logo === undefined
+  const normalizedSquareLogo =
+    input.squareLogoUrl === undefined
       ? undefined
-      : assertValidOrganizationLogoUrl(input.logo);
+      : assertValidOrganizationImageUrl(
+          input.squareLogoUrl,
+          "organization square logo URL",
+        );
+  const normalizedWordmarkLogo =
+    input.wordmarkLogoUrl === undefined
+      ? undefined
+      : assertValidOrganizationImageUrl(
+          input.wordmarkLogoUrl,
+          "organization wordmark logo URL",
+        );
   const normalizedWebsite =
     input.website === undefined
       ? undefined
       : assertValidOrganizationWebsiteUrl(input.website);
+  const normalizedDonationUrl =
+    input.donationUrl === undefined
+      ? undefined
+      : assertValidOrganizationWebsiteUrl(input.donationUrl);
 
   if (!name) {
     throw new Error("Organization name is required");
@@ -121,14 +138,18 @@ export async function findOrCreateOrganization(
           contactEmail: input.contactEmail ?? existingBySourceRef.contactEmail,
           deletedAt: null,
           description: input.description ?? existingBySourceRef.description,
-          logo: normalizedLogo ?? existingBySourceRef.logo,
+          donationUrl: normalizedDonationUrl ?? existingBySourceRef.donationUrl,
           name,
           slug: nextSlug,
           sourceRef: normalizedSourceRef,
           sourceUrl: input.sourceUrl ?? existingBySourceRef.sourceUrl,
+          squareLogoUrl:
+            normalizedSquareLogo ?? existingBySourceRef.squareLogoUrl,
           status: OrgStatus.APPROVED,
           type: desiredType,
           website: normalizedWebsite ?? existingBySourceRef.website,
+          wordmarkLogoUrl:
+            normalizedWordmarkLogo ?? existingBySourceRef.wordmarkLogoUrl,
         },
       });
     }
@@ -155,13 +176,16 @@ export async function findOrCreateOrganization(
         contactEmail: input.contactEmail ?? existingByName.contactEmail,
         deletedAt: null,
         description: input.description ?? existingByName.description,
-        logo: normalizedLogo ?? existingByName.logo,
+        donationUrl: normalizedDonationUrl ?? existingByName.donationUrl,
         slug: nextSlug,
         sourceRef: normalizedSourceRef ?? existingByName.sourceRef,
         sourceUrl: input.sourceUrl ?? existingByName.sourceUrl,
+        squareLogoUrl: normalizedSquareLogo ?? existingByName.squareLogoUrl,
         status: OrgStatus.APPROVED,
         type: input.type ?? existingByName.type,
         website: normalizedWebsite ?? existingByName.website,
+        wordmarkLogoUrl:
+          normalizedWordmarkLogo ?? existingByName.wordmarkLogoUrl,
       },
     });
   }
@@ -172,14 +196,16 @@ export async function findOrCreateOrganization(
     data: {
       contactEmail: input.contactEmail ?? null,
       description: input.description ?? null,
-      logo: normalizedLogo ?? null,
+      donationUrl: normalizedDonationUrl ?? null,
       name,
       slug: nextSlug,
       sourceRef: normalizedSourceRef,
       sourceUrl: input.sourceUrl ?? null,
+      squareLogoUrl: normalizedSquareLogo ?? null,
       status: OrgStatus.APPROVED,
       type: desiredType,
       website: normalizedWebsite ?? null,
+      wordmarkLogoUrl: normalizedWordmarkLogo ?? null,
     },
   });
 }
@@ -203,7 +229,9 @@ interface CreateOrganizationInput {
   status?: OrgStatus | null;
   website?: string | null;
   description?: string | null;
-  logo?: string | null;
+  donationUrl?: string | null;
+  squareLogoUrl?: string | null;
+  wordmarkLogoUrl?: string | null;
   contactEmail?: string | null;
   jurisdictionId?: string | null;
 }
@@ -224,7 +252,15 @@ export async function createOrganizationWithOwner(
   options: CreateOrganizationOptions = { rejectDuplicates: true },
 ) {
   const name = input.name.trim();
-  const logo = assertValidOrganizationLogoUrl(input.logo);
+  const squareLogoUrl = assertValidOrganizationImageUrl(
+    input.squareLogoUrl,
+    "organization square logo URL",
+  );
+  const wordmarkLogoUrl = assertValidOrganizationImageUrl(
+    input.wordmarkLogoUrl,
+    "organization wordmark logo URL",
+  );
+  const donationUrl = assertValidOrganizationWebsiteUrl(input.donationUrl);
   const website = assertValidOrganizationWebsiteUrl(input.website);
   if (!name) {
     throw new Error("Organization name is required");
@@ -278,7 +314,9 @@ export async function createOrganizationWithOwner(
         creatorId: creatorUserId,
         website,
         description: input.description ?? null,
-        logo,
+        donationUrl,
+        squareLogoUrl,
+        wordmarkLogoUrl,
         contactEmail: input.contactEmail ?? null,
         jurisdictionId: input.jurisdictionId ?? null,
       },
@@ -380,7 +418,9 @@ export async function getApprovedOrganizationForSurveySlug(slug: string) {
       slug: true,
       status: true,
       deletedAt: true,
-      logo: true,
+      squareLogoUrl: true,
+      wordmarkLogoUrl: true,
+      donationUrl: true,
       website: true,
       description: true,
     },
@@ -477,7 +517,9 @@ interface UpdateOrganizationInput {
   status?: OrgStatus;
   website?: string | null;
   description?: string | null;
-  logo?: string | null;
+  donationUrl?: string | null;
+  squareLogoUrl?: string | null;
+  wordmarkLogoUrl?: string | null;
   contactEmail?: string | null;
   jurisdictionId?: string | null;
 }
@@ -541,9 +583,21 @@ export async function updateOrganization(
   if (patch.website !== undefined) {
     data.website = assertValidOrganizationWebsiteUrl(patch.website);
   }
+  if (patch.donationUrl !== undefined) {
+    data.donationUrl = assertValidOrganizationWebsiteUrl(patch.donationUrl);
+  }
   if (patch.description !== undefined) data.description = patch.description;
-  if (patch.logo !== undefined) {
-    data.logo = assertValidOrganizationLogoUrl(patch.logo);
+  if (patch.squareLogoUrl !== undefined) {
+    data.squareLogoUrl = assertValidOrganizationImageUrl(
+      patch.squareLogoUrl,
+      "organization square logo URL",
+    );
+  }
+  if (patch.wordmarkLogoUrl !== undefined) {
+    data.wordmarkLogoUrl = assertValidOrganizationImageUrl(
+      patch.wordmarkLogoUrl,
+      "organization wordmark logo URL",
+    );
   }
   if (patch.contactEmail !== undefined) data.contactEmail = patch.contactEmail;
   if (patch.jurisdictionId !== undefined) {

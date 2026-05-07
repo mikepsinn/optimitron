@@ -169,7 +169,7 @@ function SignatoryRow({
     : entry.organization.name;
   const avatar = isHuman
     ? getUserDisplayAvatar(entry.user)
-    : entry.organization.logo;
+    : entry.organization.squareLogoUrl;
   const href = isHuman
     ? getUserDisplayHref(entry.user)
     : getSafeHttpUrl(entry.organization.website);

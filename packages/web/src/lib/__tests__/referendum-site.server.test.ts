@@ -238,7 +238,7 @@ describe("referendum-site.server", () => {
           name: "B Org",
           slug: "b-org",
           website: "https://b.example",
-          logo: null,
+          squareLogoUrl: null,
           description: "B org description",
         },
       },

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { OrganizationProfileEditor } from "@/components/organizations/OrganizationProfileEditor";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
@@ -111,22 +112,19 @@ Responses from this link are credited to ${org.name}.`;
           <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Profile
           </h2>
-          <dl className="space-y-2 text-base font-bold text-foreground">
-            <div>
-              <dt className="inline text-muted-foreground">Type: </dt>
-              <dd className="inline">{org.type}</dd>
-            </div>
-            <div>
-              <dt className="inline text-muted-foreground">Contact: </dt>
-              <dd className="inline">{org.contactEmail ?? "—"}</dd>
-            </div>
-            {org.description ? (
-              <div>
-                <dt className="inline text-muted-foreground">About: </dt>
-                <dd className="inline">{org.description}</dd>
-              </div>
-            ) : null}
-          </dl>
+          <OrganizationProfileEditor
+            organization={{
+              contactEmail: org.contactEmail,
+              description: org.description,
+              donationUrl: org.donationUrl,
+              id: org.id,
+              name: org.name,
+              squareLogoUrl: org.squareLogoUrl,
+              type: org.type,
+              website: org.website,
+              wordmarkLogoUrl: org.wordmarkLogoUrl,
+            }}
+          />
         </div>
 
         <div>

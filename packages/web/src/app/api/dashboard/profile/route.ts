@@ -14,7 +14,9 @@ export async function PATCH(req: NextRequest) {
       name: typeof data.name === "string" ? data.name : undefined,
       bio: typeof data.bio === "string" ? data.bio : undefined,
       handle: "handle" in data ? (data.handle as string | null) : undefined,
-      headline: "headline" in data ? (data.headline as string | null) : undefined,
+      headline:
+        "headline" in data ? (data.headline as string | null) : undefined,
+      image: "image" in data ? (data.image as string | null) : undefined,
       website: "website" in data ? (data.website as string | null) : undefined,
       coverImage:
         "coverImage" in data ? (data.coverImage as string | null) : undefined,

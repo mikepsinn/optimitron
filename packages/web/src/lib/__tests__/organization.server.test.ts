@@ -172,7 +172,7 @@ describe("organization.server", () => {
     expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
   });
 
-  it("rejects unsafe organization logo URLs before creating records", async () => {
+  it("rejects unsafe organization square logo URLs before creating records", async () => {
     mocks.transaction.mockImplementation(async (callback) =>
       callback({
         organization: {
@@ -191,12 +191,12 @@ describe("organization.server", () => {
     await expect(
       createOrganizationWithOwner(
         {
-          logo: "javascript:alert(1)",
+          squareLogoUrl: "javascript:alert(1)",
           name: "Unsafe Logo Org",
         },
         "user_1",
       ),
-    ).rejects.toThrow("Invalid organization logo URL");
+    ).rejects.toThrow("Invalid organization square logo URL");
     expect(mocks.txOrganizationCreate).not.toHaveBeenCalled();
   });
 

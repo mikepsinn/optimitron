@@ -7,12 +7,13 @@ import {
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
-import { PersonConditionStatus, ReferendumVoteSource } from "@optimitron/db";
+import { CourtCasePartyRole, PersonConditionStatus } from "@optimitron/db";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { ManageRepresentedPeopleClient } from "@/components/people/ManageRepresentedPeopleClient";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
+import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
 import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
 import { prisma } from "@/lib/prisma";
 import {
@@ -131,14 +132,18 @@ export default async function ManagePeoplePage({
   const initialEditingId =
     typeof editParam === "string" && editParam.trim() ? editParam.trim() : null;
   const representedPeopleWhere = {
-    createdByUserId: userId,
     deletedAt: null,
-    referendumVotes: {
-      some: {
-        deletedAt: null,
-        referendum: { slug: referendumSlug },
-        userId,
-        voteSource: ReferendumVoteSource.REPRESENTED,
+    subject: {
+      courtCaseParties: {
+        some: {
+          case: {
+            deletedAt: null,
+            slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+          },
+          createdByUserId: userId,
+          deletedAt: null,
+          role: CourtCasePartyRole.NAMED_PLAINTIFF,
+        },
       },
     },
   };
@@ -157,11 +162,12 @@ export default async function ManagePeoplePage({
       conditions: {
         where: { deletedAt: null },
         orderBy: [{ status: "desc" as const }, { createdAt: "asc" as const }],
-        select: { conditionName: true, status: true },
+        select: { conditionName: true, isPublic: true, status: true },
         take: 3,
       },
       deathDate: true,
       displayName: true,
+      bio: true,
       id: true,
       image: true,
       isPublic: true,
@@ -193,16 +199,6 @@ export default async function ManagePeoplePage({
           },
         },
       },
-      referendumVotes: {
-        where: {
-          deletedAt: null,
-          referendum: { slug: referendumSlug },
-          userId,
-          voteSource: ReferendumVoteSource.REPRESENTED,
-        },
-        select: { publicComment: true },
-        take: 1,
-      },
       relationshipsAsObject: {
         where: { createdByUserId: userId, deletedAt: null },
         orderBy: { createdAt: "desc" },
@@ -222,9 +218,11 @@ export default async function ManagePeoplePage({
       null;
     const submission = person.memorial?.submissions[0] ?? null;
     return {
+      authorityConfirmed: false,
       birthDate: dateInputValue(person.birthDate),
       causeCategory:
         person.memorial?.causeCategory ?? PersonDeathCauseCategory.UNKNOWN,
+      conditionIsPublic: primaryCondition?.isPublic ?? false,
       conditionName: primaryCondition?.conditionName ?? "",
       dateOfDeath: dateInputValue(person.deathDate),
       deathCountryCode: person.memorial?.deathCountryCode ?? "",
@@ -238,11 +236,13 @@ export default async function ManagePeoplePage({
           title: evidence.title ?? "",
         })) ?? [],
       id: person.id,
+      healthDisclosureConfirmed: false,
       imageUrl: person.image ?? "",
       isPublic: person.isPublic,
       lifeStatus: person.lifeStatus,
       memorialMessage: submission?.memorialMessage ?? "",
-      publicComment: person.referendumVotes[0]?.publicComment ?? "",
+      publicComment: person.bio ?? "",
+      publicDisplayAcknowledged: false,
       relationshipType: person.relationshipsAsObject[0]?.relationshipType ?? "",
       consentCourtEvidence: submission?.consentCourtEvidence ?? false,
     };

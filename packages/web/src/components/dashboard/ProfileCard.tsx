@@ -1,36 +1,47 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card } from "@/components/retroui/Card"
-import { Button } from "@/components/retroui/Button"
-import { Input } from "@/components/retroui/Input"
-import { Label } from "@/components/retroui/Label"
-import { Textarea } from "@/components/retroui/Textarea"
-import { Check, Copy, ExternalLink, Globe } from "lucide-react"
-import { PrivacyToggle } from "@/components/dashboard/PrivacyToggle"
-import { OrganizationSelector } from "@/components/dashboard/OrganizationSelector"
-import type { DashboardUser } from "@/types/dashboard"
-import Link from "next/link"
+import { useEffect, useRef, useState } from "react";
+import { Card } from "@/components/retroui/Card";
+import { Button } from "@/components/retroui/Button";
+import { Input } from "@/components/retroui/Input";
+import { Label } from "@/components/retroui/Label";
+import { Textarea } from "@/components/retroui/Textarea";
+import { Check, Copy, ExternalLink, Globe, Upload } from "lucide-react";
+import { PrivacyToggle } from "@/components/dashboard/PrivacyToggle";
+import { OrganizationSelector } from "@/components/dashboard/OrganizationSelector";
+import { SquarePhotoCropper } from "@/components/people/SquarePhotoCropper";
+import { uploadImageViaBackend } from "@/lib/image-upload.client";
+import type { DashboardUser } from "@/types/dashboard";
+import Link from "next/link";
 
 interface ProfileCardProps {
-  user: DashboardUser
-  onUserChange: (user: DashboardUser) => void
-  onRefresh: () => void
+  user: DashboardUser;
+  onUserChange: (user: DashboardUser) => void;
+  onRefresh: () => void;
 }
 
-export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps) {
-  const [formError, setFormError] = useState<string | null>(null)
+export function ProfileCard({
+  user,
+  onUserChange,
+  onRefresh,
+}: ProfileCardProps) {
+  const [formError, setFormError] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     name: user.name,
     bio: user.bio,
     isPublic: user.isPublic,
     website: user.website || "",
     headline: user.headline || "",
+    image: user.image || "",
     coverImage: user.coverImage || "",
-  })
-  const [isSaving, setIsSaving] = useState(false)
-  const [isCopied, setIsCopied] = useState(false)
-  const [origin, setOrigin] = useState("")
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [origin, setOrigin] = useState("");
+  const [avatarCropFile, setAvatarCropFile] = useState<File | null>(null);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setEditForm({
@@ -39,28 +50,29 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
       isPublic: user.isPublic,
       website: user.website || "",
       headline: user.headline || "",
+      image: user.image || "",
       coverImage: user.coverImage || "",
-    })
-  }, [user])
+    });
+  }, [user]);
 
   useEffect(() => {
-    setOrigin(window.location.origin)
-  }, [])
+    setOrigin(window.location.origin);
+  }, []);
 
   const publicProfileUrl =
-    origin && user.handle ? `${origin}/u/${user.handle}` : null
+    origin && user.handle ? `${origin}/u/${user.handle}` : null;
 
   const handleCopyUrl = () => {
-    if (!publicProfileUrl) return
-    navigator.clipboard.writeText(publicProfileUrl)
-    setIsCopied(true)
-    setTimeout(() => setIsCopied(false), 2000)
-  }
+    if (!publicProfileUrl) return;
+    navigator.clipboard.writeText(publicProfileUrl);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   const saveProfile = async () => {
     try {
-      setIsSaving(true)
-      setFormError(null)
+      setIsSaving(true);
+      setFormError(null);
       const res = await fetch("/api/dashboard/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -70,13 +82,14 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
           isPublic: editForm.isPublic,
           website: editForm.website || null,
           headline: editForm.headline || null,
+          image: editForm.image || null,
           coverImage: editForm.coverImage || null,
         }),
-      })
+      });
 
       if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || "Failed to update profile")
+        const data = await res.json();
+        throw new Error(data.error || "Failed to update profile");
       }
 
       onUserChange({
@@ -86,31 +99,130 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         isPublic: editForm.isPublic,
         website: editForm.website || null,
         headline: editForm.headline || null,
+        image: editForm.image || null,
+        person: user.person
+          ? {
+              ...user.person,
+              bio: editForm.bio,
+              coverImage: editForm.coverImage || null,
+              displayName: editForm.name,
+              headline: editForm.headline || null,
+              image: editForm.image || null,
+              isPublic: editForm.isPublic,
+              website: editForm.website || null,
+            }
+          : user.person,
         coverImage: editForm.coverImage || null,
-      })
+      });
 
-      onRefresh()
+      onRefresh();
     } catch (error) {
-      console.error("Failed to update profile:", error)
-      setFormError(error instanceof Error ? error.message : "Failed to update profile. Please try again.")
+      console.error("Failed to update profile:", error);
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : "Failed to update profile. Please try again.",
+      );
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
+
+  const uploadAvatar = async (file: File) => {
+    setAvatarUploading(true);
+    setAvatarError(null);
+    try {
+      const { publicUrl } = await uploadImageViaBackend({
+        file,
+        kind: "person-photo",
+      });
+      setEditForm((current) => ({ ...current, image: publicUrl }));
+      setAvatarCropFile(null);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to upload photo.";
+      setAvatarError(message);
+      throw new Error(message);
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
 
   return (
     <Card className="border-4 border-primary">
       <Card.Header>
-        <Card.Title className="text-2xl font-black uppercase">YOUR PROFILE</Card.Title>
-        <Card.Description className="font-bold">Your public record on this planet.</Card.Description>
+        <Card.Title className="text-2xl font-black uppercase">
+          YOUR PROFILE
+        </Card.Title>
+        <Card.Description className="font-bold">
+          Your public record on this planet.
+        </Card.Description>
       </Card.Header>
       <Card.Content className="space-y-6">
+        {avatarCropFile ? (
+          <SquarePhotoCropper
+            file={avatarCropFile}
+            onCancel={() => setAvatarCropFile(null)}
+            onCrop={uploadAvatar}
+            title="Crop photo"
+          />
+        ) : null}
         <div className="space-y-4">
+          <div>
+            <Label className="text-sm font-bold uppercase">Profile photo</Label>
+            <div className="mt-2 flex flex-wrap items-center gap-4">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden border border-foreground bg-background text-xl font-black uppercase">
+                {editForm.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    alt=""
+                    className="h-full w-full object-cover"
+                    src={editForm.image}
+                  />
+                ) : (
+                  (editForm.name || user.email || "?").slice(0, 2)
+                )}
+              </div>
+              <div className="space-y-2">
+                <input
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  disabled={avatarUploading || isSaving}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) setAvatarCropFile(file);
+                    if (avatarInputRef.current) {
+                      avatarInputRef.current.value = "";
+                    }
+                  }}
+                  ref={avatarInputRef}
+                  type="file"
+                />
+                <Button
+                  className="border border-foreground bg-background"
+                  disabled={avatarUploading || isSaving}
+                  onClick={() => avatarInputRef.current?.click()}
+                  type="button"
+                  variant="outline"
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  {avatarUploading ? "Uploading..." : "Upload photo"}
+                </Button>
+                {avatarError ? (
+                  <p className="text-xs font-bold text-red-600">
+                    {avatarError}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </div>
           <div>
             <Label className="text-sm font-bold uppercase">Name</Label>
             <Input
               value={editForm.name}
-              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, name: e.target.value })
+              }
               className="border-4 border-primary bg-background"
             />
           </div>
@@ -118,16 +230,22 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
             <Label className="text-sm font-bold uppercase">Bio</Label>
             <Textarea
               value={editForm.bio}
-              onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, bio: e.target.value })
+              }
               className="border-4 border-primary bg-background"
               rows={3}
             />
           </div>
           <div>
-            <Label className="text-sm font-bold uppercase">Professional Headline</Label>
+            <Label className="text-sm font-bold uppercase">
+              Professional Headline
+            </Label>
             <Input
               value={editForm.headline}
-              onChange={(e) => setEditForm({ ...editForm, headline: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, headline: e.target.value })
+              }
               className="border-4 border-primary bg-background"
               placeholder="Concerned citizen | Spreadsheet appreciator"
             />
@@ -139,17 +257,23 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
             <Label className="text-sm font-bold uppercase">Website</Label>
             <Input
               value={editForm.website}
-              onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, website: e.target.value })
+              }
               className="border-4 border-primary bg-background"
               placeholder="https://yourwebsite.com"
               type="url"
             />
           </div>
           <div>
-            <Label className="text-sm font-bold uppercase">Cover Image URL</Label>
+            <Label className="text-sm font-bold uppercase">
+              Cover Image URL
+            </Label>
             <Input
               value={editForm.coverImage}
-              onChange={(e) => setEditForm({ ...editForm, coverImage: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, coverImage: e.target.value })
+              }
               className="border-4 border-primary bg-background"
               placeholder="https://example.com/cover.jpg"
               type="url"
@@ -173,7 +297,9 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         </div>
 
         <div className="space-y-3 pt-2">
-          <Label className="text-sm font-bold uppercase mb-2 block">Privacy Settings</Label>
+          <Label className="text-sm font-bold uppercase mb-2 block">
+            Privacy Settings
+          </Label>
           <PrivacyToggle
             isPublic={editForm.isPublic}
             onChange={(value) => setEditForm({ ...editForm, isPublic: value })}
@@ -222,13 +348,19 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         </div>
 
         <div className="flex items-center justify-end pt-4 border-t-2 border-primary">
-          <Button onClick={saveProfile} disabled={isSaving} className="border-4 border-primary bg-brutal-pink w-full sm:w-auto">
+          <Button
+            onClick={saveProfile}
+            disabled={isSaving}
+            className="border-4 border-primary bg-brutal-pink w-full sm:w-auto"
+          >
             {isSaving ? "Saving..." : "Update Profile"}
           </Button>
         </div>
 
-        {formError && <p className="text-sm font-bold text-red-600">{formError}</p>}
+        {formError && (
+          <p className="text-sm font-bold text-red-600">{formError}</p>
+        )}
       </Card.Content>
     </Card>
-  )
+  );
 }

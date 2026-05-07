@@ -66,9 +66,9 @@ export interface PublicOrganizationSignatoryEntry {
   organization: {
     description: string | null;
     id: string;
-    logo: string | null;
     name: string;
     slug: string;
+    squareLogoUrl: string | null;
     website: string | null;
   };
 }
@@ -120,9 +120,9 @@ export type ReferendumSiteSupporterRecord =
         select: {
           description: true;
           id: true;
-          logo: true;
           name: true;
           slug: true;
+          squareLogoUrl: true;
           website: true;
         };
       };
@@ -248,7 +248,7 @@ export async function getReferendumSiteHomeData(
             name: true,
             slug: true,
             website: true,
-            logo: true,
+            squareLogoUrl: true,
             description: true,
           },
         },
@@ -384,22 +384,22 @@ export async function getReferendumSiteHomeData(
 
   return {
     ...context,
-    lateEmployeeProgramTask:
-      isTreatyCampaignSite
-        ? ((treatyParentTask?.task ?? null) as TaskCardTask | null)
-        : null,
-    lateEmployeeTasks:
-      isTreatyCampaignSite
-        ? ((treatyParentTask?.task.childTasks ??
-            []) as unknown as TaskCardTask[])
-        : [],
-    fullTasksHref: isTreatyCampaignSite ? getTreatyParentTaskHref() : ROUTES.tasks,
+    lateEmployeeProgramTask: isTreatyCampaignSite
+      ? ((treatyParentTask?.task ?? null) as TaskCardTask | null)
+      : null,
+    lateEmployeeTasks: isTreatyCampaignSite
+      ? ((treatyParentTask?.task.childTasks ?? []) as unknown as TaskCardTask[])
+      : [],
+    fullTasksHref: isTreatyCampaignSite
+      ? getTreatyParentTaskHref()
+      : ROUTES.tasks,
     individualCount,
     representedHumanCount,
     memorialVoteCount,
     organizationCount,
-    treatyMarkdown:
-      isTreatyCampaignSite ? shareableSnippets.onePercentTreatyText.markdown : "",
+    treatyMarkdown: isTreatyCampaignSite
+      ? shareableSnippets.onePercentTreatyText.markdown
+      : "",
     publicSigners: {
       currentUserSigner,
       signers: signerRows,
@@ -436,7 +436,7 @@ export async function getReferendumSiteSupportersData(
           name: true,
           slug: true,
           website: true,
-          logo: true,
+          squareLogoUrl: true,
           description: true,
         },
       },

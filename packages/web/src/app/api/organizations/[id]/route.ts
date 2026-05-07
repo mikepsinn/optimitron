@@ -3,7 +3,7 @@ import { requireAuth } from "@/lib/auth-utils";
 import {
   canManageOrganization,
   normalizeOrganizationHttpUrl,
-  normalizeOrganizationLogoUrl,
+  normalizeOrganizationImageUrl,
 } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 
@@ -83,24 +83,49 @@ export async function PATCH(
       name?: string;
       website?: string | null;
       description?: string | null;
-      logo?: string | null;
+      donationUrl?: string | null;
+      squareLogoUrl?: string | null;
+      wordmarkLogoUrl?: string | null;
       contactEmail?: string | null;
     };
-    const logo =
-      body.logo === undefined
+    const squareLogoUrl =
+      body.squareLogoUrl === undefined
         ? undefined
-        : normalizeOrganizationLogoUrl(body.logo);
+        : normalizeOrganizationImageUrl(body.squareLogoUrl);
+    const wordmarkLogoUrl =
+      body.wordmarkLogoUrl === undefined
+        ? undefined
+        : normalizeOrganizationImageUrl(body.wordmarkLogoUrl);
     const website =
       body.website === undefined
         ? undefined
         : normalizeOrganizationHttpUrl(body.website);
+    const donationUrl =
+      body.donationUrl === undefined
+        ? undefined
+        : normalizeOrganizationHttpUrl(body.donationUrl);
 
-    if (logo === false) {
-      return NextResponse.json({ error: "Invalid logo URL" }, { status: 400 });
+    if (squareLogoUrl === false) {
+      return NextResponse.json(
+        { error: "Invalid square logo URL" },
+        { status: 400 },
+      );
+    }
+    if (wordmarkLogoUrl === false) {
+      return NextResponse.json(
+        { error: "Invalid wordmark logo URL" },
+        { status: 400 },
+      );
     }
     if (website === false) {
       return NextResponse.json(
         { error: "Invalid website URL" },
+        { status: 400 },
+      );
+    }
+    if (donationUrl === false) {
+      return NextResponse.json(
+        { error: "Invalid donation URL" },
         { status: 400 },
       );
     }
@@ -110,9 +135,11 @@ export async function PATCH(
       data: {
         name: body.name?.trim() || undefined,
         website,
+        donationUrl,
         description:
           body.description === undefined ? undefined : body.description,
-        logo,
+        squareLogoUrl,
+        wordmarkLogoUrl,
         contactEmail:
           body.contactEmail === undefined ? undefined : body.contactEmail,
       },
