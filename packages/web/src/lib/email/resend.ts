@@ -15,6 +15,8 @@ import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { appendWishoniaSignature } from "@/lib/email/wishonia-signature";
 import type { EmailScope } from "@/lib/email/scopes";
 
+const DEFAULT_EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
+
 interface BaseMessage {
   /** The recipient's `User.id` — required so we can check suppression + build the unsubscribe URL. */
   userId: string;
@@ -167,6 +169,47 @@ function replaceUnsubscribePlaceholder<
   };
 }
 
+function normalizeEmailList(emails: readonly string[] | null | undefined) {
+  const seen = new Set<string>();
+  const normalized: string[] = [];
+
+  for (const email of emails ?? []) {
+    const value = email.trim().toLowerCase();
+    if (!value || seen.has(value)) {
+      continue;
+    }
+    seen.add(value);
+    normalized.push(value);
+  }
+
+  return normalized;
+}
+
+function resolveBcc(message: { bcc?: string[] | null; to: string }) {
+  const recipient = message.to.trim().toLowerCase();
+  const monitorBcc = resolveMonitorBcc();
+  const bcc = normalizeEmailList([
+    ...(message.bcc ?? []),
+    ...(monitorBcc ? [monitorBcc] : []),
+  ]).filter((email) => email !== recipient);
+
+  return bcc.length > 0 ? bcc : undefined;
+}
+
+function resolveMonitorBcc() {
+  const configured = serverEnv.EMAIL_MONITOR_BCC?.trim();
+  if (!configured) {
+    return DEFAULT_EMAIL_MONITOR_BCC;
+  }
+
+  const lowered = configured.toLowerCase();
+  if (lowered === "0" || lowered === "false") {
+    return null;
+  }
+
+  return configured;
+}
+
 export async function sendResendEmail(
   message: ResendMessage,
 ): Promise<SendResult> {
@@ -198,10 +241,11 @@ export async function sendResendEmail(
       ? body
       : appendWishoniaSignature(body);
   const resend = getResendClient();
+  const bcc = resolveBcc(message);
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
     to: [message.to],
-    ...(message.bcc?.length ? { bcc: message.bcc } : {}),
+    ...(bcc ? { bcc } : {}),
     ...(message.replyTo ? { replyTo: message.replyTo } : {}),
     subject: message.subject,
     html: signed.html,
@@ -255,10 +299,11 @@ export async function sendReactEmail(
       ? body
       : appendWishoniaSignature(body);
 
+  const bcc = resolveBcc(message);
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
     to: [message.to],
-    ...(message.bcc?.length ? { bcc: message.bcc } : {}),
+    ...(bcc ? { bcc } : {}),
     ...(message.replyTo ? { replyTo: message.replyTo } : {}),
     subject: message.subject,
     html: signed.html,
@@ -298,10 +343,11 @@ export async function sendExternalResendEmail(
       ? body
       : appendWishoniaSignature(body);
   const resend = getResendClient();
+  const bcc = resolveBcc(message);
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
     to: [message.to],
-    ...(message.bcc?.length ? { bcc: message.bcc } : {}),
+    ...(bcc ? { bcc } : {}),
     subject: message.subject,
     html: signed.html,
     text: signed.text,

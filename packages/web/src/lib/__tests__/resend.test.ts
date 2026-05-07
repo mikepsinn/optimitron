@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   emailSend: vi.fn(),
   serverEnv: {
     EMAIL_FROM: "team@optimitron.com" as string | undefined,
+    EMAIL_MONITOR_BCC: undefined as string | undefined,
     NODE_ENV: "development",
     RESEND_API_KEY: "resend_test_key" as string | undefined,
     RESEND_MOCK_SEND: undefined as "1" | undefined,
@@ -38,13 +39,19 @@ vi.mock("@/lib/email/unsub-url", () => ({
 }));
 
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "../email/placeholders";
-import { sendResendEmail } from "../email/resend";
+import {
+  sendExternalResendEmail,
+  sendReactEmail,
+  sendResendEmail,
+} from "../email/resend";
+import { render } from "@react-email/components";
 
 describe("sendResendEmail", () => {
   beforeEach(() => {
     mocks.canSendEmailToUser.mockReset();
     mocks.emailSend.mockReset();
     mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
+    mocks.serverEnv.EMAIL_MONITOR_BCC = undefined;
     mocks.serverEnv.NODE_ENV = "development";
     mocks.serverEnv.RESEND_API_KEY = "resend_test_key";
     mocks.serverEnv.RESEND_MOCK_SEND = undefined;
@@ -142,6 +149,110 @@ describe("sendResendEmail", () => {
 
     expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
       replyTo: "reply+task_1@reply.test",
+    });
+  });
+
+  it("BCCs the default monitor address on normal Resend emails", async () => {
+    await sendResendEmail({
+      html: "<p>Hello</p>",
+      scope: "task_notifications",
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
+      bcc: ["m@thinkbynumbers.org"],
+    });
+  });
+
+  it("merges configured monitor BCC with per-message BCCs", async () => {
+    mocks.serverEnv.EMAIL_MONITOR_BCC = "M@ThinkByNumbers.org";
+
+    await sendResendEmail({
+      bcc: ["admin@example.com", "m@thinkbynumbers.org"],
+      html: "<p>Hello</p>",
+      scope: "task_notifications",
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
+      bcc: ["admin@example.com", "m@thinkbynumbers.org"],
+    });
+  });
+
+  it("disables monitor BCC when EMAIL_MONITOR_BCC is explicitly false", async () => {
+    mocks.serverEnv.EMAIL_MONITOR_BCC = "false";
+
+    await sendResendEmail({
+      html: "<p>Hello</p>",
+      scope: "task_notifications",
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    const payload = mocks.emailSend.mock.calls[0]?.[0] as Record<
+      string,
+      unknown
+    >;
+    expect(payload.bcc).toBeUndefined();
+  });
+
+  it("does not BCC the monitor address when the monitor is the recipient", async () => {
+    mocks.serverEnv.EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
+
+    await sendResendEmail({
+      html: "<p>Hello</p>",
+      scope: "task_notifications",
+      subject: "Hello",
+      text: "Hello",
+      to: "M@ThinkByNumbers.org",
+      userId: "user_1",
+    });
+
+    const payload = mocks.emailSend.mock.calls[0]?.[0] as Record<
+      string,
+      unknown
+    >;
+    expect(payload.bcc).toBeUndefined();
+  });
+
+  it("BCCs the monitor address on React emails", async () => {
+    mocks.serverEnv.EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
+    vi.mocked(render).mockResolvedValueOnce("<p>Hello</p>");
+    vi.mocked(render).mockResolvedValueOnce("Hello");
+
+    await sendReactEmail({
+      react: { props: { children: "Hello" }, type: "div" } as never,
+      scope: "task_notifications",
+      subject: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
+      bcc: ["m@thinkbynumbers.org"],
+    });
+  });
+
+  it("BCCs the monitor address on external emails", async () => {
+    mocks.serverEnv.EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
+
+    await sendExternalResendEmail({
+      html: "<p>Hello</p>",
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+    });
+
+    expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
+      bcc: ["m@thinkbynumbers.org"],
     });
   });
 
