@@ -3713,7 +3713,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a task. Visibility defaults to PUBLIC when assigneeOrganizationId is set and PRIVATE otherwise; pass visibility='PRIVATE' or 'PUBLIC' to override. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
+      "Create a task. Visibility defaults to PRIVATE; admin-scope callers (tasks:admin) get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. Pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
       "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +

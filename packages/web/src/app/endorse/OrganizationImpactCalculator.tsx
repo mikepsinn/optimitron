@@ -295,19 +295,19 @@ export function OrganizationImpactCalculator() {
           </p>
         </div>
         <div className="border-2 border-foreground bg-foreground p-4 text-background">
-          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background/80">
+          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
             If you do not
           </p>
           <p className="mt-2 text-3xl font-black tabular-nums leading-none">
             {formatNumber(estimate.livesSaved)}
           </p>
-          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-background/80">
+          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-background">
             preventable deaths allowed
           </p>
           <p className="mt-3 text-3xl font-black tabular-nums leading-none">
             {formatNumber(estimate.sufferingYears)}
           </p>
-          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-background/80">
+          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-background">
             years of suffering allowed
           </p>
         </div>

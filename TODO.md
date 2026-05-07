@@ -198,6 +198,41 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
   `/api/referendums/[slug]/vote` route after the YES upsert. Memorial/posthumous
   registration was already wired in the represented-people route. Backfill script for
   pre-existing voters still needed (one-time `packages/web/scripts/backfill-court-plaintiffs.ts`).
+- **Family-registration as primary CTA on `/humanity-v-government`.** Lost-prosperity
+  primary theory is per-representative-person ($25.2M cohort / $10.6M NPV), so each
+  registered deceased relative adds another full $25.2M to the family claim. Average
+  user with 4 deceased grandparents = $100M+ family claim from grandparent
+  registrations alone. Move the "register estate of [deceased]" CTA up from the
+  bottom; reframe top-of-page as "register yourself + every deceased family member
+  you can name." This is the strongest recruitment hook in the system — bigger than
+  civic morality, bigger than the prize-fund refund.
+- **Plaintiff dedup, schema-light.** Real risk is duplicate `Subject` rows, not
+  duplicate parties (the `CourtCaseParty(caseId, role, subjectId)` unique constraint
+  already dedups at the Subject level). Add **pre-search before create** on the
+  represented-people registration flow: query existing `Person` rows by canonicalized
+  `lower(displayName) + birthDate + deathDate` before letting the user create a new
+  record. If a match exists, offer "join as co-next-of-kin" instead. Optional schema
+  follow-up: `Person.canonicalKey` indexed column for fast match. Real class actions
+  use SSN + manual claim-administrator reconciliation; we don't have SSNs and we're
+  global, so canonicalized fuzzy match + UX prompt is the practical ceiling. Verify
+  via existing `represented-people` evidence flow (obituary URL, death certificate)
+  when conflicts arise.
+- **Damages sensitivity calculator on `/humanity-v-government`.** Sliders for the
+  disputed inputs (VSL $5M / $10M / $13.7M; war deaths 200M-340M; efficacy-lag deaths
+  CI 36.9M-214M; efficacy lag 4.85-11.5 years; NPV discount 3-7%; lost-prosperity
+  counterfactual benchmark). Live recalculate per-plaintiff demanded recovery + total
+  using the same useMemo + slider pattern as `OrganizationImpactCalculator`. Default
+  values match the manual; users sandbox to their own. Rhetorical purpose: invert
+  every "you made up the numbers" critique into "tune it however you want; case still
+  pleads." A skeptic who dials VSL to $5M still gets $12.6M per plaintiff —
+  bigger than any real filed class action would deliver. Defensibility survives any
+  single-parameter disagreement. Schema-zero; single new client component.
+- **Co-representative model.** Multiple descendants can represent the same estate.
+  Schema-zero option: each descendant registered as `CourtCasePartyRole.PLAINTIFF_REPRESENTATIVE`
+  (or similar role) on the same `subjectId` as the named plaintiff (the deceased).
+  Damages still accrue once to the estate; the case DB does not split the dollar
+  amount among heirs — that's governed by will / intestate statute outside our
+  system, matching how real class actions handle this.
 - ~~**`/humanity-v-government` renders the live case**~~ — done. Replaces the redirect
   with case caption, three counts (310M / 102M / 262M), demanded-recovery tier
   ($10.6M NPV / $25.2M cohort headline; floor + treble alternatives), live plaintiff

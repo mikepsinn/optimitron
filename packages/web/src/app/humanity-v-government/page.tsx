@@ -175,13 +175,13 @@ export default async function HumanityVGovernmentPage() {
             </p>
           </div>
           <div className="border-2 border-foreground bg-foreground p-4 text-background">
-            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background/80">
+            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
               Headline (cohort)
             </p>
             <p className="mt-2 text-2xl font-black tabular-nums leading-none">
               $25.2M
             </p>
-            <p className="mt-1 text-xs font-bold text-background/80">
+            <p className="mt-1 text-xs font-bold text-background">
               Lost-prosperity-only, lifetime, representative full-life cohort.
             </p>
           </div>
@@ -198,7 +198,19 @@ export default async function HumanityVGovernmentPage() {
           </div>
         </div>
         <p className="mt-4 text-sm font-bold leading-6 text-muted-foreground">
-          Body-count alternative pleadings: floor{" "}
+          <span className="font-black text-foreground">Why $25.2M.</span>{" "}
+          Governments collected $36.5T/year to "promote the general welfare"
+          and underdelivered. The lost-prosperity theory compares delivered
+          welfare to a benchmark where disease was being seriously addressed;
+          the gap is the per-person deficiency. This is antitrust-style
+          lost-profits — the framework prosecutors actually win with against
+          corporate defendants. One coherent number, one comparison, no double-
+          counting deaths.
+        </p>
+        <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
+          <span className="font-black text-foreground">Alternative pleadings.</span>{" "}
+          If the Court rejects the lost-prosperity theory, body-count tiers
+          fall back: floor{" "}
           <ParameterValue
             figures={3}
             param={CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA}
@@ -210,8 +222,16 @@ export default async function HumanityVGovernmentPage() {
             param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
             valueOverride="$2.74M"
           />{" "}
-          per capita. Full damages schedule with derivations on the manual page.
+          per capita. Each tier is independently citable.
         </p>
+        <a
+          className="mt-5 inline-block border-2 border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
+          href={HUMANITY_V_GOVERNMENT_MANUAL_URL}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Read the full damages analysis →
+        </a>
       </section>
 
       <section className="mt-10 border-2 border-foreground bg-background p-5">
@@ -231,17 +251,6 @@ export default async function HumanityVGovernmentPage() {
         </Link>
       </section>
 
-      <p className="mt-10 text-xs font-bold text-muted-foreground">
-        Doctrinal long-form, methodology, and citations:{" "}
-        <a
-          className="underline underline-offset-4"
-          href={HUMANITY_V_GOVERNMENT_MANUAL_URL}
-          rel="noreferrer"
-          target="_blank"
-        >
-          {HUMANITY_V_GOVERNMENT_MANUAL_URL}
-        </a>
-      </p>
     </main>
   );
 }

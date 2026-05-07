@@ -1,4 +1,8 @@
-import { Prisma } from "@optimitron/db";
+import {
+  Prisma,
+  TaskCommentKind,
+  TaskCommentSource,
+} from "@optimitron/db";
 import { describe, expect, it, vi } from "vitest";
 import { processInboundReply, stripQuotedReply } from "../inbound-reply";
 
@@ -290,8 +294,8 @@ describe("processInboundReply", () => {
         authorOrganizationId: "org_iam",
         authorUserId: null,
         authorPersonId: null,
-        kind: "INBOUND_MESSAGE",
-        source: "EMAIL_REPLY",
+        kind: TaskCommentKind.INBOUND_MESSAGE,
+        source: TaskCommentSource.EMAIL_REPLY,
         message: "We posted the survey link to our member newsletter.",
         taskId: "task_iam",
       }),
