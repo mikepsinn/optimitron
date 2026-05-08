@@ -593,24 +593,95 @@ mechanical email loop; the directory move locks in a place for the
 next 3–5 templates without over-designing for variants we haven't
 written yet.
 
-### P1 — Subtask creation by any user — UI form (API shipped 2026-05-08)
+### P1 — Per-task subtask-creation permission (`allowsUserSubtasks`)
 
-API + server helper + parent-validation guards shipped this session
-(`POST /api/tasks` accepts `parentTaskId`; `createTask` accepts and
-persists it; subtasks default to `isPublic: false`). What's left is
-the UI form on `/tasks/[id]/page.tsx`:
+The `parentTaskId` plumbing shipped this session lets any authenticated
+caller POST a subtask to any public parent. That's wrong for the campaign
+shape: top-level programs under `optimize-earth` (1% Treaty, Decentralized
+FDA, Decentralized USDA, etc.) should be admin-curated, while leaf
+programs need user-suggested subtasks to make the "decentralized to-do
+list for humanity" frame actually decentralized.
 
-- "Add subtask" disclosure on public parent tasks. Title + optional
-  description fields. Submits to `POST /api/tasks` with the parent's
-  id. ~30 lines.
-- Admin "Promote to public" one-click action on the parent-task
-  page (same shape as existing curator-verification disclosure).
-  Lets the parent-task creator surface user-suggested subtasks
-  into the public tree.
+**Schema (one column, separate schema PR per AGENTS.md):**
 
-This closes the user-agency loop that pairs with the donate-to-fund-
-task entry below: orgs propose work → admin promotes → foundations
-fund.
+```prisma
+model Task {
+  // Whether non-admin users can POST subtasks under this task. Defaults
+  // to false — admin opts a task in when it should accept user-suggested
+  // subtasks (e.g., "End War and Disease", "Create Decentralized FDA").
+  allowsUserSubtasks Boolean @default(false)
+}
+```
+
+**API guards in `POST /api/tasks` (follow-up after schema lands):**
+
+- If `parentTaskId == null` → require `caller.isAdmin`. Closes the
+  pre-existing gap where non-admins can create top-level public tasks
+  via the REST API.
+- If `parentTaskId != null` → require `caller.isAdmin` OR
+  `parent.allowsUserSubtasks === true`. Otherwise 403.
+- Subtasks continue to default to `isPublic: false`; admin promotes via
+  the existing `/tasks/[id]` disclosure.
+
+**Seed defaults:**
+
+- `optimize-earth` root: `allowsUserSubtasks = false` (top-level
+  programs stay curated).
+- Each program child (1% Treaty parent, Decentralized FDA, Decentralized
+  USDA, Bed Nets Gap, etc.): `allowsUserSubtasks = true`. Users
+  contribute under any program.
+- Per-leader treaty signer tasks: `allowsUserSubtasks = false` (each
+  leader's page shouldn't be subtask-spammed).
+
+**Why a boolean and not an enum / per-user allowlist** (decided 2026-05-08):
+
+- Wikipedia, GitHub Issues, StackOverflow, Reddit — every successful
+  large UGC system uses *group-level* trust with *content-level*
+  protection levels. None use per-user-per-page allowlists. The
+  reason is rot: contributor leaves, allowlist becomes stale and
+  undocumented; across thousands of tasks this is unmaintainable.
+- A reputation tier (`User.completedTaskCount` → auto-promotion past N)
+  is the right *next* lever if/when admin promotion becomes a
+  bottleneck. Premature now (we have hundreds of users, not millions).
+- Closest analog to copy: GitHub Issues + maintainer triage. Anyone
+  POSTs a subtask (= file an issue); admin promotes / soft-deletes
+  (= label / close). Maintainer status is repo-wide (= isAdmin), not
+  per-issue. Same shape we already have.
+
+**Sequence:**
+
+1. Schema PR: add `Task.allowsUserSubtasks Boolean @default(false)` +
+   migration. ~10 lines.
+2. API + seed PR: add guards in `POST /api/tasks`, set
+   `allowsUserSubtasks = true` on the program children in seed.
+   ~25 lines.
+3. UI form PR: "Add subtask" disclosure on `/tasks/[id]/page.tsx`
+   gated to `task.allowsUserSubtasks === true || viewer.isAdmin`,
+   plus an admin "Promote to public" one-click action (same shape
+   as the existing curator-verification disclosure). ~30 lines.
+
+After step 3, the user-agency loop pairs with the donate-to-fund-task
+entry: orgs propose subtasks → admin promotes → foundations fund.
+
+### P1 — Top-level programs under `optimize-earth`
+
+Adjacent to "Ratify the 1% Treaty" (which exists as a child of the root),
+seed the rest of the campaign's top-level programs as direct children of
+`OPTIMIZE_EARTH_ROOT_TASK_ID`:
+
+- Create the Decentralized FDA
+- Create the Decentralized USDA / agriculture agency
+- Create the Decentralized [other agency] (one row per agency on the
+  manual's "Decentralized Agencies" list)
+- Fund the Bed Nets Gap (already a child? verify; if not, add)
+- End War and Disease (umbrella for the existing treaty + dFDA work?
+  decide whether this is its own row or just the prize-win-condition
+  framing)
+
+Each gets `allowsUserSubtasks = true` so users can contribute under
+them. The root keeps `allowsUserSubtasks = false`. Admin-only seed; not
+user-creatable. Schema-zero after the `allowsUserSubtasks` column
+lands.
 
 ### P1 — Dashboard / presidents page mental-model split (lightweight)
 
