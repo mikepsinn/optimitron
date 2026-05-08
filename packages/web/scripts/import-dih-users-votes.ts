@@ -277,6 +277,14 @@ function parseReferralInvitationStatus(
     : null;
 }
 
+function parseAllocationPercent(value: number | null): number | null {
+  if (value == null || !Number.isFinite(value) || value < 0 || value > 100) {
+    return null;
+  }
+
+  return value;
+}
+
 async function importUsers(
   payload: ExportPayload,
   options: ImportOptions,
@@ -591,10 +599,16 @@ async function importWishocraticAllocations(
         summary.skipped += 1;
         continue;
       }
-      const allocationA = Math.max(
-        0,
-        Math.min(100, vote.militaryAllocationPercent),
+      const allocationA = parseAllocationPercent(
+        vote.militaryAllocationPercent,
       );
+      if (allocationA == null) {
+        summary.errors += 1;
+        console.error(
+          `[import:vote-alloc] vote ${vote.id}: invalid militaryAllocationPercent ${String(vote.militaryAllocationPercent)}`,
+        );
+        continue;
+      }
       const allocationB = 100 - allocationA;
       await prisma.wishocraticAllocation.create({
         data: {
