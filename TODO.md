@@ -157,6 +157,72 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 
 Ordered by funnel-stage impact. P0 = ship next; P1 = right after; P2 = before launch.
 
+### Next 3 (re-prioritized 2026-05-08, "get orgs and people joining" lens)
+
+The foundation-outreach smoke test ran end-to-end (IAM org → email →
+ready for replies). The mechanical loop works. The remaining bottlenecks
+to volume of joins, in order of leverage:
+
+1. **Plaintiffs page damages surface** (was queued as P1; promote — see
+   `/plaintiffs/page.tsx` audit below). Visitors landing from the case
+   page or from the IAM-style email's `register-deceased` deep-link
+   currently don't see what they're owed (~$10.6M NPV / $25.2M cohort
+   per registered plaintiff). 30-line JSX add, schema-zero, immediate
+   conversion lift on a high-traffic surface. **Smallest unit, biggest
+   per-line leverage right now.**
+
+2. **Foundation outreach: tightened parameter-driven email template +
+   ~10 high-leverage seed targets.** The IAM smoke-test email I sent
+   was 250+ words (user flagged as too long). The replacement should:
+   (a) live in a real template file (not inline in a script), (b) pull
+   numbers from `@optimitron/data/parameters` (so "12.3×" stays canon
+   instead of drifting to "quadruple"), (c) use the
+   `WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION` thesis line, (d) single CTA
+   to `/endorse`. Plus: list 8–12 high-leverage foundations
+   (Gates, Wellcome, Open Phil, RWJF, Wellcome Leap, Chan Zuckerberg,
+   Arnold Ventures, Schmidt Futures, Skoll, Omidyar) with verified
+   contact emails so the bulk-outreach loop has actual payload. This
+   is the bottleneck for org joins — without targets and tight copy,
+   the mechanical pipeline doesn't move the metric.
+
+3. **Stage 2 President Manager promotion** (already queued as P0
+   below). After HMT graduation users currently dead-end. The 193-
+   leader roster is sitting with `enabled: false` on the spawn
+   trigger. Once turned on with a destination task, every HMT-completer
+   becomes a recruiter for their country's leader. Largest single
+   funnel multiplier still unshipped.
+
+Everything else (right-sidebar metadata, milestone-to-subtask
+deprecation, email threading, prize wire-up, etc.) is real work but
+downstream of these three.
+
+### Shipped this session (2026-05-07 → 2026-05-08)
+
+- Court of Humanity case page rendered at `/humanity-v-government` with
+  jury-summons + plaintiff #N + damages tier + sensitivity calculator
+  + family-registration CTA.
+- Live treaty YES voters auto-register as plaintiffs.
+- Backfill script for pre-existing voters.
+- dih-neobrutalist user/vote/allocation/inclusion migration (33 users,
+  23 votes, 49 allocations, 30 inclusions) imported with skip-on-conflict.
+- MCP `createTask` → assignment email pipeline (createTask wired to
+  `notifyTaskAssigneeOfAssignment`, From shows creator's display name,
+  inbound replies fan to all watchers, default-private for non-admin
+  scope, IAM smoke test confirmed end-to-end).
+- 5 grant-asking funding tasks soft-deleted (Schmidt Futures, Skoll,
+  Omidyar, SFF, Open Phil) per "ask orgs to join, not to fund" pivot.
+- Slider question reframed welfare-style ("Governments are paid $36T/yr
+  to promote the general welfare. What allocation…would best fulfill
+  that duty?") so the answer reads as juror testimony in the case.
+- `/vote` already-voted guard mirrors the home-page redirect.
+- Action menu labels: "Render Verdict" + "Register a Plaintiff" on
+  the warondisease.org top nav.
+- `/tasks/[id]/page.tsx`: leader-accountability blocks now gated on
+  `isTreatySigner`, claim/complete action lifted above the fold,
+  neobrutalist styling stripped (BrutalCard / ArcadeTag /
+  text-brutal-pink / border-4 / hard shadows all removed in favor of
+  treaty-style tokens), admin blocks moved into `<details>` disclosures.
+
 ### P0 — Court of Humanity integration on `/court`
 
 The Court is the integrating institution that gives every other piece of the system a coherent purpose. Plaintiff = treaty signer = juror, one action, three roles. The treaty referendum IS the verdict vote. The 1% Treaty IS the settlement offer. Damages numbers are the same as the prize math. **Zero schema changes — every model already exists; only wiring + page-rendering work remains.**
