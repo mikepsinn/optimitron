@@ -387,6 +387,43 @@ routing other humans toward verdict-rendering work.
   (reusing the dedup pre-search helper from the plaintiff-dedup work) +
   "or add a new person" input with name + email.
 
+### P1 — Programmatic email validation (vitest lint + CI gate)
+
+A vitest that imports every email + share template, renders with stub
+tokens, and asserts mechanical guardrails: word count ≤ N (per template
+family — outreach ≤ 200, reminders ≤ 100), subject ≤ 78 chars,
+no banned phrases (curated list of corporate-blather strings:
+"we are excited", "let's take a moment", "we hope this finds you
+well", "I just wanted to", "circling back", etc.), required tokens
+interpolated (recipient name, CTA URL), single primary CTA per
+template body. Runs in `core-validate` so drift fails CI. ~50 lines.
+The IAM smoke-test email I wrote first would have failed this lint
+on the word-count rule alone — exactly the regression class the
+human flagged. Schema-zero. Cheap.
+
+LLM-as-judge variant (separate, optional): a vitest that calls Claude
+with each template + the Wishonia voice rules and asserts no
+violations. Catches tone drift the regex lint can't. Higher cost; do
+only if the curated template set grows past ~30 and tone consistency
+is a real issue.
+
+### P1 — Per-send template content hash for conversion analysis
+
+Resolves the false dichotomy in the human's earlier question (templates
+in DB vs code). Templates stay in code (git history = version history,
+typechecked, code-reviewed). Each `TaskCommunication` records
+`templateContentHash: sha256(rendered)` in the existing `metadataJson`
+field — schema-zero. Conversion analysis groups rows by hash, counts
+replies / completions per group, gives per-version conversion data
+without DB-storing the templates themselves.
+
+At our current scale (~50 sends total), per-version conversion data
+is statistically meaningless — we'd need hundreds of sends per variant
+for signal. So this isn't urgent for measurement; it's urgent because
+it locks in the data shape now so when scale arrives the data is
+already there. Adding the field is ~10 lines in `task-notifications.server.ts`
+where the draft + send happens.
+
 ### P1 — Action-oriented menu labels + plaintiff damages surface
 
 Two related copy / placement tweaks discovered during the foundation-outreach
