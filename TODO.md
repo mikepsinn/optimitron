@@ -789,6 +789,41 @@ this entry.
 
 Cost: ~120 lines + the schema PR. Schema-light; mostly composition.
 
+### P1 — Audit + queue neobrutalist remnants for treaty-style migration
+
+The migration rule in CLAUDE.md (lines 162, 209, 228, 236, 244) and
+AGENTS.md says public UI defaults to treaty style and existing
+neobrutalist surfaces migrate when touched. That's working
+opportunistically — `/tasks/[id]`, `/`, `/humanity-v-government`,
+`/endorse` have all migrated this session. But many surfaces haven't
+been touched yet and still ship neobrutalist chrome (BrutalCard, hard
+shadows, brutal-* color fills, ArcadeTag).
+
+**Goal:** systematic audit so the migration is tracked, not just
+"happens when someone happens to edit the file."
+
+**Audit (one-time):**
+- Grep for `BrutalCard`, `ArcadeTag`, `brutal-` (color tokens),
+  `border-4`, `shadow-brutal`, hard-offset shadow utilities — list
+  every public surface using them.
+- Categorize each hit: (a) public recruitment surface (must migrate),
+  (b) admin/curator UI (can keep colored chips if functional),
+  (c) game/demo/Sierra screens (keep — color is the brand there),
+  (d) email markup (must keep inline hex per CLAUDE.md).
+
+**Queue:** for each (a) hit, file a small TODO subtask (under this
+parent) with the file path + the planned treaty-token replacement.
+That way the migration is visible work, not invisible drift.
+
+**Don't bulk-migrate.** A single mass-replace PR is high-risk
+(visual regressions across many pages, hard to review, easy to break
+edge cases). One small migration per surface, opportunistic + queued,
+is the same pattern that's already working.
+
+Cost: the audit itself is ~30 min of grep + categorization. Each
+queued subtask migration is whatever the surface needs (5-30 lines
+typically).
+
 ### P1 — Dashboard / presidents page mental-model split (lightweight)
 
 `/tasks` already restructured to the two-section "Humanity's Tasks"

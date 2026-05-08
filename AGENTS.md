@@ -49,7 +49,8 @@
 
 ## UI Style
 
-- Public treaty/campaign UI should migrate toward the simple black-and-white style used by the `warondisease.org` variant: white paper, black ink, thin black rules, square corners, restrained typography, and no decorative color.
+- **New components default to treaty style.** The simple black-and-white style used by the `warondisease.org` variant — white paper, black ink, thin black rules, square corners, restrained typography, no decorative color — is the default for all new public UI. Don't introduce neobrutalist tokens on a new component because surrounding components still use them; use treaty tokens and let the surrounding UI catch up via the migration rule below.
+- **Migration rule:** when touching existing public UI, remove neobrutalist styling instead of copying it forward. The goal is full migration to treaty style across all public surfaces. Admin-only status chips, charts, game/demo/Sierra screens, and email-client markup may keep their own specialized colors when the color carries functional meaning — the rule is about public recruitment surfaces, not every internal admin tool.
 - Use semantic/treaty tokens such as `bg-background`, `text-foreground`, `border-foreground`, `text-muted-foreground`, and `var(--treaty-*)`.
 - Do not add neobrutalist styling to public UI: avoid `brutal-*` color fills, hard shadows, gradients, rounded cards, beige/cream backgrounds, thick novelty borders, and decorative emoji/icons unless the user explicitly asks for them.
 - Keep UI minimal. Do not add wrapper boxes, divider lines, shadows, icons, labels, helper text, or other extra elements unless they clarify the action, improve scanning, or solve a real usability problem.
