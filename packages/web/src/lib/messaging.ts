@@ -270,8 +270,14 @@ export const ARCADE_LABELS = {
 } as const;
 
 export const VOTE_SECTION = {
+  // Welfare-framed (vs preference-framed) so the slider answer reads as
+  // juror testimony on the welfare-maximizing allocation rather than a
+  // personal preference. Maps directly to the cause of action in
+  // Humanity v. Government: governments are paid ~$36T/yr to promote
+  // the general welfare and underdeliver. Voters' welfare-findings
+  // become evidence in the case; preferences alone would not.
   sliderPrompt:
-    "How do you think global governments should allocate between military spending and high efficiency pragmatic clinical trials to cure and treat disease?",
+    "Governments are paid $36 trillion a year to promote the general welfare. What allocation between military spending and clinical trials would best fulfill that duty?",
   realityCheck:
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:
