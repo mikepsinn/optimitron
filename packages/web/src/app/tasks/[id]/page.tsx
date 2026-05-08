@@ -17,7 +17,6 @@ import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskDeleteButton } from "@/components/tasks/TaskDeleteButton";
-import { TaskMilestoneEditor } from "@/components/tasks/TaskMilestoneEditor";
 import { TaskRowShare } from "@/components/tasks/task-row-share";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
 import { TaskBlockerCard } from "@/components/tasks/blocks/TaskBlockerCard";
@@ -28,8 +27,6 @@ import { TaskRemindEmployee } from "@/components/tasks/blocks/TaskRemindEmployee
 import { TaskTreatyImpactCard } from "@/components/tasks/blocks/TaskTreatyImpactCard";
 import { TaskUnlocks } from "@/components/tasks/blocks/TaskUnlocks";
 import { Avatar } from "@/components/retroui/Avatar";
-import { ArcadeTag } from "@/components/ui/arcade-tag";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { getPersonHref } from "@/lib/person-href";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -88,16 +85,26 @@ const getCachedPublicTaskPageData = unstable_cache(
   { revalidate: PUBLIC_TASK_DETAIL_REVALIDATE_SECONDS },
 );
 
-function formatDueDate(value: Date) {
-  return value.toLocaleDateString("en-US", {
+function getDisplayDate(value: Date | string | null | undefined): Date | null {
+  if (value == null) {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function formatDueDate(value: Date | string) {
+  const date = getDisplayDate(value);
+  if (date == null) {
+    return "";
+  }
+
+  return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-}
-
-function getMilestoneStatusLabel(status: string) {
-  return status.replaceAll("_", " ").toLowerCase();
 }
 
 function formatShortDate(value: Date) {
@@ -143,14 +150,16 @@ function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardPr
     invitation.convertedAt ?? invitation.sentAt ?? invitation.copiedAt ?? null;
 
   return (
-    <BrutalCard bgColor="yellow" padding="lg">
+    <section className="border-2 border-foreground bg-background p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm font-black uppercase text-brutal-pink">
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
               Earth optimization task
             </p>
-            <ArcadeTag>{getReferralInvitationTaskStatus(invitation.status)}</ArcadeTag>
+            <span className="text-xs font-black uppercase tracking-[0.12em] text-foreground">
+              {getReferralInvitationTaskStatus(invitation.status)}
+            </span>
           </div>
           <h2 className="text-2xl font-black uppercase leading-tight">
             Help {invitation.recipientName} vote on the 1% Treaty
@@ -162,33 +171,33 @@ function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardPr
           </p>
         </div>
         <Link
-          className="inline-flex h-11 items-center justify-center border-4 border-primary bg-background px-4 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="inline-flex h-11 items-center justify-center border-2 border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground"
           href={DASHBOARD_INVITE_HREF}
         >
           Invite another
         </Link>
       </div>
       <div className="mt-5 grid gap-3 text-xs font-black uppercase sm:grid-cols-3">
-        <div className="border-4 border-primary bg-background p-3">
+        <div className="border border-foreground p-3">
           <p className="text-muted-foreground">Recipient</p>
-          <p className="mt-1 break-words">
+          <p className="mt-1 break-words text-foreground">
             {invitation.recipientEmail ?? invitation.recipientName}
           </p>
         </div>
-        <div className="border-4 border-primary bg-background p-3">
+        <div className="border border-foreground p-3">
           <p className="text-muted-foreground">Format</p>
-          <p className="mt-1">
+          <p className="mt-1 text-foreground">
             {invitation.messageFormat.replaceAll("_", " ").toLowerCase()}
           </p>
         </div>
-        <div className="border-4 border-primary bg-background p-3">
+        <div className="border border-foreground p-3">
           <p className="text-muted-foreground">Last activity</p>
-          <p className="mt-1">
+          <p className="mt-1 text-foreground">
             {activityDate ? formatShortDate(activityDate) : "waiting"}
           </p>
         </div>
       </div>
-    </BrutalCard>
+    </section>
   );
 }
 
@@ -202,7 +211,7 @@ interface TaskMetaSubtitleProps {
       }
     | null;
   assigneeOrganization: { name: string } | null;
-  dueAt?: Date | null;
+  dueAt?: Date | string | null;
   currentDelayDays: number;
   isOverdue: boolean;
 }
@@ -214,6 +223,7 @@ function TaskMetaSubtitle({
   currentDelayDays,
   isOverdue,
 }: TaskMetaSubtitleProps) {
+  const dueDate = getDisplayDate(dueAt);
   const displayName = assigneePerson?.displayName ?? assigneeOrganization?.name;
   const personHref = assigneePerson ? getPersonHref(assigneePerson) : null;
   const initials = displayName
@@ -245,10 +255,10 @@ function TaskMetaSubtitle({
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-muted-foreground">
       {assigneeNode}
-      {dueAt ? (
+      {dueDate ? (
         <>
           {assigneeNode ? <span>·</span> : null}
-          <span>Due {formatDueDate(dueAt)}</span>
+          <span>Due {formatDueDate(dueDate)}</span>
         </>
       ) : null}
       {isOverdue && currentDelayDays > 0 ? (
@@ -373,9 +383,6 @@ export default async function TaskDetailPage({
     targetLabel,
     taskTitle: task.title,
   });
-  const completedMilestoneCount = task.milestones.filter(
-    (milestone) => milestone.status === "COMPLETED" || milestone.status === "VERIFIED",
-  ).length;
   const provenanceArtifacts =
     task.currentImpactEstimateSet?.sourceArtifacts?.length
       ? task.currentImpactEstimateSet.sourceArtifacts
@@ -523,112 +530,68 @@ export default async function TaskDetailPage({
             <ReferralInvitationTaskCard invitation={referralInvitation} />
           ) : null}
           {isTreatySigner ? <TaskHowToSignCard leaderName={leaderName} /> : null}
+
+          {/* Action row lifted above the fold (was previously buried below
+              ~6 informational blocks). For tasks the viewer can act on,
+              this is the primary CTA and belongs immediately under the
+              hero stats. Non-actionable viewers see nothing — the nav
+              already has a Sign In link. */}
+          {task.status !== TaskStatus.VERIFIED &&
+          canShowClaimButton &&
+          (canClaim || task.viewerHasClaim) ? (
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <TaskClaimButton
+                canClaim={canClaim}
+                signedIn={Boolean(userId)}
+                signInHref={signInHref}
+                taskId={task.id}
+                viewerHasClaim={task.viewerHasClaim}
+              />
+              {viewerClaim ? (
+                <span className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  Your claim: {viewerClaim.status.toLowerCase()}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+          {viewerClaim &&
+          (viewerClaim.status === TaskClaimStatus.CLAIMED ||
+            viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
+            <TaskCompleteForm taskId={task.id} />
+          ) : null}
         </section>
 
-        <TaskBlockerCard context={context} />
-        <TaskUnlocks context={context} />
-        {isTreatySigner ? <TaskTreatyImpactCard /> : null}
-        <TaskRemindEmployee
-          reminder={context.reminder}
-          assigneeProfile={context.assigneeProfile}
-          taskId={task.id}
-          tokens={reminderTokens}
-        />
-        <TaskContextList context={context} tokens={reminderTokens} />
-        <TaskCurrentActivities context={context} />
-
-        {/* Action row — only rendered when the viewer actually has something to do.
-            Non-assignee visitors see nothing: the nav already has a Sign In link. */}
-        {task.status !== TaskStatus.VERIFIED &&
-        canShowClaimButton &&
-        (canClaim || task.viewerHasClaim) ? (
-          <div className="flex flex-wrap items-center gap-3">
-            <TaskClaimButton
-              canClaim={canClaim}
-              signedIn={Boolean(userId)}
-              signInHref={signInHref}
+        {/* Leader-accountability blocks: load-bearing for the treaty-
+            signer political-pressure mechanic (each block pressures the
+            named leader publicly). Hidden for non-leader tasks (foundation
+            outreach, internal work, generic) where they would only confuse
+            the recipient — e.g., a foundation lead seeing a "Remind
+            Employee" block targeted at themselves. */}
+        {isTreatySigner ? (
+          <>
+            <TaskBlockerCard context={context} />
+            <TaskUnlocks context={context} />
+            <TaskTreatyImpactCard />
+            <TaskRemindEmployee
+              reminder={context.reminder}
+              assigneeProfile={context.assigneeProfile}
               taskId={task.id}
-              viewerHasClaim={task.viewerHasClaim}
+              tokens={reminderTokens}
             />
-            {viewerClaim ? (
-              <span className="text-xs font-black uppercase text-brutal-pink">
-                Your claim: {viewerClaim.status.toLowerCase()}
-              </span>
-            ) : null}
-          </div>
-        ) : null}
-        {viewerClaim &&
-        (viewerClaim.status === TaskClaimStatus.CLAIMED ||
-          viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
-          <TaskCompleteForm taskId={task.id} />
-        ) : null}
-
-        {task.milestones.length > 0 ? (
-          <BrutalCard bgColor="cyan" padding="lg">
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="text-sm font-black uppercase text-brutal-pink">
-                    Milestone Tracker
-                  </p>
-                  <p className="text-sm font-bold text-muted-foreground">
-                    {completedMilestoneCount} of {task.milestones.length} milestones reached
-                  </p>
-                </div>
-                <ArcadeTag>{`${completedMilestoneCount}/${task.milestones.length}`}</ArcadeTag>
-              </div>
-              <div className="space-y-4">
-                {task.milestones.map((milestone) => (
-                  <div
-                    key={milestone.id}
-                    className="border-4 border-foreground bg-background p-4"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="space-y-1">
-                        <p className="text-lg font-black uppercase">{milestone.title}</p>
-                        {milestone.description ? (
-                          <p className="text-sm font-bold text-muted-foreground">
-                            {milestone.description}
-                          </p>
-                        ) : null}
-                      </div>
-                      <ArcadeTag>{getMilestoneStatusLabel(milestone.status)}</ArcadeTag>
-                    </div>
-                    {milestone.evidenceNote ? (
-                      <p className="mt-3 text-sm font-bold">{milestone.evidenceNote}</p>
-                    ) : null}
-                    {milestone.evidenceUrl ? (
-                      <Link
-                        className="mt-2 inline-block text-sm font-black uppercase underline underline-offset-4"
-                        href={milestone.evidenceUrl}
-                        target="_blank"
-                      >
-                        Open Evidence
-                      </Link>
-                    ) : null}
-                    {viewer?.isAdmin ? (
-                      <TaskMilestoneEditor
-                        defaultEvidenceNote={milestone.evidenceNote}
-                        defaultEvidenceUrl={milestone.evidenceUrl}
-                        defaultStatus={milestone.status}
-                        milestoneId={milestone.id}
-                        taskId={task.id}
-                      />
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </BrutalCard>
+            <TaskContextList context={context} tokens={reminderTokens} />
+            <TaskCurrentActivities context={context} />
+          </>
         ) : null}
 
         {task.sourceUrl || provenanceArtifacts.length > 0 ? (
-          <BrutalCard bgColor="background" padding="lg">
+          <section className="border-2 border-foreground bg-background p-5">
             <div className="space-y-3">
-              <p className="text-sm font-black uppercase text-brutal-pink">Sources</p>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                Sources
+              </p>
               {task.sourceUrl ? (
                 <Link
-                  className="inline-block text-sm font-bold underline underline-offset-4"
+                  className="inline-block max-w-full break-words text-sm font-bold underline underline-offset-4"
                   href={task.sourceUrl}
                   target="_blank"
                 >
@@ -641,7 +604,7 @@ export default async function TaskDetailPage({
                     artifactEntry.sourceArtifact.sourceUrl ? (
                       <Link
                         key={artifactEntry.sourceArtifact.id}
-                        className="block text-sm font-bold underline underline-offset-4"
+                        className="block max-w-full break-words text-sm font-bold underline underline-offset-4"
                         href={artifactEntry.sourceArtifact.sourceUrl}
                         target="_blank"
                       >
@@ -652,37 +615,37 @@ export default async function TaskDetailPage({
                 </div>
               ) : null}
             </div>
-          </BrutalCard>
+          </section>
         ) : null}
 
         {viewer?.isAdmin &&
         task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY &&
         task.status !== TaskStatus.VERIFIED ? (
-          <BrutalCard bgColor="cyan" padding="lg">
-            <div className="space-y-4">
-              <p className="text-sm font-black uppercase text-brutal-pink">
-                Curator Verification
-              </p>
+          <details className="border-2 border-foreground bg-background p-5">
+            <summary className="cursor-pointer text-xs font-black uppercase tracking-[0.16em] text-muted-foreground marker:text-foreground">
+              Admin · Curator verification
+            </summary>
+            <div className="mt-4 space-y-4">
               <TaskVerifyForm
                 defaultEvidence={task.completionEvidence}
                 helperText="For assigned-only public tasks, paste the public evidence used to mark the task complete."
-                submitLabel="Verify Assigned Task"
+                submitLabel="Verify assigned task"
                 taskId={task.id}
               />
             </div>
-          </BrutalCard>
+          </details>
         ) : null}
 
         {viewer?.isAdmin && reviewableClaims.length > 0 ? (
-          <BrutalCard bgColor="green" padding="lg">
-            <div className="space-y-6">
-              <p className="text-sm font-black uppercase text-brutal-pink">
-                Pending Claim Reviews
-              </p>
+          <details className="border-2 border-foreground bg-background p-5">
+            <summary className="cursor-pointer text-xs font-black uppercase tracking-[0.16em] text-muted-foreground marker:text-foreground">
+              Admin · Pending claim reviews ({reviewableClaims.length})
+            </summary>
+            <div className="mt-4 space-y-6">
               {reviewableClaims.map((claim) => (
                 <div
                   key={claim.id}
-                  className="space-y-3 border-t-4 border-primary pt-4 first:border-t-0 first:pt-0"
+                  className="space-y-3 border-t border-foreground pt-4 first:border-t-0 first:pt-0"
                 >
                   <p className="text-lg font-black uppercase">
                     {getUserDisplayLabel(claim.user) || claim.userId}
@@ -696,13 +659,13 @@ export default async function TaskDetailPage({
                     claimId={claim.id}
                     defaultEvidence={claim.verificationNote}
                     helperText="Add an optional verification note, then mark the claim verified."
-                    submitLabel="Verify Claim"
+                    submitLabel="Verify claim"
                     taskId={task.id}
                   />
                 </div>
               ))}
             </div>
-          </BrutalCard>
+          </details>
         ) : null}
 
         {task.childTasks.length > 0 ? (

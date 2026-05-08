@@ -76,7 +76,6 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   updateTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   setTaskImpact: [McpScope.TASKS_ADMIN],
   recordTaskActuals: [McpScope.TASKS_ADMIN],
-  updateMilestone: [McpScope.TASKS_ADMIN],
   addDependency: [McpScope.TASKS_ADMIN],
   createReferendum: [McpScope.TASKS_ADMIN],
   createPerson: [McpScope.TASKS_ADMIN],
@@ -153,7 +152,6 @@ const ADMIN_ONLY_TOOLS = new Set([
   "promoteTask",
   "setTaskImpact",
   "recordTaskActuals",
-  "updateMilestone",
   "addDependency",
   "createReferendum",
   "createPerson",
@@ -683,7 +681,6 @@ type SummarizableTask = {
   assigneePerson?: { displayName?: string | null } | null;
   assigneeOrganization?: { name?: string | null } | null;
   blockerStatuses?: string[] | null;
-  milestones?: unknown[] | null;
   childTasks?: unknown[] | null;
   _count?: { childTasks?: number | null } | null;
 };
@@ -1007,7 +1004,6 @@ function summarizeTask(task: SummarizableTask) {
       task.blockerStatuses?.some((status) => status !== TaskStatus.VERIFIED) ??
       false,
     blockerCount: task.blockerStatuses?.length ?? 0,
-    milestoneCount: task.milestones?.length ?? 0,
     childTaskCount: task.childTasks?.length ?? task._count?.childTasks ?? 0,
   };
 }
@@ -4636,26 +4632,6 @@ const TASK_TOOL_DEFINITIONS = [
         },
       },
       required: ["taskId", "completionEvidence"],
-    },
-  },
-  {
-    name: "updateMilestone",
-    description: "Update a task milestone's status with evidence.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        milestoneId: { type: "string", description: "Milestone ID" },
-        status: {
-          type: "string",
-          enum: ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "VERIFIED"],
-          description: "New milestone status",
-        },
-        evidence: {
-          type: "string",
-          description: "Evidence for the status change",
-        },
-      },
-      required: ["milestoneId", "status"],
     },
   },
   {
@@ -8550,30 +8526,6 @@ export function createMcpServer(
               a.completionEvidence as string,
             );
             return ok({ claimId: claim.id, status: claim.status });
-          }
-
-          // ── updateMilestone ────────────────────────────────────
-          case "updateMilestone": {
-            const prisma = await getPrisma();
-            const { TaskMilestoneStatus } = await import("@optimitron/db");
-            const statusValue =
-              TaskMilestoneStatus[a.status as keyof typeof TaskMilestoneStatus];
-            const milestone = await prisma.taskMilestone.update({
-              where: { id: a.milestoneId as string },
-              data: {
-                status: statusValue,
-                ...(a.evidence
-                  ? { verificationNote: a.evidence as string }
-                  : {}),
-                ...(statusValue === TaskMilestoneStatus.COMPLETED
-                  ? { completedAt: new Date() }
-                  : {}),
-                ...(statusValue === TaskMilestoneStatus.VERIFIED
-                  ? { verifiedAt: new Date() }
-                  : {}),
-              },
-            });
-            return ok({ milestoneId: milestone.id, status: milestone.status });
           }
 
           // ── addDependency ──────────────────────────────────────

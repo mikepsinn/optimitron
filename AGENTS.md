@@ -14,6 +14,9 @@
 ## Local Dev Safety
 
 - If a local dev server is already running, do not disrupt it for routine verification; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.
+- Use one reusable local web server by default. For `packages/web`, prefer `http://127.0.0.1:3001` / `http://localhost:3001` as the canonical dev server. Before starting any new web server, check whether port `3001` is already serving the app and reuse it for browser checks, Playwright, screenshots, and ad-hoc verification.
+- Do not start extra Next.js/Vite/preview servers on alternate ports just because `3001` is busy. If `3001` is busy with the right app, use it. If `3001` is busy with the wrong process, stop and report that instead of silently launching `3002`, `3003`, etc. Use a different port only when the human explicitly asks, a test genuinely requires two versions running at once, or a clean isolated server is required to debug a server-start problem.
+- When a server you started is no longer needed, shut it down before ending the turn. Do not leave background dev servers, preview servers, or Playwright-managed servers running unless they were already running when you arrived or the human asked to keep them.
 
 ## Branch and Pull Request Workflow
 
@@ -32,6 +35,7 @@
 
 - After changing any user interface surface, capture screenshots of the affected pages or states before considering the work complete.
 - For meaningful UI changes, capture before/after screenshots when feasible: before from production, main, or the current unchanged page; after from the branch, preview deployment, or local dev server. Assume screenshots may contain sensitive or production-derived data unless proven otherwise.
+- For before/after screenshots, prefer the cheapest workflow that preserves the work safely. If the working tree is clean and switching branches will not disrupt uncommitted work, use the same checkout and dependency install sequentially: capture `main`/before, switch back to the feature branch, capture after. Use a separate worktree only when both versions must run at the same time, the current checkout is dirty, branch switching would disrupt a running workflow, or isolation is genuinely faster. Do not create a fresh worktree that requires a full `pnpm install` just for routine screenshot comparison.
 - Inspect the screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and obvious responsive problems.
 - Generate the current screenshot review at `packages/web/output/playwright/review/latest.html` by default, organized by page/viewport with before/after screenshots side by side when both versions are available. This gives the human one stable local file to bookmark and refresh after each UI change.
 - Make a branch-specific or timestamped review folder only when it is genuinely useful for a longer audit, multiple competing versions, or preserving a before/after history. Do not create duplicate review HTML files out of habit.
@@ -48,7 +52,8 @@
 
 ## UI Style
 
-- Public treaty/campaign UI should migrate toward the simple black-and-white style used by the `warondisease.org` variant: white paper, black ink, thin black rules, square corners, restrained typography, and no decorative color.
+- **New components default to treaty style.** The simple black-and-white style used by the `warondisease.org` variant — white paper, black ink, thin black rules, square corners, restrained typography, no decorative color — is the default for all new public UI. Don't introduce neobrutalist tokens on a new component because surrounding components still use them; use treaty tokens and let the surrounding UI catch up via the migration rule below.
+- **Migration rule:** when touching existing public UI, remove neobrutalist styling instead of copying it forward. The goal is full migration to treaty style across all public surfaces. Admin-only status chips, charts, game/demo/Sierra screens, and email-client markup may keep their own specialized colors when the color carries functional meaning — the rule is about public recruitment surfaces, not every internal admin tool.
 - Use semantic/treaty tokens such as `bg-background`, `text-foreground`, `border-foreground`, `text-muted-foreground`, and `var(--treaty-*)`.
 - Do not add neobrutalist styling to public UI: avoid `brutal-*` color fills, hard shadows, gradients, rounded cards, beige/cream backgrounds, thick novelty borders, and decorative emoji/icons unless the user explicitly asks for them.
 - Keep UI minimal. Do not add wrapper boxes, divider lines, shadows, icons, labels, helper text, or other extra elements unless they clarify the action, improve scanning, or solve a real usability problem.

@@ -95,10 +95,9 @@ async function main() {
     return;
   }
 
-  const [{ upsertImportedTaskBundle }, { findOrCreatePerson }, { syncTaskMilestones }] = await Promise.all([
+  const [{ upsertImportedTaskBundle }, { findOrCreatePerson }] = await Promise.all([
     import("../src/lib/tasks/import-task-bundle.server"),
     import("../src/lib/person.server"),
-    import("../src/lib/tasks/milestones.server"),
   ]);
 
   const assigneePerson =
@@ -141,7 +140,6 @@ async function main() {
       sortOrder: 0,
     },
   });
-  await syncTaskMilestones(result.taskId, []);
 
   console.log(
     JSON.stringify(

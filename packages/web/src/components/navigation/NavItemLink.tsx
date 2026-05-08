@@ -120,7 +120,9 @@ export function NavItemLink({
     resolvedDescriptionMode === "tooltip" && item.description ? (
       <span className="group relative inline-block">
         {label}
-        <span className={getTooltipClasses(variant)}>{item.description}</span>
+        <span className={getTooltipClasses(variant)} data-nav-tooltip="">
+          {item.description}
+        </span>
       </span>
     ) : (
       label

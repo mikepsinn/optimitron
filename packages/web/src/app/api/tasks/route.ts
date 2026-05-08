@@ -10,6 +10,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
@@ -35,6 +36,7 @@ const CreateTaskBodySchema = z.object({
   interestTags: z.array(z.string()).nullish(),
   isPublic: z.boolean().nullish(),
   maxClaims: z.number().int().positive().nullish(),
+  parentTaskId: z.string().trim().min(1).nullish(),
   roleTitle: z.string().nullish(),
   skillTags: z.array(z.string()).nullish(),
   status: z.nativeEnum(TaskStatus).nullish(),
@@ -88,10 +90,40 @@ export async function POST(request: Request) {
   try {
     const { userId } = await requireAuth();
     const parsed = CreateTaskBodySchema.parse(await request.json());
-    const { dueAt, ...rest } = parsed;
+    const { dueAt, parentTaskId, ...rest } = parsed;
+
+    if (parentTaskId) {
+      const parent = await prisma.task.findFirst({
+        where: { id: parentTaskId, deletedAt: null },
+        select: { id: true, isPublic: true },
+      });
+      if (!parent) {
+        return NextResponse.json(
+          { error: "Parent task not found." },
+          { status: 404 },
+        );
+      }
+      if (!parent.isPublic) {
+        return NextResponse.json(
+          { error: "Cannot add a subtask to a private task." },
+          { status: 403 },
+        );
+      }
+    }
+
+    // Subtasks created through the public REST API are always private. The
+    // parent-task creator promotes them to public via the existing admin
+    // disclosure on /tasks/[id]. Honoring a client-supplied `isPublic: true`
+    // here would let any caller graft a public subtask onto someone else's
+    // tree.
     const task = await createTask(userId, {
       ...rest,
       dueAt: dueAt == null ? null : new Date(dueAt),
+      claimPolicy: parentTaskId
+        ? TaskClaimPolicy.ASSIGNED_ONLY
+        : rest.claimPolicy,
+      isPublic: parentTaskId ? false : rest.isPublic,
+      parentTaskId: parentTaskId ?? null,
     });
 
     return NextResponse.json({ data: task, success: true }, { status: 201 });

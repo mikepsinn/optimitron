@@ -323,26 +323,6 @@ const taskListSelect = {
   verifiedAt: true,
 } satisfies Prisma.TaskSelect;
 
-const taskMilestoneSelect = {
-  completedAt: true,
-  description: true,
-  evidenceNote: true,
-  evidenceUrl: true,
-  id: true,
-  key: true,
-  metadataJson: true,
-  sortOrder: true,
-  status: true,
-  title: true,
-  verifiedAt: true,
-  verifiedByUser: {
-    select: {
-      id: true,
-      person: { select: { handle: true, displayName: true } },
-    },
-  },
-} satisfies Prisma.TaskMilestoneSelect;
-
 const taskSearchSelect = {
   assigneeOrganization: {
     select: {
@@ -394,13 +374,6 @@ const taskDetailSelect = {
       sentAt: true,
       status: true,
     },
-  },
-  milestones: {
-    where: {
-      deletedAt: null,
-    },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    select: taskMilestoneSelect,
   },
   verifiedByUser: {
     select: {
@@ -986,10 +959,19 @@ function getTaskVisibilityWhere(input?: {
   }
 
   if (visibility === "accessible" && input?.userId) {
-    return {
-      ...baseWhere,
-      OR: [{ isPublic: true }, { createdByUserId: input.userId }],
-    };
+    // A task is "accessible" to a signed-in viewer if it is public, the
+    // viewer created it, OR it is assigned to the viewer's Person. The last
+    // clause matters for private trigger-spawned tasks (assignee = me,
+    // creator = system) so they don't 404 when their assignee clicks them
+    // from /tasks "Your Tasks" → /tasks/[id].
+    const ors: Prisma.TaskWhereInput[] = [
+      { isPublic: true },
+      { createdByUserId: input.userId },
+    ];
+    if (input.personId) {
+      ors.push({ assigneePersonId: input.personId });
+    }
+    return { ...baseWhere, OR: ors };
   }
 
   return {
@@ -1055,6 +1037,22 @@ export async function getTasksPageData(
     }),
   ]);
 
+  const assignedToMeRaw = viewer?.personId
+    ? await prisma.task.findMany({
+        where: {
+          deletedAt: null,
+          assigneePersonId: viewer.personId,
+          status: { not: TaskStatus.VERIFIED },
+        },
+        orderBy: [
+          { dueAt: { sort: "asc", nulls: "last" } },
+          { createdAt: "desc" },
+        ],
+        take: 25,
+        select: taskListSelect,
+      })
+    : [];
+
   const decoratedTasks = allTasks.map((task) =>
     decorateTask(task, {
       frameKey: options?.frameKey,
@@ -1101,8 +1099,16 @@ export async function getTasksPageData(
     (t) => !topLevelTaskIds.has(t.id) && !topLevelChildIds.has(t.id),
   );
 
+  const assignedToMe = assignedToMeRaw.map((task) =>
+    decorateTask(task, {
+      frameKey: options?.frameKey,
+      userId: viewer?.id ?? null,
+    }),
+  );
+
   return {
     allTasks: filteredAllTasks,
+    assignedToMe,
     forYou,
     topLevelTasks: decoratedTopLevel,
     viewer,
@@ -1121,16 +1127,22 @@ export async function getTaskDetailData(
     return null;
   }
 
-  const [task, viewer, taskCommunicationCount] = await Promise.all([
+  // Sequence the viewer fetch before the task fetch so we can include the
+  // viewer's personId in the visibility filter — otherwise a private task
+  // assigned to the viewer (but created by a different user / by the
+  // system) is invisible on /tasks/[id].
+  const viewer = userId ? await getTaskViewer(userId) : null;
+
+  const [task, taskCommunicationCount] = await Promise.all([
     prisma.task.findFirst({
       where: getTaskVisibilityWhere({
         taskId: normalizedTaskId,
         userId,
+        personId: viewer?.personId ?? null,
         visibility: "accessible",
       }),
       select: taskDetailSelect,
     }),
-    userId ? getTaskViewer(userId) : Promise.resolve(null),
     countTaskCommunications(normalizedTaskId),
   ]);
 
@@ -1449,6 +1461,7 @@ export async function createTask(
     interestTags?: string[] | null;
     isPublic?: boolean | null;
     maxClaims?: number | null;
+    parentTaskId?: string | null;
     primaryEndpoint?: PrimaryTaskCommunicationEndpointInput | null;
     roleTitle?: string | null;
     skillTags?: string[] | null;
@@ -1468,9 +1481,10 @@ export async function createTask(
   const resolvedClaimPolicy = isAssignedTask
     ? TaskClaimPolicy.ASSIGNED_ONLY
     : (input.claimPolicy ?? defaultClaimPolicy);
-  const isPublic =
-    resolvedClaimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY ||
-    (input.isPublic ?? isAssignedTask);
+  const requestedIsPublic =
+    input.isPublic ??
+    (resolvedClaimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY || isAssignedTask);
+  const isPublic = input.parentTaskId ? false : requestedIsPublic;
   const endpointData = input.primaryEndpoint
     ? buildPrimaryTaskCommunicationEndpointCreateData(input.primaryEndpoint)
     : null;
@@ -1510,6 +1524,7 @@ export async function createTask(
         resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY
           ? (input.maxClaims ?? null)
           : null,
+      parentTaskId: input.parentTaskId ?? null,
       createdByUserId: creatorUserId,
       roleTitle: input.roleTitle?.trim() || null,
       skillTags: input.skillTags?.filter(Boolean) ?? [],

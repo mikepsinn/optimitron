@@ -51,6 +51,7 @@ export function DeathCounter({
   return (
     <span
       className={className}
+      data-visual-mask="dynamic"
       title="Preventable deaths from this delay"
       suppressHydrationWarning
     >

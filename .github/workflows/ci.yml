@@ -77,6 +77,13 @@ jobs:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      issues: write
+      pages: write
+      pull-requests: write
     env:
       CI: true
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
@@ -162,6 +169,208 @@ jobs:
 
       - name: Run Playwright smoke validation
         run: pnpm --filter @optimitron/web run e2e -- smoke
+
+      - name: Seed visual review data
+        run: pnpm --filter @optimitron/db run seed:bootstrap
+
+      - name: Run Playwright visual review
+        env:
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+          ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
+        run: pnpm --filter @optimitron/web run e2e -- visual
+
+      - name: Preserve PR visual screenshots
+        if: always() && github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          rm -rf packages/web/output/playwright/pr-screenshots
+          if [ -d packages/web/screenshots ]; then
+            mkdir -p packages/web/output/playwright
+            cp -R packages/web/screenshots packages/web/output/playwright/pr-screenshots
+          fi
+
+      - name: Resolve main visual baseline
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          baseline_root="packages/web/output/playwright/main-baseline"
+          pr_screenshots="packages/web/output/playwright/pr-screenshots"
+          rm -rf "$baseline_root"
+          mkdir -p "$baseline_root"
+
+          mapfile -t run_ids < <(gh run list \
+            --workflow CI \
+            --branch main \
+            --status success \
+            --limit 20 \
+            --json databaseId \
+            --jq '.[].databaseId')
+
+          for run_id in "${run_ids[@]}"; do
+            if gh run download "$run_id" \
+              --name web-visual-review \
+              --dir "$baseline_root" >/dev/null 2>&1; then
+              if [ -d "$baseline_root/packages/web/screenshots" ]; then
+                echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$baseline_root/packages/web/screenshots" >> "$GITHUB_ENV"
+                echo "Downloaded visual baseline from main run $run_id."
+                rm -rf packages/web/screenshots
+                if [ -d "$pr_screenshots" ]; then
+                  cp -R "$pr_screenshots" packages/web/screenshots
+                fi
+                exit 0
+              fi
+            fi
+          done
+
+          echo "No usable main web-visual-review artifact found; visual review will show after screenshots only."
+          rm -rf packages/web/screenshots
+          if [ -d "$pr_screenshots" ]; then
+            cp -R "$pr_screenshots" packages/web/screenshots
+          fi
+
+      - name: Build visual review index
+        if: always()
+        run: pnpm --filter @optimitron/web run visual:review
+
+      - name: Summarize visual review
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Visual review"
+            echo
+            echo "- Open the \`web-visual-review\` artifact from this run."
+            echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
+            echo "- Use the Argos check on the pull request for before/after diffs and changed-only review."
+            echo "- Captured routes are defined in \`packages/web/e2e/visual-regression.spec.ts\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Playwright visual review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: web-visual-review
+          path: |
+            packages/web/output/playwright/review
+            packages/web/screenshots
+            packages/web/playwright-report
+            packages/web/test-results
+          if-no-files-found: ignore
+
+      - name: Prepare visual review Pages site
+        if: always() && github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          pages_root="packages/web/output/playwright/pages"
+          pr_dir="$pages_root/pr-${{ github.event.pull_request.number }}"
+          rm -rf "$pages_root"
+          mkdir -p "$pr_dir/screenshots"
+
+          cp -R packages/web/output/playwright/review/. "$pr_dir/"
+
+          cat > "$pages_root/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>Optimitron Visual Reviews</title>
+            </head>
+            <body>
+              <h1>Optimitron Visual Reviews</h1>
+              <p>Open the pull request comment for the latest visual review link.</p>
+            </body>
+          </html>
+          HTML
+          touch "$pages_root/.nojekyll"
+
+      - name: Configure GitHub Pages
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/web/output/playwright/pages
+
+      - name: Deploy visual review to GitHub Pages
+        if: always() && github.event_name == 'pull_request'
+        id: visual_review_pages
+        uses: actions/deploy-pages@v4
+
+      - name: Comment visual review instructions
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const marker = '<!-- optimitron-visual-review -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const checksUrl = `${context.serverUrl}/${owner}/${repo}/pull/${issue_number}/checks`;
+            const artifactsResponse = await github.rest.actions.listWorkflowRunArtifacts({
+              owner,
+              repo,
+              run_id: context.runId,
+              per_page: 100,
+            });
+            const artifacts = artifactsResponse.data.artifacts;
+            const visualArtifact = artifacts.find((artifact) => artifact.name === 'web-visual-review');
+            const artifactUrl = visualArtifact
+              ? `${runUrl}/artifacts/${visualArtifact.id}`
+              : `${runUrl}#artifacts`;
+            const reviewPageUrl = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/latest.html`;
+            const headSha = context.payload.pull_request.head.sha;
+            const checkRunsResponse = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref: headSha,
+              per_page: 100,
+            });
+            const checkRuns = checkRunsResponse.data.check_runs;
+            const argosCheck = checkRuns.find((check) => {
+              const name = check.name || '';
+              const detailsUrl = check.details_url || '';
+              return /argos/i.test(name) || /argos/i.test(detailsUrl);
+            });
+            const visualDiffUrl = argosCheck?.details_url || checksUrl;
+            const visualDiffLabel = argosCheck
+              ? 'Open before/after visual diffs'
+              : 'Open PR checks for visual diffs';
+            const body = `${marker}
+            ## Visual review
+
+            - [Open screenshot gallery in the browser](${reviewPageUrl})
+            - [${visualDiffLabel}](${visualDiffUrl})
+            - [Download the compact screenshot gallery artifact](${artifactUrl})
+            - [Open this workflow run](${runUrl})
+
+            Start with the browser gallery for a quick before/after pass over every captured route. Use the visual diff link for changed-only review when Argos is available. The downloadable artifact is the fallback copy of \`packages/web/output/playwright/review/latest.html\`.`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
 
       - name: Upload Playwright artifacts
         if: failure()

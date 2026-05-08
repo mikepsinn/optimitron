@@ -339,6 +339,28 @@ const warOnDiseaseShareLink: NavItem = {
   cta: "Share",
 };
 
+// Top-nav alias for /vote that uses the Court framing already canonical
+// on /humanity-v-government. The YES vote IS the verdict — naming it as
+// such in the nav primes the case context and creates curiosity click
+// for unfamiliar visitors.
+const warOnDiseaseRenderVerdictLink: NavItem = {
+  ...treatyVoteLink,
+  label: "Render Verdict",
+  tagline: "Vote on the 1% Treaty as a juror in Humanity v. Government",
+  cta: "Render Verdict",
+};
+
+// Top-nav alias for /plaintiffs that frames the page as an action
+// surface (file a plaintiff claim) rather than a passive label
+// ('Plaintiffs'). Activates the family-multiplier hook — each
+// registered estate adds another $10.6M–$25.2M plaintiff to the case.
+const warOnDiseaseRegisterPlaintiffLink: NavItem = {
+  ...plaintiffsLink,
+  label: "Register a Plaintiff",
+  tagline: "Register yourself or a deceased relative as a plaintiff",
+  cta: "Register a Plaintiff",
+};
+
 const warOnDiseaseFundLink: NavItem = {
   ...donateLink,
   label: "Fund the Campaign",
@@ -353,16 +375,20 @@ const warOnDiseaseImpactAnalysisLink: NavItem = {
   cta: "Read Impact Analysis",
 };
 
+// Top nav for warondisease.org. The two action labels (Render the Verdict
+// → /vote, Register a Plaintiff → /plaintiffs) are aliases of the base
+// nav links with Court-frame copy, kept variant-specific so other sites
+// (optimitron, dfda, dih) don't inherit the relabel.
 const warOnDiseaseNavSections: NavSection[] = [
   {
     id: "primary",
     label: "Primary",
     primary: true,
     items: [
-      treatyVoteLink,
+      warOnDiseaseRenderVerdictLink,
       warOnDiseaseShareLink,
       warOnDiseaseFundLink,
-      plaintiffsLink,
+      warOnDiseaseRegisterPlaintiffLink,
       presidentManagementLink,
       readTreatyLink,
       whyLink,

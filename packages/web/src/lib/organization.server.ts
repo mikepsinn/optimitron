@@ -23,9 +23,7 @@ function getOrganizationActivationTaskKey(organizationId: string) {
 
 function buildOrganizationActivationTaskDescription(input: {
   baseUrl: string;
-  organizationId: string;
   organizationName: string;
-  organizationSlug: string;
   organizationToolsUrl: string;
   surveyUrl: string;
 }) {
@@ -84,9 +82,7 @@ export async function ensureOrganizationTreatyActivationTask(
   const surveyUrl = `${baseUrl}/survey/${organization.slug}`;
   const description = buildOrganizationActivationTaskDescription({
     baseUrl,
-    organizationId: input.organizationId,
     organizationName: organization.name,
-    organizationSlug: organization.slug,
     organizationToolsUrl,
     surveyUrl,
   });

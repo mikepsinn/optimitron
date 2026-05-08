@@ -11,7 +11,6 @@ import {
 } from "../src/lib/tasks/government-task-assignee";
 import { buildOnePercentTreatyPolicyModelRun } from "../src/lib/tasks/one-percent-treaty-policy-model";
 import { upsertImportedTaskBundle } from "../src/lib/tasks/import-task-bundle.server";
-import { syncTaskMilestones } from "../src/lib/tasks/milestones.server";
 import { buildImportedTaskBundleFromPolicyModelRun } from "../src/lib/tasks/policy-model-run-to-imported-task-bundle";
 import {
   buildTreatyParameterExport,
@@ -262,8 +261,6 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
             sortOrder: slot.sortOrder,
           },
         });
-
-        await syncTaskMilestones(result.taskId, []);
 
         return {
           action: "updated" as const,

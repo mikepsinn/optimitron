@@ -44,9 +44,13 @@ const MODE_SPECS = {
   "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],
   "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
   "treaty-reminder-one-human": ["e2e/treaty-reminder-one-human.spec.ts"],
+  visual: ["e2e/visual-regression.spec.ts"],
 };
 
 const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];
+const PLAYWRIGHT_MODE_DEFAULT_ARGS = {
+  visual: ["--project=default", "--project=visual-mobile", "--workers=1"],
+};
 const scriptArgs = process.argv.slice(2).filter((arg, index) => !(index === 0 && arg === "--"));
 const requestedMode = scriptArgs[0];
 const helpRequested = ["-h", "--help", "help"].includes(requestedMode ?? "");
@@ -96,7 +100,13 @@ async function main() {
     env.PLAYWRIGHT_OUTPUT_DIR = process.env.PLAYWRIGHT_OUTPUT_DIR ?? NEW_USER_FLOW_ARTIFACT_DIR;
   }
 
-  const playwrightArgs = ["test", ...MODE_SPECS[mode], ...appendDefaultProjectArg(passthroughArgs)];
+  if (mode === "visual") {
+    env.ARGOS_VISUAL = "1";
+  } else {
+    delete env.ARGOS_VISUAL;
+  }
+
+  const playwrightArgs = ["test", ...MODE_SPECS[mode], ...appendDefaultProjectArg(passthroughArgs, mode)];
 
   console.log(`[e2e] mode=${mode}`);
   console.log(`[e2e] baseUrl=${execution.baseUrl}`);
@@ -145,12 +155,13 @@ async function resolveLocalExecution(options = {}) {
   };
 }
 
-function appendDefaultProjectArg(args) {
+function appendDefaultProjectArg(args, selectedMode) {
   const hasProjectArg = args.some((arg, index) => (
     arg === "--project" || arg.startsWith("--project=") || (index > 0 && args[index - 1] === "--project")
   ));
 
-  return hasProjectArg ? args : [...PLAYWRIGHT_DEFAULT_ARGS, ...args];
+  const defaultArgs = PLAYWRIGHT_MODE_DEFAULT_ARGS[selectedMode] ?? PLAYWRIGHT_DEFAULT_ARGS;
+  return hasProjectArg ? args : [...defaultArgs, ...args];
 }
 
 function hasExistingBuild() {
@@ -256,11 +267,13 @@ Modes:
              Regenerate the cross-variant new-user funnel screenshots
   treaty-screenshots
              Regenerate the treaty vote/post-vote screenshots
+  visual     Capture curated route screenshots for Argos visual PR review
 
 Behavior:
   - In CI, uses the Playwright-managed built server path
   - Locally, reuses BASE_URL or a running server on ${DEFAULT_BASE_URL} when available
   - Locally, new-user-flow-screenshots requires a running dev server unless E2E_ALLOW_PRODUCTION_FALLBACK=1 is set
   - If no local server is running, falls back to an existing production build
+  - visual runs desktop and mobile projects and enables the Argos reporter
 `);
 }

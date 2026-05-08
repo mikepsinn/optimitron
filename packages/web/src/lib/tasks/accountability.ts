@@ -24,14 +24,14 @@ const DAY_MS = 1000 * 60 * 60 * 24;
 const HOURS_PER_YEAR = 365.25 * 24;
 
 export interface TaskAccountabilityLike {
-  completedAt?: Date | null;
-  dueAt?: Date | null;
+  completedAt?: Date | string | null;
+  dueAt?: Date | string | null;
   impact?: {
     selectedFrame?: TaskImpactFrameSummary | null;
     selectedMetrics?: Record<string, TaskImpactMetricSummary> | null;
   } | null;
   status?: TaskStatus | null;
-  verifiedAt?: Date | null;
+  verifiedAt?: Date | string | null;
 }
 
 export interface TaskDelayStats {
@@ -72,6 +72,19 @@ function sumNullable(values: Array<number | null | undefined>) {
   }
 
   return numericValues.reduce((sum, value) => sum + value, 0);
+}
+
+function normalizeDate(value: Date | string | null | undefined): Date | null {
+  if (value == null) {
+    return null;
+  }
+
+  if (value instanceof Date) {
+    return Number.isFinite(value.getTime()) ? value : null;
+  }
+
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) ? parsed : null;
 }
 
 function derivePerDayMetric(
@@ -120,8 +133,8 @@ export function getTaskDelayStats(
   task: TaskAccountabilityLike | null | undefined,
   now: Date = new Date(),
 ): TaskDelayStats {
-  const dueAt = task?.dueAt ?? null;
-  const resolvedAt = task?.verifiedAt ?? task?.completedAt ?? null;
+  const dueAt = normalizeDate(task?.dueAt);
+  const resolvedAt = normalizeDate(task?.verifiedAt) ?? normalizeDate(task?.completedAt);
   const activeUntil = resolvedAt ?? now;
   const currentDelayMs =
     dueAt == null || activeUntil.getTime() <= dueAt.getTime()

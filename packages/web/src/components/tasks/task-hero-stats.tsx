@@ -17,7 +17,7 @@ interface TaskHeroStatsProps {
   /** Estimated effort hours. */
   effortHours: number | null | undefined;
   /** Due date — used as the delay clock origin. */
-  dueAt: Date | null | undefined;
+  dueAt: Date | string | null | undefined;
   /**
    * Optional attribution share (0 to 1). For a signer task, this is the
    * country's share of global military spending. Defaults to 1 (full treaty-
@@ -39,6 +39,7 @@ interface HeroCell {
   label: string;
   bg: "red" | "green" | "pink" | "yellow" | "cyan";
   value: ReactNode;
+  valueClassName?: string;
   caption?: string;
 }
 
@@ -49,6 +50,15 @@ const BG_CLASS: Record<HeroCell["bg"], string> = {
   yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
   cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
 };
+
+function getDateMs(value: Date | string | null | undefined): number | null {
+  if (value == null) {
+    return null;
+  }
+
+  const dateMs = value instanceof Date ? value.getTime() : new Date(value).getTime();
+  return Number.isFinite(dateMs) ? dateMs : null;
+}
 
 /**
  * Stat strip that crowns a task detail page. Cost of delay is computed from
@@ -63,7 +73,7 @@ export function TaskHeroStats({
 }: TaskHeroStatsProps) {
   const cells: HeroCell[] = [];
 
-  const dueMs = dueAt?.getTime() ?? null;
+  const dueMs = getDateMs(dueAt);
   const isOverdue = dueMs != null && dueMs < Date.now();
 
   // Deaths from delay — per-second rate × elapsed since dueAt
@@ -89,6 +99,7 @@ export function TaskHeroStats({
       label: "💸 Wasted by delay",
       bg: "red",
       value: <MoneyCounter usdPerSecond={usdPerSecond} startMs={dueMs} />,
+      valueClassName: "text-[clamp(0.95rem,4.2vw,1.75rem)]",
     });
   }
 
@@ -128,7 +139,12 @@ export function TaskHeroStats({
               <p className="text-xs font-black uppercase tracking-[0.18em]">
                 {cell.label}
               </p>
-              <p className="mt-2 break-all text-3xl font-black tabular-nums leading-none sm:text-4xl">
+              <p
+                className={`mt-2 overflow-hidden text-ellipsis whitespace-nowrap font-black tabular-nums leading-none ${
+                  cell.valueClassName ??
+                  "text-[clamp(1.25rem,5vw,2.25rem)]"
+                }`}
+              >
                 {cell.value}
               </p>
               {cell.caption ? (
