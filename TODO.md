@@ -764,6 +764,58 @@ Schema: add `voteEarningRatio: Float?` to `Task`. Mint path:
 until the existing VOTE-earning-via-referral path has measurable
 volume — premature otherwise.
 
+### P1 — Donate-to-the-prize-pool surface on `/donate`
+
+`/donate` today lands money in AMF (501c3, unrestricted,
+charitable, tax-deductible). The actual Earth Optimization Prize
+pool is USDC deposited into `VoterPrizeTreasury` on Base Sepolia
+and currently has zero UI surface — visitors who *want* to grow
+the prize pool have no way to.
+
+Add a second path on `/donate`:
+
+- **Option A: Donate to the campaign (AMF).** Existing flow,
+  unchanged. Tax-deductible. Funds outreach.
+- **Option B: Deposit to the Earth Optimization Prize pool.**
+  Direct-USDC-to-`VoterPrizeTreasury` deposit via WalletConnect
+  /  Privy / whatever wallet adapter the prize pages already use.
+  *Refundable + ~4.2× yield if the treaty fails by 2040* (the
+  dominant-assurance economics CLAUDE.md already describes).
+  Donor gets VOTE 1:1 for the deposit on success.
+
+Both options labeled clearly so donors pick the vehicle that
+matches their tax + risk profile (per the CLAUDE.md rule
+"separation is enforced at every layer" between AMF charitable
+and EOS LLC dominant-assurance).
+
+Also: spawn a public Task "Grow the Earth Optimization Prize
+pool" pointing at Option B so it slots into the donate-to-fund-
+task pattern — every page that funnels toward action can deep-
+link to the deposit UI.
+
+Cost: ~80 lines on `/donate` (the second option + form +
+provider resolution) + 1 new public task seed row. No schema
+changes. Does **not** require Phase-2 mainnet readiness — Sepolia
+is fine for the deposit UI; mainnet migration happens on its own
+schedule.
+
+### P2 — Post-treaty alignment between VOTE holders and WISH UBI
+
+Design note (parked, do not build until treaty passes): pre-
+treaty VOTE holders get a one-time WISH airdrop at treaty-
+passage time, weighted by their VOTE balance. Aligns campaign
+contributors with the post-treaty world they helped create
+without merging the two tokens (which would compound the SEC
+posture surface across both phases).
+
+The user proposed merging VOTE + WISH into a single "Earth
+Optimization Points" token (2026-05-08); rejected because the two
+tokens have sequential, non-overlapping economic regimes —
+VOTE = assurance-contract / prize-pool share (pre-treaty);
+WISH = tx-tax-funded UBI primitive (post-treaty). One token can't
+be both without legal complications. Cross-phase airdrop captures
+the alignment intent at zero design cost.
+
 ### P2 — Prize wire-up into the post-vote funnel (BLOCKED on legal + mainnet)
 
 CLAUDE.md states `/prize` is "the most important feature on the site; every other page should
