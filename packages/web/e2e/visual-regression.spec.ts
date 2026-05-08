@@ -38,6 +38,11 @@ const ARGOS_CSS = `
   time {
     visibility: hidden !important;
   }
+
+  /* Argos full-page stabilization can expose hover-only nav tooltips. */
+  [data-nav-tooltip] {
+    display: none !important;
+  }
 `;
 
 test.describe("route visual regression", () => {

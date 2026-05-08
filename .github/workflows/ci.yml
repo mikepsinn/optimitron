@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -172,15 +174,74 @@ jobs:
           ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
         run: pnpm --filter @optimitron/web run e2e -- visual
 
+      - name: Build visual review index
+        if: always()
+        run: pnpm --filter @optimitron/web run visual:review
+
+      - name: Summarize visual review
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Visual review"
+            echo
+            echo "- Open the \`web-visual-review\` artifact from this run."
+            echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact screenshot gallery."
+            echo "- Use the Argos check on the pull request for before/after diffs and changed-only review."
+            echo "- Captured routes are defined in \`packages/web/e2e/visual-regression.spec.ts\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload Playwright visual review
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: web-visual-review
           path: |
+            packages/web/output/playwright/review
+            packages/web/screenshots
             packages/web/playwright-report
             packages/web/test-results
           if-no-files-found: ignore
+
+      - name: Comment visual review instructions
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const marker = '<!-- optimitron-visual-review -->';
+            const body = `${marker}
+            ## Visual review
+
+            The \`web-visual-review\` artifact contains a compact screenshot gallery at:
+
+            \`packages/web/output/playwright/review/latest.html\`
+
+            Use the Argos check on this pull request for before/after diffs and changed-only review. The downloadable artifact is the manual fallback when Argos is unavailable or you want to inspect every captured route.`;
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
 
       - name: Upload Playwright artifacts
         if: failure()
