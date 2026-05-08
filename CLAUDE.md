@@ -2,7 +2,19 @@
 
 ## What This Is
 
-Optimitron is an **Eartth Optimization Machine** for coordinating 8 billion humans to maximizing median health, wealth, and happiness. i.e real median after tax income and median health adjusted life years. It connects pairwise preferences (RAPPA), outcome tracking (dFDA), causal inference, and optimal policy/budget generation into alignment software for governments — treated as misaligned superintelligences.
+Optimitron is an **Earth Optimization Machine** for coordinating 8 billion humans to maximize median healthy life-years and real median after-tax income. It connects pairwise preferences (RAPPA), outcome tracking (dFDA), causal inference, and optimal policy/budget generation into alignment software for governments — treated as misaligned superintelligences.
+
+The current public campaign is the **International Campaign to End War and Disease** at `warondisease.org`. Until the 1% Treaty passes, that campaign is the product. `optimitron.com` is the operating system and proof engine behind it: tasks, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent coordination.
+
+Default priority order during campaign mode:
+
+1. Increase treaty vote conversion.
+2. Increase referral propagation: each voter gets two more humans to vote.
+3. Get organizations to endorse, embed, and recruit their own people.
+4. Register plaintiffs and connect the case framing to voting.
+5. Pressure country leaders and treaty signers.
+6. Improve discoverability and trust in people, organization, task, and evidence pages.
+7. Preserve Optimitron's broader governance OS as the proof layer, not as a competing homepage.
 
 ## Wishonia: Voice of the Site
 
@@ -150,7 +162,7 @@ The task tree has a single root: `optimize-earth` (taskKey `program:optimize-ear
 
 ## UI/UX Rules
 
-The goal is to get 8 billion humans to complete the tasks on this site. Every UI decision optimizes for task completion, not decoration.
+The near-term goal is to get a verified majority of humanity to vote for the 1% Treaty. Every UI decision optimizes for voting, referral, endorsement, plaintiff registration, leader pressure, or trust in the quantified case. Decoration loses by default.
 
 - **Screenshot UI changes.** After changing UI, capture affected pages/states before considering the work complete. Inspect screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and responsive problems.
 - **Use local before/after review artifacts.** For meaningful visual changes, capture before and after screenshots when feasible and generate a local HTML review page under `packages/web/output/playwright/`, either side-by-side or with the previous screenshot above the updated screenshot for each page/state/viewport. Always write or copy the current review page to `packages/web/output/playwright/review/latest.html` so the user can bookmark one local file and refresh it. Copy referenced screenshot assets beside `latest.html` or rewrite image paths relative to that stable file, then verify the stable page has no broken image references. Link that stable file in the handoff with a clickable local file link and a plain filesystem path.

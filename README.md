@@ -20,13 +20,22 @@ Optimitron is my attempt to help. It's a universal causal inference engine that 
 
 The canonical first-year roadmap lives at [docs/ROADMAP.md](./docs/ROADMAP.md).
 
-The current product loop is:
+The current product focus is `warondisease.org`: get a majority of humanity to
+vote for the 1% Treaty, then use that public demand to redirect 1% of military
+spending into pragmatic clinical trials.
 
-1. show the highest-value overdue tasks
-2. make the cost of delay obvious
-3. let people share the task
-4. let people contact the assignee
-5. track whether pressure moves the task forward
+Optimitron remains the operating system behind that campaign. It supplies the
+task graph, referrals, organization outreach, Court of Humanity framing,
+politician scorecards, OPG/OBG/Wishocracy evidence, and AI-agent coordination.
+
+Until the treaty passes, product work should improve at least one of these:
+
+1. treaty vote conversion
+2. referral propagation
+3. organization endorsement and embedding
+4. plaintiff registration
+5. leader pressure
+6. discoverability and trust in the quantified case
 
 ---
 
@@ -197,7 +206,12 @@ Right now. With this code. Not in some theoretical future where humans have lear
 
 | What | How | Where |
 |------|-----|-------|
-| Play the game | Deposit USDC, recruit voters, earn ~11x floor or prize share | [`/prize`](packages/web/) |
+| Vote for the 1% Treaty | Cast a World ID vote and get a referral link | [`warondisease.org`](https://warondisease.org) / [`/vote`](packages/web/) |
+| Recruit two humans | Share tracked invites and watch conversions | [`/dashboard`](packages/web/) |
+| Endorse as an organization | Join, embed, and recruit your community | [`/endorse`](packages/web/) |
+| Register a plaintiff | Join the Court of Humanity case framing | [`/plaintiffs`](packages/web/) |
+| Pressure a leader | Push country leaders toward treaty signature | [`/tasks/1-pct-treaty`](packages/web/) |
+| Play the prize game | Deposit USDC, recruit voters, earn ~11x floor or prize share | [`/prize`](packages/web/) |
 | Express your budget preferences | 5-minute pairwise comparison survey | [`/agencies/dcongress/wishocracy`](packages/web/) |
 | Score your politicians | Alignment reports vs your stated preferences | [`/agencies/dfec/alignment`](packages/web/) |
 | Grade governments by outcomes | Every nation ranked by health, income, and freedom | [`/governments`](packages/web/) |
@@ -248,7 +262,9 @@ pnpm alignment:sync
 
 ## The Web App
 
-The Next.js 15 app at `packages/web` is the primary user-facing product. Here's what's live:
+The Next.js 15 app at `packages/web` serves the War on Disease campaign and the
+Optimitron proof surfaces. During campaign mode, `warondisease.org` is the
+primary user-facing product. Here's what's live:
 
 | Page | Route | What It Does |
 |------|-------|-------------|

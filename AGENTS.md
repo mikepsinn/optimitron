@@ -11,6 +11,14 @@
 - Changes to the Prisma schema or exported `@optimitron/db` types require explicit human approval.
 - If the human says `optimize earth`, follow `docs/OPTIMIZE_EARTH_PROTOCOL.md`.
 
+## Mission Focus
+
+- Until the 1% Treaty passes, optimize for the International Campaign to End War and Disease at `warondisease.org`.
+- The default product question is: does this help a human vote, recruit two more humans, get an organization to join, register a plaintiff, pressure a leader, or trust the quantified case enough to act?
+- Treat `optimitron.com` as the operating system and proof engine behind the campaign: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let the broader platform compete with the campaign for attention during this phase.
+- Park generic platform features, clever demos, cosmetic cleanup, and non-campaign variant work unless they directly reduce campaign friction or protect an already-shipping path.
+- For development and visual review, make the War on Disease variant the primary surface. Keep secondary variant screenshots/links available for regression checks, but put the campaign gallery first so PR review load stays low.
+
 ## Local Dev Safety
 
 - If a local dev server is already running, do not disrupt it for routine verification; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.

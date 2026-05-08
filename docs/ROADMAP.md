@@ -1,107 +1,142 @@
 # Product Roadmap
 
+## North Star
+
+`warondisease.org` is the website for the International Campaign to End War and
+Disease. The near-term win is a verified majority of humanity voting for the 1%
+Treaty, then using that demand to redirect 1% of military spending into
+pragmatic clinical trials.
+
+`optimitron.com` is the operating system and proof engine behind the campaign:
+tasks, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact
+math, and AI-agent coordination. Keep it alive as the civilization OS, but do
+not let it compete with the campaign while the treaty is the bottleneck.
+
 ## Principles
 
-- Treaty is Sprint 1, not the permanent only task type.
-- The product center of gravity is the ranked task loop:
-  1. show the highest-value overdue tasks
-  2. make delay cost obvious
-  3. let people share the task
-  4. let people contact the assignee
-  5. track whether pressure moves the task forward
-- The task foundation is already the main system:
+- Campaign mode remains active until the 1% Treaty passes.
+- The product center of gravity is War on Disease, not generic platform breadth.
+- Every new roadmap item should improve at least one of:
+  - treaty vote conversion
+  - referral propagation
+  - organization endorsement or embedding
+  - plaintiff registration
+  - leader pressure
+  - search/indexing discoverability
+  - trust in the quantified model
+- The task system is still the core coordination substrate:
   - `Task`
   - `Person`
   - `Organization`
+  - `ReferralInvitation`
+  - `ShareAttempt`
+  - `TaskCommunication`
+  - `TaskComment`
   - impact frames / metrics / provenance
   - claims / edges / source artifacts
-- Humor stays as framing. It is not a major implementation track.
-- `Questionnaire`, referendums, and other civic systems should support tasks, not distract from them.
-- Private tasks and agent-managed project tasks should use the same `Task` model with ownership and visibility, not a separate app.
+- Optimitron proof surfaces should be linked when they increase trust or agent
+  usefulness. They should not be dumped onto the campaign homepage.
+- Private tasks and agent-managed project tasks should use the same `Task` model
+  with ownership and visibility, not a separate app.
+- Keep the black-and-white War on Disease treaty style as the default for public
+  campaign surfaces.
 
 ## Now
 
-### Ranked task loop
+### Campaign Defaults
 
-- Make `/tasks` the clearest entry into the product.
-- Keep the top section focused on highest-value overdue accountability tasks.
-- Ensure visible public tasks have:
-  - clear assignee
-  - quantified delay stats
-  - share action
-  - contact / push action
-  - task detail page with sources and methodology
+- Make the War on Disease variant the default development and PR-review surface.
+- Generate the main visual review gallery for War on Disease first.
+- Keep secondary variant galleries for Optimitron, dFDA, and DIH as regression
+  links, not as the default review burden.
+- Keep local review on the reusable `http://127.0.0.1:3001` server unless a
+  clean isolated run is genuinely needed.
 
-### Task detail as performance review
+### Conversion Funnel
 
-- Treat each task page as the assignee’s accountability page.
-- Keep:
-  - task ID
-  - overdue / priority framing
-  - assignee emphasis
-  - parent-child hierarchy and breadcrumbs
-  - acceptance criteria where useful
-  - dynamic share image
-- Add / maintain:
-  - contact flow
-  - milestone tracker with evidence
-  - source and methodology display
+- Keep `/` and `/vote` focused on one action: vote for the 1% Treaty.
+- Keep auth inline and pre-vote friction as low as possible.
+- After voting, immediately route the person into the "get two more humans"
+  referral loop.
+- Make the dashboard answer: what should I do next, who did I already reach,
+  and what changes if I act now?
 
-### Treaty-first operations
+### Organization Spread
 
-- Keep `Ratify the 1% Treaty` as the canonical parent task.
-- Keep per-leader signer tasks as child tasks.
-- Seed / sync:
-  - leaders
-  - organizations
-  - contact info
-  - due dates
-  - stable task keys
-- Preserve the generalized impact import path so non-treaty quantified tasks can be added without schema changes.
+- Make `/endorse` the fast path for foundations, nonprofits, researchers,
+  companies, and partner communities to join and recruit their people.
+- Keep outreach templates short, parameter-backed, and pointed at one action.
+- Prefer embedding and referral links over bespoke partnership flows.
+- Index public organization pages so AI agents and search systems can find who
+  is participating.
 
-### Private and agent-managed tasks
+### Plaintiffs And The Case
 
-- Support owned private tasks in the same task system.
-- Add authenticated CRUD and API/MCP support for owner-managed tasks.
-- Keep ownership separate from assignee identity:
-  - owner = `User`
-  - accountable assignee = `Person` / `Organization`
+- Make the Court of Humanity framing visible where it increases conversion:
+  voter = plaintiff = juror.
+- Surface damages numbers on plaintiff pages without implying individual
+  recovery is conditioned on personal recruitment.
+- Keep posthumous registration framed as estate / next-of-kin participation.
+
+### Leader Pressure
+
+- Keep country leader tasks tied to the treaty-signing path.
+- After a voter completes the basic referral loop, highlight their country's
+  leader within the existing president/signer pressure surface.
+- Make leader pages and people pages indexable enough for AI agents to find who
+  should be contacted and why.
 
 ## Next
 
-- Backlog browser for quantified non-treaty tasks
-- Promotion rules for moving backlog tasks into the active spotlight
-- Better treaty signer sync and roster maintenance
-- Agent/MCP task management surface for owned tasks
-- Broader task views and filters for different operator roles
+- Complete the War on Disease default-development and visual-review variant
+  split.
+- Tighten organization outreach templates and seed the first high-leverage
+  foundation targets.
+- Add the plaintiff damages surface.
+- Promote the user's country leader as the next task after basic HMT completion.
+- Fill sitemap gaps for public organizations, case pages, people, and tasks.
+- Add email threading headers so outreach conversations stay coherent in mail
+  clients and in-app comments.
 
 ## Later
 
-- Board / kanban parody
-- Timeline / Gantt views
-- Burndown charts and sprint parody chrome
-- Broader gamified civics surfaces that do not directly improve the task loop
-- Embeddable widgets
-- Multi-language support
-- Push notifications keyed to milestone progress
+- Broader Optimitron home-page/product architecture once the campaign has
+  measurable vote and organization momentum.
+- Backlog browser for quantified non-treaty tasks.
+- Promotion rules for moving backlog tasks into the active spotlight.
+- Agent/MCP task management surfaces for owned private tasks.
+- Broader task views and filters for different operator roles.
+- Embeddable widgets beyond the first endorsement/vote widgets.
+- Multi-language campaign surfaces.
+- Push notifications keyed to campaign task progress.
+
+## Parked
+
+Do not pick these unless they directly unblock the campaign:
+
+- Board / kanban parody.
+- Timeline / Gantt views.
+- Burndown charts and sprint parody chrome.
+- Generic gamified civics surfaces.
+- New treasury/token mechanics beyond the current treaty/prize path.
+- Non-campaign variant polish that does not protect a shipping path.
 
 ## Done / Landed Foundations
 
-- Person-centered task schema with organization targeting
-- Task impact frames, metrics, and provenance
-- Task share buttons and dynamic task OG images
-- Accountability delay counters on task list/detail pages
-- Treaty policy-model import path
-- Production migration automation in CI
-- Schema usage audit tooling
+- Person-centered task schema with organization targeting.
+- Task impact frames, metrics, and provenance.
+- Task share buttons and dynamic task OG images.
+- Accountability delay counters on task list/detail pages.
+- Treaty policy-model import path.
+- Referral attribution and share-attempt tracking.
+- Production migration automation in CI.
+- Schema usage audit tooling.
+- War on Disease treaty visual style direction.
 
 ## Tracking
 
-- This file is the canonical roadmap.
+- This file is the strategic roadmap.
+- `TODO.md` is the tactical working queue.
 - GitHub issues and projects should mirror `Now`, `Next`, and `Later`.
-- Avoid adding roadmap items that do not directly improve:
-  - conversion into the ranked task list
-  - sharing
-  - pressure on assignees
-  - trust in the quantified model
-  - future generalized task ranking
+- Avoid adding roadmap items that do not directly improve the campaign or the
+  proof/coordination layer that makes the campaign credible.

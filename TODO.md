@@ -12,10 +12,34 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 
 - **Goal:** ~4B votes on the 1% Treaty referendum (majority of humans on Earth).
 - **Math:** 32 doubling rounds × 2 referrals each ≈ 4.3B reached.
-- **Primary site:** `warondisease.org`. Treaty text host: `1percenttreaty.org`. App: `optimitron.com`.
+- **Primary site:** `warondisease.org` - the public website for the
+  International Campaign to End War and Disease. Treaty text host:
+  `1percenttreaty.org`. App/proof engine: `optimitron.com`.
 - **Tree:** every task on the site is a child of `optimize-earth`
   (`OPTIMIZE_EARTH_ROOT_TASK_ID` exported from `@optimitron/db` and re-exported
   by `packages/web/src/lib/tasks/task-keys.ts`).
+
+## Strategic Frame (2026-05-08)
+
+Until the 1% Treaty passes, this repo is in campaign mode.
+
+- `warondisease.org` is the front door. It should get a human to vote,
+  recruit two more humans, get an organization to join, register a plaintiff,
+  or pressure a leader.
+- `optimitron.com` is the operating system and evidence layer behind the
+  campaign: tasks, communications, referrals, OPG/OBG/Wishocracy, politician
+  grading, impact math, and AI-agent coordination.
+- Development defaults and PR visual reviews should put the War on Disease
+  variant first. Secondary variant galleries for Optimitron, dFDA, and DIH are
+  useful regression checks, but they should not be the main review burden while
+  the campaign is the bottleneck.
+- Park broad platform work unless it directly improves vote conversion,
+  referral propagation, organization endorsement, leader pressure, plaintiff
+  registration, search/indexing discoverability, or trust in the quantified
+  model.
+- Do not move Optimitron's governance/proof systems onto the campaign homepage.
+  Link to them when they make the campaign more credible; otherwise keep the
+  campaign surface focused on action.
 
 ## What's shipped (2026-05-07)
 
@@ -1149,7 +1173,9 @@ exist; they are not wired into the funnel.
   autobot — straightforward / engineering-aligned / fits the "Earth
   Optimization System" sober tagline. "Wishonia" sounds like a
   country — more on-brand for the sardonic Wishonia voice copy. Both
-  are defensible. Pure brand call; no code change blocking it.
+  are defensible. Pure brand call; no code change blocking it. This is
+  not the same decision as the War on Disease campaign default; do not
+  reopen it while the treaty campaign is the active bottleneck.
 
 ## Long-tail (parked, not 4B-blocking)
 
