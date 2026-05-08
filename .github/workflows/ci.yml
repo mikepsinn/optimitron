@@ -224,21 +224,11 @@ jobs:
             fi
           done
 
-          echo "No usable main web-visual-review artifact found; capturing main baseline in this run."
-          current_ref="$(git rev-parse HEAD)"
-          git fetch --depth=1 origin main
-          git checkout --detach origin/main
-          pnpm --filter @optimitron/web run build:fast
-          pnpm --filter @optimitron/db run seed:bootstrap
-          rm -rf packages/web/screenshots
-          ARGOS_TOKEN="" ARGOS_IGNORE_UPLOAD_FAILURES=1 pnpm --filter @optimitron/web run e2e -- visual
-          mv packages/web/screenshots "$baseline_root/screenshots"
-          git checkout --detach "$current_ref"
+          echo "No usable main web-visual-review artifact found; visual review will show after screenshots only."
           rm -rf packages/web/screenshots
           if [ -d "$pr_screenshots" ]; then
             cp -R "$pr_screenshots" packages/web/screenshots
           fi
-          echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$baseline_root/screenshots" >> "$GITHUB_ENV"
 
       - name: Build visual review index
         if: always()
