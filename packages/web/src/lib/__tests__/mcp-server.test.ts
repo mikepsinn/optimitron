@@ -286,7 +286,6 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
     interestTags: [],
     estimatedEffortHours: 1,
     blockerStatuses: [],
-    milestones: [],
     childTasks: [],
     assigneePerson: null,
     assigneeOrganization: null,

@@ -15,7 +15,7 @@ import { McpScope } from "@optimitron/db/enums";
 export { McpScope };
 
 export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
-  [McpScope.TASKS_ADMIN]: "Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, dependencies, and milestones",
+  [McpScope.TASKS_ADMIN]: "Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, and dependencies",
   [McpScope.TASKS_PERSONAL]: "Manage your private tasks, dependencies, comments, queues, and next-action recommendations",
   [McpScope.EARTHDATA_WRITE]: "Create sourced public Earth-data records: memorials, evidence, intervention reports, organization signatories, and correction reports",
   [McpScope.EARTHDATA_ADMIN]: "Admin-only: hide, restore, merge, and resolve Earth-data records and reports",

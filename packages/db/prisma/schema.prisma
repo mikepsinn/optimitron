@@ -510,14 +510,6 @@ enum TaskClaimStatus {
   ABANDONED
 }
 
-/// Lifecycle state for a milestone attached to a task
-enum TaskMilestoneStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-  VERIFIED
-}
-
 /// Non-hierarchical relationship between tasks for causal and dependency modeling
 enum TaskEdgeType {
   DEPENDS_ON
@@ -1561,7 +1553,6 @@ model User {
   createdTasks                       Task[]                           @relation("TaskCreator")
   verifiedTasks                      Task[]                           @relation("TaskVerifiedByUser")
   verifiedTaskClaims                 TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
-  verifiedTaskMilestones             TaskMilestone[]                  @relation("TaskMilestoneVerifiedByUser")
   taskComments                       TaskComment[]                    @relation("TaskCommentAuthor")
   moderatedTaskComments              TaskComment[]                    @relation("TaskCommentModerator")
   taskCommentVotes                   TaskCommentVote[]                @relation("TaskCommentVoter")
@@ -5363,7 +5354,6 @@ model Task {
   currentImpactEstimateSet  TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
   impactEstimateSets        TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
   claims                    TaskClaim[]                 @relation("TaskClaims")
-  milestones                TaskMilestone[]             @relation("TaskMilestones")
   comments                  TaskComment[]               @relation("TaskComments")
   sourceArtifacts           TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
   outgoingEdges             TaskEdge[]                  @relation("TaskOutgoingEdges")
@@ -5515,67 +5505,6 @@ model SourceArtifact {
   @@index([versionKey])
   @@index([sourceRef])
   @@index([contentHash])
-  @@index([deletedAt])
-}
-
-/// A milestone representing progress toward completing a task
-model TaskMilestone {
-  /// Unique identifier
-  id String @id @default(cuid())
-
-  /// Parent task
-  taskId String
-
-  /// Stable milestone key within the task
-  key String
-
-  /// Short milestone title
-  title String
-
-  /// Optional explanatory detail
-  description String?
-
-  /// Current milestone status
-  status TaskMilestoneStatus @default(NOT_STARTED)
-
-  /// Optional supporting evidence URL
-  evidenceUrl String?
-
-  /// Optional curation / evidence note
-  evidenceNote String?
-
-  /// Display order within the task page
-  sortOrder Int @default(0)
-
-  /// When this milestone was completed
-  completedAt DateTime?
-
-  /// When this milestone was verified
-  verifiedAt DateTime?
-
-  /// User who verified this milestone
-  verifiedByUserId String?
-
-  /// Structured milestone metadata for domain-specific display
-  metadataJson Json?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp
-  deletedAt DateTime?
-
-  // -- Relations --
-  task           Task  @relation("TaskMilestones", fields: [taskId], references: [id], onDelete: Cascade)
-  verifiedByUser User? @relation("TaskMilestoneVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
-
-  @@unique([taskId, key])
-  @@index([taskId, sortOrder])
-  @@index([verifiedByUserId])
-  @@index([status])
   @@index([deletedAt])
 }
 

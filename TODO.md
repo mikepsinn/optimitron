@@ -13,8 +13,9 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 - **Goal:** ~4B votes on the 1% Treaty referendum (majority of humans on Earth).
 - **Math:** 32 doubling rounds × 2 referrals each ≈ 4.3B reached.
 - **Primary site:** `warondisease.org`. Treaty text host: `1percenttreaty.org`. App: `optimitron.com`.
-- **Tree:** every task on the site is a child of `win-earth-optimization-prize`
-  (`packages/web/src/lib/tasks/task-keys.ts:21`).
+- **Tree:** every task on the site is a child of `optimize-earth`
+  (`OPTIMIZE_EARTH_ROOT_TASK_ID` exported from `@optimitron/db` and re-exported
+  by `packages/web/src/lib/tasks/task-keys.ts`).
 
 ## What's shipped (2026-05-07)
 
@@ -186,15 +187,21 @@ to volume of joins, in order of leverage:
    the mechanical pipeline doesn't move the metric.
 
 3. **Stage 2 President Manager promotion** (already queued as P0
-   below). After HMT graduation users currently dead-end. The 193-
-   leader roster is sitting with `enabled: false` on the spawn
-   trigger. Once turned on with a destination task, every HMT-completer
-   becomes a recruiter for their country's leader. Largest single
-   funnel multiplier still unshipped.
+   below) — re-scoped after 2026-05-08 review. The existing PMS
+   section already shows all 193 leaders, so the scoped-out "spawn a
+   new trigger + new task + dashboard reorder" was overkill.
+   Lightweight version: post-HMT, the dashboard primary CTA
+   highlights *the user's country's leader* within the existing PMS
+   section. ~10 lines. Same conversion goal.
 
-Everything else (right-sidebar metadata, milestone-to-subtask
-deprecation, email threading, prize wire-up, etc.) is real work but
-downstream of these three.
+The other "boring infra" items (email threading, sitemap orgs,
+Stripe Connect for AMF, email validation lint) are all cheap (10-50
+lines each) and have non-obvious compound channels — AI email
+summarizers thread by `Message-ID`, LLM search engines
+(ChatGPT/Perplexity/Claude/Gemini) discover via sitemaps, Connect
+unblocks grant-loop scaling beyond ~5 grants/year. They sit just
+below the Next 3 because they are the infrastructure the next 3
+ride on, not blockers downstream of them.
 
 ### Shipped this session (2026-05-07 → 2026-05-08)
 
@@ -222,6 +229,33 @@ downstream of these three.
   neobrutalist styling stripped (BrutalCard / ArcadeTag /
   text-brutal-pink / border-4 / hard shadows all removed in favor of
   treaty-style tokens), admin blocks moved into `<details>` disclosures.
+- Root task ID/key renamed to `optimize-earth` / `program:optimize-earth`;
+  values exported as `OPTIMIZE_EARTH_ROOT_TASK_ID` /
+  `OPTIMIZE_EARTH_ROOT_TASK_KEY` from `@optimitron/db` and re-exported by
+  the web `task-keys` shim. One literal, one place. Hand-written
+  `migrations/20260508120000_drop_task_milestone/migration.sql` plus a
+  one-shot `scripts/rename-optimize-earth-root.ts` (transactional: nulls
+  children → renames root → re-points children) handle the prod rename.
+- All other task-key constants and builders consolidated into
+  `packages/db/src/task-keys.ts` and surfaced via
+  `@optimitron/db/task-keys`. The web `lib/tasks/task-keys.ts` is now a
+  re-export shim plus the one Next.js routing helper
+  (`getTreatyParentTaskHref`).
+- `parentTaskId` plumbed through `POST /api/tasks` schema with parent-
+  exists + parent-must-be-public guards, and through the `createTask`
+  server helper. New subtasks created via the REST API default to
+  `isPublic: false` so a parent-task creator decides what gets
+  surfaced — Wikipedia/StackOverflow-style UGC.
+- `/tasks` restructured into two sections: **Humanity's Tasks**
+  (single row → `optimize-earth` root, drill in for the tree) and
+  **Your Tasks** (assigned-to-me list when present; a synthetic
+  "Vote on the 1% Treaty" CTA linking direct to `/vote` otherwise).
+  Dropped the flat task queue. `getTasksPageData` now returns
+  `assignedToMe`.
+- `TaskMilestone` model + UI editor + API route + server helper +
+  tests + MCP tool + dashboard rendering all deleted; subtasks
+  subsume every milestone capability. Drop-table migration written
+  by hand (no data migration needed — milestone table empty in prod).
 
 ### P0 — Court of Humanity integration on `/court`
 
@@ -343,32 +377,32 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
 - **Reframe the post-vote share flow.** `TreatyPostVoteShareFlow.tsx` adds plaintiff-number framing alongside the existing impact framing: "You are now plaintiff #N in Humanity v. Government. The verdict needs more jurors." The recruitment ask becomes "register fellow plaintiffs," not "share the petition."
 - **Test:** vitest covering case-creation, plaintiff-backfill, and the auto-register-on-vote hook; e2e screenshot covering `/court` with seeded data.
 
-### P0 — Stage 2: President Manager promotion
+### P0 — Stage 2: President Manager promotion (lightweight)
 
-After a user finishes HMT, the funnel currently dead-ends. They get promoted in language but no
-new task. The roster of 193 leaders exists but the per-slot trigger is **disabled**, so the
-country-leader pairing has nowhere to land.
+After a user finishes HMT, the funnel currently dead-ends. The
+existing `PresidentManagementSystemSection` already shows all 193
+leaders, so the originally-scoped trigger-blueprint + task-spawn
++ dashboard-reorder approach was overkill (re-scoped 2026-05-08).
 
-**Reframe in the Court frame:** the Stage-2 task is no longer "find your country's leader and ask them to sign a petition." It is "your country's defendant has not accepted the settlement; demand they do." Same engineering work; copy and incentive structure shift to plaintiff-vs-defendant framing. Coordinate with the Court integration above so language is consistent.
+**Lightweight version:**
 
-- **Enable `treaty:signer` blueprint.** Currently `enabled: false` at
-  `packages/web/src/lib/triggers/blueprints/one-percent-treaty.ts:360`. Flip to `true` once
-  there's a destination for the spawned tasks.
-- **Add `user-onboarding:treaty:promotion-stage-2` trigger** in the same blueprint file.
-  Fires on `task.statusChanged.VERIFIED` with eventFilter for the user's `completeTraining`
-  taskKey. Spawns:
-  - A promotion comment on the user's HMT root (corporate-HR voice: "Acting President Manager").
-  - A pre-targeted task: "[Leader name] is N days overdue on signing." Resolves
-    `user.countryCode` → `treaty:signer` slot. Fallback: a generic "find your leader" task if
-    the country isn't in the 193-slot list.
-  - Action-link to the leader's contact page or a Google search for office contact, with the
-    user's `referralCode` embedded in the share URL so a leader signature converts back.
-- **Dashboard surfaces Stage-2 task as new primary CTA** when present. Past HMT subtasks
-  collapse to "✓ done" rows. Touches
-  `packages/web/src/components/site/TreatyTaskDashboardClient.tsx` +
-  `packages/web/src/components/tasks/PresidentManagementSystemSection.tsx`.
-- **Test:** end-to-end vitest exercising signup → 5-subtask completion → Stage-2 spawn →
-  dashboard reorder.
+Post-HMT, the dashboard primary CTA highlights *the user's
+country's leader* within the existing PMS section. Same conversion
+goal — the user's specific defendant is now their next action
+without spawning a separate task. ~10 lines in
+`TreatyTaskDashboardClient.tsx`: detect HMT-completion via the
+existing user-task state, scroll/highlight the user's
+country-code-matched row in the PMS list.
+
+**Reframe in the Court frame:** copy shifts from "find your
+country's leader and ask them to sign a petition" to "your
+country's defendant has not accepted the settlement; demand they
+do." Same surface; plaintiff-vs-defendant framing.
+
+If conversion data later argues the user actually needs a separate
+spawned task (rather than a highlighted PMS row), the heavyweight
+trigger + spawn approach is still in the parking lot. Don't build
+it speculatively.
 
 ### P0 — Live plaintiff counter on `/court`
 
@@ -415,126 +449,37 @@ to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/m
   campaign; visible peer pressure is part of the asset. Default-private only kicks in
   for non-admin MCP scope (the bullet above).
 
-### P1 — "Delegate or decline" path on assigned task emails
+### P1 — "Forward to someone better-fit" on assignment emails (lightweight)
 
-Every assignment email today gives the recipient two options: do the task or
-ignore it. Ignoring is the path of least resistance, so most low-priority
-assignments quietly orphan. Adding a third path — *delegate to someone better-
-fit* — turns an opt-out into a recruitment event: every "not for me" becomes
-either an existing Person picking it up or a new Person joining the network.
+Every assignment email today gives the recipient two options: do the
+task or ignore it. Ignoring is the path of least resistance. Adding a
+third path — *forward to someone better-fit* — turns an opt-out into a
+recruitment event.
 
-**Framing (consistent with HMT corporate-promotion voice):** "Don't want to or
-can't do this? Good news. You have been promoted to Humanity Manager at Earth
-Optimization Services LLC. Delegate this task to someone better-fit. Add their
-email or pick from people you already know on the platform." The promotion
-is real — the EOS LLC half of the prize structure is the operational arm of
-the campaign, and "Humanity Manager" is the canonical role for any user
-routing other humans toward verdict-rendering work.
+**Lightweight scope (the heavyweight delegate-API + new-Person
+confirmation flow + rate-limit was cut after the 2026-05-08 review):**
 
-**Implementation, schema-zero:**
+Add a `mailto:` button to the assignment email that opens the
+recipient's mail client pre-filled with the task link, the task
+title, and a short Wishonia-voice intro ("This was sent to me but
+you'd be better-fit. Take a look:"). Recipient picks the email
+manually. ~5 lines in
+`task-assignment-notification-email.server.ts`. Schema-zero.
+Zero new endpoints. Zero spam-attack surface.
 
-- Email template change (`task-assignment-notification-email.server.ts`): add
-  a "Delegate this task" section under the primary CTA with a deep link to
-  the task page (or a dedicated `/tasks/[id]/delegate` route).
-- New POST `/api/tasks/[id]/delegate` taking either `{ personId }` (existing
-  Person) or `{ name, email }` (new Person). Caller must be the current
-  assignee.
-- For the existing-Person case: swap `assigneePersonId` immediately, write a
-  `TaskComment(kind: SYSTEM, source: AGENT)` audit row ("Alice delegated to
-  Bob"), fire `notifyTaskAssigneeOfAssignment` for the new assignee.
-- For the new-Person case: do NOT swap immediately. Send the new person a
-  confirmation email ("Alice thinks you should handle X — click to accept or
-  decline"). On accept, create the User if needed, swap assignment, audit.
-  This avoids the spam/harassment attack where someone weaponizes
-  delegation against a target.
-- Rate-limit per delegator (same shape as the feedback `FeedbackRejectedError(rate_limited)`
-  we shipped) — N delegations per 10 minutes.
-- Front-end form on the task page: search-existing-people dropdown
-  (reusing the dedup pre-search helper from the plaintiff-dedup work) +
-  "or add a new person" input with name + email.
-
-### P0 — Task detail page: conditional leader-accountability blocks
-
-`/tasks/[id]/page.tsx` is 761 lines, 17 imported block components, ~13
-vertically stacked content zones. Industry standard (Linear, Asana,
-GitHub Issues) is 3 zones (title+body / right sidebar / comments).
-
-**The single biggest UX problem:** leader-accountability blocks
-(`TaskRemindEmployee`, `TaskBlockerCard`, `TaskUnlocks`,
-`TaskCurrentActivities`) render unconditionally. They were designed
-for the treaty-signer political-pressure mechanic ("president X is
-overdue, here's how to pressure them") and on those pages they're
-load-bearing. But they ALSO render on outreach tasks (e.g., the IAM
-foundation-join task I just sent), where they're confusing — the
-foundation lead sees a "Remind Employee" block targeted at them.
-
-**Fix:** the page already computes `isTreatySigner` at line 540.
-Extend that gate to wrap `TaskRemindEmployee`, `TaskBlockerCard`,
-`TaskUnlocks`, `TaskCurrentActivities`. For non-treaty-signer tasks
-(outreach, internal work, generic), they don't render. ~30 lines
-diff. Schema-zero. Shrinks the IAM-style task page from ~13 zones
-to ~5 — closer to industry standard, primary action ("Claim",
-"Mark complete") becomes findable above the fold.
-
-**Don't break:** the treaty-signer accountability density is
-intentional — the political-pressure mechanic relies on those blocks
-being visible on every leader page. Conditional gating preserves
-that path.
+If forward-conversions become a measurable channel, then upgrade to
+in-app delegation with admin-mediated invite flow.
 
 ### P1 — Task detail right-sidebar metadata pattern
 
-After the P0 conditional gating, the next-biggest gap is metadata
+After the conditional-gating ship, the next-biggest gap is metadata
 position. Status / assignee / due date / claim policy / claim count /
-milestones / sources stack vertically inline with content; the
-desktop right rail is wasted. Standard pattern (`lg:grid-cols-[1fr_320px]`)
-puts metadata in a right rail, body in the main column. Mobile
-collapses to single column. Multi-day refactor; do after P0 to know
-which blocks survive.
-
-### P1 — Move claim / complete action row above the fold
-
-Today rendered after ~6 informational blocks. Industry standard puts
-primary actions either at the top right (sidebar pattern) or directly
-under the title. ~10 lines to move it to render right after
-`<TaskHeroStats>`. Becomes trivial after the P0 conditional-gating
-ship: with leader blocks gone for outreach tasks, the action row
-naturally falls higher.
-
-### P2 — Deprecate `TaskMilestone`, replace with subtasks
-
-Subtasks subsume every milestone capability and add: assignability, due
-dates, claim flow, comments, sub-children, full TaskStatus granularity.
-Milestone is a weaker, redundant model. Only thing it does that
-subtasks don't is render as a compact `X/Y reached` progress strip at
-the top of the parent task — a UI choice, not a data-model
-justification (subtasks could render the same strip by counting
-children where status === VERIFIED).
-
-Surface area for migration:
-- One-time script: each `TaskMilestone` → child `Task` with
-  `parentTaskId = milestone.taskId`, status mapped from
-  `TaskMilestoneStatus`, `completionEvidence = milestone.evidenceNote`,
-  `sourceUrl = milestone.evidenceUrl`. Soft-delete the milestone row.
-- Update `/tasks/[id]/page.tsx` milestone strip to count subtasks
-  where `status === VERIFIED` over total child count.
-- Remove milestone references from: page, server helper at
-  `lib/tasks/milestones.server.ts`, API route at
-  `app/api/tasks/[id]/milestones/[milestoneId]/route.ts` + test, and
-  the `TaskMilestoneEditor` component.
-- Drop `TaskMilestone` model in a separate schema PR (per the
-  AGENTS.md rule that schema changes get their own PR).
-
-Schema change required (drops a model). Run the data migration first;
-verify all milestones converted to subtasks and visible on their
-parent task pages; THEN ship the schema-removal PR. Don't combine the
-two.
-
-### P2 — Admin task blocks behind a disclosure
-
-`Curator Verification` and `Pending Claim Reviews` render inline in
-main content flow for admins. Industry standard puts admin tools in
-a separate panel or behind a disclosure. Low urgency since admin =
-small audience.
+sources stack vertically inline with content; the desktop right rail
+is wasted. Standard pattern (`lg:grid-cols-[1fr_320px]`) puts
+metadata in a right rail, body in the main column. Mobile collapses
+to single column. Multi-day refactor — defer until a specific user
+complaint about metadata position triggers it; right now this is
+"industry standard says…" not a measured problem.
 
 ### P1 — Programmatic email validation (vitest lint + CI gate)
 
@@ -556,49 +501,22 @@ violations. Catches tone drift the regex lint can't. Higher cost; do
 only if the curated template set grows past ~30 and tone consistency
 is a real issue.
 
-### P1 — Per-send template content hash for conversion analysis
+### P1 — Plaintiff damages surface on `/plaintiffs/page.tsx` (Next 3 #1)
 
-Resolves the false dichotomy in the human's earlier question (templates
-in DB vs code). Templates stay in code (git history = version history,
-typechecked, code-reviewed). Each `TaskCommunication` records
-`templateContentHash: sha256(rendered)` in the existing `metadataJson`
-field — schema-zero. Conversion analysis groups rows by hash, counts
-replies / completions per group, gives per-version conversion data
-without DB-storing the templates themselves.
+`/plaintiffs/page.tsx` imports `WAR_DEATHS_SINCE_1900` and
+military-spending parameters but not
+`CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA` or the
+cohort constant. So a visitor sees the gallery without learning
+what each registered plaintiff is owed (~$10.6M NPV / $25.2M
+lifetime cohort). The case page surfaces this; the registration
+page should too. ~30 lines of JSX added under the existing
+parameter imports — schema-zero. Highest per-line conversion lift
+on the to-do list right now; a visitor who lands on `/plaintiffs`
+from the case-page CTA without first reading the case currently
+has no damages number to anchor on.
 
-At our current scale (~50 sends total), per-version conversion data
-is statistically meaningless — we'd need hundreds of sends per variant
-for signal. So this isn't urgent for measurement; it's urgent because
-it locks in the data shape now so when scale arrives the data is
-already there. Adding the field is ~10 lines in `task-notifications.server.ts`
-where the draft + send happens.
-
-### P1 — Action-oriented menu labels + plaintiff damages surface
-
-Two related copy / placement tweaks discovered during the foundation-outreach
-smoke test, both schema-zero:
-
-**Menu labels (warondisease.org top nav).** Current labels are passive
-(*Vote, Plaintiffs, Read the Treaty, The Case*). Action-oriented variants
-match the Court frame already canonical elsewhere: *Render the Verdict*
-(→ `/vote` or `/humanity-v-government`), *Become a Juror* (→ `/court`),
-*Register a Plaintiff* (→ `/plaintiffs`). The verdict-render + juror
-phrasing only currently appears on `/humanity-v-government/page.tsx`
-(the case page I built this session); the nav is plain. One-line label
-edits in `routes.ts` (`whyLink`, `plaintiffsLink`, `treatyVoteLink`) plus
-the `warOnDiseaseShareLink` and `warOnDiseaseFundLink` aliases in
-`site.ts`. Hold pending the broader nav-reorg conversation, but the
-relabel itself is small and reversible.
-
-**`/plaintiffs/page.tsx` does NOT show damages.** It imports
-`WAR_DEATHS_SINCE_1900` and military-spending parameters but not
-`CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA` or the cohort
-constant. So a visitor sees the gallery without learning what each
-registered plaintiff is owed (~$10.6M NPV / $25.2M lifetime cohort).
-The case page surfaces this; the registration page should too. ~30
-lines of JSX added under the existing parameter imports — schema-zero.
-Strong candidate for next ship because it converts visitors who land
-on `/plaintiffs` from the case page CTA without first reading the case.
+(Menu-label rebrand to verdict/juror/plaintiff phrasing already
+shipped this session — see Shipped block.)
 
 ### P1 — Centralize communication templates (audit findings 2026-05-08)
 
@@ -644,185 +562,112 @@ campaign-driven copy but only one DISABLED spec. Outreach-task
 descriptions (the foundation-join one I just wrote) are inline in
 helpers / scripts.
 
-**Target organization (proposed):**
+**Lightweight scope (the MCP tool layer was cut after the
+2026-05-08 review — yak-shave for current scale):**
 
-1. **One `lib/communications/templates/` directory** with one file per
+1. **`lib/communications/templates/` directory** with one file per
    template family: `assignment-notification.ts`,
-   `comment-notification.ts`, `magic-link.ts`, `outreach-foundation-join.ts`,
-   `outreach-leader-sign.ts`, `treaty-share.ts`, etc. Each exports
-   `{ subject, html, text, tokens }` builders or a `ShareTemplate`-shape
-   record. Same pattern as `share-templates.ts`.
+   `comment-notification.ts`, `magic-link.ts`,
+   `outreach-foundation-join.ts`, `outreach-leader-sign.ts`,
+   `treaty-share.ts`. Each exports `{ subject, html, text, tokens }`
+   builders. Same pattern as `share-templates.ts`. Move the
+   foundation-outreach copy currently inline in
+   `scripts/smoke-test-iam-outreach.ts` into a real template file.
 2. **`lib/communications/registry.ts`** — central index mapping
-   template IDs → builders, the way `share-templates.ts` already does
-   for share copy. Lets MCP tools / agents enumerate templates.
-3. **MCP tools** (added to `mcp-server.ts`):
-   - `listCommunicationTemplates({ category? })` — admin-scope only;
-     returns id + label + tokens + sample-rendered preview.
-   - `generateCommunicationTemplate({ templateId, tokens, recipient })`
-     — renders a template with provided tokens for inspection /
-     attachment to a task. Doesn't send; just returns the rendered body.
-   - Together these let Wishonia (or a human via Claude Code) pull
-     "give me the foundation-join template tuned for X" without
-     hardcoding the copy in chat.
-4. **Trigger blueprints reference the registry** — rather than inline
+   template IDs → builders. Lets the email validation lint (separate
+   P1 entry) enumerate templates.
+3. **Trigger blueprints reference the registry** — rather than inline
    `bodyTextTemplate` strings, blueprints reference `templateId:
-   "outreach-foundation-join"` and the trigger framework looks up the
-   builder. Lets one template power both human-driven outreach (via
-   the MCP tool) and automated cron-driven outreach.
+   "outreach-foundation-join"`. Lets one template power both human-
+   driven outreach and automated cron-driven outreach.
 
-**Cost:** the move itself is medium-sized (~200-400 lines, mostly file-
-moves and one new registry). The MCP tools are 30-50 lines each on top
-of the existing tool dispatch pattern. Schema-zero.
+Skipped: the MCP tools (`listCommunicationTemplates`,
+`generateCommunicationTemplate`). Add only when an agent workflow
+specifically needs them.
 
-**Sequencing:** do this AFTER the immediate "make foundation outreach
-work end-to-end" loop is proven. Don't refactor the template layout
-before we know what shape templates we actually need at scale. The
-smoke test just validated the mechanical email loop works; the next
-step is sending more outreach with copy variations to learn what
-converts. THEN centralize what survives.
+**Cost:** ~50–80 lines, mostly file moves. Schema-zero.
 
-### P1 — Subtask creation by any user (decentralized to-do tree)
+**Sequencing:** AFTER the immediate "make foundation outreach work
+end-to-end" loop is proven (Next 3 #2). The smoke test validated the
+mechanical email loop; the directory move locks in a place for the
+next 3–5 templates without over-designing for variants we haven't
+written yet.
 
-The `POST /api/tasks` REST endpoint's `CreateTaskBodySchema` does NOT
-include `parentTaskId` — so any logged-in user can create top-level
-tasks but cannot attach them to existing parents through the public
-API. The underlying `createTask` server function + the MCP `createTask`
-tool both support `parentTaskId`; only the REST schema strips it.
-There's also no "Add subtask" UI on `/tasks/[id]`.
+### P1 — Subtask creation by any user — UI form (API shipped 2026-05-08)
 
-For the "decentralized to-do list for humanity" framing, this is the
-gap. Fix:
+API + server helper + parent-validation guards shipped this session
+(`POST /api/tasks` accepts `parentTaskId`; `createTask` accepts and
+persists it; subtasks default to `isPublic: false`). What's left is
+the UI form on `/tasks/[id]/page.tsx`:
 
-1. Add `parentTaskId: z.string().nullish()` to `CreateTaskBodySchema`
-   in `app/api/tasks/route.ts` (1 line).
-2. Add a small "Add subtask" form to `/tasks/[id]/page.tsx` —
-   gated to `task.isPublic: true` parents so private outreach tasks
-   aren't subtask-spammed.
-3. Default new subtasks to `isPublic: false`. The parent-task creator
-   sees them on their /dashboard and chooses what to publicize. This
-   is the spam-protection lever — any user can suggest, parent-task
-   creator decides what gets surfaced.
+- "Add subtask" disclosure on public parent tasks. Title + optional
+  description fields. Submits to `POST /api/tasks` with the parent's
+  id. ~30 lines.
+- Admin "Promote to public" one-click action on the parent-task
+  page (same shape as existing curator-verification disclosure).
+  Lets the parent-task creator surface user-suggested subtasks
+  into the public tree.
 
-Schema-zero. ~40 lines of code total. Strong leverage for the
-"Wikipedia-meets-todo-list for the campaign" thesis.
+This closes the user-agency loop that pairs with the donate-to-fund-
+task entry below: orgs propose work → admin promotes → foundations
+fund.
 
-### P1 — Tasks-page / dashboard / presidents restructure
+### P1 — Dashboard / presidents page mental-model split (lightweight)
 
-Currently `PresidentManagementSystemSection` renders in two places:
+`/tasks` already restructured to the two-section "Humanity's Tasks"
++ "Your Tasks" pattern (shipped 2026-05-08). Remaining mental-model
+issue: `PresidentManagementSystemSection` renders in two places —
 inside `/dashboard` (TreatyTaskDashboardClient) AND on `/employees`
-(its dedicated route). Confusing mental model.
+(its dedicated route).
 
 Cleaner separation:
-
-- **`/dashboard`** = personal: your handle, share link, your assigned
-  tasks, your verdict + plaintiff status. No full PMS section.
-- **`/tasks`** = the full task tree browser (top-level programs +
-  child branches + leaf queue, filterable).
-- **`/employees`** (consider renaming to `/presidents` for clarity) =
+- **`/dashboard`** = personal: your handle, share link, your
+  assigned tasks, your verdict + plaintiff status. Replace the
+  inline PMS section with a "Pressure overdue presidents" button
+  linking to `/employees`.
+- **`/employees`** (consider renaming to `/presidents`) =
   president-accountability surface. Only thing on this page.
 
-Change: remove `<PresidentManagementSystemSection>` from
-`TreatyTaskDashboardClient.tsx` and add a "Pressure overdue presidents"
-button linking to `/employees`. ~20 lines.
+~20 lines.
 
-### P1 — Grant-application infrastructure (Task-attached, schema-light)
+### P1 — Donate-to-fund-task (lightweight, schema-zero)
 
-**Premise:** nonprofits engage more when they see a visible pathway to
-getting paid for impact. Right now there is no way for an org to
-propose work and be funded for it through this platform; the 5
-"Fund the Campaign" tasks I just deleted were the wrong direction
-(us asking foundations for money instead of foundations browsing
-fundable work).
+**Premise:** nonprofits engage when they see a paid pathway for
+impact. Foundations that fund cost-effective work (Open Phil,
+GiveWell-aligned, EA Funds) explicitly browse on cost-per-DALY —
+matching the metric the existing `TaskImpactFrame` already
+computes. Right now there is no way for a foundation to land on a
+specific task and direct money to that work.
 
-**AMF status (corrected 2026-05-08):** Accelerated Medicine Foundation
-is already a registered US 501(c)(3) and the existing /donate page
-accepts donations via Stripe. Disbursement infrastructure (W-9 +
-1099-MISC + grant agreement template + outbound payment via Stripe
-Connect or wire) is the remaining workstream — much smaller scope
-than originally assumed, and unblocks money flow today rather than
-waiting for legal-entity setup.
+**Lightweight scope (the heavyweight `TaskFundingPledge` /
+`/grants/apply` / admin-review marketplace was cut after the
+2026-05-08 review — premature for our scale):**
 
-**Reuse Task. Don't introduce a Campaign model.** `TaskImpactFrame`
-(schema lines 5905-5979) already has every grant economic field —
-estimatedCashCostUsdBase (low/base/high), expectedDalysAvertedBase,
-expectedEconomicValueUsdBase, successProbabilityBase, HALE +
-median-income effects, delay-DALYs-per-day. Cost-per-DALY is
-computable today: `estimatedCashCostUsdBase / expectedDalysAvertedBase`.
-Existing `assigneeOrganizationId` captures who would do the work.
-Existing claim/complete/verify flow handles delivery. The grant
-application IS proposing a task; the pledge IS funding it.
+1. **Org proposes a task** via the existing `POST /api/tasks` with
+   the `parentTaskId` parameter shipped this session. Defaults to
+   `isPublic: false` (spam protection); creator-org sees it on
+   their dashboard.
+2. **Admin promotes to public** via a one-click action on the
+   existing `/tasks/[id]/page.tsx` admin disclosure. Same shape as
+   the curator-verification block.
+3. **Public task gets a "Donate to fund this work" button** on the
+   detail page when `assigneeOrganizationId` is set, linking to
+   `/donate?taskId=...&org=...`.
+4. **`/donate` reads the query params**, pre-fills the donation
+   note with the task title + org slug, and stores the designation
+   in donation metadata so AMF disburses through its existing
+   processes (check / ACH / wire — no Stripe Connect outbound code
+   path).
+5. **Public task detail page shows a small "$X designated" stat**
+   read from a sum of designated donations in metadata.
 
-**Schema additions (light, two pieces):**
+Total scope: ~80–120 lines, zero new schema, zero new ops surface.
+Foundation-browsing recruitment story works on day one without
+blocking on Stripe Connect, W-9 forms, or 1099-MISC reporting.
 
-```prisma
-enum TaskFundingStatus {
-  PROPOSED            // org submitted, awaiting review
-  ACCEPTED            // admin approved as fundable
-  PARTIALLY_PLEDGED   // pledges < estimatedCashCostUsdBase
-  FULLY_PLEDGED       // pledges >= estimatedCashCostUsdBase
-  DISBURSED           // paid to org
-  VERIFIED            // delivery confirmed
-}
-
-model TaskFundingPledge {
-  id                   String   @id @default(cuid())
-  taskId               String
-  funderUserId         String?
-  funderOrganizationId String?
-  amountUsd            Float
-  status               String   // pending | committed | disbursed | refunded
-  pledgedAt            DateTime @default(now())
-  disbursedAt          DateTime?
-  deletedAt            DateTime?
-  task                 Task           @relation(fields: [taskId], references: [id])
-  funderUser           User?          @relation(fields: [funderUserId], references: [id])
-  funderOrganization   Organization?  @relation(fields: [funderOrganizationId], references: [id])
-  @@index([taskId])
-  @@index([funderUserId])
-  @@index([funderOrganizationId])
-  @@index([status])
-}
-```
-
-Plus a nullable `Task.fundingStatus: TaskFundingStatus?` so the
-proposal-vs-non-proposal distinction is queryable without joining
-to TaskFundingPledge.
-
-**UI surfaces:**
-
-- `/grants` (or `/fund/proposals`) — public gallery of `ACCEPTED`
-  tasks ranked by cost-per-DALY. Each row: org name, task title,
-  cost, DALYs averted, success probability, "$X needed / $Y
-  pledged" progress bar, "Pledge" CTA.
-- `/grants/apply` — form for orgs to propose a task. Fields map
-  1:1 to existing TaskImpactFrame columns. Submission creates a
-  Task with `fundingStatus: PROPOSED` and `assigneeOrganizationId =
-  caller.org`. Admin reviews and flips to ACCEPTED or REJECTED.
-- Task detail page gets a "Funding" section if `fundingStatus` is
-  set: shows pledges, progress, disbursement status. Conditional
-  block (already gated infrastructure — same pattern as
-  leader-accountability blocks).
-
-**Critical separation from current /donate page.** Donate is
-unrestricted individual giving to the campaign. Grants are
-designated giving to a specific task with verified outcome. Two
-different concepts; two different surfaces. /donate stays as-is.
-
-**Build order (updated after AMF correction):**
-
-1. Schema (TaskFundingStatus enum + TaskFundingPledge model + nullable
-   Task.fundingStatus column). Schema PR.
-2. /grants public gallery + /grants/apply form. Schema-zero after #1.
-3. Admin review flow on existing /tasks/[id]/page.tsx (collapsed
-   `<details>` like the curator-verification block already shipped).
-4. AMF disbursement workflow: W-9 + grant agreement + Stripe Connect
-   (or wire) outbound payment + 1099-MISC reporting at year end.
-   This is real work but the legal entity exists, so it's a normal
-   nonprofit-ops build, not a blocked-on-legal item.
-
-All four can ship in sequence without legal-entity blockers. The
-foundation-browsing recruitment story benefits land after #2 even
-before #4 is wired.
+**Stripe Connect comes later** — see the separate P1 entry below.
+Manual disbursement is fine for the first ~5–10 grants; Connect
+unblocks scaling past that.
 
 ### P1 — Sitemap completeness (orgs, /humanity-v-government, /court)
 
@@ -860,6 +705,64 @@ Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/emai
 - **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
   on the new `TaskComment`, so the in-app feed nests correctly.
 - **No schema changes.** All metadata fits in the existing `metadataJson` field.
+
+### P1 — Stripe Connect for AMF outbound disbursement
+
+AMF is already a US 501(c)(3) with Stripe wired for inbound
+donations. Manual disbursement (checks, spreadsheets, year-end
+1099-MISC done by hand) caps the funding loop at ~5 grants/year
+before ops becomes the bottleneck. Connect = automated outbound +
+recipient-self-served tax forms + built-in 1099 generation.
+
+- Enable Stripe Connect on the existing AMF Stripe account
+  (Standard or Express; Express recommended for our shape).
+- New onboarding endpoint: `/api/grants/[taskId]/connect-onboard`
+  that creates a Connect account for the recipient org and returns
+  the Stripe-hosted onboarding link.
+- Disbursement helper: a small server action that calls Stripe's
+  Transfer API to move designated donations from AMF's platform
+  balance to the recipient's connected account on grant
+  verification (`Task.status === VERIFIED`).
+- Admin UI: a "Disburse $X to [org]" button on the existing
+  `/tasks/[id]/page.tsx` admin disclosure for verified
+  donate-to-fund-task tasks.
+
+Roughly ~150 lines + Stripe dashboard config. Real but bounded.
+Defer until donate-to-fund-task has produced ~3–5 actual designated
+gifts (so we know the loop converts before automating it).
+
+### P1 — Extend VOTE token earning to verified task completion
+
+Right now VOTE is earned exclusively through referrals (referrer
+earns 1:1 with verified-vote referrals — see `VoteToken` /
+`VoterPrizeTreasury` on Base Sepolia). High-leverage builders who
+do work for the campaign (translate the treaty into 50 languages,
+build the /grants page, run a foundation-outreach sprint) get
+nothing from the prize pool. That misaligns the assurance contract
+from the actual production-of-results work.
+
+**Lightweight extension (do not introduce a new token):**
+
+- Add a verifier-gated mint path on `VoteToken`: when
+  `Task.status` flips to `VERIFIED` and the task carries a
+  `voteEarningRatio` (or a constant ratio per category), the
+  contract mints VOTE to the verified completer's address.
+- Define ratios per task category (OUTREACH, ENGINEERING,
+  TRANSLATION, etc.) — values configurable via the existing
+  parameter manifest, not hard-coded.
+- Mint trigger: a server-side hook on `verifyTask` that calls the
+  contract's mint function. Same shape as the existing referral
+  mint trigger.
+
+**Why not a new token (EOP / Earth Optimization Points):** brand
+confusion (VOTE + WISH + Hypercerts already three systems);
+sybil cost is on the verification surface, not the token; every
+new token doubles the SEC/securities posture surface.
+
+Schema: add `voteEarningRatio: Float?` to `Task`. Mint path:
+~50 lines on the contract + ~30 lines on the server hook. Park
+until the existing VOTE-earning-via-referral path has measurable
+volume — premature otherwise.
 
 ### P2 — Prize wire-up into the post-vote funnel (BLOCKED on legal + mainnet)
 
@@ -971,15 +874,6 @@ exist; they are not wired into the funnel.
 - Never run `pnpm build` / `next build` — the dev server handles compilation.
 - Library packages (`optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`,
   `storage`) stay runtime-safe: no Prisma, no runtime DB.
-
-## Open questions
-
-- **"Two Questions on the Same Ballot" (court-of-humanity manual section): does the treaty
-  vote stay as a single question that is rhetorically read as both a treaty-yes and a
-  verdict-yes, or do we surface them as two coupled questions on the ballot UI?** The single-
-  question version preserves all existing voter records and copy; the two-question version
-  is more legible but requires referendum-schema work and breaks attribution math. Default to
-  single-question with dual framing in copy until funnel data argues otherwise.
 
 ## Long-tail (parked, not 4B-blocking)
 

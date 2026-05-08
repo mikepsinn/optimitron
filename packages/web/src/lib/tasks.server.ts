@@ -323,26 +323,6 @@ const taskListSelect = {
   verifiedAt: true,
 } satisfies Prisma.TaskSelect;
 
-const taskMilestoneSelect = {
-  completedAt: true,
-  description: true,
-  evidenceNote: true,
-  evidenceUrl: true,
-  id: true,
-  key: true,
-  metadataJson: true,
-  sortOrder: true,
-  status: true,
-  title: true,
-  verifiedAt: true,
-  verifiedByUser: {
-    select: {
-      id: true,
-      person: { select: { handle: true, displayName: true } },
-    },
-  },
-} satisfies Prisma.TaskMilestoneSelect;
-
 const taskSearchSelect = {
   assigneeOrganization: {
     select: {
@@ -394,13 +374,6 @@ const taskDetailSelect = {
       sentAt: true,
       status: true,
     },
-  },
-  milestones: {
-    where: {
-      deletedAt: null,
-    },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    select: taskMilestoneSelect,
   },
   verifiedByUser: {
     select: {
@@ -1055,6 +1028,22 @@ export async function getTasksPageData(
     }),
   ]);
 
+  const assignedToMeRaw = viewer?.personId
+    ? await prisma.task.findMany({
+        where: {
+          deletedAt: null,
+          assigneePersonId: viewer.personId,
+          status: { not: TaskStatus.VERIFIED },
+        },
+        orderBy: [
+          { dueAt: { sort: "asc", nulls: "last" } },
+          { createdAt: "desc" },
+        ],
+        take: 25,
+        select: taskListSelect,
+      })
+    : [];
+
   const decoratedTasks = allTasks.map((task) =>
     decorateTask(task, {
       frameKey: options?.frameKey,
@@ -1101,8 +1090,16 @@ export async function getTasksPageData(
     (t) => !topLevelTaskIds.has(t.id) && !topLevelChildIds.has(t.id),
   );
 
+  const assignedToMe = assignedToMeRaw.map((task) =>
+    decorateTask(task, {
+      frameKey: options?.frameKey,
+      userId: viewer?.id ?? null,
+    }),
+  );
+
   return {
     allTasks: filteredAllTasks,
+    assignedToMe,
     forYou,
     topLevelTasks: decoratedTopLevel,
     viewer,
@@ -1449,6 +1446,7 @@ export async function createTask(
     interestTags?: string[] | null;
     isPublic?: boolean | null;
     maxClaims?: number | null;
+    parentTaskId?: string | null;
     primaryEndpoint?: PrimaryTaskCommunicationEndpointInput | null;
     roleTitle?: string | null;
     skillTags?: string[] | null;
@@ -1510,6 +1508,7 @@ export async function createTask(
         resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY
           ? (input.maxClaims ?? null)
           : null,
+      parentTaskId: input.parentTaskId ?? null,
       createdByUserId: creatorUserId,
       roleTitle: input.roleTitle?.trim() || null,
       skillTags: input.skillTags?.filter(Boolean) ?? [],

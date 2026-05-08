@@ -16,6 +16,9 @@ export * from './types.js';
 // Shared constants (slugs, etc.)
 export * from './constants.js';
 
+// Task-key registry (root IDs, prefixes, builders)
+export * from './task-keys.js';
+
 // FillingType case conversion utilities
 export {
   fillingTypeToPrisma,

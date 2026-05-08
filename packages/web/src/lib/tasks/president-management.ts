@@ -1,7 +1,7 @@
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import {
-  EARTH_OPTIMIZATION_PRIZE_ROOT_TASK_ID,
   isTreatySignerTaskKeyPrefix,
+  OPTIMIZE_EARTH_ROOT_TASK_ID,
   TREATY_PARENT_TASK_ID,
 } from "@/lib/tasks/task-keys";
 
@@ -20,7 +20,7 @@ export function selectTreatyPresidentManagementTasks(data: {
   topLevelTasks: TaskTreeRoot[];
 }): PresidentManagementTasks {
   const prizeRoot = data.topLevelTasks.find(
-    (task) => task.id === EARTH_OPTIMIZATION_PRIZE_ROOT_TASK_ID,
+    (task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID,
   );
   const programChildren = Array.isArray(prizeRoot?.childTasks)
     ? prizeRoot.childTasks

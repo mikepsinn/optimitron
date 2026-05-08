@@ -13,6 +13,10 @@
     "./enums": {
       "types": "./dist/generated/prisma/enums.d.ts",
       "default": "./dist/generated/prisma/enums.js"
+    },
+    "./task-keys": {
+      "types": "./dist/task-keys.d.ts",
+      "default": "./dist/task-keys.js"
     }
   },
   "scripts": {

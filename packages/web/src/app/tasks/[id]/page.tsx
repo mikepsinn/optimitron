@@ -17,7 +17,6 @@ import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskDeleteButton } from "@/components/tasks/TaskDeleteButton";
-import { TaskMilestoneEditor } from "@/components/tasks/TaskMilestoneEditor";
 import { TaskRowShare } from "@/components/tasks/task-row-share";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
 import { TaskBlockerCard } from "@/components/tasks/blocks/TaskBlockerCard";
@@ -106,10 +105,6 @@ function formatDueDate(value: Date | string) {
     month: "long",
     year: "numeric",
   });
-}
-
-function getMilestoneStatusLabel(status: string) {
-  return status.replaceAll("_", " ").toLowerCase();
 }
 
 function formatShortDate(value: Date) {
@@ -388,9 +383,6 @@ export default async function TaskDetailPage({
     targetLabel,
     taskTitle: task.title,
   });
-  const completedMilestoneCount = task.milestones.filter(
-    (milestone) => milestone.status === "COMPLETED" || milestone.status === "VERIFIED",
-  ).length;
   const provenanceArtifacts =
     task.currentImpactEstimateSet?.sourceArtifacts?.length
       ? task.currentImpactEstimateSet.sourceArtifacts
@@ -589,69 +581,6 @@ export default async function TaskDetailPage({
             <TaskContextList context={context} tokens={reminderTokens} />
             <TaskCurrentActivities context={context} />
           </>
-        ) : null}
-
-        {task.milestones.length > 0 ? (
-          <section className="border-2 border-foreground bg-background p-5">
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-                    Milestone tracker
-                  </p>
-                  <p className="text-sm font-bold text-muted-foreground">
-                    {completedMilestoneCount} of {task.milestones.length} milestones reached
-                  </p>
-                </div>
-                <span className="text-xs font-black uppercase tracking-[0.12em] text-foreground">
-                  {`${completedMilestoneCount}/${task.milestones.length}`}
-                </span>
-              </div>
-              <div className="space-y-4">
-                {task.milestones.map((milestone) => (
-                  <div
-                    key={milestone.id}
-                    className="border border-foreground p-4"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="space-y-1">
-                        <p className="text-lg font-black uppercase">{milestone.title}</p>
-                        {milestone.description ? (
-                          <p className="text-sm font-bold text-muted-foreground">
-                            {milestone.description}
-                          </p>
-                        ) : null}
-                      </div>
-                      <span className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-                        {getMilestoneStatusLabel(milestone.status)}
-                      </span>
-                    </div>
-                    {milestone.evidenceNote ? (
-                      <p className="mt-3 text-sm font-bold">{milestone.evidenceNote}</p>
-                    ) : null}
-                    {milestone.evidenceUrl ? (
-                      <Link
-                        className="mt-2 inline-block text-sm font-black uppercase underline underline-offset-4"
-                        href={milestone.evidenceUrl}
-                        target="_blank"
-                      >
-                        Open evidence
-                      </Link>
-                    ) : null}
-                    {viewer?.isAdmin ? (
-                      <TaskMilestoneEditor
-                        defaultEvidenceNote={milestone.evidenceNote}
-                        defaultEvidenceUrl={milestone.evidenceUrl}
-                        defaultStatus={milestone.status}
-                        milestoneId={milestone.id}
-                        taskId={task.id}
-                      />
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
         ) : null}
 
         {task.sourceUrl || provenanceArtifacts.length > 0 ? (

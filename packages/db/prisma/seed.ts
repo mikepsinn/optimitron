@@ -45,6 +45,8 @@ import {
   TREATY_REFERENDUM_SLUG,
   DECLARATION_REFERENDUM_SLUG,
   COURT_OF_HUMANITY_REFERENDUM_SLUG,
+  OPTIMIZE_EARTH_ROOT_TASK_ID,
+  OPTIMIZE_EARTH_ROOT_TASK_KEY,
 } from "../src/constants.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { createHash } from "node:crypto";
@@ -1419,10 +1421,10 @@ async function seedTreatyTasks() {
   const { hale, medianIncome } = earthOptimizationPrizeWinCondition;
   const prizeRootTask = await createTaskWithImpact({
     task: {
-      // Internal id + taskKey kept stable so nothing else breaks. The label is
-      // what the user sees.
-      id: "win-earth-optimization-prize",
-      taskKey: "program:earth-optimization-prize:win",
+      // Internal id + taskKey come from the canonical OPTIMIZE_EARTH_ROOT
+      // constants in @optimitron/db so seed and web stay in lockstep.
+      id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+      taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
       assigneeOrganizationId: humanity.id,
       title: "Promote the General Welfare",
       description: [
