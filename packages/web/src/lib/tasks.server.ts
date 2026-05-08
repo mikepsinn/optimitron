@@ -959,10 +959,19 @@ function getTaskVisibilityWhere(input?: {
   }
 
   if (visibility === "accessible" && input?.userId) {
-    return {
-      ...baseWhere,
-      OR: [{ isPublic: true }, { createdByUserId: input.userId }],
-    };
+    // A task is "accessible" to a signed-in viewer if it is public, the
+    // viewer created it, OR it is assigned to the viewer's Person. The last
+    // clause matters for private trigger-spawned tasks (assignee = me,
+    // creator = system) so they don't 404 when their assignee clicks them
+    // from /tasks "Your Tasks" → /tasks/[id].
+    const ors: Prisma.TaskWhereInput[] = [
+      { isPublic: true },
+      { createdByUserId: input.userId },
+    ];
+    if (input.personId) {
+      ors.push({ assigneePersonId: input.personId });
+    }
+    return { ...baseWhere, OR: ors };
   }
 
   return {
@@ -1118,16 +1127,22 @@ export async function getTaskDetailData(
     return null;
   }
 
-  const [task, viewer, taskCommunicationCount] = await Promise.all([
+  // Sequence the viewer fetch before the task fetch so we can include the
+  // viewer's personId in the visibility filter — otherwise a private task
+  // assigned to the viewer (but created by a different user / by the
+  // system) is invisible on /tasks/[id].
+  const viewer = userId ? await getTaskViewer(userId) : null;
+
+  const [task, taskCommunicationCount] = await Promise.all([
     prisma.task.findFirst({
       where: getTaskVisibilityWhere({
         taskId: normalizedTaskId,
         userId,
+        personId: viewer?.personId ?? null,
         visibility: "accessible",
       }),
       select: taskDetailSelect,
     }),
-    userId ? getTaskViewer(userId) : Promise.resolve(null),
     countTaskCommunications(normalizedTaskId),
   ]);
 

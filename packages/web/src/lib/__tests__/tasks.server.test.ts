@@ -2,11 +2,13 @@ import { TaskClaimPolicy, TaskClaimStatus, TaskStatus } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  countTaskCommunications: vi.fn(),
   grantWishes: vi.fn(),
   notifyTaskAssigneeOfAssignment: vi.fn(),
   prisma: {
     taskCreate: vi.fn(),
     taskFindFirst: vi.fn(),
+    taskClaimFindUnique: vi.fn(),
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskFindMany: vi.fn(),
@@ -29,6 +31,7 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     $transaction: mocks.prisma.transaction,
     taskClaim: {
+      findUnique: mocks.prisma.taskClaimFindUnique,
       findUniqueOrThrow: mocks.prisma.taskClaimFindUniqueOrThrow,
       update: mocks.prisma.taskClaimUpdate,
     },
@@ -51,9 +54,14 @@ vi.mock("@/lib/tasks/task-assignment-notifications.server", () => ({
   notifyTaskAssigneeOfAssignment: mocks.notifyTaskAssigneeOfAssignment,
 }));
 
+vi.mock("@/lib/tasks/task-communications.server", () => ({
+  countTaskCommunications: mocks.countTaskCommunications,
+}));
+
 import {
   completeTaskClaim,
   createTask,
+  getTaskDetailData,
   listTasks,
   searchTasks,
   updateTaskCreatedByUser,
@@ -74,6 +82,7 @@ function createTransactionClient() {
 }
 
 function resetAllMocks() {
+  mocks.countTaskCommunications.mockReset();
   mocks.grantWishes.mockReset();
   mocks.notifyTaskAssigneeOfAssignment.mockReset();
 
@@ -359,5 +368,53 @@ describe("tasks server", () => {
     ).rejects.toThrow("Public tasks can't be unpublished. Ask an admin.");
 
     expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+  });
+
+  describe("getTaskDetailData visibility", () => {
+    // Regression for the 404-on-own-task bug: a private task assigned to
+    // the viewer's Person but created by a different user (or the system,
+    // via a trigger blueprint) showed up in /tasks "Your Tasks" because the
+    // assignedToMe query filters only on assigneePersonId, but clicking it
+    // returned 404 because the visibility filter on /tasks/[id] only
+    // matched isPublic=true OR createdByUserId=viewer.
+    it("matches a private task assigned to the viewer's Person via assigneePersonId", async () => {
+      mocks.prisma.userFindUniqueOrThrow.mockResolvedValue({
+        availableHoursPerWeek: null,
+        id: "user_demo",
+        interestTags: [],
+        isAdmin: false,
+        maxTaskDifficulty: null,
+        personId: "person_demo",
+        skillTags: [],
+      });
+      mocks.prisma.taskFindFirst.mockResolvedValue(null);
+      mocks.countTaskCommunications.mockResolvedValue(0);
+
+      await getTaskDetailData("task_assigned_to_demo", "user_demo");
+
+      expect(mocks.prisma.taskFindFirst).toHaveBeenCalledTimes(1);
+      const args = mocks.prisma.taskFindFirst.mock.calls[0]?.[0] as
+        | { where?: { OR?: Array<Record<string, unknown>> } }
+        | undefined;
+      const ors = args?.where?.OR ?? [];
+      expect(ors).toContainEqual({ isPublic: true });
+      expect(ors).toContainEqual({ createdByUserId: "user_demo" });
+      expect(ors).toContainEqual({ assigneePersonId: "person_demo" });
+    });
+
+    it("falls back to public-only matching when no signed-in viewer", async () => {
+      mocks.prisma.taskFindFirst.mockResolvedValue(null);
+      mocks.countTaskCommunications.mockResolvedValue(0);
+
+      await getTaskDetailData("task_anon", null);
+
+      expect(mocks.prisma.userFindUniqueOrThrow).not.toHaveBeenCalled();
+      const args = mocks.prisma.taskFindFirst.mock.calls[0]?.[0] as
+        | { where?: Record<string, unknown> }
+        | undefined;
+      // For unauthenticated callers, getTaskVisibilityWhere returns the
+      // base where with isPublic: true (no OR clause).
+      expect(args?.where).toMatchObject({ isPublic: true });
+    });
   });
 });
