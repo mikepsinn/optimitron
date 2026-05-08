@@ -1,5 +1,6 @@
 import { CourtCasePartyRole, CourtCaseStatus } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
+import { prisma } from "@/lib/prisma";
 
 export const HUMANITY_V_GOVERNMENT_CASE_SLUG = "humanity-v-government";
 export const HUMANITY_V_GOVERNMENT_CASE_TITLE = "Humanity v Government";
@@ -8,6 +9,29 @@ type HumanityVGovernmentCaseClient = Pick<
   Prisma.TransactionClient,
   "courtCase" | "courtCaseParty"
 >;
+
+/**
+ * Returns the live plaintiff count for *Humanity v. Government*.
+ *
+ * Counts soft-delete-aware `NAMED_PLAINTIFF` parties on the case. Returns 0
+ * when the case row does not exist yet (the case is created lazily by
+ * `ensureHumanityVGovernmentPlaintiffParty`, so a brand-new install hasn't
+ * registered any plaintiffs yet).
+ */
+export async function getHumanityVGovernmentPlaintiffCount(): Promise<number> {
+  const courtCase = await prisma.courtCase.findUnique({
+    where: { slug: HUMANITY_V_GOVERNMENT_CASE_SLUG },
+    select: { id: true, deletedAt: true },
+  });
+  if (!courtCase || courtCase.deletedAt) return 0;
+  return prisma.courtCaseParty.count({
+    where: {
+      caseId: courtCase.id,
+      role: CourtCasePartyRole.NAMED_PLAINTIFF,
+      deletedAt: null,
+    },
+  });
+}
 
 export async function ensureHumanityVGovernmentPlaintiffParty(
   tx: HumanityVGovernmentCaseClient,

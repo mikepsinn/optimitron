@@ -2596,6 +2596,60 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("non-admin org-assigned tasks default to private and create successfully", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "created-task",
+          assigneeOrganizationId: "org-foundation-1",
+          assigneeOrganization: { name: "Test Foundation" },
+          isPublic: false,
+          contextJson: {
+            executor_type: "AI Agent",
+            value: 100,
+            p_success: 0.5,
+            cash_cost: 0,
+          },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 1,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Outreach to Test Foundation",
+          description:
+            "Wishonia-style outreach. Should not be visible on the public Earth feed.",
+          category: "OUTREACH",
+          acceptanceCriteria: ["The foundation receives the assignment email"],
+          impactStatement: "Agent-driven outreach should not auto-broadcast.",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+          assigneeOrganizationId: "org-foundation-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
+      expect(data).toMatchObject({
+        assigneeOrganizationId: "org-foundation-1",
+        isPublic: false,
+      });
+      expect(parseToolBody(result)).toMatchObject({
+        isPublic: false,
+        visibility: "PRIVATE",
+      });
+    });
+
     it("rejects explicit PUBLIC visibility for non-admin users", async () => {
       const client = await setup("user-1", [
         McpScope.TASKS_PERSONAL,

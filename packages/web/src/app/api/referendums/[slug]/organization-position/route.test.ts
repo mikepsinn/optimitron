@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   canManageOrganization: vi.fn(),
   createOrganizationWithOwner: vi.fn(),
   ensureOrganizationTreatyActivationTask: vi.fn(),
+  organizationFindFirst: vi.fn(),
   positionFindUnique: vi.fn(),
   positionUpsert: vi.fn(),
   referendumFindUnique: vi.fn(),
@@ -38,6 +39,9 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     referendum: {
       findUnique: mocks.referendumFindUnique,
+    },
+    organization: {
+      findFirst: mocks.organizationFindFirst,
     },
     organizationReferendumPosition: {
       findUnique: mocks.positionFindUnique,
@@ -76,6 +80,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.referendumFindUnique.mockResolvedValue(ACTIVE_REFERENDUM);
     mocks.canManageOrganization.mockResolvedValue(true);
+    mocks.organizationFindFirst.mockResolvedValue(null);
     mocks.createOrganizationWithOwner.mockResolvedValue({
       id: "org_new",
       name: "New Organization",

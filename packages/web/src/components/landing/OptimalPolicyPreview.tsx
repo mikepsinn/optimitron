@@ -61,7 +61,55 @@ export function OptimalPolicyPreview() {
           size="lg"
         />
 
-        <div className="overflow-x-auto border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="space-y-3 md:hidden">
+          {PREVIEW_POLICIES.map((p) => {
+            const grade = p.evidenceGrade as Grade;
+            const action = ACTION_LABEL[p.recommendationType] ?? {
+              icon: "📋",
+              label: p.recommendationType.toUpperCase(),
+            };
+
+            return (
+              <Link
+                key={p.name}
+                href={getPolicyPath(p.name)}
+                className="block border-4 border-primary bg-background p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-transform active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="min-w-0 flex-1 break-words text-base font-black leading-tight text-foreground">
+                    {p.name}
+                  </h3>
+                  <span className={`shrink-0 border-2 border-primary px-3 py-1 text-sm font-black ${GRADE_COLOR[grade] ?? GRADE_COLOR.D}`}>
+                    {grade}
+                  </span>
+                </div>
+
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <dt className="font-black uppercase text-muted-foreground">Health</dt>
+                    <dd className={`mt-1 font-black ${effectColor(p.healthEffect)}`}>
+                      {formatEffect(p.healthEffect, " yrs")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-black uppercase text-muted-foreground">Income</dt>
+                    <dd className={`mt-1 font-black ${effectColor(p.incomeEffect)}`}>
+                      {formatEffect(p.incomeEffect, " pp")}
+                    </dd>
+                  </div>
+                  <div className="col-span-2 border-t-2 border-primary pt-3">
+                    <dt className="font-black uppercase text-muted-foreground">Action</dt>
+                    <dd className="mt-1 break-words font-black">
+                      {action.icon} {action.label}
+                    </dd>
+                  </div>
+                </dl>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="hidden overflow-hidden border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:block">
           <table className="w-full">
             <thead>
               <tr className="border-b-4 border-primary bg-foreground text-background">

@@ -1,10 +1,14 @@
-import { Prisma } from "@optimitron/db";
+import {
+  Prisma,
+  TaskCommentKind,
+  TaskCommentSource,
+} from "@optimitron/db";
 import { describe, expect, it, vi } from "vitest";
 import { processInboundReply, stripQuotedReply } from "../inbound-reply";
 
 const notificationMocks = vi.hoisted(() => ({
-  sendTaskNotificationEmail: vi.fn().mockResolvedValue({
-    replyTo: "reply+task_1@reply.test",
+  notifyTaskCommentRecipients: vi.fn().mockResolvedValue({
+    commentId: "comment_1",
     status: "sent",
   }),
 }));
@@ -16,9 +20,12 @@ vi.mock("@/lib/email/task-notification", async () => {
   return {
     ...actual,
     getTaskUrl: (taskId: string) => `https://warondisease.org/tasks/${taskId}`,
-    sendTaskNotificationEmail: notificationMocks.sendTaskNotificationEmail,
   };
 });
+
+vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
+  notifyTaskCommentRecipients: notificationMocks.notifyTaskCommentRecipients,
+}));
 
 /**
  * Unit tests for the inbound-reply quote stripper. Pure function — covers
@@ -219,7 +226,7 @@ describe("processInboundReply", () => {
       communicationEndpoints: [],
     });
     db.user.findUnique.mockResolvedValue({ email: "creator@example.org" });
-    notificationMocks.sendTaskNotificationEmail.mockClear();
+    notificationMocks.notifyTaskCommentRecipients.mockClear();
 
     const result = await processInboundReply(
       inboundEvent({
@@ -240,10 +247,68 @@ describe("processInboundReply", () => {
         message: "Done.",
       }),
     });
-    expect(notificationMocks.sendTaskNotificationEmail).toHaveBeenCalledWith(
+    expect(notificationMocks.notifyTaskCommentRecipients).toHaveBeenCalledWith(
       expect.objectContaining({
-        recipientEmail: "creator@example.org",
+        authorUserId: "user_creator",
+        commentId: "comment_1",
+        message: "Done.",
         taskId: "task_1",
+      }),
+    );
+  });
+
+  it("credits the assignee organization when the contactEmail replies", async () => {
+    const db = makeInboundDb();
+    db.task.findUnique.mockResolvedValue({
+      id: "task_iam",
+      title: "Join the International Campaign to End War and Disease",
+      createdByUserId: "user_creator",
+      createdByUser: { id: "user_creator", email: "creator@example.org" },
+      assigneePerson: null,
+      assigneeOrganization: {
+        id: "org_iam",
+        contactEmail: "test@thinkbynumbers.org",
+      },
+      communicationEndpoints: [],
+    });
+    db.user.findUnique.mockResolvedValue({ email: "creator@example.org" });
+    notificationMocks.notifyTaskCommentRecipients.mockClear();
+
+    const result = await processInboundReply(
+      inboundEvent({
+        from: "Institute for Accelerated Medicine <test@thinkbynumbers.org>",
+        to: "reply+task_iam@reply.warondisease.org",
+        text: "We posted the survey link to our member newsletter.",
+        providerMessageId: "provider_msg_iam_reply",
+      }),
+      db as never,
+    );
+
+    expect(result).toMatchObject({
+      status: "created",
+      taskCommentId: "comment_1",
+      taskCommunicationId: "comm_1",
+    });
+    expect(db.taskComment.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        authorOrganizationId: "org_iam",
+        authorUserId: null,
+        authorPersonId: null,
+        kind: TaskCommentKind.INBOUND_MESSAGE,
+        source: TaskCommentSource.EMAIL_REPLY,
+        message: "We posted the survey link to our member newsletter.",
+        taskId: "task_iam",
+      }),
+    });
+    // Author org is filtered out of fan-out so it doesn't email itself back.
+    expect(notificationMocks.notifyTaskCommentRecipients).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authorOrganizationId: "org_iam",
+        authorUserId: null,
+        authorPersonId: null,
+        commentId: "comment_1",
+        message: "We posted the survey link to our member newsletter.",
+        taskId: "task_iam",
       }),
     );
   });

@@ -156,6 +156,9 @@ export const HUMANITY_MANAGEMENT = {
   callOneHumanTaskTitle: "Make one phone call. Outsource humanity management.",
 } as const;
 
+export const ORGANIZATION_ACTIVATION_TASK_TITLE =
+  "Share the Clinical Trial Abundance Survey with your members" as const;
+
 export const CTA = {
   playTheGame: "Play the Game",
   insertCoin: "Insert Coin",

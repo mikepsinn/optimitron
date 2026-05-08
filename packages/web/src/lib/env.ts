@@ -42,6 +42,7 @@ const serverSchema = z.object({
 
   // ── Email ─────────────────────────────────────────────────────────
   EMAIL_FROM: z.string().optional(),
+  EMAIL_MONITOR_BCC: optionalNonEmptyString,
   RESEND_API_KEY: z.string().optional(),
   RESEND_MOCK_SEND: z.enum(["1"]).optional(),
   /// Signing secret for the Resend webhook. Configured in Resend dashboard

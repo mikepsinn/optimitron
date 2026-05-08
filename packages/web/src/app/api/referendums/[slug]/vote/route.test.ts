@@ -3,7 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   activityCreate: vi.fn(),
   checkBadgesAfterWish: vi.fn(),
+  ensureHumanityVGovernmentPlaintiffParty: vi.fn(),
+  ensureSubjectForPerson: vi.fn(),
   organizationFindUnique: vi.fn(),
+  personFindUnique: vi.fn(),
+  prismaTransaction: vi.fn(),
   requireAuth: vi.fn(),
   findUnique: vi.fn(),
   grantWishes: vi.fn(),
@@ -23,11 +27,22 @@ vi.mock("@/lib/auth-utils", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    $transaction: mocks.prismaTransaction,
     activity: { create: mocks.activityCreate },
     organization: { findUnique: mocks.organizationFindUnique },
+    person: { findUnique: mocks.personFindUnique },
     referendum: { findUnique: mocks.findUnique },
     referendumVote: { upsert: mocks.upsert },
   },
+}));
+
+vi.mock("@/lib/subject.server", () => ({
+  ensureSubjectForPerson: mocks.ensureSubjectForPerson,
+}));
+
+vi.mock("@/lib/humanity-v-government-case.server", () => ({
+  ensureHumanityVGovernmentPlaintiffParty:
+    mocks.ensureHumanityVGovernmentPlaintiffParty,
 }));
 
 vi.mock("@/lib/referral.server", () => ({
@@ -99,7 +114,21 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.syncReferralVoteTokenMintForVote.mockResolvedValue(null);
     mocks.resolveInvitationReferrer.mockResolvedValue(null);
     mocks.convertReferralInvitationForVote.mockResolvedValue(null);
-    mocks.ensurePersonForUser.mockResolvedValue({ id: "person_1" });
+    mocks.ensurePersonForUser.mockResolvedValue({
+      id: "person_1",
+      displayName: "Mike",
+    });
+    mocks.personFindUnique.mockResolvedValue({
+      displayName: "Mike",
+      isPublic: true,
+    });
+    mocks.prismaTransaction.mockImplementation(
+      async (cb: (tx: unknown) => Promise<unknown>) => cb({}),
+    );
+    mocks.ensureSubjectForPerson.mockResolvedValue({ id: "subject_1" });
+    mocks.ensureHumanityVGovernmentPlaintiffParty.mockResolvedValue({
+      id: "party_1",
+    });
     mocks.ensureUserTreatyTask.mockResolvedValue({
       created: false,
       taskId: "task_root",
@@ -257,6 +286,36 @@ describe("POST /api/referendums/[slug]/vote", () => {
       personId: "person_1",
       userId: "user_1",
     });
+    // Plaintiff registration on Humanity v. Government fires for treaty YES.
+    expect(mocks.ensureHumanityVGovernmentPlaintiffParty).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        createdByUserId: "user_1",
+        displayName: "Mike",
+        subjectId: "subject_1",
+      }),
+    );
+  });
+
+  it("does not register a plaintiff on a NO treaty vote", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(TREATY_REFERENDUM);
+    const vote = {
+      id: "vote_no",
+      answer: "NO",
+      userId: "user_1",
+      referendumId: "ref_1",
+    };
+    mocks.upsert.mockResolvedValue(vote);
+
+    await POST(
+      makeRequest("one-percent-treaty", { answer: "no" }),
+      makeParams("one-percent-treaty"),
+    );
+
+    expect(
+      mocks.ensureHumanityVGovernmentPlaintiffParty,
+    ).not.toHaveBeenCalled();
   });
 
   it("casts a NO vote successfully", async () => {

@@ -2,12 +2,14 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { OrganizationProfileEditor } from "@/components/organizations/OrganizationProfileEditor";
 import { getCurrentUser } from "@/lib/auth-utils";
-import {
-  canManageOrganization,
-  NONPROFIT_COALITION_STRATEGY_URL,
-} from "@/lib/organization.server";
+import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
-import { getOrganizationPath, getSignInPath, ROUTES } from "@/lib/routes";
+import {
+  getOrganizationPath,
+  getSignInPath,
+  NONPROFIT_COALITION_STRATEGY_URL,
+  ROUTES,
+} from "@/lib/routes";
 import { buildOrganizationSurveyUrl } from "@/lib/site";
 import {
   getUserDisplayHandle,

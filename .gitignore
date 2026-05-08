@@ -57,6 +57,12 @@ packages/db/src/generated/
 *.timestamp-*
 .cache
 .cache/
+
+# Migration / backfill JSON dumps (e.g. dih-neobrutalist user export
+# consumed by packages/web/scripts/import-dih-users-votes.ts). Never
+# commit — contains user PII (emails, phone numbers, IPs).
+backups/
+**/users-votes-export-*.json
 **/.cache/
 
 # Local scratch files

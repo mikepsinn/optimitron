@@ -195,16 +195,15 @@ export function OrganizationImpactCalculator() {
   ]);
 
   return (
-    <section className="mt-6 border-2 border-foreground bg-background p-4">
+    <section className="border-2 border-foreground bg-background p-5">
       <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-        Estimate your reach
+        Step 1
       </p>
-      <h3 className="mt-2 text-xl font-black uppercase leading-tight text-foreground">
-        What could one hour do?
-      </h3>
-      <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-        Enter your audience size. The calculator estimates what one setup hour
-        could do if you embed the survey, send one member email, and post once.
+      <h2 className="mt-2 text-2xl font-black uppercase leading-tight text-foreground sm:text-3xl">
+        Size of organization and membership.
+      </h2>
+      <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
+        Same numbers, two columns. Prevented if you act. Allowed if you do not.
       </p>
 
       <div className="mt-4 space-y-5">
@@ -277,54 +276,54 @@ export function OrganizationImpactCalculator() {
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 border-t border-foreground pt-4 sm:grid-cols-2">
-        <div>
+      <div className="mt-5 grid gap-4 border-t border-foreground pt-5 sm:grid-cols-2">
+        <div className="border-2 border-foreground bg-background p-4">
           <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-            Estimated humans reached
+            If you act
           </p>
-          <p className="mt-1 text-2xl font-black tabular-nums">
-            {formatNumber(estimate.humansReached)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-            Verified treaty votes
-          </p>
-          <p className="mt-1 text-2xl font-black tabular-nums">
-            {formatNumber(estimate.verifiedVotes)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-            Estimated total lives saved
-          </p>
-          <p className="mt-1 text-2xl font-black tabular-nums">
+          <p className="mt-2 text-3xl font-black tabular-nums leading-none">
             {formatNumber(estimate.livesSaved)}
           </p>
-        </div>
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-            Estimated total years of suffering prevented
+          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+            lives saved
           </p>
-          <p className="mt-1 text-2xl font-black tabular-nums">
+          <p className="mt-3 text-3xl font-black tabular-nums leading-none">
             {formatNumber(estimate.sufferingYears)}
+          </p>
+          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+            years of suffering prevented
+          </p>
+        </div>
+        <div className="border-2 border-foreground bg-foreground p-4 text-background">
+          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
+            If you do not
+          </p>
+          <p className="mt-2 text-3xl font-black tabular-nums leading-none">
+            {formatNumber(estimate.livesSaved)}
+          </p>
+          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-background">
+            preventable deaths allowed
+          </p>
+          <p className="mt-3 text-3xl font-black tabular-nums leading-none">
+            {formatNumber(estimate.sufferingYears)}
+          </p>
+          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-background">
+            years of suffering allowed
           </p>
         </div>
       </div>
 
-      <p className="mt-4 border-t border-foreground pt-4 text-sm font-bold leading-6 text-muted-foreground">
-        At {formatCurrency(parsePositiveNumber(grantCostPerVote, 2))} per
-        verified vote, this supports a {formatCurrency(estimate.grantAsk)}{" "}
-        outreach-grant ask. Foundations can compare the modeled
-        cost-effectiveness to bed nets. These totals are the estimated verified
-        votes multiplied by{" "}
+      <p className="mt-5 border-t border-foreground pt-4 text-sm font-bold leading-6 text-muted-foreground">
+        {formatNumber(estimate.verifiedVotes)} verified votes ×{" "}
         <ParameterValue figures={2} param={FLOW_VOTER_LIVES_SAVED_ROUNDED} />{" "}
         lives and{" "}
         <ParameterValue
           figures={2}
           param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED}
         />{" "}
-        years of suffering prevented per vote.
+        years prevented per vote. At{" "}
+        {formatCurrency(parsePositiveNumber(grantCostPerVote, 2))} per vote,
+        funders fund {formatCurrency(estimate.grantAsk)} of outreach.
       </p>
     </section>
   );

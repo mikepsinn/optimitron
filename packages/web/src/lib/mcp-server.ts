@@ -209,14 +209,16 @@ function hasAdminTaskWriteAccess(
 // ---------------------------------------------------------------------------
 
 async function getTaskFunctions() {
-  const [tasks, ranking, impact, endpoints, lease] = await Promise.all([
-    import("./tasks.server"),
-    import("./tasks/rank-tasks"),
-    import("./tasks/impact"),
-    import("./tasks/task-communication-endpoints.server"),
-    import("./tasks/agent-lease.server"),
-  ]);
-  return { tasks, ranking, impact, endpoints, lease };
+  const [tasks, ranking, impact, endpoints, lease, assignmentNotifications] =
+    await Promise.all([
+      import("./tasks.server"),
+      import("./tasks/rank-tasks"),
+      import("./tasks/impact"),
+      import("./tasks/task-communication-endpoints.server"),
+      import("./tasks/agent-lease.server"),
+      import("./tasks/task-assignment-notifications.server"),
+    ]);
+  return { tasks, ranking, impact, endpoints, lease, assignmentNotifications };
 }
 
 async function getPrisma() {
@@ -1104,12 +1106,18 @@ function parseTaskVisibility(value: unknown) {
 
 function resolveCreateTaskIsPublic(
   input: Record<string, unknown>,
-  assigneeOrganizationId?: string,
+  assigneeOrganizationId: string | undefined,
+  hasAdminAccess: boolean,
 ) {
   const visibilityOverride = parseTaskVisibility(input.visibility);
   if (visibilityOverride !== undefined) return visibilityOverride;
   if (typeof input.isPublic === "boolean") return input.isPublic;
-  return Boolean(assigneeOrganizationId);
+  // Org-assigned tasks default public for admin scope (intentional for
+  // public-facing campaigns: leader/president/treaty-activation tasks).
+  // Non-admin scope defaults private — Wishonia and other agents creating
+  // outreach to organizations should not silently expose those tasks to
+  // the public feed; the recipient still gets the email and can act on it.
+  return hasAdminAccess && Boolean(assigneeOrganizationId);
 }
 
 function firstFiniteNumber(values: unknown[], fallback?: number) {
@@ -3757,7 +3765,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a task. Visibility defaults to PUBLIC when assigneeOrganizationId is set and PRIVATE otherwise; pass visibility='PRIVATE' or 'PUBLIC' to override. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
+      "Create a task. Visibility defaults to PRIVATE; admin-scope callers (tasks:admin) get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. Pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
       "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
@@ -6603,7 +6611,8 @@ export function createMcpServer(
                 "This tool needs an identified user to attribute writes or fetch personal data.",
               );
 
-            const { endpoints, ranking, tasks } = await getTaskFunctions();
+            const { endpoints, ranking, tasks, assignmentNotifications } =
+              await getTaskFunctions();
             const prisma = await getPrisma();
 
             const economics = resolveTaskEconomics(a);
@@ -6775,7 +6784,11 @@ export function createMcpServer(
               (a.assigneeOrganizationId as string | undefined) || undefined;
             let isPublic: boolean;
             try {
-              isPublic = resolveCreateTaskIsPublic(a, assigneeOrganizationId);
+              isPublic = resolveCreateTaskIsPublic(
+                a,
+                assigneeOrganizationId,
+                hasAdminTaskWriteAccess(scopes, isAdmin),
+              );
             } catch (error) {
               return err(
                 error instanceof Error
@@ -6886,6 +6899,25 @@ export function createMcpServer(
               });
               return created;
             });
+
+            // Mirror the web-side createTask call site so MCP-driven task
+            // creation also fires the assignment email. Best-effort — never
+            // fail the tool because the email layer flinched.
+            if (assigneePersonId || assigneeOrganizationId) {
+              try {
+                await assignmentNotifications.notifyTaskAssigneeOfAssignment({
+                  senderUserId: userId,
+                  taskId: task.id,
+                });
+              } catch (error) {
+                console.error(
+                  "[mcp] notifyTaskAssigneeOfAssignment failed",
+                  task.id,
+                  error,
+                );
+              }
+            }
+
             const fresh = await tasks.getTaskDetailData(task.id, userId);
             const scored = fresh
               ? buildPersonalQueueRows(

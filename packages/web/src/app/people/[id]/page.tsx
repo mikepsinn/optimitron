@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { PersonLifeStatus } from "@optimitron/db/enums";
+import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
@@ -29,6 +30,20 @@ import {
   type RepresentedPersonProfileData,
 } from "@/lib/represented-people.server";
 import { getSiteFromHeaders } from "@/lib/site";
+
+const PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS = 300;
+
+const getCachedRepresentedPersonProfileData = unstable_cache(
+  async (id: string) => getRepresentedPersonProfileData(id),
+  ["public-represented-person-profile"],
+  { revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS },
+);
+
+const getCachedPersonTaskProfileData = unstable_cache(
+  async (id: string) => getPersonTaskProfileData(id, null),
+  ["public-person-task-profile"],
+  { revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS },
+);
 
 export async function generateMetadata({
   params,
@@ -59,6 +74,7 @@ export async function generateMetadata({
         absolute: `${representedData.person.displayName} | ${site.name}`,
       },
       description,
+      robots: { index: true, follow: true },
       metadataBase: new URL(site.canonicalOrigin),
       openGraph: {
         title: representedData.person.displayName,
@@ -90,6 +106,7 @@ export async function generateMetadata({
     description: isOfficial
       ? `${data.person.displayName}'s employee performance review.`
       : `${data.person.displayName}'s public task profile.`,
+    robots: { index: true, follow: true },
     metadataBase: new URL(site.canonicalOrigin),
     openGraph: {
       siteName: site.name,
@@ -339,13 +356,17 @@ export default async function PersonDetailPage({
   const { id } = await params;
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
-  const representedData = await getRepresentedPersonProfileData(id);
+  const representedData = userId
+    ? await getRepresentedPersonProfileData(id)
+    : await getCachedRepresentedPersonProfileData(id);
 
   if (representedData) {
     return <RepresentedPersonProfile data={representedData} />;
   }
 
-  const data = await getPersonTaskProfileData(id, userId);
+  const data = userId
+    ? await getPersonTaskProfileData(id, userId)
+    : await getCachedPersonTaskProfileData(id);
 
   if (!data) {
     notFound();

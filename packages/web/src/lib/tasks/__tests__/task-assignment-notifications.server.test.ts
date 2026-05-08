@@ -4,12 +4,16 @@ const mocks = vi.hoisted(() => ({
   draftTaskNotification: vi.fn(),
   sendDraftTaskNotification: vi.fn(),
   taskFindUnique: vi.fn(),
+  userFindUnique: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     task: {
       findUnique: mocks.taskFindUnique,
+    },
+    user: {
+      findUnique: mocks.userFindUnique,
     },
   },
 }));
@@ -61,6 +65,16 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     vi.resetAllMocks();
     mocks.draftTaskNotification.mockResolvedValue({ id: "comm_1" });
     mocks.sendDraftTaskNotification.mockResolvedValue({ status: "sent" });
+    mocks.userFindUnique.mockResolvedValue({
+      id: "demo-user-id",
+      email: "demo@warondisease.org",
+      person: {
+        id: "person_demo",
+        handle: "mike",
+        displayName: "Mike",
+        image: null,
+      },
+    });
   });
 
   it("sends organization-assigned tasks to the organization contact email", async () => {
@@ -89,8 +103,14 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     expect(mocks.draftTaskNotification.mock.calls[0]?.[0].text).toContain(
       "Put the survey link on your site",
     );
+    expect(mocks.draftTaskNotification.mock.calls[0]?.[0].senderName).toBe(
+      "Mike",
+    );
     expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith({
       communicationId: "comm_1",
+      from: expect.stringMatching(
+        /^Mike via International Campaign to End War and Disease </,
+      ),
       senderUserId: "demo-user-id",
     });
   });
