@@ -681,6 +681,50 @@ smoke test just validated the mechanical email loop works; the next
 step is sending more outreach with copy variations to learn what
 converts. THEN centralize what survives.
 
+### P1 — Subtask creation by any user (decentralized to-do tree)
+
+The `POST /api/tasks` REST endpoint's `CreateTaskBodySchema` does NOT
+include `parentTaskId` — so any logged-in user can create top-level
+tasks but cannot attach them to existing parents through the public
+API. The underlying `createTask` server function + the MCP `createTask`
+tool both support `parentTaskId`; only the REST schema strips it.
+There's also no "Add subtask" UI on `/tasks/[id]`.
+
+For the "decentralized to-do list for humanity" framing, this is the
+gap. Fix:
+
+1. Add `parentTaskId: z.string().nullish()` to `CreateTaskBodySchema`
+   in `app/api/tasks/route.ts` (1 line).
+2. Add a small "Add subtask" form to `/tasks/[id]/page.tsx` —
+   gated to `task.isPublic: true` parents so private outreach tasks
+   aren't subtask-spammed.
+3. Default new subtasks to `isPublic: false`. The parent-task creator
+   sees them on their /dashboard and chooses what to publicize. This
+   is the spam-protection lever — any user can suggest, parent-task
+   creator decides what gets surfaced.
+
+Schema-zero. ~40 lines of code total. Strong leverage for the
+"Wikipedia-meets-todo-list for the campaign" thesis.
+
+### P1 — Tasks-page / dashboard / presidents restructure
+
+Currently `PresidentManagementSystemSection` renders in two places:
+inside `/dashboard` (TreatyTaskDashboardClient) AND on `/employees`
+(its dedicated route). Confusing mental model.
+
+Cleaner separation:
+
+- **`/dashboard`** = personal: your handle, share link, your assigned
+  tasks, your verdict + plaintiff status. No full PMS section.
+- **`/tasks`** = the full task tree browser (top-level programs +
+  child branches + leaf queue, filterable).
+- **`/employees`** (consider renaming to `/presidents` for clarity) =
+  president-accountability surface. Only thing on this page.
+
+Change: remove `<PresidentManagementSystemSection>` from
+`TreatyTaskDashboardClient.tsx` and add a "Pressure overdue presidents"
+button linking to `/employees`. ~20 lines.
+
 ### P1 — Grant-application infrastructure (Task-attached, schema-light)
 
 **Premise:** nonprofits engage more when they see a visible pathway to
@@ -689,6 +733,14 @@ propose work and be funded for it through this platform; the 5
 "Fund the Campaign" tasks I just deleted were the wrong direction
 (us asking foundations for money instead of foundations browsing
 fundable work).
+
+**AMF status (corrected 2026-05-08):** Accelerated Medicine Foundation
+is already a registered US 501(c)(3) and the existing /donate page
+accepts donations via Stripe. Disbursement infrastructure (W-9 +
+1099-MISC + grant agreement template + outbound payment via Stripe
+Connect or wire) is the remaining workstream — much smaller scope
+than originally assumed, and unblocks money flow today rather than
+waiting for legal-entity setup.
 
 **Reuse Task. Don't introduce a Campaign model.** `TaskImpactFrame`
 (schema lines 5905-5979) already has every grant economic field —
@@ -756,24 +808,21 @@ unrestricted individual giving to the campaign. Grants are
 designated giving to a specific task with verified outcome. Two
 different concepts; two different surfaces. /donate stays as-is.
 
-**Build before money flows.** Actual disbursement requires AMF
-501(c)(3) + EOS LLC (already queued under P2 prize block). But the
-application + ranking + visible-pathway benefits land BEFORE money
-does. Pre-curated queue of fundable work converts into real funding
-the moment AMF opens. Foundations browsing "$X cost / Y DALYs
-averted" rankings is itself the recruitment story.
-
-**Build order:**
+**Build order (updated after AMF correction):**
 
 1. Schema (TaskFundingStatus enum + TaskFundingPledge model + nullable
    Task.fundingStatus column). Schema PR.
 2. /grants public gallery + /grants/apply form. Schema-zero after #1.
 3. Admin review flow on existing /tasks/[id]/page.tsx (collapsed
    `<details>` like the curator-verification block already shipped).
-4. (BLOCKED on AMF) Pledge → escrow → disbursement automation.
+4. AMF disbursement workflow: W-9 + grant agreement + Stripe Connect
+   (or wire) outbound payment + 1099-MISC reporting at year end.
+   This is real work but the legal entity exists, so it's a normal
+   nonprofit-ops build, not a blocked-on-legal item.
 
-Items 1-3 unblock the org-engagement story; #4 follows once legal
-lands.
+All four can ship in sequence without legal-entity blockers. The
+foundation-browsing recruitment story benefits land after #2 even
+before #4 is wired.
 
 ### P1 — Sitemap completeness (orgs, /humanity-v-government, /court)
 
