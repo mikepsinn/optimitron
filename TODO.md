@@ -593,6 +593,57 @@ mechanical email loop; the directory move locks in a place for the
 next 3–5 templates without over-designing for variants we haven't
 written yet.
 
+### P1 — Slim "Your Tasks" card render (hide redundant assignee + noise)
+
+The `/tasks` "Your Tasks" section reuses the full `TaskCard` from
+`components/tasks/task-card.tsx`. Every card duplicates assignee
+information (avatar header AND "Assigned to [name]" inline text)
+because every task in that section is assigned to the viewer. Other
+fields are noise on this surface: the top arcade-tag row showing
+`taskKey ?? id` reads `program:one-percent-treaty:user:xyz...:reminder`
+for trigger-spawned tasks; `TaskCommunicationActions` (outbound-comm
+tooling) is meaningless on a list of tasks assigned *to* you.
+
+Fix: add a `compact` / `hideAssignee` prop on `SortableTaskList →
+TaskCard`. In compact mode:
+
+- Drop the avatar header block (lines 244-274 of task-card.tsx).
+- Drop the "Assigned to X" inline text (lines 293-318).
+- Drop the arcade-tag row (lines 219-242).
+- Drop `TaskCommunicationActions` (the bottom block).
+- Keep: title, description summary, claim button, share buttons,
+  delay/harm sections.
+
+`/tasks/page.tsx` passes `compact={true}` only on the "Your Tasks"
+SortableTaskList. ~30-40 lines. Schema-zero.
+
+### P1 — E2E regression test: signed-in user can open their own task
+
+Pair to the visibility-helper unit test shipped 2026-05-08 (commit
+`35aaa9b3`). Different bug class than the unit test catches: a future
+regression in `unstable_cache` keying, `notFound()` invocation, route
+config, or middleware could 404 a task that the visibility helper
+correctly matches. Playwright covers that.
+
+Test shape:
+
+```ts
+test("signed-in user opens their own assigned task without 404", async ({ page }) => {
+  await signIn(page, "demo@optimitron.com");
+  await page.goto("/tasks");
+  const firstTaskRow = page.locator("[data-testid='your-tasks-row']").first();
+  const href = await firstTaskRow.getAttribute("href");
+  await firstTaskRow.click();
+  await expect(page).toHaveURL(href);
+  await expect(page.locator("h1")).toBeVisible(); // not the 404 page
+});
+```
+
+Land this AFTER ChatGPT's playwright + visual-regression infrastructure
+commits — adding now would conflict with their `playwright.config.ts`
+and `e2e/` setup work. Schema-zero. ~30 lines once the e2e harness
+exists.
+
 ### P1 — Per-task subtask-creation permission (`allowsUserSubtasks`)
 
 The `parentTaskId` plumbing shipped this session lets any authenticated
