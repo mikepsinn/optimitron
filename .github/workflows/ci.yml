@@ -163,6 +163,25 @@ jobs:
       - name: Run Playwright smoke validation
         run: pnpm --filter @optimitron/web run e2e -- smoke
 
+      - name: Seed visual review data
+        run: pnpm --filter @optimitron/db run seed:bootstrap
+
+      - name: Run Playwright visual review
+        env:
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+          ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
+        run: pnpm --filter @optimitron/web run e2e -- visual
+
+      - name: Upload Playwright visual review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: web-visual-review
+          path: |
+            packages/web/playwright-report
+            packages/web/test-results
+          if-no-files-found: ignore
+
       - name: Upload Playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v6

@@ -42,6 +42,7 @@ export function MoneyCounter({
   return (
     <span
       className={className}
+      data-visual-mask="dynamic"
       title="Taxpayer money burned during this delay"
       suppressHydrationWarning
     >

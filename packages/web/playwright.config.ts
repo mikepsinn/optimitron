@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices, type ReporterDescription } from "@playwright/test";
 import path from "path";
 
 const screenshotDir = path.resolve(__dirname, "public/img/screenshots");
@@ -6,13 +6,30 @@ const outputDir = process.env.PLAYWRIGHT_OUTPUT_DIR
   ? path.resolve(process.env.PLAYWRIGHT_OUTPUT_DIR)
   : screenshotDir;
 const isCI = Boolean(process.env.CI);
+const enableArgosReporter = process.env.ARGOS_VISUAL === "1";
+const reporter: "html" | ReporterDescription[] = enableArgosReporter
+  ? [
+      ["line"],
+      ["html", { open: "never" }],
+      [
+        "@argos-ci/playwright/reporter",
+        {
+          buildName: "route-visuals",
+          uploadToArgos: isCI,
+          ignoreUploadFailures: process.env.ARGOS_IGNORE_UPLOAD_FAILURES === "1",
+        },
+      ],
+    ]
+  : isCI
+    ? [["line"], ["html", { open: "never" }]]
+    : "html";
 
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   retries: 0,
   workers: isCI ? 4 : 4,
-  reporter: isCI ? [["line"], ["html", { open: "never" }]] : "html",
+  reporter,
   timeout: 120_000,
   snapshotPathTemplate: `${screenshotDir}/{testName}/{arg}{ext}`,
   outputDir,
@@ -56,6 +73,16 @@ export default defineConfig({
       name: "mobile",
       use: {
         ...devices["iPhone 14"],
+      },
+    },
+    {
+      name: "visual-mobile",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        isMobile: true,
+        hasTouch: true,
       },
     },
   ],
