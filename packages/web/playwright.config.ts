@@ -75,16 +75,20 @@ export default defineConfig({
         ...devices["iPhone 14"],
       },
     },
-    {
-      name: "visual-mobile",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 390, height: 844 },
-        deviceScaleFactor: 1,
-        isMobile: true,
-        hasTouch: true,
-      },
-    },
+    ...(enableArgosReporter
+      ? [
+          {
+            name: "visual-mobile",
+            use: {
+              ...devices["Desktop Chrome"],
+              viewport: { width: 390, height: 844 },
+              deviceScaleFactor: 1,
+              isMobile: true,
+              hasTouch: true,
+            },
+          },
+        ]
+      : []),
   ],
   webServer: process.env.SKIP_SERVER
     ? undefined

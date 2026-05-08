@@ -43,29 +43,30 @@ async function main() {
   // Cancel DRAFT TaskCommunications so the email pipeline doesn't send
   // queued messages after the task is gone. Already-SENT communications
   // are left alone — the email already went out, no recall.
-  const cancelledComms = await prisma.taskCommunication.updateMany({
-    where: {
-      taskId: { in: taskIds },
-      status: TaskCommunicationStatus.DRAFT,
-      deletedAt: null,
-    },
-    data: {
-      cancelledAt: now,
-      errorMessage: "Task soft-deleted before send.",
-      status: TaskCommunicationStatus.CANCELLED,
-    },
-  });
+  const [cancelledComms, result] = await prisma.$transaction([
+    prisma.taskCommunication.updateMany({
+      where: {
+        taskId: { in: taskIds },
+        status: TaskCommunicationStatus.DRAFT,
+        deletedAt: null,
+      },
+      data: {
+        cancelledAt: now,
+        errorMessage: "Task soft-deleted before send.",
+        status: TaskCommunicationStatus.CANCELLED,
+      },
+    }),
+    prisma.task.updateMany({
+      where: { id: { in: taskIds }, deletedAt: null },
+      data: {
+        deletedAt: now,
+        status: TaskStatus.CANCELLED,
+      },
+    }),
+  ]);
   console.log(
     `\nCancelled ${cancelledComms.count} DRAFT task communications.`,
   );
-
-  const result = await prisma.task.updateMany({
-    where: { id: { in: taskIds }, deletedAt: null },
-    data: {
-      deletedAt: now,
-      status: TaskStatus.CANCELLED,
-    },
-  });
   console.log(`\nSoft-deleted ${result.count} tasks.`);
 
   await prisma.$disconnect();

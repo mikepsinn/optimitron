@@ -102,6 +102,8 @@ async function main() {
 
   if (mode === "visual") {
     env.ARGOS_VISUAL = "1";
+  } else {
+    delete env.ARGOS_VISUAL;
   }
 
   const playwrightArgs = ["test", ...MODE_SPECS[mode], ...appendDefaultProjectArg(passthroughArgs, mode)];

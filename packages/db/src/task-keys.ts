@@ -65,6 +65,9 @@ export function getUserTreatyTaskKey(userId: string) {
 }
 
 export function getUserTreatySubtaskKey(userId: string, kind: string) {
+  if (!/^[a-zA-Z0-9_-]+$/.test(kind)) {
+    throw new Error(`Invalid user treaty subtask kind: ${kind}`);
+  }
   return `${getUserTreatyTaskKey(userId)}:${kind}`;
 }
 

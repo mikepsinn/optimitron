@@ -36,7 +36,7 @@ const CreateTaskBodySchema = z.object({
   interestTags: z.array(z.string()).nullish(),
   isPublic: z.boolean().nullish(),
   maxClaims: z.number().int().positive().nullish(),
-  parentTaskId: z.string().nullish(),
+  parentTaskId: z.string().trim().min(1).nullish(),
   roleTitle: z.string().nullish(),
   skillTags: z.array(z.string()).nullish(),
   status: z.nativeEnum(TaskStatus).nullish(),
@@ -119,6 +119,9 @@ export async function POST(request: Request) {
     const task = await createTask(userId, {
       ...rest,
       dueAt: dueAt == null ? null : new Date(dueAt),
+      claimPolicy: parentTaskId
+        ? TaskClaimPolicy.ASSIGNED_ONLY
+        : rest.claimPolicy,
       isPublic: parentTaskId ? false : rest.isPublic,
       parentTaskId: parentTaskId ?? null,
     });

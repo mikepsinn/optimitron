@@ -79,7 +79,9 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
+      id-token: write
       issues: write
+      pages: write
       pull-requests: write
     env:
       CI: true
@@ -205,6 +207,61 @@ jobs:
             packages/web/test-results
           if-no-files-found: ignore
 
+      - name: Prepare visual review Pages site
+        if: always() && github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          pages_root="packages/web/output/playwright/pages"
+          pr_dir="$pages_root/pr-${{ github.event.pull_request.number }}"
+          rm -rf "$pages_root"
+          mkdir -p "$pr_dir/screenshots"
+
+          cp -R packages/web/output/playwright/review/. "$pr_dir/"
+          if [ -d packages/web/screenshots ]; then
+            cp -R packages/web/screenshots/. "$pr_dir/screenshots/"
+          fi
+
+          node - "$pr_dir/latest.html" <<'NODE'
+          const { readFileSync, writeFileSync } = require("node:fs");
+          const htmlPath = process.argv[2];
+          const html = readFileSync(htmlPath, "utf8").replaceAll(
+            "../../../screenshots/",
+            "screenshots/",
+          );
+          writeFileSync(htmlPath, html);
+          NODE
+
+          cat > "$pages_root/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>Optimitron Visual Reviews</title>
+            </head>
+            <body>
+              <h1>Optimitron Visual Reviews</h1>
+              <p>Open the pull request comment for the latest visual review link.</p>
+            </body>
+          </html>
+          HTML
+          touch "$pages_root/.nojekyll"
+
+      - name: Configure GitHub Pages
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/web/output/playwright/pages
+
+      - name: Deploy visual review to GitHub Pages
+        if: always() && github.event_name == 'pull_request'
+        id: visual_review_pages
+        uses: actions/deploy-pages@v4
+
       - name: Comment visual review instructions
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v8
@@ -226,6 +283,7 @@ jobs:
             const artifactUrl = visualArtifact
               ? `${runUrl}/artifacts/${visualArtifact.id}`
               : `${runUrl}#artifacts`;
+            const reviewPageUrl = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/latest.html`;
             const headSha = context.payload.pull_request.head.sha;
             const checkRunsResponse = await github.rest.checks.listForRef({
               owner,
@@ -246,13 +304,12 @@ jobs:
             const body = `${marker}
             ## Visual review
 
+            - [Open screenshot gallery in the browser](${reviewPageUrl})
             - [${visualDiffLabel}](${visualDiffUrl})
             - [Download the compact screenshot gallery artifact](${artifactUrl})
             - [Open this workflow run](${runUrl})
 
-            The gallery artifact contains \`packages/web/output/playwright/review/latest.html\`.
-
-            Start with the visual diff link for changed-only before/after review. Use the downloadable artifact when Argos is unavailable or when you want to inspect every captured route.`;
+            Start with the browser gallery for a quick pass over every captured route. Use the visual diff link for changed-only before/after review when Argos is available. The downloadable artifact is the fallback copy of \`packages/web/output/playwright/review/latest.html\`.`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,

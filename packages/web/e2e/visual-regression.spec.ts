@@ -44,6 +44,7 @@ const ARGOS_CSS = `
     display: none !important;
   }
 `;
+const OPTIONAL_ROUTE_SKIP_STATUSES = new Set([401, 403, 404]);
 
 test.describe("route visual regression", () => {
   for (const route of VISUAL_ROUTES) {
@@ -51,7 +52,7 @@ test.describe("route visual regression", () => {
       const response = await openVisualRoute(page, route.path);
       const status = response?.status() ?? 0;
 
-      if (!route.required && status >= 400) {
+      if (!route.required && OPTIONAL_ROUTE_SKIP_STATUSES.has(status)) {
         test.skip(true, `${route.path} returned ${status}; seed data not available`);
         return;
       }

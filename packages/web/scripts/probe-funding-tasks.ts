@@ -13,8 +13,12 @@ async function main() {
         { title: { contains: "fund", mode: "insensitive" } },
         { title: { contains: "donat", mode: "insensitive" } },
         { title: { contains: "campaign", mode: "insensitive" } },
+        { description: { contains: "fund", mode: "insensitive" } },
+        { description: { contains: "donat", mode: "insensitive" } },
+        { description: { contains: "campaign", mode: "insensitive" } },
         { taskKey: { contains: "fund", mode: "insensitive" } },
         { taskKey: { contains: "donat", mode: "insensitive" } },
+        { taskKey: { contains: "campaign", mode: "insensitive" } },
       ],
     },
     select: {
