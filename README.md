@@ -206,7 +206,7 @@ Right now. With this code. Not in some theoretical future where humans have lear
 
 | What | How | Where |
 |------|-----|-------|
-| Vote for the 1% Treaty | Cast a World ID vote and get a referral link | [`warondisease.org`](https://warondisease.org) / [`/vote`](packages/web/) |
+| Vote for the 1% Treaty | Cast a treaty vote and get a referral link | [`warondisease.org`](https://warondisease.org) / [`/vote`](packages/web/) |
 | Recruit two humans | Share tracked invites and watch conversions | [`/dashboard`](packages/web/) |
 | Endorse as an organization | Join, embed, and recruit your community | [`/endorse`](packages/web/) |
 | Register a plaintiff | Join the Court of Humanity case framing | [`/plaintiffs`](packages/web/) |
