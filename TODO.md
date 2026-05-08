@@ -387,6 +387,114 @@ routing other humans toward verdict-rendering work.
   (reusing the dedup pre-search helper from the plaintiff-dedup work) +
   "or add a new person" input with name + email.
 
+### P1 — Action-oriented menu labels + plaintiff damages surface
+
+Two related copy / placement tweaks discovered during the foundation-outreach
+smoke test, both schema-zero:
+
+**Menu labels (warondisease.org top nav).** Current labels are passive
+(*Vote, Plaintiffs, Read the Treaty, The Case*). Action-oriented variants
+match the Court frame already canonical elsewhere: *Render the Verdict*
+(→ `/vote` or `/humanity-v-government`), *Become a Juror* (→ `/court`),
+*Register a Plaintiff* (→ `/plaintiffs`). The verdict-render + juror
+phrasing only currently appears on `/humanity-v-government/page.tsx`
+(the case page I built this session); the nav is plain. One-line label
+edits in `routes.ts` (`whyLink`, `plaintiffsLink`, `treatyVoteLink`) plus
+the `warOnDiseaseShareLink` and `warOnDiseaseFundLink` aliases in
+`site.ts`. Hold pending the broader nav-reorg conversation, but the
+relabel itself is small and reversible.
+
+**`/plaintiffs/page.tsx` does NOT show damages.** It imports
+`WAR_DEATHS_SINCE_1900` and military-spending parameters but not
+`CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA` or the cohort
+constant. So a visitor sees the gallery without learning what each
+registered plaintiff is owed (~$10.6M NPV / $25.2M lifetime cohort).
+The case page surfaces this; the registration page should too. ~30
+lines of JSX added under the existing parameter imports — schema-zero.
+Strong candidate for next ship because it converts visitors who land
+on `/plaintiffs` from the case page CTA without first reading the case.
+
+### P1 — Centralize communication templates (audit findings 2026-05-08)
+
+Audit of every outbound-comm copy locus in the repo, in service of the
+human's question "should we have a TS library or MCP tool for generating
+templates rather than scattering them across files":
+
+**Email body builders (3 files):**
+- `lib/email/magic-link-email.ts` — `sendMagicLinkEmail()` + `buildMagicLinkHtml()/Text()`
+- `lib/tasks/task-assignment-notification-email.server.ts` — `buildTaskAssignmentNotificationEmail()`
+- `lib/tasks/task-comment-notification-email.server.ts` — `buildTaskCommentNotificationEmail()`
+
+**Plain-text / share / SMS copy (1 megafile, already centralized):**
+- `lib/tasks/share-templates.ts` lines 74-778 — 40+ named `ShareTemplate`
+  objects (polite-reminder, performance-review, it-ticket, class-action,
+  personal-roi, pentagon-hr, slack-dm, task-notification, sincere, …).
+  Each has `id`, `label`, `body`, `requiredTokens`. Selector helpers:
+  `getShareTemplate()`, `pickDefaultShareTemplateId()`,
+  `getUsableShareTemplates()`. **This is already the model.**
+
+**Trigger-blueprint spawn-communication specs (1 file, mostly empty):**
+- `lib/triggers/blueprints/one-percent-treaty.ts` line 405 — only ONE
+  `spawnCommunication` blueprint defined (`task:overdue-reminder`,
+  cron-driven), and it's `enabled: false`. The framework supports
+  `subjectTemplate` + `bodyTextTemplate` + `commentTemplate` per spec
+  with `{{var.placeholder}}` interpolation, but it's barely used.
+
+**Misc constants:**
+- `lib/messaging.ts` — `VOTE_SECTION` (slider prompt, vote question,
+  email-success footer), `ORGANIZATION_ACTIVATION_TASK_TITLE`,
+  vocabulary-frame helpers.
+- `lib/organization.server.ts` lines 24-61 — `buildOrganizationActivationTaskDescription()`
+  embeds the post-join activation task copy directly in the helper that
+  creates the task. Inline in code, not a template.
+- The smoke-test foundation-outreach copy I just wrote in
+  `scripts/smoke-test-iam-outreach.ts` — lives in a script, not the
+  template system. Wrong place for production use.
+
+**Honest assessment.** Plain-text + share copy is already centralized
+(share-templates.ts is good). Email builders are scattered (3 files,
+each hand-rolled). Trigger blueprints have the right shape for
+campaign-driven copy but only one DISABLED spec. Outreach-task
+descriptions (the foundation-join one I just wrote) are inline in
+helpers / scripts.
+
+**Target organization (proposed):**
+
+1. **One `lib/communications/templates/` directory** with one file per
+   template family: `assignment-notification.ts`,
+   `comment-notification.ts`, `magic-link.ts`, `outreach-foundation-join.ts`,
+   `outreach-leader-sign.ts`, `treaty-share.ts`, etc. Each exports
+   `{ subject, html, text, tokens }` builders or a `ShareTemplate`-shape
+   record. Same pattern as `share-templates.ts`.
+2. **`lib/communications/registry.ts`** — central index mapping
+   template IDs → builders, the way `share-templates.ts` already does
+   for share copy. Lets MCP tools / agents enumerate templates.
+3. **MCP tools** (added to `mcp-server.ts`):
+   - `listCommunicationTemplates({ category? })` — admin-scope only;
+     returns id + label + tokens + sample-rendered preview.
+   - `generateCommunicationTemplate({ templateId, tokens, recipient })`
+     — renders a template with provided tokens for inspection /
+     attachment to a task. Doesn't send; just returns the rendered body.
+   - Together these let Wishonia (or a human via Claude Code) pull
+     "give me the foundation-join template tuned for X" without
+     hardcoding the copy in chat.
+4. **Trigger blueprints reference the registry** — rather than inline
+   `bodyTextTemplate` strings, blueprints reference `templateId:
+   "outreach-foundation-join"` and the trigger framework looks up the
+   builder. Lets one template power both human-driven outreach (via
+   the MCP tool) and automated cron-driven outreach.
+
+**Cost:** the move itself is medium-sized (~200-400 lines, mostly file-
+moves and one new registry). The MCP tools are 30-50 lines each on top
+of the existing tool dispatch pattern. Schema-zero.
+
+**Sequencing:** do this AFTER the immediate "make foundation outreach
+work end-to-end" loop is proven. Don't refactor the template layout
+before we know what shape templates we actually need at scale. The
+smoke test just validated the mechanical email loop works; the next
+step is sending more outreach with copy variations to learn what
+converts. THEN centralize what survives.
+
 ### P1 — Email threading (Message-ID, In-Reply-To, References)
 
 Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/email/resend.ts:209,266,309`). Inbound captures `inReplyTo` into `TaskCommunication.metadataJson.inReplyTo` but it is never consumed. Mail clients won't visually thread the conversation; in-app `parentCommentId` never gets set on inbound replies. Replies feel orphaned in both surfaces.
