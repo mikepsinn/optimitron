@@ -45,9 +45,11 @@ import {
   TREATY_REFERENDUM_SLUG,
   DECLARATION_REFERENDUM_SLUG,
   COURT_OF_HUMANITY_REFERENDUM_SLUG,
+} from "../src/constants.js";
+import {
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   OPTIMIZE_EARTH_ROOT_TASK_KEY,
-} from "../src/constants.js";
+} from "../src/task-keys.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
