@@ -111,10 +111,15 @@ export async function POST(request: Request) {
       }
     }
 
+    // Subtasks created through the public REST API are always private. The
+    // parent-task creator promotes them to public via the existing admin
+    // disclosure on /tasks/[id]. Honoring a client-supplied `isPublic: true`
+    // here would let any caller graft a public subtask onto someone else's
+    // tree.
     const task = await createTask(userId, {
       ...rest,
       dueAt: dueAt == null ? null : new Date(dueAt),
-      isPublic: parentTaskId ? (rest.isPublic ?? false) : rest.isPublic,
+      isPublic: parentTaskId ? false : rest.isPublic,
       parentTaskId: parentTaskId ?? null,
     });
 
