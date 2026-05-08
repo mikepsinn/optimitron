@@ -107,8 +107,11 @@ export default withAuth(
         );
       }
 
+      const url = req.nextUrl.clone();
+      url.pathname = "/_site-not-found";
+      url.search = "";
       return syncLocalSiteVariantCookie(
-        new NextResponse("Not found", { status: 404 }),
+        NextResponse.rewrite(url, { request: { headers: requestHeaders } }),
         overrideResolution,
       );
     }
