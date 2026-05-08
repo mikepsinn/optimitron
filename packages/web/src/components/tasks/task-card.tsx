@@ -178,10 +178,18 @@ function UnmeasuredSpendingSection({ task }: { task: TaskCardTask }) {
 }
 
 export function TaskCard({
+  hideAssignee = false,
   showRecommendationScore = false,
   signedIn,
   task,
 }: {
+  /**
+   * When true, suppress the avatar header, the inline "Assigned to X"
+   * text, and the "Full Record" link. Used on the /tasks "Your Tasks"
+   * section where every row is assigned to the viewer — both renderings
+   * just say "you" and add nothing.
+   */
+  hideAssignee?: boolean;
   showRecommendationScore?: boolean;
   signedIn: boolean;
   task: TaskCardTask;
@@ -242,7 +250,7 @@ export function TaskCard({
         </div>
 
         <div className="space-y-2">
-          {task.assigneePerson || task.assigneeOrganization ? (
+          {!hideAssignee && (task.assigneePerson || task.assigneeOrganization) ? (
             <div className="flex items-center gap-3">
               <Avatar className="h-14 w-14 border-4 border-foreground bg-muted">
                 <Avatar.Image
@@ -291,7 +299,7 @@ export function TaskCard({
         </div>
 
         <div className="space-y-2 text-sm font-bold">
-          {task.assigneePerson ? (
+          {!hideAssignee && task.assigneePerson ? (
             <p>
               Assigned to{" "}
               <span className="underline underline-offset-4">
@@ -300,7 +308,7 @@ export function TaskCard({
               {task.roleTitle ? `, ${task.roleTitle}` : ""}
             </p>
           ) : null}
-          {!task.assigneePerson && task.assigneeOrganization ? (
+          {!hideAssignee && !task.assigneePerson && task.assigneeOrganization ? (
             <p>
               Assigned to{" "}
               <span className="underline underline-offset-4">
@@ -309,7 +317,9 @@ export function TaskCard({
               {task.roleTitle ? `, ${task.roleTitle}` : ""}
             </p>
           ) : null}
-          {task.assigneeAffiliationSnapshot || task.assigneePerson?.currentAffiliation ? (
+          {!hideAssignee &&
+          (task.assigneeAffiliationSnapshot ||
+            task.assigneePerson?.currentAffiliation) ? (
             <p>
               {task.assigneeAffiliationSnapshot ??
                 task.assigneeOrganization?.name ??
@@ -358,7 +368,7 @@ export function TaskCard({
           >
             Details
           </Link>
-          {task.assigneePerson ? (
+          {!hideAssignee && task.assigneePerson ? (
             <Link
               className="text-sm font-black uppercase underline underline-offset-4"
               href={getPersonHref(task.assigneePerson)}

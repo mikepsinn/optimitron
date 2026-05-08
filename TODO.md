@@ -593,29 +593,13 @@ mechanical email loop; the directory move locks in a place for the
 next 3–5 templates without over-designing for variants we haven't
 written yet.
 
-### P1 — Slim "Your Tasks" card render (hide redundant assignee + noise)
+### ~~P1 — Slim "Your Tasks" card render~~ (shipped 2026-05-08)
 
-The `/tasks` "Your Tasks" section reuses the full `TaskCard` from
-`components/tasks/task-card.tsx`. Every card duplicates assignee
-information (avatar header AND "Assigned to [name]" inline text)
-because every task in that section is assigned to the viewer. Other
-fields are noise on this surface: the top arcade-tag row showing
-`taskKey ?? id` reads `program:one-percent-treaty:user:xyz...:reminder`
-for trigger-spawned tasks; `TaskCommunicationActions` (outbound-comm
-tooling) is meaningless on a list of tasks assigned *to* you.
-
-Fix: add a `compact` / `hideAssignee` prop on `SortableTaskList →
-TaskCard`. In compact mode:
-
-- Drop the avatar header block (lines 244-274 of task-card.tsx).
-- Drop the "Assigned to X" inline text (lines 293-318).
-- Drop the arcade-tag row (lines 219-242).
-- Drop `TaskCommunicationActions` (the bottom block).
-- Keep: title, description summary, claim button, share buttons,
-  delay/harm sections.
-
-`/tasks/page.tsx` passes `compact={true}` only on the "Your Tasks"
-SortableTaskList. ~30-40 lines. Schema-zero.
+`hideAssignee` prop now set on the `/tasks` "Your Tasks"
+`SortableTaskList`. `TaskRow` already supported the prop (table-row
+variant); also threaded through `TaskCard.tsx` for consistency.
+Avatar header, "Assigned to X" inline text, and "Full Record" link
+suppressed on assigned-to-me rows where they were pure duplication.
 
 ### P1 — E2E regression test: signed-in user can open their own task
 
@@ -720,19 +704,90 @@ Adjacent to "Ratify the 1% Treaty" (which exists as a child of the root),
 seed the rest of the campaign's top-level programs as direct children of
 `OPTIMIZE_EARTH_ROOT_TASK_ID`:
 
-- Create the Decentralized FDA
-- Create the Decentralized USDA / agriculture agency
-- Create the Decentralized [other agency] (one row per agency on the
-  manual's "Decentralized Agencies" list)
-- Fund the Bed Nets Gap (already a child? verify; if not, add)
-- End War and Disease (umbrella for the existing treaty + dFDA work?
-  decide whether this is its own row or just the prize-win-condition
-  framing)
+- **Establish the Decentralized FDA** — action link → `/agencies/dfda`
+  (or `/dfda`)
+- **Establish the Decentralized Federal Reserve** — action link → the
+  monetary-policy / treasury feature page once it has one
+- **Establish the Decentralized IRS** — action link → the tax-policy
+  feature page once it has one
+- **Establish the Decentralized USDA** — action link → the agriculture
+  feature page
+- **Establish the Decentralized [other agency]** — one row per agency
+  on the manual's "Decentralized Agencies" list, each linking to its
+  dedicated feature page (e.g., `/agencies/<slug>`)
+- **Fund the Bed Nets Gap** — verify whether already a child; if not,
+  add. Action link → `/donate?taskId=...` once donate-to-fund-task
+  surface ships
+- **End War and Disease** — umbrella for the existing treaty + dFDA
+  work; decide whether this is its own row or just the
+  prize-win-condition framing
 
 Each gets `allowsUserSubtasks = true` so users can contribute under
 them. The root keeps `allowsUserSubtasks = false`. Admin-only seed; not
 user-creatable. Schema-zero after the `allowsUserSubtasks` column
 lands.
+
+**Action-link concept:** each "Establish X" task has a primary external
+action button on its `/tasks/[id]` page pointing at the existing
+feature page (`/agencies/dfda`, `/dfda`, etc.). No new schema — the
+existing `Task.sourceUrl` or `contextJson.sourceUrls` field carries it,
+or the description markdown links it directly. The feature pages
+become the "more info" / "actually do the thing" surface; the task
+page is the "here's what humanity needs done" surface. Same pattern
+as how the foundation-outreach tasks point at `/endorse`.
+
+### P1 — Replace optimitron landing page with tasks tree; move current to `/features`
+
+Captured screenshots of `OptimitronLandingPage.tsx` at desktop +
+mobile (2026-05-08): page is roughly 8× viewport tall at
+1280×900, cycling through 19 colored sections. No primary action
+visible above the fold. Confirms the structural smell that motivated
+this entry.
+
+**Design (decided 2026-05-08):**
+
+- **`/`** (optimitron landing) becomes the tasks-page tree view:
+  hero stat (live plaintiff count or HALE/income progress) +
+  optimize-earth root with its program children rendered as the
+  primary content (the "Humanity's Tasks" pattern from `/tasks`).
+  Visitor lands → sees humanity's to-do list → clicks a program
+  ("Establish Decentralized FDA") → sees subtasks + an action link
+  to `/agencies/dfda` for the deep dive.
+- **`/features`** (new route) = the current 19-section landing,
+  moved verbatim. Serves the "scroll-and-see-everything-this-system-
+  does" use case for the curious / the technically-aligned. Linked
+  from the footer + a "How it all works" link in the nav.
+- Keep deep-link footer to `/scoreboard`, `/vote`, `/governments`,
+  `/politicians`, `/agencies`, `/opg`, `/wishonia`, `/tools`,
+  `/why`, `/treatments`, `/employees`, `/prize`, `/court`,
+  `/humanity-v-government`.
+
+**Why this and not "literally the tasks page":**
+
+- The tasks page (`/tasks/page.tsx`) is a *worker* view ("Your Tasks"
+  + a single Humanity's Tasks row). The landing needs a *recruitment*
+  view: visitors who haven't signed in shouldn't be shown a "Your
+  Tasks" section at all. Render the optimize-earth tree at the top
+  level; render `/tasks` as the personal queue.
+- 12 of 19 current landing sections already have dedicated pages.
+  The work is mostly footer-deep-link curation, not new component
+  building. The 3 truly orphaned sections (`InvisibleGraveyardSection`,
+  `PleaseSelectAnEarthSection`, `DecisionMatrixSection`) live on the
+  `/features` page; can fold into other dedicated pages later
+  (`/why`, `/select-earth` curio, `/prize`).
+
+**Sequencing:**
+
+1. Schema PR for `Task.allowsUserSubtasks` (separate, see entry above).
+2. Seed top-level programs under `optimize-earth` (Decentralized FDA,
+   etc.) with action links to their feature pages.
+3. New `/features` route: literally re-export `OptimitronLandingPage`
+   with whatever metadata change is needed.
+4. Replace `/` for `optimitron` site variant to render the tasks-tree
+   layout. Hero + tree + footer-deep-link strip. ~80 lines of layout
+   work; no new components.
+
+Cost: ~120 lines + the schema PR. Schema-light; mostly composition.
 
 ### P1 — Dashboard / presidents page mental-model split (lightweight)
 
@@ -1048,6 +1103,18 @@ exist; they are not wired into the funnel.
 - Never run `pnpm build` / `next build` — the dev server handles compilation.
 - Library packages (`optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`,
   `storage`) stay runtime-safe: no Prisma, no runtime DB.
+
+## Open brand decisions
+
+- **optimitron.com vs wishonia.love canonical site.** Two parallel
+  surfaces today; running both forever doubles maintenance and lets
+  Google penalize duplicate content. Decision needed: pick whichever
+  has more inbound traffic / brand recognition, point the other's DNS
+  at the canonical, 301 every URL. "Optimitron" sounds like an
+  autobot — straightforward / engineering-aligned / fits the "Earth
+  Optimization System" sober tagline. "Wishonia" sounds like a
+  country — more on-brand for the sardonic Wishonia voice copy. Both
+  are defensible. Pure brand call; no code change blocking it.
 
 ## Long-tail (parked, not 4B-blocking)
 

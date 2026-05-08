@@ -97,6 +97,7 @@ export default async function TasksPage() {
               defaultSortKey="cost"
               defaultSortDir="desc"
               pageSize={25}
+              hideAssignee
             />
           ) : (
             <TreatyVoteCta />
