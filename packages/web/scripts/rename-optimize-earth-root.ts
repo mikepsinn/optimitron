@@ -43,7 +43,17 @@ async function main() {
   });
 
   if (!oldRow && newRow) {
-    console.log("   nothing to do — old row absent, new row present.");
+    if (newRow.taskKey !== OPTIMIZE_EARTH_ROOT_TASK_KEY) {
+      console.log(
+        `   repairing taskKey on ${OPTIMIZE_EARTH_ROOT_TASK_ID}: "${newRow.taskKey}" -> "${OPTIMIZE_EARTH_ROOT_TASK_KEY}"`,
+      );
+      await prisma.task.update({
+        where: { id: OPTIMIZE_EARTH_ROOT_TASK_ID },
+        data: { taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY },
+      });
+    } else {
+      console.log("   nothing to do — old row absent, new row present.");
+    }
     await prisma.$disconnect();
     return;
   }
@@ -57,6 +67,11 @@ async function main() {
   if (oldRow && newRow) {
     throw new Error(
       `Both old (${OLD_ID}) and new (${OPTIMIZE_EARTH_ROOT_TASK_ID}) rows exist. Resolve manually before re-running.`,
+    );
+  }
+  if (oldRow && oldRow.taskKey !== OLD_KEY) {
+    throw new Error(
+      `Old row ${OLD_ID} has unexpected taskKey "${oldRow.taskKey}" (expected "${OLD_KEY}").`,
     );
   }
 

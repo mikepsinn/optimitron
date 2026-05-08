@@ -1,6 +1,8 @@
 import "./load-env";
 import { prisma } from "../src/lib/prisma";
 
+const TASK_PROBE_LIMIT = 100;
+
 async function main() {
   // Pull anything that looks like funding/donation/fund-the-campaign work,
   // matching against title and description (case-insensitive). Not deleting
@@ -34,10 +36,15 @@ async function main() {
       description: true,
     },
     orderBy: { createdAt: "asc" },
-    take: 100,
+    take: TASK_PROBE_LIMIT,
   });
 
   console.log(`Found ${tasks.length} candidate funding-related tasks:\n`);
+  if (tasks.length === TASK_PROBE_LIMIT) {
+    console.warn(
+      `Warning: hit probe cap (${TASK_PROBE_LIMIT}). Results may be truncated; rerun with paging or a higher cap.`,
+    );
+  }
   for (const task of tasks) {
     console.log(`  id:           ${task.id}`);
     console.log(`  title:        ${task.title}`);
