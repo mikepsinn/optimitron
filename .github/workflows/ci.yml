@@ -238,10 +238,13 @@ jobs:
               return /argos/i.test(name) || /argos/i.test(detailsUrl);
             });
             const visualDiffUrl = argosCheck?.details_url || checksUrl;
+            const visualDiffLabel = argosCheck
+              ? 'Open before/after visual diffs'
+              : 'Open PR checks for visual diffs';
             const body = `${marker}
             ## Visual review
 
-            - [Open before/after visual diffs](${visualDiffUrl})
+            - [${visualDiffLabel}](${visualDiffUrl})
             - [Download the compact screenshot gallery artifact](${artifactUrl})
             - [Open this workflow run](${runUrl})
 
