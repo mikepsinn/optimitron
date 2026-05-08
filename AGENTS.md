@@ -14,6 +14,9 @@
 ## Local Dev Safety
 
 - If a local dev server is already running, do not disrupt it for routine verification; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.
+- Use one reusable local web server by default. For `packages/web`, prefer `http://127.0.0.1:3001` / `http://localhost:3001` as the canonical dev server. Before starting any new web server, check whether port `3001` is already serving the app and reuse it for browser checks, Playwright, screenshots, and ad-hoc verification.
+- Do not start extra Next.js/Vite/preview servers on alternate ports just because `3001` is busy. If `3001` is busy with the right app, use it. If `3001` is busy with the wrong process, stop and report that instead of silently launching `3002`, `3003`, etc. Use a different port only when the human explicitly asks, a test genuinely requires two versions running at once, or a clean isolated server is required to debug a server-start problem.
+- When a server you started is no longer needed, shut it down before ending the turn. Do not leave background dev servers, preview servers, or Playwright-managed servers running unless they were already running when you arrived or the human asked to keep them.
 
 ## Branch and Pull Request Workflow
 
