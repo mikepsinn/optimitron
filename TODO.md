@@ -434,6 +434,35 @@ under the title. ~10 lines to move it to render right after
 ship: with leader blocks gone for outreach tasks, the action row
 naturally falls higher.
 
+### P2 — Deprecate `TaskMilestone`, replace with subtasks
+
+Subtasks subsume every milestone capability and add: assignability, due
+dates, claim flow, comments, sub-children, full TaskStatus granularity.
+Milestone is a weaker, redundant model. Only thing it does that
+subtasks don't is render as a compact `X/Y reached` progress strip at
+the top of the parent task — a UI choice, not a data-model
+justification (subtasks could render the same strip by counting
+children where status === VERIFIED).
+
+Surface area for migration:
+- One-time script: each `TaskMilestone` → child `Task` with
+  `parentTaskId = milestone.taskId`, status mapped from
+  `TaskMilestoneStatus`, `completionEvidence = milestone.evidenceNote`,
+  `sourceUrl = milestone.evidenceUrl`. Soft-delete the milestone row.
+- Update `/tasks/[id]/page.tsx` milestone strip to count subtasks
+  where `status === VERIFIED` over total child count.
+- Remove milestone references from: page, server helper at
+  `lib/tasks/milestones.server.ts`, API route at
+  `app/api/tasks/[id]/milestones/[milestoneId]/route.ts` + test, and
+  the `TaskMilestoneEditor` component.
+- Drop `TaskMilestone` model in a separate schema PR (per the
+  AGENTS.md rule that schema changes get their own PR).
+
+Schema change required (drops a model). Run the data migration first;
+verify all milestones converted to subtasks and visible on their
+parent task pages; THEN ship the schema-removal PR. Don't combine the
+two.
+
 ### P2 — Admin task blocks behind a disclosure
 
 `Curator Verification` and `Pending Claim Reviews` render inline in
