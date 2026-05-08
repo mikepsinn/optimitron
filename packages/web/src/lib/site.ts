@@ -345,9 +345,9 @@ const warOnDiseaseShareLink: NavItem = {
 // for unfamiliar visitors.
 const warOnDiseaseRenderVerdictLink: NavItem = {
   ...treatyVoteLink,
-  label: "Render the Verdict",
+  label: "Render Verdict",
   tagline: "Vote on the 1% Treaty as a juror in Humanity v. Government",
-  cta: "Render the Verdict",
+  cta: "Render Verdict",
 };
 
 // Top-nav alias for /plaintiffs that frames the page as an action

@@ -387,6 +387,60 @@ routing other humans toward verdict-rendering work.
   (reusing the dedup pre-search helper from the plaintiff-dedup work) +
   "or add a new person" input with name + email.
 
+### P0 — Task detail page: conditional leader-accountability blocks
+
+`/tasks/[id]/page.tsx` is 761 lines, 17 imported block components, ~13
+vertically stacked content zones. Industry standard (Linear, Asana,
+GitHub Issues) is 3 zones (title+body / right sidebar / comments).
+
+**The single biggest UX problem:** leader-accountability blocks
+(`TaskRemindEmployee`, `TaskBlockerCard`, `TaskUnlocks`,
+`TaskCurrentActivities`) render unconditionally. They were designed
+for the treaty-signer political-pressure mechanic ("president X is
+overdue, here's how to pressure them") and on those pages they're
+load-bearing. But they ALSO render on outreach tasks (e.g., the IAM
+foundation-join task I just sent), where they're confusing — the
+foundation lead sees a "Remind Employee" block targeted at them.
+
+**Fix:** the page already computes `isTreatySigner` at line 540.
+Extend that gate to wrap `TaskRemindEmployee`, `TaskBlockerCard`,
+`TaskUnlocks`, `TaskCurrentActivities`. For non-treaty-signer tasks
+(outreach, internal work, generic), they don't render. ~30 lines
+diff. Schema-zero. Shrinks the IAM-style task page from ~13 zones
+to ~5 — closer to industry standard, primary action ("Claim",
+"Mark complete") becomes findable above the fold.
+
+**Don't break:** the treaty-signer accountability density is
+intentional — the political-pressure mechanic relies on those blocks
+being visible on every leader page. Conditional gating preserves
+that path.
+
+### P1 — Task detail right-sidebar metadata pattern
+
+After the P0 conditional gating, the next-biggest gap is metadata
+position. Status / assignee / due date / claim policy / claim count /
+milestones / sources stack vertically inline with content; the
+desktop right rail is wasted. Standard pattern (`lg:grid-cols-[1fr_320px]`)
+puts metadata in a right rail, body in the main column. Mobile
+collapses to single column. Multi-day refactor; do after P0 to know
+which blocks survive.
+
+### P1 — Move claim / complete action row above the fold
+
+Today rendered after ~6 informational blocks. Industry standard puts
+primary actions either at the top right (sidebar pattern) or directly
+under the title. ~10 lines to move it to render right after
+`<TaskHeroStats>`. Becomes trivial after the P0 conditional-gating
+ship: with leader blocks gone for outreach tasks, the action row
+naturally falls higher.
+
+### P2 — Admin task blocks behind a disclosure
+
+`Curator Verification` and `Pending Claim Reviews` render inline in
+main content flow for admins. Industry standard puts admin tools in
+a separate panel or behind a disclosure. Low urgency since admin =
+small audience.
+
 ### P1 — Programmatic email validation (vitest lint + CI gate)
 
 A vitest that imports every email + share template, renders with stub
