@@ -78,6 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
+      actions: read
       contents: read
       id-token: write
       issues: write
@@ -178,6 +179,36 @@ jobs:
           ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
         run: pnpm --filter @optimitron/web run e2e -- visual
 
+      - name: Download main visual baseline
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          baseline_root="packages/web/output/playwright/main-baseline"
+          rm -rf "$baseline_root"
+          mkdir -p "$baseline_root"
+
+          mapfile -t run_ids < <(gh run list \
+            --workflow CI \
+            --branch main \
+            --status success \
+            --limit 20 \
+            --json databaseId \
+            --jq '.[].databaseId')
+
+          for run_id in "${run_ids[@]}"; do
+            if gh run download "$run_id" \
+              --name web-visual-review \
+              --dir "$baseline_root" >/dev/null 2>&1; then
+              echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$baseline_root/packages/web/screenshots" >> "$GITHUB_ENV"
+              echo "Downloaded visual baseline from main run $run_id."
+              exit 0
+            fi
+          done
+
+          echo "No main web-visual-review artifact found; visual review will be after-only."
+
       - name: Build visual review index
         if: always()
         run: pnpm --filter @optimitron/web run visual:review
@@ -190,7 +221,7 @@ jobs:
             echo "## Visual review"
             echo
             echo "- Open the \`web-visual-review\` artifact from this run."
-            echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact screenshot gallery."
+            echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
             echo "- Use the Argos check on the pull request for before/after diffs and changed-only review."
             echo "- Captured routes are defined in \`packages/web/e2e/visual-regression.spec.ts\`."
           } >> "$GITHUB_STEP_SUMMARY"
@@ -217,19 +248,6 @@ jobs:
           mkdir -p "$pr_dir/screenshots"
 
           cp -R packages/web/output/playwright/review/. "$pr_dir/"
-          if [ -d packages/web/screenshots ]; then
-            cp -R packages/web/screenshots/. "$pr_dir/screenshots/"
-          fi
-
-          node - "$pr_dir/latest.html" <<'NODE'
-          const { readFileSync, writeFileSync } = require("node:fs");
-          const htmlPath = process.argv[2];
-          const html = readFileSync(htmlPath, "utf8").replaceAll(
-            "../../../screenshots/",
-            "screenshots/",
-          );
-          writeFileSync(htmlPath, html);
-          NODE
 
           cat > "$pages_root/index.html" <<'HTML'
           <!doctype html>
@@ -309,7 +327,7 @@ jobs:
             - [Download the compact screenshot gallery artifact](${artifactUrl})
             - [Open this workflow run](${runUrl})
 
-            Start with the browser gallery for a quick pass over every captured route. Use the visual diff link for changed-only before/after review when Argos is available. The downloadable artifact is the fallback copy of \`packages/web/output/playwright/review/latest.html\`.`;
+            Start with the browser gallery for a quick before/after pass over every captured route. Use the visual diff link for changed-only review when Argos is available. The downloadable artifact is the fallback copy of \`packages/web/output/playwright/review/latest.html\`.`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,

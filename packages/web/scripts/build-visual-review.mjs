@@ -1,12 +1,24 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
 const webRoot = process.cwd();
+const repoRoot = path.resolve(webRoot, "../..");
 const screenshotsRoot = path.resolve(webRoot, "screenshots");
+const beforeScreenshotsRoot = process.env.VISUAL_BEFORE_ROOT
+  ? resolveInputPath(process.env.VISUAL_BEFORE_ROOT)
+  : null;
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
+const assetRoot = path.join(outputRoot, "assets");
 const latestHtmlPath = path.join(outputRoot, "latest.html");
 
 const routeOrder = [
@@ -23,8 +35,14 @@ main();
 
 function main() {
   mkdirSync(outputRoot, { recursive: true });
+  rmSync(assetRoot, { recursive: true, force: true });
 
-  const screenshots = collectScreenshots();
+  const screenshots = [
+    ...(beforeScreenshotsRoot
+      ? collectScreenshots(beforeScreenshotsRoot, "before")
+      : []),
+    ...collectScreenshots(screenshotsRoot, "after"),
+  ];
   const grouped = groupScreenshots(screenshots);
   const html = renderHtml(grouped);
 
@@ -33,28 +51,33 @@ function main() {
   console.log(`[visual-review] screenshots=${screenshots.length}`);
 }
 
-function collectScreenshots() {
-  if (!existsSync(screenshotsRoot)) {
+function collectScreenshots(root, version) {
+  if (!existsSync(root)) {
     return [];
   }
 
   const files = [];
-  for (const projectName of safeReadDir(screenshotsRoot, { dirsOnly: true })) {
-    const projectDir = path.join(screenshotsRoot, projectName);
+  for (const projectName of safeReadDir(root, { dirsOnly: true })) {
+    const projectDir = path.join(root, projectName);
     for (const entry of safeReadDir(projectDir)) {
       if (!entry.toLowerCase().endsWith(".png")) {
         continue;
       }
 
       const filePath = path.join(projectDir, entry);
+      const assetDir = path.join(assetRoot, version, projectName);
+      mkdirSync(assetDir, { recursive: true });
+      const assetPath = path.join(assetDir, entry);
+      copyFileSync(filePath, assetPath);
       const routeName = entry
         .replace(/\.png$/i, "")
         .replace(/-(default|visual-mobile)$/i, "");
       files.push({
+        version,
         projectName,
         routeName,
         fileName: entry,
-        relPath: toPosix(path.relative(outputRoot, filePath)),
+        relPath: toPosix(path.relative(outputRoot, assetPath)),
       });
     }
   }
@@ -71,11 +94,21 @@ function collectScreenshots() {
 function groupScreenshots(screenshots) {
   const grouped = new Map();
   for (const screenshot of screenshots) {
-    const group = grouped.get(screenshot.routeName) ?? [];
-    group.push(screenshot);
-    grouped.set(screenshot.routeName, group);
+    const route = grouped.get(screenshot.routeName) ?? new Map();
+    const pair = route.get(screenshot.projectName) ?? {
+      projectName: screenshot.projectName,
+      routeName: screenshot.routeName,
+    };
+    pair[screenshot.version] = screenshot;
+    route.set(screenshot.projectName, pair);
+    grouped.set(screenshot.routeName, route);
   }
-  return [...grouped.entries()].map(([routeName, shots]) => ({ routeName, shots }));
+  return [...grouped.entries()].map(([routeName, projectMap]) => ({
+    routeName,
+    pairs: [...projectMap.values()].sort(
+      (a, b) => projectSortIndex(a.projectName) - projectSortIndex(b.projectName),
+    ),
+  }));
 }
 
 function renderHtml(groups) {
@@ -155,17 +188,36 @@ function renderHtml(groups) {
       letter-spacing: 0;
     }
 
-    .grid {
+    .pairs {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
-      gap: 20px;
+      gap: 28px;
+    }
+
+    .pair {
+      border: 1px solid var(--line);
+    }
+
+    .pair h3 {
+      margin: 0;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
     }
 
     figure {
       margin: 0;
-      border: 1px solid var(--line);
       background: #ffffff;
+    }
+
+    figure + figure {
+      border-left: 1px solid var(--line);
     }
 
     figcaption {
@@ -181,6 +233,12 @@ function renderHtml(groups) {
       height: auto;
     }
 
+    .missing div {
+      padding: 24px 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     code {
       font-family: Consolas, "Liberation Mono", monospace;
       font-size: 0.95em;
@@ -189,13 +247,24 @@ function renderHtml(groups) {
     .empty {
       max-width: 760px;
     }
+
+    @media (max-width: 820px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+
+      figure + figure {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Optimitron Visual Review</h1>
     <div class="meta">
-      Generated ${escapeHtml(generatedAt)}. This fallback artifact shows captured PR screenshots. Use Argos on the PR for before/after diffs and changed-only review.
+      Generated ${escapeHtml(generatedAt)}. ${beforeScreenshotsRoot ? "Left side is the latest main baseline artifact; right side is this pull request." : "No main baseline artifact was available, so this page shows pull request screenshots only."} Use Argos on the PR for changed-only review when available.
     </div>
   </header>
   <main>
@@ -207,19 +276,35 @@ function renderHtml(groups) {
 }
 
 function renderRouteGroup(group) {
-  const shots = group.shots.map(renderFigure).join("\n");
+  const pairs = group.pairs.map(renderPair).join("\n");
   return `<section>
     <h2>${escapeHtml(labelRoute(group.routeName))}</h2>
-    <div class="grid">
-      ${shots}
+    <div class="pairs">
+      ${pairs}
     </div>
   </section>`;
 }
 
-function renderFigure(screenshot) {
+function renderPair(pair) {
+  return `<article class="pair">
+    <h3>${escapeHtml(labelProject(pair.projectName))}</h3>
+    <div class="comparison">
+      ${renderFigure(pair.before, "Before: main")}
+      ${renderFigure(pair.after, "After: pull request")}
+    </div>
+  </article>`;
+}
+
+function renderFigure(screenshot, label) {
+  if (!screenshot) {
+    return `<figure class="missing">
+    <figcaption>${escapeHtml(label)}</figcaption>
+    <div>Not captured</div>
+  </figure>`;
+  }
   return `<figure>
-    <figcaption>${escapeHtml(labelProject(screenshot.projectName))}</figcaption>
-    <img src="${escapeHtml(screenshot.relPath)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName}`)}" loading="lazy">
+    <figcaption>${escapeHtml(label)}</figcaption>
+    <img src="${escapeHtml(screenshot.relPath)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
   </figure>`;
 }
 
@@ -277,4 +362,15 @@ function escapeHtml(value) {
 
 function toPosix(value) {
   return value.split(path.sep).join("/");
+}
+
+function resolveInputPath(value) {
+  if (path.isAbsolute(value)) {
+    return value;
+  }
+  const packageRelative = path.resolve(webRoot, value);
+  if (existsSync(packageRelative)) {
+    return packageRelative;
+  }
+  return path.resolve(repoRoot, value);
 }
