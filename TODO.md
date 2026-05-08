@@ -681,6 +681,30 @@ smoke test just validated the mechanical email loop works; the next
 step is sending more outreach with copy variations to learn what
 converts. THEN centralize what survives.
 
+### P1 — Sitemap completeness (orgs, /humanity-v-government, /court)
+
+`packages/web/src/app/sitemap.ts` already pulls public People + public
+Tasks (capped at 500 each, hourly-cached, per-variant gated). Three
+gaps worth filling:
+
+- **Organizations not in dynamic sitemap.** Each public Organization
+  with a public profile page is missing. Foundation supporters and
+  treaty-supporter orgs aren't being indexed. Add a third
+  `prisma.organization.findMany({ where: { deletedAt: null,
+  status: "APPROVED" }, take: 500 })` to `getCachedPublicDetailSitemapRows`
+  and emit entries pointing at the org's public href.
+- **Verify `/humanity-v-government` and `/court` are in the static-
+  route list.** Both are central to the post-merge funnel. If
+  `getSitemapForSite` omits them, the case page isn't being indexed.
+  Quick grep on the static-routes list to confirm.
+- **500-row cap per entity type** is a future-scale concern. At
+  hundreds of foundations / thousands of plaintiffs / all 193 leaders,
+  silently drops the lower-`updatedAt` entries past row 500. Standard
+  pattern: split into multiple sitemap files
+  (`sitemap-tasks.xml`, `sitemap-people.xml`, `sitemap-orgs.xml`)
+  via Next.js sitemap-index conventions. Park until ~300 entries
+  visible per type.
+
 ### P1 — Email threading (Message-ID, In-Reply-To, References)
 
 Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/email/resend.ts:209,266,309`). Inbound captures `inReplyTo` into `TaskCommunication.metadataJson.inReplyTo` but it is never consumed. Mail clients won't visually thread the conversation; in-app `parentCommentId` never gets set on inbound replies. Replies feel orphaned in both surfaces.
