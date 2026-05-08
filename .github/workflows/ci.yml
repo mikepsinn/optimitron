@@ -179,13 +179,24 @@ jobs:
           ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
         run: pnpm --filter @optimitron/web run e2e -- visual
 
-      - name: Download main visual baseline
+      - name: Preserve PR visual screenshots
+        if: always() && github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          rm -rf packages/web/output/playwright/pr-screenshots
+          if [ -d packages/web/screenshots ]; then
+            mkdir -p packages/web/output/playwright
+            cp -R packages/web/screenshots packages/web/output/playwright/pr-screenshots
+          fi
+
+      - name: Resolve main visual baseline
         if: always() && github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           baseline_root="packages/web/output/playwright/main-baseline"
+          pr_screenshots="packages/web/output/playwright/pr-screenshots"
           rm -rf "$baseline_root"
           mkdir -p "$baseline_root"
 
@@ -201,13 +212,33 @@ jobs:
             if gh run download "$run_id" \
               --name web-visual-review \
               --dir "$baseline_root" >/dev/null 2>&1; then
-              echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$baseline_root/packages/web/screenshots" >> "$GITHUB_ENV"
-              echo "Downloaded visual baseline from main run $run_id."
-              exit 0
+              if [ -d "$baseline_root/packages/web/screenshots" ]; then
+                echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$baseline_root/packages/web/screenshots" >> "$GITHUB_ENV"
+                echo "Downloaded visual baseline from main run $run_id."
+                rm -rf packages/web/screenshots
+                if [ -d "$pr_screenshots" ]; then
+                  cp -R "$pr_screenshots" packages/web/screenshots
+                fi
+                exit 0
+              fi
             fi
           done
 
-          echo "No main web-visual-review artifact found; visual review will be after-only."
+          echo "No usable main web-visual-review artifact found; capturing main baseline in this run."
+          current_ref="$(git rev-parse HEAD)"
+          git fetch --depth=1 origin main
+          git checkout --detach origin/main
+          pnpm --filter @optimitron/web run build:fast
+          pnpm --filter @optimitron/db run seed:bootstrap
+          rm -rf packages/web/screenshots
+          ARGOS_TOKEN="" ARGOS_IGNORE_UPLOAD_FAILURES=1 pnpm --filter @optimitron/web run e2e -- visual
+          mv packages/web/screenshots "$baseline_root/screenshots"
+          git checkout --detach "$current_ref"
+          rm -rf packages/web/screenshots
+          if [ -d "$pr_screenshots" ]; then
+            cp -R "$pr_screenshots" packages/web/screenshots
+          fi
+          echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$baseline_root/screenshots" >> "$GITHUB_ENV"
 
       - name: Build visual review index
         if: always()
