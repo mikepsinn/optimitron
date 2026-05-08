@@ -124,6 +124,22 @@ describe("task accountability helpers", () => {
     expect(stats.currentSufferingHoursLost).toBeCloseTo(50, 5);
   });
 
+  it("handles serialized task dates from cached public task data", () => {
+    const now = new Date("2026-04-10T00:00:00.000Z");
+
+    const stats = getTaskDelayStats(
+      {
+        dueAt: "2026-04-05T00:00:00.000Z",
+        completedAt: "2026-04-08T00:00:00.000Z",
+        status: TaskStatus.VERIFIED,
+      },
+      now,
+    );
+
+    expect(stats.currentDelayDays).toBe(3);
+    expect(stats.dueAt?.toISOString()).toBe("2026-04-05T00:00:00.000Z");
+  });
+
   it("aggregates direct child task delay totals", () => {
     const now = new Date("2026-04-10T00:00:00.000Z");
     const summary = aggregateTaskDelayStats(

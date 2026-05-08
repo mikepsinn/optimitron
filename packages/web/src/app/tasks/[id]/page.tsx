@@ -88,8 +88,22 @@ const getCachedPublicTaskPageData = unstable_cache(
   { revalidate: PUBLIC_TASK_DETAIL_REVALIDATE_SECONDS },
 );
 
-function formatDueDate(value: Date) {
-  return value.toLocaleDateString("en-US", {
+function getDisplayDate(value: Date | string | null | undefined): Date | null {
+  if (value == null) {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function formatDueDate(value: Date | string) {
+  const date = getDisplayDate(value);
+  if (date == null) {
+    return "";
+  }
+
+  return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -202,7 +216,7 @@ interface TaskMetaSubtitleProps {
       }
     | null;
   assigneeOrganization: { name: string } | null;
-  dueAt?: Date | null;
+  dueAt?: Date | string | null;
   currentDelayDays: number;
   isOverdue: boolean;
 }
@@ -214,6 +228,7 @@ function TaskMetaSubtitle({
   currentDelayDays,
   isOverdue,
 }: TaskMetaSubtitleProps) {
+  const dueDate = getDisplayDate(dueAt);
   const displayName = assigneePerson?.displayName ?? assigneeOrganization?.name;
   const personHref = assigneePerson ? getPersonHref(assigneePerson) : null;
   const initials = displayName
@@ -245,10 +260,10 @@ function TaskMetaSubtitle({
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-muted-foreground">
       {assigneeNode}
-      {dueAt ? (
+      {dueDate ? (
         <>
           {assigneeNode ? <span>·</span> : null}
-          <span>Due {formatDueDate(dueAt)}</span>
+          <span>Due {formatDueDate(dueDate)}</span>
         </>
       ) : null}
       {isOverdue && currentDelayDays > 0 ? (
@@ -628,7 +643,7 @@ export default async function TaskDetailPage({
               <p className="text-sm font-black uppercase text-brutal-pink">Sources</p>
               {task.sourceUrl ? (
                 <Link
-                  className="inline-block text-sm font-bold underline underline-offset-4"
+                  className="inline-block max-w-full break-words text-sm font-bold underline underline-offset-4"
                   href={task.sourceUrl}
                   target="_blank"
                 >
@@ -641,7 +656,7 @@ export default async function TaskDetailPage({
                     artifactEntry.sourceArtifact.sourceUrl ? (
                       <Link
                         key={artifactEntry.sourceArtifact.id}
-                        className="block text-sm font-bold underline underline-offset-4"
+                        className="block max-w-full break-words text-sm font-bold underline underline-offset-4"
                         href={artifactEntry.sourceArtifact.sourceUrl}
                         target="_blank"
                       >
