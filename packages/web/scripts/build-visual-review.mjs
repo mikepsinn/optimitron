@@ -39,7 +39,7 @@ function collectScreenshots() {
   }
 
   const files = [];
-  for (const projectName of safeReadDir(screenshotsRoot)) {
+  for (const projectName of safeReadDir(screenshotsRoot, { dirsOnly: true })) {
     const projectDir = path.join(screenshotsRoot, projectName);
     for (const entry of safeReadDir(projectDir)) {
       if (!entry.toLowerCase().endsWith(".png")) {
@@ -223,10 +223,12 @@ function renderFigure(screenshot) {
   </figure>`;
 }
 
-function safeReadDir(dir) {
+function safeReadDir(dir, { dirsOnly = false } = {}) {
   try {
     return readdirSync(dir, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() || entry.isFile())
+      .filter((entry) =>
+        dirsOnly ? entry.isDirectory() : entry.isDirectory() || entry.isFile(),
+      )
       .map((entry) => entry.name);
   } catch {
     return [];

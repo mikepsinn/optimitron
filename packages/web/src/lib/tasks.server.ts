@@ -1481,9 +1481,10 @@ export async function createTask(
   const resolvedClaimPolicy = isAssignedTask
     ? TaskClaimPolicy.ASSIGNED_ONLY
     : (input.claimPolicy ?? defaultClaimPolicy);
-  const isPublic =
-    resolvedClaimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY ||
-    (input.isPublic ?? isAssignedTask);
+  const requestedIsPublic =
+    input.isPublic ??
+    (resolvedClaimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY || isAssignedTask);
+  const isPublic = input.parentTaskId ? false : requestedIsPublic;
   const endpointData = input.primaryEndpoint
     ? buildPrimaryTaskCommunicationEndpointCreateData(input.primaryEndpoint)
     : null;

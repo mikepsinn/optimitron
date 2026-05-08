@@ -415,6 +415,7 @@ describe("tasks server", () => {
       // For unauthenticated callers, getTaskVisibilityWhere returns the
       // base where with isPublic: true (no OR clause).
       expect(args?.where).toMatchObject({ isPublic: true });
+      expect(args?.where).not.toHaveProperty("OR");
     });
   });
 });
