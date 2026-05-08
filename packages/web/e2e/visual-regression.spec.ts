@@ -7,6 +7,8 @@
  */
 import { expect, test, type Page } from "@playwright/test";
 import { argosScreenshot } from "@argos-ci/playwright";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import { forceAnimationsComplete } from "./utils/audit-helpers";
 
 const VISUAL_ROUTES = [
@@ -45,6 +47,7 @@ const ARGOS_CSS = `
   }
 `;
 const OPTIONAL_ROUTE_SKIP_STATUSES = new Set([401, 403, 404]);
+const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
 
 test.describe("route visual regression", () => {
   for (const route of VISUAL_ROUTES) {
@@ -70,6 +73,16 @@ test.describe("route visual regression", () => {
           threshold: 0.55,
         },
       );
+
+      const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
+      await mkdir(screenshotDir, { recursive: true });
+      await page.screenshot({
+        fullPage: true,
+        path: path.join(
+          screenshotDir,
+          `${route.name}-${testInfo.project.name}.png`,
+        ),
+      });
     });
   }
 });
