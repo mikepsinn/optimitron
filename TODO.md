@@ -681,6 +681,100 @@ smoke test just validated the mechanical email loop works; the next
 step is sending more outreach with copy variations to learn what
 converts. THEN centralize what survives.
 
+### P1 — Grant-application infrastructure (Task-attached, schema-light)
+
+**Premise:** nonprofits engage more when they see a visible pathway to
+getting paid for impact. Right now there is no way for an org to
+propose work and be funded for it through this platform; the 5
+"Fund the Campaign" tasks I just deleted were the wrong direction
+(us asking foundations for money instead of foundations browsing
+fundable work).
+
+**Reuse Task. Don't introduce a Campaign model.** `TaskImpactFrame`
+(schema lines 5905-5979) already has every grant economic field —
+estimatedCashCostUsdBase (low/base/high), expectedDalysAvertedBase,
+expectedEconomicValueUsdBase, successProbabilityBase, HALE +
+median-income effects, delay-DALYs-per-day. Cost-per-DALY is
+computable today: `estimatedCashCostUsdBase / expectedDalysAvertedBase`.
+Existing `assigneeOrganizationId` captures who would do the work.
+Existing claim/complete/verify flow handles delivery. The grant
+application IS proposing a task; the pledge IS funding it.
+
+**Schema additions (light, two pieces):**
+
+```prisma
+enum TaskFundingStatus {
+  PROPOSED            // org submitted, awaiting review
+  ACCEPTED            // admin approved as fundable
+  PARTIALLY_PLEDGED   // pledges < estimatedCashCostUsdBase
+  FULLY_PLEDGED       // pledges >= estimatedCashCostUsdBase
+  DISBURSED           // paid to org
+  VERIFIED            // delivery confirmed
+}
+
+model TaskFundingPledge {
+  id                   String   @id @default(cuid())
+  taskId               String
+  funderUserId         String?
+  funderOrganizationId String?
+  amountUsd            Float
+  status               String   // pending | committed | disbursed | refunded
+  pledgedAt            DateTime @default(now())
+  disbursedAt          DateTime?
+  deletedAt            DateTime?
+  task                 Task           @relation(fields: [taskId], references: [id])
+  funderUser           User?          @relation(fields: [funderUserId], references: [id])
+  funderOrganization   Organization?  @relation(fields: [funderOrganizationId], references: [id])
+  @@index([taskId])
+  @@index([funderUserId])
+  @@index([funderOrganizationId])
+  @@index([status])
+}
+```
+
+Plus a nullable `Task.fundingStatus: TaskFundingStatus?` so the
+proposal-vs-non-proposal distinction is queryable without joining
+to TaskFundingPledge.
+
+**UI surfaces:**
+
+- `/grants` (or `/fund/proposals`) — public gallery of `ACCEPTED`
+  tasks ranked by cost-per-DALY. Each row: org name, task title,
+  cost, DALYs averted, success probability, "$X needed / $Y
+  pledged" progress bar, "Pledge" CTA.
+- `/grants/apply` — form for orgs to propose a task. Fields map
+  1:1 to existing TaskImpactFrame columns. Submission creates a
+  Task with `fundingStatus: PROPOSED` and `assigneeOrganizationId =
+  caller.org`. Admin reviews and flips to ACCEPTED or REJECTED.
+- Task detail page gets a "Funding" section if `fundingStatus` is
+  set: shows pledges, progress, disbursement status. Conditional
+  block (already gated infrastructure — same pattern as
+  leader-accountability blocks).
+
+**Critical separation from current /donate page.** Donate is
+unrestricted individual giving to the campaign. Grants are
+designated giving to a specific task with verified outcome. Two
+different concepts; two different surfaces. /donate stays as-is.
+
+**Build before money flows.** Actual disbursement requires AMF
+501(c)(3) + EOS LLC (already queued under P2 prize block). But the
+application + ranking + visible-pathway benefits land BEFORE money
+does. Pre-curated queue of fundable work converts into real funding
+the moment AMF opens. Foundations browsing "$X cost / Y DALYs
+averted" rankings is itself the recruitment story.
+
+**Build order:**
+
+1. Schema (TaskFundingStatus enum + TaskFundingPledge model + nullable
+   Task.fundingStatus column). Schema PR.
+2. /grants public gallery + /grants/apply form. Schema-zero after #1.
+3. Admin review flow on existing /tasks/[id]/page.tsx (collapsed
+   `<details>` like the curator-verification block already shipped).
+4. (BLOCKED on AMF) Pledge → escrow → disbursement automation.
+
+Items 1-3 unblock the org-engagement story; #4 follows once legal
+lands.
+
 ### P1 — Sitemap completeness (orgs, /humanity-v-government, /court)
 
 `packages/web/src/app/sitemap.ts` already pulls public People + public
