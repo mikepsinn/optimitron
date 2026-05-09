@@ -26,7 +26,7 @@ export default function EfficiencyPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
           Efficiency Rankings
         </p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">
@@ -53,7 +53,7 @@ export default function EfficiencyPage() {
       <div className="overflow-x-auto border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-brutal-yellow text-brutal-yellow-foreground">
+            <tr className="bg-background text-foreground">
               <th className="px-3 py-3 text-left font-black uppercase">Category</th>
               <th className="px-3 py-3 text-left font-black uppercase">Best country</th>
               <th className="px-3 py-3 text-right font-black uppercase">US spend / cap</th>
@@ -77,7 +77,7 @@ export default function EfficiencyPage() {
                       {legislationSlug ? (
                         <Link
                           href={getLegislationPath(legislationSlug)}
-                          className="text-xs font-black uppercase tracking-wide text-brutal-pink underline underline-offset-4"
+                          className="text-xs font-black uppercase tracking-wide text-foreground underline underline-offset-4"
                         >
                           Open legislation
                         </Link>
@@ -99,7 +99,7 @@ export default function EfficiencyPage() {
                   <td className="px-3 py-3 text-right font-black text-foreground">
                     {row.efficiency.rank}/{row.efficiency.totalCountries}
                   </td>
-                  <td className="px-3 py-3 text-right font-black text-brutal-cyan">
+                  <td className="px-3 py-3 text-right font-black text-background">
                     {row.efficiency.overspendRatio.toFixed(1)}x
                   </td>
                   <td className="px-3 py-3 text-right font-black text-foreground">

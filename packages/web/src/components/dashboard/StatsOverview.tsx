@@ -17,14 +17,14 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
         <Tooltip.Provider>
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <Card className="border-4 border-primary hover:border-brutal-yellow hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <Card className="border-4 border-primary hover:border-background hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
                 <Card.Content className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-bold uppercase text-muted-foreground">Wishes</p>
                       <p className="text-4xl font-black text-foreground">{stats.wishes}</p>
                     </div>
-                    <Star className="h-12 w-12 text-brutal-yellow" />
+                    <Star className="h-12 w-12 text-background" />
                   </div>
                 </Card.Content>
               </Card>
@@ -37,26 +37,26 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
           </Tooltip>
         </Tooltip.Provider>
 
-        <Card className="border-4 border-primary hover:border-brutal-pink hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+        <Card className="border-4 border-primary hover:border-foreground hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
           <Card.Content className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold uppercase text-muted-foreground">Referrals</p>
-                <p className="text-4xl font-black text-brutal-pink">{stats.referrals}</p>
+                <p className="text-4xl font-black text-foreground">{stats.referrals}</p>
               </div>
-              <Users className="h-12 w-12 text-brutal-pink" />
+              <Users className="h-12 w-12 text-foreground" />
             </div>
           </Card.Content>
         </Card>
 
-        <Card className="border-4 border-primary hover:border-brutal-cyan hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+        <Card className="border-4 border-primary hover:border-background hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
           <Card.Content className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold uppercase text-muted-foreground">Comparisons</p>
-                <p className="text-4xl font-black text-brutal-cyan">{stats.wishocraticAllocations}</p>
+                <p className="text-4xl font-black text-background">{stats.wishocraticAllocations}</p>
               </div>
-              <BarChart3 className="h-12 w-12 text-brutal-cyan" />
+              <BarChart3 className="h-12 w-12 text-background" />
             </div>
           </Card.Content>
         </Card>
@@ -64,14 +64,14 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
         <Tooltip.Provider>
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <Card className="border-4 border-primary hover:border-brutal-yellow hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <Card className="border-4 border-primary hover:border-background hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
                 <Card.Content className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-bold uppercase text-muted-foreground">Badges</p>
                       <p className="text-4xl font-black text-foreground">{stats.badges}</p>
                     </div>
-                    <Award className="h-12 w-12 text-brutal-yellow" />
+                    <Award className="h-12 w-12 text-background" />
                   </div>
                 </Card.Content>
               </Card>

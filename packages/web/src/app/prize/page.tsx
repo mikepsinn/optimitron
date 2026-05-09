@@ -51,15 +51,15 @@ const levels = [
     level: "STEP 1",
     title: "DEPOSIT",
     description: `Deposit USDC. You get PRIZE shares. Projected growth: ${poolReturn} annually if the thresholds miss.`,
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
+    color: "bg-foreground",
+    textColor: "text-background",
   },
   {
     level: "STEP 2",
     title: "RECRUIT",
     description: `Share your referral link. ${REFERRAL.earnOne} ${REFERRAL.noDeposit}`,
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
 ];
 
@@ -102,7 +102,7 @@ export default async function PrizePage() {
 
       {/* HERO — Arcade Cabinet */}
       <section className="mb-16 text-center">
-        <p className="font-pixel text-sm font-bold uppercase tracking-[0.3em] text-brutal-pink mb-4">
+        <p className="font-pixel text-sm font-bold uppercase tracking-[0.3em] text-foreground mb-4">
           The Earth Optimization Game
         </p>
         <h1 className="font-pixel text-4xl md:text-6xl font-black uppercase tracking-tight text-foreground mb-4">
@@ -129,7 +129,7 @@ export default async function PrizePage() {
             metric: <>{incomeGain}+ INCOME</>,
             description: <>Humanity gets its act together. Your deposit stays in the prize pool. Your expected upside is {incomeGain} more per capita lifetime income and {haleGain} extra healthy years.</>,
           }}
-          footer={<>Recruit voters too? You earn {POINTS}. {PRIZE_OUTCOMES.successShort}<span className="font-black text-brutal-pink"> Dominant assurance design.</span></>}
+          footer={<>Recruit voters too? You earn {POINTS}. {PRIZE_OUTCOMES.successShort}<span className="font-black text-foreground"> Dominant assurance design.</span></>}
         />
       </section>
 
@@ -142,7 +142,7 @@ export default async function PrizePage() {
           Two numbers. If both rise by 2040, the pool splits to {POINT} holders. If not, depositors claim principal + projected growth.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="font-mono text-lg font-black mb-2 uppercase">
               Median Healthy Life Years
             </h3>
@@ -150,9 +150,9 @@ export default async function PrizePage() {
               <span>Now: {fmtParam(GLOBAL_HALE_CURRENT)}</span>
               <span>Target: {fmtParam(TREATY_PROJECTED_HALE_YEAR_15)}</span>
             </div>
-            <div className="h-4 bg-brutal-cyan-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
+            <div className="h-4 bg-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
               <div
-                className="h-full bg-brutal-cyan-foreground"
+                className="h-full bg-foreground"
                 style={{ width: `${(GLOBAL_HALE_CURRENT.value / TREATY_PROJECTED_HALE_YEAR_15.value * 100).toFixed(0)}%` }}
               />
             </div>
@@ -160,7 +160,7 @@ export default async function PrizePage() {
               +{fmtParam(TREATY_HALE_GAIN_YEAR_15)} by 2040
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="font-mono text-lg font-black mb-2 uppercase">
               Median Real After-Tax Income
             </h3>
@@ -168,9 +168,9 @@ export default async function PrizePage() {
               <span>Now: {fmtParam(GLOBAL_AVG_INCOME_2025)}</span>
               <span>Target: {fmtParam(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15)}</span>
             </div>
-            <div className="h-4 bg-brutal-yellow-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
+            <div className="h-4 bg-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
               <div
-                className="h-full bg-brutal-yellow-foreground"
+                className="h-full bg-foreground"
                 style={{ width: `${(GLOBAL_AVG_INCOME_2025.value / TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value * 100).toFixed(0)}%` }}
               />
             </div>
@@ -183,7 +183,7 @@ export default async function PrizePage() {
 
       {/* Insert Coin - Deposit Section */}
       <section id="invest" className="mb-16">
-        <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-primary bg-foreground text-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="font-pixel text-2xl font-black uppercase mb-4">
             Insert Coin
           </h2>
@@ -246,7 +246,7 @@ export default async function PrizePage() {
             </AccordionHeader>
             <AccordionContent className="px-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+                <div className="border-4 border-primary bg-background text-foreground p-4">
                   <h4 className="font-mono font-black uppercase text-xs mb-2">
                     Zero Insider Advantage
                   </h4>
@@ -255,7 +255,7 @@ export default async function PrizePage() {
                     keys. Your $100 gets exactly the same terms as $100,000.
                   </p>
                 </div>
-                <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+                <div className="border-4 border-primary bg-background text-foreground p-4">
                   <h4 className="font-mono font-black uppercase text-xs mb-2">
                     Fully On-Chain
                   </h4>
@@ -297,7 +297,7 @@ export default async function PrizePage() {
                   item={contractsSourceLink}
                   variant="custom"
                   external
-                  className="inline-flex items-center text-xs font-black text-brutal-pink uppercase hover:text-foreground transition-colors"
+                  className="inline-flex items-center text-xs font-black text-foreground uppercase hover:text-foreground transition-colors"
                 >
                   VoterPrizeTreasury.sol, VoteToken.sol — full source on GitHub &rarr;
                 </NavItemLink>
@@ -335,7 +335,7 @@ export default async function PrizePage() {
         </div>
 
         {/* Final CTA */}
-        <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+        <div className="border-4 border-primary bg-foreground text-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
           <h2 className="font-pixel text-2xl font-black mb-3 uppercase">
             Play the Game
           </h2>

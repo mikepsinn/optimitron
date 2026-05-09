@@ -4,9 +4,9 @@ import { formatWish, useTreasuryData } from "@/hooks/useTreasuryData";
 import { WISHOCRATIC_ITEMS, type WishocraticItemId } from "@/lib/wishocracy-data";
 
 const BAR_COLORS = [
-  "bg-brutal-pink",
-  "bg-brutal-cyan",
-  "bg-brutal-yellow",
+  "bg-foreground",
+  "bg-background",
+  "bg-background",
   "bg-green-400",
   "bg-purple-400",
   "bg-orange-400",
@@ -51,7 +51,7 @@ export function TreasuryAllocationViz() {
       <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         {/* Flow diagram */}
         <div className="flex flex-col md:flex-row items-stretch gap-0 mb-6">
-          <div className="flex-1 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4 text-center">
+          <div className="flex-1 border-4 border-primary bg-background text-foreground p-4 text-center">
             <div className="text-xs font-black uppercase mb-1">
               Step 1
             </div>
@@ -67,7 +67,7 @@ export function TreasuryAllocationViz() {
               &rarr;
             </span>
           </div>
-          <div className="flex-1 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4 text-center">
+          <div className="flex-1 border-4 border-primary bg-background text-foreground p-4 text-center">
             <div className="text-xs font-black uppercase mb-1">
               Step 2
             </div>
@@ -83,7 +83,7 @@ export function TreasuryAllocationViz() {
               &rarr;
             </span>
           </div>
-          <div className="flex-1 border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-4 text-center">
+          <div className="flex-1 border-4 border-primary bg-foreground text-background p-4 text-center">
             <div className="text-xs font-black uppercase mb-1">
               Step 3
             </div>
@@ -136,7 +136,7 @@ export function TreasuryAllocationViz() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Wishocratic UBI */}
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-5">
+          <div className="border-4 border-primary bg-background text-foreground p-5">
             <h3 className="font-black uppercase text-sm mb-3">
               UBI Is a Category, Not a Guarantee
             </h3>
@@ -150,7 +150,7 @@ export function TreasuryAllocationViz() {
           </div>
 
           {/* Politician funding note */}
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-5">
+          <div className="border-4 border-primary bg-foreground text-background p-5">
             <h3 className="font-black uppercase text-sm mb-3">
               Politician Funding? That&apos;s IABs.
             </h3>

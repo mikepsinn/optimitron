@@ -2,9 +2,9 @@ import { cn } from "@/lib/utils";
 
 const colorMap = {
   red: "bg-brutal-red",
-  cyan: "bg-brutal-cyan",
+  cyan: "bg-background",
   green: "bg-brutal-green",
-  yellow: "bg-brutal-yellow",
+  yellow: "bg-background",
 } as const;
 
 interface SpendingBarProps {

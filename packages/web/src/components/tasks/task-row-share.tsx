@@ -227,7 +227,7 @@ export function ReminderComposer({
 
       {/* Primary CTA */}
       <Button
-        className="w-full cursor-pointer justify-center border-4 border-foreground bg-brutal-pink font-black uppercase text-brutal-pink-foreground !shadow-none transition-colors hover:bg-brutal-pink/85"
+        className="w-full cursor-pointer justify-center border-4 border-foreground bg-foreground font-black uppercase text-background !shadow-none transition-colors hover:bg-foreground/85"
         disabled={copyDisabled}
         size="sm"
         type="button"
@@ -489,8 +489,8 @@ export function TaskRowShare({
 
   const triggerClassName =
     size === "lg"
-      ? "inline-flex w-full items-center justify-center border-4 border-foreground bg-brutal-pink px-6 py-4 text-lg font-black uppercase tracking-wide text-brutal-pink-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:text-xl"
-      : "inline-flex items-center justify-center border-2 border-foreground bg-brutal-pink px-3 py-1 text-xs font-black uppercase tracking-wide text-brutal-pink-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]";
+      ? "inline-flex w-full items-center justify-center border-4 border-foreground bg-foreground px-6 py-4 text-lg font-black uppercase tracking-wide text-background shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:text-xl"
+      : "inline-flex items-center justify-center border-2 border-foreground bg-foreground px-3 py-1 text-xs font-black uppercase tracking-wide text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]";
   const triggerLabel = size === "lg" ? "Send Reminder" : "Remind";
 
   const composerProps = {

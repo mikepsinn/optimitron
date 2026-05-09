@@ -82,7 +82,7 @@ export function ImpactLedgerCard({ votesLogged }: ImpactLedgerCardProps) {
           </div>
         </section>
 
-        <section className="border-4 border-primary p-4 bg-brutal-yellow space-y-3">
+        <section className="border-4 border-primary p-4 bg-background space-y-3">
           <div className="flex items-center gap-2 font-black text-lg uppercase">
             <Clock3 className="h-5 w-5" />
             Time ROI
@@ -93,7 +93,7 @@ export function ImpactLedgerCard({ votesLogged }: ImpactLedgerCardProps) {
             value, using the $150K-per-year DALY/QALY benchmark.
           </p>
           <p className="font-bold">
-            <Heart className="h-4 w-4 inline text-brutal-pink fill-brutal-pink" />{" "}
+            <Heart className="h-4 w-4 inline text-foreground fill-foreground" />{" "}
             You&apos;ve saved <span className="font-black">{formatLives(lifeMilestone.current)}</span> lives.
             {lifeMilestone.current < lifeMilestone.next && (
               <> One more recruit takes you to <span className="font-black">{formatLives(lifeMilestone.next)}</span>.</>

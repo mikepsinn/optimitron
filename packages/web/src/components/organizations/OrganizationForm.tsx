@@ -77,7 +77,7 @@ export function OrganizationForm({ onSuccess, onCancel, compact = false, initial
     if (formSubmitted && createdOrg) {
         return (
             <div className={`space-y-4 ${compact ? "p-0" : "p-8 bg-background border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"}`}>
-                <div className="p-4 bg-brutal-yellow border-4 border-primary">
+                <div className="p-4 bg-background border-4 border-primary">
                     <div className="flex items-center gap-2 mb-2">
                         <CheckCircle className="h-5 w-5 text-foreground" />
                         <span className="font-black uppercase text-foreground">Submitted — Pending Review</span>
@@ -92,7 +92,7 @@ export function OrganizationForm({ onSuccess, onCancel, compact = false, initial
                     <div className="flex justify-center">
                         <Button
                             onClick={() => router.push(getOrganizationManagementHref(createdOrg.id))}
-                            className="bg-foreground text-background border-4 border-primary hover:bg-brutal-pink hover:text-foreground font-black uppercase"
+                            className="bg-foreground text-background border-4 border-primary hover:bg-foreground hover:text-foreground font-black uppercase"
                         >
                             Manage Organization
                         </Button>
@@ -168,7 +168,7 @@ export function OrganizationForm({ onSuccess, onCancel, compact = false, initial
                     <Button
                         type="submit"
                         disabled={isCreating}
-                        className="bg-foreground text-background border-4 border-primary hover:bg-brutal-pink hover:text-foreground font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        className="bg-foreground text-background border-4 border-primary hover:bg-foreground hover:text-foreground font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     >
                         {isCreating ? (
                             <>

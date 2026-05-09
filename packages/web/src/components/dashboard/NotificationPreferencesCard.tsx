@@ -99,7 +99,7 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
           </div>
         ))}
 
-        <div className="p-4 border-2 border-dashed border-primary bg-brutal-yellow">
+        <div className="p-4 border-2 border-dashed border-primary bg-background">
           <p className="text-sm font-bold text-center">
             Notifications are only useful if you can ignore the useless ones.
           </p>

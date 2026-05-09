@@ -33,7 +33,7 @@ export default function IABPage() {
       {/* Hero */}
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
             Phase 2 — After the Referendum
           </p>
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
@@ -44,7 +44,7 @@ export default function IABPage() {
             <NavItemLink
               item={prizeLink}
               variant="custom"
-              className="font-black text-brutal-pink underline hover:text-foreground transition-colors"
+              className="font-black text-foreground underline hover:text-foreground transition-colors"
             >
               Earth Optimization Prize referendum
             </NavItemLink>{" "}
@@ -78,7 +78,7 @@ export default function IABPage() {
           split by smart contract. No committees. No discretion. Just arithmetic.
         </p>
         <div className="space-y-4">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-12 h-12 bg-foreground text-background flex items-center justify-center text-lg font-black shrink-0">
                 80%
@@ -101,7 +101,7 @@ export default function IABPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <div className="flex items-center gap-3 mb-3">
                 <span className="w-12 h-12 bg-foreground text-background flex items-center justify-center text-lg font-black shrink-0">
                   10%
@@ -122,7 +122,7 @@ export default function IABPage() {
               </div>
             </div>
 
-            <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <div className="flex items-center gap-3 mb-3">
                 <span className="w-12 h-12 bg-foreground text-background flex items-center justify-center text-lg font-black shrink-0">
                   10%
@@ -161,7 +161,7 @@ export default function IABPage() {
           Risk &amp; Reward
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-black uppercase mb-2">
               Treaty Fails
             </div>
@@ -175,7 +175,7 @@ export default function IABPage() {
               of playing for {bondReturnPct} annual returns.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-black uppercase mb-2">
               Treaty Succeeds
             </div>
@@ -220,7 +220,7 @@ export default function IABPage() {
           Prize vs IABs — Two Phases, One Goal
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-black uppercase mb-2">
               Phase 1 — Now
             </div>
@@ -229,15 +229,15 @@ export default function IABPage() {
             </h3>
             <ul className="space-y-2 text-sm font-bold">
               <li className="flex gap-2">
-                <span className="text-brutal-cyan-foreground font-black shrink-0">1.</span>
+                <span className="text-foreground font-black shrink-0">1.</span>
                 <span>Deposit → PRIZE shares (Prize fund yield)</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-brutal-cyan-foreground font-black shrink-0">2.</span>
+                <span className="text-foreground font-black shrink-0">2.</span>
                 <span>Recruit verified voters → earn {POINTS}</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-brutal-cyan-foreground font-black shrink-0">3.</span>
+                <span className="text-foreground font-black shrink-0">3.</span>
                 <span>Prove demand for the 1% Treaty via global referendum</span>
               </li>
             </ul>
@@ -247,13 +247,13 @@ export default function IABPage() {
             <NavItemLink
               item={prizeLink}
               variant="custom"
-              className="inline-flex items-center mt-4 text-sm font-black text-brutal-cyan-foreground uppercase underline decoration-current underline-offset-2 hover:opacity-80 transition-opacity"
+              className="inline-flex items-center mt-4 text-sm font-black text-foreground uppercase underline decoration-current underline-offset-2 hover:opacity-80 transition-opacity"
             >
               Go to Prize &rarr;
             </NavItemLink>
           </div>
 
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-black uppercase mb-2">
               Phase 2 — After Demand Is Proven
             </div>
@@ -262,15 +262,15 @@ export default function IABPage() {
             </h3>
             <ul className="space-y-2 text-sm font-bold">
               <li className="flex gap-2">
-                <span className="text-brutal-pink-foreground font-black shrink-0">1.</span>
+                <span className="text-background font-black shrink-0">1.</span>
                 <span>Raise ~$1B to lobby for treaty passage</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-brutal-pink-foreground font-black shrink-0">2.</span>
+                <span className="text-background font-black shrink-0">2.</span>
                 <span>Treaty revenue splits 80/10/10 by smart contract</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-brutal-pink-foreground font-black shrink-0">3.</span>
+                <span className="text-background font-black shrink-0">3.</span>
                 <span>Bondholders earn projected {bondReturnPct} annual returns</span>
               </li>
             </ul>
@@ -292,11 +292,11 @@ export default function IABPage() {
         <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-center">
             {[
-              { label: "IAB investment", detail: "funds the lobbying campaign", color: "bg-brutal-yellow text-brutal-yellow-foreground" },
-              { label: "Treaty passes", detail: "1% military → clinical trials", color: "bg-brutal-cyan text-brutal-cyan-foreground" },
-              { label: "Diseases cured", detail: "80% funds pragmatic trials", color: "bg-brutal-cyan text-brutal-cyan-foreground" },
-              { label: "GDP rises", detail: "healthier people earn more", color: "bg-brutal-pink text-brutal-pink-foreground" },
-              { label: "Everyone lobbies", detail: "for 1% → 2% → 5%", color: "bg-brutal-yellow text-brutal-yellow-foreground" },
+              { label: "IAB investment", detail: "funds the lobbying campaign", color: "bg-background text-foreground" },
+              { label: "Treaty passes", detail: "1% military → clinical trials", color: "bg-background text-foreground" },
+              { label: "Diseases cured", detail: "80% funds pragmatic trials", color: "bg-background text-foreground" },
+              { label: "GDP rises", detail: "healthier people earn more", color: "bg-foreground text-background" },
+              { label: "Everyone lobbies", detail: "for 1% → 2% → 5%", color: "bg-background text-foreground" },
             ].map((step, i) => (
               <div key={step.label} className="flex flex-col items-center">
                 <div className={`w-full border-4 border-primary ${step.color} p-3`}>
@@ -372,7 +372,7 @@ export default function IABPage() {
             item={contractsSourceLink}
             variant="custom"
             external
-            className="inline-flex items-center text-sm font-black text-brutal-pink uppercase hover:text-foreground transition-colors"
+            className="inline-flex items-center text-sm font-black text-foreground uppercase hover:text-foreground transition-colors"
           >
             Full source on GitHub &rarr;
           </NavItemLink>
@@ -380,7 +380,7 @@ export default function IABPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="card bg-brutal-yellow text-brutal-yellow-foreground border-primary text-center">
+      <section className="card bg-background text-foreground border-primary text-center">
         <h2 className="text-2xl font-black mb-3 uppercase">
           Phase 1 First
         </h2>

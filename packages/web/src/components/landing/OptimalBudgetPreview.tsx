@@ -96,7 +96,7 @@ export function OptimalBudgetPreview() {
                 <th className="py-3 px-4 text-center font-black uppercase text-sm text-brutal-green" colSpan={2}>
                   Best Performer
                 </th>
-                <th className="py-3 px-4 text-center font-black uppercase text-sm text-brutal-yellow">
+                <th className="py-3 px-4 text-center font-black uppercase text-sm text-background">
                   Overspend
                 </th>
               </tr>
@@ -120,7 +120,7 @@ export function OptimalBudgetPreview() {
                     {row.bestLabel} — {row.bestOutcome}
                   </td>
                   <td className="py-3 px-4 text-center">
-                    <span className="inline-block px-3 py-1 font-black text-lg bg-brutal-yellow text-brutal-yellow-foreground border-2 border-primary">
+                    <span className="inline-block px-3 py-1 font-black text-lg bg-background text-foreground border-2 border-primary">
                       {row.ratio}
                     </span>
                   </td>

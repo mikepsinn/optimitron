@@ -85,17 +85,17 @@ export function WishocracyLandingSection() {
   const topItem = hasCommunityData ? rows[0] : null;
 
   return (
-    <section className="border-y-4 border-primary bg-brutal-cyan">
+    <section className="border-y-4 border-primary bg-background">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <div>
             <div className="mb-4 inline-flex border-4 border-primary bg-foreground px-3 py-1 text-xs font-black uppercase text-background">
               Wishocracy Live
             </div>
-            <h2 className="text-3xl font-black uppercase tracking-tight text-brutal-cyan-foreground sm:text-4xl">
+            <h2 className="text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">
               Community Budget Priorities
             </h2>
-            <p className="mt-4 max-w-2xl text-base font-bold leading-relaxed text-brutal-cyan-foreground">
+            <p className="mt-4 max-w-2xl text-base font-bold leading-relaxed text-foreground">
               Save your allocation, compare it with current government spending,
               and see which priorities rise to the top across the community.
             </p>
@@ -130,7 +130,7 @@ export function WishocracyLandingSection() {
               <NavItemLink
                 item={wishocracyLink}
                 variant="custom"
-                className="inline-flex items-center justify-center border-4 border-primary bg-brutal-pink px-8 py-3 text-sm font-black uppercase text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-primary bg-foreground px-8 py-3 text-sm font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
               >
                 Make Your Allocation
               </NavItemLink>
@@ -143,7 +143,7 @@ export function WishocracyLandingSection() {
               <NavItemLink
                 item={alignmentLink}
                 variant="custom"
-                className="inline-flex items-center justify-center border-4 border-primary bg-brutal-yellow px-8 py-3 text-sm font-black uppercase text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
               >
                 See Alignment Reports
               </NavItemLink>
@@ -180,7 +180,7 @@ export function WishocracyLandingSection() {
                   <div className="space-y-2">
                     <div className="h-5 overflow-hidden border-4 border-primary bg-muted">
                       <div
-                        className="h-full bg-brutal-pink"
+                        className="h-full bg-foreground"
                         style={{ width: `${row.communityPercent}%` }}
                       />
                     </div>

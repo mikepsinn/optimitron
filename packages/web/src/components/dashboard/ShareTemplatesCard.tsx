@@ -87,15 +87,15 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
           {templates.map((template, index) => (
             <div
               key={index}
-              className="border-4 border-primary p-4 bg-background hover:bg-brutal-yellow transition-colors"
+              className="border-4 border-primary p-4 bg-background hover:bg-background transition-colors"
             >
               <div className="flex items-start justify-between gap-4 mb-2">
-                <p className="font-black uppercase text-sm text-brutal-cyan">{template.label}</p>
+                <p className="font-black uppercase text-sm text-background">{template.label}</p>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => void copyTemplate(template.text, index)}
-                  className="border-4 border-primary hover:bg-brutal-pink shrink-0"
+                  className="border-4 border-primary hover:bg-foreground shrink-0"
                 >
                   {copiedIndex === index ? (
                     <>

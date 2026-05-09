@@ -52,7 +52,7 @@ export function MetricsComparison({
       </h2>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <BrutalCard bgColor="pink" shadowSize={8} padding="md">
-          <div className="mb-4 text-xs font-black uppercase tracking-[0.15em] text-brutal-pink-foreground">
+          <div className="mb-4 text-xs font-black uppercase tracking-[0.15em] text-background">
             Earth Agency Optimizes For
           </div>
           <div className="space-y-3">

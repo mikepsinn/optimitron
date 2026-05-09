@@ -46,7 +46,7 @@ export function LeaderboardCard({ leaderboard, user, stats }: LeaderboardCardPro
               <div
                 key={`${entry.rank}-${entry.userId}`}
                 className={`flex items-center justify-between p-3 border-4 border-primary ${
-                  isCurrentUser ? "bg-brutal-pink" : "bg-background"
+                  isCurrentUser ? "bg-foreground" : "bg-background"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -58,7 +58,7 @@ export function LeaderboardCard({ leaderboard, user, stats }: LeaderboardCardPro
                       className="h-10 w-10 rounded-full border-4 border-primary object-cover"
                     />
                   ) : (
-                    <div className="h-10 w-10 rounded-full bg-brutal-cyan border-4 border-primary flex items-center justify-center font-black text-sm">
+                    <div className="h-10 w-10 rounded-full bg-background border-4 border-primary flex items-center justify-center font-black text-sm">
                       {getInitials(entry.name)}
                     </div>
                   )}

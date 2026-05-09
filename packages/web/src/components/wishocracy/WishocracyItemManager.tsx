@@ -83,7 +83,7 @@ export function WishocracyItemManager({
                           border-2 border-primary text-sm font-bold
                           transition-all
                           ${canRemove
-                            ? "bg-brutal-cyan text-brutal-cyan-foreground hover:bg-brutal-red hover:text-brutal-red-foreground"
+                            ? "bg-background text-foreground hover:bg-brutal-red hover:text-brutal-red-foreground"
                             : "bg-muted text-muted-foreground cursor-not-allowed"
                           }
                         `}

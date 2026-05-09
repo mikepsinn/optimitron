@@ -56,7 +56,7 @@ export function TaskAssignee({
         <Link href={personHref} className="shrink-0" aria-label={`Open ${displayLabel}`}>
           <Avatar className={`${avatarSize} border-foreground bg-muted shrink-0`}>
             <Avatar.Image alt={displayLabel} src={imageSrc} />
-            <Avatar.Fallback className="bg-brutal-pink font-black text-background">
+            <Avatar.Fallback className="bg-foreground font-black text-background">
               {initials || "?"}
             </Avatar.Fallback>
           </Avatar>
@@ -64,13 +64,13 @@ export function TaskAssignee({
       ) : (
         <Avatar className={`${avatarSize} border-foreground bg-muted shrink-0`}>
           <Avatar.Image alt={displayLabel} src={imageSrc} />
-          <Avatar.Fallback className="bg-brutal-pink font-black text-background">
+          <Avatar.Fallback className="bg-foreground font-black text-background">
             {initials || "?"}
           </Avatar.Fallback>
         </Avatar>
       )}
       <div className="min-w-0 space-y-0.5">
-        <p className="text-xs font-bold uppercase text-brutal-pink">{eyebrowLabel}</p>
+        <p className="text-xs font-bold uppercase text-foreground">{eyebrowLabel}</p>
         <p className={`${nameSize} font-black`}>
           {personHref ? (
             <Link className="underline underline-offset-4" href={personHref}>

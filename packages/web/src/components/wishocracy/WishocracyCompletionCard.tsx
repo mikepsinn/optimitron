@@ -74,7 +74,7 @@ export function WishocracyCompletionCard({
     <div className="mx-auto mb-8 mt-12 max-w-3xl">
       <div className="mb-6 text-center">
         <div className="mb-4 flex justify-center">
-          <CheckCircle2 className="h-16 w-16 text-brutal-cyan" />
+          <CheckCircle2 className="h-16 w-16 text-background" />
         </div>
         <h2 className="text-2xl font-black uppercase">Well Done</h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export function WishocracyCompletionCard({
         <div className="space-y-3">
           {topPriorities.map((priority, index) => (
             <div key={priority.itemId} className="flex items-center gap-3">
-              <span className="w-8 text-2xl font-black text-brutal-pink">{index + 1}.</span>
+              <span className="w-8 text-2xl font-black text-foreground">{index + 1}.</span>
               <span className="text-2xl">{priority.item.icon}</span>
               <div className="flex-1">
                 <div className="text-sm font-bold uppercase">{priority.item.name}</div>
@@ -121,9 +121,9 @@ export function WishocracyCompletionCard({
         </div>
       </div>
 
-      <div className="mb-6 border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="mb-3 text-center text-base font-black uppercase text-brutal-cyan-foreground">Share Your Referral Link</h3>
-        <p className="mb-4 text-center text-xs text-brutal-cyan-foreground">
+      <div className="mb-6 border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h3 className="mb-3 text-center text-base font-black uppercase text-foreground">Share Your Referral Link</h3>
+        <p className="mb-4 text-center text-xs text-foreground">
           More humans = better data. Basic statistics, really.
         </p>
         <div className="mb-4">
@@ -138,30 +138,30 @@ export function WishocracyCompletionCard({
           {isAuthenticated ? (
             <>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
                 <span>Your allocations are saved. Unlike most government records, these ones are actually accurate.</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
                 <span>Share your referral link. More humans = better data. Basic statistics, really.</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
                 <span>Review the allocations below. Change your mind as often as you like — that&apos;s not indecisiveness, it&apos;s updating on new information.</span>
               </div>
             </>
           ) : (
             <>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
                 <span>Sign in to keep these. Otherwise they&apos;ll vanish, which is what your species usually does with good data.</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
                 <span>Your referral link becomes personal once you create an account.</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
                 <span>Share now, sign up later. I&apos;ll wait. I&apos;ve been doing this for 4,237 years.</span>
               </div>
             </>

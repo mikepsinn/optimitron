@@ -17,7 +17,7 @@ const warDeaths = fmtParam(WAR_DEATHS_SINCE_1900);
 
 export function Slide170tOpportunityCost() {
   return (
-    <SierraSlideWrapper act={1} className="text-brutal-cyan">
+    <SierraSlideWrapper act={1} className="text-background">
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1600px] mx-auto">
         {/* Price tag */}
         <div className="font-pixel text-2xl md:text-3xl text-muted-foreground text-center">
@@ -41,12 +41,12 @@ export function Slide170tOpportunityCost() {
           </div>
 
           {/* What they could have bought */}
-          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 text-center">
-            <div className="font-pixel text-xl md:text-2xl text-brutal-cyan mb-4">
+          <div className="bg-muted border-2 border-background rounded-lg p-6 text-center">
+            <div className="font-pixel text-xl md:text-2xl text-background mb-4">
               WHAT THEY COULD HAVE BOUGHT
             </div>
             <div className="text-6xl md:text-8xl mb-4">🧪</div>
-            <div className="font-pixel text-4xl md:text-6xl text-brutal-cyan">
+            <div className="font-pixel text-4xl md:text-6xl text-background">
               {yearsOfTrials.toLocaleString()} YEARS
             </div>
             <div className="font-pixel text-lg md:text-xl text-muted-foreground mt-3">
@@ -56,16 +56,16 @@ export function Slide170tOpportunityCost() {
         </div>
 
         {/* Punchline */}
-        <div className="font-pixel text-2xl md:text-3xl text-brutal-yellow text-center">
+        <div className="font-pixel text-2xl md:text-3xl text-background text-center">
           They bought the other thing.
         </div>
 
         {/* 33× richer */}
         <div className="text-center">
-          <div className="font-pixel text-2xl md:text-3xl text-brutal-cyan">
+          <div className="font-pixel text-2xl md:text-3xl text-background">
             YOU WOULD BE {richerMultiple}× RICHER TODAY.
           </div>
-          <div className="font-pixel text-xl md:text-2xl text-brutal-yellow mt-1">
+          <div className="font-pixel text-xl md:text-2xl text-background mt-1">
             SO THAT&apos;S WHAT YOU&apos;RE GOING TO FIX.
           </div>
         </div>

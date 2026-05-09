@@ -30,7 +30,7 @@ export function CostEffectivenessComparison() {
       </p>
 
       {/* Giant animated multiplier */}
-      <div className="text-7xl sm:text-8xl md:text-9xl font-black text-brutal-pink mb-4">
+      <div className="text-7xl sm:text-8xl md:text-9xl font-black text-foreground mb-4">
         <CountUp value={multiplier} duration={2} suffix="×" />
       </div>
       <p className="text-xl sm:text-2xl font-black text-foreground uppercase mb-8">
@@ -42,7 +42,7 @@ export function CostEffectivenessComparison() {
         <div className="flex items-center gap-4 mb-3">
           <div className="text-right w-32 text-sm font-black text-foreground uppercase">Bed nets</div>
           <motion.div
-            className="h-10 bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary flex items-center px-3"
+            className="h-10 bg-background text-foreground border-4 border-primary flex items-center px-3"
             initial={reduced ? { width: "100%" } : { width: 0 }}
             animate={isInView ? { width: "100%" } : {}}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -54,7 +54,7 @@ export function CostEffectivenessComparison() {
         <div className="flex items-center gap-4">
           <div className="text-right w-32 text-sm font-black text-foreground uppercase">1% Treaty</div>
           <motion.div
-            className="h-10 bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary flex items-center px-3"
+            className="h-10 bg-background text-foreground border-4 border-primary flex items-center px-3"
             initial={reduced ? { width: "2%" } : { width: 0 }}
             animate={isInView ? { width: "2%" } : {}}
             transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -74,7 +74,7 @@ export function CostEffectivenessComparison() {
         <BrutalCard shadowSize={4} className="max-w-lg">
           <p className="text-sm font-bold text-foreground">
             Even adjusted for political risk at 1% success probability:{" "}
-            <span className="font-black text-brutal-pink">{riskAdjusted}&times;</span>{" "}
+            <span className="font-black text-foreground">{riskAdjusted}&times;</span>{" "}
             more cost-effective than bed nets.
           </p>
         </BrutalCard>

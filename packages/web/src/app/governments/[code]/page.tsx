@@ -101,7 +101,7 @@ function StatCard({ label, value, emoji, subtitle, source, url, barValue, barMax
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10px] font-bold text-brutal-pink hover:text-foreground transition-colors mt-2 block"
+            className="text-[10px] font-bold text-foreground hover:text-foreground transition-colors mt-2 block"
           >
             {source} ↗
           </a>
@@ -175,7 +175,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
       <section className="mb-12">
         <Link
           href="/governments"
-          className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+          className="text-sm font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
         >
           &larr; All Governments
         </Link>
@@ -198,7 +198,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
                 href={governmentProfile.governmentWebsite}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-block text-sm font-black uppercase text-brutal-pink hover:text-foreground transition-colors"
+                className="mt-2 inline-block text-sm font-black uppercase text-foreground hover:text-foreground transition-colors"
               >
                 Official government site ↗
               </a>
@@ -213,7 +213,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
           <BrutalCard bgColor="yellow" shadowSize={8} padding="lg">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <div className="text-xs font-black uppercase text-brutal-yellow-foreground mb-1">
+                <div className="text-xs font-black uppercase text-foreground mb-1">
                   ⚔️ Military : 🧪 Trials Ratio
                 </div>
                 <div className="text-3xl sm:text-4xl font-black text-brutal-red">
@@ -317,7 +317,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
             {gov.clinicalTrialSpending && (
               <div>
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-black uppercase text-brutal-cyan">
+                  <span className="text-xs font-black uppercase text-background">
                     🧪 Clinical Trials
                   </span>
                   <span className="text-sm font-black text-foreground">
@@ -342,7 +342,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
             {gov.govMedicalResearchSpending && (
               <div>
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-black uppercase text-brutal-cyan">
+                  <span className="text-xs font-black uppercase text-background">
                     🧬 Total Medical Research
                   </span>
                   <span className="text-sm font-black text-foreground">
@@ -469,7 +469,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
                           href={source.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs font-black text-brutal-pink hover:text-foreground transition-colors"
+                          className="text-xs font-black text-foreground hover:text-foreground transition-colors"
                         >
                           {source.label} ↗
                         </a>
@@ -578,10 +578,10 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
       {/* Politician Alignment */}
       <section className="mb-12">
         <BrutalCard bgColor="pink" shadowSize={8} padding="lg">
-          <h2 className="mb-3 text-2xl font-black uppercase text-brutal-pink-foreground">
+          <h2 className="mb-3 text-2xl font-black uppercase text-background">
             🗳️ {gov.name} Politician Alignment
           </h2>
-          <p className="mb-6 text-lg font-bold text-brutal-pink-foreground">
+          <p className="mb-6 text-lg font-bold text-background">
             Every politician&apos;s votes scored against what citizens actually want
             via pairwise comparison. The gap between what they vote for and what
             you&apos;d vote for, expressed as a single number.
@@ -666,7 +666,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-brutal-cyan p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <section className="border-4 border-primary bg-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
           🎯 Fix {gov.name}&apos;s Score
         </h2>

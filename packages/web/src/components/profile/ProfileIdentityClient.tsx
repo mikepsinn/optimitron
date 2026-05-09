@@ -40,7 +40,7 @@ export function ProfileIdentityClient({
       <div className="mb-8">
         <ArcadeTag>Identity</ArcadeTag>
         <h1 className="text-4xl sm:text-5xl font-black uppercase mb-2">
-          YOUR <span className="text-brutal-pink">PROFILE</span>
+          YOUR <span className="text-foreground">PROFILE</span>
         </h1>
         <p className="text-base font-bold text-muted-foreground">
           Tell the system who you are. Name, face, connected accounts, and the signature you

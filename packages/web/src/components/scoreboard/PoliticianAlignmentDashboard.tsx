@@ -15,7 +15,7 @@ export function PoliticianAlignmentDashboard({ data }: PoliticianAlignmentDashbo
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
       <section className="mb-12 space-y-3">
-        <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
           Public Scoreboard
         </p>
         <h1 className="text-4xl font-black uppercase tracking-tight text-foreground">
@@ -31,27 +31,27 @@ export function PoliticianAlignmentDashboard({ data }: PoliticianAlignmentDashbo
 
       {/* Metadata cards */}
       <section className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="border-4 border-primary bg-brutal-cyan p-4">
-          <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-cyan-foreground">
+        <div className="border-4 border-primary bg-background p-4">
+          <div className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
             Jurisdiction
           </div>
-          <div className="mt-2 text-2xl font-black text-brutal-cyan-foreground">
+          <div className="mt-2 text-2xl font-black text-foreground">
             {data.jurisdiction.name ?? data.jurisdiction.code}
           </div>
         </div>
-        <div className="border-4 border-primary bg-brutal-pink p-4">
-          <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink-foreground">
+        <div className="border-4 border-primary bg-foreground p-4">
+          <div className="text-xs font-black uppercase tracking-[0.2em] text-background">
             Comparisons
           </div>
-          <div className="mt-2 text-2xl font-black text-brutal-pink-foreground">
+          <div className="mt-2 text-2xl font-black text-background">
             {data.aggregationRun.allocationCount.toLocaleString()}
           </div>
         </div>
-        <div className="border-4 border-primary bg-brutal-yellow p-4">
-          <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
+        <div className="border-4 border-primary bg-background p-4">
+          <div className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
             Participants
           </div>
-          <div className="mt-2 text-2xl font-black text-brutal-yellow-foreground">
+          <div className="mt-2 text-2xl font-black text-foreground">
             {data.aggregationRun.participantCount.toLocaleString()}
           </div>
         </div>

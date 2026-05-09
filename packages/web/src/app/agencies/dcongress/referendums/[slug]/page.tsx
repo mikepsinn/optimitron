@@ -57,7 +57,7 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
       <section className="mb-10">
-        <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-3">
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground mb-3">
           Referendum
         </p>
         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground mb-4">
@@ -68,11 +68,11 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
             {referendum.description}
           </p>
         )}
-        <div className="mt-6 border-4 border-primary bg-brutal-yellow p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
+        <div className="mt-6 border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-foreground">
             Ballot Question
           </p>
-          <p className="text-xl font-black leading-snug text-brutal-yellow-foreground">
+          <p className="text-xl font-black leading-snug text-foreground">
             {referendum.question}
           </p>
         </div>
@@ -105,7 +105,7 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
               No
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
+          <div className="border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
             <div className="text-3xl font-black text-foreground">
               {stats.verifiedVotes}
             </div>

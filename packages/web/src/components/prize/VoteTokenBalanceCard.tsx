@@ -33,8 +33,8 @@ function formatVOTE(weiAmount: string): string {
 
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   CONFIRMED: { bg: "bg-green-100", text: "text-green-800" },
-  PENDING: { bg: "bg-brutal-yellow", text: "text-brutal-yellow-foreground" },
-  SUBMITTED: { bg: "bg-brutal-cyan", text: "text-brutal-cyan-foreground" },
+  PENDING: { bg: "bg-background", text: "text-foreground" },
+  SUBMITTED: { bg: "bg-background", text: "text-foreground" },
   FAILED: { bg: "bg-red-100", text: "text-red-700" },
 };
 
@@ -76,7 +76,7 @@ export function VoteTokenBalanceCard() {
 
   if (error === "sign-in") {
     return (
-      <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="text-lg font-black uppercase mb-2">
           Sign In to View {POINTS}
         </h3>
@@ -111,7 +111,7 @@ export function VoteTokenBalanceCard() {
           Your {POINTS}
         </h3>
         <div className="grid gap-4 grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+          <div className="border-4 border-primary bg-background text-foreground p-4">
             <div className="text-xs font-black uppercase">
               Confirmed Rewards
             </div>
@@ -119,7 +119,7 @@ export function VoteTokenBalanceCard() {
               {data.totalVotes}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+          <div className="border-4 border-primary bg-background text-foreground p-4">
             <div className="text-xs font-black uppercase">
               Total {POINT_NAME} Balance
             </div>
@@ -130,12 +130,12 @@ export function VoteTokenBalanceCard() {
         </div>
 
         {data.totalVotes === 0 && (
-          <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3">
+          <div className="mt-4 border-4 border-primary bg-background text-foreground p-3">
             <p className="text-xs font-bold">
               You don&apos;t have any {POINTS} yet. Share a{" "}
               <Link
                 href={ROUTES.referendum}
-                className="font-black text-brutal-pink underline hover:text-foreground"
+                className="font-black text-foreground underline hover:text-foreground"
               >
                 referendum
               </Link>{" "}
@@ -163,7 +163,7 @@ export function VoteTokenBalanceCard() {
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`${ROUTES.referendum}/${mint.referendum.slug}`}
-                      className="text-sm font-black text-foreground hover:text-brutal-pink transition-colors truncate block"
+                      className="text-sm font-black text-foreground hover:text-foreground transition-colors truncate block"
                     >
                       {mint.referendum.title}
                     </Link>
@@ -173,7 +173,7 @@ export function VoteTokenBalanceCard() {
                         <>
                           {" "}
                           &middot;{" "}
-                          <a href={`https://sepolia.basescan.org/tx/${mint.txHash}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-brutal-pink">
+                          <a href={`https://sepolia.basescan.org/tx/${mint.txHash}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
                             view tx
                           </a>
                         </>

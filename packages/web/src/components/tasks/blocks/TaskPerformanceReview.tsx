@@ -10,9 +10,9 @@ interface TaskPerformanceReviewProps {
 const TONE_CLASS: Record<string, string> = {
   red: "bg-brutal-red text-brutal-red-foreground",
   green: "bg-brutal-green text-brutal-green-foreground",
-  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-  pink: "bg-brutal-pink text-brutal-pink-foreground",
-  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  cyan: "bg-background text-foreground",
+  pink: "bg-foreground text-background",
+  yellow: "bg-background text-foreground",
 };
 
 export function TaskPerformanceReview({ context }: TaskPerformanceReviewProps) {
@@ -28,7 +28,7 @@ export function TaskPerformanceReview({ context }: TaskPerformanceReviewProps) {
   return (
     <BrutalCard bgColor="background" padding="lg">
       <div className="space-y-5">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground">
           Performance Review
         </p>
 

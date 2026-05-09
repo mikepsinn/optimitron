@@ -125,8 +125,8 @@ function getLeftBorderColor(task: TaskCardTask): string {
 
   if (task.status === "VERIFIED" && hasNegative) return "border-l-brutal-red";
   if (task.status === "VERIFIED" && hasPositive) return "border-l-brutal-green";
-  if (task.claimPolicy === "ASSIGNED_ONLY") return "border-l-brutal-yellow";
-  if (task.viewerHasClaim) return "border-l-brutal-cyan";
+  if (task.claimPolicy === "ASSIGNED_ONLY") return "border-l-background";
+  if (task.viewerHasClaim) return "border-l-background";
   return "border-l-muted";
 }
 
@@ -358,7 +358,7 @@ export function TaskRow({
           undefined
         }
       />
-      <Avatar.Fallback className="bg-brutal-pink text-xs font-black text-background">
+      <Avatar.Fallback className="bg-foreground text-xs font-black text-background">
         {fallbackInitials || "?"}
       </Avatar.Fallback>
     </Avatar>
@@ -439,7 +439,7 @@ export function TaskRow({
                 alt={targetLabel}
                 src={task.assigneePerson?.image ?? undefined}
               />
-              <Avatar.Fallback className="bg-brutal-pink text-xs font-black text-background">
+              <Avatar.Fallback className="bg-foreground text-xs font-black text-background">
                 {fallbackInitials || "?"}
               </Avatar.Fallback>
             </Avatar>
@@ -610,7 +610,7 @@ export function TaskRow({
                 alt={targetLabel}
                 src={task.assigneePerson?.image ?? undefined}
               />
-              <Avatar.Fallback className="bg-brutal-pink text-xs font-black text-background">
+              <Avatar.Fallback className="bg-foreground text-xs font-black text-background">
                 {fallbackInitials || "?"}
               </Avatar.Fallback>
             </Avatar>

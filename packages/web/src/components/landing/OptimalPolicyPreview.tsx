@@ -11,8 +11,8 @@ type Grade = "A" | "B" | "C" | "D" | "F";
 
 const GRADE_COLOR: Record<Grade, string> = {
   A: "bg-brutal-green text-brutal-green-foreground",
-  B: "bg-brutal-cyan text-brutal-cyan-foreground",
-  C: "bg-brutal-yellow text-brutal-yellow-foreground",
+  B: "bg-background text-foreground",
+  C: "bg-background text-foreground",
   D: "bg-brutal-red text-brutal-red-foreground",
   F: "bg-brutal-red text-brutal-red-foreground",
 };

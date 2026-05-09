@@ -11,22 +11,22 @@ const coreCards = [
     title: "Dominant Assurance",
     description:
       `Deposit into the Earth Optimization Prize fund. Plan fails after 15 years? Projected ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} return (based on VC-sector diversification). Plan succeeds? Everyone benefits from higher GDP. All figures are hypothetical projections, not guarantees.`,
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
+    color: "bg-foreground",
+    textColor: "text-background",
   },
   {
     title: "Two Terminal Metrics",
     description:
       "Median healthy life years and median real after-tax income. Health gets 50%. Income gets 50%. Everything else is an intermediate variable. If those two numbers don't move, nobody gets paid.",
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     title: "Referral Recruitment",
     description:
       `Share your referral link. ${REFERRAL.earnOne} Metrics hit targets after 15 years? ${PRIZE_OUTCOMES.successShort} ${REFERRAL.noDeposit}`,
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     title: "Anti-Capture",
@@ -39,7 +39,7 @@ const coreCards = [
 
 export function EarthOptimizationPrizeSection() {
   return (
-    <section className="bg-brutal-yellow text-brutal-yellow-foreground">
+    <section className="bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight">

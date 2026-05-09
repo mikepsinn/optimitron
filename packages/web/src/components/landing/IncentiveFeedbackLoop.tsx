@@ -24,8 +24,8 @@ const stakeholders = [
     name: "Bondholders",
     cut: "10%",
     label: "of treaty inflows",
-    color: "bg-brutal-yellow text-brutal-yellow-foreground",
-    borderColor: "border-brutal-yellow",
+    color: "bg-background text-foreground",
+    borderColor: "border-background",
     why: "Returns rise with each cycle. They buy more bonds.",
     action: "Buy more →",
   },
@@ -33,9 +33,9 @@ const stakeholders = [
     name: "Politicians",
     cut: "10%",
     label: "alignment rewards",
-    color: "bg-brutal-pink text-brutal-pink-foreground",
-    borderColor: "border-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
+    color: "bg-foreground text-background",
+    borderColor: "border-foreground",
+    textColor: "text-background",
     why: "Higher alignment scores = more campaign funding. They lobby for expansion.",
     action: "Lobby more →",
   },
@@ -43,8 +43,8 @@ const stakeholders = [
     name: "Citizens",
     cut: "80%",
     label: "to pragmatic trials",
-    color: "bg-brutal-cyan text-brutal-cyan-foreground",
-    borderColor: "border-brutal-cyan",
+    color: "bg-background text-foreground",
+    borderColor: "border-background",
     why: "Diseases cured. Income rises. They demand more treaty funding.",
     action: "Demand more →",
   },
@@ -94,9 +94,9 @@ export function IncentiveFeedbackLoop() {
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.87, 0, 0.13, 1] }}
             style={{ originX: 0 }}
-            className="w-[10%] bg-brutal-yellow border-r-2 border-primary flex items-center justify-center"
+            className="w-[10%] bg-background border-r-2 border-primary flex items-center justify-center"
           >
-            <span className="text-[10px] sm:text-xs font-black text-brutal-yellow-foreground whitespace-nowrap">
+            <span className="text-[10px] sm:text-xs font-black text-foreground whitespace-nowrap">
               10% Bonds
             </span>
           </motion.div>
@@ -105,9 +105,9 @@ export function IncentiveFeedbackLoop() {
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.6, delay: 0.4, ease: [0.87, 0, 0.13, 1] }}
             style={{ originX: 0 }}
-            className="w-[10%] bg-brutal-pink border-r-2 border-primary flex items-center justify-center"
+            className="w-[10%] bg-foreground border-r-2 border-primary flex items-center justify-center"
           >
-            <span className="text-[10px] sm:text-xs font-black text-brutal-pink-foreground whitespace-nowrap">
+            <span className="text-[10px] sm:text-xs font-black text-background whitespace-nowrap">
               10% Pols
             </span>
           </motion.div>
@@ -116,9 +116,9 @@ export function IncentiveFeedbackLoop() {
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.8, delay: 0.6, ease: [0.87, 0, 0.13, 1] }}
             style={{ originX: 0 }}
-            className="w-[80%] bg-brutal-cyan flex items-center justify-center"
+            className="w-[80%] bg-background flex items-center justify-center"
           >
-            <span className="text-xs sm:text-sm font-black text-brutal-cyan-foreground">
+            <span className="text-xs sm:text-sm font-black text-foreground">
               80% Pragmatic Trials
             </span>
           </motion.div>
@@ -186,7 +186,7 @@ export function IncentiveFeedbackLoop() {
         initial={reduced ? {} : { opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.4, delay: 1.1 }}
-        className="p-5 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-4"
+        className="p-5 border-4 border-primary bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-4"
       >
         <div className="flex items-baseline gap-3 flex-wrap">
           <h4 className="text-lg font-black uppercase">
@@ -220,7 +220,7 @@ export function IncentiveFeedbackLoop() {
         initial={reduced ? {} : { opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.4, delay: 1.4 }}
-        className="p-5 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6"
+        className="p-5 border-4 border-primary bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6"
       >
         <div className="flex items-baseline gap-3 flex-wrap">
           <h4 className="text-lg font-black uppercase">

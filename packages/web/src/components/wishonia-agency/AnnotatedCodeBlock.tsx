@@ -24,7 +24,7 @@ export function AnnotatedCodeBlock({
           <span className="text-xs font-black uppercase tracking-[0.1em] text-background/80">
             {language === "solidity" ? "Solidity 0.8.24" : "TypeScript"}
           </span>
-          <span className="text-xs font-black uppercase tracking-[0.1em] text-brutal-cyan">
+          <span className="text-xs font-black uppercase tracking-[0.1em] text-background">
             Deployed on Base Sepolia
           </span>
         </div>
@@ -32,7 +32,7 @@ export function AnnotatedCodeBlock({
           <code>{code}</code>
         </pre>
       </div>
-      <div className="mt-4 border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="mt-4 border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <p className="text-sm font-bold leading-relaxed text-foreground">
           {explanation}
         </p>

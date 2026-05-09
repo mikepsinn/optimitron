@@ -17,7 +17,7 @@ export function TaskContextList({ context, tokens }: TaskContextListProps) {
       <div className="space-y-6">
         {comparisons.map((group) => (
           <div key={group.heading} className="space-y-2">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground">
               {group.heading}
             </p>
             <ul className="space-y-1 text-sm font-bold">

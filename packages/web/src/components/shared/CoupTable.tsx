@@ -57,7 +57,7 @@ export function CoupTable({ coups }: CoupTableProps) {
   );
 
   const headerClass =
-    "text-left text-[10px] font-black uppercase text-muted-foreground px-3 py-2 cursor-pointer hover:text-brutal-pink transition-colors select-none";
+    "text-left text-[10px] font-black uppercase text-muted-foreground px-3 py-2 cursor-pointer hover:text-foreground transition-colors select-none";
   const staticHeaderClass =
     "text-left text-[10px] font-black uppercase text-muted-foreground px-3 py-2";
   const arrow = (key: SortKey) =>
@@ -105,7 +105,7 @@ export function CoupTable({ coups }: CoupTableProps) {
                     href={c.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-black text-foreground hover:text-brutal-pink transition-colors"
+                    className="text-sm font-black text-foreground hover:text-foreground transition-colors"
                   >
                     {c.country} ↗
                   </a>
@@ -155,7 +155,7 @@ export function CoupTable({ coups }: CoupTableProps) {
           <p className="text-[10px] font-black uppercase text-muted-foreground">
             Total Displaced
           </p>
-          <p className="text-xl font-black text-brutal-yellow">
+          <p className="text-xl font-black text-background">
             {formatNumber(totalDisplaced)}
           </p>
         </div>
@@ -163,7 +163,7 @@ export function CoupTable({ coups }: CoupTableProps) {
           <p className="text-[10px] font-black uppercase text-muted-foreground">
             Years of Dictatorship
           </p>
-          <p className="text-xl font-black text-brutal-cyan">
+          <p className="text-xl font-black text-background">
             {totalDictatorshipYears}
           </p>
         </div>

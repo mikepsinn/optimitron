@@ -4,9 +4,9 @@ import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { useEffect, useState } from "react";
 
 const ACTIONS = [
-  { emoji: "✊", action: "Recruit voters", result: "→ Hypercert", color: "text-brutal-cyan" },
-  { emoji: "💰", action: "Deposit to fund", result: "→ Hypercert", color: "text-brutal-yellow" },
-  { emoji: "⚖️", action: "Allocate budget", result: "→ Hypercert", color: "text-brutal-pink" },
+  { emoji: "✊", action: "Recruit voters", result: "→ Hypercert", color: "text-background" },
+  { emoji: "💰", action: "Deposit to fund", result: "→ Hypercert", color: "text-background" },
+  { emoji: "⚖️", action: "Allocate budget", result: "→ Hypercert", color: "text-foreground" },
 ];
 
 export function SlideImpactCertificates() {

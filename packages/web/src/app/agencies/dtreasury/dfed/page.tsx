@@ -19,32 +19,32 @@ const historicalCycles = [
     event: "Silver content in denarius reduced from 95% to 5%",
     result:
       "1,000% price increases. Empire fragments. Diocletian blames merchants.",
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
+    color: "bg-foreground",
+    textColor: "text-background",
   },
   {
     era: "France, 1790s",
     event: "National Assembly prints assignats backed by seized church land",
     result:
       "13,000% hyperinflation in five years. Revolution eats its children. Napoleon shows up.",
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     era: "Weimar Germany, 1920s",
     event: "Reichsbank prints marks to pay war reparations",
     result:
       "29,500% monthly inflation. Life savings buy a loaf of bread. Scapegoating begins.",
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     era: "United States, 1913–Present",
     event:
       "Federal Reserve created. Dollar immediately used to fund WWI without popular consent.",
     result: `Dollar loses 96% of value. ${fmtParam(MONEY_PRINTER_WAR_DEATHS)} across six wars funded by money printing. ${fmtParam({ ...CUMULATIVE_MILITARY_SPENDING_FED_ERA, unit: "USD" })} in cumulative military spending.`,
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
+    color: "bg-foreground",
+    textColor: "text-background",
   },
 ];
 
@@ -76,7 +76,7 @@ export default function DTreasuryDfedPage() {
       <div className="mb-8">
         <Link
           href={ROUTES.dtreasury}
-          className="text-sm font-black uppercase text-brutal-pink hover:underline"
+          className="text-sm font-black uppercase text-foreground hover:underline"
         >
           &larr; Back to dTreasury
         </Link>
@@ -146,7 +146,7 @@ export default function DTreasuryDfedPage() {
           a constraint. After that, it didn&apos;t.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Before 1971 (Gold-Anchored)
             </h3>
@@ -166,7 +166,7 @@ export default function DTreasuryDfedPage() {
               ))}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               After 1971 (Fiat Currency)
             </h3>
@@ -187,7 +187,7 @@ export default function DTreasuryDfedPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed">
             Median wages measured in gold equivalent have lost 93% of their
             value since 1971. Your species doubled its workforce and household
@@ -208,7 +208,7 @@ export default function DTreasuryDfedPage() {
           prices have already risen.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-3xl font-black">
               ~$4T
             </div>
@@ -216,7 +216,7 @@ export default function DTreasuryDfedPage() {
               Fed Created (2020)
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-3xl font-black">$4T</div>
             <div className="mt-1 text-xs font-black uppercase">
               Top 1% Gained (2020)

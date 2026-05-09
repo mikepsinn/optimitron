@@ -59,7 +59,7 @@ export function ReminderActionCard({
 
         <ShareOverdueListButtons
           economicLoss={formatCompactCurrency(currentEconomicValueUsdLost)}
-          labelClassName="text-brutal-pink-foreground"
+          labelClassName="text-background"
           livesLost={formatCompactCount(currentHumanLivesLost)}
           overdueCount={overdueTaskCount}
           tasksUrl={tasksUrl}

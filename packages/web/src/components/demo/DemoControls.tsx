@@ -66,7 +66,7 @@ export function DemoControls({
             onClick={onToggleCaptions}
             className={`px-2 py-2 rounded transition-all font-pixel text-[10px] ${
               isCaptionsVisible
-                ? "bg-brutal-cyan text-brutal-cyan-foreground"
+                ? "bg-background text-foreground"
                 : "bg-white/10 hover:bg-white/20 text-foreground"
             }`}
             aria-label={isCaptionsVisible ? "Hide captions" : "Show captions"}

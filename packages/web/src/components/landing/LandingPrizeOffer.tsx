@@ -20,10 +20,10 @@ import {
  */
 export function LandingPrizeOffer() {
   return (
-    <section className="bg-brutal-pink text-brutal-pink-foreground">
+    <section className="bg-foreground text-background">
       <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-black font-pixel uppercase tracking-tight text-brutal-pink-foreground sm:text-4xl md:text-5xl">
+          <h2 className="text-3xl font-black font-pixel uppercase tracking-tight text-background sm:text-4xl md:text-5xl">
             The Earth Optimization Game
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg font-bold">
@@ -57,7 +57,7 @@ export function LandingPrizeOffer() {
               Two Ways In
             </h3>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-5">
+              <div className="border-4 border-primary bg-foreground text-background p-5">
                 <div className="mb-1 text-xs font-black uppercase">
                   Have Capital?
                 </div>
@@ -68,7 +68,7 @@ export function LandingPrizeOffer() {
                   referral link for success-side upside.
                 </p>
               </div>
-              <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-5">
+              <div className="border-4 border-primary bg-background text-foreground p-5">
                 <div className="mb-1 text-xs font-black uppercase">
                   Have a Network?
                 </div>

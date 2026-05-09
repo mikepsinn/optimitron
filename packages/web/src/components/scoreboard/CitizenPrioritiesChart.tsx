@@ -14,21 +14,21 @@ interface CitizenPrioritiesChartProps {
 }
 
 const BAR_COLORS = [
-  "bg-brutal-pink",
-  "bg-brutal-cyan",
-  "bg-brutal-yellow",
+  "bg-foreground",
+  "bg-background",
+  "bg-background",
   "bg-brutal-red",
-  "bg-brutal-pink",
-  "bg-brutal-cyan",
-  "bg-brutal-yellow",
+  "bg-foreground",
+  "bg-background",
+  "bg-background",
   "bg-brutal-red",
-  "bg-brutal-pink",
-  "bg-brutal-cyan",
-  "bg-brutal-yellow",
+  "bg-foreground",
+  "bg-background",
+  "bg-background",
   "bg-brutal-red",
-  "bg-brutal-pink",
-  "bg-brutal-cyan",
-  "bg-brutal-yellow",
+  "bg-foreground",
+  "bg-background",
+  "bg-background",
 ];
 
 export function CitizenPrioritiesChart({

@@ -15,9 +15,9 @@ export interface NumberedStepCardProps {
 }
 
 const colorClasses: Record<StepCardColor, string> = {
-  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-  pink: "bg-brutal-pink text-brutal-pink-foreground",
-  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  cyan: "bg-background text-foreground",
+  pink: "bg-foreground text-background",
+  yellow: "bg-background text-foreground",
   green: "bg-brutal-green text-brutal-green-foreground",
   purple: "bg-brutal-purple",
   default: "bg-background",

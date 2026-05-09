@@ -26,7 +26,7 @@ export function ObjectionNodeView({
       transition={{ duration: 0.3 }}
     >
       <Card className="bg-background text-foreground border-4 border-primary p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-2xl mx-auto mb-6">
-        <div className="mb-4 border-l-4 border-brutal-yellow bg-brutal-yellow/10 p-4">
+        <div className="mb-4 border-l-4 border-background bg-background/10 p-4">
           <h3 className="text-xs font-black uppercase mb-2 text-muted-foreground">
             The strongest version of your No:
           </h3>
@@ -55,7 +55,7 @@ export function ObjectionNodeView({
         <div className="flex flex-col sm:flex-row gap-3">
           <Button
             onClick={onReAnswer}
-            className="flex-1 h-12 text-sm font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="flex-1 h-12 text-sm font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           >
             {content.reAnswerCta}
           </Button>

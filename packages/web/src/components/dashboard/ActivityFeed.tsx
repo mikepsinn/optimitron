@@ -17,7 +17,7 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
           {activities.length > 0 ? (
             activities.map((activity) => (
               <div key={activity.id} className="flex items-start gap-3 p-3 border-4 border-primary bg-background">
-                <div className="h-10 w-10 rounded-full bg-brutal-cyan border-4 border-primary flex items-center justify-center shrink-0 text-xl">
+                <div className="h-10 w-10 rounded-full bg-background border-4 border-primary flex items-center justify-center shrink-0 text-xl">
                   {activity.emoji}
                 </div>
                 <div className="flex-1">

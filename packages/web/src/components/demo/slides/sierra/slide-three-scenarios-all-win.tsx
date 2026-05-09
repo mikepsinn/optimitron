@@ -14,20 +14,20 @@ const lifetimeGain = formatCurrency(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_C
 
 export function SlideThreeScenariosAllWin() {
   return (
-    <SierraSlideWrapper act={2} className="text-brutal-cyan">
+    <SierraSlideWrapper act={2} className="text-background">
       <div className="flex flex-col items-center justify-center gap-8 max-w-[1500px] mx-auto">
         <div className="text-center">
           <div className="font-pixel text-2xl md:text-3xl text-muted-foreground mb-2">
             HOW TO BRIBE HUMANITY INTO ACTUALLY DOING THIS
           </div>
-          <h1 className="font-pixel text-2xl md:text-4xl text-brutal-yellow">
+          <h1 className="font-pixel text-2xl md:text-4xl text-background">
             THE EARTH OPTIMIZATION PRIZE FUND
           </h1>
         </div>
 
         <div className="grid grid-cols-3 gap-6 w-full">
           {/* Metrics hit */}
-          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 text-center">
+          <div className="bg-muted border-2 border-background rounded-lg p-6 text-center">
             <div className="text-4xl mb-3">🌍</div>
             <div className="font-pixel text-xl md:text-2xl text-sierra-cyan mb-4">
               METRICS HIT
@@ -38,7 +38,7 @@ export function SlideThreeScenariosAllWin() {
             <div className="font-pixel text-lg text-muted-foreground mt-2">
               {POINTS} pay out
             </div>
-            <div className="mt-3 border-t border-brutal-cyan/30 pt-3">
+            <div className="mt-3 border-t border-background/30 pt-3">
               <div className="font-pixel text-3xl md:text-5xl text-sierra-cyan">
                 +{lifetimeGain}
               </div>
@@ -49,12 +49,12 @@ export function SlideThreeScenariosAllWin() {
           </div>
 
           {/* Humanity fails */}
-          <div className="bg-muted border-2 border-brutal-yellow rounded-lg p-6 text-center">
+          <div className="bg-muted border-2 border-background rounded-lg p-6 text-center">
             <div className="text-4xl mb-3">📈</div>
-            <div className="font-pixel text-xl md:text-2xl text-brutal-yellow mb-4">
+            <div className="font-pixel text-xl md:text-2xl text-background mb-4">
               HUMANITY FAILS
             </div>
-            <div className="font-pixel text-4xl md:text-6xl text-brutal-yellow">
+            <div className="font-pixel text-4xl md:text-6xl text-background">
               {Math.round(GAME_PARAMS.prizePoolFallbackMultiple)}x RETURN
             </div>
             <div className="font-pixel text-lg text-muted-foreground mt-2">

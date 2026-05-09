@@ -27,7 +27,7 @@ export function UrgencyTimer({
         "border-4 border-primary px-4 py-2 text-center font-black uppercase",
         expired
           ? "bg-muted text-muted-foreground"
-          : "bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+          : "bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
       )}
     >
       {expired

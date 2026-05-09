@@ -86,7 +86,7 @@ export function UBIRegistrationCard() {
 
         {/* Step 1: Sign in */}
         {!isLoggedIn && (
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+          <div className="border-4 border-primary bg-background text-foreground p-4">
             <div className="text-xs font-black uppercase mb-1">
               Step 1
             </div>
@@ -108,7 +108,7 @@ export function UBIRegistrationCard() {
 
         {/* Step 3: Register on-chain */}
         {isLoggedIn && isVerified && !isConnected && (
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+          <div className="border-4 border-primary bg-background text-foreground p-4">
             <div className="text-xs font-black uppercase mb-1">
               Step 3
             </div>
@@ -120,7 +120,7 @@ export function UBIRegistrationCard() {
 
         {isLoggedIn && isVerified && isConnected && (
           <div className="space-y-3">
-            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+            <div className="border-4 border-primary bg-background text-foreground p-4">
               <div className="flex items-center gap-2 mb-2">
                 <ShieldCheck className="h-4 w-4" />
                 <span className="text-xs font-black uppercase">
@@ -134,7 +134,7 @@ export function UBIRegistrationCard() {
             </div>
 
             {isDemo && (
-              <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3">
+              <div className="border-4 border-primary bg-background text-foreground p-3">
                 <div className="text-xs font-black uppercase">
                   Not Yet Deployed
                 </div>
@@ -149,7 +149,7 @@ export function UBIRegistrationCard() {
               <button
                 onClick={handleRegister}
                 disabled={isRegistering || registerSuccess}
-                className="border-4 border-primary bg-brutal-cyan px-6 py-2.5 text-sm font-black uppercase text-brutal-cyan-foreground hover:bg-brutal-cyan/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="border-4 border-primary bg-background px-6 py-2.5 text-sm font-black uppercase text-foreground hover:bg-background/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
               >
                 {isRegistering
                   ? "Registering..."

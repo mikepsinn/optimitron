@@ -18,22 +18,22 @@ const incomeProgress = (GLOBAL_AVG_INCOME_2025.value / TREATY_TRAJECTORY_AVG_INC
 
 export function SlideWinConditionsHaleIncome() {
   return (
-    <SierraSlideWrapper act={2} className="text-brutal-yellow">
+    <SierraSlideWrapper act={2} className="text-background">
       <div className="flex flex-col items-center justify-center gap-8 max-w-[1200px] mx-auto w-full">
-        <h1 className="font-pixel text-2xl md:text-4xl text-brutal-yellow text-center">
+        <h1 className="font-pixel text-2xl md:text-4xl text-background text-center">
           HOW YOU WIN
         </h1>
 
         <div className="grid grid-cols-2 gap-8 w-full">
           {/* HALE */}
-          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 text-center">
+          <div className="bg-muted border-2 border-background rounded-lg p-6 text-center">
             <div className="text-5xl mb-3">❤️</div>
             <div className="font-pixel text-xl md:text-2xl text-sierra-cyan mb-4">
               HEALTHY LIFE EXPECTANCY
             </div>
             <div className="w-full mb-4">
-              <div className="h-4 bg-zinc-800 border-2 border-brutal-cyan/50 rounded-sm overflow-hidden">
-                <div className="h-full bg-brutal-cyan" style={{ width: `${haleProgress}%` }} />
+              <div className="h-4 bg-zinc-800 border-2 border-background/50 rounded-sm overflow-hidden">
+                <div className="h-full bg-background" style={{ width: `${haleProgress}%` }} />
               </div>
             </div>
             <div className="font-pixel text-4xl md:text-6xl text-muted-foreground">
@@ -46,21 +46,21 @@ export function SlideWinConditionsHaleIncome() {
           </div>
 
           {/* Income */}
-          <div className="bg-muted border-2 border-brutal-yellow rounded-lg p-6 text-center">
+          <div className="bg-muted border-2 border-background rounded-lg p-6 text-center">
             <div className="text-5xl mb-3">💰</div>
-            <div className="font-pixel text-xl md:text-2xl text-brutal-yellow mb-4">
+            <div className="font-pixel text-xl md:text-2xl text-background mb-4">
               MEDIAN INCOME
             </div>
             <div className="w-full mb-4">
-              <div className="h-4 bg-zinc-800 border-2 border-brutal-yellow/50 rounded-sm overflow-hidden">
-                <div className="h-full bg-brutal-yellow" style={{ width: `${incomeProgress}%` }} />
+              <div className="h-4 bg-zinc-800 border-2 border-background/50 rounded-sm overflow-hidden">
+                <div className="h-full bg-background" style={{ width: `${incomeProgress}%` }} />
               </div>
             </div>
             <div className="font-pixel text-4xl md:text-6xl text-muted-foreground">
               {currentIncome}
             </div>
             <div className="font-pixel text-2xl text-muted-foreground my-2">→</div>
-            <div className="font-pixel text-4xl md:text-6xl text-brutal-yellow">
+            <div className="font-pixel text-4xl md:text-6xl text-background">
               {targetIncome}
             </div>
           </div>

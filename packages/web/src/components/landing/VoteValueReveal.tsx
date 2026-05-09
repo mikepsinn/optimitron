@@ -22,18 +22,18 @@ export function VoteValueReveal() {
         {/* Part A — The Stakes */}
         <div className="text-center mb-12">
           <ArcadeTag className="mb-4">{VOTE_VALUE.heading}</ArcadeTag>
-          <div className="text-5xl sm:text-6xl md:text-7xl font-black text-brutal-pink-foreground mb-4">
+          <div className="text-5xl sm:text-6xl md:text-7xl font-black text-background mb-4">
             <ParameterValue
               param={TREATY_HALE_GAIN_YEAR_15}
-              className="text-brutal-pink-foreground"
+              className="text-background"
             />{" "}
             More Healthy Years
           </div>
-          <p className="text-xl sm:text-2xl font-black text-brutal-pink-foreground uppercase mb-4">
+          <p className="text-xl sm:text-2xl font-black text-background uppercase mb-4">
             +{" "}
             <ParameterValue
               param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA}
-              className="text-brutal-pink-foreground"
+              className="text-background"
             />{" "}
             Lifetime Income Per Person
           </p>
@@ -45,46 +45,46 @@ export function VoteValueReveal() {
         {/* Part B — Two Outcomes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
           <BrutalCard bgColor="yellow" shadowSize={8} padding="lg">
-            <h3 className="text-xl font-black uppercase text-brutal-yellow-foreground mb-3">
+            <h3 className="text-xl font-black uppercase text-foreground mb-3">
               {VOTE_VALUE.failHeading}
             </h3>
-            <div className="text-4xl font-black text-brutal-yellow-foreground mb-3">
+            <div className="text-4xl font-black text-foreground mb-3">
               <ParameterValue
                 param={PRIZE_POOL_ANNUAL_RETURN}
-                className="text-brutal-yellow-foreground"
+                className="text-foreground"
               />{" "}
               Annual
             </div>
-            <p className="text-sm font-bold text-brutal-yellow-foreground leading-relaxed">
+            <p className="text-sm font-bold text-foreground leading-relaxed">
               Depositors get{" "}
               <ParameterValue
                 param={PRIZE_POOL_ANNUAL_RETURN}
-                className="text-brutal-yellow-foreground font-black"
+                className="text-foreground font-black"
               />{" "}
               {VOTE_VALUE.failBody}
             </p>
           </BrutalCard>
 
           <BrutalCard bgColor="cyan" shadowSize={8} padding="lg">
-            <h3 className="text-xl font-black uppercase text-brutal-cyan-foreground mb-3">
+            <h3 className="text-xl font-black uppercase text-foreground mb-3">
               {VOTE_VALUE.successHeading}
             </h3>
-            <div className="text-4xl font-black text-brutal-cyan-foreground mb-3">
+            <div className="text-4xl font-black text-foreground mb-3">
               <ParameterValue
                 param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA}
-                className="text-brutal-cyan-foreground"
+                className="text-foreground"
               />
             </div>
-            <p className="text-sm font-bold text-brutal-cyan-foreground leading-relaxed">
+            <p className="text-sm font-bold text-foreground leading-relaxed">
               Everyone gains{" "}
               <ParameterValue
                 param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA}
-                className="text-brutal-cyan-foreground font-black"
+                className="text-foreground font-black"
               />{" "}
               lifetime income.{" "}
               <ParameterValue
                 param={TREATY_HALE_GAIN_YEAR_15}
-                className="text-brutal-cyan-foreground font-black"
+                className="text-foreground font-black"
               />{" "}
               more years of healthy life. {VOTE_VALUE.successBody}
             </p>
@@ -102,7 +102,7 @@ export function VoteValueReveal() {
             {VOTE_VALUE.breakEvenPrefix}{" "}
             <ParameterValue
               param={{ ...SHARING_BREAKEVEN_ONE_IN_TREATY, unit: "" }}
-              className="text-brutal-pink font-black"
+              className="text-foreground font-black"
             />
             . {VOTE_VALUE.breakEvenSuffix}
           </p>
@@ -129,13 +129,13 @@ export function VoteValueReveal() {
 
         {/* Part D — The Flywheel */}
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h3 className="text-2xl sm:text-3xl font-black uppercase text-brutal-pink-foreground mb-4">
+          <h3 className="text-2xl sm:text-3xl font-black uppercase text-background mb-4">
             {VOTE_VALUE.flywheelHeading}
           </h3>
           <p className="text-base sm:text-lg font-bold text-background leading-relaxed mb-4">
             {VOTE_VALUE.flywheelDescription}
           </p>
-          <p className="text-lg font-black text-brutal-pink-foreground italic">
+          <p className="text-lg font-black text-background italic">
             {VOTE_VALUE.shopkeeperQuip}
           </p>
         </div>

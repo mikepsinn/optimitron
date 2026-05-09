@@ -125,7 +125,7 @@ export function NeobrutalistSpinner({ message, size = 'md' }: NeobrutalistLoader
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-6">
       <div
-        className={`${sizeClasses[size]} border-4 border-foreground bg-brutal-cyan rounded-sm shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
+        className={`${sizeClasses[size]} border-4 border-foreground bg-background rounded-sm shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
         style={{
           animation: 'spin 1s ease-in-out infinite',
         }}
@@ -174,7 +174,7 @@ export function NeobrutalistCardLoader({ count = 3 }: { count?: number }) {
             {/* Progress bar */}
             <div className="h-3 bg-muted border-2 border-foreground rounded-full overflow-hidden">
               <div
-                className="h-full bg-brutal-pink border-r-2 border-foreground animate-pulse"
+                className="h-full bg-foreground border-r-2 border-foreground animate-pulse"
                 style={{ width: '60%' }}
               />
             </div>
@@ -184,7 +184,7 @@ export function NeobrutalistCardLoader({ count = 3 }: { count?: number }) {
               {[1, 2, 3].map((j) => (
                 <div
                   key={j}
-                  className="h-7 bg-brutal-yellow border-2 border-foreground rounded-full w-24 animate-pulse"
+                  className="h-7 bg-background border-2 border-foreground rounded-full w-24 animate-pulse"
                   style={{ animationDelay: `${j * 0.1}s` }}
                 />
               ))}
@@ -195,7 +195,7 @@ export function NeobrutalistCardLoader({ count = 3 }: { count?: number }) {
               {[1, 2].map((j) => (
                 <div
                   key={j}
-                  className="h-7 bg-brutal-cyan border-2 border-foreground rounded-full w-20 animate-pulse"
+                  className="h-7 bg-background border-2 border-foreground rounded-full w-20 animate-pulse"
                   style={{ animationDelay: `${j * 0.15}s` }}
                 />
               ))}

@@ -93,7 +93,7 @@ export function MilitaryVsTrialsPie({
         {trialsPath && (
           <motion.path
             d={trialsPath}
-            fill="var(--brutal-cyan)"
+            fill="var(--background)"
             initial={reduced ? {} : { scale: 0, opacity: 0 }}
             animate={isInView ? { scale: 1, opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -128,7 +128,7 @@ export function MilitaryVsTrialsPie({
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-brutal-cyan border-2 border-primary" />
+          <div className="w-3 h-3 bg-background border-2 border-primary" />
           <span className="text-xs font-black text-foreground">
             Testing Medicines {formatDollars(trialsDollars)}
           </span>

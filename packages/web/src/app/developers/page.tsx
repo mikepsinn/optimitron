@@ -394,7 +394,7 @@ function StepCard({
     <BrutalCard bgColor="yellow" shadowSize={8}>
       <div className="p-6">
         <div className="flex items-center gap-3 mb-3">
-          <span className="inline-flex items-center justify-center w-10 h-10 border-4 border-primary bg-brutal-pink text-brutal-pink-foreground font-black text-xl">
+          <span className="inline-flex items-center justify-center w-10 h-10 border-4 border-primary bg-foreground text-background font-black text-xl">
             {step}
           </span>
           <h3 className="font-black uppercase text-lg">{title}</h3>

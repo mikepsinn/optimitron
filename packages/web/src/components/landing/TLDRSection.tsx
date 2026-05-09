@@ -18,7 +18,7 @@ export function TLDRSection() {
           {/* The two steps */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="text-6xl font-black text-brutal-pink mb-2">1</div>
+              <div className="text-6xl font-black text-foreground mb-2">1</div>
               <p className="text-xl sm:text-2xl font-black uppercase text-foreground">
                 Click 2 Buttons
               </p>
@@ -27,7 +27,7 @@ export function TLDRSection() {
               </p>
             </div>
             <div className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="text-6xl font-black text-brutal-pink mb-2">2</div>
+              <div className="text-6xl font-black text-foreground mb-2">2</div>
               <p className="text-xl sm:text-2xl font-black uppercase text-foreground">
                 Tell Your Friends
               </p>

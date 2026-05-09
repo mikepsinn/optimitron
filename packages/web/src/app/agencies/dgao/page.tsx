@@ -27,9 +27,9 @@ const pipelineSteps = [
       "Citizens pick between two things. Then two more. Do this enough times and the maths tells you what everyone actually wants. Your current method is to let 535 people guess.",
     tech: "Storacha (IPFS)",
     techDetail: "Aggregated preference snapshots are content-addressed on IPFS — every version is immutable and linked to its predecessor.",
-    color: "bg-brutal-pink",
+    color: "bg-foreground",
     borderColor: "border-primary",
-    textColor: "text-brutal-pink-foreground",
+    textColor: "text-background",
     subTextColor: "text-background",
   },
   {
@@ -39,10 +39,10 @@ const pipelineSteps = [
       "We compare what your politicians actually voted for against what you actually wanted. The gap between those two numbers is called a 'Citizen Alignment Score.' It is usually depressing.",
     tech: "Hypercerts (AT Protocol)",
     techDetail: "Each alignment score is published as a Hypercert — an Activity claim with Measurements, Evaluations, and Attachments.",
-    color: "bg-brutal-yellow",
+    color: "bg-background",
     borderColor: "border-primary",
-    textColor: "text-brutal-yellow-foreground",
-    subTextColor: "text-brutal-yellow-foreground",
+    textColor: "text-foreground",
+    subTextColor: "text-foreground",
   },
   {
     number: 3,
@@ -51,10 +51,10 @@ const pipelineSteps = [
       "Everything is stored where nobody can quietly delete it. Your governments love deleting things. This one can't.",
     tech: "Storacha Gateway",
     techDetail: "Every CID resolves to its exact data at {cid}.ipfs.storacha.link — no server can alter it after the fact.",
-    color: "bg-brutal-cyan",
+    color: "bg-background",
     borderColor: "border-primary",
-    textColor: "text-brutal-cyan-foreground",
-    subTextColor: "text-brutal-cyan-foreground",
+    textColor: "text-foreground",
+    subTextColor: "text-foreground",
   },
   {
     number: 4,
@@ -63,10 +63,10 @@ const pipelineSteps = [
       "Smart contracts read the scores and distribute money to politicians based on how much they actually did what voters wanted. Not how much they promised. Not how good their hair is. What they did.",
     tech: "$WISH ERC-20",
     techDetail: "A 0.5% transaction tax funds UBI distribution. Politicians earn $WISH by aligning with citizens, not donors.",
-    color: "bg-brutal-cyan",
+    color: "bg-background",
     borderColor: "border-primary",
-    textColor: "text-brutal-cyan-foreground",
-    subTextColor: "text-brutal-cyan-foreground",
+    textColor: "text-foreground",
+    subTextColor: "text-foreground",
   },
   {
     number: 5,
@@ -75,9 +75,9 @@ const pipelineSteps = [
       "The 0.5% tax accumulates. Then it goes to everyone. Equally. Your current welfare system has 80+ programmes, costs $1.1 trillion to administer, and still loses people in the cracks. This one has a for-loop.",
     tech: "World ID + Smart Contracts",
     techDetail: "No welfare bureaucracy. No IRS. Automated redistribution funded by economic activity, not income tax.",
-    color: "bg-brutal-pink",
+    color: "bg-foreground",
     borderColor: "border-primary",
-    textColor: "text-brutal-pink-foreground",
+    textColor: "text-background",
     subTextColor: "text-background",
   },
 ];
@@ -87,7 +87,7 @@ export default function TransparencyPage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
             Transparency
           </p>
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
@@ -172,7 +172,7 @@ export default function TransparencyPage() {
                       {pol.chamber}
                     </div>
                   </div>
-                  <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground px-2 py-1 text-center">
+                  <div className="border-4 border-primary bg-background text-foreground px-2 py-1 text-center">
                     <div className="text-lg font-black">{pol.alignmentScore}%</div>
                   </div>
                 </div>
@@ -181,18 +181,18 @@ export default function TransparencyPage() {
                     href={`https://${pol.storageCid}.ipfs.storacha.link/`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block border border-primary bg-brutal-cyan text-brutal-cyan-foreground px-2 py-1 text-[10px] font-black uppercase hover:bg-brutal-cyan transition-colors truncate"
+                    className="block border border-primary bg-background text-foreground px-2 py-1 text-[10px] font-black uppercase hover:bg-background transition-colors truncate"
                   >
                     IPFS: {pol.storageCid.slice(0, 20)}...
                   </a>
                   <div
-                    className="border border-primary bg-brutal-cyan text-brutal-cyan-foreground px-2 py-1 text-[10px] font-black uppercase truncate"
+                    className="border border-primary bg-background text-foreground px-2 py-1 text-[10px] font-black uppercase truncate"
                     title={pol.activityUri}
                   >
                     Activity: {pol.activityUri.split("/").pop()}
                   </div>
                   <div
-                    className="border border-primary bg-brutal-pink px-2 py-1 text-[10px] font-black uppercase text-brutal-pink-foreground truncate"
+                    className="border border-primary bg-foreground px-2 py-1 text-[10px] font-black uppercase text-background truncate"
                     title={pol.evaluationUri}
                   >
                     Evaluation: {pol.evaluationUri.split("/").pop()}
@@ -211,15 +211,15 @@ export default function TransparencyPage() {
             Preference Aggregation Snapshot
           </h3>
           <div className="grid gap-4 md:grid-cols-3 mb-4">
-            <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-3">
+            <div className="border-4 border-primary bg-foreground text-background p-3">
               <div className="text-xs font-black uppercase">Participants</div>
               <div className="text-2xl font-black">{snapshotData.participantCount}</div>
             </div>
-            <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3">
+            <div className="border-4 border-primary bg-background text-foreground p-3">
               <div className="text-xs font-black uppercase">Consistency Ratio</div>
               <div className="text-2xl font-black">{(snapshotData.consistencyRatio * 100).toFixed(0)}%</div>
             </div>
-            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-3">
+            <div className="border-4 border-primary bg-background text-foreground p-3">
               <div className="text-xs font-black uppercase">Categories</div>
               <div className="text-2xl font-black">{snapshotData.preferenceWeights.length}</div>
             </div>
@@ -228,7 +228,7 @@ export default function TransparencyPage() {
             href={`https://${snapshotData.storageCid}.ipfs.storacha.link/`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground px-3 py-2 text-xs font-black uppercase hover:bg-brutal-cyan transition-colors"
+            className="inline-flex items-center gap-2 border-4 border-primary bg-background text-foreground px-3 py-2 text-xs font-black uppercase hover:bg-background transition-colors"
           >
             View on IPFS: {snapshotData.storageCid.slice(0, 24)}...
           </a>
@@ -240,7 +240,7 @@ export default function TransparencyPage() {
           $WISH Token & UBI
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="text-xl font-black uppercase mb-3">
               Transaction Tax Replaces the IRS
             </h3>
@@ -251,7 +251,7 @@ export default function TransparencyPage() {
               employing 83,000 people to process forms.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="text-xl font-black uppercase mb-3">
               UBI Replaces Welfare Bureaucracy
             </h3>
@@ -262,7 +262,7 @@ export default function TransparencyPage() {
               spending half of it on the process of giving it to them.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="text-xl font-black uppercase mb-3">
               Alignment-Based Campaign Finance
             </h3>
@@ -273,7 +273,7 @@ export default function TransparencyPage() {
               distribute automatically.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="text-xl font-black uppercase mb-3">
               The Full Loop
             </h3>
@@ -293,7 +293,7 @@ export default function TransparencyPage() {
         <h2 className="text-2xl font-black uppercase text-foreground mb-6">
           Earth Optimization Prize
         </h2>
-        <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed mb-4">
             The Prize is a dominant assurance contract (VoterPrizeTreasury).
             Depositors fund the pool, which earns Prize fund yield.
@@ -358,7 +358,7 @@ export default function TransparencyPage() {
         </div>
       </section>
 
-      <section className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary text-center">
+      <section className="card bg-background text-foreground border-primary text-center">
         <h2 className="text-2xl font-black mb-3 uppercase">
           Audit Everything
         </h2>

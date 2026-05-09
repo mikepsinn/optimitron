@@ -680,7 +680,7 @@ function CommentNode({
             <Link href={personHref} className="shrink-0">
               <Avatar className="h-7 w-7 border-2 border-foreground bg-muted">
                 <Avatar.Image alt={handle} src={avatar ?? undefined} />
-                <Avatar.Fallback className="bg-brutal-pink text-[10px] font-black text-background">
+                <Avatar.Fallback className="bg-foreground text-[10px] font-black text-background">
                   {handle.slice(0, 2).toUpperCase()}
                 </Avatar.Fallback>
               </Avatar>
@@ -688,7 +688,7 @@ function CommentNode({
           ) : (
             <Avatar className="h-7 w-7 shrink-0 border-2 border-foreground bg-muted">
               <Avatar.Image alt={handle} src={avatar ?? undefined} />
-              <Avatar.Fallback className="bg-brutal-pink text-[10px] font-black text-background">
+              <Avatar.Fallback className="bg-foreground text-[10px] font-black text-background">
                 {handle.slice(0, 2).toUpperCase()}
               </Avatar.Fallback>
             </Avatar>
@@ -704,7 +704,7 @@ function CommentNode({
             <span className="text-sm font-bold">@{handle}</span>
           )}
           {isWishonia ? (
-            <span className="border-2 border-foreground bg-brutal-pink px-1.5 py-0 text-[10px] font-bold uppercase text-brutal-pink-foreground">
+            <span className="border-2 border-foreground bg-foreground px-1.5 py-0 text-[10px] font-bold uppercase text-background">
               Wishonia
             </span>
           ) : null}
@@ -734,9 +734,9 @@ function CommentNode({
             {comment.isStreaming && comment.message.length === 0 ? (
               <p className="flex items-center gap-2 text-sm font-bold italic text-muted-foreground">
                 <span className="inline-flex gap-1">
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-brutal-pink [animation-delay:-0.3s]" />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-brutal-pink [animation-delay:-0.15s]" />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-brutal-pink" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-foreground [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-foreground [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-foreground" />
                 </span>
                 Wishonia is writing...
               </p>
@@ -746,7 +746,7 @@ function CommentNode({
                 {comment.isStreaming ? (
                   <span
                     aria-hidden
-                    className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-brutal-pink align-middle"
+                    className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-foreground align-middle"
                   />
                 ) : null}
               </div>
@@ -756,7 +756,7 @@ function CommentNode({
                 href={comment.mediaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-block text-xs font-bold text-brutal-pink underline underline-offset-4"
+                className="mt-2 inline-block text-xs font-bold text-foreground underline underline-offset-4"
               >
                 Evidence: {comment.mediaUrl}
               </a>
@@ -788,7 +788,7 @@ function CommentNode({
               disabled={currentUserId == null || isDeleted}
               className={`border-2 border-foreground p-0.5 ${
                 comment.viewerVote === 1
-                  ? "bg-brutal-pink text-brutal-pink-foreground"
+                  ? "bg-foreground text-background"
                   : "bg-background text-foreground hover:bg-muted"
               }`}
               aria-label="Upvote"
@@ -805,7 +805,7 @@ function CommentNode({
               disabled={currentUserId == null || isDeleted}
               className={`border-2 border-foreground p-0.5 ${
                 comment.viewerVote === -1
-                  ? "bg-brutal-cyan text-brutal-cyan-foreground"
+                  ? "bg-background text-foreground"
                   : "bg-background text-foreground hover:bg-muted"
               }`}
               aria-label="Downvote"
@@ -905,7 +905,7 @@ function ActivityRow({ activity }: { activity: TaskActivityRow }) {
     <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-muted-foreground">
       <Avatar className="h-4 w-4 shrink-0 border border-foreground">
         <Avatar.Image alt={handle} src={avatar ?? undefined} />
-        <Avatar.Fallback className="bg-brutal-pink text-[8px] font-black text-background">
+        <Avatar.Fallback className="bg-foreground text-[8px] font-black text-background">
           {handle.slice(0, 1).toUpperCase()}
         </Avatar.Fallback>
       </Avatar>

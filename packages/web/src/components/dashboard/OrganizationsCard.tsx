@@ -20,9 +20,9 @@ export function OrganizationsCard({ organizations }: OrganizationsCardProps) {
   }
 
   const statusColors = {
-    PENDING: "bg-brutal-yellow text-brutal-yellow-foreground",
-    APPROVED: "bg-brutal-cyan text-brutal-cyan-foreground",
-    REJECTED: "bg-brutal-pink text-brutal-pink-foreground",
+    PENDING: "bg-background text-foreground",
+    APPROVED: "bg-background text-foreground",
+    REJECTED: "bg-foreground text-background",
   }
 
   const statusIcons = {
@@ -44,7 +44,7 @@ export function OrganizationsCard({ organizations }: OrganizationsCardProps) {
 
       {/* Total Impact Summary */}
       {totalMembers > 0 && (
-        <div className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-4 mb-6 flex items-center gap-4">
+        <div className="bg-background text-foreground border-4 border-primary p-4 mb-6 flex items-center gap-4">
           <TrendingUp className="w-6 h-6" />
           <div>
             <div className="text-2xl font-black">{totalMembers} MEMBERS</div>
@@ -58,7 +58,7 @@ export function OrganizationsCard({ organizations }: OrganizationsCardProps) {
         {created.map((org) => (
           <div
             key={org.id}
-            className="border-4 border-primary p-4 bg-background hover:bg-brutal-yellow/10 transition-colors"
+            className="border-4 border-primary p-4 bg-background hover:bg-background/10 transition-colors"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -75,7 +75,7 @@ export function OrganizationsCard({ organizations }: OrganizationsCardProps) {
                 <div className="flex items-center gap-6 text-sm font-bold">
                   <div>
                     <span className="text-muted-foreground">Members: </span>
-                    <span className="text-brutal-pink text-lg font-black">{org.memberCount}</span>
+                    <span className="text-foreground text-lg font-black">{org.memberCount}</span>
                   </div>
                 </div>
               </div>

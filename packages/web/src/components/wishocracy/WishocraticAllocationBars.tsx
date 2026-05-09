@@ -25,7 +25,7 @@ function ItemRow({ item, percentage, govPercent, avgPercent }: {
         <span className="uppercase flex-1">{item.name}</span>
         <button
           onClick={() => setDetailsOpen(!detailsOpen)}
-          className="text-[10px] text-muted-foreground hover:text-brutal-pink transition-colors font-bold"
+          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors font-bold"
         >
           {detailsOpen ? "\u25BE Details" : "\u25B8 Details"}
         </button>
@@ -33,7 +33,7 @@ function ItemRow({ item, percentage, govPercent, avgPercent }: {
       {/* Your allocation bar */}
       <div className="h-6 bg-muted border-4 border-primary relative overflow-visible">
         <div
-          className="h-full bg-brutal-cyan border-r-2 border-primary transition-all duration-300"
+          className="h-full bg-background border-r-2 border-primary transition-all duration-300"
           style={{ width: `${percentage}%` }}
         />
         <span
@@ -44,9 +44,9 @@ function ItemRow({ item, percentage, govPercent, avgPercent }: {
         </span>
       </div>
       {/* Community average allocation bar */}
-      <div className="h-6 bg-muted border-2 border-brutal-pink relative overflow-visible">
+      <div className="h-6 bg-muted border-2 border-foreground relative overflow-visible">
         <div
-          className="h-full bg-brutal-pink border-r-2 border-primary transition-all duration-300"
+          className="h-full bg-foreground border-r-2 border-primary transition-all duration-300"
           style={{ width: `${avgPercent}%` }}
         />
         <span
@@ -81,7 +81,7 @@ function ItemRow({ item, percentage, govPercent, avgPercent }: {
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] text-muted-foreground/70 hover:text-brutal-pink transition-colors"
+                  className="text-[10px] text-muted-foreground/70 hover:text-foreground transition-colors"
                   title={s.name}
                 >
                   {s.name}
@@ -202,11 +202,11 @@ export function WishocraticAllocationBars({ allocations: pairwiseAllocations }: 
       <div className="mt-4 pt-4 border-t-2 border-primary">
         <div className="flex items-center justify-center gap-3 text-xs mb-2 flex-wrap">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-brutal-cyan border-4 border-primary" />
+            <div className="w-4 h-4 bg-background border-4 border-primary" />
             <span className="font-bold">Your Priorities</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-brutal-pink border-2 border-brutal-pink" />
+            <div className="w-4 h-4 bg-foreground border-2 border-foreground" />
             <span className="font-bold">Community Avg</span>
           </div>
           <div className="flex items-center gap-2">

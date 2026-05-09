@@ -19,8 +19,8 @@ export function SourceChip({ source }: { source: Source }) {
       className={cn(
         "inline-flex max-w-full items-center gap-1 rounded-none border-2 border-primary px-2 py-0.5 text-[10px] font-black uppercase tracking-wide leading-tight shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-px hover:translate-y-px hover:shadow-none",
         source.adversarial
-          ? "bg-brutal-yellow text-brutal-yellow-foreground"
-          : "bg-brutal-cyan text-brutal-cyan-foreground",
+          ? "bg-background text-foreground"
+          : "bg-background text-foreground",
       )}
     >
       {source.adversarial ? (

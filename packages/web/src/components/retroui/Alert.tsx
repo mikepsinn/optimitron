@@ -12,8 +12,8 @@ const alertVariants = cva("relative w-full rounded border-2 p-4", {
     },
     status: {
       error: "bg-destructive/20 text-destructive border-destructive",
-      success: "bg-brutal-cyan/20 text-brutal-cyan-foreground border-brutal-cyan-foreground",
-      warning: "bg-brutal-yellow/20 text-brutal-yellow-foreground border-brutal-yellow-foreground",
+      success: "bg-background/20 text-foreground border-foreground",
+      warning: "bg-background/20 text-foreground border-foreground",
       info: "bg-primary/20 text-primary border-primary",
     },
   },

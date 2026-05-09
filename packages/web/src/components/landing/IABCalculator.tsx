@@ -107,18 +107,18 @@ export function IABCalculator() {
           initial={reduced ? {} : { opacity: 0.5, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="p-5 border-4 border-primary bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="p-5 border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          <div className="text-xs font-black uppercase text-brutal-yellow-foreground mb-1">
+          <div className="text-xs font-black uppercase text-foreground mb-1">
             If the Treaty Fails
           </div>
-          <div className="text-3xl font-black text-brutal-yellow-foreground mb-1">
+          <div className="text-3xl font-black text-foreground mb-1">
             {formatUSD(0)}
           </div>
-          <div className="text-sm font-bold text-brutal-yellow-foreground mb-3">
+          <div className="text-sm font-bold text-foreground mb-3">
             Investment funded the campaign
           </div>
-          <div className="text-xs text-brutal-yellow-foreground font-bold space-y-1">
+          <div className="text-xs text-foreground font-bold space-y-1">
             <p>
               Your {formatUSD(amount)} went to lobbyists, Super PACs, and the
               awareness campaign. The money was spent trying to pass the treaty.
@@ -135,18 +135,18 @@ export function IABCalculator() {
           initial={reduced ? {} : { opacity: 0.5, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="p-5 border-4 border-primary bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="p-5 border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          <div className="text-xs font-black uppercase text-brutal-cyan-foreground mb-1">
+          <div className="text-xs font-black uppercase text-foreground mb-1">
             If the Treaty Succeeds
           </div>
-          <div className="text-3xl font-black text-brutal-cyan-foreground mb-1">
+          <div className="text-3xl font-black text-foreground mb-1">
             {formatUSD(annualRevShare)}/yr
           </div>
-          <div className="text-sm font-bold text-brutal-cyan-foreground mb-3">
+          <div className="text-sm font-bold text-foreground mb-3">
             Projected <ParameterValue param={VICTORY_BOND_ANNUAL_RETURN_PCT} /> annual revenue share
           </div>
-          <div className="text-xs text-brutal-cyan-foreground font-bold space-y-1">
+          <div className="text-xs text-foreground font-bold space-y-1">
             <p>
               10% of treaty revenue flows to bondholders proportionally.
               Plus your personal lifetime income increases by{" "}

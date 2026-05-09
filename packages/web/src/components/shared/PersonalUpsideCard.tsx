@@ -45,7 +45,7 @@ export function PersonalUpsideCard() {
       />
 
       {/* Giant animated number */}
-      <div className="text-6xl sm:text-7xl md:text-8xl font-black text-brutal-pink mb-2">
+      <div className="text-6xl sm:text-7xl md:text-8xl font-black text-foreground mb-2">
         +$<CountUp value={treatyGainRaw} duration={2} suffix="M" />
       </div>
       <p className="text-xl font-black text-foreground uppercase mb-8">

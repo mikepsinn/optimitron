@@ -82,7 +82,7 @@ export function ReplicationNodeView({
             <Button
               key={bucket}
               onClick={() => setSelectedBucket(bucket)}
-              className={`h-12 text-xs font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${selectedBucket === bucket ? "bg-brutal-pink text-brutal-pink-foreground" : "bg-brutal-cyan text-brutal-cyan-foreground hover:bg-brutal-cyan/90"}`}
+              className={`h-12 text-xs font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${selectedBucket === bucket ? "bg-foreground text-background" : "bg-background text-foreground hover:bg-background/90"}`}
             >
               {bucket.replace("-", " / ")}
             </Button>

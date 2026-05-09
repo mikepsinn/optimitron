@@ -83,7 +83,7 @@ export function DeclarationSignatureActions({
   if (showStatusMessage && statusMessage) {
     return (
       <div className="mx-auto max-w-lg">
-        <div className="border-4 border-primary bg-brutal-cyan p-4 text-center text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-primary bg-background p-4 text-center text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-black uppercase">{statusMessage}</p>
         </div>
       </div>

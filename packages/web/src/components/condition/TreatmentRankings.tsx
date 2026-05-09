@@ -13,7 +13,7 @@ export function TreatmentRankings({ conditionName, comparisonData }: TreatmentRa
   if (!comparisonData) {
     return (
       <div className="text-center py-8">
-        <div className="mb-4 inline-flex h-16 w-16 items-center justify-center border-4 border-foreground bg-brutal-yellow text-brutal-yellow-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mb-4 inline-flex h-16 w-16 items-center justify-center border-4 border-foreground bg-background text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           <AlertCircle className="h-8 w-8" />
         </div>
         <h3 className="mb-2 text-lg font-black uppercase">

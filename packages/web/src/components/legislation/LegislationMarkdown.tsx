@@ -32,7 +32,7 @@ export function LegislationMarkdown({ markdown }: { markdown: string }) {
               <p className="text-sm font-bold leading-7 text-muted-foreground">{children}</p>
             ),
             blockquote: ({ children }) => (
-              <blockquote className="border-l-4 border-brutal-pink bg-muted px-4 py-3 text-sm font-bold text-foreground">
+              <blockquote className="border-l-4 border-foreground bg-muted px-4 py-3 text-sm font-bold text-foreground">
                 {children}
               </blockquote>
             ),
@@ -53,7 +53,7 @@ export function LegislationMarkdown({ markdown }: { markdown: string }) {
                     href={target}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-black text-brutal-pink underline underline-offset-4"
+                    className="font-black text-foreground underline underline-offset-4"
                   >
                     {children}
                   </a>
@@ -63,7 +63,7 @@ export function LegislationMarkdown({ markdown }: { markdown: string }) {
               return (
                 <Link
                   href={target}
-                  className="font-black text-brutal-pink underline underline-offset-4"
+                  className="font-black text-foreground underline underline-offset-4"
                 >
                   {children}
                 </Link>
@@ -75,7 +75,7 @@ export function LegislationMarkdown({ markdown }: { markdown: string }) {
               </div>
             ),
             thead: ({ children }) => (
-              <thead className="bg-brutal-yellow text-brutal-yellow-foreground">{children}</thead>
+              <thead className="bg-background text-foreground">{children}</thead>
             ),
             th: ({ children }) => (
               <th className="border-b-2 border-primary px-3 py-2 font-black uppercase">{children}</th>

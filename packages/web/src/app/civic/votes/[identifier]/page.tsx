@@ -59,9 +59,9 @@ export default async function CivicVotePage({
   })() : null;
 
   const positionColor =
-    vote.position === "YES" ? "var(--brutal-cyan)" :
-    vote.position === "NO" ? "var(--brutal-pink)" :
-    "var(--brutal-yellow)";
+    vote.position === "YES" ? "var(--background)" :
+    vote.position === "NO" ? "var(--foreground)" :
+    "var(--background)";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">

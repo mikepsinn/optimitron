@@ -15,7 +15,7 @@ export function ProgressIndicator({ current, total }: ProgressIndicatorProps) {
       </div>
       <div className="h-8 bg-background border-4 border-primary relative overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <div
-          className="h-full bg-brutal-pink transition-all duration-300"
+          className="h-full bg-foreground transition-all duration-300"
           style={{ width: `${percent}%` }}
         />
         <div className="absolute inset-0 flex items-center justify-center font-black text-sm">

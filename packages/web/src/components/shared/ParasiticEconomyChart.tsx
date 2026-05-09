@@ -93,7 +93,7 @@ export function ParasiticEconomyChart() {
         <h3 className="font-pixel text-xl sm:text-2xl md:text-4xl text-brutal-red uppercase">
           Countdown to Collapse
         </h3>
-        <div className="font-pixel text-2xl sm:text-3xl md:text-5xl text-brutal-yellow mt-2 tabular-nums tracking-wider">
+        <div className="font-pixel text-2xl sm:text-3xl md:text-5xl text-background mt-2 tabular-nums tracking-wider">
           {countdownStr}
         </div>
       </div>
@@ -104,7 +104,7 @@ export function ParasiticEconomyChart() {
         <span className="text-brutal-red font-black">{currentParasiticPct}%</span> of global GDP
         and growing exponentially. Every civilisation that crossed 35–45% collapsed.
         At current rates, productive and parasitic lines cross in{" "}
-        <span className="text-brutal-yellow font-black">{COLLAPSE_YEAR}</span>.
+        <span className="text-background font-black">{COLLAPSE_YEAR}</span>.
         This isn&apos;t a prediction. It&apos;s compound interest.
       </p>
 

@@ -181,7 +181,7 @@ function PaginationControls({
   const first = page * pageSize + 1;
   const last = Math.min((page + 1) * pageSize, totalRows);
   return (
-    <div className="flex items-center justify-between gap-3 border-t-2 border-foreground bg-brutal-yellow px-4 py-3 text-brutal-yellow-foreground">
+    <div className="flex items-center justify-between gap-3 border-t-2 border-foreground bg-background px-4 py-3 text-foreground">
       <div className="text-xs font-black uppercase tracking-wide sm:text-sm">
         {first.toLocaleString()}–{last.toLocaleString()} of{" "}
         {totalRows.toLocaleString()}

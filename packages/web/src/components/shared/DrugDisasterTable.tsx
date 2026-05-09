@@ -63,7 +63,7 @@ export function DrugDisasterTable({ disasters }: DrugDisasterTableProps) {
   const costPerDeath = totalDeaths > 0 ? Math.round(totalFines / totalDeaths) : 0;
 
   const headerClass =
-    "text-left text-[10px] font-black uppercase text-muted-foreground px-3 py-2 cursor-pointer hover:text-brutal-pink transition-colors select-none";
+    "text-left text-[10px] font-black uppercase text-muted-foreground px-3 py-2 cursor-pointer hover:text-foreground transition-colors select-none";
   const arrow = (key: SortKey) =>
     sortKey === key ? (sortDir === "asc" ? " ↑" : " ↓") : "";
 
@@ -109,7 +109,7 @@ export function DrugDisasterTable({ disasters }: DrugDisasterTableProps) {
                       href={d.sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-black text-foreground hover:text-brutal-pink transition-colors"
+                      className="text-sm font-black text-foreground hover:text-foreground transition-colors"
                     >
                       {d.drug} ↗
                     </a>
@@ -153,7 +153,7 @@ export function DrugDisasterTable({ disasters }: DrugDisasterTableProps) {
           <p className="text-[10px] font-black uppercase text-muted-foreground">
             Total Fines
           </p>
-          <p className="text-xl font-black text-brutal-cyan">
+          <p className="text-xl font-black text-background">
             {formatUsd(totalFines)}
           </p>
         </div>
@@ -161,7 +161,7 @@ export function DrugDisasterTable({ disasters }: DrugDisasterTableProps) {
           <p className="text-[10px] font-black uppercase text-muted-foreground">
             Cost Per Death
           </p>
-          <p className="text-xl font-black text-brutal-yellow">
+          <p className="text-xl font-black text-background">
             {formatUsd(costPerDeath)}
           </p>
         </div>

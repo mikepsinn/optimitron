@@ -5,10 +5,10 @@ import type { AgencyGrade } from "@optimitron/data/datasets/agency-performance";
 type AccentColor = "pink" | "cyan" | "yellow" | "green";
 
 const gradeColors: Record<AgencyGrade, string> = {
-  A: "bg-brutal-cyan text-brutal-cyan-foreground",
-  B: "bg-brutal-cyan text-brutal-cyan-foreground",
-  C: "bg-brutal-yellow text-brutal-yellow-foreground",
-  D: "bg-brutal-yellow text-brutal-yellow-foreground",
+  A: "bg-background text-foreground",
+  B: "bg-background text-foreground",
+  C: "bg-background text-foreground",
+  D: "bg-background text-foreground",
   F: "bg-brutal-red text-brutal-red-foreground",
 };
 
@@ -46,7 +46,7 @@ function SingleAgencyCard({ agency }: { agency: EarthAgency }) {
           <p className="mt-4 text-sm font-bold italic text-background leading-relaxed">
             &ldquo;{perf.wishoniaQuote}&rdquo;
           </p>
-          <p className="mt-2 text-xs font-black uppercase tracking-[0.1em] text-brutal-pink">
+          <p className="mt-2 text-xs font-black uppercase tracking-[0.1em] text-foreground">
             — Wishonia
           </p>
         </div>
@@ -78,7 +78,7 @@ function MultiAgencyCard({ agencies }: { agencies: EarthAgency[] }) {
       <p className="text-sm font-bold italic text-background leading-relaxed">
         &ldquo;{agencies[0]!.performance!.wishoniaQuote}&rdquo;
       </p>
-      <p className="mt-2 text-xs font-black uppercase tracking-[0.1em] text-brutal-pink">
+      <p className="mt-2 text-xs font-black uppercase tracking-[0.1em] text-foreground">
         — Wishonia
       </p>
     </BrutalCard>

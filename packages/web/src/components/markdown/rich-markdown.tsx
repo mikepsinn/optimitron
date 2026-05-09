@@ -85,7 +85,7 @@ function getRichMarkdownComponents(): Components {
     a: ({ href, children }) => (
       <a
         href={href}
-        className="font-black text-brutal-pink underline underline-offset-4 hover:text-foreground"
+        className="font-black text-foreground underline underline-offset-4 hover:text-foreground"
         target={href?.startsWith("http") ? "_blank" : undefined}
         rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
       >
@@ -93,7 +93,7 @@ function getRichMarkdownComponents(): Components {
       </a>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-brutal-pink bg-muted px-4 py-3 text-base font-bold text-foreground">
+      <blockquote className="border-l-4 border-foreground bg-muted px-4 py-3 text-base font-bold text-foreground">
         {children}
       </blockquote>
     ),

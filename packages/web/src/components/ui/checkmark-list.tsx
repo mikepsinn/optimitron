@@ -14,10 +14,10 @@ export interface CheckmarkListProps {
 }
 
 const iconColorClasses: Record<CheckmarkIconColor, string> = {
-  cyan: "text-brutal-cyan",
-  pink: "text-brutal-pink",
+  cyan: "text-background",
+  pink: "text-foreground",
   green: "text-brutal-green",
-  yellow: "text-brutal-yellow",
+  yellow: "text-background",
   foreground: "text-foreground",
 }
 

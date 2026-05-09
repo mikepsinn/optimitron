@@ -25,7 +25,7 @@ export function SettingsClient({ emailPreferences, notificationPreferences }: Se
       <div className="mb-8">
         <ArcadeTag>Configuration</ArcadeTag>
         <h1 className="text-4xl sm:text-5xl font-black uppercase mb-2">
-          <span className="text-brutal-cyan">SETTINGS</span>
+          <span className="text-background">SETTINGS</span>
         </h1>
         <p className="text-base font-bold text-muted-foreground">
           Notification preferences, account toggles, and profile controls.

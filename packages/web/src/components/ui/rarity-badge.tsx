@@ -9,18 +9,18 @@ export interface RarityBadgeProps {
 
 const rarityStyles: Record<Rarity, { bg: string; text: string; label: string }> = {
   legendary: {
-    bg: "bg-brutal-pink",
-    text: "text-brutal-pink-foreground",
+    bg: "bg-foreground",
+    text: "text-background",
     label: "LEGENDARY",
   },
   epic: {
-    bg: "bg-brutal-yellow",
-    text: "text-brutal-yellow-foreground",
+    bg: "bg-background",
+    text: "text-foreground",
     label: "EPIC",
   },
   rare: {
-    bg: "bg-brutal-cyan",
-    text: "text-brutal-cyan-foreground",
+    bg: "bg-background",
+    text: "text-foreground",
     label: "RARE",
   },
   uncommon: {

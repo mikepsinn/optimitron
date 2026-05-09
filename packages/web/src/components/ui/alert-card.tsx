@@ -20,21 +20,21 @@ const typeConfig: Record<AlertType, { bg: string; border: string; text: string; 
     DefaultIcon: AlertCircle,
   },
   success: {
-    bg: "bg-brutal-cyan",
+    bg: "bg-background",
     border: "border-primary",
-    text: "text-brutal-cyan-foreground",
+    text: "text-foreground",
     DefaultIcon: CheckCircle,
   },
   warning: {
-    bg: "bg-brutal-yellow",
+    bg: "bg-background",
     border: "border-primary",
-    text: "text-brutal-yellow-foreground",
+    text: "text-foreground",
     DefaultIcon: AlertTriangle,
   },
   info: {
-    bg: "bg-brutal-cyan",
+    bg: "bg-background",
     border: "border-primary",
-    text: "text-brutal-cyan-foreground",
+    text: "text-foreground",
     DefaultIcon: Info,
   },
 }

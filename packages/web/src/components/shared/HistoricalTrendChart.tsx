@@ -5,9 +5,9 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import type { AgencyHistoricalTrend } from "@optimitron/data/datasets/agency-historical-trends";
 
 const SERIES_COLORS = [
-  "var(--brutal-pink)",
-  "var(--brutal-cyan)",
-  "var(--brutal-yellow)",
+  "var(--foreground)",
+  "var(--background)",
+  "var(--background)",
   "#888",
 ];
 

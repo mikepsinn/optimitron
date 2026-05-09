@@ -93,11 +93,11 @@ export function ReferendumVoteSection({
     });
 
     return (
-      <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="text-lg font-black uppercase text-brutal-yellow-foreground mb-2">
+      <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h3 className="text-lg font-black uppercase text-foreground mb-2">
           Sign In to Vote
         </h3>
-        <p className="text-sm font-bold text-brutal-yellow-foreground">
+        <p className="text-sm font-bold text-foreground">
           You need an account to cast your vote. Verify with World ID
           afterwards to make it count as a verified vote.
         </p>
@@ -116,25 +116,25 @@ export function ReferendumVoteSection({
 
     return (
       <div className="space-y-6">
-        <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h3 className="text-lg font-black uppercase text-brutal-cyan-foreground mb-2">
+        <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="text-lg font-black uppercase text-foreground mb-2">
             Vote Recorded: {answer}
           </h3>
-          <p className="text-sm font-bold text-brutal-cyan-foreground">
+          <p className="text-sm font-bold text-foreground">
             Verify with World ID to make your vote count as verified.
             Then share your link below to bring in more verified votes.
           </p>
         </div>
 
-        <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h3 className="text-lg font-black uppercase text-brutal-yellow-foreground mb-2">
+        <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="text-lg font-black uppercase text-foreground mb-2">
             Earn Referral Rewards
           </h3>
-          <p className="text-sm font-bold text-brutal-yellow-foreground">
+          <p className="text-sm font-bold text-foreground">
             {REFERRAL.verifyAndEarn} Link a wallet on your{" "}
             <Link
               href={ROUTES.profile}
-              className="font-black text-brutal-pink underline hover:text-brutal-yellow-foreground"
+              className="font-black text-foreground underline hover:text-foreground"
             >
               profile
             </Link>{" "}
@@ -179,7 +179,7 @@ export function ReferendumVoteSection({
         <button
           onClick={() => void castVote("YES")}
           disabled={isSubmitting}
-          className="flex-1 border-4 border-primary bg-brutal-cyan py-4 text-xl font-black uppercase text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+          className="flex-1 border-4 border-primary bg-background py-4 text-xl font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
         >
           Yes
         </button>

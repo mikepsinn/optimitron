@@ -36,21 +36,21 @@ const chainSteps = [
     label: "TRIAL CAPACITY",
     value: `${trialMultiplier.toFixed(1)}×`,
     sublabel: "capacity via pragmatic trials",
-    color: "text-brutal-cyan",
+    color: "text-background",
   },
   {
     emoji: "⏩",
     label: "CURES ARRIVE",
     value: "YEARS EARLIER",
     sublabel: "faster discovery pipeline",
-    color: "text-brutal-yellow",
+    color: "text-background",
   },
   {
     emoji: "❤️",
     label: "LIVES SAVED",
     value: `${(livesSaved / 1e9).toFixed(1)}B`,
     sublabel: "deaths prevented",
-    color: "text-brutal-cyan",
+    color: "text-background",
   },
 ];
 
@@ -113,7 +113,7 @@ export function SlideTenBillionLivesSaved() {
 
       <div className="relative z-10 flex flex-col items-center justify-center h-full gap-8 w-full max-w-[1600px] mx-auto">
         {/* Title */}
-        <div className="font-pixel text-2xl md:text-4xl text-brutal-cyan text-center">
+        <div className="font-pixel text-2xl md:text-4xl text-background text-center">
           WHAT 1% BUYS YOU
         </div>
 
@@ -150,7 +150,7 @@ export function SlideTenBillionLivesSaved() {
         {showStats && (
           <div className="flex gap-6 md:gap-12 fade-up">
             <div className="text-center">
-              <div className="font-pixel text-3xl md:text-5xl text-brutal-cyan">
+              <div className="font-pixel text-3xl md:text-5xl text-background">
                 +{haleGain.toFixed(1)} yrs
               </div>
               <div className="font-pixel text-sm md:text-lg text-muted-foreground">
@@ -158,7 +158,7 @@ export function SlideTenBillionLivesSaved() {
               </div>
             </div>
             <div className="text-center">
-              <div className="font-pixel text-3xl md:text-5xl text-brutal-yellow">
+              <div className="font-pixel text-3xl md:text-5xl text-background">
                 +${(incomeGain / 1e6).toFixed(1)}M
               </div>
               <div className="font-pixel text-sm md:text-lg text-muted-foreground">
@@ -166,7 +166,7 @@ export function SlideTenBillionLivesSaved() {
               </div>
             </div>
             <div className="text-center">
-              <div className="font-pixel text-3xl md:text-5xl text-brutal-pink">
+              <div className="font-pixel text-3xl md:text-5xl text-foreground">
                 {Math.round(incomeMultiplier)}× richer
               </div>
               <div className="font-pixel text-sm md:text-lg text-muted-foreground">

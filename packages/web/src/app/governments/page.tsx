@@ -101,7 +101,7 @@ export default async function GovernmentsPage() {
       {/* Summary Stats */}
       <section className="mb-16">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-2xl font-black">
               {formatNumber(
                 GOVERNMENTS.reduce(
@@ -114,7 +114,7 @@ export default async function GovernmentsPage() {
               Total Body Count
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-2xl font-black">
               {formatNumber(
                 GOVERNMENTS.reduce(
@@ -127,7 +127,7 @@ export default async function GovernmentsPage() {
               Nuclear Warheads
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-2xl font-black">
               {formatUSD(
                 GOVERNMENTS.reduce(
@@ -171,7 +171,7 @@ export default async function GovernmentsPage() {
       </section>
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <section className="border-4 border-primary bg-foreground text-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         <h2 className="mb-3 text-2xl font-black uppercase">
           OPTIMISE THE GOVERNMENTS
         </h2>

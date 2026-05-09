@@ -14,7 +14,7 @@ export default function LegislationPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
           Model Legislation
         </p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">
@@ -47,7 +47,7 @@ export default function LegislationPage() {
               {entry.usRank ? <span>US rank {entry.usRank}</span> : null}
               <span>Updated {new Date(entry.updatedAt).toLocaleDateString()}</span>
             </div>
-            <p className="mt-4 text-xs font-black uppercase tracking-wide text-brutal-pink">
+            <p className="mt-4 text-xs font-black uppercase tracking-wide text-foreground">
               Open draft →
             </p>
           </Link>
@@ -66,8 +66,8 @@ export default function LegislationPage() {
 function StatusBadge({ status }: { status: "draft" | "reviewed" }) {
   const className =
     status === "reviewed"
-      ? "bg-brutal-cyan text-brutal-cyan-foreground"
-      : "bg-brutal-yellow text-brutal-yellow-foreground";
+      ? "bg-background text-foreground"
+      : "bg-background text-foreground";
 
   return (
     <span className={`border-2 border-primary px-2 py-1 text-xs font-black uppercase tracking-wide ${className}`}>

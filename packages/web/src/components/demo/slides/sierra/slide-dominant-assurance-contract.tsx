@@ -31,10 +31,10 @@ export function SlideDominantAssuranceContract() {
   }, []);
 
   return (
-    <SierraSlideWrapper act={2} className="text-brutal-cyan">
+    <SierraSlideWrapper act={2} className="text-background">
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1400px] mx-auto">
         <h1
-          className="font-pixel text-2xl md:text-4xl text-brutal-cyan text-center transition-opacity duration-500"
+          className="font-pixel text-2xl md:text-4xl text-background text-center transition-opacity duration-500"
           style={{ opacity: phase >= 1 ? 1 : 0 }}
         >
           VOTE → SHARE → EARN
@@ -45,21 +45,21 @@ export function SlideDominantAssuranceContract() {
           className="flex items-center justify-center gap-3 md:gap-6 transition-opacity duration-500"
           style={{ opacity: phase >= 2 ? 1 : 0 }}
         >
-          <div className="text-center p-4 bg-muted border-2 border-brutal-cyan rounded">
+          <div className="text-center p-4 bg-muted border-2 border-background rounded">
             <div className="text-4xl mb-2">🗳️</div>
-            <div className="font-pixel text-xl md:text-2xl text-brutal-cyan">VOTE</div>
+            <div className="font-pixel text-xl md:text-2xl text-background">VOTE</div>
             <div className="font-terminal text-sm md:text-lg text-muted-foreground">10 pairwise choices</div>
           </div>
           <div className="font-pixel text-2xl text-muted-foreground">→</div>
-          <div className="text-center p-4 bg-muted border-2 border-brutal-pink rounded">
+          <div className="text-center p-4 bg-muted border-2 border-foreground rounded">
             <div className="text-4xl mb-2">🔗</div>
-            <div className="font-pixel text-xl md:text-2xl text-brutal-pink">SHARE LINK</div>
+            <div className="font-pixel text-xl md:text-2xl text-foreground">SHARE LINK</div>
             <div className="font-terminal text-sm md:text-lg text-muted-foreground">Get friends to vote</div>
           </div>
           <div className="font-pixel text-2xl text-muted-foreground">→</div>
-          <div className="text-center p-4 bg-muted border-2 border-brutal-yellow rounded">
+          <div className="text-center p-4 bg-muted border-2 border-background rounded">
             <div className="text-4xl mb-2">🏆</div>
-            <div className="font-pixel text-xl md:text-2xl text-brutal-yellow">EARN {POINTS.toUpperCase()}</div>
+            <div className="font-pixel text-xl md:text-2xl text-background">EARN {POINTS.toUpperCase()}</div>
             <div className="font-terminal text-sm md:text-lg text-muted-foreground">1 point per voter recruited</div>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function SlideDominantAssuranceContract() {
           style={{ opacity: phase >= 3 ? 1 : 0 }}
         >
           <div className="font-pixel text-lg text-muted-foreground mb-1">EACH {POINT.toUpperCase()} COULD BE WORTH UP TO</div>
-          <div className="font-pixel text-5xl md:text-7xl text-brutal-yellow">{voteValue}</div>
+          <div className="font-pixel text-5xl md:text-7xl text-background">{voteValue}</div>
           <div className="font-pixel text-lg text-muted-foreground mt-1">if the fund receives 1% of global savings and targets are hit</div>
         </div>
 
@@ -79,16 +79,16 @@ export function SlideDominantAssuranceContract() {
           className="grid grid-cols-2 gap-6 w-full transition-opacity duration-500"
           style={{ opacity: phase >= 4 ? 1 : 0 }}
         >
-          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-5 text-center space-y-2">
+          <div className="bg-muted border-2 border-background rounded-lg p-5 text-center space-y-2">
             <div className="text-4xl">🌍</div>
-            <div className="font-pixel text-xl md:text-2xl text-brutal-cyan">TARGETS HIT</div>
+            <div className="font-pixel text-xl md:text-2xl text-background">TARGETS HIT</div>
             <div className="font-terminal text-lg md:text-xl text-zinc-200">
               Prize pool splits by your {POINTS}
             </div>
           </div>
-          <div className="bg-muted border-2 border-brutal-yellow rounded-lg p-5 text-center space-y-2">
+          <div className="bg-muted border-2 border-background rounded-lg p-5 text-center space-y-2">
             <div className="text-4xl">📈</div>
-            <div className="font-pixel text-xl md:text-2xl text-brutal-yellow">TARGETS MISSED</div>
+            <div className="font-pixel text-xl md:text-2xl text-background">TARGETS MISSED</div>
             <div className="font-terminal text-lg md:text-xl text-zinc-200">
               Keep your compound returns
             </div>
@@ -96,7 +96,7 @@ export function SlideDominantAssuranceContract() {
         </div>
 
         <div
-          className="font-pixel text-xl md:text-2xl text-brutal-cyan text-center transition-opacity duration-500"
+          className="font-pixel text-xl md:text-2xl text-background text-center transition-opacity duration-500"
           style={{ opacity: phase >= 5 ? 1 : 0 }}
         >
           The only way to lose is not to play.

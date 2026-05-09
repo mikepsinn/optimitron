@@ -14,18 +14,18 @@ export default function ActionOptionsSection() {
       option: "OPTION 1: LEARN",
       action: "READ THE EVIDENCE",
       description: "Peer-reviewed papers. Real math. No ideology.",
-      color: "bg-brutal-yellow",
-      textColor: "text-brutal-yellow-foreground",
-      accentColor: "text-brutal-pink",
+      color: "bg-background",
+      textColor: "text-foreground",
+      accentColor: "text-foreground",
       href: "/research" as string | null,
     },
     {
       option: "OPTION 2: VOTE",
       action: "RANK YOUR PRIORITIES",
       description: "30 seconds. Anonymous. Shape optimal policy.",
-      color: "bg-brutal-cyan",
-      textColor: "text-brutal-cyan-foreground",
-      accentColor: "text-brutal-pink",
+      color: "bg-background",
+      textColor: "text-foreground",
+      accentColor: "text-foreground",
       href: ROUTES.wishocracy as string | null,
     },
     {
@@ -34,7 +34,7 @@ export default function ActionOptionsSection() {
       description: `Dominant assurance design. Projected ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} return if thresholds not met. Play the game.`,
       color: "bg-background",
       textColor: "text-foreground",
-      accentColor: "text-brutal-pink",
+      accentColor: "text-foreground",
       href: "/prize" as string | null,
     },
     {
@@ -43,7 +43,7 @@ export default function ActionOptionsSection() {
       description: "And continue paying $101 trillion per year for governance that doesn't optimize anything.",
       color: "bg-primary",
       textColor: "text-primary-foreground",
-      accentColor: "text-brutal-pink",
+      accentColor: "text-foreground",
       href: null as string | null,
     },
   ]
@@ -52,7 +52,7 @@ export default function ActionOptionsSection() {
     <SectionContainer bgColor="foreground" borderPosition="bottom" padding="lg">
       <Container>
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase text-center mb-16 text-background">
-          DO <span className="text-brutal-pink">SOMETHING</span>
+          DO <span className="text-foreground">SOMETHING</span>
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {options.map((item, index) => {

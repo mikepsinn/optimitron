@@ -51,16 +51,16 @@ const BARS: BarData[] = [
     detail: `+${treatyHaleGain} healthy yrs · ${trialCapacityX}× trial capacity · ${livesSavedB}B lives saved`,
     value: treatyIncome,
     widthPct: (treatyIncome / optimalIncome) * 100,
-    colorBar: "bg-brutal-cyan",
-    colorText: "text-brutal-cyan",
+    colorBar: "bg-background",
+    colorText: "text-background",
   },
   {
     label: "🌍 OPTIMAL GOVERNANCE",
     detail: `+${wishoniaHaleGain} healthy yrs`,
     value: optimalIncome,
     widthPct: 100,
-    colorBar: "bg-brutal-yellow",
-    colorText: "text-brutal-yellow",
+    colorBar: "bg-background",
+    colorText: "text-background",
   },
 ];
 
@@ -109,7 +109,7 @@ export function SlideCompoundGrowthScenarios() {
                         {isOptimal ? (
                           <>
                             End the ${globalDysfunctionCostT}T/yr{" "}
-                            <a href={DYSFUNCTION_TAX_URL} target="_blank" rel="noopener noreferrer" className="underline hover:text-brutal-yellow">
+                            <a href={DYSFUNCTION_TAX_URL} target="_blank" rel="noopener noreferrer" className="underline hover:text-background">
                               Political Dysfunction Tax
                             </a>
                             {" · "}+{wishoniaHaleGain} healthy yrs

@@ -28,10 +28,10 @@ import { getWishoniaReplacementFor } from "@optimitron/data/datasets/wishonia-ag
 // ---------------------------------------------------------------------------
 
 const gradeColors: Record<AgencyGrade, string> = {
-  A: "bg-brutal-cyan text-brutal-cyan-foreground",
-  B: "bg-brutal-cyan text-brutal-cyan-foreground",
-  C: "bg-brutal-yellow text-brutal-yellow-foreground",
-  D: "bg-brutal-yellow text-brutal-yellow-foreground",
+  A: "bg-background text-foreground",
+  B: "bg-background text-foreground",
+  C: "bg-background text-foreground",
+  D: "bg-background text-foreground",
   F: "bg-brutal-red text-brutal-red-foreground",
 };
 
@@ -135,7 +135,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
       {/* Back link */}
       <Link
         href={`/governments/${gov.code}/agencies`}
-        className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+        className="text-sm font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
       >
         &larr; {gov.name} Agencies
       </Link>
@@ -189,7 +189,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
                 <div className="text-xs font-black uppercase text-background">
                   Annual Savings If Deprecated
                 </div>
-                <div className="text-3xl sm:text-4xl font-black text-brutal-pink mt-1">
+                <div className="text-3xl sm:text-4xl font-black text-foreground mt-1">
                   {institutionalData.annualSavings}
                 </div>
               </div>
@@ -229,13 +229,13 @@ export default async function AgencyDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Spending trend */}
           <BrutalCard bgColor="cyan" shadowSize={8} padding="md">
-            <div className="text-xs font-black uppercase text-brutal-cyan-foreground mb-1">
+            <div className="text-xs font-black uppercase text-foreground mb-1">
               Spending Trend ({spendTrend.startYear}–{spendTrend.endYear})
             </div>
-            <div className="text-3xl font-black text-brutal-cyan-foreground">
+            <div className="text-3xl font-black text-foreground">
               {spendTrend.direction} {spendTrend.changePercent}
             </div>
-            <div className="text-sm font-bold text-brutal-cyan-foreground mt-2">
+            <div className="text-sm font-bold text-foreground mt-2">
               {formatCompact(spendTrend.startValue)} → {formatCompact(spendTrend.endValue)}
             </div>
           </BrutalCard>
@@ -243,13 +243,13 @@ export default async function AgencyDetailPage({ params }: PageProps) {
           {/* Outcome trend */}
           {outcomeTrend && outcomeSeries && (
             <BrutalCard bgColor="pink" shadowSize={8} padding="md">
-              <div className="text-xs font-black uppercase text-brutal-pink-foreground mb-1">
+              <div className="text-xs font-black uppercase text-background mb-1">
                 {outcomeSeries.label} ({outcomeTrend.startYear}–{outcomeTrend.endYear})
               </div>
-              <div className="text-3xl font-black text-brutal-pink-foreground">
+              <div className="text-3xl font-black text-background">
                 {outcomeTrend.direction} {outcomeTrend.changePercent}
               </div>
-              <div className="text-sm font-bold text-brutal-pink-foreground mt-2">
+              <div className="text-sm font-bold text-background mt-2">
                 {outcomeSeries.direction === "lower_is_better"
                   ? "Lower is better"
                   : "Higher is better"}
@@ -262,10 +262,10 @@ export default async function AgencyDetailPage({ params }: PageProps) {
       {/* Wishonia quote */}
       <section className="mb-12">
         <BrutalCard bgColor="yellow" shadowSize={8} padding="lg">
-          <div className="text-xs font-black uppercase text-brutal-yellow-foreground mb-2">
+          <div className="text-xs font-black uppercase text-foreground mb-2">
             Wishonia Says
           </div>
-          <blockquote className="text-lg sm:text-xl font-bold text-brutal-yellow-foreground leading-relaxed italic">
+          <blockquote className="text-lg sm:text-xl font-bold text-foreground leading-relaxed italic">
             &ldquo;{agency.wishoniaQuote}&rdquo;
           </blockquote>
         </BrutalCard>
@@ -287,7 +287,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-base font-bold text-brutal-pink hover:text-foreground transition-colors border-b-2 border-brutal-pink"
+                  className="text-base font-bold text-foreground hover:text-foreground transition-colors border-b-2 border-foreground"
                 >
                   {source.label} ↗
                 </a>
@@ -299,7 +299,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
 
       {/* CTA — See the replacement */}
       {replacement && (
-        <section className="border-4 border-primary bg-brutal-cyan p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <section className="border-4 border-primary bg-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
             See the Replacement
           </h2>
@@ -315,7 +315,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
 
       {/* Fallback CTA if no replacement mapping */}
       {!replacement && (
-        <section className="border-4 border-primary bg-brutal-cyan p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <section className="border-4 border-primary bg-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
             See All Wishonia Agencies
           </h2>

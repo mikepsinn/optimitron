@@ -15,9 +15,9 @@ export interface FeaturedInfoCardProps {
 
 const bgClasses: Record<FeaturedInfoBgColor, string> = {
   foreground: "bg-foreground text-background",
-  pink: "bg-brutal-pink text-brutal-pink-foreground",
-  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  pink: "bg-foreground text-background",
+  cyan: "bg-background text-foreground",
+  yellow: "bg-background text-foreground",
   background: "bg-background",
 }
 

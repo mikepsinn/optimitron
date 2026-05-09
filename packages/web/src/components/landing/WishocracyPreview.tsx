@@ -16,9 +16,9 @@ interface PreferenceData {
 }
 
 const BRUTAL_COLORS = [
-  "var(--brutal-pink)",
-  "var(--brutal-cyan)",
-  "var(--brutal-yellow)",
+  "var(--foreground)",
+  "var(--background)",
+  "var(--background)",
   "var(--chart-1)",
   "var(--chart-2)",
   "var(--chart-3)",
@@ -146,7 +146,7 @@ export function WishocracyPreview() {
 
         {hasVoted && (
           <ScrollReveal className="mb-12 text-center">
-            <p className="text-lg font-black text-brutal-pink mb-4">
+            <p className="text-lg font-black text-foreground mb-4">
               See? Four seconds. Your government couldn&apos;t do that in four years.
             </p>
             <GameCTA href="/agencies/dcongress/wishocracy" variant="primary">
@@ -158,7 +158,7 @@ export function WishocracyPreview() {
         {/* Pie charts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <ScrollReveal direction="left">
-            <div className="p-6 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="p-6 border-4 border-primary bg-background text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <h3 className="text-lg font-black uppercase text-center mb-4">
                 What People Actually Want
               </h3>
@@ -177,7 +177,7 @@ export function WishocracyPreview() {
           </ScrollReveal>
 
           <ScrollReveal direction="right" delay={0.15}>
-            <div className="p-6 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="p-6 border-4 border-primary bg-background text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <h3 className="text-lg font-black uppercase text-center mb-4">
                 What Governments Spend
               </h3>

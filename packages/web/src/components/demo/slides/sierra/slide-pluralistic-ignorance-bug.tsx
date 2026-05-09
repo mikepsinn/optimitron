@@ -16,7 +16,7 @@ export function SlidePluralisticIgnoranceBug() {
   return (
     <SierraSlideWrapper act={2}>
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1500px] mx-auto w-full">
-        <h1 className="font-pixel text-2xl md:text-4xl text-brutal-yellow text-center">
+        <h1 className="font-pixel text-2xl md:text-4xl text-background text-center">
           🐛 BUG: EVERYONE THINKS EVERYONE ELSE THINKS THIS IS CRAZY
         </h1>
 
@@ -34,7 +34,7 @@ export function SlidePluralisticIgnoranceBug() {
                 <span className="text-xl shrink-0">👤</span>
                 <div className="font-terminal text-2xl md:text-3xl">
                   <span className="text-muted-foreground">{label}: </span>
-                  <span className="text-brutal-cyan">&quot;{QUOTE}&quot;</span>
+                  <span className="text-background">&quot;{QUOTE}&quot;</span>
                 </div>
               </div>
             );

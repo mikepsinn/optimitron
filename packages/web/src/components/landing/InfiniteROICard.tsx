@@ -24,19 +24,19 @@ export function InfiniteROICard() {
   const campaignCostLatex = escapeLatex(campaignCostFormatted)
 
   return (
-    <Card className="bg-brutal-pink border-4 border-primary p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12">
-      <div className="flex flex-col items-center gap-3 mb-4 text-brutal-pink-foreground">
+    <Card className="bg-foreground border-4 border-primary p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12">
+      <div className="flex flex-col items-center gap-3 mb-4 text-background">
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase text-center">The Math That Broke Excel</h3>
         <p className="font-bold text-center">A <ParameterValue param={TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG} /> Return on Investment</p>
-        <ImpactExplainer className="h-9 w-9 border-primary text-brutal-pink-foreground bg-brutal-pink" label="Show impact math" />
+        <ImpactExplainer className="h-9 w-9 border-primary text-background bg-foreground" label="Show impact math" />
       </div>
 
-      <p className="text-base font-bold text-brutal-pink-foreground">
+      <p className="text-base font-bold text-background">
         A <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} /> campaign yields{" "}
         <span className="text-background text-2xl font-black"><ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE} /></span> in health value.
       </p>
 
-      <div className="bg-brutal-yellow border-4 border-primary p-4 my-4 text-brutal-yellow-foreground">
+      <div className="bg-background border-4 border-primary p-4 my-4 text-foreground">
         <LatexBlock className="text-center">
           {`\\begin{aligned}
 \\text{ROI} &= \\frac{\\text{Health Value Created}}{\\text{Campaign Cost}} \\\\[1em]
@@ -49,7 +49,7 @@ export function InfiniteROICard() {
         <p className="text-lg sm:text-xl font-black uppercase text-center mb-6">Where The Value Comes From:</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <Card className="bg-brutal-yellow border-4 border-primary p-4 text-center text-brutal-yellow-foreground">
+          <Card className="bg-background border-4 border-primary p-4 text-center text-foreground">
             <div className="text-3xl sm:text-4xl font-black mb-2">
               <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} />
             </div>
@@ -57,7 +57,7 @@ export function InfiniteROICard() {
             <div className="text-xs font-bold">Total investment needed</div>
           </Card>
 
-          <Card className="bg-brutal-cyan border-4 border-primary p-4 text-center text-brutal-cyan-foreground">
+          <Card className="bg-background border-4 border-primary p-4 text-center text-foreground">
             <div className="text-3xl sm:text-4xl font-black mb-2">
               <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE} />
             </div>
@@ -82,7 +82,7 @@ export function InfiniteROICard() {
           </Card>
         </div>
 
-        <div className="bg-brutal-pink border-4 border-primary p-6 text-center text-brutal-pink-foreground">
+        <div className="bg-foreground border-4 border-primary p-6 text-center text-background">
           <p className="font-black text-lg sm:text-xl mb-2">
             Math says this is the best possible use of a billion dollars.
           </p>

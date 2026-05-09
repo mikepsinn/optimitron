@@ -63,25 +63,25 @@ export function WishocracyIntroCard({ show, isLoading, onStart }: WishocracyIntr
                   </li>
                 </ul>
               </div>
-              <div className="border-4 border-brutal-cyan bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="border-4 border-background bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <h3 className="text-lg font-black text-foreground mb-3 uppercase">
                   What Wishocracy Does Instead
                 </h3>
                 <ul className="space-y-2 text-sm text-foreground font-bold">
                   <li className="flex gap-2">
-                    <span className="text-brutal-cyan font-black shrink-0">&#10003;</span>
+                    <span className="text-background font-black shrink-0">&#10003;</span>
                     <span>Citizens vote directly on priorities. No fundraising. No middleman</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-brutal-cyan font-black shrink-0">&#10003;</span>
+                    <span className="text-background font-black shrink-0">&#10003;</span>
                     <span>Causal engine determines which policies actually work</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-brutal-cyan font-black shrink-0">&#10003;</span>
+                    <span className="text-background font-black shrink-0">&#10003;</span>
                     <span>Alignment scores expose how much each official deviates from citizen preferences</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-brutal-cyan font-black shrink-0">&#10003;</span>
+                    <span className="text-background font-black shrink-0">&#10003;</span>
                     <span>Optimises for <span className="font-black">outcomes</span>, not re-election</span>
                   </li>
                 </ul>
@@ -91,7 +91,7 @@ export function WishocracyIntroCard({ show, isLoading, onStart }: WishocracyIntr
             {/* CTA */}
             <Button
               onClick={onStart}
-              className="w-full h-16 text-xl font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
+              className="w-full h-16 text-xl font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
             >
               LET&apos;S GO
             </Button>

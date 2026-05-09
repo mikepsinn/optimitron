@@ -104,7 +104,7 @@ export function SlideOnePercentReferendumVote() {
       <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Slider allocation */}
         {phase >= 1 && (
-          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 animate-fade-in">
+          <div className="bg-muted border-2 border-background rounded-lg p-6 animate-fade-in">
             <div className="font-pixel text-xl md:text-2xl text-sierra-cyan text-center mb-4">
               DRAG TO ALLOCATE
             </div>
@@ -138,7 +138,7 @@ export function SlideOnePercentReferendumVote() {
                   style={{ width: `${sliderValue}%` }}
                 />
                 <div
-                  className="absolute inset-y-0 right-0 bg-brutal-cyan"
+                  className="absolute inset-y-0 right-0 bg-background"
                   style={{ width: `${100 - sliderValue}%` }}
                 />
                 {/* Center divider */}

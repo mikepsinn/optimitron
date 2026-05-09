@@ -13,7 +13,7 @@ export function TaskCurrentActivities({ context }: TaskCurrentActivitiesProps) {
   return (
     <BrutalCard bgColor="yellow" padding="lg">
       <div className="space-y-4">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground">
           Currently Doing Instead
         </p>
         <div className="space-y-4">

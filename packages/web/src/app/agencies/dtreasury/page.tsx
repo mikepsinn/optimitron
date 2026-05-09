@@ -18,27 +18,27 @@ const problemStats = [
     label: "Global Welfare Spending",
     detail:
       "Your species spends $13.5 trillion per year on social protection programs globally. Between $400 and $675 billion of that is pure administration — case workers, applications, audits, fraud detection — all to decide who deserves to not starve. On my planet, we just... give people money.",
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
-    detailColor: "text-brutal-pink-foreground",
+    color: "bg-foreground",
+    textColor: "text-background",
+    detailColor: "text-background",
   },
   {
     value: "83,000",
     label: "IRS Employees",
     detail:
       "Eighty-three thousand people whose entire job is interpreting a 74,000-page tax code that no single human understands. You built a system so complicated that you need a small city of people just to run it. Impressive, in a way.",
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
-    detailColor: "text-brutal-yellow-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
+    detailColor: "text-foreground",
   },
   {
     value: "0 data",
     label: "Budget Allocation",
     detail:
       "Politicians allocate trillions of dollars in public spending with zero systematic data on what citizens actually want. They use polls, focus groups, and whatever their largest donors suggest. On my planet, this is called 'guessing.'",
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
-    detailColor: "text-brutal-cyan-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
+    detailColor: "text-foreground",
   },
 ];
 
@@ -48,24 +48,24 @@ const subPages = [
     title: "Transaction Tax (Replaces the IRS)",
     description:
       "0.5% of every transaction. That's the whole tax code. Six lines of Solidity replacing 74,000 pages of rules that no single human on your planet understands. Your accountants can finally do something useful. Like not dying.",
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
+    color: "bg-foreground",
+    textColor: "text-background",
   },
   {
     ...federalReserveLink,
     title: "Algorithmic Monetary Policy (Replaces the Fed)",
     description:
       "Fixed supply. Zero inflation. No room of 12 unelected humans holding a séance over interest rates. Your Federal Reserve has devalued your dollar 96% since 1913. A rock would have done better. Literally. A rock holds its value.",
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     ...dssaLink,
     title: "Universal Basic Income (Replaces Welfare)",
     description:
       "Money goes in. Money goes out. To everyone. Equally. World ID confirms you're a real human and not three bots in a trenchcoat. No means testing. No case workers. No 45-day processing time to prove you're poor enough to eat.",
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
 ];
 
@@ -75,7 +75,7 @@ export default function DTreasuryPage() {
       {/* Hero */}
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
             dTreasury
           </p>
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
@@ -145,15 +145,15 @@ export default function DTreasuryPage() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-black uppercase mb-1">Not this</div>
             <div className="text-sm font-black">An investment vehicle</div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-black uppercase mb-1">Not this</div>
             <div className="text-sm font-black">A security or speculative asset</div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-black uppercase mb-1">This</div>
             <div className="text-sm font-black">Money with built-in governance</div>
           </div>
@@ -247,7 +247,7 @@ export default function DTreasuryPage() {
               </div>
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="flex items-start gap-4">
               <span className="w-8 h-8 bg-foreground text-background flex items-center justify-center text-xs font-black shrink-0">
                 04
@@ -321,7 +321,7 @@ export default function DTreasuryPage() {
       </section>
 
       {/* CTA */}
-      <section className="card bg-brutal-pink text-brutal-pink-foreground border-primary text-center">
+      <section className="card bg-foreground text-background border-primary text-center">
         <h2 className="text-2xl font-black mb-3 uppercase">
           Money That Does Something
         </h2>

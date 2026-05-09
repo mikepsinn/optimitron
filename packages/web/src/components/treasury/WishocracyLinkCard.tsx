@@ -6,8 +6,8 @@ import { wishocracyLink, prizeLink } from "@/lib/routes";
 export function WishocracyLinkCard() {
   return (
     <section className="mb-16">
-      <div className="border-4 border-primary bg-brutal-pink p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-        <h2 className="text-2xl font-black uppercase text-brutal-pink-foreground mb-3">
+      <div className="border-4 border-primary bg-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+        <h2 className="text-2xl font-black uppercase text-background mb-3">
           Two Systems. One Goal.
         </h2>
         <p className="text-background mb-6 font-bold max-w-2xl mx-auto leading-relaxed">

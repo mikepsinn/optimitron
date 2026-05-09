@@ -18,9 +18,9 @@ export interface IconCardProps {
 const colorClasses: Record<IconCardColor, string> = {
   red: "bg-brutal-red text-brutal-red-foreground",
   green: "bg-brutal-green text-brutal-green-foreground",
-  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-  pink: "bg-brutal-pink text-brutal-pink-foreground",
-  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  cyan: "bg-background text-foreground",
+  pink: "bg-foreground text-background",
+  yellow: "bg-background text-foreground",
   purple: "bg-brutal-purple",
   default: "bg-background",
 }

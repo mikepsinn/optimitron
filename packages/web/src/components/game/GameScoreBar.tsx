@@ -66,7 +66,7 @@ export function GameScoreBar() {
             className="flex items-center gap-1.5 transition-colors hover:text-foreground"
             title={`${POINTS} (${REFERRAL.earnOneShort})`}
           >
-            <Vote className="h-3.5 w-3.5 text-brutal-cyan" />
+            <Vote className="h-3.5 w-3.5 text-background" />
             <span>{stats.votePoints} {POINT_NAME}</span>
           </Link>
 
@@ -75,7 +75,7 @@ export function GameScoreBar() {
             className="flex items-center gap-1.5 transition-colors hover:text-foreground"
             title="Lives saved through recruitment"
           >
-            <Heart className="h-3.5 w-3.5 text-brutal-pink" />
+            <Heart className="h-3.5 w-3.5 text-foreground" />
             <span>{formatLives(impact.livesSaved)} INVERSE KILLS</span>
           </Link>
 
@@ -84,7 +84,7 @@ export function GameScoreBar() {
             className="hidden items-center gap-1.5 transition-colors hover:text-foreground sm:flex"
             title="Budget comparisons completed"
           >
-            <BarChart3 className="h-3.5 w-3.5 text-brutal-yellow" />
+            <BarChart3 className="h-3.5 w-3.5 text-background" />
             <span>{stats.comparisons}</span>
           </Link>
         </div>

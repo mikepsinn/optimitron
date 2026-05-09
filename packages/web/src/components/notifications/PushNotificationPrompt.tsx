@@ -80,7 +80,7 @@ export function PushNotificationPrompt() {
 
       {subscribed ? (
         <div className="flex items-center gap-2">
-          <span className="text-xs text-brutal-cyan">Notifications enabled</span>
+          <span className="text-xs text-background">Notifications enabled</span>
           <button
             onClick={() => void handleUnsubscribe()}
             disabled={loading}
@@ -93,7 +93,7 @@ export function PushNotificationPrompt() {
         <button
           onClick={() => void handleSubscribe()}
           disabled={loading}
-          className="rounded-md bg-brutal-pink px-3 py-1.5 text-xs font-bold text-brutal-pink-foreground hover:bg-brutal-pink/80 disabled:opacity-50"
+          className="rounded-md bg-foreground px-3 py-1.5 text-xs font-bold text-background hover:bg-foreground/80 disabled:opacity-50"
         >
           Enable Reminders
         </button>

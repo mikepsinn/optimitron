@@ -577,7 +577,7 @@ function DemoPlayerInner({
       {/* Progress bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted/30 z-50 pointer-events-none">
         <div
-          className="h-full bg-brutal-pink transition-all duration-300"
+          className="h-full bg-foreground transition-all duration-300"
           style={{
             width: `${((currentIndex + 1) / slides.length) * 100}%`,
           }}

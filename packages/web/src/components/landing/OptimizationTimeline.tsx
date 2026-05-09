@@ -89,7 +89,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
       {/* Warp Effect Overlay */}
       {isWarping && (
-        <div className="fixed inset-0 pointer-events-none z-50 bg-brutal-cyan text-brutal-cyan-foreground">
+        <div className="fixed inset-0 pointer-events-none z-50 bg-background text-foreground">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-4xl font-black animate-pulse">
               TIME WARP
@@ -99,7 +99,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
             {[...Array(20)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 bg-brutal-cyan opacity-50"
+                className="absolute w-1 bg-background opacity-50"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: 0,
@@ -115,7 +115,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
       {/* Age Input */}
       <div className="max-w-xs mx-auto mb-4 sm:mb-8">
-        <div className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-3 sm:p-4">
+        <div className="bg-background text-foreground border-4 border-primary p-3 sm:p-4">
           <div className="text-center">
             <div className="font-black uppercase text-xs sm:text-sm mb-1 sm:mb-2">Make It Personal</div>
             <div className="text-xs mb-2 sm:mb-3">Enter your age to see if optimized policy arrives in time</div>
@@ -141,7 +141,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
       {/* "You Are Here" Start */}
       <div className="flex justify-center mb-4 sm:mb-8">
-        <div className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary px-4 sm:px-6 py-2 sm:py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="bg-background text-foreground border-4 border-primary px-4 sm:px-6 py-2 sm:py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="text-base sm:text-xl font-black uppercase text-center">You Are Here</div>
           <div className="text-[10px] sm:text-xs font-bold text-center mt-1">Year 0 — Stop Choosing Badly</div>
         </div>
@@ -155,7 +155,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
           style={{ height: `${statusQuoHeight}px` }}
         >
           <div
-            className="absolute top-0 left-0 right-0 bg-brutal-cyan"
+            className="absolute top-0 left-0 right-0 bg-background"
             style={{ height: `${dfdaQueueYears * pxPerYear}px` }}
           />
           <div
@@ -172,7 +172,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
           className="absolute left-0 sm:left-4 z-10 w-36 sm:w-44"
           style={{ top: `${dfdaQueueYears * pxPerYear - 80}px` }}
         >
-          <div className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
+          <div className="bg-background text-foreground border-4 border-primary p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
             <div className="text-lg mb-1">&#x1F389;</div>
             <div className="font-black text-xs uppercase leading-tight mb-2">
               Optimal policies identified for most categories
@@ -207,7 +207,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
             style={{ top: `${Math.min(currentYear * pxPerYear + 50, statusQuoHeight - 200)}px` }}
           >
             <div className="grid grid-cols-2 gap-0 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="bg-brutal-cyan text-brutal-cyan-foreground p-3 text-center border-r-2 border-primary">
+              <div className="bg-background text-foreground p-3 text-center border-r-2 border-primary">
                 <div className="text-[10px] font-black uppercase mb-2">Evidence-Based Optimization</div>
                 <div className="text-sm font-black uppercase mb-1">Policies Optimized</div>
                 <div className="text-xs font-bold">

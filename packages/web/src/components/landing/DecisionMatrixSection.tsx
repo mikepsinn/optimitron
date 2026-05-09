@@ -34,13 +34,13 @@ export function DecisionMatrixSection() {
                 <th className="p-2 sm:p-4 text-left text-sm font-black uppercase text-muted-foreground w-1/5">
                   Your Move
                 </th>
-                <th className="p-2 sm:p-4 text-center text-sm font-black uppercase w-2/5 bg-brutal-yellow text-brutal-yellow-foreground border-l-4 border-primary">
+                <th className="p-2 sm:p-4 text-center text-sm font-black uppercase w-2/5 bg-background text-foreground border-l-4 border-primary">
                   Targets Missed
                   <div className="text-sm font-bold normal-case mt-1">
                     Somalia, but everywhere by {collapseYear}
                   </div>
                 </th>
-                <th className="p-2 sm:p-4 text-center text-sm font-black uppercase w-2/5 bg-brutal-cyan text-brutal-cyan-foreground border-l-4 border-primary">
+                <th className="p-2 sm:p-4 text-center text-sm font-black uppercase w-2/5 bg-background text-foreground border-l-4 border-primary">
                   Targets Hit
                   <div className="text-sm font-bold normal-case mt-1">
                     {incomeMultiple}x richer &middot; +{haleGain} healthy years
