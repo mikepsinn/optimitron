@@ -11,8 +11,10 @@
 - Your share of the demanded recovery in Humanity v. Government. Each deceased family member you register as a fellow plaintiff adds another full claim to the family share. Damages are what the case pleads; payouts depend on whether four billion humans render the verdict.
 - REGISTER PLAINTIFF
 ### WHO SHOULD BE A PLAINTIFF?
-- Use their real name or the name people know them by.
-- NAME
+- Use the name that belongs on the court record.
+- FIRST NAME
+- MIDDLE NAME OPTIONAL
+- LAST NAME
 - I have permission or legal authority to add this person, or they are deceased and I am their family member or personal representative.
 - I understand public plaintiff cards, photos, comments, memorial details, and evidence may be visible to anyone.
 - Governments are paid $37 trillion a year to promote the general welfare. Over the last century, they spent $170 trillion murdering 310 million humans.

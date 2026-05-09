@@ -28,6 +28,8 @@ const diffPixelRatioThreshold = parseNumberEnv(
   0.001,
 );
 const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
+const allowIncompleteReview =
+  process.env.VISUAL_REVIEW_ALLOW_INCOMPLETE === "1";
 
 const routeOrder = [
   "home",
@@ -74,6 +76,7 @@ function main() {
   ];
   const grouped = analyzeGroups(groupScreenshots(screenshots));
   const html = renderHtml(grouped);
+  const blockingIssues = getBlockingReviewIssues(grouped, screenshots);
 
   writeFileSync(latestHtmlPath, html, "utf8");
   console.log(`[visual-review] wrote ${latestHtmlPath}`);
@@ -81,6 +84,18 @@ function main() {
   console.log(
     `[visual-review] changed=${grouped.filter((group) => group.changed).length} unchanged=${grouped.filter((group) => !group.changed).length}`,
   );
+
+  if (!allowIncompleteReview && blockingIssues.length > 0) {
+    console.error("[visual-review] incomplete screenshot review:");
+    for (const issue of blockingIssues) {
+      console.error(`- ${issue}`);
+    }
+    console.error(
+      "[visual-review] Failing so the pull request cannot pass with blind spots. " +
+        "Set VISUAL_REVIEW_ALLOW_INCOMPLETE=1 only for intentional local debugging.",
+    );
+    process.exitCode = 1;
+  }
 }
 
 function collectScreenshots(root, version) {
@@ -516,6 +531,34 @@ function summarizeGroups(groups) {
     unchangedRoutes: groups.filter((group) => !group.changed && !group.errored).length,
     missingPairs: groups.reduce((sum, group) => sum + group.missingPairs, 0),
   };
+}
+
+function getBlockingReviewIssues(groups, screenshots) {
+  const issues = [];
+  const afterCount = screenshots.filter(
+    (screenshot) => screenshot.version === "after",
+  ).length;
+
+  if (afterCount === 0) {
+    issues.push("no pull-request screenshots were captured");
+  }
+
+  for (const group of groups) {
+    for (const pair of group.pairs) {
+      if (pair.before && !pair.after) {
+        issues.push(
+          `${group.routeName}/${pair.projectName}: missing pull-request screenshot`,
+        );
+      }
+      if (pair.diff.errored) {
+        issues.push(
+          `${group.routeName}/${pair.projectName}: ${pair.diff.label}`,
+        );
+      }
+    }
+  }
+
+  return issues;
 }
 
 function routeStatusLabel(group) {

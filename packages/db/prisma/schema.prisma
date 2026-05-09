@@ -6382,7 +6382,7 @@ model TaskTrigger {
   ///   "user-onboarding:treaty"
   ///   "treaty:signer-reminder"
   ///   "referral:vote-invitation"
-  ///   "task:overdue-reminder"
+  ///   "task:follow-up"
   triggerKey String @unique
 
   /// Free-form event name. Convention: "<source>.<verb>" or "<source>.<verb>.<qualifier>".
@@ -6582,7 +6582,7 @@ model TaskCommunicationSpawnSpec {
   triggerId String
 
   /// Suffix used in the dedupeKey for the spawned TaskCommunication.
-  /// e.g. "overdue-reminder", "delayed-day-7"
+  /// e.g. "delayed-day-7", "follow-up"
   kind String
 
   sortOrder Int @default(0)
@@ -6615,7 +6615,7 @@ model TaskCommunicationSpawnSpec {
 
   // -- Rate-limit / dedup --
   /// Deduplication key template. Prevents the same communication from
-  /// being sent twice (e.g. "task-overdue-reminder:{{task.id}}:{{sendCount}}").
+  /// being sent twice (e.g. "task-follow-up:{{task.id}}:{{sendCount}}").
   dedupeKeyTemplate String
 
   /// Minimum hours between fires to the same recipient on this trigger.

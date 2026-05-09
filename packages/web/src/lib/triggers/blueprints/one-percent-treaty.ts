@@ -383,56 +383,6 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// Pattern 9 — Generic overdue reminder, kept as a TEMPLATE BUT DISABLED.
-// ---------------------------------------------------------------------------
-// A generic "every overdue task gets a reminder" trigger is dangerous: the
-// copy can't fit every task family, and the audience may not even be the user
-// you want to nag. Concretely, this trigger as a global rule would:
-//   - email heads of state (signer tasks) treaty-flavored guilt copy
-//   - duplicate the named-recipient Sequence A1-A4 for referral invitations
-//   - duplicate user-onboarding:treaty:wishonia-nudge on the HMT root
-//   - apply an Earth-flavored reminder to future PERS / admin tasks where it doesn't fit
-//
-// The right pattern is one overdue trigger PER task family, each with its own
-// eventFilter scoping to that family's taskKey pattern and its own appropriate
-// copy + audience. This entry stays as a documented template; enable it only
-// if you genuinely want a catch-all reminder, and add an eventFilter first.
-
-const overdueReminderCron: CreateTaskTriggerInput = {
-  triggerKey: "task:overdue-reminder",
-  eventName: "cron.run-due-triggers",
-  triggerKind: "spawnCommunication",
-  enabled: false,
-  schedule: "30 * * * *",
-  iterationSource: "overdue-tasks",
-  idempotencyKeyTemplate: "task-overdue-reminder:{{task.id}}",
-  notes:
-    "DISABLED. Catch-all overdue reminder template. Don't enable globally — copy + audience won't fit every task family. Clone with an eventFilter scoping to a specific taskKey pattern instead (see user-onboarding:treaty:wishonia-nudge).",
-  communicationSpawnSpecs: [
-    {
-      kind: "overdue-reminder",
-      sortOrder: 0,
-      subjectTemplate: "Task overdue: {{task.title}}",
-      // No Wishonia signature in the body — the resend.ts send helpers
-      // append the canonical signature (with random title + tagline + sprite
-      // avatar) to every outgoing email. Embedding a signature here would
-      // double-sign.
-      bodyTextTemplate:
-        "This task is overdue: {{task.title}}.\n\nPlease mark it complete or post a status update.",
-      commentTemplate:
-        "This task is overdue.\n\nPlease mark it complete or post a status update.",
-      channel: "EMAIL",
-      audienceResolver: "ASSIGNEE",
-      purpose: "REMINDER",
-      emailScope: "task-reminders",
-      dedupeKeyTemplate: "task-overdue-reminder:{{task.id}}",
-      minHoursBetweenSends: 24,
-      maxSendsPerTask: 5,
-    },
-  ],
-};
-
 // Note on Wishonia nudges: the framework now supports per-trigger schedules,
 // iterationSource queries, and per-spec sendCount-range escalation — see the
 // run-due-triggers route plus minSendCount/maxSendCount on
@@ -448,5 +398,4 @@ export const ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS: CreateTaskTriggerInput[] = [
   treatyRatify,
   hmtVerifyGate,
   treatySignerPerSlot,
-  overdueReminderCron,
 ];
