@@ -71,14 +71,38 @@ import { POST } from "./route";
 
 function request(
   body: Record<string, unknown>,
-  options: { includeDefaultAcknowledgements?: boolean } = {},
+  options: {
+    includeDefaultAcknowledgements?: boolean;
+    includeDefaultNameParts?: boolean;
+  } = {},
 ) {
+  const displayName =
+    typeof body.displayName === "string" ? body.displayName : "Kay Elaine Sinn";
+  const parsedNameParts = displayName.trim().split(/\s+/).filter(Boolean);
+  const defaultNameParts =
+    options.includeDefaultNameParts === false
+      ? {}
+      : {
+          firstName:
+            typeof body.firstName === "string"
+              ? body.firstName
+              : (parsedNameParts[0] ?? "Kay"),
+          middleName:
+            typeof body.middleName === "string"
+              ? body.middleName
+              : parsedNameParts.slice(1, -1).join(" "),
+          lastName:
+            typeof body.lastName === "string"
+              ? body.lastName
+              : (parsedNameParts.at(-1) ?? "Sinn"),
+        };
   const withAcknowledgements =
     options.includeDefaultAcknowledgements === false
       ? body
       : {
           authorityConfirmed: true,
           publicDisplayAcknowledged: true,
+          ...defaultNameParts,
           ...body,
         };
   return new Request(
@@ -121,21 +145,21 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     mocks.voteFindFirst.mockResolvedValue({ id: "self_vote", answer: "YES" });
     mocks.personCreate.mockResolvedValue({
       id: "person_grandma",
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       lifeStatus: "LIVING",
       isPublic: true,
     });
     mocks.personFindUnique.mockResolvedValue(null);
     mocks.personUpdate.mockResolvedValue({
       id: "person_grandma",
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       handle: null,
       lifeStatus: "LIVING",
       isPublic: true,
     });
     mocks.personUpsert.mockResolvedValue({
       id: "person_grandma",
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       handle: null,
       lifeStatus: "LIVING",
       isPublic: true,
@@ -208,7 +232,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
   it("creates a named Humanity v Government plaintiff without creating a referendum vote", async () => {
     const res = await POST(
       request({
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         conditionName: "dementia",
         publicComment: "She deserved better.",
       }),
@@ -242,14 +266,14 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       update: expect.objectContaining({
         createdByUserId: "user_1",
         deletedAt: null,
-        displayNameSnapshot: "Grandma Kay",
+        displayNameSnapshot: "Kay Elaine Sinn",
         isPublic: true,
         role: "NAMED_PLAINTIFF",
       }),
       create: expect.objectContaining({
         caseId: "case_hvg",
         createdByUserId: "user_1",
-        displayNameSnapshot: "Grandma Kay",
+        displayNameSnapshot: "Kay Elaine Sinn",
         isPublic: true,
         role: "NAMED_PLAINTIFF",
         subjectId: "subject_person",
@@ -266,7 +290,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
 
     const res = await POST(
-      request({ displayName: "Grandma Kay", conditionName: "dementia" }),
+      request({ displayName: "Kay Elaine Sinn", conditionName: "dementia" }),
       params(),
     );
 
@@ -287,7 +311,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
 
   it("rejects unsupported referendum slugs before creating a Humanity v Government plaintiff", async () => {
     const res = await POST(
-      request({ displayName: "Grandma Kay", conditionName: "dementia" }),
+      request({ displayName: "Kay Elaine Sinn", conditionName: "dementia" }),
       params("random-referendum"),
     );
 
@@ -300,7 +324,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
   it("rejects represented people without permission or authority confirmation", async () => {
     const res = await POST(
       request(
-        { displayName: "Grandma Kay", conditionName: "dementia" },
+        { displayName: "Kay Elaine Sinn", conditionName: "dementia" },
         { includeDefaultAcknowledgements: false },
       ),
       params(),
@@ -316,11 +340,31 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.personCreate).not.toHaveBeenCalled();
   });
 
+  it("requires structured names for plaintiff filing", async () => {
+    const res = await POST(
+      request(
+        { displayName: "Kay Elaine Sinn", conditionName: "dementia" },
+        { includeDefaultNameParts: false },
+      ),
+      params(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: "Invalid represented person submission",
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: ["firstName"] }),
+        expect.objectContaining({ path: ["lastName"] }),
+      ]),
+    });
+    expect(mocks.personCreate).not.toHaveBeenCalled();
+  });
+
   it("does not require the caster to have a self YES vote first", async () => {
     mocks.voteFindFirst.mockResolvedValue(null);
 
     const res = await POST(
-      request({ displayName: "Grandma Kay", conditionName: "dementia" }),
+      request({ displayName: "Kay Elaine Sinn", conditionName: "dementia" }),
       params(),
     );
 
@@ -333,7 +377,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       request({
         birthDate: "1938-04-12",
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         imageUrl: "/img/grandma.jpg",
         lifeStatus: "LIVING",
         originUrl: "https://warondisease.org/people?utm=family",
@@ -354,7 +398,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       },
       person: {
         id: "person_grandma",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         lifeStatus: "LIVING",
         isPublic: true,
       },
@@ -363,9 +407,12 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(personCreateData).toMatchObject({
       createdByUserId: "user_1",
       birthDate: new Date("1938-04-12T00:00:00.000Z"),
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       image: "/img/grandma.jpg",
       isPublic: true,
+      firstName: "Kay",
+      middleName: "Elaine",
+      lastName: "Sinn",
       lifeStatus: "LIVING",
     });
     expect(personCreateData).not.toHaveProperty("sourceRef");
@@ -390,9 +437,9 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     });
     expect(mocks.subjectUpsert).toHaveBeenCalledWith({
       where: { personId: "person_grandma" },
-      update: { displayName: "Grandma Kay" },
+      update: { displayName: "Kay Elaine Sinn" },
       create: expect.objectContaining({
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         personId: "person_grandma",
         subjectType: "PERSON",
       }),
@@ -402,7 +449,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       expect.objectContaining({
         create: expect.objectContaining({
           createdByUserId: "user_1",
-          displayNameSnapshot: "Grandma Kay",
+          displayNameSnapshot: "Kay Elaine Sinn",
           isPublic: true,
           subjectId: "subject_person",
         }),
@@ -414,7 +461,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     const res = await POST(
       request({
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         healthDisclosureConfirmed: true,
         lifeStatus: "LIVING",
         showConditionPublicly: true,
@@ -437,7 +484,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     const res = await POST(
       request({
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         lifeStatus: "LIVING",
         showConditionPublicly: true,
       }),
@@ -457,21 +504,21 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
   it("uses clientDraftId as the represented-person idempotency key", async () => {
     mocks.personFindUnique.mockResolvedValue({
       id: "person_existing",
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       handle: null,
       isPublic: true,
       lifeStatus: "UNKNOWN",
     });
     mocks.personUpdate.mockResolvedValue({
       id: "person_existing",
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       handle: null,
       isPublic: true,
       lifeStatus: "UNKNOWN",
     });
     mocks.personUpsert.mockResolvedValue({
       id: "person_existing",
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       handle: null,
       isPublic: true,
       lifeStatus: "UNKNOWN",
@@ -481,7 +528,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       request({
         clientDraftId: "draft_1",
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         relationshipType: "grandchild-of",
       }),
       params(),
@@ -502,11 +549,11 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     expect(mocks.personUpsert).toHaveBeenCalledWith({
       where: { sourceRef: "represented-person-draft:user_1:draft_1" },
       create: expect.objectContaining({
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         sourceRef: "represented-person-draft:user_1:draft_1",
       }),
       update: expect.objectContaining({
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         sourceRef: "represented-person-draft:user_1:draft_1",
       }),
       select: {
@@ -545,7 +592,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     const res = await POST(
       request({
         conditionName: "Alzheimer's Disease",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         lifeStatus: "LIVING",
       }),
       params(),
@@ -568,7 +615,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     const res = await POST(
       request({
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         imageUrl: "https://tracker.example.com/grandma.jpg",
         lifeStatus: "LIVING",
       }),
@@ -589,7 +636,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
     const res = await POST(
       request({
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         lifeStatus: "LIVING",
         originUrl: "javascript:alert(1)",
       }),
@@ -611,7 +658,7 @@ describe("POST /api/referendums/[slug]/represented-people", () => {
       request({
         causeCategory: "ALIEN_ABDUCTION",
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         lifeStatus: "DEAD",
       }),
       params(),

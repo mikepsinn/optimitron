@@ -15,6 +15,7 @@ import {
 } from "@/lib/efficacy-lag-matcher.server";
 import { findCanonicalConditionGlobalVariable } from "@/lib/global-variable-lookup.server";
 import { ensureHumanityVGovernmentPlaintiffParty } from "@/lib/humanity-v-government-case.server";
+import { buildDisplayNameFromParts } from "@/lib/person-name";
 import { prisma } from "@/lib/prisma";
 import { ensurePersonForUser } from "@/lib/person.server";
 import {
@@ -201,7 +202,9 @@ const representedPersonSubmissionSchema = z
     consentCourtEvidence: z.unknown().transform((value) => value === true),
     dateOfDeath: nullableDateInputSchema,
     deathCountryCode: countryCodeSchema,
-    displayName: cleanStringSchema(MAX_NAME_LENGTH),
+    firstName: cleanStringSchema(MAX_NAME_LENGTH),
+    middleName: cleanStringSchema(MAX_NAME_LENGTH),
+    lastName: cleanStringSchema(MAX_NAME_LENGTH),
     imageUrl: siteLocalImageSchema,
     isPublic: z.unknown().transform((value) => value !== false),
     lifeStatus: lifeStatusInputSchema,
@@ -273,11 +276,19 @@ const representedPersonSubmissionSchema = z
       });
     }
 
-    if (!data.displayName) {
+    if (!data.firstName) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Name is required.",
-        path: ["displayName"],
+        message: "First name is required.",
+        path: ["firstName"],
+      });
+    }
+
+    if (!data.lastName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Last name is required.",
+        path: ["lastName"],
       });
     }
 
@@ -322,7 +333,9 @@ const representedPersonSubmissionSchema = z
     }
 
     for (const field of [
-      "displayName",
+      "firstName",
+      "middleName",
+      "lastName",
       "conditionName",
       "publicComment",
       "memorialMessage",
@@ -385,9 +398,11 @@ export async function POST(
       consentCourtEvidence,
       dateOfDeath,
       deathCountryCode,
-      displayName,
       imageUrl,
       isPublic,
+      firstName,
+      middleName,
+      lastName,
       lifeStatus,
       healthDisclosureConfirmed,
       memorialEvidence,
@@ -399,6 +414,11 @@ export async function POST(
       showConditionPublicly,
       wasChild,
     } = parsed.data;
+    const displayName = buildDisplayNameFromParts({
+      firstName,
+      middleName,
+      lastName,
+    });
 
     const isConflictCause = CONFLICT_CAUSE_CATEGORIES.has(causeCategory);
 
@@ -492,6 +512,9 @@ export async function POST(
         displayName,
         image: imageUrl,
         isPublic,
+        firstName,
+        middleName: middleName || null,
+        lastName,
         lifeStatus,
         ...(sourceRef ? { sourceRef } : {}),
       };

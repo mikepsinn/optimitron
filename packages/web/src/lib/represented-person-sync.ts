@@ -1,6 +1,10 @@
 "use client";
 
 import { storage, type PendingRepresentedPersonDraft } from "@/lib/storage";
+import {
+  buildDisplayNameFromParts,
+  splitDisplayNameIntoNameParts,
+} from "@/lib/person-name";
 
 const LOCK_TTL_MS = 15_000;
 
@@ -46,13 +50,30 @@ function releaseLock(ownerId: string): void {
 }
 
 function draftPayload(draft: PendingRepresentedPersonDraft) {
+  const fallbackName = splitDisplayNameIntoNameParts(draft.displayName);
+  const firstName =
+    draft.firstName?.trim() || fallbackName.firstName;
+  const middleName =
+    draft.middleName?.trim() || fallbackName.middleName;
+  const lastName =
+    draft.lastName?.trim() || fallbackName.lastName;
+  const displayName =
+    buildDisplayNameFromParts({
+      firstName,
+      middleName,
+      lastName,
+    }) || draft.displayName;
+
   return {
     authorityConfirmed: draft.authorityConfirmed === true,
     clientDraftId: draft.clientDraftId,
     conditionName: draft.conditionName ?? "",
-    displayName: draft.displayName,
+    displayName,
     healthDisclosureConfirmed: draft.healthDisclosureConfirmed === true,
     isPublic: draft.isPublic === true,
+    firstName,
+    middleName,
+    lastName,
     lifeStatus: draft.lifeStatus ?? "UNKNOWN",
     originUrl: draft.originUrl,
     publicComment: draft.publicComment ?? "",

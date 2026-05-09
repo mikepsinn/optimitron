@@ -14,6 +14,10 @@ import {
   syncPendingRepresentedPeople,
   type SyncedRepresentedPerson,
 } from "@/lib/represented-person-sync";
+import {
+  buildDisplayNameFromParts,
+  splitDisplayNameIntoNameParts,
+} from "@/lib/person-name";
 import { getRepresentedPersonDetailsHref } from "@/lib/plaintiffs-flow";
 import { ROUTES } from "@/lib/routes";
 import { storage, type PendingRepresentedPersonDraft } from "@/lib/storage";
@@ -43,6 +47,15 @@ function savedPersonFromSync(
   };
 }
 
+function nameFromDraft(draft: PendingRepresentedPersonDraft) {
+  const fallback = splitDisplayNameIntoNameParts(draft.displayName);
+  return {
+    firstName: draft.firstName ?? fallback.firstName,
+    middleName: draft.middleName ?? fallback.middleName,
+    lastName: draft.lastName ?? fallback.lastName,
+  };
+}
+
 interface RepresentedPersonConversionFormProps {
   className?: string;
   referendumSlug?: string;
@@ -54,7 +67,9 @@ export function RepresentedPersonConversionForm({
 }: RepresentedPersonConversionFormProps) {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
-  const [displayName, setDisplayName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [authorityConfirmed, setAuthorityConfirmed] = useState(false);
   const [publicDisplayAcknowledged, setPublicDisplayAcknowledged] =
     useState(false);
@@ -64,7 +79,13 @@ export function RepresentedPersonConversionForm({
   const [syncAttempt, setSyncAttempt] = useState(0);
   const syncStartedRef = useRef(false);
 
-  const hasName = displayName.trim().length > 0;
+  const displayName = buildDisplayNameFromParts({
+    firstName,
+    middleName,
+    lastName,
+  });
+  const hasName =
+    firstName.trim().length > 0 && lastName.trim().length > 0;
   const canSubmit = hasName && authorityConfirmed && publicDisplayAcknowledged;
   const isAuthenticated =
     sessionStatus === "authenticated" && Boolean(session?.user);
@@ -106,7 +127,10 @@ export function RepresentedPersonConversionForm({
 
         if (result.failedDrafts.length > 0) {
           const first = result.failedDrafts[0]!;
-          setDisplayName(first.displayName);
+          const draftName = nameFromDraft(first);
+          setFirstName(draftName.firstName);
+          setMiddleName(draftName.middleName);
+          setLastName(draftName.lastName);
           setError(
             "I could not save that person yet. The draft is still here.",
           );
@@ -135,7 +159,9 @@ export function RepresentedPersonConversionForm({
   }, [isAuthenticated, router, syncAttempt]);
 
   function resetForm() {
-    setDisplayName("");
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
     setAuthorityConfirmed(false);
     setPublicDisplayAcknowledged(false);
   }
@@ -144,9 +170,12 @@ export function RepresentedPersonConversionForm({
     return {
       authorityConfirmed,
       clientDraftId: createDraftId(),
-      displayName: displayName.trim(),
+      displayName,
       healthDisclosureConfirmed: false,
       isPublic: true,
+      firstName: firstName.trim(),
+      middleName: middleName.trim(),
+      lastName: lastName.trim(),
       lifeStatus: "UNKNOWN",
       originUrl:
         typeof window !== "undefined" ? window.location.href : undefined,
@@ -290,27 +319,63 @@ export function RepresentedPersonConversionForm({
             Who should be a plaintiff?
           </h2>
           <p className="font-bold leading-7 text-muted-foreground">
-            Use their real name or the name people know them by.
+            Use the name that belongs on the court record.
           </p>
         </div>
 
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label
-              className="text-xs font-black uppercase"
-              htmlFor="represented-fast-name"
-            >
-              Name
-            </Label>
-            <Input
-              autoComplete="name"
-              className="min-h-14 border-border bg-background text-lg font-bold"
-              disabled={mode === "saving"}
-              id="represented-fast-name"
-              onChange={(event) => setDisplayName(event.target.value)}
-              placeholder="Grandma Kay"
-              value={displayName}
-            />
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="space-y-2">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-fast-first-name"
+              >
+                First name
+              </Label>
+              <Input
+                autoComplete="given-name"
+                className="min-h-14 border-border bg-background text-lg font-bold"
+                disabled={mode === "saving"}
+                id="represented-fast-first-name"
+                onChange={(event) => setFirstName(event.target.value)}
+                placeholder="Kay"
+                value={firstName}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-fast-middle-name"
+              >
+                Middle name optional
+              </Label>
+              <Input
+                autoComplete="additional-name"
+                className="min-h-14 border-border bg-background text-lg font-bold"
+                disabled={mode === "saving"}
+                id="represented-fast-middle-name"
+                onChange={(event) => setMiddleName(event.target.value)}
+                placeholder="Elaine"
+                value={middleName}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-fast-last-name"
+              >
+                Last name
+              </Label>
+              <Input
+                autoComplete="family-name"
+                className="min-h-14 border-border bg-background text-lg font-bold"
+                disabled={mode === "saving"}
+                id="represented-fast-last-name"
+                onChange={(event) => setLastName(event.target.value)}
+                placeholder="Sinn"
+                value={lastName}
+              />
+            </div>
           </div>
 
           <label className="flex items-start gap-3 text-sm font-bold leading-6">

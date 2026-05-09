@@ -336,6 +336,37 @@ describe("PATCH /api/people/[id]", () => {
     expect(mocks.voteUpdateMany).not.toHaveBeenCalled();
   });
 
+  it("stores structured names and derives the plaintiff display snapshot", async () => {
+    const res = await PATCH(
+      request({
+        firstName: "Jane",
+        middleName: "Quincy",
+        lastName: "Public",
+        lifeStatus: "LIVING",
+      }),
+      params(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.personUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          displayName: "Jane Quincy Public",
+          firstName: "Jane",
+          middleName: "Quincy",
+          lastName: "Public",
+        }),
+      }),
+    );
+    expect(mocks.courtCasePartyUpdateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          displayNameSnapshot: "Jane Quincy Public",
+        }),
+      }),
+    );
+  });
+
   it("returns 404 when the owned person is not a court case plaintiff", async () => {
     mocks.personFindUnique.mockResolvedValue({
       birthDate: null,
@@ -372,7 +403,7 @@ describe("PATCH /api/people/[id]", () => {
     const res = await PATCH(
       request({
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         lifeStatus: "LIVING",
       }),
       params(),
@@ -394,7 +425,7 @@ describe("PATCH /api/people/[id]", () => {
     const res = await PATCH(
       request({
         conditionName: "dementia",
-        displayName: "Grandma Kay",
+        displayName: "Kay Elaine Sinn",
         healthDisclosureConfirmed: true,
         lifeStatus: "LIVING",
         showConditionPublicly: true,

@@ -88,6 +88,9 @@ export type PendingRepresentedPersonDraft = {
   displayName: string;
   healthDisclosureConfirmed?: boolean;
   isPublic: boolean;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
   lifeStatus?: "DECEASED" | "LIVING" | "UNKNOWN";
   originUrl?: string;
   publicComment?: string;
