@@ -102,7 +102,7 @@ Every action in the game mints a **Hypercert** on AT Protocol. Voter recruitment
 Proof-of-personhood for sybil-resistant civic participation. One person, one vote.
 
 - **Voter verification**: every VOTE token requires a World ID proof — no bots, no sock puppets
-- **Referendum voting**: direct democracy at `/agencies/dcongress/referendums` with World ID gating
+- **Referendum voting**: direct democracy at `/agencies/dcongress/referendums`. Anyone signed in can cast a vote; World ID verification is *optional* and marks the vote as verified-personhood for sybil-resistant tallies and VOTE token attribution
 - **UBI distribution**: the `UBIDistributor` contract in `@optimitron/treasury-wish` uses World ID to ensure one-per-human payouts
 - **Referral tracking**: recruiter credit requires the recruited voter to be World ID-verified
 
