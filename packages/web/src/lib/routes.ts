@@ -127,7 +127,29 @@ export interface NavItem {
   cta: string;
   external?: boolean;
   matchPrefixes?: string[];
+  /** Capture this route in the logged-out visual review. */
+  screenshot?: boolean;
+  /** Capture this route again as the seeded demo user. */
+  authenticatedScreenshot?: boolean;
+  /** Generate a logged-out page.md copy preview for this route. */
+  copyPreview?: boolean;
+  /** Generate a page.authed.md copy preview as the seeded demo user. */
+  authenticatedCopyPreview?: boolean;
+  /** Stable screenshot/copy-review id when the path alone is ambiguous. */
+  reviewName?: string;
 }
+
+export const homeLink: NavItem = {
+  href: ROUTES.home,
+  label: "Home",
+  emoji: "",
+  description: "Primary public landing page.",
+  tagline: "Primary public landing page",
+  copyPreview: true,
+  reviewName: "home",
+  screenshot: true,
+  cta: "Go Home",
+};
 
 export function getBudgetCategoryPath(name: string): string {
   return `${ROUTES.obg}/${slugify(name)}`;
@@ -381,21 +403,14 @@ export const moroniaLink: NavItem = {
 
 export const dashboardLink: NavItem = {
   href: ROUTES.dashboard,
-  label: "Dashboard",
+  label: "Manage Humanity",
   emoji: "📊",
   description:
-    "Your referral link, your rank, your treaty tasks, and who still needs a reminder.",
-  tagline: "Your link, rank, tasks, and reminders",
-
-  cta: "Open Dashboard",
-};
-
-export const treatyDashboardLink: NavItem = {
-  ...dashboardLink,
-  description:
     "Invite humans to vote on the 1% Treaty and track who still needs a reminder.",
-  label: "Dashboard",
-  tagline: "Invite voters and track reminders",
+  tagline: "Copy your voting link and coordinate reminders",
+  authenticatedCopyPreview: true,
+  authenticatedScreenshot: true,
+  cta: "Manage Humanity",
 };
 
 export const tasksLink: NavItem = {
@@ -405,17 +420,23 @@ export const tasksLink: NavItem = {
   description:
     "Find public tasks that move health, income, and treaty adoption. Claim one or remind the person responsible.",
   tagline: "Claim tasks or remind the person responsible",
+  authenticatedScreenshot: true,
+  copyPreview: true,
+  reviewName: "tasks-index",
+  screenshot: true,
   cta: "Open Tasks",
 };
 
 export const presidentManagementLink: NavItem = {
   href: ROUTES.employees,
-  label: "President Management System",
+  label: "Remind Presidents",
   emoji: "🪪",
   description:
     "You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.",
   tagline: "Remind presidents to promote the general welfare",
-  cta: "Manage Presidents",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Remind Presidents",
 };
 
 export const searchLink: NavItem = {
@@ -477,7 +498,8 @@ export const settingsLink: NavItem = {
   description:
     "Notification preferences, account toggles, and profile controls.",
   tagline: "Notification preferences and account toggles",
-
+  authenticatedCopyPreview: true,
+  authenticatedScreenshot: true,
   cta: "Open Settings",
 };
 
@@ -608,12 +630,15 @@ export const iabLink: NavItem = {
 
 export const treatyLink: NavItem = {
   href: ROUTES.treaty,
-  label: "The 1% Treaty",
+  label: "Sign the Treaty",
   emoji: "📜",
   description:
     "The full text of the treaty that redirects 1% of military spending to clinical trials. Read it, sign it, share it. Every signature from an official account is verified on the public ledger.",
-  tagline: "1% of war budgets → clinical trials",
-  cta: "Read the Treaty",
+  tagline: "Read it, sign it, share it",
+  authenticatedScreenshot: true,
+  copyPreview: true,
+  screenshot: true,
+  cta: "Sign the Treaty",
 };
 
 export const courtLink: NavItem = {
@@ -623,6 +648,8 @@ export const courtLink: NavItem = {
   description:
     "Join the public jury and plaintiff class for government harm. If a government kills, injures, imprisons, or ruins your family, humanity should be able to hear the case.",
   tagline: "Public jury for government harm",
+  copyPreview: true,
+  screenshot: true,
   cta: "Join the Court",
 };
 
@@ -639,12 +666,9 @@ export const humanityVGovernmentLink: NavItem = {
   description:
     "Governments were hired to promote the general welfare. They chose war instead. Now there's a legal theory for that.",
   tagline: "The case against government harm",
+  copyPreview: true,
+  screenshot: true,
   cta: "Read the Case",
-};
-
-export const readTreatyLink: NavItem = {
-  ...treatyLink,
-  label: "Read the Treaty",
 };
 
 export const voteLink: NavItem = {
@@ -655,13 +679,9 @@ export const voteLink: NavItem = {
     "Answer the 1% Treaty question. Thirty seconds. Then give the next human their voting task.",
   tagline: "Answer the 1% Treaty question",
   matchPrefixes: [ROUTES.vote],
+  copyPreview: true,
+  screenshot: true,
   cta: "Vote Now",
-};
-
-export const treatyVoteLink: NavItem = {
-  ...voteLink,
-  description: "Please take 30 seconds to end war and disease.",
-  tagline: "Vote on the 1% Treaty",
 };
 
 export const peopleLink: NavItem = {
@@ -671,16 +691,22 @@ export const peopleLink: NavItem = {
   description:
     "1% Treaty work needs actual humans. Find people with public tasks and remind the right one.",
   tagline: "1% Treaty task coordination",
+  authenticatedScreenshot: true,
+  copyPreview: true,
+  screenshot: true,
   cta: "Find People",
 };
 
 export const plaintiffsLink: NavItem = {
   href: ROUTES.plaintiffs,
-  label: "Plaintiffs",
+  label: "Register a Plaintiff",
   emoji: "👥",
   description: `Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in ${humanityVGovernmentLink.label}.`,
-  tagline: "Sign for someone who can't",
-  cta: "Sign for Them",
+  tagline: "Register yourself or a deceased relative as a plaintiff",
+  authenticatedScreenshot: true,
+  copyPreview: true,
+  screenshot: true,
+  cta: "Register a Plaintiff",
 };
 
 export const plaintiffsManageLink: NavItem = {
@@ -689,10 +715,12 @@ export const plaintiffsManageLink: NavItem = {
   label: "Your Plaintiffs",
   description: `Edit the plaintiffs you registered for ${humanityVGovernmentLink.label}.`,
   tagline: "Edit your plaintiffs",
+  authenticatedCopyPreview: true,
+  authenticatedScreenshot: true,
+  copyPreview: false,
+  screenshot: false,
   cta: "Your Plaintiffs",
 };
-
-export const peopleManageLink = plaintiffsManageLink;
 
 export const questionsLink: NavItem = {
   href: ROUTES.questions,
@@ -702,17 +730,21 @@ export const questionsLink: NavItem = {
     "The longer context-first treaty walkthrough with the story, stakes, math, and vote question.",
   tagline: "Story, stakes, math, and the treaty vote",
   matchPrefixes: [ROUTES.questions],
+  copyPreview: true,
+  screenshot: true,
   cta: "See the Questions",
 };
 
 export const whyLink: NavItem = {
   href: ROUTES.why,
-  label: "The Case",
+  label: "Check the Math",
   emoji: "🧠",
   description:
     "The core numbers behind the 1% Treaty: disease, war spending, trial capacity, and why one apocalypse is enough to trade.",
   tagline: "The numbers behind the treaty",
-  cta: "Read the Case",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Check the Math",
 };
 
 export const endorseLink: NavItem = {
@@ -722,28 +754,32 @@ export const endorseLink: NavItem = {
   description:
     "Join the International Campaign to End War and Disease as an organization.",
   tagline: "Join as an organization",
+  copyPreview: true,
+  screenshot: true,
   cta: "Join as Organization",
 };
 
-export const campaignPartnersLink: NavItem = {
+export const signatoriesLink: NavItem = {
   href: ROUTES.signatories,
   label: "Signatories",
   emoji: "🏢",
   description: "Organizations and humans publicly signed onto the 1% Treaty.",
   tagline: "See who signed",
+  copyPreview: true,
+  screenshot: true,
   cta: "See Signatories",
 };
 
-export const coalitionLink = campaignPartnersLink;
-
 export const donateLink: NavItem = {
   href: ROUTES.donate,
-  label: "Donate",
+  label: "Fund Campaign",
   emoji: "💝",
   description:
     "Use the calculator to buy expected lives saved or years of suffering prevented. Tax-deductible to a U.S. 501(c)(3).",
-  tagline: "Buy expected lives saved",
-  cta: "Donate",
+  tagline: "Fund the campaign",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Fund Campaign",
 };
 
 export const legalLink: NavItem = {
@@ -753,6 +789,7 @@ export const legalLink: NavItem = {
   description:
     "Legal notes for organizations reviewing nonpartisan treaty support.",
   tagline: "For organizations",
+  copyPreview: true,
   cta: "Read Legal Notes",
 };
 
@@ -763,6 +800,7 @@ export const privacyLink: NavItem = {
   description:
     "What this site collects, why it collects it, and how to contact us.",
   tagline: "Data use and choices",
+  copyPreview: true,
   cta: "Read Privacy",
 };
 
@@ -772,6 +810,7 @@ export const termsLink: NavItem = {
   emoji: "📄",
   description: "The rules for using this site.",
   tagline: "Site rules",
+  copyPreview: true,
   cta: "Read Terms",
 };
 
@@ -791,6 +830,7 @@ export const trialEmbedLink: NavItem = {
   emoji: "🧩",
   description: "Get your organization's survey link and iframe code.",
   tagline: "Survey link and iframe code",
+  authenticatedScreenshot: true,
   cta: "Embed Survey",
 };
 
@@ -1014,6 +1054,8 @@ export const feedbackLink: NavItem = {
   emoji: "!",
   description:
     "Tell us what is confusing, irritating, broken, or missing so this becomes a better to-do list for humanity.",
+  copyPreview: true,
+  screenshot: true,
   cta: "Send Feedback",
 };
 
@@ -1093,14 +1135,14 @@ export const invisibleGraveyardPaperLink: NavItem = {
 };
 
 export const onePercentTreatyPaperLink: NavItem = {
-  label: "The 1% Treaty",
+  label: "Impact Analysis",
   href: "https://impact.warondisease.org",
   emoji: "🕊️",
   description:
     "Going from spending 99% of the murder budget on murder to 98%. Your species will find this controversial.",
   external: true,
-
-  cta: "Read Paper",
+  tagline: "Read the economic analysis",
+  cta: "Read Impact Analysis",
 };
 
 export const politicalDysfunctionTaxPaperLink: NavItem = {
@@ -1392,3 +1434,93 @@ export const communityLinks: NavItem[] = [
   readmeLink,
   mitLicenseLink,
 ];
+
+export type RouteReviewMode =
+  | "screenshot"
+  | "authenticatedScreenshot"
+  | "copyPreview"
+  | "authenticatedCopyPreview";
+
+export interface RouteReviewSpec {
+  name: string;
+  navItem: NavItem;
+  path: string;
+}
+
+export const routeReviewNavItems = [
+  homeLink,
+  voteLink,
+  treatyLink,
+  whyLink,
+  humanityVGovernmentLink,
+  plaintiffsLink,
+  plaintiffsManageLink,
+  courtLink,
+  donateLink,
+  endorseLink,
+  signatoriesLink,
+  presidentManagementLink,
+  dashboardLink,
+  tasksLink,
+  peopleLink,
+  questionsLink,
+  feedbackLink,
+  legalLink,
+  privacyLink,
+  settingsLink,
+  termsLink,
+  trialEmbedLink,
+] as const satisfies readonly NavItem[];
+
+export function getRouteReviewSpecs(mode: RouteReviewMode): RouteReviewSpec[] {
+  return dedupeRouteReviewSpecs(
+    routeReviewNavItems.flatMap((navItem) => {
+      if (!navItem[mode] || navItem.external) {
+        return [];
+      }
+      const reviewPath = getReviewPathFromNavItem(navItem);
+      if (!reviewPath) {
+        return [];
+      }
+      return [
+        {
+          name: navItem.reviewName ?? getRouteReviewName(reviewPath),
+          navItem,
+          path: reviewPath,
+        },
+      ];
+    }),
+  );
+}
+
+export function getRouteReviewName(pathname: string): string {
+  return (
+    pathname
+      .replace(/^\//, "")
+      .replace(/\/$/, "")
+      .replace(/[^a-zA-Z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "home"
+  );
+}
+
+function getReviewPathFromNavItem(navItem: NavItem): string | null {
+  const href = navItem.href.trim();
+  if (!href.startsWith("/")) {
+    return null;
+  }
+  return href.split(/[?#]/, 1)[0] || ROUTES.home;
+}
+
+function dedupeRouteReviewSpecs(
+  specs: RouteReviewSpec[],
+): RouteReviewSpec[] {
+  const seen = new Set<string>();
+  return specs.filter((spec) => {
+    const key = `${spec.name}:${spec.path}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}

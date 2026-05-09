@@ -2,6 +2,8 @@
 
 **Read this FIRST before making any changes.**
 
+**Edits to this file and CLAUDE.md: minimum words to convey the rule. One example only if the rule is ambiguous without it. No example flotillas.**
+
 ## Core Working Rules
 
 - Read the relevant package `AGENTS.md` before editing package files.
@@ -88,6 +90,7 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Do not leak implementation or planning terms into user copy: "site variant", "program graph", "initiative landing page", "approved organizations get", "route allowlist", etc.
 - Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.
 - For treaty/vote/referral copy, optimize for voting, sharing, embedding, and task completion, not explaining the whole system.
+- **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
 - Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
 - When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
 

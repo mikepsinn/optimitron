@@ -15,6 +15,7 @@ import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
 import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
 import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
+import { splitDisplayNameIntoNameParts } from "@/lib/person-name";
 import { prisma } from "@/lib/prisma";
 import {
   getSignInPath,
@@ -171,6 +172,9 @@ export default async function ManagePeoplePage({
       id: true,
       image: true,
       isPublic: true,
+      firstName: true,
+      middleName: true,
+      lastName: true,
       lifeStatus: true,
       memorial: {
         select: {
@@ -209,6 +213,9 @@ export default async function ManagePeoplePage({
   });
 
   const editablePeople = people.map((person) => {
+    const fallbackName = splitDisplayNameIntoNameParts(
+      person.displayName,
+    );
     const primaryCondition =
       person.conditions.find(
         (condition) =>
@@ -239,6 +246,10 @@ export default async function ManagePeoplePage({
       healthDisclosureConfirmed: false,
       imageUrl: person.image ?? "",
       isPublic: person.isPublic,
+      firstName: person.firstName ?? fallbackName.firstName,
+      middleName:
+        person.middleName ?? fallbackName.middleName,
+      lastName: person.lastName ?? fallbackName.lastName,
       lifeStatus: person.lifeStatus,
       memorialMessage: submission?.memorialMessage ?? "",
       publicComment: person.bio ?? "",

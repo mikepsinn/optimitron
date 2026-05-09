@@ -13,6 +13,7 @@ import { requireAuth } from "@/lib/auth-utils";
 import { findCanonicalConditionGlobalVariable } from "@/lib/global-variable-lookup.server";
 import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
 import { ensurePersonForUser } from "@/lib/person.server";
+import { buildDisplayNameFromParts } from "@/lib/person-name";
 import { prisma } from "@/lib/prisma";
 import {
   isSelfServeMemorialEvidenceKindAllowed,
@@ -187,6 +188,9 @@ const updatePersonSchema = z
     dateOfDeath: optionalNullableDateInputSchema,
     deathCountryCode: optionalCountryCodeSchema,
     displayName: optionalCleanStringSchema(MAX_NAME_LENGTH),
+    firstName: optionalCleanStringSchema(MAX_NAME_LENGTH),
+    middleName: optionalCleanStringSchema(MAX_NAME_LENGTH),
+    lastName: optionalCleanStringSchema(MAX_NAME_LENGTH),
     imageUrl: optionalSiteLocalImageSchema,
     isPublic: z.boolean().optional(),
     lifeStatus: optionalLifeStatusInputSchema,
@@ -244,6 +248,22 @@ const updatePersonSchema = z
       });
     }
 
+    if (data.firstName !== undefined && !data.firstName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "First name is required.",
+        path: ["firstName"],
+      });
+    }
+
+    if (data.lastName !== undefined && !data.lastName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Last name is required.",
+        path: ["lastName"],
+      });
+    }
+
     if (
       data.birthDate &&
       data.dateOfDeath &&
@@ -258,6 +278,9 @@ const updatePersonSchema = z
 
     for (const field of [
       "displayName",
+      "firstName",
+      "middleName",
+      "lastName",
       "conditionName",
       "publicComment",
       "memorialMessage",
@@ -317,6 +340,9 @@ export async function PATCH(
         createdByUserId: true,
         deathDate: true,
         displayName: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
         bio: true,
         id: true,
         image: true,
@@ -381,8 +407,26 @@ export async function PATCH(
     const existingCondition = existingPerson.conditions[0] ?? null;
     const finalLifeStatus = parsed.data.lifeStatus ?? existingPerson.lifeStatus;
     const finalIsPublic = parsed.data.isPublic ?? existingPerson.isPublic;
-    const finalDisplayName =
-      parsed.data.displayName ?? existingPerson.displayName;
+    const namePartsWereSubmitted =
+      parsed.data.firstName !== undefined ||
+      parsed.data.middleName !== undefined ||
+      parsed.data.lastName !== undefined;
+    const finalFirstName = namePartsWereSubmitted
+      ? (parsed.data.firstName ?? existingPerson.firstName ?? "")
+      : (existingPerson.firstName ?? null);
+    const finalMiddleName = namePartsWereSubmitted
+      ? (parsed.data.middleName ?? existingPerson.middleName ?? "")
+      : (existingPerson.middleName ?? null);
+    const finalLastName = namePartsWereSubmitted
+      ? (parsed.data.lastName ?? existingPerson.lastName ?? "")
+      : (existingPerson.lastName ?? null);
+    const finalDisplayName = namePartsWereSubmitted
+      ? buildDisplayNameFromParts({
+          firstName: finalFirstName,
+          middleName: finalMiddleName,
+          lastName: finalLastName,
+        })
+      : (parsed.data.displayName ?? existingPerson.displayName);
     const finalBirthDate =
       parsed.data.birthDate === undefined
         ? existingPerson.birthDate
@@ -442,6 +486,36 @@ export async function PATCH(
         {
           error: "Invalid person update",
           issues: [{ message: "Name is required.", path: ["displayName"] }],
+        },
+        { status: 400 },
+      );
+    }
+
+    if (namePartsWereSubmitted && !finalFirstName) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [
+            {
+              message: "First name is required.",
+              path: ["firstName"],
+            },
+          ],
+        },
+        { status: 400 },
+      );
+    }
+
+    if (namePartsWereSubmitted && !finalLastName) {
+      return NextResponse.json(
+        {
+          error: "Invalid person update",
+          issues: [
+            {
+              message: "Last name is required.",
+              path: ["lastName"],
+            },
+          ],
         },
         { status: 400 },
       );
@@ -544,6 +618,13 @@ export async function PATCH(
           displayName: finalDisplayName,
           image: finalImageUrl,
           isPublic: finalIsPublic,
+          ...(namePartsWereSubmitted
+            ? {
+                firstName: finalFirstName || null,
+                middleName: finalMiddleName || null,
+                lastName: finalLastName || null,
+              }
+            : {}),
           lifeStatus: finalLifeStatus,
         },
         select: {

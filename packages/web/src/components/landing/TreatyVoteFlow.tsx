@@ -441,22 +441,21 @@ export function TreatyVoteFlow({
               dropCap
               className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"
             >
-              I&apos;m very sorry to bother you, but this is kind of the most
-              important thing in the universe and it will only take a few
-              moments of your time.
+              Give me 30 seconds. If this is wrong, leave. If it is right,
+              your vote helps move money from war to medicine.
             </TreatyFlowParagraph>
             <TreatyFlowButtonRow>
               <Button
                 className={treatySecondaryButtonClass}
                 onClick={() => advancePreVote("grandma", true)}
               >
-                Go to hell
+                Leave
               </Button>
               <Button
                 className={treatyPrimaryButtonClass}
                 onClick={() => advancePreVote("grandma")}
               >
-                Fine
+                Continue
               </Button>
             </TreatyFlowButtonRow>
           </TreatyFlowShell>

@@ -72,8 +72,20 @@ function formatDuration(hours: number | null | undefined): string {
   return `${Math.round(hours / 24)}d`;
 }
 
-function formatDueDate(value: Date) {
-  return value.toLocaleDateString("en-US", {
+function getTaskDate(value: Date | string | null | undefined): Date | null {
+  if (value == null) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function getTaskDateMs(value: Date | string | null | undefined): number | null {
+  return getTaskDate(value)?.getTime() ?? null;
+}
+
+function formatDueDate(value: Date | string) {
+  const date = getTaskDate(value);
+  if (!date) return "";
+  return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
   });
@@ -130,9 +142,10 @@ function getLeftBorderColor(task: TaskCardTask): string {
   return "border-l-muted";
 }
 
-function formatCompletedDate(value: Date | null | undefined): string {
-  if (!value) return "—";
-  return value.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+function formatCompletedDate(value: Date | string | null | undefined): string {
+  const date = getTaskDate(value);
+  if (!date) return "—";
+  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
 function impactSignClass(value: number | null | undefined): string {
@@ -315,7 +328,8 @@ export function TaskRow({
 
   const pressurePrompt: string | null = null;
 
-  const isOverdue = task.dueAt != null && task.dueAt.getTime() < Date.now();
+  const dueMs = getTaskDateMs(task.dueAt);
+  const isOverdue = dueMs != null && dueMs < Date.now();
 
   const perDayDalys = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
   const moneyWasted = delayStats.currentEconomicValueUsdLost;
@@ -338,7 +352,7 @@ export function TaskRow({
   // Continuous death counter inputs: convert per-day healthy life-years lost
   // into per-second, then divide by years-per-death to get deaths/sec.
   const yearsPerSecond = perDayDalys != null && perDayDalys > 0 ? perDayDalys / 86400 : null;
-  const deathClockStartMs = task.dueAt?.getTime() ?? null;
+  const deathClockStartMs = dueMs;
   const showDeathCounter = yearsPerSecond != null && deathClockStartMs != null && isOverdue;
 
   const calculationsUrl =
@@ -380,7 +394,6 @@ export function TaskRow({
       assigneeBudget != null ? assigneeBudget / GLOBAL_MILITARY_USD : 0;
     const deathsPerSecond = (DAILY_DISEASE_DEATHS * share) / 86400;
     const usdPerSecond = (DAILY_DISEASE_COST_USD * share) / 86400;
-    const dueMs = task.dueAt?.getTime() ?? null;
     const canTick =
       dueMs != null && dueMs < Date.now() && share > 0 && attribution != null;
     // Compact packed caption for mobile (desktop uses full numbers below).
@@ -873,11 +886,11 @@ export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string |
     case "impactMoney":
       return task.impact?.selectedFrame?.expectedEconomicValueUsdBase ?? 0;
     case "verifiedAt":
-      return task.verifiedAt?.getTime() ?? 0;
+      return getTaskDateMs(task.verifiedAt) ?? 0;
     case "assignee":
       return task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? "";
     case "status":
-      return task.dueAt?.getTime() ?? Infinity;
+      return getTaskDateMs(task.dueAt) ?? Infinity;
     case "title":
       return task.title;
   }

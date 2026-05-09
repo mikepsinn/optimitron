@@ -61,12 +61,6 @@ const SCALEABLE_METRIC_KEYS = new Set([
   "treaty_qalys_gained_annual_global",
 ]);
 
-/**
- * @deprecated Treaty-specific alias. New code should import
- * `GovernmentLeaderRecord` directly from `@optimitron/data`.
- */
-export type TreatySignerSlot = GovernmentLeaderRecord;
-
 function round(value: number, digits = 4) {
   const scale = 10 ** digits;
   return Math.round(value * scale) / scale;
@@ -84,7 +78,7 @@ function uniqueArtifacts(artifacts: ImportedSourceArtifactDraft[]) {
   return [...deduped.values()];
 }
 
-function buildCountryInterestTags(slot: TreatySignerSlot) {
+function buildCountryInterestTags(slot: GovernmentLeaderRecord) {
   return [
     "treaty",
     "disease-eradication",
@@ -93,7 +87,7 @@ function buildCountryInterestTags(slot: TreatySignerSlot) {
   ];
 }
 
-function buildCountrySkillTags(slot: TreatySignerSlot) {
+function buildCountrySkillTags(slot: GovernmentLeaderRecord) {
   return [
     "diplomacy",
     "public-pressure",
@@ -103,7 +97,7 @@ function buildCountrySkillTags(slot: TreatySignerSlot) {
 }
 
 function buildTreatySignerSourceArtifacts(
-  slot: TreatySignerSlot,
+  slot: GovernmentLeaderRecord,
 ): ImportedSourceArtifactDraft[] {
   const artifacts: ImportedSourceArtifactDraft[] = [
     {
@@ -209,7 +203,7 @@ function upsertMetric(
   metrics.push(nextMetric);
 }
 
-function buildSignerImpactMetrics(slot: TreatySignerSlot) {
+function buildSignerImpactMetrics(slot: GovernmentLeaderRecord) {
   const militaryShareRatio =
     slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
   const redirectAmountUsd = slot.militaryBudgetUsd * 0.01;
@@ -272,7 +266,7 @@ function buildSignerImpactMetrics(slot: TreatySignerSlot) {
 
 export function buildTreatySignerImportDraft(input: {
   baseDraft: PolicyModelRunImportDraft;
-  slot: TreatySignerSlot;
+  slot: GovernmentLeaderRecord;
 }): PolicyModelRunImportDraft {
   const slot = input.slot;
   const factor =

@@ -4,12 +4,15 @@ import {
   copyFileSync,
   existsSync,
   mkdirSync,
+  readFileSync,
   readdirSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
 const webRoot = process.cwd();
 const repoRoot = path.resolve(webRoot, "../..");
@@ -20,15 +23,41 @@ const beforeScreenshotsRoot = process.env.VISUAL_BEFORE_ROOT
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
 const assetRoot = path.join(outputRoot, "assets");
 const latestHtmlPath = path.join(outputRoot, "latest.html");
+const diffPixelRatioThreshold = parseNumberEnv(
+  "VISUAL_REVIEW_DIFF_RATIO",
+  0.001,
+);
+const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
 
 const routeOrder = [
   "home",
+  "side-menu",
+  "side-menu-auth",
+  "dashboard",
+  "employees",
+  "vote",
+  "treaty",
+  "treaty-auth",
+  "why",
+  "humanity-v-government",
+  "plaintiffs",
+  "plaintiffs-auth",
+  "plaintiffs-manage",
+  "court",
+  "donate",
+  "endorse",
+  "signatories",
   "tasks-index",
+  "tasks-index-auth",
+  "people",
+  "people-auth",
+  "questions",
+  "feedback",
+  "settings",
+  "organizations",
   "task-optimize-earth",
   "task-one-percent-treaty",
   "task-signer-canada",
-  "endorse",
-  "humanity-v-government",
 ];
 
 main();
@@ -43,12 +72,15 @@ function main() {
       : []),
     ...collectScreenshots(screenshotsRoot, "after"),
   ];
-  const grouped = groupScreenshots(screenshots);
+  const grouped = analyzeGroups(groupScreenshots(screenshots));
   const html = renderHtml(grouped);
 
   writeFileSync(latestHtmlPath, html, "utf8");
   console.log(`[visual-review] wrote ${latestHtmlPath}`);
   console.log(`[visual-review] screenshots=${screenshots.length}`);
+  console.log(
+    `[visual-review] changed=${grouped.filter((group) => group.changed).length} unchanged=${grouped.filter((group) => !group.changed).length}`,
+  );
 }
 
 function collectScreenshots(root, version) {
@@ -77,6 +109,7 @@ function collectScreenshots(root, version) {
         projectName,
         routeName,
         fileName: entry,
+        assetPath,
         relPath: toPosix(path.relative(outputRoot, assetPath)),
       });
     }
@@ -113,6 +146,7 @@ function groupScreenshots(screenshots) {
 
 function renderHtml(groups) {
   const generatedAt = new Date().toISOString();
+  const summary = summarizeGroups(groups);
   const body = groups.length > 0
     ? groups.map(renderRouteGroup).join("\n")
     : `<section class="empty">
@@ -168,29 +202,65 @@ function renderHtml(groups) {
       font-size: 13px;
     }
 
+    .summary-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
     main {
       padding: 24px;
     }
 
-    section {
+    details.route {
       border-top: 1px solid var(--line);
-      padding: 24px 0 40px;
     }
 
-    section:first-child {
+    details.route:first-child {
       border-top: 0;
-      padding-top: 0;
     }
 
-    h2 {
-      margin: 0 0 16px;
+    summary {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      list-style: none;
+      padding: 18px 0;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::before {
+      content: "+";
+      flex: 0 0 auto;
+      font-family: Consolas, "Liberation Mono", monospace;
       font-size: 18px;
+      font-weight: 700;
+    }
+
+    details[open] > summary::before {
+      content: "-";
+    }
+
+    .route-title {
+      flex: 1 1 auto;
+      font-size: 18px;
+      font-weight: 700;
       letter-spacing: 0;
     }
 
     .pairs {
       display: grid;
       gap: 28px;
+      padding: 0 0 40px;
     }
 
     .pair {
@@ -198,6 +268,10 @@ function renderHtml(groups) {
     }
 
     .pair h3 {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
       margin: 0;
       border-bottom: 1px solid var(--line);
       padding: 8px 10px;
@@ -225,6 +299,32 @@ function renderHtml(groups) {
       padding: 8px 10px;
       font-size: 13px;
       font-weight: 700;
+    }
+
+    .pill {
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      color: var(--fg);
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 700;
+      min-height: 24px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pill.changed,
+    .pill.missing,
+    .pill.error {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .pill.unchanged {
+      border-color: #777777;
+      color: var(--muted);
     }
 
     img {
@@ -264,7 +364,13 @@ function renderHtml(groups) {
   <header>
     <h1>Optimitron Visual Review</h1>
     <div class="meta">
-      Generated ${escapeHtml(generatedAt)}. ${beforeScreenshotsRoot ? "Left side is the latest main baseline artifact; right side is this pull request." : "No main baseline artifact was available, so this page shows pull request screenshots only."} Use Argos on the PR for changed-only review when available.
+      Generated ${escapeHtml(generatedAt)}. ${beforeScreenshotsRoot ? "Left side is the latest main baseline artifact; right side is this pull request." : "No main baseline artifact was available, so this page shows pull request screenshots only."} Changed or missing-baseline pages are expanded; unchanged pages are collapsed but still captured.
+    </div>
+    <div class="summary-line">
+      <span class="pill changed">${summary.changedRoutes} changed</span>
+      <span class="pill unchanged">${summary.unchangedRoutes} unchanged</span>
+      <span class="pill missing">${summary.missingPairs} missing pairs</span>
+      <span class="pill error">${summary.erroredRoutes} errored</span>
     </div>
   </header>
   <main>
@@ -277,17 +383,24 @@ function renderHtml(groups) {
 
 function renderRouteGroup(group) {
   const pairs = group.pairs.map(renderPair).join("\n");
-  return `<section>
-    <h2>${escapeHtml(labelRoute(group.routeName))}</h2>
+  const openAttr = group.changed || group.errored ? " open" : "";
+  return `<details class="route ${group.changed || group.errored ? "changed" : "unchanged"}"${openAttr}>
+    <summary>
+      <span class="route-title">${escapeHtml(labelRoute(group.routeName))}</span>
+      <span class="pill ${group.errored ? "error" : group.changed ? "changed" : "unchanged"}">${escapeHtml(routeStatusLabel(group))}</span>
+    </summary>
     <div class="pairs">
       ${pairs}
     </div>
-  </section>`;
+  </details>`;
 }
 
 function renderPair(pair) {
   return `<article class="pair">
-    <h3>${escapeHtml(labelProject(pair.projectName))}</h3>
+    <h3>
+      <span>${escapeHtml(labelProject(pair.projectName))}</span>
+      <span class="pill ${escapeHtml(pair.diff.statusClass)}">${escapeHtml(pair.diff.label)}</span>
+    </h3>
     <div class="comparison">
       ${renderFigure(pair.before, "Before: main")}
       ${renderFigure(pair.after, "After: pull request")}
@@ -306,6 +419,120 @@ function renderFigure(screenshot, label) {
     <figcaption>${escapeHtml(label)}</figcaption>
     <img src="${escapeHtml(screenshot.relPath)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
   </figure>`;
+}
+
+function analyzeGroups(groups) {
+  return groups.map((group) => {
+    const pairs = group.pairs.map((pair) => ({
+      ...pair,
+      diff: comparePair(pair),
+    }));
+    const changedPairs = pairs.filter((pair) => pair.diff.changed).length;
+    const missingPairs = pairs.filter((pair) => pair.diff.missing).length;
+    const erroredPairs = pairs.filter((pair) => pair.diff.errored).length;
+    return {
+      ...group,
+      changed: changedPairs > 0,
+      changedPairs,
+      errored: erroredPairs > 0,
+      erroredPairs,
+      missingPairs,
+      pairs,
+    };
+  });
+}
+
+function comparePair(pair) {
+  if (!pair.before && pair.after) {
+    return {
+      changed: true,
+      label: "missing before",
+      missing: true,
+      statusClass: "missing",
+    };
+  }
+  if (pair.before && !pair.after) {
+    return {
+      changed: true,
+      label: "missing after",
+      missing: true,
+      statusClass: "missing",
+    };
+  }
+  if (!pair.before || !pair.after) {
+    return {
+      changed: true,
+      label: "missing",
+      missing: true,
+      statusClass: "missing",
+    };
+  }
+
+  try {
+    const before = PNG.sync.read(readFileSync(pair.before.assetPath));
+    const after = PNG.sync.read(readFileSync(pair.after.assetPath));
+    if (before.width !== after.width || before.height !== after.height) {
+      return {
+        changed: true,
+        label: `${before.width}x${before.height} -> ${after.width}x${after.height}`,
+        missing: false,
+        statusClass: "changed",
+      };
+    }
+
+    const diffPixels = pixelmatch(
+      before.data,
+      after.data,
+      null,
+      before.width,
+      before.height,
+      { threshold: pixelmatchThreshold },
+    );
+    const totalPixels = before.width * before.height;
+    const ratio = totalPixels > 0 ? diffPixels / totalPixels : 0;
+    const changed = ratio > diffPixelRatioThreshold;
+    return {
+      changed,
+      label: `${formatPercent(ratio)} changed`,
+      missing: false,
+      statusClass: changed ? "changed" : "unchanged",
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      changed: false,
+      errored: true,
+      label: `diff error: ${message.slice(0, 60)}`,
+      missing: false,
+      statusClass: "error",
+    };
+  }
+}
+
+function summarizeGroups(groups) {
+  return {
+    changedRoutes: groups.filter((group) => group.changed).length,
+    erroredRoutes: groups.filter((group) => group.errored).length,
+    unchangedRoutes: groups.filter((group) => !group.changed && !group.errored).length,
+    missingPairs: groups.reduce((sum, group) => sum + group.missingPairs, 0),
+  };
+}
+
+function routeStatusLabel(group) {
+  if (!group.changed && !group.errored) {
+    return "unchanged";
+  }
+  const parts = [];
+  if (group.changedPairs > 0) {
+    parts.push(`${group.changedPairs} changed`);
+  }
+  if (group.missingPairs > 0) {
+    parts.push(`${group.missingPairs} missing`);
+  }
+  if (group.erroredPairs > 0) {
+    parts.push(`${group.erroredPairs} errored`);
+  }
+  return parts.join(" / ");
 }
 
 function safeReadDir(dir, { dirsOnly = false } = {}) {
@@ -358,6 +585,23 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+function formatPercent(value) {
+  return new Intl.NumberFormat("en", {
+    maximumFractionDigits: value >= 0.01 ? 1 : 2,
+    minimumFractionDigits: value > 0 && value < 0.01 ? 2 : 0,
+    style: "percent",
+  }).format(value);
+}
+
+function parseNumberEnv(name, fallback) {
+  const raw = process.env[name];
+  if (!raw) {
+    return fallback;
+  }
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) ? parsed : fallback;
 }
 
 function toPosix(value) {

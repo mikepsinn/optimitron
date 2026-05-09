@@ -15,6 +15,7 @@ import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
 import { uploadImageViaBackend } from "@/lib/image-upload.client";
+import { buildDisplayNameFromParts } from "@/lib/person-name";
 import { ROUTES } from "@/lib/routes";
 import { SquarePhotoCropper } from "./SquarePhotoCropper";
 
@@ -43,6 +44,9 @@ export interface EditableRepresentedPerson {
   id: string;
   imageUrl: string;
   isPublic: boolean;
+  firstName: string;
+  middleName: string;
+  lastName: string;
   lifeStatus: PersonLifeStatus;
   memorialMessage: string;
   publicComment: string;
@@ -106,7 +110,18 @@ function patchPerson(
   person: EditableRepresentedPerson,
   patch: Partial<EditableRepresentedPerson>,
 ): EditableRepresentedPerson {
-  return { ...person, ...patch };
+  const next = { ...person, ...patch };
+  if (
+    "firstName" in patch ||
+    "middleName" in patch ||
+    "lastName" in patch
+  ) {
+    return {
+      ...next,
+      displayName: buildDisplayNameFromParts(next) || next.displayName,
+    };
+  }
+  return next;
 }
 
 function lifeStatusLabel(status: PersonLifeStatus) {
@@ -132,7 +147,8 @@ function canSavePerson(person: EditableRepresentedPerson) {
     person.conditionIsPublic;
 
   return (
-    person.displayName.trim() !== "" &&
+    person.firstName.trim() !== "" &&
+    person.lastName.trim() !== "" &&
     person.authorityConfirmed &&
     (!person.isPublic || person.publicDisplayAcknowledged) &&
     (!wantsPublicCondition || person.healthDisclosureConfirmed)
@@ -595,16 +611,47 @@ export function ManageRepresentedPeopleClient({
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label className="text-xs font-black uppercase">
-                          Name
+                          First name
                         </Label>
                         <Input
+                          autoComplete="given-name"
                           className="border-border bg-background font-bold"
                           onChange={(event) =>
                             updatePerson(editingPerson.id, {
-                              displayName: event.target.value,
+                              firstName: event.target.value,
                             })
                           }
-                          value={editingPerson.displayName}
+                          value={editingPerson.firstName}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs font-black uppercase">
+                          Middle name optional
+                        </Label>
+                        <Input
+                          autoComplete="additional-name"
+                          className="border-border bg-background font-bold"
+                          onChange={(event) =>
+                            updatePerson(editingPerson.id, {
+                              middleName: event.target.value,
+                            })
+                          }
+                          value={editingPerson.middleName}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs font-black uppercase">
+                          Last name
+                        </Label>
+                        <Input
+                          autoComplete="family-name"
+                          className="border-border bg-background font-bold"
+                          onChange={(event) =>
+                            updatePerson(editingPerson.id, {
+                              lastName: event.target.value,
+                            })
+                          }
+                          value={editingPerson.lastName}
                         />
                       </div>
                       <div className="space-y-2">

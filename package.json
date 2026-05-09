@@ -24,7 +24,6 @@
     "db:validate": "pnpm --filter @optimitron/db run prisma:validate",
     "db:cli": "pnpm --filter @optimitron/db exec tsx src/db-cli.ts",
     "db:test-data": "pnpm --filter @optimitron/db exec tsx src/cleanup-test-data.ts",
-    "db:reassign-personal-tasks": "pnpm --filter @optimitron/db exec tsx src/reassign-personal-tasks.ts",
     "db:migrate": "pnpm --filter @optimitron/db run prisma:migrate:dev",
     "db:deploy": "pnpm --filter @optimitron/db run prisma:migrate:deploy",
     "db:test": "pnpm --filter @optimitron/db run test:integration",
@@ -67,7 +66,8 @@
   "pnpm": {
     "overrides": {
       "glob@>=10.2.0 <10.5.0": ">=10.5.0",
-      "hono@>=4.0.0 <4.12.12": ">=4.12.12"
+      "hono@>=4.0.0 <4.12.12": ">=4.12.12",
+      "import-in-the-middle": "3.0.0"
     }
   }
 }

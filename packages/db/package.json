@@ -26,7 +26,6 @@
     "test:watch": "vitest",
     "db:cli": "tsx src/db-cli.ts",
     "db:test-data": "tsx src/cleanup-test-data.ts",
-    "db:reassign-personal-tasks": "tsx src/reassign-personal-tasks.ts",
     "audit:schema-usage": "tsx src/schema-usage-audit.ts",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate --schema prisma/schema.prisma",
@@ -36,7 +35,8 @@
     "seed": "prisma db seed",
     "seed:reference": "tsx prisma/seed.ts --scope reference",
     "seed:bootstrap": "tsx prisma/seed.ts --scope bootstrap",
-    "seed:demo": "tsx prisma/seed.ts --scope demo"
+    "seed:demo": "tsx prisma/seed.ts --scope demo",
+    "seed:tasks": "tsx prisma/seed.ts --scope tasks"
   },
   "dependencies": {
     "@optimitron/data": "workspace:*",

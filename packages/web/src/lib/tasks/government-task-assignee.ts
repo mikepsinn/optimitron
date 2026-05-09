@@ -1,5 +1,5 @@
 import { OrgType } from "@optimitron/db";
-import type { TreatySignerSlot } from "./treaty-signer-network";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
 
 export interface GovernmentPersonDraftInput {
   countryCode: string | null;
@@ -12,11 +12,11 @@ export interface GovernmentPersonDraftInput {
   sourceUrl: string | null;
 }
 
-export function getGovernmentTaskActorLabel(slot: TreatySignerSlot) {
+export function getGovernmentTaskActorLabel(slot: GovernmentLeaderRecord) {
   return slot.leaderName ?? slot.decisionMakerLabel;
 }
 
-export function buildGovernmentOrganizationDraft(slot: TreatySignerSlot) {
+export function buildGovernmentOrganizationDraft(slot: GovernmentLeaderRecord) {
   return {
     name: slot.governmentName,
     sourceRef: `organization:government:${slot.countryCode.toLowerCase()}`,
@@ -27,7 +27,7 @@ export function buildGovernmentOrganizationDraft(slot: TreatySignerSlot) {
 }
 
 export function buildGovernmentLeaderPersonDraft(
-  slot: TreatySignerSlot,
+  slot: GovernmentLeaderRecord,
 ): GovernmentPersonDraftInput | null {
   if (!slot.leaderName || !slot.leaderSourceRef) {
     return null;

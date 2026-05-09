@@ -38,6 +38,12 @@ function formatTotalEffort(hours: number | null | undefined): string | null {
   return `${Math.round(hours / 24)} days`;
 }
 
+function getTaskDateMs(value: Date | string | null | undefined): number | null {
+  if (value == null) return null;
+  const dateMs = value instanceof Date ? value.getTime() : new Date(value).getTime();
+  return Number.isFinite(dateMs) ? dateMs : null;
+}
+
 export function ProgramCard({ task }: { task: TaskCardTask }) {
   const delayStats = getTaskDelayStats(task);
   const overdueLabel =
@@ -45,8 +51,8 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
       ? formatDelayDuration(delayStats.currentDelayDays)
       : null;
   const costOfDelay = getTreatyLevelCostOfDelay(delayStats.currentDelayDays);
-  const dueMs = task.dueAt?.getTime() ?? null;
-  const canTick = dueMs != null && task.dueAt != null && task.dueAt.getTime() < Date.now();
+  const dueMs = getTaskDateMs(task.dueAt);
+  const canTick = dueMs != null && dueMs < Date.now();
   const isTreatyParent = isTreatyParentTaskKey(task.taskKey);
   const totalEffortLabel = formatTotalEffort(task.estimatedEffortHours);
 

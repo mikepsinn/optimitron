@@ -51,7 +51,7 @@ export interface TaskCardTask {
   } | null;
   category: TaskCategory;
   claimPolicy: TaskClaimPolicy;
-  completedAt: Date | null;
+  completedAt: Date | string | null;
   contextJson?: unknown;
   primaryEndpoint?: {
     email?: string | null;
@@ -72,7 +72,7 @@ export interface TaskCardTask {
   }> | null;
   description: string;
   difficulty: TaskDifficulty;
-  dueAt: Date | null;
+  dueAt: Date | string | null;
   estimatedEffortHours: number | null;
   id: string;
   impact?: {
@@ -95,7 +95,7 @@ export interface TaskCardTask {
   taskKey?: string | null;
   title: string;
   skillTags: string[];
-  verifiedAt: Date | null;
+  verifiedAt: Date | string | null;
   viewerHasClaim: boolean;
 }
 
@@ -134,8 +134,16 @@ function getCardColor(task: TaskCardTask): BrutalCardBgColor {
   return "background";
 }
 
-function formatDueDate(value: Date) {
-  return value.toLocaleDateString("en-US", {
+function getTaskDate(value: Date | string | null | undefined): Date | null {
+  if (value == null) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function formatDueDate(value: Date | string) {
+  const date = getTaskDate(value);
+  if (!date) return "";
+  return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -221,6 +229,7 @@ export function TaskCard({
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
+  const dueDate = getTaskDate(task.dueAt);
 
   return (
     <BrutalCard bgColor={getCardColor(task)} className="h-full" hover padding="lg">
@@ -236,9 +245,9 @@ export function TaskCard({
                 ? "single-active"
                 : "open-many"}
           </ArcadeTag>
-          {task.dueAt ? (
+          {dueDate ? (
             <ArcadeTag>
-              {task.dueAt.getTime() < Date.now() ? "overdue" : `due ${formatDueDate(task.dueAt)}`}
+              {dueDate.getTime() < Date.now() ? "overdue" : `due ${formatDueDate(dueDate)}`}
             </ArcadeTag>
           ) : null}
           {task.estimatedEffortHours != null ? (

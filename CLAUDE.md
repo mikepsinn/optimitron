@@ -1,5 +1,7 @@
 # CLAUDE.md — Optimitron Agent Instructions
 
+**Edits to this file and AGENTS.md: minimum words to convey the rule. One example only if the rule is ambiguous without it. No example flotillas, no read-aloud tests, no flourishes.**
+
 ## What This Is
 
 Optimitron is an **Earth Optimization Machine** for coordinating 8 billion humans to maximize median healthy life-years and real median after-tax income. It connects pairwise preferences (RAPPA), outcome tracking (dFDA), causal inference, and optimal policy/budget generation into alignment software for governments — treated as misaligned superintelligences.
@@ -36,7 +38,9 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 - "Your FDA makes treatments wait 8.2 years AFTER they've already been proven safe. Just... sitting there. Being safe. While 102 million people died waiting."
 - "On my planet, governance takes about four minutes a week."
 
-**Apply to:** all user-facing copy — landing pages, task descriptions, budget categories, button labels, errors, empty states, tooltips, Wishonia chat replies. **Not to:** CLAUDE.md, code comments, README.
+**No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
+
+**Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
 
 ## Papers (algorithm source of truth)
 

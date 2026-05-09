@@ -29,9 +29,12 @@ import {
 const draft = {
   authorityConfirmed: true,
   clientDraftId: "draft_1",
-  displayName: "Grandma Kay",
+  displayName: "Kay Elaine Sinn",
   healthDisclosureConfirmed: false,
   isPublic: true,
+  firstName: "Kay",
+  middleName: "Elaine",
+  lastName: "Sinn",
   originUrl: "https://warondisease.org/people",
   publicDisplayAcknowledged: true,
   referendumSlug: "one-percent-treaty",
@@ -66,7 +69,7 @@ describe("represented person sync", () => {
     mocks.getPendingRepresentedPeople.mockReturnValue([draft]);
     const fetchMock = vi.fn().mockResolvedValue({
       json: vi.fn().mockResolvedValue({
-        person: { displayName: "Grandma Kay", id: "person_1" },
+        person: { displayName: "Kay Elaine Sinn", id: "person_1" },
       }),
       ok: true,
     });
@@ -76,7 +79,7 @@ describe("represented person sync", () => {
 
     expect(result.syncedDrafts).toEqual([draft]);
     expect(result.syncedPeople).toEqual([
-      { displayName: "Grandma Kay", draft, personId: "person_1" },
+      { displayName: "Kay Elaine Sinn", draft, personId: "person_1" },
     ]);
     expect(result.failedDrafts).toEqual([]);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -107,14 +110,14 @@ describe("represented person sync", () => {
   it("returns the created person id from a successful post", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       json: vi.fn().mockResolvedValue({
-        person: { displayName: "Grandma Kay", id: "person_1" },
+        person: { displayName: "Kay Elaine Sinn", id: "person_1" },
       }),
       ok: true,
     });
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(postRepresentedPersonDraft(draft)).resolves.toEqual({
-      displayName: "Grandma Kay",
+      displayName: "Kay Elaine Sinn",
       draft,
       personId: "person_1",
     });
@@ -129,7 +132,7 @@ describe("represented person sync", () => {
   it("posts the public display and health disclosure flags from the pending draft", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       json: vi.fn().mockResolvedValue({
-        person: { displayName: "Grandma Kay", id: "person_1" },
+        person: { displayName: "Kay Elaine Sinn", id: "person_1" },
       }),
       ok: true,
     });
@@ -148,6 +151,9 @@ describe("represented person sync", () => {
     expect(body).toMatchObject({
       authorityConfirmed: true,
       healthDisclosureConfirmed: true,
+      firstName: "Kay",
+      middleName: "Elaine",
+      lastName: "Sinn",
       publicDisplayAcknowledged: true,
       showConditionPublicly: true,
     });
@@ -156,7 +162,7 @@ describe("represented person sync", () => {
   it("normalizes stored draft privacy flags to explicit booleans", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       json: vi.fn().mockResolvedValue({
-        person: { displayName: "Grandma Kay", id: "person_1" },
+        person: { displayName: "Kay Elaine Sinn", id: "person_1" },
       }),
       ok: true,
     });

@@ -757,6 +757,15 @@ model Person {
   /// Public display name
   displayName String
 
+  /// First name when a structured court/intake name is needed
+  firstName String?
+
+  /// Middle name when a structured court/intake name is needed
+  middleName String?
+
+  /// Last name when a structured court/intake name is needed
+  lastName String?
+
   /// Optional email for signup linking
   email String? @unique
 
@@ -834,6 +843,7 @@ model Person {
   sentTaskCommunications      TaskCommunication[]  @relation("TaskCommunicationSenderPerson")
 
   @@index([displayName])
+  @@index([lastName, firstName])
   @@index([deathDate])
   @@index([countryCode])
   @@index([createdByUserId])

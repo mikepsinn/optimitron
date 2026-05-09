@@ -1,0 +1,72 @@
+# /people
+
+- DECENTRALIZED TO-DO LIST FOR HUMANITY
+## COORDINATE THE HUMANS WHO CAN END WAR AND DISEASE.
+- Find officials, lawyers, clinical researchers, organizers, funders, and other people with public tasks. Open a profile, see what they were asked to do, and remind them.
+- SEE TASKS
+- REGISTER A PLAINTIFF
+- SEARCH
+- ALL
+- OFFICIALS
+- RESEARCHERS
+- LAWYERS
+- ORGANIZERS
+- COMMUNICATORS
+- GOVERNANCE
+- DIRECTORY
+### 189 PEOPLE WITH TASKS
+- PERSON
+- ROLE
+- TASK
+- OPEN
+- AA
+- Abd al-Hamid Dbeibeh
+- Government of Libya
+- Public official / LY / 1 task
+- Public official / LY
+- 1 task
+- NEXT TASK
+- Sign the 1% Treaty
+- PROFILE
+- Abdalla Hamdok
+- Government of Sudan
+- Public official / SD / 1 task
+- Public official / SD
+- AM
+- Abdoulaye Maïga
+- Government of Mali
+- Public official / ML / 1 task
+- Public official / ML
+- Abdoulkader Kamil Mohamed
+- Government of Djibouti
+- Public official / DJ / 1 task
+- Public official / DJ
+- Abdulla Aripov
+- Government of Uzbekistan
+- Public official / UZ / 1 task
+- Public official / UZ
+- Abiy Ahmed
+- Government of Ethiopia
+- Public official / ET / 1 task
+- Public official / ET
+- Adama Barrow
+- Government of Gambia
+- Public official / GM / 1 task
+- Public official / GM
+- AK
+- Adylbek Kasymaliev
+- Government of Kyrgyzstan
+- Public official / KG / 1 task
+- Public official / KG
+- Alaksandar Turčyn
+- Government of Belarus
+- Public official / BY / 1 task
+- Public official / BY
+- Alexandru Munteanu
+- Government of Moldova
+- Public official / MD / 1 task
+- Public official / MD
+- 1-10 OF 189
+- PREVIOUS
+- PAGE 1 OF 19
+- NEXT

@@ -7,6 +7,7 @@ settings:
 overrides:
   glob@>=10.2.0 <10.5.0: '>=10.5.0'
   hono@>=4.0.0 <4.12.12: '>=4.12.12'
+  import-in-the-middle: 3.0.0
 
 importers:
 
@@ -551,7 +552,7 @@ importers:
         specifier: ^12.33.0
         version: 12.38.0(react-dom@18.3.1)(react@18.3.1)
       import-in-the-middle:
-        specifier: ^3.0.0
+        specifier: 3.0.0
         version: 3.0.0
       jose:
         specifier: ^6.2.2
@@ -707,12 +708,18 @@ importers:
       openai:
         specifier: ^6.27.0
         version: 6.33.0(ws@8.18.3)(zod@3.25.76)
+      pixelmatch:
+        specifier: ^7.2.0
+        version: 7.2.0
       playwright-core:
         specifier: 1.58.2
         version: 1.58.2
       png-to-ico:
         specifier: ^3.0.1
         version: 3.0.1
+      pngjs:
+        specifier: ^7.0.0
+        version: 7.0.0
       postcss:
         specifier: ^8.4.33
         version: 8.5.8
@@ -5011,7 +5018,7 @@ packages:
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/api-logs': 0.207.0
-      import-in-the-middle: 2.0.6
+      import-in-the-middle: 3.0.0
       require-in-the-middle: 8.0.1
     transitivePeerDependencies:
       - supports-color
@@ -5025,7 +5032,7 @@ packages:
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/api-logs': 0.212.0
-      import-in-the-middle: 2.0.6
+      import-in-the-middle: 3.0.0
       require-in-the-middle: 8.0.1
     transitivePeerDependencies:
       - supports-color
@@ -15376,15 +15383,6 @@ packages:
       resolve-from: 4.0.0
     dev: true
 
-  /import-in-the-middle@2.0.6:
-    resolution: {integrity: sha512-3vZV3jX0XRFW3EJDTwzWoZa+RH1b8eTTx6YOCjglrLyPuepwoBti1k3L2dKwdCUrnVEfc5CuRuGstaC/uQJJaw==}
-    dependencies:
-      acorn: 8.16.0
-      acorn-import-attributes: 1.9.5(acorn@8.16.0)
-      cjs-module-lexer: 2.2.0
-      module-details-from-path: 1.0.4
-    dev: false
-
   /import-in-the-middle@3.0.0:
     resolution: {integrity: sha512-OnGy+eYT7wVejH2XWgLRgbmzujhhVIATQH0ztIeRilwHBjTeG3pD+XnH3PKX0r9gJ0BuJmJ68q/oh9qgXnNDQg==}
     engines: {node: '>=18'}
@@ -18188,6 +18186,13 @@ packages:
   /pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
+    dev: true
+
+  /pixelmatch@7.2.0:
+    resolution: {integrity: sha512-xhcb4yHu9sM/G7foGzoLtXYcC0zHEaOXXjRKhGup0fw78Nf2Tkiapv4EQyMzrbcmQPsllAI7DbFY2UT7PlI9Pg==}
+    hasBin: true
+    dependencies:
+      pngjs: 7.0.0
     dev: true
 
   /pkce-challenge@5.0.1:

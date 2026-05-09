@@ -11,10 +11,10 @@ import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
   ROUTES,
-  coalitionLink,
   conditionsLink,
   communityLinks,
   courtLink,
+  dashboardLink,
   dfdaLink,
   dihLink,
   donateLink,
@@ -31,14 +31,14 @@ import {
   plaintiffsLink,
   privacyLink,
   profileLink,
-  readTreatyLink,
+  signatoriesLink,
   termsLink,
   tasksLink,
   treatmentsLink,
-  treatyDashboardLink,
   presidentManagementLink,
-  treatyVoteLink,
+  treatyLink,
   trialEmbedLink,
+  voteLink,
   whyLink,
   type NavItem,
   type NavSection,
@@ -331,67 +331,19 @@ const WAR_ON_DISEASE_ASSETS = copiedSiteAssets({
 // flag flip, not archaeology.
 const SHOW_ORGANIZATIONAL_SIGNATORIES_LINK = false;
 const organizationalSignatoryLinks: NavItem[] =
-  SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [coalitionLink] : [];
+  SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [signatoriesLink] : [];
 
-const warOnDiseaseShareLink: NavItem = {
-  ...treatyDashboardLink,
-  label: "Share",
-  tagline: "Share your voting link",
-  cta: "Share",
-};
-
-// Top-nav alias for /vote that uses the Court framing already canonical
-// on /humanity-v-government. The YES vote IS the verdict — naming it as
-// such in the nav primes the case context and creates curiosity click
-// for unfamiliar visitors.
-const warOnDiseaseRenderVerdictLink: NavItem = {
-  ...treatyVoteLink,
-  label: "Render Verdict",
-  tagline: "Vote on the 1% Treaty as a juror in Humanity v. Government",
-  cta: "Render Verdict",
-};
-
-// Top-nav alias for /plaintiffs that frames the page as an action
-// surface (file a plaintiff claim) rather than a passive label
-// ('Plaintiffs'). Activates the family-multiplier hook — each
-// registered estate adds another $10.6M–$25.2M plaintiff to the case.
-const warOnDiseaseRegisterPlaintiffLink: NavItem = {
-  ...plaintiffsLink,
-  label: "Register a Plaintiff",
-  tagline: "Register yourself or a deceased relative as a plaintiff",
-  cta: "Register a Plaintiff",
-};
-
-const warOnDiseaseFundLink: NavItem = {
-  ...donateLink,
-  label: "Fund the Campaign",
-  tagline: "Fund the campaign",
-  cta: "Fund the Campaign",
-};
-
-const warOnDiseaseImpactAnalysisLink: NavItem = {
-  ...onePercentTreatyPaperLink,
-  label: "Impact Analysis",
-  tagline: "Read the economic analysis",
-  cta: "Read Impact Analysis",
-};
-
-// Top nav for warondisease.org. The two action labels (Render the Verdict
-// → /vote, Register a Plaintiff → /plaintiffs) are aliases of the base
-// nav links with Court-frame copy, kept variant-specific so other sites
-// (optimitron, dfda, dih) don't inherit the relabel.
 const warOnDiseaseNavSections: NavSection[] = [
   {
     id: "primary",
     label: "Primary",
     primary: true,
     items: [
-      warOnDiseaseRenderVerdictLink,
-      warOnDiseaseShareLink,
-      warOnDiseaseFundLink,
-      warOnDiseaseRegisterPlaintiffLink,
+      treatyLink,
+      dashboardLink,
+      donateLink,
+      plaintiffsLink,
       presidentManagementLink,
-      readTreatyLink,
       whyLink,
     ],
   },
@@ -521,17 +473,12 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     columns: [
       {
         title: "Do Something",
-        items: [
-          treatyVoteLink,
-          plaintiffsLink,
-          warOnDiseaseFundLink,
-          feedbackLink,
-        ],
+        items: [voteLink, plaintiffsLink, donateLink, feedbackLink],
       },
       {
         title: "Tell Someone Else",
         items: [
-          warOnDiseaseShareLink,
+          dashboardLink,
           presidentManagementLink,
           peopleLink,
           tasksLink,
@@ -540,9 +487,9 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
       {
         title: "Learn Something",
         items: [
-          readTreatyLink,
+          treatyLink,
           humanityVGovernmentLink,
-          warOnDiseaseImpactAnalysisLink,
+          onePercentTreatyPaperLink,
           courtLink,
         ],
       },
@@ -945,8 +892,8 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: ROUTES.vote, label: "Vote Now", variant: "primary" },
-    { href: ROUTES.treaty, label: "Read the Treaty", variant: "outline" },
+    { href: ROUTES.treaty, label: treatyLink.label, variant: "primary" },
+    { href: ROUTES.dashboard, label: dashboardLink.label, variant: "outline" },
   ],
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
@@ -1394,8 +1341,6 @@ export function buildOrganizationSurveyUrl(
 
   return url.toString();
 }
-
-export const buildTrialAbundanceSurveyUrl = buildOrganizationSurveyUrl;
 
 export function absoluteConfiguredSiteUrl(
   path: string,

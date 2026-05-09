@@ -15,6 +15,7 @@ import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { uploadImageViaBackend } from "@/lib/image-upload.client";
+import { buildDisplayNameFromParts } from "@/lib/person-name";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildPlaintiffsUrl } from "@/lib/url";
@@ -116,7 +117,9 @@ export function RepresentedPersonForm({
   variant = "panel",
 }: RepresentedPersonFormProps) {
   const requestOrigin = useRequestSiteOrigin();
-  const [displayName, setDisplayName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [lifeStatus, setLifeStatus] = useState<PersonLifeStatus>(
     PersonLifeStatus.LIVING,
@@ -178,8 +181,14 @@ export function RepresentedPersonForm({
   const isDeceased = lifeStatus === PersonLifeStatus.DECEASED;
   const hasCondition = conditionName.trim().length > 0;
   const showConflictFields = isDeceased && isConflictCause;
+  const displayName = buildDisplayNameFromParts({
+    firstName,
+    middleName,
+    lastName,
+  });
   const canSubmit =
-    displayName.trim() !== "" &&
+    firstName.trim() !== "" &&
+    lastName.trim() !== "" &&
     authorityConfirmed &&
     (!isPublic || publicDisplayAcknowledged) &&
     (isDeceased || !showConditionPublicly || healthDisclosureConfirmed);
@@ -374,6 +383,9 @@ export function RepresentedPersonForm({
             displayName,
             imageUrl,
             isPublic,
+            firstName,
+            middleName,
+            lastName,
             lifeStatus,
             healthDisclosureConfirmed,
             memorialEvidence: isDeceased ? memorialEvidence : [],
@@ -444,7 +456,9 @@ export function RepresentedPersonForm({
       setShareText(text);
       setSubmittedDisplayName(personName || "them");
       setStatus("saved");
-      setDisplayName("");
+      setFirstName("");
+      setMiddleName("");
+      setLastName("");
       setImageUrl("");
       setBirthDate("");
       setRelationshipType("");
@@ -503,23 +517,61 @@ export function RepresentedPersonForm({
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-3">
             <div className="space-y-2">
               <Label
                 className="text-xs font-black uppercase"
-                htmlFor="represented-name"
+                htmlFor="represented-first-name"
               >
-                Name
+                First name
               </Label>
               <Input
+                autoComplete="given-name"
                 className="border-border bg-background font-bold"
                 disabled={disabled}
-                id="represented-name"
-                onChange={(event) => setDisplayName(event.target.value)}
-                placeholder="Grandma Kay"
-                value={displayName}
+                id="represented-first-name"
+                onChange={(event) => setFirstName(event.target.value)}
+                placeholder="Kay"
+                value={firstName}
               />
             </div>
+            <div className="space-y-2">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-middle-name"
+              >
+                Middle name optional
+              </Label>
+              <Input
+                autoComplete="additional-name"
+                className="border-border bg-background font-bold"
+                disabled={disabled}
+                id="represented-middle-name"
+                onChange={(event) => setMiddleName(event.target.value)}
+                placeholder="Elaine"
+                value={middleName}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                className="text-xs font-black uppercase"
+                htmlFor="represented-last-name"
+              >
+                Last name
+              </Label>
+              <Input
+                autoComplete="family-name"
+                className="border-border bg-background font-bold"
+                disabled={disabled}
+                id="represented-last-name"
+                onChange={(event) => setLastName(event.target.value)}
+                placeholder="Sinn"
+                value={lastName}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
               <Label
                 className="text-xs font-black uppercase"

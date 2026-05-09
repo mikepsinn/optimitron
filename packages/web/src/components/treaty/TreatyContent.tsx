@@ -81,7 +81,7 @@ export function TreatyContent({
       {showCourtCta ? (
         <div className="border-t border-[var(--treaty-ink-muted)] pt-10 text-center">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
-            Next: the enforcement stack
+            If your government refuses to sign
           </p>
           <Button
             asChild
@@ -94,8 +94,9 @@ export function TreatyContent({
             </Link>
           </Button>
           <p className="mt-3 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-base">
-            The treaty is the off-ramp. The Court is the road that produces the
-            off-ramp.
+            {showInlineSign
+              ? "Sign the treaty here. If your government refuses to sign it, join the class action and sue them for the 102 million people their refusal has killed."
+              : "If your government refuses to sign the treaty, join the class action and sue them for the 102 million people their refusal has killed."}
           </p>
         </div>
       ) : null}

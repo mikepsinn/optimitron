@@ -171,7 +171,11 @@ jobs:
         run: pnpm --filter @optimitron/web run e2e -- smoke
 
       - name: Seed visual review data
-        run: pnpm --filter @optimitron/db run seed:bootstrap
+        run: |
+          pnpm --filter @optimitron/db run seed:bootstrap
+          pnpm --filter @optimitron/db run seed:demo
+          pnpm --filter @optimitron/db run seed:tasks
+          pnpm db:seed:triggers
 
       - name: Run Playwright visual review
         env:
