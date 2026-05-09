@@ -228,6 +228,8 @@ jobs:
                 fi
               done
             fi
+
+            rm -rf "$run_root"
           done
 
           echo "No usable main web-visual-review artifact found; visual review will show after screenshots only."
