@@ -55,6 +55,7 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 Before calling a public or authenticated UI "done," inspect it as if the human is about to open the page and ask why it is making the desired action harder.
 
 - **Goal first.** Identify the one action the page should maximize. Put that action before browsing, explanation, counters, filters, dashboards, FAQs, or legal framing.
+- **Do not lead campaign landing pages with bookkeeping.** Raw counters, scoreboards, totals, leaderboards, and internal status panels may support trust after the primary action is understood, but the first screen of `warondisease.org` must lead with the treaty vote/referral action, not "Living votes", "Total voices", or similar accounting.
 - **No useless top clutter.** Remove or demote counters, filter boxes, sort controls, explanatory cards, "older" buttons, and status text that do not help the next user action.
 - **Do not require auth to understand or start.** Let anonymous visitors fill the conversion form first when possible; persist the draft and ask for auth only when the action must be verified.
 - **Do not leak our planning conversation into copy.** Avoid phrases like "details can come later," "add details now," "record," "manage people," or other internal narration unless the user explicitly asks for that wording.

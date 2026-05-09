@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
 import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeaderboard";
+import { VoteCounterSplit } from "@/components/referendum/VoteCounterSplit";
 import { TreatySection } from "@/components/site/TreatySection";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
@@ -38,8 +39,10 @@ const landingData = {
       heroTitle: "The 1% Treaty",
     },
   },
+  individualCount: 26,
   lateEmployeeProgramTask: null,
   lateEmployeeTasks: [],
+  memorialVoteCount: 0,
   publicSigners: {
     currentUserSigner: null,
     page: 1,
@@ -51,6 +54,7 @@ const landingData = {
   site: {
     primaryReferendumSlug: "one-percent-treaty",
   },
+  representedHumanCount: 27,
   treatyMarkdown: "",
 } as unknown as ReferendumSiteHomeData;
 
@@ -104,6 +108,7 @@ describe("OnePercentTreatyLandingPage", () => {
   it("keeps the landing page focused on voting", () => {
     const page = OnePercentTreatyLandingPage({ data: landingData });
 
+    expect(findElementByType(page, VoteCounterSplit)).toBeNull();
     expect(findElementByType(page, TasksRootIntro)).toBeNull();
     expect(findElementByType(page, ProgramTaskSection)).toBeNull();
     expect(findElementByType(page, TreatySection)).toBeNull();

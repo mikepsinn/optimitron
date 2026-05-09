@@ -62,6 +62,13 @@ describe("site variant registry", () => {
       getSiteFromHeaders(
         new Headers({
           host: "127.0.0.1:3001",
+        }),
+      ).key,
+    ).toBe("warOnDisease");
+    expect(
+      getSiteFromHeaders(
+        new Headers({
+          host: "127.0.0.1:3001",
           "x-optimitron-site-key": "warOnDisease",
         }),
       ).key,

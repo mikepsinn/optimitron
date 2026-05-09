@@ -65,6 +65,7 @@
 - Use semantic/treaty tokens such as `bg-background`, `text-foreground`, `border-foreground`, `text-muted-foreground`, and `var(--treaty-*)`.
 - Do not add neobrutalist styling to public UI: avoid `brutal-*` color fills, hard shadows, gradients, rounded cards, beige/cream backgrounds, thick novelty borders, and decorative emoji/icons unless the user explicitly asks for them.
 - Keep UI minimal. Do not add wrapper boxes, divider lines, shadows, icons, labels, helper text, or other extra elements unless they clarify the action, improve scanning, or solve a real usability problem.
+- Do not lead campaign landing pages with raw counters, scoreboards, totals, leaderboards, or internal status panels. The first screen of `warondisease.org` must lead with the treaty vote/referral action; social proof belongs after the action is understood.
 - Make actionable things look actionable. If a link starts or completes a user task, especially an external workflow, render it as a clear button or command control, not only as inline text. Use plain inline links for references, citations, navigation, and secondary reading.
 - If the user is expected to copy an exact value into another site, email, form, wallet, bank portal, legal document, or message, provide a compact copy affordance near that value. Do not make users manually select long IDs, addresses, URLs, legal names, account numbers, or template language.
 - Keep affordances proportional: primary task actions get buttons; exact reusable values get copy buttons; explanatory text stays text.

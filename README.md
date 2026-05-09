@@ -37,7 +37,7 @@ On my planet, governance takes about four minutes a week. You lot seem to spend 
 | 🪪 | **Decentralized Identity** | Proof-of-personhood (ZK) — one person, one vote, zero surveillance. |
 | ⛓️ | **Anonymous On-Chain** | Anonymized effect sizes stored publicly. No single entity owns the data. |
 | 📊 | **Aggregation Server** | Meta-analysis across all submissions → population-level insights. |
-| 💸 | **Incentive Layer** | Dominant assurance contracts, data contribution tokens, and outcome-gated campaign funding. |
+| 💸 | **Incentive Layer** | Dominant assurance contracts, data contribution rewards, and outcome-gated campaign funding. |
 
 ---
 
@@ -165,7 +165,7 @@ Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-f
 | dOMB - Budget Optimization | `/agencies/domb` | 34+ budget categories, OBG engine, reallocation targets |
 | dGAO - Transparency & Audit | `/agencies/dgao` | IPFS snapshots, Hypercerts, smart contract verification |
 | dIH - Health Discoveries | `/agencies/dih/discoveries` | Population-level health insights from tracked data |
-| dTreasury - $WISH System | `/agencies/dtreasury` | $WISH token, transaction tax, UBI, Wishocratic allocation |
+| dTreasury | `/agencies/dtreasury` | Transaction tax, UBI, Wishocratic budget allocation |
 | dTreasury - dFED | `/agencies/dtreasury/dfed` | Monetary policy: transparent algorithm vs 12 guessers |
 | dTreasury - dIRS | `/agencies/dtreasury/dirs` | 0.5% transaction tax replacing 74,000-page tax code |
 | dTreasury - dSSA | `/agencies/dtreasury/dssa` | Universal Basic Income replacing 80+ welfare programs |
@@ -212,7 +212,7 @@ Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-f
 | About | `/about` | What this is, why it exists, and why an alien had to build it |
 | Contribute | `/contribute` | How to help |
 
-Auth: Google OAuth, magic-link email, proof-of-personhood. Referral system with VOTE point rewards.
+Auth: Google OAuth, magic-link email, proof-of-personhood. Referral tracking built in.
 
 ---
 
@@ -224,10 +224,10 @@ Auth: Google OAuth, magic-link email, proof-of-personhood. Referral system with 
 | [`@optimitron/wishocracy`](packages/wishocracy/) | Pairwise preference aggregation, convergence analysis, preference gaps, and politician alignment scoring | Live in the web app |
 | [`@optimitron/opg`](packages/opg/) | Turns policy evidence into enact/replace/repeal/maintain recommendations with explicit confidence scoring | Used by report generators |
 | [`@optimitron/obg`](packages/obg/) | Finds minimum-effective and optimal spending levels, overspend ratios, and budget reallocation targets | Used by budget analyses |
-| [`@optimitron/treasury-prize`](packages/treasury-prize/) | VoteToken + VoterPrizeTreasury — Phase 1 referendum dominant assurance contract | Deployed on Base Sepolia |
-| [`@optimitron/treasury-iab`](packages/treasury-iab/) | IABVault + IABSplitter + PublicGoodsPool + AlignmentScoreOracle + PoliticalIncentiveAllocator | Contracts written, not yet deployed |
-| [`@optimitron/treasury-wish`](packages/treasury-wish/) | WishToken + WishocraticTreasury + UBIDistributor — monetary reform and UBI | Contracts written |
-| [`@optimitron/treasury-shared`](packages/treasury-shared/) | Shared interfaces, mocks, and deployed contract addresses for all treasury packages | Shared treasury foundation |
+| [`@optimitron/treasury-prize`](packages/treasury-prize/) | Phase 1 dominant assurance contract for voter recruitment | Deployed on testnet |
+| [`@optimitron/treasury-iab`](packages/treasury-iab/) | Phase 2 treaty bonds and alignment-gated political funding | Contracts written, not yet deployed |
+| [`@optimitron/treasury-wish`](packages/treasury-wish/) | Phase 3 monetary reform — transaction tax, UBI, Wishocratic allocation | Contracts written |
+| [`@optimitron/treasury-shared`](packages/treasury-shared/) | Shared interfaces and addresses for all treasury packages | Shared treasury foundation |
 | [`@optimitron/data`](packages/data/) | Public-data fetchers plus 9 local-first health importers and the international dataset catalog | Real-source ingestion layer |
 | [`@optimitron/db`](packages/db/) | Prisma 7 schema, governance models, auth/session/referral data, and Zod validators | Production schema layer |
 | [`@optimitron/web`](packages/web/) | Live Next.js 15 app: auth, voting, alignment reports, referrals, daily tracking | Active product surface |
@@ -309,60 +309,23 @@ The database is multi-tenant: every jurisdiction is a tenant with its own priori
 
 ---
 
-## Economic Instruments
+## Economic Mechanisms
 
-Three separate mechanisms, three separate contract families, three separate pages. On my planet, we would combine them. But your species has a talent for confusing things that are next to each other, so I kept them apart.
+Three separate mechanisms. On my planet, we would combine them. But your species has a talent for confusing things that are next to each other, so I kept them apart. Details in the [Incentive Alignment Bonds paper](https://iab.warondisease.org).
 
 ### Phase 1: Earth Optimization Prize — `/prize`
 
-Dominant assurance contract for voter recruitment. Participation is positive-expected-value whether the treaty passes or not. See the [formal proof](https://iab.warondisease.org).
-
-**Contracts**: `VoterPrizeTreasury` + `VoteToken` (deployed on Base Sepolia)
-
-Start here. Everything else depends on proving demand first.
+A [dominant assurance contract](https://iab.warondisease.org) that makes voter recruitment individually rational. Participation is positive-expected-value whether the treaty passes or not. Start here — everything else depends on proving demand first.
 
 ### Phase 2: Incentive Alignment Bonds — `/iab`
 
-After the Prize proves demand, IABs raise ~$1B to fund the treaty campaign. Same dominant assurance structure — treaty fails, bondholders get compound returns back. Treaty passes, the $27B/yr in redirected spending splits 80/10/10: 80% to pragmatic clinical trials, 10% to bondholder returns, 10% to fund politicians whose voting records align with their constituents' stated preferences.
+After the Prize proves demand, IABs raise ~$1B to fund the treaty campaign. Treaty fails, bondholders get returns back. Treaty passes, $27B/yr in redirected spending splits: 80% to pragmatic clinical trials, 10% to bondholders, 10% to fund politicians whose voting records align with their constituents' stated preferences. The treaty unlocks an [**$114B annual peace dividend**](https://manual.warondisease.org/knowledge/economics/peace-dividend.html) from reduced conflict costs.
 
-The treaty unlocks an **$114B annual peace dividend** from reduced conflict costs — direct military savings, reduced infrastructure damage, trade disruption reduction, and veteran healthcare savings. Combined with the $101T political dysfunction tax, this is the first cut.
+### Phase 3: Monetary Reform — `/money`
 
-**Contracts**: `IABVault` + `IABSplitter` + `PublicGoodsPool` + `AlignmentScoreOracle` + `PoliticalIncentiveAllocator` (not yet deployed — Phase 1 first)
+Independent from Prize and IABs. The endgame: replace 80,000 IRS employees interpreting a 74,000-page tax code with a 0.5% transaction tax. Replace 27+ overlapping welfare bureaucracies with UBI. Replace politicians deciding budgets via influence markets with 5-minute pairwise comparisons that produce stable budget weights automatically.
 
-### Phase 3: $WISH Token — `/money`
-
-Independent from Prize and IABs. Different contracts, different purpose. The endgame: a programmable currency with governance built into the protocol.
-
-| Reform | What it replaces | Annual savings |
-|--------|-----------------|----------------|
-| 0.5% transaction tax | 80,000 IRS employees interpreting a 74,000-page tax code | $546B compliance costs |
-| Universal Basic Income | 27+ overlapping welfare bureaucracies | $1.1T administration waste |
-| Wishocratic allocation | Politicians deciding budgets via influence markets | $4.4B influence industry + $181B corporate welfare |
-| Algorithmic 0% inflation | Federal Reserve's 2% "stealth taxation" | 8% of GDP in financial sector extraction |
-
-Citizens do 5 minutes of pairwise comparisons → eigenvector decomposition produces stable budget weights → $WISH transaction taxes are allocated automatically. No politicians. No influence markets. No 74,000-page tax code. The [economic projections](https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html) show what happens when you stop lighting money on fire.
-
-On my planet, this is called "basic infrastructure." On yours, it would be the largest quality-of-life improvement in the history of your species.
-
-**Contracts**: `WishToken` + `WishocraticTreasury` + `UBIDistributor`
-
-All treasury contracts are Solidity 0.8.24, Hardhat 2.22, OpenZeppelin 5.1.
-
----
-
-## For Businesses
-
-### 📈 Same Engine, Different Domain
-
-I know some of you won't care about saving lives or fixing governments, but you *will* care about money. Good news: the optimizer doesn't know the difference between a drug and an ad campaign. It's **completely domain-agnostic**. Feed it any two time series and it answers: *Does X cause Y? By how much? What's the optimal value of X?* It's almost like maths works for everything. Weird.
-
-| Domain | Predictor (X) | Outcome (Y) | Question |
-|--------|--------------|-------------|----------|
-| Marketing | Ad spend | Revenue | "What's the optimal weekly ad budget?" |
-| Pricing | Price point | Conversion rate | "What price maximizes revenue?" |
-| Manufacturing | Temperature | Defect rate | "What setting minimizes defects?" |
-
-All use the same pipeline: **Temporal alignment → Bradford Hill → Predictor Impact Score → Optimal value.**
+On my planet, this is called "basic infrastructure." On yours, it would be the largest quality-of-life improvement in the history of your species. The [economic projections](https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html) show what happens when you stop lighting money on fire.
 
 ---
 
@@ -405,7 +368,7 @@ The architecture is clean, modular, and dependency-free at the core. It took me 
 - `@optimitron/optimizer` depends on **nothing** — it's the foundation
 - Library packages are **pure TypeScript** — no server, no database
 - `@optimitron/optimizer` is **domain-agnostic** — no references to "drugs", "policies", or "budgets"
-- Treasury packages are **three independent contract families** — Prize, IAB, and $WISH never share state
+- Treasury packages are **three independent mechanisms** — Prize, IAB, and monetary reform never share state
 - No circular dependencies
 
 ---
@@ -453,7 +416,7 @@ Every algorithm is defined in a published paper with exact formulas, worked exam
 | **Optimal Policy Generator** | `@optimitron/opg` — Policy Impact Score, Causal Confidence Score, method weights | [opg.warondisease.org](https://opg.warondisease.org) |
 | **Optimal Budget Generator** | `@optimitron/obg` — Diminishing returns, Optimal Spending Level, Budget Impact Score | [obg.warondisease.org](https://obg.warondisease.org) |
 | **Optimocracy** | Two-metric welfare function (shared by OPG + OBG) | [optimocracy.warondisease.org](https://optimocracy.warondisease.org) |
-| **Incentive Alignment Bonds** | `@optimitron/treasury-*` — Prize, IAB, and $WISH mechanisms (Solidity 0.8.24, four packages) | [iab.warondisease.org](https://iab.warondisease.org) |
+| **Incentive Alignment Bonds** | `@optimitron/treasury-*` — Prize, IAB, and monetary reform mechanisms | [iab.warondisease.org](https://iab.warondisease.org) |
 
 ### Motivation & Impact Papers
 

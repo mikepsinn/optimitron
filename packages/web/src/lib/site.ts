@@ -71,6 +71,7 @@ export const SITE_VARIANT_OVERRIDE_QUERY_PARAM = "site";
 export type SiteKey = "optimitron" | "dfda" | "dih" | "warOnDisease";
 
 export const SITE_VARIANT_OVERRIDE_HEADER = "x-optimitron-site-key";
+const LOCAL_DEFAULT_SITE_KEY: SiteKey = "warOnDisease";
 
 export type SiteChromeVariant = "platform" | "referendum";
 export type SiteHomeVariant =
@@ -1117,6 +1118,10 @@ export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
   );
   if (host && isLocalHost(host) && isSiteKey(cookieOverride)) {
     return SITE_CONFIGS[cookieOverride];
+  }
+
+  if (host && isLocalHost(host)) {
+    return SITE_CONFIGS[LOCAL_DEFAULT_SITE_KEY];
   }
 
   return getSiteFromHost(host);
