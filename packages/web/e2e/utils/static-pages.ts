@@ -8,7 +8,7 @@ import * as path from "path";
 import { ROUTES } from "@/lib/routes";
 import {
   getEnabledStaticPathsForSite,
-  getSiteFromHost,
+  getSiteFromHeaders,
 } from "@/lib/site";
 
 const APP_DIR = path.resolve(__dirname, "..", "..", "src", "app");
@@ -23,7 +23,9 @@ function getSmokeTestHost() {
   }
 }
 
-const SMOKE_TEST_SITE = getSiteFromHost(getSmokeTestHost());
+const SMOKE_TEST_SITE = getSiteFromHeaders(
+  new Headers({ host: getSmokeTestHost() ?? "" }),
+);
 
 /** Routes that require authentication (redirect to sign-in when unauthenticated) */
 export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
@@ -36,8 +38,18 @@ export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
   "/mcp/authorize",
 ]);
 
-/** Routes to skip entirely (auth forms, not content pages) */
-const SKIP_PATHS: Set<string> = new Set([ROUTES.signIn]);
+const CANDIDATE_REDIRECT_ONLY_PATHS = [ROUTES.impact];
+
+/** Routes that redirect off-app and should be tested as redirects, not pages. */
+export const REDIRECT_ONLY_PATHS: Set<string> = new Set(
+  getEnabledStaticPathsForSite(SMOKE_TEST_SITE, CANDIDATE_REDIRECT_ONLY_PATHS),
+);
+
+/** Routes to skip entirely (auth forms, redirects, not content pages) */
+const SKIP_PATHS: Set<string> = new Set([
+  ROUTES.signIn,
+  ...REDIRECT_ONLY_PATHS,
+]);
 
 function discoverStaticAppPages(
   dir: string,
