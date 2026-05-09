@@ -18,13 +18,13 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import type { LeaderActivityRecord } from "@optimitron/data/datasets/leader-activities";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
 import type {
   ImportedImpactFrameDraft,
   ImportedImpactMetricDraft,
   ImportedSourceArtifactDraft,
   ImportedTaskBundle,
 } from "./opg-obg-adapters";
-import type { TreatySignerSlot } from "./treaty-signer-network";
 import {
   ACCOUNTABILITY_TASK_KEY_PREFIX,
   buildAccountabilityTaskKey,
@@ -218,7 +218,7 @@ function buildActivityImpactFrame(activity: LeaderActivityRecord): ImportedImpac
 // ---------------------------------------------------------------------------
 
 export function buildActivityTaskBundle(
-  slot: TreatySignerSlot,
+  slot: GovernmentLeaderRecord,
   activity: LeaderActivityRecord,
 ): ImportedTaskBundle {
   const taskKey = buildAccountabilityTaskKey(activity.countryCode, activity.activitySlug);

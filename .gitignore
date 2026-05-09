@@ -70,8 +70,10 @@ tmp-*
 output/
 packages/web/output/
 
-# Generated page-copy previews (pnpm --filter @optimitron/web copy:preview)
-packages/web/src/app/**/page.md
+# Generated page-copy previews — authed views may include user-specific
+# content (handle, assigned tasks, plaintiff status). page.md (logged-out
+# views) is committed so PR diffs show copy changes inline.
+packages/web/src/app/**/page.authed.md
 NUL
 .vercel
 .playwright-mcp/

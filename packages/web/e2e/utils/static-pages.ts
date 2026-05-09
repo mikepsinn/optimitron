@@ -14,7 +14,7 @@ import {
 const APP_DIR = path.resolve(__dirname, "..", "..", "src", "app");
 
 function getSmokeTestHost() {
-  if (!process.env.BASE_URL) return null;
+  if (!process.env.BASE_URL) return "127.0.0.1:3001";
 
   try {
     return new URL(process.env.BASE_URL).host;
@@ -33,6 +33,9 @@ export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
   ROUTES.dashboard,
   ROUTES.census,
   ROUTES.checkIn,
+  ROUTES.organizations,
+  ROUTES.peopleManage,
+  ROUTES.plaintiffsManage,
   ROUTES.settings,
   ROUTES.transmit,
   "/mcp/authorize",

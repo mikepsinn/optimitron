@@ -1,0 +1,111 @@
+# /donate
+
+- THE 1% TREATY
+## TRADE ONE OF HUMANITY'S 122 APOCALYPSES FOR DISEASE ERADICATION IN 36 YEARS.
+- 122
+- 36
+- Humans spend $2.72 trillion every year on stuff designed specifically to make humans stop being alive. The 1% Treaty redirects 1% of that spending to high-efficiency pragmatic clinical trials.
+- $2.72 trillion
+- 1%
+- Under the current system, only 15 diseases get their first effective treatment each year while 6,650 diseases are still waiting. That is why the disease-eradication timeline is 443 years. The proposal is simple: humanity should trade one of its 122 apocalypses of mass-murder capacity to compress the disease-eradication timeline from 443 years to 36 years.
+- 15
+- 6,650
+- 443
+- Your donation helps reach the humans needed to prove humanity wants this.
+- For the full economic analysis, read the 1% Treaty impact analysis.
+- 1% Treaty impact analysis
+### HOW MUCH DEATH AND SUFFERING DO YOU WANT TO PREVENT?
+- Enter a donation amount, a lives-saved target, or years of suffering prevented. The other boxes recalculate from the treaty campaign model. These are probability-adjusted estimates, not a receipt from the universe. See how this is calculated ↓
+- See how this is calculated ↓
+- At the default assumptions, $1 buys about 0.11 expected lives and 2 years of suffering and disability prevented.
+- YOUR DONATION (USD)
+- LIVES SAVED
+- YEARS OF SUFFERING AND DISABILITY PREVENTED
+- FREQUENCY
+- Monthly
+- One-time
+- Donate $100/mo
+- Estimated out-of-pocket after federal deduction: $76 if you itemize in a 24% bracket. Processed for Accelerated Medicine Foundation Inc (EIN 41-2555651), a U.S. 501(c)(3) public charity.
+### ADJUST THE MODEL
+- RESET
+- Don't trust an assumption? Drag it. The math doesn't care. Every box on the left recomputes.
+- Published campaign model
+- If it works: $0.0018/DALY, 50,307× bed nets. Risk-adjusted at 1% success: $0.18/DALY, 503× bed nets. Bed nets are $89/DALY.
+- Assuming a 99% chance humanity fumbles this, this model still estimates the treaty campaign is 503× more cost-effective than bed nets per healthy life-year. If that sounds insane, good. Change the assumptions or attack the citations below.
+- Voter-equivalent reach needed
+- 500,000,000. Default: 500,000,000 people at $2.00 each, matching the published $1,000,000,000 campaign model.
+- Cost to reach one voter
+- Cost to reach one voter $
+- $2.00. Meta and Google petition CPC. Cheaper if it goes viral.
+- Political success probability
+- Political success probability %
+- 1.0%. Default 1%. Drag to 100% for the if-it-works case.
+- Share of military spending the treaty redirects
+- Share of military spending the treaty redirects %
+- 1.00%. Default 1% — the treaty as written. Linear above 1%.
+- Lives saved per $1
+- 0.11
+- Years of suffering prevented per $1
+- Cost per life saved
+- $9.31
+- Cost per year of suffering and disability prevented
+- $0.45
+- Cost-effectiveness vs bed nets
+- 503×
+- Total campaign cost
+- $1,000,000,000
+- Live derivation
+### HOW THIS IS CALCULATED
+- Click sourced constants for citations. The boxed numbers are the same live assumptions as the calculator above. Simple math: addition mostly, some multiplication.
+#### Only 15 diseases get their first effective treatment each year.
+- That is the throughput of every drug regulator on the planet, combined. This means your Food and Drug Administration has not administered drugs for most food-and-drug-related problems.
+#### About 6,650 diseases are still waiting.
+- That backlog is the treatment queue, and it is longer than any queue humans have ever voluntarily stood in, which is saying something because you invented Disneyland.
+#### At the current discovery rate, finding treatments for all of them takes 443 years.
+- The average untreated disease waits 222 years for its first treatment. Everyone currently alive will be dead before we finish. This is the current timeline. There are 9,500 known safe compounds, and 99.7% of their potential uses have never been tested.
+- 222
+- 9,500
+- 99.7%
+#### You'd volunteer for trials faster, but so would 1.08 billion other patients.
+- 1.08 billion
+- The current system has 1.9 million slots. It is like a billion people drowning in line for the two available life jackets.
+- 1.9 million
+#### Current trials cost about $41,000 per patient.
+- $41,000
+- Most of that cost is on-site monitoring, not science. Your current system is somehow worse than panic.
+#### Pragmatic decentralized trials cost $929 per patient.
+- $929
+- The RECOVERY trial showed this kind of thing works in reality, during a pandemic, while panicking. Same statistical power, real-world data, no on-site visits.
+#### The treaty redirects $27.2 billion/year. $21.8 billion funds 23.4 million trial patients.
+- $27.2 billion/year
+- $21.8 billion
+- 23.4 million
+- No grant committees deciding which diseases are fashionable this year. The patient subsidy follows the patient. That is 12.3x current global capacity: more trials, more disease coverage, same pool of compounds.
+- 12.3x
+#### The queue compresses from 443 years to 36.0 years.
+- 36.0
+- Remember that billion patients drowning in line? Your decentralized FDA will hand out 23.4 million. The physical upper bound is 566x current capacity. The average disease gets its first treatment 204 years sooner. Add 8.2 years of removed efficacy lag: 212 years sooner.
+- 566x
+- 204
+- 8.2
+- 212
+#### 150,000 people die from disease every day.
+- 150,000
+- That is 104 every minute. Every minute of delay, 104 humans permanently stop. With the current live assumptions, the model estimates 107,455,177 expected deaths prevented and 2,204,450,326 years of suffering and disability prevented.
+- 104
+- 10
+#### Humans spend $2.72 trillion every year on stuff designed specifically to make humans stop being alive. Move % to high-efficiency pragmatic clinical trials.
+- Government spending on clinical trials is 604 times less than military spending. Your chance of dying from disease is 100%. Your current budget does not reflect this. Earth owns 12,200 nuclear warheads. 100 is enough for nuclear winter. We have 122 apocalypses' worth of weapons. Keep the deterrent. Spend one slice curing every disease.
+- 604
+- 12,200
+- 100
+- 11
+#### To pass the treaty: reach humans at $ each.
+- That makes the campaign cost $1,000,000,000. Everyone thinks this is crazy because everyone else thinks this is crazy. Right now every human who wants less war and disease assumes they are the weird one. The referendum is the moment they find out they are everyone.
+- 12
+#### At % success and 1x treaty scale, the model gives $0.18 per healthy life-year.
+- That is 503x the cost-effectiveness of bed nets at the live assumptions. Your calculator will display an error, emit a tiny electronic scream, and attempt to leave the desk. This is correct. The published skeptical case assumes a 99% chance humanity fumbles this and still comes out 503x better than bed nets, where bed nets cost $89/daly. This model suggests the treaty campaign may be the most cost-effective way to reduce human suffering per dollar spent. If that sounds insane, good. Change the assumptions or attack the citations.
+- 503
+- $89/daly
+- Other ways to give
+- Watch on YouTube

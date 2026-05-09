@@ -175,6 +175,7 @@ jobs:
           pnpm --filter @optimitron/db run seed:bootstrap
           pnpm --filter @optimitron/db run seed:demo
           pnpm --filter @optimitron/db run seed:tasks
+          pnpm db:seed:triggers
 
       - name: Run Playwright visual review
         env:

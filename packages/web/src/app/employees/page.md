@@ -1,0 +1,91 @@
+# /employees
+
+## PRESIDENT MANAGEMENT SYSTEM
+- You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
+#### SEND EARTH OPTIMIZATION TASK REMINDER
+- SIGN THE 1% TREATY
+- STEP 1. SELECT RECIPIENT
+- PRESIDENT
+- HUMANITY
+- ONE HUMAN
+- STEP 2. SELECT THE FUNNIEST MESSAGE
+- VOICE:
+- OFFICE MEMO
+- STEP 3. CLICK TO COPY
+- STEP 4. SELECT MEANS OF TRANSMISSION AND PASTE
+- BLUESKY
+- EMAIL
+- LINKEDIN
+- FACEBOOK
+- REDDIT
+- COPY LINK
+- RATIFY THE 1% TREATY
+- 1.4 YEARS OVERDUE
+- TIME REQUIRED: 1.6 HOURS COMBINED
+- 6650 diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take 443 years to cure them all.
+- 6650
+- 443
+- Humanity currently spends enough on its capacity for mass murder to achieve 122 apocalypses. This treaty asks it to settle for 121.2 apocalypses in exchange for 12.3× more clinical trial capacity to cure disease.
+- 122
+- 121.2
+- 12.3
+- This could compress that 443 years into 36, avoiding 10.7 billion deaths, 1.93 quadrillion hours of suffering, and $84.8 quadrillion wasted by delayed disease eradication.
+- 36
+- 10.7 billion
+- 1.93 quadrillion
+- $84.8 quadrillion
+- 💀 DEAD ALREADY FROM THE DELAY
+- 74,224,290
+- RATE: 150,000 deaths/day × 494 DAYS
+- 150,000 deaths/day
+- 💸 WASTED ON DISEASE WHILE THEY DELAY
+- $20,199,852,668,451
+- RATE: $9.90 trillion/year + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
+- $9.90 trillion/year
+### ↳ 193 employees have overdue tasks
+- 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
+- Sort
+- ASSIGNEE
+- TASK
+- 💀 DEATHS FROM DELAY
+- 💸 WASTED BY DELAY
+- ⏱ TIME
+- REMIND
+- Donald Trump
+- 24,177,471
+- $6,579,804,950,091
+- $6,579,804,950,245
+- Remind
+- Li Qiang
+- 8,077,349
+- $2,198,219,261,030
+- Yulia Svyrydenko
+- 6,607,980
+- $1,798,336,245,710
+- Mikhail Mishustin
+- 2,974,429
+- $809,479,390,060
+- Narendra Modi
+- 2,281,305
+- $620,848,412,927
+- Donald Tusk
+- 2,124,975
+- $578,303,708,180
+- $578,303,708,194
+- Salman bin Abdulaziz Al Saud
+- 2,068,456
+- $562,922,364,844
+- Keir Starmer
+- 2,046,625
+- $556,981,231,705
+- Friedrich Merz
+- 1,822,861
+- $496,084,617,039
+- Sifi Ghrieb
+- SG
+- 1,794,866
+- $488,465,876,779
+- $488,465,876,791
+- ← PREV
+- PAGE 1 / 20
+- NEXT →

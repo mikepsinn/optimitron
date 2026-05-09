@@ -1,0 +1,47 @@
+# /endorse
+
+- YOUR ORGANIZATION CAN
+## ENTER YOUR AUDIENCE. SEE THE SUFFERING YOU CAUSE OR PREVENT.
+- 150,000 humans die from disease today. Most preventable. Your audience size decides how much of it gets to keep happening.
+- 150,000
+- STEP 1
+### SIZE OF ORGANIZATION AND MEMBERSHIP.
+- Same numbers, two columns. Prevented if you act. Allowed if you do not.
+- YOUR AUDIENCE
+- EMAIL MEMBERS
+- MONTHLY SITE VISITORS
+- SOCIAL AUDIENCE
+- MONTHS ON WEBSITE
+- ASSUMPTIONS
+- AUDIENCE THAT SEES IT %
+- VERIFIED VOTE RATE %
+- MEMBER SHARE MULTIPLIER
+- FOUNDATION $ PER VOTE
+- IF YOU ACT
+- 5,346
+- LIVES SAVED
+- 109,058
+- YEARS OF SUFFERING PREVENTED
+- IF YOU DO NOT
+- PREVENTABLE DEATHS ALLOWED
+- YEARS OF SUFFERING ALLOWED
+- 1,980 verified votes × 2.7 lives and 55 years prevented per vote. At $2 per vote, funders fund $3,960 of outreach.
+- 2.7
+- 55
+- STEP 2 — ONE HOUR, THREE ACTIONS
+- 1. EMBED THE IFRAME One paste, then it works while you sleep.
+- 1. EMBED THE IFRAME
+- One paste, then it works while you sleep.
+- 2. SEND ONE EMAIL Pre-written. Your members already trust you. That is the asset.
+- 2. SEND ONE EMAIL
+- Pre-written. Your members already trust you. That is the asset.
+- 3. POST ONCE PER CHANNEL Link auto-credits responses to your organization.
+- 3. POST ONCE PER CHANNEL
+- Link auto-credits responses to your organization.
+- ORGANIZATION NAME *
+- WEBSITE
+- JOIN AS ORGANIZATION
+- LEGAL NOTES FOR ORGANIZATIONS
+- READ THE 1% TREATY TEXT
+- Already joined? See the organizational supporters.
+- organizational supporters

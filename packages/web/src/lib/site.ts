@@ -11,10 +11,10 @@ import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
   ROUTES,
-  coalitionLink,
   conditionsLink,
   communityLinks,
   courtLink,
+  dashboardLink,
   dfdaLink,
   dihLink,
   donateLink,
@@ -31,15 +31,14 @@ import {
   plaintiffsLink,
   privacyLink,
   profileLink,
-  readTreatyLink,
-  signTreatyLink,
+  signatoriesLink,
   termsLink,
   tasksLink,
   treatmentsLink,
-  treatyDashboardLink,
   presidentManagementLink,
-  treatyVoteLink,
+  treatyLink,
   trialEmbedLink,
+  voteLink,
   whyLink,
   type NavItem,
   type NavSection,
@@ -332,59 +331,19 @@ const WAR_ON_DISEASE_ASSETS = copiedSiteAssets({
 // flag flip, not archaeology.
 const SHOW_ORGANIZATIONAL_SIGNATORIES_LINK = false;
 const organizationalSignatoryLinks: NavItem[] =
-  SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [coalitionLink] : [];
+  SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [signatoriesLink] : [];
 
-const warOnDiseaseManageHumanityLink: NavItem = {
-  ...treatyDashboardLink,
-  label: "Manage Humanity",
-  tagline: "Copy your voting link and coordinate reminders",
-  cta: "Manage Humanity",
-};
-
-// Top-nav alias for /plaintiffs that frames the page as an action
-// surface (file a plaintiff claim) rather than a passive label
-// ('Plaintiffs'). Activates the family-multiplier hook — each
-// registered estate adds another $10.6M–$25.2M plaintiff to the case.
-const warOnDiseaseRegisterPlaintiffLink: NavItem = {
-  ...plaintiffsLink,
-  label: "Register a Plaintiff",
-  tagline: "Register yourself or a deceased relative as a plaintiff",
-  cta: "Register a Plaintiff",
-};
-
-const warOnDiseaseFundLink: NavItem = {
-  ...donateLink,
-  label: "Fund Campaign",
-  tagline: "Fund the campaign",
-  cta: "Fund Campaign",
-};
-
-const warOnDiseasePresidentManagementLink: NavItem = {
-  ...presidentManagementLink,
-  label: "Remind Presidents",
-  cta: "Remind Presidents",
-};
-
-const warOnDiseaseImpactAnalysisLink: NavItem = {
-  ...onePercentTreatyPaperLink,
-  label: "Impact Analysis",
-  tagline: "Read the economic analysis",
-  cta: "Read Impact Analysis",
-};
-
-// Top nav for warondisease.org uses action labels. Keep these aliases
-// variant-specific so other sites don't inherit campaign funnel copy.
 const warOnDiseaseNavSections: NavSection[] = [
   {
     id: "primary",
     label: "Primary",
     primary: true,
     items: [
-      signTreatyLink,
-      warOnDiseaseManageHumanityLink,
-      warOnDiseaseFundLink,
-      warOnDiseaseRegisterPlaintiffLink,
-      warOnDiseasePresidentManagementLink,
+      treatyLink,
+      dashboardLink,
+      donateLink,
+      plaintiffsLink,
+      presidentManagementLink,
       whyLink,
     ],
   },
@@ -514,18 +473,13 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     columns: [
       {
         title: "Do Something",
-        items: [
-          treatyVoteLink,
-          plaintiffsLink,
-          warOnDiseaseFundLink,
-          feedbackLink,
-        ],
+        items: [voteLink, plaintiffsLink, donateLink, feedbackLink],
       },
       {
         title: "Tell Someone Else",
         items: [
-          warOnDiseaseManageHumanityLink,
-          warOnDiseasePresidentManagementLink,
+          dashboardLink,
+          presidentManagementLink,
           peopleLink,
           tasksLink,
         ],
@@ -533,9 +487,9 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
       {
         title: "Learn Something",
         items: [
-          readTreatyLink,
+          treatyLink,
           humanityVGovernmentLink,
-          warOnDiseaseImpactAnalysisLink,
+          onePercentTreatyPaperLink,
           courtLink,
         ],
       },
@@ -938,8 +892,8 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: ROUTES.treaty, label: "Sign the Treaty", variant: "primary" },
-    { href: ROUTES.dashboard, label: "Manage Humanity", variant: "outline" },
+    { href: ROUTES.treaty, label: treatyLink.label, variant: "primary" },
+    { href: ROUTES.dashboard, label: dashboardLink.label, variant: "outline" },
   ],
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
@@ -1387,8 +1341,6 @@ export function buildOrganizationSurveyUrl(
 
   return url.toString();
 }
-
-export const buildTrialAbundanceSurveyUrl = buildOrganizationSurveyUrl;
 
 export function absoluteConfiguredSiteUrl(
   path: string,

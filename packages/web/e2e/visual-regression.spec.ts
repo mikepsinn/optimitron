@@ -11,44 +11,7 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { forceAnimationsComplete } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
-
-const VISUAL_ROUTES = [
-  { name: "home", path: "/", required: true },
-  {
-    name: "side-menu",
-    path: "/",
-    required: true,
-    openMenu: true,
-  },
-  {
-    name: "side-menu-auth",
-    path: "/",
-    required: true,
-    authenticated: true,
-    openMenu: true,
-    expectSettings: true,
-  },
-  {
-    name: "dashboard",
-    path: "/dashboard",
-    required: true,
-    authenticated: true,
-    requiredText: /employees have overdue tasks/i,
-  },
-  {
-    name: "employees",
-    path: "/employees",
-    required: true,
-    requiredText: /employees have overdue tasks/i,
-  },
-  { name: "tasks-index", path: "/tasks", required: true },
-  { name: "task-optimize-earth", path: "/tasks/optimize-earth", required: false },
-  { name: "task-one-percent-treaty", path: "/tasks/1-pct-treaty", required: false },
-  { name: "task-signer-canada", path: "/tasks/1-pct-treaty-signer-ca", required: false },
-  { name: "endorse", path: "/endorse", required: false },
-  { name: "plaintiffs", path: "/plaintiffs", required: true },
-  { name: "humanity-v-government", path: "/humanity-v-government", required: true },
-] as const;
+import { VISUAL_ROUTES } from "./utils/visual-routes";
 
 const ARGOS_CSS = `
   *, *::before, *::after {
@@ -106,7 +69,7 @@ test.describe("route visual regression", () => {
         });
       }
 
-      if ("requiredText" in route) {
+      if (route.requiredText) {
         // Regression guard: these visual pages must keep exposing the
         // president/signer task list. Do not delete without Mike's explicit
         // approval.

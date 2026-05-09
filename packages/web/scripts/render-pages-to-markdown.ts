@@ -12,7 +12,8 @@
  *   src/app/page.tsx (root)   -> src/app/page.md
  *   src/app/[a]/[b]/page.tsx  -> src/app/[a]/[b]/page.md  (best-effort)
  *
- * The generated `page.md` files are gitignored; local preview only.
+ * The generated `page.md` files are deterministic copy inventory files.
+ * Authenticated `page.authed.md` files are local-only and gitignored.
  *
  * Usage:
  *   pnpm --filter @optimitron/web copy:preview
@@ -23,6 +24,8 @@ import { chromium } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { mintDemoSessionCookie } from "./mint-demo-session";
+import { getRouteReviewSpecs } from "../src/lib/routes";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = path.resolve(__dirname, "..");
@@ -31,38 +34,33 @@ const APP_DIR = path.resolve(WEB_ROOT, "src/app");
 const BASE = process.env.PREVIEW_BASE_URL ?? "http://127.0.0.1:3001";
 const SITE_KEY = process.env.PREVIEW_SITE_KEY ?? "warOnDisease";
 
-// Public surfaces. Edit this list as the site grows.
-const DEFAULT_ROUTES = [
-  "/",
-  "/vote",
-  "/treaty",
-  "/why",
-  "/scoreboard",
-  "/humanity-v-government",
-  "/plaintiffs",
-  "/court",
-  "/donate",
-  "/endorse",
-  "/prize",
-  "/iab",
-  "/tasks",
-  "/agencies",
-  "/governments",
-  "/politicians",
-  "/wishonia",
-  "/opg",
-  "/obg",
-  "/about",
-];
+const DEFAULT_LOGGED_OUT_ROUTES = getRouteReviewSpecs("copyPreview").map(
+  (spec) => spec.path,
+);
+const DEFAULT_AUTHENTICATED_ROUTES = getRouteReviewSpecs(
+  "authenticatedCopyPreview",
+).map((spec) => spec.path);
 
-function parseRoutesFromArgs(): string[] {
+function parseRoutesFromArgs(): {
+  authenticatedRoutes: string[];
+  loggedOutRoutes: string[];
+} {
   const arg = process.argv.find((a) => a.startsWith("--routes="));
-  if (!arg) return DEFAULT_ROUTES;
-  return arg
+  if (!arg) {
+    return {
+      authenticatedRoutes: DEFAULT_AUTHENTICATED_ROUTES,
+      loggedOutRoutes: DEFAULT_LOGGED_OUT_ROUTES,
+    };
+  }
+  const routes = arg
     .slice("--routes=".length)
     .split(",")
     .map((r) => r.trim())
     .filter(Boolean);
+  return {
+    authenticatedRoutes: routes,
+    loggedOutRoutes: routes,
+  };
 }
 
 function routeToFilePath(route: string): string {
@@ -108,31 +106,91 @@ async function extractPage(page: import("@playwright/test").Page, route: string)
   });
 }
 
-async function main() {
-  const routes = parseRoutesFromArgs();
-  const browser = await chromium.launch();
+function cookieDomainFromBase(): string {
+  // Playwright's addCookies needs a domain. For localhost/127.0.0.1
+  // strip the protocol + port and use the hostname directly.
   try {
-    const ctx = await browser.newContext({
-      viewport: { width: 1280, height: 900 },
-      extraHTTPHeaders: { "x-optimitron-site-key": SITE_KEY },
-    });
-    const page = await ctx.newPage();
+    const url = new URL(BASE);
+    return url.hostname;
+  } catch {
+    return "127.0.0.1";
+  }
+}
+
+async function capturePass(
+  browser: import("@playwright/test").Browser,
+  routes: string[],
+  filename: "page.md" | "page.authed.md",
+  options: { authCookie?: { name: string; value: string } } = {},
+) {
+  const ctx = await browser.newContext({
+    viewport: { width: 1280, height: 900 },
+    extraHTTPHeaders: { "x-optimitron-site-key": SITE_KEY },
+  });
+  if (options.authCookie) {
+    await ctx.addCookies([
+      {
+        name: options.authCookie.name,
+        value: options.authCookie.value,
+        domain: cookieDomainFromBase(),
+        path: "/",
+        httpOnly: true,
+        sameSite: "Lax",
+      },
+    ]);
+  }
+  const page = await ctx.newPage();
+  try {
     for (const route of routes) {
-      const outPath = routeToFilePath(route);
+      const dir = path.dirname(routeToFilePath(route));
+      const outPath = path.join(dir, filename);
       try {
         const md = await extractPage(page, route);
-        await mkdir(path.dirname(outPath), { recursive: true });
-        const header = [
-          `# ${route}`,
-          "",
-          `_Captured ${new Date().toISOString()} from ${BASE} (site=${SITE_KEY}). Gitignored; regenerate with \`pnpm --filter @optimitron/web copy:preview\`._`,
-          "",
-        ].join("\n");
+        await mkdir(dir, { recursive: true });
+        // Deterministic: route as the only header. No timestamps, no
+        // capture metadata — every regeneration produces the same
+        // bytes for unchanged copy, so PR diffs only show real changes.
+        const header = `# ${route}\n\n`;
         await writeFile(outPath, header + md + "\n", "utf8");
         console.log(`OK ${route}  ->  ${path.relative(WEB_ROOT, outPath)}`);
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         console.warn(`FAIL ${route}  (${message})`);
+      }
+    }
+  } finally {
+    await ctx.close();
+  }
+}
+
+async function main() {
+  const { authenticatedRoutes, loggedOutRoutes } = parseRoutesFromArgs();
+  const skipAuthed = process.argv.includes("--no-authed");
+  const browser = await chromium.launch();
+  try {
+    console.log("--- Logged-out pass ---");
+    await capturePass(browser, loggedOutRoutes, "page.md");
+
+    if (skipAuthed) {
+      console.log("\n(--no-authed; skipping authenticated pass)");
+    } else if (authenticatedRoutes.length === 0) {
+      console.log("\n(no authenticated copy-preview routes configured)");
+    } else {
+      try {
+        const authCookie = await mintDemoSessionCookie();
+        console.log(
+          `\n--- Authenticated pass (cookie minted offline for ${process.env.COPY_PREVIEW_USER_EMAIL ?? "m@thinkbynumbers.org"}) ---`,
+        );
+        await capturePass(browser, authenticatedRoutes, "page.authed.md", {
+          authCookie,
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.warn(
+          `\n(skipping authenticated pass: ${message})\n` +
+            `Set NEXTAUTH_SECRET in .env and ensure the demo user exists, ` +
+            `or pass --no-authed to silence this.`,
+        );
       }
     }
   } finally {

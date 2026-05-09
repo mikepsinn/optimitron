@@ -9,16 +9,16 @@ import {
   TaskImpactPublicationStatus,
   TaskStatus,
 } from "@optimitron/db";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
 import { SIPRI_WORLD_MILITARY_SPENDING_USD_2024 } from "@optimitron/data/parameters";
 import { describe, expect, it } from "vitest";
 import type { PolicyModelRunImportDraft } from "./policy-model-run-to-imported-task-bundle";
 import {
   buildTreatySignerImportDraft,
   TREATY_DUE_AT,
-  type TreatySignerSlot,
 } from "./treaty-signer-network";
 
-const sampleUsSignerSlot: TreatySignerSlot = {
+const sampleUsSignerSlot: GovernmentLeaderRecord = {
   contactEmail: null,
   contactLabel: "White House contact form",
   contactUrl: "https://www.whitehouse.gov/contact/",

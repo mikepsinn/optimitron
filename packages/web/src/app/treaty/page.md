@@ -1,0 +1,84 @@
+# /treaty
+
+- Should governments redirect 1% of military spending to pragmatic clinical trials and disease eradication by adopting the 1% Treaty?
+## PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE
+- Governments are paid $36 trillion a year to promote the general welfare. What allocation between military spending and clinical trials would best fulfill that duty?
+- WHEREAS, humanity pays governments approximately $36.5 trillion per year for the service of promoting the general welfare, defined as the median health and wealth of the citizenry;
+- $36.5 trillion
+- WHEREAS, the citizenry would like to actually receive this service at some point;
+- WHEREAS, these public servants instead used $170 trillion of their salary to murder approximately 310 million humans over the last century of their employment;
+- $170 trillion
+- 310 million
+- WHEREAS, these murdered humans included 930,000 doctors, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and 102 million children who will never grow up to replace them;
+- 102 million
+- WHEREAS, this seems counterproductive;
+- WHEREAS, murdering 310 million of your employers is the opposite of promoting their welfare, and would be grounds for termination in any other employment contract humans have ever signed;
+- WHEREAS, had your governments not spent $170 trillion murdering those people and destroying everything they spent their entire lives building, the average human alive today would earn $333,636 a year instead of $14,375. Dead scientists do not discover things and exploded cities are very expensive to fix;
+- $333,636
+- $14,375
+- WHEREAS, the governments of Earth have been hitting each other for roughly 10,000 years because the other one hit them last;
+- WHEREAS, this is the conflict resolution strategy of four-year-olds except four-year-olds eventually get tired and take a nap, and these governments have failed to apply naps to foreign policy;
+- WHEREAS, the governments of Earth possess nuclear weapons sufficient to end civilization 122 times but have not cured Alzheimer's once (which is particularly wasteful given we only have one civilization to destroy);
+- 122
+- WHEREAS, your employees spend $2.72 trillion a year on their capacity for mass murder, which is enough to buy 850 bullets for every man, woman, and child every year, even though it would require at most 2 bullets per person to murder everyone;
+- $2.72 trillion
+- 850
+- WHEREAS, governments spend 604 dollars on the capacity for orphan manufacturing for every one dollar spent on the trials that might cure what is actually going to kill their citizens;
+- 604
+- WHEREAS, the Department of "Defense" has "misplaced" $2.46 trillion, failed seven consecutive audits trying to find it, and then requested additional trillions without explanation or apology (Not to belabor the point, but that money could have funded 547 years of clinical trials at current funding levels, possibly saving billions of lives and preventing quadrillions of hours of suffering, so we would appreciate it if you would have them be more careful in the future);
+- 547
+- WHEREAS, pre-WW2 U.S. military spending was 96.7% lower than today's peacetime budget, even after adjusting for inflation. The U.S. still won World War II, then cut military spending 87.6% in two years and produced the fastest growth in median standard of living in history.
+- 96.7%
+- 87.6%
+- WHEREAS, unless the human genome has significantly degraded in the two generations since, a one percent improvement in resource allocation should be manageable;
+- WHEREAS, global military spending has been growing 2.76% a year for twenty years. If no one tells it to stop, every human alive will pay about $402,488 over their lifetime (mostly funding explosions in countries they cannot find on a map). A one percent cut tells it to stop. That saves the average person about $290,052 (the peace dividend);
+- 2.76%
+- $402,488
+- $290,052
+- the peace dividend
+- WHEREAS, diseases kill more people than all wars combined and, unlike wars, do not even have the decency to be quick about it;
+- diseases kill more people than all wars combined
+- WHEREAS, your chance of dying in a terrorist attack is approximately 1 in 30 million, and your chance of dying of a disease is 100%, and your current budget does not reflect this;
+- 30 million
+- WHEREAS, only 15 diseases get their first effective treatment each year, while 6,650 diseases are still waiting;
+- 6,650 diseases
+- WHEREAS, at this rate, it takes 443 years to find treatments for all diseases, which is important because you will personally be dead within 80 years (which I mention not to be rude but because you seem weirdly calm about this);
+- 443
+- WHEREAS, there are 9,500 known safe treatments which have never been tested for 99.7% of their potential uses;
+- 9,500
+- 99.7%
+- WHEREAS, pragmatic clinical trials built into ordinary healthcare cost $929 per patient instead of the usual $41,000, which makes them 44.1 times cheaper, which means 12.3 times as many patients can join, which drops the wait from 443 years to 36 years, which means treatments arrive 204 years sooner on average.
+- pragmatic clinical trials built into ordinary healthcare
+- $929
+- $41,000
+- 44.1
+- 12.3
+- 443 years
+- 36 years
+- 204
+- WHEREAS, discovering treatments centuries sooner is projected to prevent approximately 10.7 billion deaths and 1.93 quadrillion hours of human suffering, which are not metaphors and refer to specific future humans with specific future plans for next Tuesday;
+- projected
+- 10.7 billion deaths
+- 1.93 quadrillion hours
+- WHEREAS, someone you love is, at this moment, suffering from a disease because the treatment that would help them exists untested on a shelf, because the money that would have tested it was busy turning into a missile; that missile incinerated a child who might have grown up to discover the cure; you lose the treatment, you lose the scientist, you get the inflation, you get the tax bill, you get to pay for her murder;
+- WHEREAS, this is suboptimal;
+- NOW, THEREFORE, the undersigned nations agree to be 1% more rational, as follows:
+- Article I: Each signatory shall redirect exactly 1% of its annual military budget to the 1% Treaty Fund, split as follows: 80% to pragmatic clinical trials; 10% to perpetual returns on Incentive Alignment Bonds; and 10% to a Political Incentive Fund that supports campaigns of legislators who vote to implement and expand this Treaty. The 80% cures the diseases. The other 20% make sure nobody quietly cancels the part that cures the diseases.
+- 80%
+- pragmatic clinical trials
+- 10%
+- Incentive Alignment Bonds
+- Political Incentive Fund
+- Article II: Transfers shall be automatic, immediate, and irrevocable. The money moves on the first of every month, the way your mortgage does, except nobody has to call and yell at anyone.
+- Article III: The percentage can go up. It never goes down. When the treaty works, a mandatory review raises it. Because Article I allocates in percentages, not fixed dollars, every increase enlarges the bondholder payouts and the Political Incentive Fund in lockstep. This produces something your species has never had before: a class of wealthy humans whose bank accounts grow every time a war ends, a disease is eradicated, or a child who would have died gets to grow up and have opinions about things. For the first time in human history, the absence of war and disease will be more profitable than their existence.
+- Article IV: Compliance shall be verified by public ledger and independent audits. Relabeling a submarine as "humanitarian infrastructure" will be noticed, because submarines are large and loud and do not fit in the humanitarian infrastructure drawer. Non-compliant parties shall be given a stern talking to; their compliant political opponents shall be funded via the Political Incentive Fund, which rewards legislators by recorded vote on two axes: (a) Treaty implementation and expansion, and (b) honoring Court of Humanity judgments against their government. Compliant votes earn campaign support for those seeking reelection, post-office appointments for those retiring. Non-compliant votes earn the same thing for their opponents. No funds pass directly to any legislator; all disbursements route through a scoring algorithm, which is apparently the only legal way to train a senator. The NRA already perfected this technology; this Treaty plagiarizes it, substituting "not dying from diseases" for "guns."
+- Court of Humanity
+- a scoring algorithm
+- Article V: Citizens of any signatory nation may sue their own government in its own courts for non-compliance with this Treaty. Where domestic courts decline jurisdiction or invoke sovereign immunity, citizens may bring the same claim in the Court of Humanity, whose jurisdiction derives from human rather than sovereign consent and whose judgments are enforced through capital markets rather than coercion.
+- sovereign immunity
+- the Court of Humanity
+- Article VI: Holders of Article I Incentive Alignment Bonds may sue any signatory's government in its own courts for non-payment. Billionaires have lawyers the way other humans have socks. This Treaty points those lawyers at the one thing billionaires and dying people both want, which is the treaty to keep working.
+- Article VII: Withdrawal requires unanimous consent of all parties plus 10-year notice. Ten years is enough time for the bondholders to sue, the Political Incentive Fund to replace whoever is trying to leave, and the voters to notice that the party attempting withdrawal is the one that wants the diseases back.
+- Article VIII: This treaty supersedes all conflicting domestic law. Including the subsection your legislature added at 2 a.m. last session specifically to make sure this couldn't happen.
+- Article IX: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in the history of planet Earth.
+- IN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.
