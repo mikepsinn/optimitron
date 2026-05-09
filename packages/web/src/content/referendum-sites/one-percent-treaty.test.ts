@@ -5,6 +5,14 @@ import { fileURLToPath } from "node:url";
 import { ROUTES } from "@/lib/routes";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/site";
 import { onePercentTreatyContent } from "./one-percent-treaty";
+import type { ReferendumSiteContent } from "./types";
+
+type WarOnDiseaseMessages = {
+  onePercentTreaty: Pick<
+    ReferendumSiteContent,
+    "home" | "metadata" | "why"
+  >;
+};
 
 const messagesPath = fileURLToPath(
   new URL("../../messages/en-US/war-on-disease.json", import.meta.url),
@@ -26,6 +34,18 @@ function collectStrings(value: unknown): string[] {
   return [];
 }
 
+function isWarOnDiseaseMessages(value: unknown): value is WarOnDiseaseMessages {
+  if (!value || typeof value !== "object" || !("onePercentTreaty" in value)) {
+    return false;
+  }
+
+  const maybeMessages = value as { onePercentTreaty?: unknown };
+  return (
+    Boolean(maybeMessages.onePercentTreaty) &&
+    typeof maybeMessages.onePercentTreaty === "object"
+  );
+}
+
 describe("one percent treaty referendum content", () => {
   it("does not redirect the local impact route back to itself", () => {
     expect(onePercentTreatyContent.impactUrl).not.toBe(
@@ -38,7 +58,10 @@ describe("one percent treaty referendum content", () => {
     expect(messagesFileExists).toBe(true);
     if (!messagesFileExists) return;
 
-    const messages = JSON.parse(readFileSync(messagesPath, "utf8"));
+    const messages: unknown = JSON.parse(readFileSync(messagesPath, "utf8"));
+    expect(isWarOnDiseaseMessages(messages)).toBe(true);
+    if (!isWarOnDiseaseMessages(messages)) return;
+
     const catalog = messages.onePercentTreaty;
 
     expect(catalog.metadata.home.description).toContain("{apocalypseCount}");

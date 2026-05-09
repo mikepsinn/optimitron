@@ -34,20 +34,26 @@ const onePercentTreatyMessageCatalog: OnePercentTreatyMessageCatalog =
 function renderMessageTemplates<T>(
   value: T,
   replacements: Record<string, string>,
+  pathParts: string[] = [],
 ): T {
   if (typeof value === "string") {
     return value.replace(/\{([A-Za-z0-9_]+)\}/g, (_, key: string) => {
       const replacement = replacements[key];
       if (replacement === undefined) {
-        throw new Error(`Missing message replacement for {${key}}`);
+        throw new Error(
+          `Missing message replacement for {${key}} at ${pathParts.join(".")}`,
+        );
       }
       return replacement;
     }) as T;
   }
 
   if (Array.isArray(value)) {
-    return value.map((item) =>
-      renderMessageTemplates(item, replacements),
+    return value.map((item, index) =>
+      renderMessageTemplates(item, replacements, [
+        ...pathParts,
+        String(index),
+      ]),
     ) as T;
   }
 
@@ -55,7 +61,10 @@ function renderMessageTemplates<T>(
     return Object.fromEntries(
       Object.entries(value).map(([key, nestedValue]) => [
         key,
-        renderMessageTemplates(nestedValue, replacements),
+        renderMessageTemplates(nestedValue, replacements, [
+          ...pathParts,
+          key,
+        ]),
       ]),
     ) as T;
   }
@@ -72,6 +81,7 @@ const onePercentTreatyRenderedMessages = renderMessageTemplates(
     reducedApocalypseCount,
     treatyTradePosition,
   },
+  ["onePercentTreaty"],
 );
 
 export const onePercentTreatyContent: ReferendumSiteContent = {
