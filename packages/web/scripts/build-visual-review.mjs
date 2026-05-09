@@ -37,6 +37,11 @@ const diffPixelRatioThreshold = parseNumberEnv(
 const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
 const allowIncompleteReview =
   process.env.VISUAL_REVIEW_ALLOW_INCOMPLETE === "1";
+const reviewCommitSha =
+  process.env.VISUAL_REVIEW_COMMIT_SHA ??
+  process.env.VERCEL_GIT_COMMIT_SHA ??
+  process.env.GITHUB_SHA ??
+  null;
 const routePaths = loadRoutePaths();
 
 const routeOrder = [
@@ -169,6 +174,7 @@ function groupScreenshots(screenshots) {
 
 function renderHtml(groups) {
   const generatedAt = new Date().toISOString();
+  const generatedAtCentral = formatCentralTime(new Date(generatedAt));
   const summary = summarizeGroups(groups);
   const body = groups.length > 0
     ? groups.map(renderRouteGroup).join("\n")
@@ -406,7 +412,7 @@ function renderHtml(groups) {
   <header>
     <h1>Optimitron Visual Review</h1>
     <div class="meta">
-      Generated ${escapeHtml(generatedAt)}. ${beforeScreenshotsRoot ? "Left side is the latest main baseline artifact; right side is this pull request." : "No main baseline artifact was available, so this page shows pull request screenshots only."} Changed or missing-baseline pages are expanded; unchanged pages are collapsed but still captured.
+      Generated ${escapeHtml(generatedAtCentral)} Central time (${escapeHtml(generatedAt)} UTC).${reviewCommitSha ? ` Commit ${escapeHtml(shortSha(reviewCommitSha))}.` : ""} ${beforeScreenshotsRoot ? "Left side is the latest main baseline artifact; right side is this pull request." : "No main baseline artifact was available, so this page shows pull request screenshots only."} Changed or missing-baseline pages are expanded; unchanged pages are collapsed but still captured.
     </div>
     <div class="summary-line">
       <span class="pill changed">${summary.changedRoutes} changed</span>
@@ -667,6 +673,23 @@ function formatPercent(value) {
     minimumFractionDigits: value > 0 && value < 0.01 ? 2 : 0,
     style: "percent",
   }).format(value);
+}
+
+function formatCentralTime(date) {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    month: "short",
+    second: "2-digit",
+    timeZone: "America/Chicago",
+    timeZoneName: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+function shortSha(value) {
+  return String(value).slice(0, 12);
 }
 
 function loadRoutePaths() {
