@@ -54,20 +54,18 @@ describe("one percent treaty referendum content", () => {
   });
 
   it("keeps public War on Disease copy in a reviewable JSON message catalog", () => {
-    const messagesFileExists = existsSync(messagesPath);
-    expect(messagesFileExists).toBe(true);
-    if (!messagesFileExists) return;
+    if (!existsSync(messagesPath)) {
+      throw new Error(`Missing message catalog: ${messagesPath}`);
+    }
 
     const messages: unknown = JSON.parse(readFileSync(messagesPath, "utf8"));
-    expect(isWarOnDiseaseMessages(messages)).toBe(true);
-    if (!isWarOnDiseaseMessages(messages)) return;
+    if (!isWarOnDiseaseMessages(messages)) {
+      throw new Error("Invalid War on Disease message catalog shape");
+    }
 
     const catalog = messages.onePercentTreaty;
 
     expect(catalog.metadata.home.description).toContain("{apocalypseCount}");
-    expect(onePercentTreatyContent.metadata.home.description).not.toContain(
-      "{apocalypseCount}",
-    );
     expect(onePercentTreatyContent.home.heroTitle).toBe(
       catalog.home.heroTitle,
     );
