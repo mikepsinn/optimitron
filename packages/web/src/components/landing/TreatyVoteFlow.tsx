@@ -114,6 +114,7 @@ export function TreatyVoteFlow({
   const [sliderSubmitted, setSliderSubmitted] = useState(false);
   const [userHasDragged, setUserHasDragged] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [sliderTutorialFinished, setSliderTutorialFinished] = useState(false);
   const [animatedValue, setAnimatedValue] = useState(50);
   const [isMounted, setIsMounted] = useState(false);
   const { data: session, status } = useSession();
@@ -166,6 +167,7 @@ export function TreatyVoteFlow({
       setSliderSubmitted(true);
       setShowSlider(false);
       setUserHasDragged(true);
+      setSliderTutorialFinished(true);
       if (pendingTreatyVote.answer) {
         setAnswer(pendingTreatyVote.answer.toLowerCase() as "yes" | "no");
       }
@@ -190,13 +192,14 @@ export function TreatyVoteFlow({
 
   // Intersection Observer to trigger animation when slider comes into view
   useEffect(() => {
-    if (!sliderSectionRef.current || userHasDragged) return;
+    if (!sliderSectionRef.current || userHasDragged || sliderTutorialFinished) return;
 
+    let animationTimeout: number | null = null;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !userHasDragged) {
-            setTimeout(() => setShowAnimation(true), 500);
+          if (entry.isIntersecting && !animationTimeout) {
+            animationTimeout = window.setTimeout(() => setShowAnimation(true), 500);
           }
         });
       },
@@ -204,8 +207,13 @@ export function TreatyVoteFlow({
     );
 
     observer.observe(sliderSectionRef.current);
-    return () => observer.disconnect();
-  }, [userHasDragged]);
+    return () => {
+      observer.disconnect();
+      if (animationTimeout !== null) {
+        window.clearTimeout(animationTimeout);
+      }
+    };
+  }, [sliderTutorialFinished, userHasDragged]);
 
   // Animate the slider value when animation is active
   useEffect(() => {
@@ -233,6 +241,7 @@ export function TreatyVoteFlow({
         setAnimatedValue(centerValue);
         setMilitaryAllocation(centerValue);
         setShowAnimation(false);
+        setSliderTutorialFinished(true);
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
           animationFrameRef.current = null;
@@ -321,6 +330,7 @@ export function TreatyVoteFlow({
     if (!userHasDragged) {
       setUserHasDragged(true);
       setShowAnimation(false);
+      setSliderTutorialFinished(true);
     }
   };
 
@@ -345,6 +355,7 @@ export function TreatyVoteFlow({
     });
     setSliderSubmitted(true);
     setShowSlider(false);
+    setSliderTutorialFinished(true);
 
     if (status === "authenticated" && session) {
       void syncPendingReferendumVotes(session);
@@ -649,6 +660,11 @@ export function TreatyVoteFlow({
             <TreatyFlowShell
               data-screen="slider"
               data-testid="treaty-vote-slider-card"
+              data-visual-state={
+                showSlider && !userHasDragged && !sliderTutorialFinished
+                  ? "animating"
+                  : "settled"
+              }
               className={initialVoteShellClassName}
               contentClassName={initialVoteContentClassName}
             >

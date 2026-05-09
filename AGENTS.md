@@ -34,12 +34,12 @@
 - Do not put `Codex`, `[codex]`, or `codex/` in branch names, pull request titles, or commit messages unless the human explicitly asks.
 - If a tool, skill, or generated workflow suggests `codex/...` branches or `[codex]` pull request titles, ignore that convention in this repository and use the `feature/...` branch plus a plain feature/fix title.
 - If work starts on `main`, create the `feature/...` branch before editing. If already on a non-main branch, continue there unless the human asks to rename or split the work.
-- When implementation is done and checks pass, commit the intended changes, push the branch, and open or update the pull request unless the human explicitly asked not to commit or push.
+- When implementation is done and checks pass, commit the intended changes, push the branch, and update the existing pull request for that branch or task. Create a new pull request only when no open PR exists for the work.
 - Do not create draft pull requests unless the human explicitly asks for a draft. Open normal pull requests so CI and review automation run immediately.
 - After every push, watch GitHub Actions, deployment checks, and pull request review comments. Fix valid failures or comments, push again, and watch again.
 - **Do not blindly comply with bot reviewers** (Codex, Copilot, CodeRabbit, Vercel Agent Review). For every comment ask: does this point at a real bug that hits a real path? If yes, fix and mark resolved. If it's AI slop, hypothetical, stylistic, "for symmetry", "for consistency", or extract-this-constant nagging, mark the thread resolved with a one-line reason ("hypothetical, no triggering path", "stylistic, current shape is intentional", "already addressed in commit X"). Adding code to silence a bot adds maintenance surface forever in exchange for one-time review noise. Stay in the driver's seat.
 - **Never write worthless tests.** A test exists to catch a bug or guard a regression in code that ships. Tests added "for symmetry", "for documentation", "for consistency", or because a reviewer asked are pure cost. Skip them. Mock-and-assert-the-mock tests (mock `foo`, assert `foo` was called) test nothing — test the boundary, not the wiring. See `CLAUDE.md` "Testing Rules" for the full list.
-- Once checks are green and there are no unresolved valid review complaints, merge the pull request when the human has asked you to finish or merge the work.
+- Never merge pull requests. Once checks are green and there are no unresolved valid review complaints, report that the pull request is ready and let the human review the diff and merge it.
 
 ## UI Verification
 

@@ -76,6 +76,7 @@ test.describe("route visual regression", () => {
         await expect(page.getByText(route.requiredText)).toBeVisible();
       }
 
+      await waitForVisualIdle(page);
       await argosScreenshot(
         page,
         `${route.name}-${testInfo.project.name}`,
@@ -126,6 +127,15 @@ async function normalizeVisualPage(page: Page) {
 
   await page.addStyleTag({ content: ARGOS_CSS });
   await page.waitForTimeout(250);
+}
+
+async function waitForVisualIdle(page: Page) {
+  await page.waitForFunction(
+    () => !document.querySelector('[data-visual-state="animating"]'),
+    undefined,
+    { timeout: 10_000 },
+  );
+  await forceAnimationsComplete(page);
 }
 
 async function openSideMenu(
