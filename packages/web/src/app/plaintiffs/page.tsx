@@ -164,7 +164,7 @@ export default async function PlaintiffsPage({
     <main className="min-h-screen bg-background text-foreground [font-family:var(--v0-font-libre-baskerville)]">
       <section className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:py-14">
         <header className="space-y-6">
-          <h1 className="max-w-4xl text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
+          <h1 className="max-w-4xl text-4xl font-black uppercase leading-none sm:text-6xl">
             Register plaintiffs for Humanity v Government.
           </h1>
           <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
@@ -186,7 +186,7 @@ export default async function PlaintiffsPage({
           className="border-y-2 border-foreground bg-background py-8"
         >
           <div className="space-y-5">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-xs font-black uppercase text-muted-foreground">
               Demanded recovery per registered plaintiff
             </p>
             <div className="flex flex-wrap items-baseline gap-x-10 gap-y-3">
@@ -197,7 +197,7 @@ export default async function PlaintiffsPage({
                     figures={2}
                   />
                 </span>
-                <span className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="text-xs font-black uppercase text-muted-foreground">
                   NPV at 3% perpetuity
                 </span>
               </div>
@@ -208,7 +208,7 @@ export default async function PlaintiffsPage({
                     figures={2}
                   />
                 </span>
-                <span className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="text-xs font-black uppercase text-muted-foreground">
                   Lifetime cohort exposure
                 </span>
               </div>
@@ -279,7 +279,7 @@ export default async function PlaintiffsPage({
         <section className="space-y-5 border-t border-border pt-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="space-y-2">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-xs font-black uppercase text-muted-foreground">
                 Public plaintiffs
               </p>
               <h2 className="text-3xl font-black uppercase leading-tight">
@@ -298,7 +298,7 @@ export default async function PlaintiffsPage({
             <>
               <PeopleFilterBar />
               {hasActiveBrowseState ? (
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-xs font-black uppercase text-muted-foreground">
                   Showing {formatCount(people.length)} of{" "}
                   {formatCount(filteredCount)}
                 </p>
@@ -320,7 +320,7 @@ export default async function PlaintiffsPage({
               ))
             ) : (
               <article className="col-span-3 border border-border bg-card p-8 text-card-foreground sm:col-span-4 md:col-span-6 lg:col-span-7 xl:col-span-8">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                <p className="text-xs font-black uppercase text-muted-foreground">
                   No public plaintiffs yet
                 </p>
                 <p className="mt-4 text-lg font-bold leading-8">
@@ -331,7 +331,7 @@ export default async function PlaintiffsPage({
           </section>
 
           {totalPages > 1 ? (
-            <nav className="flex items-center justify-between gap-3 border-t border-border pt-4 text-xs font-black uppercase tracking-[0.14em]">
+            <nav className="flex items-center justify-between gap-3 border-t border-border pt-4 text-xs font-black uppercase">
               {currentPage > 1 ? (
                 <Link
                   className="border border-border bg-background px-4 py-2 text-foreground"
@@ -360,7 +360,7 @@ export default async function PlaintiffsPage({
         </section>
 
         <section className="space-y-3 border-t border-border pt-8">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-xs font-black uppercase text-muted-foreground">
             Questions
           </p>
           <details className="border border-border bg-card p-4 text-card-foreground">
