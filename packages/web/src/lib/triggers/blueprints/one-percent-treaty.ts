@@ -398,6 +398,8 @@ const treatySignerPerSlot: CreateTaskTriggerInput = {
 // eventFilter scoping to that family's taskKey pattern and its own appropriate
 // copy + audience. This entry stays as a documented template; enable it only
 // if you genuinely want a catch-all reminder, and add an eventFilter first.
+// Keeping the disabled tombstone in the seed also keeps any existing database
+// row disabled on deploy.
 
 const overdueReminderCron: CreateTaskTriggerInput = {
   triggerKey: "task:overdue-reminder",

@@ -62,4 +62,15 @@ describe("1% Treaty trigger blueprints", () => {
     expect(copy).not.toMatch(/\b32 rounds\b/i);
     expect(copy).not.toMatch(/\btwo friends\b/i);
   });
+
+  it("keeps catch-all overdue email reminders disabled", () => {
+    const overdueReminder = ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS.find(
+      (blueprint) => blueprint.triggerKey === "task:overdue-reminder",
+    );
+
+    expect(overdueReminder?.enabled).toBe(false);
+    expect(overdueReminder?.communicationSpawnSpecs?.[0]?.kind).toBe(
+      "overdue-reminder",
+    );
+  });
 });
