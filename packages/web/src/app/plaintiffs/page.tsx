@@ -1,6 +1,8 @@
 import {
+  CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
@@ -178,6 +180,54 @@ export default async function PlaintiffsPage({
             .
           </p>
         </header>
+
+        <section
+          aria-label="Demanded recovery per registered plaintiff"
+          className="border-y-2 border-foreground bg-background py-8"
+        >
+          <div className="space-y-5">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+              Demanded recovery per registered plaintiff
+            </p>
+            <div className="flex flex-wrap items-baseline gap-x-10 gap-y-3">
+              <div className="flex flex-col gap-1">
+                <span className="text-5xl font-black uppercase leading-none tracking-tight sm:text-6xl">
+                  <ParameterValue
+                    param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
+                    figures={2}
+                  />
+                </span>
+                <span className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                  NPV at 3% perpetuity
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-5xl font-black uppercase leading-none tracking-tight sm:text-6xl">
+                  <ParameterValue
+                    param={LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA}
+                    figures={2}
+                  />
+                </span>
+                <span className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                  Lifetime cohort exposure
+                </span>
+              </div>
+            </div>
+            <p className="max-w-4xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
+              Your share of the demanded recovery in{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.humanityVGovernment}
+              >
+                {humanityVGovernmentLink.label}
+              </Link>
+              . Each deceased family member you register as a fellow plaintiff
+              adds another full claim to the family share. Damages are what
+              the case pleads; payouts depend on whether four billion humans
+              render the verdict.
+            </p>
+          </div>
+        </section>
 
         <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
 
