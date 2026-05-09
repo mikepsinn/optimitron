@@ -10,7 +10,7 @@ export interface BrutalCardProps {
   bgColor?: BrutalCardBgColor
   shadowSize?: BrutalCardShadowSize
   padding?: BrutalCardPadding
-  /** Enable hover animation (translate + shadow change) */
+  /** Enable hover state. */
   hover?: boolean
   children: React.ReactNode
   className?: string
@@ -27,8 +27,7 @@ const bgClasses: Record<BrutalCardBgColor, string> = {
   default: "bg-card text-card-foreground",
 }
 
-// Treaty migration 2026-05-08: hard offset shadows removed. Prop
-// retained as no-op so consumers don't need updates.
+// Retain shadowSize as a no-op so existing consumers do not need updates.
 const shadowClasses: Record<BrutalCardShadowSize, string> = {
   4: "",
   8: "",
@@ -49,15 +48,11 @@ export function BrutalCard({
   children,
   className,
 }: BrutalCardProps) {
-  // Treaty migration 2026-05-08: dropped translate/hard-shadow hover
-  // animation. Hover now nudges background to muted — quiet, not arcade.
   const hoverClass = hover ? "transition-colors hover:bg-muted" : ""
 
   return (
     <Card
       className={cn(
-        // Treaty migration 2026-05-08: border-4 border-primary →
-        // border-2 border-foreground.
         "border-2 border-foreground",
         paddingClasses[padding],
         shadowClasses[shadowSize],

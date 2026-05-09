@@ -114,16 +114,8 @@ body {
   --sidebar-ring: rgb(236, 70, 153);
   --sidebar: rgb(245, 245, 245);
 
-  /* Decorative neobrutalist colors redirected to treaty tokens
-     (2026-05-08 bulk migration). pink/cyan/yellow were purely
-     decorative; they now resolve to background/foreground so every
-     consumer (BrutalCard, SectionContainer bgColor, all Tailwind
-     default color scales redirected to these via @theme inline)
-     renders treaty-style without per-component edits.
-
-     red/green stay vibrant — they encode status semantics
-     (error/harm/destructive vs verified/success) and changing them
-     would lose information. */
+  /* Decorative brutal tokens now resolve to treaty black/white tokens.
+     Red/green keep color because they carry status meaning. */
   --brutal-pink: var(--foreground);
   --brutal-pink-foreground: var(--background);
   --brutal-cyan: var(--background);
@@ -185,8 +177,7 @@ body {
   --sidebar-border: rgb(58, 58, 90);
   --sidebar-ring: rgb(244, 114, 182);
   --sidebar: rgb(23, 23, 23);
-  /* Dark mode: same treaty redirect as :root. pink/cyan/yellow
-     follow foreground/background which auto-flip in dark mode. */
+  /* Same treaty redirect as :root, flipped through foreground/background. */
   --brutal-pink: var(--foreground);
   --brutal-pink-foreground: var(--background);
   --brutal-cyan: var(--background);

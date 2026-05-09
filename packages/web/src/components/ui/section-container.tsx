@@ -24,9 +24,6 @@ const bgClasses: Record<SectionBgColor, string> = {
   primary: "bg-primary text-primary-foreground",
 }
 
-// Treaty migration 2026-05-08: thick novelty borders → thin treaty
-// rules. border-t-4 / border-b-4 → border-t / border-b;
-// border-primary → border-foreground.
 const borderClasses: Record<BorderPosition, string> = {
   top: "border-t border-foreground",
   bottom: "border-b border-foreground",
