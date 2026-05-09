@@ -223,7 +223,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
       },
     ],
   },
-  impactUrl: "https://warondisease.org/impact",
+  impactUrl: "https://impact.warondisease.org",
   notFound: {
     title: "This page is not here.",
     description:

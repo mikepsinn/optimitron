@@ -11,6 +11,14 @@
 - Changes to the Prisma schema or exported `@optimitron/db` types require explicit human approval.
 - If the human says `optimize earth`, follow `docs/OPTIMIZE_EARTH_PROTOCOL.md`.
 
+## Mission Focus
+
+- Until the 1% Treaty passes, optimize for the International Campaign to End War and Disease at `warondisease.org`.
+- The default product question is: does this help a human vote, recruit two more humans, get an organization to join, register a plaintiff, pressure a leader, or trust the quantified case enough to act?
+- Treat `optimitron.com` as the operating system and proof engine behind the campaign: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let the broader platform compete with the campaign for attention during this phase.
+- Park generic platform features, clever demos, cosmetic cleanup, and non-campaign variant work unless they directly reduce campaign friction or protect an already-shipping path.
+- For development and visual review, make the War on Disease variant the primary surface. Keep secondary variant screenshots/links available for regression checks, but put the campaign gallery first so PR review load stays low.
+
 ## Local Dev Safety
 
 - If a local dev server is already running, do not disrupt it for routine verification; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.
@@ -57,6 +65,7 @@
 - Use semantic/treaty tokens such as `bg-background`, `text-foreground`, `border-foreground`, `text-muted-foreground`, and `var(--treaty-*)`.
 - Do not add neobrutalist styling to public UI: avoid `brutal-*` color fills, hard shadows, gradients, rounded cards, beige/cream backgrounds, thick novelty borders, and decorative emoji/icons unless the user explicitly asks for them.
 - Keep UI minimal. Do not add wrapper boxes, divider lines, shadows, icons, labels, helper text, or other extra elements unless they clarify the action, improve scanning, or solve a real usability problem.
+- Do not lead campaign landing pages with raw counters, scoreboards, totals, leaderboards, or internal status panels. The first screen of `warondisease.org` must lead with the treaty vote/referral action; social proof belongs after the action is understood.
 - Make actionable things look actionable. If a link starts or completes a user task, especially an external workflow, render it as a clear button or command control, not only as inline text. Use plain inline links for references, citations, navigation, and secondary reading.
 - If the user is expected to copy an exact value into another site, email, form, wallet, bank portal, legal document, or message, provide a compact copy affordance near that value. Do not make users manually select long IDs, addresses, URLs, legal names, account numbers, or template language.
 - Keep affordances proportional: primary task actions get buttons; exact reusable values get copy buttons; explanatory text stays text.

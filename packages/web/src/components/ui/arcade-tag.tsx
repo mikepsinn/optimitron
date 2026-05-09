@@ -1,24 +1,15 @@
-import { ARCADE_LABELS } from "@/lib/messaging";
-
 interface ArcadeTagProps {
   children: React.ReactNode;
-  /** Bottom margin — defaults to mb-2 */
+  /** Bottom margin, defaults to mb-2. */
   className?: string;
 }
 
 /**
- * Arcade-styled subtitle tag for page headers.
- * Renders in Press Start 2P pixel font, pink, uppercase.
- *
- * Usage:
- *   <ArcadeTag>Boss Fight</ArcadeTag>
- *   <ArcadeTag>{ARCADE_LABELS.playerStats}</ArcadeTag>
+ * Subtitle tag for page headers.
  */
 export function ArcadeTag({ children, className = "mb-2" }: ArcadeTagProps) {
   return (
-    <p
-      className={`font-pixel text-sm font-black uppercase tracking-[0.2em] text-brutal-pink ${className}`}
-    >
+    <p className={`text-xs font-black uppercase text-muted-foreground ${className}`}>
       {children}
     </p>
   );

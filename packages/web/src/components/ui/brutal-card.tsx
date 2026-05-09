@@ -10,7 +10,7 @@ export interface BrutalCardProps {
   bgColor?: BrutalCardBgColor
   shadowSize?: BrutalCardShadowSize
   padding?: BrutalCardPadding
-  /** Enable hover animation (translate + shadow change) */
+  /** Enable hover state. */
   hover?: boolean
   children: React.ReactNode
   className?: string
@@ -27,10 +27,11 @@ const bgClasses: Record<BrutalCardBgColor, string> = {
   default: "bg-card text-card-foreground",
 }
 
+// Retain shadowSize as a no-op so existing consumers do not need updates.
 const shadowClasses: Record<BrutalCardShadowSize, string> = {
-  4: "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-  8: "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
-  12: "shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]",
+  4: "",
+  8: "",
+  12: "",
 }
 
 const paddingClasses: Record<BrutalCardPadding, string> = {
@@ -47,14 +48,12 @@ export function BrutalCard({
   children,
   className,
 }: BrutalCardProps) {
-  const hoverClass = hover
-    ? "hover:translate-x-2 hover:translate-y-2 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
-    : ""
+  const hoverClass = hover ? "transition-colors hover:bg-muted" : ""
 
   return (
     <Card
       className={cn(
-        "border-4 border-primary",
+        "border-2 border-foreground",
         paddingClasses[padding],
         shadowClasses[shadowSize],
         bgClasses[bgColor],

@@ -18,6 +18,7 @@ const VISUAL_ROUTES = [
   { name: "task-one-percent-treaty", path: "/tasks/1-pct-treaty", required: false },
   { name: "task-signer-canada", path: "/tasks/1-pct-treaty-signer-ca", required: false },
   { name: "endorse", path: "/endorse", required: false },
+  { name: "plaintiffs", path: "/plaintiffs", required: true },
   { name: "humanity-v-government", path: "/humanity-v-government", required: true },
 ] as const;
 

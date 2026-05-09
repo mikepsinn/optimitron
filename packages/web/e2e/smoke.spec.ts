@@ -13,6 +13,7 @@ import { test, expect, type Page } from "@playwright/test";
 import {
   AUTH_REQUIRED_PATHS,
   PUBLIC_PAGE_PATHS,
+  REDIRECT_ONLY_PATHS,
 } from "./utils/static-pages";
 import { signInDemoUser } from "./utils/auth";
 
@@ -61,6 +62,15 @@ async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
 for (const path of PUBLIC_PAGE_PATHS) {
   test(`${path} loads without errors and has valid metadata`, async ({ page }) => {
     await expectPageLoadsWithMetadata(page, path);
+  });
+}
+
+for (const path of REDIRECT_ONLY_PATHS) {
+  test(`${path} redirects to its canonical content`, async ({ request }) => {
+    const response = await request.get(path, { maxRedirects: 0 });
+    expect(response.status()).toBeGreaterThanOrEqual(300);
+    expect(response.status()).toBeLessThan(400);
+    expect(response.headers().location).toBeTruthy();
   });
 }
 

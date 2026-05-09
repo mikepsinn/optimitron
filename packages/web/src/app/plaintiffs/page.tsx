@@ -1,6 +1,8 @@
 import {
+  CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
@@ -162,7 +164,7 @@ export default async function PlaintiffsPage({
     <main className="min-h-screen bg-background text-foreground [font-family:var(--v0-font-libre-baskerville)]">
       <section className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:py-14">
         <header className="space-y-6">
-          <h1 className="max-w-4xl text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
+          <h1 className="max-w-4xl text-4xl font-black uppercase leading-none sm:text-6xl">
             Register plaintiffs for Humanity v Government.
           </h1>
           <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
@@ -178,6 +180,54 @@ export default async function PlaintiffsPage({
             .
           </p>
         </header>
+
+        <section
+          aria-label="Demanded recovery per registered plaintiff"
+          className="border-y-2 border-foreground bg-background py-8"
+        >
+          <div className="space-y-5">
+            <p className="text-xs font-black uppercase text-muted-foreground">
+              Demanded recovery per registered plaintiff
+            </p>
+            <div className="flex flex-wrap items-baseline gap-x-10 gap-y-3">
+              <div className="flex flex-col gap-1">
+                <span className="text-5xl font-black uppercase leading-none sm:text-6xl">
+                  <ParameterValue
+                    param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
+                    figures={2}
+                  />
+                </span>
+                <span className="text-xs font-black uppercase text-muted-foreground">
+                  NPV at 3% perpetuity
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-5xl font-black uppercase leading-none sm:text-6xl">
+                  <ParameterValue
+                    param={LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA}
+                    figures={2}
+                  />
+                </span>
+                <span className="text-xs font-black uppercase text-muted-foreground">
+                  Lifetime cohort exposure
+                </span>
+              </div>
+            </div>
+            <p className="max-w-4xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
+              Your share of the demanded recovery in{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.humanityVGovernment}
+              >
+                {humanityVGovernmentLink.label}
+              </Link>
+              . Each deceased family member you register as a fellow plaintiff
+              adds another full claim to the family share. Damages are what
+              the case pleads; payouts depend on whether four billion humans
+              render the verdict.
+            </p>
+          </div>
+        </section>
 
         <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
 
@@ -229,7 +279,7 @@ export default async function PlaintiffsPage({
         <section className="space-y-5 border-t border-border pt-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="space-y-2">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-xs font-black uppercase text-muted-foreground">
                 Public plaintiffs
               </p>
               <h2 className="text-3xl font-black uppercase leading-tight">
@@ -248,7 +298,7 @@ export default async function PlaintiffsPage({
             <>
               <PeopleFilterBar />
               {hasActiveBrowseState ? (
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-xs font-black uppercase text-muted-foreground">
                   Showing {formatCount(people.length)} of{" "}
                   {formatCount(filteredCount)}
                 </p>
@@ -270,7 +320,7 @@ export default async function PlaintiffsPage({
               ))
             ) : (
               <article className="col-span-3 border border-border bg-card p-8 text-card-foreground sm:col-span-4 md:col-span-6 lg:col-span-7 xl:col-span-8">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                <p className="text-xs font-black uppercase text-muted-foreground">
                   No public plaintiffs yet
                 </p>
                 <p className="mt-4 text-lg font-bold leading-8">
@@ -281,7 +331,7 @@ export default async function PlaintiffsPage({
           </section>
 
           {totalPages > 1 ? (
-            <nav className="flex items-center justify-between gap-3 border-t border-border pt-4 text-xs font-black uppercase tracking-[0.14em]">
+            <nav className="flex items-center justify-between gap-3 border-t border-border pt-4 text-xs font-black uppercase">
               {currentPage > 1 ? (
                 <Link
                   className="border border-border bg-background px-4 py-2 text-foreground"
@@ -310,7 +360,7 @@ export default async function PlaintiffsPage({
         </section>
 
         <section className="space-y-3 border-t border-border pt-8">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-xs font-black uppercase text-muted-foreground">
             Questions
           </p>
           <details className="border border-border bg-card p-4 text-card-foreground">
