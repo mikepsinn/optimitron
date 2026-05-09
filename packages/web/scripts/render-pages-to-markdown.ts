@@ -8,12 +8,12 @@
  * what each page actually says before committing.
  *
  * Output paths:
- *   src/app/treaty/page.tsx   -> src/app/treaty/page.md
- *   src/app/page.tsx (root)   -> src/app/page.md
- *   src/app/[a]/[b]/page.tsx  -> src/app/[a]/[b]/page.md  (best-effort)
+ *   src/app/treaty/page.tsx   -> src/app/treaty/page.logged-out.md
+ *   src/app/page.tsx (root)   -> src/app/page.logged-out.md
+ *   src/app/[a]/[b]/page.tsx  -> src/app/[a]/[b]/page.logged-out.md  (best-effort)
  *
- * The generated `page.md` files are deterministic copy inventory files.
- * Authenticated `page.authed.md` files are local-only and gitignored.
+ * The generated `page.logged-out.md` files are deterministic copy inventory files.
+ * Authenticated `page.logged-in.md` files are local-only and gitignored.
  *
  * Usage:
  *   pnpm --filter @optimitron/web copy:preview
@@ -63,10 +63,10 @@ function parseRoutesFromArgs(): {
   };
 }
 
-function routeToFilePath(route: string): string {
-  // "/"        -> src/app/page.md
-  // "/treaty"  -> src/app/treaty/page.md
-  // "/a/b"     -> src/app/a/b/page.md
+function routeToDirPath(route: string): string {
+  // "/"        -> src/app
+  // "/treaty"  -> src/app/treaty
+  // "/a/b"     -> src/app/a/b
   if (!route.startsWith("/")) {
     throw new Error(`Route must start with "/": ${route}`);
   }
@@ -83,7 +83,7 @@ function routeToFilePath(route: string): string {
   ) {
     throw new Error(`Invalid route segment in "${route}"`);
   }
-  const outPath = path.resolve(APP_DIR, ...segments, "page.md");
+  const outPath = path.resolve(APP_DIR, ...segments);
   const relative = path.relative(APP_DIR, outPath);
   if (relative.startsWith("..") || path.isAbsolute(relative)) {
     throw new Error(`Resolved path escapes app dir for route "${route}"`);
@@ -140,7 +140,7 @@ function cookieDomainFromBase(): string {
 async function capturePass(
   browser: import("@playwright/test").Browser,
   routes: string[],
-  filename: "page.md" | "page.authed.md",
+  filename: "page.logged-out.md" | "page.logged-in.md",
   options: { authCookie?: { name: string; value: string } } = {},
 ): Promise<number> {
   let failures = 0;
@@ -163,7 +163,7 @@ async function capturePass(
   const page = await ctx.newPage();
   try {
     for (const route of routes) {
-      const dir = path.dirname(routeToFilePath(route));
+      const dir = routeToDirPath(route);
       const outPath = path.join(dir, filename);
       try {
         const md = await extractPage(page, route);
@@ -193,7 +193,7 @@ async function main() {
   let failures = 0;
   try {
     console.log("--- Logged-out pass ---");
-    failures += await capturePass(browser, loggedOutRoutes, "page.md");
+    failures += await capturePass(browser, loggedOutRoutes, "page.logged-out.md");
 
     if (skipAuthed) {
       console.log("\n(--no-authed; skipping authenticated pass)");
@@ -205,7 +205,7 @@ async function main() {
         console.log(
           `\n--- Authenticated pass (cookie minted offline for ${process.env.COPY_PREVIEW_USER_EMAIL ?? "m@thinkbynumbers.org"}) ---`,
         );
-        failures += await capturePass(browser, authenticatedRoutes, "page.authed.md", {
+        failures += await capturePass(browser, authenticatedRoutes, "page.logged-in.md", {
           authCookie,
         });
       } catch (err) {
