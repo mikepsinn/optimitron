@@ -60,16 +60,16 @@ export default function NPVAnalysisSection() {
     <SectionContainer bgColor="background" borderPosition="top" padding="lg">
       <Container>
         <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-4">
-          NPV ANALYSIS: <span className="text-brutal-pink">10-YEAR PROJECTION</span>
+          NPV ANALYSIS: <span className="text-foreground">10-YEAR PROJECTION</span>
         </h2>
         <p className="text-center text-lg font-bold mb-12 max-w-3xl mx-auto">
           Rigorous financial modeling using{" "}
-          <span className="text-brutal-pink font-black">Net Present Value (NPV)</span> to account for time value of
+          <span className="text-foreground font-black">Net Present Value (NPV)</span> to account for time value of
           money and gradual adoption
         </p>
 
         {/* Key Parameters */}
-        <Card className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12">
+        <Card className="bg-background text-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12">
           <h3 className="text-2xl font-black uppercase mb-6 text-center">MODEL PARAMETERS</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -133,17 +133,17 @@ export default function NPVAnalysisSection() {
 
         {/* NPV Summary */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-brutal-pink text-brutal-pink-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <Card className="bg-foreground text-background border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-sm font-bold uppercase mb-2">NPV of Costs</div>
             <div className="text-4xl font-black">${totalNPVCosts.toFixed(1)}B</div>
             <div className="text-xs mt-2">Upfront + discounted operations</div>
           </Card>
-          <Card className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <Card className="bg-background text-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-sm font-bold uppercase mb-2">NPV of Savings</div>
             <div className="text-4xl font-black">${totalNPVSavings.toFixed(1)}B</div>
             <div className="text-xs mt-2">Discounted cash flows over {years} years</div>
           </Card>
-          <Card className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <Card className="bg-background text-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-sm font-bold uppercase mb-2">NPV-Adjusted ROI</div>
             <div className="text-4xl font-black"><ParameterValue param={DFDA_ROI_RD_ONLY} /></div>
             <div className="text-xs mt-2">After time value of money</div>
@@ -182,16 +182,16 @@ export default function NPVAnalysisSection() {
                       <td className="py-3 px-2 font-bold">Year 0</td>
                       <td className="text-right py-3 px-2">-</td>
                       <td className="text-right py-3 px-2">-</td>
-                      <td className="text-right py-3 px-2 text-brutal-pink font-bold"><ParameterValue param={DFDA_NPV_UPFRONT_COST_TOTAL} /></td>
-                      <td className="text-right py-3 px-2 text-brutal-pink font-bold">-<ParameterValue param={DFDA_NPV_UPFRONT_COST_TOTAL} /></td>
-                      <td className="text-right py-3 px-2 text-brutal-pink font-bold">-<ParameterValue param={DFDA_NPV_UPFRONT_COST_TOTAL} /></td>
+                      <td className="text-right py-3 px-2 text-foreground font-bold"><ParameterValue param={DFDA_NPV_UPFRONT_COST_TOTAL} /></td>
+                      <td className="text-right py-3 px-2 text-foreground font-bold">-<ParameterValue param={DFDA_NPV_UPFRONT_COST_TOTAL} /></td>
+                      <td className="text-right py-3 px-2 text-foreground font-bold">-<ParameterValue param={DFDA_NPV_UPFRONT_COST_TOTAL} /></td>
                     </tr>
                     {yearlyData.map((row) => (
                       <tr key={row.year} className="border-b-2 border-primary/20">
                         <td className="py-3 px-2 font-bold">Year {row.year}</td>
                         <td className="text-right py-3 px-2">{row.adoptionRate}%</td>
-                        <td className="text-right py-3 px-2 text-brutal-cyan font-bold">${row.savings}B</td>
-                        <td className="text-right py-3 px-2 text-brutal-pink">-${row.costs}B</td>
+                        <td className="text-right py-3 px-2 text-background font-bold">${row.savings}B</td>
+                        <td className="text-right py-3 px-2 text-foreground">-${row.costs}B</td>
                         <td className="text-right py-3 px-2 font-bold">${row.netCashFlow}B</td>
                         <td className="text-right py-3 px-2 font-black">${row.presentValue}B</td>
                       </tr>
@@ -200,7 +200,7 @@ export default function NPVAnalysisSection() {
                       <td className="py-3 px-2" colSpan={5}>
                         TOTAL NPV ({years} years)
                       </td>
-                      <td className="text-right py-3 px-2 text-brutal-pink text-lg">${totalNPVSavings.toFixed(1)}B</td>
+                      <td className="text-right py-3 px-2 text-foreground text-lg">${totalNPVSavings.toFixed(1)}B</td>
                     </tr>
                   </tbody>
                 </table>
@@ -214,7 +214,7 @@ export default function NPVAnalysisSection() {
           <h3 className="text-2xl font-black uppercase mb-6 text-center">WHY NPV ANALYSIS MATTERS</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <div className="bg-brutal-pink text-brutal-pink-foreground border-l-4 border-brutal-pink p-4 mb-4">
+              <div className="bg-foreground text-background border-l-4 border-foreground p-4 mb-4">
                 <div className="font-black uppercase text-sm mb-2">Simple ROI (higher)</div>
                 <ul className="text-sm space-y-2">
                   <li>Easy to understand</li>
@@ -226,7 +226,7 @@ export default function NPVAnalysisSection() {
               </div>
             </div>
             <div>
-              <div className="bg-brutal-cyan text-brutal-cyan-foreground border-l-4 border-brutal-cyan p-4 mb-4">
+              <div className="bg-background text-foreground border-l-4 border-background p-4 mb-4">
                 <div className="font-black uppercase text-sm mb-2">NPV-Adjusted ROI ({roiRaw}:1)</div>
                 <ul className="text-sm space-y-2">
                   <li>Academically rigorous</li>
@@ -238,7 +238,7 @@ export default function NPVAnalysisSection() {
               </div>
             </div>
           </div>
-          <div className="mt-6 bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-4">
+          <div className="mt-6 bg-background text-foreground border-4 border-primary p-4">
             <p className="font-bold text-center">
               The {roiRaw}:1 NPV-adjusted ROI is the <span className="font-black">canonical figure</span> we use for
               academic credibility. It&apos;s conservative and passes rigorous financial scrutiny.
@@ -260,9 +260,9 @@ export default function NPVAnalysisSection() {
             })).map((item) => (
               <div key={item.year} className="flex items-center gap-4">
                 <div className="w-20 text-sm font-bold">Year {item.year}:</div>
-                <div className="flex-1 bg-brutal-pink border-4 border-primary h-12 relative">
+                <div className="flex-1 bg-foreground border-4 border-primary h-12 relative">
                   <div
-                    className="bg-brutal-pink h-full flex items-center justify-end pr-2 font-black text-sm text-brutal-pink-foreground"
+                    className="bg-foreground h-full flex items-center justify-end pr-2 font-black text-sm text-background"
                     style={{ width: `${item.pct}%` }}
                   >
                     {item.pct}%{item.note || ""}

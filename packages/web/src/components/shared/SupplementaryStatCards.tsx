@@ -57,7 +57,7 @@ export function SupplementaryStatCards({
               </h4>
             </div>
 
-            <p className="text-3xl font-black text-brutal-pink mb-2">
+            <p className="text-3xl font-black text-foreground mb-2">
               {item.value}
             </p>
 
@@ -78,7 +78,7 @@ export function SupplementaryStatCards({
                     href={item.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-brutal-cyan transition-colors"
+                    className="hover:text-background transition-colors"
                   >
                     Source: {item.source} ↗
                   </a>

@@ -6,7 +6,13 @@ import {
   fmtParamValueOnly,
   fmtRaw,
 } from "@optimitron/data/parameters";
+import messages from "@/messages/en-US/war-on-disease.json";
 import type { ReferendumSiteContent } from "./types";
+
+type OnePercentTreatyMessageCatalog = Omit<
+  ReferendumSiteContent,
+  "impactUrl" | "key"
+>;
 
 const apocalypseCount = fmtParamValueOnly(NUCLEAR_WINTER_OVERKILL_FACTOR);
 const reducedApocalypseCount = fmtRaw(
@@ -22,212 +28,64 @@ const dfdaQueueYears = Math.round(
 const campaignName = "International Campaign to End War and Disease";
 const treatyTradePosition = `humanity should trade one of its ${apocalypseCount} apocalypses of mass-murder capacity to compress the disease-eradication timeline from ${statusQuoQueueYears} years to ${dfdaQueueYears} years`;
 
+const onePercentTreatyMessageCatalog: OnePercentTreatyMessageCatalog =
+  messages.onePercentTreaty;
+
+function renderMessageTemplates<T>(
+  value: T,
+  replacements: Record<string, string>,
+  pathParts: string[] = [],
+): T {
+  if (typeof value === "string") {
+    return value.replace(/\{([A-Za-z0-9_]+)\}/g, (_, key: string) => {
+      const replacement = replacements[key];
+      if (replacement === undefined) {
+        throw new Error(
+          `Missing message replacement for {${key}} at ${pathParts.join(".")}`,
+        );
+      }
+      return replacement;
+    }) as T;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item, index) =>
+      renderMessageTemplates(item, replacements, [
+        ...pathParts,
+        String(index),
+      ]),
+    ) as T;
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        renderMessageTemplates(nestedValue, replacements, [
+          ...pathParts,
+          key,
+        ]),
+      ]),
+    ) as T;
+  }
+
+  return value;
+}
+
+const onePercentTreatyRenderedMessages = renderMessageTemplates(
+  onePercentTreatyMessageCatalog,
+  {
+    apocalypseCount,
+    campaignName,
+    diseaseAcceleration,
+    reducedApocalypseCount,
+    treatyTradePosition,
+  },
+  ["onePercentTreaty"],
+);
+
 export const onePercentTreatyContent: ReferendumSiteContent = {
   key: "onePercentTreaty",
-  metadata: {
-    home: {
-      title: "1% Treaty — Take 30 Seconds to End War and Disease",
-      description: `Humanity currently spends enough on mass murder capacity for ${apocalypseCount} apocalypses. This proposes we settle for ${reducedApocalypseCount} and use the savings to eradicate disease ${diseaseAcceleration} times faster.`,
-    },
-    treaty: {
-      title: "Treaty — 1% Treaty",
-      description:
-        "The entire text, then a box to sign it. It is shorter than your last software update.",
-    },
-    dashboard: {
-      title: "Dashboard — 1% Treaty",
-      description:
-        "Your signature, your link, and a list of leaders who are still late on a thirty-second task.",
-    },
-    tasks: {
-      title: "Tasks — 1% Treaty",
-      description:
-        "The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.",
-    },
-    endorse: {
-      title: "Join as Organization — 1% Treaty",
-      description: `Join the ${campaignName} as an organization: ${treatyTradePosition}.`,
-    },
-    signatories: {
-      title: "Signatories — 1% Treaty",
-      description:
-        "Organizations and humans who publicly signed the 1% Treaty.",
-    },
-    supporters: {
-      title: "Organizational Supporters — 1% Treaty",
-      description: `Organizations that publicly support the 1% Treaty: ${treatyTradePosition}.`,
-    },
-    why: {
-      title: "Why — 1% Treaty",
-      description:
-        "The numbers. 604 to 1. 443 years. 150,000 per day. The species does not like to look at them.",
-    },
-    legal: {
-      title: "Legal — 1% Treaty",
-      description:
-        "For organizations: signing is not a candidate endorsement, not a donation, and not support for any specific domestic legislation.",
-    },
-    impact: {
-      title: "Impact — 1% Treaty",
-      description:
-        "Cost-effectiveness of keeping humans alive, in the spreadsheet format your species requires before doing anything.",
-    },
-  },
-  navItems: [
-    { label: "Treaty", href: "/treaty" },
-    { label: "Join as Organization", href: "/endorse" },
-    { label: "Signatories", href: "/signatories" },
-    { label: "Tasks", href: "/tasks" },
-    { label: "Why", href: "/why" },
-  ],
-  home: {
-    eyebrow: "1% Treaty",
-    heroTitle: "Please Take 30 Seconds to End War and Disease",
-    titleLines: [
-      "Redirect one percent of military spending",
-      "to finding out which medicines actually work.",
-    ],
-    intro: "",
-    primaryCtaLabel: "Read and sign the treaty",
-    secondaryCtaLabel: "Join as Organization",
-    treatyEyebrow: "Treaty text",
-    signTitle: "Sign the treaty now",
-    signBody:
-      "Read it. Sign it. Then go remind your late employees — the ones your species pays to promote the general welfare — that their thirty-second task is overdue.",
-    signBoxTitle: "Sign the 1% Treaty",
-    lateEmployeesEyebrow: "Late employees",
-    lateEmployeesTitle:
-      "Your late employees still have overdue Earth Optimization Tasks.",
-    lateEmployeesBody:
-      "These are the subtasks under Ratify the 1% Treaty. They are the humans you hired to promote the general welfare. They are late. The task is a pen.",
-    lateEmployeesCtaLabel: "See every late employee",
-  },
-  dashboard: {
-    welcomeTitle: "You signed. Thank you.",
-    welcomeBody:
-      "Your signature produces one more receipt to wave at the leaders who are still late on a thirty-second task.",
-    shareTitle: "Share your signature",
-    shareBody:
-      "Start with your link. Then use the overdue task list below to remind specific humans that delay is measured in corpses and squandered paperwork-with-presidents-on-it.",
-    shareText:
-      "I signed the 1% Treaty to redirect 1% of military spending to finding out which medicines work. Sign it, then pressure the leaders who haven't:",
-    shareEmailSubject: "I signed the 1% Treaty",
-    shareCtaLabel: "See who still needs reminders",
-    urgencyTitle: "Unsigned leaders are still costing lives and money.",
-    urgencyBody:
-      "Each overdue task below shows the damage from delay and includes the share-and-contact buttons you need to apply pressure until the wrist movement occurs.",
-    statsLeadersLabel: "Leaders still unsigned",
-    statsDeathsLabel: "Deaths from delay",
-    statsMoneyLabel: "Economic value evaporated",
-    tasksTitle: "Outstanding leader tasks",
-    tasksBody:
-      "Sort by deaths or wasted money. Then share the overdue tasks until the responsible humans stop pretending not to notice.",
-    fullDashboardLabel: "Open your Earth Optimization dashboard",
-  },
-  supporters: {
-    eyebrow: "Organizational supporters",
-    title: "Organizational Supporters",
-    description: `Organizations that publicly support the 1% Treaty through the ${campaignName}.`,
-    emptyTitle: "No organizational supporters yet.",
-    emptyBody: `Be the first organization willing to put this on the record: ${treatyTradePosition}.`,
-    ctaLabel: "Join as Organization",
-  },
-  endorse: {
-    eyebrow: "Your Organization Can",
-    title: "End War And Disease One Day Sooner",
-    signInTitle: "Verify organization",
-    signInDescription:
-      "Organization support uses verified accounts so nobody joins the campaign in your organization's name.",
-    signInLabel: "Verify",
-    existingSupportersLabel: "organizational supporters",
-  },
-  why: {
-    eyebrow: "The case",
-    title: "Why the 1% Treaty",
-    intro:
-      "Redirect one percent of global military spending to finding out which medicines actually work. That is the whole ask. The math below is why your species will eventually agree.",
-    facts: [
-      {
-        number: "604 : 1",
-        label: "Weapons to medicine",
-        body: "For every dollar your species spends testing which medicines actually work, it spends six hundred and four on weapons designed to make humans stop being alive. It is almost a hobby at this point.",
-      },
-      {
-        number: "443 years",
-        label: "The queue to not die",
-        body: "At current clinical trial funding, finishing treatments for the known diseases takes until roughly the year twenty-four sixty-nine. Everyone currently alive will be dead before that queue clears. Their children too. Their grandchildren probably also.",
-      },
-      {
-        number: "150,000 / day",
-        label: "The daily deletion event",
-        body: "One hundred and fifty thousand humans permanently stop every twenty-four hours from diseases that are, fundamentally, bugs in your meat software. That is one Holocaust every forty days, with fewer Nazis and more insurance paperwork.",
-      },
-      {
-        number: "8.2 years",
-        label: "Delay after a drug is proven safe",
-        body: "Eight years between 'this drug will not kill you' and 'you may have this drug.' The drug passes the safety test. Everyone agrees it will not kill you. But you cannot have it because a committee needs almost a decade to be sure it works well enough while you do not.",
-      },
-      {
-        number: "13,000",
-        label: "Nuclear warheads on standby",
-        body: "Enough to end your civilization thirteen times, in case the first twelve apocalypses fail to take. Your species keeps ordering more. Rocks have managed to live peacefully alongside different-colored rocks for thousands of years without any of this.",
-      },
-    ],
-    closingLead: "One percent. Not ten. Not fifty. One.",
-    closingBody:
-      "If that is too much to ask, your species has a branding problem about what it actually values, and the branding problem is now killing approximately one hundred and four humans per minute.",
-    ctaLabel: "Read and sign the treaty",
-  },
-  legal: {
-    eyebrow: "For organizations",
-    title: "Legal notes for organizations",
-    sections: [
-      {
-        heading: "Summary",
-        paragraphs: [
-          "Joining means your organization publicly supports the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.",
-          "It is not a donation, candidate endorsement, party activity, ballot measure position, or support for a pending bill.",
-        ],
-      },
-      {
-        heading: "Organizations already do this",
-        paragraphs: [
-          'Civil-society coalitions helped turn landmines and nuclear weapons from "politically impossible" into treaty text. The International Campaign to Ban Landmines helped bring about the Mine Ban Treaty. ICAN helped drive the Treaty on the Prohibition of Nuclear Weapons. The 1% Treaty asks organizations to do the same normal thing: publicly support a humanitarian treaty, not a candidate or party.',
-        ],
-        links: [
-          {
-            label: "Landmine Treaty Precedent",
-            href: "https://icblcmc.org/about-icbl",
-          },
-          {
-            label: "Nuclear Treaty Precedent",
-            href: "https://www.nobelprize.org/prizes/peace/2017/ican/facts/",
-          },
-        ],
-      },
-      {
-        heading: "What joining does",
-        paragraphs: [],
-        bullets: [
-          "Public display of your organization's name with other public supporters.",
-          "Access to your organization's member link, website button, iframe, and outreach starter.",
-          "No ongoing obligations. No financial contributions. No signatures on unrelated documents.",
-        ],
-      },
-      {
-        heading: "Treaty text",
-        paragraphs: [
-          "The treaty is short. The full text is collapsed on the organization signup page so your organization can read it without leaving.",
-        ],
-        links: [],
-      },
-    ],
-  },
+  ...onePercentTreatyRenderedMessages,
   impactUrl: "https://impact.warondisease.org",
-  notFound: {
-    title: "This page is not here.",
-    description:
-      "Your species has 1.6 billion websites. This particular URL is not on the campaign site. Try one of the others.",
-    ctaLabel: "Return home",
-  },
 };

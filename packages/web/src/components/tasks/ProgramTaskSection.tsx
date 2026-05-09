@@ -67,7 +67,7 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             </span>
           ) : null}
           {isTreatyParent ? (
-            <span className="border-2 border-background bg-brutal-yellow px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-yellow-foreground">
+            <span className="border-2 border-background bg-background px-2 py-0.5 text-xs font-black uppercase tracking-wide text-foreground">
               Time Required: {totalEffortLabel ?? "1.6 Hours"} Combined
             </span>
           ) : null}
@@ -81,7 +81,7 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             <ParameterValue
               param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
               display="integer"
-              className="font-black text-brutal-pink"
+              className="font-black text-foreground"
             />{" "}
             diseases have 0 FDA-approved treatments. At current clinical trial
             capacity, it could take{" "}
@@ -97,16 +97,16 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             <ParameterValue
               param={NUCLEAR_WINTER_OVERKILL_FACTOR}
               display="integer"
-              className="font-black text-brutal-pink"
+              className="font-black text-foreground"
             />{" "}
             apocalypses. This treaty asks it to settle for{" "}
-            <span className="font-black text-brutal-pink">
+            <span className="font-black text-foreground">
               {(NUCLEAR_WINTER_OVERKILL_FACTOR.value * 0.99).toFixed(1)}
             </span>{" "}
             apocalypses in exchange for{" "}
             <ParameterValue
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-              className="font-black text-brutal-pink"
+              className="font-black text-foreground"
             />
             × more clinical trial capacity to cure disease.
           </p>
@@ -121,23 +121,23 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             <ParameterValue
               param={DFDA_QUEUE_CLEARANCE_YEARS}
               display="integer"
-              className="font-black text-brutal-pink"
+              className="font-black text-foreground"
             />
             , avoiding{" "}
             <ParameterValue
               param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
-              className="font-black text-brutal-pink"
+              className="font-black text-foreground"
             />{" "}
             deaths,{" "}
             <ParameterValue
               param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
-              className="font-black text-brutal-pink"
+              className="font-black text-foreground"
             />{" "}
             hours of suffering, and{" "}
             <ParameterValue
               param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE}
               display="withUnit"
-              className="font-black text-brutal-pink"
+              className="font-black text-foreground"
             />{" "}
             wasted by delayed disease eradication.
           </p>
@@ -223,7 +223,7 @@ export function ProgramTaskSection({
               <h2 className="text-lg font-black tracking-tight sm:text-2xl">
                 {subtasksTitle}
               </h2>
-              <p className="text-sm font-black uppercase text-brutal-pink">
+              <p className="text-sm font-black uppercase text-foreground">
                 👉 Click the Remind button to do your job
               </p>
             </div>

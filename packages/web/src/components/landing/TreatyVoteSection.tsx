@@ -13,7 +13,7 @@ export default function TreatyVoteSection() {
     >
       <Container size="md">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-pixel text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
+          <p className="font-pixel text-xs font-black uppercase tracking-[0.18em] text-foreground">
             Treaty vote
           </p>
           <h2 className="mt-4 text-3xl font-black uppercase leading-tight sm:text-5xl">

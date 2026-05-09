@@ -6,7 +6,7 @@ export function SlideDecentralizedIrs() {
   return (
     <SierraSlideWrapper act={2}>
       <div className="flex flex-col items-center justify-center gap-8 max-w-[1400px] mx-auto">
-        <h1 className="font-pixel text-3xl md:text-5xl text-brutal-yellow text-center">
+        <h1 className="font-pixel text-3xl md:text-5xl text-background text-center">
           📄 AUTOMATED REVENUE SERVICE
         </h1>
 
@@ -21,14 +21,14 @@ export function SlideDecentralizedIrs() {
           </div>
 
           {/* Arrow */}
-          <div className="font-pixel text-4xl text-brutal-yellow">→</div>
+          <div className="font-pixel text-4xl text-background">→</div>
 
           {/* Replacement */}
-          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 text-center">
-            <div className="font-pixel text-xl md:text-2xl text-brutal-cyan mb-4">REPLACEMENT</div>
-            <div className="font-pixel text-5xl md:text-7xl text-brutal-cyan mb-1">~$0</div>
+          <div className="bg-muted border-2 border-background rounded-lg p-6 text-center">
+            <div className="font-pixel text-xl md:text-2xl text-background mb-4">REPLACEMENT</div>
+            <div className="font-pixel text-5xl md:text-7xl text-background mb-1">~$0</div>
             <div className="font-pixel text-lg md:text-xl text-muted-foreground mb-4">NO FILING, NO COMPLIANCE</div>
-            <div className="font-pixel text-3xl md:text-4xl text-brutal-cyan">4 lines of code</div>
+            <div className="font-pixel text-3xl md:text-4xl text-background">4 lines of code</div>
             <div className="font-pixel text-lg md:text-xl text-muted-foreground">0.5% automatic transaction tax</div>
           </div>
         </div>

@@ -60,7 +60,7 @@ export function WishPointToast({ amount, label, onDone }: WishPointToastProps) {
             animate={{ opacity: 0.15 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-brutal-yellow"
+            className="absolute inset-0 bg-background"
           />
 
           {/* Main star — flies in from top, scales up, then flies out */}
@@ -97,7 +97,7 @@ export function WishPointToast({ amount, label, onDone }: WishPointToastProps) {
               transition={{ delay: 0.3, type: "spring", stiffness: 400 }}
               className="text-center mt-2"
             >
-              <div className="border-4 border-primary bg-brutal-yellow px-6 py-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] inline-block">
+              <div className="border-4 border-primary bg-background px-6 py-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] inline-block">
                 <span className="text-4xl sm:text-5xl font-black text-foreground">
                   +{amount}
                 </span>

@@ -8,7 +8,7 @@ interface DisclaimerBannerProps {
 export function DisclaimerBanner({ compact = false }: DisclaimerBannerProps) {
   if (compact) {
     return (
-      <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground px-4 py-2 flex items-start gap-2">
+      <div className="border-4 border-primary bg-background text-foreground px-4 py-2 flex items-start gap-2">
         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
         <p className="text-xs font-bold">
           For entertainment purposes only. All figures are hypothetical
@@ -19,7 +19,7 @@ export function DisclaimerBanner({ compact = false }: DisclaimerBannerProps) {
   }
 
   return (
-    <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <div className="flex items-start gap-3">
         <AlertTriangle className="w-6 h-6 shrink-0 mt-0.5" />
         <div className="space-y-2">

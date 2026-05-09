@@ -27,7 +27,7 @@ function StatBox({
   value: string;
   accent?: "red" | "pink";
 }) {
-  const accentClass = accent === "red" ? "text-brutal-red" : "text-brutal-pink";
+  const accentClass = accent === "red" ? "text-brutal-red" : "text-foreground";
   return (
     <div className="border-4 border-foreground bg-muted/20 p-3">
       <p className={`text-xs font-black uppercase tracking-[0.18em] ${accentClass}`}>

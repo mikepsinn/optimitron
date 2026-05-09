@@ -49,7 +49,7 @@ export function WalletCard() {
                   <button
                     key={connector.uid}
                     onClick={() => connect({ connector })}
-                    className="border-4 border-primary bg-brutal-cyan px-4 py-2.5 text-sm font-black uppercase text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    className="border-4 border-primary bg-background px-4 py-2.5 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
                   >
                     {connector.name === "Injected"
                       ? "Browser Wallet (MetaMask)"
@@ -58,14 +58,14 @@ export function WalletCard() {
                 ))}
               </div>
             )}
-            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-3">
+            <div className="border-4 border-primary bg-background text-foreground p-3">
               <p className="text-xs font-bold">
                 Need a wallet?{" "}
                 <a
                   href="https://metamask.io/download/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black underline hover:text-brutal-pink"
+                  className="font-black underline hover:text-foreground"
                 >
                   Install MetaMask
                 </a>{" "}
@@ -88,7 +88,7 @@ export function WalletCard() {
                 {chainId !== sepolia.id && (
                   <button
                     onClick={() => switchChain({ chainId: sepolia.id })}
-                    className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-yellow/80 transition-colors"
+                    className="border-4 border-primary bg-background text-foreground px-3 py-1.5 text-xs font-black uppercase hover:bg-background/80 transition-colors"
                   >
                     Switch to Sepolia
                   </button>
@@ -103,7 +103,7 @@ export function WalletCard() {
             </div>
 
             <div className="grid gap-2 grid-cols-2">
-              <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-2">
+              <div className="border-4 border-primary bg-background text-foreground p-2">
                 <div className="text-[10px] font-black uppercase">
                   $WISH Balance
                 </div>
@@ -113,7 +113,7 @@ export function WalletCard() {
                     : `${formatWish(wishBalance)} $WISH`}
                 </div>
               </div>
-              <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-2">
+              <div className="border-4 border-primary bg-background text-foreground p-2">
                 <div className="text-[10px] font-black uppercase">
                   Max Supply (Fixed)
                 </div>

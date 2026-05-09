@@ -35,7 +35,7 @@ export function WarVsCuresChart() {
           transition={{ duration: 0.5, ease: [0.87, 0, 0.13, 1], delay: 0.2 }}
           className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-black uppercase text-center mb-0"
         >
-          {RATIO}X more on <span className="text-brutal-pink">war</span>
+          {RATIO}X more on <span className="text-foreground">war</span>
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 30 }}
@@ -58,7 +58,7 @@ export function WarVsCuresChart() {
               className="flex items-center justify-between mb-2"
             >
               <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">Military</div>
-              <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-pink">
+              <div className="text-xl sm:text-2xl md:text-3xl font-black text-foreground">
                 <ParameterValue param={{...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD"}} display="withUnit" />
               </div>
             </motion.div>
@@ -68,10 +68,10 @@ export function WarVsCuresChart() {
               viewport={{ once: true }}
               transition={{ duration: 1, ease: [0.87, 0, 0.13, 1], delay: 0.6 }}
               style={{ originX: 0 }}
-              className="relative h-20 sm:h-24 bg-brutal-pink border-4 border-primary"
+              className="relative h-20 sm:h-24 bg-foreground border-4 border-primary"
             >
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm sm:text-lg md:text-xl font-black text-brutal-pink-foreground uppercase text-center">
+                <span className="text-sm sm:text-lg md:text-xl font-black text-background uppercase text-center">
                   {milFmt} for blowing things up
                 </span>
               </div>
@@ -88,7 +88,7 @@ export function WarVsCuresChart() {
               className="flex items-center justify-between mb-2"
             >
               <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">Medical Research</div>
-              <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-cyan">
+              <div className="text-xl sm:text-2xl md:text-3xl font-black text-background">
                 <ParameterValue param={{...GLOBAL_MED_RESEARCH_SPENDING, unit: "USD"}} display="withUnit" />
               </div>
             </motion.div>
@@ -99,7 +99,7 @@ export function WarVsCuresChart() {
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: [0.87, 0, 0.13, 1], delay: 0.9 }}
                 style={{ originX: 0, width: `${MEDICAL_BAR_PCT}%` }}
-                className="relative h-20 sm:h-24 bg-brutal-cyan border-4 border-primary"
+                className="relative h-20 sm:h-24 bg-background border-4 border-primary"
               />
               <motion.span
                 initial={{ opacity: 0, x: -20 }}

@@ -79,7 +79,7 @@ export function OrganizationEmailSignatureCard({ surveyLink, organizationName, u
 
           <Button
             onClick={copySignature}
-            className="w-full bg-brutal-pink hover:bg-brutal-yellow border-4 border-primary font-black uppercase"
+            className="w-full bg-foreground hover:bg-background border-4 border-primary font-black uppercase"
           >
             {copied ? (
               <>

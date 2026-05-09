@@ -13,16 +13,16 @@ export interface CTASectionProps {
 
 const bgColorClasses: Record<CTABgColor, { bg: string; text: string }> = {
   pink: {
-    bg: "bg-brutal-pink",
-    text: "text-brutal-pink-foreground",
+    bg: "bg-foreground",
+    text: "text-background",
   },
   yellow: {
-    bg: "bg-brutal-yellow",
-    text: "text-brutal-yellow-foreground",
+    bg: "bg-background",
+    text: "text-foreground",
   },
   cyan: {
-    bg: "bg-brutal-cyan",
-    text: "text-brutal-cyan-foreground",
+    bg: "bg-background",
+    text: "text-foreground",
   },
   black: {
     bg: "bg-foreground",

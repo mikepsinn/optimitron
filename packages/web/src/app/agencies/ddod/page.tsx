@@ -47,7 +47,7 @@ export default function DepartmentOfWarPage() {
       {/* Hero */}
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
             Department of War
           </p>
           <h1 className="text-3xl font-black uppercase tracking-tight text-foreground md:text-5xl">
@@ -84,7 +84,7 @@ export default function DepartmentOfWarPage() {
               <div className="text-sm font-black uppercase text-muted-foreground">
                 Global military spending (2024)
               </div>
-              <div className="text-2xl font-black text-brutal-pink">
+              <div className="text-2xl font-black text-foreground">
                 <ParameterValue param={{...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD"}} display="withUnit" />
               </div>
             </div>
@@ -99,7 +99,7 @@ export default function DepartmentOfWarPage() {
               <div className="text-sm font-black uppercase text-muted-foreground">
                 Deaths from money-printer wars
               </div>
-              <div className="text-2xl font-black text-brutal-pink">
+              <div className="text-2xl font-black text-foreground">
                 <ParameterValue param={MONEY_PRINTER_WAR_DEATHS} />
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function DepartmentOfWarPage() {
               <div className="text-sm font-black uppercase text-muted-foreground">
                 Cumulative military spending (since 1913)
               </div>
-              <div className="text-2xl font-black text-brutal-pink">
+              <div className="text-2xl font-black text-foreground">
                 <ParameterValue param={{...CUMULATIVE_MILITARY_SPENDING_FED_ERA, unit: "USD"}} display="withUnit" />
               </div>
             </div>
@@ -130,7 +130,7 @@ export default function DepartmentOfWarPage() {
               <div className="text-sm font-black uppercase text-muted-foreground">
                 Military spending ROI
               </div>
-              <div className="text-2xl font-black text-brutal-pink">
+              <div className="text-2xl font-black text-foreground">
                 <ParameterValue param={ECONOMIC_MULTIPLIER_MILITARY_SPENDING} />
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function DepartmentOfWarPage() {
           {couldHaveBought.map((item) => (
             <div
               key={item.instead}
-              className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               <h3 className="text-sm font-black uppercase">
                 {item.instead}
@@ -177,7 +177,7 @@ export default function DepartmentOfWarPage() {
             </div>
           ))}
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed">
             Clean water, no homelessness, fully funded medical research, and no
             one starving. Total cost: roughly ${fmtRaw(totalAlt)} per year.
@@ -228,13 +228,13 @@ export default function DepartmentOfWarPage() {
           Yemen. That is a lot of defending.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-3xl font-black">13+</div>
             <div className="mt-1 text-xs font-black uppercase">
               Wars Since &ldquo;Defense&rdquo; Rebrand
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-3xl font-black">0</div>
             <div className="mt-1 text-xs font-black uppercase">
               Were Defensive
@@ -250,7 +250,7 @@ export default function DepartmentOfWarPage() {
       </section>
 
       {/* CTA */}
-      <section className="card border-primary bg-brutal-pink text-brutal-pink-foreground text-center">
+      <section className="card border-primary bg-foreground text-background text-center">
         <h2 className="mb-3 text-2xl font-black uppercase">
           Optimise for Living, Not Killing
         </h2>

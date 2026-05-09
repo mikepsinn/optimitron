@@ -73,9 +73,9 @@ export function SlideOnePercentTreaty() {
   const redirectedAmount = (sliderValue / 100) * military;
 
   return (
-    <SierraSlideWrapper act={2} className="text-brutal-cyan">
+    <SierraSlideWrapper act={2} className="text-background">
       {/* Title */}
-      <h1 className="font-pixel text-2xl md:text-4xl text-brutal-cyan text-center mb-8">
+      <h1 className="font-pixel text-2xl md:text-4xl text-background text-center mb-8">
         THE 1% TREATY
       </h1>
 
@@ -95,11 +95,11 @@ export function SlideOnePercentTreaty() {
 
             {/* Trials portion */}
             <div
-              className="relative bg-brutal-cyan transition-all duration-100 flex items-center overflow-hidden rounded-r"
+              className="relative bg-background transition-all duration-100 flex items-center overflow-hidden rounded-r"
               style={{ width: `${Math.max(sliderValue, 0.5)}%` }}
             >
               {sliderValue > 0.3 && (
-                <span className="font-pixel text-xl text-brutal-cyan-foreground whitespace-nowrap pl-2">
+                <span className="font-pixel text-xl text-foreground whitespace-nowrap pl-2">
                   🧪 {sliderValue.toFixed(1)}%
                 </span>
               )}
@@ -123,7 +123,7 @@ export function SlideOnePercentTreaty() {
           {/* Labels */}
           <div className="flex justify-between font-pixel text-2xl">
             <span className="text-brutal-red">{(100 - sliderValue).toFixed(1)}% Military</span>
-            <span className="text-brutal-cyan">{sliderValue.toFixed(1)}% Clinical Trials</span>
+            <span className="text-background">{sliderValue.toFixed(1)}% Clinical Trials</span>
           </div>
         </div>
 
@@ -132,7 +132,7 @@ export function SlideOnePercentTreaty() {
           <div className="space-y-6 animate-fade-in">
             {/* Redirected amount */}
             <div className="text-center">
-              <div className="font-pixel text-3xl md:text-6xl text-brutal-cyan">
+              <div className="font-pixel text-3xl md:text-6xl text-background">
                 <AnimatedCounter
                   end={treatyFunding}
                   duration={2000}
@@ -145,18 +145,18 @@ export function SlideOnePercentTreaty() {
 
             {/* Two key stats */}
             <div className="grid grid-cols-2 gap-6">
-              <div className="text-center p-4 bg-muted border-2 border-brutal-cyan rounded">
+              <div className="text-center p-4 bg-muted border-2 border-background rounded">
                 <div className="font-pixel text-xl text-muted-foreground mb-1">TRIAL CAPACITY</div>
-                <div className="font-pixel text-4xl md:text-6xl text-brutal-cyan">
+                <div className="font-pixel text-4xl md:text-6xl text-background">
                   {trialMultiplier.toFixed(1)}×
                 </div>
               </div>
-              <div className="text-center p-4 bg-muted border-2 border-brutal-yellow rounded">
+              <div className="text-center p-4 bg-muted border-2 border-background rounded">
                 <div className="font-pixel text-xl text-muted-foreground mb-1">TIME TO CURE ALL DISEASES</div>
                 <div className="font-pixel text-4xl md:text-6xl text-brutal-red line-through">
                   {oldQueue} yrs
                 </div>
-                <div className="font-pixel text-4xl md:text-6xl text-brutal-cyan">
+                <div className="font-pixel text-4xl md:text-6xl text-background">
                   {newQueue} yrs
                 </div>
               </div>

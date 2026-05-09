@@ -22,9 +22,9 @@ export interface FeatureListProps {
 }
 
 const iconColorClasses: Record<FeatureIconColor, string> = {
-  cyan: "text-brutal-cyan",
-  pink: "text-brutal-pink",
-  yellow: "text-brutal-yellow",
+  cyan: "text-background",
+  pink: "text-foreground",
+  yellow: "text-background",
   green: "text-brutal-green",
   foreground: "text-foreground",
 }

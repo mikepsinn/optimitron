@@ -51,7 +51,7 @@ function Sparkline({ data }: { data: { year: number; value: number }[] }) {
       <polyline
         points={points}
         fill="none"
-        stroke="var(--brutal-pink)"
+        stroke="var(--foreground)"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -84,7 +84,7 @@ export function LobbyingCard({ industry }: LobbyingCardProps) {
       </div>
 
       {/* Annual spend */}
-      <p className="text-3xl font-black text-brutal-pink mb-1">
+      <p className="text-3xl font-black text-foreground mb-1">
         {formatUsd(industry.annualSpending)}
         <span className="text-sm font-bold text-muted-foreground ml-1">/yr</span>
       </p>
@@ -120,7 +120,7 @@ export function LobbyingCard({ industry }: LobbyingCardProps) {
           href={industry.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] font-bold text-muted-foreground hover:text-brutal-cyan transition-colors"
+          className="text-[10px] font-bold text-muted-foreground hover:text-background transition-colors"
         >
           {industry.source} ↗
         </a>

@@ -34,7 +34,7 @@ export function SavingsImpact({
           <p className="text-lg font-bold italic leading-relaxed text-background">
             &ldquo;{wishoniaQuote}&rdquo;
           </p>
-          <p className="mt-4 text-xs font-black uppercase tracking-[0.1em] text-brutal-pink">
+          <p className="mt-4 text-xs font-black uppercase tracking-[0.1em] text-foreground">
             — Wishonia
           </p>
         </BrutalCard>

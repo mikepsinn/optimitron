@@ -40,7 +40,7 @@ export function AllocationComparisonCard({
   return (
     <Card className="bg-background border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       <h3 className="text-2xl font-black uppercase">
-        <span className="text-brutal-pink">{title}</span>
+        <span className="text-foreground">{title}</span>
       </h3>
 
       <div className="space-y-4">
@@ -94,21 +94,21 @@ export function AllocationComparisonCard({
       {/* Comparison Message */}
       <div className="border-primary">
         {difference > 0 ? (
-          <div className="text-center p-4 bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary">
+          <div className="text-center p-4 bg-background text-foreground border-4 border-primary">
             <p className="text-lg font-black">
               You allocated <span className="text-2xl">{Math.abs(difference)}%</span> MORE
             </p>
             <p className="text-sm font-bold">to {itemB.label.toLowerCase()} than the average person</p>
           </div>
         ) : difference < 0 ? (
-          <div className="text-center p-4 bg-brutal-pink text-brutal-pink-foreground border-4 border-primary">
+          <div className="text-center p-4 bg-foreground text-background border-4 border-primary">
             <p className="text-lg font-black">
               You allocated <span className="text-2xl">{Math.abs(difference)}%</span> LESS
             </p>
             <p className="text-sm font-bold">to {itemB.label.toLowerCase()} than the average person</p>
           </div>
         ) : (
-          <div className="text-center p-4 bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary">
+          <div className="text-center p-4 bg-background text-foreground border-4 border-primary">
             <p className="text-lg font-black">
               You matched the community average!
             </p>

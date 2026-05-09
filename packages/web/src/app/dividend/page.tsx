@@ -26,7 +26,7 @@ export default function DividendPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
           Optimization Dividend
         </p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">
@@ -54,7 +54,7 @@ export default function DividendPage() {
           <div className="mt-6 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+                <tr className="border-b-2 border-primary bg-background text-foreground">
                   <th className="px-3 py-2 text-left font-black uppercase">Category</th>
                   <th className="px-3 py-2 text-left font-black uppercase">Model</th>
                   <th className="px-3 py-2 text-right font-black uppercase">Overspend</th>
@@ -73,7 +73,7 @@ export default function DividendPage() {
                         {row.legislationSlug ? (
                           <Link
                             href={getLegislationPath(row.legislationSlug)}
-                            className="text-xs font-black uppercase tracking-wide text-brutal-pink underline underline-offset-4"
+                            className="text-xs font-black uppercase tracking-wide text-foreground underline underline-offset-4"
                           >
                             View model legislation
                           </Link>
@@ -84,7 +84,7 @@ export default function DividendPage() {
                     <td className="px-3 py-3 text-right font-black text-foreground">
                       {row.overspendRatio.toFixed(1)}x
                     </td>
-                    <td className="px-3 py-3 text-right font-black text-brutal-cyan">
+                    <td className="px-3 py-3 text-right font-black text-background">
                       {formatCurrency(row.annualSavingsPerAdult)}
                     </td>
                     <td className="px-3 py-3 text-right font-black text-foreground">
@@ -163,9 +163,9 @@ function StatCard({
   accent: "pink" | "cyan" | "yellow" | "foreground";
 }) {
   const accents: Record<typeof accent, string> = {
-    pink: "bg-brutal-pink text-brutal-pink-foreground",
-    cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-    yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+    pink: "bg-foreground text-background",
+    cyan: "bg-background text-foreground",
+    yellow: "bg-background text-foreground",
     foreground: "bg-foreground text-background",
   };
 

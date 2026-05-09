@@ -156,20 +156,20 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
           {requestError ? <AlertCard type="error" message={requestError} /> : null}
 
           {isVerified ? (
-            <div className="border-4 border-primary bg-brutal-cyan p-4">
+            <div className="border-4 border-primary bg-background p-4">
               <div className="flex items-start gap-3">
-                <ShieldCheck className="mt-0.5 h-5 w-5 text-brutal-cyan-foreground" />
+                <ShieldCheck className="mt-0.5 h-5 w-5 text-foreground" />
                 <div className="space-y-1 text-sm">
-                  <p className="font-bold text-brutal-cyan-foreground">
+                  <p className="font-bold text-foreground">
                     Verified with {sessionUser.personhoodProvider === "WORLD_ID" ? "World ID" : "a personhood provider"}.
                   </p>
                   {sessionUser.personhoodVerificationLevel ? (
-                    <p className="text-brutal-cyan-foreground">
+                    <p className="text-foreground">
                       Credential: {sessionUser.personhoodVerificationLevel}
                     </p>
                   ) : null}
                   {verifiedDate ? (
-                    <p className="text-brutal-cyan-foreground">Verified on {verifiedDate}.</p>
+                    <p className="text-foreground">Verified on {verifiedDate}.</p>
                   ) : null}
                 </div>
               </div>
@@ -179,11 +179,11 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
               World ID verification is disabled for this environment.
             </div>
           ) : (
-            <div className="border-4 border-primary bg-brutal-cyan p-4">
+            <div className="border-4 border-primary bg-background p-4">
               <div className="flex items-start gap-3">
-                <ShieldQuestion className="mt-0.5 h-5 w-5 text-brutal-cyan-foreground" />
+                <ShieldQuestion className="mt-0.5 h-5 w-5 text-foreground" />
                 <div className="space-y-3 text-sm">
-                  <p className="text-brutal-cyan-foreground">
+                  <p className="text-foreground">
                     This does not replace login. It adds a separate uniqueness proof on top of
                     your account.
                   </p>

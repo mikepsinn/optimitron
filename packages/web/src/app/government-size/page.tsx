@@ -28,7 +28,7 @@ export default function GovernmentSizePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
           Government Size
         </p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">
@@ -57,7 +57,7 @@ export default function GovernmentSizePage() {
           {analysis.objectiveFloors.map((floor) => (
             <div key={floor.id} className="border-4 border-primary p-4">
               <p className="text-lg font-black uppercase text-foreground">{floor.name}</p>
-              <p className="mt-3 text-3xl font-black text-brutal-cyan">
+              <p className="mt-3 text-3xl font-black text-background">
                 {formatPercent(floor.usEquivalentOptimalPctGdp)}
               </p>
               <p className="mt-1 text-xs font-black uppercase tracking-wide text-muted-foreground">
@@ -80,7 +80,7 @@ export default function GovernmentSizePage() {
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+                <tr className="border-b-2 border-primary bg-background text-foreground">
                   <th className="px-3 py-2 text-left font-black uppercase">Window</th>
                   <th className="px-3 py-2 text-right font-black uppercase">Floor</th>
                   <th className="px-3 py-2 text-right font-black uppercase">Band</th>
@@ -93,12 +93,12 @@ export default function GovernmentSizePage() {
                     <td className="px-3 py-3 font-bold text-foreground">
                       {scenario.startYear} to {scenario.endYear}
                       {scenario.isPrimaryScenario ? (
-                        <span className="ml-2 bg-brutal-pink px-2 py-0.5 text-xs font-black text-brutal-pink-foreground">
+                        <span className="ml-2 bg-foreground px-2 py-0.5 text-xs font-black text-background">
                           primary
                         </span>
                       ) : null}
                     </td>
-                    <td className="px-3 py-3 text-right font-black text-brutal-cyan">
+                    <td className="px-3 py-3 text-right font-black text-background">
                       {formatPercent(scenario.usEquivalentOptimalPctGdp)}
                     </td>
                     <td className="px-3 py-3 text-right font-bold text-muted-foreground">
@@ -130,7 +130,7 @@ export default function GovernmentSizePage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-black text-brutal-cyan">
+                    <p className="text-lg font-black text-background">
                       {formatCurrency(jurisdiction.medianSpendingPerCapitaPpp)}
                     </p>
                     <p className="text-xs font-black uppercase tracking-wide text-muted-foreground">
@@ -202,9 +202,9 @@ function MetricCard({
   accent: "cyan" | "yellow" | "pink" | "foreground";
 }) {
   const accents: Record<typeof accent, string> = {
-    cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-    yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
-    pink: "bg-brutal-pink text-brutal-pink-foreground",
+    cyan: "bg-background text-foreground",
+    yellow: "bg-background text-foreground",
+    pink: "bg-foreground text-background",
     foreground: "bg-foreground text-background",
   };
 

@@ -64,7 +64,7 @@ export function ViralDoublingChart() {
                       delay: i * 0.15,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="bg-brutal-cyan border-t-2 border-primary"
+                    className="bg-background border-t-2 border-primary"
                   />
                 </div>
                 <motion.div
@@ -88,10 +88,10 @@ export function ViralDoublingChart() {
         transition={{ duration: 0.4, delay: 1.2 }}
       >
         <BrutalCard bgColor="yellow" shadowSize={8} className="max-w-xl text-center">
-          <p className="text-2xl sm:text-3xl font-black text-brutal-yellow-foreground">
+          <p className="text-2xl sm:text-3xl font-black text-foreground">
             {TARGET_B.toFixed(0)}B = A Majority of Humans on Earth
           </p>
-          <p className="text-sm font-bold text-brutal-yellow-foreground mt-1">
+          <p className="text-sm font-bold text-foreground mt-1">
             Two humans per round reaches the target in months, not decades.
           </p>
         </BrutalCard>

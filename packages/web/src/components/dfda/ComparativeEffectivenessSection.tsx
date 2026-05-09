@@ -45,10 +45,10 @@ export function ComparativeEffectivenessSection() {
   const treatments = SAMPLE_DATA[selected] ?? [];
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-brutal-pink border-b-4 border-primary">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-foreground border-b-4 border-primary">
       <div className="container mx-auto px-4 md:px-6">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <h2 className="text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl text-brutal-pink-foreground">
+          <h2 className="text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl text-background">
             TREATMENT RANKINGS
           </h2>
         </div>
@@ -107,7 +107,7 @@ export function ComparativeEffectivenessSection() {
                         {intervention.sideEffects.map((effect, effectIndex) => (
                           <div
                             key={effectIndex}
-                            className="rounded-full bg-brutal-yellow px-2 py-1 text-xs font-medium text-brutal-yellow-foreground flex items-center"
+                            className="rounded-full bg-background px-2 py-1 text-xs font-medium text-foreground flex items-center"
                           >
                             <AlertCircle className="h-3 w-3 mr-1" />
                             {effect.name}: {effect.percentage}%
@@ -118,7 +118,7 @@ export function ComparativeEffectivenessSection() {
                     <div className="flex flex-wrap gap-2 mt-4">
                       <a
                         href={`/agencies/dfda/conditions/${selected.toLowerCase().replace(/\s+/g, '-')}/treatments/${intervention.name.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="inline-flex items-center rounded-full bg-brutal-cyan px-3 py-1 text-xs font-bold text-brutal-cyan-foreground border border-brutal-cyan hover:opacity-80 transition-colors"
+                        className="inline-flex items-center rounded-full bg-background px-3 py-1 text-xs font-bold text-foreground border border-background hover:opacity-80 transition-colors"
                       >
                         More Details
                       </a>

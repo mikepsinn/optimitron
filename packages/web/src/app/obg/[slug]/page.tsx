@@ -113,16 +113,16 @@ function trendIcon(trend: string): string {
 
 function trendColor(trend: string): string {
   const t = trend.toLowerCase();
-  if (t === "increasing" || t === "improving") return "text-brutal-cyan";
+  if (t === "increasing" || t === "improving") return "text-background";
   if (t === "decreasing") return "text-brutal-red";
   return "text-muted-foreground";
 }
 
 function gradeBg(grade: string): string {
   switch (grade) {
-    case "A": return "bg-brutal-cyan text-brutal-cyan-foreground";
-    case "B": return "bg-brutal-yellow text-brutal-yellow-foreground";
-    case "C": return "bg-brutal-yellow text-brutal-yellow-foreground";
+    case "A": return "bg-background text-foreground";
+    case "B": return "bg-background text-foreground";
+    case "C": return "bg-background text-foreground";
     case "D": return "bg-brutal-red text-brutal-red-foreground";
     case "F": return "bg-brutal-red text-brutal-red-foreground";
     default: return "bg-muted";
@@ -131,11 +131,11 @@ function gradeBg(grade: string): string {
 
 function actionBadgeStyle(action: string): string {
   const a = action.toLowerCase();
-  if (a.includes("major increase") || a === "scale_up") return "bg-brutal-cyan text-brutal-cyan-foreground";
-  if (a.includes("increase") || a === "increase") return "bg-brutal-cyan text-brutal-cyan-foreground";
+  if (a.includes("major increase") || a === "scale_up") return "bg-background text-foreground";
+  if (a.includes("increase") || a === "increase") return "bg-background text-foreground";
   if (a.includes("maintain") || a === "maintain") return "bg-muted text-foreground";
   if (a.includes("major decrease") || a === "major_decrease") return "bg-brutal-red text-brutal-red-foreground";
-  if (a.includes("decrease") || a === "decrease") return "bg-brutal-yellow text-brutal-yellow-foreground";
+  if (a.includes("decrease") || a === "decrease") return "bg-background text-foreground";
   if (a.includes("non-discretionary")) return "bg-muted text-foreground";
   if (a.includes("insufficient")) return "bg-muted text-muted-foreground";
   return "bg-muted text-foreground";
@@ -153,8 +153,8 @@ function actionLabel(action: string): string {
 }
 
 function barColor(val: number): string {
-  if (val >= 0.7) return "bg-brutal-cyan text-brutal-cyan-foreground";
-  if (val >= 0.4) return "bg-brutal-yellow text-brutal-yellow-foreground";
+  if (val >= 0.7) return "bg-background text-foreground";
+  if (val >= 0.4) return "bg-background text-foreground";
   return "bg-brutal-red text-brutal-red-foreground";
 }
 
@@ -192,7 +192,7 @@ export default async function BudgetCategoryPage({
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
         <h1 className="text-3xl font-black uppercase text-foreground mb-4">Category Not Found</h1>
-        <NavItemLink item={obgLink} variant="custom" className="text-brutal-pink font-bold underline">
+        <NavItemLink item={obgLink} variant="custom" className="text-foreground font-bold underline">
           ← Back to Budget Dashboard
         </NavItemLink>
       </div>
@@ -236,11 +236,11 @@ export default async function BudgetCategoryPage({
           {cat.name}
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary p-4 bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase mb-1">Current Spending</div>
             <div className="text-2xl sm:text-3xl font-black">{fmt(cat.currentSpending)}</div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary p-4 bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase mb-1">Optimal Spending</div>
             <div className="text-2xl sm:text-3xl font-black">{fmt(cat.optimalSpending)}</div>
             {cat.oslCiLow !== undefined && cat.oslCiHigh !== undefined && (
@@ -251,7 +251,7 @@ export default async function BudgetCategoryPage({
           </div>
           <div
             className={`border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
-              cat.gap >= 0 ? "bg-brutal-cyan text-brutal-cyan-foreground" : "bg-brutal-red text-brutal-red-foreground"
+              cat.gap >= 0 ? "bg-background text-foreground" : "bg-brutal-red text-brutal-red-foreground"
             }`}
           >
             <div className="text-xs font-bold uppercase mb-1">Gap</div>
@@ -288,7 +288,7 @@ export default async function BudgetCategoryPage({
                 <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Constrained Optimal</div>
                 <div className="text-xl font-black text-foreground">{fmt(constrainedCat.constrainedOptimal)}</div>
               </div>
-              <div className={`border-4 border-primary p-4 ${constrainedCat.reallocation >= 0 ? "bg-brutal-cyan text-brutal-cyan-foreground" : "bg-brutal-red text-brutal-red-foreground"}`}>
+              <div className={`border-4 border-primary p-4 ${constrainedCat.reallocation >= 0 ? "bg-background text-foreground" : "bg-brutal-red text-brutal-red-foreground"}`}>
                 <div className="text-xs font-bold uppercase mb-1">Reallocation</div>
                 <div className="text-xl font-black">
                   {constrainedCat.reallocation >= 0 ? "+" : ""}{fmt(constrainedCat.reallocation)}
@@ -319,7 +319,7 @@ export default async function BudgetCategoryPage({
             </div>
             <div className="h-8 bg-muted border-4 border-primary overflow-hidden">
               <div
-                className="h-full bg-brutal-cyan border-r-2 border-primary"
+                className="h-full bg-background border-r-2 border-primary"
                 style={{ width: `${currentPct}%` }}
               />
             </div>
@@ -331,7 +331,7 @@ export default async function BudgetCategoryPage({
             </div>
             <div className="h-8 bg-muted border-4 border-primary overflow-hidden">
               <div
-                className="h-full bg-brutal-yellow border-r-2 border-primary"
+                className="h-full bg-background border-r-2 border-primary"
                 style={{ width: `${optimalPct}%` }}
               />
             </div>
@@ -355,7 +355,7 @@ export default async function BudgetCategoryPage({
               <div className="text-xs font-bold uppercase text-muted-foreground">R² (Model Fit)</div>
               <div className="text-lg font-black text-foreground">{(dr.r2 * 100).toFixed(0)}%</div>
               <div className="mt-1 h-2 bg-muted border border-primary overflow-hidden">
-                <div className="h-full bg-brutal-pink" style={{ width: `${dr.r2 * 100}%` }} />
+                <div className="h-full bg-foreground" style={{ width: `${dr.r2 * 100}%` }} />
               </div>
             </div>
             {cat.elasticity !== undefined && (
@@ -373,12 +373,12 @@ export default async function BudgetCategoryPage({
               N = {dr.n} observations
             </span>
             {dr.lowFit && (
-              <span className="text-xs font-bold px-2 py-0.5 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+              <span className="text-xs font-bold px-2 py-0.5 border-4 border-primary bg-background text-foreground">
                 Low fit (R²&lt;0.3) — treat with caution
               </span>
             )}
             {dr.smallSample && (
-              <span className="text-xs font-bold px-2 py-0.5 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+              <span className="text-xs font-bold px-2 py-0.5 border-4 border-primary bg-background text-foreground">
                 Small sample (n≤10) — may overfit
               </span>
             )}
@@ -410,7 +410,7 @@ export default async function BudgetCategoryPage({
                 </div>
                 <div className="border-4 border-primary p-3 bg-background">
                   <div className="text-xs font-bold uppercase text-muted-foreground">Mean % Change</div>
-                  <div className={`text-lg font-black ${causalEvidence.meanPercentChange >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
+                  <div className={`text-lg font-black ${causalEvidence.meanPercentChange >= 0 ? "text-background" : "text-brutal-red"}`}>
                     {causalEvidence.meanPercentChange >= 0 ? "+" : ""}{causalEvidence.meanPercentChange.toFixed(1)}%
                   </div>
                 </div>
@@ -502,7 +502,7 @@ export default async function BudgetCategoryPage({
       {/* Recommendation Callout */}
       <section
         className={`border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8 ${
-          cat.gap >= 0 ? "bg-brutal-cyan text-brutal-cyan-foreground" : "bg-brutal-red text-brutal-red-foreground"
+          cat.gap >= 0 ? "bg-background text-foreground" : "bg-brutal-red text-brutal-red-foreground"
         }`}
       >
         <h2 className="text-lg font-black uppercase mb-2">
@@ -529,24 +529,24 @@ export default async function BudgetCategoryPage({
           </div>
           <div className="border-4 border-primary p-3 bg-background">
             <div className="text-xs font-bold uppercase text-muted-foreground">Income Effect</div>
-            <div className={`text-xl font-black ${cat.welfareEffect.incomeEffect >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
+            <div className={`text-xl font-black ${cat.welfareEffect.incomeEffect >= 0 ? "text-background" : "text-brutal-red"}`}>
               {cat.welfareEffect.incomeEffect >= 0 ? "+" : ""}{(cat.welfareEffect.incomeEffect * 100).toFixed(0)}%
             </div>
             <div className="mt-1 h-2 bg-muted border border-primary overflow-hidden">
               <div
-                className={`h-full ${cat.welfareEffect.incomeEffect >= 0 ? "bg-brutal-cyan" : "bg-brutal-red"}`}
+                className={`h-full ${cat.welfareEffect.incomeEffect >= 0 ? "bg-background" : "bg-brutal-red"}`}
                 style={{ width: `${Math.min(Math.abs(cat.welfareEffect.incomeEffect) * 100, 100)}%` }}
               />
             </div>
           </div>
           <div className="border-4 border-primary p-3 bg-background">
             <div className="text-xs font-bold uppercase text-muted-foreground">Health Effect</div>
-            <div className={`text-xl font-black ${cat.welfareEffect.healthEffect >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
+            <div className={`text-xl font-black ${cat.welfareEffect.healthEffect >= 0 ? "text-background" : "text-brutal-red"}`}>
               {cat.welfareEffect.healthEffect >= 0 ? "+" : ""}{(cat.welfareEffect.healthEffect * 100).toFixed(0)}%
             </div>
             <div className="mt-1 h-2 bg-muted border border-primary overflow-hidden">
               <div
-                className={`h-full ${cat.welfareEffect.healthEffect >= 0 ? "bg-brutal-cyan" : "bg-brutal-red"}`}
+                className={`h-full ${cat.welfareEffect.healthEffect >= 0 ? "bg-background" : "bg-brutal-red"}`}
                 style={{ width: `${Math.min(Math.abs(cat.welfareEffect.healthEffect) * 100, 100)}%` }}
               />
             </div>
@@ -564,7 +564,7 @@ export default async function BudgetCategoryPage({
           </div>
           <div className="h-4 bg-muted border-4 border-primary overflow-hidden">
             <div
-              className="h-full bg-brutal-pink"
+              className="h-full bg-foreground"
               style={{ width: `${(cat.currentSpending / data.totalBudget) * 100}%` }}
             />
           </div>
@@ -576,7 +576,7 @@ export default async function BudgetCategoryPage({
           </div>
           <div className="h-4 bg-muted border-4 border-primary overflow-hidden">
             <div
-              className="h-full bg-brutal-yellow"
+              className="h-full bg-background"
               style={{ width: `${(cat.optimalSpending / totalOptimal) * 100}%` }}
             />
           </div>
@@ -595,7 +595,7 @@ export default async function BudgetCategoryPage({
             category is modeled with a concave utility function — the first dollar spent on a
             category produces more welfare than the billionth dollar.
           </p>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+          <div className="border-4 border-primary bg-background text-foreground p-4">
             <h3 className="text-sm font-black uppercase mb-2">
               Budget Impact Score (BIS)
             </h3>
@@ -606,7 +606,7 @@ export default async function BudgetCategoryPage({
               health, education, security, and quality of life.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+          <div className="border-4 border-primary bg-background text-foreground p-4">
             <h3 className="text-sm font-black uppercase mb-2">
               Diminishing Returns Model
             </h3>
@@ -619,7 +619,7 @@ export default async function BudgetCategoryPage({
               welfare.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-4">
+          <div className="border-4 border-primary bg-foreground text-background p-4">
             <h3 className="text-sm font-black uppercase mb-2">
               Marginal Return ({(cat.marginalReturn * 100).toFixed(2)}% for {cat.name})
             </h3>
@@ -644,7 +644,7 @@ export default async function BudgetCategoryPage({
               item={optimalBudgetGeneratorPaperLink}
               variant="custom"
               external
-              className="text-brutal-pink hover:underline"
+              className="text-foreground hover:underline"
             >
               Optimal Budget Generator paper
             </NavItemLink>{" "}

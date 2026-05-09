@@ -22,9 +22,9 @@ export interface ToggleButtonGroupProps {
 }
 
 const activeColorClasses: Record<ToggleActiveColor, string> = {
-  pink: "bg-brutal-pink text-brutal-pink-foreground",
-  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  pink: "bg-foreground text-background",
+  cyan: "bg-background text-foreground",
+  yellow: "bg-background text-foreground",
   green: "bg-brutal-green text-brutal-green-foreground",
 }
 

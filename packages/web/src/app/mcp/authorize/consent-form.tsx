@@ -115,7 +115,7 @@ export function McpConsentForm({
                     <span className="font-black uppercase text-sm">{labels.title}</span>
                     <code className="text-xs font-bold text-muted-foreground">{scopeToWire(scope)}</code>
                     {!wasRequested ? (
-                      <span className="text-[10px] font-black uppercase border-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground px-1">
+                      <span className="text-[10px] font-black uppercase border-2 border-primary bg-background text-foreground px-1">
                         Not Requested
                       </span>
                     ) : null}

@@ -53,7 +53,7 @@ export function DistributeUBICard() {
 
   return (
     <section className="mb-16">
-      <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="font-black uppercase text-foreground mb-3">
           Trigger UBI Distribution
         </h3>
@@ -90,7 +90,7 @@ export function DistributeUBICard() {
         </div>
 
         {!isDeployed && isDemo && (
-          <div className="border-4 border-primary bg-brutal-yellow p-3 mb-4">
+          <div className="border-4 border-primary bg-background p-3 mb-4">
             <p className="text-xs font-black uppercase text-muted-foreground">
               Not yet deployed &mdash; illustrative data shown above
             </p>

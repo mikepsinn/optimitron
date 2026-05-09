@@ -367,7 +367,7 @@ export function ProfileCard({
           <Button
             onClick={saveProfile}
             disabled={isBusy}
-            className="border-4 border-primary bg-brutal-pink w-full sm:w-auto"
+            className="border-4 border-primary bg-foreground w-full sm:w-auto"
           >
             {isSaving ? "Saving..." : "Update Profile"}
           </Button>

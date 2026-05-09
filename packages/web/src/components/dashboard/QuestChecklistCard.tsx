@@ -35,7 +35,7 @@ export function QuestChecklistCard({ quests }: QuestChecklistCardProps) {
           {/* Progress bar */}
           <div className="h-6 bg-background border-4 border-primary rounded-none overflow-hidden">
             <div
-              className="h-full bg-brutal-cyan transition-all duration-500"
+              className="h-full bg-background transition-all duration-500"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -57,7 +57,7 @@ function QuestRow({ quest }: { quest: QuestItem }) {
     <div
       className={`flex items-center gap-3 p-3 border-4 border-primary transition-all ${
         quest.completed
-          ? "bg-brutal-cyan text-brutal-cyan-foreground"
+          ? "bg-background text-foreground"
           : quest.comingSoon
             ? "bg-background opacity-50"
             : "bg-background hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
@@ -90,7 +90,7 @@ function QuestRow({ quest }: { quest: QuestItem }) {
           SOON
         </span>
       ) : (
-        <span className="text-xs font-black bg-brutal-yellow text-brutal-yellow-foreground border-2 border-primary px-2 py-0.5 flex-shrink-0">
+        <span className="text-xs font-black bg-background text-foreground border-2 border-primary px-2 py-0.5 flex-shrink-0">
           +{quest.wishesLabel} ★
         </span>
       )}

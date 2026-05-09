@@ -214,7 +214,7 @@ function SearchResultRow({
       <div className="flex items-center gap-3">
         <Avatar className="h-5 w-5 border border-primary/25 bg-background">
           <Avatar.Image src={faviconUrl} alt="" className="h-full w-full object-cover" />
-          <Avatar.Fallback className="bg-brutal-yellow text-[9px] font-black text-brutal-yellow-foreground">
+          <Avatar.Fallback className="bg-background text-[9px] font-black text-foreground">
             {source.charAt(0)}
           </Avatar.Fallback>
         </Avatar>
@@ -293,7 +293,7 @@ export default async function SearchPage({
             {scope !== "all" ? <input type="hidden" name="scope" value={scope} /> : null}
             <button
               type="submit"
-              className="inline-flex h-14 items-center justify-center border-4 border-primary bg-brutal-pink px-6 text-sm font-black uppercase tracking-[0.14em] text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+              className="inline-flex h-14 items-center justify-center border-4 border-primary bg-foreground px-6 text-sm font-black uppercase tracking-[0.14em] text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
             >
               Search
             </button>
@@ -340,7 +340,7 @@ export default async function SearchPage({
                 ) : null}
               </p>
               {results.manualError ? (
-                <div className="max-w-3xl border-2 border-primary bg-brutal-yellow px-4 py-3 text-sm font-bold text-brutal-yellow-foreground">
+                <div className="max-w-3xl border-2 border-primary bg-background px-4 py-3 text-sm font-bold text-foreground">
                   {results.manualError}
                 </div>
               ) : null}

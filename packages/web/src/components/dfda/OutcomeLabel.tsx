@@ -35,7 +35,7 @@ export function OutcomeLabel({ title, subtitle, tag, data, footer }: OutcomeLabe
   const renderProgressBar = (item: OutcomeItem, isSideEffect: boolean = false) => {
     // Determine color based on positivity or if it's a side effect
     const colorClass = isSideEffect
-      ? 'bg-brutal-yellow' // Use yellow for side effects
+      ? 'bg-background' // Use yellow for side effects
       : item.isPositive === true
         ? 'bg-brutal-green'
         : item.isPositive === false
@@ -80,7 +80,7 @@ export function OutcomeLabel({ title, subtitle, tag, data, footer }: OutcomeLabe
         <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <span className="font-semibold text-lg">{title}</span>
           {tag && (
-            <span className="text-sm bg-brutal-cyan text-brutal-cyan-foreground px-2 py-1 rounded-full mt-1 sm:mt-0">
+            <span className="text-sm bg-background text-foreground px-2 py-1 rounded-full mt-1 sm:mt-0">
               {tag}
             </span>
           )}

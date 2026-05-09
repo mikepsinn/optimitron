@@ -16,7 +16,7 @@ export function GlobalProgressCard({ progress }: GlobalProgressCardProps) {
   const progressPercentage = (currentProgress / progress.target) * 100
 
   return (
-    <Card className="border-4 border-primary mb-8 bg-brutal-yellow">
+    <Card className="border-4 border-primary mb-8 bg-background">
       <Card.Header>
         <Card.Title className="text-2xl font-black uppercase flex items-center gap-2">
           <Target className="h-6 w-6" />

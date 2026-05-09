@@ -36,7 +36,7 @@ function HypercertBadge({ politicianId }: { politicianId: string }) {
       href={`https://${cert.storageCid}.ipfs.storacha.link/`}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-2 inline-flex items-center gap-1.5 border-4 border-primary bg-brutal-cyan px-2 py-1 text-xs font-black uppercase tracking-[0.1em] text-brutal-cyan-foreground transition-all hover:bg-brutal-cyan/80 hover:translate-x-[1px] hover:translate-y-[1px]"
+      className="mt-2 inline-flex items-center gap-1.5 border-4 border-primary bg-background px-2 py-1 text-xs font-black uppercase tracking-[0.1em] text-foreground transition-all hover:bg-background/80 hover:translate-x-[1px] hover:translate-y-[1px]"
       title="This alignment score is published as a Hypercert on AT Protocol, with data stored on Storacha (IPFS)"
     >
       <Shield className="h-3 w-3" />
@@ -104,7 +104,7 @@ export function AlignmentReport({
     return (
       <div className="space-y-8">
         <section className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
             {publicMode ? "Shared Alignment" : "Your Alignment"}
           </p>
           <h1 className="text-4xl font-black uppercase tracking-tight text-foreground">
@@ -119,7 +119,7 @@ export function AlignmentReport({
 
         <section className="border-4 border-primary bg-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="max-w-3xl space-y-5">
-            <div className="inline-flex items-center gap-2 border-4 border-primary bg-brutal-yellow px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
+            <div className="inline-flex items-center gap-2 border-4 border-primary bg-background px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-foreground">
               <Target className="h-4 w-4" />
               Not Ready Yet
             </div>
@@ -129,25 +129,25 @@ export function AlignmentReport({
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="border-4 border-primary bg-brutal-cyan p-4">
-                <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-cyan-foreground">
+              <div className="border-4 border-primary bg-background p-4">
+                <div className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
                   Comparisons Saved
                 </div>
-                <div className="mt-2 text-3xl font-black text-brutal-cyan-foreground">{state.allocationCount}</div>
+                <div className="mt-2 text-3xl font-black text-foreground">{state.allocationCount}</div>
               </div>
-              <div className="border-4 border-primary bg-brutal-yellow p-4">
-                <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
+              <div className="border-4 border-primary bg-background p-4">
+                <div className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
                   Categories In Scope
                 </div>
-                <div className="mt-2 text-3xl font-black text-brutal-yellow-foreground">
+                <div className="mt-2 text-3xl font-black text-foreground">
                   {state.selectedItemCount}
                 </div>
               </div>
-              <div className="border-4 border-primary bg-brutal-pink p-4">
-                <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink-foreground">
+              <div className="border-4 border-primary bg-foreground p-4">
+                <div className="text-xs font-black uppercase tracking-[0.2em] text-background">
                   Completion
                 </div>
-                <div className="mt-2 text-3xl font-black text-brutal-pink-foreground">
+                <div className="mt-2 text-3xl font-black text-background">
                   {formatPercent(state.completionRatio)}
                 </div>
               </div>
@@ -177,14 +177,14 @@ export function AlignmentReport({
     <div className="space-y-10">
       <section className="space-y-3">
         <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
             {publicMode ? "Shared Alignment" : "Your Alignment"}
           </p>
           <span
             className={`border-4 border-primary px-3 py-1 text-xs font-black uppercase tracking-[0.2em] ${
               state.report.isPreliminary
-                ? "bg-brutal-yellow text-brutal-yellow-foreground"
-                : "bg-brutal-cyan text-brutal-cyan-foreground"
+                ? "bg-background text-foreground"
+                : "bg-background text-foreground"
             }`}
           >
             {state.report.isPreliminary ? "Preliminary" : "Ready"}
@@ -204,7 +204,7 @@ export function AlignmentReport({
         <div className="border-4 border-primary bg-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 border-4 border-primary bg-brutal-yellow px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
+              <div className="inline-flex items-center gap-2 border-4 border-primary bg-background px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-foreground">
                 <Sparkles className="h-4 w-4" />
                 Best Match
               </div>
@@ -224,38 +224,38 @@ export function AlignmentReport({
               </p>
               <HypercertBadge politicianId={topMatch.politicianId} />
             </div>
-            <div className="min-w-40 border-4 border-primary bg-brutal-cyan p-5 text-center">
-              <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-cyan-foreground">
+            <div className="min-w-40 border-4 border-primary bg-background p-5 text-center">
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
                 Alignment Score
               </div>
-              <div className="mt-2 text-4xl font-black text-brutal-cyan-foreground">
+              <div className="mt-2 text-4xl font-black text-foreground">
                 {formatScore(topMatch.score)}
               </div>
             </div>
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <div className="border-4 border-primary bg-brutal-pink p-4">
-              <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink-foreground">
+            <div className="border-4 border-primary bg-foreground p-4">
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-background">
                 Comparisons
               </div>
-              <div className="mt-2 text-3xl font-black text-brutal-pink-foreground">
+              <div className="mt-2 text-3xl font-black text-background">
                 {state.report.allocationCount}
               </div>
             </div>
-            <div className="border-4 border-primary bg-brutal-yellow p-4">
-              <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
+            <div className="border-4 border-primary bg-background p-4">
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
                 Categories
               </div>
-              <div className="mt-2 text-3xl font-black text-brutal-yellow-foreground">
+              <div className="mt-2 text-3xl font-black text-foreground">
                 {state.report.selectedItemCount}
               </div>
             </div>
-            <div className="border-4 border-primary bg-brutal-cyan p-4">
-              <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-cyan-foreground">
+            <div className="border-4 border-primary bg-background p-4">
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-foreground">
                 Completion
               </div>
-              <div className="mt-2 text-3xl font-black text-brutal-cyan-foreground">
+              <div className="mt-2 text-3xl font-black text-foreground">
                 {formatPercent(state.report.completionRatio)}
               </div>
             </div>
@@ -288,14 +288,14 @@ export function AlignmentReport({
         </div>
 
         <div className="space-y-6">
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center gap-2 text-brutal-yellow-foreground">
+          <div className="border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-2 text-foreground">
               <BarChart3 className="h-5 w-5" />
               <h3 className="text-lg font-black uppercase">
                 Share This Report
               </h3>
             </div>
-            <p className="mt-3 text-sm font-bold text-brutal-yellow-foreground">
+            <p className="mt-3 text-sm font-bold text-foreground">
               Copy or share the public report URL so other people can open this exact
               alignment snapshot.
             </p>
@@ -385,7 +385,7 @@ export function AlignmentReport({
                     {politician.closestMatches.map((gap) => (
                       <span
                         key={`${politician.politicianId}-${gap.itemId}-match`}
-                        className="border-4 border-primary bg-brutal-cyan px-2 py-1 text-xs font-bold uppercase"
+                        className="border-4 border-primary bg-background px-2 py-1 text-xs font-bold uppercase"
                       >
                         {gap.itemName}
                       </span>
@@ -402,7 +402,7 @@ export function AlignmentReport({
                       politician.wantsMore.map((gap) => (
                         <span
                           key={`${politician.politicianId}-${gap.itemId}-more`}
-                          className="border-4 border-primary bg-brutal-pink px-2 py-1 text-xs font-bold uppercase"
+                          className="border-4 border-primary bg-foreground px-2 py-1 text-xs font-bold uppercase"
                         >
                           {gap.itemName}
                         </span>
@@ -424,7 +424,7 @@ export function AlignmentReport({
                       politician.wantsLess.map((gap) => (
                         <span
                           key={`${politician.politicianId}-${gap.itemId}-less`}
-                          className="border-4 border-primary bg-brutal-yellow px-2 py-1 text-xs font-bold uppercase"
+                          className="border-4 border-primary bg-background px-2 py-1 text-xs font-bold uppercase"
                         >
                           {gap.itemName}
                         </span>
@@ -450,20 +450,20 @@ export function AlignmentReport({
         />
       </section>
 
-      <section className="border-4 border-primary bg-brutal-cyan p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <div className="flex items-center gap-2 mb-4 text-brutal-cyan-foreground">
+      <section className="border-4 border-primary bg-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="flex items-center gap-2 mb-4 text-foreground">
           <Shield className="h-5 w-5" />
           <h2 className="text-2xl font-black uppercase">
             Verifiable Attestations
           </h2>
         </div>
-        <p className="text-sm font-bold text-brutal-cyan-foreground max-w-3xl mb-6">
+        <p className="text-sm font-bold text-foreground max-w-3xl mb-6">
           Every alignment score above is published as a{" "}
           <a
             href="https://hypercerts.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-black underline hover:text-brutal-pink"
+            className="font-black underline hover:text-foreground"
           >
             Hypercert
           </a>{" "}
@@ -472,7 +472,7 @@ export function AlignmentReport({
             href="https://storacha.network"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-black underline hover:text-brutal-pink"
+            className="font-black underline hover:text-foreground"
           >
             Storacha
           </a>{" "}
@@ -481,7 +481,7 @@ export function AlignmentReport({
             href="https://iab.warondisease.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-black underline hover:text-brutal-pink"
+            className="font-black underline hover:text-foreground"
           >
             Incentive Alignment Bonds
           </a>{" "}
@@ -505,12 +505,12 @@ export function AlignmentReport({
                   href={`https://${pol.storageCid}.ipfs.storacha.link/`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 border border-primary bg-brutal-cyan px-1.5 py-0.5 text-[10px] font-black uppercase hover:bg-brutal-cyan"
+                  className="inline-flex items-center gap-1 border border-primary bg-background px-1.5 py-0.5 text-[10px] font-black uppercase hover:bg-background"
                 >
                   IPFS <ExternalLink className="h-2.5 w-2.5" />
                 </a>
                 <span
-                  className="inline-flex items-center gap-1 border border-primary bg-brutal-cyan px-1.5 py-0.5 text-[10px] font-black uppercase"
+                  className="inline-flex items-center gap-1 border border-primary bg-background px-1.5 py-0.5 text-[10px] font-black uppercase"
                   title={pol.activityUri}
                 >
                   AT Proto
@@ -519,13 +519,13 @@ export function AlignmentReport({
             </div>
           ))}
         </div>
-        <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em] text-brutal-cyan-foreground">
+        <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em] text-foreground">
           Methodology:{" "}
           <a
             href="https://wishocracy.warondisease.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-brutal-pink"
+            className="underline hover:text-foreground"
           >
             wishocracy.warondisease.org
           </a>{" "}

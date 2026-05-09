@@ -57,14 +57,14 @@ function DivergingArrows({
           {/* Outcome arrow — goes DOWN */}
           <motion.line
             x1="230" y1="20" x2="230" y2="90"
-            className="stroke-brutal-cyan" strokeWidth="6" strokeLinecap="round"
+            className="stroke-background" strokeWidth="6" strokeLinecap="round"
             initial={reduced ? {} : { pathLength: 0 }}
             animate={isInView ? { pathLength: 1 } : {}}
             transition={{ duration: 0.8, delay: delay + 0.4 }}
           />
           <motion.polygon
             points="230,100 218,82 242,82"
-            className="fill-brutal-cyan"
+            className="fill-background"
             initial={reduced ? {} : { opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.3, delay: delay + 1.1 }}
@@ -91,7 +91,7 @@ function DivergingArrows({
         </div>
         <div className="text-center">
           <motion.p
-            className="text-3xl font-black text-brutal-cyan"
+            className="text-3xl font-black text-background"
             initial={reduced ? {} : { opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.4, delay: delay + 0.8 }}

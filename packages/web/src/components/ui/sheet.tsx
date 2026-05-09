@@ -36,7 +36,7 @@ const sheetVariants = cva(
     variants: {
       appearance: {
         default:
-          "border-4 border-primary bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
+          "border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
         minimal: "border-2 border-foreground bg-background p-5 text-foreground shadow-none",
       },
       side: {

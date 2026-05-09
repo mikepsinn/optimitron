@@ -91,7 +91,7 @@ export function SlidePairwiseBudgetAllocation() {
         <div className="font-pixel text-lg md:text-xl text-muted-foreground mb-1">
           DECENTRALIZED APPROPRIATIONS COMMITTEE
         </div>
-        <h1 className="font-pixel text-2xl md:text-4xl text-brutal-cyan">
+        <h1 className="font-pixel text-2xl md:text-4xl text-background">
           MAKE YOUR WISHOCRATIC ALLOCATION
         </h1>
         <div className="font-terminal text-xl md:text-2xl text-sierra-fg mt-2">
@@ -102,7 +102,7 @@ export function SlidePairwiseBudgetAllocation() {
       <div className="w-full max-w-[1700px] mx-auto space-y-5">
         {/* Pairwise comparison slider */}
         {phase >= 2 && (
-          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 animate-fade-in">
+          <div className="bg-muted border-2 border-background rounded-lg p-6 animate-fade-in">
             {/* Pair counter */}
             <div className="font-pixel text-lg md:text-xl text-sierra-fg text-center mb-4">
               COMPARISON {activePair + 1} OF {PAIRS.length}
@@ -137,7 +137,7 @@ export function SlidePairwiseBudgetAllocation() {
             <div className="relative mb-10">
               <div className="relative h-10 rounded overflow-hidden border-2 border-primary">
                 <div
-                  className="absolute inset-y-0 left-0 bg-brutal-cyan transition-all duration-100"
+                  className="absolute inset-y-0 left-0 bg-background transition-all duration-100"
                   style={{ width: `${allocationA}%` }}
                 />
                 <div

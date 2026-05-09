@@ -26,12 +26,12 @@ function pct(n: number): string {
 function actionBadgeStyle(action: string | undefined): string {
   if (!action) return "bg-muted text-foreground";
   const a = action.toLowerCase();
-  if (a.includes("major increase") || a === "scale_up") return "bg-brutal-cyan text-brutal-cyan-foreground";
-  if (a.includes("increase") || a === "increase") return "bg-brutal-cyan text-brutal-cyan-foreground";
+  if (a.includes("major increase") || a === "scale_up") return "bg-background text-foreground";
+  if (a.includes("increase") || a === "increase") return "bg-background text-foreground";
   if (a.includes("maintain") || a === "maintain") return "bg-muted text-foreground";
-  if (a.includes("modest decrease") || a === "decrease") return "bg-brutal-yellow text-brutal-yellow-foreground";
+  if (a.includes("modest decrease") || a === "decrease") return "bg-background text-foreground";
   if (a.includes("major decrease") || a === "major_decrease") return "bg-brutal-red text-brutal-red-foreground";
-  if (a.includes("decrease")) return "bg-brutal-yellow text-brutal-yellow-foreground";
+  if (a.includes("decrease")) return "bg-background text-foreground";
   if (a.includes("non-discretionary")) return "bg-muted text-foreground";
   if (a.includes("insufficient")) return "bg-muted text-muted-foreground";
   return "bg-muted text-foreground";
@@ -75,7 +75,7 @@ export default function BudgetPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <SummaryCard label="Total Current" value={fmt(totalCurrent)} />
         <SummaryCard label="Total Optimal" value={fmt(totalOptimal)} />
-        <SummaryCard label="Net Reallocation" value={fmt(totalOptimal - totalCurrent)} color={totalOptimal > totalCurrent ? "text-brutal-cyan" : "text-brutal-red"} />
+        <SummaryCard label="Net Reallocation" value={fmt(totalOptimal - totalCurrent)} color={totalOptimal > totalCurrent ? "text-background" : "text-brutal-red"} />
         <SummaryCard label="Categories Analyzed" value={String(data.categories.length)} />
       </div>
 
@@ -112,7 +112,7 @@ export default function BudgetPage() {
           {data.topRecommendations.slice(0, 5).map((rec, i) => (
             <div key={i} className="card border-primary">
               <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-brutal-pink text-brutal-pink-foreground flex items-center justify-center text-sm font-black border-4 border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <span className="flex-shrink-0 w-8 h-8 bg-foreground text-background flex items-center justify-center text-sm font-black border-4 border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   {i + 1}
                 </span>
                 <p className="text-sm text-foreground font-bold">{rec}</p>
@@ -132,7 +132,7 @@ export default function BudgetPage() {
                 <h3 className="text-sm font-black text-foreground">{cat.name}</h3>
                 <div className="flex items-center gap-2">
                   {cat.efficiency && (
-                    <span className="text-xs font-black px-2 py-0.5 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+                    <span className="text-xs font-black px-2 py-0.5 border-4 border-primary bg-background text-foreground">
                       {cat.efficiency.overspendRatio.toFixed(1)}× overspend
                     </span>
                   )}
@@ -168,7 +168,7 @@ export default function BudgetPage() {
         <div className="overflow-x-auto border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+              <tr className="border-b-2 border-primary bg-background text-foreground">
                 <th className="text-left py-3 px-2 font-black uppercase">Category</th>
                 <th className="text-right py-3 px-2 font-black uppercase">Current</th>
                 <th className="text-right py-3 px-2 font-black uppercase">Optimal</th>
@@ -179,15 +179,15 @@ export default function BudgetPage() {
             </thead>
             <tbody>
               {sorted.map((cat) => (
-                <tr key={cat.name} className="border-b border-primary hover:bg-brutal-cyan">
+                <tr key={cat.name} className="border-b border-primary hover:bg-background">
                   <td className="py-3 px-2 text-foreground font-bold">
-                    <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-brutal-pink transition-colors">
+                    <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-foreground transition-colors">
                       {cat.name}
                     </Link>
                   </td>
                   <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.currentSpending)}</td>
                   <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.optimalSpendingNominal)}</td>
-                  <td className={`py-3 px-2 text-right font-bold ${cat.gap >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
+                  <td className={`py-3 px-2 text-right font-bold ${cat.gap >= 0 ? "text-background" : "text-brutal-red"}`}>
                     {pct(cat.gapPercent)}
                   </td>
                   <td className="py-3 px-2 text-right font-bold text-foreground">

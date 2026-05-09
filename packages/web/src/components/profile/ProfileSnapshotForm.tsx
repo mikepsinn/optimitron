@@ -118,7 +118,7 @@ function SelectField({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="col-span-full text-sm font-black uppercase tracking-[0.15em] text-brutal-pink mt-4 first:mt-0">
+    <p className="col-span-full text-sm font-black uppercase tracking-[0.15em] text-foreground mt-4 first:mt-0">
       {children}
     </p>
   );

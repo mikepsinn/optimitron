@@ -54,7 +54,7 @@ export default async function ScoreboardPage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
       <section className="mb-12 space-y-3 text-center">
-        <p className="text-sm font-black font-pixel uppercase tracking-[0.2em] text-brutal-pink">
+        <p className="text-sm font-black font-pixel uppercase tracking-[0.2em] text-foreground">
           The Earth Optimization Game
         </p>
         <h1 className="text-3xl md:text-5xl font-black font-pixel uppercase tracking-tight text-foreground">
@@ -138,7 +138,7 @@ export default async function ScoreboardPage() {
 
       {/* Wishonia comment */}
       <section className="mb-12">
-        <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed text-center">
             On Wishonia, we solved this in year 12. You lot have been arguing
             about it for 4,237 years. The scoreboard makes the campaign size

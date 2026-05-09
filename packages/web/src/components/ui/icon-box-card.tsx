@@ -16,9 +16,9 @@ export interface IconBoxCardProps {
 }
 
 const iconBgClasses: Record<IconBoxBgColor, string> = {
-  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-  pink: "bg-brutal-pink text-brutal-pink-foreground",
-  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  cyan: "bg-background text-foreground",
+  pink: "bg-foreground text-background",
+  yellow: "bg-background text-foreground",
   green: "bg-brutal-green text-brutal-green-foreground",
   foreground: "bg-foreground text-background",
 }

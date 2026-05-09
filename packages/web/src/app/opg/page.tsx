@@ -111,7 +111,7 @@ export default function PoliciesPage() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <Link href={getPolicyPath(policy.name)} className="text-foreground font-black truncate hover:text-brutal-pink transition-colors underline" onClick={(e) => e.stopPropagation()}>{policy.name}</Link>
+                    <Link href={getPolicyPath(policy.name)} className="text-foreground font-black truncate hover:text-foreground transition-colors underline" onClick={(e) => e.stopPropagation()}>{policy.name}</Link>
                     <GradeBadge grade={policy.evidenceGrade} />
                     <RecommendationBadge type={policy.recommendationType} />
                     <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted border border-primary font-bold">
@@ -156,12 +156,12 @@ export default function PoliciesPage() {
                       </p>
                       <p className="text-muted-foreground font-bold">
                         <span className="text-muted-foreground font-bold">Income Effect:</span>{" "}
-                        <span className="text-brutal-cyan font-black">+${incomePerYear(policy.incomeEffect).toLocaleString()}/yr</span>
+                        <span className="text-background font-black">+${incomePerYear(policy.incomeEffect).toLocaleString()}/yr</span>
                         <span className="text-muted-foreground"> ({(policy.incomeEffect * 100).toFixed(0)}% of median income)</span>
                       </p>
                       <p className="text-muted-foreground font-bold">
                         <span className="text-muted-foreground font-bold">Health Effect:</span>{" "}
-                        <span className="text-brutal-cyan font-black">+{haleMonths(policy.healthEffect)} months</span>
+                        <span className="text-background font-black">+{haleMonths(policy.healthEffect)} months</span>
                         <span className="text-muted-foreground"> healthy life expectancy</span>
                       </p>
                       <p className="text-muted-foreground font-bold">
@@ -199,7 +199,7 @@ export default function PoliciesPage() {
                           <span className="text-xs text-muted-foreground w-24 capitalize font-bold">{key}</span>
                           <div className="flex-1 h-2 bg-muted border border-primary overflow-hidden">
                             <div
-                              className="h-full bg-brutal-pink"
+                              className="h-full bg-foreground"
                               style={{ width: `${(val as number) * 100}%` }}
                             />
                           </div>
@@ -214,7 +214,7 @@ export default function PoliciesPage() {
 
                 <Link
                   href={getPolicyPath(policy.name)}
-                  className="inline-block mt-2 border-4 border-primary bg-brutal-pink text-brutal-pink-foreground px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
+                  className="inline-block mt-2 border-4 border-primary bg-foreground text-background px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
                   onClick={(e) => e.stopPropagation()}
                 >
                   View Full Analysis →
@@ -250,8 +250,8 @@ function GradeBadge({ grade }: { grade: string }) {
 
 function RecommendationBadge({ type }: { type: string }) {
   const styles: Record<string, string> = {
-    enact: "bg-brutal-cyan text-brutal-cyan-foreground",
-    modify: "bg-brutal-yellow text-brutal-yellow-foreground",
+    enact: "bg-background text-foreground",
+    modify: "bg-background text-foreground",
     repeal: "bg-brutal-red text-brutal-red-foreground",
     maintain: "bg-muted",
   };
@@ -265,7 +265,7 @@ function RecommendationBadge({ type }: { type: string }) {
 function Metric({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className="text-center">
-      <div className={`text-sm font-black ${highlight ? "text-brutal-cyan" : "text-foreground"}`}>{value}</div>
+      <div className={`text-sm font-black ${highlight ? "text-background" : "text-foreground"}`}>{value}</div>
       <div className="text-[10px] text-muted-foreground font-bold uppercase">{label}</div>
     </div>
   );

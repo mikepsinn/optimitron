@@ -37,7 +37,7 @@ export default function DCongressPage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <Link
         href={ROUTES.agencies}
-        className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+        className="text-sm font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
       >
         &larr; Optimized Governance
       </Link>
@@ -82,13 +82,13 @@ export default function DCongressPage() {
         ))}
       </div>
 
-      <section className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <section className="border-4 border-primary bg-background text-foreground p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         <p className="text-lg font-bold max-w-2xl mx-auto">
           &ldquo;Your Congress has an approval rating of eighteen percent and a
           re-election rate of ninety-four percent. On my planet, we call that a
           bug. You lot call it democracy.&rdquo;
         </p>
-        <p className="mt-3 text-xs font-black uppercase text-brutal-pink">
+        <p className="mt-3 text-xs font-black uppercase text-foreground">
           — Wishonia
         </p>
         <div className="mt-6">

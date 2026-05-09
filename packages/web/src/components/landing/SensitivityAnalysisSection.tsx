@@ -35,7 +35,7 @@ export default function SensitivityAnalysisSection() {
         </p>
 
         {/* The Main Message */}
-        <Card className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12 max-w-4xl mx-auto">
+        <Card className="bg-background text-foreground border-4 border-primary p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12 max-w-4xl mx-auto">
           <div className="text-center">
             <div className="text-2xl md:text-3xl font-black uppercase mb-6">EVEN IF WE&apos;RE WRONG, WE&apos;RE STILL RIGHT</div>
             <p className="text-lg font-bold mb-8">
@@ -44,17 +44,17 @@ export default function SensitivityAnalysisSection() {
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-background text-foreground border-4 border-primary p-6">
                 <div className="text-sm font-bold uppercase mb-2">Worst Case</div>
-                <div className="text-4xl font-black text-brutal-pink mb-2">{worstCaseROI}:1</div>
+                <div className="text-4xl font-black text-foreground mb-2">{worstCaseROI}:1</div>
                 <div className="text-xs">60% of projected savings<br/>2x operational costs</div>
               </div>
-              <div className="bg-brutal-pink text-brutal-pink-foreground border-4 border-primary p-6">
+              <div className="bg-foreground text-background border-4 border-primary p-6">
                 <div className="text-sm font-bold uppercase mb-2">Our Baseline</div>
                 <div className="text-4xl font-black mb-2">{roiRaw}:1</div>
                 <div className="text-xs">Based on RECOVERY trial data<br/>NPV-adjusted over {npvTimeHorizon} years</div>
               </div>
               <div className="bg-background text-foreground border-4 border-primary p-6">
                 <div className="text-sm font-bold uppercase mb-2">Best Case</div>
-                <div className="text-4xl font-black text-brutal-pink mb-2">{bestCaseROI}:1</div>
+                <div className="text-4xl font-black text-foreground mb-2">{bestCaseROI}:1</div>
                 <div className="text-xs">Full market capture<br/>0.5x operational costs</div>
               </div>
             </div>
@@ -71,14 +71,14 @@ export default function SensitivityAnalysisSection() {
           <h3 className="text-2xl font-black uppercase mb-6 text-center">WHY THIS MATTERS</h3>
           <div className="space-y-4 text-lg">
             <p>
-              <span className="font-black text-brutal-pink">It&apos;s a low-risk bet:</span> You&apos;d have to be wrong about BOTH cost reduction AND operational efficiency to drop below {Math.round(roiRaw * 0.5)}:1 ROI.
+              <span className="font-black text-foreground">It&apos;s a low-risk bet:</span> You&apos;d have to be wrong about BOTH cost reduction AND operational efficiency to drop below {Math.round(roiRaw * 0.5)}:1 ROI.
             </p>
             <p>
-              <span className="font-black text-brutal-pink">The RECOVERY trial already proved {costReductionRaw}x is achievable:</span>{" "}
+              <span className="font-black text-foreground">The RECOVERY trial already proved {costReductionRaw}x is achievable:</span>{" "}
               <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} />/patient vs. <ParameterValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />/patient. Our baseline uses proven methodology.
             </p>
             <p>
-              <span className="font-black text-brutal-pink">This isn&apos;t a moonshot:</span> The maths works even when you assume we&apos;re wrong about almost everything. Which, given your track record, seemed worth checking.
+              <span className="font-black text-foreground">This isn&apos;t a moonshot:</span> The maths works even when you assume we&apos;re wrong about almost everything. Which, given your track record, seemed worth checking.
             </p>
           </div>
         </Card>

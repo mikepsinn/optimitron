@@ -199,7 +199,7 @@ export function SlideEconomicCollapseClock() {
             <h1 className="font-pixel text-2xl md:text-4xl text-brutal-red">
               COUNTDOWN TO COLLAPSE
             </h1>
-            <div className="font-pixel text-3xl md:text-5xl text-brutal-yellow mt-2 tabular-nums tracking-wider">
+            <div className="font-pixel text-3xl md:text-5xl text-background mt-2 tabular-nums tracking-wider">
               {countdownStr}
             </div>
           </div>
@@ -209,12 +209,12 @@ export function SlideEconomicCollapseClock() {
         {phase >= 2 && (
           <div className="w-full fade-up">
             <div className="flex justify-between mb-1">
-              <span className="font-pixel text-sm text-brutal-cyan">🏗️ PRODUCTIVE ECONOMY</span>
+              <span className="font-pixel text-sm text-background">🏗️ PRODUCTIVE ECONOMY</span>
               <span className="font-pixel text-sm text-brutal-red">PARASITIC ECONOMY 💀</span>
             </div>
             <div className="relative h-16 bg-zinc-900 border-2 border-primary rounded overflow-hidden">
               <div
-                className="absolute inset-y-0 left-0 bg-brutal-cyan transition-all duration-200 flex items-center overflow-hidden"
+                className="absolute inset-y-0 left-0 bg-background transition-all duration-200 flex items-center overflow-hidden"
                 style={{ width: `${healthPct}%` }}
               >
                 <span className="whitespace-nowrap pl-2 text-4xl opacity-80">🏥🏫🔬🏭👷🌾</span>

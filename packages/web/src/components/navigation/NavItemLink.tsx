@@ -18,14 +18,14 @@ export function getNavItemLinkClasses(
     case "dropdown":
       return `block px-4 py-3 transition-colors ${
         isActive
-          ? "bg-brutal-yellow text-brutal-yellow-foreground"
-          : "hover:bg-brutal-cyan hover:text-brutal-cyan-foreground"
+          ? "bg-background text-foreground"
+          : "hover:bg-background hover:text-foreground"
       }`;
     case "mobile":
       return `block px-3 py-2 border-2 transition-all ${
         isActive
-          ? "border-primary bg-brutal-yellow text-brutal-yellow-foreground"
-          : "border-transparent hover:border-primary hover:bg-brutal-cyan hover:text-brutal-cyan-foreground"
+          ? "border-primary bg-background text-foreground"
+          : "border-transparent hover:border-primary hover:bg-background hover:text-foreground"
       }`;
     case "footer":
       return "flex min-h-[44px] items-center text-sm font-bold text-muted-foreground transition-colors hover:text-foreground";

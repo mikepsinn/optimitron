@@ -61,7 +61,7 @@ export default function DTreasuryDirsPage() {
       <div className="mb-8">
         <Link
           href={ROUTES.dtreasury}
-          className="text-sm font-black uppercase text-brutal-pink hover:underline"
+          className="text-sm font-black uppercase text-foreground hover:underline"
         >
           &larr; Back to dTreasury
         </Link>
@@ -115,7 +115,7 @@ export default function DTreasuryDirsPage() {
           complicated. The politics, apparently, is.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Current System (IRS)
             </h3>
@@ -135,7 +135,7 @@ export default function DTreasuryDirsPage() {
               ))}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               $WISH Transaction Tax
             </h3>
@@ -156,7 +156,7 @@ export default function DTreasuryDirsPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed">
             Americans spend 6.1 billion hours per year on tax compliance. That&apos;s
             roughly 3 million full-time jobs worth of human effort — filling out

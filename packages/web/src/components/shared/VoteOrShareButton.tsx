@@ -109,11 +109,11 @@ export function VoteOrShareButton({
   }
 
   const variantClasses = {
-    default: "bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground",
-    hero: "bg-brutal-pink hover:bg-brutal-pink/90 text-brutal-pink-foreground",
+    default: "bg-background hover:bg-background/90 text-foreground",
+    hero: "bg-foreground hover:bg-foreground/90 text-background",
     nav: "bg-background hover:bg-background/90",
-    cta: "bg-brutal-yellow hover:bg-brutal-yellow/90 text-brutal-yellow-foreground",
-    inline: "bg-transparent hover:bg-brutal-yellow/10 p-0 h-auto",
+    cta: "bg-background hover:bg-background/90 text-foreground",
+    inline: "bg-transparent hover:bg-background/10 p-0 h-auto",
   }
 
   const buttonClassName = cn(

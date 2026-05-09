@@ -52,7 +52,7 @@ export function TaskSectionNav({ links }: TaskSectionNavProps) {
                 href={`#${link.id}`}
                 className={`inline-block border-2 border-foreground px-3 py-1 transition-colors ${
                   isActive
-                    ? "bg-brutal-pink text-brutal-pink-foreground"
+                    ? "bg-foreground text-background"
                     : "bg-background hover:bg-muted"
                 }`}
               >

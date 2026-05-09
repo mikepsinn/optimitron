@@ -42,17 +42,17 @@ export function WishocracyLoadingCard({ isLoading }: WishocracyLoadingCardProps)
                 <motion.div
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-                  className="w-3 h-3 bg-brutal-cyan border-4 border-primary"
+                  className="w-3 h-3 bg-background border-4 border-primary"
                 />
                 <motion.div
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                  className="w-3 h-3 bg-brutal-pink border-4 border-primary"
+                  className="w-3 h-3 bg-foreground border-4 border-primary"
                 />
                 <motion.div
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-                  className="w-3 h-3 bg-brutal-cyan border-4 border-primary"
+                  className="w-3 h-3 bg-background border-4 border-primary"
                 />
               </div>
             </div>

@@ -49,7 +49,7 @@ export function HumanityScoreboard() {
             href="https://manual.warondisease.org/knowledge/economics/gdp-trajectories"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brutal-pink font-black underline hover:text-foreground transition-colors"
+            className="text-foreground font-black underline hover:text-foreground transition-colors"
           >
             See the full projections ↗
           </a>
@@ -67,12 +67,12 @@ export function HumanityScoreboard() {
             </span>
           </div>
           <div className="text-center">
-            <span className="text-xs font-black uppercase text-brutal-cyan">
+            <span className="text-xs font-black uppercase text-background">
               1% Treaty (2040)
             </span>
           </div>
           <div className="text-center">
-            <span className="text-xs font-black uppercase text-brutal-pink">
+            <span className="text-xs font-black uppercase text-foreground">
               Optimal Governance (2040)
             </span>
           </div>
@@ -98,7 +98,7 @@ export function HumanityScoreboard() {
             />
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-black text-brutal-cyan">
+            <div className="text-3xl md:text-4xl font-black text-background">
               <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
             </div>
             <SpendingBar
@@ -113,7 +113,7 @@ export function HumanityScoreboard() {
             </p>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-black text-brutal-pink">
+            <div className="text-3xl md:text-4xl font-black text-foreground">
               <ParameterValue param={WISHONIA_PROJECTED_HALE_YEAR_15} />
             </div>
             <SpendingBar
@@ -152,10 +152,10 @@ export function HumanityScoreboard() {
             />
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-black text-brutal-cyan">
+            <div className="text-3xl md:text-4xl font-black text-background">
               <ParameterValue
                 param={TREATY_TRAJECTORY_AVG_INCOME_YEAR_15}
-                className="text-brutal-cyan"
+                className="text-background"
               />
             </div>
             <SpendingBar
@@ -170,10 +170,10 @@ export function HumanityScoreboard() {
             </p>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-black text-brutal-pink">
+            <div className="text-3xl md:text-4xl font-black text-foreground">
               <ParameterValue
                 param={WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15}
-                className="text-brutal-pink"
+                className="text-foreground"
               />
             </div>
             <SpendingBar
@@ -214,10 +214,10 @@ export function HumanityScoreboard() {
               />
             </div>
             <div className="text-center">
-              <span className="text-[10px] font-black uppercase text-brutal-cyan">
+              <span className="text-[10px] font-black uppercase text-background">
                 Treaty 2040
               </span>
-              <div className="text-xl sm:text-2xl font-black text-brutal-cyan mt-1">
+              <div className="text-xl sm:text-2xl font-black text-background mt-1">
                 <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
               </div>
               <SpendingBar
@@ -232,10 +232,10 @@ export function HumanityScoreboard() {
               </p>
             </div>
             <div className="text-center">
-              <span className="text-[10px] font-black uppercase text-brutal-pink">
+              <span className="text-[10px] font-black uppercase text-foreground">
                 Optimal 2040
               </span>
-              <div className="text-xl sm:text-2xl font-black text-brutal-pink mt-1">
+              <div className="text-xl sm:text-2xl font-black text-foreground mt-1">
                 <ParameterValue param={WISHONIA_PROJECTED_HALE_YEAR_15} />
               </div>
               <SpendingBar
@@ -277,13 +277,13 @@ export function HumanityScoreboard() {
               />
             </div>
             <div className="text-center">
-              <span className="text-[10px] font-black uppercase text-brutal-cyan">
+              <span className="text-[10px] font-black uppercase text-background">
                 Treaty 2040
               </span>
-              <div className="text-xl sm:text-2xl font-black text-brutal-cyan mt-1">
+              <div className="text-xl sm:text-2xl font-black text-background mt-1">
                 <ParameterValue
                   param={TREATY_TRAJECTORY_AVG_INCOME_YEAR_15}
-                  className="text-brutal-cyan"
+                  className="text-background"
                 />
               </div>
               <SpendingBar
@@ -298,13 +298,13 @@ export function HumanityScoreboard() {
               </p>
             </div>
             <div className="text-center">
-              <span className="text-[10px] font-black uppercase text-brutal-pink">
+              <span className="text-[10px] font-black uppercase text-foreground">
                 Optimal 2040
               </span>
-              <div className="text-xl sm:text-2xl font-black text-brutal-pink mt-1">
+              <div className="text-xl sm:text-2xl font-black text-foreground mt-1">
                 <ParameterValue
                   param={WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15}
-                  className="text-brutal-pink"
+                  className="text-foreground"
                 />
               </div>
               <SpendingBar

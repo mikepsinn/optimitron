@@ -72,7 +72,7 @@ export function OpportunityCostTicker({
           </span>
           <span
             ref={trialsRef}
-            className="text-lg sm:text-xl font-black text-brutal-cyan"
+            className="text-lg sm:text-xl font-black text-background"
             style={{ fontVariantNumeric: "tabular-nums" }}
           >
             0.0

@@ -26,7 +26,7 @@ export function CheckInPageClient({ initialData }: CheckInPageClientProps) {
       <section className="space-y-3">
         <ArcadeTag>Daily Check-In</ArcadeTag>
         <h1 className="text-4xl font-black uppercase tracking-tight text-foreground">
-          HOW ARE YOU <span className="text-brutal-pink">TODAY</span>?
+          HOW ARE YOU <span className="text-foreground">TODAY</span>?
         </h1>
         <p className="max-w-2xl text-base font-bold text-foreground">
           Thirty seconds. Health and happiness on a scale of 1 to 5.
@@ -41,19 +41,19 @@ export function CheckInPageClient({ initialData }: CheckInPageClientProps) {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href={ROUTES.census}
-          className="block border-4 border-primary bg-brutal-cyan p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+          className="block border-4 border-primary bg-background p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
         >
-          <h3 className="text-sm font-black uppercase text-brutal-cyan-foreground">Update Census Data</h3>
-          <p className="mt-1 text-xs font-bold text-brutal-cyan-foreground">
+          <h3 className="text-sm font-black uppercase text-foreground">Update Census Data</h3>
+          <p className="mt-1 text-xs font-bold text-foreground">
             Income, location, demographics — the permanent record stuff.
           </p>
         </Link>
         <Link
           href={ROUTES.wishocracy}
-          className="block border-4 border-primary bg-brutal-yellow p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+          className="block border-4 border-primary bg-background p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
         >
-          <h3 className="text-sm font-black uppercase text-brutal-yellow-foreground">Budget Allocation</h3>
-          <p className="mt-1 text-xs font-bold text-brutal-yellow-foreground">
+          <h3 className="text-sm font-black uppercase text-foreground">Budget Allocation</h3>
+          <p className="mt-1 text-xs font-bold text-foreground">
             Tell me what you think Earth should spend money on.
           </p>
         </Link>

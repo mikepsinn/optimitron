@@ -23,7 +23,7 @@ export default function DIhPage() {
           same question would have cost $420 million.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Traditional RCT (What NIH Funds)
             </h3>
@@ -49,7 +49,7 @@ export default function DIhPage() {
               ))}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Pragmatic Trial (What dIH Funds)
             </h3>
@@ -76,7 +76,7 @@ export default function DIhPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed">
             At $929 per patient instead of $27,800, the NIH&apos;s $47 billion
             could enrol 50 million patients per year in pragmatic trials instead
@@ -93,7 +93,7 @@ export default function DIhPage() {
           Where the $47 Billion Actually Goes
         </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-3xl font-black">
               96.7%
             </div>
@@ -107,7 +107,7 @@ export default function DIhPage() {
               and 3% on water. $45.5 billion that never touches a patient.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-3xl font-black">3.3%</div>
             <div className="mt-1 text-xs font-black uppercase">
               Actual Clinical Trials
@@ -118,7 +118,7 @@ export default function DIhPage() {
             </p>
           </div>
           <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-brutal-cyan">97%</div>
+            <div className="text-3xl font-black text-background">97%</div>
             <div className="mt-1 text-xs font-black uppercase text-background/80">
               dIH → Patient Subsidies
             </div>

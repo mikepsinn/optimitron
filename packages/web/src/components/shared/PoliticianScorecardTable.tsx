@@ -211,7 +211,7 @@ export function PoliticianScorecardTable({
           placeholder="Search name or state..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brutal-pink w-full sm:w-48"
+          className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground w-full sm:w-48"
         />
       </div>
       <p className="text-xs font-bold text-muted-foreground mb-3">
@@ -265,7 +265,7 @@ export function PoliticianScorecardTable({
                   <td className="p-2">
                     <Link
                       href={`/governments/${countryCode}/politicians/${s.bioguideId}`}
-                      className="flex items-center gap-2 hover:text-brutal-pink transition-colors"
+                      className="flex items-center gap-2 hover:text-foreground transition-colors"
                     >
                       <Image
                         src={`https://bioguide.congress.gov/bioguide/photo/${s.bioguideId[0]?.toUpperCase() ?? "X"}/${s.bioguideId}.jpg`}
@@ -296,7 +296,7 @@ export function PoliticianScorecardTable({
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black text-brutal-cyan w-8 shrink-0">RX</span>
+                        <span className="text-[10px] font-black text-background w-8 shrink-0">RX</span>
                         <SpendingBar
                           value={s.clinicalTrialDollarsVotedFor}
                           max={maxTrials}

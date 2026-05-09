@@ -60,7 +60,7 @@ export function EmployeeReviewBanner({
 
         {callout ? (
           <div className="border-4 border-foreground bg-background p-4 text-foreground">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brutal-pink">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground">
               {callout.eyebrow}
             </p>
             <p className="mt-2 text-lg font-black uppercase">{callout.title}</p>

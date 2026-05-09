@@ -131,7 +131,7 @@ export function CitizenDashboard() {
   // Unauthenticated
   if (!data?.stats) {
     return (
-      <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="text-lg font-black uppercase mb-2">
           Your Citizen Dashboard
         </h3>
@@ -182,7 +182,7 @@ export function CitizenDashboard() {
       </h2>
 
       {/* ── Impact Banner ── */}
-      <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="text-sm font-black uppercase mb-2">
           Your Verified Votes Have Contributed To
         </h3>
@@ -264,19 +264,19 @@ export function CitizenDashboard() {
           label="Verified Votes"
           value={stats.verifiedVotes.toString()}
           detail={`${stats.pendingVerification} pending verification`}
-          color="bg-brutal-cyan"
+          color="bg-background"
         />
         <StatCard
           label="Total Referrals"
           value={stats.totalReferrals.toString()}
           detail="Votes from your link"
-          color="bg-brutal-yellow"
+          color="bg-background"
         />
         <StatCard
           label="Est. Share"
           value={`${sharePercent}%`}
           detail="Of success pool"
-          color="bg-brutal-pink"
+          color="bg-foreground"
         />
         <StatCard
           label="Global Rank"
@@ -287,7 +287,7 @@ export function CitizenDashboard() {
       </div>
 
       {/* ── Referral Goal + Badges ── */}
-      <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="text-lg font-black uppercase mb-1">
           Your Referral Goal
         </h3>
@@ -322,7 +322,7 @@ export function CitizenDashboard() {
                 key={badge.threshold}
                 className={`p-3 border-4 border-primary text-center transition-all ${
                   unlocked
-                    ? "bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                    ? "bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                     : "bg-background opacity-40"
                 }`}
               >
@@ -369,7 +369,7 @@ export function CitizenDashboard() {
                 className={`flex items-center gap-3 border-b border-primary pb-2 last:border-0 ${
                   entry.userId ===
                   (session?.user as { id?: string } | undefined)?.id
-                    ? "bg-brutal-cyan -mx-2 px-2 rounded"
+                    ? "bg-background -mx-2 px-2 rounded"
                     : ""
                 }`}
               >
@@ -383,14 +383,14 @@ export function CitizenDashboard() {
                     className="w-8 h-8 border-4 border-primary object-cover shrink-0"
                   />
                 ) : (
-                  <span className="w-8 h-8 bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary flex items-center justify-center text-xs font-black shrink-0">
+                  <span className="w-8 h-8 bg-background text-foreground border-4 border-primary flex items-center justify-center text-xs font-black shrink-0">
                     {entry.name.charAt(0).toUpperCase()}
                   </span>
                 )}
                 <span className="flex-1 text-sm font-bold truncate">
                   {entry.name}
                 </span>
-                <span className="text-sm font-black text-brutal-pink">
+                <span className="text-sm font-black text-foreground">
                   {entry.verifiedVotes}
                 </span>
               </div>
@@ -400,19 +400,19 @@ export function CitizenDashboard() {
       )}
 
       {/* ── Global Treaty Target ── */}
-      <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="text-lg font-black uppercase mb-1">
           Progress Toward a Majority of Humans on Earth{" "}
           <Tooltip.Provider>
             <Tooltip>
               <Tooltip.Trigger asChild>
-                <button className="inline-flex items-center justify-center w-6 h-6 border-4 border-primary bg-background text-xs font-black hover:bg-brutal-pink hover:text-background transition-colors align-middle">
+                <button className="inline-flex items-center justify-center w-6 h-6 border-4 border-primary bg-background text-xs font-black hover:bg-foreground hover:text-background transition-colors align-middle">
                   ?
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
                 <p className="font-bold text-sm text-foreground">
-                  <span className="text-brutal-pink">
+                  <span className="text-foreground">
                     Treaty target:
                   </span>{" "}
                   The target is <ParameterValue param={MAJORITY_OF_HUMANS_ON_EARTH} display="withUnit" />:
@@ -460,12 +460,14 @@ export function CitizenDashboard() {
 // StatCard
 // ---------------------------------------------------------------------------
 
+// Treaty migration 2026-05-08: pink/cyan/yellow brutal tokens were
+// collapsed to bg-background/bg-foreground by the codemod; this map is
+// now mostly redundant since most stat cards render in the same treaty
+// background. Status (bg-brutal-red) keeps its paired foreground.
 const statCardTextColors: Record<string, string> = {
-  "bg-brutal-cyan": "text-brutal-cyan-foreground",
-  "bg-brutal-yellow": "text-brutal-yellow-foreground",
-  "bg-brutal-pink": "text-brutal-pink-foreground",
+  "bg-background": "text-foreground",
+  "bg-foreground": "text-background",
   "bg-brutal-red": "text-brutal-red-foreground",
-  "bg-background": "",
 };
 
 function StatCard({

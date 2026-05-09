@@ -91,11 +91,11 @@ const BRADFORD_HILL_DESCRIPTIONS: Record<string, string> = {
 function gradeColor(grade: string): string {
   switch (grade) {
     case "A":
-      return "bg-brutal-cyan text-brutal-cyan-foreground";
+      return "bg-background text-foreground";
     case "B":
-      return "bg-brutal-yellow text-brutal-yellow-foreground";
+      return "bg-background text-foreground";
     case "C":
-      return "bg-brutal-yellow text-brutal-yellow-foreground";
+      return "bg-background text-foreground";
     default:
       return "bg-brutal-red text-brutal-red-foreground";
   }
@@ -115,8 +115,8 @@ function gradeLabel(grade: string): string {
 }
 
 function barColor(val: number): string {
-  if (val >= 0.8) return "bg-brutal-cyan text-brutal-cyan-foreground";
-  if (val >= 0.5) return "bg-brutal-yellow text-brutal-yellow-foreground";
+  if (val >= 0.8) return "bg-background text-foreground";
+  if (val >= 0.5) return "bg-background text-foreground";
   return "bg-brutal-red text-brutal-red-foreground";
 }
 
@@ -146,7 +146,7 @@ export default async function PolicyDetailPage({
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
         <h1 className="text-3xl font-black uppercase text-foreground mb-4">Policy Not Found</h1>
-        <NavItemLink item={opgLink} variant="custom" className="text-brutal-pink font-bold underline">
+        <NavItemLink item={opgLink} variant="custom" className="text-foreground font-bold underline">
           ← Back to Policy Rankings
         </NavItemLink>
       </div>
@@ -195,23 +195,23 @@ export default async function PolicyDetailPage({
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-          <div className="border-4 border-primary p-4 bg-brutal-pink text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary p-4 bg-foreground text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase opacity-80 mb-1">Welfare Score</div>
             <div className="text-2xl sm:text-3xl font-black">+{policy.welfareScore}</div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary p-4 bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase mb-1">Causal Confidence</div>
             <div className="text-2xl sm:text-3xl font-black">
               {(policy.causalConfidenceScore * 100).toFixed(0)}%
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary p-4 bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase mb-1">Policy Impact</div>
             <div className="text-2xl sm:text-3xl font-black">
               {(policy.policyImpactScore * 100).toFixed(0)}%
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary p-4 bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase mb-1">BH Average</div>
             <div className="text-2xl sm:text-3xl font-black">
               {(avgBH * 100).toFixed(0)}%
@@ -249,38 +249,38 @@ export default async function PolicyDetailPage({
       <section className="border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
         <h2 className="text-lg font-black uppercase text-foreground mb-4">💥 Impact Breakdown</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground">
+          <div className="border-4 border-primary p-4 bg-background text-foreground">
             <div className="text-xs font-bold uppercase mb-1">Income Effect</div>
             <div className="text-3xl font-black">
               +{(policy.incomeEffect * 100).toFixed(0)}%
             </div>
             <div className="mt-2 h-3 bg-muted border border-primary overflow-hidden">
               <div
-                className="h-full bg-brutal-cyan"
+                className="h-full bg-background"
                 style={{ width: `${policy.incomeEffect * 100}%` }}
               />
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-pink text-brutal-pink-foreground">
+          <div className="border-4 border-primary p-4 bg-foreground text-background">
             <div className="text-xs font-bold uppercase mb-1">Health Effect</div>
-            <div className="text-3xl font-black text-brutal-pink-foreground">
+            <div className="text-3xl font-black text-background">
               +{(policy.healthEffect * 100).toFixed(0)}%
             </div>
             <div className="mt-2 h-3 bg-muted border border-primary overflow-hidden">
               <div
-                className="h-full bg-brutal-pink"
+                className="h-full bg-foreground"
                 style={{ width: `${policy.healthEffect * 100}%` }}
               />
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground">
+          <div className="border-4 border-primary p-4 bg-background text-foreground">
             <div className="text-xs font-bold uppercase mb-1">
               Combined Welfare
             </div>
             <div className="text-3xl font-black">+{policy.welfareScore}</div>
             <div className="mt-2 h-3 bg-muted border border-primary overflow-hidden">
               <div
-                className="h-full bg-brutal-cyan"
+                className="h-full bg-background"
                 style={{ width: `${Math.min(policy.welfareScore, 100)}%` }}
               />
             </div>
@@ -315,7 +315,7 @@ export default async function PolicyDetailPage({
           </div>
           <div>
             <div className="text-xs font-bold uppercase text-muted-foreground mb-2">Rationale</div>
-            <p className="text-sm text-foreground font-bold border-l-4 border-brutal-pink pl-3">
+            <p className="text-sm text-foreground font-bold border-l-4 border-foreground pl-3">
               {policy.rationale}
             </p>
 
@@ -377,7 +377,7 @@ export default async function PolicyDetailPage({
           ))}
         </div>
 
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+        <div className="mt-4 border-4 border-primary bg-background text-foreground p-4">
           <h3 className="text-sm font-black uppercase mb-2">
             How is the Causal Confidence Score calculated?
           </h3>
@@ -400,7 +400,7 @@ export default async function PolicyDetailPage({
               item={optimalPolicyGeneratorPaperLink}
               variant="custom"
               external
-              className="text-brutal-pink hover:underline"
+              className="text-foreground hover:underline"
             >
               Optimal Policy Generator paper
             </NavItemLink>{" "}
@@ -453,7 +453,7 @@ function NaturalExperimentsSection({ experiments }: { experiments: MatchedExperi
         {experiments.map((exp) => (
           <div key={`${exp.computed.jurisdiction}-${exp.computed.policy}`}>
             {/* Experiment header */}
-            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4 mb-4">
+            <div className="border-4 border-primary bg-background text-foreground p-4 mb-4">
               <h3 className="text-sm font-black uppercase">
                 {exp.computed.jurisdiction} — {exp.computed.policy}
               </h3>
@@ -542,7 +542,7 @@ function InternationalComparisonSection({ comparison }: { comparison: MatchedCom
 
 function isUS(iso3: string): string {
   return iso3 === "USA"
-    ? "bg-brutal-yellow text-brutal-yellow-foreground font-black"
+    ? "bg-background text-foreground font-black"
     : "text-foreground";
 }
 
@@ -561,7 +561,7 @@ function DrugComparisonTable({ data }: { data: CountryDrugPolicy[] }) {
       </thead>
       <tbody>
         {sorted.map((c) => (
-          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-background text-foreground" : ""}`}>
             <Td className={isUS(c.iso3)}>{c.country}</Td>
             <Td className={isUS(c.iso3)}>{c.approach}</Td>
             <Td align="right" className={isUS(c.iso3)}>{c.drugDeathsPer100K.toFixed(1)}</Td>
@@ -589,7 +589,7 @@ function HealthComparisonTable({ data }: { data: CountryHealthData[] }) {
       </thead>
       <tbody>
         {sorted.map((c) => (
-          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-background text-foreground" : ""}`}>
             <Td className={isUS(c.iso3)}>{c.country}</Td>
             <Td align="right" className={isUS(c.iso3)}>${c.healthSpendingPerCapita.toLocaleString()}</Td>
             <Td align="right" className={isUS(c.iso3)}>{c.lifeExpectancy.toFixed(1)}</Td>
@@ -617,7 +617,7 @@ function EducationComparisonTable({ data }: { data: CountryEducationData[] }) {
       </thead>
       <tbody>
         {sorted.map((c) => (
-          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-background text-foreground" : ""}`}>
             <Td className={isUS(c.iso3)}>{c.country}</Td>
             <Td align="right" className={isUS(c.iso3)}>{c.educationSpendingPctGDP.toFixed(1)}%</Td>
             <Td align="right" className={isUS(c.iso3)}>{c.pisaScoreMath}</Td>
@@ -645,7 +645,7 @@ function CriminalJusticeComparisonTable({ data }: { data: CountryCriminalJustice
       </thead>
       <tbody>
         {sorted.map((c) => (
-          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-background text-foreground" : ""}`}>
             <Td className={isUS(c.iso3)}>{c.country}</Td>
             <Td align="right" className={isUS(c.iso3)}>{c.incarcerationRatePer100K}</Td>
             <Td align="right" className={isUS(c.iso3)}>{c.homicideRatePer100K.toFixed(1)}</Td>

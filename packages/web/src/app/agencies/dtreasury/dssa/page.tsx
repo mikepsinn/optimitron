@@ -13,22 +13,22 @@ const welfareProblems = [
     title: "Overhead exceeds impact",
     description:
       "Your species currently spends more administering welfare than it distributes in benefits. The overhead-to-impact ratio is, and I say this with genuine bewilderment, worse than 1:1 in several programs.",
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
+    color: "bg-foreground",
+    textColor: "text-background",
   },
   {
     title: "The poverty trap",
     description:
       "Means-tested benefits create a cliff: earn $1 more and lose $2,000 in benefits. Your system actively punishes people for getting less poor. On my planet, this is classified as a bug, not a feature.",
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     title: "The crack-falling problem",
     description:
       "Millions of people who qualify for benefits never receive them because they can't navigate the paperwork. You built a safety net with holes larger than the people it's supposed to catch.",
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
 ];
 
@@ -85,7 +85,7 @@ export default function DTreasuryDssaPage() {
       <div className="mb-8">
         <Link
           href={ROUTES.dtreasury}
-          className="text-sm font-black uppercase text-brutal-pink hover:underline"
+          className="text-sm font-black uppercase text-foreground hover:underline"
         >
           &larr; Back to dTreasury
         </Link>
@@ -160,7 +160,7 @@ export default function DTreasuryDssaPage() {
           80+ Programs vs 1 For-Loop
         </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Current System (SSA + Welfare)
             </h3>
@@ -180,7 +180,7 @@ export default function DTreasuryDssaPage() {
               ))}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               $WISH UBI
             </h3>
@@ -201,7 +201,7 @@ export default function DTreasuryDssaPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed">
             The $1.1 trillion your species spends administering welfare is more
             than the GDP of the Netherlands. That money doesn&apos;t feed anyone.

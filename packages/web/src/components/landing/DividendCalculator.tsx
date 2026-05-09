@@ -75,7 +75,7 @@ export function DividendCalculator({
               type="checkbox"
               checked={selected[category.name] ?? false}
               onChange={() => toggleCategory(category.name)}
-              className="h-5 w-5 accent-brutal-pink"
+              className="h-5 w-5 accent-foreground"
             />
             <span className="text-sm font-bold text-foreground">
               {category.name}
@@ -99,7 +99,7 @@ export function DividendCalculator({
               onClick={() => setAdults(n)}
               className={`border-2 border-primary px-4 py-2 text-sm font-black transition-all ${
                 adults === n
-                  ? "bg-brutal-pink text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  ? "bg-foreground text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   : "bg-background text-foreground hover:bg-muted"
               }`}
             >
@@ -114,7 +114,7 @@ export function DividendCalculator({
           <span className="text-sm font-bold text-muted-foreground">
             Your monthly dividend
           </span>
-          <span className="text-3xl font-black text-brutal-pink">
+          <span className="text-3xl font-black text-foreground">
             {formatUSD(monthlyHousehold)}
             <span className="text-lg text-muted-foreground">/mo</span>
           </span>

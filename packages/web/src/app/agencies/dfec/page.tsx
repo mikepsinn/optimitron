@@ -16,7 +16,7 @@ export default function DFECPage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <Link
         href={ROUTES.agencies}
-        className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+        className="text-sm font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
       >
         &larr; Optimized Governance
       </Link>
@@ -86,28 +86,28 @@ export default function DFECPage() {
         </h2>
         <div className="space-y-4 text-sm font-bold text-foreground">
           <p>
-            <span className="text-brutal-pink font-black">1.</span> Citizens pick
+            <span className="text-foreground font-black">1.</span> Citizens pick
             between two things. Then two more. The maths works out what you
             actually want. (Turns out nobody had asked before.)
           </p>
           <p>
-            <span className="text-brutal-pink font-black">2.</span> Politicians
+            <span className="text-foreground font-black">2.</span> Politicians
             vote on real legislation. Their votes are compared against citizen
             preferences.
           </p>
           <p>
-            <span className="text-brutal-pink font-black">3.</span> Each
+            <span className="text-foreground font-black">3.</span> Each
             politician gets a single number: how much they actually did what
             you asked. It&apos;s like a restaurant hygiene rating, except for
             democracy.
           </p>
           <p>
-            <span className="text-brutal-pink font-black">4.</span> Smart
+            <span className="text-foreground font-black">4.</span> Smart
             contracts route money to politicians based on their score. No
             lobbyists. No donors. No dinner fundraisers at $50,000 a plate.
           </p>
           <p>
-            <span className="text-brutal-pink font-black">5.</span> Politicians
+            <span className="text-foreground font-black">5.</span> Politicians
             who align with citizens get funded. Those who don&apos;t, don&apos;t.
             No lobbying required.
           </p>

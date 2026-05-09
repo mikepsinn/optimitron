@@ -27,7 +27,7 @@ function EfficiencyTag({ context, roiRatio, annualBudgetBillions }: {
     <div className="mt-2">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-[10px] font-bold uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+        className="text-[10px] font-bold uppercase text-muted-foreground hover:text-foreground transition-colors"
       >
         {tags.join(' · ')} {expanded ? '▲' : '▼'}
       </button>
@@ -56,7 +56,7 @@ function TruncatedDescription({ text, sources }: { text: string; sources?: reado
           {text.slice(0, 100)}&hellip;{" "}
           <button
             onClick={() => setExpanded(true)}
-            className="text-brutal-pink font-bold hover:underline"
+            className="text-foreground font-bold hover:underline"
           >
             more
           </button>
@@ -69,7 +69,7 @@ function TruncatedDescription({ text, sources }: { text: string; sources?: reado
               {" "}
               <button
                 onClick={() => setExpanded(false)}
-                className="text-brutal-pink font-bold hover:underline"
+                className="text-foreground font-bold hover:underline"
               >
                 less
               </button>
@@ -83,7 +83,7 @@ function TruncatedDescription({ text, sources }: { text: string; sources?: reado
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] text-muted-foreground/70 hover:text-brutal-pink transition-colors"
+                  className="text-[10px] text-muted-foreground/70 hover:text-foreground transition-colors"
                   title={s.name}
                 >
                   {s.name}
@@ -197,7 +197,7 @@ export function WishocraticPairSlider({
         <div className="flex justify-between items-center mb-4">
           <div className="flex-1 text-center">
             <div className="text-6xl mb-3">{itemA.icon}</div>
-            <div className="text-4xl sm:text-5xl font-black text-brutal-pink mb-2">
+            <div className="text-4xl sm:text-5xl font-black text-foreground mb-2">
               {allocation}%
             </div>
             <div className="text-sm sm:text-base font-bold uppercase px-2">
@@ -206,7 +206,7 @@ export function WishocraticPairSlider({
           </div>
           <div className="flex-1 text-center">
             <div className="text-6xl mb-3">{itemB.icon}</div>
-            <div className="text-4xl sm:text-5xl font-black text-brutal-cyan mb-2">
+            <div className="text-4xl sm:text-5xl font-black text-background mb-2">
               {allocationB}%
             </div>
             <div className="text-sm sm:text-base font-bold uppercase px-2">
@@ -279,7 +279,7 @@ export function WishocraticPairSlider({
         >
           <Button
             onClick={handleSubmit}
-            className="w-full h-16 text-xl font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+            className="w-full h-16 text-xl font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
           >
             SUBMIT CHOICE
           </Button>

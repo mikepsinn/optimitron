@@ -61,13 +61,13 @@ export function ClaimNodeView({
         <div className="flex flex-col sm:flex-row gap-3">
           <Button
             onClick={() => onAnswer("yes")}
-            className="flex-1 h-14 text-lg font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="flex-1 h-14 text-lg font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           >
             Yes
           </Button>
           <Button
             onClick={() => onAnswer("no")}
-            className="flex-1 h-14 text-lg font-black uppercase bg-brutal-pink hover:bg-brutal-pink/90 text-brutal-pink-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="flex-1 h-14 text-lg font-black uppercase bg-foreground hover:bg-foreground/90 text-background border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           >
             No
           </Button>

@@ -87,7 +87,7 @@ export function EmailSignatureCard({ referralLink, userName }: EmailSignatureCar
 
           <Button
             onClick={() => void copySignature()}
-            className="w-full bg-brutal-pink hover:bg-brutal-yellow border-4 border-primary font-black uppercase"
+            className="w-full bg-foreground hover:bg-background border-4 border-primary font-black uppercase"
           >
             {copied ? (
               <>

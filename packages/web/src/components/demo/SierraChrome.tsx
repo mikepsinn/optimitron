@@ -30,11 +30,11 @@ function QuestMetrics() {
       <div className="flex items-center gap-1 md:gap-2">
         <span className="text-sm md:text-lg">❤️</span>
         <div className="flex flex-col gap-0.5">
-          <span className={`${ARCADE} text-[10px] md:text-xs text-brutal-cyan`}>
+          <span className={`${ARCADE} text-[10px] md:text-xs text-background`}>
             HALE {haleCurrent}→{haleTarget}
           </span>
-          <div className="w-16 md:w-28 h-1.5 md:h-2.5 bg-zinc-800 border border-brutal-cyan/50 rounded-sm overflow-hidden">
-            <div className="h-full bg-brutal-cyan" style={{ width: `${haleProgress}%` }} />
+          <div className="w-16 md:w-28 h-1.5 md:h-2.5 bg-zinc-800 border border-background/50 rounded-sm overflow-hidden">
+            <div className="h-full bg-background" style={{ width: `${haleProgress}%` }} />
           </div>
         </div>
       </div>
@@ -42,11 +42,11 @@ function QuestMetrics() {
       <div className="flex items-center gap-1 md:gap-2">
         <span className="text-sm md:text-lg">💰</span>
         <div className="flex flex-col gap-0.5">
-          <span className={`${ARCADE} text-[10px] md:text-xs text-brutal-yellow`}>
+          <span className={`${ARCADE} text-[10px] md:text-xs text-background`}>
             INCOME {incomeCurrent}→{incomeTarget}
           </span>
-          <div className="w-16 md:w-28 h-1.5 md:h-2.5 bg-zinc-800 border border-brutal-yellow/50 rounded-sm overflow-hidden">
-            <div className="h-full bg-brutal-yellow" style={{ width: `${incomeProgress}%` }} />
+          <div className="w-16 md:w-28 h-1.5 md:h-2.5 bg-zinc-800 border border-background/50 rounded-sm overflow-hidden">
+            <div className="h-full bg-background" style={{ width: `${incomeProgress}%` }} />
           </div>
         </div>
       </div>

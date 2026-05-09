@@ -100,7 +100,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
       <div className="mx-auto max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
         <Link
           href={`/governments/${gov.code}`}
-          className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+          className="text-sm font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
         >
           &larr; {gov.name}
         </Link>
@@ -154,7 +154,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
                     </div>
                     <div>
                       <div className="text-xs font-black uppercase text-muted-foreground">Trials</div>
-                      <div className="text-lg font-black text-brutal-cyan">
+                      <div className="text-lg font-black text-background">
                         {formatDollars(p.clinicalTrialPortion)}
                       </div>
                     </div>
@@ -204,7 +204,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
               No politician data available for {gov.name} yet.{" "}
               <Link
                 href={ROUTES.wishocracy}
-                className="font-black text-brutal-pink underline hover:text-foreground"
+                className="font-black text-foreground underline hover:text-foreground"
               >
                 Vote on Wishocracy
               </Link>{" "}

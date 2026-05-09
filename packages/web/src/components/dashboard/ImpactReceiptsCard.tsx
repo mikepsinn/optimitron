@@ -10,8 +10,8 @@ interface ImpactReceiptsCardProps {
 }
 
 const STATUS_STYLES: Record<DashboardImpactReceipt["statusTone"], string> = {
-  success: "bg-brutal-cyan text-brutal-cyan-foreground",
-  accent: "bg-brutal-yellow text-brutal-yellow-foreground",
+  success: "bg-background text-foreground",
+  accent: "bg-background text-foreground",
   muted: "bg-muted text-foreground",
 }
 

@@ -25,7 +25,7 @@ export function BadgesSection({ badges }: BadgesSectionProps) {
               <div
                 key={badge.id}
                 className={`p-4 border-4 border-primary rounded-none ${
-                  badge.earned ? "bg-brutal-yellow" : "bg-muted opacity-50"
+                  badge.earned ? "bg-background" : "bg-muted opacity-50"
                 }`}
               >
                 <div className="flex items-start gap-3">

@@ -18,7 +18,7 @@ export function ProfileHub({ initialData }: ProfileHubProps) {
   return (
     <div className="space-y-8">
       <section className="space-y-3">
-        <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
           Your Data
         </p>
         <h1 className="text-4xl font-black uppercase tracking-tight text-foreground">
@@ -36,22 +36,22 @@ export function ProfileHub({ initialData }: ProfileHubProps) {
           href={ROUTES.checkIn}
           label="Daily Check-In"
           description="Rate your health and happiness. Thirty seconds. Every day."
-          color="bg-brutal-pink"
-          textColor="text-brutal-pink-foreground"
+          color="bg-foreground"
+          textColor="text-background"
         />
         <ProfileCTA
           href={ROUTES.wishocracy}
           label="Wishocracy"
           description="Set your ideal budget priorities via pairwise comparisons"
-          color="bg-brutal-cyan"
-          textColor="text-brutal-cyan-foreground"
+          color="bg-background"
+          textColor="text-foreground"
         />
         <ProfileCTA
           href={ROUTES.alignment}
           label="Alignment"
           description="See which politicians match your priorities"
-          color="bg-brutal-yellow"
-          textColor="text-brutal-yellow-foreground"
+          color="bg-background"
+          textColor="text-foreground"
         />
         <ProfileCTA
           href={ROUTES.referendum}

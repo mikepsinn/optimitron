@@ -22,9 +22,9 @@ interface ExperimentTimeSeriesChartProps {
 }
 
 const SERIES_COLORS = [
-  "var(--brutal-pink)",
-  "var(--brutal-cyan)",
-  "var(--brutal-yellow)",
+  "var(--foreground)",
+  "var(--background)",
+  "var(--background)",
 ];
 
 export function ExperimentTimeSeriesChart({

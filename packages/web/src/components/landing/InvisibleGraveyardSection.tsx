@@ -95,7 +95,7 @@ export function InvisibleGraveyardSection() {
                   >
                     {ghost.emoji}
                   </span>
-                  <div className="relative z-10 p-6 border-4 border-brutal-yellow bg-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="relative z-10 p-6 border-4 border-background bg-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-3xl sm:text-4xl">{stat.emoji}</span>
                       <span className="text-3xl sm:text-4xl font-black text-brutal-red">

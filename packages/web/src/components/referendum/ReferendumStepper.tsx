@@ -205,7 +205,7 @@ const stepperMarkdownComponents = {
     );
   },
   blockquote: ({ children }: { children?: ReactNode }) => (
-    <blockquote className="border-l-4 border-brutal-pink bg-white/10 px-4 py-3 text-sm font-bold text-white">
+    <blockquote className="border-l-4 border-foreground bg-white/10 px-4 py-3 text-sm font-bold text-white">
       {children}
     </blockquote>
   ),

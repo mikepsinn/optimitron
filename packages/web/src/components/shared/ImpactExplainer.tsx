@@ -146,7 +146,7 @@ export function ImpactExplainer({
             {showFullAnalysisLink ? (
               <Link
                 href={ROUTES.impact}
-                className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
+                className="inline-flex items-center gap-2 text-xs font-black text-foreground underline"
               >
                 See the full analysis
                 <ArrowUpRight className="h-3 w-3" />

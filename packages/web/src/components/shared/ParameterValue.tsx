@@ -165,7 +165,7 @@ function ParameterDetailContent({
           {param.peerReviewed && (
             <Badge
               variant="outline"
-              className="text-[10px] px-1.5 py-0 h-5 font-bold uppercase border-primary bg-brutal-cyan text-brutal-cyan-foreground"
+              className="text-[10px] px-1.5 py-0 h-5 font-bold uppercase border-primary bg-background text-foreground"
             >
               peer-reviewed
             </Badge>

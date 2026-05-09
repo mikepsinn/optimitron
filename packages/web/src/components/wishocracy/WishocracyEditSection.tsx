@@ -138,7 +138,7 @@ export function WishocracyEditSection({
         <div className="flex items-center gap-3">
           <h3 className="text-xl font-black uppercase">Review & Edit Your Choices</h3>
           {hasChanges && !isOpen && (
-            <span className="px-2 py-1 bg-brutal-pink text-xs font-bold uppercase rounded text-brutal-pink-foreground">
+            <span className="px-2 py-1 bg-foreground text-xs font-bold uppercase rounded text-background">
               Unsaved Changes
             </span>
           )}
@@ -159,16 +159,16 @@ export function WishocracyEditSection({
             <div className="p-6 pt-0 border-t-4 border-primary">
               {/* Warning Banner */}
               {showWarning && itemsToDelete.size > 0 && (
-                <div className="mb-6 p-4 bg-brutal-yellow border-4 border-primary rounded">
+                <div className="mb-6 p-4 bg-background border-4 border-primary rounded">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-brutal-yellow-foreground mt-0.5" />
+                    <AlertTriangle className="w-5 h-5 text-foreground mt-0.5" />
                     <div>
-                      <p className="font-bold text-brutal-yellow-foreground">Warning: Item Removal</p>
-                      <p className="text-sm text-brutal-yellow-foreground mt-1">
+                      <p className="font-bold text-foreground">Warning: Item Removal</p>
+                      <p className="text-sm text-foreground mt-1">
                         Removing an item will permanently delete all allocations involving that item.
                         You&apos;ll need to redo those allocations if you change your mind.
                       </p>
-                      <p className="text-xs font-bold text-brutal-yellow-foreground mt-2">
+                      <p className="text-xs font-bold text-foreground mt-2">
                         Categories to be removed: {Array.from(itemsToDelete).map(id => WISHOCRATIC_ITEMS[id].name).join(", ")}
                       </p>
                     </div>
@@ -190,7 +190,7 @@ export function WishocracyEditSection({
                         key={itemId}
                         className={`p-3 border-2 rounded flex items-center justify-between ${
                           isSelected && !willBeDeleted
-                            ? "border-brutal-cyan bg-brutal-cyan"
+                            ? "border-background bg-background"
                             : willBeDeleted
                             ? "border-brutal-red bg-brutal-red"
                             : "border-primary bg-muted"
@@ -199,8 +199,8 @@ export function WishocracyEditSection({
                         <div className="flex items-center gap-3">
                           <span className="text-2xl">{item.icon}</span>
                           <div>
-                            <p className={`font-bold text-sm ${isSelected && !willBeDeleted ? "text-brutal-cyan-foreground" : willBeDeleted ? "text-brutal-red-foreground" : ""}`}>{item.name}</p>
-                            <p className={`text-xs ${isSelected && !willBeDeleted ? "text-brutal-cyan-foreground" : willBeDeleted ? "text-brutal-red-foreground" : "text-muted-foreground"}`}>
+                            <p className={`font-bold text-sm ${isSelected && !willBeDeleted ? "text-foreground" : willBeDeleted ? "text-brutal-red-foreground" : ""}`}>{item.name}</p>
+                            <p className={`text-xs ${isSelected && !willBeDeleted ? "text-foreground" : willBeDeleted ? "text-brutal-red-foreground" : "text-muted-foreground"}`}>
                               {editedAllocations.filter(c => c.itemAId === itemId || c.itemBId === itemId).length} allocations
                             </p>
                           </div>
@@ -212,7 +212,7 @@ export function WishocracyEditSection({
                             onChange={(e) => handleItemToggle(itemId, e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-full h-full bg-muted border-4 border-primary peer-checked:bg-brutal-cyan transition-colors" />
+                          <div className="w-full h-full bg-muted border-4 border-primary peer-checked:bg-background transition-colors" />
                           <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-foreground border-4 border-primary transition-transform peer-checked:translate-x-6" />
                         </label>
                       </div>
@@ -271,8 +271,8 @@ export function WishocracyEditSection({
                               }}
                             />
                             <div className="flex justify-between text-sm font-bold">
-                              <span className="text-brutal-pink">{comp.allocationA}%</span>
-                              <span className="text-brutal-cyan">{comp.allocationB}%</span>
+                              <span className="text-foreground">{comp.allocationA}%</span>
+                              <span className="text-background">{comp.allocationB}%</span>
                             </div>
                           </div>
                         </div>
@@ -294,7 +294,7 @@ export function WishocracyEditSection({
                 <Button
                   onClick={handleSave}
                   disabled={!hasChanges || isSaving}
-                  className="flex-1 h-12 font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-12 font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {isSaving ? "Saving..." : "Save Changes"}

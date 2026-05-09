@@ -1,9 +1,9 @@
 type CardColor = "pink" | "cyan" | "yellow" | "green";
 
 const dNameColorClasses: Record<CardColor, string> = {
-  pink: "text-brutal-pink",
-  cyan: "text-brutal-cyan",
-  yellow: "text-brutal-yellow-foreground",
+  pink: "text-foreground",
+  cyan: "text-background",
+  yellow: "text-foreground",
   green: "text-brutal-green",
 };
 
@@ -39,7 +39,7 @@ export function AgencyStampHero({
         <p className="text-lg font-bold leading-relaxed text-muted-foreground italic">
           &ldquo;{tagline}&rdquo;
         </p>
-        <p className="text-xs font-bold uppercase tracking-[0.1em] text-brutal-pink">
+        <p className="text-xs font-bold uppercase tracking-[0.1em] text-foreground">
           — Wishonia, Planetary Systems Engineer
         </p>
       </div>

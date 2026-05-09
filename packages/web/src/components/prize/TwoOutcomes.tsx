@@ -16,7 +16,7 @@ export function TwoOutcomes({ fail, success, footer }: TwoOutcomesProps) {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-primary bg-background text-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] mb-2 opacity-80">
             {fail.title}
           </p>
@@ -27,7 +27,7 @@ export function TwoOutcomes({ fail, success, footer }: TwoOutcomesProps) {
             {fail.description}
           </p>
         </div>
-        <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-primary bg-background text-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] mb-2 opacity-80">
             {success.title}
           </p>

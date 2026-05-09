@@ -19,7 +19,7 @@ export function PrivacyToggle({ isPublic, onChange }: PrivacyToggleProps) {
         <motion.div
           className={cn(
             "absolute h-[calc(100%-8px)] w-[calc(50%-4px)] border-4 border-primary",
-            isPublic ? "bg-brutal-yellow" : "bg-muted-foreground/20"
+            isPublic ? "bg-background" : "bg-muted-foreground/20"
           )}
           initial={false}
           animate={{

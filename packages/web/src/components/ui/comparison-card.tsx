@@ -20,9 +20,9 @@ export interface ComparisonCardProps {
 }
 
 const colorClasses: Record<ComparisonColor, string> = {
-  pink: "text-brutal-pink",
-  cyan: "text-brutal-cyan",
-  yellow: "text-brutal-yellow",
+  pink: "text-foreground",
+  cyan: "text-background",
+  yellow: "text-background",
   green: "text-brutal-green",
   foreground: "text-foreground",
   default: "",

@@ -52,7 +52,7 @@ export default function OpportunityCostTicker() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase text-center text-brutal-yellow mb-8"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase text-center text-background mb-8"
         >
           OPPORTUNITY COST CLOCK
         </motion.h2>
@@ -63,11 +63,11 @@ export default function OpportunityCostTicker() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
           >
-            <Card className="bg-brutal-pink border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black text-brutal-pink-foreground tabular-nums mb-4">
+            <Card className="bg-foreground border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+              <div className="text-4xl sm:text-5xl md:text-6xl font-black text-background tabular-nums mb-4">
                 {formatNumber(todayDeaths)}
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl font-black text-brutal-pink-foreground uppercase">
+              <div className="text-lg sm:text-xl md:text-2xl font-black text-background uppercase">
                 LIVES LOST TO POLICY INEFFICIENCY TODAY
               </div>
             </Card>
@@ -78,11 +78,11 @@ export default function OpportunityCostTicker() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
           >
-            <Card className="bg-brutal-cyan border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black text-brutal-cyan-foreground tabular-nums mb-4">
+            <Card className="bg-background border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+              <div className="text-4xl sm:text-5xl md:text-6xl font-black text-foreground tabular-nums mb-4">
                 {formatNumber(yearDeaths)}
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl font-black text-brutal-cyan-foreground uppercase">
+              <div className="text-lg sm:text-xl md:text-2xl font-black text-foreground uppercase">
                 LIVES LOST THIS YEAR
               </div>
             </Card>

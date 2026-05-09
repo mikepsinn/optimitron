@@ -57,7 +57,7 @@ export function DeclarationBody() {
             );
           },
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-brutal-pink bg-muted px-4 py-3 text-sm font-bold text-foreground">
+            <blockquote className="border-l-4 border-foreground bg-muted px-4 py-3 text-sm font-bold text-foreground">
               {children}
             </blockquote>
           ),

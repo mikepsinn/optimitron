@@ -151,7 +151,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
       {/* Back link */}
       <Link
         href={`/governments/${gov.code}/politicians`}
-        className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+        className="text-sm font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
       >
         &larr; {gov.name} Politicians
       </Link>
@@ -178,8 +178,8 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
             {rank > 0 && ` · Rank #${rank} of ${allSorted.length}`}
           </p>
           {/* Score badge */}
-          <div className="mt-3 inline-block border-4 border-primary bg-brutal-yellow px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-[10px] font-black uppercase text-brutal-yellow-foreground tracking-wider">
+          <div className="mt-3 inline-block border-4 border-primary bg-background px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-[10px] font-black uppercase text-foreground tracking-wider">
               Score
             </div>
             <div className={`text-2xl sm:text-3xl font-black ${score >= 0 ? "text-brutal-green" : "text-brutal-red"}`}>
@@ -223,7 +223,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
         <BrutalCard bgColor="yellow" shadowSize={8} padding="lg" className="mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <div className="text-xs font-black uppercase text-brutal-yellow-foreground mb-1">
+              <div className="text-xs font-black uppercase text-foreground mb-1">
                 Score
               </div>
               <div className={`text-3xl sm:text-4xl font-black ${score >= 0 ? "text-brutal-green" : "text-brutal-red"}`}>
@@ -273,7 +273,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               {getMilitarySynonym(politician.bioguideId + "-ratio")} : medicines ratio
             </div>
             <div className={`text-3xl sm:text-4xl font-black ${
-              politician.ratio >= 100 ? "text-brutal-red" : politician.ratio <= 1 ? "text-brutal-cyan" : "text-foreground"
+              politician.ratio >= 100 ? "text-brutal-red" : politician.ratio <= 1 ? "text-background" : "text-foreground"
             }`}>
               {formatRatio(politician.ratio)}
             </div>
@@ -307,7 +307,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
             </div>
             <div>
               <div className="flex justify-between items-baseline mb-1">
-                <span className="text-xs font-black uppercase text-brutal-cyan">
+                <span className="text-xs font-black uppercase text-background">
                   Testing Medicines
                 </span>
                 <span className="text-sm font-black text-foreground">
@@ -361,7 +361,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
                   <div
                     key={v.bill}
                     className={`border-4 border-primary p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
-                      isMilitary ? "bg-brutal-red" : "bg-brutal-cyan"
+                      isMilitary ? "bg-brutal-red" : "bg-background"
                     }`}
                   >
                     <div className="flex justify-between items-center mb-2">
@@ -491,7 +491,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               </p>
             </div>
             <div>
-              <div className="text-xs font-black uppercase text-brutal-cyan mb-2">
+              <div className="text-xs font-black uppercase text-background mb-2">
                 Clinical Trials $
               </div>
               <div className="bg-background border-2 border-primary px-4 py-2 font-mono text-sm text-foreground mb-2">
@@ -548,7 +548,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
       </section>
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-brutal-cyan p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <section className="border-4 border-primary bg-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
           Does This Match Your Priorities?
         </h2>

@@ -166,7 +166,7 @@ function UnmeasuredSpendingSection({ task }: { task: TaskCardTask }) {
 
   return (
     <div className="space-y-1 border-t-2 border-foreground/20 pt-2">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-yellow">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-background">
         Unmeasured Spending
       </p>
       {cost != null ? (
@@ -257,12 +257,12 @@ export function TaskCard({
                   alt={targetLabel}
                   src={task.assigneePerson?.image ?? task.assigneeOrganization?.squareLogoUrl ?? undefined}
                 />
-                <Avatar.Fallback className="bg-brutal-pink font-black text-background">
+                <Avatar.Fallback className="bg-foreground font-black text-background">
                   {fallbackInitials || "?"}
                 </Avatar.Fallback>
               </Avatar>
               <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground">
                   Assignee
                 </p>
                 <p className="truncate text-sm font-black uppercase">

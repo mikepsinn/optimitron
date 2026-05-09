@@ -95,7 +95,7 @@ function GovernmentRowLink({
   return (
     <Link
       href={href}
-      className={`block -m-3 p-3 transition-colors hover:text-brutal-pink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className ?? ""}`}
+      className={`block -m-3 p-3 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className ?? ""}`}
     >
       {children}
     </Link>
@@ -357,7 +357,7 @@ export function GovernmentLeaderboard({
             placeholder="Search country..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brutal-pink flex-1 sm:w-48"
+            className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground flex-1 sm:w-48"
           />
         </div>
       </div>

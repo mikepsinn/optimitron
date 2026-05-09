@@ -27,19 +27,19 @@ const DEATHS_DAILY = Math.round(
 const TEMPLATES = [
   {
     label: "Impact-Focused",
-    color: "text-brutal-cyan",
+    color: "text-background",
     text: (url: string) =>
       `Your vote = ${LIVES_PER_VOTE} lives saved + ${SUFFERING_YEARS_PER_VOTE} years of suffering prevented. It takes 30 seconds. We can get cures to patients ${EFFICACY_LAG} years sooner through pragmatic trials. ${url}`,
   },
   {
     label: "The Math",
-    color: "text-brutal-pink",
+    color: "text-foreground",
     text: (url: string) =>
       `${DEATHS_DAILY} people die daily from preventable causes. A dominant assurance bond that funds pragmatic clinical trials. Projected return if thresholds not met: ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} (based on VC-sector diversification). ${url}`,
   },
   {
     label: "Personal",
-    color: "text-brutal-yellow",
+    color: "text-background",
     text: (url: string) =>
       `Everyone knows someone suffering from disease. What if we could get cures to them ${EFFICACY_LAG} years sooner? Pragmatic trials let patients access treatments after safety testing while collecting real-world efficacy data. 30 seconds to vote: ${url}`,
   },
@@ -85,7 +85,7 @@ export function ShareTemplatesCard({ referralUrl }: ShareTemplatesCardProps) {
           return (
             <div
               key={t.label}
-              className="border-4 border-primary p-4 hover:bg-brutal-yellow/10 transition-colors"
+              className="border-4 border-primary p-4 hover:bg-background/10 transition-colors"
             >
               <div className="flex items-start justify-between gap-4 mb-2">
                 <span className={`text-xs font-black uppercase ${t.color}`}>
@@ -93,7 +93,7 @@ export function ShareTemplatesCard({ referralUrl }: ShareTemplatesCardProps) {
                 </span>
                 <button
                   onClick={() => void copyTemplate(text, index)}
-                  className="text-xs font-black uppercase border-4 border-primary px-3 py-1 hover:bg-brutal-pink hover:text-background transition-colors shrink-0"
+                  className="text-xs font-black uppercase border-4 border-primary px-3 py-1 hover:bg-foreground hover:text-background transition-colors shrink-0"
                 >
                   {copiedIndex === index ? "Copied!" : "Copy"}
                 </button>

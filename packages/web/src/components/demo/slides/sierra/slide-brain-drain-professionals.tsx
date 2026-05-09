@@ -239,7 +239,7 @@ export function SlideBrainDrainProfessionals() {
           <div className="font-pixel text-lg md:text-xl text-amber-400">
             ALEXANDER FLEMING SURVIVED WWI. ONE SCIENTIST. ONE ACCIDENT.
           </div>
-          <div className="font-pixel text-lg md:text-xl text-brutal-cyan">
+          <div className="font-pixel text-lg md:text-xl text-background">
             PENICILLIN. ONE BILLION LIVES SAVED.
           </div>
           <div className="font-pixel text-lg md:text-xl text-red-500 animate-pulse mt-2">

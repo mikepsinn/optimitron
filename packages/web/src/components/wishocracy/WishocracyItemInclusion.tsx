@@ -95,7 +95,7 @@ export function WishocracyItemInclusion({
         <div className="flex items-center justify-between mb-2">
           <button
             onClick={currentIndex === 0 ? onBack : () => setCurrentIndex(prev => prev - 1)}
-            className="flex items-center gap-1 text-sm font-bold uppercase hover:text-brutal-pink transition-colors"
+            className="flex items-center gap-1 text-sm font-bold uppercase hover:text-foreground transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
             Back
@@ -106,7 +106,7 @@ export function WishocracyItemInclusion({
         </div>
         <div className="w-full h-3 bg-background border-4 border-primary">
           <motion.div
-            className="h-full bg-brutal-cyan border-r-2 border-primary"
+            className="h-full bg-background border-r-2 border-primary"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.3 }}
@@ -141,7 +141,7 @@ export function WishocracyItemInclusion({
                 </p>
                 <Button
                   onClick={handleComplete}
-                  className="w-full h-16 text-xl font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                  className="w-full h-16 text-xl font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                 >
                   {includedItemIds.size >= 2 ? 'Start Comparing →' : 'Continue →'}
                 </Button>
@@ -192,7 +192,7 @@ export function WishocracyItemInclusion({
                 </Button>
                 <Button
                   onClick={handleFund}
-                  className="h-16 text-base sm:text-lg font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all whitespace-normal"
+                  className="h-16 text-base sm:text-lg font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all whitespace-normal"
                 >
                   More Than $0
                 </Button>

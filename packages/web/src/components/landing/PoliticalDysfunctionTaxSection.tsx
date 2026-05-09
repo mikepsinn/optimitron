@@ -23,25 +23,25 @@ const wasteBreakdown = [
     label: "Healthcare Inefficiency",
     stat: "17.3%",
     detail: "US spends 17.3% of GDP on healthcare. Singapore spends 4.1% and lives 6 years longer. You are paying quadruple for a worse product. On purpose, apparently.",
-    color: "bg-brutal-cyan text-brutal-cyan-foreground",
+    color: "bg-background text-foreground",
   },
   {
     label: "Administrative Bloat",
     stat: "$4.9T",
     detail: "Allocative inefficiency in the US alone. That is money spent deciding how to spend money. Your bureaucracy has a bureaucracy and it also needs a meeting.",
-    color: "bg-brutal-yellow text-brutal-yellow-foreground",
+    color: "bg-background text-foreground",
   },
   {
     label: "Regulatory Capture",
     stat: "Systemic",
     detail: "Industries writing their own regulations. It is like letting students grade their own exams, except the students have lobbyists and the exams affect whether people live or die.",
-    color: "bg-brutal-pink text-brutal-pink-foreground",
+    color: "bg-foreground text-background",
   },
   {
     label: "Military Overspend",
     stat: `${milSpendFmt}/yr`,
     detail: `Global military spending. That is ${milToTrialsRatio} times more than you spend on disease research. You have prioritised blowing things up over not dying. Bold strategy.`,
-    color: "bg-brutal-cyan text-brutal-cyan-foreground",
+    color: "bg-background text-foreground",
   },
 ];
 

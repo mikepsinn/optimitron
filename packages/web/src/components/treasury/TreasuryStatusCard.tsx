@@ -20,13 +20,13 @@ export function TreasuryStatusCard() {
       label: "UBI Pending",
       value: `${formatWish(ubiPendingBalance)} $WISH`,
       detail: "Awaiting distribution to citizens",
-      color: "bg-brutal-cyan",
+      color: "bg-background",
     },
     {
       label: "Per Citizen",
       value: citizenCountNum > 0 ? `${formatWish(perCitizen)} $WISH` : "\u2014",
       detail: citizenCountNum > 0 ? "Next distribution" : "No citizens yet",
-      color: "bg-brutal-cyan",
+      color: "bg-background",
     },
     {
       label: "Registered Citizens",
@@ -59,7 +59,7 @@ export function TreasuryStatusCard() {
           Treasury Status
         </h2>
         {isDemo && (
-          <span className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground px-2 py-0.5 text-[10px] font-black uppercase">
+          <span className="border-4 border-primary bg-background text-foreground px-2 py-0.5 text-[10px] font-black uppercase">
             Demo
           </span>
         )}
@@ -68,7 +68,7 @@ export function TreasuryStatusCard() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`border-4 border-primary ${stat.color} ${stat.color === "bg-brutal-cyan" ? "text-brutal-cyan-foreground" : ""} p-3`}
+            className={`border-4 border-primary ${stat.color} ${stat.color === "bg-background" ? "text-foreground" : ""} p-3`}
           >
             <div className="text-[10px] font-black uppercase">
               {stat.label}

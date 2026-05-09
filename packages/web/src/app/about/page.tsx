@@ -156,7 +156,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
           {steps.map((step, index) => (
             <div key={step.label} className="card text-center py-5">
-              <div className="text-brutal-pink font-black text-lg">{index + 1}</div>
+              <div className="text-foreground font-black text-lg">{index + 1}</div>
               <div className="text-foreground font-black text-sm uppercase">{step.label}</div>
               <div className="text-xs text-muted-foreground mt-2 font-bold leading-relaxed">
                 {step.desc}
@@ -175,9 +175,9 @@ export default function AboutPage() {
           up — your species has a habit of confusing different piles of money.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="card bg-brutal-pink text-brutal-pink-foreground border-primary">
+          <div className="card bg-foreground text-background border-primary">
             <div className="text-2xl mb-2">🏆</div>
-            <h3 className="font-black text-brutal-pink-foreground mb-2">Prize (Phase 1)</h3>
+            <h3 className="font-black text-background mb-2">Prize (Phase 1)</h3>
             <p className="text-sm text-background font-bold leading-relaxed">
               Deposit into the prize pool. Recruit voters for the 1% Treaty referendum. If it
               works, you share the prize. If it doesn&apos;t, you get ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your
@@ -186,12 +186,12 @@ export default function AboutPage() {
             <NavItemLink
               item={prizeLink}
               variant="custom"
-              className="mt-4 inline-flex items-center text-sm font-black uppercase text-brutal-pink-foreground hover:text-brutal-yellow transition-colors"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase text-background hover:text-background transition-colors"
             >
               Play the Game &rarr;
             </NavItemLink>
           </div>
-          <div className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary">
+          <div className="card bg-background text-foreground border-primary">
             <div className="text-2xl mb-2">🤝</div>
             <h3 className="font-black mb-2">IABs (Phase 2)</h3>
             <p className="text-sm font-bold leading-relaxed">
@@ -202,12 +202,12 @@ export default function AboutPage() {
             <NavItemLink
               item={iabLink}
               variant="custom"
-              className="mt-4 inline-flex items-center text-sm font-black uppercase hover:text-brutal-pink transition-colors"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase hover:text-foreground transition-colors"
             >
               Learn About IABs &rarr;
             </NavItemLink>
           </div>
-          <div className="card bg-brutal-yellow text-brutal-yellow-foreground border-primary">
+          <div className="card bg-background text-foreground border-primary">
             <div className="text-2xl mb-2">💸</div>
             <h3 className="font-black mb-2">$WISH</h3>
             <p className="text-sm font-bold leading-relaxed">
@@ -218,7 +218,7 @@ export default function AboutPage() {
             <NavItemLink
               item={dtreasuryLink}
               variant="custom"
-              className="mt-4 inline-flex items-center text-sm font-black uppercase hover:text-brutal-pink transition-colors"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase hover:text-foreground transition-colors"
             >
               How $WISH Works &rarr;
             </NavItemLink>
@@ -228,14 +228,14 @@ export default function AboutPage() {
           <NavItemLink
             item={prizeLink}
             variant="custom"
-            className="inline-flex items-center text-sm font-black uppercase text-foreground hover:text-brutal-pink transition-colors"
+            className="inline-flex items-center text-sm font-black uppercase text-foreground hover:text-foreground transition-colors"
           >
             Play the Game &rarr;
           </NavItemLink>
           <NavItemLink
             item={transparencyLink}
             variant="custom"
-            className="inline-flex items-center text-sm font-black uppercase text-foreground hover:text-brutal-pink transition-colors"
+            className="inline-flex items-center text-sm font-black uppercase text-foreground hover:text-foreground transition-colors"
           >
             See The Full Pipeline &rarr;
           </NavItemLink>
@@ -259,13 +259,13 @@ export default function AboutPage() {
               external
               className="card group hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
             >
-              <h3 className="text-foreground font-black group-hover:text-brutal-pink transition-colors">
+              <h3 className="text-foreground font-black group-hover:text-foreground transition-colors">
                 {paper.label}
               </h3>
               <p className="text-sm text-muted-foreground mt-2 font-bold leading-relaxed">
                 {paper.description}
               </p>
-              <span className="text-xs text-brutal-pink mt-3 inline-block font-black uppercase">
+              <span className="text-xs text-foreground mt-3 inline-block font-black uppercase">
                 Read paper &rarr;
               </span>
             </NavItemLink>
@@ -273,7 +273,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary text-center">
+      <section className="card bg-background text-foreground border-primary text-center">
         <h2 className="text-2xl font-black mb-3 uppercase">
           Open By Design
         </h2>

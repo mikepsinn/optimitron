@@ -94,7 +94,7 @@ export function TaskCommunicationActions({
 
   return (
     <div className="space-y-2">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground">
         Push This Task
       </p>
       {!compact ? (

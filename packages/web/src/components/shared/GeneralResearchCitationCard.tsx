@@ -27,7 +27,7 @@ export function GeneralResearchCitationCard({
           <div className="flex-1">
             <h3 className="text-xl md:text-2xl font-black uppercase mb-2">{citation.title}</h3>
             {firstSource && (
-              <div className="text-sm font-bold text-brutal-pink mb-4">{firstSource.text}</div>
+              <div className="text-sm font-bold text-foreground mb-4">{firstSource.text}</div>
             )}
           </div>
           {firstSource && (
@@ -43,9 +43,9 @@ export function GeneralResearchCitationCard({
         </div>
         {firstQuote && <p className="text-lg mb-4 leading-relaxed">{firstQuote}</p>}
         {citation.notes && (
-          <div className="bg-brutal-yellow border-l-4 border-brutal-yellow p-4">
-            <div className="text-sm font-bold uppercase mb-1 text-brutal-yellow-foreground">IMPACT</div>
-            <div className="font-bold text-brutal-yellow-foreground">{citation.notes}</div>
+          <div className="bg-background border-l-4 border-background p-4">
+            <div className="text-sm font-bold uppercase mb-1 text-foreground">IMPACT</div>
+            <div className="font-bold text-foreground">{citation.notes}</div>
           </div>
         )}
       </Card>
@@ -83,7 +83,7 @@ export function GeneralResearchCitationCard({
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brutal-pink hover:underline font-bold flex items-center gap-1 break-words"
+                  className="text-foreground hover:underline font-bold flex items-center gap-1 break-words"
                 >
                   {source.text}
                   <ExternalLink className="h-4 w-4 flex-shrink-0" />
@@ -95,9 +95,9 @@ export function GeneralResearchCitationCard({
       )}
 
       {citation.notes && (
-        <div className="bg-brutal-yellow border-l-4 border-brutal-yellow p-4">
-          <div className="text-sm font-bold uppercase mb-1 text-brutal-yellow-foreground">NOTES</div>
-          <div className="font-bold text-brutal-yellow-foreground">{citation.notes}</div>
+        <div className="bg-background border-l-4 border-background p-4">
+          <div className="text-sm font-bold uppercase mb-1 text-foreground">NOTES</div>
+          <div className="font-bold text-foreground">{citation.notes}</div>
         </div>
       )}
     </Card>

@@ -42,7 +42,7 @@ export function LandingProblemSection() {
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Financial Cost */}
-          <div className="border-4 border-brutal-yellow bg-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-background bg-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="mb-4 inline-block border-4 border-primary bg-brutal-red px-3 py-1">
               <span className="text-xs font-black uppercase text-brutal-red-foreground">
                 Financial Cost
@@ -72,8 +72,8 @@ export function LandingProblemSection() {
           </div>
 
           {/* Human Cost */}
-          <div className="border-4 border-brutal-yellow bg-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="mb-4 inline-block border-4 border-primary bg-brutal-yellow px-3 py-1">
+          <div className="border-4 border-background bg-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="mb-4 inline-block border-4 border-primary bg-background px-3 py-1">
               <span className="text-xs font-black uppercase text-foreground">
                 Human Cost
               </span>
@@ -104,7 +104,7 @@ export function LandingProblemSection() {
         </div>
 
         <div className="mt-8">
-          <div className="border-4 border-brutal-yellow bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-background bg-background text-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-center text-sm font-bold">
               On my planet, when a system kills{" "}
               <ParameterValue param={{...GLOBAL_DISEASE_DEATHS_DAILY, unit: ""}} /> people a day and costs{" "}

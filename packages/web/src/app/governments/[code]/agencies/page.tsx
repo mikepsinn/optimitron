@@ -43,7 +43,7 @@ export default async function AgenciesIndexPage({ params }: PageProps) {
       {/* Back link */}
       <Link
         href={`/governments/${gov.code}`}
-        className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
+        className="text-sm font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
       >
         &larr; {gov.name}
       </Link>
@@ -96,11 +96,11 @@ export default async function AgenciesIndexPage({ params }: PageProps) {
       )}
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-brutal-pink p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <h2 className="mb-3 text-2xl font-black uppercase text-brutal-pink-foreground">
+      <section className="border-4 border-primary bg-foreground p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <h2 className="mb-3 text-2xl font-black uppercase text-background">
           See How Wishonia Does It
         </h2>
-        <p className="mx-auto mb-6 max-w-2xl text-lg font-bold text-brutal-pink-foreground">
+        <p className="mx-auto mb-6 max-w-2xl text-lg font-bold text-background">
           On a well-run planet, agencies are graded in real time and replaced
           when they fail. Here is what that looks like.
         </p>

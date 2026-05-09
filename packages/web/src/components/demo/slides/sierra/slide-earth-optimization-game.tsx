@@ -147,7 +147,7 @@ export function SlideEarthOptimizationGame() {
                 </div>
                 {/* Cures portion */}
                 <div
-                  className="absolute inset-y-0 right-0 bg-brutal-cyan transition-all duration-100 overflow-hidden rounded-r"
+                  className="absolute inset-y-0 right-0 bg-background transition-all duration-100 overflow-hidden rounded-r"
                   style={{ width: `${Math.max(curesPct, 0.2)}%` }}
                 />
               </div>
@@ -166,13 +166,13 @@ export function SlideEarthOptimizationGame() {
             </div>
             <div className="flex justify-between font-pixel text-lg md:text-xl">
               <span className="text-brutal-red">💣 {(100 - curesPct).toFixed(0)}% MILITARY</span>
-              <span className="text-brutal-cyan">CURES {curesPct.toFixed(1)}% 🧬</span>
+              <span className="text-background">CURES {curesPct.toFixed(1)}% 🧬</span>
             </div>
 
             {/* +$27B popup */}
             <div className="h-12 flex items-center justify-center">
               {phase >= 3 && (
-                <div className="font-pixel text-xl md:text-2xl text-brutal-cyan animate-bounce bg-muted border-2 border-brutal-cyan rounded px-6 py-2">
+                <div className="font-pixel text-xl md:text-2xl text-background animate-bounce bg-muted border-2 border-background rounded px-6 py-2">
                   🧪 +$27B → CURES 🧪
                 </div>
               )}

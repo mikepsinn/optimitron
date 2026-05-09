@@ -58,7 +58,7 @@ export function DecentralizedFDASection() {
                 <th className="p-3 text-left text-xs font-black uppercase text-brutal-red">
                   Current System
                 </th>
-                <th className="p-3 text-left text-xs font-black uppercase text-brutal-cyan">
+                <th className="p-3 text-left text-xs font-black uppercase text-background">
                   dFDA
                 </th>
                 <th className="p-3 text-right text-xs font-black uppercase text-muted-foreground">
@@ -81,7 +81,7 @@ export function DecentralizedFDASection() {
                   <td className="p-3 font-bold text-sm text-foreground">
                     {row.dfda}
                   </td>
-                  <td className="p-3 text-right font-black text-sm text-brutal-cyan">
+                  <td className="p-3 text-right font-black text-sm text-background">
                     {row.improvement}
                   </td>
                 </tr>
@@ -92,7 +92,7 @@ export function DecentralizedFDASection() {
 
         {/* Stage descriptions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-8">
-          <div className="p-4 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground">
+          <div className="p-4 border-4 border-primary bg-background text-foreground">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-black px-2 py-0.5 bg-foreground text-background">
                 Stage 1
@@ -103,7 +103,7 @@ export function DecentralizedFDASection() {
               Real-world evidence from existing data — prescriptions, wearables, lab results. Pattern recognition, not recruitment.
             </p>
           </div>
-          <div className="p-4 border-4 border-primary bg-brutal-pink text-brutal-pink-foreground">
+          <div className="p-4 border-4 border-primary bg-foreground text-background">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-black px-2 py-0.5 bg-foreground text-background">
                 Stage 2

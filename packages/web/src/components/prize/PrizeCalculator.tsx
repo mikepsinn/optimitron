@@ -127,7 +127,7 @@ export function PrizeCalculator() {
           initial={reduced ? {} : { opacity: 0.5, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="p-5 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="p-5 border-4 border-primary bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
           <div className="text-xs font-black uppercase mb-1">
             If Metrics Miss Targets (15 Years)
@@ -154,7 +154,7 @@ export function PrizeCalculator() {
           initial={reduced ? {} : { opacity: 0.5, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="p-5 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="p-5 border-4 border-primary bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
           <div className="text-xs font-black uppercase mb-1">
             If Metrics Hit Targets (15 Years)

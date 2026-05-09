@@ -39,14 +39,14 @@ const RATING_SWATCHES: Record<CostEffectivenessRating, RatingSwatch> = {
     badge: 'default',
   },
   good: {
-    bg: 'bg-brutal-cyan',
-    text: 'text-brutal-cyan-foreground',
+    bg: 'bg-background',
+    text: 'text-foreground',
     border: 'border-foreground',
     badge: 'secondary',
   },
   moderate: {
-    bg: 'bg-brutal-yellow',
-    text: 'text-brutal-yellow-foreground',
+    bg: 'bg-background',
+    text: 'text-foreground',
     border: 'border-foreground',
     badge: 'outline',
   },

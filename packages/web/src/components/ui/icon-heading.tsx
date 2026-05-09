@@ -17,9 +17,9 @@ export interface IconHeadingProps {
 }
 
 const iconBoxColors: Record<IconBoxColor, string> = {
-  cyan: "bg-brutal-cyan",
-  pink: "bg-brutal-pink",
-  yellow: "bg-brutal-yellow",
+  cyan: "bg-background",
+  pink: "bg-foreground",
+  yellow: "bg-background",
   green: "bg-brutal-green",
   foreground: "bg-foreground text-background",
 }

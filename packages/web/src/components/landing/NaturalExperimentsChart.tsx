@@ -100,7 +100,7 @@ export function NaturalExperimentsChart() {
                   </span>
                   <div className="flex items-center gap-2 shrink-0">
                     <span
-                      className={`font-black text-lg ${good ? "text-brutal-cyan" : "text-brutal-red"}`}
+                      className={`font-black text-lg ${good ? "text-background" : "text-brutal-red"}`}
                     >
                       {primary.percentChange > 0 ? "+" : ""}
                       {primary.percentChange.toFixed(1)}%
@@ -126,7 +126,7 @@ export function NaturalExperimentsChart() {
                         ease: [0.87, 0, 0.13, 1],
                       }}
                       style={{ originX: 0, width: `${barWidth}%` }}
-                      className={`absolute inset-y-0 left-0 ${good ? "bg-brutal-cyan" : "bg-brutal-red"}`}
+                      className={`absolute inset-y-0 left-0 ${good ? "bg-background" : "bg-brutal-red"}`}
                     />
                   </div>
                   <div className="text-xs text-muted-foreground font-bold shrink-0 hidden sm:block w-36 text-right">
@@ -164,7 +164,7 @@ export function NaturalExperimentsChart() {
                                 </span>
                               </span>
                               <span
-                                className={`text-sm font-black shrink-0 ${o.directionCorrect ? "text-brutal-cyan" : "text-brutal-red"}`}
+                                className={`text-sm font-black shrink-0 ${o.directionCorrect ? "text-background" : "text-brutal-red"}`}
                               >
                                 {o.percentChange > 0 ? "+" : ""}
                                 {o.percentChange.toFixed(1)}%
@@ -180,7 +180,7 @@ export function NaturalExperimentsChart() {
                                     ease: [0.87, 0, 0.13, 1],
                                   }}
                                   style={{ originX: 0, width: `${oBarW}%` }}
-                                  className={`absolute inset-y-0 left-0 ${o.directionCorrect ? "bg-brutal-cyan" : "bg-brutal-red"}`}
+                                  className={`absolute inset-y-0 left-0 ${o.directionCorrect ? "bg-background" : "bg-brutal-red"}`}
                                 />
                               </div>
                               <span className="text-xs text-muted-foreground font-bold shrink-0">
@@ -218,7 +218,7 @@ export function NaturalExperimentsChart() {
         <NavItemLink
           item={opgLink}
           variant="custom"
-          className="inline-flex items-center text-sm font-black text-brutal-pink hover:text-foreground uppercase transition-colors"
+          className="inline-flex items-center text-sm font-black text-foreground hover:text-foreground uppercase transition-colors"
         >
           View all policy analyses &rarr;
         </NavItemLink>

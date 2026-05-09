@@ -44,7 +44,7 @@ export default async function LegislationDetailPage({
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <Link href={ROUTES.legislation} className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink underline underline-offset-4">
+        <Link href={ROUTES.legislation} className="text-xs font-black uppercase tracking-[0.2em] text-foreground underline underline-offset-4">
           ← All legislation
         </Link>
         <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -84,7 +84,7 @@ export default async function LegislationDetailPage({
             href={entry.editUrl}
             target="_blank"
             rel="noreferrer"
-            className="border-4 border-primary bg-brutal-yellow px-4 py-2 text-xs font-black uppercase tracking-wide text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="border-4 border-primary bg-background px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
             Edit on GitHub
           </a>
@@ -113,8 +113,8 @@ export default async function LegislationDetailPage({
 function StatusBadge({ status }: { status: "draft" | "reviewed" }) {
   const className =
     status === "reviewed"
-      ? "bg-brutal-cyan text-brutal-cyan-foreground"
-      : "bg-brutal-yellow text-brutal-yellow-foreground";
+      ? "bg-background text-foreground"
+      : "bg-background text-foreground";
 
   return (
     <span className={`border-2 border-primary px-2 py-1 text-xs font-black uppercase tracking-wide ${className}`}>

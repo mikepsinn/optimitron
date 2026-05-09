@@ -8,25 +8,25 @@ import type {
 } from "@optimitron/data/datasets/agency-performance";
 
 const OUTCOME_COLORS = [
-  "var(--brutal-pink)",
-  "var(--brutal-yellow)",
+  "var(--foreground)",
+  "var(--background)",
   "var(--muted-foreground)",
   "var(--brutal-red)",
 ];
 
 const gradeColors: Record<AgencyGrade, string> = {
-  A: "bg-brutal-cyan text-brutal-cyan-foreground",
-  B: "bg-brutal-cyan text-brutal-cyan-foreground",
-  C: "bg-brutal-yellow text-brutal-yellow-foreground",
-  D: "bg-brutal-yellow text-brutal-yellow-foreground",
+  A: "bg-background text-foreground",
+  B: "bg-background text-foreground",
+  C: "bg-background text-foreground",
+  D: "bg-background text-foreground",
   F: "bg-brutal-red text-brutal-red-foreground",
 };
 
 const gradeBorderColors: Record<AgencyGrade, string> = {
-  A: "border-brutal-cyan",
-  B: "border-brutal-cyan",
-  C: "border-brutal-yellow",
-  D: "border-brutal-yellow",
+  A: "border-background",
+  B: "border-background",
+  C: "border-background",
+  D: "border-background",
   F: "border-brutal-red",
 };
 
@@ -188,7 +188,7 @@ export function AgencyGradeChart({
         <motion.path
           d={spendPath}
           fill="none"
-          stroke="var(--brutal-cyan)"
+          stroke="var(--background)"
           strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -236,7 +236,7 @@ export function AgencyGradeChart({
           x={5}
           y={PAD.top + 4}
           textAnchor="start"
-          className="fill-brutal-cyan text-[8px] font-black"
+          className="fill-background text-[8px] font-black"
         >
           {formatCompact(spendMax)}
         </text>
@@ -246,7 +246,7 @@ export function AgencyGradeChart({
           x={W - 5}
           y={PAD.top + 4}
           textAnchor="end"
-          className="fill-brutal-pink text-[8px] font-black"
+          className="fill-foreground text-[8px] font-black"
         >
           {formatCompact(outcomeMax)}
         </text>
@@ -255,7 +255,7 @@ export function AgencyGradeChart({
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-3 mt-1">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-0.5 bg-brutal-cyan" />
+          <div className="w-3 h-0.5 bg-background" />
           <span className="text-[9px] font-bold text-muted-foreground">
             {compact ? "Spending" : agency.spendingLabel}
           </span>
@@ -287,7 +287,7 @@ export function AgencyGradeChart({
                   href={ann.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-brutal-pink transition-colors"
+                  className="hover:text-foreground transition-colors"
                 >
                   {ann.label} ↗
                 </a>

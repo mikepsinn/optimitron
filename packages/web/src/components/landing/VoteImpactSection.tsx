@@ -28,11 +28,11 @@ export default function VoteImpactSection() {
       <Container>
         {/* Header */}
         <div className="flex flex-col items-center gap-4 mb-12">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-center text-brutal-pink-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-center text-background">
             YOUR <span className="text-background">VOTE&apos;S</span> IMPACT
           </h2>
           <ImpactExplainer
-            className="h-10 w-10 border-background bg-brutal-pink text-background hover:bg-background hover:text-brutal-pink"
+            className="h-10 w-10 border-background bg-foreground text-background hover:bg-background hover:text-foreground"
             iconClassName="text-background"
             size={24}
             label="Show impact calculations"
@@ -42,8 +42,8 @@ export default function VoteImpactSection() {
         {/* Main Impact Card */}
         <BrutalCard bgColor="background" padding="lg" className="mb-8 text-center p-12">
           <div className="mb-6">
-            <HeartPulse className="h-16 w-16 mx-auto mb-4 text-brutal-pink" />
-            <div className="text-7xl sm:text-8xl md:text-9xl font-black text-brutal-pink mb-4">
+            <HeartPulse className="h-16 w-16 mx-auto mb-4 text-foreground" />
+            <div className="text-7xl sm:text-8xl md:text-9xl font-black text-foreground mb-4">
               {livesSaved}
             </div>
             <div className="text-2xl sm:text-3xl md:text-4xl font-black uppercase mb-6">
@@ -53,7 +53,7 @@ export default function VoteImpactSection() {
 
           <div className="max-w-3xl mx-auto space-y-4">
             <p className="text-lg sm:text-xl font-bold">
-              <ParameterValue param={TREATY_ANNUAL_FUNDING} className="text-brutal-pink font-black" />/year scales trial capacity <span className="text-brutal-pink font-black"><ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} display="integer" />X</span>, achieving <span className="text-brutal-pink font-black"><ParameterValue param={TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR} display="integer" /> years</span> of progress in <span className="text-brutal-pink font-black"><ParameterValue param={LIFE_EXTENSION_YEARS} display="integer" /></span>
+              <ParameterValue param={TREATY_ANNUAL_FUNDING} className="text-foreground font-black" />/year scales trial capacity <span className="text-foreground font-black"><ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} display="integer" />X</span>, achieving <span className="text-foreground font-black"><ParameterValue param={TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR} display="integer" /> years</span> of progress in <span className="text-foreground font-black"><ParameterValue param={LIFE_EXTENSION_YEARS} display="integer" /></span>
             </p>
             <p className="text-base sm:text-lg font-bold opacity-80">
               Through a <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS} display="integer" />-year average timeline shift: <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} display="integer" />x trial capacity + eliminating <ParameterValue param={EFFICACY_LAG_YEARS} figures={2} />-year regulatory delays

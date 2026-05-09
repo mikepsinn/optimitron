@@ -64,7 +64,7 @@ export function ImplementationPlanSection() {
             className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-              <div className="w-12 h-12 bg-brutal-pink border-4 border-primary flex items-center justify-center text-lg font-black text-brutal-pink-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] shrink-0">
+              <div className="w-12 h-12 bg-foreground border-4 border-primary flex items-center justify-center text-lg font-black text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] shrink-0">
                 {item.step}
               </div>
               <div className="flex-1">
@@ -74,7 +74,7 @@ export function ImplementationPlanSection() {
                 <p className="text-sm text-foreground leading-relaxed font-bold mb-2">
                   {item.description}
                 </p>
-                <p className="text-xs font-black text-brutal-pink uppercase">
+                <p className="text-xs font-black text-foreground uppercase">
                   Why it happens: {item.why}
                 </p>
               </div>
@@ -88,7 +88,7 @@ export function ImplementationPlanSection() {
           item={fullManualPaperLink}
           variant="custom"
           external
-          className="inline-flex items-center text-sm font-black text-brutal-pink uppercase hover:text-foreground transition-colors"
+          className="inline-flex items-center text-sm font-black text-foreground uppercase hover:text-foreground transition-colors"
         >
           Read the full manual &rarr;
         </NavItemLink>

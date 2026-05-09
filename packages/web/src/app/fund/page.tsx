@@ -53,7 +53,7 @@ export default function FundPage() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <BrutalCard bgColor="foreground" shadowSize={12} padding="lg">
-              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-brutal-yellow">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-background">
                 Current State
               </p>
               <h2 className="mb-4 text-3xl font-black uppercase text-background">
@@ -86,7 +86,7 @@ export default function FundPage() {
             </BrutalCard>
 
             <BrutalCard bgColor="background" shadowSize={8} padding="lg">
-              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-brutal-pink">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-foreground">
                 Grounding
               </p>
               <ul className="space-y-3 text-sm font-bold leading-relaxed text-foreground">
@@ -99,7 +99,7 @@ export default function FundPage() {
                 item={earthOptimizationPrizeDetailsLink}
                 variant="custom"
                 external
-                className="mt-6 inline-flex items-center text-xs font-black uppercase text-brutal-pink hover:text-foreground"
+                className="mt-6 inline-flex items-center text-xs font-black uppercase text-foreground hover:text-foreground"
               >
                 Read the funding spec
               </NavItemLink>

@@ -232,7 +232,7 @@ export function OrganizationSelector({ value, onSelect, disabled, initialName }:
               <Button
                 onClick={handleCreate}
                 disabled={isCreating || !createName.trim()}
-                className="border-4 border-primary bg-brutal-pink"
+                className="border-4 border-primary bg-foreground"
               >
                 {isCreating ? (
                   <>

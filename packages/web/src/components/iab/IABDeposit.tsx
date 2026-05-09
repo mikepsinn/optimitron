@@ -19,7 +19,7 @@ export function IABDeposit() {
         </h3>
         <div className="space-y-4">
           <div className="flex gap-3">
-            <span className="w-8 h-8 bg-brutal-pink text-brutal-pink-foreground flex items-center justify-center text-sm font-black shrink-0 border-2 border-primary">
+            <span className="w-8 h-8 bg-foreground text-background flex items-center justify-center text-sm font-black shrink-0 border-2 border-primary">
               1
             </span>
             <div>
@@ -33,7 +33,7 @@ export function IABDeposit() {
             </div>
           </div>
           <div className="flex gap-3">
-            <span className="w-8 h-8 bg-brutal-cyan text-brutal-cyan-foreground flex items-center justify-center text-sm font-black shrink-0 border-2 border-primary">
+            <span className="w-8 h-8 bg-background text-foreground flex items-center justify-center text-sm font-black shrink-0 border-2 border-primary">
               2
             </span>
             <div>
@@ -47,7 +47,7 @@ export function IABDeposit() {
             </div>
           </div>
           <div className="flex gap-3">
-            <span className="w-8 h-8 bg-brutal-yellow text-brutal-yellow-foreground flex items-center justify-center text-sm font-black shrink-0 border-2 border-primary">
+            <span className="w-8 h-8 bg-background text-foreground flex items-center justify-center text-sm font-black shrink-0 border-2 border-primary">
               3
             </span>
             <div>
@@ -68,7 +68,7 @@ export function IABDeposit() {
 
       {/* Returns */}
       <div className="grid gap-4 grid-cols-2">
-        <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+        <div className="border-4 border-primary bg-background text-foreground p-4">
           <div className="text-[10px] font-black uppercase">
             Projected Annual Return
           </div>
@@ -80,7 +80,7 @@ export function IABDeposit() {
             on $1B invested
           </p>
         </div>
-        <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+        <div className="border-4 border-primary bg-background text-foreground p-4">
           <div className="text-[10px] font-black uppercase">
             If Treaty Fails
           </div>
@@ -94,7 +94,7 @@ export function IABDeposit() {
       </div>
 
       {/* Status */}
-      <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-4">
+      <div className="border-4 border-primary bg-foreground text-background p-4">
         <div className="text-xs font-black uppercase mb-1">
           Status: Phase 2 — Not Yet Deployed
         </div>
