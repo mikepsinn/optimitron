@@ -143,7 +143,7 @@ The Next.js 15 app at `packages/web` serves the War on Disease campaign and the
 Optimitron proof surfaces. During campaign mode, `warondisease.org` is the
 primary user-facing product. Here's what's live:
 
-#### Treaty Campaign
+### Treaty Campaign
 
 | Page | Route | What It Does |
 |------|-------|-------------|
@@ -151,7 +151,7 @@ primary user-facing product. Here's what's live:
 | Humanity's Scoreboard | `/scoreboard` | GDP trajectory, collapse countdown, pool size, voter count |
 | Incentive Alignment Bonds | `/iab` | Phase 2 treaty bonds (not yet deployed) |
 
-#### Optimized Governance Agencies (`/agencies`)
+### Optimized Governance Agencies (`/agencies`)
 
 Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.
 
@@ -172,14 +172,14 @@ Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-f
 | dDoD - Defense | `/agencies/ddod` | Military spending analysis and 1% Treaty case |
 | dCensus | `/agencies/dcensus` | Population and demographic data |
 
-#### Earth's Governments
+### Earth's Governments
 
 | Page | Route | What It Does |
 |------|-------|-------------|
 | Government Report Cards | `/governments` | Every government ranked by outcomes (health, income, freedom) |
 | Politician Leaderboard | `/governments/US/politicians` | Politicians ranked by alignment score + voting records |
 
-#### Analysis
+### Analysis
 
 | Page | Route | What It Does |
 |------|-------|-------------|
@@ -188,7 +188,7 @@ Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-f
 | Studies / Outcomes | `/outcomes` | Pair studies with Bradford Hill causal scores |
 | Civic Hub | `/civic` | Bill voting, representative lookup, cost-benefit analysis |
 
-#### You
+### You
 
 | Page | Route | What It Does |
 |------|-------|-------------|
@@ -196,14 +196,14 @@ Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-f
 | Dashboard | `/dashboard` | Referral link, badges, leaderboard rank, campaign control room |
 | Profile | `/profile` | Check-ins, census demographics, personal reports |
 
-#### Futures
+### Futures
 
 | Page | Route | What It Does |
 |------|-------|-------------|
 | Wishonia | `/wishonia` | What 4,237 years of good governance looks like |
 | Moronia | `/moronia` | What happens when you spend more on weapons than cures |
 
-#### Meta
+### Meta
 
 | Page | Route | What It Does |
 |------|-------|-------------|
@@ -302,7 +302,7 @@ Your governments currently make decisions the way a blindfolded person throws da
 - **Legislative classification**: bills are automatically classified into budget categories via keyword and policy-area matching, with generated cost-benefit analyses for informed citizen voting at `/civic`.
 - **Political accountability**: personal alignment reports at `/alignment` show which benchmark politicians best match a citizen's stated priorities, with public share URLs for distribution. The `/scoreboard` ranks all politicians by alignment score.
 - **Legislative provenance**: the web app syncs current federal identities from Congress.gov and increasingly derives profiles from recent classified roll calls instead of only curated priors.
-- **Referendum infrastructure**: citizens vote directly on policy proposals at `/referendum` with proof-of-personhood verification for sybil resistance.
+- **Referendum infrastructure**: citizens vote directly on policy proposals at `/agencies/dcongress/referendums` with proof-of-personhood verification for sybil resistance.
 - **Cross-jurisdiction analysis**: the `/compare` page and examples package run international comparisons for health, education, drug policy, criminal justice, and federal spending questions.
 
 The database is multi-tenant: every jurisdiction is a tenant with its own priorities, officials, and data.
