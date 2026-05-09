@@ -257,9 +257,8 @@ ride on, not blockers downstream of them.
   values exported as `OPTIMIZE_EARTH_ROOT_TASK_ID` /
   `OPTIMIZE_EARTH_ROOT_TASK_KEY` from `@optimitron/db` and re-exported by
   the web `task-keys` shim. One literal, one place. Hand-written
-  `migrations/20260508120000_drop_task_milestone/migration.sql` plus a
-  one-shot `scripts/rename-optimize-earth-root.ts` (transactional: nulls
-  children → renames root → re-points children) handle the prod rename.
+  `packages/db/prisma/migrations/20260509173000_rename_optimize_earth_root_task/migration.sql`
+  handles the prod rename.
 - All other task-key constants and builders consolidated into
   `packages/db/src/task-keys.ts` and surfaced via
   `@optimitron/db/task-keys`. The web `lib/tasks/task-keys.ts` is now a
@@ -813,40 +812,115 @@ this entry.
 
 Cost: ~120 lines + the schema PR. Schema-light; mostly composition.
 
-### P1 — Audit + queue neobrutalist remnants for treaty-style migration
+### P1 — Finish neobrutalist → treaty migration cleanup
 
-The migration rule in CLAUDE.md (lines 162, 209, 228, 236, 244) and
-AGENTS.md says public UI defaults to treaty style and existing
-neobrutalist surfaces migrate when touched. That's working
-opportunistically — `/tasks/[id]`, `/`, `/humanity-v-government`,
-`/endorse` have all migrated this session. But many surfaces haven't
-been touched yet and still ship neobrutalist chrome (BrutalCard, hard
-shadows, brutal-* color fills, ArcadeTag).
+**Already shipped on this branch (state as of 2026-05-09):**
+- CSS-var redirect in `globals.css` first attempted, then partially
+  reverted by Codex (`b23da4ce`) after contrast-compatibility issues —
+  brutal-pink/cyan/yellow vars now back to actual colors.
+- **Codemod committed (`3fab7d3b`): 1,653 replacements across 239
+  files** swapping literal `bg-brutal-pink` / `text-brutal-cyan-foreground`
+  / etc. in consumer code for semantic tokens (`bg-foreground`,
+  `text-background`, etc.). Status tokens (`brutal-red`, `brutal-green`)
+  preserved.
+- `BrutalCard` shape simplified: hard offset shadows removed,
+  `border-4` → `border-2`, hover translate removed.
+- `ArcadeTag` simplified: dropped `font-pixel` + `text-brutal-pink`,
+  now muted-foreground small caps.
+- `SectionContainer` thick borders → thin treaty rules.
 
-**Goal:** systematic audit so the migration is tracked, not just
-"happens when someone happens to edit the file."
+**Remaining cleanup (so we don't have to re-audit later):**
 
-**Audit (one-time):**
-- Grep for `BrutalCard`, `ArcadeTag`, `brutal-` (color tokens),
-  `border-4`, `shadow-brutal`, hard-offset shadow utilities — list
-  every public surface using them.
-- Categorize each hit: (a) public recruitment surface (must migrate),
-  (b) admin/curator UI (can keep colored chips if functional),
-  (c) game/demo/Sierra screens (keep — color is the brand there),
-  (d) email markup (must keep inline hex per CLAUDE.md).
+1. **Drop `pink|cyan|yellow` from `BrutalCard.bgColor` + `bgClasses`
+   map.** Currently those variants render in actual neobrutalist
+   colors (after Codex's revert). Requires updating dynamic
+   color-returning functions that emit `"yellow"` / `"cyan"` for
+   non-status meanings:
+   - `task-card.tsx:getCardColor` returns `"yellow"` for
+     ASSIGNED_ONLY, `"cyan"` for viewerHasClaim. Decision needed:
+     fold those into `"default"` / `"background"` (lose the visual
+     distinction, gain treaty consistency) or keep as muted-bg
+     variants with explicit semantic labels.
+   - `HowToPlaySection.tsx`: `step.color` data values pass `"pink"` /
+     `"cyan"` / `"yellow"` — drop the field, let all cards render
+     identically.
+   - `MetricsComparison.tsx`, `employee-review-banner.tsx`,
+     `SavingsImpact.tsx`: `accentColor` / `metric.tone` props.
+2. **Drop `pink|cyan|yellow` from `SectionContainer.bgColor` +
+   `bgClasses`.** All consumers passing those values need
+   `bgColor="background"` or `bgColor="default"`. Codemod-friendly.
+3. **Delete `--brutal-pink` / `--brutal-cyan` / `--brutal-yellow` CSS
+   vars** from `globals.css` (`:root` and `.dark` blocks) once steps 1
+   and 2 are done. Keep `--brutal-red` and `--brutal-green` for
+   status semantics.
+4. **Collapse the `@theme inline` Tailwind redirect block** in
+   `globals.css` (~200 lines mapping every default color scale to
+   brutal-* vars). After step 3, only the red-family redirect needs
+   to survive (mapping `bg-red-*` to `var(--brutal-red)`); pink/rose/
+   fuchsia/purple/violet/indigo/blue/cyan/teal/sky/amber/orange
+   redirects can go. Result: demo/sierra screens fall back to default
+   Tailwind colors, which is what they want anyway (CLAUDE.md exception
+   already grants game/demo screens specialized colors).
+5. **Optional polish: rename `BrutalCard` → `TreatySection`,
+   `ArcadeTag` → `Eyebrow`.** ~60 import paths to update via codemod.
+   Cosmetic — names match purpose. Defer if low-priority.
+6. **Delete dead `ARCADE_LABELS` dictionary** from
+   `packages/web/src/lib/messaging.ts`. Audit confirmed zero
+   callsites use it.
 
-**Queue:** for each (a) hit, file a small TODO subtask (under this
-parent) with the file path + the planned treaty-token replacement.
-That way the migration is visible work, not invisible drift.
+Sequencing: 1 → 2 → 3 → 4 in one PR, since 3 and 4 depend on 1 and 2.
+Visual-review pipeline catches any rendering regressions in demo
+screens (which is the only place colors might surprise).
 
-**Don't bulk-migrate.** A single mass-replace PR is high-risk
-(visual regressions across many pages, hard to review, easy to break
-edge cases). One small migration per surface, opportunistic + queued,
-is the same pattern that's already working.
+Cost: 1-2 focused hours. Schema-zero. Pure cleanup, no new behavior.
 
-Cost: the audit itself is ~30 min of grep + categorization. Each
-queued subtask migration is whatever the surface needs (5-30 lines
-typically).
+### P1 — Copy audit: kill startup-bro / pompous-systems-engineer writing
+
+CLAUDE.md voice rules updated (2026-05-09) to explicitly forbid the
+"hollow infrastructure metaphor" anti-pattern. Now do the audit pass
+on the existing copy.
+
+**Canonical violation shipped (this is the example to never repeat):**
+
+> *"Next: the enforcement stack. The treaty is the off-ramp. The
+> Court is the road that produces the off-ramp."*
+>
+> Source: `packages/web/src/components/treaty/TreatyContent.tsx:84,
+> 97-98`
+
+Says nothing. Replace with what the user does, who it stops, which
+number changes.
+
+**Confirmed offenders found in initial grep (2026-05-09):**
+
+- `packages/web/src/components/treaty/TreatyContent.tsx:84,97-98` —
+  the "enforcement stack" / "off-ramp" canonical example above. Must
+  be rewritten.
+- `packages/web/src/components/treasury/TreasuryAllocationViz.tsx:160`
+  — "incentive layer" framing. Replace with what the tax actually
+  funds and what the user sees on their dashboard.
+- `packages/web/src/components/treasury/WishocracyLinkCard.tsx:17` —
+  "incentive layer" again. Same fix.
+- `packages/web/src/emails/components/ResourcePromoSection.tsx:12` —
+  "It covers the economics, the incentive structures, and why
+  nobody has to evolve morally." Stacked-abstract-noun list. Pick
+  one concrete claim.
+
+**Audit task:** sweep `packages/web/src/` for the patterns listed in
+CLAUDE.md "Anti-patterns — do not write like this". Specifically:
+
+- Grep for `off-ramp|the road that|enforcement stack|the actual
+  game|the real game|incentive layer|coordination mechanism|the
+  protocol that|primitive|substrate|kernel of|fundamentally|
+  essentially|literally the`.
+- Read the surrounding paragraph; if it sounds like a Y Combinator
+  pitch, rewrite to concrete-Cunk-deadpan. Use the patterns in CLAUDE.md
+  Examples block as the model.
+- Validate fixes against CLAUDE.md "test before shipping a sentence":
+  read aloud, would it appear unchanged in a Stripe keynote? Rewrite.
+
+Schema-zero, copy-only. ~30 surfaces to scan. Each rewrite is 1-3
+sentences. The visual-review pipeline catches layout regressions.
 
 ### P1 — Dashboard / presidents page mental-model split (lightweight)
 

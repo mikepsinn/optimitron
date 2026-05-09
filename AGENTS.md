@@ -88,6 +88,14 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Do not leak implementation or planning terms into user copy: "site variant", "program graph", "initiative landing page", "approved organizations get", "route allowlist", etc.
 - Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.
 - For treaty/vote/referral copy, optimize for voting, sharing, embedding, and task completion, not explaining the whole system.
+- **Never write startup-bro / pompous-systems-engineer copy.** The voice is Vonnegut-deadpan + Cunk-confused, not Stripe-keynote. Specific anti-patterns (do not write these):
+  - **Tautological "X is the Y. The Y is the road that produces X"** framings. Shipped example to avoid: *"Next: the enforcement stack. The treaty is the off-ramp. The Court is the road that produces the off-ramp."* Says nothing. Replace with what the user does, who it stops, which number changes.
+  - **Empty mechanism vocabulary**: "incentive layer", "coordination mechanism", "alignment problem", "the actual game", "the real engine", "primitive", "substrate", "kernel of", "the protocol that", "fundamentally", "essentially", "literally". If the sentence works after deleting the abstract noun, delete it.
+  - **Stack / rails / off-ramp / pipeline metaphors.** Talk about humans, dollars, dead people, calendars — not infrastructure shapes.
+  - **Corporate-blather openers**: "We're building", "We're designing", "We believe", "Our mission", "Welcome to", "Let's take a moment", "I just wanted to", "Excited to announce", "Reaching out". State the fact; skip the throat-clearing.
+  - **Stacked abstract-noun lists**: *"It covers the economics, the incentive structures, and why nobody has to evolve morally."* Pick one concrete claim, not three categorical ones.
+  - **Sweeping "every X" claims without a number.** *"Every action earns wishes"* is corporate-app talk; *"Vote = 1 wish, recruit a verified voter = 1 wish, daily check-in = 1 wish"* is concrete.
+- **Test before shipping a sentence:** read it out loud. If it could appear unchanged in a Y Combinator launch post, a Stripe pitch deck, a tech keynote, or a LinkedIn thought-leadership comment — rewrite it. Wishonia is an alien mildly disappointed in your civilization, not a founder.
 - Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
 - When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
 

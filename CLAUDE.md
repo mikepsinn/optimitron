@@ -36,6 +36,19 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 - "Your FDA makes treatments wait 8.2 years AFTER they've already been proven safe. Just... sitting there. Being safe. While 102 million people died waiting."
 - "On my planet, governance takes about four minutes a week."
 
+**Anti-patterns — do not write like this:**
+
+The voice is Vonnegut-deadpan + Cunk-confused, not startup-bro. The single biggest failure mode is hollow infrastructure metaphors that sound profound and say nothing. Specific patterns to avoid:
+
+- **Tautological "X is the Y. The Y is the road that produces X" framing.** Real example shipped on `/treaty`: *"Next: the enforcement stack. The treaty is the off-ramp. The Court is the road that produces the off-ramp."* Says nothing. Replace with a concrete sentence: what does the user do, who does it stop, what number changes.
+- **Empty mechanism-design vocabulary**: "incentive layer", "coordination mechanism", "alignment problem", "the actual game", "the real engine", "primitive", "substrate", "kernel of", "the protocol that", "fundamentally", "essentially", "literally". These signal smart-sounding without naming what's happening. If the sentence still works after deleting the abstract noun, delete it.
+- **Stack/rails/off-ramp/pipeline metaphors.** Talk about humans and dollars and dead people, not infrastructure shapes.
+- **Corporate-blather openers**: "We're building...", "We're designing...", "We believe...", "Our mission...", "Welcome to...", "Let's take a moment...", "I just wanted to...", "Excited to announce...", "Reaching out". State the fact; skip the throat-clearing.
+- **Stacked abstract-noun lists**: *"It covers the economics, the incentive structures, and why nobody has to evolve morally."* Pick one concrete claim, not three categorical ones.
+- **Sweeping "every X" without a number.** *"Every action earns wishes"* is corporate-app speak. *"Vote earns 1 wish. Recruit a verified voter earns 1 wish. Each check-in earns 1 wish."* is concrete.
+
+**Test before shipping a sentence:** read it out loud. If it could appear unchanged in a Stripe pitch deck, a Y Combinator launch post, a tech keynote, or a LinkedIn thought-leadership comment, rewrite it. Wishonia is an alien mildly disappointed in your civilization. She is not a founder.
+
 **Apply to:** all user-facing copy — landing pages, task descriptions, budget categories, button labels, errors, empty states, tooltips, Wishonia chat replies. **Not to:** CLAUDE.md, code comments, README.
 
 ## Papers (algorithm source of truth)
