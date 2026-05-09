@@ -7,8 +7,13 @@ interface ArcadeTagProps {
 }
 
 /**
- * Arcade-styled subtitle tag for page headers.
- * Renders in Press Start 2P pixel font, pink, uppercase.
+ * Subtitle tag for page headers — eyebrow text above a heading.
+ *
+ * Treaty migration 2026-05-08: dropped the Press Start 2P pixel font
+ * and brutal-pink color. Renders as a quiet small-caps line in
+ * muted-foreground. Component + ARCADE_LABELS dictionary kept so
+ * consumers don't need updates; the visual is now treaty-style
+ * across all surfaces.
  *
  * Usage:
  *   <ArcadeTag>Boss Fight</ArcadeTag>
@@ -17,7 +22,7 @@ interface ArcadeTagProps {
 export function ArcadeTag({ children, className = "mb-2" }: ArcadeTagProps) {
   return (
     <p
-      className={`font-pixel text-sm font-black uppercase tracking-[0.2em] text-brutal-pink ${className}`}
+      className={`text-xs font-black uppercase tracking-[0.18em] text-muted-foreground ${className}`}
     >
       {children}
     </p>
