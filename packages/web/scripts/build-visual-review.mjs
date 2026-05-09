@@ -370,6 +370,7 @@ function renderHtml(groups) {
       <span class="pill changed">${summary.changedRoutes} changed</span>
       <span class="pill unchanged">${summary.unchangedRoutes} unchanged</span>
       <span class="pill missing">${summary.missingPairs} missing pairs</span>
+      <span class="pill error">${summary.erroredRoutes} errored</span>
     </div>
   </header>
   <main>
@@ -382,11 +383,11 @@ function renderHtml(groups) {
 
 function renderRouteGroup(group) {
   const pairs = group.pairs.map(renderPair).join("\n");
-  const openAttr = group.changed ? " open" : "";
-  return `<details class="route ${group.changed ? "changed" : "unchanged"}"${openAttr}>
+  const openAttr = group.changed || group.errored ? " open" : "";
+  return `<details class="route ${group.changed || group.errored ? "changed" : "unchanged"}"${openAttr}>
     <summary>
       <span class="route-title">${escapeHtml(labelRoute(group.routeName))}</span>
-      <span class="pill ${group.changed ? "changed" : "unchanged"}">${escapeHtml(routeStatusLabel(group))}</span>
+      <span class="pill ${group.errored ? "error" : group.changed ? "changed" : "unchanged"}">${escapeHtml(routeStatusLabel(group))}</span>
     </summary>
     <div class="pairs">
       ${pairs}
@@ -428,10 +429,13 @@ function analyzeGroups(groups) {
     }));
     const changedPairs = pairs.filter((pair) => pair.diff.changed).length;
     const missingPairs = pairs.filter((pair) => pair.diff.missing).length;
+    const erroredPairs = pairs.filter((pair) => pair.diff.errored).length;
     return {
       ...group,
       changed: changedPairs > 0,
       changedPairs,
+      errored: erroredPairs > 0,
+      erroredPairs,
       missingPairs,
       pairs,
     };
@@ -496,7 +500,8 @@ function comparePair(pair) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
-      changed: true,
+      changed: false,
+      errored: true,
       label: `diff error: ${message.slice(0, 60)}`,
       missing: false,
       statusClass: "error",
@@ -507,13 +512,14 @@ function comparePair(pair) {
 function summarizeGroups(groups) {
   return {
     changedRoutes: groups.filter((group) => group.changed).length,
-    unchangedRoutes: groups.filter((group) => !group.changed).length,
+    erroredRoutes: groups.filter((group) => group.errored).length,
+    unchangedRoutes: groups.filter((group) => !group.changed && !group.errored).length,
     missingPairs: groups.reduce((sum, group) => sum + group.missingPairs, 0),
   };
 }
 
 function routeStatusLabel(group) {
-  if (!group.changed) {
+  if (!group.changed && !group.errored) {
     return "unchanged";
   }
   const parts = [];
@@ -522,6 +528,9 @@ function routeStatusLabel(group) {
   }
   if (group.missingPairs > 0) {
     parts.push(`${group.missingPairs} missing`);
+  }
+  if (group.erroredPairs > 0) {
+    parts.push(`${group.erroredPairs} errored`);
   }
   return parts.join(" / ");
 }

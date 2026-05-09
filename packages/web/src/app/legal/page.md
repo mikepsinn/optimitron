@@ -1,24 +1,47 @@
 # /legal
 
-## 404
-- PAGE NOT FOUND
-- Fascinating. You've managed to navigate to a page that doesn't exist. On my planet, our routing infrastructure hasn't lost a page in 4,237 years. You lot can't even keep track of a URL.
-- To be fair, your species also loses approximately $2.1 trillion annually to administrative inefficiency, so misplacing a web page is relatively on-brand.
-- The page you're looking for has either been moved, deleted, or — and I cannot stress how likely this is — never existed in the first place. Much like your evidence-based policymaking.
-- WISHONIA DIAGNOSTIC REPORT
-- Problem: Page not found
-- Problem:
-- Severity: Mildly embarrassing
-- Severity:
-- Root cause: Human error (probability: 97.3%)
-- Root cause:
-- Recommended action: Click a button that actually goes somewhere
-- Recommended action:
-- Time to resolve on my planet: 0.003 seconds
-- Time to resolve on my planet:
-- Estimated time on yours: Unclear. You still haven't fixed healthcare.
-- Estimated time on yours:
-- RETURN TO EARTH
-- VIEW SCOREBOARD
-- “It's almost impressive how a species that put people on the moon regularly types URLs wrong.” — Wishonia, mildly disappointed (as usual)
-- — Wishonia, mildly disappointed (as usual)
+- YOUR ORGANIZATION CAN
+## ENTER YOUR AUDIENCE. SEE THE SUFFERING YOU CAUSE OR PREVENT.
+- 150,000 humans die from disease today. Most preventable. Your audience size decides how much of it gets to keep happening.
+- 150,000
+- STEP 1
+### SIZE OF ORGANIZATION AND MEMBERSHIP.
+- Same numbers, two columns. Prevented if you act. Allowed if you do not.
+- YOUR AUDIENCE
+- EMAIL MEMBERS
+- MONTHLY SITE VISITORS
+- SOCIAL AUDIENCE
+- MONTHS ON WEBSITE
+- ASSUMPTIONS
+- AUDIENCE THAT SEES IT %
+- VERIFIED VOTE RATE %
+- MEMBER SHARE MULTIPLIER
+- FOUNDATION $ PER VOTE
+- IF YOU ACT
+- 5,346
+- LIVES SAVED
+- 109,058
+- YEARS OF SUFFERING PREVENTED
+- IF YOU DO NOT
+- PREVENTABLE DEATHS ALLOWED
+- YEARS OF SUFFERING ALLOWED
+- 1,980 verified votes × 2.7 lives and 55 years prevented per vote. At $2 per vote, funders fund $3,960 of outreach.
+- 2.7
+- 55
+- STEP 2 — ONE HOUR, THREE ACTIONS
+- 1. EMBED THE IFRAME One paste, then it works while you sleep.
+- 1. EMBED THE IFRAME
+- One paste, then it works while you sleep.
+- 2. SEND ONE EMAIL Pre-written. Your members already trust you. That is the asset.
+- 2. SEND ONE EMAIL
+- Pre-written. Your members already trust you. That is the asset.
+- 3. POST ONCE PER CHANNEL Link auto-credits responses to your organization.
+- 3. POST ONCE PER CHANNEL
+- Link auto-credits responses to your organization.
+- ORGANIZATION NAME *
+- WEBSITE
+- JOIN AS ORGANIZATION
+- LEGAL NOTES FOR ORGANIZATIONS
+- READ THE 1% TREATY TEXT
+- Already joined? See the organizational supporters.
+- organizational supporters

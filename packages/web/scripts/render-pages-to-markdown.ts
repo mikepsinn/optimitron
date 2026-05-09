@@ -67,8 +67,28 @@ function routeToFilePath(route: string): string {
   // "/"        -> src/app/page.md
   // "/treaty"  -> src/app/treaty/page.md
   // "/a/b"     -> src/app/a/b/page.md
-  const segments = route === "/" ? [] : route.split("/").filter(Boolean);
-  return path.join(APP_DIR, ...segments, "page.md");
+  if (!route.startsWith("/")) {
+    throw new Error(`Route must start with "/": ${route}`);
+  }
+  const pathname = route.split(/[?#]/, 1)[0] ?? "/";
+  const segments = pathname === "/" ? [] : pathname.split("/").filter(Boolean);
+  if (
+    segments.some(
+      (segment) =>
+        segment === "." ||
+        segment === ".." ||
+        segment.includes("\\") ||
+        path.isAbsolute(segment),
+    )
+  ) {
+    throw new Error(`Invalid route segment in "${route}"`);
+  }
+  const outPath = path.resolve(APP_DIR, ...segments, "page.md");
+  const relative = path.relative(APP_DIR, outPath);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error(`Resolved path escapes app dir for route "${route}"`);
+  }
+  return outPath;
 }
 
 async function extractPage(page: import("@playwright/test").Page, route: string) {
@@ -122,7 +142,8 @@ async function capturePass(
   routes: string[],
   filename: "page.md" | "page.authed.md",
   options: { authCookie?: { name: string; value: string } } = {},
-) {
+): Promise<number> {
+  let failures = 0;
   const ctx = await browser.newContext({
     viewport: { width: 1280, height: 900 },
     extraHTTPHeaders: { "x-optimitron-site-key": SITE_KEY },
@@ -154,10 +175,12 @@ async function capturePass(
         await writeFile(outPath, header + md + "\n", "utf8");
         console.log(`OK ${route}  ->  ${path.relative(WEB_ROOT, outPath)}`);
       } catch (err) {
+        failures += 1;
         const message = err instanceof Error ? err.message : String(err);
         console.warn(`FAIL ${route}  (${message})`);
       }
     }
+    return failures;
   } finally {
     await ctx.close();
   }
@@ -167,9 +190,10 @@ async function main() {
   const { authenticatedRoutes, loggedOutRoutes } = parseRoutesFromArgs();
   const skipAuthed = process.argv.includes("--no-authed");
   const browser = await chromium.launch();
+  let failures = 0;
   try {
     console.log("--- Logged-out pass ---");
-    await capturePass(browser, loggedOutRoutes, "page.md");
+    failures += await capturePass(browser, loggedOutRoutes, "page.md");
 
     if (skipAuthed) {
       console.log("\n(--no-authed; skipping authenticated pass)");
@@ -181,10 +205,11 @@ async function main() {
         console.log(
           `\n--- Authenticated pass (cookie minted offline for ${process.env.COPY_PREVIEW_USER_EMAIL ?? "m@thinkbynumbers.org"}) ---`,
         );
-        await capturePass(browser, authenticatedRoutes, "page.authed.md", {
+        failures += await capturePass(browser, authenticatedRoutes, "page.authed.md", {
           authCookie,
         });
       } catch (err) {
+        failures += authenticatedRoutes.length;
         const message = err instanceof Error ? err.message : String(err);
         console.warn(
           `\n(skipping authenticated pass: ${message})\n` +
@@ -192,6 +217,9 @@ async function main() {
             `or pass --no-authed to silence this.`,
         );
       }
+    }
+    if (failures > 0) {
+      throw new Error(`Copy preview failed for ${failures} route(s).`);
     }
   } finally {
     await browser.close();

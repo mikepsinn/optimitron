@@ -1,5 +1,5 @@
 # /questions
 
-- I'm very sorry to bother you, but this is kind of the most important thing in the universe and it will only take a few moments of your time.
-- GO TO HELL
-- FINE
+- Give me 30 seconds. If this is wrong, leave. If it is right, your vote helps move money from war to medicine.
+- LEAVE
+- CONTINUE

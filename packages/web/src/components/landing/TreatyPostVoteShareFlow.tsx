@@ -741,16 +741,16 @@ export function TreatyPostVoteShareFlow({
             <div className="space-y-4">
               <FlowParagraph dropCap>
                 {answer === "no"
-                  ? "You voted no. Totally fine. But I'm going to keep talking anyway because this is kind of the most important thing in the universe and it will only take a few moments of your time."
-                  : "I'm very sorry to bother you, but this is kind of the most important thing in the universe and it will only take a few moments of your time."}
+                  ? "You voted no. Noted. I still need 30 seconds, because this is about moving money from war to medicine."
+                  : "Give me 30 seconds. If this is wrong, leave. If it is right, help move money from war to medicine."}
               </FlowParagraph>
             </div>
             <FlowButtonRow>
               <Button className={dismissButtonClass} onClick={() => go("stakes", true)}>
-                Go to hell
+                Leave
               </Button>
               <Button className={primaryButtonClass} onClick={() => go("stakes")}>
-                Fine
+                Continue
               </Button>
             </FlowButtonRow>
           </>

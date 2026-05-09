@@ -4,7 +4,7 @@
 ## COORDINATE THE HUMANS WHO CAN END WAR AND DISEASE.
 - Find officials, lawyers, clinical researchers, organizers, funders, and other people with public tasks. Open a profile, see what they were asked to do, and remind them.
 - SEE TASKS
-- PLAINTIFFS
+- REGISTER A PLAINTIFF
 - SEARCH
 - ALL
 - OFFICIALS

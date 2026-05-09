@@ -46,6 +46,172 @@ BEGIN
       SET "parentTaskId" = new_id
       WHERE "parentTaskId" = old_id;
 
+    -- Move active references to the canonical root before hiding the legacy
+    -- root. If a duplicate row already exists for the canonical root, retire
+    -- the legacy duplicate with its legacy task.
+    UPDATE "ReferralInvitation"
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    UPDATE "ShareAttempt"
+      SET "taskId" = new_id
+      WHERE "taskId" = old_id;
+
+    UPDATE "AgentRunCost"
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    UPDATE "CourtCase" court_case
+      SET "rootTaskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE court_case."rootTaskId" = old_id
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "CourtCase" existing
+          WHERE existing."rootTaskId" = new_id
+        );
+
+    UPDATE "CourtCase"
+      SET "rootTaskId" = NULL,
+          "updatedAt" = NOW()
+      WHERE "rootTaskId" = old_id;
+
+    UPDATE "CourtCaseRemedy"
+      SET "enforcementTaskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE "enforcementTaskId" = old_id;
+
+    UPDATE "TaskClaim" task_claim
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE task_claim."taskId" = old_id
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "TaskClaim" existing
+          WHERE existing."taskId" = new_id
+            AND existing."userId" = task_claim."userId"
+        );
+
+    UPDATE "TaskClaim"
+      SET "deletedAt" = COALESCE("deletedAt", NOW()),
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    UPDATE "TaskComment"
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    UPDATE "TaskSourceArtifact" source_artifact
+      SET "taskId" = new_id
+      WHERE source_artifact."taskId" = old_id
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "TaskSourceArtifact" existing
+          WHERE existing."taskId" = new_id
+            AND existing."sourceArtifactId" = source_artifact."sourceArtifactId"
+        );
+
+    UPDATE "TaskSourceArtifact"
+      SET "deletedAt" = COALESCE("deletedAt", NOW())
+      WHERE "taskId" = old_id;
+
+    UPDATE "TaskEdge" task_edge
+      SET "fromTaskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE task_edge."fromTaskId" = old_id
+        AND task_edge."toTaskId" <> new_id
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "TaskEdge" existing
+          WHERE existing."fromTaskId" = new_id
+            AND existing."toTaskId" = task_edge."toTaskId"
+            AND existing."edgeType" = task_edge."edgeType"
+        );
+
+    UPDATE "TaskEdge" task_edge
+      SET "toTaskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE task_edge."toTaskId" = old_id
+        AND task_edge."fromTaskId" <> new_id
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "TaskEdge" existing
+          WHERE existing."fromTaskId" = task_edge."fromTaskId"
+            AND existing."toTaskId" = new_id
+            AND existing."edgeType" = task_edge."edgeType"
+        );
+
+    UPDATE "TaskEdge"
+      SET "deletedAt" = COALESCE("deletedAt", NOW()),
+          "updatedAt" = NOW()
+      WHERE "fromTaskId" = old_id
+         OR "toTaskId" = old_id
+         OR ("fromTaskId" = new_id AND "toTaskId" = new_id);
+
+    UPDATE "TaskImpactEstimateSet" estimate_set
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE estimate_set."taskId" = old_id
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "TaskImpactEstimateSet" existing
+          WHERE existing."taskId" = new_id
+            AND existing."estimateKind" = estimate_set."estimateKind"
+            AND existing."sourceSystem" = estimate_set."sourceSystem"
+            AND existing."calculationVersion" IS NOT DISTINCT FROM estimate_set."calculationVersion"
+            AND existing."methodologyKey" IS NOT DISTINCT FROM estimate_set."methodologyKey"
+            AND existing."parameterSetHash" IS NOT DISTINCT FROM estimate_set."parameterSetHash"
+            AND existing."counterfactualKey" IS NOT DISTINCT FROM estimate_set."counterfactualKey"
+        );
+
+    UPDATE "TaskImpactEstimateSet"
+      SET "deletedAt" = COALESCE("deletedAt", NOW()),
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    UPDATE "TaskCommunicationEndpoint"
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    UPDATE "TaskCommunicationTemplate" task_template
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE task_template."taskId" = old_id
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "TaskCommunicationTemplate" existing
+          WHERE existing."taskId" = new_id
+            AND existing."audience" = task_template."audience"
+            AND existing."purpose" = task_template."purpose"
+        );
+
+    UPDATE "TaskCommunicationTemplate"
+      SET "deletedAt" = COALESCE("deletedAt", NOW()),
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    UPDATE "TaskCommunication"
+      SET "taskId" = new_id,
+          "updatedAt" = NOW()
+      WHERE "taskId" = old_id;
+
+    DELETE FROM "AgentTaskLease" task_lease
+      WHERE task_lease."taskId" = old_id
+        AND EXISTS (
+          SELECT 1
+          FROM "AgentTaskLease" existing
+          WHERE existing."taskId" = new_id
+            AND existing."agentId" = task_lease."agentId"
+        );
+
+    UPDATE "AgentTaskLease"
+      SET "taskId" = new_id
+      WHERE "taskId" = old_id;
+
     UPDATE "Task"
       SET "deletedAt" = COALESCE("deletedAt", NOW()),
           "updatedAt" = NOW()
