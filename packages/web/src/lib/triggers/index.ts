@@ -14,7 +14,6 @@
  *   import { fireTaskTrigger } from "@/lib/triggers";
  *
  *   await fireTaskTrigger("treaty:signer", { slot, paramSetHash });
- *   await fireTaskTrigger("task:overdue-reminder", { task, sendCount });
  *
  * By default the helpers open their own `prisma.$transaction`. Pass
  * `{ db: tx }` when the trigger must share a caller transaction, for example

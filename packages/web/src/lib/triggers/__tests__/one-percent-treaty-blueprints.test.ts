@@ -63,14 +63,16 @@ describe("1% Treaty trigger blueprints", () => {
     expect(copy).not.toMatch(/\btwo friends\b/i);
   });
 
-  it("keeps catch-all overdue email reminders disabled", () => {
-    const overdueReminder = ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS.find(
-      (blueprint) => blueprint.triggerKey === "task:overdue-reminder",
+  it("does not seed catch-all overdue email reminders", () => {
+    const triggerKeys = ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS.map(
+      (blueprint) => blueprint.triggerKey,
+    );
+    const communicationKinds = ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS.flatMap(
+      (blueprint) =>
+        blueprint.communicationSpawnSpecs?.map((spec) => spec.kind) ?? [],
     );
 
-    expect(overdueReminder?.enabled).toBe(false);
-    expect(overdueReminder?.communicationSpawnSpecs?.[0]?.kind).toBe(
-      "overdue-reminder",
-    );
+    expect(triggerKeys).not.toContain("task:overdue-reminder");
+    expect(communicationKinds).not.toContain("overdue-reminder");
   });
 });
