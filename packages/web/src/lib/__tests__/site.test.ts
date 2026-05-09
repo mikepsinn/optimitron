@@ -179,6 +179,21 @@ describe("site variant registry", () => {
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 
+  it("keeps the War on Disease primary menu action-oriented", () => {
+    const labels = getSiteConfig("warOnDisease").ui.nav.sections
+      .find((section) => section.primary)
+      ?.items.map((item) => item.label);
+
+    expect(labels).toEqual([
+      "Sign the Treaty",
+      "Manage Humanity",
+      "Fund Campaign",
+      "Register a Plaintiff",
+      "Remind Presidents",
+      "Check the Math",
+    ]);
+  });
+
   it("keeps Profile out of the War on Disease menu chrome and links president management", () => {
     const warItems = getSiteConfig("warOnDisease").ui.nav.sections.flatMap(
       (section) => section.items,

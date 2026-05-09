@@ -69,6 +69,9 @@ backups/
 tmp-*
 output/
 packages/web/output/
+
+# Generated page-copy previews (pnpm --filter @optimitron/web copy:preview)
+packages/web/src/app/**/page.md
 NUL
 .vercel
 .playwright-mcp/

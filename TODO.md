@@ -893,9 +893,6 @@ number changes.
 
 **Confirmed offenders found in initial grep (2026-05-09):**
 
-- `packages/web/src/components/treaty/TreatyContent.tsx:84,97-98` —
-  the "enforcement stack" / "off-ramp" canonical example above. Must
-  be rewritten.
 - `packages/web/src/components/treasury/TreasuryAllocationViz.tsx:160`
   — "incentive layer" framing. Replace with what the tax actually
   funds and what the user sees on their dashboard.

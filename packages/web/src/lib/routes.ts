@@ -647,6 +647,13 @@ export const readTreatyLink: NavItem = {
   label: "Read the Treaty",
 };
 
+export const signTreatyLink: NavItem = {
+  ...treatyLink,
+  label: "Sign the Treaty",
+  cta: "Sign the Treaty",
+  tagline: "Read it, sign it, share it",
+};
+
 export const voteLink: NavItem = {
   href: ROUTES.vote,
   label: "Vote",
@@ -707,12 +714,12 @@ export const questionsLink: NavItem = {
 
 export const whyLink: NavItem = {
   href: ROUTES.why,
-  label: "The Case",
+  label: "Check the Math",
   emoji: "🧠",
   description:
     "The core numbers behind the 1% Treaty: disease, war spending, trial capacity, and why one apocalypse is enough to trade.",
   tagline: "The numbers behind the treaty",
-  cta: "Read the Case",
+  cta: "Check the Math",
 };
 
 export const endorseLink: NavItem = {

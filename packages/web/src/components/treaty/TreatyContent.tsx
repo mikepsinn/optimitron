@@ -94,9 +94,9 @@ export function TreatyContent({
             </Link>
           </Button>
           <p className="mt-3 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-base">
-            Sign the treaty here. If your government refuses to ratify it,
-            join the class action and sue them for the 102 million people
-            their refusal has killed.
+            {showInlineSign
+              ? "Sign the treaty here. If your government refuses to sign it, join the class action and sue them for the 102 million people their refusal has killed."
+              : "If your government refuses to sign the treaty, join the class action and sue them for the 102 million people their refusal has killed."}
           </p>
         </div>
       ) : null}

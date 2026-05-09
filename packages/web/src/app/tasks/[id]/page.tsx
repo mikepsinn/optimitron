@@ -5,7 +5,6 @@ import {
   TaskClaimStatus,
   TaskStatus,
 } from "@optimitron/db";
-import { unstable_cache } from "next/cache";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { type TaskCardTask } from "@/components/tasks/task-card";
@@ -63,27 +62,21 @@ import {
 } from "@/lib/tasks/task-keys";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
-const PUBLIC_TASK_DETAIL_REVALIDATE_SECONDS = 60;
+async function getPublicTaskPageData(id: string) {
+  const [data, commentFeed, activityTimeline, ancestors] = await Promise.all([
+    getTaskDetailData(id, null),
+    getTaskCommentFeed({
+      taskId: id,
+      sort: "new",
+      limit: 100,
+      currentUserId: null,
+    }),
+    getTaskActivityTimeline(id, 50),
+    getTaskAncestors(id),
+  ]);
 
-const getCachedPublicTaskPageData = unstable_cache(
-  async (id: string) => {
-    const [data, commentFeed, activityTimeline, ancestors] = await Promise.all([
-      getTaskDetailData(id, null),
-      getTaskCommentFeed({
-        taskId: id,
-        sort: "new",
-        limit: 100,
-        currentUserId: null,
-      }),
-      getTaskActivityTimeline(id, 50),
-      getTaskAncestors(id),
-    ]);
-
-    return { data, commentFeed, activityTimeline, ancestors };
-  },
-  ["public-task-detail-page"],
-  { revalidate: PUBLIC_TASK_DETAIL_REVALIDATE_SECONDS },
-);
+  return { data, commentFeed, activityTimeline, ancestors };
+}
 
 function getDisplayDate(value: Date | string | null | undefined): Date | null {
   if (value == null) {
@@ -327,7 +320,7 @@ export default async function TaskDetailPage({
   const userId = session?.user.id ?? null;
   const publicPageData = userId
     ? null
-    : await getCachedPublicTaskPageData(id);
+    : await getPublicTaskPageData(id);
   const [data, commentFeed, activityTimeline, wishoniaUserId, ancestors, viewerIsAdmin] =
     userId
       ? await Promise.all([

@@ -22,7 +22,13 @@ import {
   isNavItemActive,
   profileLink,
   searchLink,
+  settingsLink,
+  type NavItem,
 } from "@/lib/routes";
+
+function getNavItemAriaLabel(item: NavItem): string {
+  return item.description ? `${item.label}: ${item.description}` : item.label;
+}
 
 function AvatarButton({
   callbackUrl,
@@ -39,12 +45,14 @@ function AvatarButton({
 }) {
   const initial = user?.name?.charAt(0) ?? user?.email?.charAt(0) ?? null;
   const href = isAuthenticated ? ROUTES.dashboard : getSignInPath(callbackUrl);
+  const label = isAuthenticated ? "Open Dashboard" : "Sign In";
 
   return (
     <Link
       href={href}
       className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-foreground bg-background text-foreground transition-colors hover:bg-muted"
-      title={isAuthenticated ? "Profile" : "Sign In"}
+      title={label}
+      aria-label={label}
     >
       {initial ? (
         <span className="text-sm font-black uppercase">{initial}</span>
@@ -139,8 +147,8 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
               <Link
                 href={quickActionHref}
                 className="inline-flex h-9 items-center justify-center gap-2 border-2 border-foreground bg-foreground px-2.5 text-xs font-black uppercase tracking-[0.12em] text-background transition-colors hover:bg-background hover:text-foreground sm:px-3"
-                title={quickAction.label}
-                aria-label={quickAction.label}
+                title={quickAction.description}
+                aria-label={getNavItemAriaLabel(quickAction)}
               >
                 <UserPlus className="h-4 w-4 stroke-[2.5px]" />
                 <span className="hidden sm:inline">{quickAction.cta}</span>
@@ -214,10 +222,17 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                 ) : null}
 
                 {primarySections.length > 0 ? (
-                  <div className="mb-3 flex flex-col border-b border-border pb-3">
+                  <div
+                    className={`flex flex-col ${
+                      collapsedSections.length > 0
+                        ? "mb-3 border-b border-border pb-3"
+                        : ""
+                    }`}
+                  >
                     {primarySections.flatMap((section) =>
                       section.items.map((item) => {
                         const active = isNavItemActive(pathname, item);
+                        const ariaLabel = getNavItemAriaLabel(item);
                         const linkClass = `flex items-center gap-3 px-3 py-3 min-h-[48px] text-base font-black uppercase transition-colors ${
                           active
                             ? "bg-muted text-foreground"
@@ -232,6 +247,8 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={linkClass}
+                                title={item.description}
+                                aria-label={ariaLabel}
                               >
                                 {item.emoji && <span className="text-base">{item.emoji}</span>}
                                 {item.label}
@@ -242,7 +259,12 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
 
                         return (
                           <SheetClose asChild key={item.href}>
-                            <Link href={item.href} className={linkClass}>
+                            <Link
+                              href={item.href}
+                              className={linkClass}
+                              title={item.description}
+                              aria-label={ariaLabel}
+                            >
                               {item.emoji && <span className="text-base">{item.emoji}</span>}
                               {item.label}
                             </Link>
@@ -268,6 +290,7 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                         <div className="flex flex-col">
                           {section.items.map((item) => {
                             const active = isNavItemActive(pathname, item);
+                            const ariaLabel = getNavItemAriaLabel(item);
                             const linkClass = `flex items-center gap-3 px-3 py-3 min-h-[44px] text-sm font-bold uppercase transition-colors ${
                               active
                                 ? "bg-muted text-foreground"
@@ -282,6 +305,8 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className={linkClass}
+                                    title={item.description}
+                                    aria-label={ariaLabel}
                                   >
                                     {item.emoji && <span className="text-base">{item.emoji}</span>}
                                     {item.label}
@@ -292,7 +317,12 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
 
                             return (
                               <SheetClose asChild key={item.href}>
-                                <Link href={item.href} className={linkClass}>
+                                <Link
+                                  href={item.href}
+                                  className={linkClass}
+                                  title={item.description}
+                                  aria-label={ariaLabel}
+                                >
                                   {item.emoji && <span className="text-base">{item.emoji}</span>}
                                   {item.label}
                                 </Link>
@@ -319,8 +349,20 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                         <Link
                           href={profileLink.href}
                           className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-colors hover:bg-muted"
+                          title={profileLink.description}
+                          aria-label={`${profileLink.label}: ${profileLink.description}`}
                         >
                           {profileLink.emoji} {profileLink.label}
+                        </Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <Link
+                          href={settingsLink.href}
+                          className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-colors hover:bg-muted"
+                          title={settingsLink.description}
+                          aria-label={`${settingsLink.label}: ${settingsLink.description}`}
+                        >
+                          {settingsLink.emoji} {settingsLink.label}
                         </Link>
                       </SheetClose>
                       <button

@@ -3,11 +3,13 @@ import {
   isTreatySignerTaskKeyPrefix,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   TREATY_PARENT_TASK_ID,
+  TREATY_PARENT_TASK_KEY,
 } from "@/lib/tasks/task-keys";
 
 interface TaskTreeRoot {
   childTasks?: TaskCardTask[] | null;
   id: string;
+  taskKey?: string | null;
 }
 
 export interface PresidentManagementTasks {
@@ -22,11 +24,17 @@ export function selectTreatyPresidentManagementTasks(data: {
   const prizeRoot = data.topLevelTasks.find(
     (task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID,
   );
-  const programChildren = Array.isArray(prizeRoot?.childTasks)
+  const preferredProgramChildren = Array.isArray(prizeRoot?.childTasks)
     ? prizeRoot.childTasks
     : [];
+  const allProgramChildren = data.topLevelTasks.flatMap((task) =>
+    Array.isArray(task.childTasks) ? task.childTasks : [],
+  );
   const treatyProgram =
-    programChildren.find((task) => task.id === TREATY_PARENT_TASK_ID) ?? null;
+    preferredProgramChildren.find(isTreatyParentTask) ??
+    allProgramChildren.find(isTreatyParentTask) ??
+    data.allTasks.find(isTreatyParentTask) ??
+    null;
   const signerTasks = data.allTasks.filter((task) =>
     isTreatySignerTaskKeyPrefix(task.taskKey),
   );
@@ -35,4 +43,11 @@ export function selectTreatyPresidentManagementTasks(data: {
     signerTasks,
     treatyProgram,
   };
+}
+
+function isTreatyParentTask(task: { id: string; taskKey?: string | null }) {
+  return (
+    task.id === TREATY_PARENT_TASK_ID ||
+    task.taskKey === TREATY_PARENT_TASK_KEY
+  );
 }

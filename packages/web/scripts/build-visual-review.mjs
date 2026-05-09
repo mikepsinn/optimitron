@@ -23,11 +23,16 @@ const latestHtmlPath = path.join(outputRoot, "latest.html");
 
 const routeOrder = [
   "home",
+  "side-menu",
+  "side-menu-auth",
+  "dashboard",
+  "employees",
   "tasks-index",
   "task-optimize-earth",
   "task-one-percent-treaty",
   "task-signer-canada",
   "endorse",
+  "plaintiffs",
   "humanity-v-government",
 ];
 

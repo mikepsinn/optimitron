@@ -23,12 +23,15 @@ const nextConfig = {
     ],
   },
   transpilePackages: ["@optimitron/data"],
-  serverExternalPackages: ["@storacha/client", "multiformats", "pinata"],
+  serverExternalPackages: ["@storacha/client", "pinata"],
   // Next.js matches dev origins against the request hostname, not a full URL.
-  allowedDevOrigins: ["warondisease.local"],
+  allowedDevOrigins: ["127.0.0.1", "localhost", "warondisease.local"],
   output: isStaticExport ? "export" : undefined,
   basePath: isStaticExport ? "/optimitron" : "",
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
+  turbopack: {
+    root: path.resolve(__dirname, "../.."),
+  },
   images: {
     unoptimized: true,
   },
@@ -57,16 +60,16 @@ const nextConfig = {
       "@react-native-async-storage/async-storage": false,
     };
 
-    // @storacha/client needs multiformats@13 (exports ./link), but
-    // @atproto/* hoists multiformats@9 (doesn't). unshift so our function
-    // runs BEFORE Next.js's handleExternals decides to bundle these.
+    // @storacha/client needs its nested multiformats@13 (exports ./link), but
+    // @atproto/* also brings multiformats@9. Externalize Storacha itself and
+    // let Node resolve Storacha's own dependency instead of externalizing the
+    // ambiguous bare multiformats request.
     if (isServer) {
       config.externals.unshift(({ request }, callback) => {
         if (
           /^@optimitron\/storage(\/|$)/.test(request) ||
           /^@storacha\//.test(request) ||
-          /^pinata(\/|$)/.test(request) ||
-          /^multiformats(\/|$)/.test(request)
+          /^pinata(\/|$)/.test(request)
         ) {
           return callback(null, "node-commonjs " + request);
         }

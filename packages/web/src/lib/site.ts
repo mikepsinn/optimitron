@@ -32,6 +32,7 @@ import {
   privacyLink,
   profileLink,
   readTreatyLink,
+  signTreatyLink,
   termsLink,
   tasksLink,
   treatmentsLink,
@@ -333,22 +334,11 @@ const SHOW_ORGANIZATIONAL_SIGNATORIES_LINK = false;
 const organizationalSignatoryLinks: NavItem[] =
   SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [coalitionLink] : [];
 
-const warOnDiseaseShareLink: NavItem = {
+const warOnDiseaseManageHumanityLink: NavItem = {
   ...treatyDashboardLink,
-  label: "Share",
-  tagline: "Share your voting link",
-  cta: "Share",
-};
-
-// Top-nav alias for /vote that uses the Court framing already canonical
-// on /humanity-v-government. The YES vote IS the verdict — naming it as
-// such in the nav primes the case context and creates curiosity click
-// for unfamiliar visitors.
-const warOnDiseaseRenderVerdictLink: NavItem = {
-  ...treatyVoteLink,
-  label: "Render Verdict",
-  tagline: "Vote on the 1% Treaty as a juror in Humanity v. Government",
-  cta: "Render Verdict",
+  label: "Manage Humanity",
+  tagline: "Copy your voting link and coordinate reminders",
+  cta: "Manage Humanity",
 };
 
 // Top-nav alias for /plaintiffs that frames the page as an action
@@ -364,9 +354,15 @@ const warOnDiseaseRegisterPlaintiffLink: NavItem = {
 
 const warOnDiseaseFundLink: NavItem = {
   ...donateLink,
-  label: "Fund the Campaign",
+  label: "Fund Campaign",
   tagline: "Fund the campaign",
-  cta: "Fund the Campaign",
+  cta: "Fund Campaign",
+};
+
+const warOnDiseasePresidentManagementLink: NavItem = {
+  ...presidentManagementLink,
+  label: "Remind Presidents",
+  cta: "Remind Presidents",
 };
 
 const warOnDiseaseImpactAnalysisLink: NavItem = {
@@ -376,22 +372,19 @@ const warOnDiseaseImpactAnalysisLink: NavItem = {
   cta: "Read Impact Analysis",
 };
 
-// Top nav for warondisease.org. The two action labels (Render the Verdict
-// → /vote, Register a Plaintiff → /plaintiffs) are aliases of the base
-// nav links with Court-frame copy, kept variant-specific so other sites
-// (optimitron, dfda, dih) don't inherit the relabel.
+// Top nav for warondisease.org uses action labels. Keep these aliases
+// variant-specific so other sites don't inherit campaign funnel copy.
 const warOnDiseaseNavSections: NavSection[] = [
   {
     id: "primary",
     label: "Primary",
     primary: true,
     items: [
-      warOnDiseaseRenderVerdictLink,
-      warOnDiseaseShareLink,
+      signTreatyLink,
+      warOnDiseaseManageHumanityLink,
       warOnDiseaseFundLink,
       warOnDiseaseRegisterPlaintiffLink,
-      presidentManagementLink,
-      readTreatyLink,
+      warOnDiseasePresidentManagementLink,
       whyLink,
     ],
   },
@@ -531,8 +524,8 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
       {
         title: "Tell Someone Else",
         items: [
-          warOnDiseaseShareLink,
-          presidentManagementLink,
+          warOnDiseaseManageHumanityLink,
+          warOnDiseasePresidentManagementLink,
           peopleLink,
           tasksLink,
         ],
@@ -945,8 +938,8 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: ROUTES.vote, label: "Vote Now", variant: "primary" },
-    { href: ROUTES.treaty, label: "Read the Treaty", variant: "outline" },
+    { href: ROUTES.treaty, label: "Sign the Treaty", variant: "primary" },
+    { href: ROUTES.dashboard, label: "Manage Humanity", variant: "outline" },
   ],
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
