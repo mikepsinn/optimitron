@@ -74,7 +74,7 @@ jobs:
 
   web-validate:
     name: web-validate
-    if: github.event_name != 'push'
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -209,19 +209,27 @@ jobs:
             --jq '.[].databaseId')
 
           for run_id in "${run_ids[@]}"; do
+            run_root="$baseline_root/run-$run_id"
+            rm -rf "$run_root"
+            mkdir -p "$run_root"
+
             if gh run download "$run_id" \
               --name web-visual-review \
-              --dir "$baseline_root" >/dev/null 2>&1; then
-              if [ -d "$baseline_root/packages/web/screenshots" ]; then
-                echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$baseline_root/packages/web/screenshots" >> "$GITHUB_ENV"
-                echo "Downloaded visual baseline from main run $run_id."
-                rm -rf packages/web/screenshots
-                if [ -d "$pr_screenshots" ]; then
-                  cp -R "$pr_screenshots" packages/web/screenshots
+              --dir "$run_root" >/dev/null 2>&1; then
+              for screenshots_dir in "$run_root/screenshots" "$run_root/packages/web/screenshots"; do
+                if [ -d "$screenshots_dir" ]; then
+                  echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$screenshots_dir" >> "$GITHUB_ENV"
+                  echo "Downloaded visual baseline from main run $run_id."
+                  rm -rf packages/web/screenshots
+                  if [ -d "$pr_screenshots" ]; then
+                    cp -R "$pr_screenshots" packages/web/screenshots
+                  fi
+                  exit 0
                 fi
-                exit 0
-              fi
+              done
             fi
+
+            rm -rf "$run_root"
           done
 
           echo "No usable main web-visual-review artifact found; visual review will show after screenshots only."
