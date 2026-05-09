@@ -114,14 +114,13 @@ body {
   --sidebar-ring: rgb(236, 70, 153);
   --sidebar: rgb(245, 245, 245);
 
-  /* Decorative brutal tokens now resolve to treaty black/white tokens.
-     Red/green keep color because they carry status meaning. */
-  --brutal-pink: var(--foreground);
-  --brutal-pink-foreground: var(--background);
-  --brutal-cyan: var(--background);
-  --brutal-cyan-foreground: var(--foreground);
-  --brutal-yellow: var(--background);
-  --brutal-yellow-foreground: var(--foreground);
+  /* Neobrutalist color tokens */
+  --brutal-pink: rgb(236, 70, 153);
+  --brutal-pink-foreground: rgb(255, 255, 255);
+  --brutal-cyan: rgb(6, 182, 212);
+  --brutal-cyan-foreground: rgb(0, 0, 0);
+  --brutal-yellow: rgb(255, 221, 87);
+  --brutal-yellow-foreground: rgb(0, 0, 0);
   --brutal-red: rgb(200, 40, 40);
   --brutal-red-foreground: rgb(255, 255, 255);
   --brutal-green: rgb(34, 197, 94);
@@ -177,13 +176,12 @@ body {
   --sidebar-border: rgb(58, 58, 90);
   --sidebar-ring: rgb(244, 114, 182);
   --sidebar: rgb(23, 23, 23);
-  /* Same treaty redirect as :root, flipped through foreground/background. */
-  --brutal-pink: var(--foreground);
-  --brutal-pink-foreground: var(--background);
-  --brutal-cyan: var(--background);
-  --brutal-cyan-foreground: var(--foreground);
-  --brutal-yellow: var(--background);
-  --brutal-yellow-foreground: var(--foreground);
+  --brutal-pink: rgb(244, 114, 182);
+  --brutal-pink-foreground: rgb(0, 0, 0);
+  --brutal-cyan: rgb(8, 145, 178);
+  --brutal-cyan-foreground: rgb(0, 0, 0);
+  --brutal-yellow: rgb(253, 224, 71);
+  --brutal-yellow-foreground: rgb(0, 0, 0);
   --brutal-red: rgb(239, 68, 68);
   --brutal-red-foreground: rgb(0, 0, 0);
   --brutal-green: rgb(34, 197, 94);
