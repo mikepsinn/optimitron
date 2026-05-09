@@ -7,7 +7,7 @@
  */
 import { expect, test, type Page } from "@playwright/test";
 import { argosScreenshot } from "@argos-ci/playwright";
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { forceAnimationsComplete } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
@@ -28,7 +28,20 @@ const ARGOS_CSS = `
   }
 
   /* Live counters and timestamps should not create noisy visual diffs. */
-  [data-visual-mask="dynamic"],
+  [data-visual-mask="dynamic"] {
+    -webkit-text-fill-color: transparent !important;
+    position: relative !important;
+  }
+
+  [data-visual-mask="dynamic"]::after {
+    color: currentColor !important;
+    content: attr(data-visual-placeholder) !important;
+    left: 0;
+    position: absolute;
+    top: 0;
+    -webkit-text-fill-color: currentColor !important;
+  }
+
   time {
     visibility: hidden !important;
   }
@@ -40,8 +53,25 @@ const ARGOS_CSS = `
 `;
 const OPTIONAL_ROUTE_SKIP_STATUSES = new Set([401, 403, 404]);
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
+const ROUTE_MANIFEST_PATH = path.join(SCREENSHOT_ROOT, "routes.json");
 
 test.describe("route visual regression", () => {
+  test.beforeAll(async () => {
+    await mkdir(SCREENSHOT_ROOT, { recursive: true });
+    await writeFile(
+      ROUTE_MANIFEST_PATH,
+      JSON.stringify(
+        VISUAL_ROUTES.map(({ name, path: routePath }) => ({
+          name,
+          path: routePath,
+        })),
+        null,
+        2,
+      ),
+      "utf8",
+    );
+  });
+
   for (const route of VISUAL_ROUTES) {
     test(`${route.name}`, async ({ page }, testInfo) => {
       if ("authenticated" in route && route.authenticated) {
@@ -102,6 +132,13 @@ test.describe("route visual regression", () => {
 
 async function openVisualRoute(page: Page, routePath: string) {
   const errors: string[] = [];
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "__OPTIMITRON_VISUAL_REVIEW__", {
+      value: true,
+      configurable: true,
+    });
+  });
+
   page.on("pageerror", (error) => {
     if (!error.message.includes("Hydration")) {
       errors.push(error.message);

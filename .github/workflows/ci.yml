@@ -242,8 +242,45 @@ jobs:
             cp -R "$pr_screenshots" packages/web/screenshots
           fi
 
+      - name: Resolve PR preview URL
+        if: always() && github.event_name == 'pull_request'
+        id: pr_preview_url
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: |
+            const { owner, repo } = context.repo;
+            const ref = context.payload.pull_request.head.sha;
+            const deployments = await github.paginate(github.rest.repos.listDeployments, {
+              owner,
+              repo,
+              ref,
+              per_page: 100,
+            });
+
+            for (const deployment of deployments) {
+              const statuses = await github.rest.repos.listDeploymentStatuses({
+                owner,
+                repo,
+                deployment_id: deployment.id,
+                per_page: 20,
+              });
+              const ready = statuses.data.find((status) =>
+                status.state === 'success' &&
+                status.environment_url &&
+                /^https?:\/\//.test(status.environment_url)
+              );
+              if (ready) {
+                return ready.environment_url;
+              }
+            }
+
+            return '';
+
       - name: Build visual review index
         if: always()
+        env:
+          VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
@@ -316,6 +353,8 @@ jobs:
       - name: Comment visual review instructions
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v8
+        env:
+          VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
         with:
           script: |
             const marker = '<!-- optimitron-visual-review -->';
@@ -352,10 +391,15 @@ jobs:
             const visualDiffLabel = argosCheck
               ? 'Open before/after visual diffs'
               : 'Open PR checks for visual diffs';
+            const previewUrl = process.env.VISUAL_REVIEW_BASE_URL || '';
+            const previewLine = previewUrl
+              ? `- [Open preview deployment](${previewUrl})\n`
+              : '';
             const body = `${marker}
             ## Visual review
 
             - [Open screenshot gallery in the browser](${reviewPageUrl})
+            ${previewLine}
             - [${visualDiffLabel}](${visualDiffUrl})
             - [Download the compact screenshot gallery artifact](${artifactUrl})
             - [Open this workflow run](${runUrl})
