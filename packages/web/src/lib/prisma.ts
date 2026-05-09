@@ -21,9 +21,9 @@ function getClient(): PrismaClient {
     log: serverEnv.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 
-  if (serverEnv.NODE_ENV !== "production") {
-    globalForPrisma.prisma = client;
-  }
+  // Next production chunks can evaluate this module through separate bundles.
+  // Keep one process-level client/pool in every environment.
+  globalForPrisma.prisma = client;
 
   return client;
 }
