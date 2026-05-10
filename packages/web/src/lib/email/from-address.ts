@@ -1,10 +1,13 @@
-import { serverEnv } from "@/lib/env";
-import { WAR_ON_DISEASE_UPDATES_DOMAIN } from "@/lib/domains";
-
-export const CAMPAIGN_EMAIL_FROM_NAME =
-  "International Campaign to End War and Disease";
-export const DEFAULT_SYSTEM_EMAIL_FROM = `${CAMPAIGN_EMAIL_FROM_NAME} <hello@${WAR_ON_DISEASE_UPDATES_DOMAIN}>`;
-export const DEFAULT_UNSUBSCRIBE_EMAIL = `unsubscribe@${WAR_ON_DISEASE_UPDATES_DOMAIN}`;
+import {
+  CAMPAIGN_EMAIL_FROM_NAME,
+  DEFAULT_SYSTEM_EMAIL_FROM,
+} from "@optimitron/db/system-identities";
+export {
+  CAMPAIGN_EMAIL_FROM_NAME,
+  CAMPAIGN_SYSTEM_EMAIL,
+  DEFAULT_SYSTEM_EMAIL_FROM,
+  DEFAULT_UNSUBSCRIBE_EMAIL,
+} from "@optimitron/db/system-identities";
 
 export interface ParsedEmailFromHeader {
   address: string;
@@ -35,13 +38,9 @@ export function parseEmailFromHeader(
   return { address: trimmed, displayName: null };
 }
 
-/** The bare email address from `EMAIL_FROM`, or null when unset/malformed. */
+/** The bare campaign system email address. */
 export function getConfiguredFromAddress(): string | null {
-  return (
-    parseEmailFromHeader(serverEnv.EMAIL_FROM)?.address ??
-    parseEmailFromHeader(DEFAULT_SYSTEM_EMAIL_FROM)?.address ??
-    null
-  );
+  return parseEmailFromHeader(DEFAULT_SYSTEM_EMAIL_FROM)?.address ?? null;
 }
 
 /** Format a From header while guaranteeing a display name. */
@@ -62,21 +61,22 @@ export function formatEmailFromHeader(
 }
 
 /**
- * Format the default platform sender. The env may provide the deliverable
- * address, but the default visible sender stays the campaign unless a caller
- * deliberately passes a per-message `from` override.
+ * Format the default platform sender. The default visible sender stays the
+ * campaign unless a caller deliberately passes a per-message `from` override.
  */
 export function formatDefaultSystemEmailFromHeader(): string {
-  const parsed =
-    parseEmailFromHeader(serverEnv.EMAIL_FROM) ??
-    parseEmailFromHeader(DEFAULT_SYSTEM_EMAIL_FROM);
+  return formatSystemEmailFromHeader(CAMPAIGN_EMAIL_FROM_NAME);
+}
+
+export function formatSystemEmailFromHeader(displayName: string): string {
+  const parsed = parseEmailFromHeader(DEFAULT_SYSTEM_EMAIL_FROM);
   if (!parsed) return "";
 
-  const displayName = sanitizeDisplayName(
-    CAMPAIGN_EMAIL_FROM_NAME,
+  const safeDisplayName = sanitizeDisplayName(
+    displayName,
     CAMPAIGN_EMAIL_FROM_NAME,
   );
-  return `${displayName} <${parsed.address}>`;
+  return `${safeDisplayName} <${parsed.address}>`;
 }
 
 /**
@@ -87,7 +87,7 @@ export function formatDefaultSystemEmailFromHeader(): string {
  * but the inbox should foreground the named sender (so the recipient sees
  * a friend's name, not a brand they don't recognize). Per docs/questions.md.
  *
- * Falls back to the platform system sender if EMAIL_FROM is unset/malformed.
+ * Uses the platform system sender address.
  */
 export function formatShareEmailFromHeader(senderName: string): string {
   const address = getConfiguredFromAddress();

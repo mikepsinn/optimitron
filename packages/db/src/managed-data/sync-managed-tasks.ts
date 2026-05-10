@@ -342,6 +342,37 @@ function buildTaskCreateData(
   };
 }
 
+function sortManagedTaskRecords(records: ManagedTaskRecord[]) {
+  const byId = new Map(records.map((record) => [record.id, record]));
+  const sorted: ManagedTaskRecord[] = [];
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+
+  function visit(record: ManagedTaskRecord) {
+    if (visited.has(record.id)) return;
+    if (visiting.has(record.id)) {
+      throw new Error(`Managed task parent cycle detected at ${record.id}`);
+    }
+
+    visiting.add(record.id);
+    const parentRecord = record.parentTaskId
+      ? byId.get(record.parentTaskId)
+      : undefined;
+    if (parentRecord) {
+      visit(parentRecord);
+    }
+    visiting.delete(record.id);
+    visited.add(record.id);
+    sorted.push(record);
+  }
+
+  for (const record of records) {
+    visit(record);
+  }
+
+  return sorted;
+}
+
 function buildTaskUpdateData(collectionKey: string, record: ManagedTaskRecord) {
   return {
     ...buildTaskScalars(collectionKey, record),
@@ -434,9 +465,10 @@ export async function syncManagedTasks(
   }
 
   assertUniqueManagedTaskRecords(options.records);
+  const records = sortManagedTaskRecords(options.records);
 
-  const ids = options.records.map((record) => record.id);
-  const taskKeys = options.records.map((record) => record.taskKey);
+  const ids = records.map((record) => record.id);
+  const taskKeys = records.map((record) => record.taskKey);
   const existingRows = await client.task.findMany({
     where: {
       OR: [
@@ -482,7 +514,7 @@ export async function syncManagedTasks(
   };
   const now = options.now ?? new Date();
 
-  for (const record of options.records) {
+  for (const record of records) {
     const conflictingKeyOwner = existingRows.find(
       (row) => row.taskKey === record.taskKey && row.id !== record.id,
     );
@@ -501,26 +533,7 @@ export async function syncManagedTasks(
         continue;
       }
 
-      if (existing.deletedAt) {
-        result.unchanged.push(label);
-        continue;
-      }
-
-      result.retired.push(label);
       if (options.apply) {
-        await client.task.updateMany({
-          where: {
-            deletedAt: null,
-            OR: [
-              { id: record.id },
-              { taskKey: record.taskKey },
-            ],
-          },
-          data: {
-            deletedAt: now,
-            status: TaskStatus.STALE,
-          },
-        });
         const retiredEndpoints = await client.taskCommunicationEndpoint.updateMany({
           where: {
             deletedAt: null,
@@ -556,6 +569,28 @@ export async function syncManagedTasks(
         if (activeEndpoint) {
           result.endpointRetired.push(label);
         }
+      }
+
+      if (existing.deletedAt) {
+        result.unchanged.push(label);
+        continue;
+      }
+
+      result.retired.push(label);
+      if (options.apply) {
+        await client.task.updateMany({
+          where: {
+            deletedAt: null,
+            OR: [
+              { id: record.id },
+              { taskKey: record.taskKey },
+            ],
+          },
+          data: {
+            deletedAt: now,
+            status: TaskStatus.STALE,
+          },
+        });
       }
       continue;
     }

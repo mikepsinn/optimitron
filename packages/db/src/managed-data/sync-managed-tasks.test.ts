@@ -162,6 +162,12 @@ class FakeManagedTaskClient implements ManagedTaskClient {
       };
       let task = this.tasks.find((candidate) => candidate.id === where.id);
       if (!task) {
+        const parentConnect = (
+          create["parentTask"] as { connect?: { id: string } } | undefined
+        )?.connect?.id;
+        if (parentConnect && !this.tasks.some((item) => item.id === parentConnect)) {
+          throw new Error(`Missing parent task ${parentConnect}`);
+        }
         task = makeTask({
           id: create["id"] as string,
           taskKey: create["taskKey"] as string,
@@ -466,5 +472,84 @@ describe("syncManagedTasks", () => {
     });
 
     expect(client.transactionCalls).toBe(1);
+  });
+
+  it("creates managed parents before children even when records are unordered", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [
+        {
+          id: "child",
+          taskKey: "program:test:child",
+          parentTaskId: "root",
+          title: "Child task",
+          description: "Managed child description.",
+        },
+        activeRecord,
+      ],
+    });
+
+    expect(client.tasks.map((task) => task.id)).toEqual(["root", "child"]);
+    expect(client.tasks.find((task) => task.id === "child")).toMatchObject({
+      parentTaskId: "root",
+    });
+  });
+
+  it("retires active endpoints for already-retired managed tasks", async () => {
+    const now = new Date("2026-05-10T12:00:00.000Z");
+    const client = new FakeManagedTaskClient({
+      tasks: [
+        makeTask({
+          deletedAt: new Date("2026-05-01T00:00:00.000Z"),
+          id: "retired",
+          taskKey: "program:test:retired",
+        }),
+      ],
+      endpoints: [
+        {
+          deletedAt: null,
+          email: null,
+          id: "endpoint-retired",
+          instructions: null,
+          isPrimary: true,
+          kind: TaskCommunicationEndpointKind.ACTION_LINK,
+          label: "Old retired endpoint",
+          priority: 0,
+          sourceUrl: null,
+          taskId: "retired",
+          url: "/old-retired-task",
+          verificationStatus:
+            TaskCommunicationEndpointVerificationStatus.UNVERIFIED,
+        },
+      ],
+    });
+
+    const result = await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      now,
+      records: [
+        {
+          id: "retired",
+          taskKey: "program:test:retired",
+          parentTaskId: null,
+          title: "Retired",
+          description: "Retired row.",
+          retired: true,
+        },
+      ],
+    });
+
+    expect(result.unchanged).toEqual(["retired (program:test:retired)"]);
+    expect(result.endpointRetired).toEqual(["retired (program:test:retired)"]);
+    expect(client.endpoints[0]).toMatchObject({
+      deletedAt: now,
+      isPrimary: false,
+    });
   });
 });

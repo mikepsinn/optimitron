@@ -5,6 +5,11 @@ import process from "node:process";
 
 function parseMode(argv) {
   const args = argv.filter((arg) => arg !== "--");
+  const allowed = new Set(["--apply", "--dry-run"]);
+  const unknown = args.filter((arg) => !allowed.has(arg));
+  if (unknown.length > 0) {
+    throw new Error(`Unknown argument(s): ${unknown.join(", ")}`);
+  }
   const apply = args.includes("--apply");
   const dryRun = args.includes("--dry-run");
 

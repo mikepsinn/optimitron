@@ -3,6 +3,7 @@ import {
   TaskCommentKind,
   TaskCommentSource,
 } from "@optimitron/db";
+import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@optimitron/db/system-identities";
 import { describe, expect, it, vi } from "vitest";
 import { processInboundReply, stripQuotedReply } from "../inbound-reply";
 
@@ -121,7 +122,7 @@ function inboundEvent(
 ) {
   return {
     from: "Assignee <assignee@example.org>",
-    to: "reply+task_1@reply.warondisease.org",
+    to: `reply+task_1@${WAR_ON_DISEASE_REPLY_DOMAIN}`,
     subject: "Re: task",
     text: "Done.",
     providerMessageId: "provider_msg_1",
@@ -277,7 +278,7 @@ describe("processInboundReply", () => {
     const result = await processInboundReply(
       inboundEvent({
         from: "Institute for Accelerated Medicine <test@thinkbynumbers.org>",
-        to: "reply+task_iam@reply.warondisease.org",
+        to: `reply+task_iam@${WAR_ON_DISEASE_REPLY_DOMAIN}`,
         text: "We posted the survey link to our member newsletter.",
         providerMessageId: "provider_msg_iam_reply",
       }),

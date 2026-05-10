@@ -552,7 +552,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   publicContactUrl: PUBLIC_CONTACT_URL,
   legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
-    fromName: "Optimitron",
+    fromName: "Earth Optimization Services",
     primaryColor: "#ff00ff",
     secondaryColor: "#00d9ff",
     orgName: EARTH_OPTIMIZATION_SERVICES_LLC,

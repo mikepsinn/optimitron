@@ -7,29 +7,45 @@ interface MagicLinkCopy {
   notRequested: string;
 }
 
-const lumberghCopy: MagicLinkCopy = {
+const defaultNotRequested = "If you didn't request this, you can ignore it.";
+
+const optimitronCopy: MagicLinkCopy = {
   buttonLabel: "Sign in",
-  intro: "Yeahhh, here's your sign-in link. Mmkay.",
-  notRequested: "Didn't ask for this? Just go ahead and ignore it. That'd be great.",
+  intro: "Sign in to Optimitron.",
+  notRequested: defaultNotRequested,
+};
+
+const warOnDiseaseCopy: MagicLinkCopy = {
+  buttonLabel: "Log in",
+  intro: "Please log in to end war and disease.",
+  notRequested: defaultNotRequested,
 };
 
 const magicLinkCopyBySite: Record<SiteKey, MagicLinkCopy> = {
-  optimitron: lumberghCopy,
-  warOnDisease: lumberghCopy,
+  optimitron: optimitronCopy,
+  warOnDisease: warOnDiseaseCopy,
   dfda: {
     buttonLabel: "Sign in",
     intro: "Sign in to dFDA.",
-    notRequested: "If you didn't request this, you can ignore it.",
+    notRequested: defaultNotRequested,
   },
   dih: {
     buttonLabel: "Sign in",
     intro: "Sign in to the Decentralized Institutes of Health.",
-    notRequested: "If you didn't request this, you can ignore it.",
+    notRequested: defaultNotRequested,
   },
 };
 
 function getMagicLinkCopy(host: string): MagicLinkCopy {
   return magicLinkCopyBySite[getSiteFromHost(host).key];
+}
+
+export function buildMagicLinkSubject(host: string) {
+  if (getSiteFromHost(host).key === "warOnDisease") {
+    return "Log in to end war and disease";
+  }
+
+  return `Sign in to ${host}`;
 }
 
 export function escapeHtml(value: string) {

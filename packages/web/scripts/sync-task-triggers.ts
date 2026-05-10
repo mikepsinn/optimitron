@@ -23,12 +23,17 @@ import { createTaskTrigger, updateTaskTrigger } from "../src/lib/triggers/admin"
 
 function parseArgs(argv: string[]) {
   const args = argv.filter((arg) => arg !== "--");
+  const allowed = new Set(["--apply", "--dry-run"]);
+  const unknown = args.filter((arg) => !allowed.has(arg));
+  if (unknown.length > 0) {
+    throw new Error(`Unknown argument(s): ${unknown.join(", ")}`);
+  }
   const apply = args.includes("--apply");
   const dryRun = args.includes("--dry-run");
   if (apply && dryRun) {
     throw new Error("Use either --apply or --dry-run, not both.");
   }
-  return { apply };
+  return { apply, dryRun };
 }
 
 function makeBarePrismaClient(): PrismaClient {

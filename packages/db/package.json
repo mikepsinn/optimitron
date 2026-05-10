@@ -17,6 +17,10 @@
     "./task-keys": {
       "types": "./dist/task-keys.d.ts",
       "default": "./dist/task-keys.js"
+    },
+    "./system-identities": {
+      "types": "./dist/system-identities.d.ts",
+      "default": "./dist/system-identities.js"
     }
   },
   "scripts": {

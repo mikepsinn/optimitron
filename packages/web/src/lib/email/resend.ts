@@ -6,7 +6,6 @@ import { canSendEmailToUser } from "@/lib/email/can-send.server";
 import {
   DEFAULT_UNSUBSCRIBE_EMAIL,
   formatDefaultSystemEmailFromHeader,
-  parseEmailFromHeader,
 } from "@/lib/email/from-address";
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
 import { isTransactionalScope } from "@/lib/email/scopes";
@@ -69,6 +68,15 @@ export type SendResult =
   | { status: "suppressed"; reason: "user_opt_out" }
   | { status: "sent"; id: string | null; unsubscribeUrl: string | null };
 
+export interface ReceivedEmailContent {
+  from: string;
+  to: string[];
+  subject: string;
+  text: string | null;
+  html: string | null;
+  headers: Record<string, string> | null;
+}
+
 let resendClient: Resend | null = null;
 
 function isMockSendEnabled() {
@@ -109,6 +117,27 @@ function getResendClient() {
   return resendClient;
 }
 
+export async function getReceivedEmailContent(
+  emailId: string,
+): Promise<ReceivedEmailContent> {
+  const response = await getResendClient().emails.receiving.get(emailId);
+  if (response.error) {
+    throw new Error(response.error.message);
+  }
+  if (!response.data) {
+    throw new Error(`Resend returned no received email data for ${emailId}.`);
+  }
+
+  return {
+    from: response.data.from,
+    to: response.data.to,
+    subject: response.data.subject,
+    text: response.data.text,
+    html: response.data.html,
+    headers: response.data.headers,
+  };
+}
+
 function buildUnsubscribeHeaders(
   unsubscribeUrl: string | null,
 ): Record<string, string> | undefined {
@@ -116,10 +145,7 @@ function buildUnsubscribeHeaders(
     return undefined;
   }
 
-  const mailtoAddr =
-    parseEmailFromHeader(serverEnv.EMAIL_FROM)?.address ??
-    DEFAULT_UNSUBSCRIBE_EMAIL;
-  const mailto = `mailto:${mailtoAddr}?subject=unsubscribe`;
+  const mailto = `mailto:${DEFAULT_UNSUBSCRIBE_EMAIL}?subject=unsubscribe`;
   return {
     "List-Unsubscribe": `<${unsubscribeUrl}>, <${mailto}>`,
     "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
@@ -181,7 +207,7 @@ function normalizeEmailList(emails: readonly string[] | null | undefined) {
 
 function resolveBcc(message: { bcc?: string[] | null; to: string }) {
   const recipient = message.to.trim().toLowerCase();
-  const monitorBcc = resolveMonitorBcc();
+  const monitorBcc = getEmailMonitorAddress();
   const bcc = normalizeEmailList([
     ...(message.bcc ?? []),
     ...(monitorBcc ? [monitorBcc] : []),
@@ -190,7 +216,7 @@ function resolveBcc(message: { bcc?: string[] | null; to: string }) {
   return bcc.length > 0 ? bcc : undefined;
 }
 
-function resolveMonitorBcc() {
+export function getEmailMonitorAddress() {
   const configured = serverEnv.EMAIL_MONITOR_BCC?.trim();
   if (!configured) {
     return null;

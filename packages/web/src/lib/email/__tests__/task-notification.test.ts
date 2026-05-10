@@ -83,7 +83,7 @@ describe("reply-address encode/decode", () => {
 
 describe("reply domain env", () => {
   const originalReplyDomain = process.env.REPLY_EMAIL_DOMAIN;
-  const originalInboundSecret = process.env.RESEND_INBOUND_WEBHOOK_SECRET;
+  const originalWebhookSecret = process.env.RESEND_WEBHOOK_SECRET;
 
   afterEach(() => {
     if (originalReplyDomain !== undefined) {
@@ -91,10 +91,10 @@ describe("reply domain env", () => {
     } else {
       delete process.env.REPLY_EMAIL_DOMAIN;
     }
-    if (originalInboundSecret !== undefined) {
-      process.env.RESEND_INBOUND_WEBHOOK_SECRET = originalInboundSecret;
+    if (originalWebhookSecret !== undefined) {
+      process.env.RESEND_WEBHOOK_SECRET = originalWebhookSecret;
     } else {
-      delete process.env.RESEND_INBOUND_WEBHOOK_SECRET;
+      delete process.env.RESEND_WEBHOOK_SECRET;
     }
     vi.resetModules();
   });
@@ -112,8 +112,8 @@ describe("reply domain env", () => {
     );
   });
 
-  it("does not enable task email replies until both inbound secret and domain are configured", async () => {
-    delete process.env.RESEND_INBOUND_WEBHOOK_SECRET;
+  it("does not enable task email replies until both webhook secret and domain are configured", async () => {
+    delete process.env.RESEND_WEBHOOK_SECRET;
     process.env.REPLY_EMAIL_DOMAIN = "reply.test";
     vi.resetModules();
     const { getConfiguredTaskReplyAddress, getTaskEmailReplyInstruction } =
@@ -123,8 +123,8 @@ describe("reply domain env", () => {
     expect(getTaskEmailReplyInstruction()).toBeNull();
   });
 
-  it("returns a task reply address when inbound secret and domain are configured", async () => {
-    process.env.RESEND_INBOUND_WEBHOOK_SECRET = "secret_test";
+  it("returns a task reply address when webhook secret and domain are configured", async () => {
+    process.env.RESEND_WEBHOOK_SECRET = "secret_test";
     process.env.REPLY_EMAIL_DOMAIN = "reply.test";
     vi.resetModules();
     const { getConfiguredTaskReplyAddress, getTaskEmailReplyInstruction } =

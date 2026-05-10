@@ -1,7 +1,7 @@
 /**
  * Inbound email reply → TaskComment processor.
  *
- * Wired by `/api/webhooks/resend-inbound` (or equivalent route). Decodes the
+ * Wired by `/api/webhooks/resend`. Decodes the
  * `reply+{taskId}@{REPLY_EMAIL_DOMAIN}` address back to a taskId, strips
  * quoted prior messages from the body, authenticates the sender by matching
  * email to a known user, Person, Organization, or endpoint on the task, and

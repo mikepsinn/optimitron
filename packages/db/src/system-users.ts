@@ -1,18 +1,29 @@
 import { PersonLifeStatus } from "./generated/prisma/client.js";
+import {
+  WISHONIA_AFFILIATION,
+  WISHONIA_DISPLAY_NAME,
+  WISHONIA_EMAIL,
+  WISHONIA_IMAGE,
+  WISHONIA_SOURCE_REF,
+  WISHONIA_USERNAME,
+} from "./system-identities.js";
 
-export const WISHONIA_EMAIL = "wishonia@gmail.com";
-export const WISHONIA_USERNAME = "wishonia";
-export const WISHONIA_DISPLAY_NAME = "Wishonia";
-export const WISHONIA_AFFILIATION =
-  "World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation";
-export const WISHONIA_IMAGE = "/sprites/wishonia/smirk-smile.png";
-export const WISHONIA_SOURCE_REF = "wishonia:system";
+export {
+  WISHONIA_AFFILIATION,
+  WISHONIA_DISPLAY_NAME,
+  WISHONIA_EMAIL,
+  WISHONIA_IMAGE,
+  WISHONIA_SOURCE_REF,
+  WISHONIA_USERNAME,
+} from "./system-identities.js";
 
 export interface WishoniaUserClient {
   person: {
     upsert(args: unknown): Promise<{ id: string; handle: string | null }>;
   };
   user: {
+    findFirst(args: unknown): Promise<{ id: string } | null>;
+    update(args: unknown): Promise<{ id: string }>;
     upsert(args: unknown): Promise<{ id: string }>;
   };
 }
@@ -46,6 +57,25 @@ export async function upsertWishoniaUser(
       lifeStatus: PersonLifeStatus.LIVING,
     },
   });
+
+  const existingUserForPerson = await client.user.findFirst({
+    where: { personId: person.id },
+    select: { id: true },
+  });
+
+  if (existingUserForPerson) {
+    const user = await client.user.update({
+      where: { id: existingUserForPerson.id },
+      data: {
+        email: WISHONIA_EMAIL,
+        emailVerified: now,
+        isSystem: true,
+        person: { connect: { id: person.id } },
+      },
+    });
+
+    return { person, user };
+  }
 
   const user = await client.user.upsert({
     where: { email: WISHONIA_EMAIL },
