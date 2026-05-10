@@ -45,142 +45,22 @@ Until the 1% Treaty passes, this repo is in campaign mode.
   Link to them when they make the campaign more credible; otherwise keep the
   campaign surface focused on action.
 
-## What's shipped (2026-05-07)
+## Current State Snapshot
 
-**Live vote counter on landing:**
-
-- `VoteCounterSplit` now renders above the `TreatyVoteFlow` on the landing
-  page, hidden when total voices is 0 so a brand-new site doesn't show
-  empty rails. Uses the same `individualCount` / `memorialVoteCount` /
-  `representedHumanCount` already loaded by `ReferendumSiteHomeData`, so
-  no new server query.
-  `packages/web/src/components/site/OnePercentTreatyLandingPage.tsx`.
-
-**MCP-driven outreach pipeline (continuing PR #58):**
-
-- MCP `createTask` now fires the assignment email on creation. Best-effort
-  via the existing `notifyTaskAssigneeOfAssignment` helper, mirroring the
-  web-side call site. `packages/web/src/lib/mcp-server.ts:6543`.
-- Non-admin MCP scope creating an org-assigned task no longer errors —
-  defaults to `isPublic: false` so Wishonia's outreach to organizations is
-  not auto-broadcast on the public Earth feed. Admin scope keeps the public
-  default for leader/president/treaty-activation tasks.
-- Inbound email replies fan out to all watchers (creator + assignee +
-  endpoints + admin monitors) via `notifyTaskCommentRecipients` instead of
-  notifying only the creator. The helper now also filters out the
-  authoring organization so an org reply does not echo back to the org.
-  `packages/web/src/lib/email/inbound-reply.ts`,
-  `packages/web/src/lib/tasks/task-comment-notifications.server.ts`.
-
-**Campaign-organization flow follow-ups (PR #58):**
-
-- Feedback rate-limit returns `FeedbackRejectedError(rate_limited)` instead of 500.
-  `packages/web/src/lib/feedback.server.ts:117`.
-- `getBaseUrl()` trailing-slash normalized in organization activation task URLs.
-  `packages/web/src/lib/organization.server.ts:82`.
-- Pending-org-endorsement sync: lock loss mid-batch returns `skippedBecauseLocked`
-  instead of error-stating remaining drafts. `AbortController` (12s) on the post
-  fetch keeps it < 15s lock TTL.
-  `packages/web/src/lib/organization-endorsement-sync.ts`.
-- Assignment-email From now reads `<Creator> via International Campaign to End War
-  and Disease <hello@updates.warondisease.org>`. Orgs see who actually assigned
-  the task; reply-routing via `reply+{taskId}@…` unchanged.
-  `packages/web/src/lib/tasks/task-assignment-notifications.server.ts:125`.
-- Inbound-reply tests cover the org-contactEmail → `TaskComment(authorOrganizationId)`
-  path so the round-trip is documented.
-  `packages/web/src/lib/email/__tests__/inbound-reply.test.ts`.
-
-**`/endorse` rewrite:**
-
-- Calculator moved above the join form. Header is one prompt + one data sentence
-  citing `GLOBAL_DISEASE_DEATHS_DAILY`. Result split into two columns: "If you
-  act" (lives saved, suffering prevented) vs "If you do not" (preventable deaths
-  allowed, suffering allowed) — same magnitude, opposite framing.
-- Cut the `ORGANIZATION_BENEFITS` aside, the duplicated `ImpactStat` block, and
-  the multi-paragraph "Why bother?" section. Three-step "embed iframe / send
-  one email / post once" replaces the bullets.
-  `packages/web/src/app/endorse/page.tsx`,
-  `packages/web/src/app/endorse/OrganizationImpactCalculator.tsx`.
-
-
-
-**Acquisition funnel (warondisease.org):**
-
-- Landing renders embedded `TreatyVoteFlow`; auth is inline; no pre-vote friction.
-  `packages/web/src/components/site/OnePercentTreatyLandingPage.tsx`,
-  `packages/web/src/components/landing/TreatyVoteFlow.tsx`.
-- `/vote` and `/vote/<code>` routes own the focused flow; post-vote redirects to `/dashboard`.
-  `packages/web/src/app/vote/page.tsx`.
-- 14-screen post-vote share flow records ShareAttempts.
-  `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
-- Per-variant magic-link copy (Lumbergh for warOnDisease + optimitron, neutral for dfda + dih).
-  `packages/web/src/lib/email/magic-link-render.ts:16-29`.
-
-**Onboarding tree (HMT):**
-
-- `user-onboarding:treaty` trigger spawns 5 chain-creating subtasks at signup
-  (`assignFirstHuman`, `assignSecondHuman`, `shareReferralUrl`, `signTreatyPersonally`, `phoneScript`)
-  + a `completeTraining` gate. `packages/web/src/lib/triggers/blueprints/one-percent-treaty.ts:77`.
-- HMT auto-verify gate flips `completeTraining` to VERIFIED when all 5 siblings are done.
-  Same file, `hmtVerifyGate` at `:318`.
-- `linkParam` helper + `*Linked` parameter variants for sourced markdown citations.
-  `packages/web/src/lib/triggers/context.ts:66`.
-- Phone-script body keeps raw variants (read aloud); markdown surfaces use `*Linked`.
-
-**Treaty roster + ratification spine:**
-
-- Singleton "Ratify the 1% Treaty" parent task seeded via `treaty:ratify` blueprint.
-- `packages/data/src/datasets/government-leaders.ts` defines ~193 `GovernmentLeaderRecord`s
-  with name, role, country, contact, military/government budgets.
-- `packages/web/scripts/sync-treaty-signers.ts` walks the roster and builds per-leader task drafts.
-- Country → leader resolution exists via `getTreatySignerSlots()` (countryCode filter).
-
-**Referral attribution + share infra:**
-
-- `buildReferralUrl`, `buildUserReferralUrl`, `buildInviteReferralUrl` in
-  `packages/web/src/lib/url.ts`. `/vote/<handle-or-code>?invite=<token>` is the canonical pattern.
-- `ShareAttempt` records every outbound message with `sa=<id>` attribution
-  (`packages/web/src/lib/share-channels.ts:79` `embedShareAttemptId`).
-- `ReferralInvitation` lifecycle: invite created → recipient task spawned via
-  `referral:vote-invitation` trigger → recipient votes → invitation marked CONVERTED →
-  sender dashboard row updates. Coverage at `packages/web/e2e/invite-token-attribution.spec.ts`.
-- `recordShareAttempt(tx, ...)` in `packages/web/src/lib/share-attempts.server.ts` is the
-  single write path; computes `templateHash` + `renderedHash`.
-
-**Court of Humanity scaffolding:**
-
-- Schema exists: `CourtCase`, `CourtCaseParty`, `CourtCaseClaim`, `CourtCaseHarm`,
-  `CourtCaseEvidence`, `CourtCaseRemedy` at `packages/db/prisma/schema.prisma:4342+`. All
-  status enums in place. `juryReferendumId`, `enforcementTaskId`, and `Subject`-based
-  party identity already wired.
-- MCP tools exist for every case operation: `addCourtCaseClaim/Evidence/Harm/Party/Remedy`,
-  `upsertCourtCase`, `getCourtCase`, `openCourtCaseJuryVote`. See `packages/web/src/lib/court-data.server.ts`.
-- Routes exist: `/court` (empty page), `/humanity-v-government` (currently redirects to
-  the manual at `manual.warondisease.org/knowledge/appendix/humanity-v-government.html`).
-- Posthumous-plaintiff registration already implemented — see
-  `routes.ts:678` "Sign the 1% Treaty for someone who can no longer sign it themselves".
-- **What's missing:** the seeded `Humanity v. Government` case row, the plaintiff backfill,
-  the live `/court` rendering, and the dual treaty-vote / verdict-vote framing. P0 below.
-
-**MCP-driven outreach pipeline (partial):**
-
-- Outbound email infrastructure: Resend, with `replyTo: reply+{taskId}@{REPLY_EMAIL_DOMAIN}`
-  auto-injected per task. `packages/web/src/lib/email/task-notification.ts:27`.
-- Inbound webhook: Resend Inbound Parse + svix-verified signature, quote-stripping, sender
-  authentication, writes `TaskComment` (`source: EMAIL_REPLY`) + `TaskCommunication`
-  (`direction: INBOUND`). `packages/web/src/app/api/webhooks/resend-inbound/route.ts`.
-- Web-side `createTask` already triggers assignment email via `notifyTaskAssigneeOfAssignment`.
-  MCP-side `createTask` does **not** (P0 gap below).
-- `Task.isPublic` exists with sensible defaults. `TaskComment.visibility` (`PUBLIC | INTERNAL`)
-  modeled. Trigger framework supports `spawnCommunication` for fully-automated emission.
-
-**Diagnostics:**
-
-- New-user funnel screenshot harness for warondisease + optimitron + dfda variants.
-  `packages/web/e2e/new-user-flow-screenshots.spec.ts`.
-- `VoteCounterSplit` live count component (used on `/signatories`, not yet on landing).
-  `packages/web/src/components/referendum/VoteCounterSplit.tsx`.
-- MCP errors wired to Sentry (`packages/web/src/app/api/mcp/route.ts` catches).
+- War on Disease is the default product focus; development and PR review should
+  keep that variant first.
+- The treaty vote, referral attribution, post-vote share flow, and organization
+  endorsement flow exist.
+- `optimize-earth` exists as the root task key/id, but the canonical campaign
+  tree still needs managed-data sync so source-controlled data, production rows,
+  MCP, API, and pages cannot drift.
+- `/humanity-v-government` renders the operational case. `/court` exists but
+  still needs the live Court surface, plaintiff/juror counter, and final
+  treaty-as-verdict framing.
+- MCP task assignment email and inbound reply fan-out have shipped. The remaining
+  MCP outreach gap is an integration test for the full round trip.
+- Visual review exists, but still needs cache-busted review URLs, fewer missing
+  before/after pairs, direct preview links, and deterministic animation settling.
 
 ## Gaps blocking 4B
 
@@ -269,8 +149,18 @@ Notes:
 - `dfda` / bed-nets benchmark tasks should not be direct children of the current
   War on Disease mission tree. Keep dFDA as a supporting product/page elsewhere;
   bed nets can remain benchmark/reference material, not a primary campaign task.
+- Primary action links should stay in the same managed source as the tree, using
+  the existing task communication/action endpoint if it is enough:
+  `End War and Disease` -> `/`, `Establish the Court of Humanity` -> `/court`,
+  `Prosecute Humanity v. Governments of Earth` -> `/humanity-v-government`,
+  `Register plaintiffs` -> `/plaintiffs`, `Ratify the 1% Treaty` -> `/vote`,
+  `Get 193 heads of government to sign` -> `/employees`, and `Summon jurors`
+  -> the invite/referral route once it exists.
 
 ### Current implementation order (decided 2026-05-10)
+
+This is the canonical near-term order. Older detailed sections below are
+supporting detail or parked work; they should not override this sequence.
 
 1. **Do not ship the interrupted seed-only cleanup as the long-term pattern.**
    Either replace the local partial seed/migration/test changes with managed
@@ -424,103 +314,24 @@ cross-check so they do not disappear into chat history.
   real bottleneck.
 - VOTE token rewards for verified task completion.
 
-### Next 3 (re-prioritized 2026-05-08, "get orgs and people joining" lens)
+### Near-term after managed-data sync
 
-The foundation-outreach smoke test ran end-to-end (IAM org → email →
-ready for replies). The mechanical loop works. The remaining bottlenecks
-to volume of joins, in order of leverage:
+After the managed task tree is syncing and deployed, do the smallest high-leverage
+user-facing work in this order:
 
-1. **Plaintiffs page damages surface** (was queued as P1; promote — see
-   `/plaintiffs/page.tsx` audit below). Visitors landing from the case
-   page or from the IAM-style email's `register-deceased` deep-link
-   currently don't see what they're owed (~$10.6M NPV / $25.2M cohort
-   per registered plaintiff). 30-line JSX add, schema-zero, immediate
-   conversion lift on a high-traffic surface. **Smallest unit, biggest
-   per-line leverage right now.**
-
-2. **Foundation outreach: tightened parameter-driven email template +
-   ~10 high-leverage seed targets.** The IAM smoke-test email I sent
-   was 250+ words (user flagged as too long). The replacement should:
-   (a) live in a real template file (not inline in a script), (b) pull
-   numbers from `@optimitron/data/parameters` (so "12.3×" stays canon
-   instead of drifting to "quadruple"), (c) use the
-   `WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION` thesis line, (d) single CTA
-   to `/endorse`. Plus: list 8–12 high-leverage foundations
-   (Gates, Wellcome, Open Phil, RWJF, Wellcome Leap, Chan Zuckerberg,
-   Arnold Ventures, Schmidt Futures, Skoll, Omidyar) with verified
-   contact emails so the bulk-outreach loop has actual payload. This
-   is the bottleneck for org joins — without targets and tight copy,
-   the mechanical pipeline doesn't move the metric.
-
-3. **Stage 2 President Manager promotion** (already queued as P0
-   below) — re-scoped after 2026-05-08 review. The existing PMS
-   section already shows all 193 leaders, so the scoped-out "spawn a
-   new trigger + new task + dashboard reorder" was overkill.
-   Lightweight version: post-HMT, the dashboard primary CTA
-   highlights *the user's country's leader* within the existing PMS
-   section. ~10 lines. Same conversion goal.
-
-The other "boring infra" items (email threading, sitemap orgs,
-Stripe Connect for AMF, email validation lint) are all cheap (10-50
-lines each) and have non-obvious compound channels — AI email
-summarizers thread by `Message-ID`, LLM search engines
-(ChatGPT/Perplexity/Claude/Gemini) discover via sitemaps, Connect
-unblocks grant-loop scaling beyond ~5 grants/year. They sit just
-below the Next 3 because they are the infrastructure the next 3
-ride on, not blockers downstream of them.
-
-### Shipped this session (2026-05-07 → 2026-05-08)
-
-- Court of Humanity case page rendered at `/humanity-v-government` with
-  jury-summons + plaintiff #N + damages tier + sensitivity calculator
-  + family-registration CTA.
-- Live treaty YES voters auto-register as plaintiffs.
-- Backfill script for pre-existing voters.
-- dih-neobrutalist user/vote/allocation/inclusion migration (33 users,
-  23 votes, 49 allocations, 30 inclusions) imported with skip-on-conflict.
-- MCP `createTask` → assignment email pipeline (createTask wired to
-  `notifyTaskAssigneeOfAssignment`, From shows creator's display name,
-  inbound replies fan to all watchers, default-private for non-admin
-  scope, IAM smoke test confirmed end-to-end).
-- 5 grant-asking funding tasks soft-deleted (Schmidt Futures, Skoll,
-  Omidyar, SFF, Open Phil) per "ask orgs to join, not to fund" pivot.
-- Slider question reframed welfare-style ("Governments are paid $36T/yr
-  to promote the general welfare. What allocation…would best fulfill
-  that duty?") so the answer reads as juror testimony in the case.
-- `/vote` already-voted guard mirrors the home-page redirect.
-- Action menu labels: "Render Verdict" + "Register a Plaintiff" on
-  the warondisease.org top nav.
-- `/tasks/[id]/page.tsx`: leader-accountability blocks now gated on
-  `isTreatySigner`, claim/complete action lifted above the fold,
-  neobrutalist styling stripped (BrutalCard / ArcadeTag /
-  text-brutal-pink / border-4 / hard shadows all removed in favor of
-  treaty-style tokens), admin blocks moved into `<details>` disclosures.
-- Root task ID/key renamed to `optimize-earth` / `program:optimize-earth`;
-  values exported as `OPTIMIZE_EARTH_ROOT_TASK_ID` /
-  `OPTIMIZE_EARTH_ROOT_TASK_KEY` from `@optimitron/db` and re-exported by
-  the web `task-keys` shim. One literal, one place. Hand-written
-  `packages/db/prisma/migrations/20260509173000_rename_optimize_earth_root_task/migration.sql`
-  handles the prod rename.
-- All other task-key constants and builders consolidated into
-  `packages/db/src/task-keys.ts` and surfaced via
-  `@optimitron/db/task-keys`. The web `lib/tasks/task-keys.ts` is now a
-  re-export shim plus the one Next.js routing helper
-  (`getTreatyParentTaskHref`).
-- `parentTaskId` plumbed through `POST /api/tasks` schema with parent-
-  exists + parent-must-be-public guards, and through the `createTask`
-  server helper. New subtasks created via the REST API default to
-  `isPublic: false` so a parent-task creator decides what gets
-  surfaced — Wikipedia/StackOverflow-style UGC.
-- `/tasks` restructured into two sections: **Humanity's Tasks**
-  (single row → `optimize-earth` root, drill in for the tree) and
-  **Your Tasks** (assigned-to-me list when present; a synthetic
-  "Vote on the 1% Treaty" CTA linking direct to `/vote` otherwise).
-  Dropped the flat task queue. `getTasksPageData` now returns
-  `assignedToMe`.
-- `TaskMilestone` model + UI editor + API route + server helper +
-  tests + MCP tool + dashboard rendering all deleted; subtasks
-  subsume every milestone capability. Drop-table migration written
-  by hand (no data migration needed — milestone table empty in prod).
+1. Simplify the logged-in dashboard into the core action checklist: sign treaty,
+   render verdict, register plaintiff, summon jurors, pressure presidents.
+2. Simplify `/tasks/[id]` into the universal black-and-white task layout:
+   header, assignee/due date, primary action, markdown body, comments, complete
+   or reassign controls, admin disclosures.
+3. Finish `/court` and the plaintiff/juror counter so the Court of Humanity
+   frame connects cleanly to the 1% Treaty verdict.
+4. Fix visual-review friction that wastes PR-review time: cache-busted pages,
+   before-left/after-right layout, missing-pair failures, preview links, and
+   deterministic animation settling.
+5. Then handle messaging/email cleanup: central template registry, no generic
+   reminder spam, optional plaintiff email only if the notice is useful, and the
+   lightweight "forward to someone better-fit" task-assignment mailto.
 
 ### P0 — Court of Humanity integration on `/court`
 
@@ -675,44 +486,18 @@ it speculatively.
 slot is `/court` once the page renders. Wire to the same `voteCounterSplit` shape used by
 `SignatoriesLeaderboard`, framed as the live plaintiff count alongside the case caption.
 
-### P0 — MCP-driven outreach pipeline (createTask → email → reply → comment)
+### P1 — MCP outreach email round-trip integration test
 
-MCP `createTask` already creates `Task` rows but does **not** fire the assignment email. Web
-`createTask` does. This blocks Wishonia (the autonomous agent) from running its own outreach
-to the orgs and officials it pre-builds. Audit detail at `packages/web/src/lib/mcp-server.ts`,
-`packages/web/src/lib/email/inbound-reply.ts`, `packages/web/src/lib/tasks/task-assignment-notifications.server.ts`.
+The MCP `createTask` -> assignment email -> reply -> comment path has shipped.
+The only remaining gap is one integration test at
+`packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
+`createOrganization` -> `createTask` -> assert email queued + `from` set +
+`replyTo` set; then synthesize an `InboundEmailEvent` matching the `replyTo`
+and assert `processInboundReply` writes a `TaskComment` and notifies non-author
+recipients.
 
-- ~~**Wire `notifyTaskAssigneeOfAssignment`**~~ — done.
-- ~~**Pass `from` override**~~ — done. `notifyTaskAssigneeOfAssignment` now resolves
-  `senderUserId` → `Person.displayName` and passes
-  `formatShareEmailFromHeader(senderName)` through `sendDraftTaskNotification`.
-- ~~**Default `isPublic: false` for non-admin MCP-created assignee-organization tasks**~~ — done.
-  `resolveCreateTaskIsPublic` now returns `false` when the caller lacks admin scope and no
-  explicit visibility was passed. Non-admin scope can now create org-assigned tasks (was
-  previously blocked by the `isPublic && !admin` check).
-- ~~**Fan out inbound replies to all watchers**~~ — done. The helper now also filters
-  out an authoring organization so the org's contactEmail does not get its own reply
-  echoed back.
-- **Integration test** at `packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
-  `createOrganization` → `createTask` → assert email queued + `from` set + `replyTo` set.
-  Then synthesize an `InboundEmailEvent` matching the `replyTo` and assert `processInboundReply`
-  writes a `TaskComment` and notifies non-author recipients. (The org-contactEmail leg of
-  the inbound side is already covered by `inbound-reply.test.ts`; the gap is the integration
-  glue.)
-- **No schema changes.**
-
-**Open design decisions (resolved 2026-05-07, do not re-litigate):**
-
-- **One recipient, not all org members.** Resolution stays `contactEmail` → first
-  owner/admin (`task-assignment-notifications.server.ts:71-96`). Tasks are accountability;
-  blasting all members turns them into newsletters and dilutes ownership. Other members
-  arrive via the comment thread when the contact loops them in.
-- **Auto-send on assignment, no confirmation step.** Confirmation adds a `DRAFT` task
-  state and a second MCP tool that the agent has to remember to call. Add only when a
-  real misfire shows up.
-- **Privacy: keep treaty activation tasks `isPublic: true`.** This is a public-facing
-  campaign; visible peer pressure is part of the asset. Default-private only kicks in
-  for non-admin MCP scope (the bullet above).
+No schema changes. Do not rebuild the shipped pipeline unless a real failure
+appears.
 
 ### P1 — "Forward to someone better-fit" on assignment emails (lightweight)
 
@@ -735,16 +520,13 @@ Zero new endpoints. Zero spam-attack surface.
 If forward-conversions become a measurable channel, then upgrade to
 in-app delegation with admin-mediated invite flow.
 
-### P1 — Task detail right-sidebar metadata pattern
+### P1 — Simplify task-detail page into a universal task surface
 
-After the conditional-gating ship, the next-biggest gap is metadata
-position. Status / assignee / due date / claim policy / claim count /
-sources stack vertically inline with content; the desktop right rail
-is wasted. Standard pattern (`lg:grid-cols-[1fr_320px]`) puts
-metadata in a right rail, body in the main column. Mobile collapses
-to single column. Multi-day refactor — defer until a specific user
-complaint about metadata position triggers it; right now this is
-"industry standard says…" not a measured problem.
+Do not build a right-sidebar metadata refactor. The newer direction is simpler:
+title, assignee, due date, primary action, markdown body, comments, complete /
+reassign controls, and admin disclosures. Remove duplicated status/governance/
+owner/progress metadata when the same information is already in the header or
+does not help the user complete the task.
 
 ### P1 — Programmatic email validation (vitest lint + CI gate)
 
@@ -766,7 +548,7 @@ violations. Catches tone drift the regex lint can't. Higher cost; do
 only if the curated template set grows past ~30 and tone consistency
 is a real issue.
 
-### P1 — Plaintiff damages surface on `/plaintiffs/page.tsx` (Next 3 #1)
+### P1 — Plaintiff damages surface on `/plaintiffs/page.tsx`
 
 `/plaintiffs/page.tsx` imports `WAR_DEATHS_SINCE_1900` and
 military-spending parameters but not
@@ -852,19 +634,10 @@ specifically needs them.
 
 **Cost:** ~50–80 lines, mostly file moves. Schema-zero.
 
-**Sequencing:** AFTER the immediate "make foundation outreach work
-end-to-end" loop is proven (Next 3 #2). The smoke test validated the
-mechanical email loop; the directory move locks in a place for the
-next 3–5 templates without over-designing for variants we haven't
-written yet.
-
-### ~~P1 — Slim "Your Tasks" card render~~ (shipped 2026-05-08)
-
-`hideAssignee` prop now set on the `/tasks` "Your Tasks"
-`SortableTaskList`. `TaskRow` already supported the prop (table-row
-variant); also threaded through `TaskCard.tsx` for consistency.
-Avatar header, "Assigned to X" inline text, and "Full Record" link
-suppressed on assigned-to-me rows where they were pure duplication.
+**Sequencing:** after the managed task-tree sync and dashboard/task-detail
+simplification, unless email copy becomes the immediate production blocker.
+The directory move locks in a place for the next 3-5 templates without
+over-designing for variants we have not written yet.
 
 ### P1 — E2E regression test: signed-in user can open their own task
 
@@ -965,33 +738,6 @@ model Task {
 After step 3, the user-agency loop pairs with the donate-to-fund-task
 entry: orgs propose subtasks → admin promotes → foundations fund.
 
-### P0 — Publish the canonical campaign task tree
-
-This supersedes the old "top-level programs under optimize-earth" note. Do not
-make dFDA, decentralized agencies, or bed-net funding direct children of the
-current War on Disease mission tree. Those can remain feature pages, future
-platform tasks, or benchmark/reference material. The primary tree for the
-foreseeable campaign is the one in "Canonical Optimize Earth task tree" above.
-
-Implementation belongs in managed data. The website may present a curated
-subset, but the task ids, taskKeys, parent-child links, retired rows, and
-primary action endpoints must come from one source-controlled managed
-collection so MCP/agents/API/pages agree.
-
-**Primary action-link concept:**
-
-- `End War and Disease` → `/`
-- `Establish the Court of Humanity` → `/court`
-- `Prosecute Humanity v. Governments of Earth` → `/humanity-v-government`
-- `Register plaintiffs` → `/plaintiffs`
-- `Summon jurors` → invite/referral route once it exists
-- `Render the verdict` → `/court` or the verdict section of `/humanity-v-government`
-- `Ratify the 1% Treaty` → `/vote`
-- `Get 193 heads of government to sign` → `/employees`
-
-No new schema is required for action links if the existing primary task
-communication endpoint is enough.
-
 ### P1 — Replace optimitron landing page with tasks tree; move current to `/features`
 
 Captured screenshots of `OptimitronLandingPage.tsx` at desktop +
@@ -1035,7 +781,7 @@ this entry.
 **Sequencing:**
 
 1. Managed-data sync for the canonical Optimize Earth tree.
-2. Publish the canonical campaign task tree under `optimize-earth`.
+2. Sync the canonical campaign task tree under `optimize-earth`.
 3. New `/features` route: literally re-export `OptimitronLandingPage`
    with whatever metadata change is needed.
 4. Replace `/` for `optimitron` site variant to render the tasks-tree
