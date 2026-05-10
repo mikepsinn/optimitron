@@ -7,17 +7,18 @@ interface MagicLinkCopy {
   notRequested: string;
 }
 
-const defaultNotRequested = "If you didn't request this, you can ignore it.";
+const defaultIntro = "Your sign-in link is below.";
+const defaultNotRequested = "Didn't request this? Ignore it.";
 
 const optimitronCopy: MagicLinkCopy = {
   buttonLabel: "Sign in",
-  intro: "Sign in to Optimitron.",
+  intro: defaultIntro,
   notRequested: defaultNotRequested,
 };
 
 const warOnDiseaseCopy: MagicLinkCopy = {
-  buttonLabel: "Log in",
-  intro: "Please log in to end war and disease.",
+  buttonLabel: "End war and disease",
+  intro: defaultIntro,
   notRequested: defaultNotRequested,
 };
 
@@ -26,12 +27,12 @@ const magicLinkCopyBySite: Record<SiteKey, MagicLinkCopy> = {
   warOnDisease: warOnDiseaseCopy,
   dfda: {
     buttonLabel: "Sign in",
-    intro: "Sign in to dFDA.",
+    intro: defaultIntro,
     notRequested: defaultNotRequested,
   },
   dih: {
     buttonLabel: "Sign in",
-    intro: "Sign in to the Decentralized Institutes of Health.",
+    intro: defaultIntro,
     notRequested: defaultNotRequested,
   },
 };
@@ -42,7 +43,7 @@ function getMagicLinkCopy(host: string): MagicLinkCopy {
 
 export function buildMagicLinkSubject(host: string) {
   if (getSiteFromHost(host).key === "warOnDisease") {
-    return "Log in to end war and disease";
+    return "End war and disease";
   }
 
   return `Sign in to ${host}`;

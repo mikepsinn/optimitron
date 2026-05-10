@@ -36,9 +36,9 @@ describe("sendMagicLinkEmail", () => {
 
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
-        subject: "Log in to end war and disease",
-        text: expect.stringContaining("Please log in to end war and disease."),
-        html: expect.stringContaining("Please log in to end war and disease."),
+        subject: "End war and disease",
+        text: expect.stringContaining("End war and disease"),
+        html: expect.stringContaining("End war and disease"),
       }),
     );
   });
@@ -52,9 +52,9 @@ describe("sendMagicLinkEmail", () => {
 
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
-        subject: "Log in to end war and disease",
-        text: expect.stringContaining("Please log in to end war and disease."),
-        html: expect.stringContaining("Please log in to end war and disease."),
+        subject: "End war and disease",
+        text: expect.stringContaining("End war and disease"),
+        html: expect.stringContaining("End war and disease"),
       }),
     );
   });
@@ -70,8 +70,8 @@ describe("sendMagicLinkEmail", () => {
       expect.objectContaining({
         from: "Earth Optimization Services <hello@updates.warondisease.org>",
         subject: "Sign in to optimitron.local",
-        text: expect.stringContaining("Sign in to Optimitron."),
-        html: expect.stringContaining("Sign in to Optimitron."),
+        text: expect.stringContaining("Your sign-in link is below."),
+        html: expect.stringContaining("Your sign-in link is below."),
       }),
     );
   });
