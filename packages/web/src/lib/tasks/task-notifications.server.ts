@@ -19,6 +19,7 @@ import {
   claimEmailLog,
   markEmailLogStatus,
 } from "@/lib/email/email-log.server";
+import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@optimitron/db/system-identities";
 import { isEmailScope, type EmailScope } from "@/lib/email/scopes";
 import { sendExternalResendEmail, sendResendEmail } from "@/lib/email/resend";
 import { getConfiguredTaskReplyAddress } from "@/lib/email/task-notification";
@@ -284,6 +285,66 @@ function asMetadataObject(metadata: unknown): Prisma.InputJsonObject {
   return metadata as Prisma.InputJsonObject;
 }
 
+function sanitizeMessageIdPart(value: string) {
+  return value.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+export function buildTaskCommunicationMessageId(input: {
+  communicationId: string;
+  taskId: string;
+}) {
+  return `<task-${sanitizeMessageIdPart(input.taskId)}-comm-${sanitizeMessageIdPart(
+    input.communicationId,
+  )}@${WAR_ON_DISEASE_REPLY_DOMAIN}>`;
+}
+
+function getStoredMessageId(metadata: unknown) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
+    return null;
+  }
+  const value = (metadata as Record<string, unknown>).messageId;
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+async function getPriorThreadMessageId(input: {
+  communicationId: string;
+  taskId: string;
+}) {
+  const prior = await prisma.taskCommunication.findFirst({
+    where: {
+      channel: TaskCommunicationChannel.EMAIL,
+      deletedAt: null,
+      direction: TaskCommunicationDirection.OUTBOUND,
+      id: { not: input.communicationId },
+      status: TaskCommunicationStatus.SENT,
+      taskId: input.taskId,
+    },
+    orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
+    select: { metadataJson: true },
+  });
+
+  return getStoredMessageId(prior?.metadataJson);
+}
+
+function buildThreadHeaders(input: {
+  messageId: string;
+  priorMessageId: string | null;
+}) {
+  return {
+    "Message-ID": input.messageId,
+    ...(input.priorMessageId
+      ? {
+          "In-Reply-To": input.priorMessageId,
+          References: input.priorMessageId,
+        }
+      : {}),
+  };
+}
+
 function isExplicitOptOut(metadata: unknown, errorMessage?: string | null) {
   if (
     metadata !== null &&
@@ -511,12 +572,22 @@ export async function sendDraftTaskNotification(
     );
     const bccEmails = getStoredBccEmails(communication.metadataJson);
     const replyTo = getConfiguredTaskReplyAddress(communication.taskId);
+    const messageId = buildTaskCommunicationMessageId({
+      communicationId: communication.id,
+      taskId: communication.taskId,
+    });
+    const priorMessageId = await getPriorThreadMessageId({
+      communicationId: communication.id,
+      taskId: communication.taskId,
+    });
+    const headers = buildThreadHeaders({ messageId, priorMessageId });
     const result = communication.recipientUserId
       ? await sendResendEmail({
           emailLogId: claimed.emailLogId,
           from: input.from ?? undefined,
           html,
           bcc: bccEmails,
+          headers,
           replyTo: replyTo ?? undefined,
           scope: userEmailOptions.emailScope,
           skipWishoniaSignature: userEmailOptions.skipWishoniaSignature,
@@ -530,6 +601,7 @@ export async function sendDraftTaskNotification(
           from: input.from ?? undefined,
           html,
           bcc: bccEmails,
+          headers,
           subject: message.subject,
           text: message.text,
           to: communication.recipientEmail,
@@ -586,6 +658,12 @@ export async function sendDraftTaskNotification(
         data: {
           emailLogId: claimed.emailLogId,
           errorMessage: null,
+          metadataJson: {
+            ...asMetadataObject(communication.metadataJson),
+            inReplyTo: priorMessageId,
+            messageId,
+            references: priorMessageId ? [priorMessageId] : [],
+          } satisfies Prisma.InputJsonObject,
           providerMessageId: result.id,
           sentAt: now,
           status: TaskCommunicationStatus.SENT,

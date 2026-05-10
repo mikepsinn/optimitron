@@ -190,6 +190,30 @@ describe("sendResendEmail", () => {
     });
   });
 
+  it("passes through caller headers while keeping unsubscribe headers", async () => {
+    await sendResendEmail({
+      headers: {
+        "Message-ID": "<task-task_1-comm-comm_1@updates.warondisease.org>",
+      },
+      html: "<p>Hello</p>",
+      scope: "task_notifications",
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
+      headers: {
+        "Message-ID": "<task-task_1-comm-comm_1@updates.warondisease.org>",
+        "List-Unsubscribe": expect.stringContaining(
+          "https://optimitron.com/api/email/unsubscribe?token=abc",
+        ),
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    });
+  });
+
   it("does not BCC a monitor address unless EMAIL_MONITOR_BCC is configured", async () => {
     await sendResendEmail({
       html: "<p>Hello</p>",

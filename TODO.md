@@ -781,16 +781,25 @@ gaps worth filling:
 
 ### P1 — Email threading (Message-ID, In-Reply-To, References)
 
-Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/email/resend.ts:209,266,309`). Inbound captures `inReplyTo` into `TaskCommunication.metadataJson.inReplyTo` but it is never consumed. Mail clients won't visually thread the conversation; in-app `parentCommentId` never gets set on inbound replies. Replies feel orphaned in both surfaces.
+**Status:** shipped on `feature/managed-task-tree-sync` for task notification
+email: outbound `TaskCommunication` emails set stable `Message-ID`,
+`In-Reply-To`, and `References` headers, persist the message id in
+`metadataJson`, and inbound replies use that header to nest under the outbound
+task comment.
 
-- **Generate stable `Message-ID`** per outbound `TaskCommunication`:
+Original problem: outbound mail only set `List-Unsubscribe`. Inbound captured
+`inReplyTo` into `TaskCommunication.metadataJson.inReplyTo`, but it was never
+consumed. Mail clients would not visually thread the conversation; in-app
+`parentCommentId` never got set on inbound replies.
+
+- [x] **Generate stable `Message-ID`** per outbound `TaskCommunication`:
   `<task-{taskId}-comm-{communicationId}@{REPLY_EMAIL_DOMAIN}>`. Pass via Resend's `headers`.
   Persist on `TaskCommunication.metadataJson.messageId`.
-- **Set `In-Reply-To` and `References`** on subsequent sends in the thread by reading the
+- [x] **Set `In-Reply-To` and `References`** on subsequent sends in the thread by reading the
   most recent outbound `TaskCommunication` for the task.
-- **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
+- [x] **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
   on the new `TaskComment`, so the in-app feed nests correctly.
-- **No schema changes.** All metadata fits in the existing `metadataJson` field.
+- [x] **No schema changes.** All metadata fits in the existing `metadataJson` field.
 
 ## Architecture Guardrails (durable — do not violate)
 

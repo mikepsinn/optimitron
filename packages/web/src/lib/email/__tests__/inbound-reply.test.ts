@@ -215,6 +215,42 @@ describe("processInboundReply", () => {
     });
   });
 
+  it("nests inbound replies under the outbound comment referenced by Message-ID", async () => {
+    const db = makeInboundDb();
+    db.taskCommunication.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ taskCommentId: "comment_parent" });
+
+    const result = await processInboundReply(
+      inboundEvent({
+        inReplyTo: "<task-task_1-comm-comm_1@updates.warondisease.org>",
+      }),
+      db as never,
+    );
+
+    expect(result).toMatchObject({
+      status: "created",
+      taskCommentId: "comment_1",
+      taskCommunicationId: "comm_1",
+    });
+    expect(db.taskCommunication.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          metadataJson: {
+            path: ["messageId"],
+            equals: "<task-task_1-comm-comm_1@updates.warondisease.org>",
+          },
+          taskId: "task_1",
+        }),
+      }),
+    );
+    expect(db.taskComment.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        parentCommentId: "comment_parent",
+      }),
+    });
+  });
+
   it("accepts replies from the task creator and sends the creator notification", async () => {
     const db = makeInboundDb();
     db.task.findUnique.mockResolvedValue({

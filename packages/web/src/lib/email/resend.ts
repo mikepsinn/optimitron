@@ -23,6 +23,9 @@ interface BaseMessage {
   /** When true, bypass the DB-backed suppression check (cron has already filtered). */
   skipSuppressionCheck?: boolean;
   bcc?: string[];
+  /// Optional RFC-5322 headers such as Message-ID / In-Reply-To for mail
+  /// threading. Unsubscribe headers are still owned by this helper.
+  headers?: Record<string, string>;
   /// Optional Reply-To header. Task notifications use this for per-task reply
   /// routing when inbound email has been explicitly configured.
   replyTo?: string;
@@ -48,6 +51,9 @@ interface ResendReactMessage extends BaseMessage {
 
 interface ExternalResendMessage {
   from?: string;
+  /// Optional RFC-5322 headers such as Message-ID / In-Reply-To for mail
+  /// threading. Unsubscribe headers are still owned by this helper.
+  headers?: Record<string, string>;
   /// Optional Reply-To header. Lets task notifications route inbound replies
   /// to a per-task address without
   /// changing the From line that recipients see.
@@ -152,6 +158,17 @@ function buildUnsubscribeHeaders(
   };
 }
 
+function mergeEmailHeaders(
+  messageHeaders: Record<string, string> | undefined,
+  unsubscribeHeaders: Record<string, string> | undefined,
+) {
+  const headers = {
+    ...(messageHeaders ?? {}),
+    ...(unsubscribeHeaders ?? {}),
+  };
+  return Object.keys(headers).length > 0 ? headers : undefined;
+}
+
 function resolveUnsubscribeUrl(message: BaseMessage): string | null {
   if (isTransactionalScope(message.scope)) {
     return null;
@@ -246,6 +263,7 @@ export async function sendResendEmail(
 
   const unsubscribeUrl = resolveUnsubscribeUrl(message);
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
+  const headers = mergeEmailHeaders(message.headers, unsubscribeHeaders);
 
   if (isMockSendEnabled()) {
     return buildMockSendResult(unsubscribeUrl);
@@ -270,7 +288,7 @@ export async function sendResendEmail(
     subject: message.subject,
     html: signed.html,
     text: signed.text,
-    ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
+    ...(headers ? { headers } : {}),
   });
 
   if (response.error) {
@@ -300,6 +318,7 @@ export async function sendReactEmail(
 
   const unsubscribeUrl = resolveUnsubscribeUrl(message);
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
+  const headers = mergeEmailHeaders(message.headers, unsubscribeHeaders);
 
   if (isMockSendEnabled()) {
     return buildMockSendResult(unsubscribeUrl);
@@ -328,7 +347,7 @@ export async function sendReactEmail(
     subject: message.subject,
     html: signed.html,
     text: signed.text,
-    ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
+    ...(headers ? { headers } : {}),
   });
 
   if (response.error) {
@@ -351,6 +370,7 @@ export async function sendExternalResendEmail(
 
   const unsubscribeUrl = message.unsubscribeUrl ?? null;
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
+  const headers = mergeEmailHeaders(message.headers, unsubscribeHeaders);
 
   if (isMockSendEnabled()) {
     return buildMockSendResult(unsubscribeUrl);
@@ -372,7 +392,7 @@ export async function sendExternalResendEmail(
     html: signed.html,
     text: signed.text,
     ...(message.replyTo ? { replyTo: message.replyTo } : {}),
-    ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
+    ...(headers ? { headers } : {}),
   });
 
   if (response.error) {
