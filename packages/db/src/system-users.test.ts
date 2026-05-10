@@ -16,7 +16,19 @@ function makeClient(existingUserForPerson: { id: string } | null = null) {
     user: {
       findFirst: vi.fn(async () => existingUserForPerson),
       update: vi.fn(async () => ({ id: existingUserForPerson?.id ?? "user_1" })),
-      upsert: vi.fn(async () => ({ id: "user_wishonia" })),
+      upsert: vi.fn(async (args) => {
+        const input = args as {
+          create: { email: string };
+          where: { email: string };
+        };
+        if (
+          input.where.email !== WISHONIA_EMAIL ||
+          input.create.email !== WISHONIA_EMAIL
+        ) {
+          throw new Error("Wishonia system user must use the reserved email.");
+        }
+        return { id: "user_wishonia" };
+      }),
     },
   } satisfies WishoniaUserClient;
 
@@ -45,13 +57,15 @@ describe("upsertWishoniaUser", () => {
   it("creates the system user by reserved email when no linked user exists", async () => {
     const client = makeClient();
 
-    await upsertWishoniaUser(client);
+    const result = await upsertWishoniaUser(client);
 
-    expect(client.user.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        create: expect.objectContaining({ email: WISHONIA_EMAIL }),
-        where: { email: WISHONIA_EMAIL },
-      }),
-    );
+    expect(result).toEqual({
+      person: {
+        handle: "wishonia",
+        id: "person_wishonia",
+      },
+      user: { id: "user_wishonia" },
+    });
+    expect(client.user.update).not.toHaveBeenCalled();
   });
 });
