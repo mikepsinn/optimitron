@@ -126,6 +126,7 @@ const serverSchema = z.object({
 const clientSchema = z.object({
   NEXT_PUBLIC_BASE_URL: z.string().optional(),
   NEXT_PUBLIC_DEMO_LOGIN_ENABLED: z.string().optional(),
+  NEXT_PUBLIC_VERCEL_ENV: z.string().optional(),
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().optional(),
   NEXT_PUBLIC_WORLD_ID_ENABLED: z.string().optional(),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
@@ -176,6 +177,7 @@ export function getClientEnv(): ClientEnv {
   const parsed = clientSchema.safeParse({
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_DEMO_LOGIN_ENABLED: process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV,
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
     NEXT_PUBLIC_WORLD_ID_ENABLED: process.env.NEXT_PUBLIC_WORLD_ID_ENABLED,

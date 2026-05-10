@@ -8,6 +8,7 @@ import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
+import { isDemoLoginEnabled } from "@/lib/demo-login";
 import { clientEnv } from "@/lib/env";
 import { createLogger } from "@/lib/logger";
 import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
@@ -74,8 +75,11 @@ export function AuthForm({
   const googleEnabled = providers?.google ?? true;
   const demoLoginEnabled =
     providers?.demo ??
-    (process.env.NODE_ENV !== "production" ||
-      clientEnv.NEXT_PUBLIC_DEMO_LOGIN_ENABLED === "true");
+    isDemoLoginEnabled({
+      demoLoginEnabled: clientEnv.NEXT_PUBLIC_DEMO_LOGIN_ENABLED,
+      nodeEnv: process.env.NODE_ENV,
+      vercelEnv: clientEnv.NEXT_PUBLIC_VERCEL_ENV,
+    });
   const containerClassName = hideContainer
     ? "w-full"
     : isDocument

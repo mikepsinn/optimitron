@@ -144,6 +144,20 @@ describe("getConfiguredProviders", () => {
     expect(getConfiguredProviders().demo).toBe(true);
   });
 
+  it("enables demo login in development", () => {
+    vi.stubEnv("NODE_ENV", "development");
+
+    expect(getConfiguredProviders().demo).toBe(true);
+  });
+
+  it("enables demo login in production when explicitly enabled", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_DEMO_LOGIN_ENABLED", "true");
+
+    expect(getConfiguredProviders().demo).toBe(true);
+  });
+
   it("keeps demo login off in normal production deployments", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("VERCEL_ENV", "production");
