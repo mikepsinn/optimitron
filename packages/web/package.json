@@ -44,7 +44,6 @@
     "mcp:claude-task": "tsx scripts/claude-code-optimitron-task.ts",
     "report:task-tree": "tsx scripts/export-task-tree.ts",
     "report:next-action": "tsx scripts/report-next-action.ts",
-    "bootstrap:optimize-earth": "tsx scripts/bootstrap-optimize-earth.ts",
     "draft:legislation": "tsx scripts/draft-legislation.ts",
     "media:upload": "tsx scripts/upload-media-to-r2.ts",
     "check:r2-upload": "tsx scripts/check-r2-upload.ts"
