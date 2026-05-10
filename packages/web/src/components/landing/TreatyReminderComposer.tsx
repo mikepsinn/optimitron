@@ -58,9 +58,9 @@ type SendState = "idle" | "sending" | "sent";
 
 interface GovernmentLeaderClientContext {
   countryCode: string;
-  governmentBudgetUsd: number;
+  governmentBudgetUsd: number | null;
   leaderName: string | null;
-  militaryBudgetUsd: number;
+  militaryBudgetUsd: number | null;
   militaryToClinicalTrialsRatio: number | null;
 }
 
@@ -100,9 +100,11 @@ function isGovernmentLeaderClientContext(
   const record = value as Record<string, unknown>;
   return (
     typeof record.countryCode === "string" &&
-    typeof record.governmentBudgetUsd === "number" &&
+    (record.governmentBudgetUsd == null ||
+      typeof record.governmentBudgetUsd === "number") &&
     (record.leaderName == null || typeof record.leaderName === "string") &&
-    typeof record.militaryBudgetUsd === "number" &&
+    (record.militaryBudgetUsd == null ||
+      typeof record.militaryBudgetUsd === "number") &&
     (record.militaryToClinicalTrialsRatio == null ||
       typeof record.militaryToClinicalTrialsRatio === "number")
   );

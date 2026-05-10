@@ -6,7 +6,7 @@ import {
   TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
-import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leader-types";
 import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
 import { getMilitaryToGovernmentClinicalTrialRatio } from "@optimitron/data/datasets/government-spending-ratios";
 import {

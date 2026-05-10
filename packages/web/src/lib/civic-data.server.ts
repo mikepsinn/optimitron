@@ -1,10 +1,11 @@
-import * as fetchers from "@optimitron/data/fetchers";
+import {
+  fetchMembers,
+  type CongressMember,
+} from "@optimitron/data/fetchers/congress";
 import { ALIGNMENT_BENCHMARKS } from "./alignment-benchmarks";
 import type { CivicRepresentative, StateDistrict } from "./civic-data";
 
 export type { CivicRepresentative, StateDistrict };
-
-type CongressMember = Awaited<ReturnType<typeof fetchers.fetchMembers>>[number];
 
 function isSenateChamber(chamber: string): boolean {
   return chamber.trim().toLowerCase() === "senate";
@@ -80,7 +81,7 @@ export async function lookupRepresentatives(
   state: string,
   district?: number,
 ): Promise<CivicRepresentative[]> {
-  const members = await fetchers.fetchMembers();
+  const members = await fetchMembers();
   if (!members.length) return [];
 
   const stateUpper = state.toUpperCase();

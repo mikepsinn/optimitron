@@ -22,6 +22,7 @@
 
 import type { CountryPanelRow } from "./country-panel";
 import { getCountryPanelLatestResolved } from "./country-panel";
+import type { GovernmentLeaderRecord } from "./government-leader-types";
 import {
   getCanonicalGovernmentDisplayName,
   getGovernmentCodeForCountryIso3,
@@ -29,36 +30,7 @@ import {
   isSovereignGovernment,
 } from "./governments";
 
-/** Public DTO — one per head of government. No campaign-specific fields. */
-export interface GovernmentLeaderRecord {
-  contactEmail: string | null;
-  contactLabel: string | null;
-  contactUrl: string | null;
-  /** ISO 3166-1 alpha-2 */
-  countryCode: string;
-  /** ISO 3166-1 alpha-3 */
-  countryIso3: string;
-  /** Human-readable, canonical country name */
-  countryName: string;
-  decisionMakerLabel: string;
-  governmentName: string;
-  governmentWebsite: string | null;
-  leaderImageUrl: string | null;
-  leaderName: string | null;
-  leaderSourceRef: string | null;
-  /** Annual military expenditure in absolute USD */
-  militaryBudgetUsd: number;
-  /**
-   * Annual total general-government expenditure (IMF Fiscal Monitor, all
-   * levels). Includes transfers, subsidies, debt service. Guaranteed non-null
-   * in the output of `listGovernmentLeaders()` — the call throws if any
-   * leader is missing this number.
-   */
-  governmentBudgetUsd: number;
-  officialSourceUrl: string | null;
-  roleTitle: string;
-  sortOrder: number;
-}
+export type { GovernmentLeaderRecord };
 
 /**
  * Hand-curated total general-government expenditure (USD/year, most recent

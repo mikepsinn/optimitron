@@ -1,4 +1,7 @@
-import * as fetchers from "@optimitron/data/fetchers";
+import {
+  fetchMemberDetails,
+  getCongressApiKey,
+} from "@optimitron/data/fetchers/congress";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import {
@@ -250,7 +253,7 @@ export async function loadAlignmentBenchmarkProfiles(): Promise<AlignmentBenchma
 }
 
 export async function syncAlignmentBenchmarkPoliticians(): Promise<AlignmentPoliticianSyncResult> {
-  if (!fetchers.getCongressApiKey()) {
+  if (!getCongressApiKey()) {
     return {
       skipped: true,
       reason: "CONGRESS_API_KEY is required to sync politician identities from Congress.gov.",
@@ -279,7 +282,7 @@ export async function syncAlignmentBenchmarkPoliticians(): Promise<AlignmentPoli
       continue;
     }
 
-    const member = await fetchers.fetchMemberDetails(benchmark.externalId);
+    const member = await fetchMemberDetails(benchmark.externalId);
     if (!member) {
       logger.warn("Skipping politician with missing Congress member data:", benchmark.externalId);
       continue;

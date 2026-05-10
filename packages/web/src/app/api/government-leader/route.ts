@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getGovernmentLeader } from "@optimitron/data/datasets/government-leaders";
-import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
+import { getGovernmentProfile } from "@optimitron/data/datasets/governments";
 import { getMilitaryToGovernmentClinicalTrialRatio } from "@optimitron/data/datasets/government-spending-ratios";
+import { US_FEDERAL_SPENDING_2024 } from "@optimitron/data/parameters";
 
 export async function GET(request: NextRequest) {
   const countryCode = request.nextUrl.searchParams
@@ -16,21 +16,22 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const leader = getGovernmentLeader(countryCode);
-  if (!leader) {
+  const profile = getGovernmentProfile(countryCode);
+  if (!profile) {
     return NextResponse.json({ error: "leader not found" }, { status: 404 });
   }
 
-  const metrics = getGovernmentMetrics(leader.countryCode);
+  const metrics = profile.metrics;
   const militaryToClinicalTrialsRatio = metrics
     ? getMilitaryToGovernmentClinicalTrialRatio(metrics)
     : null;
 
   return NextResponse.json({
-    countryCode: leader.countryCode,
-    governmentBudgetUsd: leader.governmentBudgetUsd,
-    leaderName: leader.leaderName,
-    militaryBudgetUsd: leader.militaryBudgetUsd,
+    countryCode: profile.code,
+    governmentBudgetUsd:
+      profile.code === "US" ? US_FEDERAL_SPENDING_2024.value : null,
+    leaderName: profile.leader?.leaderName ?? null,
+    militaryBudgetUsd: metrics?.militarySpendingAnnual.value ?? null,
     militaryToClinicalTrialsRatio,
   });
 }

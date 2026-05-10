@@ -66,12 +66,13 @@ Until the 1% Treaty passes, this repo is in campaign mode.
 
 Ordered by funnel-stage impact. P0 = ship next; P1 = right after; P2 = before launch.
 
-### P0 — Confirm preview build memory after client bundle cleanup
+### P0 — Confirm preview build memory after generated-data type-graph cleanup
 
 - PR #70 removed the generated country-panel/government-leader import path from
-  client task rows and the treaty reminder composer. Local `next build` now
-  keeps the country-panel JSON out of static client chunks and drops major route
-  first-load JS by hundreds of KB.
+  client task rows and the treaty reminder composer, then removed the broad
+  data-fetcher/type imports that pulled the generated country panel and median
+  income datasets into Next type validation. Local `next build` now keeps those
+  giant generated datasets out of static client chunks and the Next type graph.
 - Watch the next Vercel preview build. If it still OOMs, continue from evidence:
   lower Next worker concurrency and trim remaining server-only generated data
   bundles before considering paid larger builders.
