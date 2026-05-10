@@ -9,6 +9,10 @@ import {
   TaskStatus,
 } from "../generated/prisma/client.js";
 import {
+  OPTIMIZE_EARTH_ROOT_TASK_ID,
+  OPTIMIZE_EARTH_ROOT_TASK_KEY,
+} from "../task-keys.js";
+import {
   syncManagedTasks,
   type ManagedTaskClient,
   type ManagedTaskRecord,
@@ -259,8 +263,8 @@ class TransactionalFakeManagedTaskClient extends FakeManagedTaskClient {
 }
 
 const activeRecord: ManagedTaskRecord = {
-  id: "root",
-  taskKey: "program:test:root",
+  id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+  taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
   parentTaskId: null,
   title: "Root task",
   description: "Managed root description.",
@@ -270,15 +274,20 @@ const activeRecord: ManagedTaskRecord = {
   sortOrder: -100,
   primaryEndpoint: {
     label: "Open root task",
-    url: "/tasks/root",
+    url: "/tasks/optimize-earth",
   },
 };
+const activeRecordLabel = `${OPTIMIZE_EARTH_ROOT_TASK_ID} (${OPTIMIZE_EARTH_ROOT_TASK_KEY})`;
 
 describe("syncManagedTasks", () => {
   it("reports dry-run creates, updates, and retires without writing", async () => {
     const client = new FakeManagedTaskClient({
       tasks: [
-        makeTask({ id: "root", taskKey: "program:test:root", title: "Stale root" }),
+        makeTask({
+          id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
+          title: "Stale root",
+        }),
         makeTask({ id: "retired", taskKey: "program:test:retired" }),
         makeTask({ id: "user-task", taskKey: "user:created", title: "Do not touch" }),
       ],
@@ -318,20 +327,20 @@ describe("syncManagedTasks", () => {
         {
           id: "new-child",
           taskKey: "program:test:new-child",
-          parentTaskId: "root",
+          parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
           title: "New child",
           description: "New child description.",
         },
       ],
     });
 
-    expect(result.updated).toContain("root (program:test:root)");
+    expect(result.updated).toContain(activeRecordLabel);
     expect(result.created).toContain("new-child (program:test:new-child)");
     expect(result.retired).toContain("retired (program:test:retired)");
     expect(result.endpointRetired).toContain("retired (program:test:retired)");
-    expect(client.tasks.find((task) => task.id === "root")?.title).toBe(
-      "Stale root",
-    );
+    expect(
+      client.tasks.find((task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID)?.title,
+    ).toBe("Stale root");
     expect(client.tasks.find((task) => task.id === "retired")?.deletedAt).toBeNull();
     expect(client.tasks.find((task) => task.id === "user-task")?.title).toBe(
       "Do not touch",
@@ -342,7 +351,11 @@ describe("syncManagedTasks", () => {
     const now = new Date("2026-05-10T12:00:00.000Z");
     const client = new FakeManagedTaskClient({
       tasks: [
-        makeTask({ id: "root", taskKey: "program:test:root", title: "Stale root" }),
+        makeTask({
+          id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
+          title: "Stale root",
+        }),
         makeTask({ id: "retired", taskKey: "program:test:retired" }),
         makeTask({ id: "user-task", taskKey: "user:created", title: "Do not touch" }),
       ],
@@ -352,7 +365,7 @@ describe("syncManagedTasks", () => {
       {
         id: "child",
         taskKey: "program:test:child",
-        parentTaskId: "root",
+        parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
         title: "Child task",
         description: "Managed child description.",
         primaryEndpoint: {
@@ -378,7 +391,9 @@ describe("syncManagedTasks", () => {
       records,
     });
 
-    const root = client.tasks.find((task) => task.id === "root");
+    const root = client.tasks.find(
+      (task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID,
+    );
     expect(root).toMatchObject({
       title: "Root task",
       description: "Managed root description.",
@@ -388,12 +403,12 @@ describe("syncManagedTasks", () => {
     expect(root?.contextJson).toMatchObject({
       managedData: {
         collectionKey: "test-tree",
-        recordId: "root",
+        recordId: OPTIMIZE_EARTH_ROOT_TASK_ID,
       },
     });
 
     expect(client.tasks.find((task) => task.id === "child")).toMatchObject({
-      parentTaskId: "root",
+      parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
       createdByUserId: "creator",
       title: "Child task",
     });
@@ -431,7 +446,7 @@ describe("syncManagedTasks", () => {
     expect(secondResult.endpointRetired).toEqual([]);
     expect(secondResult.unchanged).toEqual(
       expect.arrayContaining([
-        "root (program:test:root)",
+        activeRecordLabel,
         "child (program:test:child)",
         "retired (program:test:retired)",
       ]),
@@ -441,8 +456,11 @@ describe("syncManagedTasks", () => {
   it("rejects taskKey ownership conflicts before applying writes", async () => {
     const client = new FakeManagedTaskClient({
       tasks: [
-        makeTask({ id: "root", taskKey: "program:test:old-root" }),
-        makeTask({ id: "other", taskKey: "program:test:root" }),
+        makeTask({
+          id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          taskKey: "program:test:old-root",
+        }),
+        makeTask({ id: "other", taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY }),
       ],
     });
 
@@ -454,9 +472,12 @@ describe("syncManagedTasks", () => {
         records: [activeRecord],
       }),
     ).rejects.toThrow(
-      "Managed task key program:test:root already belongs to other",
+      `Managed task key ${OPTIMIZE_EARTH_ROOT_TASK_KEY} already belongs to other`,
     );
-    expect(client.tasks.find((task) => task.id === "root")?.taskKey).toBe(
+    expect(
+      client.tasks.find((task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID)
+        ?.taskKey,
+    ).toBe(
       "program:test:old-root",
     );
   });
@@ -485,7 +506,7 @@ describe("syncManagedTasks", () => {
         {
           id: "child",
           taskKey: "program:test:child",
-          parentTaskId: "root",
+          parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
           title: "Child task",
           description: "Managed child description.",
         },
@@ -493,10 +514,60 @@ describe("syncManagedTasks", () => {
       ],
     });
 
-    expect(client.tasks.map((task) => task.id)).toEqual(["root", "child"]);
+    expect(client.tasks.map((task) => task.id)).toEqual([
+      OPTIMIZE_EARTH_ROOT_TASK_ID,
+      "child",
+    ]);
     expect(client.tasks.find((task) => task.id === "child")).toMatchObject({
-      parentTaskId: "root",
+      parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     });
+  });
+
+  it("rejects active records that reference missing parents during dry-run", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await expect(
+      syncManagedTasks(client, {
+        apply: false,
+        collectionKey: "test-tree",
+        createdByUserId: "creator",
+        records: [
+          activeRecord,
+          {
+            id: "orphan",
+            taskKey: "program:test:orphan",
+            parentTaskId: "missing-parent",
+            title: "Orphan task",
+            description: "This task references a parent that does not exist.",
+          },
+        ],
+      }),
+    ).rejects.toThrow(
+      "Managed task orphan (program:test:orphan) references missing parentTaskId missing-parent",
+    );
+  });
+
+  it("rejects extra active roots before applying writes", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await expect(
+      syncManagedTasks(client, {
+        apply: true,
+        collectionKey: "test-tree",
+        createdByUserId: "creator",
+        records: [
+          activeRecord,
+          {
+            id: "extra-root",
+            taskKey: "program:test:extra-root",
+            parentTaskId: null,
+            title: "Extra root",
+            description: "This would create a second root.",
+          },
+        ],
+      }),
+    ).rejects.toThrow("Managed task tree must have exactly one active root");
+    expect(client.tasks).toEqual([]);
   });
 
   it("retires active endpoints for already-retired managed tasks", async () => {

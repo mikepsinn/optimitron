@@ -1,6 +1,35 @@
 import { createHmac } from "node:crypto";
-import { describe, expect, it } from "vitest";
-import { verifyResendSignature } from "../resend-webhook";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  activityCreate: vi.fn(),
+  applyUnsubscribe: vi.fn(),
+  emailLogFindFirst: vi.fn(),
+  emailLogUpdateMany: vi.fn(),
+}));
+
+vi.mock("@/lib/prisma", () => ({
+  prisma: {
+    activity: {
+      create: mocks.activityCreate,
+    },
+    emailLog: {
+      findFirst: mocks.emailLogFindFirst,
+      updateMany: mocks.emailLogUpdateMany,
+    },
+  },
+}));
+
+vi.mock("@/lib/email/suppression.server", () => ({
+  applyUnsubscribe: mocks.applyUnsubscribe,
+}));
+
+import { EmailLogStatus } from "@optimitron/db";
+import {
+  applyFailedEvent,
+  applySuppressedEvent,
+  verifyResendSignature,
+} from "../resend-webhook";
 
 function signTestPayload(input: { id: string; ts: string; body: string; secret: string }) {
   const rawSecret = input.secret.startsWith("whsec_") ? input.secret.slice(6) : input.secret;
@@ -73,5 +102,62 @@ describe("verifyResendSignature", () => {
     expect(
       verifyResendSignature({ rawBody, svixId, svixTimestamp, svixSignature, secret }),
     ).toBe(false);
+  });
+});
+
+describe("resend delivery state webhooks", () => {
+  beforeEach(() => {
+    mocks.activityCreate.mockReset();
+    mocks.applyUnsubscribe.mockReset();
+    mocks.emailLogFindFirst.mockReset();
+    mocks.emailLogUpdateMany.mockReset();
+    mocks.emailLogFindFirst.mockResolvedValue({
+      id: "email_log_1",
+      templateId: "task-assigned",
+      userId: "user_1",
+    });
+    mocks.emailLogUpdateMany.mockResolvedValue({ count: 1 });
+  });
+
+  it("only marks transient email logs failed for failed events", async () => {
+    await applyFailedEvent({
+      type: "email.failed",
+      data: {
+        email_id: "resend_1",
+        error: { message: "Provider failed." },
+      },
+    });
+
+    expect(mocks.emailLogUpdateMany).toHaveBeenCalledWith({
+      where: {
+        id: "email_log_1",
+        status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
+      },
+      data: {
+        errorMessage: "Provider failed.",
+        status: EmailLogStatus.FAILED,
+      },
+    });
+  });
+
+  it("only marks transient email logs failed for suppressed events", async () => {
+    await applySuppressedEvent({
+      type: "email.suppressed",
+      data: {
+        email_id: "resend_1",
+        reason: "Recipient is suppressed.",
+      },
+    });
+
+    expect(mocks.emailLogUpdateMany).toHaveBeenCalledWith({
+      where: {
+        id: "email_log_1",
+        status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
+      },
+      data: {
+        errorMessage: "Recipient is suppressed.",
+        status: EmailLogStatus.FAILED,
+      },
+    });
   });
 });

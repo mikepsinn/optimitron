@@ -182,7 +182,10 @@ export async function applyFailedEvent(event: ResendEvent): Promise<void> {
   const ctx = await findEmailLogContext(event.data.email_id);
   if (!ctx) return;
   await prisma.emailLog.updateMany({
-    where: { id: ctx.id },
+    where: {
+      id: ctx.id,
+      status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
+    },
     data: {
       errorMessage:
         getWebhookErrorMessage(event) ?? "Resend failed to send this email.",
@@ -195,7 +198,10 @@ export async function applySuppressedEvent(event: ResendEvent): Promise<void> {
   const ctx = await findEmailLogContext(event.data.email_id);
   if (!ctx) return;
   await prisma.emailLog.updateMany({
-    where: { id: ctx.id },
+    where: {
+      id: ctx.id,
+      status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
+    },
     data: {
       errorMessage: getWebhookErrorMessage(event) ?? "Resend suppressed this email.",
       status: EmailLogStatus.FAILED,

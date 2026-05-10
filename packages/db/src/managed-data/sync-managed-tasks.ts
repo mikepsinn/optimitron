@@ -17,6 +17,10 @@ import {
   upsertWishoniaUser,
   type WishoniaUserClient,
 } from "../system-users.js";
+import {
+  OPTIMIZE_EARTH_ROOT_TASK_ID,
+  OPTIMIZE_EARTH_ROOT_TASK_KEY,
+} from "../task-keys.js";
 
 export interface ManagedTaskPrimaryEndpoint {
   email?: string | null;
@@ -373,6 +377,57 @@ function sortManagedTaskRecords(records: ManagedTaskRecord[]) {
   return sorted;
 }
 
+function validateManagedTaskTree(
+  records: ManagedTaskRecord[],
+  existingRows: ManagedTaskRow[],
+) {
+  const activeRecords = records.filter((record) => !record.retired);
+  if (activeRecords.length === 0) {
+    return;
+  }
+
+  const rootRecords = activeRecords.filter((record) => record.parentTaskId === null);
+  if (rootRecords.length !== 1) {
+    throw new Error(
+      `Managed task tree must have exactly one active root: ${OPTIMIZE_EARTH_ROOT_TASK_ID} (${OPTIMIZE_EARTH_ROOT_TASK_KEY})`,
+    );
+  }
+
+  const root = rootRecords[0];
+  if (!root) {
+    throw new Error(
+      `Managed task tree must have exactly one active root: ${OPTIMIZE_EARTH_ROOT_TASK_ID} (${OPTIMIZE_EARTH_ROOT_TASK_KEY})`,
+    );
+  }
+  if (
+    root.id !== OPTIMIZE_EARTH_ROOT_TASK_ID ||
+    root.taskKey !== OPTIMIZE_EARTH_ROOT_TASK_KEY
+  ) {
+    throw new Error(
+      `Managed task tree root must be ${OPTIMIZE_EARTH_ROOT_TASK_ID} (${OPTIMIZE_EARTH_ROOT_TASK_KEY}); got ${root.id} (${root.taskKey})`,
+    );
+  }
+
+  const activeRecordIds = new Set(activeRecords.map((record) => record.id));
+  const activeExistingIds = new Set(
+    existingRows
+      .filter((row) => row.deletedAt === null)
+      .map((row) => row.id),
+  );
+
+  for (const record of activeRecords) {
+    if (
+      record.parentTaskId &&
+      !activeRecordIds.has(record.parentTaskId) &&
+      !activeExistingIds.has(record.parentTaskId)
+    ) {
+      throw new Error(
+        `Managed task ${record.id} (${record.taskKey}) references missing parentTaskId ${record.parentTaskId}`,
+      );
+    }
+  }
+}
+
 function buildTaskUpdateData(collectionKey: string, record: ManagedTaskRecord) {
   return {
     ...buildTaskScalars(collectionKey, record),
@@ -469,10 +524,14 @@ export async function syncManagedTasks(
 
   const ids = records.map((record) => record.id);
   const taskKeys = records.map((record) => record.taskKey);
+  const parentTaskIds = records.flatMap((record) =>
+    record.parentTaskId ? [record.parentTaskId] : [],
+  );
+  const lookupIds = [...new Set([...ids, ...parentTaskIds])];
   const existingRows = await client.task.findMany({
     where: {
       OR: [
-        { id: { in: ids } },
+        { id: { in: lookupIds } },
         { taskKey: { in: taskKeys } },
       ],
     },
@@ -500,6 +559,7 @@ export async function syncManagedTasks(
       deletedAt: true,
     },
   });
+  validateManagedTaskTree(records, existingRows);
 
   const result: SyncManagedTasksResult = {
     collectionKey: options.collectionKey,
