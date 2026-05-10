@@ -8,7 +8,6 @@ import { Card } from "@/components/retroui/Card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
-import { getGovernmentLeader } from "@optimitron/data/datasets/government-leaders";
 import { buildTaskShareTokens } from "@/lib/tasks/accountability";
 import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import {
@@ -57,6 +56,14 @@ type OneHumanDirectChannel = "email-app" | "sms" | "telegram" | "whatsapp";
 type CopyState = "idle" | "copied" | "error";
 type SendState = "idle" | "sending" | "sent";
 
+interface GovernmentLeaderClientContext {
+  countryCode: string;
+  governmentBudgetUsd: number;
+  leaderName: string | null;
+  militaryBudgetUsd: number;
+  militaryToClinicalTrialsRatio: number | null;
+}
+
 interface TreatyReminderComposerProps {
   cardClassName?: string;
   defaultCowardMode?: boolean;
@@ -86,6 +93,21 @@ function recipientModeLabel(mode: TreatyReminderRecipientMode) {
   }
 }
 
+function isGovernmentLeaderClientContext(
+  value: unknown,
+): value is GovernmentLeaderClientContext {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.countryCode === "string" &&
+    typeof record.governmentBudgetUsd === "number" &&
+    (record.leaderName == null || typeof record.leaderName === "string") &&
+    typeof record.militaryBudgetUsd === "number" &&
+    (record.militaryToClinicalTrialsRatio == null ||
+      typeof record.militaryToClinicalTrialsRatio === "number")
+  );
+}
+
 export function TreatyReminderComposer({
   cardClassName,
   defaultCowardMode = false,
@@ -113,9 +135,34 @@ export function TreatyReminderComposer({
     useState<OneHumanDirectChannel | null>(null);
   const [sendState, setSendState] = useState<SendState>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [leaderContext, setLeaderContext] =
+    useState<GovernmentLeaderClientContext | null>(null);
 
   const countryCode =
     session?.user?.countryCode || getCountryFromLocale() || "US";
+
+  useEffect(() => {
+    const normalizedCountryCode = countryCode.trim().toUpperCase();
+    let cancelled = false;
+
+    void fetch(
+      `/api/government-leader?countryCode=${encodeURIComponent(normalizedCountryCode)}`,
+    )
+      .then((response) => (response.ok ? response.json() : null))
+      .then((value: unknown) => {
+        if (cancelled) return;
+        setLeaderContext(
+          isGovernmentLeaderClientContext(value) ? value : null,
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setLeaderContext(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [countryCode]);
 
   const baseUrl = referralBaseUrl ?? getBaseUrl();
   const referralIdentity = referralUser ?? session?.user ?? null;
@@ -138,8 +185,7 @@ export function TreatyReminderComposer({
   }, [baseUrl, invitation, referralIdentity]);
 
   const { leaderTemplates, leaderTokenBag, leaderName } = useMemo(() => {
-    const leader = getGovernmentLeader(countryCode);
-    const targetLabel = leader?.leaderName ?? "Your Government";
+    const targetLabel = leaderContext?.leaderName ?? "Your Government";
     const tokens = buildTaskShareTokens({
       targetLabel,
       taskTitle: "Sign the 1% Treaty",
@@ -147,8 +193,10 @@ export function TreatyReminderComposer({
       currentEconomicValueUsdLost: null,
       currentHumanLivesLost: null,
       countryCode,
-      militaryBudgetUsdPerYear: leader?.militaryBudgetUsd ?? null,
-      governmentBudgetUsdPerYear: leader?.governmentBudgetUsd ?? null,
+      militaryBudgetUsdPerYear: leaderContext?.militaryBudgetUsd ?? null,
+      governmentBudgetUsdPerYear: leaderContext?.governmentBudgetUsd ?? null,
+      militaryToClinicalTrialsRatio:
+        leaderContext?.militaryToClinicalTrialsRatio ?? null,
       leaderHandle: null,
       citizenName: session?.user?.name || "A citizen",
       treatyUrl: referralUrl,
@@ -158,7 +206,7 @@ export function TreatyReminderComposer({
       leaderTokenBag: tokens,
       leaderName: targetLabel,
     };
-  }, [countryCode, delayDays, referralUrl, session?.user?.name]);
+  }, [countryCode, delayDays, leaderContext, referralUrl, session?.user?.name]);
 
   const { humanityTemplates, humanityTokenBag } = useMemo(() => {
     const delay = getTreatyLevelCostOfDelay(delayDays);

@@ -39,6 +39,11 @@ const nextConfig = {
     // Skip ESLint during builds — run separately via `pnpm lint`
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    // `next build` only needs the app/runtime graph. The full `tsc --noEmit`
+    // CI gate still covers tests, Playwright, and scripts.
+    tsconfigPath: "tsconfig.next.json",
+  },
   webpack: (config, { isServer }) => {
     // wagmi/connectors re-exports optional wallet connectors whose peer
     // packages are intentionally not installed. WalletConnect and injected

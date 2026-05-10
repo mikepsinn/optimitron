@@ -66,6 +66,16 @@ Until the 1% Treaty passes, this repo is in campaign mode.
 
 Ordered by funnel-stage impact. P0 = ship next; P1 = right after; P2 = before launch.
 
+### P0 — Confirm preview build memory after client bundle cleanup
+
+- PR #70 removed the generated country-panel/government-leader import path from
+  client task rows and the treaty reminder composer. Local `next build` now
+  keeps the country-panel JSON out of static client chunks and drops major route
+  first-load JS by hundreds of KB.
+- Watch the next Vercel preview build. If it still OOMs, continue from evidence:
+  lower Next worker concurrency and trim remaining server-only generated data
+  bundles before considering paid larger builders.
+
 ### P0 — Managed canonical data sync (seed replacement for semi-permanent rows)
 
 **Problem decided 2026-05-10:** normal Prisma migrations are the wrong tool for
