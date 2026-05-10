@@ -57,8 +57,8 @@ Until the 1% Treaty passes, this repo is in campaign mode.
 - `/humanity-v-government` renders the operational case. `/court` exists but
   still needs the live Court surface, plaintiff/juror counter, and final
   treaty-as-verdict framing.
-- MCP task assignment email and inbound reply fan-out have shipped. The remaining
-  MCP outreach gap is an integration test for the full round trip.
+- MCP task assignment email, inbound reply fan-out, and the focused round-trip
+  integration test have shipped.
 - Visual review exists, but still needs cache-busted review URLs, fewer missing
   before/after pairs, direct preview links, and deterministic animation settling.
 
@@ -400,16 +400,11 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
 
 ### P1 — MCP outreach email round-trip integration test
 
-The MCP `createTask` -> assignment email -> reply -> comment path has shipped.
-The only remaining gap is one integration test at
-`packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
-`createOrganization` -> `createTask` -> assert email queued + `from` set +
-`replyTo` set; then synthesize an `InboundEmailEvent` matching the `replyTo`
-and assert `processInboundReply` writes a `TaskComment` and notifies non-author
-recipients.
-
-No schema changes. Do not rebuild the shipped pipeline unless a real failure
-appears.
+Done on `feature/managed-task-tree-sync`:
+`packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`
+covers task assignment email send + `Reply-To` routing + inbound reply becoming
+a task comment and notifying non-author recipients. Do not rebuild the shipped
+pipeline unless a real failure appears.
 
 ### P1 — "Forward to someone better-fit" on assignment emails (lightweight)
 

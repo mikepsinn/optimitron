@@ -660,3 +660,52 @@ export async function unsubscribeTaskCommunication(input: {
 
   return true;
 }
+
+export async function unsubscribeTaskCommunicationByReply(input: {
+  recipientEmail: string;
+  taskId?: string | null;
+}) {
+  const recipientEmail = normalizeEmail(input.recipientEmail);
+  if (!recipientEmail) {
+    return { status: "skipped" as const, reason: "missing_recipient_email" };
+  }
+
+  const communication = await prisma.taskCommunication.findFirst({
+    where: {
+      channel: TaskCommunicationChannel.EMAIL,
+      deletedAt: null,
+      direction: TaskCommunicationDirection.OUTBOUND,
+      recipientEmail,
+      status: { not: TaskCommunicationStatus.CANCELLED },
+      unsubscribeToken: { not: null },
+      ...(input.taskId ? { taskId: input.taskId } : {}),
+    },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, metadataJson: true },
+  });
+
+  if (!communication) {
+    return { status: "skipped" as const, reason: "no_matching_communication" };
+  }
+
+  const now = new Date();
+  await prisma.taskCommunication.update({
+    where: { id: communication.id },
+    data: {
+      cancelledAt: now,
+      errorMessage: "Recipient unsubscribed by email reply.",
+      metadataJson: {
+        ...asMetadataObject(communication.metadataJson),
+        optOut: true,
+        optOutAt: now.toISOString(),
+        optOutVia: "reply",
+      } satisfies Prisma.InputJsonObject,
+      status: TaskCommunicationStatus.CANCELLED,
+    },
+  });
+
+  return {
+    status: "unsubscribed" as const,
+    taskCommunicationId: communication.id,
+  };
+}

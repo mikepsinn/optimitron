@@ -9,6 +9,7 @@ import {
   processInboundReply,
   type InboundEmailEvent,
 } from "@/lib/email/inbound-reply";
+import { processInboundUnsubscribe } from "@/lib/email/inbound-unsubscribe";
 import { forwardInboundReplyToMonitor } from "@/lib/email/inbound-monitor-forward";
 import { getReceivedEmailContent } from "@/lib/email/resend";
 
@@ -45,6 +46,27 @@ async function dispatchInboundReceivedEvent(event: ResendEvent) {
   const inboundEvent = await normalizeInboundEvent(event);
   if (!inboundEvent) {
     return { ok: false, reason: "malformed_inbound_event", status: 400 };
+  }
+
+  const unsubscribe = await processInboundUnsubscribe(inboundEvent);
+  if (unsubscribe.handled) {
+    try {
+      await forwardInboundReplyToMonitor(inboundEvent, {
+        reason:
+          unsubscribe.status === "unsubscribed"
+            ? `unsubscribe:${unsubscribe.scope ?? "unknown"}`
+            : `unsubscribe_skipped:${unsubscribe.reason ?? "unknown"}`,
+        status: "skipped",
+        taskCommunicationId: unsubscribe.taskCommunicationId,
+      });
+    } catch (monitorError) {
+      console.error(
+        "[RESEND WEBHOOK] Inbound monitor forward failed",
+        inboundEvent.providerMessageId,
+        monitorError,
+      );
+    }
+    return { ok: true, result: unsubscribe, status: 200 };
   }
 
   const result = await processInboundReply(inboundEvent);

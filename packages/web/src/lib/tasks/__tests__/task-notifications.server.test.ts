@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   claimEmailLog: vi.fn(),
   emailLogUpdate: vi.fn(),
   findMany: vi.fn(),
+  findFirst: vi.fn(),
   findUnique: vi.fn(),
   getConfiguredTaskReplyAddress: vi.fn(),
   markEmailLogStatus: vi.fn(),
@@ -17,6 +18,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     taskCommunication: {
+      findFirst: mocks.findFirst,
       findMany: mocks.findMany,
       findUnique: mocks.findUnique,
       update: mocks.taskCommunicationUpdate,
@@ -45,7 +47,10 @@ vi.mock("@/lib/email/task-notification", () => ({
   getConfiguredTaskReplyAddress: mocks.getConfiguredTaskReplyAddress,
 }));
 
-import { sendDraftTaskNotification } from "@/lib/tasks/task-notifications.server";
+import {
+  sendDraftTaskNotification,
+  unsubscribeTaskCommunicationByReply,
+} from "@/lib/tasks/task-notifications.server";
 
 describe("task notifications", () => {
   beforeEach(() => {
@@ -353,6 +358,45 @@ describe("task notifications", () => {
     expect(mocks.sendExternalResendEmail).toHaveBeenCalledWith(
       expect.not.objectContaining({
         replyTo: expect.any(String),
+      }),
+    );
+  });
+
+  it("marks the latest matching external communication opted out when a recipient replies unsubscribe", async () => {
+    mocks.findFirst.mockResolvedValue({
+      id: "comm_unsub",
+      metadataJson: { unsubscribeUrl: "https://warondisease.org/unsub" },
+    });
+
+    const result = await unsubscribeTaskCommunicationByReply({
+      recipientEmail: "Recipient@Example.com",
+      taskId: "task_1",
+    });
+
+    expect(result).toEqual({
+      status: "unsubscribed",
+      taskCommunicationId: "comm_unsub",
+    });
+    expect(mocks.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          recipientEmail: "recipient@example.com",
+          taskId: "task_1",
+          unsubscribeToken: { not: null },
+        }),
+      }),
+    );
+    expect(mocks.taskCommunicationUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "comm_unsub" },
+        data: expect.objectContaining({
+          errorMessage: "Recipient unsubscribed by email reply.",
+          metadataJson: expect.objectContaining({
+            optOut: true,
+            optOutVia: "reply",
+          }),
+          status: "CANCELLED",
+        }),
       }),
     );
   });
