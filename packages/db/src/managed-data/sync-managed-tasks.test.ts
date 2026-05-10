@@ -189,13 +189,13 @@ class FakeManagedTaskClient implements ManagedTaskClient {
     },
     findFirst: async (args: unknown) => {
       const { where } = args as {
-        where: { deletedAt: null; isPrimary: boolean; taskId: string };
+        where: { deletedAt: null; isPrimary?: boolean; taskId: string };
       };
       const endpoint =
         this.endpoints.find(
           (candidate) =>
             candidate.deletedAt === where.deletedAt &&
-            candidate.isPrimary === where.isPrimary &&
+            (!("isPrimary" in where) || candidate.isPrimary === where.isPrimary) &&
             candidate.taskId === where.taskId,
         ) ?? null;
       if (!endpoint) return null;
@@ -276,6 +276,23 @@ describe("syncManagedTasks", () => {
         makeTask({ id: "retired", taskKey: "program:test:retired" }),
         makeTask({ id: "user-task", taskKey: "user:created", title: "Do not touch" }),
       ],
+      endpoints: [
+        {
+          deletedAt: null,
+          email: null,
+          id: "endpoint-retired",
+          instructions: null,
+          isPrimary: true,
+          kind: TaskCommunicationEndpointKind.ACTION_LINK,
+          label: "Old retired endpoint",
+          priority: 0,
+          sourceUrl: null,
+          taskId: "retired",
+          url: "/old-retired-task",
+          verificationStatus:
+            TaskCommunicationEndpointVerificationStatus.UNVERIFIED,
+        },
+      ],
     });
 
     const result = await syncManagedTasks(client, {
@@ -305,6 +322,7 @@ describe("syncManagedTasks", () => {
     expect(result.updated).toContain("root (program:test:root)");
     expect(result.created).toContain("new-child (program:test:new-child)");
     expect(result.retired).toContain("retired (program:test:retired)");
+    expect(result.endpointRetired).toContain("retired (program:test:retired)");
     expect(client.tasks.find((task) => task.id === "root")?.title).toBe(
       "Stale root",
     );

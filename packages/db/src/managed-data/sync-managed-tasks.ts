@@ -534,6 +534,28 @@ export async function syncManagedTasks(
         if (retiredEndpoints.count > 0) {
           result.endpointRetired.push(label);
         }
+      } else {
+        const activeEndpoint = await client.taskCommunicationEndpoint.findFirst({
+          where: {
+            deletedAt: null,
+            taskId: existing.id,
+          },
+          select: {
+            id: true,
+            email: true,
+            instructions: true,
+            isPrimary: true,
+            kind: true,
+            label: true,
+            priority: true,
+            sourceUrl: true,
+            url: true,
+            verificationStatus: true,
+          },
+        });
+        if (activeEndpoint) {
+          result.endpointRetired.push(label);
+        }
       }
       continue;
     }
