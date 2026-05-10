@@ -54,10 +54,10 @@ export default async function ScoreboardPage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
       <section className="mb-12 space-y-3 text-center">
-        <p className="text-sm font-black font-pixel uppercase tracking-[0.2em] text-foreground">
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
           The Earth Optimization Game
         </p>
-        <h1 className="text-3xl md:text-5xl font-black font-pixel uppercase tracking-tight text-foreground">
+        <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
           HIGH SCORES
         </h1>
         <p className="mx-auto max-w-2xl text-lg font-bold text-muted-foreground">
@@ -69,7 +69,7 @@ export default async function ScoreboardPage() {
 
       {/* Humanity's Scoreboard — the two metrics that define the game */}
       <section className="mb-12">
-        <h2 className="text-xl font-black font-pixel uppercase tracking-tight text-foreground mb-6 text-center">
+        <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
           The Two Numbers That Matter
         </h2>
         <HumanityScoreboard />
@@ -77,8 +77,8 @@ export default async function ScoreboardPage() {
 
       {/* GDP Trajectory Chart */}
       <section className="mb-12">
-        <div className="border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-xl font-black font-pixel uppercase tracking-tight text-foreground mb-2 text-center">
+        <div className="border border-foreground bg-background p-6">
+          <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-2 text-center">
             Why There&apos;s a Timer
           </h2>
           <p className="text-sm font-bold text-muted-foreground text-center mb-4 max-w-2xl mx-auto">
@@ -93,7 +93,7 @@ export default async function ScoreboardPage() {
 
       {/* Live Game Stats */}
       <section className="mb-12">
-        <h2 className="text-xl font-black font-pixel uppercase tracking-tight text-foreground mb-6 text-center">
+        <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
           Live Game Status
         </h2>
         <StatCardGrid
@@ -109,8 +109,8 @@ export default async function ScoreboardPage() {
 
       {/* How the Game Works */}
       <section className="mb-12">
-        <div className="border-4 border-primary bg-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-xl font-black font-pixel uppercase tracking-tight text-foreground mb-6 text-center">
+        <div className="border border-foreground bg-background p-8">
+          <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
             How to Play
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -138,7 +138,7 @@ export default async function ScoreboardPage() {
 
       {/* Wishonia comment */}
       <section className="mb-12">
-        <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border border-foreground bg-background text-foreground p-6">
           <p className="text-sm font-bold leading-relaxed text-center">
             On Wishonia, we solved this in year 12. You lot have been arguing
             about it for 4,237 years. The scoreboard makes the campaign size

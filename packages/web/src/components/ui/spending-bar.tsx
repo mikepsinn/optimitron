@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 
 const colorMap = {
-  red: "bg-brutal-red",
+  red: "bg-foreground",
   cyan: "bg-background",
-  green: "bg-brutal-green",
+  green: "bg-foreground",
   yellow: "bg-background",
 } as const;
 
@@ -35,7 +35,7 @@ export function SpendingBar({
   return (
     <div
       className={cn(
-        "w-full border-2 border-primary bg-muted",
+        "w-full border border-foreground bg-background",
         height === "sm" ? "h-3" : "h-5",
         className,
       )}

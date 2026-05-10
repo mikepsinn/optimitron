@@ -569,8 +569,7 @@ body {
 /* Neobrutalist utility classes */
 @layer components {
   .card {
-    @apply bg-card border-2 border-border p-6;
-    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+    @apply bg-card border border-border p-6 shadow-none;
   }
 
   .section-title {

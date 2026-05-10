@@ -25,7 +25,7 @@ function ToolCard({ item, color }: { item: NavItem; color: "cyan" | "yellow" | "
       <div className="flex items-start justify-between">
         <span className="text-3xl">{item.emoji}</span>
         {item.external && (
-          <span className="inline-block border-2 border-primary bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.1em] text-foreground">
+          <span className="inline-block border border-foreground bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.1em] text-foreground">
             External
           </span>
         )}
@@ -90,7 +90,7 @@ export default function ToolsPage() {
       ))}
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-foreground text-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <section className="border border-foreground bg-background text-foreground p-8 text-center">
         <h2 className="mb-3 text-2xl font-black uppercase">
           Still Browsing?
         </h2>

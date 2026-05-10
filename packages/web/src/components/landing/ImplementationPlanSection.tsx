@@ -45,8 +45,8 @@ const steps = [
 
 export function ImplementationPlanSection() {
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-      <div className="text-center mb-16">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="text-center mb-12">
         <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-foreground">
           Five Steps. No Altruism Required.
         </h2>
@@ -61,10 +61,10 @@ export function ImplementationPlanSection() {
         {steps.map((item) => (
           <div
             key={item.step}
-            className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="p-6 border border-foreground bg-background"
           >
             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-              <div className="w-12 h-12 bg-foreground border-4 border-primary flex items-center justify-center text-lg font-black text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] shrink-0">
+              <div className="w-12 h-12 bg-background border border-foreground flex items-center justify-center text-lg font-black text-foreground shrink-0">
                 {item.step}
               </div>
               <div className="flex-1">
