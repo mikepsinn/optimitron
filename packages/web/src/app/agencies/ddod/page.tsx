@@ -8,7 +8,7 @@ import {
   fmtRaw,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
-  MONEY_PRINTER_WAR_DEATHS,
+  WAR_DEATHS_SINCE_1900,
   ECONOMIC_MULTIPLIER_MILITARY_SPENDING,
   ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT,
   GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL,
@@ -97,14 +97,14 @@ export default function DepartmentOfWarPage() {
           <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
               <div className="text-sm font-black uppercase text-muted-foreground">
-                Deaths from money-printer wars
+                War and conflict deaths since 1900
               </div>
               <div className="text-2xl font-black text-foreground">
-                <ParameterValue param={MONEY_PRINTER_WAR_DEATHS} />
+                <ParameterValue param={WAR_DEATHS_SINCE_1900} />
               </div>
             </div>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
-              {MONEY_PRINTER_WAR_DEATHS.description}
+              {WAR_DEATHS_SINCE_1900.description}
             </p>
           </div>
 

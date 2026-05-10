@@ -17,9 +17,16 @@ import { PNG } from "pngjs";
 const webRoot = process.cwd();
 const repoRoot = path.resolve(webRoot, "../..");
 const screenshotsRoot = path.resolve(webRoot, "screenshots");
+const routeManifestPath = path.join(screenshotsRoot, "routes.json");
 const beforeScreenshotsRoot = process.env.VISUAL_BEFORE_ROOT
   ? resolveInputPath(process.env.VISUAL_BEFORE_ROOT)
   : null;
+const pageLinkBaseUrl = parseOptionalUrl(
+  process.env.VISUAL_REVIEW_BASE_URL ??
+    (process.env.CI === "true"
+      ? null
+      : process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL),
+);
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
 const assetRoot = path.join(outputRoot, "assets");
 const latestHtmlPath = path.join(outputRoot, "latest.html");
@@ -30,6 +37,20 @@ const diffPixelRatioThreshold = parseNumberEnv(
 const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
 const allowIncompleteReview =
   process.env.VISUAL_REVIEW_ALLOW_INCOMPLETE === "1";
+const reviewCommitSha =
+  process.env.VISUAL_REVIEW_COMMIT_SHA ??
+  process.env.VERCEL_GIT_COMMIT_SHA ??
+  process.env.GITHUB_SHA ??
+  null;
+const reviewGeneratedAt = new Date();
+const reviewCacheKey = [
+  reviewCommitSha ? shortSha(reviewCommitSha) : "local",
+  process.env.GITHUB_RUN_ID ?? null,
+  reviewGeneratedAt.getTime(),
+]
+  .filter(Boolean)
+  .join("-");
+const routePaths = loadRoutePaths();
 
 const routeOrder = [
   "home",
@@ -41,6 +62,10 @@ const routeOrder = [
   "treaty",
   "treaty-auth",
   "why",
+  "about",
+  "agencies",
+  "scoreboard",
+  "tools",
   "humanity-v-government",
   "plaintiffs",
   "plaintiffs-auth",
@@ -160,7 +185,8 @@ function groupScreenshots(screenshots) {
 }
 
 function renderHtml(groups) {
-  const generatedAt = new Date().toISOString();
+  const generatedAt = reviewGeneratedAt.toISOString();
+  const generatedAtCentral = formatCentralTime(reviewGeneratedAt);
   const summary = summarizeGroups(groups);
   const body = groups.length > 0
     ? groups.map(renderRouteGroup).join("\n")
@@ -354,6 +380,25 @@ function renderHtml(groups) {
       font-size: 13px;
     }
 
+    .page-link {
+      border: 1px solid var(--line);
+      color: var(--fg);
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 8px;
+      min-height: 24px;
+      padding: 3px 7px;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .page-link:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
     code {
       font-family: Consolas, "Liberation Mono", monospace;
       font-size: 0.95em;
@@ -379,7 +424,7 @@ function renderHtml(groups) {
   <header>
     <h1>Optimitron Visual Review</h1>
     <div class="meta">
-      Generated ${escapeHtml(generatedAt)}. ${beforeScreenshotsRoot ? "Left side is the latest main baseline artifact; right side is this pull request." : "No main baseline artifact was available, so this page shows pull request screenshots only."} Changed or missing-baseline pages are expanded; unchanged pages are collapsed but still captured.
+      Generated ${escapeHtml(generatedAtCentral)} Central time (${escapeHtml(generatedAt)} UTC).${reviewCommitSha ? ` Commit ${escapeHtml(shortSha(reviewCommitSha))}.` : ""} ${beforeScreenshotsRoot ? "Left side is the latest main baseline artifact; right side is this pull request." : "No main baseline artifact was available, so this page shows pull request screenshots only."} Changed or missing-baseline pages are expanded; unchanged pages are collapsed but still captured.
     </div>
     <div class="summary-line">
       <span class="pill changed">${summary.changedRoutes} changed</span>
@@ -411,10 +456,14 @@ function renderRouteGroup(group) {
 }
 
 function renderPair(pair) {
+  const routeUrl = getRouteUrl(pair.routeName);
   return `<article class="pair">
     <h3>
       <span>${escapeHtml(labelProject(pair.projectName))}</span>
-      <span class="pill ${escapeHtml(pair.diff.statusClass)}">${escapeHtml(pair.diff.label)}</span>
+      <span>
+        ${routeUrl ? `<a class="page-link" href="${escapeHtml(routeUrl)}" target="_blank" rel="noreferrer">Open page</a>` : ""}
+        <span class="pill ${escapeHtml(pair.diff.statusClass)}">${escapeHtml(pair.diff.label)}</span>
+      </span>
     </h3>
     <div class="comparison">
       ${renderFigure(pair.before, "Before: main")}
@@ -432,7 +481,7 @@ function renderFigure(screenshot, label) {
   }
   return `<figure>
     <figcaption>${escapeHtml(label)}</figcaption>
-    <img src="${escapeHtml(screenshot.relPath)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
+    <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
   </figure>`;
 }
 
@@ -636,6 +685,77 @@ function formatPercent(value) {
     minimumFractionDigits: value > 0 && value < 0.01 ? 2 : 0,
     style: "percent",
   }).format(value);
+}
+
+function formatCentralTime(date) {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    month: "short",
+    second: "2-digit",
+    timeZone: "America/Chicago",
+    timeZoneName: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+function shortSha(value) {
+  return String(value).slice(0, 12);
+}
+
+function loadRoutePaths() {
+  if (!existsSync(routeManifestPath)) {
+    return new Map();
+  }
+
+  try {
+    const parsed = JSON.parse(readFileSync(routeManifestPath, "utf8"));
+    if (!Array.isArray(parsed)) {
+      return new Map();
+    }
+
+    return new Map(
+      parsed
+        .filter((entry) => (
+          entry &&
+          typeof entry.name === "string" &&
+          typeof entry.path === "string"
+        ))
+        .map((entry) => [entry.name, entry.path]),
+    );
+  } catch (error) {
+    console.warn(
+      `[visual-review] Could not read route manifest at ${routeManifestPath}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return new Map();
+  }
+}
+
+function getRouteUrl(routeName) {
+  if (!pageLinkBaseUrl) {
+    return null;
+  }
+
+  const routePath = routePaths.get(routeName);
+  if (!routePath) {
+    return null;
+  }
+
+  return new URL(routePath, pageLinkBaseUrl).toString();
+}
+
+function parseOptionalUrl(value) {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return new URL(value);
+  } catch {
+    console.warn(`[visual-review] Ignoring invalid page link base URL: ${value}`);
+    return null;
+  }
 }
 
 function parseNumberEnv(name, fallback) {

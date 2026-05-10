@@ -79,15 +79,18 @@ function shouldIncludeStaticRoute(site: SiteConfig, path: string) {
     return false;
   }
 
-  if (path === ROUTES.home || site.sitemap.includePublicRoutes) {
+  if (path === ROUTES.home || site.sitemap.includeAllStaticRoutes) {
     return true;
   }
 
-  if (!site.routePolicy.restrictToAllowlist) {
+  if (matchesAnyPrefix(path, site.routePolicy.canonicalPrefixes)) {
     return true;
   }
 
-  return matchesAnyPrefix(path, site.routePolicy.canonicalPrefixes);
+  return Boolean(
+    site.sitemap.includePublicRoutes &&
+      matchesAnyPrefix(path, site.routePolicy.publicPrefixes),
+  );
 }
 
 function makeEntry(

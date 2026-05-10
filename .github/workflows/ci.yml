@@ -80,6 +80,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      deployments: read
       id-token: write
       issues: write
       pages: write
@@ -242,8 +243,46 @@ jobs:
             cp -R "$pr_screenshots" packages/web/screenshots
           fi
 
+      - name: Resolve PR preview URL
+        if: always() && github.event_name == 'pull_request'
+        id: pr_preview_url
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: |
+            const { owner, repo } = context.repo;
+            const ref = context.payload.pull_request.head.sha;
+            const deployments = await github.paginate(github.rest.repos.listDeployments, {
+              owner,
+              repo,
+              ref,
+              per_page: 100,
+            });
+
+            for (const deployment of deployments) {
+              const statuses = await github.rest.repos.listDeploymentStatuses({
+                owner,
+                repo,
+                deployment_id: deployment.id,
+                per_page: 20,
+              });
+              const ready = statuses.data.find((status) =>
+                status.state === 'success' &&
+                status.environment_url &&
+                /^https?:\/\//.test(status.environment_url)
+              );
+              if (ready) {
+                return ready.environment_url;
+              }
+            }
+
+            return '';
+
       - name: Build visual review index
         if: always()
+        env:
+          VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
@@ -277,10 +316,14 @@ jobs:
         run: |
           pages_root="packages/web/output/playwright/pages"
           pr_dir="$pages_root/pr-${{ github.event.pull_request.number }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
+          short_sha="${head_sha:0:12}"
+          commit_dir="$pr_dir/$short_sha"
           rm -rf "$pages_root"
-          mkdir -p "$pr_dir/screenshots"
+          mkdir -p "$pr_dir" "$commit_dir"
 
           cp -R packages/web/output/playwright/review/. "$pr_dir/"
+          cp -R packages/web/output/playwright/review/. "$commit_dir/"
 
           cat > "$pages_root/index.html" <<'HTML'
           <!doctype html>
@@ -316,6 +359,8 @@ jobs:
       - name: Comment visual review instructions
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v8
+        env:
+          VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
         with:
           script: |
             const marker = '<!-- optimitron-visual-review -->';
@@ -334,8 +379,10 @@ jobs:
             const artifactUrl = visualArtifact
               ? `${runUrl}/artifacts/${visualArtifact.id}`
               : `${runUrl}#artifacts`;
-            const reviewPageUrl = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/latest.html`;
             const headSha = context.payload.pull_request.head.sha;
+            const shortSha = headSha.slice(0, 12);
+            const reviewPageUrl = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/${shortSha}/latest.html`;
+            const latestReviewPageUrl = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/latest.html`;
             const checkRunsResponse = await github.rest.checks.listForRef({
               owner,
               repo,
@@ -352,10 +399,15 @@ jobs:
             const visualDiffLabel = argosCheck
               ? 'Open before/after visual diffs'
               : 'Open PR checks for visual diffs';
+            const previewUrl = process.env.VISUAL_REVIEW_BASE_URL || '';
+            const previewLine = previewUrl
+              ? `\n- [Open preview deployment](${previewUrl})`
+              : '';
             const body = `${marker}
             ## Visual review
 
             - [Open screenshot gallery in the browser](${reviewPageUrl})
+            - [Open latest screenshot gallery alias](${latestReviewPageUrl})${previewLine}
             - [${visualDiffLabel}](${visualDiffUrl})
             - [Download the compact screenshot gallery artifact](${artifactUrl})
             - [Open this workflow run](${runUrl})
@@ -397,6 +449,7 @@ jobs:
   deploy-production:
     name: deploy-production
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    needs: web-validate
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:

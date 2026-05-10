@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
 
@@ -33,7 +33,7 @@ vi.mock("@/lib/email/magic-link-email", () => ({
 }));
 
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { authOptions, getConfiguredProviders } from "@/lib/auth";
 
 type JwtParams = {
   token: JWT;
@@ -75,6 +75,10 @@ const fullIdentityRow = {
 describe("authOptions.callbacks.jwt", () => {
   beforeEach(() => {
     mockedFindUnique.mockReset();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("keeps token.id set to user.id even when the identity lookup returns null", async () => {
@@ -125,6 +129,41 @@ describe("authOptions.callbacks.jwt", () => {
 
     expect(token.id).toBe("user_123");
     expect(mockedFindUnique).not.toHaveBeenCalled();
+  });
+});
+
+describe("getConfiguredProviders", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("enables demo login on Vercel preview deployments", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("VERCEL_ENV", "preview");
+
+    expect(getConfiguredProviders().demo).toBe(true);
+  });
+
+  it("enables demo login in development", () => {
+    vi.stubEnv("NODE_ENV", "development");
+
+    expect(getConfiguredProviders().demo).toBe(true);
+  });
+
+  it("enables demo login in production when explicitly enabled", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_DEMO_LOGIN_ENABLED", "true");
+
+    expect(getConfiguredProviders().demo).toBe(true);
+  });
+
+  it("keeps demo login off in normal production deployments", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_DEMO_LOGIN_ENABLED", "");
+
+    expect(getConfiguredProviders().demo).toBe(false);
   });
 });
 

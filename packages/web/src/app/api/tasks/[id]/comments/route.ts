@@ -42,7 +42,7 @@ export async function GET(
 
     const currentUser = await getCurrentUser();
 
-    const [{ comments, nextCursor }, activityEvents] = await Promise.all([
+    const [{ comments, nextCursor, total }, activityEvents] = await Promise.all([
       getTaskCommentFeed({
         taskId,
         sort,
@@ -58,6 +58,7 @@ export async function GET(
     return NextResponse.json({
       comments,
       nextCursor: nextCursor?.toISOString() ?? null,
+      total,
       activityEvents,
     });
   } catch (error) {
@@ -289,4 +290,3 @@ function streamCommentResponse(args: {
     },
   });
 }
-

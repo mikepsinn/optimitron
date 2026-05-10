@@ -334,6 +334,7 @@ export const agenciesLink: NavItem = {
   description: `${wishoniaAgencyCount} optimized agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.`,
   tagline: `${wishoniaAgencyCount} agencies. No bureaucracy. Just code.`,
   matchPrefixes: [ROUTES.agencies],
+  screenshot: true,
 
   cta: "See All Agencies",
 };
@@ -531,6 +532,7 @@ export const toolsLink: NavItem = {
     "Free tools for voting, evidence, budgets, policy, outreach, and task tracking.",
   tagline: "Free tools for votes, tasks, budgets, and evidence",
   matchPrefixes: [ROUTES.tools],
+  screenshot: true,
 
   cta: "Open Tools",
 };
@@ -615,6 +617,7 @@ export const scoreboardLink: NavItem = {
     "Two numbers: how long you live without disease and how much a normal person earns. Not GDP. Not billionaire wealth. The median. Everything else on this site exists to move these two numbers up.",
   tagline: "Two numbers: disease-free lifespan and median income",
   matchPrefixes: [ROUTES.scoreboard],
+  screenshot: true,
 
   cta: "View Scoreboard",
 };
@@ -861,6 +864,7 @@ export const aboutLink: NavItem = {
   description:
     "What this is, why it exists, and why an alien had to build it because your species wouldn't.",
   tagline: "What this is, why it exists, and why an alien built it",
+  screenshot: true,
 
   cta: "Learn More",
 };
@@ -1452,6 +1456,10 @@ export const routeReviewNavItems = [
   voteLink,
   treatyLink,
   whyLink,
+  aboutLink,
+  agenciesLink,
+  scoreboardLink,
+  toolsLink,
   humanityVGovernmentLink,
   plaintiffsLink,
   plaintiffsManageLink,

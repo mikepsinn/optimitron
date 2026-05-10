@@ -9126,6 +9126,7 @@ export function createMcpServer(
             return ok({
               comments: feed.comments,
               nextCursor: feed.nextCursor?.toISOString() ?? null,
+              total: feed.total,
               activityEvents: activities,
             });
           }

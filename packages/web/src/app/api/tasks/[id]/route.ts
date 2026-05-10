@@ -14,6 +14,7 @@ import {
   getTaskDetailData,
   updateTaskCreatedByUser,
 } from "@/lib/tasks.server";
+import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,12 @@ const PrimaryEndpointBodySchema = z.object({
   instructions: z.string().nullish(),
   label: z.string().nullish(),
   sourceUrl: z.string().nullish(),
-  url: z.string().nullish(),
+  url: z
+    .string()
+    .refine((value) => normalizeTaskCommunicationEndpointUrl(value) !== null, {
+      message: "Primary endpoint URL must be http, https, mailto, or an internal path.",
+    })
+    .nullish(),
 });
 
 const UpdateTaskBodySchema = z

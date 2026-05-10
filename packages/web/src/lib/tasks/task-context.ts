@@ -36,6 +36,12 @@ const AssigneeProfileSchema = z.object({
    * share templates to compute year-to-date tax citizens have paid to this person.
    */
   governmentBudgetUsdPerYear: z.number().optional(),
+  /**
+   * Military spending per $1 of government clinical-trials spending.
+   * Snapshotted into signer task context so client task rows do not import the
+   * government report-card dataset at runtime.
+   */
+  militaryToClinicalTrialsRatio: z.number().optional(),
   jobQuote: z
     .object({ text: z.string(), source: z.string() })
     .optional(),
@@ -188,6 +194,15 @@ export function getAssigneeGovernmentBudgetUsd(
   const profile = readTaskContext(contextJson).assigneeProfile;
   return typeof profile?.governmentBudgetUsdPerYear === "number"
     ? profile.governmentBudgetUsdPerYear
+    : null;
+}
+
+export function getAssigneeMilitaryToClinicalTrialsRatio(
+  contextJson: unknown,
+): number | null {
+  const profile = readTaskContext(contextJson).assigneeProfile;
+  return typeof profile?.militaryToClinicalTrialsRatio === "number"
+    ? profile.militaryToClinicalTrialsRatio
     : null;
 }
 

@@ -27,7 +27,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@optimitron/data/fetchers", () => ({
+vi.mock("@optimitron/data/fetchers/congress", () => ({
   fetchMemberDetails: mocks.fetchMemberDetails,
   getCongressApiKey: mocks.getCongressApiKey,
 }));

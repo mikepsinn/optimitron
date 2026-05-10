@@ -1,5 +1,5 @@
 import { OrgType } from "@optimitron/db";
-import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leader-types";
 
 export interface GovernmentPersonDraftInput {
   countryCode: string | null;

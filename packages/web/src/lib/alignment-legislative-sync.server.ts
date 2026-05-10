@@ -1,4 +1,10 @@
-import * as fetchers from "@optimitron/data/fetchers";
+import {
+  fetchBills,
+  fetchBillSubjects,
+  fetchBillsByType,
+  fetchBillVotes,
+  fetchRollCallVote,
+} from "@optimitron/data/fetchers/congress";
 import {
   ALIGNMENT_BILL_FEEDS,
   type AlignmentBillFeedConfig,
@@ -44,8 +50,8 @@ export interface DerivedAlignmentVoteRow {
   votedAt: Date | null;
 }
 
-type FetchedBill = Awaited<ReturnType<typeof fetchers.fetchBills>>[number];
-type FetchedBillVote = Awaited<ReturnType<typeof fetchers.fetchBillVotes>>[number];
+type FetchedBill = Awaited<ReturnType<typeof fetchBills>>[number];
+type FetchedBillVote = Awaited<ReturnType<typeof fetchBillVotes>>[number];
 
 function currentCongressNumber(now: Date = new Date()): number {
   return Math.floor((now.getUTCFullYear() - 1789) / 2) + 1;
@@ -270,8 +276,8 @@ async function fetchRecentBillsForCongress(congress: number): Promise<FetchedBil
   const feeds = await Promise.all(
     ALIGNMENT_BILL_FEEDS.map((feed: AlignmentBillFeedConfig) =>
       feed.billType
-        ? fetchers.fetchBillsByType(congress, feed.billType, feed.limit)
-        : fetchers.fetchBills(congress, undefined, feed.limit),
+        ? fetchBillsByType(congress, feed.billType, feed.limit)
+        : fetchBills(congress, undefined, feed.limit),
     ),
   );
 
@@ -304,8 +310,8 @@ export async function deriveRecentLegislativeVoteRows(
 
   for (const bill of bills) {
     const [subjectInfo, billVotes] = await Promise.all([
-      fetchers.fetchBillSubjects(bill.type, bill.number, bill.congress),
-      fetchers.fetchBillVotes(bill.type, bill.number, bill.congress),
+      fetchBillSubjects(bill.type, bill.number, bill.congress),
+      fetchBillVotes(bill.type, bill.number, bill.congress),
     ]);
     const classifiedBill = {
       billId: bill.billId,
@@ -323,7 +329,7 @@ export async function deriveRecentLegislativeVoteRows(
     const rollCalls = dedupeRollCalls(billVotes).slice(0, MAX_ROLL_CALLS_PER_BILL);
 
     for (const rawVote of rollCalls) {
-      const vote = await fetchers.fetchRollCallVote(
+      const vote = await fetchRollCallVote(
         rawVote.congress ?? bill.congress,
         rawVote.chamber ?? "house",
         rawVote.sessionNumber ?? 1,

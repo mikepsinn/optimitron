@@ -18,7 +18,7 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import type { LeaderActivityRecord } from "@optimitron/data/datasets/leader-activities";
-import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leader-types";
 import type {
   ImportedImpactFrameDraft,
   ImportedImpactMetricDraft,

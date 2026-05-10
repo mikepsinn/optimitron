@@ -3,7 +3,7 @@ import { CTA } from "@/lib/messaging";
 
 const variants = {
   primary:
-    "bg-foreground text-black",
+    "bg-foreground text-background",
   secondary:
     "bg-foreground text-background",
   outline:
@@ -54,13 +54,9 @@ export function GameCTA({
 }: GameCTAProps) {
   const baseClasses = [
     "inline-flex items-center justify-center gap-2",
-    "font-pixel",
     "font-black uppercase",
-    "border-4 border-primary",
-    "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-    "hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]",
-    "hover:translate-x-[-2px] hover:translate-y-[-2px]",
-    "transition-all",
+    "border border-foreground",
+    "transition-colors hover:bg-background hover:text-foreground",
     variants[variant],
     sizes[size],
     className,

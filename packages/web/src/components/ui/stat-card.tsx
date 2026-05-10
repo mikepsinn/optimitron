@@ -20,9 +20,9 @@ export interface StatCardProps {
 
 const colorClasses: Record<StatCardColor, string> = {
   yellow: "bg-background text-foreground",
-  pink: "bg-foreground text-background",
+  pink: "bg-background text-foreground",
   cyan: "bg-background text-foreground",
-  green: "bg-brutal-green text-brutal-green-foreground",
+  green: "bg-background text-foreground",
   default: "bg-background",
 }
 
@@ -59,15 +59,13 @@ export function StatCard({
 }: StatCardProps) {
   const sizes = sizeClasses[size]
   const colorClass = colorClasses[color]
-  const hoverClass = hover
-    ? "hover:translate-x-2 hover:translate-y-2 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
-    : ""
+  const hoverClass = hover ? "transition-colors hover:bg-muted" : ""
 
   return (
     <Card
       className={cn(
         sizes.padding,
-        "border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
+        "border border-foreground shadow-none",
         colorClass,
         hoverClass,
         className

@@ -41,11 +41,11 @@ export function SectionHeader({
 
   return (
     <div className={cn(sizes.spacing, centered && "text-center", className)}>
-      <h2 className={cn(sizes.title, "font-pixel uppercase mb-4 break-words")}>
+      <h2 className={cn(sizes.title, "font-black uppercase mb-4 break-words")}>
         {title}
       </h2>
       {subtitle && (
-        <p className={cn(sizes.subtitle, "font-terminal", centered && "max-w-3xl mx-auto")}>
+        <p className={cn(sizes.subtitle, "font-bold", centered && "max-w-3xl mx-auto")}>
           {subtitle}
         </p>
       )}

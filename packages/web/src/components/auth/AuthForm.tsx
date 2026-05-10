@@ -8,6 +8,8 @@ import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
+import { isDemoLoginEnabled } from "@/lib/demo-login";
+import { clientEnv } from "@/lib/env";
 import { createLogger } from "@/lib/logger";
 import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
 import { storage } from "@/lib/storage";
@@ -15,6 +17,7 @@ import { storage } from "@/lib/storage";
 const logger = createLogger("auth-form");
 
 interface ProviderFlags {
+  demo?: boolean;
   email: boolean;
   google: boolean;
 }
@@ -70,6 +73,13 @@ export function AuthForm({
   const buttonClassName = compact ? "h-11 text-sm" : "h-12 text-base";
   const magicLinkEnabled = providers?.email ?? true;
   const googleEnabled = providers?.google ?? true;
+  const demoLoginEnabled =
+    providers?.demo ??
+    isDemoLoginEnabled({
+      demoLoginEnabled: clientEnv.NEXT_PUBLIC_DEMO_LOGIN_ENABLED,
+      nodeEnv: process.env.NODE_ENV,
+      vercelEnv: clientEnv.NEXT_PUBLIC_VERCEL_ENV,
+    });
   const containerClassName = hideContainer
     ? "w-full"
     : isDocument
@@ -241,7 +251,7 @@ export function AuthForm({
       ) : null}
 
       <div className="space-y-4">
-        {process.env.NODE_ENV !== "production" && (
+        {demoLoginEnabled && (
           <>
             <Button
               type="button"

@@ -24,6 +24,7 @@ interface TreatyFlowShellProps {
   contentClassName?: string;
   "data-screen"?: string;
   "data-testid"?: string;
+  "data-visual-state"?: string;
 }
 
 export function TreatyFlowShell({
@@ -32,11 +33,13 @@ export function TreatyFlowShell({
   contentClassName,
   "data-screen": dataScreen,
   "data-testid": dataTestId,
+  "data-visual-state": dataVisualState,
 }: TreatyFlowShellProps) {
   return (
     <section
       data-screen={dataScreen}
       data-testid={dataTestId}
+      data-visual-state={dataVisualState}
       className={cn(
         "relative isolate z-[60] mx-auto flex min-h-screen min-h-[100dvh] w-full overflow-hidden bg-[var(--treaty-paper)] px-4 py-6 text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:px-8 sm:py-10",
         className,

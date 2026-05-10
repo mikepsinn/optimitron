@@ -19,12 +19,12 @@ export interface BrutalCardProps {
 const bgClasses: Record<BrutalCardBgColor, string> = {
   background: "bg-background text-foreground",
   foreground: "bg-foreground text-background",
-  pink: "bg-brutal-pink text-brutal-pink-foreground",
-  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
-  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
-  green: "bg-brutal-green text-brutal-green-foreground",
-  red: "bg-brutal-red text-brutal-red-foreground",
-  default: "bg-card text-card-foreground",
+  pink: "bg-background text-foreground",
+  cyan: "bg-background text-foreground",
+  yellow: "bg-background text-foreground",
+  green: "bg-background text-foreground",
+  red: "bg-background text-foreground",
+  default: "bg-background text-foreground",
 }
 
 // Retain shadowSize as a no-op so existing consumers do not need updates.
@@ -53,7 +53,7 @@ export function BrutalCard({
   return (
     <Card
       className={cn(
-        "border-2 border-foreground",
+        "border border-foreground",
         paddingClasses[padding],
         shadowClasses[shadowSize],
         bgClasses[bgColor],

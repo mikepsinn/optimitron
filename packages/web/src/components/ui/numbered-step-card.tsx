@@ -16,10 +16,10 @@ export interface NumberedStepCardProps {
 
 const colorClasses: Record<StepCardColor, string> = {
   cyan: "bg-background text-foreground",
-  pink: "bg-foreground text-background",
+  pink: "bg-background text-foreground",
   yellow: "bg-background text-foreground",
-  green: "bg-brutal-green text-brutal-green-foreground",
-  purple: "bg-brutal-purple",
+  green: "bg-background text-foreground",
+  purple: "bg-background text-foreground",
   default: "bg-background",
 }
 
@@ -34,13 +34,13 @@ export function NumberedStepCard({
   return (
     <Card
       className={cn(
-        "p-6 sm:p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
+        "p-6 sm:p-8 border border-foreground shadow-none",
         colorClasses[color],
         className
       )}
     >
       <div className="flex items-start gap-4 sm:gap-6">
-        <div className="bg-primary text-background w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-black text-xl sm:text-2xl flex-shrink-0">
+        <div className="bg-background text-foreground border border-foreground w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center font-black text-xl sm:text-2xl flex-shrink-0">
           {label ?? step}
         </div>
         <div>

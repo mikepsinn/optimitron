@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, MessageSquare, Send, Trash2, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  MessageSquare,
+  Send,
+  Trash2,
+  X,
+} from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Button } from "@/components/retroui/Button";
 import { Dialog } from "@/components/retroui/Dialog";
@@ -156,7 +163,10 @@ export function TaskCommentFeed({
     });
     // Sort replies chronologically (oldest first so threads read naturally)
     for (const arr of repliesByParent.values()) {
-      arr.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      arr.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
     }
     return { topLevel, repliesByParent };
   }, [comments, sort]);
@@ -165,14 +175,17 @@ export function TaskCommentFeed({
   // as subtle one-liners above the comment section.
   const displayActivities = useMemo(() => {
     return [...activities].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   }, [activities]);
 
   // Polling to pick up Wishonia replies landing in the background
   const fetchLatest = useCallback(async () => {
     try {
-      const res = await fetch(API_ROUTES.tasks.comments(taskId, "sort=new&limit=100"));
+      const res = await fetch(
+        API_ROUTES.tasks.comments(taskId, "sort=new&limit=100"),
+      );
       if (!res.ok) return;
       const data = (await res.json()) as {
         comments: TaskCommentRow[];
@@ -224,7 +237,9 @@ export function TaskCommentFeed({
         body: JSON.stringify({ message, parentCommentId, mediaUrl }),
       });
       if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
+        const body = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
         throw new Error(body?.error ?? `Failed with status ${res.status}`);
       }
       if (!res.body) {
@@ -264,13 +279,17 @@ export function TaskCommentFeed({
       };
 
       const removeStreamingPlaceholder = () => {
-        setComments((prev) => prev.filter((c) => c.id !== streamingPlaceholderId));
+        setComments((prev) =>
+          prev.filter((c) => c.id !== streamingPlaceholderId),
+        );
       };
 
       const replaceStreamingPlaceholder = (real: TaskCommentRow) => {
         setComments((prev) => {
           const map = new Map(
-            prev.filter((c) => c.id !== streamingPlaceholderId).map((c) => [c.id, c] as const),
+            prev
+              .filter((c) => c.id !== streamingPlaceholderId)
+              .map((c) => [c.id, c] as const),
           );
           map.set(real.id, real);
           return [...map.values()];
@@ -291,7 +310,11 @@ export function TaskCommentFeed({
                 const event = JSON.parse(line) as StreamEvent;
                 handleStreamEvent(event);
               } catch (err) {
-                console.error("[TaskCommentFeed] Failed to parse NDJSON line:", line, err);
+                console.error(
+                  "[TaskCommentFeed] Failed to parse NDJSON line:",
+                  line,
+                  err,
+                );
               }
             }
             newlineIdx = buffer.indexOf("\n");
@@ -367,9 +390,13 @@ export function TaskCommentFeed({
         }
       }
     } catch (err) {
-      setPostError(err instanceof Error ? err.message : "Failed to post comment");
+      setPostError(
+        err instanceof Error ? err.message : "Failed to post comment",
+      );
       // Clean up any streaming placeholder that was inserted before the error
-      setComments((prev) => prev.filter((c) => c.id !== streamingPlaceholderId));
+      setComments((prev) =>
+        prev.filter((c) => c.id !== streamingPlaceholderId),
+      );
     } finally {
       setSubmitting(false);
     }
@@ -448,7 +475,9 @@ export function TaskCommentFeed({
     const target = deleteTarget;
     setDeleteTarget(null);
     try {
-      const res = await fetch(API_ROUTES.tasks.comment(target.id), { method: "DELETE" });
+      const res = await fetch(API_ROUTES.tasks.comment(target.id), {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Delete failed");
       if (currentUserIsAdmin) {
         setComments((prev) =>
@@ -459,7 +488,9 @@ export function TaskCommentFeed({
       } else {
         setComments((prev) =>
           prev.map((c) =>
-            c.id === target.id ? { ...c, deletedAt: new Date().toISOString() } : c,
+            c.id === target.id
+              ? { ...c, deletedAt: new Date().toISOString() }
+              : c,
           ),
         );
       }
@@ -479,7 +510,7 @@ export function TaskCommentFeed({
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold uppercase tracking-wide">Status Update</h2>
+        <h2 className="text-xl font-black">Updates</h2>
         <div className="flex gap-1 text-xs font-bold uppercase">
           <button
             type="button"
@@ -499,13 +530,13 @@ export function TaskCommentFeed({
       </div>
 
       {currentUserId ? (
-        <div className="border-2 border-primary bg-background p-3">
+        <div className="border border-foreground bg-background p-3">
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             maxLength={MAX_MESSAGE_LENGTH}
-            placeholder="Share proof of what you did, post a mermaid diagram, argue with the numbers..."
-            className="w-full resize-y border-2 border-foreground bg-background p-2 text-sm font-bold focus:outline-none"
+            placeholder="Share an update, evidence, or question..."
+            className="w-full resize-y border border-foreground bg-background p-2 text-sm font-bold focus:outline-none"
             rows={3}
           />
           <input
@@ -513,18 +544,22 @@ export function TaskCommentFeed({
             value={draftMediaUrl}
             onChange={(e) => setDraftMediaUrl(e.target.value)}
             placeholder="Optional evidence URL (tweet, article, screenshot)"
-            className="mt-2 w-full border-2 border-foreground bg-background p-2 text-xs font-bold focus:outline-none"
+            className="mt-2 w-full border border-foreground bg-background p-2 text-xs font-bold focus:outline-none"
           />
           <div className="mt-2 flex items-center justify-between text-xs font-bold text-muted-foreground">
             <span>
-              Supports markdown, math ($x$), mermaid, chart. {draft.length}/{MAX_MESSAGE_LENGTH}
+              Markdown is supported. {draft.length}/{MAX_MESSAGE_LENGTH}
             </span>
             <Button
               size="sm"
               className="font-bold uppercase"
               disabled={submitting || draft.trim().length === 0}
               onClick={() => {
-                void submitComment(draft.trim(), null, draftMediaUrl.trim() || null);
+                void submitComment(
+                  draft.trim(),
+                  null,
+                  draftMediaUrl.trim() || null,
+                );
               }}
             >
               <Send className="mr-1 h-3 w-3" />
@@ -532,7 +567,9 @@ export function TaskCommentFeed({
             </Button>
           </div>
           {postError ? (
-            <p className="mt-2 text-xs font-bold text-brutal-red">{postError}</p>
+            <p className="mt-2 text-xs font-bold text-brutal-red">
+              {postError}
+            </p>
           ) : null}
           {wishoniaNotice ? (
             <p className="mt-2 text-xs font-bold italic text-muted-foreground">
@@ -541,16 +578,22 @@ export function TaskCommentFeed({
           ) : null}
         </div>
       ) : (
-        <div className="flex items-center justify-between border-2 border-primary bg-muted/30 p-3">
-          <p className="text-sm font-bold">Sign in to comment, vote, and reply.</p>
-          <Button asChild size="sm" className="font-bold uppercase">
+        <div className="flex flex-col gap-3 border border-foreground bg-background p-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-bold">
+            Sign in to post an update or ask a question.
+          </p>
+          <Button
+            asChild
+            size="sm"
+            className="w-full justify-center font-bold uppercase sm:w-auto"
+          >
             <Link href={signInHref}>Sign In</Link>
           </Button>
         </div>
       )}
 
       {displayActivities.length > 0 ? (
-        <div className="border-2 border-primary/50 bg-background">
+        <div className="border border-foreground bg-background">
           <div className="divide-y divide-foreground/10">
             {displayActivities.slice(0, 10).map((activity) => (
               <ActivityRow key={activity.id} activity={activity} />
@@ -712,7 +755,9 @@ function CommentNode({
             · {formatRelative(comment.createdAt)}
           </span>
           {comment.editedAt ? (
-            <span className="text-xs font-bold text-muted-foreground">· edited</span>
+            <span className="text-xs font-bold text-muted-foreground">
+              · edited
+            </span>
           ) : null}
           {canDelete ? (
             <button
@@ -728,7 +773,9 @@ function CommentNode({
         </header>
 
         {isDeleted ? (
-          <p className="text-sm font-bold italic text-muted-foreground">[deleted]</p>
+          <p className="text-sm font-bold italic text-muted-foreground">
+            [deleted]
+          </p>
         ) : (
           <>
             {comment.isStreaming && comment.message.length === 0 ? (
@@ -784,7 +831,9 @@ function CommentNode({
           <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => onVote(comment.id, comment.viewerVote === 1 ? 0 : 1)}
+              onClick={() =>
+                onVote(comment.id, comment.viewerVote === 1 ? 0 : 1)
+              }
               disabled={currentUserId == null || isDeleted}
               className={`border-2 border-foreground p-0.5 ${
                 comment.viewerVote === 1
@@ -801,7 +850,9 @@ function CommentNode({
             </span>
             <button
               type="button"
-              onClick={() => onVote(comment.id, comment.viewerVote === -1 ? 0 : -1)}
+              onClick={() =>
+                onVote(comment.id, comment.viewerVote === -1 ? 0 : -1)
+              }
               disabled={currentUserId == null || isDeleted}
               className={`border-2 border-foreground p-0.5 ${
                 comment.viewerVote === -1
@@ -828,7 +879,8 @@ function CommentNode({
           ) : null}
           {comment.replyCount > 0 ? (
             <span className="text-xs font-bold text-muted-foreground">
-              {comment.replyCount} {comment.replyCount === 1 ? "reply" : "replies"}
+              {comment.replyCount}{" "}
+              {comment.replyCount === 1 ? "reply" : "replies"}
             </span>
           ) : null}
         </footer>
@@ -961,13 +1013,18 @@ function extractCitations(citationsJson: unknown): Citation[] {
   for (const c of obj.citations) {
     if (c && typeof c === "object") {
       const citation = c as Record<string, unknown>;
-      if (typeof citation.title === "string" && typeof citation.url === "string") {
+      if (
+        typeof citation.title === "string" &&
+        typeof citation.url === "string"
+      ) {
         results.push({
           title: citation.title,
           url: citation.url,
           path: typeof citation.path === "string" ? citation.path : null,
           description:
-            typeof citation.description === "string" ? citation.description : null,
+            typeof citation.description === "string"
+              ? citation.description
+              : null,
         });
       }
     }

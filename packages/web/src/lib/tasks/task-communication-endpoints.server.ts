@@ -36,6 +36,31 @@ function clean(value?: string | null) {
   return trimmed ? trimmed : null;
 }
 
+export function normalizeTaskCommunicationEndpointUrl(
+  value?: string | null,
+) {
+  const url = clean(value);
+  if (!url) {
+    return null;
+  }
+
+  if (url.startsWith("/") && !url.startsWith("//")) {
+    return url;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const protocol = parsed.protocol.toLowerCase();
+    if (protocol === "http:" || protocol === "https:" || protocol === "mailto:") {
+      return parsed.toString();
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 function inferEndpointKind(input: {
   email: string | null;
   url: string | null;
@@ -58,7 +83,7 @@ function inferEndpointKind(input: {
 export function normalizePrimaryTaskCommunicationEndpoint(
   input: PrimaryTaskCommunicationEndpointInput,
 ): NormalizedTaskCommunicationEndpoint | null {
-  const url = clean(input.url);
+  const url = normalizeTaskCommunicationEndpointUrl(input.url);
   const emailFromMailto =
     url?.toLowerCase().startsWith("mailto:")
       ? clean(url.slice("mailto:".length).split("?")[0] ?? null)

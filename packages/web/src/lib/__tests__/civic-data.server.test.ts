@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@optimitron/data/fetchers", () => ({
+vi.mock("@optimitron/data/fetchers/congress", () => ({
   fetchMembers: vi.fn(),
 }));
 
-import * as fetchers from "@optimitron/data/fetchers";
+import * as fetchers from "@optimitron/data/fetchers/congress";
 
 import { lookupRepresentatives, zipToStateDistrict } from "../civic-data.server";
 

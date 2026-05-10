@@ -60,7 +60,7 @@ export default function AgenciesIndexPage() {
                 >
                   <div className="flex items-start justify-between">
                     <span className="text-3xl">{agency.emoji}</span>
-                    <span className="inline-block border-2 border-primary bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.1em] text-foreground">
+                    <span className="inline-block border border-foreground bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.1em] text-foreground">
                       Active
                     </span>
                   </div>
@@ -80,7 +80,7 @@ export default function AgenciesIndexPage() {
         </section>
       ))}
 
-      <section className="border-4 border-primary bg-foreground p-8 text-center text-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <section className="border border-foreground bg-background p-8 text-center text-foreground">
         <h2 className="mb-3 text-2xl font-black uppercase">
           See How Earth Does It
         </h2>

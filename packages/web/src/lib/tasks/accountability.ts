@@ -6,12 +6,11 @@ import {
   getSignerDelayAttribution,
 } from "./delay-attribution";
 import { getMetricBaseValue, type TaskImpactFrameSummary, type TaskImpactMetricSummary } from "./impact";
-import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
-import { getMilitaryToGovernmentClinicalTrialRatio } from "@optimitron/data/datasets/government-spending-ratios";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   GLOBAL_DISEASE_DEATHS_DAILY,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_HALE_GAIN_YEAR_15,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
@@ -272,6 +271,13 @@ export interface TaskShareTokenInput {
    * are filtered out of the picker.
    */
   governmentBudgetUsdPerYear?: number | null;
+  /**
+   * Military spending per $1 of government-funded clinical trials. Prefer a
+   * country-specific value when the server already has it; otherwise signer
+   * tasks can use the global parameter fallback without importing the
+   * government datasets into the client bundle.
+   */
+  militaryToClinicalTrialsRatio?: number | null;
   /** X/Twitter handle (without the `@`), or the Optimitron handle as fallback. */
   leaderHandle?: string | null;
   /** Viewer-facing name ("Your employer,\n{citizen_name}"). Defaults to "A citizen". */
@@ -337,13 +343,14 @@ export function buildTaskShareTokens(
 
   const leaderHandle = (input.leaderHandle ?? "").replace(/^@/, "").trim();
 
-  // Per-country military-to-clinical-trials spending ratio (e.g. ~1,093:1 for US)
-  const govMetrics = input.countryCode
-    ? getGovernmentMetrics(input.countryCode)
-    : undefined;
-  const milToTrialsRatio = govMetrics
-    ? getMilitaryToGovernmentClinicalTrialRatio(govMetrics)
-    : null;
+  const milToTrialsRatio =
+    input.militaryToClinicalTrialsRatio != null &&
+    Number.isFinite(input.militaryToClinicalTrialsRatio) &&
+    input.militaryToClinicalTrialsRatio > 0
+      ? input.militaryToClinicalTrialsRatio
+      : input.countryCode
+        ? MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value
+        : null;
 
   // Random synonym for "military spending" — varies per render so
   // shares from the same task don't all look identical on social feeds.

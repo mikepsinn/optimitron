@@ -17,9 +17,9 @@ import {
 import {
   getAssigneeGovernmentBudgetUsd,
   getAssigneeMilitaryBudgetUsd,
+  getAssigneeMilitaryToClinicalTrialsRatio,
   getAssigneeTwitterHandle,
 } from "@/lib/tasks/task-context";
-import { getGovernmentLeader } from "@optimitron/data/datasets/government-leaders";
 import { getPersonHref } from "@/lib/person-href";
 import { getTaskPath } from "@/lib/routes";
 import type { TaskCardTask } from "./task-card";
@@ -288,13 +288,11 @@ export function TaskRow({
   const targetLabel = assignedToYou
     ? "You"
     : task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
-  // Budget data: prefer data package (always current) over contextJson (stale snapshot).
   const countryCode = task.assigneePerson?.countryCode ?? null;
-  const leaderRecord = countryCode ? getGovernmentLeader(countryCode) : undefined;
-  const assigneeBudget =
-    leaderRecord?.militaryBudgetUsd ?? getAssigneeMilitaryBudgetUsd(task.contextJson);
-  const governmentBudgetUsd =
-    leaderRecord?.governmentBudgetUsd ?? getAssigneeGovernmentBudgetUsd(task.contextJson);
+  const assigneeBudget = getAssigneeMilitaryBudgetUsd(task.contextJson);
+  const governmentBudgetUsd = getAssigneeGovernmentBudgetUsd(task.contextJson);
+  const militaryToClinicalTrialsRatio =
+    getAssigneeMilitaryToClinicalTrialsRatio(task.contextJson);
 
   const isSignerTask = task.assigneePerson != null && assigneeBudget != null;
   const fallbackInitials = targetLabel
@@ -321,6 +319,7 @@ export function TaskRow({
     currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
     governmentBudgetUsdPerYear: governmentBudgetUsd,
     leaderHandle,
+    militaryToClinicalTrialsRatio,
     militaryBudgetUsdPerYear: assigneeBudget,
     targetLabel,
     taskTitle: task.title,
@@ -419,6 +418,7 @@ export function TaskRow({
       currentSufferingHoursLost: null,
       governmentBudgetUsdPerYear: governmentBudgetUsd,
       leaderHandle,
+      militaryToClinicalTrialsRatio,
       militaryBudgetUsdPerYear: assigneeBudget,
       targetLabel,
       taskTitle: task.title,

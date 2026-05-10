@@ -37,7 +37,7 @@ export function HumanityScoreboard() {
   return (
     <BrutalCard bgColor="background" shadowSize={8} className="p-4 sm:p-6 md:p-8">
       <div className="text-center mb-6">
-        <span className="text-xs font-black px-2.5 py-1 bg-foreground text-background uppercase">
+        <span className="text-xs font-black px-2.5 py-1 border border-foreground bg-background text-foreground uppercase">
           Please Select an Earth
         </span>
         <p className="text-sm font-bold text-muted-foreground mt-3 max-w-2xl mx-auto">
@@ -67,7 +67,7 @@ export function HumanityScoreboard() {
             </span>
           </div>
           <div className="text-center">
-            <span className="text-xs font-black uppercase text-background">
+            <span className="text-xs font-black uppercase text-foreground">
               1% Treaty (2040)
             </span>
           </div>
@@ -79,7 +79,7 @@ export function HumanityScoreboard() {
         </div>
 
         {/* HALE row */}
-        <div className="grid grid-cols-4 gap-4 items-start py-4 border-b-4 border-primary">
+        <div className="grid grid-cols-4 gap-4 items-start py-4 border-b border-foreground">
           <div>
             <p className="text-lg font-black uppercase text-foreground">
               ❤️ Healthy Life Years
@@ -98,7 +98,7 @@ export function HumanityScoreboard() {
             />
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-black text-background">
+            <div className="text-3xl md:text-4xl font-black text-foreground">
               <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
             </div>
             <SpendingBar
@@ -152,10 +152,10 @@ export function HumanityScoreboard() {
             />
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-black text-background">
+            <div className="text-3xl md:text-4xl font-black text-foreground">
               <ParameterValue
                 param={TREATY_TRAJECTORY_AVG_INCOME_YEAR_15}
-                className="text-background"
+                className="text-foreground"
               />
             </div>
             <SpendingBar
@@ -193,7 +193,7 @@ export function HumanityScoreboard() {
       {/* Mobile: stacked layout (hidden on md+) */}
       <div className="md:hidden space-y-6">
         {/* HALE block */}
-        <div className="border-b-4 border-primary pb-6">
+        <div className="border-b border-foreground pb-6">
           <p className="text-base font-black uppercase text-foreground mb-3">
             ❤️ Healthy Life Years
           </p>
@@ -214,10 +214,10 @@ export function HumanityScoreboard() {
               />
             </div>
             <div className="text-center">
-              <span className="text-[10px] font-black uppercase text-background">
+              <span className="text-[10px] font-black uppercase text-foreground">
                 Treaty 2040
               </span>
-              <div className="text-xl sm:text-2xl font-black text-background mt-1">
+              <div className="text-xl sm:text-2xl font-black text-foreground mt-1">
                 <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
               </div>
               <SpendingBar
@@ -277,13 +277,13 @@ export function HumanityScoreboard() {
               />
             </div>
             <div className="text-center">
-              <span className="text-[10px] font-black uppercase text-background">
+              <span className="text-[10px] font-black uppercase text-foreground">
                 Treaty 2040
               </span>
-              <div className="text-xl sm:text-2xl font-black text-background mt-1">
+              <div className="text-xl sm:text-2xl font-black text-foreground mt-1">
                 <ParameterValue
                   param={TREATY_TRAJECTORY_AVG_INCOME_YEAR_15}
-                  className="text-background"
+                  className="text-foreground"
                 />
               </div>
               <SpendingBar

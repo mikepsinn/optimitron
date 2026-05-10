@@ -4,7 +4,7 @@ import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import {
   fmtParam,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
-  MONEY_PRINTER_WAR_DEATHS,
+  WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { federalReserveLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
@@ -42,7 +42,7 @@ const historicalCycles = [
     era: "United States, 1913–Present",
     event:
       "Federal Reserve created. Dollar immediately used to fund WWI without popular consent.",
-    result: `Dollar loses 96% of value. ${fmtParam(MONEY_PRINTER_WAR_DEATHS)} across six wars funded by money printing. ${fmtParam({ ...CUMULATIVE_MILITARY_SPENDING_FED_ERA, unit: "USD" })} in cumulative military spending.`,
+    result: `Dollar loses 96% of value. ${fmtParam(WAR_DEATHS_SINCE_1900)} war and conflict deaths since 1900. ${fmtParam({ ...CUMULATIVE_MILITARY_SPENDING_FED_ERA, unit: "USD" })} in cumulative military spending.`,
     color: "bg-foreground",
     textColor: "text-background",
   },
@@ -85,7 +85,7 @@ export default function DTreasuryDfedPage() {
       {/* The $WISH Alternative */}
       <section className="mb-16">
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
-          The $WISH Alternative: Fixed Supply, Zero Inflation
+          The Alternative: Fixed Supply, Zero Inflation
         </h2>
         <div className="border-4 border-primary bg-background p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6">
           <p className="text-sm text-foreground font-bold leading-relaxed mb-4">

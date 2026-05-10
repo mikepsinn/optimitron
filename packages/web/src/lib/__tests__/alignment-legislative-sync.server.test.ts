@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   fetchRollCallVote: vi.fn(),
 }));
 
-vi.mock("@optimitron/data/fetchers", () => ({
+vi.mock("@optimitron/data/fetchers/congress", () => ({
   fetchBillSubjects: mocks.fetchBillSubjects,
   fetchBillVotes: mocks.fetchBillVotes,
   fetchBills: mocks.fetchBills,

@@ -6,6 +6,7 @@ import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { compare, hash } from "bcryptjs";
 import { createAuthAdapter } from "@/lib/auth-adapter";
+import { isDemoLoginEnabled } from "@/lib/demo-login";
 import { sendMagicLinkEmail } from "@/lib/email/magic-link-email";
 import { summarizePersonhoodVerifications } from "@/lib/personhood.server";
 import { prisma } from "@/lib/prisma";
@@ -127,6 +128,11 @@ if (serverEnv.GOOGLE_CLIENT_ID && serverEnv.GOOGLE_CLIENT_SECRET) {
 /** Which sign-in providers are configured for this deployment (env-var based). */
 export function getConfiguredProviders() {
   return {
+    demo: isDemoLoginEnabled({
+      demoLoginEnabled: process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED,
+      nodeEnv: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV,
+    }),
     email: true,
     google: Boolean(serverEnv.GOOGLE_CLIENT_ID && serverEnv.GOOGLE_CLIENT_SECRET),
   };

@@ -6,7 +6,9 @@ import {
   TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
-import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leaders";
+import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leader-types";
+import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
+import { getMilitaryToGovernmentClinicalTrialRatio } from "@optimitron/data/datasets/government-spending-ratios";
 import {
   SIPRI_MILITARY_SPENDING_2024_SOURCE_URL,
   SIPRI_WORLD_MILITARY_SPENDING_SNAPSHOT_YEAR,
@@ -272,6 +274,10 @@ export function buildTreatySignerImportDraft(input: {
   const factor =
     slot.militaryBudgetUsd / SIPRI_WORLD_MILITARY_SPENDING_USD_2024;
   const redirectAmountUsd = slot.militaryBudgetUsd * 0.01;
+  const governmentMetrics = getGovernmentMetrics(slot.countryCode);
+  const militaryToClinicalTrialsRatio = governmentMetrics
+    ? getMilitaryToGovernmentClinicalTrialRatio(governmentMetrics)
+    : null;
   const cloned = structuredClone(input.baseDraft);
   const taskKey = getTreatySignerTaskKey(slot);
 
@@ -340,6 +346,9 @@ export function buildTreatySignerImportDraft(input: {
       budgetUsdPerYear: slot.militaryBudgetUsd,
       budgetLabel: "Military spending",
       governmentBudgetUsdPerYear: slot.governmentBudgetUsd,
+      ...(militaryToClinicalTrialsRatio != null
+        ? { militaryToClinicalTrialsRatio }
+        : {}),
     },
     acceptanceCriteria: buildTreatyAcceptanceCriteria({
       actorLabel: slot.leaderName ?? slot.decisionMakerLabel,
@@ -350,6 +359,9 @@ export function buildTreatySignerImportDraft(input: {
       countryCode: slot.countryCode,
       countryIso3: slot.countryIso3,
       governmentBudgetUsd: slot.governmentBudgetUsd,
+      ...(militaryToClinicalTrialsRatio != null
+        ? { militaryToClinicalTrialsRatio }
+        : {}),
       militaryBudgetSharePct: round(factor * 100, 2),
       militaryBudgetUsd: slot.militaryBudgetUsd,
       snapshotYear: 2024,

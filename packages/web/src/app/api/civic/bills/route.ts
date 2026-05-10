@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as fetchers from "@optimitron/data/fetchers";
+import {
+  fetchBillDetail,
+  fetchBillsByType,
+} from "@optimitron/data/fetchers/congress";
 import {
   classifyLegislativeBill,
   inferLegislativeBudgetDirection,
@@ -33,8 +36,8 @@ export async function GET(request: NextRequest) {
   try {
     // Fetch recent HR and S bills
     const [hrBills, sBills] = await Promise.all([
-      fetchers.fetchBillsByType(undefined, "hr", 50),
-      fetchers.fetchBillsByType(undefined, "s", 50),
+      fetchBillsByType(undefined, "hr", 50),
+      fetchBillsByType(undefined, "s", 50),
     ]);
 
     const allBills = [...hrBills, ...sBills];
@@ -43,7 +46,7 @@ export async function GET(request: NextRequest) {
     const enriched = await Promise.all(
       allBills.map(async (bill) => {
         if (bill.subjects.length === 0 && !bill.policyArea) {
-          const detail = await fetchers.fetchBillDetail(bill.type, bill.number, bill.congress);
+          const detail = await fetchBillDetail(bill.type, bill.number, bill.congress);
           return detail ?? bill;
         }
         return bill;

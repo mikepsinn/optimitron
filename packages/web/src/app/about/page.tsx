@@ -175,10 +175,10 @@ export default function AboutPage() {
           up — your species has a habit of confusing different piles of money.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="card bg-foreground text-background border-primary">
+          <div className="card bg-background text-foreground border-foreground">
             <div className="text-2xl mb-2">🏆</div>
-            <h3 className="font-black text-background mb-2">Prize (Phase 1)</h3>
-            <p className="text-sm text-background font-bold leading-relaxed">
+            <h3 className="font-black text-foreground mb-2">Prize (Phase 1)</h3>
+            <p className="text-sm text-foreground font-bold leading-relaxed">
               Deposit into the prize pool. Recruit voters for the 1% Treaty referendum. If it
               works, you share the prize. If it doesn&apos;t, you get ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your
               deposit back from the Earth Optimization Prize fund after 15 years. Zero downside.
@@ -186,7 +186,7 @@ export default function AboutPage() {
             <NavItemLink
               item={prizeLink}
               variant="custom"
-              className="mt-4 inline-flex items-center text-sm font-black uppercase text-background hover:text-background transition-colors"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase text-foreground hover:text-foreground transition-colors"
             >
               Play the Game &rarr;
             </NavItemLink>
@@ -257,7 +257,7 @@ export default function AboutPage() {
               item={paper}
               variant="custom"
               external
-              className="card group hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
+              className="card group transition-colors hover:bg-muted"
             >
               <h3 className="text-foreground font-black group-hover:text-foreground transition-colors">
                 {paper.label}
