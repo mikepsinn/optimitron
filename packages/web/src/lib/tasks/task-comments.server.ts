@@ -317,13 +317,17 @@ export async function getTaskCommentFeed(input: {
 }): Promise<{
   comments: TaskCommentRow[];
   nextCursor: Date | null;
+  total: number;
 }> {
   const sort = input.sort ?? "new";
   const limit = Math.min(Math.max(input.limit ?? 50, 1), 100);
 
-  const where: Prisma.TaskCommentWhereInput = {
+  const baseWhere: Prisma.TaskCommentWhereInput = {
     taskId: input.taskId,
     deletedAt: null,
+  };
+  const where: Prisma.TaskCommentWhereInput = {
+    ...baseWhere,
     ...(input.cursor ? { createdAt: { lt: input.cursor } } : {}),
   };
 
@@ -332,20 +336,25 @@ export async function getTaskCommentFeed(input: {
       ? [{ voteScore: "desc" }, { createdAt: "desc" }]
       : [{ createdAt: "desc" }];
 
-  const rows = await prisma.taskComment.findMany({
-    where,
-    orderBy,
-    take: limit + 1,
-    include: {
-      authorUser: {
-        select: userDisplaySelect,
+  const [rows, total] = await Promise.all([
+    prisma.taskComment.findMany({
+      where,
+      orderBy,
+      take: limit + 1,
+      include: {
+        authorUser: {
+          select: userDisplaySelect,
+        },
       },
-    },
-  });
+    }),
+    prisma.taskComment.count({ where: baseWhere }),
+  ]);
 
   const hasMore = rows.length > limit;
   const sliced = hasMore ? rows.slice(0, limit) : rows;
-  const nextCursor = hasMore ? sliced[sliced.length - 1]?.createdAt ?? null : null;
+  const nextCursor = hasMore
+    ? (sliced[sliced.length - 1]?.createdAt ?? null)
+    : null;
 
   // Fetch viewer's votes on these comments if signed in
   let viewerVotes: Map<string, 1 | -1> = new Map();
@@ -365,7 +374,7 @@ export async function getTaskCommentFeed(input: {
     viewerVote: viewerVotes.get(row.id) ?? 0,
   })) as TaskCommentRow[];
 
-  return { comments, nextCursor };
+  return { comments, nextCursor, total };
 }
 
 /**

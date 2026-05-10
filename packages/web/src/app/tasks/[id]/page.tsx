@@ -50,6 +50,8 @@ async function getPublicTaskPageData(id: string) {
   return { data, commentFeed, activityTimeline, ancestors };
 }
 
+const TASK_DATE_TIME_ZONE = "UTC";
+
 function getDisplayDate(value: Date | string | null | undefined): Date | null {
   if (value == null) {
     return null;
@@ -68,6 +70,7 @@ function formatDueDate(value: Date | string | null | undefined) {
   return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
+    timeZone: TASK_DATE_TIME_ZONE,
     year: "numeric",
   });
 }
@@ -81,6 +84,7 @@ function formatShortDate(value: Date | string | null | undefined) {
   return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
+    timeZone: TASK_DATE_TIME_ZONE,
     year: "numeric",
   });
 }
@@ -491,7 +495,7 @@ export default async function TaskDetailPage({
             ) : null}
             <DetailItem
               label="Updates"
-              value={commentFeed.comments.length.toLocaleString("en-US")}
+              value={commentFeed.total.toLocaleString("en-US")}
             />
           </dl>
 
