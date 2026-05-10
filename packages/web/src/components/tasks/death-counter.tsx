@@ -68,6 +68,7 @@ export function DeathCounter({
       className={className}
       data-visual-mask="dynamic"
       data-visual-placeholder={VISUAL_REVIEW_DEATH_PLACEHOLDER}
+      data-volatile="deaths"
       title="Preventable deaths from this delay"
       suppressHydrationWarning
     >

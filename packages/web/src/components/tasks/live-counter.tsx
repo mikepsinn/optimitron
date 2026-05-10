@@ -57,7 +57,11 @@ export function LiveCounter({
   }, [ratePerSecond, startMs, mode]);
 
   return (
-    <span className={className} suppressHydrationWarning>
+    <span
+      className={className}
+      data-volatile={mode === "currency" ? "money" : "count"}
+      suppressHydrationWarning
+    >
       {displayValue ?? "…"}
     </span>
   );

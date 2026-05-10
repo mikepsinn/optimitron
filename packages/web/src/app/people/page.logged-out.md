@@ -19,7 +19,7 @@
 - ROLE
 - TASK
 - OPEN
-- AA
+- [initials]
 - Abd al-Hamid Dbeibeh
 - Government of Libya
 - Public official / LY / 1 task
@@ -32,7 +32,6 @@
 - Government of Sudan
 - Public official / SD / 1 task
 - Public official / SD
-- AM
 - Abdoulaye Maïga
 - Government of Mali
 - Public official / ML / 1 task
@@ -53,7 +52,6 @@
 - Government of Gambia
 - Public official / GM / 1 task
 - Public official / GM
-- AK
 - Adylbek Kasymaliev
 - Government of Kyrgyzstan
 - Public official / KG / 1 task

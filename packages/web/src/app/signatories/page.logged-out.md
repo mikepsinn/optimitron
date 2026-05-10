@@ -28,7 +28,7 @@
 - 0 Voters recruited
 - #3
 - Nikhil Yadala
-- DU #4 Demo User
-- DU
+- [INITIALS] #4 Demo User
+- [INITIALS]
 - #4
 - Demo User

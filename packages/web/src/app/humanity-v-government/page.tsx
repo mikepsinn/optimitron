@@ -47,7 +47,7 @@ export default async function HumanityVGovernmentPage() {
         </p>
         <p className="mt-2 text-base font-bold leading-7 text-foreground">
           You have been called as juror{" "}
-          <span className="tabular-nums">
+          <span className="tabular-nums" data-volatile="juror-number">
             #{formatCount(plaintiffCount + 1)}
           </span>
           . You are also a named plaintiff. Your share of the demanded recovery:{" "}
@@ -118,7 +118,12 @@ export default async function HumanityVGovernmentPage() {
             <dt className="w-32 shrink-0 text-muted-foreground">Plaintiff</dt>
             <dd className="text-foreground">
               {CASE_CAPTION.plaintiff} (
-              <span className="tabular-nums">{formatCount(plaintiffCount)}</span>{" "}
+              <span
+                className="tabular-nums"
+                data-volatile="plaintiff-count"
+              >
+                {formatCount(plaintiffCount)}
+              </span>{" "}
               named, accumulating)
             </dd>
           </div>

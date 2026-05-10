@@ -10,7 +10,7 @@
 - ONE HUMAN
 - STEP 2. SELECT THE FUNNIEST MESSAGE
 - VOICE:
-- OFFICE MEMO
+- THE DEAL-MAKER
 - STEP 3. CLICK TO COPY
 - STEP 4. SELECT MEANS OF TRANSMISSION AND PASTE
 - BLUESKY
@@ -35,11 +35,12 @@
 - 1.93 quadrillion
 - $84.8 quadrillion
 - 💀 DEAD ALREADY FROM THE DELAY
-- 74,224,290
-- RATE: 150,000 deaths/day × 494 DAYS
+- [count]
+- RATE: 150,000 deaths/day × [DAYS-OVERDUE]
 - 150,000 deaths/day
+- [DAYS-OVERDUE]
 - 💸 WASTED ON DISEASE WHILE THEY DELAY
-- $20,199,852,668,451
+- [money]
 - RATE: $9.90 trillion/year + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
 - $9.90 trillion/year
 ### ↳ 193 employees have overdue tasks
@@ -52,40 +53,17 @@
 - ⏱ TIME
 - REMIND
 - Donald Trump
-- 24,177,471
-- $6,579,804,950,091
-- $6,579,804,950,245
 - Remind
 - Li Qiang
-- 8,077,349
-- $2,198,219,261,030
 - Yulia Svyrydenko
-- 6,607,980
-- $1,798,336,245,710
+- [initials]
 - Mikhail Mishustin
-- 2,974,429
-- $809,479,390,060
 - Narendra Modi
-- 2,281,305
-- $620,848,412,927
 - Donald Tusk
-- 2,124,975
-- $578,303,708,180
-- $578,303,708,194
 - Salman bin Abdulaziz Al Saud
-- 2,068,456
-- $562,922,364,844
 - Keir Starmer
-- 2,046,625
-- $556,981,231,705
 - Friedrich Merz
-- 1,822,861
-- $496,084,617,039
 - Sifi Ghrieb
-- SG
-- 1,794,866
-- $488,465,876,779
-- $488,465,876,791
 - ← PREV
 - PAGE 1 / 20
 - NEXT →

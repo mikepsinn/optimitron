@@ -174,8 +174,11 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
                 param={GLOBAL_DISEASE_DEATHS_DAILY}
                 display="withUnit"
               />{" "}
-              × {delayStats.currentDelayDays.toLocaleString()}{" "}
-              {delayStats.currentDelayDays === 1 ? "day" : "days"}
+              ×{" "}
+              <span data-volatile="days-overdue">
+                {delayStats.currentDelayDays.toLocaleString()}{" "}
+                {delayStats.currentDelayDays === 1 ? "day" : "days"}
+              </span>
             </p>
           </div>
           <div className="bg-brutal-red px-4 py-3 text-brutal-red-foreground">

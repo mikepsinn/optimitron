@@ -3,8 +3,8 @@
 - COURT OF HUMANITY — OPEN CASE
 ## HUMANITY V. GOVERNMENTS OF EARTH
 - YOU ARE SUMMONED
-- You have been called as juror #54. You are also a named plaintiff. Your share of the demanded recovery: $10.6M (NPV) — $25.2M (lifetime cohort).
-- #54
+- You have been called as juror [juror-number]. You are also a named plaintiff. Your share of the demanded recovery: $10.6M (NPV) — $25.2M (lifetime cohort).
+- [juror-number]
 - $10.6M (NPV)
 - $25.2M (lifetime cohort)
 - The verdict is the 1% Treaty. The case binds governments only when four billion plaintiffs render it. Recruit two more jurors. The case is the chain.
@@ -21,7 +21,7 @@
 - The dead have no juror function
 - REGISTER A DECEASED PLAINTIFF
 ### THE CASE CAPTION
-- 53
+- [plaintiff-count]
 ### THE THREE COUNTS
 - COUNT 1 — DIRECT KILLING 310 million deaths War and conflict deaths since 1900. Defendants chose the policy and proceeded.
 - COUNT 1 — DIRECT KILLING
