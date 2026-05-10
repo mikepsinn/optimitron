@@ -92,6 +92,10 @@ import { seedReasoningData } from "./seed-reasoning.ts";
 import { loadDatabaseUrl } from "../src/db-cli.ts";
 import { GLOBAL_VARIABLE_SEED_DATA } from "./seed-data/global-variables.ts";
 import { VARIABLE_CATEGORY_SEED_DATA } from "./seed-data/variable-categories.ts";
+import {
+  formatManagedDataResult,
+  syncManagedData,
+} from "../src/managed-data/index.js";
 
 const adapter = new PrismaPg({ connectionString: loadDatabaseUrl() });
 const prisma = new PrismaClient({ adapter });
@@ -1289,6 +1293,13 @@ export async function seedDatabase(options: SeedDatabaseOptions = {}) {
 
   if (scopes.includes("tasks")) {
     await seedTreatyTasks();
+    const createdByUserId =
+      cachedSeedWishoniaUserId || (await seedWishoniaUser()).user.id;
+    const managedDataResult = await syncManagedData(prisma, {
+      apply: true,
+      createdByUserId,
+    });
+    console.log(formatManagedDataResult(managedDataResult));
   }
 
   console.log("\n🎉 Seed complete!");

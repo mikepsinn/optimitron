@@ -33,6 +33,7 @@
     "db:seed:bootstrap": "pnpm --filter @optimitron/db run seed:bootstrap",
     "db:seed:demo": "pnpm --filter @optimitron/db run seed:demo",
     "db:seed:triggers": "pnpm --filter @optimitron/web exec tsx scripts/seed-task-triggers.ts",
+    "db:sync:managed-data": "pnpm --filter @optimitron/db run sync:managed-data",
     "audit:schema-usage": "pnpm --filter @optimitron/db run audit:schema-usage",
     "db:up": "docker compose up -d --wait postgres",
     "db:setup": "pnpm db:up && pnpm db:deploy && pnpm db:generate && pnpm db:seed && pnpm db:seed:triggers",

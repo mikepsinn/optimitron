@@ -113,6 +113,11 @@ seed-only cleanup approach with this, then retire old direct children like
 `dfda` / `bed-nets-funding-gap` through managed data rather than bespoke
 migrations for every future edit.
 
+**Branch status:** `feature/managed-task-tree-sync` adds the first managed
+collection for `Task` rows and primary task endpoints, with dry-run/apply modes,
+seed reuse, and production deploy wiring. Trigger definitions still need to move
+into managed data after this task sync proves stable.
+
 **Testing:** one focused unit/integration test for sync semantics:
 
 - upsert creates/updates managed task fields by id/taskKey;
@@ -173,25 +178,25 @@ Notes:
 This is the canonical near-term order. Older detailed sections below are
 supporting detail or parked work; they should not override this sequence.
 
-1. **Do not ship the interrupted seed-only cleanup as the long-term pattern.**
+1. [x] **Do not ship the interrupted seed-only cleanup as the long-term pattern.**
    Either replace the local partial seed/migration/test changes with managed
    data, or explicitly throw them away before the next task-tree patch.
-2. **Build managed-data sync for tasks first.** Keep scope narrow:
+2. [x] **Build managed-data sync for tasks first.** Keep scope narrow:
    `Task` rows, primary task communication endpoint, parent-child links,
    explicit retire flags, dry-run/apply.
-3. **Move the Optimize Earth tree into managed data.** Sync production so
+3. [x] **Move the Optimize Earth tree into managed data.** Sync production so
    `Optimize Earth` becomes the root title, `End War and Disease` becomes the
    primary mission child, Court/case/treaty tasks exist, and obsolete direct
    benchmark children are retired.
-4. **Wire production deploy to run managed-data sync.** This prevents future
+4. [x] **Wire production deploy to run managed-data sync.** This prevents future
    canonical task/title/trigger changes from requiring one-off data migrations.
-5. **Then update the UI presentation.** `/tasks/optimize-earth`, dashboard, and
+5. [ ] **Then update the UI presentation.** `/tasks/optimize-earth`, dashboard, and
    visual-review routes should show the simplified tree, while `warondisease.org`
    still pushes the 1% Treaty vote first.
-6. **Only add `allowsUserSubtasks` before exposing public subtask creation UI.**
+6. [ ] **Only add `allowsUserSubtasks` before exposing public subtask creation UI.**
    Seeded/admin-managed task trees can ship before this. Public UGC needs the
    permission column/guard so arbitrary users cannot clutter canonical parents.
-7. **Fold task triggers into managed data after the task-tree sync is proven.**
+7. [ ] **Fold task triggers into managed data after the task-tree sync is proven.**
    Trigger definitions are the same kind of semi-permanent app data and should
    eventually stop using a separate one-off production seed path.
 
@@ -203,11 +208,6 @@ cross-check so they do not disappear into chat history.
 
 **Current branch hygiene**
 
-- Decide what to do with the interrupted local changes:
-  `packages/db/prisma/seed.ts`,
-  `packages/db/prisma/migrations/20260510010000_cleanup_optimize_earth_task_tree/`,
-  and `packages/db/src/__tests__/optimize-earth-task-tree.test.ts`. Replace with
-  managed-data sync or discard them before the next commit.
 - After each push, keep working on local tasks while GitHub Actions run instead
   of blocking the whole session on watching checks, unless the next step truly
   depends on a result.
