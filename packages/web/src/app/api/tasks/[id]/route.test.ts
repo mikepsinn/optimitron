@@ -106,6 +106,29 @@ describe("task detail route", () => {
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
+  it("rejects unsafe primary endpoint URLs", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+
+    const response = await PATCH(
+      new Request("http://localhost/api/tasks/task_1", {
+        body: JSON.stringify({
+          primaryEndpoint: {
+            label: "Open link",
+            url: "javascript:alert(document.cookie)",
+          },
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+      }),
+      {
+        params: Promise.resolve({ id: "task_1" }),
+      },
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.updateTaskCreatedByUser).not.toHaveBeenCalled();
+  });
+
   it("deletes a task created by the authenticated user", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.deleteTaskCreatedByUser.mockResolvedValue({

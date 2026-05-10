@@ -31,6 +31,7 @@ import {
   getTaskActivityTimeline,
   getTaskCommentFeed,
 } from "@/lib/tasks/task-comments.server";
+import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
@@ -144,7 +145,7 @@ function getEndpointHref(
   }
 
   if (endpoint.url) {
-    return endpoint.url;
+    return normalizeTaskCommunicationEndpointUrl(endpoint.url);
   }
 
   if (endpoint.email) {
