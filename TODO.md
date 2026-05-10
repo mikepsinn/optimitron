@@ -51,9 +51,9 @@ Until the 1% Treaty passes, this repo is in campaign mode.
   keep that variant first.
 - The treaty vote, referral attribution, post-vote share flow, and organization
   endorsement flow exist.
-- `optimize-earth` exists as the root task key/id, but the canonical campaign
-  tree still needs managed-data sync so source-controlled data, production rows,
-  MCP, API, and pages cannot drift.
+- `optimize-earth` exists as the root task key/id, and the canonical campaign
+  task tree now syncs through managed data so source-controlled data,
+  production rows, MCP, API, and pages cannot drift.
 - `/humanity-v-government` renders the operational case. `/court` exists but
   still needs the live Court surface, plaintiff/juror counter, and final
   treaty-as-verdict framing.
@@ -113,10 +113,9 @@ seed-only cleanup approach with this, then retire old direct children like
 `dfda` / `bed-nets-funding-gap` through managed data rather than bespoke
 migrations for every future edit.
 
-**Branch status:** `feature/managed-task-tree-sync` adds the first managed
-collection for `Task` rows and primary task endpoints, with dry-run/apply modes,
-seed reuse, and production deploy wiring. Trigger definitions still need to move
-into managed data after this task sync proves stable.
+**Branch status:** `feature/managed-task-tree-sync` adds managed sync for the
+canonical `Task` tree and task trigger blueprints, with dry-run/apply modes,
+seed reuse, and production deploy wiring.
 
 **Testing:** one focused unit/integration test for sync semantics:
 
@@ -196,9 +195,9 @@ supporting detail or parked work; they should not override this sequence.
 6. [ ] **Only add `allowsUserSubtasks` before exposing public subtask creation UI.**
    Seeded/admin-managed task trees can ship before this. Public UGC needs the
    permission column/guard so arbitrary users cannot clutter canonical parents.
-7. [ ] **Fold task triggers into managed data after the task-tree sync is proven.**
-   Trigger definitions are the same kind of semi-permanent app data and should
-   eventually stop using a separate one-off production seed path.
+7. [x] **Fold task triggers into managed data after the task-tree sync is proven.**
+   Trigger definitions are the same kind of semi-permanent app data and no
+   longer use a separate one-off production seed path.
 
 ### Recently discussed but not yet implemented
 

@@ -39,6 +39,7 @@
     "extract:tasks": "tsx scripts/extract-tasks-from-manual.ts",
     "import:treaty-model": "tsx scripts/import-treaty-policy-model.ts",
     "sync:treaty-signers": "tsx scripts/sync-treaty-signers.ts",
+    "sync:task-triggers": "tsx scripts/sync-task-triggers.ts",
     "mcp:tasks": "tsx scripts/mcp-task-server.ts",
     "mcp:claude-task": "tsx scripts/claude-code-optimitron-task.ts",
     "report:task-tree": "tsx scripts/export-task-tree.ts",

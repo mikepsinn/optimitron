@@ -179,7 +179,7 @@ jobs:
           pnpm --filter @optimitron/db run seed:bootstrap
           pnpm --filter @optimitron/db run seed:demo
           pnpm --filter @optimitron/db run seed:tasks
-          pnpm db:seed:triggers
+          pnpm db:sync:managed-data -- --apply
 
       - name: Run Playwright visual review
         env:
@@ -530,11 +530,6 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm db:sync:managed-data -- --apply
-
-      - name: Seed task triggers (idempotent upsert)
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm db:seed:triggers
 
       - name: Deploy production artifact
         id: deploy
