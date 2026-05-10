@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { unstable_cache } from "next/cache";
+import { OrgStatus } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { getPersonHref } from "@/lib/person-href";
-import { getTaskPath, ROUTES } from "@/lib/routes";
+import { getOrganizationSurveyPath, getTaskPath, ROUTES } from "@/lib/routes";
 import { isSiteRouteAllowed, type SiteConfig } from "@/lib/site";
 
 const PUBLIC_DETAIL_SITEMAP_LIMIT = 500;
@@ -27,7 +28,13 @@ function makeEntry(
 
 const getCachedPublicDetailSitemapRows = unstable_cache(
   async () => {
-    const [people, tasks] = await Promise.all([
+    const [organizations, people, tasks] = await Promise.all([
+      prisma.organization.findMany({
+        where: { deletedAt: null, status: OrgStatus.APPROVED },
+        orderBy: [{ updatedAt: "desc" }],
+        select: { slug: true, updatedAt: true },
+        take: PUBLIC_DETAIL_SITEMAP_LIMIT,
+      }),
       prisma.person.findMany({
         where: {
           deletedAt: null,
@@ -48,7 +55,7 @@ const getCachedPublicDetailSitemapRows = unstable_cache(
       }),
     ]);
 
-    return { people, tasks };
+    return { organizations, people, tasks };
   },
   ["public-detail-sitemap"],
   { revalidate: PUBLIC_DETAIL_SITEMAP_REVALIDATE_SECONDS },
@@ -62,15 +69,28 @@ export async function getPublicDetailSitemapEntries(
   }
 
   const includePeople = isSiteRouteAllowed(site, ROUTES.people);
+  const includeOrganizations = Boolean(site.primaryReferendumSlug) &&
+    isSiteRouteAllowed(site, ROUTES.survey);
   const includeTasks = isSiteRouteAllowed(site, ROUTES.tasks);
 
-  if (!includePeople && !includeTasks) {
+  if (!includeOrganizations && !includePeople && !includeTasks) {
     return [];
   }
 
-  const { people, tasks } = await getCachedPublicDetailSitemapRows();
+  const { organizations, people, tasks } =
+    await getCachedPublicDetailSitemapRows();
 
   return [
+    ...(includeOrganizations
+      ? organizations.map((organization) =>
+          makeEntry(
+            site,
+            getOrganizationSurveyPath(organization.slug),
+            organization.updatedAt,
+            0.65,
+          ),
+        )
+      : []),
     ...(includePeople
       ? people.map((person) =>
           makeEntry(site, getPersonHref(person), person.updatedAt, 0.55),

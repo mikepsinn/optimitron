@@ -175,6 +175,10 @@ export function getOrganizationPath(id: string): string {
   return `${ROUTES.organizations}/${id}`;
 }
 
+export function getOrganizationSurveyPath(slug: string): string {
+  return `${ROUTES.survey}/${encodeURIComponent(slug)}`;
+}
+
 export function getSignInPath(
   callbackUrl: string = DEFAULT_POST_LOGIN_ROUTE,
   options?: { referralCode?: string | null },

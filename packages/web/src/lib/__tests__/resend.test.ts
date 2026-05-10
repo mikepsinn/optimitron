@@ -113,6 +113,24 @@ describe("sendResendEmail", () => {
     });
   });
 
+  it("uses the campaign display name for default sends even when EMAIL_FROM names Optimitron", async () => {
+    mocks.serverEnv.EMAIL_FROM = "Optimitron <team@optimitron.com>";
+
+    await sendResendEmail({
+      html: "<p>Hello</p>",
+      scope: "magic_link",
+      subject: "Magic link",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    const payload = mocks.emailSend.mock.calls[0]?.[0];
+    expect(payload).toMatchObject({
+      from: "International Campaign to End War and Disease <team@optimitron.com>",
+    });
+  });
+
   it("omits one-click unsubscribe headers for transactional email", async () => {
     const result = await sendResendEmail({
       html: "<p>Hello</p>",

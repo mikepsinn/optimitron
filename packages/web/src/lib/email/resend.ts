@@ -4,9 +4,8 @@ import { Resend } from "resend";
 import { serverEnv } from "@/lib/env";
 import { canSendEmailToUser } from "@/lib/email/can-send.server";
 import {
-  CAMPAIGN_EMAIL_FROM_NAME,
   DEFAULT_UNSUBSCRIBE_EMAIL,
-  formatEmailFromHeader,
+  formatDefaultSystemEmailFromHeader,
   parseEmailFromHeader,
 } from "@/lib/email/from-address";
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
@@ -87,14 +86,11 @@ function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
 }
 
 export function getEmailFromAddress() {
-  // Default sender is the platform brand; share emails override via the
+  // Default sender is the campaign brand; share emails override via the
   // per-message `from` field with
   // formatShareEmailFromHeader (so the recipient's inbox foregrounds the
   // friend's name instead of a corporate brand they don't recognize).
-  return formatEmailFromHeader(
-    serverEnv.EMAIL_FROM,
-    CAMPAIGN_EMAIL_FROM_NAME,
-  );
+  return formatDefaultSystemEmailFromHeader();
 }
 
 export function isResendConfigured() {

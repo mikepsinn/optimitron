@@ -62,6 +62,24 @@ export function formatEmailFromHeader(
 }
 
 /**
+ * Format the default platform sender. The env may provide the deliverable
+ * address, but the default visible sender stays the campaign unless a caller
+ * deliberately passes a per-message `from` override.
+ */
+export function formatDefaultSystemEmailFromHeader(): string {
+  const parsed =
+    parseEmailFromHeader(serverEnv.EMAIL_FROM) ??
+    parseEmailFromHeader(DEFAULT_SYSTEM_EMAIL_FROM);
+  if (!parsed) return "";
+
+  const displayName = sanitizeDisplayName(
+    CAMPAIGN_EMAIL_FROM_NAME,
+    CAMPAIGN_EMAIL_FROM_NAME,
+  );
+  return `${displayName} <${parsed.address}>`;
+}
+
+/**
  * Build the share-email From header in the form:
  *   `<senderName> via International Campaign to End War and Disease <hello@updates.warondisease.org>`
  *
