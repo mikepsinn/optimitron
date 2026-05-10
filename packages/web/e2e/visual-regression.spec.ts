@@ -7,7 +7,7 @@
  */
 import { expect, test, type Page } from "@playwright/test";
 import { argosScreenshot } from "@argos-ci/playwright";
-import { mkdir, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { forceAnimationsComplete } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
@@ -107,7 +107,7 @@ test.describe("route visual regression", () => {
       }
 
       await waitForVisualIdle(page);
-      await argosScreenshot(
+      const attachments = await argosScreenshot(
         page,
         `${route.name}-${testInfo.project.name}`,
         {
@@ -119,13 +119,20 @@ test.describe("route visual regression", () => {
 
       const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
       await mkdir(screenshotDir, { recursive: true });
-      await page.screenshot({
-        fullPage: true,
-        path: path.join(
+      const screenshotAttachment = attachments.find(
+        (attachment) => attachment.contentType === "image/png",
+      );
+      expect(
+        screenshotAttachment,
+        `${route.name} should produce an Argos screenshot attachment`,
+      ).toBeTruthy();
+      await copyFile(
+        screenshotAttachment!.path,
+        path.join(
           screenshotDir,
           `${route.name}-${testInfo.project.name}.png`,
         ),
-      });
+      );
     });
   }
 });

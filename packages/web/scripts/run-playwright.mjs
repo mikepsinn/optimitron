@@ -49,7 +49,7 @@ const MODE_SPECS = {
 
 const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];
 const PLAYWRIGHT_MODE_DEFAULT_ARGS = {
-  visual: ["--project=default", "--project=visual-mobile", "--workers=1"],
+  visual: ["--project=default", "--project=visual-mobile"],
 };
 const scriptArgs = process.argv.slice(2).filter((arg, index) => !(index === 0 && arg === "--"));
 const requestedMode = scriptArgs[0];
