@@ -18,6 +18,10 @@ DIH migration notes, code-review-fix lists from 2026-04-29) are in git history. 
 - **Tree:** every task on the site is a child of `optimize-earth`
   (`OPTIMIZE_EARTH_ROOT_TASK_ID` exported from `@optimitron/db` and re-exported
   by `packages/web/src/lib/tasks/task-keys.ts`).
+- **Canonical mission tree target:** `Optimize Earth` → `End War and Disease`
+  → the Court of Humanity / treaty workstreams below. The public site can
+  still surface "Sign the 1% Treaty" first; the tree exists so tasks, agents,
+  APIs, and dashboards share one mental model.
 
 ## Strategic Frame (2026-05-08)
 
@@ -181,6 +185,244 @@ Until the 1% Treaty passes, this repo is in campaign mode.
 ## Gaps blocking 4B
 
 Ordered by funnel-stage impact. P0 = ship next; P1 = right after; P2 = before launch.
+
+### P0 — Managed canonical data sync (seed replacement for semi-permanent rows)
+
+**Problem decided 2026-05-10:** normal Prisma migrations are the wrong tool for
+every title/task-tree/court/trigger tweak, but `seed.ts` alone is also wrong:
+production deploy currently runs `pnpm db:deploy` and `pnpm db:seed:triggers`,
+not `seed:tasks` or full `db:seed`. A seed edit will update fresh/local/CI DBs
+but will not automatically update production. Missing-from-seed also cannot
+safely imply "delete this row" because user-created records live in the same
+tables.
+
+**Target pattern:** source-controlled managed data with an idempotent sync script.
+
+- Create `packages/db/managed-data/` for canonical app data:
+  `optimize-earth-task-tree.ts`, `task-triggers.ts`, `referendums.ts`,
+  `court-cases.ts` as needed.
+- Create `packages/db/scripts/sync-managed-data.ts` with `--dry-run` and
+  `--apply`. It upserts by stable ids/keys, updates only managed fields, and
+  soft-deletes/disabled rows only when a source record explicitly says
+  `retired: true`.
+- Add a package/root script such as `pnpm db:sync:managed-data`.
+- Run it on production deploy after `pnpm db:deploy` and before Vercel deploy.
+  Keep `db:seed:triggers` until triggers are folded into managed data.
+- Keep normal `seed.ts` for local/reference/demo/bootstrap convenience, but have
+  it call the same managed-data sync helpers where possible so fresh databases
+  and production converge.
+- Do not use "record missing from manifest" as a global delete rule. Deletion is
+  safe only inside a named managed collection, and only for rows previously owned
+  by that collection or explicitly marked retired.
+- Managed sync must never touch user-created tasks, comments, claims, votes,
+  plaintiffs, represented people, donations, or task rows outside its collection.
+
+**First managed collection:** Optimize Earth task tree. Replace the interrupted
+seed-only cleanup approach with this, then retire old direct children like
+`dfda` / `bed-nets-funding-gap` through managed data rather than bespoke
+migrations for every future edit.
+
+**Testing:** one focused unit/integration test for sync semantics:
+
+- upsert creates/updates managed task fields by id/taskKey;
+- `retired: true` soft-deletes a managed row;
+- user-created/unmanaged rows are untouched;
+- `--dry-run` reports changes without writing.
+
+### P0 — Canonical Optimize Earth task tree
+
+Use managed data, not hard-coded page data and not seed-only drift, to publish
+the durable tree:
+
+```text
+Optimize Earth
+└─ End War and Disease
+   ├─ Establish the Court of Humanity
+   │  ├─ Adopt the Court of Humanity charter
+   │  └─ Prosecute Humanity v. Governments of Earth
+   │     ├─ Register plaintiffs
+   │     ├─ Summon jurors
+   │     ├─ Publish evidence and damages
+   │     ├─ Render the verdict
+   │     └─ Enforce the settlement: the 1% Treaty
+   └─ Ratify the 1% Treaty
+      ├─ Get a majority of humanity to vote yes
+      └─ Get 193 heads of government to sign
+```
+
+Notes:
+
+- `Optimize Earth` is the root/system task. "Promote the general welfare" stays
+  in the description/legal frame, not as the primary task title.
+- `End War and Disease` is the human-facing mission under the root.
+- `Establish the Court of Humanity` is a real institution-building parent task,
+  not just a slogan. It should have concrete outputs such as charter/rules.
+- Plaintiffs and jurors are specific to the case, so they belong under
+  `Prosecute Humanity v. Governments of Earth`, not directly under the Court.
+- Do not add a useless "assemble plaintiffs and jurors" parent. `Register
+  plaintiffs` and `Summon jurors` are separate sibling tasks.
+- `Ratify the 1% Treaty` is both a sibling workstream and the settlement/remedy
+  for the case. If the database needs the relationship without duplicate tree
+  parents, model it with an edge/remedy reference, not a second copy.
+- The concrete government-side task wording is "Get 193 heads of government to
+  sign", not vague "get governments to adopt the treaty".
+- `dfda` / bed-nets benchmark tasks should not be direct children of the current
+  War on Disease mission tree. Keep dFDA as a supporting product/page elsewhere;
+  bed nets can remain benchmark/reference material, not a primary campaign task.
+
+### Current implementation order (decided 2026-05-10)
+
+1. **Do not ship the interrupted seed-only cleanup as the long-term pattern.**
+   Either replace the local partial seed/migration/test changes with managed
+   data, or explicitly throw them away before the next task-tree patch.
+2. **Build managed-data sync for tasks first.** Keep scope narrow:
+   `Task` rows, primary task communication endpoint, parent-child links,
+   explicit retire flags, dry-run/apply.
+3. **Move the Optimize Earth tree into managed data.** Sync production so
+   `Optimize Earth` becomes the root title, `End War and Disease` becomes the
+   primary mission child, Court/case/treaty tasks exist, and obsolete direct
+   benchmark children are retired.
+4. **Wire production deploy to run managed-data sync.** This prevents future
+   canonical task/title/trigger changes from requiring one-off data migrations.
+5. **Then update the UI presentation.** `/tasks/optimize-earth`, dashboard, and
+   visual-review routes should show the simplified tree, while `warondisease.org`
+   still pushes the 1% Treaty vote first.
+6. **Only add `allowsUserSubtasks` before exposing public subtask creation UI.**
+   Seeded/admin-managed task trees can ship before this. Public UGC needs the
+   permission column/guard so arbitrary users cannot clutter canonical parents.
+7. **Fold task triggers into managed data after the task-tree sync is proven.**
+   Trigger definitions are the same kind of semi-permanent app data and should
+   eventually stop using a separate one-off production seed path.
+
+### Recently discussed but not yet implemented
+
+This is the compaction-safe backlog of chat decisions that have not obviously
+landed yet. Some items also have detailed sections below; this list is the
+cross-check so they do not disappear into chat history.
+
+**Current branch hygiene**
+
+- Decide what to do with the interrupted local changes:
+  `packages/db/prisma/seed.ts`,
+  `packages/db/prisma/migrations/20260510010000_cleanup_optimize_earth_task_tree/`,
+  and `packages/db/src/__tests__/optimize-earth-task-tree.test.ts`. Replace with
+  managed-data sync or discard them before the next commit.
+- After each push, keep working on local tasks while GitHub Actions run instead
+  of blocking the whole session on watching checks, unless the next step truly
+  depends on a result.
+
+**Dashboard and task UX**
+
+- Replace the logged-in dashboard with a short action checklist:
+  sign the 1% Treaty, render verdict, register plaintiff, summon jurors,
+  pressure/manage presidents. Link each row to the actual page.
+- Remove the generic task-detail metadata block where it duplicates header
+  information. Keep title, assignee, due date, primary action, markdown body,
+  comments, complete/reassign/admin controls.
+- Remove or demote the public "Sign in to claim" button on campaign tasks.
+  Public users should see the useful action first, then sign in only when needed
+  to mark done or save state.
+- Continue simplifying `/tasks/[id]` toward one universal black-and-white
+  task layout with markdown content, comments at the bottom, and normal task
+  management controls.
+- Add E2E coverage that a signed-in demo user can open an assigned/private task
+  from "Your Tasks" without hitting 404.
+
+**Visual review and preview workflow**
+
+- Add the Central Time generation timestamp to visual review HTML.
+- Use commit-hash or otherwise cache-busted GitHub Pages paths for generated
+  visual reviews so a new PR comment cannot show an old cached `latest.html`.
+- Put before screenshots on the left and after screenshots on the right for
+  every changed route; keep changed/missing pairs expanded and unchanged routes
+  collapsed.
+- Fail or clearly flag the PR check when required before/after screenshot pairs
+  are missing instead of silently rendering many "not captured" boxes.
+- Add direct preview deployment links above each screenshot, including logged-in
+  and logged-out state links when available.
+- Add a preview/dev-only demo-session route or query flow so visual-review links
+  can open the exact route as the demo user or as logged-out without manual
+  sign-in.
+- Stop animation false positives by waiting for landing animations and animated
+  counters to settle before screenshots. Prefer deterministic settling over a
+  loose pixel threshold.
+- Ensure animated counters such as deaths/wasted-by-delay are not blank in
+  screenshots unless intentionally hidden.
+- Continue speeding up visual tests with route metadata, fewer hard-coded
+  exceptions, sensible workers, and no duplicate local dev servers.
+- Keep generated markdown/copy previews state-aware in filenames
+  (`logged-out`, `logged-in`) and decide whether stale copy previews should fail
+  CI or only publish artifacts.
+
+**Preview deployments and databases**
+
+- Finish real preview-deployment wiring: stable preview URLs, visual-review
+  links to those URLs, and War on Disease as the default variant.
+- Decide whether to add Neon branch/database forks for preview deployments. This
+  is useful once review links need realistic logged-in data without touching
+  production, but may be overkill until previews are used heavily.
+- Keep demo login available on preview deployments, but not normal production,
+  unless explicitly enabled.
+
+**Public copy, messaging, and emails**
+
+- Move remaining dashboard/page copy into the messaging/copy-review system where
+  practical, especially Treaty Dashboard text and major CTAs.
+- Continue internationalization groundwork by centralizing public copy in JSON or
+  a template registry rather than scattering new prose across React components.
+- Add optional email to plaintiff registration only if the resulting notification
+  has a clear, non-irritating purpose.
+- Draft/implement the aggressive class-action plaintiff/juror notification copy
+  only after the template system and suppression rules are sane.
+- Delete or keep disabled all generic reminder email flows that would irritate
+  people. Do not reintroduce generic overdue-reminder spam.
+- Centralize communication templates under a registry and add a template lint for
+  word count, banned mush phrases, required tokens, and one primary CTA.
+- Add the lightweight "forward this to someone better-fit" mailto action to task
+  assignment emails.
+
+**Campaign pages and funnels**
+
+- Add the plaintiff damages surface on `/plaintiffs` so visitors see the per-
+  plaintiff recovery frame without first reading the case page.
+- Add a live plaintiff/juror counter on `/court`.
+- Finish `/court` as the Court of Humanity surface, with the case, verdict, and
+  plaintiff/juror mental model connected to the 1% Treaty.
+- Decide/create the "summon jurors" route if existing referral pages do not give
+  a clean standalone target.
+- Split dashboard vs president management: dashboard should link to president
+  pressure; `/employees` or a clearer `/presidents` route should own the full
+  president-management surface.
+- Add sitemap entries for public organizations, `/humanity-v-government`, and
+  `/court`.
+
+**Navigation and information architecture**
+
+- Finalize action-oriented nav labels: sign treaty, render verdict, register
+  plaintiff, dashboard, settings/profile, pressure presidents.
+- Add route-description tooltips to nav items only if it improves scanning
+  without adding clutter.
+- Remove duplicate nav divider lines if still present.
+- Consider renaming `/employees` to a clearer public route such as `/presidents`
+  while preserving redirects.
+
+**Parameter and cleanup audits**
+
+- Verify all old money-printer war-deaths references were replaced by the new
+  `war_deaths_since_1900` / `WAR_DEATHS_SINCE_1900` parameter path.
+- Confirm War on Disease and local dev route policy can serve the needed pages
+  without surprising 404s.
+- Continue the neobrutalist-to-black-and-white cleanup without changing approved
+  copy unless the human explicitly asks.
+
+**Deferred product work**
+
+- Move the current Optimitron feature landing to `/features` and make the
+  Optimitron root a task-tree/recruitment surface after managed-data sync exists.
+- Donate-to-fund-task flow and task-designated donation metadata.
+- Stripe Connect / AMF outbound disbursement after manual disbursement becomes a
+  real bottleneck.
+- VOTE token rewards for verified task completion.
 
 ### Next 3 (re-prioritized 2026-05-08, "get orgs and people joining" lens)
 
@@ -655,10 +897,11 @@ exists.
 
 The `parentTaskId` plumbing shipped this session lets any authenticated
 caller POST a subtask to any public parent. That's wrong for the campaign
-shape: top-level programs under `optimize-earth` (1% Treaty, Decentralized
-FDA, Decentralized USDA, etc.) should be admin-curated, while leaf
-programs need user-suggested subtasks to make the "decentralized to-do
-list for humanity" frame actually decentralized.
+shape: canonical parents under `optimize-earth` (End War and Disease, Court of
+Humanity, Humanity v. Governments of Earth, Ratify the 1% Treaty) should be
+admin/managed-data curated unless explicitly opened. Leaf or community
+workstreams can accept user-suggested subtasks to make the "decentralized
+to-do list for humanity" frame actually decentralized.
 
 **Schema (one column, separate schema PR per AGENTS.md):**
 
@@ -666,7 +909,7 @@ list for humanity" frame actually decentralized.
 model Task {
   // Whether non-admin users can POST subtasks under this task. Defaults
   // to false — admin opts a task in when it should accept user-suggested
-  // subtasks (e.g., "End War and Disease", "Create Decentralized FDA").
+  // subtasks (e.g., a community workstream under End War and Disease).
   allowsUserSubtasks Boolean @default(false)
 }
 ```
@@ -684,10 +927,11 @@ model Task {
 **Seed defaults:**
 
 - `optimize-earth` root: `allowsUserSubtasks = false` (top-level
-  programs stay curated).
-- Each program child (1% Treaty parent, Decentralized FDA, Decentralized
-  USDA, Bed Nets Gap, etc.): `allowsUserSubtasks = true`. Users
-  contribute under any program.
+  mission stays curated).
+- `end-war-and-disease`, `court-of-humanity`,
+  `humanity-v-governments-of-earth`, and `1-pct-treaty`: default false until
+  the first public subtask UI ships. Open specific community workstreams later,
+  not every high-level mission parent by default.
 - Per-leader treaty signer tasks: `allowsUserSubtasks = false` (each
   leader's page shouldn't be subtask-spammed).
 
@@ -710,8 +954,8 @@ model Task {
 
 1. Schema PR: add `Task.allowsUserSubtasks Boolean @default(false)` +
    migration. ~10 lines.
-2. API + seed PR: add guards in `POST /api/tasks`, set
-   `allowsUserSubtasks = true` on the program children in seed.
+2. API + managed-data PR: add guards in `POST /api/tasks`, set
+   `allowsUserSubtasks` only on explicitly opened community parents.
    ~25 lines.
 3. UI form PR: "Add subtask" disclosure on `/tasks/[id]/page.tsx`
    gated to `task.allowsUserSubtasks === true || viewer.isAdmin`,
@@ -721,43 +965,32 @@ model Task {
 After step 3, the user-agency loop pairs with the donate-to-fund-task
 entry: orgs propose subtasks → admin promotes → foundations fund.
 
-### P1 — Top-level programs under `optimize-earth`
+### P0 — Publish the canonical campaign task tree
 
-Adjacent to "Ratify the 1% Treaty" (which exists as a child of the root),
-seed the rest of the campaign's top-level programs as direct children of
-`OPTIMIZE_EARTH_ROOT_TASK_ID`:
+This supersedes the old "top-level programs under optimize-earth" note. Do not
+make dFDA, decentralized agencies, or bed-net funding direct children of the
+current War on Disease mission tree. Those can remain feature pages, future
+platform tasks, or benchmark/reference material. The primary tree for the
+foreseeable campaign is the one in "Canonical Optimize Earth task tree" above.
 
-- **Establish the Decentralized FDA** — action link → `/agencies/dfda`
-  (or `/dfda`)
-- **Establish the Decentralized Federal Reserve** — action link → the
-  monetary-policy / treasury feature page once it has one
-- **Establish the Decentralized IRS** — action link → the tax-policy
-  feature page once it has one
-- **Establish the Decentralized USDA** — action link → the agriculture
-  feature page
-- **Establish the Decentralized [other agency]** — one row per agency
-  on the manual's "Decentralized Agencies" list, each linking to its
-  dedicated feature page (e.g., `/agencies/<slug>`)
-- **Fund the Bed Nets Gap** — verify whether already a child; if not,
-  add. Action link → `/donate?taskId=...` once donate-to-fund-task
-  surface ships
-- **End War and Disease** — umbrella for the existing treaty + dFDA
-  work; decide whether this is its own row or just the
-  prize-win-condition framing
+Implementation belongs in managed data. The website may present a curated
+subset, but the task ids, taskKeys, parent-child links, retired rows, and
+primary action endpoints must come from one source-controlled managed
+collection so MCP/agents/API/pages agree.
 
-Each gets `allowsUserSubtasks = true` so users can contribute under
-them. The root keeps `allowsUserSubtasks = false`. Admin-only seed; not
-user-creatable. Schema-zero after the `allowsUserSubtasks` column
-lands.
+**Primary action-link concept:**
 
-**Action-link concept:** each "Establish X" task has a primary external
-action button on its `/tasks/[id]` page pointing at the existing
-feature page (`/agencies/dfda`, `/dfda`, etc.). No new schema — the
-existing `Task.sourceUrl` or `contextJson.sourceUrls` field carries it,
-or the description markdown links it directly. The feature pages
-become the "more info" / "actually do the thing" surface; the task
-page is the "here's what humanity needs done" surface. Same pattern
-as how the foundation-outreach tasks point at `/endorse`.
+- `End War and Disease` → `/`
+- `Establish the Court of Humanity` → `/court`
+- `Prosecute Humanity v. Governments of Earth` → `/humanity-v-government`
+- `Register plaintiffs` → `/plaintiffs`
+- `Summon jurors` → invite/referral route once it exists
+- `Render the verdict` → `/court` or the verdict section of `/humanity-v-government`
+- `Ratify the 1% Treaty` → `/vote`
+- `Get 193 heads of government to sign` → `/employees`
+
+No new schema is required for action links if the existing primary task
+communication endpoint is enough.
 
 ### P1 — Replace optimitron landing page with tasks tree; move current to `/features`
 
@@ -771,11 +1004,11 @@ this entry.
 
 - **`/`** (optimitron landing) becomes the tasks-page tree view:
   hero stat (live plaintiff count or HALE/income progress) +
-  optimize-earth root with its program children rendered as the
+  optimize-earth root with its canonical campaign children rendered as the
   primary content (the "Humanity's Tasks" pattern from `/tasks`).
   Visitor lands → sees humanity's to-do list → clicks a program
-  ("Establish Decentralized FDA") → sees subtasks + an action link
-  to `/agencies/dfda` for the deep dive.
+  ("End War and Disease" or "Establish the Court of Humanity") → sees
+  subtasks + an action link to the relevant campaign surface.
 - **`/features`** (new route) = the current 19-section landing,
   moved verbatim. Serves the "scroll-and-see-everything-this-system-
   does" use case for the curious / the technically-aligned. Linked
@@ -801,9 +1034,8 @@ this entry.
 
 **Sequencing:**
 
-1. Schema PR for `Task.allowsUserSubtasks` (separate, see entry above).
-2. Seed top-level programs under `optimize-earth` (Decentralized FDA,
-   etc.) with action links to their feature pages.
+1. Managed-data sync for the canonical Optimize Earth tree.
+2. Publish the canonical campaign task tree under `optimize-earth`.
 3. New `/features` route: literally re-export `OptimitronLandingPage`
    with whatever metadata change is needed.
 4. Replace `/` for `optimitron` site variant to render the tasks-tree
