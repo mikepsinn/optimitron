@@ -305,15 +305,6 @@ cross-check so they do not disappear into chat history.
 - Continue the neobrutalist-to-black-and-white cleanup without changing approved
   copy unless the human explicitly asks.
 
-**Deferred product work**
-
-- Move the current Optimitron feature landing to `/features` and make the
-  Optimitron root a task-tree/recruitment surface after managed-data sync exists.
-- Donate-to-fund-task flow and task-designated donation metadata.
-- Stripe Connect / AMF outbound disbursement after manual disbursement becomes a
-  real bottleneck.
-- VOTE token rewards for verified task completion.
-
 ### Near-term after managed-data sync
 
 After the managed task tree is syncing and deployed, do the smallest high-leverage
@@ -466,9 +457,6 @@ parameter imports — schema-zero. Highest per-line conversion lift
 on the to-do list right now; a visitor who lands on `/plaintiffs`
 from the case-page CTA without first reading the case currently
 has no damages number to anchor on.
-
-(Menu-label rebrand to verdict/juror/plaintiff phrasing already
-shipped this session — see Shipped block.)
 
 ### P1 — Centralize communication templates (audit findings 2026-05-08)
 
@@ -639,9 +627,6 @@ model Task {
    gated to `task.allowsUserSubtasks === true || viewer.isAdmin`,
    plus an admin "Promote to public" one-click action (same shape
    as the existing curator-verification disclosure). ~30 lines.
-
-After step 3, the user-agency loop pairs with the donate-to-fund-task
-entry: orgs propose subtasks → admin promotes → foundations fund.
 
 ### P1 — Finish neobrutalist → treaty migration cleanup
 
@@ -843,8 +828,9 @@ Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/emai
   `dfda.earth` → short paths canonical. `optimitron.com` → agency-scoped paths canonical.
 - **Q4 — dfda.earth**: keep as standalone medical surface AND expose DFDA under Optimitron's
   agency tree.
-- **Q5 — `components/ui/*` shadcn files**: rewrite compatibility wrappers to
-  brutalist/semantic tokens; preserve API surface; do not introduce a second visual system.
+- **Q5 — `components/ui/*` shadcn files**: preserve API surface, but use the
+  current semantic black-and-white/treaty tokens. Do not reintroduce
+  neobrutalist styling as a compatibility crutch.
 - **Q6 — `google-grounded-search.ts`**: do not delete while `OutcomeLabel` imports it.
 - **Q7 — Treatment slug consistency**: 216 conditions, 0 missing `treatments/*.json`. Stable.
 - **Don't collapse `1percenttreaty.org` → `warondisease.org/treaty`**: the separate domain is
