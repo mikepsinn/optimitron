@@ -341,8 +341,6 @@ The Court is the integrating institution that gives every other piece of the sys
 
 **One narrow rule** (not a general MLM panic — the rule applies to one specific shape of claim): a class member's individual recovery is never conditioned on that member's personal recruitment. "Recruit two more jurors to claim your share" is the tripwire. "The verdict only binds governments at four billion plaintiffs, so we need every plaintiff to recruit two" is fine — that's about case enforceability across the class, not per-member payout eligibility. Governments aren't a typical defendant; a moral class action against them gets enforced by political pressure (the 4B-vote threshold) rather than by federal court order. Explain both halves to a recruit: their individual share is $X regardless; the case only collects at 4B votes.
 
-The VOTE-token / dominant-assurance prize stays a separate, optional track for plaintiffs who *also* deposit into the fund. The two systems are complementary (charitable AMF prize pool + LLC dominant-assurance contract per the legal-wrapper note in the P2 Prize section).
-
 **Damages numbers to surface on the case page (canonical, all from `packages/data/src/parameters/parameters-calculations-citations.ts` and aligned with `manual.warondisease.org/knowledge/appendix/humanity-v-government.html` "Corporate Damages Schedule"):**
 
 The manual's **PRIMARY theory** (lead with this in recruitment copy): lost-prosperity-only, lifetime cohort.
@@ -370,32 +368,6 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
 
 - **Schema is already in place.** `CourtCase`, `CourtCaseParty`, `CourtCaseClaim`, `CourtCaseHarm`, `CourtCaseEvidence`, `CourtCaseRemedy` at `packages/db/prisma/schema.prisma:4342+`. `juryReferendumId` field already links a case to a `Referendum`. `enforcementTaskId` field already links a remedy to a `Task`. MCP tools already exist for all six entities (`addCourtCaseClaim/Evidence/Harm/Party/Remedy`, `upsertCourtCase`, `getCourtCase`, `openCourtCaseJuryVote`).
 - **Seed `Humanity v. Government` as a `CourtCase` row.** Status `OPEN`, `juryReferendumId` = `one-percent-treaty` referendum, primary respondent = synthetic "Governments of Earth" `Subject`, nominal plaintiff = synthetic "Humanity" `Subject`. Three counts as `CourtCaseClaim` rows (Direct Killing, Regulatory Delay, Misallocation) with manual-section URLs as evidence citations. Harms as `CourtCaseHarm` rows linked to parameter constants (310M war deaths, 102M efficacy-lag deaths, etc.). Settlement remedy = "Ratify the 1% Treaty" with `enforcementTaskId` pointing at the existing singleton ratification task.
-- ~~**Live treaty voters auto-register as plaintiffs**~~ — done. Hooked into the
-  `/api/referendums/[slug]/vote` route after the YES upsert. Memorial/posthumous
-  registration was already wired in the represented-people route.
-- **dih-neobrutalist user / vote / referral migration.** Two-script
-  pipeline. (1) Source side: `dih-neobrutalist/scripts/export-users-votes.ts`
-  uses Prisma to dump users + votes + referral invitations as JSON to
-  `backups/users-votes-export-<timestamp>.json`. (2) Destination side:
-  `packages/web/scripts/import-dih-users-votes.ts <export.json>` reads the
-  JSON and idempotently maps each row into the current schema (User by
-  email, ReferendumVote by (referendumId, personId), ReferralInvitation by
-  inviteToken). Source `User.name`/`username`/`image`/`bio`/etc. land on
-  `Person`; source `referralCode` is preserved when free in destination.
-  Run order on deploy: import → backfill-court-plaintiffs (so imported YES
-  voters register on Humanity v. Government). Both scripts schema-zero;
-  both support `--dry-run`. Source-side script lives in the source repo
-  (cross-repo cross-DB read), so it commits there separately.
-- ~~**Backfill pre-existing voters as plaintiffs**~~ — script shipped at
-  `packages/web/scripts/backfill-court-plaintiffs.ts`. Walks every YES vote on the
-  treaty referendum and registers each as a `NAMED_PLAINTIFF` on the case via the
-  existing idempotent `ensureHumanityVGovernmentPlaintiffParty` helper. Run once per
-  deploy where pre-existing voters need to be backfilled:
-  `pnpm --dir packages/web tsx scripts/backfill-court-plaintiffs.ts`. Dry-run with
-  `--dry-run`. Without this, `getHumanityVGovernmentPlaintiffCount` only sees voters
-  who voted *after* the auto-register hook shipped, so the live counter on
-  `/humanity-v-government` reads artificially low — a credibility rupture on the
-  case page's headline number.
 - **Surface implicit class membership in the dashboard.** Every signed-in user is
   structurally already a plaintiff in *Humanity v. Government* (Rule 23(b)(3)-style
   automatic class membership for living humans harmed by government failure to
@@ -405,14 +377,6 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
   claim. Your share: $10.6M–$25.2M." Schema-zero — pure UI surfacing of state we
   already track. Keeps the opt-in-via-voting default but makes the implicit class
   visible so users understand what they're in by default.
-- **Family-registration as primary CTA on `/humanity-v-government`.** Lost-prosperity
-  primary theory is per-representative-person ($25.2M cohort / $10.6M NPV), so each
-  registered deceased relative adds another full $25.2M to the family claim. Average
-  user with 4 deceased grandparents = $100M+ family claim from grandparent
-  registrations alone. Move the "register estate of [deceased]" CTA up from the
-  bottom; reframe top-of-page as "register yourself + every deceased family member
-  you can name." This is the strongest recruitment hook in the system — bigger than
-  civic morality, bigger than the prize-fund refund.
 - **Plaintiff dedup, schema-light.** Real risk is duplicate `Subject` rows, not
   duplicate parties (the `CourtCaseParty(caseId, role, subjectId)` unique constraint
   already dedups at the Subject level). Add **pre-search before create** on the
@@ -424,67 +388,14 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
   global, so canonicalized fuzzy match + UX prompt is the practical ceiling. Verify
   via existing `represented-people` evidence flow (obituary URL, death certificate)
   when conflicts arise.
-- **Damages sensitivity calculator on `/humanity-v-government`.** Sliders for the
-  disputed inputs (VSL $5M / $10M / $13.7M; war deaths 200M-340M; efficacy-lag deaths
-  CI 36.9M-214M; efficacy lag 4.85-11.5 years; NPV discount 3-7%; lost-prosperity
-  counterfactual benchmark). Live recalculate per-plaintiff demanded recovery + total
-  using the same useMemo + slider pattern as `OrganizationImpactCalculator`. Default
-  values match the manual; users sandbox to their own. Rhetorical purpose: invert
-  every "you made up the numbers" critique into "tune it however you want; case still
-  pleads." A skeptic who dials VSL to $5M still gets $12.6M per plaintiff —
-  bigger than any real filed class action would deliver. Defensibility survives any
-  single-parameter disagreement. Schema-zero; single new client component.
-- **Co-representative model.** Multiple descendants can represent the same estate.
-  Schema-zero option: each descendant registered as `CourtCasePartyRole.PLAINTIFF_REPRESENTATIVE`
-  (or similar role) on the same `subjectId` as the named plaintiff (the deceased).
-  Damages still accrue once to the estate; the case DB does not split the dollar
-  amount among heirs — that's governed by will / intestate statute outside our
-  system, matching how real class actions handle this.
-- ~~**`/humanity-v-government` renders the live case**~~ — done. Replaces the redirect
-  with case caption, three counts (310M / 102M / 262M), demanded-recovery tier
-  ($10.6M NPV / $25.2M cohort headline; floor + treble alternatives), live plaintiff
-  count via new `getHumanityVGovernmentPlaintiffCount` helper, jury-summons
-  framing for next juror, and "register estate of [deceased]" CTA pointing at
-  `/plaintiffs/manage`. Single primary CTA: render the verdict via `/vote`.
-  `packages/web/src/app/humanity-v-government/page.tsx`.
 - **Add the 193 governments as `CourtCaseParty` rows of role `RESPONDENT`.** Capacity flips from `IN_DEFAULT` to `SETTLED_VIA_TREATY` as ratifications come in (drive from `government-leaders.ts` + ratification status). The page becomes narratively alive — every news event of a country ratifying is a defendant accepting the settlement.
-- **Build `/court` page.** Currently empty (`packages/web/src/app/court/page.tsx`). Render: case caption, three counts with body-count numbers, live plaintiff count, three columns of defendants (settled / served / in-default), settlement progress bar, single CTA "Register as plaintiff = sign the treaty." Reuse `VoteCounterSplit` component for the plaintiff count.
-- **Update `/humanity-v-government` page** to render the local case rather than redirecting to the manual. Manual stays as the doctrinal long-form; site presents the case in operational form.
+- **Build `/court` page as the operational Court surface.** It currently renders
+  the generic referendum stepper. Decide whether `/court` should remain the Court
+  membership/signing flow or become the case dashboard; either way, the page
+  needs the case caption, plaintiff/juror count, defendant status, settlement
+  progress, and a single treaty/verdict CTA without adding another maze.
 - **Reframe the post-vote share flow.** `TreatyPostVoteShareFlow.tsx` adds plaintiff-number framing alongside the existing impact framing: "You are now plaintiff #N in Humanity v. Government. The verdict needs more jurors." The recruitment ask becomes "register fellow plaintiffs," not "share the petition."
 - **Test:** vitest covering case-creation, plaintiff-backfill, and the auto-register-on-vote hook; e2e screenshot covering `/court` with seeded data.
-
-### P0 — Stage 2: President Manager promotion (lightweight)
-
-After a user finishes HMT, the funnel currently dead-ends. The
-existing `PresidentManagementSystemSection` already shows all 193
-leaders, so the originally-scoped trigger-blueprint + task-spawn
-+ dashboard-reorder approach was overkill (re-scoped 2026-05-08).
-
-**Lightweight version:**
-
-Post-HMT, the dashboard primary CTA highlights *the user's
-country's leader* within the existing PMS section. Same conversion
-goal — the user's specific defendant is now their next action
-without spawning a separate task. ~10 lines in
-`TreatyTaskDashboardClient.tsx`: detect HMT-completion via the
-existing user-task state, scroll/highlight the user's
-country-code-matched row in the PMS list.
-
-**Reframe in the Court frame:** copy shifts from "find your
-country's leader and ask them to sign a petition" to "your
-country's defendant has not accepted the settlement; demand they
-do." Same surface; plaintiff-vs-defendant framing.
-
-If conversion data later argues the user actually needs a separate
-spawned task (rather than a highlighted PMS row), the heavyweight
-trigger + spawn approach is still in the parking lot. Don't build
-it speculatively.
-
-### P0 — Live plaintiff counter on `/court`
-
-`VoteCounterSplit` is now on the landing page (above) and `/signatories`. The remaining
-slot is `/court` once the page renders. Wire to the same `voteCounterSplit` shape used by
-`SignatoriesLeaderboard`, framed as the live plaintiff count alongside the case caption.
 
 ### P1 — MCP outreach email round-trip integration test
 
@@ -541,12 +452,6 @@ template body. Runs in `core-validate` so drift fails CI. ~50 lines.
 The IAM smoke-test email I wrote first would have failed this lint
 on the word-count rule alone — exactly the regression class the
 human flagged. Schema-zero. Cheap.
-
-LLM-as-judge variant (separate, optional): a vitest that calls Claude
-with each template + the Wishonia voice rules and asserts no
-violations. Catches tone drift the regex lint can't. Higher cost; do
-only if the curated template set grows past ~30 and tone consistency
-is a real issue.
 
 ### P1 — Plaintiff damages surface on `/plaintiffs/page.tsx`
 
@@ -738,58 +643,6 @@ model Task {
 After step 3, the user-agency loop pairs with the donate-to-fund-task
 entry: orgs propose subtasks → admin promotes → foundations fund.
 
-### P1 — Replace optimitron landing page with tasks tree; move current to `/features`
-
-Captured screenshots of `OptimitronLandingPage.tsx` at desktop +
-mobile (2026-05-08): page is roughly 8× viewport tall at
-1280×900, cycling through 19 colored sections. No primary action
-visible above the fold. Confirms the structural smell that motivated
-this entry.
-
-**Design (decided 2026-05-08):**
-
-- **`/`** (optimitron landing) becomes the tasks-page tree view:
-  hero stat (live plaintiff count or HALE/income progress) +
-  optimize-earth root with its canonical campaign children rendered as the
-  primary content (the "Humanity's Tasks" pattern from `/tasks`).
-  Visitor lands → sees humanity's to-do list → clicks a program
-  ("End War and Disease" or "Establish the Court of Humanity") → sees
-  subtasks + an action link to the relevant campaign surface.
-- **`/features`** (new route) = the current 19-section landing,
-  moved verbatim. Serves the "scroll-and-see-everything-this-system-
-  does" use case for the curious / the technically-aligned. Linked
-  from the footer + a "How it all works" link in the nav.
-- Keep deep-link footer to `/scoreboard`, `/vote`, `/governments`,
-  `/politicians`, `/agencies`, `/opg`, `/wishonia`, `/tools`,
-  `/why`, `/treatments`, `/employees`, `/prize`, `/court`,
-  `/humanity-v-government`.
-
-**Why this and not "literally the tasks page":**
-
-- The tasks page (`/tasks/page.tsx`) is a *worker* view ("Your Tasks"
-  + a single Humanity's Tasks row). The landing needs a *recruitment*
-  view: visitors who haven't signed in shouldn't be shown a "Your
-  Tasks" section at all. Render the optimize-earth tree at the top
-  level; render `/tasks` as the personal queue.
-- 12 of 19 current landing sections already have dedicated pages.
-  The work is mostly footer-deep-link curation, not new component
-  building. The 3 truly orphaned sections (`InvisibleGraveyardSection`,
-  `PleaseSelectAnEarthSection`, `DecisionMatrixSection`) live on the
-  `/features` page; can fold into other dedicated pages later
-  (`/why`, `/select-earth` curio, `/prize`).
-
-**Sequencing:**
-
-1. Managed-data sync for the canonical Optimize Earth tree.
-2. Sync the canonical campaign task tree under `optimize-earth`.
-3. New `/features` route: literally re-export `OptimitronLandingPage`
-   with whatever metadata change is needed.
-4. Replace `/` for `optimitron` site variant to render the tasks-tree
-   layout. Hero + tree + footer-deep-link strip. ~80 lines of layout
-   work; no new components.
-
-Cost: ~120 lines + the schema PR. Schema-light; mostly composition.
-
 ### P1 — Finish neobrutalist → treaty migration cleanup
 
 **Already shipped on this branch (state as of 2026-05-09):**
@@ -839,10 +692,7 @@ Cost: ~120 lines + the schema PR. Schema-light; mostly composition.
    redirects can go. Result: demo/sierra screens fall back to default
    Tailwind colors, which is what they want anyway (CLAUDE.md exception
    already grants game/demo screens specialized colors).
-5. **Optional polish: rename `BrutalCard` → `TreatySection`,
-   `ArcadeTag` → `Eyebrow`.** ~60 import paths to update via codemod.
-   Cosmetic — names match purpose. Defer if low-priority.
-6. **Delete dead `ARCADE_LABELS` dictionary** from
+5. **Delete dead `ARCADE_LABELS` dictionary** from
    `packages/web/src/lib/messaging.ts`. Audit confirmed zero
    callsites use it.
 
@@ -915,45 +765,6 @@ Cleaner separation:
 
 ~20 lines.
 
-### P1 — Donate-to-fund-task (lightweight, schema-zero)
-
-**Premise:** nonprofits engage when they see a paid pathway for
-impact. Foundations that fund cost-effective work (Open Phil,
-GiveWell-aligned, EA Funds) explicitly browse on cost-per-DALY —
-matching the metric the existing `TaskImpactFrame` already
-computes. Right now there is no way for a foundation to land on a
-specific task and direct money to that work.
-
-**Lightweight scope (the heavyweight `TaskFundingPledge` /
-`/grants/apply` / admin-review marketplace was cut after the
-2026-05-08 review — premature for our scale):**
-
-1. **Org proposes a task** via the existing `POST /api/tasks` with
-   the `parentTaskId` parameter shipped this session. Defaults to
-   `isPublic: false` (spam protection); creator-org sees it on
-   their dashboard.
-2. **Admin promotes to public** via a one-click action on the
-   existing `/tasks/[id]/page.tsx` admin disclosure. Same shape as
-   the curator-verification block.
-3. **Public task gets a "Donate to fund this work" button** on the
-   detail page when `assigneeOrganizationId` is set, linking to
-   `/donate?taskId=...&org=...`.
-4. **`/donate` reads the query params**, pre-fills the donation
-   note with the task title + org slug, and stores the designation
-   in donation metadata so AMF disburses through its existing
-   processes (check / ACH / wire — no Stripe Connect outbound code
-   path).
-5. **Public task detail page shows a small "$X designated" stat**
-   read from a sum of designated donations in metadata.
-
-Total scope: ~80–120 lines, zero new schema, zero new ops surface.
-Foundation-browsing recruitment story works on day one without
-blocking on Stripe Connect, W-9 forms, or 1099-MISC reporting.
-
-**Stripe Connect comes later** — see the separate P1 entry below.
-Manual disbursement is fine for the first ~5–10 grants; Connect
-unblocks scaling past that.
-
 ### P1 — Sitemap completeness (orgs, /humanity-v-government, /court)
 
 `packages/web/src/app/sitemap.ts` already pulls public People + public
@@ -990,166 +801,6 @@ Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/emai
 - **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
   on the new `TaskComment`, so the in-app feed nests correctly.
 - **No schema changes.** All metadata fits in the existing `metadataJson` field.
-
-### P1 — Stripe Connect for AMF outbound disbursement
-
-AMF is already a US 501(c)(3) with Stripe wired for inbound
-donations. Manual disbursement (checks, spreadsheets, year-end
-1099-MISC done by hand) caps the funding loop at ~5 grants/year
-before ops becomes the bottleneck. Connect = automated outbound +
-recipient-self-served tax forms + built-in 1099 generation.
-
-- Enable Stripe Connect on the existing AMF Stripe account
-  (Standard or Express; Express recommended for our shape).
-- New onboarding endpoint: `/api/grants/[taskId]/connect-onboard`
-  that creates a Connect account for the recipient org and returns
-  the Stripe-hosted onboarding link.
-- Disbursement helper: a small server action that calls Stripe's
-  Transfer API to move designated donations from AMF's platform
-  balance to the recipient's connected account on grant
-  verification (`Task.status === VERIFIED`).
-- Admin UI: a "Disburse $X to [org]" button on the existing
-  `/tasks/[id]/page.tsx` admin disclosure for verified
-  donate-to-fund-task tasks.
-
-Roughly ~150 lines + Stripe dashboard config. Real but bounded.
-Defer until donate-to-fund-task has produced ~3–5 actual designated
-gifts (so we know the loop converts before automating it).
-
-### P1 — Extend VOTE token earning to verified task completion
-
-Right now VOTE is earned exclusively through referrals (referrer
-earns 1:1 with verified-vote referrals — see `VoteToken` /
-`VoterPrizeTreasury` on Base Sepolia). High-leverage builders who
-do work for the campaign (translate the treaty into 50 languages,
-build the /grants page, run a foundation-outreach sprint) get
-nothing from the prize pool. That misaligns the assurance contract
-from the actual production-of-results work.
-
-**Lightweight extension (do not introduce a new token):**
-
-- Add a verifier-gated mint path on `VoteToken`: when
-  `Task.status` flips to `VERIFIED` and the task carries a
-  `voteEarningRatio` (or a constant ratio per category), the
-  contract mints VOTE to the verified completer's address.
-- Define ratios per task category (OUTREACH, ENGINEERING,
-  TRANSLATION, etc.) — values configurable via the existing
-  parameter manifest, not hard-coded.
-- Mint trigger: a server-side hook on `verifyTask` that calls the
-  contract's mint function. Same shape as the existing referral
-  mint trigger.
-
-**Why not a new token (EOP / Earth Optimization Points):** brand
-confusion (VOTE + WISH + Hypercerts already three systems);
-sybil cost is on the verification surface, not the token; every
-new token doubles the SEC/securities posture surface.
-
-Schema: add `voteEarningRatio: Float?` to `Task`. Mint path:
-~50 lines on the contract + ~30 lines on the server hook. Park
-until the existing VOTE-earning-via-referral path has measurable
-volume — premature otherwise.
-
-### P1 — Donate-to-the-prize-pool surface on `/donate`
-
-`/donate` today lands money in AMF (501c3, unrestricted,
-charitable, tax-deductible). The actual Earth Optimization Prize
-pool is USDC deposited into `VoterPrizeTreasury` on Base Sepolia
-and currently has zero UI surface — visitors who *want* to grow
-the prize pool have no way to.
-
-Add a second path on `/donate`:
-
-- **Option A: Donate to the campaign (AMF).** Existing flow,
-  unchanged. Tax-deductible. Funds outreach.
-- **Option B: Deposit to the Earth Optimization Prize pool.**
-  Direct-USDC-to-`VoterPrizeTreasury` deposit via WalletConnect
-  /  Privy / whatever wallet adapter the prize pages already use.
-  *Refundable + ~4.2× yield if the treaty fails by 2040* (the
-  dominant-assurance economics CLAUDE.md already describes).
-  Donor gets VOTE 1:1 for the deposit on success.
-
-Both options labeled clearly so donors pick the vehicle that
-matches their tax + risk profile (per the CLAUDE.md rule
-"separation is enforced at every layer" between AMF charitable
-and EOS LLC dominant-assurance).
-
-Also: spawn a public Task "Grow the Earth Optimization Prize
-pool" pointing at Option B so it slots into the donate-to-fund-
-task pattern — every page that funnels toward action can deep-
-link to the deposit UI.
-
-Cost: ~80 lines on `/donate` (the second option + form +
-provider resolution) + 1 new public task seed row. No schema
-changes. Does **not** require Phase-2 mainnet readiness — Sepolia
-is fine for the deposit UI; mainnet migration happens on its own
-schedule.
-
-### P2 — Post-treaty alignment between VOTE holders and WISH UBI
-
-Design note (parked, do not build until treaty passes): pre-
-treaty VOTE holders get a one-time WISH airdrop at treaty-
-passage time, weighted by their VOTE balance. Aligns campaign
-contributors with the post-treaty world they helped create
-without merging the two tokens (which would compound the SEC
-posture surface across both phases).
-
-The user proposed merging VOTE + WISH into a single "Earth
-Optimization Points" token (2026-05-08); rejected because the two
-tokens have sequential, non-overlapping economic regimes —
-VOTE = assurance-contract / prize-pool share (pre-treaty);
-WISH = tx-tax-funded UBI primitive (post-treaty). One token can't
-be both without legal complications. Cross-phase airdrop captures
-the alignment intent at zero design cost.
-
-### P2 — Prize wire-up into the post-vote funnel (BLOCKED on legal + mainnet)
-
-CLAUDE.md states `/prize` is "the most important feature on the site; every other page should
-funnel toward it." Currently disconnected — zero mentions of VOTE / earn / prize / USDC in
-`TreatyPostVoteShareFlow.tsx` or `TreatyTaskDashboardClient.tsx`. The backend mint logic
-(`syncReferralVoteTokenMintsForVerifiedVoter`) and the `VoteTokenBalanceCard` component both
-exist; they are not wired into the funnel.
-
-**Blocked on out-of-band work** (do not start engineering until these are resolved):
-
-1. **Two-entity legal structure** (working assumption, 2026-05-07). The site presents two
-   separate funding tracks:
-   - **Accelerated Medicine Foundation** (existing US 501(c)(3)) hosts a charitable prize
-     pool. Donations tax-deductible. Accepts stock cleanly through a brokerage. Grants out
-     to outreach campaigns with verified-vote outcome metrics. This unlocks foundation /
-     ESG-mandated / large-individual donor capital that the assurance contract structurally
-     cannot reach (no clawback on completed gifts).
-   - **Earth Optimization Services LLC** (new) operates the dominant-assurance contract:
-     deposits, Aave yield, refund-or-payout. LLC structure avoids the 501(c)(3) "completed
-     gift" rule and avoids the lobbying-substantial-activity test (which lives at the LLC
-     side anyway because the IAB lobbying mechanism does too).
-   - **Constraints to enforce:** AMF cannot grant in ways that benefit EOS owners
-     (self-dealing); the two pools must be operationally separable; lobbying activity stays
-     LLC-side. UI on `/prize` should label the two tracks clearly so donors pick the
-     vehicle that matches their tax + risk profile.
-2. Securities posture for the LLC pool (Reg D 506(c) accredited path, or a defensible
-   non-security framing).
-3. Contract audit + Base mainnet deployment. Contracts currently target Sepolia.
-4. Multisig + emergency-pause governance. 3-of-5 default. Same multisig holds both pools or
-   separate? Default to separate so AMF's 501(c)(3) audit trail is clean.
-5. Aave mainnet integration verified end-to-end with small real capital (LLC side only —
-   AMF charitable pool is cash + stock, not yield-bearing).
-6. Seed deposits ($100K–$500K from creator + aligned co-funders) — non-empty contract is a
-   precondition for credibility.
-
-**Once unblocked** (~2 days of engineering):
-
-- Surface VOTE earning ratio in `TreatyPostVoteShareFlow.tsx` alongside impact framing.
-- Add `VoteTokenBalanceCard` to `TreatyTaskDashboardClient.tsx` with a link to `/prize`.
-- Day-7 + day-30 reminder emails referencing the user's VOTE balance and prize milestones.
-- Referrer leaderboard on `/prize` (social proof).
-- **Accept share/equity donations** through the AMF 501(c)(3) sleeve. Stand up a
-  DTC-eligible brokerage account, publish a valuation methodology, and decide
-  hold-vs-liquidate per donation. Volume likely small in cycle one (private founder-led
-  companies, small B-corps, crypto treasuries already used to non-cash assets) but high
-  signal: a company pledging its own equity is unusually committed.
-- "Track-now, mint-retroactively" framing if engineering ships before contracts go live, so
-  the referral-attribution data is collected from day one.
-- No schema changes.
 
 ## Architecture Guardrails (durable — do not violate)
 
@@ -1233,7 +884,12 @@ Bring back here only if the work directly removes a P0/P1 gap above.
 
 - Multi-agent / service-account architecture (Phase 0-3 build plan).
 - AP2 / ACP / x402 agentic-payment wiring.
-- Donations & crowdfunding tracks 2-4 (IAB lobbying, DAO-governed fund).
+- Optimitron root rewrite / `/features` archive. War on Disease is the active
+  front door; do not spend campaign time rebuilding the Optimitron landing page.
+- Donate-to-fund-task marketplace, Stripe Connect outbound disbursement, prize-
+  pool deposit UI, VOTE-for-task-completion, WISH airdrop, IAB lobbying, and
+  DAO-governed funding. Bring these back only after the vote/referral/court
+  funnel is boring and measurable.
 - Dead-people-voting PRD (memorial form, dead-person registration, prosecution dashboard).
 - DIH feature migration (porting from `dih-neobrutalist`).
 - MCP queue sync items not on the 4B critical path (commission page, EV calculator,
