@@ -42,6 +42,14 @@ const reviewCommitSha =
   process.env.VERCEL_GIT_COMMIT_SHA ??
   process.env.GITHUB_SHA ??
   null;
+const reviewGeneratedAt = new Date();
+const reviewCacheKey = [
+  reviewCommitSha ? shortSha(reviewCommitSha) : "local",
+  process.env.GITHUB_RUN_ID ?? null,
+  reviewGeneratedAt.getTime(),
+]
+  .filter(Boolean)
+  .join("-");
 const routePaths = loadRoutePaths();
 
 const routeOrder = [
@@ -173,8 +181,8 @@ function groupScreenshots(screenshots) {
 }
 
 function renderHtml(groups) {
-  const generatedAt = new Date().toISOString();
-  const generatedAtCentral = formatCentralTime(new Date(generatedAt));
+  const generatedAt = reviewGeneratedAt.toISOString();
+  const generatedAtCentral = formatCentralTime(reviewGeneratedAt);
   const summary = summarizeGroups(groups);
   const body = groups.length > 0
     ? groups.map(renderRouteGroup).join("\n")
@@ -469,7 +477,7 @@ function renderFigure(screenshot, label) {
   }
   return `<figure>
     <figcaption>${escapeHtml(label)}</figcaption>
-    <img src="${escapeHtml(screenshot.relPath)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
+    <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
   </figure>`;
 }
 
