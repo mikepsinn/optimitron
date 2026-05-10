@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
+import { clientEnv } from "@/lib/env";
 import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
 
 interface DemoLoginButtonProps {
@@ -42,7 +43,12 @@ export function DemoLoginButton({
     }
   }
 
-  if (process.env.NODE_ENV === "production") return null;
+  if (
+    process.env.NODE_ENV === "production" &&
+    clientEnv.NEXT_PUBLIC_DEMO_LOGIN_ENABLED !== "true"
+  ) {
+    return null;
+  }
 
   return (
     <div className={className}>

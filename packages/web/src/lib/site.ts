@@ -71,7 +71,8 @@ export const SITE_VARIANT_OVERRIDE_QUERY_PARAM = "site";
 export type SiteKey = "optimitron" | "dfda" | "dih" | "warOnDisease";
 
 export const SITE_VARIANT_OVERRIDE_HEADER = "x-optimitron-site-key";
-const LOCAL_DEFAULT_SITE_KEY: SiteKey = "warOnDisease";
+const DEFAULT_SITE_KEY: SiteKey = "warOnDisease";
+const LOCAL_DEFAULT_SITE_KEY: SiteKey = DEFAULT_SITE_KEY;
 
 export type SiteChromeVariant = "platform" | "referendum";
 export type SiteHomeVariant =
@@ -1050,8 +1051,8 @@ export function getTreatySignUrl(site: SiteConfig): string {
 }
 
 export function getSiteFromHost(host: string | null | undefined): SiteConfig {
-  if (!host) return OPTIMITRON_CONFIG;
-  return SITE_CONFIGS[HOST_TO_SITE_KEY[normalizeHost(host)] ?? "optimitron"];
+  if (!host) return SITE_CONFIGS[DEFAULT_SITE_KEY];
+  return SITE_CONFIGS[HOST_TO_SITE_KEY[normalizeHost(host)] ?? DEFAULT_SITE_KEY];
 }
 
 export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {

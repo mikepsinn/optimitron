@@ -51,6 +51,12 @@ describe("site variant registry", () => {
     expect(getSiteFromHost("dih.earth").key).toBe("dih");
     expect(getSiteFromHost("acceleratedmedicine.org").key).toBe("warOnDisease");
     expect(getSiteFromHost("optimitron.com").key).toBe("optimitron");
+    expect(
+      getSiteFromHost(
+        "optimitron-web-git-feature-remove-c9e3c0-mike-p-sinns-projects.vercel.app",
+      ).key,
+    ).toBe("warOnDisease");
+    expect(getSiteFromHost("unknown.example").key).toBe("warOnDisease");
   });
 
   it("supports local-only middleware site override plumbing without DNS-specific hosts", () => {

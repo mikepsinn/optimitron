@@ -127,6 +127,10 @@ if (serverEnv.GOOGLE_CLIENT_ID && serverEnv.GOOGLE_CLIENT_SECRET) {
 /** Which sign-in providers are configured for this deployment (env-var based). */
 export function getConfiguredProviders() {
   return {
+    demo:
+      process.env.NODE_ENV !== "production" ||
+      process.env.VERCEL_ENV === "preview" ||
+      process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED === "true",
     email: true,
     google: Boolean(serverEnv.GOOGLE_CLIENT_ID && serverEnv.GOOGLE_CLIENT_SECRET),
   };
