@@ -132,6 +132,7 @@ export type SiteSitemapDynamicRouteGroup =
 
 export interface SiteSitemapConfig {
   dynamicRouteGroups?: readonly SiteSitemapDynamicRouteGroup[];
+  includeAllStaticRoutes?: boolean;
   includePublicRoutes?: boolean;
   landingPageOnly?: boolean;
 }
@@ -609,6 +610,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   },
   assets: OPTIMITRON_ASSETS,
   sitemap: {
+    includeAllStaticRoutes: true,
     includePublicRoutes: true,
   },
   ui: OPTIMITRON_UI,
@@ -946,7 +948,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.questions,
       ROUTES.feedback,
     ],
-    restrictToAllowlist: true,
+    restrictToAllowlist: false,
     publicPrefixes: [
       ROUTES.treaty,
       ROUTES.court,

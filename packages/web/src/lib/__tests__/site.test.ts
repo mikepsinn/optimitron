@@ -54,17 +54,20 @@ describe("site variant registry", () => {
   });
 
   it("supports local-only middleware site override plumbing without DNS-specific hosts", () => {
+    const localSite = getSiteFromHeaders(
+      new Headers({
+        host: "127.0.0.1:3001",
+      }),
+    );
+
     expect(isLocalHost("127.0.0.1:3001")).toBe(true);
     expect(isLocalHost("warondisease.org")).toBe(false);
     expect(getCanonicalHostForSiteKey("warOnDisease")).toBe("warondisease.org");
     expect(getCanonicalHostForSiteKey("dfda")).toBe("dfda.earth");
-    expect(
-      getSiteFromHeaders(
-        new Headers({
-          host: "127.0.0.1:3001",
-        }),
-      ).key,
-    ).toBe("warOnDisease");
+    expect(localSite.key).toBe("warOnDisease");
+    expect(getSiteRouteDisposition(localSite, ROUTES.scoreboard)).toEqual({
+      type: "allow",
+    });
     expect(
       getSiteFromHeaders(
         new Headers({
@@ -224,7 +227,7 @@ describe("site variant registry", () => {
     expect(typeof siteRegistry.getSiteRouteRedirect).toBe("function");
     expect(
       siteRegistry.getSiteRouteRedirect?.(campaignSite, "/scoreboard"),
-    ).toBe("https://optimitron.com/scoreboard");
+    ).toBeNull();
     expect(siteRegistry.getSiteRouteRedirect?.(dfdaSite, "/treaty")).toBe(
       "https://warondisease.org/treaty",
     );
@@ -256,19 +259,19 @@ describe("site variant registry", () => {
     }
   });
 
-  it("keeps the campaign host closed to unrelated Optimitron routes", () => {
+  it("lets campaign hosts serve platform routes without cross-domain redirects", () => {
     const treatySite = getSiteFromHost("1percenttreaty.org");
 
     expect(isSiteRouteAllowed(treatySite, "/")).toBe(true);
     expect(isSiteRouteAllowed(treatySite, ROUTES.dashboard)).toBe(true);
     expect(isSiteRouteAllowed(treatySite, ROUTES.tasks)).toBe(true);
     expect(isSiteRouteAllowed(treatySite, ROUTES.signatories)).toBe(true);
-    expect(isSiteRouteAllowed(treatySite, ROUTES.reasoning)).toBe(false);
-    expect(isSiteRouteAllowed(treatySite, ROUTES.scoreboard)).toBe(false);
-    expect(isSiteRouteAllowed(treatySite, ROUTES.search)).toBe(false);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.reasoning)).toBe(true);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.scoreboard)).toBe(true);
+    expect(isSiteRouteAllowed(treatySite, ROUTES.search)).toBe(true);
   });
 
-  it("allows War on Disease footer trust routes without opening the whole platform", () => {
+  it("allows War on Disease to serve the whole platform", () => {
     const warSite = getSiteFromHost("warondisease.org");
 
     expect(isSiteRouteAllowed(warSite, ROUTES.signatories)).toBe(true);
@@ -278,8 +281,8 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(warSite, ROUTES.endorse)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.privacy)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.terms)).toBe(true);
-    expect(isSiteRouteAllowed(warSite, ROUTES.reasoning)).toBe(false);
-    expect(isSiteRouteAllowed(warSite, ROUTES.search)).toBe(false);
+    expect(isSiteRouteAllowed(warSite, ROUTES.reasoning)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.search)).toBe(true);
   });
 
   it("exposes medical pages on DFDA without exposing treaty campaign pages", () => {
