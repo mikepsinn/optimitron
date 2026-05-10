@@ -96,6 +96,7 @@ import {
   formatManagedDataResult,
   syncManagedData,
 } from "../src/managed-data/index.js";
+import { upsertWishoniaUser } from "../src/system-users.js";
 
 const adapter = new PrismaPg({ connectionString: loadDatabaseUrl() });
 const prisma = new PrismaClient({ adapter });
@@ -2055,12 +2056,6 @@ async function seedTreatyTasks() {
   console.log(`  ✓ ${created} signer tasks with leader photos`);
 }
 
-const WISHONIA_EMAIL = "wishonia@gmail.com";
-const WISHONIA_USERNAME = "wishonia";
-const WISHONIA_DISPLAY_NAME = "Wishonia";
-const WISHONIA_AFFILIATION =
-  "World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation";
-const WISHONIA_IMAGE = "/sprites/wishonia/smirk-smile.png";
 const GRANDMA_KAY_SOURCE_REF = "memorial-example:grandma-kay";
 let cachedSeedWishoniaUserId: string | null = null;
 
@@ -2076,49 +2071,7 @@ let cachedSeedWishoniaUserId: string | null = null;
 async function seedWishoniaUser() {
   console.log("🛸 Seeding Wishonia user...");
 
-  // Upsert the Person first so we can link the User to it.
-  const sourceRef = "wishonia:system";
-  const person = await prisma.person.upsert({
-    where: { sourceRef },
-    update: {
-      handle: WISHONIA_USERNAME,
-      displayName: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
-      bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
-      currentAffiliation: WISHONIA_AFFILIATION,
-      isPublic: true,
-      isPublicFigure: true,
-      lifeStatus: PersonLifeStatus.LIVING,
-    },
-    create: {
-      sourceRef,
-      handle: WISHONIA_USERNAME,
-      displayName: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
-      bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
-      currentAffiliation: WISHONIA_AFFILIATION,
-      isPublic: true,
-      isPublicFigure: true,
-      lifeStatus: PersonLifeStatus.LIVING,
-    },
-  });
-
-  // Upsert the user by stable email and link to the Person. Display fields
-  // (name/image/handle) live exclusively on Person — set them in the Person
-  // upsert above, not here.
-  const user = await prisma.user.upsert({
-    where: { email: WISHONIA_EMAIL },
-    update: {
-      isSystem: true,
-      person: { connect: { id: person.id } },
-    },
-    create: {
-      email: WISHONIA_EMAIL,
-      isSystem: true,
-      emailVerified: new Date(),
-      person: { connect: { id: person.id } },
-    },
-  });
+  const { person, user } = await upsertWishoniaUser(prisma);
 
   console.log(`  ✓ Wishonia user (${user.id}) + person (${person.id}) handle=${person.handle}`);
   cachedSeedWishoniaUserId = user.id;

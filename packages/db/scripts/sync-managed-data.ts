@@ -14,10 +14,13 @@ function parseArgs(argv: string[]) {
     throw new Error("Use either --apply or --dry-run, not both.");
   }
 
-  return { apply };
+  return {
+    apply,
+    mode: apply ? "apply" : "dry-run",
+  };
 }
 
-const { apply } = parseArgs(process.argv.slice(2));
+const { apply, mode } = parseArgs(process.argv.slice(2));
 const adapter = new PrismaPg({ connectionString: loadDatabaseUrl() });
 const prisma = new PrismaClient({ adapter });
 
@@ -25,7 +28,7 @@ try {
   const result = await syncManagedData(prisma, { apply });
   console.log(formatManagedDataResult(result));
   if (!apply) {
-    console.log("\nDry run only. Re-run with --apply to write these changes.");
+    console.log(`\n${mode} only. Re-run with --apply to write these changes.`);
   }
 } catch (error) {
   console.error("Managed data sync failed:");

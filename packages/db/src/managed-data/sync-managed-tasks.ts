@@ -1,5 +1,4 @@
 import {
-  PersonLifeStatus,
   TaskCategory,
   TaskClaimPolicy,
   TaskCommunicationEndpointKind,
@@ -14,13 +13,10 @@ import {
   type TaskDifficulty as TaskDifficultyValue,
   type TaskStatus as TaskStatusValue,
 } from "../generated/prisma/client.js";
-
-const WISHONIA_EMAIL = "wishonia@gmail.com";
-const WISHONIA_USERNAME = "wishonia";
-const WISHONIA_DISPLAY_NAME = "Wishonia";
-const WISHONIA_AFFILIATION =
-  "World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation";
-const WISHONIA_IMAGE = "/sprites/wishonia/smirk-smile.png";
+import {
+  upsertWishoniaUser,
+  type WishoniaUserClient,
+} from "../system-users.js";
 
 export interface ManagedTaskPrimaryEndpoint {
   email?: string | null;
@@ -79,6 +75,19 @@ interface ManagedTaskRow {
   deletedAt: Date | null;
 }
 
+interface ManagedEndpointRow {
+  id: string;
+  email: string | null;
+  instructions: string | null;
+  isPrimary: boolean;
+  kind: typeof TaskCommunicationEndpointKind[keyof typeof TaskCommunicationEndpointKind];
+  label: string | null;
+  priority: number;
+  sourceUrl: string | null;
+  url: string | null;
+  verificationStatus: typeof TaskCommunicationEndpointVerificationStatus[keyof typeof TaskCommunicationEndpointVerificationStatus];
+}
+
 export interface ManagedTaskClient {
   task: {
     findMany(args: unknown): Promise<ManagedTaskRow[]>;
@@ -87,19 +96,16 @@ export interface ManagedTaskClient {
   };
   taskCommunicationEndpoint: {
     create(args: unknown): Promise<unknown>;
-    findFirst(args: unknown): Promise<{ id: string } | null>;
+    findFirst(args: unknown): Promise<ManagedEndpointRow | null>;
     update(args: unknown): Promise<unknown>;
     updateMany(args: unknown): Promise<{ count: number }>;
   };
 }
 
-export interface ManagedIdentityClient {
-  person: {
-    upsert(args: unknown): Promise<{ id: string; handle: string | null }>;
-  };
-  user: {
-    upsert(args: unknown): Promise<{ id: string }>;
-  };
+export type ManagedIdentityClient = WishoniaUserClient;
+
+export interface ManagedTransactionClient extends ManagedTaskClient {
+  $transaction<T>(callback: (client: ManagedTaskClient) => Promise<T>): Promise<T>;
 }
 
 export interface SyncManagedTasksOptions {
@@ -108,6 +114,7 @@ export interface SyncManagedTasksOptions {
   createdByUserId: string;
   now?: Date;
   records: ManagedTaskRecord[];
+  useTransaction?: boolean;
 }
 
 export interface SyncManagedTasksResult {
@@ -199,21 +206,23 @@ async function upsertPrimaryEndpoint(
   client: ManagedTaskClient,
   taskId: string,
   input: ManagedTaskPrimaryEndpoint | null,
+  now: Date,
 ) {
   const endpoint = input ? normalizePrimaryEndpoint(input) : null;
 
   if (!endpoint) {
-    return client.taskCommunicationEndpoint.updateMany({
+    const result = await client.taskCommunicationEndpoint.updateMany({
       where: {
         deletedAt: null,
         isPrimary: true,
         taskId,
       },
       data: {
-        deletedAt: new Date(),
+        deletedAt: now,
         isPrimary: false,
       },
     });
+    return result.count > 0 ? "cleared" : "unchanged";
   }
 
   const existing = await client.taskCommunicationEndpoint.findFirst({
@@ -222,22 +231,39 @@ async function upsertPrimaryEndpoint(
       isPrimary: true,
       taskId,
     },
-    select: { id: true },
+    select: {
+      id: true,
+      email: true,
+      instructions: true,
+      isPrimary: true,
+      kind: true,
+      label: true,
+      priority: true,
+      sourceUrl: true,
+      url: true,
+      verificationStatus: true,
+    },
   });
 
   if (existing) {
-    return client.taskCommunicationEndpoint.update({
+    if (sameJson(existing, { id: existing.id, ...endpoint })) {
+      return "unchanged";
+    }
+
+    await client.taskCommunicationEndpoint.update({
       where: { id: existing.id },
       data: endpoint,
     });
+    return "updated";
   }
 
-  return client.taskCommunicationEndpoint.create({
+  await client.taskCommunicationEndpoint.create({
     data: {
       ...endpoint,
       taskId,
     },
   });
+  return "created";
 }
 
 function assertUniqueManagedTaskRecords(records: ManagedTaskRecord[]) {
@@ -392,6 +418,21 @@ export async function syncManagedTasks(
   client: ManagedTaskClient,
   options: SyncManagedTasksOptions,
 ): Promise<SyncManagedTasksResult> {
+  const shouldUseTransaction =
+    options.apply &&
+    options.useTransaction !== false &&
+    "$transaction" in client &&
+    typeof (client as ManagedTransactionClient).$transaction === "function";
+
+  if (shouldUseTransaction) {
+    return (client as ManagedTransactionClient).$transaction((transactionClient) =>
+      syncManagedTasks(transactionClient, {
+        ...options,
+        useTransaction: false,
+      }),
+    );
+  }
+
   assertUniqueManagedTaskRecords(options.records);
 
   const ids = options.records.map((record) => record.id);
@@ -442,14 +483,17 @@ export async function syncManagedTasks(
   const now = options.now ?? new Date();
 
   for (const record of options.records) {
-    const existing = findExistingTask(existingRows, record);
-    const label = `${record.id} (${record.taskKey})`;
-
-    if (existing && existing.id !== record.id) {
+    const conflictingKeyOwner = existingRows.find(
+      (row) => row.taskKey === record.taskKey && row.id !== record.id,
+    );
+    if (conflictingKeyOwner) {
       throw new Error(
-        `Managed task key ${record.taskKey} already belongs to ${existing.id}; expected ${record.id}`,
+        `Managed task key ${record.taskKey} already belongs to ${conflictingKeyOwner.id}; expected ${record.id}`,
       );
     }
+
+    const existing = findExistingTask(existingRows, record);
+    const label = `${record.id} (${record.taskKey})`;
 
     if (record.retired) {
       if (!existing) {
@@ -477,7 +521,7 @@ export async function syncManagedTasks(
             status: TaskStatus.STALE,
           },
         });
-        await client.taskCommunicationEndpoint.updateMany({
+        const retiredEndpoints = await client.taskCommunicationEndpoint.updateMany({
           where: {
             deletedAt: null,
             taskId: existing.id,
@@ -487,8 +531,10 @@ export async function syncManagedTasks(
             isPrimary: false,
           },
         });
+        if (retiredEndpoints.count > 0) {
+          result.endpointRetired.push(label);
+        }
       }
-      result.endpointRetired.push(label);
       continue;
     }
 
@@ -498,10 +544,6 @@ export async function syncManagedTasks(
       result.updated.push(label);
     } else {
       result.unchanged.push(label);
-    }
-
-    if (record.primaryEndpoint !== undefined) {
-      result.endpointUpdated.push(label);
     }
 
     if (options.apply) {
@@ -516,11 +558,52 @@ export async function syncManagedTasks(
       });
 
       if (record.primaryEndpoint !== undefined) {
-        await upsertPrimaryEndpoint(
+        const endpointAction = await upsertPrimaryEndpoint(
           client,
           record.id,
           record.primaryEndpoint ?? null,
+          now,
         );
+        if (endpointAction === "cleared") {
+          result.endpointRetired.push(label);
+        } else if (endpointAction !== "unchanged") {
+          result.endpointUpdated.push(label);
+        }
+      }
+    } else if (record.primaryEndpoint !== undefined) {
+      const existingEndpoint = await client.taskCommunicationEndpoint.findFirst({
+        where: {
+          deletedAt: null,
+          isPrimary: true,
+          taskId: record.id,
+        },
+        select: {
+          id: true,
+          email: true,
+          instructions: true,
+          isPrimary: true,
+          kind: true,
+          label: true,
+          priority: true,
+          sourceUrl: true,
+          url: true,
+          verificationStatus: true,
+        },
+      });
+      const normalized = record.primaryEndpoint
+        ? normalizePrimaryEndpoint(record.primaryEndpoint)
+        : null;
+      const wouldChange =
+        normalized === null
+          ? existingEndpoint !== null
+          : !existingEndpoint ||
+            !sameJson(existingEndpoint, { id: existingEndpoint.id, ...normalized });
+      if (wouldChange) {
+        if (normalized === null) {
+          result.endpointRetired.push(label);
+        } else {
+          result.endpointUpdated.push(label);
+        }
       }
     }
   }
@@ -532,47 +615,7 @@ export async function ensureManagedDataSystemUser(
   client: ManagedIdentityClient,
   now = new Date(),
 ) {
-  const sourceRef = "wishonia:system";
-  const person = await client.person.upsert({
-    where: { sourceRef },
-    update: {
-      deletedAt: null,
-      handle: WISHONIA_USERNAME,
-      displayName: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
-      bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
-      currentAffiliation: WISHONIA_AFFILIATION,
-      isPublic: true,
-      isPublicFigure: true,
-      lifeStatus: PersonLifeStatus.LIVING,
-    },
-    create: {
-      sourceRef,
-      handle: WISHONIA_USERNAME,
-      displayName: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
-      bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
-      currentAffiliation: WISHONIA_AFFILIATION,
-      isPublic: true,
-      isPublicFigure: true,
-      lifeStatus: PersonLifeStatus.LIVING,
-    },
-  });
-
-  const user = await client.user.upsert({
-    where: { email: WISHONIA_EMAIL },
-    update: {
-      isSystem: true,
-      person: { connect: { id: person.id } },
-    },
-    create: {
-      email: WISHONIA_EMAIL,
-      isSystem: true,
-      emailVerified: now,
-      person: { connect: { id: person.id } },
-    },
-  });
-
+  const { user } = await upsertWishoniaUser(client, now);
   return user;
 }
 

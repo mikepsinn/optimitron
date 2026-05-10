@@ -68,6 +68,7 @@ export {
 export type {
   ManagedIdentityClient,
   ManagedTaskClient,
+  ManagedTransactionClient,
   ManagedTaskRecord,
   SyncManagedTasksOptions,
   SyncManagedTasksResult,

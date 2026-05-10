@@ -191,14 +191,26 @@ class FakeManagedTaskClient implements ManagedTaskClient {
       const { where } = args as {
         where: { deletedAt: null; isPrimary: boolean; taskId: string };
       };
-      return (
+      const endpoint =
         this.endpoints.find(
-          (endpoint) =>
-            endpoint.deletedAt === where.deletedAt &&
-            endpoint.isPrimary === where.isPrimary &&
-            endpoint.taskId === where.taskId,
-        ) ?? null
-      );
+          (candidate) =>
+            candidate.deletedAt === where.deletedAt &&
+            candidate.isPrimary === where.isPrimary &&
+            candidate.taskId === where.taskId,
+        ) ?? null;
+      if (!endpoint) return null;
+      return {
+        id: endpoint.id,
+        email: endpoint.email,
+        instructions: endpoint.instructions,
+        isPrimary: endpoint.isPrimary,
+        kind: endpoint.kind,
+        label: endpoint.label,
+        priority: endpoint.priority,
+        sourceUrl: endpoint.sourceUrl,
+        url: endpoint.url,
+        verificationStatus: endpoint.verificationStatus,
+      };
     },
     update: async (args: unknown) => {
       const { where, data } = args as {
@@ -229,6 +241,15 @@ class FakeManagedTaskClient implements ManagedTaskClient {
       return { count };
     },
   };
+}
+
+class TransactionalFakeManagedTaskClient extends FakeManagedTaskClient {
+  transactionCalls = 0;
+
+  async $transaction<T>(callback: (client: ManagedTaskClient) => Promise<T>) {
+    this.transactionCalls += 1;
+    return callback(this);
+  }
 }
 
 const activeRecord: ManagedTaskRecord = {
@@ -382,6 +403,8 @@ describe("syncManagedTasks", () => {
     expect(secondResult.created).toEqual([]);
     expect(secondResult.updated).toEqual([]);
     expect(secondResult.retired).toEqual([]);
+    expect(secondResult.endpointUpdated).toEqual([]);
+    expect(secondResult.endpointRetired).toEqual([]);
     expect(secondResult.unchanged).toEqual(
       expect.arrayContaining([
         "root (program:test:root)",
@@ -389,5 +412,41 @@ describe("syncManagedTasks", () => {
         "retired (program:test:retired)",
       ]),
     );
+  });
+
+  it("rejects taskKey ownership conflicts before applying writes", async () => {
+    const client = new FakeManagedTaskClient({
+      tasks: [
+        makeTask({ id: "root", taskKey: "program:test:old-root" }),
+        makeTask({ id: "other", taskKey: "program:test:root" }),
+      ],
+    });
+
+    await expect(
+      syncManagedTasks(client, {
+        apply: true,
+        collectionKey: "test-tree",
+        createdByUserId: "creator",
+        records: [activeRecord],
+      }),
+    ).rejects.toThrow(
+      "Managed task key program:test:root already belongs to other",
+    );
+    expect(client.tasks.find((task) => task.id === "root")?.taskKey).toBe(
+      "program:test:old-root",
+    );
+  });
+
+  it("runs apply mode inside a transaction when the client supports it", async () => {
+    const client = new TransactionalFakeManagedTaskClient({ tasks: [] });
+
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [activeRecord],
+    });
+
+    expect(client.transactionCalls).toBe(1);
   });
 });

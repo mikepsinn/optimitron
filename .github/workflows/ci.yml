@@ -60,6 +60,9 @@ jobs:
       - name: Apply database migrations
         run: pnpm db:deploy
 
+      - name: Verify managed data sync
+        run: pnpm db:sync:managed-data -- --dry-run
+
       - name: Build
         run: pnpm --filter '!@optimitron/web' run build
 
