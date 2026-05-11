@@ -270,25 +270,27 @@ cross-check so they do not disappear into chat history.
   a forward-friendly share kit on YES treaty vote. Referrer receives a single
   "Your link worked. Round 1 of 32" email on their first conversion only —
   never on subsequent conversions. Both deduped via `EmailLog.dedupeKey`.
-- Monthly chain digest (not yet built). One email per user per month, sent
-  until they unsubscribe — no skipping silent months. Two variants picked by
-  current-month conversion count `N`:
-    - `N > 0`: subject `{N} more voters joined through your link in {month}`.
-      Body shows transitive chain size, which doubling round they're on,
-      how many more rounds reach 4B. Pure positive reinforcement.
+- Monthly chain digest shipped (PR #74). Cron at `0 14 1 * *` calls
+  `/api/cron/monthly-chain-digest`, which iterates every YES treaty voter
+  with an email and sends one of two variants picked by past-30-day direct
+  conversion count `N`:
+    - `N > 0`: positive reinforcement. Subject names the count + month;
+      body shows monthly + all-time totals + doubling-rounds math +
+      dashboard link + canonical share footer.
     - `N == 0`: resend the forward kit. Subject `Still 30 seconds. Still
-      two humans you love.` Body is the canonical share message + button.
+      two humans you love.` Body is the canonical share message verbatim.
       The zero-conversion user is exactly who needs the nudge; silence
-      treats unconverted as user-failure when it's a we-failed-to-activate
-      signal.
-  Requires cron + transitive-chain recursive CTE + per-user "last digest
-  sent at" state. Use `scope: "onboarding"` so the existing unsubscribe
-  rails are the clean opt-out.
-- Retrofit `<ShareFooter>` (shipped PR #74) onto pre-existing engaged-user
-  email templates: `task-assignment-notification`, `task-comment-notification`.
-  Both already go to authenticated users via `sendResendEmail`; they're a
-  natural fit for the share kit at the bottom. NOT magic-link or other
-  transactional templates — those stay clean.
+      would have treated unconverted as user-failure when it's actually
+      a we-failed-to-activate signal.
+  Deduped per user per calendar month via
+  `EmailLog.dedupeKey` = `monthly-chain-digest:{userId}:{yyyy-mm}`.
+  Future enhancement: replace direct count with a transitive recursive CTE
+  so the digest can show full chain size + which doubling round the user
+  is actually on, not just direct conversions.
+- `<ShareFooter>` retrofit shipped (PR #74) on `task-assignment-notification`
+  and `task-comment-notification`. Both fetch the recipient's referral URL
+  when `recipientUserId` is set and append the canonical share kit; external
+  recipients (leaders' offices) get the email without the footer.
 - Email-template screenshots in the visual review (not yet built). Render
   every email template — magic-link, task-assignment, task-comment-notification,
   inbound-monitor-forward, post-vote-share, referral-first-conversion — with

@@ -23,6 +23,7 @@ import { test } from "@playwright/test";
 import { buildMagicLinkHtml } from "@/lib/email/magic-link-render";
 import { buildPostVoteShareHtml } from "@/lib/email/post-vote-share-email";
 import { buildReferralFirstConversionHtml } from "@/lib/email/referral-first-conversion-email";
+import { buildMonthlyChainDigestHtml } from "@/lib/email/monthly-chain-digest-email";
 import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignment-notification-email.server";
 import { buildTaskCommentNotificationEmail } from "@/lib/tasks/task-comment-notification-email.server";
 
@@ -101,6 +102,28 @@ test.describe("email visual coverage", () => {
       recipientReferralUrl: SAMPLE_REFERRAL,
     });
     await captureEmail(page, "email-task-assignment", built.html, testInfo);
+  });
+
+  test("email-monthly-digest-positive", async ({ page }, testInfo) => {
+    const html = buildMonthlyChainDigestHtml({
+      monthlyConversionCount: 7,
+      totalConversionCount: 19,
+      referralUrl: SAMPLE_REFERRAL,
+      dashboardUrl: SAMPLE_DASHBOARD,
+      monthLabel: "May 2026",
+    });
+    await captureEmail(page, "email-monthly-digest-positive", html, testInfo);
+  });
+
+  test("email-monthly-digest-resend", async ({ page }, testInfo) => {
+    const html = buildMonthlyChainDigestHtml({
+      monthlyConversionCount: 0,
+      totalConversionCount: 0,
+      referralUrl: SAMPLE_REFERRAL,
+      dashboardUrl: SAMPLE_DASHBOARD,
+      monthLabel: "May 2026",
+    });
+    await captureEmail(page, "email-monthly-digest-resend", html, testInfo);
   });
 
   test("email-task-comment-notification", async ({ page }, testInfo) => {
