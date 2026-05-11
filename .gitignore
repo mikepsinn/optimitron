@@ -89,3 +89,4 @@ packages/web/public/audio/tts-test/
 packages/web/public/media/
 
 .vercel
+.claude/scheduled_tasks.lock
