@@ -506,6 +506,58 @@ function renderHtml(groups) {
       outline-offset: 2px;
     }
 
+    .toolbar {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px 24px;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .toolbar input[type="search"] {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 240px;
+      padding: 6px 10px;
+    }
+
+    .toolbar-button {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--fg);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      text-transform: uppercase;
+    }
+
+    .toolbar-button:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .toolbar-count {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* Hidden by search filter — still in DOM (state preserved on clear). */
+    details.route[hidden] {
+      display: none !important;
+    }
+
     .missing div {
       padding: 24px 10px;
       color: var(--muted);
@@ -565,6 +617,18 @@ function renderHtml(groups) {
       <span class="pill error">${summary.erroredRoutes} errored</span>
     </div>
   </header>
+  <div class="toolbar" role="toolbar" aria-label="Visual review controls">
+    <input
+      type="search"
+      id="route-filter"
+      placeholder="Filter routes — try 'treaty' or 'dashboard'"
+      autocomplete="off"
+    />
+    <button type="button" class="toolbar-button" data-toolbar-action="expand-all">Expand all</button>
+    <button type="button" class="toolbar-button" data-toolbar-action="collapse-all">Collapse all</button>
+    <button type="button" class="toolbar-button" data-toolbar-action="expand-changed">Only show changed</button>
+    <span class="toolbar-count" id="route-count" aria-live="polite"></span>
+  </div>
   <main>
     ${body}
   </main>
@@ -624,6 +688,76 @@ function renderHtml(groups) {
       document.addEventListener("keydown", function (event) {
         if (event.key === "Escape" && lightbox.classList.contains("open")) {
           close();
+        }
+      });
+    })();
+
+    // Toolbar: live route-name filter + expand/collapse all.
+    (function () {
+      var filter = document.getElementById("route-filter");
+      var countEl = document.getElementById("route-count");
+      var routes = Array.prototype.slice.call(
+        document.querySelectorAll("details.route"),
+      );
+
+      function applyFilter() {
+        var query = filter.value.trim().toLowerCase();
+        var visible = 0;
+        for (var i = 0; i < routes.length; i++) {
+          var r = routes[i];
+          var titleEl = r.querySelector(".route-title");
+          var title = titleEl ? titleEl.textContent.toLowerCase() : "";
+          var match = query === "" || title.indexOf(query) !== -1;
+          if (match) {
+            r.removeAttribute("hidden");
+            visible += 1;
+          } else {
+            r.setAttribute("hidden", "");
+          }
+        }
+        countEl.textContent =
+          query === ""
+            ? routes.length + " routes"
+            : visible + " of " + routes.length + " match";
+      }
+
+      filter.addEventListener("input", applyFilter);
+
+      document.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-toolbar-action]");
+        if (!button) return;
+        var action = button.getAttribute("data-toolbar-action");
+        if (action === "expand-all") {
+          for (var i = 0; i < routes.length; i++) {
+            if (!routes[i].hasAttribute("hidden")) routes[i].open = true;
+          }
+        } else if (action === "collapse-all") {
+          for (var j = 0; j < routes.length; j++) {
+            routes[j].open = false;
+          }
+        } else if (action === "expand-changed") {
+          for (var k = 0; k < routes.length; k++) {
+            var isChanged = routes[k].classList.contains("changed");
+            routes[k].open = isChanged && !routes[k].hasAttribute("hidden");
+          }
+        }
+      });
+
+      // Initial count.
+      applyFilter();
+
+      // Keyboard shortcut: "/" focuses the filter input (like GitHub).
+      document.addEventListener("keydown", function (event) {
+        if (
+          event.key === "/" &&
+          document.activeElement !== filter &&
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.altKey
+        ) {
+          event.preventDefault();
+          filter.focus();
+          filter.select();
         }
       });
     })();
