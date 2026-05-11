@@ -257,6 +257,10 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "Ratify the treaty that redirects one percent of military spending into pragmatic clinical trials and disease eradication.",
     impactStatement:
       "The fastest known settlement is one percent of the war budget pointed at disease.",
+    // Keep the cost-of-delay counters on `/employees` and similar treaty
+    // surfaces live by preserving an overdue `dueAt`. The managed-sync
+    // overwrites whatever the seed wrote, so we have to set it here too.
+    dueAt: new Date("2024-12-31T00:00:00.000Z"),
     sortOrder: -700,
     primaryEndpoint: {
       label: "Sign the 1% Treaty",
