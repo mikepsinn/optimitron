@@ -27,6 +27,7 @@ import { sendPostVoteShareEmail } from "@/lib/email/post-vote-share-email";
 import { sendReferralFirstConversionEmail } from "@/lib/email/referral-first-conversion-email";
 import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
 import { ROUTES } from "@/lib/routes";
+import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const log = createLogger("referendum-vote");
 
@@ -257,9 +258,20 @@ export async function POST(
           const voter = await prisma.user.findUnique({
             where: { id: userId },
             select: {
-              email: true,
+              ...userDisplaySelect,
               referralCode: true,
-              person: { select: { displayName: true, handle: true } },
+              // isPublic gates whether we surface this voter's name to the
+              // referrer below. Not part of userDisplaySelect because most
+              // display sites don't need it.
+              person: {
+                select: {
+                  id: true,
+                  handle: true,
+                  displayName: true,
+                  image: true,
+                  isPublic: true,
+                },
+              },
             },
           });
           if (voter?.email) {
@@ -279,14 +291,18 @@ export async function POST(
             const referrer = await prisma.user.findUnique({
               where: { id: vote.referredByUserId },
               select: {
-                email: true,
+                ...userDisplaySelect,
                 referralCode: true,
-                person: { select: { handle: true } },
               },
             });
             if (referrer?.email) {
-              const voterDisplayName =
-                voter?.person?.displayName ?? "A new voter";
+              // Referral links can be shared anywhere (Twitter, group chats),
+              // so the "referrer" may not actually know the voter. Only
+              // expose the voter's display name when they've opted into a
+              // public profile; otherwise fall back to a generic label.
+              const voterDisplayName = voter?.person?.isPublic
+                ? getUserDisplayName(voter)
+                : "A new voter";
               const referrerReferralUrl = buildUserReferralUrl({
                 handle: referrer.person?.handle ?? null,
                 referralCode: referrer.referralCode,

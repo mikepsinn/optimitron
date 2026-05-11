@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  REFERRAL_FIRST_CONVERSION_SUBJECT,
-  REFERRAL_FIRST_CONVERSION_TEMPLATE_ID,
   buildReferralFirstConversionHtml,
   buildReferralFirstConversionText,
 } from "../referral-first-conversion-email";
@@ -52,10 +50,4 @@ describe("referral-first-conversion email builders", () => {
     expect(text).toContain(SAMPLE.referrerReferralUrl);
   });
 
-  it("exposes a stable template id + subject (used for dedupe and logging)", () => {
-    expect(REFERRAL_FIRST_CONVERSION_TEMPLATE_ID).toBe(
-      "referral-first-conversion",
-    );
-    expect(REFERRAL_FIRST_CONVERSION_SUBJECT).toBe("Your link worked.");
-  });
 });

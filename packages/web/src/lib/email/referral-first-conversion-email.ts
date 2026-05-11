@@ -12,13 +12,9 @@
  * referrals only the first triggers an email.
  */
 
-import { nanoid } from "nanoid";
-import {
-  claimEmailLog,
-  markEmailLogStatus,
-} from "@/lib/email/email-log.server";
-import { sendResendEmail, type SendResult } from "@/lib/email/resend";
 import { escapeHtml } from "@/lib/email/magic-link-render";
+import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
+import type { SendResult } from "@/lib/email/resend";
 import {
   buildShareFooterHtml,
   buildShareFooterText,
@@ -105,56 +101,15 @@ export function buildReferralFirstConversionText(
 export async function sendReferralFirstConversionEmail(
   input: ReferralFirstConversionEmailInput,
 ): Promise<SendResult | { status: "duplicate" }> {
-  const emailLogId = nanoid();
-  const dedupeKey = `${REFERRAL_FIRST_CONVERSION_TEMPLATE_ID}:${input.referrerUserId}`;
-  const now = new Date();
-
-  const claimed = await claimEmailLog({
-    dedupeKey,
-    id: emailLogId,
-    now,
-    subject: REFERRAL_FIRST_CONVERSION_SUBJECT,
+  return sendDedupedEmail({
+    dedupeKey: `${REFERRAL_FIRST_CONVERSION_TEMPLATE_ID}:${input.referrerUserId}`,
     templateId: REFERRAL_FIRST_CONVERSION_TEMPLATE_ID,
-    toAddress: input.referrerEmail,
+    subject: REFERRAL_FIRST_CONVERSION_SUBJECT,
+    html: buildReferralFirstConversionHtml(input),
+    text: buildReferralFirstConversionText(input),
     userId: input.referrerUserId,
+    toAddress: input.referrerEmail,
+    scope: "onboarding",
+    skipWishoniaSignature: true,
   });
-
-  if (claimed.duplicate || !claimed.emailLogId) {
-    return { status: "duplicate" };
-  }
-
-  try {
-    const result = await sendResendEmail({
-      emailLogId: claimed.emailLogId,
-      html: buildReferralFirstConversionHtml(input),
-      scope: "onboarding",
-      skipWishoniaSignature: true,
-      subject: REFERRAL_FIRST_CONVERSION_SUBJECT,
-      text: buildReferralFirstConversionText(input),
-      to: input.referrerEmail,
-      userId: input.referrerUserId,
-    });
-
-    if (result.status === "sent") {
-      await markEmailLogStatus({
-        emailLogId: claimed.emailLogId,
-        providerMessageId: result.id,
-        status: "SENT",
-      });
-    } else {
-      await markEmailLogStatus({
-        emailLogId: claimed.emailLogId,
-        errorMessage: `send_aborted:${result.status}`,
-        status: "FAILED",
-      });
-    }
-    return result;
-  } catch (error) {
-    await markEmailLogStatus({
-      emailLogId: claimed.emailLogId,
-      errorMessage: error instanceof Error ? error.message : String(error),
-      status: "FAILED",
-    });
-    throw error;
-  }
 }

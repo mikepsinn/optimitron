@@ -12,13 +12,9 @@
  * Dedupe: keyed on the `voteId`, so re-votes don't double-send.
  */
 
-import { nanoid } from "nanoid";
-import {
-  claimEmailLog,
-  markEmailLogStatus,
-} from "@/lib/email/email-log.server";
-import { sendResendEmail, type SendResult } from "@/lib/email/resend";
 import { escapeHtml } from "@/lib/email/magic-link-render";
+import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
+import type { SendResult } from "@/lib/email/resend";
 import { buildShareMessage } from "@/lib/share-message";
 
 interface PostVoteShareEmailInput {
@@ -37,13 +33,9 @@ interface PostVoteShareEmailInput {
 export const POST_VOTE_SHARE_TEMPLATE_ID = "post-vote-share";
 export const POST_VOTE_SHARE_SUBJECT = "End war and disease";
 
-export function buildPostVoteShareMessageText(referralUrl: string): string {
-  return buildShareMessage(referralUrl);
-}
-
 export function buildPostVoteShareHtml(referralUrl: string): string {
   const escapedUrl = escapeHtml(referralUrl);
-  const message = escapeHtml(buildPostVoteShareMessageText(referralUrl));
+  const message = escapeHtml(buildShareMessage(referralUrl));
   return `
     <div style="padding:32px 16px;font-family:Arial,sans-serif;color:#111827;max-width:640px;margin:0 auto;">
       <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#71717a;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;">
@@ -70,7 +62,7 @@ export function buildPostVoteShareText(referralUrl: string): string {
   return [
     "You voted. Now forward this to two humans you love.",
     "",
-    buildPostVoteShareMessageText(referralUrl),
+    buildShareMessage(referralUrl),
     "",
     `End war and disease: ${referralUrl}`,
     "",
@@ -81,56 +73,15 @@ export function buildPostVoteShareText(referralUrl: string): string {
 export async function sendPostVoteShareEmail(
   input: PostVoteShareEmailInput,
 ): Promise<SendResult | { status: "duplicate" }> {
-  const emailLogId = nanoid();
-  const dedupeKey = `${POST_VOTE_SHARE_TEMPLATE_ID}:${input.voteId}`;
-  const now = new Date();
-
-  const claimed = await claimEmailLog({
-    dedupeKey,
-    id: emailLogId,
-    now,
-    subject: POST_VOTE_SHARE_SUBJECT,
+  return sendDedupedEmail({
+    dedupeKey: `${POST_VOTE_SHARE_TEMPLATE_ID}:${input.voteId}`,
     templateId: POST_VOTE_SHARE_TEMPLATE_ID,
-    toAddress: input.toAddress,
+    subject: POST_VOTE_SHARE_SUBJECT,
+    html: buildPostVoteShareHtml(input.referralUrl),
+    text: buildPostVoteShareText(input.referralUrl),
     userId: input.userId,
+    toAddress: input.toAddress,
+    scope: "onboarding",
+    skipWishoniaSignature: true,
   });
-
-  if (claimed.duplicate || !claimed.emailLogId) {
-    return { status: "duplicate" };
-  }
-
-  try {
-    const result = await sendResendEmail({
-      emailLogId: claimed.emailLogId,
-      html: buildPostVoteShareHtml(input.referralUrl),
-      scope: "onboarding",
-      skipWishoniaSignature: true,
-      subject: POST_VOTE_SHARE_SUBJECT,
-      text: buildPostVoteShareText(input.referralUrl),
-      to: input.toAddress,
-      userId: input.userId,
-    });
-
-    if (result.status === "sent") {
-      await markEmailLogStatus({
-        emailLogId: claimed.emailLogId,
-        providerMessageId: result.id,
-        status: "SENT",
-      });
-    } else {
-      await markEmailLogStatus({
-        emailLogId: claimed.emailLogId,
-        errorMessage: `send_aborted:${result.status}`,
-        status: "FAILED",
-      });
-    }
-    return result;
-  } catch (error) {
-    await markEmailLogStatus({
-      emailLogId: claimed.emailLogId,
-      errorMessage: error instanceof Error ? error.message : String(error),
-      status: "FAILED",
-    });
-    throw error;
-  }
 }
