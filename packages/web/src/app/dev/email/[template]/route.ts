@@ -74,8 +74,54 @@ const renderers: Record<string, () => string> = {
     }).html,
 };
 
+// Gmail-mobile-like wrapper that surrounds the email body in an iframe
+// scaled to phone width (~420px). The iframe isolates the email's own
+// inline styles from the wrapper chrome. Reviewers on mobile (or desktop
+// with narrow viewport) get a faithful rendering of how Gmail's mobile
+// app actually displays the email.
+//
+// Use `?raw=1` to get the bare email HTML (e.g. for the Playwright
+// screenshot spec, which page.goto's this URL).
+function escapeForSrcdoc(html: string): string {
+  return html.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+}
+
+function buildMobilePreviewWrapper(template: string, emailHtml: string): string {
+  const safe = escapeForSrcdoc(emailHtml);
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Email preview: ${template}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f5f5f5; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .toolbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 10px 16px; font-size: 13px; color: #5f6368; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .toolbar strong { color: #202124; }
+  .toolbar a { color: #1a73e8; text-decoration: none; }
+  .toolbar a:hover { text-decoration: underline; }
+  .gmail-frame { max-width: 420px; margin: 12px auto; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-radius: 8px; overflow: hidden; }
+  .gmail-frame iframe { width: 100%; height: 80vh; border: 0; display: block; background: #fff; }
+  @media (min-width: 640px) {
+    .gmail-frame { max-width: 420px; margin: 24px auto; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>Email preview · <strong>${template}</strong> · Gmail-mobile width (420px)</span>
+  <a href="?raw=1">view raw HTML →</a>
+</div>
+<div class="gmail-frame">
+  <iframe srcdoc="${safe}" title="${template}"></iframe>
+</div>
+</body>
+</html>`;
+}
+
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ template: string }> },
 ) {
   if (process.env.VERCEL_ENV === "production") {
@@ -93,7 +139,11 @@ export async function GET(
   }
 
   const html = renderer();
-  return new NextResponse(html, {
+  const url = new URL(request.url);
+  const wantsRaw = url.searchParams.get("raw") === "1";
+
+  const body = wantsRaw ? html : buildMobilePreviewWrapper(template, html);
+  return new NextResponse(body, {
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 }

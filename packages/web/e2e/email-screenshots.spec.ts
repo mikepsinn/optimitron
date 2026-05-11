@@ -32,7 +32,12 @@ async function captureEmail(
   testInfo: import("@playwright/test").TestInfo,
 ) {
   await page.setViewportSize(EMAIL_VIEWPORT);
-  await page.goto(`/dev/email/${template}`, { waitUntil: "domcontentloaded" });
+  // `?raw=1` returns the bare email HTML; the default route wraps it in a
+  // Gmail-mobile preview chrome which we don't want in the visual-regression
+  // screenshot.
+  await page.goto(`/dev/email/${template}?raw=1`, {
+    waitUntil: "domcontentloaded",
+  });
   await page.waitForLoadState("networkidle").catch(() => undefined);
 
   const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
