@@ -439,6 +439,26 @@ jobs:
               });
             }
 
+      - name: Post Visual review commit status
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const headSha = context.payload.pull_request.head.sha;
+            const shortSha = headSha.slice(0, 12);
+            const target_url = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/${shortSha}/latest.html`;
+            await github.rest.repos.createCommitStatus({
+              owner,
+              repo,
+              sha: headSha,
+              state: 'success',
+              context: 'Visual review',
+              description: shortSha,
+              target_url,
+            });
+
       - name: Upload Playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v6
