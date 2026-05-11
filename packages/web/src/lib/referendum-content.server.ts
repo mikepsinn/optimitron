@@ -29,19 +29,20 @@ export async function getReferendumPageContent(
       bodyMarkdown: true,
     },
   });
-  if (!row) return null;
 
   // Treaty body falls back to the bundled `onePercentTreatyText` snippet
-  // when the DB row is empty — preview DBs, fresh seeds, or anywhere the
-  // Referendum.bodyMarkdown column hasn't been populated would otherwise
-  // render `/treaty` with only the headline + signature box and no
-  // treaty text in between.
-  if (slug === TREATY_REFERENDUM_SLUG && !row.bodyMarkdown) {
+  // when the DB row is missing or its `bodyMarkdown` column is empty —
+  // CI databases, fresh seeds, or anywhere the Referendum row hasn't been
+  // populated would otherwise render `/treaty` with only the headline +
+  // signature box and no treaty text in between.
+  if (slug === TREATY_REFERENDUM_SLUG && (!row || !row.bodyMarkdown)) {
     return {
-      ...row,
+      question: row?.question ?? "",
       bodyMarkdown: shareableSnippets.onePercentTreatyText.markdown,
     };
   }
+
+  if (!row) return null;
 
   return row;
 }
