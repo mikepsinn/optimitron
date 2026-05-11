@@ -622,13 +622,16 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-// For lives / DALYs / suffering-years: integer (with commas) when ≥ 1,
-// 2 significant figures when < 1 so a $0.50 donation reads "0.65 lives"
-// rather than "0".
+// For lives / DALYs / suffering-years: ≥3 significant figures per the
+// calculator-page rule. Previously truncated to integer for `value >= 1`
+// which made a $1 donation's 2.34 averted years display as "2".
+// Big values (≥100) get full integer + commas (already ≥3 sig figs and
+// avoids scientific notation that `toPrecision` falls back to past 4
+// digits); smaller values use `toPrecision(3)` which keeps decimals.
 function formatQuantity(value: number): string {
   if (!Number.isFinite(value) || value <= 0) return "";
-  if (value >= 1) return formatNumber(value, 0);
-  return Number(value.toPrecision(2)).toString();
+  if (value >= 100) return formatNumber(value, 0);
+  return value.toPrecision(3);
 }
 
 function formatPrice(value: number): string {

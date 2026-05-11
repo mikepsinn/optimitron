@@ -583,10 +583,12 @@ function formatNumber(value: number, decimals = 0): string {
   }).format(value);
 }
 
+// ≥3 sig figs per the calculator-page rule. See sibling note in
+// DonationImpactCalculator.tsx formatQuantity.
 function formatQuantity(value: number): string {
   if (!Number.isFinite(value) || value <= 0) return "";
-  if (value >= 1) return formatNumber(value, 0);
-  return Number(value.toPrecision(2)).toString();
+  if (value >= 100) return formatNumber(value, 0);
+  return value.toPrecision(3);
 }
 
 function formatPrice(value: number): string {
