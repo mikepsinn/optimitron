@@ -334,7 +334,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       `Quick personal-finance note. Had your governments not spent $170 trillion murdering people and destroying everything they spent their entire lives building, the average human alive today would earn $333,636 a year instead of $14,375. Dead scientists do not discover things and exploded cities are very expensive to fix.`,
       ``,
-      `Through the compound effects of this misallocation to war alone, you are 23.2 times poorer than you would otherwise be. (Source and citations: warondisease.org/why.)`,
+      `Through the compound effects of this misallocation to war alone, you are 23.2 times poorer than you would otherwise be. (Source and citations: warondisease.org/treaty.)`,
       ``,
       `Going forward: global military spending has been growing 2.76% a year for twenty years. If no one tells it to stop, every human alive will pay about $402,488 over their lifetime (mostly funding explosions in countries they cannot find on a map). A one percent cut tells it to stop. That saves the average person about $290,052 — the peace dividend.`,
       ``,

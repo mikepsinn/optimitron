@@ -23,7 +23,6 @@ describe("site sitemap routing", () => {
         ROUTES.signatories,
         ROUTES.treaty,
         ROUTES.vote,
-        ROUTES.why,
         ROUTES.donate,
         ROUTES.employees,
       ]),

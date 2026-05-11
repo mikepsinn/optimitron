@@ -22,15 +22,15 @@ describe("metadata helpers", () => {
     const metadata = getSiteMetadata(
       site,
       {
-        title: "Why — 1% Treaty",
-        description: "Why the treaty exists.",
+        title: "Treaty — 1% Treaty",
+        description: "The treaty text.",
       },
-      "/why",
+      "/treaty",
       { robots: { index: true, follow: true } },
     );
 
     expect(metadata.metadataBase?.toString()).toBe("https://warondisease.org/");
-    expect(metadata.alternates?.canonical).toBe("/why");
+    expect(metadata.alternates?.canonical).toBe("/treaty");
     expect(metadata.openGraph?.siteName).toBe(
       "International Campaign to End War and Disease",
     );

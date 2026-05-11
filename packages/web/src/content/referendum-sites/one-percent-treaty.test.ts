@@ -8,10 +8,7 @@ import { onePercentTreatyContent } from "./one-percent-treaty";
 import type { ReferendumSiteContent } from "./types";
 
 type WarOnDiseaseMessages = {
-  onePercentTreaty: Pick<
-    ReferendumSiteContent,
-    "home" | "metadata" | "why"
-  >;
+  onePercentTreaty: Pick<ReferendumSiteContent, "home" | "metadata">;
 };
 
 const messagesPath = fileURLToPath(
@@ -69,9 +66,6 @@ describe("one percent treaty referendum content", () => {
     expect(onePercentTreatyContent.home.heroTitle).toBe(
       catalog.home.heroTitle,
     );
-    expect(
-      onePercentTreatyContent.why.facts.map(({ label }) => label),
-    ).toEqual(catalog.why.facts.map(({ label }: { label: string }) => label));
   });
 
   it("does not leak unresolved message placeholders into runtime copy", () => {
