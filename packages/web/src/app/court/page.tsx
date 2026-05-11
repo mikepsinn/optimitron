@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { headers } from "next/headers";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
@@ -11,7 +10,11 @@ import {
 import { formatCount } from "@/lib/format-count";
 import { getHumanityVGovernmentPlaintiffCount } from "@/lib/humanity-v-government-case.server";
 import { getRouteMetadata } from "@/lib/metadata";
-import { courtLink, humanityVGovernmentLink, ROUTES } from "@/lib/routes";
+import {
+  HUMANITY_V_GOVERNMENT_CASE_NAME,
+  courtLink,
+  ROUTES,
+} from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -25,8 +28,8 @@ interface CourtPageProps {
 
 /**
  * Court of Humanity entry surface. Tight executive summary of the only case
- * currently being heard — `Humanity v. Governments of Earth` — with a single
- * CTA (render the verdict = sign the 1% Treaty). The detailed case lives on
+ * currently being heard — `Humanity v. Government` — with a single CTA
+ * (render the verdict = sign the 1% Treaty). The detailed case lives on
  * `/humanity-v-government`.
  *
  * Preserves `?ref=` so referrers landing visitors here keep attribution
@@ -43,7 +46,6 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
     : ROUTES.humanityVGovernment;
 
   const plaintiffCount = await getHumanityVGovernmentPlaintiffCount();
-  await headers(); // force dynamic render
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
@@ -56,9 +58,9 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
         One action. Three roles.
       </h1>
       <p className="mt-5 max-w-2xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
-        The Court of Humanity hears one case: <em>Humanity v. Governments of
-        Earth</em>. The verdict is the 1% Treaty. Rendering it makes you a
-        named plaintiff and a juror.
+        The Court of Humanity hears one case:{" "}
+        <em>{HUMANITY_V_GOVERNMENT_CASE_NAME}</em>. The verdict is the 1%
+        Treaty. Rendering it makes you a named plaintiff and a juror.
       </p>
 
       <section className="mt-10 border-2 border-foreground bg-background p-6">
@@ -190,7 +192,7 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
           className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:text-muted-foreground"
           href={caseHref}
         >
-          Read the full case → {humanityVGovernmentLink.label}
+          Read the full case → {HUMANITY_V_GOVERNMENT_CASE_NAME}
         </Link>
       </section>
     </main>
