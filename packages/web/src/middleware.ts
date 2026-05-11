@@ -70,13 +70,15 @@ function handleDevAuthQueryParams(req: import("next/server").NextRequest) {
   const logout = params.get("logout");
 
   if (loginAs === "demo") {
-    // Default-deny: any production signal disables the bypass. Mirrors
-    // `isProduction()` in /api/dev/login-as-demo/route.ts.
-    if (
-      process.env.VERCEL_ENV === "production" ||
-      process.env.NODE_ENV === "production"
-    )
-      return null;
+    // Allow-list, NOT deny-list. Vercel sets NODE_ENV=production on BOTH
+    // preview and production deploys, so a deny-list check breaks the
+    // feature on previews (the exact env it's designed for). Mirror the
+    // `isPreviewOrDev()` allow-list in /api/dev/login-as-demo/route.ts.
+    const isPreviewOrDev =
+      process.env.VERCEL_ENV === "preview" ||
+      process.env.VERCEL_ENV === "development" ||
+      process.env.NODE_ENV === "development";
+    if (!isPreviewOrDev) return null;
     const stripped = req.nextUrl.clone();
     stripped.searchParams.delete("login");
     const next = `${stripped.pathname}${stripped.search}${stripped.hash}`;

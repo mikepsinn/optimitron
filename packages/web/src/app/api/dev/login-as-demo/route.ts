@@ -18,14 +18,23 @@ import { prisma } from "@/lib/prisma";
 
 const DEMO_EMAIL = "demo@thinkbynumbers.org";
 
-function isProduction(): boolean {
-  // Default-deny: any signal that we're in production disables the bypass.
-  // VERCEL_ENV alone is insufficient — if it's unset (e.g. self-hosted,
-  // misconfigured project, or running outside Vercel), we'd otherwise enable
-  // the auth-bypass route in a real production environment.
+function isPreviewOrDev(): boolean {
+  // Allow-list, not deny-list. Vercel sets NODE_ENV=production on BOTH
+  // preview and production deploys, so a "block if NODE_ENV=production"
+  // check breaks the feature on the exact environment it's designed for.
+  // The only safe approach: explicitly allow only environments we know
+  // are non-prod.
+  //
+  // - Vercel preview deploys: VERCEL_ENV === "preview"
+  // - Vercel dev: VERCEL_ENV === "development"
+  // - Localhost / generic dev: NODE_ENV === "development" (VERCEL_ENV unset)
+  //
+  // Anything else (Vercel production, self-hosted prod where neither is
+  // explicitly preview/dev) is blocked.
   return (
-    process.env.VERCEL_ENV === "production" ||
-    process.env.NODE_ENV === "production"
+    process.env.VERCEL_ENV === "preview" ||
+    process.env.VERCEL_ENV === "development" ||
+    process.env.NODE_ENV === "development"
   );
 }
 
@@ -45,7 +54,7 @@ function cookieName(req: Request): string {
 }
 
 export async function GET(request: Request) {
-  if (isProduction()) {
+  if (!isPreviewOrDev()) {
     return new NextResponse("Not Found", { status: 404 });
   }
 
