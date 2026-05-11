@@ -1,6 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ParameterValue } from "@/components/shared/ParameterValue";
+import {
+  DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER,
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  GLOBAL_POPULATION_2024,
+  GLOBAL_WARHEAD_COUNT,
+  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+} from "@optimitron/data/parameters";
+import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
 import { buildShareMessage } from "@/lib/share-message";
 
 interface DashboardShareCardProps {
@@ -56,19 +66,65 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
         Humanity Manager · Assignment 1
       </p>
       <h2 className="mt-2 text-2xl font-black uppercase leading-tight tracking-tight sm:text-3xl">
-        Trade one apocalypse for 12.3× more clinical trials.
+        Trade one apocalypse for{" "}
+        <ParameterValue
+          className="font-black"
+          figures={3}
+          param={DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER}
+        />
+        × more clinical trials.
       </h2>
       <div className="mt-4 space-y-3 text-sm font-bold leading-7 text-[var(--treaty-ink)] sm:text-base">
         <p>
           You have been promoted to Humanity Manager at Earth
-          Optimization Services LLC. Responsible for 8,000,000,000 humans.
-          First task: get them to ratify the 1% Treaty.
+          Optimization Services LLC. Responsible for{" "}
+          <ParameterValue
+            className="font-black"
+            display="withUnit"
+            figures={1}
+            param={GLOBAL_POPULATION_2024}
+          />{" "}
+          humans. First task: get them to ratify the 1% Treaty.
         </p>
         <p>
-          Earth owns 12,200 nuclear warheads. 100 of them ends
-          civilization. That is 122 apocalypses on the shelf. Spend one
-          apocalypse on 12.3× more clinical trials and the disease-
-          eradication timeline collapses from 443 years to 36.
+          Earth owns{" "}
+          <ParameterValue
+            className="font-black"
+            figures={3}
+            param={GLOBAL_WARHEAD_COUNT}
+          />{" "}
+          nuclear warheads.{" "}
+          <ParameterValue
+            className="font-black"
+            figures={3}
+            param={NUCLEAR_WINTER_WARHEAD_THRESHOLD}
+          />{" "}
+          of them ends civilization. That is{" "}
+          <ParameterValue
+            className="font-black"
+            figures={3}
+            param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
+          />{" "}
+          apocalypses on the shelf. Spend one apocalypse on{" "}
+          <ParameterValue
+            className="font-black"
+            figures={3}
+            param={DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER}
+          />
+          × more clinical trials and the disease-eradication timeline
+          collapses from{" "}
+          <ParameterValue
+            className="font-black"
+            figures={3}
+            param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+          />{" "}
+          years to{" "}
+          <ParameterValue
+            className="font-black"
+            figures={2}
+            param={DFDA_QUEUE_CLEARANCE_YEARS}
+          />
+          .
         </p>
         <p className="text-[var(--treaty-ink)]/70">
           To get there: send the message below to two humans you love.
