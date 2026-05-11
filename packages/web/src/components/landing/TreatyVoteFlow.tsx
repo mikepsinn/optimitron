@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
 import { TreatyPostVoteShareFlow } from "@/components/landing/TreatyPostVoteShareFlow";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { NeobrutalistLoaderMark } from "@/components/ui/neobrutalist-loader";
+import { CivilizationOsLoaderMark } from "@/components/ui/civilization-os-loader";
 import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import confetti from "canvas-confetti";
@@ -618,7 +618,7 @@ export function TreatyVoteFlow({
               contentClassName="max-w-2xl justify-center py-10 sm:py-12"
             >
               <div className="space-y-6 text-center">
-                <NeobrutalistLoaderMark
+                <CivilizationOsLoaderMark
                   size="sm"
                   className="mx-auto text-[var(--treaty-ink)]"
                 />

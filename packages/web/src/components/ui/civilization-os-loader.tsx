@@ -1,23 +1,23 @@
 "use client";
 
-interface NeobrutalistLoaderProps {
+interface CivilizationOsLoaderProps {
   message?: string;
   submessage?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-interface NeobrutalistLoaderMarkProps {
+interface CivilizationOsLoaderMarkProps {
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export function NeobrutalistLoaderMark({
+export function CivilizationOsLoaderMark({
   label = 'OPTIMIZING EARTH',
   size = 'md',
   className = '',
-}: NeobrutalistLoaderMarkProps) {
+}: CivilizationOsLoaderMarkProps) {
   const panelClasses = {
     sm: 'w-40 p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]',
     md: 'w-56 p-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
@@ -95,15 +95,15 @@ export function NeobrutalistLoaderMark({
   );
 }
 
-export function NeobrutalistLoader({
+export function CivilizationOsLoader({
   message = 'Booting Earth Optimization System',
   submessage = 'Thank you for your patience. Your civilization is very important to us.',
   size = 'md',
   className = '',
-}: NeobrutalistLoaderProps) {
+}: CivilizationOsLoaderProps) {
   return (
     <div className={`flex flex-col items-center justify-center gap-6 py-12 ${className}`}>
-      <NeobrutalistLoaderMark label={message} size={size} />
+      <CivilizationOsLoaderMark label={message} size={size} />
 
       {submessage && (
         <p className="max-w-xl text-center text-sm font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -115,7 +115,7 @@ export function NeobrutalistLoader({
 }
 
 // Alternative loader with spinning square
-export function NeobrutalistSpinner({ message, size = 'md' }: NeobrutalistLoaderProps) {
+export function CivilizationOsSpinner({ message, size = 'md' }: CivilizationOsLoaderProps) {
   const sizeClasses = {
     sm: 'w-12 h-12',
     md: 'w-16 h-16',
@@ -151,8 +151,8 @@ export function NeobrutalistSpinner({ message, size = 'md' }: NeobrutalistLoader
   );
 }
 
-// Card-style skeleton loader with neobrutalist design
-export function NeobrutalistCardLoader({ count = 3 }: { count?: number }) {
+// Card-style skeleton loader for dense Civilization OS surfaces.
+export function CivilizationOsCardLoader({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, i) => (

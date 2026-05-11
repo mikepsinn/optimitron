@@ -65,7 +65,6 @@ export function ParameterValue({
     param.formula,
     param.latex,
     param.sourceRef,
-    param.sourceUrl,
     param.confidence,
     param.calculationsUrl,
     param.manualPageUrl,
@@ -129,6 +128,13 @@ function ParameterDetailContent({
     : undefined
 
   const fullValue = fmtParam(param)
+  const showReferenceLabel = Boolean(!citation?.URL && param.sourceRef)
+  const hasReferenceActions = Boolean(
+    showReferenceLabel ||
+    param.calculationsUrl ||
+    param.manualPageUrl
+  )
+  const hasCitationDetail = Boolean(citation?.title)
 
   return (
     <div className="min-w-0 space-y-3">
@@ -181,64 +187,52 @@ function ParameterDetailContent({
         </div>
       ) : null}
 
-      {/* Links section */}
-      <div className="space-y-3 pt-3 border-t-2 border-primary/20">
-        <div className="flex flex-wrap items-center gap-2">
-          {param.sourceUrl && (
-            <MetaLink
-              href={param.sourceUrl}
-              icon={ExternalLink}
-              label="Original Source"
-            />
+      {(hasReferenceActions || hasCitationDetail) && (
+        <div className="space-y-3 pt-3 border-t-2 border-primary/20">
+          {hasReferenceActions && (
+            <div className="flex flex-wrap items-center gap-2">
+              {showReferenceLabel && (
+                <span className="text-xs text-muted-foreground font-bold flex items-center gap-1">
+                  <Info className="h-3.5 w-3.5" />
+                  Ref: {param.sourceRef?.replace(/-/g, " ")}
+                </span>
+              )}
+              {param.calculationsUrl && (
+                <MetaLink
+                  href={param.calculationsUrl}
+                  icon={FlaskConical}
+                  label="Simulations & Sensitivity"
+                />
+              )}
+              {param.manualPageUrl && (
+                <MetaLink
+                  href={param.manualPageUrl}
+                  icon={BookOpen}
+                  label="Chapter"
+                  detail={param.manualPageTitle ?? "Manual"}
+                />
+              )}
+            </div>
           )}
-          {citation?.URL && citation.URL !== param.sourceUrl && (
-            <MetaLink
-              href={citation.URL}
-              icon={ExternalLink}
-              label="Published Study"
-            />
-          )}
-          {!param.sourceUrl && !citation?.URL && param.sourceRef && (
-            <span className="text-xs text-muted-foreground font-bold flex items-center gap-1">
-              <Info className="h-3.5 w-3.5" />
-              Ref: {param.sourceRef.replace(/-/g, " ")}
-            </span>
-          )}
-          {param.calculationsUrl && (
-            <MetaLink
-              href={param.calculationsUrl}
-              icon={FlaskConical}
-              label="Simulations & Sensitivity"
-            />
-          )}
-          {param.manualPageUrl && (
-            <MetaLink
-              href={param.manualPageUrl}
-              icon={BookOpen}
-              label="Chapter"
-              detail={param.manualPageTitle ?? "Manual"}
-            />
+
+          {citation?.title && (
+            <p className="text-xs font-bold text-muted-foreground leading-relaxed">
+              {citation.title}
+              {citation.author?.[0] && (
+                <span>
+                  {" — "}
+                  {citation.author[0].literal ??
+                    `${citation.author[0].family ?? ""}${citation.author[0].given ? `, ${citation.author[0].given}` : ""}`}
+                  {citation.author.length > 1 && " et al."}
+                </span>
+              )}
+              {citation.issued?.["date-parts"]?.[0]?.[0] && (
+                <span> ({citation.issued["date-parts"][0][0]})</span>
+              )}
+            </p>
           )}
         </div>
-
-        {/* Citation detail */}
-        {citation?.title && (
-          <p className="text-xs font-bold text-muted-foreground leading-relaxed">
-            {citation.title}
-            {citation.author?.[0] && (
-              <span>
-                {" — "}
-                {citation.author[0].literal ??
-                  `${citation.author[0].family ?? ""}${citation.author[0].given ? `, ${citation.author[0].given}` : ""}`}
-                {citation.author.length > 1 && " et al."}
-              </span>
-            )}
-            {citation.issued?.["date-parts"]?.[0]?.[0] && (
-              <span> ({citation.issued["date-parts"][0][0]})</span>
-            )}
-          </p>
-        )}
-      </div>
+      )}
     </div>
   )
 }
@@ -296,4 +290,3 @@ function MetaLink({
     </a>
   )
 }
-
