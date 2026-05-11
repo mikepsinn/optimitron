@@ -266,6 +266,23 @@ cross-check so they do not disappear into chat history.
 
 **Public copy, messaging, and emails**
 
+- Post-vote forward email + first-conversion email shipped (PR3). Voter receives
+  a forward-friendly share kit on YES treaty vote. Referrer receives a single
+  "Your link worked. Round 1 of 32" email on their first conversion only —
+  never on subsequent conversions. Both deduped via `EmailLog.dedupeKey`.
+- Monthly chain-stats digest (not yet built). Once a month, send each user a
+  digest only when the count of new voters reaching them via their link in
+  the past month is > 0. Subject: `{N} more voters joined through your link
+  in {month}`. Body shows full chain size + which doubling round they're on
+  + how many more rounds reach 4B (the math the user has to grasp to
+  evangelize correctly). Skip zero-count months entirely — silent is better
+  than depressing. Requires cron + transitive-chain query (recursive CTE).
+- Email-template screenshots in the visual review (not yet built). Render
+  every email template — magic-link, task-assignment, task-comment-notification,
+  inbound-monitor-forward, post-vote-share, referral-first-conversion — with
+  representative tokens, screenshot at email-client widths, embed alongside
+  page screenshots in `latest.html`. Reviewers currently can't see email
+  copy without setting up Resend locally.
 - Move remaining dashboard/page copy into the messaging/copy-review system where
   practical, especially Treaty Dashboard text and major CTAs.
 - Continue internationalization groundwork by centralizing public copy in JSON or

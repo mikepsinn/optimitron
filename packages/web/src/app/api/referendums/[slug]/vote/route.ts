@@ -23,6 +23,10 @@ import { ensureHumanityVGovernmentPlaintiffParty } from "@/lib/humanity-v-govern
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
+import { sendPostVoteShareEmail } from "@/lib/email/post-vote-share-email";
+import { sendReferralFirstConversionEmail } from "@/lib/email/referral-first-conversion-email";
+import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
+import { ROUTES } from "@/lib/routes";
 
 const log = createLogger("referendum-vote");
 
@@ -244,6 +248,51 @@ export async function POST(
           });
         } catch (plaintiffError) {
           log.error("Plaintiff registration error", plaintiffError);
+        }
+
+        // Forward-friendly post-vote share email + first-conversion email to
+        // the referrer (if any). Both are deduped by emailLog dedupeKey so
+        // re-votes and subsequent referral conversions don't fire again.
+        try {
+          const voter = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+              email: true,
+              referralCode: true,
+              person: { select: { displayName: true, handle: true } },
+            },
+          });
+          if (voter?.email) {
+            const referralUrl = buildUserReferralUrl({
+              handle: voter.person?.handle ?? null,
+              referralCode: voter.referralCode,
+            });
+            await sendPostVoteShareEmail({
+              voteId: vote.id,
+              userId,
+              toAddress: voter.email,
+              referralUrl,
+            });
+          }
+
+          if (vote.referredByUserId) {
+            const referrer = await prisma.user.findUnique({
+              where: { id: vote.referredByUserId },
+              select: { email: true },
+            });
+            if (referrer?.email) {
+              const voterDisplayName =
+                voter?.person?.displayName ?? "A new voter";
+              await sendReferralFirstConversionEmail({
+                referrerUserId: vote.referredByUserId,
+                referrerEmail: referrer.email,
+                voterDisplayName,
+                dashboardUrl: `${getBaseUrl()}${ROUTES.dashboard}`,
+              });
+            }
+          }
+        } catch (shareEmailError) {
+          log.error("Post-vote share email error", shareEmailError);
         }
       }
     }
