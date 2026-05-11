@@ -86,7 +86,6 @@ export default async function DashboardPage({
     return (
       <TreatyTaskDashboardClient
         user={profileData.user}
-        treatyProgram={presidentManagement.treatyProgram}
         signerTasks={presidentManagement.signerTasks}
       />
     );
