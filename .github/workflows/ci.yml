@@ -340,6 +340,16 @@ jobs:
           mkdir -p "$commit_dir" "$latest_dir"
           cp -R packages/web/output/playwright/review/. "$commit_dir/"
           cp -R packages/web/output/playwright/review/. "$latest_dir/"
+          # `latest.html` is the entry point the build script writes. Also
+          # publish it as `index.html` so bare `pr-N/latest/` and
+          # `pr-N/<sha>/` directory URLs (no filename) resolve to the review
+          # page instead of returning 404.
+          if [ -f "$commit_dir/latest.html" ]; then
+            cp "$commit_dir/latest.html" "$commit_dir/index.html"
+          fi
+          if [ -f "$latest_dir/latest.html" ]; then
+            cp "$latest_dir/latest.html" "$latest_dir/index.html"
+          fi
           # Seed `.nojekyll` and a root `index.html` at the publish root so the
           # gh-pages site doesn't try to render through Jekyll and so the
           # bare https://<user>.github.io/<repo>/ URL renders something
