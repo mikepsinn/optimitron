@@ -253,9 +253,26 @@ export async function POST(
 
         // Forward-friendly post-vote share email + first-conversion email to
         // the referrer (if any). Both are deduped by emailLog dedupeKey so
-        // re-votes and subsequent referral conversions don't fire again.
+        // re-votes and subsequent referral conversions don't fire again. The
+        // two sends are independent: a voter share failure must not suppress
+        // the referrer's first-conversion email (or vice-versa).
+        type VoterRecord = {
+          id: string;
+          email: string;
+          referralCode: string | null;
+          person:
+            | {
+                id: string;
+                handle: string | null;
+                displayName: string | null;
+                image: string | null;
+                isPublic: boolean | null;
+              }
+            | null;
+        };
+        let voter: VoterRecord | null = null;
         try {
-          const voter = await prisma.user.findUnique({
+          voter = (await prisma.user.findUnique({
             where: { id: userId },
             select: {
               ...userDisplaySelect,
@@ -273,7 +290,8 @@ export async function POST(
                 },
               },
             },
-          });
+          })) as VoterRecord | null;
+
           if (voter?.email) {
             const referralUrl = buildUserReferralUrl({
               handle: voter.person?.handle ?? null,
@@ -286,8 +304,12 @@ export async function POST(
               referralUrl,
             });
           }
+        } catch (postVoteShareError) {
+          log.error("Post-vote share email error", postVoteShareError);
+        }
 
-          if (vote.referredByUserId) {
+        if (vote.referredByUserId) {
+          try {
             const referrer = await prisma.user.findUnique({
               where: { id: vote.referredByUserId },
               select: {
@@ -315,9 +337,12 @@ export async function POST(
                 referrerReferralUrl,
               });
             }
+          } catch (firstConversionError) {
+            log.error(
+              "Referral first-conversion email error",
+              firstConversionError,
+            );
           }
-        } catch (shareEmailError) {
-          log.error("Post-vote share email error", shareEmailError);
         }
       }
     }

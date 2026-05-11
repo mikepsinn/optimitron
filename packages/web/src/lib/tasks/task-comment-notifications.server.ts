@@ -22,23 +22,7 @@ import {
 } from "@/lib/tasks/task-notifications.server";
 import { recipientWithinRateLimits } from "@/lib/tasks/task-recipient-rate-limit.server";
 import { resolveTaskRecipients } from "@/lib/tasks/task-recipients.server";
-import { buildUserReferralUrl } from "@/lib/url";
-
-async function getRecipientReferralUrl(userId: string | null): Promise<string | null> {
-  if (!userId) return null;
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      referralCode: true,
-      person: { select: { handle: true } },
-    },
-  });
-  if (!user) return null;
-  return buildUserReferralUrl({
-    handle: user.person?.handle ?? null,
-    referralCode: user.referralCode,
-  });
-}
+import { getRecipientReferralUrl } from "@/lib/referral-url-helpers.server";
 
 const log = createLogger("task-comment-notifications");
 

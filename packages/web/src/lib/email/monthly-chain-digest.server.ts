@@ -10,15 +10,11 @@
  * Driven by `app/api/cron/monthly-chain-digest/route.ts`.
  */
 
-import { nanoid } from "nanoid";
 import { ReferendumStatus, VotePosition } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
-import {
-  claimEmailLog,
-  markEmailLogStatus,
-} from "@/lib/email/email-log.server";
-import { sendResendEmail, type SendResult } from "@/lib/email/resend";
+import type { SendResult } from "@/lib/email/resend";
+import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import {
   MONTHLY_CHAIN_DIGEST_TEMPLATE_ID,
   buildMonthlyChainDigestHtml,
@@ -54,8 +50,8 @@ function monthBucket(now: Date): string {
   return `${year}-${month}`;
 }
 
-function monthLabel(now: Date): string {
-  return now.toLocaleDateString("en-US", {
+function monthLabel(date: Date): string {
+  return date.toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
     timeZone: "UTC",
@@ -67,8 +63,12 @@ export async function publishMonthlyChainDigest(input?: {
 }): Promise<MonthlyChainDigestPublishResult> {
   const now = input?.now ?? new Date();
   const bucket = monthBucket(now);
-  const label = monthLabel(now);
   const windowStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  // Label the month the conversion data actually covers (the prior calendar
+  // month when cron fires on day 1), not the month we send. The dedupe
+  // bucket still uses `now` so we ship exactly one digest per recipient per
+  // calendar month.
+  const label = monthLabel(windowStart);
 
   const referendum = await prisma.referendum.findUnique({
     where: { slug: TREATY_REFERENDUM_SLUG },
@@ -202,6 +202,12 @@ export async function publishMonthlyChainDigest(input?: {
         result.duplicate += 1;
       } else if (sendResult.status === "sent") {
         result.sent += 1;
+      } else {
+        // disabled / suppressed — terminal, not retryable, but visible.
+        result.failed += 1;
+        result.errors.push(
+          `${recipient.userId}: send_aborted:${sendResult.status}`,
+        );
       }
     } catch (error) {
       result.failed += 1;
@@ -223,50 +229,16 @@ async function sendMonthlyChainDigestEmail(input: {
   monthBucket: string;
   digestInput: MonthlyChainDigestInput;
 }): Promise<SendResult | { status: "duplicate" }> {
-  const emailLogId = nanoid();
-  const dedupeKey = `${MONTHLY_CHAIN_DIGEST_TEMPLATE_ID}:${input.userId}:${input.monthBucket}`;
   const subject = buildMonthlyChainDigestSubject(input.digestInput);
-
-  const claimed = await claimEmailLog({
-    dedupeKey,
-    id: emailLogId,
-    now: new Date(),
-    subject,
+  return sendDedupedEmail({
+    dedupeKey: `${MONTHLY_CHAIN_DIGEST_TEMPLATE_ID}:${input.userId}:${input.monthBucket}`,
     templateId: MONTHLY_CHAIN_DIGEST_TEMPLATE_ID,
-    toAddress: input.toAddress,
+    subject,
+    html: buildMonthlyChainDigestHtml(input.digestInput),
+    text: buildMonthlyChainDigestText(input.digestInput),
     userId: input.userId,
+    toAddress: input.toAddress,
+    scope: "onboarding",
+    skipWishoniaSignature: true,
   });
-
-  if (claimed.duplicate || !claimed.emailLogId) {
-    return { status: "duplicate" };
-  }
-
-  try {
-    const result = await sendResendEmail({
-      emailLogId: claimed.emailLogId,
-      html: buildMonthlyChainDigestHtml(input.digestInput),
-      scope: "onboarding",
-      skipWishoniaSignature: true,
-      subject,
-      text: buildMonthlyChainDigestText(input.digestInput),
-      to: input.toAddress,
-      userId: input.userId,
-    });
-
-    if (result.status === "sent") {
-      await markEmailLogStatus({
-        emailLogId: claimed.emailLogId,
-        providerMessageId: result.id,
-        status: "SENT",
-      });
-    }
-    return result;
-  } catch (error) {
-    await markEmailLogStatus({
-      emailLogId: claimed.emailLogId,
-      errorMessage: error instanceof Error ? error.message : String(error),
-      status: "FAILED",
-    });
-    throw error;
-  }
 }
