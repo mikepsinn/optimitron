@@ -53,14 +53,28 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
   return (
     <section className="border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8">
       <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--treaty-ink)]/60">
-        Send to two humans you love
+        Humanity Manager · Assignment 1
       </p>
       <h2 className="mt-2 text-2xl font-black uppercase leading-tight tracking-tight sm:text-3xl">
-        Each voter who recruits two more is the campaign.
+        Trade one apocalypse for 12.3× more clinical trials.
       </h2>
-      <p className="mt-2 text-sm font-bold text-[var(--treaty-ink)]/70">
-        2 → 4 → 8 → 16 → 32 doubling rounds → 4,300,000,000 humans reached.
-      </p>
+      <div className="mt-4 space-y-3 text-sm font-bold leading-7 text-[var(--treaty-ink)] sm:text-base">
+        <p>
+          You have been promoted to Humanity Manager at Earth
+          Optimization Services LLC. Responsible for 8,000,000,000 humans.
+          First task: get them to ratify the 1% Treaty.
+        </p>
+        <p>
+          Earth owns 12,200 nuclear warheads. 100 of them ends
+          civilization. That is 122 apocalypses on the shelf. Spend one
+          apocalypse on 12.3× more clinical trials and the disease-
+          eradication timeline collapses from 443 years to 36.
+        </p>
+        <p className="text-[var(--treaty-ink)]/70">
+          To get there: send the message below to two humans you love.
+          They send it to two. 32 rounds reaches every adult on Earth.
+        </p>
+      </div>
 
       <label className="mt-6 block">
         <span className="sr-only">Share message</span>
