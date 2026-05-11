@@ -278,16 +278,25 @@ export async function POST(
           if (vote.referredByUserId) {
             const referrer = await prisma.user.findUnique({
               where: { id: vote.referredByUserId },
-              select: { email: true },
+              select: {
+                email: true,
+                referralCode: true,
+                person: { select: { handle: true } },
+              },
             });
             if (referrer?.email) {
               const voterDisplayName =
                 voter?.person?.displayName ?? "A new voter";
+              const referrerReferralUrl = buildUserReferralUrl({
+                handle: referrer.person?.handle ?? null,
+                referralCode: referrer.referralCode,
+              });
               await sendReferralFirstConversionEmail({
                 referrerUserId: vote.referredByUserId,
                 referrerEmail: referrer.email,
                 voterDisplayName,
                 dashboardUrl: `${getBaseUrl()}${ROUTES.dashboard}`,
+                referrerReferralUrl,
               });
             }
           }

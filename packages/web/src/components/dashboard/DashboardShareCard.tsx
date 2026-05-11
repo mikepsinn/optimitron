@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { buildShareMessage } from "@/lib/share-message";
 
 interface DashboardShareCardProps {
   referralUrl: string;
@@ -28,13 +29,9 @@ function copyToClipboard(text: string): Promise<void> {
   }
 }
 
-function buildDefaultMessage(referralUrl: string): string {
-  return `I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to click this button at ${referralUrl} as it will reduce the chance you will suffer and die of horrible diseases.`;
-}
-
 export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
   const defaultMessage = useMemo(
-    () => buildDefaultMessage(referralUrl),
+    () => buildShareMessage(referralUrl),
     [referralUrl],
   );
   const [message, setMessage] = useState(defaultMessage);

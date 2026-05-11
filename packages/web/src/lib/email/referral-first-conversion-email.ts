@@ -19,6 +19,10 @@ import {
 } from "@/lib/email/email-log.server";
 import { sendResendEmail, type SendResult } from "@/lib/email/resend";
 import { escapeHtml } from "@/lib/email/magic-link-render";
+import {
+  buildShareFooterHtml,
+  buildShareFooterText,
+} from "@/lib/email/share-footer";
 
 interface ReferralFirstConversionEmailInput {
   /** Referrer's `User.id` (the user whose link converted). */
@@ -29,6 +33,8 @@ interface ReferralFirstConversionEmailInput {
   voterDisplayName: string;
   /** URL pointing at the referrer's dashboard so they can see ongoing stats. */
   dashboardUrl: string;
+  /** The referrer's own personal referral URL, embedded in the share footer. */
+  referrerReferralUrl: string;
 }
 
 export const REFERRAL_FIRST_CONVERSION_TEMPLATE_ID = "referral-first-conversion";
@@ -37,7 +43,7 @@ export const REFERRAL_FIRST_CONVERSION_SUBJECT = "Your link worked.";
 export function buildReferralFirstConversionHtml(
   input: Pick<
     ReferralFirstConversionEmailInput,
-    "voterDisplayName" | "dashboardUrl"
+    "voterDisplayName" | "dashboardUrl" | "referrerReferralUrl"
   >,
 ): string {
   const escapedDashboard = escapeHtml(input.dashboardUrl);
@@ -69,6 +75,7 @@ export function buildReferralFirstConversionHtml(
         Live conversion counts live on your dashboard. We only email on the
         first conversion — no per-vote pings.
       </p>
+      ${buildShareFooterHtml(input.referrerReferralUrl)}
     </div>
   `;
 }
@@ -76,7 +83,7 @@ export function buildReferralFirstConversionHtml(
 export function buildReferralFirstConversionText(
   input: Pick<
     ReferralFirstConversionEmailInput,
-    "voterDisplayName" | "dashboardUrl"
+    "voterDisplayName" | "dashboardUrl" | "referrerReferralUrl"
   >,
 ): string {
   return [
@@ -91,6 +98,7 @@ export function buildReferralFirstConversionText(
     `Open dashboard: ${input.dashboardUrl}`,
     "",
     "Live conversion counts live on your dashboard. We only email on the first conversion — no per-vote pings.",
+    buildShareFooterText(input.referrerReferralUrl),
   ].join("\n");
 }
 

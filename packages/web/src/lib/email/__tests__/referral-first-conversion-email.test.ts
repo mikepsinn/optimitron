@@ -9,6 +9,7 @@ import {
 const SAMPLE = {
   voterDisplayName: "Jamie Voter",
   dashboardUrl: "https://warondisease.org/dashboard",
+  referrerReferralUrl: "https://warondisease.org/vote/AB12CD",
 };
 
 describe("referral-first-conversion email builders", () => {
@@ -36,6 +37,19 @@ describe("referral-first-conversion email builders", () => {
     });
     expect(html).not.toContain("<script>");
     expect(html).toContain("&lt;script&gt;");
+  });
+
+  it("appends the canonical share footer with the referrer's referral URL", () => {
+    const html = buildReferralFirstConversionHtml(SAMPLE);
+    const text = buildReferralFirstConversionText(SAMPLE);
+    // Share footer leads with the eyebrow and contains the canonical message
+    // body keyed by the referrer's own URL — so the recipient can copy/paste
+    // it into any channel without going back to the website.
+    expect(html).toContain("Recruit two more humans");
+    expect(html).toContain(SAMPLE.referrerReferralUrl);
+    expect(html).toContain("I love you");
+    expect(text).toContain("Recruit two more humans");
+    expect(text).toContain(SAMPLE.referrerReferralUrl);
   });
 
   it("exposes a stable template id + subject (used for dedupe and logging)", () => {

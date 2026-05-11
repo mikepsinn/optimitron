@@ -19,6 +19,7 @@ import {
 } from "@/lib/email/email-log.server";
 import { sendResendEmail, type SendResult } from "@/lib/email/resend";
 import { escapeHtml } from "@/lib/email/magic-link-render";
+import { buildShareMessage } from "@/lib/share-message";
 
 interface PostVoteShareEmailInput {
   /** ReferendumVote.id — used as dedupe scope. */
@@ -35,7 +36,7 @@ export const POST_VOTE_SHARE_TEMPLATE_ID = "post-vote-share";
 export const POST_VOTE_SHARE_SUBJECT = "End war and disease";
 
 export function buildPostVoteShareMessageText(referralUrl: string): string {
-  return `I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to click this button at ${referralUrl} as it will reduce the chance you will suffer and die of horrible diseases.`;
+  return buildShareMessage(referralUrl);
 }
 
 export function buildPostVoteShareHtml(referralUrl: string): string {
