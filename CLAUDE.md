@@ -58,7 +58,14 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Diagram-before-code** for non-trivial changes. When a change touches >1 system (DB + deploy + CI; UI + API + DB), or you estimate >100 lines new, or the user used "I thought we had / aren't we / why is this so" phrasing: draw current + proposed flow (ASCII boxes or terse prose) in chat BEFORE the Write/Edit. User reacts to the diagram, you iterate on text not code. Trivial fixes (typo, single-line, isolated bug) skip this.
 
-**Fetch the rendered page, don't infer from the codebase.** When the user asks about UX, user journey, what a page shows, page copy, what greets a logged-out visitor, "is the page good" — `WebFetch` the actual deployed URL (warondisease.org, optimitron.com) or use the Vercel MCP for preview deploys. **Then** answer from what's actually rendered. The codebase shows what was *committed*; the deployed page shows what's *live* — and they drift (server/client boundary issues, env-specific routing, site-variant detection, content from DB, etc). Inferring from `page.tsx` source gives wrong answers about hero copy, slot order, conditional content. Fetch first, infer second.
+**Fetch the rendered page, don't infer from the codebase. AND fetch the right page.** When the user asks about UX, user journey, page copy, "is the page good" — fetch the actual rendered page first, then answer. Codebase = committed; rendered page = live; they drift (server/client boundaries, env routing, site variants, DB content).
+
+**Which page to fetch:**
+- Reviewing an unmerged PR → fetch the PR's **PREVIEW DEPLOY** via Vercel MCP (`web_fetch_vercel_url`) or via curl with the `_vercel_share` bypass token. Production is STALE relative to unmerged PR work — fetching warondisease.org for a question about "what /treaty looks like on PR 75" gives you the main branch's pre-PR rendering, which is wrong for the PR review.
+- Reviewing landed work / production behavior / "what does the live site show?" → fetch the production domain (warondisease.org, optimitron.com).
+- Local dev work → fetch http://localhost:3001 if dev server is running.
+
+Default to PREVIEW DEPLOY when the conversation context is "this PR / this branch / what does my recent commit look like." Default to PRODUCTION only when the user explicitly says "production" or asks about the live site separately from the PR.
 
 **Preview-link list format.** When generating a review-link list for the user: every URL must be ONE click — full path + `?_vercel_share=<token>&login=demo` (auth-required), or `&logout=1` (testing logged-out state), or both as TWO rows (HYBRID pages that render differently per auth state). NEVER output "click here to set the bypass cookie, then bare URLs" — that defeats the entire reason `?login=demo` / `?logout=1` query params exist. Format: a single markdown table with columns `Page | State | What changed`. State = "logged-out" / "demo logged-in".
 
