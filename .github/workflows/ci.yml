@@ -334,8 +334,12 @@ jobs:
       # One-time repo setup: Settings → Pages → Source must be set to
       # "Deploy from a branch" with branch `gh-pages` (root). The action
       # creates the branch on its first push.
+      # `!cancelled()` instead of `always()` so a cancelled run (concurrency
+      # cut-off after a newer push, manual cancel, etc.) doesn't publish a
+      # partial visual review with missing "after" screenshots. Real
+      # test failures still publish — reviewers want to see what broke.
       - name: Prepare per-PR visual review directory
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         id: prepare_pages
         shell: bash
         run: |
@@ -382,7 +386,7 @@ jobs:
           echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
 
       - name: Publish visual review to gh-pages
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         id: visual_review_pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -396,7 +400,7 @@ jobs:
           user_email: github-actions[bot]@users.noreply.github.com
 
       - name: Post Visual review commit status
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -423,7 +427,7 @@ jobs:
       # publish step. transient_environment: true tells GitHub to retire
       # older deployments for this environment automatically.
       - name: Create Visual review deployment
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         uses: actions/github-script@v8
         with:
           script: |
