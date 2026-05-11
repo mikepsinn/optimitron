@@ -43,6 +43,12 @@ const nextConfig = {
     // `next build` only needs the app/runtime graph. The full `tsc --noEmit`
     // CI gate still covers tests, Playwright, and scripts.
     tsconfigPath: "tsconfig.next.json",
+    // Vercel's build container was hanging here for 24m+ even though local
+    // `tsc -p tsconfig.next.json` finishes in ~2m. The `core-validate` job
+    // already runs the same typecheck (and the broader `typecheck:fast`)
+    // against every push, so failing the build on type errors here is
+    // redundant — we'd just wait twice for the same diagnostic.
+    ignoreBuildErrors: true,
   },
   webpack: (config, { isServer }) => {
     // wagmi/connectors re-exports optional wallet connectors whose peer
