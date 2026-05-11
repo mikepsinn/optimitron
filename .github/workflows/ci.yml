@@ -179,22 +179,25 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
-      - name: Seed database (treaty Referendum row + tasks + managed-data sync)
-        # MUST run before the Playwright smoke step: the treaty-page-structure
-        # spec asserts the rendered treaty body, which the page reads from
-        # `Referendum.bodyMarkdown`. Running smoke against an unseeded DB
-        # forced an "any DB → bundled markdown" fallback that masked seeding
-        # bugs. Smoke now validates the real DB-backed render path.
+      - name: Seed database (managed-data sync THEN bootstrap)
+        # Mirrors the production deploy flow: managed-data sync is the
+        # canonical mechanism for referendums + tasks; seeds are dev-only
+        # bootstraps for things that aren't managed (reasoning, grandma-kay
+        # example, demo user). Sync MUST run before seed:bootstrap because
+        # `seedGrandmaKayExample` does `findUniqueOrThrow` on the treaty
+        # referendum slug — that row is now created by sync, not by seed.
+        # Also runs before the Playwright smoke step so the
+        # treaty-page-structure spec validates the real DB-backed render
+        # path instead of the bundled-markdown fallback.
         run: |
-          pnpm --filter @optimitron/db run seed:bootstrap
-          pnpm --filter @optimitron/db run seed:demo
-          pnpm --filter @optimitron/db run seed:tasks
-          # Dry-run first so the planned diff appears in CI logs as a
-          # record of what `--apply` is about to do, then apply.
+          # Dry-run first so the planned diff appears in CI logs.
           echo "::group::managed-data sync plan (dry-run)"
           pnpm db:sync:managed-data -- --dry-run
           echo "::endgroup::"
           pnpm db:sync:managed-data -- --apply
+          pnpm --filter @optimitron/db run seed:bootstrap
+          pnpm --filter @optimitron/db run seed:demo
+          pnpm --filter @optimitron/db run seed:tasks
 
       - name: Run Playwright smoke validation
         run: pnpm --filter @optimitron/web run e2e -- smoke

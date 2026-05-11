@@ -83,9 +83,7 @@ import { GLOBAL_VARIABLE_SEED_DATA } from "./seed-data/global-variables.ts";
 import { VARIABLE_CATEGORY_SEED_DATA } from "./seed-data/variable-categories.ts";
 import {
   formatManagedDataResult,
-  formatManagedReferendumsResult,
   syncManagedData,
-  syncManagedReferendums,
 } from "../src/managed-data/index.js";
 import { upsertWishoniaUser } from "../src/system-users.js";
 
@@ -1143,17 +1141,14 @@ export interface SeedDatabaseOptions {
   scopes?: SeedScope[];
 }
 
-async function seedReferendums() {
-  console.log("🗳️  Seeding referendums...");
-  // Delegates to the managed-data sync so production deploys and local
-  // seeds use the same source of truth (`packages/db/src/managed-data/
-  // managed-referendums.ts`). Adding/editing referendums means updating
-  // that one file — never re-inlining records here.
-  const result = await syncManagedReferendums(prisma, { apply: true });
-  console.log(
-    `  ✓ ${formatManagedReferendumsResult(result)}`,
-  );
-}
+// Referendums are NOT seeded here. They live in `packages/db/src/
+// managed-data/managed-referendums.ts` and are upserted by
+// `pnpm db:sync:managed-data --apply` on every deploy (and in CI before
+// tests). To bootstrap a fresh local DB, run BOTH `pnpm seed:bootstrap`
+// AND `pnpm db:sync:managed-data --apply` — same flow as production.
+// Do NOT re-introduce inline Referendum upserts here; they would silently
+// drift from the managed-data source of truth and re-create the bug that
+// motivated the migration.
 
 export async function seedReferenceData() {
   const unitMap = await seedUnits();
@@ -1167,7 +1162,8 @@ export async function seedReferenceData() {
 }
 
 export async function seedBootstrapData() {
-  await seedReferendums();
+  // Note: Referendums are NOT seeded here — they're managed-data now.
+  // Run `pnpm db:sync:managed-data --apply` separately.
   await seedReasoningData(prisma);
   await seedGrandmaKayExample();
 }
