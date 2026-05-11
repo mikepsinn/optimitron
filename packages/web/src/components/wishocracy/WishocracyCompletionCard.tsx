@@ -208,7 +208,7 @@ export function WishocracyCompletionCard({
       <div className="mt-8">
         <PrizeCTA
           headline="Now prove demand for the world you just described."
-          body={`You've expressed what matters. The 1% Treaty referendum turns preferences into political pressure. ${PRIZE_CTA_COPY.depositAndRecruit} ${REFERRAL.earnOne}`}
+          body={`You've expressed what matters. The 1% Treaty referendum turns preferences into an overdue task your employees cannot ignore. ${PRIZE_CTA_COPY.depositAndRecruit} ${REFERRAL.earnOne}`}
           variant="pink"
         />
       </div>

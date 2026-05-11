@@ -216,11 +216,11 @@ export function createOnePercentTreatyCompileConfig(input: {
     ],
     executionHints: {
       decompositionNotes:
-        "Treat the signer task as the public blocker page. Public pressure should happen by sharing the blocker page and contacting the assigned official until they sign.",
+        "Treat the signer task as the public blocker page. Constituents remind their elected employee by sharing the blocker page and contacting the assigned official until they sign.",
       parentTaskDescription:
         "Secure United States signature and sustained implementation of the 1% Treaty that redirects 1% of military spending to clinical trials and disease eradication.",
       parentTaskTitle: "President of the United States signs the 1% Treaty",
-      supporterLevers: ["coalition", "media", "legislation", "public pressure", "diplomacy"],
+      supporterLevers: ["coalition", "media", "legislation", "constituent reminders", "diplomacy"],
       targetActors: [
         {
           actorKey: "person:president-of-the-united-states",
