@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
+import { buildUserReferralUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 /**
@@ -30,12 +32,17 @@ export function TreatyNameSignatureBox({
 }: {
   className?: string;
 }) {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const [name, setName] = useState("");
   const [makePublic, setMakePublic] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [signed, setSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const referralUrl = useMemo(
+    () => buildUserReferralUrl(session?.user),
+    [session?.user],
+  );
 
   const today = new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -102,19 +109,17 @@ export function TreatyNameSignatureBox({
   }
 
   if (signed && status === "authenticated") {
+    // Catch the user at peak commitment — right after signing — and put
+    // the share kit in front of them inline. Reuses the same
+    // `<DashboardShareCard>` that lives on /dashboard so the Humanity
+    // Manager copy + apocalypse math + canonical share message stay in
+    // exactly one place.
     return (
-      <div
-        className={cn(
-          "mx-auto w-full max-w-md border-2 border-foreground bg-background p-6 text-center",
-          className,
-        )}
-      >
-        <p className="text-2xl font-black uppercase text-foreground">
-          Treaty Signed.
+      <div className={cn("mx-auto w-full max-w-2xl", className)}>
+        <p className="mb-6 text-center text-2xl font-black uppercase text-foreground">
+          Signed. Thank you for ending war and disease.
         </p>
-        <p className="mt-3 text-sm font-bold text-muted-foreground">
-          Your signature is recorded. The dashboard has the share kit.
-        </p>
+        <DashboardShareCard referralUrl={referralUrl} />
       </div>
     );
   }
