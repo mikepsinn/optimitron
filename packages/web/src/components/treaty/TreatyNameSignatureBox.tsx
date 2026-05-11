@@ -147,7 +147,6 @@ export function TreatyNameSignatureBox({
       </p>
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
-          autoFocus
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
