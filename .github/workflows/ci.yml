@@ -82,11 +82,11 @@ jobs:
     timeout-minutes: 30
     permissions:
       actions: read
-      contents: read
+      # peaceiris/actions-gh-pages needs write to push the visual review to
+      # the long-lived `gh-pages` branch.
+      contents: write
       deployments: read
-      id-token: write
       issues: write
-      pages: write
       pull-requests: write
       statuses: write
     env:
@@ -314,22 +314,39 @@ jobs:
             packages/web/test-results
           if-no-files-found: ignore
 
-      - name: Prepare visual review Pages site
+      # Publish the per-PR visual review to the long-lived `gh-pages` branch
+      # so reviews from different PRs don't clobber each other. The previous
+      # setup used `actions/deploy-pages`, which atomically REPLACES the
+      # entire Pages site each deploy — so whenever any PR's CI finished,
+      # every other PR's review URL went 404 until that PR's CI ran again.
+      #
+      # `peaceiris/actions-gh-pages` with `keep_files: true` writes only the
+      # current PR's directory and preserves everything else on `gh-pages`.
+      #
+      # One-time repo setup: Settings → Pages → Source must be set to
+      # "Deploy from a branch" with branch `gh-pages` (root). The action
+      # creates the branch on its first push.
+      - name: Prepare per-PR visual review directory
         if: always() && github.event_name == 'pull_request'
+        id: prepare_pages
         shell: bash
         run: |
-          pages_root="packages/web/output/playwright/pages"
-          pr_dir="$pages_root/pr-${{ github.event.pull_request.number }}"
           head_sha="${{ github.event.pull_request.head.sha }}"
           short_sha="${head_sha:0:12}"
-          commit_dir="$pr_dir/$short_sha"
-          rm -rf "$pages_root"
-          mkdir -p "$pr_dir" "$commit_dir"
-
-          cp -R packages/web/output/playwright/review/. "$pr_dir/"
+          pr_root="packages/web/output/playwright/pages-per-pr/pr-${{ github.event.pull_request.number }}"
+          commit_dir="$pr_root/$short_sha"
+          latest_dir="$pr_root/latest"
+          rm -rf "$pr_root"
+          mkdir -p "$commit_dir" "$latest_dir"
           cp -R packages/web/output/playwright/review/. "$commit_dir/"
-
-          cat > "$pages_root/index.html" <<'HTML'
+          cp -R packages/web/output/playwright/review/. "$latest_dir/"
+          # Seed `.nojekyll` and a root `index.html` at the publish root so the
+          # gh-pages site doesn't try to render through Jekyll and so the
+          # bare https://<user>.github.io/<repo>/ URL renders something
+          # meaningful. `keep_files: true` preserves these across deploys.
+          publish_root="packages/web/output/playwright/pages-per-pr"
+          touch "$publish_root/.nojekyll"
+          cat > "$publish_root/index.html" <<'HTML'
           <!doctype html>
           <html lang="en">
             <head>
@@ -339,26 +356,26 @@ jobs:
             </head>
             <body>
               <h1>Optimitron Visual Reviews</h1>
-              <p>Open the pull request comment for the latest visual review link.</p>
+              <p>Open the "Visual review" check on a pull request for its review page.</p>
             </body>
           </html>
           HTML
-          touch "$pages_root/.nojekyll"
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
+          echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
 
-      - name: Configure GitHub Pages
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/configure-pages@v5
-
-      - name: Upload GitHub Pages artifact
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: packages/web/output/playwright/pages
-
-      - name: Deploy visual review to GitHub Pages
+      - name: Publish visual review to gh-pages
         if: always() && github.event_name == 'pull_request'
         id: visual_review_pages
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ steps.prepare_pages.outputs.publish_dir }}
+          publish_branch: gh-pages
+          keep_files: true
+          enable_jekyll: false
+          commit_message: "Visual review for pr-${{ github.event.pull_request.number }}@${{ steps.prepare_pages.outputs.short_sha }}"
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
 
       - name: Post Visual review commit status
         if: always() && github.event_name == 'pull_request'
