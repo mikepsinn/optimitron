@@ -29,16 +29,9 @@ const TICK_INTERVAL_MS = 250;
  * generated markdown previews (`pnpm copy:preview`).
  *
  * death-counter / money-counter follow the same triple-pattern.
- *
- * Placeholder widths are sized to typical PER-TASK real values, not to
- * absolute worst case. LiveCounter is used in task-row.tsx inside narrow
- * columns (`w-40 break-all`) where overflow chunks numbers into vertical
- * fragments. Real per-task wasted-by-delay amounts are in the thousands to
- * single-millions; real per-task deaths-from-delay counts are in the tens
- * to thousands. Keep these placeholders representative of that range.
  */
-const VISUAL_REVIEW_INTEGER_PLACEHOLDER = "1,234";
-const VISUAL_REVIEW_CURRENCY_PLACEHOLDER = "$1,234,567";
+const VISUAL_REVIEW_INTEGER_PLACEHOLDER = "123,456";
+const VISUAL_REVIEW_CURRENCY_PLACEHOLDER = "$123,456,789,012";
 
 function isVisualReviewMode(): boolean {
   return (
