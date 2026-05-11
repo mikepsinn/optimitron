@@ -29,17 +29,12 @@ import {
   Valence,
   MeasurementScale,
   JurisdictionType,
-  PersonConditionStatus,
-  PersonLifeStatus,
-  ReferendumVoteSource,
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
   VariableEvidenceMetricKind,
   VariableRelationshipEvidenceSourceType,
-  VotePosition,
   type Prisma,
 } from "../src/generated/prisma/client.js";
-import { TREATY_REFERENDUM_SLUG } from "../src/constants.js";
 import {
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   OPTIMIZE_EARTH_ROOT_TASK_KEY,
@@ -1141,14 +1136,14 @@ export interface SeedDatabaseOptions {
   scopes?: SeedScope[];
 }
 
-// Referendums are NOT seeded here. They live in `packages/db/src/
-// managed-data/managed-referendums.ts` and are upserted by
-// `pnpm db:sync:managed-data --apply` on every deploy (and in CI before
-// tests). To bootstrap a fresh local DB, run BOTH `pnpm seed:bootstrap`
-// AND `pnpm db:sync:managed-data --apply` — same flow as production.
-// Do NOT re-introduce inline Referendum upserts here; they would silently
-// drift from the managed-data source of truth and re-create the bug that
-// motivated the migration.
+// Referendums and Grandma Kay (and the Optimize Earth task tree) are NOT
+// seeded here — they're managed-data, upserted by `pnpm db:sync:managed-
+// data --apply` on every deploy and in CI before tests. To bootstrap a
+// fresh local DB, run `pnpm db:sync:managed-data --apply` first, then
+// `pnpm seed:bootstrap` for the remaining dev/reference convenience data.
+// Do NOT re-introduce inline upserts of managed records here — they would
+// silently drift from the source of truth in `packages/db/src/managed-
+// data/managed-*.ts` and re-create the bug that motivated the migration.
 
 export async function seedReferenceData() {
   const unitMap = await seedUnits();
@@ -1162,10 +1157,9 @@ export async function seedReferenceData() {
 }
 
 export async function seedBootstrapData() {
-  // Note: Referendums are NOT seeded here — they're managed-data now.
+  // Managed data (referendums, task tree, grandma-kay) is NOT seeded here.
   // Run `pnpm db:sync:managed-data --apply` separately.
   await seedReasoningData(prisma);
-  await seedGrandmaKayExample();
 }
 
 export async function seedDemoData() {
@@ -1953,7 +1947,6 @@ async function seedTreatyTasks() {
   console.log(`  ✓ ${created} signer tasks with leader photos`);
 }
 
-const GRANDMA_KAY_SOURCE_REF = "memorial-example:grandma-kay";
 let cachedSeedWishoniaUserId: string | null = null;
 
 /**
@@ -1975,83 +1968,9 @@ async function seedWishoniaUser() {
   return { person, user };
 }
 
-async function seedGrandmaKayExample() {
-  console.log("🧾 Seeding Grandma Kay represented-person example...");
-
-  const { user } = await seedWishoniaUser();
-  const referendum = await prisma.referendum.findUniqueOrThrow({
-    where: { slug: TREATY_REFERENDUM_SLUG },
-    select: { id: true },
-  });
-
-  const person = await prisma.person.upsert({
-    where: { sourceRef: GRANDMA_KAY_SOURCE_REF },
-    update: {
-      displayName: "Grandma Kay",
-      handle: "grandma-kay",
-      image: "/img/grandma.jpg",
-      isPublic: true,
-      lifeStatus: PersonLifeStatus.LIVING,
-    },
-    create: {
-      createdByUserId: user.id,
-      displayName: "Grandma Kay",
-      handle: "grandma-kay",
-      image: "/img/grandma.jpg",
-      isPublic: true,
-      lifeStatus: PersonLifeStatus.LIVING,
-      sourceRef: GRANDMA_KAY_SOURCE_REF,
-    },
-  });
-
-  await prisma.personCondition.upsert({
-    where: { id: "person-condition-grandma-kay-dementia" },
-    update: {
-      conditionName: "Dementia",
-      deletedAt: null,
-      isPublic: true,
-      personId: person.id,
-      reportedByUserId: user.id,
-      status: PersonConditionStatus.ACTIVE,
-    },
-    create: {
-      id: "person-condition-grandma-kay-dementia",
-      conditionName: "Dementia",
-      isPublic: true,
-      personId: person.id,
-      reportedByUserId: user.id,
-      status: PersonConditionStatus.ACTIVE,
-    },
-  });
-
-  await prisma.referendumVote.upsert({
-    where: {
-      referendumId_personId: {
-        referendumId: referendum.id,
-        personId: person.id,
-      },
-    },
-    update: {
-      answer: VotePosition.YES,
-      deletedAt: null,
-      isPublic: true,
-      publicComment: "She would trade one apocalypse for dementia research.",
-      userId: user.id,
-      voteSource: ReferendumVoteSource.REPRESENTED,
-    },
-    create: {
-      answer: VotePosition.YES,
-      isPublic: true,
-      personId: person.id,
-      publicComment: "She would trade one apocalypse for dementia research.",
-      referendumId: referendum.id,
-      userId: user.id,
-      voteSource: ReferendumVoteSource.REPRESENTED,
-    },
-  });
-
-  console.log("  ✓ Grandma Kay represented YES vote");
-}
+// `seedGrandmaKayExample` was removed 2026-05-11 — Grandma Kay is now
+// managed-data and is upserted by `pnpm db:sync:managed-data --apply`.
+// See `packages/db/src/managed-data/managed-grandma-kay.ts`.
 
 /**
  * Helper: upsert a task + impact estimate set + LIFETIME frame.

@@ -1,4 +1,10 @@
 import {
+  formatManagedGrandmaKayResult,
+  syncManagedGrandmaKay,
+  type ManagedGrandmaKayClient,
+  type SyncManagedGrandmaKayResult,
+} from "./managed-grandma-kay.js";
+import {
   formatManagedReferendumsResult,
   syncManagedReferendums,
   type ManagedReferendumClient,
@@ -26,10 +32,11 @@ export interface SyncManagedDataOptions {
 export interface SyncManagedDataResult {
   tasks: SyncManagedTasksResult;
   referendums: SyncManagedReferendumsResult;
+  grandmaKay: SyncManagedGrandmaKayResult;
 }
 
 export async function syncManagedData(
-  client: ManagedTaskClient & ManagedReferendumClient & Partial<ManagedIdentityClient>,
+  client: ManagedTaskClient & ManagedReferendumClient & ManagedGrandmaKayClient & Partial<ManagedIdentityClient>,
   options: SyncManagedDataOptions,
 ): Promise<SyncManagedDataResult> {
   let createdByUserId = options.createdByUserId;
@@ -65,13 +72,20 @@ export async function syncManagedData(
     records: OPTIMIZE_EARTH_TASK_TREE,
   });
 
-  return { tasks, referendums };
+  // Grandma Kay depends on the treaty referendum existing (FK on
+  // referendumVote.referendumId). Run after referendums.
+  const grandmaKay = await syncManagedGrandmaKay(client, {
+    apply: options.apply,
+  });
+
+  return { tasks, referendums, grandmaKay };
 }
 
 export function formatManagedDataResult(result: SyncManagedDataResult) {
   return [
     formatManagedReferendumsResult(result.referendums),
     formatManagedTasksResult(result.tasks),
+    formatManagedGrandmaKayResult(result.grandmaKay),
   ].join("\n");
 }
 
@@ -79,11 +93,22 @@ export {
   OPTIMIZE_EARTH_TASK_TREE,
   OPTIMIZE_EARTH_TASK_TREE_COLLECTION_KEY,
   ensureManagedDataSystemUser,
+  formatManagedGrandmaKayResult,
   formatManagedReferendumsResult,
   formatManagedTasksResult,
+  syncManagedGrandmaKay,
   syncManagedReferendums,
   syncManagedTasks,
 };
+export {
+  GRANDMA_KAY_SOURCE_REF,
+  GRANDMA_KAY_PERSON_CONDITION_ID,
+} from "./managed-grandma-kay.js";
+export type {
+  ManagedGrandmaKayClient,
+  SyncManagedGrandmaKayOptions,
+  SyncManagedGrandmaKayResult,
+} from "./managed-grandma-kay.js";
 export {
   COURT_OF_HUMANITY_REFERENDUM_SLUG,
   DECLARATION_REFERENDUM_SLUG,
