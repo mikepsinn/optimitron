@@ -179,25 +179,14 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
-      - name: Seed database (managed-data sync THEN bootstrap)
-        # Mirrors the production deploy flow: managed-data sync is the
-        # canonical mechanism for referendums + tasks; seeds are dev-only
-        # bootstraps for things that aren't managed (reasoning, grandma-kay
-        # example, demo user). Sync MUST run before seed:bootstrap because
-        # `seedGrandmaKayExample` does `findUniqueOrThrow` on the treaty
-        # referendum slug — that row is now created by sync, not by seed.
-        # Also runs before the Playwright smoke step so the
-        # treaty-page-structure spec validates the real DB-backed render
-        # path instead of the bundled-markdown fallback.
-        run: |
-          # Dry-run first so the planned diff appears in CI logs.
-          echo "::group::managed-data sync plan (dry-run)"
-          pnpm db:sync:managed-data -- --dry-run
-          echo "::endgroup::"
-          pnpm db:sync:managed-data -- --apply
-          pnpm --filter @optimitron/db run seed:bootstrap
-          pnpm --filter @optimitron/db run seed:demo
-          pnpm --filter @optimitron/db run seed:tasks
+      - name: Seed database (idempotent upserts; matches production)
+        # `pnpm db:seed` runs the whole `prisma/seed.ts` (all scopes — every
+        # function is `prisma.X.upsert()` so it's safe to re-run). It internally
+        # calls `syncManagedData()` for the tasks scope. This is the same
+        # command production runs on deploy, so CI exercises the real prod
+        # data-init path. Runs before smoke so the treaty-page-structure spec
+        # validates the real DB-backed render path.
+        run: pnpm db:seed
 
       - name: Run Playwright smoke validation
         run: pnpm --filter @optimitron/web run e2e -- smoke
@@ -588,10 +577,19 @@ jobs:
           PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
         run: pnpm db:deploy
 
-      - name: Sync managed production data
+      - name: Sync canonical production data (idempotent upserts)
+        # `pnpm db:seed` runs every seed function in `prisma/seed.ts`, all of
+        # which use `prisma.X.upsert()` and are safe to re-run. It internally
+        # calls `syncManagedData()` for the `tasks` scope, so referendums,
+        # task tree, grandma-kay, and demo-user all sync as part of seed.
+        # Replaces the previous "db:sync:managed-data --apply" step which only
+        # synced the managed-data subset and left reference data (units,
+        # variable categories, jurisdictions, conflicts, drug timelines,
+        # wishocratic-items, treaty tasks) stale on production after every
+        # deploy.
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm db:sync:managed-data -- --apply
+        run: pnpm db:seed
 
       - name: Deploy production artifact
         id: deploy
