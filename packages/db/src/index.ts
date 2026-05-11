@@ -18,6 +18,11 @@ export * from './constants.js';
 
 // Task-key registry (root IDs, prefixes, builders)
 export * from './task-keys.js';
+export * from './system-identities.js';
+export {
+  upsertWishoniaUser,
+  type WishoniaUserClient,
+} from './system-users.js';
 
 // FillingType case conversion utilities
 export {

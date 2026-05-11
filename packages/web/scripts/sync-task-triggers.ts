@@ -1,29 +1,45 @@
 /**
- * Idempotent seeder for known TaskTrigger blueprints.
+ * Idempotent managed-data sync for known TaskTrigger blueprints.
  *
  * Run locally:
- *   pnpm --filter @optimitron/web exec tsx scripts/seed-task-triggers.ts
+ *   pnpm --filter @optimitron/web run sync:task-triggers -- --dry-run
  *
  * On deploy, run after `prisma migrate deploy`:
- *   pnpm --filter @optimitron/web exec tsx scripts/seed-task-triggers.ts
+ *   pnpm --filter @optimitron/web run sync:task-triggers -- --apply
  *
  * Re-running is safe — every trigger is upserted by triggerKey.
  *
- * The seed builds a bare PrismaClient against DATABASE_URL only — it
- * deliberately does NOT import @/lib/prisma so it doesn't drag in the
- * web app's full env validation (NEXTAUTH_SECRET, RESEND_*, etc.). This
- * lets the CI deploy step run with just DATABASE_URL set.
+ * This script builds a bare PrismaClient against DATABASE_URL and passes it
+ * into the trigger admin helpers, so deploy-time sync does not write through
+ * the web app singleton client.
  */
+
+import "./load-env";
 
 import { PrismaClient } from "@optimitron/db";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS } from "../src/lib/triggers/blueprints/one-percent-treaty";
 import { createTaskTrigger, updateTaskTrigger } from "../src/lib/triggers/admin";
 
+function parseArgs(argv: string[]) {
+  const args = argv.filter((arg) => arg !== "--");
+  const allowed = new Set(["--apply", "--dry-run"]);
+  const unknown = args.filter((arg) => !allowed.has(arg));
+  if (unknown.length > 0) {
+    throw new Error(`Unknown argument(s): ${unknown.join(", ")}`);
+  }
+  const apply = args.includes("--apply");
+  const dryRun = args.includes("--dry-run");
+  if (apply && dryRun) {
+    throw new Error("Use either --apply or --dry-run, not both.");
+  }
+  return { apply, dryRun };
+}
+
 function makeBarePrismaClient(): PrismaClient {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
-    throw new Error("DATABASE_URL is required to seed task triggers.");
+    throw new Error("DATABASE_URL is required to sync task triggers.");
   }
   let connectionString = databaseUrl;
   // Mirror the sslmode swap in @/lib/prisma so we don't hit the pg v8
@@ -39,12 +55,20 @@ function makeBarePrismaClient(): PrismaClient {
 }
 
 const prisma = makeBarePrismaClient();
+const { apply } = parseArgs(process.argv.slice(2));
 
 async function main() {
+  console.log(`[task-triggers] ${apply ? "apply" : "dry-run"}`);
   for (const trigger of ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS) {
     const existing = await prisma.taskTrigger.findUnique({
       where: { triggerKey: trigger.triggerKey },
     });
+    if (!apply) {
+      console.log(
+        `[task-triggers] would ${existing ? "update" : "create"} ${trigger.triggerKey}`,
+      );
+      continue;
+    }
     if (existing) {
       await updateTaskTrigger(trigger, { actorUserId: null }, prisma);
       console.log(`[task-triggers] updated ${trigger.triggerKey}`);

@@ -8,7 +8,13 @@ import {
 
 const MASTER_SCOPE = "all" satisfies EmailScope;
 
-export type UnsubscribeVia = "GET" | "POST" | "complaint" | "hard_bounce" | "preferences";
+export type UnsubscribeVia =
+  | "GET"
+  | "POST"
+  | "complaint"
+  | "hard_bounce"
+  | "preferences"
+  | "reply";
 
 export interface UnsubscribeEffectInput {
   userId: string;

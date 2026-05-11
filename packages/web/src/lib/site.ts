@@ -39,7 +39,6 @@ import {
   treatyLink,
   trialEmbedLink,
   voteLink,
-  whyLink,
   type NavItem,
   type NavSection,
 } from "@/lib/routes";
@@ -346,7 +345,6 @@ const warOnDiseaseNavSections: NavSection[] = [
       donateLink,
       plaintiffsLink,
       presidentManagementLink,
-      whyLink,
     ],
   },
 ];
@@ -552,7 +550,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   publicContactUrl: PUBLIC_CONTACT_URL,
   legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
   emailBranding: {
-    fromName: "Optimitron",
+    fromName: "Earth Optimization Services",
     primaryColor: "#ff00ff",
     secondaryColor: "#00d9ff",
     orgName: EARTH_OPTIMIZATION_SERVICES_LLC,
@@ -937,7 +935,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.why,
       ROUTES.legal,
       ROUTES.privacy,
       ROUTES.terms,
@@ -964,7 +961,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.why,
       ROUTES.legal,
       ROUTES.privacy,
       ROUTES.terms,
@@ -1204,7 +1200,6 @@ const REFERENDUM_SITE_CONTENT_PATH_PREFIXES = [
   ROUTES.endorse,
   ROUTES.impact,
   ROUTES.legal,
-  ROUTES.why,
 ] as const;
 
 export function requiresReferendumSiteContent(pathname: string): boolean {

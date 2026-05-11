@@ -8,7 +8,6 @@ export type ReferendumSitePageKey =
   | "endorse"
   | "signatories"
   | "supporters"
-  | "why"
   | "legal"
   | "impact";
 
@@ -54,22 +53,6 @@ export interface ReferendumSiteEndorseContent {
   signInDescription: string;
   signInLabel: string;
   signInTitle: string;
-  title: string;
-}
-
-export interface ReferendumSiteWhyFact {
-  body: string;
-  label: string;
-  number: string;
-}
-
-export interface ReferendumSiteWhyContent {
-  closingBody: string;
-  closingLead: string;
-  ctaLabel: string;
-  eyebrow: string;
-  facts: ReferendumSiteWhyFact[];
-  intro: string;
   title: string;
 }
 
@@ -121,5 +104,4 @@ export interface ReferendumSiteContent {
   navItems: ReferendumSiteNavItem[];
   notFound: ReferendumSiteNotFoundContent;
   supporters: ReferendumSiteSupportersContent;
-  why: ReferendumSiteWhyContent;
 }

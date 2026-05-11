@@ -3,6 +3,7 @@ import {
   TaskCommentKind,
   TaskCommentSource,
 } from "@optimitron/db";
+import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@optimitron/db/system-identities";
 import { describe, expect, it, vi } from "vitest";
 import { processInboundReply, stripQuotedReply } from "../inbound-reply";
 
@@ -121,7 +122,7 @@ function inboundEvent(
 ) {
   return {
     from: "Assignee <assignee@example.org>",
-    to: "reply+task_1@reply.warondisease.org",
+    to: `reply+task_1@${WAR_ON_DISEASE_REPLY_DOMAIN}`,
     subject: "Re: task",
     text: "Done.",
     providerMessageId: "provider_msg_1",
@@ -214,6 +215,42 @@ describe("processInboundReply", () => {
     });
   });
 
+  it("nests inbound replies under the outbound comment referenced by Message-ID", async () => {
+    const db = makeInboundDb();
+    db.taskCommunication.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ taskCommentId: "comment_parent" });
+
+    const result = await processInboundReply(
+      inboundEvent({
+        inReplyTo: "<task-task_1-comm-comm_1@updates.warondisease.org>",
+      }),
+      db as never,
+    );
+
+    expect(result).toMatchObject({
+      status: "created",
+      taskCommentId: "comment_1",
+      taskCommunicationId: "comm_1",
+    });
+    expect(db.taskCommunication.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          metadataJson: {
+            path: ["messageId"],
+            equals: "<task-task_1-comm-comm_1@updates.warondisease.org>",
+          },
+          taskId: "task_1",
+        }),
+      }),
+    );
+    expect(db.taskComment.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        parentCommentId: "comment_parent",
+      }),
+    });
+  });
+
   it("accepts replies from the task creator and sends the creator notification", async () => {
     const db = makeInboundDb();
     db.task.findUnique.mockResolvedValue({
@@ -277,7 +314,7 @@ describe("processInboundReply", () => {
     const result = await processInboundReply(
       inboundEvent({
         from: "Institute for Accelerated Medicine <test@thinkbynumbers.org>",
-        to: "reply+task_iam@reply.warondisease.org",
+        to: `reply+task_iam@${WAR_ON_DISEASE_REPLY_DOMAIN}`,
         text: "We posted the survey link to our member newsletter.",
         providerMessageId: "provider_msg_iam_reply",
       }),

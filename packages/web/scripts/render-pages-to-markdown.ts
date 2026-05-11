@@ -99,6 +99,13 @@ async function extractPage(page: import("@playwright/test").Page, route: string)
   await page.waitForTimeout(400);
   return page.evaluate(() => {
     const root = document.querySelector("main") ?? document.body;
+    // Replace every `[data-volatile]` subtree with a deterministic placeholder
+    // so wall-clock counters, DB-derived counts, and async-loading fallbacks
+    // don't show up as diff noise in the generated markdown.
+    for (const el of Array.from(root.querySelectorAll("[data-volatile]"))) {
+      const label = el.getAttribute("data-volatile")?.trim() || "volatile";
+      el.replaceChildren(document.createTextNode(`[${label}]`));
+    }
     const tags =
       "h1,h2,h3,h4,h5,h6,p,li,button,a,blockquote,td,th,figcaption,summary,label,span";
     const seen = new Set<string>();

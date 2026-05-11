@@ -1,4 +1,5 @@
 import { TaskStatus } from "@optimitron/db";
+import { WISHONIA_EMAIL } from "@optimitron/db/system-identities";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // vi.mock is hoisted; use vi.hoisted so the harness is constructed before
@@ -56,7 +57,7 @@ async function reset() {
   store.users.length = 0;
   store.users.push({
     id: "wishonia_user",
-    email: "wishonia@gmail.com",
+    email: WISHONIA_EMAIL,
     personId: null,
     referralCode: null,
   });

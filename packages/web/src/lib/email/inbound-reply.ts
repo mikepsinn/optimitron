@@ -1,7 +1,7 @@
 /**
  * Inbound email reply → TaskComment processor.
  *
- * Wired by `/api/webhooks/resend-inbound` (or equivalent route). Decodes the
+ * Wired by `/api/webhooks/resend`. Decodes the
  * `reply+{taskId}@{REPLY_EMAIL_DOMAIN}` address back to a taskId, strips
  * quoted prior messages from the body, authenticates the sender by matching
  * email to a known user, Person, Organization, or endpoint on the task, and
@@ -15,6 +15,8 @@
 import {
   TaskCommentKind,
   TaskCommentSource,
+  TaskCommunicationChannel,
+  TaskCommunicationDirection,
   TaskCommunicationStatus,
 } from "@optimitron/db";
 import { Prisma } from "@optimitron/db";
@@ -100,6 +102,39 @@ function extractDisplayName(raw: string): string | null {
   if (!raw) return null;
   const angle = raw.trim().match(/^([^<]+?)\s*</);
   return angle?.[1]?.trim() || null;
+}
+
+function normalizeMessageIdHeader(value?: string | null) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  return trimmed.match(/<[^>]+>/)?.[0] ?? trimmed;
+}
+
+async function findParentCommentId(input: {
+  db: typeof prisma;
+  inReplyTo?: string | null;
+  taskId: string;
+}) {
+  const messageId = normalizeMessageIdHeader(input.inReplyTo);
+  if (!messageId) {
+    return null;
+  }
+
+  const parent = await input.db.taskCommunication.findFirst({
+    where: {
+      channel: TaskCommunicationChannel.EMAIL,
+      deletedAt: null,
+      direction: TaskCommunicationDirection.OUTBOUND,
+      metadataJson: {
+        path: ["messageId"],
+        equals: messageId,
+      },
+      taskId: input.taskId,
+    },
+    select: { taskCommentId: true },
+  });
+
+  return parent?.taskCommentId ?? null;
 }
 
 export async function processInboundReply(
@@ -199,6 +234,11 @@ export async function processInboundReply(
   if (!cleanBody) {
     return { status: "skipped", reason: "empty body after quote-stripping" };
   }
+  const parentCommentId = await findParentCommentId({
+    db,
+    inReplyTo: event.inReplyTo,
+    taskId,
+  });
 
   // Create the comment + communication atomically. The unique constraint on
   // TaskCommunication.providerMessageId is the actual idempotency guard:
@@ -215,6 +255,7 @@ export async function processInboundReply(
           message: cleanBody,
           kind: TaskCommentKind.INBOUND_MESSAGE,
           source: TaskCommentSource.EMAIL_REPLY,
+          parentCommentId,
           authorUserId,
           authorPersonId,
           authorOrganizationId,

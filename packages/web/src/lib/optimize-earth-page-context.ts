@@ -121,7 +121,7 @@ function growthChildren(parent: TaskTreeNode): TaskTreeNode[] {
   return [
     {
       description:
-        `Turn the existing ${CORE_PAGE_CONTEXT.tasks.route} overdue-leader list into a memetic pressure surface with sharper share hooks, politician deep-links, and obvious next actions. Use the actual page instead of inventing new funnel pages.`,
+        `Turn the existing ${CORE_PAGE_CONTEXT.tasks.route} overdue-leader list into a memetic reminder surface with sharper share hooks, politician deep-links, and obvious next actions. Use the actual page instead of inventing new funnel pages.`,
       estimatedEffortHours: 3,
       id: "system_weaponize_overdue_task_list",
       impact: scaleImpact(parent.impact, 0.55),
@@ -134,7 +134,7 @@ function growthChildren(parent: TaskTreeNode): TaskTreeNode[] {
       ],
       status: "DRAFT",
       taskKey: OPTIMIZE_EARTH_WEAPONIZE_OVERDUE_TASK_LIST_KEY,
-      title: "Turn the overdue leader task list into a memetic share-and-pressure machine",
+      title: "Turn the overdue leader task list into a memetic share-and-remind machine",
     },
     {
       description:

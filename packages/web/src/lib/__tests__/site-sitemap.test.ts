@@ -18,10 +18,11 @@ describe("site sitemap routing", () => {
     expect(paths).toEqual(
       expect.arrayContaining([
         "/",
+        ROUTES.court,
+        ROUTES.humanityVGovernment,
         ROUTES.signatories,
         ROUTES.treaty,
         ROUTES.vote,
-        ROUTES.why,
         ROUTES.donate,
         ROUTES.employees,
       ]),

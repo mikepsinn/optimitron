@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   canSendEmailToUser: vi.fn(),
   emailSend: vi.fn(),
+  receivingGet: vi.fn(),
   serverEnv: {
     EMAIL_FROM: "team@optimitron.com" as string | undefined,
     EMAIL_MONITOR_BCC: undefined as string | undefined,
@@ -15,6 +16,9 @@ const mocks = vi.hoisted(() => ({
 vi.mock("resend", () => ({
   Resend: class {
     emails = {
+      receiving: {
+        get: mocks.receivingGet,
+      },
       send: mocks.emailSend,
     };
   },
@@ -40,6 +44,11 @@ vi.mock("@/lib/email/unsub-url", () => ({
 
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "../email/placeholders";
 import {
+  DEFAULT_SYSTEM_EMAIL_FROM,
+  DEFAULT_UNSUBSCRIBE_EMAIL,
+} from "../email/from-address";
+import {
+  getReceivedEmailContent,
   sendExternalResendEmail,
   sendReactEmail,
   sendResendEmail,
@@ -50,6 +59,7 @@ describe("sendResendEmail", () => {
   beforeEach(() => {
     mocks.canSendEmailToUser.mockReset();
     mocks.emailSend.mockReset();
+    mocks.receivingGet.mockReset();
     mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
     mocks.serverEnv.EMAIL_MONITOR_BCC = undefined;
     mocks.serverEnv.NODE_ENV = "development";
@@ -58,6 +68,17 @@ describe("sendResendEmail", () => {
     mocks.canSendEmailToUser.mockResolvedValue(true);
     mocks.emailSend.mockResolvedValue({
       data: { id: "email_1" },
+      error: null,
+    });
+    mocks.receivingGet.mockResolvedValue({
+      data: {
+        from: "Citizen <citizen@example.org>",
+        headers: { "In-Reply-To": "<outbound@example.org>" },
+        html: "<p>Done.</p>",
+        subject: "Re: task",
+        text: "Done.",
+        to: ["reply+task_1@updates.warondisease.org"],
+      },
       error: null,
     });
   });
@@ -103,13 +124,30 @@ describe("sendResendEmail", () => {
 
     const payload = mocks.emailSend.mock.calls[0]?.[0];
     expect(payload).toMatchObject({
-      from:
-        "International Campaign to End War and Disease <hello@updates.warondisease.org>",
+      from: DEFAULT_SYSTEM_EMAIL_FROM,
       headers: {
         "List-Unsubscribe": expect.stringContaining(
-          "mailto:unsubscribe@updates.warondisease.org",
+          `mailto:${DEFAULT_UNSUBSCRIBE_EMAIL}`,
         ),
       },
+    });
+  });
+
+  it("ignores EMAIL_FROM for default sends", async () => {
+    mocks.serverEnv.EMAIL_FROM = "Optimitron <team@optimitron.com>";
+
+    await sendResendEmail({
+      html: "<p>Hello</p>",
+      scope: "magic_link",
+      subject: "Magic link",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    const payload = mocks.emailSend.mock.calls[0]?.[0];
+    expect(payload).toMatchObject({
+      from: DEFAULT_SYSTEM_EMAIL_FROM,
     });
   });
 
@@ -149,6 +187,30 @@ describe("sendResendEmail", () => {
 
     expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
       replyTo: "reply+task_1@reply.test",
+    });
+  });
+
+  it("passes through caller headers while keeping unsubscribe headers", async () => {
+    await sendResendEmail({
+      headers: {
+        "Message-ID": "<task-task_1-comm-comm_1@updates.warondisease.org>",
+      },
+      html: "<p>Hello</p>",
+      scope: "task_notifications",
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    expect(mocks.emailSend.mock.calls[0]?.[0]).toMatchObject({
+      headers: {
+        "Message-ID": "<task-task_1-comm-comm_1@updates.warondisease.org>",
+        "List-Unsubscribe": expect.stringContaining(
+          "https://optimitron.com/api/email/unsubscribe?token=abc",
+        ),
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
     });
   });
 
@@ -339,5 +401,18 @@ describe("sendResendEmail", () => {
       expect(result.id).toMatch(/^mock_resend_/);
     }
     expect(mocks.emailSend).not.toHaveBeenCalled();
+  });
+
+  it("fetches received email content for inbound reply webhooks", async () => {
+    await expect(getReceivedEmailContent("received_1")).resolves.toEqual({
+      from: "Citizen <citizen@example.org>",
+      headers: { "In-Reply-To": "<outbound@example.org>" },
+      html: "<p>Done.</p>",
+      subject: "Re: task",
+      text: "Done.",
+      to: ["reply+task_1@updates.warondisease.org"],
+    });
+
+    expect(mocks.receivingGet).toHaveBeenCalledWith("received_1");
   });
 });

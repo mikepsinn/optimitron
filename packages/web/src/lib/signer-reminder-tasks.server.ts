@@ -122,14 +122,14 @@ export async function upsertSignerReminderTask(
 
   if (result.result === "filteredOut" || result.result === "failed") {
     throw new Error(
-      `treaty:signer-reminder trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did the seed run? Try: pnpm db:seed:triggers`,
+      `treaty:signer-reminder trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did managed data sync run? Try: pnpm db:sync:managed-data -- --apply`,
     );
   }
 
   const parent = result.spawnedSpecs.find((s) => s.isParent);
   if (!parent) {
     throw new Error(
-      "treaty:signer-reminder trigger has no parent spec. Re-run scripts/seed-task-triggers.ts.",
+      "treaty:signer-reminder trigger has no parent spec. Re-run pnpm db:sync:managed-data -- --apply.",
     );
   }
 

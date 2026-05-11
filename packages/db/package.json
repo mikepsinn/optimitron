@@ -17,6 +17,10 @@
     "./task-keys": {
       "types": "./dist/task-keys.d.ts",
       "default": "./dist/task-keys.js"
+    },
+    "./system-identities": {
+      "types": "./dist/system-identities.d.ts",
+      "default": "./dist/system-identities.js"
     }
   },
   "scripts": {
@@ -36,7 +40,8 @@
     "seed:reference": "tsx prisma/seed.ts --scope reference",
     "seed:bootstrap": "tsx prisma/seed.ts --scope bootstrap",
     "seed:demo": "tsx prisma/seed.ts --scope demo",
-    "seed:tasks": "tsx prisma/seed.ts --scope tasks"
+    "seed:tasks": "tsx prisma/seed.ts --scope tasks",
+    "sync:managed-data": "tsx scripts/sync-managed-data.ts"
   },
   "dependencies": {
     "@optimitron/data": "workspace:*",

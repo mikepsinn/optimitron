@@ -36,14 +36,14 @@ describe("sendMagicLinkEmail", () => {
 
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
-        subject: "Sign in to trialabundancesurvey.org",
-        text: expect.stringContaining("Yeahhh, here's your sign-in link. Mmkay."),
-        html: expect.stringContaining("Yeahhh, here&#39;s your sign-in link. Mmkay."),
+        subject: "End war and disease",
+        text: expect.stringContaining("End war and disease"),
+        html: expect.stringContaining("End war and disease"),
       }),
     );
   });
 
-  it("keeps Lumbergh copy for War on Disease sign-ins", async () => {
+  it("uses direct War on Disease copy for War on Disease sign-ins", async () => {
     await sendMagicLinkEmail({
       identifier: "voter@example.org",
       theme: {},
@@ -52,9 +52,26 @@ describe("sendMagicLinkEmail", () => {
 
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
-        subject: "Sign in to warondisease.local",
-        text: expect.stringContaining("Yeahhh, here's your sign-in link. Mmkay."),
-        html: expect.stringContaining("Yeahhh, here&#39;s your sign-in link. Mmkay."),
+        subject: "End war and disease",
+        text: expect.stringContaining("End war and disease"),
+        html: expect.stringContaining("End war and disease"),
+      }),
+    );
+  });
+
+  it("uses Earth Optimization Services as the Optimitron sender", async () => {
+    await sendMagicLinkEmail({
+      identifier: "manager@example.org",
+      theme: {},
+      url: "https://optimitron.local/api/auth/callback/email?token=abc",
+    } as never);
+
+    expect(mocks.sendResendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        from: "Earth Optimization Services <hello@updates.warondisease.org>",
+        subject: "Sign in to optimitron.local",
+        text: expect.stringContaining("Your sign-in link is below."),
+        html: expect.stringContaining("Your sign-in link is below."),
       }),
     );
   });

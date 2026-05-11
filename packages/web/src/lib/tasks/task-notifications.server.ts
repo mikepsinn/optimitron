@@ -19,6 +19,7 @@ import {
   claimEmailLog,
   markEmailLogStatus,
 } from "@/lib/email/email-log.server";
+import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@optimitron/db/system-identities";
 import { isEmailScope, type EmailScope } from "@/lib/email/scopes";
 import { sendExternalResendEmail, sendResendEmail } from "@/lib/email/resend";
 import { getConfiguredTaskReplyAddress } from "@/lib/email/task-notification";
@@ -284,6 +285,68 @@ function asMetadataObject(metadata: unknown): Prisma.InputJsonObject {
   return metadata as Prisma.InputJsonObject;
 }
 
+function sanitizeMessageIdPart(value: string) {
+  return value.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+export function buildTaskCommunicationMessageId(input: {
+  communicationId: string;
+  taskId: string;
+}) {
+  return `<task-${sanitizeMessageIdPart(input.taskId)}-comm-${sanitizeMessageIdPart(
+    input.communicationId,
+  )}@${WAR_ON_DISEASE_REPLY_DOMAIN}>`;
+}
+
+function getStoredMessageId(metadata: unknown) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
+    return null;
+  }
+  const value = (metadata as Record<string, unknown>).messageId;
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+async function getPriorThreadMessageId(input: {
+  communicationId: string;
+  recipientEmail: string;
+  taskId: string;
+}) {
+  const prior = await prisma.taskCommunication.findFirst({
+    where: {
+      channel: TaskCommunicationChannel.EMAIL,
+      deletedAt: null,
+      direction: TaskCommunicationDirection.OUTBOUND,
+      id: { not: input.communicationId },
+      recipientEmail: input.recipientEmail,
+      status: TaskCommunicationStatus.SENT,
+      taskId: input.taskId,
+    },
+    orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
+    select: { metadataJson: true },
+  });
+
+  return getStoredMessageId(prior?.metadataJson);
+}
+
+function buildThreadHeaders(input: {
+  messageId: string;
+  priorMessageId: string | null;
+}) {
+  return {
+    "Message-ID": input.messageId,
+    ...(input.priorMessageId
+      ? {
+          "In-Reply-To": input.priorMessageId,
+          References: input.priorMessageId,
+        }
+      : {}),
+  };
+}
+
 function isExplicitOptOut(metadata: unknown, errorMessage?: string | null) {
   if (
     metadata !== null &&
@@ -511,12 +574,23 @@ export async function sendDraftTaskNotification(
     );
     const bccEmails = getStoredBccEmails(communication.metadataJson);
     const replyTo = getConfiguredTaskReplyAddress(communication.taskId);
+    const messageId = buildTaskCommunicationMessageId({
+      communicationId: communication.id,
+      taskId: communication.taskId,
+    });
+    const priorMessageId = await getPriorThreadMessageId({
+      communicationId: communication.id,
+      recipientEmail: communication.recipientEmail,
+      taskId: communication.taskId,
+    });
+    const headers = buildThreadHeaders({ messageId, priorMessageId });
     const result = communication.recipientUserId
       ? await sendResendEmail({
           emailLogId: claimed.emailLogId,
           from: input.from ?? undefined,
           html,
           bcc: bccEmails,
+          headers,
           replyTo: replyTo ?? undefined,
           scope: userEmailOptions.emailScope,
           skipWishoniaSignature: userEmailOptions.skipWishoniaSignature,
@@ -530,6 +604,7 @@ export async function sendDraftTaskNotification(
           from: input.from ?? undefined,
           html,
           bcc: bccEmails,
+          headers,
           subject: message.subject,
           text: message.text,
           to: communication.recipientEmail,
@@ -586,6 +661,12 @@ export async function sendDraftTaskNotification(
         data: {
           emailLogId: claimed.emailLogId,
           errorMessage: null,
+          metadataJson: {
+            ...asMetadataObject(communication.metadataJson),
+            inReplyTo: priorMessageId,
+            messageId,
+            references: priorMessageId ? [priorMessageId] : [],
+          } satisfies Prisma.InputJsonObject,
           providerMessageId: result.id,
           sentAt: now,
           status: TaskCommunicationStatus.SENT,
@@ -659,4 +740,78 @@ export async function unsubscribeTaskCommunication(input: {
   });
 
   return true;
+}
+
+function normalizeInReplyToHeader(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  return trimmed.match(/<[^>]+>/)?.[0] ?? trimmed;
+}
+
+export async function unsubscribeTaskCommunicationByReply(input: {
+  inReplyTo?: string | null;
+  recipientEmail: string;
+  taskId?: string | null;
+}) {
+  const recipientEmail = normalizeEmail(input.recipientEmail);
+  if (!recipientEmail) {
+    return { status: "skipped" as const, reason: "missing_recipient_email" };
+  }
+
+  const inReplyTo = normalizeInReplyToHeader(input.inReplyTo);
+  // Replies can only target communications that actually reached the recipient,
+  // so DRAFT/FAILED rows are excluded — they were never delivered.
+  const baseWhere = {
+    channel: TaskCommunicationChannel.EMAIL,
+    deletedAt: null,
+    direction: TaskCommunicationDirection.OUTBOUND,
+    recipientEmail,
+    status: TaskCommunicationStatus.SENT,
+    unsubscribeToken: { not: null },
+    ...(input.taskId ? { taskId: input.taskId } : {}),
+  } as const;
+
+  // Prefer the exact message the recipient replied to; fall back to the most
+  // recent matching row when the inbound headers do not let us pinpoint it.
+  const communication =
+    (inReplyTo
+      ? await prisma.taskCommunication.findFirst({
+          where: {
+            ...baseWhere,
+            metadataJson: { path: ["messageId"], equals: inReplyTo },
+          },
+          orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
+          select: { id: true, metadataJson: true },
+        })
+      : null) ??
+    (await prisma.taskCommunication.findFirst({
+      where: baseWhere,
+      orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
+      select: { id: true, metadataJson: true },
+    }));
+
+  if (!communication) {
+    return { status: "skipped" as const, reason: "no_matching_communication" };
+  }
+
+  const now = new Date();
+  await prisma.taskCommunication.update({
+    where: { id: communication.id },
+    data: {
+      cancelledAt: now,
+      errorMessage: "Recipient unsubscribed by email reply.",
+      metadataJson: {
+        ...asMetadataObject(communication.metadataJson),
+        optOut: true,
+        optOutAt: now.toISOString(),
+        optOutVia: "reply",
+      } satisfies Prisma.InputJsonObject,
+      status: TaskCommunicationStatus.CANCELLED,
+    },
+  });
+
+  return {
+    status: "unsubscribed" as const,
+    taskCommunicationId: communication.id,
+  };
 }

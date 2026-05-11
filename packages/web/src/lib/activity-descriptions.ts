@@ -58,7 +58,7 @@ export function getActivityDescription(
       return "Recruited a new voter. The network grows.";
 
     case ActivityType.CONTACTED_ASSIGNEE:
-      return "Contacted an accountability target. Pressure applied.";
+      return "Reminded an overdue employee of their task.";
 
     case ActivityType.VERIFIED_PERSONHOOD:
       return "Verified personhood - confirmed: not a bot. Probably.";

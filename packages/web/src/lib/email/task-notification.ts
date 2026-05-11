@@ -2,8 +2,8 @@
  * Task notification email helper.
  *
  * Wraps `sendExternalResendEmail` with the reply-to-routing token so inbound
- * replies land at the correct task. The address format is
- * `reply+{taskId}@{REPLY_EMAIL_DOMAIN}`.
+ * replies land at the correct task via `/api/webhooks/resend`. The address
+ * format is `reply+{taskId}@{REPLY_EMAIL_DOMAIN}`.
  *
  * `getReplyAddress` and `parseReplyAddress` are kept side-by-side as a single
  * source of truth on the address shape — change the encoding here and the
@@ -30,7 +30,7 @@ export function getReplyAddress(taskId: string): string {
 
 export function getConfiguredTaskReplyAddress(taskId: string): string | null {
   if (
-    !serverEnv.RESEND_INBOUND_WEBHOOK_SECRET ||
+    !serverEnv.RESEND_WEBHOOK_SECRET ||
     !serverEnv.REPLY_EMAIL_DOMAIN
   ) {
     return null;
@@ -39,7 +39,7 @@ export function getConfiguredTaskReplyAddress(taskId: string): string | null {
 }
 
 export function getTaskEmailReplyInstruction(): string | null {
-  return serverEnv.RESEND_INBOUND_WEBHOOK_SECRET && serverEnv.REPLY_EMAIL_DOMAIN
+  return serverEnv.RESEND_WEBHOOK_SECRET && serverEnv.REPLY_EMAIL_DOMAIN
     ? "Reply to this email to add a comment to the task."
     : null;
 }

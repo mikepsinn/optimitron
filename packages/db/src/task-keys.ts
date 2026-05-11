@@ -25,6 +25,47 @@
 export const OPTIMIZE_EARTH_ROOT_TASK_ID = "optimize-earth";
 export const OPTIMIZE_EARTH_ROOT_TASK_KEY = "program:optimize-earth";
 
+export const END_WAR_AND_DISEASE_TASK_ID = "end-war-and-disease";
+export const END_WAR_AND_DISEASE_TASK_KEY = "program:end-war-and-disease";
+
+export const COURT_OF_HUMANITY_TASK_ID = "court-of-humanity";
+export const COURT_OF_HUMANITY_TASK_KEY = "program:court-of-humanity:establish";
+export const COURT_OF_HUMANITY_CHARTER_TASK_ID =
+  "court-of-humanity-charter";
+export const COURT_OF_HUMANITY_CHARTER_TASK_KEY =
+  "program:court-of-humanity:charter";
+
+export const HUMANITY_V_GOVERNMENTS_TASK_ID =
+  "humanity-v-governments-of-earth";
+export const HUMANITY_V_GOVERNMENTS_TASK_KEY =
+  "program:humanity-v-governments-of-earth:prosecute";
+export const REGISTER_PLAINTIFFS_TASK_ID = "register-plaintiffs";
+export const REGISTER_PLAINTIFFS_TASK_KEY =
+  "program:humanity-v-governments-of-earth:register-plaintiffs";
+export const SUMMON_JURORS_TASK_ID = "summon-jurors";
+export const SUMMON_JURORS_TASK_KEY =
+  "program:humanity-v-governments-of-earth:summon-jurors";
+export const PUBLISH_EVIDENCE_AND_DAMAGES_TASK_ID =
+  "publish-evidence-and-damages";
+export const PUBLISH_EVIDENCE_AND_DAMAGES_TASK_KEY =
+  "program:humanity-v-governments-of-earth:publish-evidence-and-damages";
+export const RENDER_VERDICT_TASK_ID = "render-verdict";
+export const RENDER_VERDICT_TASK_KEY =
+  "program:humanity-v-governments-of-earth:render-verdict";
+export const ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_ID =
+  "enforce-one-percent-treaty-settlement";
+export const ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_KEY =
+  "program:humanity-v-governments-of-earth:enforce-one-percent-treaty-settlement";
+
+export const ONE_PERCENT_TREATY_MAJORITY_VOTE_TASK_ID =
+  "one-percent-treaty-majority-vote";
+export const ONE_PERCENT_TREATY_MAJORITY_VOTE_TASK_KEY =
+  "program:one-percent-treaty:majority-vote";
+export const ONE_PERCENT_TREATY_HEADS_OF_GOVERNMENT_TASK_ID =
+  "one-percent-treaty-heads-of-government";
+export const ONE_PERCENT_TREATY_HEADS_OF_GOVERNMENT_TASK_KEY =
+  "program:one-percent-treaty:heads-of-government";
+
 // 1% Treaty parent + signer subtree
 
 export const TREATY_PARENT_TASK_ID = "1-pct-treaty";

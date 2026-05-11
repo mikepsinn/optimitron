@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  CAMPAIGN_SYSTEM_EMAIL,
+  DEFAULT_SYSTEM_EMAIL_FROM,
   formatEmailFromHeader,
+  formatDefaultSystemEmailFromHeader,
+  formatSystemEmailFromHeader,
+  getConfiguredFromAddress,
   parseEmailFromHeader,
   sanitizeDisplayName,
 } from "../from-address";
@@ -108,7 +113,20 @@ describe("formatEmailFromHeader", () => {
 
   it("falls back to the system sender for malformed input", () => {
     expect(formatEmailFromHeader("not-an-email", "Wishonia")).toBe(
-      "International Campaign to End War and Disease <hello@updates.warondisease.org>",
+      DEFAULT_SYSTEM_EMAIL_FROM,
+    );
+  });
+});
+
+describe("default system sender", () => {
+  it("uses the hard-coded campaign sender", () => {
+    expect(formatDefaultSystemEmailFromHeader()).toBe(DEFAULT_SYSTEM_EMAIL_FROM);
+    expect(getConfiguredFromAddress()).toBe(CAMPAIGN_SYSTEM_EMAIL);
+  });
+
+  it("formats a site-specific display name on the shared system address", () => {
+    expect(formatSystemEmailFromHeader("Earth Optimization Services")).toBe(
+      `Earth Optimization Services <${CAMPAIGN_SYSTEM_EMAIL}>`,
     );
   });
 });

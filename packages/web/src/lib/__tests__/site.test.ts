@@ -199,7 +199,6 @@ describe("site variant registry", () => {
       "Fund Campaign",
       "Register a Plaintiff",
       "Remind Presidents",
-      "Check the Math",
     ]);
   });
 
@@ -317,7 +316,6 @@ describe("site variant registry", () => {
       ROUTES.endorse,
       ROUTES.impact,
       ROUTES.legal,
-      ROUTES.why,
       ROUTES.treaty,
       ROUTES.donate,
     ];

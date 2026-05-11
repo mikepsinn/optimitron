@@ -5,6 +5,7 @@ import {
   verifyResendSignature,
   type ResendEvent,
 } from "@/lib/email/resend-webhook";
+import { dispatchInboundReceivedEvent } from "@/lib/email/inbound-received-dispatch";
 
 export const runtime = "nodejs";
 
@@ -39,6 +40,17 @@ export async function POST(request: Request) {
   }
 
   try {
+    if (event.type === "email.received") {
+      const inbound = await dispatchInboundReceivedEvent(event);
+      if (!inbound.ok) {
+        return NextResponse.json(
+          { ok: false, reason: inbound.reason },
+          { status: inbound.status },
+        );
+      }
+      return NextResponse.json({ ok: true, ...inbound.result });
+    }
+
     await dispatchResendEvent(event);
   } catch (error) {
     console.error("[RESEND WEBHOOK] Dispatch failed", event.type, event.data?.email_id, error);

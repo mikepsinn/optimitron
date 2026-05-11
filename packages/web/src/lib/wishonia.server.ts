@@ -1,14 +1,13 @@
 /**
  * Wishonia user lookup helper.
  *
- * Wishonia is a regular User in the database (email: wishonia@gmail.com) with
+ * Wishonia is a system User in the database with
  * a linked Person record. She authors task comments, can be assigned tasks,
  * and shows up on /people/wishonia like any public figure.
  */
 
+import { WISHONIA_EMAIL } from "@optimitron/db/system-identities";
 import { prisma } from "@/lib/prisma";
-
-const WISHONIA_EMAIL = "wishonia@gmail.com";
 
 let cachedUserId: string | null = null;
 

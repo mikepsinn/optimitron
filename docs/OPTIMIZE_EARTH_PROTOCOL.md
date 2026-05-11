@@ -22,7 +22,7 @@ Every agent must follow this order:
 1. Check the current branch or PR for broken GitHub Actions if that information is available.
 2. If GitHub Actions are broken because of repo code, treat fixing them as the immediate system-blocker task before trusting the queue.
 3. Audit whether the current queue is sane enough to trust.
-4. If the queue is clearly missing major task families, missing quantified impact, or dominated by a narrow arbitrary cap, run `pnpm --filter @optimitron/web run bootstrap:optimize-earth` if the repo provides it, then propose system-improvement tasks first.
+4. If the queue is clearly missing canonical campaign tasks, run `pnpm db:sync:managed-data -- --apply` first. If the queue is still broken after managed data sync, propose the smallest system-improvement task that would fix the specific gap.
 5. Call `getQueueAudit`, then call `getNextAction` with its capabilities.
 6. If no executable task exists:
    - call `proposeTaskBundle` only for high-value missing tasks or unblockers

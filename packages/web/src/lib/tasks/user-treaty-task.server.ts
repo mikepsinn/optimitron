@@ -2,13 +2,14 @@
  * Per-user 1% Treaty Humanity Management onboarding tree.
  *
  * The actual spawning is handled by the `user-onboarding:treaty` TaskTrigger
- * blueprint (seeded by `scripts/seed-task-triggers.ts`). This file is a
+ * blueprint (synced by `pnpm db:sync:managed-data -- --apply`). This file is a
  * thin adapter that fires the trigger and reconstructs the legacy return
  * shape (`{ created, taskId, subtaskIds, subtaskStatuses }`) so existing
  * callers don't have to change.
  *
  * To change the onboarding tree (titles, descriptions, subtask kinds,
- * action links, completion gate, etc.), edit `scripts/seed-task-triggers.ts`
+ * action links, completion gate, etc.), edit the trigger blueprints under
+ * `src/lib/triggers/blueprints/`
  * or update the trigger row over MCP via `updateTaskTrigger`. Don't add
  * spawn logic here.
  */
@@ -87,7 +88,7 @@ export interface EnsureUserTreatyTaskResult {
  * refreshes the per-user onboarding tree. Safe to call multiple times for
  * the same user; spawn logic upserts by taskKey.
  *
- * Throws if the trigger blueprint hasn't been seeded (run `db:seed:triggers`).
+ * Throws if the trigger blueprint hasn't been synced.
  */
 export async function ensureUserTreatyTask(
   input: {
@@ -107,14 +108,14 @@ export async function ensureUserTreatyTask(
 
   if (result.result === "filteredOut" || result.result === "failed") {
     throw new Error(
-      `user-onboarding:treaty trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did the seed run? Try: pnpm db:seed:triggers`,
+      `user-onboarding:treaty trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did managed data sync run? Try: pnpm db:sync:managed-data -- --apply`,
     );
   }
 
   const parent = result.spawnedSpecs.find((s) => s.isParent);
   if (!parent) {
     throw new Error(
-      "user-onboarding:treaty trigger has no parent spec. Re-run scripts/seed-task-triggers.ts.",
+      "user-onboarding:treaty trigger has no parent spec. Re-run pnpm db:sync:managed-data -- --apply.",
     );
   }
 
@@ -128,7 +129,7 @@ export async function ensureUserTreatyTask(
     const c = childByKind.get(kind);
     if (!c) {
       throw new Error(
-        `user-onboarding:treaty trigger missing required spec '${kind}'. Re-run scripts/seed-task-triggers.ts.`,
+        `user-onboarding:treaty trigger missing required spec '${kind}'. Re-run pnpm db:sync:managed-data -- --apply.`,
       );
     }
     subtaskIds[kind] = c.taskId;

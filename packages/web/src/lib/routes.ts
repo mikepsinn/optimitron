@@ -58,7 +58,6 @@ export const ROUTES = {
   court: "/court",
   humanityVGovernment: "/humanity-v-government",
   vote: "/vote",
-  why: "/why",
   legal: "/legal",
   privacy: "/privacy",
   terms: "/terms",
@@ -173,6 +172,10 @@ export function getTaskPath(id: string): string {
 
 export function getOrganizationPath(id: string): string {
   return `${ROUTES.organizations}/${id}`;
+}
+
+export function getOrganizationSurveyPath(slug: string): string {
+  return `${ROUTES.survey}/${encodeURIComponent(slug)}`;
 }
 
 export function getSignInPath(
@@ -736,18 +739,6 @@ export const questionsLink: NavItem = {
   copyPreview: true,
   screenshot: true,
   cta: "See the Questions",
-};
-
-export const whyLink: NavItem = {
-  href: ROUTES.why,
-  label: "Check the Math",
-  emoji: "🧠",
-  description:
-    "The core numbers behind the 1% Treaty: disease, war spending, trial capacity, and why one apocalypse is enough to trade.",
-  tagline: "The numbers behind the treaty",
-  copyPreview: true,
-  screenshot: true,
-  cta: "Check the Math",
 };
 
 export const endorseLink: NavItem = {
@@ -1455,7 +1446,6 @@ export const routeReviewNavItems = [
   homeLink,
   voteLink,
   treatyLink,
-  whyLink,
   aboutLink,
   agenciesLink,
   scoreboardLink,

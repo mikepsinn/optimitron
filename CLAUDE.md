@@ -40,6 +40,8 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
 
+**Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." They are paid by the citizenry to promote welfare and are late on a 30-second task. Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
+
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
 
 ## Papers (algorithm source of truth)
@@ -180,7 +182,6 @@ The near-term goal is to get a verified majority of humanity to vote for the 1% 
 - **Cut ruthlessly.** For every page ask: **what can I remove, hide, or collapse that would increase the chance a human actually completes the task on this page?** Delete it. Collapse secondary info into accordions or sub-pages. One primary CTA per screen, visible without scrolling.
 - **Make actions look actionable.** If a link starts or completes a user task, especially an external workflow, render it as a clear button or command control, not only as inline text. Use plain inline links for references, citations, navigation, and secondary reading. If the user is expected to copy an exact value into another site, email, form, wallet, bank portal, legal document, or message, provide a compact copy affordance near that value. Primary task actions get buttons; exact reusable values get copy buttons; explanatory text stays text.
 - **No blather.** No "welcome to", "let's take a moment", "in this section we'll", "we're excited to". State the fact, state the action, stop. Every word load-bearing. If deleting it doesn't hurt, delete it. Max one adjective per noun. Numbers beat adjectives. A shocking fact beats a paragraph explaining the fact.
-- **Wishonia voice everywhere user-facing.** Deadpan, data-first, short sentences, sardonic, no partisan framing. Task descriptions, button labels, errors, empty states, tooltips, emails, modal copy — all of it.
 - **Completion test:** cover the bottom half of the screen with your hand. If a user seeing only the top half doesn't know what to do next, restructure.
 
 ## Testing Rules (non-negotiable)

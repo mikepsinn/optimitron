@@ -1,6 +1,6 @@
 /**
  * Referral-invitation task — backed by the `referral:vote-invitation`
- * TaskTrigger blueprint (seeded by `scripts/seed-task-triggers.ts`).
+ * TaskTrigger blueprint synced by `pnpm db:sync:managed-data -- --apply`.
  *
  * `createReferralInvitationTask` is a thin wrapper that fires the trigger
  * with the right context and patches the few task fields the trigger
@@ -75,14 +75,14 @@ db: Prisma.TransactionClient | typeof prisma = prisma,
 
   if (result.result === "filteredOut" || result.result === "failed") {
     throw new Error(
-      `referral:vote-invitation trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did the seed run? Try: pnpm db:seed:triggers`,
+      `referral:vote-invitation trigger did not run (${result.result}: ${result.reason ?? result.error ?? "unknown"}). Did managed data sync run? Try: pnpm db:sync:managed-data -- --apply`,
     );
   }
 
   const parent = result.spawnedSpecs.find((s) => s.isParent);
   if (!parent) {
     throw new Error(
-      "referral:vote-invitation trigger has no parent spec. Re-run scripts/seed-task-triggers.ts.",
+      "referral:vote-invitation trigger has no parent spec. Re-run pnpm db:sync:managed-data -- --apply.",
     );
   }
 

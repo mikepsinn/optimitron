@@ -7,6 +7,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { compare, hash } from "bcryptjs";
 import { createAuthAdapter } from "@/lib/auth-adapter";
 import { isDemoLoginEnabled } from "@/lib/demo-login";
+import { DEFAULT_SYSTEM_EMAIL_FROM } from "@/lib/email/from-address";
 import { sendMagicLinkEmail } from "@/lib/email/magic-link-email";
 import { summarizePersonhoodVerifications } from "@/lib/personhood.server";
 import { prisma } from "@/lib/prisma";
@@ -63,7 +64,7 @@ async function getSessionIdentity(userId: string) {
 
 const providers: NextAuthOptions["providers"] = [
   EmailProvider({
-    from: serverEnv.EMAIL_FROM,
+    from: DEFAULT_SYSTEM_EMAIL_FROM,
     maxAge: 24 * 60 * 60,
     server: {
       host: "localhost",

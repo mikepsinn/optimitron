@@ -61,7 +61,6 @@ const routeOrder = [
   "vote",
   "treaty",
   "treaty-auth",
-  "why",
   "about",
   "agencies",
   "scoreboard",
@@ -593,8 +592,13 @@ function getBlockingReviewIssues(groups, screenshots) {
   }
 
   for (const group of groups) {
+    // A route the PR no longer captures (route deleted, renamed, or
+    // unenrolled from visual review) intentionally has no after-screenshot.
+    // The baseline survives from the main branch artifact but is not a gap.
+    const routeRemovedFromPr =
+      routePaths.size > 0 && !routePaths.has(group.routeName);
     for (const pair of group.pairs) {
-      if (pair.before && !pair.after) {
+      if (pair.before && !pair.after && !routeRemovedFromPr) {
         issues.push(
           `${group.routeName}/${pair.projectName}: missing pull-request screenshot`,
         );

@@ -2,13 +2,12 @@
 
 import { LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { RepresentedPersonForm } from "@/components/people/RepresentedPersonForm";
+import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
 import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner";
 import { Button } from "@/components/retroui/Button";
-import { PresidentManagementSystemSection } from "@/components/tasks/PresidentManagementSystemSection";
-import { TreatyContent } from "@/components/treaty/TreatyContent";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
@@ -17,9 +16,26 @@ import type { DashboardUser } from "@/types/dashboard";
 
 interface TreatyTaskDashboardClientProps {
   user: DashboardUser;
-  treatyProgram: TaskCardTask | null;
   signerTasks: TaskCardTask[];
 }
+
+const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
+  {
+    href: ROUTES.plaintiffs,
+    label: "Register a plaintiff",
+    body: "Each named relative adds $10.6M to your family's share of the demanded recovery.",
+  },
+  {
+    href: ROUTES.employees,
+    label: "Remind overdue presidents",
+    body: "193 heads of government. 1.4 years overdue on a 30-second task.",
+  },
+  {
+    href: ROUTES.endorse,
+    label: "Endorse as an organization",
+    body: "If you speak for a company, charity, coalition, or church.",
+  },
+];
 
 // Treaty-paper themed wrapper for the handle/referral-link card. Replaces the
 // default brutal-yellow Card so it sits naturally inside the treaty layout.
@@ -28,7 +44,6 @@ const TREATY_BANNER_CLASSNAME =
 
 export function TreatyTaskDashboardClient({
   user: initialUser,
-  treatyProgram,
   signerTasks,
 }: TreatyTaskDashboardClientProps) {
   const router = useRouter();
@@ -36,6 +51,7 @@ export function TreatyTaskDashboardClient({
   const [user, setUser] = useState(initialUser);
   const requestOrigin = useRequestSiteOrigin();
   const referralLink = buildUserReferralUrl(user, requestOrigin);
+  const overdueSignerCount = signerTasks.length;
 
   const refreshPage = () => {
     void updateSession();
@@ -44,7 +60,7 @@ export function TreatyTaskDashboardClient({
 
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
-      <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:py-12">
+      <div className="mx-auto max-w-3xl space-y-8 px-4 py-8 sm:py-12">
         <div className="flex flex-col items-start justify-between gap-4 border-b border-[var(--treaty-ink)]/30 pb-4 sm:flex-row">
           <h1 className="text-3xl font-black uppercase tracking-tight sm:text-4xl">
             Humanity Management Dashboard
@@ -72,17 +88,53 @@ export function TreatyTaskDashboardClient({
           variant="treaty"
         />
 
-        <PresidentManagementSystemSection
-          showIntro={false}
-          signerTasks={signerTasks}
-          treatyProgram={treatyProgram}
-        >
-          <RepresentedPersonForm onCreated={refreshPage} />
-        </PresidentManagementSystemSection>
+        <DashboardShareCard referralUrl={referralLink} />
 
-        <section className="pt-10">
-          <TreatyContent />
-        </section>
+        <details className="group border border-[var(--treaty-ink)]/30 bg-[var(--treaty-paper)]">
+          <summary className="cursor-pointer list-none px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] marker:hidden">
+            <span className="inline-block w-4">▸</span>
+            Other ways to help
+          </summary>
+          <ul className="border-t border-[var(--treaty-ink)]/30 px-4 py-3">
+            {OTHER_ACTIONS.map((action) => (
+              <li
+                key={action.href}
+                className="border-b border-[var(--treaty-ink)]/15 py-3 last:border-b-0"
+              >
+                <Link
+                  href={action.href}
+                  className="block hover:underline"
+                >
+                  <p className="text-sm font-black uppercase tracking-[0.08em]">
+                    {action.label}
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-[var(--treaty-ink)]/70">
+                    {action.body}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </details>
+
+        {overdueSignerCount > 0 ? (
+          <details className="group border border-[var(--treaty-ink)]/30 bg-[var(--treaty-paper)]">
+            <summary className="cursor-pointer list-none px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] marker:hidden">
+              <span className="inline-block w-4">▸</span>
+              Your assigned tasks ({overdueSignerCount})
+            </summary>
+            <p className="border-t border-[var(--treaty-ink)]/30 px-4 py-3 text-xs font-bold text-[var(--treaty-ink)]/70">
+              Per-leader sign-the-treaty reminders. Manage on{" "}
+              <Link
+                href={ROUTES.employees}
+                className="font-black underline"
+              >
+                /employees
+              </Link>
+              .
+            </p>
+          </details>
+        ) : null}
       </div>
     </div>
   );

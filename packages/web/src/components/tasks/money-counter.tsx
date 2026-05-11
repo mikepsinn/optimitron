@@ -59,6 +59,7 @@ export function MoneyCounter({
       className={className}
       data-visual-mask="dynamic"
       data-visual-placeholder={VISUAL_REVIEW_MONEY_PLACEHOLDER}
+      data-volatile="money"
       title="Taxpayer money burned during this delay"
       suppressHydrationWarning
     >

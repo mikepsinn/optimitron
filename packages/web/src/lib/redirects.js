@@ -30,6 +30,8 @@ const REDIRECTS = [
   { source: "/referendum", destination: "/agencies/dcongress/referendums", permanent: true },
   { source: "/referendum/:slug", destination: "/agencies/dcongress/referendums/:slug", permanent: true },
   // /money is now a standalone page — no redirect needed
+  // /why folded into the treaty page — the WHEREAS clauses ARE the case.
+  { source: "/why", destination: "/treaty", permanent: true },
   { source: "/budget", destination: "/agencies/domb", permanent: true },
   { source: "/budget/:slug", destination: "/agencies/domb/:slug", permanent: true },
   { source: "/policies", destination: "/agencies/dcbo", permanent: true },

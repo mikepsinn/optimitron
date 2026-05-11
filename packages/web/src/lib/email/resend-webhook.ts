@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { ActivityType } from "@optimitron/db";
+import { ActivityType, EmailLogStatus } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { applyUnsubscribe } from "@/lib/email/suppression.server";
 
@@ -11,15 +11,23 @@ export type ResendEventType =
   | "email.bounced"
   | "email.complained"
   | "email.opened"
-  | "email.clicked";
+  | "email.clicked"
+  | "email.failed"
+  | "email.received"
+  | "email.scheduled"
+  | "email.suppressed";
 
 export interface ResendEvent {
   type: ResendEventType;
   created_at?: string;
   data: {
     email_id: string;
-    to?: string[];
+    from?: string;
+    to?: string[] | string;
     subject?: string;
+    text?: string;
+    html?: string;
+    in_reply_to?: string;
     bounce?: { type?: "hard" | "soft"; message?: string };
     [key: string]: unknown;
   };
@@ -119,7 +127,11 @@ export async function applyBounceEvent(event: ResendEvent): Promise<void> {
 
   await prisma.emailLog.update({
     where: { id: ctx.id },
-    data: { bouncedAt: new Date() },
+    data: {
+      bouncedAt: new Date(),
+      status: EmailLogStatus.BOUNCED,
+      errorMessage: event.data.bounce?.message ?? null,
+    },
   });
 
   const bounceType = event.data.bounce?.type;
@@ -148,6 +160,13 @@ export async function applyDeliveredEvent(event: ResendEvent): Promise<void> {
     where: { id: ctx.id, deliveredAt: null },
     data: { deliveredAt: new Date() },
   });
+  await prisma.emailLog.updateMany({
+    where: {
+      id: ctx.id,
+      status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
+    },
+    data: { status: EmailLogStatus.DELIVERED },
+  });
 }
 
 export async function applyOpenedEvent(event: ResendEvent): Promise<void> {
@@ -155,8 +174,60 @@ export async function applyOpenedEvent(event: ResendEvent): Promise<void> {
   if (!ctx) return;
   await prisma.emailLog.updateMany({
     where: { id: ctx.id, openedAt: null },
-    data: { openedAt: new Date() },
+    data: { openedAt: new Date(), status: EmailLogStatus.OPENED },
   });
+}
+
+export async function applyFailedEvent(event: ResendEvent): Promise<void> {
+  const ctx = await findEmailLogContext(event.data.email_id);
+  if (!ctx) return;
+  await prisma.emailLog.updateMany({
+    where: {
+      id: ctx.id,
+      status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
+    },
+    data: {
+      errorMessage:
+        getWebhookErrorMessage(event) ?? "Resend failed to send this email.",
+      status: EmailLogStatus.FAILED,
+    },
+  });
+}
+
+export async function applySuppressedEvent(event: ResendEvent): Promise<void> {
+  const ctx = await findEmailLogContext(event.data.email_id);
+  if (!ctx) return;
+  await prisma.emailLog.updateMany({
+    where: {
+      id: ctx.id,
+      status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
+    },
+    data: {
+      errorMessage: getWebhookErrorMessage(event) ?? "Resend suppressed this email.",
+      status: EmailLogStatus.FAILED,
+    },
+  });
+}
+
+function getWebhookErrorMessage(event: ResendEvent): string | null {
+  const candidate =
+    event.data.error ??
+    event.data.reason ??
+    event.data.message ??
+    event.data.bounce?.message;
+  if (typeof candidate === "string" && candidate.trim()) {
+    return candidate.trim();
+  }
+  if (
+    candidate &&
+    typeof candidate === "object" &&
+    "message" in candidate &&
+    typeof candidate.message === "string" &&
+    candidate.message.trim()
+  ) {
+    return candidate.message.trim();
+  }
+  return null;
 }
 
 /** Fan out by event type. Unknown types are ignored (not errors). */
@@ -174,7 +245,14 @@ export async function dispatchResendEvent(event: ResendEvent): Promise<void> {
     case "email.opened":
       await applyOpenedEvent(event);
       return;
-    // email.sent / email.clicked / email.delivery_delayed — no-op for now.
+    case "email.failed":
+      await applyFailedEvent(event);
+      return;
+    case "email.suppressed":
+      await applySuppressedEvent(event);
+      return;
+    // email.sent / email.clicked / email.delivery_delayed / email.scheduled /
+    // email.received is handled by the route before this dispatcher.
     default:
       return;
   }

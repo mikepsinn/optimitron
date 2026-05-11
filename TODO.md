@@ -51,14 +51,14 @@ Until the 1% Treaty passes, this repo is in campaign mode.
   keep that variant first.
 - The treaty vote, referral attribution, post-vote share flow, and organization
   endorsement flow exist.
-- `optimize-earth` exists as the root task key/id, but the canonical campaign
-  tree still needs managed-data sync so source-controlled data, production rows,
-  MCP, API, and pages cannot drift.
+- `optimize-earth` exists as the root task key/id, and the canonical campaign
+  task tree now syncs through managed data so source-controlled data,
+  production rows, MCP, API, and pages cannot drift.
 - `/humanity-v-government` renders the operational case. `/court` exists but
   still needs the live Court surface, plaintiff/juror counter, and final
   treaty-as-verdict framing.
-- MCP task assignment email and inbound reply fan-out have shipped. The remaining
-  MCP outreach gap is an integration test for the full round trip.
+- MCP task assignment email, inbound reply fan-out, and the focused round-trip
+  integration test have shipped.
 - Visual review exists, but still needs cache-busted review URLs, fewer missing
   before/after pairs, direct preview links, and deterministic animation settling.
 
@@ -112,6 +112,10 @@ tables.
 seed-only cleanup approach with this, then retire old direct children like
 `dfda` / `bed-nets-funding-gap` through managed data rather than bespoke
 migrations for every future edit.
+
+**Branch status:** `feature/managed-task-tree-sync` adds managed sync for the
+canonical `Task` tree and task trigger blueprints, with dry-run/apply modes,
+seed reuse, and production deploy wiring.
 
 **Testing:** one focused unit/integration test for sync semantics:
 
@@ -173,27 +177,27 @@ Notes:
 This is the canonical near-term order. Older detailed sections below are
 supporting detail or parked work; they should not override this sequence.
 
-1. **Do not ship the interrupted seed-only cleanup as the long-term pattern.**
+1. [x] **Do not ship the interrupted seed-only cleanup as the long-term pattern.**
    Either replace the local partial seed/migration/test changes with managed
    data, or explicitly throw them away before the next task-tree patch.
-2. **Build managed-data sync for tasks first.** Keep scope narrow:
+2. [x] **Build managed-data sync for tasks first.** Keep scope narrow:
    `Task` rows, primary task communication endpoint, parent-child links,
    explicit retire flags, dry-run/apply.
-3. **Move the Optimize Earth tree into managed data.** Sync production so
+3. [x] **Move the Optimize Earth tree into managed data.** Sync production so
    `Optimize Earth` becomes the root title, `End War and Disease` becomes the
    primary mission child, Court/case/treaty tasks exist, and obsolete direct
    benchmark children are retired.
-4. **Wire production deploy to run managed-data sync.** This prevents future
+4. [x] **Wire production deploy to run managed-data sync.** This prevents future
    canonical task/title/trigger changes from requiring one-off data migrations.
-5. **Then update the UI presentation.** `/tasks/optimize-earth`, dashboard, and
+5. [ ] **Then update the UI presentation.** `/tasks/optimize-earth`, dashboard, and
    visual-review routes should show the simplified tree, while `warondisease.org`
    still pushes the 1% Treaty vote first.
-6. **Only add `allowsUserSubtasks` before exposing public subtask creation UI.**
+6. [ ] **Only add `allowsUserSubtasks` before exposing public subtask creation UI.**
    Seeded/admin-managed task trees can ship before this. Public UGC needs the
    permission column/guard so arbitrary users cannot clutter canonical parents.
-7. **Fold task triggers into managed data after the task-tree sync is proven.**
-   Trigger definitions are the same kind of semi-permanent app data and should
-   eventually stop using a separate one-off production seed path.
+7. [x] **Fold task triggers into managed data after the task-tree sync is proven.**
+   Trigger definitions are the same kind of semi-permanent app data and no
+   longer use a separate one-off production seed path.
 
 ### Recently discussed but not yet implemented
 
@@ -203,11 +207,6 @@ cross-check so they do not disappear into chat history.
 
 **Current branch hygiene**
 
-- Decide what to do with the interrupted local changes:
-  `packages/db/prisma/seed.ts`,
-  `packages/db/prisma/migrations/20260510010000_cleanup_optimize_earth_task_tree/`,
-  and `packages/db/src/__tests__/optimize-earth-task-tree.test.ts`. Replace with
-  managed-data sync or discard them before the next commit.
 - After each push, keep working on local tasks while GitHub Actions run instead
   of blocking the whole session on watching checks, unless the next step truly
   depends on a result.
@@ -401,16 +400,11 @@ Manual reference: `manual.warondisease.org/knowledge/solution/court-of-humanity.
 
 ### P1 — MCP outreach email round-trip integration test
 
-The MCP `createTask` -> assignment email -> reply -> comment path has shipped.
-The only remaining gap is one integration test at
-`packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`:
-`createOrganization` -> `createTask` -> assert email queued + `from` set +
-`replyTo` set; then synthesize an `InboundEmailEvent` matching the `replyTo`
-and assert `processInboundReply` writes a `TaskComment` and notifies non-author
-recipients.
-
-No schema changes. Do not rebuild the shipped pipeline unless a real failure
-appears.
+Done on `feature/managed-task-tree-sync`:
+`packages/web/src/lib/__tests__/mcp-server.task-email.integration.test.ts`
+covers task assignment email send + `Reply-To` routing + inbound reply becoming
+a task comment and notifying non-author recipients. Do not rebuild the shipped
+pipeline unless a real failure appears.
 
 ### P1 — "Forward to someone better-fit" on assignment emails (lightweight)
 
@@ -787,16 +781,25 @@ gaps worth filling:
 
 ### P1 — Email threading (Message-ID, In-Reply-To, References)
 
-Outbound mail currently sets only `List-Unsubscribe` (`packages/web/src/lib/email/resend.ts:209,266,309`). Inbound captures `inReplyTo` into `TaskCommunication.metadataJson.inReplyTo` but it is never consumed. Mail clients won't visually thread the conversation; in-app `parentCommentId` never gets set on inbound replies. Replies feel orphaned in both surfaces.
+**Status:** shipped on `feature/managed-task-tree-sync` for task notification
+email: outbound `TaskCommunication` emails set stable `Message-ID`,
+`In-Reply-To`, and `References` headers, persist the message id in
+`metadataJson`, and inbound replies use that header to nest under the outbound
+task comment.
 
-- **Generate stable `Message-ID`** per outbound `TaskCommunication`:
+Original problem: outbound mail only set `List-Unsubscribe`. Inbound captured
+`inReplyTo` into `TaskCommunication.metadataJson.inReplyTo`, but it was never
+consumed. Mail clients would not visually thread the conversation; in-app
+`parentCommentId` never got set on inbound replies.
+
+- [x] **Generate stable `Message-ID`** per outbound `TaskCommunication`:
   `<task-{taskId}-comm-{communicationId}@{REPLY_EMAIL_DOMAIN}>`. Pass via Resend's `headers`.
   Persist on `TaskCommunication.metadataJson.messageId`.
-- **Set `In-Reply-To` and `References`** on subsequent sends in the thread by reading the
+- [x] **Set `In-Reply-To` and `References`** on subsequent sends in the thread by reading the
   most recent outbound `TaskCommunication` for the task.
-- **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
+- [x] **Resolve inbound `inReplyTo` → originating `TaskCommunication`** to set `parentCommentId`
   on the new `TaskComment`, so the in-app feed nests correctly.
-- **No schema changes.** All metadata fits in the existing `metadataJson` field.
+- [x] **No schema changes.** All metadata fits in the existing `metadataJson` field.
 
 ## Architecture Guardrails (durable — do not violate)
 
