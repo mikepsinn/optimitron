@@ -28,7 +28,9 @@ interface PostVoteShareEmailInput {
   userId: string;
   /** Recipient's email address. */
   toAddress: string;
-  /** The voter's personal referral URL (warondisease.org/r/ABCD or /@handle). */
+  /** The voter's personal referral URL — built via `buildUserReferralUrl`,
+   * so the shape is `${baseUrl}/vote/${handle | referralCode}` (e.g.
+   * `https://warondisease.org/vote/@alice`). */
   referralUrl: string;
 }
 
@@ -114,6 +116,12 @@ export async function sendPostVoteShareEmail(
         emailLogId: claimed.emailLogId,
         providerMessageId: result.id,
         status: "SENT",
+      });
+    } else {
+      await markEmailLogStatus({
+        emailLogId: claimed.emailLogId,
+        errorMessage: `send_aborted:${result.status}`,
+        status: "FAILED",
       });
     }
     return result;

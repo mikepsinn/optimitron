@@ -72,7 +72,7 @@ export function buildReferralFirstConversionHtml(
         Open dashboard
       </a>
       <p style="margin:32px 0 0;font-size:13px;line-height:1.6;color:#71717a;">
-        Live conversion counts live on your dashboard. We only email on the
+        Live conversion counts are on your dashboard. We only email on the
         first conversion — no per-vote pings.
       </p>
       ${buildShareFooterHtml(input.referrerReferralUrl)}
@@ -97,7 +97,7 @@ export function buildReferralFirstConversionText(
     "",
     `Open dashboard: ${input.dashboardUrl}`,
     "",
-    "Live conversion counts live on your dashboard. We only email on the first conversion — no per-vote pings.",
+    "Live conversion counts are on your dashboard. We only email on the first conversion — no per-vote pings.",
     buildShareFooterText(input.referrerReferralUrl),
   ].join("\n");
 }
@@ -140,6 +140,12 @@ export async function sendReferralFirstConversionEmail(
         emailLogId: claimed.emailLogId,
         providerMessageId: result.id,
         status: "SENT",
+      });
+    } else {
+      await markEmailLogStatus({
+        emailLogId: claimed.emailLogId,
+        errorMessage: `send_aborted:${result.status}`,
+        status: "FAILED",
       });
     }
     return result;
