@@ -1,12 +1,9 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
-import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner";
 import { Button } from "@/components/retroui/Button";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
@@ -37,26 +34,14 @@ const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
   },
 ];
 
-// Treaty-paper themed wrapper for the handle/referral-link card. Replaces the
-// default brutal-yellow Card so it sits naturally inside the treaty layout.
-const TREATY_BANNER_CLASSNAME =
-  "relative border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8 shadow-none mb-8";
-
 export function TreatyTaskDashboardClient({
   user: initialUser,
   signerTasks,
 }: TreatyTaskDashboardClientProps) {
-  const router = useRouter();
-  const { update: updateSession } = useSession();
-  const [user, setUser] = useState(initialUser);
+  const user = initialUser;
   const requestOrigin = useRequestSiteOrigin();
   const referralLink = buildUserReferralUrl(user, requestOrigin);
   const overdueSignerCount = signerTasks.length;
-
-  const refreshPage = () => {
-    void updateSession();
-    router.refresh();
-  };
 
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
@@ -76,17 +61,6 @@ export function TreatyTaskDashboardClient({
             <LogOut className="h-4 w-4 stroke-[2.5px]" />
           </Button>
         </div>
-
-        <ReferralLinkBanner
-          user={user}
-          referralLink={referralLink}
-          onUserChange={setUser}
-          onRefresh={refreshPage}
-          dismissible={false}
-          className={TREATY_BANNER_CLASSNAME}
-          userFraming="manager"
-          variant="treaty"
-        />
 
         <DashboardShareCard referralUrl={referralLink} />
 
