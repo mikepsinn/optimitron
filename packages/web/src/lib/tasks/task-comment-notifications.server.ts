@@ -193,9 +193,19 @@ export async function notifyTaskCommentRecipients(input: {
         continue;
       }
 
-      const recipientReferralUrl = await getRecipientReferralUrl(
-        recipient.userId ?? null,
-      );
+      // Optional share-footer decoration. A throw here would abort the
+      // entire notification batch — fall back to null per-recipient.
+      let recipientReferralUrl: string | null = null;
+      try {
+        recipientReferralUrl = await getRecipientReferralUrl(
+          recipient.userId ?? null,
+        );
+      } catch (lookupError) {
+        log.warn("Failed to resolve recipient referral URL", {
+          error: lookupError instanceof Error ? lookupError.message : String(lookupError),
+          userId: recipient.userId ?? null,
+        });
+      }
       const email = buildTaskCommentNotificationEmail({
         comment: {
           authorAvatarUrl: author.avatarUrl,

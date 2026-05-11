@@ -736,10 +736,23 @@ function renderHtml(groups) {
             routes[j].open = false;
           }
         } else if (action === "expand-changed") {
+          // Hide unchanged routes entirely so the page only shows what
+          // moved vs main. Filter input still works; clearing the input
+          // and clicking "Expand all" restores everything.
+          var changedCount = 0;
           for (var k = 0; k < routes.length; k++) {
             var isChanged = routes[k].classList.contains("changed");
-            routes[k].open = isChanged && !routes[k].hasAttribute("hidden");
+            if (isChanged) {
+              routes[k].removeAttribute("hidden");
+              routes[k].open = true;
+              changedCount += 1;
+            } else {
+              routes[k].setAttribute("hidden", "");
+              routes[k].open = false;
+            }
           }
+          countEl.textContent =
+            changedCount + " changed (of " + routes.length + ")";
         }
       });
 
@@ -868,7 +881,8 @@ function renderRouteGroup(group) {
   const pairs = group.pairs.map(renderPair).join("\n");
   const openAttr = group.changed || group.errored ? " open" : "";
   const contextJson = JSON.stringify(buildRouteContext(group));
-  return `<details class="route ${group.changed || group.errored ? "changed" : "unchanged"}"${openAttr}>
+  const anchorId = `route-${slugifyForAnchor(group.routeName)}`;
+  return `<details id="${escapeHtml(anchorId)}" class="route ${group.changed || group.errored ? "changed" : "unchanged"}"${openAttr}>
     <summary>
       <span class="route-title">${escapeHtml(labelRoute(group.routeName))}</span>
       <span class="route-summary-actions">

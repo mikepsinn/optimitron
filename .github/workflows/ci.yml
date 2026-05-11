@@ -270,6 +270,13 @@ jobs:
             });
 
             for (const deployment of deployments) {
+              // Skip our own visual-review deployments — we set up
+              // `visual-review/pr-N` to drive the inline timeline annotation
+              // for the gh-pages review URL, but here we want the *app*
+              // preview URL (Vercel) to feed VISUAL_REVIEW_BASE_URL.
+              const env = deployment.environment || '';
+              if (env.startsWith('visual-review')) continue;
+
               const statuses = await github.rest.repos.listDeploymentStatuses({
                 owner,
                 repo,

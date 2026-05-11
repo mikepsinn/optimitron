@@ -150,7 +150,17 @@ export async function notifyTaskAssigneeOfAssignment(input: {
 
     const { recipient, task } = resolved;
     const senderName = await resolveSenderDisplayName(input.senderUserId);
-    const recipientReferralUrl = await getRecipientReferralUrl(recipient.userId);
+    // The share footer is optional decoration — never block the
+    // assignment email if the referral lookup throws.
+    let recipientReferralUrl: string | null = null;
+    try {
+      recipientReferralUrl = await getRecipientReferralUrl(recipient.userId);
+    } catch (lookupError) {
+      log.warn("Failed to resolve recipient referral URL", {
+        error: lookupError instanceof Error ? lookupError.message : String(lookupError),
+        userId: recipient.userId,
+      });
+    }
     const email = buildTaskAssignmentNotificationEmail({
       description: task.description,
       id: task.id,

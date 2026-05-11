@@ -317,12 +317,13 @@ cross-check so they do not disappear into chat history.
   and `task-comment-notification`. Both fetch the recipient's referral URL
   when `recipientUserId` is set and append the canonical share kit; external
   recipients (leaders' offices) get the email without the footer.
-- Email-template screenshots in the visual review (not yet built). Render
-  every email template — magic-link, task-assignment, task-comment-notification,
-  inbound-monitor-forward, post-vote-share, referral-first-conversion — with
-  representative tokens, screenshot at email-client widths, embed alongside
-  page screenshots in `latest.html`. Reviewers currently can't see email
-  copy without setting up Resend locally.
+- [x] Email-template screenshots in the visual review. Implemented in
+  `packages/web/e2e/email-screenshots.spec.ts`: renders magic-link,
+  task-assignment, task-comment-notification, post-vote-share,
+  referral-first-conversion, and monthly-chain-digest with representative
+  tokens, screenshots them at email-client widths, and feeds them into the
+  same `screenshots/<project>/` tree that `build-visual-review.mjs` walks.
+  Email-* rows now appear alongside page screenshots in `latest.html`.
 - Move remaining dashboard/page copy into the messaging/copy-review system where
   practical, especially Treaty Dashboard text and major CTAs.
 - Continue internationalization groundwork by centralizing public copy in JSON or
