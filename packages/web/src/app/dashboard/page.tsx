@@ -15,7 +15,6 @@ import { getSiteFromHeaders } from "@/lib/site";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { getProfileIdentityData } from "@/lib/profile-identity.server";
-import { selectTreatyPresidentManagementTasks } from "@/lib/tasks/president-management";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
@@ -71,22 +70,15 @@ export default async function DashboardPage({
     // referral-invitation tasks attach to.
     await ensureUserTreatyTask({ personId: person.id, userId });
 
-    // Fetch tasks + the DashboardUser shape in parallel. The user is needed
-    // to render the handle/referral-link banner above the composer.
-    const [taskData, profileData] = await Promise.all([
-      getTasksPageData(userId),
-      getProfileIdentityData(userId),
-    ]);
+    // The user is needed to render the referral link for Assignment 1.
+    const profileData = await getProfileIdentityData(userId);
     if (!profileData) {
       redirect(getSignInPath(ROUTES.dashboard));
     }
 
-    const presidentManagement = selectTreatyPresidentManagementTasks(taskData);
-
     return (
       <TreatyTaskDashboardClient
         user={profileData.user}
-        signerTasks={presidentManagement.signerTasks}
       />
     );
   }

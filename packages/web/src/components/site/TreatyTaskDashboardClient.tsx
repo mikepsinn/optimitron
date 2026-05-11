@@ -8,12 +8,10 @@ import { Button } from "@/components/retroui/Button";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
-import type { TaskCardTask } from "@/components/tasks/task-card";
 import type { DashboardUser } from "@/types/dashboard";
 
 interface TreatyTaskDashboardClientProps {
   user: DashboardUser;
-  signerTasks: TaskCardTask[];
 }
 
 const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
@@ -36,12 +34,10 @@ const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
 
 export function TreatyTaskDashboardClient({
   user: initialUser,
-  signerTasks,
 }: TreatyTaskDashboardClientProps) {
   const user = initialUser;
   const requestOrigin = useRequestSiteOrigin();
   const referralLink = buildUserReferralUrl(user, requestOrigin);
-  const overdueSignerCount = signerTasks.length;
 
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
@@ -90,25 +86,6 @@ export function TreatyTaskDashboardClient({
             ))}
           </ul>
         </details>
-
-        {overdueSignerCount > 0 ? (
-          <details className="group border border-[var(--treaty-ink)]/30 bg-[var(--treaty-paper)]">
-            <summary className="cursor-pointer list-none px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] marker:hidden">
-              <span className="inline-block w-4">▸</span>
-              Your assigned tasks ({overdueSignerCount})
-            </summary>
-            <p className="border-t border-[var(--treaty-ink)]/30 px-4 py-3 text-xs font-bold text-[var(--treaty-ink)]/70">
-              Per-leader sign-the-treaty reminders. Manage on{" "}
-              <Link
-                href={ROUTES.employees}
-                className="font-black underline"
-              >
-                /employees
-              </Link>
-              .
-            </p>
-          </details>
-        ) : null}
       </div>
     </div>
   );

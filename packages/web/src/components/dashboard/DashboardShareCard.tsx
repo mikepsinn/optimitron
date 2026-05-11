@@ -129,6 +129,9 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
         <p className="text-[var(--treaty-ink)]/70">
           To get there: send the message below to two humans you love.
           They send it to two. 32 rounds reaches every adult on Earth.
+          Getting humans to agree on one thing is the first step to any
+          civilizational upgrade. You are responsible for this step. It cannot
+          be completed without you.
         </p>
       </div>
 
@@ -156,8 +159,8 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
               : "Copy message"}
         </button>
         <p className="text-xs font-bold text-[var(--treaty-ink)]/60">
-          Paste into iMessage, WhatsApp, Signal, email, wherever your people
-          read you.
+          Paste into iMessage, WhatsApp, Signal, email, or wherever humans read
+          what you write.
         </p>
       </div>
     </section>
