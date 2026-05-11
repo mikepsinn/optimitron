@@ -470,36 +470,49 @@ export default async function TaskDetailPage({
           ) : null}
         </header>
 
-        <section className="grid gap-8 border-b border-foreground py-6 lg:grid-cols-[280px_1fr]">
-          <dl>
-            <DetailItem label="Owner" value={ownerDetail} />
-            <DetailItem label="Progress" value={progressLabel} />
-            <DetailItem label="Due date" value={dueLabel} />
-            <DetailItem label="Time needed" value={effortLabel} />
-            <DetailItem label="Area" value={formatEnumLabel(task.category)} />
-            <DetailItem label="Completed" value={completedLabel} />
+        {/* Delay-cost stats — kept (motivational, not duplicated in
+            header). Owner/Progress/Time-needed/Area/Completed/Updates were
+            previously listed in a verbose `<dl>` enterprise-CRM sidebar
+            that duplicated the header (Due date) and added field-label
+            chrome users don't act on. Per TODO line 224: keep title +
+            assignee + due date + primary action + markdown body +
+            comments, drop the rest. */}
+        {(delayStats.currentHumanLivesLost != null &&
+          delayStats.currentHumanLivesLost > 0) ||
+        (delayStats.currentEconomicValueUsdLost != null &&
+          delayStats.currentEconomicValueUsdLost > 0) ? (
+          <section
+            aria-label="Delay cost"
+            className="flex flex-wrap gap-x-8 gap-y-2 border-b border-foreground py-4 text-sm font-bold"
+          >
             {delayStats.currentHumanLivesLost != null &&
             delayStats.currentHumanLivesLost > 0 ? (
-              <DetailItem
-                label="Deaths from delay"
-                value={formatCompactCount(delayStats.currentHumanLivesLost)}
-              />
+              <span>
+                <span className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  Deaths from delay
+                </span>{" "}
+                <span className="ml-1 text-foreground">
+                  {formatCompactCount(delayStats.currentHumanLivesLost)}
+                </span>
+              </span>
             ) : null}
             {delayStats.currentEconomicValueUsdLost != null &&
             delayStats.currentEconomicValueUsdLost > 0 ? (
-              <DetailItem
-                label="Wasted by delay"
-                value={formatCompactCurrency(
-                  delayStats.currentEconomicValueUsdLost,
-                )}
-              />
+              <span>
+                <span className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  Wasted by delay
+                </span>{" "}
+                <span className="ml-1 text-foreground">
+                  {formatCompactCurrency(
+                    delayStats.currentEconomicValueUsdLost,
+                  )}
+                </span>
+              </span>
             ) : null}
-            <DetailItem
-              label="Updates"
-              value={commentFeed.total.toLocaleString("en-US")}
-            />
-          </dl>
+          </section>
+        ) : null}
 
+        <section className="border-b border-foreground py-6">
           <article className="min-w-0">
             <TaskDescription markdown={task.description} />
           </article>

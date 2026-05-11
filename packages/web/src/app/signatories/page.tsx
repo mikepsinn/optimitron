@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeaderboard";
-import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
 import { parsePositivePageParam } from "@/lib/pagination";
@@ -58,28 +57,10 @@ export default async function SignatoriesPage({
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16">
-      <header className="mx-auto mb-12 max-w-3xl text-center">
-        <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          Public record
-        </p>
-        <h1 className="text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
-          Signatories
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base font-bold text-muted-foreground">
-          Humans and organizations on one board, ranked by the verified YES
-          voters they recruited to say that <TreatyTradeThesis />.
-        </p>
-      </header>
-
       {homeData.publicSignatories.totalCount > 0 ? (
         <SignatoriesLeaderboard
           pagePathname={ROUTES.signatories}
           publicSignatories={homeData.publicSignatories}
-          voteCounterSplit={{
-            liveVotes: homeData.individualCount,
-            memorialVotes: homeData.memorialVoteCount,
-            representedVotes: homeData.representedHumanCount,
-          }}
         />
       ) : (
         <section className="border-t-2 border-foreground pt-12">

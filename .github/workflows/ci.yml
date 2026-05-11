@@ -211,11 +211,15 @@ jobs:
           rm -rf "$baseline_root"
           mkdir -p "$baseline_root"
 
+          # `--limit 5` instead of 20: the previous successful main run
+          # virtually always has the artifact. Iterating 20 deep mostly
+          # burned API calls + network setup time without finding anything
+          # the first 5 didn't.
           mapfile -t run_ids < <(gh run list \
             --workflow CI \
             --branch main \
             --status success \
-            --limit 20 \
+            --limit 5 \
             --json databaseId \
             --jq '.[].databaseId')
 
