@@ -54,6 +54,8 @@ Until the 1% Treaty passes, this repo is in campaign mode.
 - `optimize-earth` exists as the root task key/id, and the canonical campaign
   task tree now syncs through managed data so source-controlled data,
   production rows, MCP, API, and pages cannot drift.
+- The managed canonical task sync work from `feature/managed-task-tree-sync` is now
+  on `main` via `PR #71` and drives production deploy via CI.
 - `/humanity-v-government` renders the operational case. `/court` exists but
   still needs the live Court surface, plaintiff/juror counter, and final
   treaty-as-verdict framing.
@@ -113,9 +115,9 @@ seed-only cleanup approach with this, then retire old direct children like
 `dfda` / `bed-nets-funding-gap` through managed data rather than bespoke
 migrations for every future edit.
 
-**Branch status:** `feature/managed-task-tree-sync` adds managed sync for the
-canonical `Task` tree and task trigger blueprints, with dry-run/apply modes,
-seed reuse, and production deploy wiring.
+**Branch status:** `main` now includes this work in `PR #71` (`feature/managed-task-tree-sync`
+merged). Managed-task sync for the canonical `Task` tree and task trigger blueprints
+ships with dry-run/apply modes, seed reuse, and production deploy wiring.
 
 **Testing:** one focused unit/integration test for sync semantics:
 
@@ -283,18 +285,21 @@ cross-check so they do not disappear into chat history.
 
 **Campaign pages and funnels**
 
-- Add the plaintiff damages surface on `/plaintiffs` so visitors see the per-
+- [x] Add the plaintiff damages surface on `/plaintiffs` so visitors see the per-
   plaintiff recovery frame without first reading the case page.
-- Add a live plaintiff/juror counter on `/court`.
-- Finish `/court` as the Court of Humanity surface, with the case, verdict, and
+- [ ] Add a live plaintiff/juror counter on `/court`.
+- [ ] Finish `/court` as the Court of Humanity surface, with the case, verdict, and
   plaintiff/juror mental model connected to the 1% Treaty.
 - Decide/create the "summon jurors" route if existing referral pages do not give
   a clean standalone target.
 - Split dashboard vs president management: dashboard should link to president
   pressure; `/employees` or a clearer `/presidents` route should own the full
   president-management surface.
-- Add sitemap entries for public organizations, `/humanity-v-government`, and
+- [x] Add static/explicit sitemap coverage for `/humanity-v-government` and
   `/court`.
+- [x] Add sitemap entries for public organizations.
+- [ ] Split sitemap outputs when `500+` detail rows exist per type (tasks, people,
+  orgs) instead of silent truncation.
 
 **Navigation and information architecture**
 
