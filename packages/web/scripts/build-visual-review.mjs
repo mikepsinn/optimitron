@@ -373,6 +373,87 @@ function renderHtml(groups) {
       height: auto;
     }
 
+    figure img {
+      cursor: zoom-in;
+    }
+
+    .lightbox {
+      align-items: center;
+      background: rgba(0, 0, 0, 0.92);
+      cursor: zoom-out;
+      display: none;
+      inset: 0;
+      justify-content: center;
+      overflow: auto;
+      padding: 24px;
+      position: fixed;
+      z-index: 100;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox img {
+      cursor: zoom-in;
+      display: block;
+      height: auto;
+      margin: auto;
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      width: auto;
+    }
+
+    .lightbox img.zoomed {
+      cursor: zoom-out;
+      height: auto;
+      margin: 0;
+      max-height: none;
+      max-width: none;
+      width: auto;
+    }
+
+    .lightbox-caption {
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      left: 24px;
+      max-width: calc(100% - 200px);
+      overflow: hidden;
+      position: fixed;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      top: 16px;
+      white-space: nowrap;
+    }
+
+    .lightbox-close {
+      background: #ffffff;
+      border: 0;
+      color: #000000;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      position: fixed;
+      right: 24px;
+      text-transform: uppercase;
+      top: 16px;
+    }
+
+    .lightbox-hint {
+      bottom: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 11px;
+      font-weight: 700;
+      left: 50%;
+      position: fixed;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+    }
+
     .missing div {
       padding: 24px 10px;
       color: var(--muted);
@@ -435,6 +516,66 @@ function renderHtml(groups) {
   <main>
     ${body}
   </main>
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button type="button" class="lightbox-close" aria-label="Close (Esc)">Close</button>
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+    <img id="lightbox-img" alt="">
+    <div class="lightbox-hint">Click image to toggle 1:1 zoom · click background or press Esc to close</div>
+  </div>
+  <script>
+    (function () {
+      var lightbox = document.getElementById("lightbox");
+      var lightboxImg = document.getElementById("lightbox-img");
+      var lightboxCaption = document.getElementById("lightbox-caption");
+      var closeBtn = lightbox.querySelector(".lightbox-close");
+
+      function open(src, alt) {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || "";
+        lightboxImg.classList.remove("zoomed");
+        lightboxCaption.textContent = alt || "";
+        lightbox.classList.add("open");
+        lightbox.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function close() {
+        lightbox.classList.remove("open");
+        lightbox.setAttribute("aria-hidden", "true");
+        lightboxImg.classList.remove("zoomed");
+        lightboxImg.removeAttribute("src");
+        document.body.style.overflow = "";
+      }
+
+      document.addEventListener("click", function (event) {
+        var img = event.target.closest("figure img");
+        if (img) {
+          event.preventDefault();
+          open(img.currentSrc || img.src, img.alt);
+        }
+      });
+
+      lightboxImg.addEventListener("click", function (event) {
+        event.stopPropagation();
+        lightboxImg.classList.toggle("zoomed");
+      });
+
+      closeBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        close();
+      });
+
+      lightbox.addEventListener("click", function (event) {
+        if (event.target === lightbox) close();
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && lightbox.classList.contains("open")) {
+          close();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
 `;
