@@ -759,12 +759,14 @@ export async function unsubscribeTaskCommunicationByReply(input: {
   }
 
   const inReplyTo = normalizeInReplyToHeader(input.inReplyTo);
+  // Replies can only target communications that actually reached the recipient,
+  // so DRAFT/FAILED rows are excluded — they were never delivered.
   const baseWhere = {
     channel: TaskCommunicationChannel.EMAIL,
     deletedAt: null,
     direction: TaskCommunicationDirection.OUTBOUND,
     recipientEmail,
-    status: { not: TaskCommunicationStatus.CANCELLED },
+    status: TaskCommunicationStatus.SENT,
     unsubscribeToken: { not: null },
     ...(input.taskId ? { taskId: input.taskId } : {}),
   } as const;
