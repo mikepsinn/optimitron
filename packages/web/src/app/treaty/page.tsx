@@ -43,9 +43,9 @@ export default async function TreatyPage() {
   const treatyMarkdown = referendumContent?.bodyMarkdown ?? "";
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+    <article className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
       <section className="space-y-10">
-        <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
+        <h2 className="text-center text-4xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
           Please quickly skim and sign to end war and disease.
         </h2>
         <ReactMarkdown
@@ -59,6 +59,6 @@ export default async function TreatyPage() {
       <section id="sign-below-treaty" className="mt-12">
         <TreatyNameSignatureBox />
       </section>
-    </main>
+    </article>
   );
 }
