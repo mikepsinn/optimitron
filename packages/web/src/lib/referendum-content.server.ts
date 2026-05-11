@@ -29,20 +29,20 @@ export async function getReferendumPageContent(
       bodyMarkdown: true,
     },
   });
+  if (!row) return null;
 
-  // Treaty body falls back to the bundled `onePercentTreatyText` snippet
-  // when the DB row is missing or its `bodyMarkdown` column is empty —
-  // CI databases, fresh seeds, or anywhere the Referendum row hasn't been
-  // populated would otherwise render `/treaty` with only the headline +
-  // signature box and no treaty text in between.
-  if (slug === TREATY_REFERENDUM_SLUG && (!row || !row.bodyMarkdown)) {
+  // Preview DB safety net: when the row exists but `bodyMarkdown` is empty
+  // (stale preview snapshots, mid-rollout migrations), fall back to the
+  // bundled treaty markdown so `/treaty` always renders a body. NOT a
+  // generic "row missing" fallback — if the row doesn't exist, that's a
+  // seeding bug and should fail loud (CI now seeds before the smoke test;
+  // the prior row-missing fallback masked an out-of-order CI workflow).
+  if (slug === TREATY_REFERENDUM_SLUG && !row.bodyMarkdown) {
     return {
-      question: row?.question ?? "",
+      ...row,
       bodyMarkdown: shareableSnippets.onePercentTreatyText.markdown,
     };
   }
-
-  if (!row) return null;
 
   return row;
 }
