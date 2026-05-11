@@ -22,6 +22,7 @@ import {
 } from "@/lib/tasks/task-notifications.server";
 import { recipientWithinRateLimits } from "@/lib/tasks/task-recipient-rate-limit.server";
 import { resolveTaskRecipients } from "@/lib/tasks/task-recipients.server";
+import { getRecipientReferralUrl } from "@/lib/referral-url-helpers.server";
 
 const log = createLogger("task-comment-notifications");
 
@@ -192,6 +193,9 @@ export async function notifyTaskCommentRecipients(input: {
         continue;
       }
 
+      const recipientReferralUrl = await getRecipientReferralUrl(
+        recipient.userId ?? null,
+      );
       const email = buildTaskCommentNotificationEmail({
         comment: {
           authorAvatarUrl: author.avatarUrl,
@@ -200,6 +204,7 @@ export async function notifyTaskCommentRecipients(input: {
         },
         cta: input.cta,
         recipientReason: recipient.reason ?? null,
+        recipientReferralUrl,
         replyInstruction: getTaskEmailReplyInstruction(),
         senderSignature: input.senderSignature,
         task,

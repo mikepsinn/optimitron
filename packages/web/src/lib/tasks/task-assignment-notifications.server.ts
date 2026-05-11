@@ -14,6 +14,7 @@ import {
   sendDraftTaskNotification,
 } from "@/lib/tasks/task-notifications.server";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
+import { getRecipientReferralUrl } from "@/lib/referral-url-helpers.server";
 
 const log = createLogger("task-assignment-notifications");
 
@@ -149,10 +150,12 @@ export async function notifyTaskAssigneeOfAssignment(input: {
 
     const { recipient, task } = resolved;
     const senderName = await resolveSenderDisplayName(input.senderUserId);
+    const recipientReferralUrl = await getRecipientReferralUrl(recipient.userId);
     const email = buildTaskAssignmentNotificationEmail({
       description: task.description,
       id: task.id,
       recipientName: recipient.name,
+      recipientReferralUrl,
       replyInstruction: getTaskEmailReplyInstruction(),
       title: task.title,
     });

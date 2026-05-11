@@ -292,6 +292,37 @@ cross-check so they do not disappear into chat history.
 
 **Public copy, messaging, and emails**
 
+- Post-vote forward email + first-conversion email shipped (PR3). Voter receives
+  a forward-friendly share kit on YES treaty vote. Referrer receives a single
+  "Your link worked. Round 1 of 32" email on their first conversion only —
+  never on subsequent conversions. Both deduped via `EmailLog.dedupeKey`.
+- Monthly chain digest shipped (PR #74). Cron at `0 14 1 * *` calls
+  `/api/cron/monthly-chain-digest`, which iterates every YES treaty voter
+  with an email and sends one of two variants picked by past-30-day direct
+  conversion count `N`:
+    - `N > 0`: positive reinforcement. Subject names the count + month;
+      body shows monthly + all-time totals + doubling-rounds math +
+      dashboard link + canonical share footer.
+    - `N == 0`: resend the forward kit. Subject `Still 30 seconds. Still
+      two humans you love.` Body is the canonical share message verbatim.
+      The zero-conversion user is exactly who needs the nudge; silence
+      would have treated unconverted as user-failure when it's actually
+      a we-failed-to-activate signal.
+  Deduped per user per calendar month via
+  `EmailLog.dedupeKey` = `monthly-chain-digest:{userId}:{yyyy-mm}`.
+  Future enhancement: replace direct count with a transitive recursive CTE
+  so the digest can show full chain size + which doubling round the user
+  is actually on, not just direct conversions.
+- `<ShareFooter>` retrofit shipped (PR #74) on `task-assignment-notification`
+  and `task-comment-notification`. Both fetch the recipient's referral URL
+  when `recipientUserId` is set and append the canonical share kit; external
+  recipients (leaders' offices) get the email without the footer.
+- Email-template screenshots in the visual review (not yet built). Render
+  every email template — magic-link, task-assignment, task-comment-notification,
+  inbound-monitor-forward, post-vote-share, referral-first-conversion — with
+  representative tokens, screenshot at email-client widths, embed alongside
+  page screenshots in `latest.html`. Reviewers currently can't see email
+  copy without setting up Resend locally.
 - Move remaining dashboard/page copy into the messaging/copy-review system where
   practical, especially Treaty Dashboard text and major CTAs.
 - Continue internationalization groundwork by centralizing public copy in JSON or
