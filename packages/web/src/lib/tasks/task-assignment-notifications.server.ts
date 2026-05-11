@@ -14,6 +14,23 @@ import {
   sendDraftTaskNotification,
 } from "@/lib/tasks/task-notifications.server";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
+import { buildUserReferralUrl } from "@/lib/url";
+
+async function getRecipientReferralUrl(userId: string | null): Promise<string | null> {
+  if (!userId) return null;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      referralCode: true,
+      person: { select: { handle: true } },
+    },
+  });
+  if (!user) return null;
+  return buildUserReferralUrl({
+    handle: user.person?.handle ?? null,
+    referralCode: user.referralCode,
+  });
+}
 
 const log = createLogger("task-assignment-notifications");
 
@@ -149,10 +166,12 @@ export async function notifyTaskAssigneeOfAssignment(input: {
 
     const { recipient, task } = resolved;
     const senderName = await resolveSenderDisplayName(input.senderUserId);
+    const recipientReferralUrl = await getRecipientReferralUrl(recipient.userId);
     const email = buildTaskAssignmentNotificationEmail({
       description: task.description,
       id: task.id,
       recipientName: recipient.name,
+      recipientReferralUrl,
       replyInstruction: getTaskEmailReplyInstruction(),
       title: task.title,
     });

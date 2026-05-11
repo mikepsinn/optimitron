@@ -4,6 +4,10 @@ import {
   type SenderSignature,
 } from "@/lib/email/wishonia-signature";
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
+import {
+  buildShareFooterHtml,
+  buildShareFooterText,
+} from "@/lib/email/share-footer";
 import { ROUTES } from "@/lib/routes";
 import { getBaseUrl } from "@/lib/url";
 
@@ -45,6 +49,13 @@ export interface CommentNotificationInput {
   recipientReason?: string | null;
   replyInstruction?: string | null;
   task: CommentNotificationTaskInput;
+  /**
+   * When the recipient is one of our users (has a referral URL), pass it
+   * here so the canonical share footer appears at the bottom. Omit for
+   * external/leader recipients — we don't pitch the share kit to people
+   * who haven't opted into the campaign.
+   */
+  recipientReferralUrl?: string | null;
 }
 
 export interface CommentNotificationEmail {
@@ -101,6 +112,7 @@ function buildHtml(input: {
   replyInstruction: string | null;
   title: string;
   unsubscribePlaceholder: string;
+  recipientReferralUrl: string | null;
 }) {
   const titleEsc = escapeHtml(input.title);
   const messageEsc = escapeHtml(input.commentMessage);
@@ -123,6 +135,9 @@ function buildHtml(input: {
   const replyInstructionHtml = input.replyInstruction
     ? `<p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:#3f3f46;">${escapeHtml(input.replyInstruction)}</p>`
     : "";
+  const shareFooterHtml = input.recipientReferralUrl
+    ? buildShareFooterHtml(input.recipientReferralUrl)
+    : "";
 
   return `<!doctype html>
 <html lang="en">
@@ -143,6 +158,7 @@ function buildHtml(input: {
       ${replyInstructionHtml}
       ${reasonHtml}
       ${signatureHtml}
+      ${shareFooterHtml}
       <p style="margin:32px 0 0;font-size:12px;line-height:1.6;color:#71717a;">
         <a href="${input.unsubscribePlaceholder}" style="color:#71717a;">Unsubscribe</a>
       </p>
@@ -162,6 +178,7 @@ function buildText(input: {
   replyInstruction: string | null;
   title: string;
   unsubscribePlaceholder: string;
+  recipientReferralUrl: string | null;
 }) {
   return [
     input.title,
@@ -184,6 +201,9 @@ function buildText(input: {
       ? buildSenderSignatureText(input.senderSignature)
       : null,
     input.senderSignature ? "" : null,
+    input.recipientReferralUrl
+      ? buildShareFooterText(input.recipientReferralUrl)
+      : null,
     `Unsubscribe: ${input.unsubscribePlaceholder}`,
   ]
     .filter((line): line is string => line !== null)
@@ -208,6 +228,7 @@ export function buildTaskCommentNotificationEmail(
     commentMessage: input.comment.message,
     cta,
     recipientReason: input.recipientReason ?? null,
+    recipientReferralUrl: input.recipientReferralUrl ?? null,
     replyInstruction: input.replyInstruction ?? null,
     secondaryCta: input.secondaryCta ?? null,
     senderSignature: input.senderSignature ?? null,
