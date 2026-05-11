@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
-import { readerMarkdownComponents } from "@/components/referendum/ReferendumStepper";
+import { readerMarkdownComponents } from "@/components/referendum/reader-markdown-components";
 import { TreatyNameSignatureBox } from "@/components/treaty/TreatyNameSignatureBox";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
