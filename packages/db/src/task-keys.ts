@@ -35,6 +35,15 @@ export const COURT_OF_HUMANITY_CHARTER_TASK_ID =
 export const COURT_OF_HUMANITY_CHARTER_TASK_KEY =
   "program:court-of-humanity:charter";
 
+/**
+ * Canonical display name for the class action. Use this in user-facing copy,
+ * task titles, and email/share strings — never hardcode "Humanity v.
+ * Government" or "Humanity v. Governments of Earth" directly. The task ID
+ * below keeps the "-of-earth" suffix as a stable database identifier even
+ * though the display name dropped it.
+ */
+export const HUMANITY_V_GOVERNMENT_CASE_NAME = "Humanity v. Government";
+
 export const HUMANITY_V_GOVERNMENTS_TASK_ID =
   "humanity-v-governments-of-earth";
 export const HUMANITY_V_GOVERNMENTS_TASK_KEY =

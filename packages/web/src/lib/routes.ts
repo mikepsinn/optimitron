@@ -1,4 +1,9 @@
 import { slugify } from "@/lib/slugify";
+// Use the dedicated `/task-keys` subpath (not bare `@optimitron/db`) — this
+// module is reachable from client components via `@/lib/routes`, and the
+// package root re-exports the Prisma client which would pull node built-ins
+// into the browser bundle.
+import { HUMANITY_V_GOVERNMENT_CASE_NAME } from "@optimitron/db/task-keys";
 import {
   fmtParam,
   DFDA_TRIAL_COST_REDUCTION_FACTOR,
@@ -12,6 +17,10 @@ import {
   AGENCIES,
   WISHONIA_AGENCIES,
 } from "@optimitron/data/datasets/wishonia-agencies";
+
+// Re-export so web consumers can `import { HUMANITY_V_GOVERNMENT_CASE_NAME }
+// from "@/lib/routes"` alongside the rest of the route catalog.
+export { HUMANITY_V_GOVERNMENT_CASE_NAME };
 // Precompute for descriptions (same pattern as demo-script.ts)
 const costReduction = Math.round(DFDA_TRIAL_COST_REDUCTION_FACTOR.value);
 const speedup = Math.round(DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER.value);
@@ -667,7 +676,7 @@ export const NONPROFIT_COALITION_STRATEGY_URL =
 
 export const humanityVGovernmentLink: NavItem = {
   href: ROUTES.humanityVGovernment,
-  label: "Humanity v. Government",
+  label: HUMANITY_V_GOVERNMENT_CASE_NAME,
   emoji: "⚖️",
   description:
     "Governments were hired to promote the general welfare. They chose war instead. Now there's a legal theory for that.",
