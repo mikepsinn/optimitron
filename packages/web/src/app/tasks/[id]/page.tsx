@@ -88,17 +88,18 @@ function formatEffortHours(value: number | null | undefined) {
   return `${rounded.toLocaleString("en-US")} ${rounded === 1 ? "hour" : "hours"}`;
 }
 
-function formatEnumLabel(value: string | null | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  return value
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
+// User-facing copy for the viewer's own claim status. Replaces a previous
+// `formatEnumLabel(TaskClaimStatus.X)` which leaked raw enum labels
+// ("Claimed", "In Progress") into user copy and prefixed with the system
+// term "Your claim:". Phrasings are Vonnegut-plain.
+const VIEWER_CLAIM_STATE_LABEL: Record<string, string> = {
+  CLAIMED: "You picked this up.",
+  IN_PROGRESS: "You're working on this.",
+  COMPLETED: "You marked it done. Awaiting verification.",
+  VERIFIED: "Done. Verified.",
+  REJECTED: "Your work needs revision.",
+  ABANDONED: "You stepped away.",
+};
 
 function getEndpointHref(
   endpoint:
@@ -402,7 +403,7 @@ export default async function TaskDetailPage({
 
           {viewerClaim ? (
             <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Your claim: {formatEnumLabel(viewerClaim.status)}
+              {VIEWER_CLAIM_STATE_LABEL[viewerClaim.status] ?? ""}
             </p>
           ) : null}
 
