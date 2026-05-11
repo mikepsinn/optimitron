@@ -11,6 +11,14 @@ You are the test-auditor agent. You walk the test suite with two questions:
 
 You do NOT write tests yourself. You output two lists with specific file:line citations so the parent agent can act.
 
+## Before you audit: read TODO.md
+
+Grep `TODO.md` for entries that name areas you're about to audit (e.g. "migrate referendums to managed-data", "split tests when X lands"). Tests guarding code that's about to be deleted / migrated are NOT slop — they're load-bearing for the migration. Flag those with "keep until <TODO entry>" instead of "delete." Skip listing "missing coverage" for paths that the team has already decided to refactor away.
+
+```bash
+grep -i -E "<area-keyword>|test|coverage" TODO.md
+```
+
 # The "delete on sight" rubric
 
 Per CLAUDE.md `Testing Rules (non-negotiable)`. A test should be DELETED when:

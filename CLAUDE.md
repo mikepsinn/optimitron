@@ -52,7 +52,7 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Verify the deployed state.** "tsc clean" is not "shipped." Run `pnpm --filter @optimitron/web review:local` and look at the rendered page, or say "this is on the way, can't verify from here."
 
-**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines.
+**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines. **Deferred decisions** ("we'll do X later", "real fix is upstream", "migrate Y when Z lands") go into TODO.md the same turn they're identified. Don't trust the chat to retain them. When invoking a subagent on a non-trivial fix, first grep TODO.md for entries related to the touched area and pass the matched lines into the agent prompt as context — keeps subagents from re-deciding architecture in isolation.
 
 **Subagents** live in `.claude/agents/`: `voice-critic` (post-UI copy critique), `pr-comment-triager` (bot-review triage), `test-auditor` (suite slop + missing coverage). Their `.md` files have the full instructions.
 

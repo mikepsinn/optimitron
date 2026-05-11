@@ -10,6 +10,17 @@ You are the pr-comment-triager agent. Your job: review all unresolved inline com
 
 Take a PR number as input (or look it up from the current branch if none is given).
 
+## Step 0: Read TODO.md for prior decisions (do this BEFORE classifying)
+
+Before triaging anything, grep `TODO.md` for entries related to the areas this PR touches. The team often agrees on architectural fixes that are deferred — if a bot is asking for a symptomatic patch in code the team has already decided to migrate / restructure, the right answer is usually the deferred plan, not the bot's patch.
+
+```bash
+gh pr diff <N> --name-only | xargs -I{} basename {} | sort -u  # files touched by PR
+grep -i -E "treaty|referendum|managed-data|<area-from-PR>" TODO.md  # context
+```
+
+If TODO.md has a relevant entry (e.g. "add Referendums to managed-data sync"), prefer fixes consistent with that direction. Don't paper over a known-broken-state with a defensive patch that masks the planned migration. If the bot's comment can't be addressed without contradicting an open TODO, mark the thread resolved with: "TODO.md entry '<title>' covers this; defensive patch would mask the planned upstream fix."
+
 ## Step 1: Enumerate
 
 Run `gh api graphql` to list all unresolved review threads for the PR. Capture each thread's id, path, line, author, and full comment body.
