@@ -312,6 +312,7 @@ function getStoredMessageId(metadata: unknown) {
 
 async function getPriorThreadMessageId(input: {
   communicationId: string;
+  recipientEmail: string;
   taskId: string;
 }) {
   const prior = await prisma.taskCommunication.findFirst({
@@ -320,6 +321,7 @@ async function getPriorThreadMessageId(input: {
       deletedAt: null,
       direction: TaskCommunicationDirection.OUTBOUND,
       id: { not: input.communicationId },
+      recipientEmail: input.recipientEmail,
       status: TaskCommunicationStatus.SENT,
       taskId: input.taskId,
     },
@@ -578,6 +580,7 @@ export async function sendDraftTaskNotification(
     });
     const priorMessageId = await getPriorThreadMessageId({
       communicationId: communication.id,
+      recipientEmail: communication.recipientEmail,
       taskId: communication.taskId,
     });
     const headers = buildThreadHeaders({ messageId, priorMessageId });
@@ -739,7 +742,14 @@ export async function unsubscribeTaskCommunication(input: {
   return true;
 }
 
+function normalizeInReplyToHeader(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  return trimmed.match(/<[^>]+>/)?.[0] ?? trimmed;
+}
+
 export async function unsubscribeTaskCommunicationByReply(input: {
+  inReplyTo?: string | null;
   recipientEmail: string;
   taskId?: string | null;
 }) {
@@ -748,19 +758,35 @@ export async function unsubscribeTaskCommunicationByReply(input: {
     return { status: "skipped" as const, reason: "missing_recipient_email" };
   }
 
-  const communication = await prisma.taskCommunication.findFirst({
-    where: {
-      channel: TaskCommunicationChannel.EMAIL,
-      deletedAt: null,
-      direction: TaskCommunicationDirection.OUTBOUND,
-      recipientEmail,
-      status: { not: TaskCommunicationStatus.CANCELLED },
-      unsubscribeToken: { not: null },
-      ...(input.taskId ? { taskId: input.taskId } : {}),
-    },
-    orderBy: { createdAt: "desc" },
-    select: { id: true, metadataJson: true },
-  });
+  const inReplyTo = normalizeInReplyToHeader(input.inReplyTo);
+  const baseWhere = {
+    channel: TaskCommunicationChannel.EMAIL,
+    deletedAt: null,
+    direction: TaskCommunicationDirection.OUTBOUND,
+    recipientEmail,
+    status: { not: TaskCommunicationStatus.CANCELLED },
+    unsubscribeToken: { not: null },
+    ...(input.taskId ? { taskId: input.taskId } : {}),
+  } as const;
+
+  // Prefer the exact message the recipient replied to; fall back to the most
+  // recent matching row when the inbound headers do not let us pinpoint it.
+  const communication =
+    (inReplyTo
+      ? await prisma.taskCommunication.findFirst({
+          where: {
+            ...baseWhere,
+            metadataJson: { path: ["messageId"], equals: inReplyTo },
+          },
+          orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
+          select: { id: true, metadataJson: true },
+        })
+      : null) ??
+    (await prisma.taskCommunication.findFirst({
+      where: baseWhere,
+      orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
+      select: { id: true, metadataJson: true },
+    }));
 
   if (!communication) {
     return { status: "skipped" as const, reason: "no_matching_communication" };

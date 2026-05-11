@@ -2,26 +2,17 @@ import { createHmac } from "node:crypto";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  activityCreate: vi.fn(),
-  applyUnsubscribe: vi.fn(),
   emailLogFindFirst: vi.fn(),
   emailLogUpdateMany: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    activity: {
-      create: mocks.activityCreate,
-    },
     emailLog: {
       findFirst: mocks.emailLogFindFirst,
       updateMany: mocks.emailLogUpdateMany,
     },
   },
-}));
-
-vi.mock("@/lib/email/suppression.server", () => ({
-  applyUnsubscribe: mocks.applyUnsubscribe,
 }));
 
 import { EmailLogStatus } from "@optimitron/db";
@@ -107,8 +98,6 @@ describe("verifyResendSignature", () => {
 
 describe("resend delivery state webhooks", () => {
   beforeEach(() => {
-    mocks.activityCreate.mockReset();
-    mocks.applyUnsubscribe.mockReset();
     mocks.emailLogFindFirst.mockReset();
     mocks.emailLogUpdateMany.mockReset();
     mocks.emailLogFindFirst.mockResolvedValue({

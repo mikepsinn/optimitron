@@ -100,6 +100,7 @@ export async function processInboundUnsubscribe(
   }
 
   const taskOptOut = await unsubscribeTaskCommunicationByReply({
+    inReplyTo: event.inReplyTo,
     recipientEmail: senderEmail,
     taskId: replyAddress?.taskId ?? null,
   });

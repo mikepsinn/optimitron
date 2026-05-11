@@ -81,8 +81,10 @@ async function normalizeInboundEvent(
         from,
         to,
         subject: data.subject || "",
-        text:
-          typeof data.text === "string" ? data.text : htmlToPlainText(html),
+        text: coalesceInboundText(
+          typeof data.text === "string" ? data.text : null,
+          html,
+        ),
         html,
         providerMessageId: data.email_id,
         inReplyTo:
@@ -100,7 +102,7 @@ async function normalizeInboundEvent(
       from,
       to,
       subject: email.subject || data.subject || "",
-      text: email.text ?? htmlToPlainText(email.html),
+      text: coalesceInboundText(email.text, email.html),
       html: email.html,
       providerMessageId: data.email_id,
       inReplyTo:
@@ -108,6 +110,14 @@ async function normalizeInboundEvent(
         (typeof data.in_reply_to === "string" ? data.in_reply_to : null),
     },
   };
+}
+
+function coalesceInboundText(
+  text: string | null | undefined,
+  html: string | null,
+) {
+  if (typeof text === "string" && text.trim().length > 0) return text;
+  return htmlToPlainText(html);
 }
 
 async function forwardInboundEventToMonitor(
