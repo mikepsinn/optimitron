@@ -270,13 +270,25 @@ cross-check so they do not disappear into chat history.
   a forward-friendly share kit on YES treaty vote. Referrer receives a single
   "Your link worked. Round 1 of 32" email on their first conversion only —
   never on subsequent conversions. Both deduped via `EmailLog.dedupeKey`.
-- Monthly chain-stats digest (not yet built). Once a month, send each user a
-  digest only when the count of new voters reaching them via their link in
-  the past month is > 0. Subject: `{N} more voters joined through your link
-  in {month}`. Body shows full chain size + which doubling round they're on
-  + how many more rounds reach 4B (the math the user has to grasp to
-  evangelize correctly). Skip zero-count months entirely — silent is better
-  than depressing. Requires cron + transitive-chain query (recursive CTE).
+- Monthly chain digest (not yet built). One email per user per month, sent
+  until they unsubscribe — no skipping silent months. Two variants picked by
+  current-month conversion count `N`:
+    - `N > 0`: subject `{N} more voters joined through your link in {month}`.
+      Body shows transitive chain size, which doubling round they're on,
+      how many more rounds reach 4B. Pure positive reinforcement.
+    - `N == 0`: resend the forward kit. Subject `Still 30 seconds. Still
+      two humans you love.` Body is the canonical share message + button.
+      The zero-conversion user is exactly who needs the nudge; silence
+      treats unconverted as user-failure when it's a we-failed-to-activate
+      signal.
+  Requires cron + transitive-chain recursive CTE + per-user "last digest
+  sent at" state. Use `scope: "onboarding"` so the existing unsubscribe
+  rails are the clean opt-out.
+- Retrofit `<ShareFooter>` (shipped PR #74) onto pre-existing engaged-user
+  email templates: `task-assignment-notification`, `task-comment-notification`.
+  Both already go to authenticated users via `sendResendEmail`; they're a
+  natural fit for the share kit at the bottom. NOT magic-link or other
+  transactional templates — those stay clean.
 - Email-template screenshots in the visual review (not yet built). Render
   every email template — magic-link, task-assignment, task-comment-notification,
   inbound-monitor-forward, post-vote-share, referral-first-conversion — with
