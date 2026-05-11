@@ -76,18 +76,16 @@ function formatDueDate(value: Date | string | null | undefined) {
   });
 }
 
-function formatShortDate(value: Date | string | null | undefined) {
-  const date = getDisplayDate(value);
-  if (date == null) {
+function formatEffortHours(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) {
     return null;
   }
-
-  return date.toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "short",
-    timeZone: TASK_DATE_TIME_ZONE,
-    year: "numeric",
-  });
+  if (value < 1) {
+    const minutes = Math.max(1, Math.round(value * 60));
+    return `${minutes.toLocaleString("en-US")} ${minutes === 1 ? "minute" : "minutes"}`;
+  }
+  const rounded = Number(value.toFixed(value >= 10 ? 0 : 1));
+  return `${rounded.toLocaleString("en-US")} ${rounded === 1 ? "hour" : "hours"}`;
 }
 
 function formatEnumLabel(value: string | null | undefined) {
@@ -100,35 +98,6 @@ function formatEnumLabel(value: string | null | undefined) {
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
-}
-
-function formatTaskProgress(value: TaskStatus) {
-  switch (value) {
-    case TaskStatus.DRAFT:
-      return "Draft";
-    case TaskStatus.ACTIVE:
-      return "To do";
-    case TaskStatus.VERIFIED:
-      return "Done";
-    case TaskStatus.STALE:
-      return "Needs review";
-    default:
-      return formatEnumLabel(value) ?? "To do";
-  }
-}
-
-function formatEffortHours(value: number | null | undefined) {
-  if (value == null || !Number.isFinite(value)) {
-    return null;
-  }
-
-  if (value < 1) {
-    const minutes = Math.max(1, Math.round(value * 60));
-    return `${minutes.toLocaleString("en-US")} ${minutes === 1 ? "minute" : "minutes"}`;
-  }
-
-  const rounded = Number(value.toFixed(value >= 10 ? 0 : 1));
-  return `${rounded.toLocaleString("en-US")} ${rounded === 1 ? "hour" : "hours"}`;
 }
 
 function getEndpointHref(
@@ -205,21 +174,6 @@ function ActionLink({
     <Link className={className} href={href}>
       {children}
     </Link>
-  );
-}
-
-function DetailItem({ label, value }: { label: string; value: ReactNode }) {
-  if (value == null || value === "") {
-    return null;
-  }
-
-  return (
-    <div className="border-t border-foreground py-3 first:border-t-0">
-      <dt className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </dt>
-      <dd className="mt-1 text-sm font-bold text-foreground">{value}</dd>
-    </div>
   );
 }
 
@@ -347,17 +301,7 @@ export default async function TaskDetailPage({
   const assigneeHref = getAssigneeHref(task);
   const assigneeLabel = getAssigneeLabel(task);
   const dueLabel = formatDueDate(task.dueAt);
-  const completedLabel = formatShortDate(task.verifiedAt ?? task.completedAt);
   const effortLabel = formatEffortHours(task.estimatedEffortHours);
-  const progressLabel = formatTaskProgress(task.status);
-  const ownerDetail =
-    assigneeLabel && assigneeHref ? (
-      <Link className="underline underline-offset-4" href={assigneeHref}>
-        {assigneeLabel}
-      </Link>
-    ) : (
-      assigneeLabel
-    );
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -414,6 +358,7 @@ export default async function TaskDetailPage({
                 <span>{task.assigneeAffiliationSnapshot}</span>
               ) : null}
               {dueLabel ? <span>Due {dueLabel}</span> : null}
+              {effortLabel ? <span>~{effortLabel}</span> : null}
               {delayStats.isOverdue ? (
                 <span className="font-black text-foreground">
                   {formatDelayDuration(delayStats.currentDelayDays)} overdue

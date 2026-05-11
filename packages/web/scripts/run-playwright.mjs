@@ -44,7 +44,15 @@ const MODE_SPECS = {
   "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],
   "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
   "treaty-reminder-one-human": ["e2e/treaty-reminder-one-human.spec.ts"],
-  visual: ["e2e/visual-regression.spec.ts"],
+  visual: [
+    "e2e/visual-regression.spec.ts",
+    // Email templates are screenshot-only too (no live route), and the
+    // generated images feed the same `screenshots/<project>/` tree that
+    // `build-visual-review.mjs` walks. Including them here keeps everything
+    // in one Playwright invocation so the review HTML shows email-* rows
+    // alongside route screenshots.
+    "e2e/email-screenshots.spec.ts",
+  ],
 };
 
 const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];
