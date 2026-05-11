@@ -70,7 +70,13 @@ function handleDevAuthQueryParams(req: import("next/server").NextRequest) {
   const logout = params.get("logout");
 
   if (loginAs === "demo") {
-    if (process.env.VERCEL_ENV === "production") return null;
+    // Default-deny: any production signal disables the bypass. Mirrors
+    // `isProduction()` in /api/dev/login-as-demo/route.ts.
+    if (
+      process.env.VERCEL_ENV === "production" ||
+      process.env.NODE_ENV === "production"
+    )
+      return null;
     const stripped = req.nextUrl.clone();
     stripped.searchParams.delete("login");
     const next = `${stripped.pathname}${stripped.search}${stripped.hash}`;

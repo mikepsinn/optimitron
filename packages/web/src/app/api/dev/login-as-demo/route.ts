@@ -19,7 +19,14 @@ import { prisma } from "@/lib/prisma";
 const DEMO_EMAIL = "demo@thinkbynumbers.org";
 
 function isProduction(): boolean {
-  return process.env.VERCEL_ENV === "production";
+  // Default-deny: any signal that we're in production disables the bypass.
+  // VERCEL_ENV alone is insufficient — if it's unset (e.g. self-hosted,
+  // misconfigured project, or running outside Vercel), we'd otherwise enable
+  // the auth-bypass route in a real production environment.
+  return (
+    process.env.VERCEL_ENV === "production" ||
+    process.env.NODE_ENV === "production"
+  );
 }
 
 function sanitizeNext(raw: string | null): string {
