@@ -1,4 +1,10 @@
 import {
+  formatManagedDemoUserResult,
+  syncManagedDemoUser,
+  type ManagedDemoUserClient,
+  type SyncManagedDemoUserResult,
+} from "./managed-demo-user.js";
+import {
   formatManagedGrandmaKayResult,
   syncManagedGrandmaKay,
   type ManagedGrandmaKayClient,
@@ -33,10 +39,11 @@ export interface SyncManagedDataResult {
   tasks: SyncManagedTasksResult;
   referendums: SyncManagedReferendumsResult;
   grandmaKay: SyncManagedGrandmaKayResult;
+  demoUser: SyncManagedDemoUserResult;
 }
 
 export async function syncManagedData(
-  client: ManagedTaskClient & ManagedReferendumClient & ManagedGrandmaKayClient & Partial<ManagedIdentityClient>,
+  client: ManagedTaskClient & ManagedReferendumClient & ManagedGrandmaKayClient & ManagedDemoUserClient & Partial<ManagedIdentityClient>,
   options: SyncManagedDataOptions,
 ): Promise<SyncManagedDataResult> {
   let createdByUserId = options.createdByUserId;
@@ -78,7 +85,12 @@ export async function syncManagedData(
     apply: options.apply,
   });
 
-  return { tasks, referendums, grandmaKay };
+  // Demo user has no FK dependencies on other managed records.
+  const demoUser = await syncManagedDemoUser(client, {
+    apply: options.apply,
+  });
+
+  return { tasks, referendums, grandmaKay, demoUser };
 }
 
 export function formatManagedDataResult(result: SyncManagedDataResult) {
@@ -86,6 +98,7 @@ export function formatManagedDataResult(result: SyncManagedDataResult) {
     formatManagedReferendumsResult(result.referendums),
     formatManagedTasksResult(result.tasks),
     formatManagedGrandmaKayResult(result.grandmaKay),
+    formatManagedDemoUserResult(result.demoUser),
   ].join("\n");
 }
 
@@ -93,13 +106,21 @@ export {
   OPTIMIZE_EARTH_TASK_TREE,
   OPTIMIZE_EARTH_TASK_TREE_COLLECTION_KEY,
   ensureManagedDataSystemUser,
+  formatManagedDemoUserResult,
   formatManagedGrandmaKayResult,
   formatManagedReferendumsResult,
   formatManagedTasksResult,
+  syncManagedDemoUser,
   syncManagedGrandmaKay,
   syncManagedReferendums,
   syncManagedTasks,
 };
+export { DEMO_EMAIL } from "./managed-demo-user.js";
+export type {
+  ManagedDemoUserClient,
+  SyncManagedDemoUserOptions,
+  SyncManagedDemoUserResult,
+} from "./managed-demo-user.js";
 export {
   GRANDMA_KAY_SOURCE_REF,
   GRANDMA_KAY_PERSON_CONDITION_ID,

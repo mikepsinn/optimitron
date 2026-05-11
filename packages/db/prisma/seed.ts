@@ -1163,7 +1163,7 @@ export async function seedBootstrapData() {
 }
 
 export async function seedDemoData() {
-  await seedDemoUser();
+  // Demo user moved to managed-data. Run `pnpm db:sync:managed-data --apply`.
 }
 
 export async function seedDatabase(options: SeedDatabaseOptions = {}) {
@@ -2202,97 +2202,12 @@ async function upsertSeedTaskCommunicationEndpoint(
 // ---------------------------------------------------------------------------
 // Email: demo@thinkbynumbers.org  Password: demo1234
 
-async function seedDemoUser() {
-  console.log("👤 Seeding demo user...");
-
-  const DEMO_EMAIL = "demo@thinkbynumbers.org";
-  const LEGACY_DEMO_EMAIL = "demo@optimitron.org";
-
-  // Pre-hashed bcrypt(12) of "demo1234"
-  const DEMO_PASSWORD_HASH =
-    "$2b$12$Hy27qJOTykSezth61xRCJ..sMPVvzWxs9wZEEsEsYn9o3GaUYkGCa";
-
-  try {
-    const existingDemoUser = await prisma.user.findUnique({
-      where: { email: DEMO_EMAIL },
-      select: { id: true },
-    });
-    if (!existingDemoUser) {
-      await prisma.user.updateMany({
-        where: { email: LEGACY_DEMO_EMAIL },
-        data: { email: DEMO_EMAIL },
-      });
-    }
-
-    const existingDemoPerson = await prisma.person.findUnique({
-      where: { email: DEMO_EMAIL },
-      select: { id: true },
-    });
-    if (!existingDemoPerson) {
-      await prisma.person.updateMany({
-        where: { email: LEGACY_DEMO_EMAIL },
-        data: { email: DEMO_EMAIL },
-      });
-    }
-
-    const user = await prisma.user.upsert({
-      where: { email: DEMO_EMAIL },
-      update: {
-        password: DEMO_PASSWORD_HASH,
-        emailVerified: new Date(),
-      },
-      create: {
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD_HASH,
-        emailVerified: new Date(),
-        referralCode: "DEMO",
-      },
-    });
-
-    // Person owns the public-display fields (handle / displayName / image).
-    const person = await prisma.person.upsert({
-      where: { email: DEMO_EMAIL },
-      update: {
-        displayName: "Demo User",
-        handle: "demo",
-      },
-      create: {
-        email: DEMO_EMAIL,
-        displayName: "Demo User",
-        handle: "demo",
-      },
-    });
-
-    if (user.personId !== person.id) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { personId: person.id },
-      });
-    }
-    console.log("  ✓ demo@thinkbynumbers.org / demo1234");
-  } catch (err) {
-    // If schema is out of sync, try raw SQL fallback. Display fields live
-    // on Person now, so the User row carries only auth-level columns.
-    console.log("  ⚠ upsert failed, trying raw SQL...");
-    await prisma.$executeRawUnsafe(`
-      UPDATE "User"
-      SET email = 'demo@thinkbynumbers.org'
-      WHERE email = 'demo@optimitron.org'
-        AND NOT EXISTS (
-          SELECT 1 FROM "User" WHERE email = 'demo@thinkbynumbers.org'
-        )
-    `);
-    await prisma.$executeRawUnsafe(`
-      INSERT INTO "User" (id, email, password, "referralCode", "emailVerified", "createdAt", "updatedAt")
-      VALUES ('demo-user-id', 'demo@thinkbynumbers.org', $1, 'DEMO', NOW(), NOW(), NOW())
-      ON CONFLICT (email) DO UPDATE SET
-        password = $1,
-        "emailVerified" = NOW(),
-        "updatedAt" = NOW()
-    `, DEMO_PASSWORD_HASH);
-    console.log("  ✓ demo@thinkbynumbers.org / demo1234 (via raw SQL)");
-  }
-}
+// `seedDemoUser` was removed 2026-05-11 — demo user is now managed-data.
+// See `packages/db/src/managed-data/managed-demo-user.ts`. The legacy
+// email migration (demo@optimitron.org → demo@thinkbynumbers.org) was
+// also dropped; it ran every seed for years and the legacy row has long
+// been migrated. The raw-SQL fallback that lived in this function was a
+// silent error-swallower (see feedback_dont_swallow_errors) and is gone.
 
 export async function disconnectSeedClient() {
   await prisma.$disconnect();
