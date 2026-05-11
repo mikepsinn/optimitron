@@ -289,6 +289,12 @@ jobs:
         env:
           VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
+          # Feeds the per-route "Copy context" button on latest.html so the
+          # generated clipboard payload includes the right PR/branch/repo
+          # identifiers for whoever the reviewer is pasting it to.
+          VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
+          VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          VISUAL_REVIEW_REPO: ${{ github.repository }}
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review

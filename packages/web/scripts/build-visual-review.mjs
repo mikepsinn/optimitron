@@ -52,6 +52,20 @@ const reviewCacheKey = [
   .join("-");
 const routePaths = loadRoutePaths();
 
+// PR/branch context for the per-route "Copy context" button. Read from
+// env (GitHub Actions sets these on pull_request events). Stays empty for
+// local runs — the copy payload still includes route + auth + screenshot
+// info; the PR/branch lines are just blank.
+const prNumber =
+  process.env.VISUAL_REVIEW_PR_NUMBER ?? process.env.PR_NUMBER ?? null;
+const headBranch =
+  process.env.VISUAL_REVIEW_HEAD_BRANCH ??
+  process.env.GITHUB_HEAD_REF ??
+  process.env.GITHUB_REF_NAME ??
+  null;
+const repoSlug =
+  process.env.VISUAL_REVIEW_REPO ?? process.env.GITHUB_REPOSITORY ?? null;
+
 const routeOrder = [
   "home",
   "side-menu",
@@ -454,6 +468,44 @@ function renderHtml(groups) {
       transform: translateX(-50%);
     }
 
+    .route-summary-actions {
+      align-items: center;
+      display: flex;
+      flex: 0 0 auto;
+      gap: 10px;
+    }
+
+    .copy-context-button {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--fg);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .copy-context-button:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .copy-context-button.copied {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    /* Block click bubbling so toggling the route doesn't toggle when you
+       click the button. JS also calls stopPropagation, but a CSS hint
+       helps keep the button visually distinct from the summary. */
+    .copy-context-button:focus-visible {
+      outline: 2px solid var(--fg);
+      outline-offset: 2px;
+    }
+
     .missing div {
       padding: 24px 10px;
       color: var(--muted);
@@ -575,6 +627,103 @@ function renderHtml(groups) {
         }
       });
     })();
+
+    // "Copy context" button: builds a markdown blob suitable for pasting
+    // into a coding agent when complaining about a route, then writes it
+    // to the clipboard. Payload includes PR/branch/commit ids, the route
+    // + auth state, before/after screenshot URLs, and explicit
+    // instructions telling the agent to download + view the screenshots
+    // when relevant.
+    (function () {
+      function formatContext(ctx) {
+        var lines = [];
+        lines.push("### Visual-review context");
+        lines.push("");
+        if (ctx.pr) lines.push("- PR: #" + ctx.pr + (ctx.repo ? " (" + ctx.repo + ")" : ""));
+        if (ctx.branch) lines.push("- Branch: \`" + ctx.branch + "\`");
+        if (ctx.shortSha) lines.push("- Commit: \`" + ctx.shortSha + "\`" + (ctx.commitSha ? " (" + ctx.commitSha + ")" : ""));
+        lines.push("- Route: \`" + ctx.route + "\` (" + ctx.routeLabel + ")");
+        if (ctx.routeUrl) lines.push("- Live URL: " + ctx.routeUrl);
+        lines.push("- Auth state: " + ctx.authState);
+        lines.push("- Diff vs main: " + ctx.status);
+        if (ctx.reviewUrl) lines.push("- Visual review: " + ctx.reviewUrl);
+        lines.push("");
+        if (ctx.screenshots && ctx.screenshots.length > 0) {
+          lines.push("**Screenshots** — please \`curl -o\` these and look at them before responding so you understand what I am seeing:");
+          lines.push("");
+          for (var i = 0; i < ctx.screenshots.length; i++) {
+            var s = ctx.screenshots[i];
+            lines.push("- **" + s.project + "** (" + s.diff + ")");
+            if (s.beforeUrl) lines.push("  - before (main): " + s.beforeUrl);
+            if (s.afterUrl) lines.push("  - after (this PR): " + s.afterUrl);
+          }
+          lines.push("");
+          lines.push("Suggested download commands (run from /tmp or similar):");
+          for (var j = 0; j < ctx.screenshots.length; j++) {
+            var sj = ctx.screenshots[j];
+            if (sj.beforeUrl) lines.push("    curl -sLO " + sj.beforeUrl);
+            if (sj.afterUrl) lines.push("    curl -sLO " + sj.afterUrl);
+          }
+          lines.push("");
+        }
+        lines.push("**My complaint:**");
+        lines.push("> _(replace this line with what looks wrong)_");
+        return lines.join("\\n");
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (err) {
+            reject(err);
+          } finally {
+            document.body.removeChild(ta);
+          }
+        });
+      }
+
+      document.addEventListener("click", function (event) {
+        var button = event.target.closest(".copy-context-button");
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+        var raw = button.getAttribute("data-context");
+        if (!raw) return;
+        var ctx;
+        try {
+          ctx = JSON.parse(raw);
+        } catch (err) {
+          console.error("[visual-review] bad context payload", err);
+          return;
+        }
+        var formatted = formatContext(ctx);
+        copyToClipboard(formatted).then(function () {
+          var prev = button.textContent;
+          button.textContent = "✓ Copied";
+          button.classList.add("copied");
+          window.setTimeout(function () {
+            button.textContent = prev;
+            button.classList.remove("copied");
+          }, 1500);
+        }, function () {
+          button.textContent = "Copy failed";
+          window.setTimeout(function () {
+            button.textContent = "📋 Copy context";
+          }, 1500);
+        });
+      });
+    })();
   </script>
 </body>
 </html>
@@ -584,15 +733,85 @@ function renderHtml(groups) {
 function renderRouteGroup(group) {
   const pairs = group.pairs.map(renderPair).join("\n");
   const openAttr = group.changed || group.errored ? " open" : "";
+  const contextJson = JSON.stringify(buildRouteContext(group));
   return `<details class="route ${group.changed || group.errored ? "changed" : "unchanged"}"${openAttr}>
     <summary>
       <span class="route-title">${escapeHtml(labelRoute(group.routeName))}</span>
-      <span class="pill ${group.errored ? "error" : group.changed ? "changed" : "unchanged"}">${escapeHtml(routeStatusLabel(group))}</span>
+      <span class="route-summary-actions">
+        <button
+          type="button"
+          class="copy-context-button"
+          data-context='${escapeJsonForAttr(contextJson)}'
+          aria-label="Copy context for this route to clipboard"
+        >📋 Copy context</button>
+        <span class="pill ${group.errored ? "error" : group.changed ? "changed" : "unchanged"}">${escapeHtml(routeStatusLabel(group))}</span>
+      </span>
     </summary>
     <div class="pairs">
       ${pairs}
     </div>
   </details>`;
+}
+
+/**
+ * Pull together everything a reviewer would want to paste into a coding
+ * agent when complaining about a route: PR + commit + branch identifiers,
+ * the route's URL, whether the screenshots cover the auth state, and
+ * which projects ran. The button's click handler formats this as
+ * markdown and writes it to the clipboard.
+ */
+function buildRouteContext(group) {
+  const routeUrl = getRouteUrl(group.routeName);
+  const isAuthed = /-auth(\b|$)/.test(group.routeName) || group.routeName.endsWith("-auth");
+  const status = group.errored
+    ? "errored"
+    : group.changed
+      ? "changed vs main"
+      : "unchanged vs main";
+  const sha = reviewCommitSha ? shortSha(reviewCommitSha) : null;
+  const reviewBase =
+    prNumber && sha
+      ? `https://mikepsinn.github.io/optimitron/pr-${prNumber}/${sha}`
+      : null;
+
+  // Per-project before/after screenshot URLs so the coding agent can
+  // download and look at them. relPath is the on-disk path inside the
+  // latest.html publish dir; the gh-pages site mounts that same tree at
+  // pr-N/<sha>/.
+  const screenshots = group.pairs.map((pair) => ({
+    project: pair.projectName,
+    diff: pair.diff?.label ?? "unknown",
+    beforeUrl: pair.before && reviewBase ? `${reviewBase}/${pair.before.relPath}` : null,
+    afterUrl: pair.after && reviewBase ? `${reviewBase}/${pair.after.relPath}` : null,
+  }));
+
+  return {
+    pr: prNumber,
+    branch: headBranch,
+    repo: repoSlug,
+    commitSha: reviewCommitSha,
+    shortSha: sha,
+    route: group.routeName,
+    routeLabel: labelRoute(group.routeName),
+    routeUrl,
+    authState: isAuthed ? "authenticated" : "logged-out",
+    status,
+    screenshots,
+    reviewUrl: reviewBase
+      ? `${reviewBase}/latest.html#route-${slugifyForAnchor(group.routeName)}`
+      : null,
+  };
+}
+
+function slugifyForAnchor(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+/** Escape a JSON string so it survives unscathed inside a single-quoted
+ * HTML attribute. `&` → `&amp;` so the browser doesn't re-encode it,
+ * `'` → `&apos;` so the attribute doesn't terminate early. */
+function escapeJsonForAttr(value) {
+  return String(value).replace(/&/g, "&amp;").replace(/'/g, "&apos;");
 }
 
 function renderPair(pair) {
