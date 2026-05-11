@@ -63,8 +63,13 @@ jobs:
       - name: Build
         run: pnpm --filter '!@optimitron/web' run build
 
-      - name: Verify managed data sync
-        run: pnpm db:sync:managed-data -- --dry-run
+      # Dropped the dry-run managed-data check that used to live here:
+      # the same script runs with `--apply` against a freshly-migrated
+      # CI Postgres in web-validate's seed step a few minutes later, and
+      # that hard check catches every schema-data drift the dry-run did,
+      # without the duplicate failure mode. `--dry-run` is still useful
+      # locally (`pnpm db:sync:managed-data --dry-run`) to preview a
+      # diff before pushing.
 
       - name: Typecheck
         run: pnpm --filter '!@optimitron/web' run typecheck
@@ -182,6 +187,11 @@ jobs:
           pnpm --filter @optimitron/db run seed:bootstrap
           pnpm --filter @optimitron/db run seed:demo
           pnpm --filter @optimitron/db run seed:tasks
+          # Dry-run first so the planned diff appears in CI logs as a
+          # record of what `--apply` is about to do, then apply.
+          echo "::group::managed-data sync plan (dry-run)"
+          pnpm db:sync:managed-data -- --dry-run
+          echo "::endgroup::"
           pnpm db:sync:managed-data -- --apply
 
       - name: Run Playwright visual review

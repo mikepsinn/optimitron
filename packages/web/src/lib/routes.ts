@@ -775,14 +775,14 @@ export const signatoriesLink: NavItem = {
 
 export const donateLink: NavItem = {
   href: ROUTES.donate,
-  label: "Fund Campaign",
+  label: "Prevent 2 yrs of suffering for $1",
   emoji: "💝",
   description:
     "Use the calculator to buy expected lives saved or years of suffering prevented. Tax-deductible to a U.S. 501(c)(3).",
-  tagline: "Fund the campaign",
+  tagline: "Prevent 2 yrs of suffering for $1",
   copyPreview: true,
   screenshot: true,
-  cta: "Fund Campaign",
+  cta: "Open the calculator",
 };
 
 export const legalLink: NavItem = {

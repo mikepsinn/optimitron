@@ -46,15 +46,11 @@ test.describe("/treaty page structure", () => {
     await expect(treatyBody).toContainText(/Article I/i);
     await expect(treatyBody).toContainText(/IN WITNESS WHEREOF/i);
 
-    // 3. Signature controls — the post-vote auth flow requires the
-    //    visitor to first answer Yes or No, so both buttons must be
-    //    present and clickable. The eventual name/email capture happens
-    //    in the AuthForm panel that mounts after Yes.
-    await expect(
-      page.getByRole("button", { name: /^Yes$/ }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: /^No$/ }),
-    ).toBeVisible();
+    // 3. Signature controls — document-style "type your name and click
+    //    Sign" (not Yes/No buttons). The dated "Signed this day, …, in
+    //    the year of our ongoing confusion." title appears above.
+    await expect(page.getByText(/in the year of our ongoing confusion/i)).toBeVisible();
+    await expect(page.getByPlaceholder(/your name/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /^Sign$/ })).toBeVisible();
   });
 });

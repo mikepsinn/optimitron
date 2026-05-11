@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { readerMarkdownComponents } from "@/components/referendum/ReferendumStepper";
-import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
+import { TreatyNameSignatureBox } from "@/components/treaty/TreatyNameSignatureBox";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
 import { ROUTES, treatyLink } from "@/lib/routes";
@@ -57,10 +57,7 @@ export default async function TreatyPage() {
       </section>
 
       <section id="sign-below-treaty" className="mt-12">
-        <ReferendumSiteInlineSign
-          referendumSlug={TREATY_REFERENDUM_SLUG}
-          showPrivacyToggle
-        />
+        <TreatyNameSignatureBox />
       </section>
     </main>
   );
