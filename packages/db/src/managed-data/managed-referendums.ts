@@ -5,6 +5,11 @@ import {
   COURT_OF_HUMANITY_TEXT,
 } from "@optimitron/data/referendums";
 import {
+  COURT_OF_HUMANITY_REFERENDUM_SLUG,
+  DECLARATION_REFERENDUM_SLUG,
+  TREATY_REFERENDUM_SLUG,
+} from "../constants.js";
+import {
   ReferendumKind,
   ReferendumStatus,
   type PrismaClient,
@@ -14,11 +19,8 @@ import {
 
 // Canonical Referendum records. Synced on every deploy + CI run via
 // `pnpm db:sync:managed-data --apply`. Edit a record below → sync detects
-// the content-hash change → upserts. No change → skip the write.
-
-export const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
-export const DECLARATION_REFERENDUM_SLUG = "declaration-of-optimization";
-export const COURT_OF_HUMANITY_REFERENDUM_SLUG = "court-of-humanity";
+// the change by comparing the row's content fields against the canonical
+// record → upserts on drift. No change → skip the write.
 
 const REFERENDUM_PUBLISHED_AT = new Date("2026-05-03T00:00:00.000Z");
 
@@ -91,19 +93,38 @@ export async function syncManagedReferendums(
   options: { apply: boolean },
 ): Promise<{ totalRecords: number; upserted: string[]; unchanged: string[] }> {
   const slugs = MANAGED_REFERENDUMS.map((r) => r.slug);
+  // Compare canonical record fields against the DB row directly. The stored
+  // `contentHash` column is not a trustworthy change signal — a direct
+  // `UPDATE referendum SET title = ...` leaves the hash stale, so the row
+  // can drift away from canonical without us noticing. Field-by-field
+  // comparison matches the pattern in `sync-managed-tasks.ts`.
   const existing = await prisma.referendum.findMany({
     where: { slug: { in: slugs } },
-    select: { slug: true, contentHash: true },
+    select: {
+      slug: true,
+      title: true,
+      question: true,
+      kind: true,
+      description: true,
+      bodyMarkdown: true,
+      status: true,
+    },
   });
-  const existingHashBySlug = new Map(existing.map((r) => [r.slug, r.contentHash]));
+  const existingBySlug = new Map(existing.map((r) => [r.slug, r]));
 
   const upserted: string[] = [];
   const unchanged: string[] = [];
 
   for (const record of MANAGED_REFERENDUMS) {
-    const contentHash = buildReferendumContentHash(record);
-
-    if (existingHashBySlug.get(record.slug) === contentHash) {
+    const row = existingBySlug.get(record.slug);
+    if (
+      row?.title === record.title &&
+      row.question === record.question &&
+      row.kind === record.kind &&
+      row.description === record.description &&
+      row.bodyMarkdown === record.bodyMarkdown &&
+      row.status === record.status
+    ) {
       unchanged.push(record.slug);
       continue;
     }
@@ -123,7 +144,7 @@ export async function syncManagedReferendums(
       publishedAt: REFERENDUM_PUBLISHED_AT,
       lockedAt: null,
       status: record.status,
-      contentHash,
+      contentHash: buildReferendumContentHash(record),
     };
 
     await prisma.referendum.upsert({

@@ -31,7 +31,7 @@ export const readerMarkdownComponents = {
   a: ({ href, children }: { href?: string; children?: ReactNode }) => {
     const target = href ?? "#";
     const linkClass =
-      "font-black text-black underline decoration-black decoration-2 underline-offset-4 transition-colors hover:text-black/70";
+      "font-black text-[var(--treaty-ink)] underline decoration-[var(--treaty-ink)] decoration-2 underline-offset-4 transition-colors hover:text-[var(--treaty-ink-soft)]";
     if (target.startsWith("http")) {
       return (
         <a href={target} target="_blank" rel="noreferrer" className={linkClass}>
@@ -46,20 +46,20 @@ export const readerMarkdownComponents = {
     );
   },
   blockquote: ({ children }: { children?: ReactNode }) => (
-    <blockquote className="border-l-4 border-black bg-white px-5 py-4 text-left text-base font-bold text-black">
+    <blockquote className="border-l-4 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-5 py-4 text-left text-base font-bold text-[var(--treaty-ink)]">
       {children}
     </blockquote>
   ),
   ul: ({ children }: { children?: ReactNode }) => (
-    <ul className="list-disc space-y-3 pl-6 text-left text-base font-bold text-black sm:text-lg">
+    <ul className="list-disc space-y-3 pl-6 text-left text-base font-bold text-[var(--treaty-ink)] sm:text-lg">
       {children}
     </ul>
   ),
   ol: ({ children }: { children?: ReactNode }) => (
-    <ol className="list-decimal space-y-3 pl-6 text-left text-base font-bold text-black sm:text-lg">
+    <ol className="list-decimal space-y-3 pl-6 text-left text-base font-bold text-[var(--treaty-ink)] sm:text-lg">
       {children}
     </ol>
   ),
   li: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
-  hr: () => <hr className="border-t-2 border-black/40" />,
+  hr: () => <hr className="border-t-2 border-[var(--treaty-ink-muted)]" />,
 };

@@ -105,8 +105,10 @@ export {
 export {
   COURT_OF_HUMANITY_REFERENDUM_SLUG,
   DECLARATION_REFERENDUM_SLUG,
-  MANAGED_REFERENDUMS,
   TREATY_REFERENDUM_SLUG,
+} from "../constants.js";
+export {
+  MANAGED_REFERENDUMS,
   buildReferendumContentHash,
 } from "./managed-referendums.js";
 export type {

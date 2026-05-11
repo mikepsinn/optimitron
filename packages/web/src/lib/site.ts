@@ -343,7 +343,6 @@ const warOnDiseaseNavSections: NavSection[] = [
     items: [
       treatyLink,
       dashboardLink,
-      // donateLink, // hidden 2026-05-11 per user direction; restore when ready
       plaintiffsLink,
       presidentManagementLink,
     ],
