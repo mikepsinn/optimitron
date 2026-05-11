@@ -7,24 +7,22 @@ import {
 import {
   ReferendumKind,
   ReferendumStatus,
+  type PrismaClient,
   type ReferendumKind as ReferendumKindValue,
   type ReferendumStatus as ReferendumStatusValue,
 } from "../generated/prisma/client.js";
 
-// Canonical Referendum records. The data sync upserts these on every
-// deploy (and in CI before tests), matching the production deploy flow.
-// Previously these lived inline in `prisma/seed.ts` and depended on the
-// full seed running, which never happens in production.
+// Canonical Referendum records. Synced on every deploy + CI run via
+// `pnpm db:sync:managed-data --apply`. Edit a record below → sync detects
+// the content-hash change → upserts. No change → skip the write.
 
 export const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
 export const DECLARATION_REFERENDUM_SLUG = "declaration-of-optimization";
 export const COURT_OF_HUMANITY_REFERENDUM_SLUG = "court-of-humanity";
 
-export const MANAGED_REFERENDUMS_COLLECTION_KEY = "managed-referendums";
-
 const REFERENDUM_PUBLISHED_AT = new Date("2026-05-03T00:00:00.000Z");
 
-export interface ManagedReferendumRecord {
+interface ManagedReferendumRecord {
   slug: string;
   title: string;
   question: string;
@@ -71,77 +69,29 @@ export const MANAGED_REFERENDUMS: readonly ManagedReferendumRecord[] = [
   },
 ] as const;
 
-function normalizeReferendumContentText(
-  value: string | null | undefined,
-): string | null {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed : null;
-}
-
 export function buildReferendumContentHash(input: {
   question: string;
   description?: string | null;
   bodyMarkdown?: string | null;
 }): string {
+  const normalize = (v: string | null | undefined) => v?.trim() || null;
   return createHash("sha256")
     .update(
       JSON.stringify({
         question: input.question.trim(),
-        description: normalizeReferendumContentText(input.description),
-        bodyMarkdown: normalizeReferendumContentText(input.bodyMarkdown),
+        description: normalize(input.description),
+        bodyMarkdown: normalize(input.bodyMarkdown),
       }),
     )
     .digest("hex");
 }
 
-interface ReferendumUpsertData {
-  title: string;
-  slug: string;
-  question: string;
-  kind: ReferendumKindValue;
-  description: string;
-  bodyMarkdown: string;
-  publishedAt: Date;
-  lockedAt: Date | null;
-  status: ReferendumStatusValue;
-  contentHash: string;
-}
-
-interface ManagedReferendumRow {
-  slug: string;
-  contentHash: string;
-}
-
-export interface ManagedReferendumClient {
-  referendum: {
-    findMany(args: {
-      where: { slug: { in: string[] } };
-      select: { slug: true; contentHash: true };
-    }): Promise<ManagedReferendumRow[]>;
-    upsert(args: {
-      where: { slug: string };
-      update: ReferendumUpsertData;
-      create: ReferendumUpsertData;
-    }): Promise<{ slug: string }>;
-  };
-}
-
-export interface SyncManagedReferendumsOptions {
-  apply: boolean;
-}
-
-export interface SyncManagedReferendumsResult {
-  totalRecords: number;
-  upserted: string[];
-  unchanged: string[];
-}
-
 export async function syncManagedReferendums(
-  client: ManagedReferendumClient,
-  options: SyncManagedReferendumsOptions,
-): Promise<SyncManagedReferendumsResult> {
+  prisma: PrismaClient,
+  options: { apply: boolean },
+): Promise<{ totalRecords: number; upserted: string[]; unchanged: string[] }> {
   const slugs = MANAGED_REFERENDUMS.map((r) => r.slug);
-  const existing = await client.referendum.findMany({
+  const existing = await prisma.referendum.findMany({
     where: { slug: { in: slugs } },
     select: { slug: true, contentHash: true },
   });
@@ -151,11 +101,7 @@ export async function syncManagedReferendums(
   const unchanged: string[] = [];
 
   for (const record of MANAGED_REFERENDUMS) {
-    const contentHash = buildReferendumContentHash({
-      question: record.question,
-      description: record.description,
-      bodyMarkdown: record.bodyMarkdown,
-    });
+    const contentHash = buildReferendumContentHash(record);
 
     if (existingHashBySlug.get(record.slug) === contentHash) {
       unchanged.push(record.slug);
@@ -163,12 +109,11 @@ export async function syncManagedReferendums(
     }
 
     if (!options.apply) {
-      // Dry-run: report would-be-upsert but don't write.
       upserted.push(record.slug);
       continue;
     }
 
-    const data: ReferendumUpsertData = {
+    const data = {
       title: record.title,
       slug: record.slug,
       question: record.question,
@@ -181,7 +126,7 @@ export async function syncManagedReferendums(
       contentHash,
     };
 
-    await client.referendum.upsert({
+    await prisma.referendum.upsert({
       where: { slug: record.slug },
       update: data,
       create: data,
@@ -189,21 +134,13 @@ export async function syncManagedReferendums(
     upserted.push(record.slug);
   }
 
-  return {
-    totalRecords: MANAGED_REFERENDUMS.length,
-    upserted,
-    unchanged,
-  };
+  return { totalRecords: MANAGED_REFERENDUMS.length, upserted, unchanged };
 }
 
 export function formatManagedReferendumsResult(
-  result: SyncManagedReferendumsResult,
+  result: { totalRecords: number; upserted: string[]; unchanged: string[] },
 ): string {
-  const parts = [
-    `Referendums: ${result.upserted.length}/${result.totalRecords} upserted`,
-  ];
-  if (result.unchanged.length) {
-    parts.push(`${result.unchanged.length} unchanged`);
-  }
+  const parts = [`Referendums: ${result.upserted.length}/${result.totalRecords} upserted`];
+  if (result.unchanged.length) parts.push(`${result.unchanged.length} unchanged`);
   return parts.join(", ");
 }

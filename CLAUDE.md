@@ -56,6 +56,8 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Pre-architect Read + Stop signal** are now enforced by hooks (PreToolUse on Write to `packages/*/src/` etc.; UserPromptSubmit detecting "should it really / I thought / aren't we" phrases). When a hook fires, treat its output as authoritative — don't argue past it. The hook exists because the equivalent CLAUDE.md rule was being ignored.
 
+**Diagram-before-code** for non-trivial changes. When a change touches >1 system (DB + deploy + CI; UI + API + DB), or you estimate >100 lines new, or the user used "I thought we had / aren't we / why is this so" phrasing: draw current + proposed flow (ASCII boxes or terse prose) in chat BEFORE the Write/Edit. User reacts to the diagram, you iterate on text not code. Trivial fixes (typo, single-line, isolated bug) skip this.
+
 **Subagents** live in `.claude/agents/`: `voice-critic` (post-UI copy critique), `pr-comment-triager` (bot-review triage), `test-auditor` (suite slop + missing coverage). Their `.md` files have the full instructions.
 
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." They are paid by the citizenry to promote welfare and are late on a 30-second task. Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
