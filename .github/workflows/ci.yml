@@ -15,33 +15,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Detect which areas of the repo changed so downstream jobs can skip
-  # expensive work (Next.js build, Playwright) when no web/db/data files
-  # were touched. Branch protection still requires `web-validate` to pass,
-  # so the job runs either way — but it short-circuits to a trivial pass
-  # when nothing relevant changed.
-  changes:
-    name: changes
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    outputs:
-      web: ${{ steps.filter.outputs.web }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Detect changed paths
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            web:
-              - 'packages/web/**'
-              - 'packages/db/**'
-              - 'packages/data/**'
-              - 'pnpm-lock.yaml'
-              - 'package.json'
-              - '.github/workflows/ci.yml'
-
   core-validate:
     name: core-validate
     if: github.event_name != 'push'
@@ -105,15 +78,8 @@ jobs:
   web-validate:
     name: web-validate
     if: github.event_name != 'push' || github.ref == 'refs/heads/main'
-    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      # Push to main always runs the full pipeline (regression baseline).
-      # PRs run the full pipeline only when web-relevant paths changed.
-      # When false, the job still completes successfully — branch protection
-      # is satisfied — but skips all the expensive build + Playwright work.
-      WEB_VALIDATE_FULL: ${{ github.event_name == 'push' || needs.changes.outputs.web == 'true' }}
     permissions:
       actions: read
       # peaceiris/actions-gh-pages needs write to push the visual review to
@@ -146,40 +112,26 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Report path-filter outcome
-        shell: bash
-        run: |
-          if [ "$WEB_VALIDATE_FULL" = "true" ]; then
-            echo "Web-relevant paths changed (or push to main) — running full pipeline."
-          else
-            echo "No web-relevant paths changed. Skipping build + Playwright; job will pass trivially."
-          fi
-
       - name: Checkout
-        if: env.WEB_VALIDATE_FULL == 'true'
         uses: actions/checkout@v6
         with:
           submodules: recursive
 
       - name: Enable Corepack
-        if: env.WEB_VALIDATE_FULL == 'true'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
-        if: env.WEB_VALIDATE_FULL == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
-        if: env.WEB_VALIDATE_FULL == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Cache Next.js build
-        if: env.WEB_VALIDATE_FULL == 'true'
         uses: actions/cache@v4
         with:
           path: packages/web/.next/cache
@@ -189,29 +141,23 @@ jobs:
             nextjs-${{ runner.os }}-
 
       - name: Apply database migrations
-        if: env.WEB_VALIDATE_FULL == 'true'
         run: pnpm db:deploy
 
       - name: Build web workspace dependencies
-        if: env.WEB_VALIDATE_FULL == 'true'
         run: pnpm --filter @optimitron/web run build:workspace-deps
 
       - name: Typecheck web app
-        if: env.WEB_VALIDATE_FULL == 'true'
         run: pnpm --filter @optimitron/web run typecheck:fast
 
       - name: Run web unit tests
-        if: env.WEB_VALIDATE_FULL == 'true'
         run: pnpm --filter @optimitron/web run test
 
       - name: Build web app
-        if: env.WEB_VALIDATE_FULL == 'true'
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: pnpm --filter @optimitron/web run build:fast
 
       - name: Cache Playwright browsers
-        if: env.WEB_VALIDATE_FULL == 'true'
         id: playwright-cache
         uses: actions/cache@v4
         with:
@@ -219,48 +165,31 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('packages/web/package.json') }}
 
       - name: Install Playwright browser
-        if: env.WEB_VALIDATE_FULL == 'true' && steps.playwright-cache.outputs.cache-hit != 'true'
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter @optimitron/web exec playwright install --with-deps chromium
 
       - name: Install Playwright system deps
-        if: env.WEB_VALIDATE_FULL == 'true' && steps.playwright-cache.outputs.cache-hit == 'true'
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
-      # Seeds were sequential — bootstrap → demo → tasks → managed-data sync.
-      # `demo` and `tasks` don't depend on each other and both need bootstrap
-      # to land first; managed-data sync needs the schema (bootstrap) only.
-      # Run demo + tasks + managed-data in parallel after bootstrap and
-      # `wait` on the group. Saves ~30-60s of serial wall time.
-      - name: Seed visual review data
-        if: env.WEB_VALIDATE_FULL == 'true'
-        shell: bash
-        run: |
-          pnpm --filter @optimitron/db run seed:bootstrap
-          pnpm --filter @optimitron/db run seed:demo &
-          demo_pid=$!
-          pnpm --filter @optimitron/db run seed:tasks &
-          tasks_pid=$!
-          pnpm db:sync:managed-data -- --apply &
-          sync_pid=$!
-          fail=0
-          wait $demo_pid || fail=1
-          wait $tasks_pid || fail=1
-          wait $sync_pid || fail=1
-          exit $fail
-
       - name: Run Playwright smoke validation
-        if: env.WEB_VALIDATE_FULL == 'true'
         run: pnpm --filter @optimitron/web run e2e -- smoke
 
+      - name: Seed visual review data
+        run: |
+          pnpm --filter @optimitron/db run seed:bootstrap
+          pnpm --filter @optimitron/db run seed:demo
+          pnpm --filter @optimitron/db run seed:tasks
+          pnpm db:sync:managed-data -- --apply
+
       - name: Run Playwright visual review
-        if: env.WEB_VALIDATE_FULL == 'true'
         env:
           ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
           ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
         run: pnpm --filter @optimitron/web run e2e -- visual
 
       - name: Preserve PR visual screenshots
-        if: always() && env.WEB_VALIDATE_FULL == 'true' && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         shell: bash
         run: |
           rm -rf packages/web/output/playwright/pr-screenshots
@@ -270,7 +199,7 @@ jobs:
           fi
 
       - name: Resolve main visual baseline
-        if: always() && env.WEB_VALIDATE_FULL == 'true' && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -319,7 +248,7 @@ jobs:
           fi
 
       - name: Resolve PR preview URL
-        if: always() && env.WEB_VALIDATE_FULL == 'true' && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         id: pr_preview_url
         uses: actions/github-script@v8
         with:
@@ -354,14 +283,14 @@ jobs:
             return '';
 
       - name: Build visual review index
-        if: always() && env.WEB_VALIDATE_FULL == 'true'
+        if: always()
         env:
           VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
-        if: always() && env.WEB_VALIDATE_FULL == 'true'
+        if: always()
         shell: bash
         run: |
           {
@@ -374,7 +303,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Playwright visual review
-        if: always() && env.WEB_VALIDATE_FULL == 'true'
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: web-visual-review
@@ -398,7 +327,7 @@ jobs:
       # "Deploy from a branch" with branch `gh-pages` (root). The action
       # creates the branch on its first push.
       - name: Prepare per-PR visual review directory
-        if: always() && env.WEB_VALIDATE_FULL == 'true' && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         id: prepare_pages
         shell: bash
         run: |
@@ -445,7 +374,7 @@ jobs:
           echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
 
       - name: Publish visual review to gh-pages
-        if: always() && env.WEB_VALIDATE_FULL == 'true' && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         id: visual_review_pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -459,7 +388,7 @@ jobs:
           user_email: github-actions[bot]@users.noreply.github.com
 
       - name: Post Visual review commit status
-        if: always() && env.WEB_VALIDATE_FULL == 'true' && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v8
         with:
           script: |
@@ -479,7 +408,7 @@ jobs:
             });
 
       - name: Upload Playwright artifacts
-        if: failure() && env.WEB_VALIDATE_FULL == 'true'
+        if: failure()
         uses: actions/upload-artifact@v6
         with:
           name: web-playwright-artifacts
