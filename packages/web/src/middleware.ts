@@ -55,8 +55,49 @@ function getHeadersWithLocalSiteVariantOverride(
   return requestHeaders;
 }
 
+// `?login=demo` and `?logout=1` query params let preview-deploy reviewers
+// flip between authed (as the demo user) and unauthed views by tweaking
+// the URL. `?login=demo` is env-gated to non-production via the API
+// route itself. `?logout=1` is harmless on any environment.
+//
+// Middleware redirects to the matching `/api/dev/*` route (which does
+// the actual cookie work) with the original URL minus the param as
+// `?next=...` so the user lands back where they started after the auth
+// state flip.
+function handleDevAuthQueryParams(req: import("next/server").NextRequest) {
+  const params = req.nextUrl.searchParams;
+  const loginAs = params.get("login");
+  const logout = params.get("logout");
+
+  if (loginAs === "demo") {
+    if (process.env.VERCEL_ENV === "production") return null;
+    const stripped = req.nextUrl.clone();
+    stripped.searchParams.delete("login");
+    const next = `${stripped.pathname}${stripped.search}${stripped.hash}`;
+    const target = req.nextUrl.clone();
+    target.pathname = "/api/dev/login-as-demo";
+    target.search = `?next=${encodeURIComponent(next || "/")}`;
+    return NextResponse.redirect(target, 307);
+  }
+
+  if (logout === "1") {
+    const stripped = req.nextUrl.clone();
+    stripped.searchParams.delete("logout");
+    const next = `${stripped.pathname}${stripped.search}${stripped.hash}`;
+    const target = req.nextUrl.clone();
+    target.pathname = "/api/dev/logout";
+    target.search = `?next=${encodeURIComponent(next || "/")}`;
+    return NextResponse.redirect(target, 307);
+  }
+
+  return null;
+}
+
 export default withAuth(
   function middleware(req) {
+    const devAuthRedirect = handleDevAuthQueryParams(req);
+    if (devAuthRedirect) return devAuthRedirect;
+
     const overrideResolution = resolveLocalSiteVariantOverride({
       cookieSiteKey: req.cookies.get(SITE_VARIANT_OVERRIDE_COOKIE)?.value,
       host: req.headers.get("host"),
