@@ -191,12 +191,13 @@ supporting detail or parked work; they should not override this sequence.
    benchmark children are retired.
 4. [x] **Wire production deploy to run managed-data sync.** This prevents future
    canonical task/title/trigger changes from requiring one-off data migrations.
-5. [ ] **Then update the UI presentation.** `/tasks/optimize-earth`, dashboard, and
-   visual-review routes should show the simplified tree, while `warondisease.org`
+5. [~] **Then update the UI presentation.** Dashboard is now a focused share
+   card + collapsed disclosures (PR #71); /tasks/optimize-earth and the
+   visual-review routes still want a simplified tree view. War on Disease
    still pushes the 1% Treaty vote first.
-6. [ ] **Only add `allowsUserSubtasks` before exposing public subtask creation UI.**
-   Seeded/admin-managed task trees can ship before this. Public UGC needs the
-   permission column/guard so arbitrary users cannot clutter canonical parents.
+6. [—] **`allowsUserSubtasks` schema column — parked.** Existing schema is
+   sufficient to add subtasks when needed. Revisit only when public subtask
+   creation UI is on the immediate roadmap.
 7. [x] **Fold task triggers into managed data after the task-tree sync is proven.**
    Trigger definitions are the same kind of semi-permanent app data and no
    longer use a separate one-off production seed path.
@@ -215,9 +216,11 @@ cross-check so they do not disappear into chat history.
 
 **Dashboard and task UX**
 
-- Replace the logged-in dashboard with a short action checklist:
-  sign the 1% Treaty, render verdict, register plaintiff, summon jurors,
-  pressure/manage presidents. Link each row to the actual page.
+- [x] Replace the logged-in dashboard with a focused share surface: plaintiff
+  status, share message + copy button, collapsed disclosures for register-a-plaintiff /
+  remind-overdue-presidents / endorse / assigned-tasks. Shipped PR #71 — the
+  composer, leaderboard, plaintiff form, and full treaty text are no longer
+  embedded; each lives only on its dedicated page.
 - Remove the generic task-detail metadata block where it duplicates header
   information. Keep title, assignee, due date, primary action, markdown body,
   comments, complete/reassign/admin controls.
@@ -230,8 +233,29 @@ cross-check so they do not disappear into chat history.
 - Add E2E coverage that a signed-in demo user can open an assigned/private task
   from "Your Tasks" without hitting 404.
 
+**Post-vote email (decided 2026-05-11)**
+
+- Build a single triggered email (not a drip) fired the moment `ReferendumVote.status == COUNTED`.
+- Body is the "I love you and don't want you to suffer and die of horrible
+  diseases" share message verbatim, with the user's referral URL inline.
+- CTA above the body: "Hit forward, paste two email addresses, send. That's
+  the whole job." The email *is* the forward-friendly recruitment vehicle, not
+  a screen the user has to copy from.
+- Reuses existing Resend pipeline + reply-handling + unsubscribe-on-reply rails.
+- No subsequent drips. Reminder spam is explicitly banned (see PR #66
+  "Disable generic overdue email reminders").
+
 **Visual review and preview workflow**
 
+- [x] Visual review surfaces a `Visual review` commit status pointing to the
+  SHA-pinned gallery in the merge box (PR #71), replacing the 6-link bot
+  comment that buried the actual gallery under filler.
+- Add email-template screenshots to the visual review HTML. Render each email
+  template (`buildMagicLinkHtml`, task-assignment, task-comment-notification,
+  inbound-monitor-forward, the future post-vote forward email) with a
+  representative token set, screenshot, and emit alongside the page
+  screenshots in `latest.html`. Reviewers currently can't see email copy
+  without setting up Resend locally + emailing themselves a test.
 - Add the Central Time generation timestamp to visual review HTML.
 - Use commit-hash or otherwise cache-busted GitHub Pages paths for generated
   visual reviews so a new PR comment cannot show an old cached `latest.html`.
@@ -454,19 +478,14 @@ The IAM smoke-test email I wrote first would have failed this lint
 on the word-count rule alone — exactly the regression class the
 human flagged. Schema-zero. Cheap.
 
-### P1 — Plaintiff damages surface on `/plaintiffs/page.tsx`
+### P1 — Plaintiff damages surface on `/plaintiffs/page.tsx` ✅ done
 
-`/plaintiffs/page.tsx` imports `WAR_DEATHS_SINCE_1900` and
-military-spending parameters but not
-`CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA` or the
-cohort constant. So a visitor sees the gallery without learning
-what each registered plaintiff is owed (~$10.6M NPV / $25.2M
-lifetime cohort). The case page surfaces this; the registration
-page should too. ~30 lines of JSX added under the existing
-parameter imports — schema-zero. Highest per-line conversion lift
-on the to-do list right now; a visitor who lands on `/plaintiffs`
-from the case-page CTA without first reading the case currently
-has no damages number to anchor on.
+Shipped: the page renders a "Demanded recovery per registered plaintiff"
+section above the conversion form with the $10.6M NPV (per
+`CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA`) and the
+$25.2M lifetime cohort (per `LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA`)
+side-by-side, then an explanation of the family-share frame and the
+4B-vote enforcement gate.
 
 ### P1 — Centralize communication templates (audit findings 2026-05-08)
 
