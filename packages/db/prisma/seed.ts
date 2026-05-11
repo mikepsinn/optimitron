@@ -31,8 +31,6 @@ import {
   JurisdictionType,
   PersonConditionStatus,
   PersonLifeStatus,
-  ReferendumKind,
-  ReferendumStatus,
   ReferendumVoteSource,
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
@@ -41,27 +39,18 @@ import {
   VotePosition,
   type Prisma,
 } from "../src/generated/prisma/client.js";
-import {
-  TREATY_REFERENDUM_SLUG,
-  DECLARATION_REFERENDUM_SLUG,
-  COURT_OF_HUMANITY_REFERENDUM_SLUG,
-} from "../src/constants.js";
+import { TREATY_REFERENDUM_SLUG } from "../src/constants.js";
 import {
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   OPTIMIZE_EARTH_ROOT_TASK_KEY,
 } from "../src/task-keys.js";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import {
   US_WISHOCRATIC_JURISDICTION,
   getUSWishocraticCatalogRecords,
   listGovernmentLeaders,
 } from "@optimitron/data";
-import {
-  COURT_OF_HUMANITY_QUESTION,
-  COURT_OF_HUMANITY_TEXT,
-} from "@optimitron/data/referendums";
 import {
   getAllConditions,
   getAllTreatments,
@@ -94,7 +83,9 @@ import { GLOBAL_VARIABLE_SEED_DATA } from "./seed-data/global-variables.ts";
 import { VARIABLE_CATEGORY_SEED_DATA } from "./seed-data/variable-categories.ts";
 import {
   formatManagedDataResult,
+  formatManagedReferendumsResult,
   syncManagedData,
+  syncManagedReferendums,
 } from "../src/managed-data/index.js";
 import { upsertWishoniaUser } from "../src/system-users.js";
 
@@ -119,27 +110,6 @@ function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/-{2,}/g, "-");
-}
-
-function normalizeReferendumContentText(value: string | null | undefined) {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed : null;
-}
-
-function buildReferendumContentHash(input: {
-  question: string;
-  description?: string | null;
-  bodyMarkdown?: string | null;
-}) {
-  return createHash("sha256")
-    .update(
-      JSON.stringify({
-        question: input.question.trim(),
-        description: normalizeReferendumContentText(input.description),
-        bodyMarkdown: normalizeReferendumContentText(input.bodyMarkdown),
-      }),
-    )
-    .digest("hex");
 }
 
 async function upsertUnit(data: Prisma.UnitUncheckedCreateInput) {
@@ -1175,83 +1145,14 @@ export interface SeedDatabaseOptions {
 
 async function seedReferendums() {
   console.log("🗳️  Seeding referendums...");
-  const publishedAt = new Date("2026-05-03T00:00:00.000Z");
-  const buildReferendumData = (
-    data: Omit<Prisma.ReferendumUncheckedCreateInput, "contentHash"> & {
-      question: string;
-    },
-  ): Prisma.ReferendumUncheckedCreateInput => ({
-    ...data,
-    contentHash: buildReferendumContentHash({
-      question: data.question,
-      description: data.description ?? null,
-      bodyMarkdown: data.bodyMarkdown ?? null,
-    }),
-  });
-
-  const treatyReferendumData = buildReferendumData({
-    title: "The 1% Treaty",
-    slug: TREATY_REFERENDUM_SLUG,
-    question:
-      "Should governments redirect 1% of military spending to pragmatic clinical trials and disease eradication by adopting the 1% Treaty?",
-    kind: ReferendumKind.TREATY,
-    description:
-      "The 1% Treaty redirects one percent of military spending into pragmatic clinical trials so disease gets less time to kill people.",
-    bodyMarkdown: shareableSnippets.onePercentTreatyText.markdown,
-    publishedAt,
-    lockedAt: null,
-    status: ReferendumStatus.ACTIVE,
-  });
-
-  await prisma.referendum.upsert({
-    where: { slug: TREATY_REFERENDUM_SLUG },
-    update: treatyReferendumData,
-    create: treatyReferendumData,
-  });
-  console.log("  ✓ 1% Treaty referendum");
-
-  const declarationReferendumData = buildReferendumData({
-    title: "Declaration of Optimization",
-    slug: DECLARATION_REFERENDUM_SLUG,
-    question: "Do you endorse the Declaration of Optimization?",
-    kind: ReferendumKind.DECLARATION,
-    description:
-      "Sign the Declaration of Optimization to declare your support for evidence-based governance.",
-    bodyMarkdown: [
-      shareableSnippets.whyOptimizationIsNecessary.markdown,
-      shareableSnippets.declarationOfOptimization.markdown,
-    ].join("\n\n"),
-    publishedAt,
-    lockedAt: null,
-    status: ReferendumStatus.ACTIVE,
-  });
-
-  await prisma.referendum.upsert({
-    where: { slug: DECLARATION_REFERENDUM_SLUG },
-    update: declarationReferendumData,
-    create: declarationReferendumData,
-  });
-  console.log("  ✓ Declaration of Optimization referendum");
-
-  const courtReferendumData = buildReferendumData({
-    title: "The Court of Humanity",
-    slug: COURT_OF_HUMANITY_REFERENDUM_SLUG,
-    question: COURT_OF_HUMANITY_QUESTION,
-    kind: ReferendumKind.MEMBERSHIP,
-    description:
-      "Join the decentralized court where 8 billion humans are the jury and sovereign immunity is abolished.",
-    bodyMarkdown: COURT_OF_HUMANITY_TEXT.markdown,
-    publishedAt,
-    lockedAt: null,
-    status: ReferendumStatus.ACTIVE,
-  });
-
-  await prisma.referendum.upsert({
-    where: { slug: COURT_OF_HUMANITY_REFERENDUM_SLUG },
-    update: courtReferendumData,
-    create: courtReferendumData,
-  });
-  console.log("  ✓ Court of Humanity referendum");
+  // Delegates to the managed-data sync so production deploys and local
+  // seeds use the same source of truth (`packages/db/src/managed-data/
+  // managed-referendums.ts`). Adding/editing referendums means updating
+  // that one file — never re-inlining records here.
+  const result = await syncManagedReferendums(prisma, { apply: true });
+  console.log(
+    `  ✓ ${formatManagedReferendumsResult(result)}`,
+  );
 }
 
 export async function seedReferenceData() {
