@@ -12,6 +12,7 @@ import {
   END_WAR_AND_DISEASE_TASK_KEY,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_ID,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_KEY,
+  HUMANITY_V_GOVERNMENT_CASE_NAME,
   HUMANITY_V_GOVERNMENTS_TASK_ID,
   HUMANITY_V_GOVERNMENTS_TASK_KEY,
   ONE_PERCENT_TREATY_HEADS_OF_GOVERNMENT_TASK_ID,
@@ -77,7 +78,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     description: [
       "Run the international campaign to end war on disease.",
       "",
-      "The practical route is to build the Court of Humanity, prosecute Humanity v. Governments of Earth, and ratify the 1% Treaty so one percent of military spending funds pragmatic clinical trials instead of organized murder machinery.",
+      `The practical route is to build the Court of Humanity, prosecute ${HUMANITY_V_GOVERNMENT_CASE_NAME}, and ratify the 1% Treaty so one percent of military spending funds pragmatic clinical trials instead of organized murder machinery.`,
     ].join("\n"),
     impactStatement:
       "This is the public mission under Optimize Earth until the 1% Treaty passes.",
@@ -135,7 +136,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: HUMANITY_V_GOVERNMENTS_TASK_ID,
     taskKey: HUMANITY_V_GOVERNMENTS_TASK_KEY,
     parentTaskId: COURT_OF_HUMANITY_TASK_ID,
-    title: "Prosecute Humanity v. Governments of Earth",
+    title: `Prosecute ${HUMANITY_V_GOVERNMENT_CASE_NAME}`,
     description: [
       "Frame the case that governments were hired and funded to promote the general welfare, then used trillions to murder citizens and delay disease eradication.",
       "",
@@ -145,7 +146,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "Turn the campaign into a public case with plaintiffs, jurors, evidence, verdict, and settlement.",
     sortOrder: -780,
     primaryEndpoint: {
-      label: "Open Humanity v. Governments of Earth",
+      label: `Open ${HUMANITY_V_GOVERNMENT_CASE_NAME}`,
       url: "/humanity-v-government",
       instructions:
         "Review the case and complete the highest-leverage prosecution task.",
@@ -167,7 +168,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       label: "Register a plaintiff",
       url: "/plaintiffs",
       instructions:
-        "Register a plaintiff in Humanity v. Governments of Earth.",
+        `Register a plaintiff in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
     },
   },
   {
@@ -178,7 +179,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: HUMANITY_V_GOVERNMENTS_TASK_ID,
     title: "Summon jurors",
     description:
-      "Invite humans to act as jurors by voting on the treaty and rendering a verdict in Humanity v. Governments of Earth.",
+      `Invite humans to act as jurors by voting on the treaty and rendering a verdict in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
     impactStatement:
       "A court for humanity needs a jury large enough to matter.",
     sortOrder: -760,
