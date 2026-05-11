@@ -27,7 +27,12 @@ const reporter: "html" | ReporterDescription[] = enableArgosReporter
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
-  retries: 0,
+  // 2 retries in CI: the visual-regression suite has hit transient
+  // `ECONNRESET` on `/api/auth/csrf` three times in one day (always on
+  // `tasks-index-auth` — the first request after sign-in occasionally
+  // drops the connection). Retries clear the flake without papering over
+  // real failures — each retry uploads its own trace + screenshot.
+  retries: isCI ? 2 : 0,
   workers: isCI ? 4 : 4,
   reporter,
   timeout: 120_000,
