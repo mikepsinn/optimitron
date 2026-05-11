@@ -15,6 +15,17 @@ interface LiveCounterProps {
 /** Tick every 250ms — 4 updates/sec, smooth enough to feel live, cheap on CPU. */
 const TICK_INTERVAL_MS = 250;
 
+/**
+ * Visual-review placeholders. The e2e visual-regression spec swaps any node
+ * with `data-visual-mask="dynamic"` to render its `data-visual-placeholder`
+ * text instead of the live value, so screenshots stay byte-identical across
+ * runs. Without this, every CI run captured a different tick of the counter
+ * and produced false-positive diffs on every page that embeds a LiveCounter
+ * (notably /employees, /presidents, and signer rows).
+ */
+const VISUAL_REVIEW_INTEGER_PLACEHOLDER = "123,456";
+const VISUAL_REVIEW_CURRENCY_PLACEHOLDER = "$123,456,789,012";
+
 const intFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
@@ -59,7 +70,12 @@ export function LiveCounter({
   return (
     <span
       className={className}
-      data-volatile={mode === "currency" ? "money" : "count"}
+      data-visual-mask="dynamic"
+      data-visual-placeholder={
+        mode === "currency"
+          ? VISUAL_REVIEW_CURRENCY_PLACEHOLDER
+          : VISUAL_REVIEW_INTEGER_PLACEHOLDER
+      }
       suppressHydrationWarning
     >
       {displayValue ?? "…"}
