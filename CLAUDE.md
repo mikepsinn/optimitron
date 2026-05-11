@@ -40,6 +40,8 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
 
+**Write like Kurt Vonnegut.** Plain words. Short declaratives. The absurd stated as ordinary. Never product-onboarding voice. Button labels and microcopy default to verb-first imperatives ("Do this." "Sign the treaty." "Done.") rather than productized verbs ("Take this on", "Get started", "Engage", "Activate"). If you catch yourself writing "Take ownership", "Engage with", "Empower", "Unlock", "Streamline", or any other corporate-onboarding verb — stop and rewrite as something a person would actually say to another person.
+
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." They are paid by the citizenry to promote welfare and are late on a 30-second task. Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
 
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.

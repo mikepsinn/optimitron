@@ -37,8 +37,12 @@ const MODE_SPECS = {
     ? [
         "e2e/smoke.spec.ts",
         "e2e/contrast-audit.spec.ts",
+        "e2e/treaty-page-structure.spec.ts",
       ]
-    : ["e2e/smoke.spec.ts"],
+    : [
+        "e2e/smoke.spec.ts",
+        "e2e/treaty-page-structure.spec.ts",
+      ],
   contrast: ["e2e/contrast-audit.spec.ts"],
   mobile: ["e2e/mobile-responsiveness-audit.spec.ts"],
   "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],

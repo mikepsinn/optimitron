@@ -208,6 +208,39 @@ This is the compaction-safe backlog of chat decisions that have not obviously
 landed yet. Some items also have detailed sections below; this list is the
 cross-check so they do not disappear into chat history.
 
+**2026-05-11 session — completed (on feature/treaty-dashboard-message-first / PR #75 unless noted)**
+
+- [x] Visual-review per-PR persistence (PR #76 merged). `peaceiris/actions-gh-pages` with `keep_files: true` to a long-lived `gh-pages` branch; each commit lands at `pr-N/<short_sha>/` so older review URLs survive newer pushes.
+- [x] LiveCounter visual-review mask (PR #76 merged). Component honors `__OPTIMITRON_VISUAL_REVIEW__` runtime flag, emits both `data-visual-mask="dynamic"` and `data-volatile` for screenshot + markdown-preview tooling.
+- [x] Lightbox on visual-review HTML — click a screenshot to open full-viewport, click again for 1:1 zoom, Esc/close button to dismiss.
+- [x] Email-template screenshots in visual review. `e2e/email-screenshots.spec.ts` renders magic-link / task-assignment / task-comment-notification / post-vote-share / referral-first-conversion / monthly-chain-digest at 720×1000 and feeds them into the same `screenshots/<project>/` tree the review HTML walks. Required adding the spec to `MODE_SPECS.visual` in `run-playwright.mjs`.
+- [x] Visual review toolbar: live route-name filter, Expand all / Collapse all, "Only show changed" (actually hides unchanged), `/` keyboard focuses the filter input.
+- [x] Per-route "📋 Copy context" button on visual review. Payload includes PR + branch + commit SHA, route + auth state, before/after screenshot URLs, and explicit "please `curl -O` these before responding" instructions for the coding agent. Embedded `data-context` JSON; JS click handler formats markdown and writes to clipboard.
+- [x] Inline PR-timeline deployment annotation per commit (Vercel-bot style), replacing the sticky comment. Uses `createDeployment` + `createDeploymentStatus` with `environment: visual-review/pr-N`.
+- [x] CSRF flake mitigation: `retries: isCI ? 2 : 0` in `playwright.config.ts`. `tasks-index-auth` had hit `ECONNRESET` on `/api/auth/csrf` three times in one session.
+- [x] Cancel-safe gh-pages publish — visual-review publish steps now gated on `!cancelled()` so a concurrency-cancelled run doesn't post a partial review with "62 missing pairs".
+- [x] Commit-status + deployment annotation only when publish succeeded — `steps.visual_review_pages.outcome == 'success'` gate so reviewers don't click dead links.
+- [x] CI baseline loop `--limit 20 → 5` for main `web-visual-review` artifact lookup. The previous successful main run virtually always has the artifact.
+- [x] Dashboard share card rewrite (`DashboardShareCard.tsx`). Replaced "Each voter who recruits two more is the campaign." marketing line with: Humanity Manager assignment frame + apocalypse math (122 apocalypses → 12.3× more clinical trials, 443yr → 36yr eradication timeline). Every number sourced from `@optimitron/data/parameters` via `<ParameterValue>` for citation popovers.
+- [x] `/treaty` restored to the original commit-`1c58293e` skim-and-sign layout. Single centered serif headline ("Please quickly skim and sign to end war and disease."), continuous treaty body, single signature box. No stepper, no slide split, no decorative dividers, no competing Court CTA. Added a `/treaty` Playwright regression test (`e2e/treaty-page-structure.spec.ts`) asserting headline + treaty body phrases + Yes/No buttons.
+- [x] `/treaty` body fallback. `getReferendumPageContent()` now falls back to bundled `shareableSnippets.onePercentTreatyText.markdown` when the DB row's `bodyMarkdown` is null/empty — previously preview deployments with unseeded DBs rendered only the headline + signature box.
+- [x] `/signatories` cleanup — removed top "Public record / Signatories / Humans and organizations…" block and the "Living votes / Represented humans / Memorial votes / Total voices" stats box. Just the leaderboard.
+- [x] `/tasks/[id]` cleanup — removed the verbose `<dl>` metadata sidebar (Owner / Progress / Time needed / Area / Completed / Updates) that duplicated header info. Kept Deaths-from-delay + Wasted-by-delay as inline tags above the markdown body. Effort hours moved into the inline header metadata strip.
+- [x] `HUMANITY_V_GOVERNMENT_CASE_NAME` canonical constant in `@optimitron/db/task-keys`, sourced by `humanityVGovernmentLink.label`, `/court` page copy, and managed-task-tree titles. Replaces the drift between "Humanity v. Government" and "Humanity v. Governments of Earth".
+- [x] CLAUDE.md voice rule reinforced — "Write like Kurt Vonnegut. Plain words. Short declaratives." Button labels and microcopy default to verb-first imperatives; banned list includes "Take ownership", "Engage", "Empower", "Unlock", "Streamline".
+- [x] Nav label rename: `tasksLink.label` "Tasks" → "To-Do List for Humanity", CTA "Open Tasks" → "Open the list".
+- [x] CodeRabbit cleanup (commit `5872a64b`): visual-review/* deployments excluded from preview-URL discovery; `<details>` route anchors carry `id="route-<slug>"` so copied URLs scroll; `getRecipientReferralUrl` failures no longer abort task-assignment / task-comment notification batches.
+
+**2026-05-11 session — discussed but not yet implemented**
+
+- Task-list rows fully clickable. Currently inner `<Link href={assigneeHref}>` on the avatar / name traps clicks and navigates to the assignee's person page instead of the task. Task lists (not the detail page) should treat the entire row as a single link to `/tasks/<id>`; assignee navigation lives on the detail page itself. Affects `task-row.tsx` across the `signer` / compact variants — replace inner `<Link>` wrappers with non-interactive spans.
+- Avatar next to assignee on `/tasks/[id]` header. Currently shows just "Assigned to <name>" as text; should render the assignee's avatar inline so the page matches the visual density of task lists.
+- Decide what to do with the task claim button (no consensus yet). Current behavior: logged-out users see nothing, logged-in users see "Claim Task". User flagged the verb "claim" as bad. Two open questions: (1) keep / drop the logged-out sign-in nudge entirely; (2) rename "Claim Task" to a Vonnegut-style verb ("Do this." is the working candidate — NOT "Take this on", that was rejected as corporate-onboarding).
+- Reframe `formatEnumLabel(viewerClaim.status)` output in the task-detail viewer state strip — current "Claimed" / "In Progress" / "Completed" / "Verified" labels leak the enum into user copy.
+- Remove drop-shadow on the Updates-section "Sign In" button + audit all other buttons that still carry hard-offset / soft shadows. CLAUDE.md already says "no shadows by default" — the Updates Sign-In on a logged-out task page is a known offender.
+- Investigate Neon DB branch-per-preview-deployment. Currently Vercel previews point at whatever `DATABASE_URL` is set on the preview environment — there's no managed-data sync against a per-PR DB, so previews show stale/missing seed data (which is why the `/treaty` row had a null `bodyMarkdown` and surfaced the page bug above). The Vercel Neon integration creates a branch per PR and runs migrations automatically; main alternative is a `sync-on-preview` workflow step that hits a preview-scoped DB.
+- Speedup attempt redo: path-filter `web-validate` so non-web PRs short-circuit. Previous attempt (`b50469063`) produced an unparseable workflow file; needs smaller incremental commits this time to isolate which construct GitHub objected to.
+
 **Current branch hygiene**
 
 - After each push, keep working on local tasks while GitHub Actions run instead

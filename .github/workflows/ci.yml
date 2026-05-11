@@ -410,8 +410,13 @@ jobs:
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
+      # Only post the status link AFTER peaceiris/actions-gh-pages
+      # actually succeeded — otherwise reviewers click through to a
+      # 404 (publish skipped or failed but status URL already pointed
+      # there). `steps.visual_review_pages.outcome == 'success'` ensures
+      # gh-pages has the path before we advertise it.
       - name: Post Visual review commit status
-        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.visual_review_pages.outcome == 'success' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -437,8 +442,11 @@ jobs:
       # which is immutable thanks to keep_files: true on the gh-pages
       # publish step. transient_environment: true tells GitHub to retire
       # older deployments for this environment automatically.
+      # Same publish-succeeded gate as the commit status above — the
+      # inline timeline annotation points to the same URL, no point
+      # posting it if gh-pages doesn't have the path yet.
       - name: Create Visual review deployment
-        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.visual_review_pages.outcome == 'success' }}
         uses: actions/github-script@v8
         with:
           script: |

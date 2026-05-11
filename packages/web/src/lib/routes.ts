@@ -428,7 +428,7 @@ export const dashboardLink: NavItem = {
 
 export const tasksLink: NavItem = {
   href: ROUTES.tasks,
-  label: "Tasks",
+  label: "To-Do List for Humanity",
   emoji: "🎯",
   description:
     "Find public tasks that move health, income, and treaty adoption. Claim one or remind the person responsible.",
@@ -437,7 +437,7 @@ export const tasksLink: NavItem = {
   copyPreview: true,
   reviewName: "tasks-index",
   screenshot: true,
-  cta: "Open Tasks",
+  cta: "Open the list",
 };
 
 export const presidentManagementLink: NavItem = {
