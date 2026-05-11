@@ -1,5 +1,9 @@
 import { slugify } from "@/lib/slugify";
-import { HUMANITY_V_GOVERNMENT_CASE_NAME } from "@optimitron/db";
+// Use the dedicated `/task-keys` subpath (not bare `@optimitron/db`) — this
+// module is reachable from client components via `@/lib/routes`, and the
+// package root re-exports the Prisma client which would pull node built-ins
+// into the browser bundle.
+import { HUMANITY_V_GOVERNMENT_CASE_NAME } from "@optimitron/db/task-keys";
 import {
   fmtParam,
   DFDA_TRIAL_COST_REDUCTION_FACTOR,
