@@ -36,10 +36,7 @@ export default async function TreatyPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-      <TreatyContent
-        introText="Please take 30 seconds to end war and disease."
-        bodyMarkdown={referendumContent?.bodyMarkdown}
-      />
+      <TreatyContent bodyMarkdown={referendumContent?.bodyMarkdown} />
     </main>
   );
 }
