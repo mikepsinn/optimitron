@@ -185,6 +185,7 @@ jobs:
           pnpm db:sync:managed-data -- --apply
 
       - name: Run Playwright visual review
+        id: visual_regression
         env:
           ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
           ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
@@ -345,12 +346,14 @@ jobs:
       # One-time repo setup: Settings → Pages → Source must be set to
       # "Deploy from a branch" with branch `gh-pages` (root). The action
       # creates the branch on its first push.
-      # `!cancelled()` instead of `always()` so a cancelled run (concurrency
-      # cut-off after a newer push, manual cancel, etc.) doesn't publish a
-      # partial visual review with missing "after" screenshots. Real
-      # test failures still publish — reviewers want to see what broke.
+      # Gate the publish chain on the visual-regression step succeeding,
+      # not just on `!cancelled()`. A test failure produces incomplete
+      # screenshots ("62 missing pairs"); publishing that to gh-pages
+      # gives reviewers a misleading review URL. Real test breakage
+      # already surfaces as the web-validate job failing — the artifact
+      # upload still runs `always()` so debugging info isn't lost.
       - name: Prepare per-PR visual review directory
-        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        if: ${{ steps.visual_regression.outcome == 'success' && github.event_name == 'pull_request' }}
         id: prepare_pages
         shell: bash
         run: |
@@ -397,7 +400,7 @@ jobs:
           echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
 
       - name: Publish visual review to gh-pages
-        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        if: ${{ steps.visual_regression.outcome == 'success' && github.event_name == 'pull_request' }}
         id: visual_review_pages
         uses: peaceiris/actions-gh-pages@v4
         with:

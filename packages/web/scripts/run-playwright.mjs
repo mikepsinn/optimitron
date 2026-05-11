@@ -48,15 +48,17 @@ const MODE_SPECS = {
   "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],
   "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
   "treaty-reminder-one-human": ["e2e/treaty-reminder-one-human.spec.ts"],
-  visual: [
-    "e2e/visual-regression.spec.ts",
-    // Email templates are screenshot-only too (no live route), and the
-    // generated images feed the same `screenshots/<project>/` tree that
-    // `build-visual-review.mjs` walks. Including them here keeps everything
-    // in one Playwright invocation so the review HTML shows email-* rows
-    // alongside route screenshots.
-    "e2e/email-screenshots.spec.ts",
-  ],
+  visual: ["e2e/visual-regression.spec.ts"],
+  // `email-screenshots.spec.ts` (which renders the templates and shoots
+  // them) is held out of `visual` for now: it imports
+  // `…-email.server.ts` modules that transitively pull `@optimitron/db`,
+  // and Playwright's spec transformer cannot parse the compiled
+  // `packages/db/dist/index.js` (`export * from …` namespace re-exports
+  // need `@babel/plugin-transform-export-namespace-from`, which isn't
+  // wired into the Playwright pipeline). Re-include here once email
+  // HTML rendering moves behind a `/dev/email/*` Next.js preview route
+  // (then the spec just `page.goto`s instead of importing).
+  "email-screenshots": ["e2e/email-screenshots.spec.ts"],
 };
 
 const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];
