@@ -120,14 +120,36 @@ export function TreatyVoteFlow({
   const { data: session, status } = useSession();
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
+  const submitButtonRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
   const initialVoteShellClassName = compactInitialScreen
     ? "min-h-0 overflow-visible px-0 py-0 sm:px-0 sm:py-0"
-    : undefined;
+    : "py-3 sm:py-10";
+  // Cut mobile vertical spacing so the submit button (which appears after
+  // first slider drag) fits in the viewport. TreatyFlowShell defaults to
+  // `space-y-10 py-10` between children; on mobile that adds ~120px of
+  // gap stacked across headline / paragraph / allocation / submit, which
+  // pushes the submit below the fold. Desktop spacing unchanged via sm:.
   const initialVoteContentClassName = compactInitialScreen
     ? "max-w-4xl flex-none justify-start py-0 sm:py-0"
-    : "max-w-4xl";
+    : "max-w-4xl space-y-5 py-4 sm:space-y-10 sm:py-12";
+
+  // After the user releases the slider, scroll the just-revealed submit
+  // button into view (block: 'nearest' — scrolls only the minimum to make
+  // it visible). Triggered on pointerup so we don't disrupt the active
+  // drag interaction; only fires once userHasDragged is true (submit
+  // button is mounted).
+  const handleSliderRelease = () => {
+    if (typeof window === "undefined") return;
+    // requestAnimationFrame defers until the AnimatePresence mount completes.
+    window.requestAnimationFrame(() => {
+      submitButtonRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    });
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -764,6 +786,8 @@ export function TreatyVoteFlow({
                     onChange={(e) =>
                       handleSliderChange(100 - Number(e.target.value))
                     }
+                    onPointerUp={handleSliderRelease}
+                    onKeyUp={handleSliderRelease}
                     className="h-3 w-full cursor-pointer appearance-none rounded-none border border-black bg-white slider-treaty"
                     style={{
                       background: `linear-gradient(to right, #000 ${militaryAllocation}%, #fff ${militaryAllocation}%)`,
@@ -777,6 +801,7 @@ export function TreatyVoteFlow({
               <AnimatePresence>
                 {userHasDragged && (
                   <motion.div
+                    ref={submitButtonRef}
                     initial={{ opacity: 0, y: 20, scale: 0.8 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{
