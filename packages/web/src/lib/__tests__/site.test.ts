@@ -196,7 +196,7 @@ describe("site variant registry", () => {
     expect(labels).toEqual([
       "Sign the Treaty",
       "Manage Humanity",
-      "Fund Campaign",
+      "Prevent 2 yrs of suffering for $1",
       "Register a Plaintiff",
       "Remind Presidents",
     ]);

@@ -40,7 +40,21 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
 
-**Write like Kurt Vonnegut.** Plain words. Short declaratives. The absurd stated as ordinary. Never product-onboarding voice. Button labels and microcopy default to verb-first imperatives ("Do this." "Sign the treaty." "Done.") rather than productized verbs ("Take this on", "Get started", "Engage", "Activate"). If you catch yourself writing "Take ownership", "Engage with", "Empower", "Unlock", "Streamline", or any other corporate-onboarding verb — stop and rewrite as something a person would actually say to another person.
+**Write like Kurt Vonnegut.** Plain declaratives. Verb-first imperatives for buttons ("Do this.", "Sign.", "Done."). Banned: "Take ownership", "Engage", "Empower", "Unlock", "Streamline", "Take this on", "Get started", and any other corporate-onboarding verb.
+
+**Reuse before rewrite.** Before writing a new component, grep `packages/web/src/components` for similarly-shaped JSX (share box, signature box, counter, markdown render, parameter display). If you find a match, use it.
+
+**`<ParameterValue>` for every user-facing number.** Grep `packages/data/src/parameters/parameters-calculations-citations.ts` for a matching parameter before typing a number. Default `figures={3}` on calculator pages.
+
+**Catch users at peak commitment.** After a YES action, render the next step inline. Never punt with "the dashboard has X."
+
+**Git archaeology before "restore".** When asked to bring back an old layout: `git log -S "phrase"`, cite the source commit. Don't reconstruct from memory.
+
+**Verify the deployed state.** "tsc clean" is not "shipped." Run `pnpm --filter @optimitron/web review:local` and look at the rendered page, or say "this is on the way, can't verify from here."
+
+**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines.
+
+**Subagents** live in `.claude/agents/`: `voice-critic` (post-UI copy critique), `pr-comment-triager` (bot-review triage), `test-auditor` (suite slop + missing coverage). Their `.md` files have the full instructions.
 
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." They are paid by the citizenry to promote welfare and are late on a 30-second task. Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
 
