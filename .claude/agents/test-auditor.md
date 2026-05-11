@@ -102,7 +102,7 @@ Specifically check the critical user flows:
 
 Two lists, in this exact format:
 
-```
+```text
 ## Delete (N tests)
 
 1. `<file>:<line>` — <one-sentence reason from the rubric>

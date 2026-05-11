@@ -33,13 +33,14 @@ export interface SyncManagedDemoUserOptions {
 
 export interface SyncManagedDemoUserResult {
   upserted: boolean;
+  dryRun: boolean;
 }
 
 export async function syncManagedDemoUser(
   client: ManagedDemoUserClient,
   options: SyncManagedDemoUserOptions,
 ): Promise<SyncManagedDemoUserResult> {
-  if (!options.apply) return { upserted: true };
+  if (!options.apply) return { upserted: false, dryRun: true };
 
   const user = await client.user.upsert({
     where: { email: DEMO_EMAIL },
@@ -76,11 +77,12 @@ export async function syncManagedDemoUser(
     });
   }
 
-  return { upserted: true };
+  return { upserted: true, dryRun: false };
 }
 
 export function formatManagedDemoUserResult(
   result: SyncManagedDemoUserResult,
 ): string {
+  if (result.dryRun) return "Demo user: would sync (dry-run)";
   return result.upserted ? "Demo user: synced" : "Demo user: unchanged";
 }

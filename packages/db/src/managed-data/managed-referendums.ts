@@ -145,7 +145,7 @@ export async function syncManagedReferendums(
     where: { slug: { in: slugs } },
     select: { slug: true, contentHash: true },
   });
-  const existingHashByslug = new Map(existing.map((r) => [r.slug, r.contentHash]));
+  const existingHashBySlug = new Map(existing.map((r) => [r.slug, r.contentHash]));
 
   const upserted: string[] = [];
   const unchanged: string[] = [];
@@ -157,7 +157,7 @@ export async function syncManagedReferendums(
       bodyMarkdown: record.bodyMarkdown,
     });
 
-    if (existingHashByslug.get(record.slug) === contentHash) {
+    if (existingHashBySlug.get(record.slug) === contentHash) {
       unchanged.push(record.slug);
       continue;
     }
