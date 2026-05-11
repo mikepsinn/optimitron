@@ -88,6 +88,7 @@ jobs:
       issues: write
       pages: write
       pull-requests: write
+      statuses: write
     env:
       CI: true
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
