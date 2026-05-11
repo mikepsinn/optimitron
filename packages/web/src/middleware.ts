@@ -176,6 +176,16 @@ export default withAuth(
     },
     callbacks: {
       authorized: ({ req, token }) => {
+        // Let dev-auth query-param flows through to the middleware body even
+        // when the target path is auth-protected. Otherwise withAuth bounces
+        // `/dashboard?login=demo` to /auth/signin BEFORE our
+        // handleDevAuthQueryParams handler runs — the redirect to
+        // /api/dev/login-as-demo never gets the chance to mint the cookie.
+        // `?logout=1` doesn't need this branch (logout from auth pages is
+        // expected to redirect to sign-in if you're already logged out).
+        const params = req.nextUrl.searchParams;
+        if (params.get("login") === "demo") return true;
+
         const authPaths = [
           ROUTES.dashboard,
           ROUTES.profile,
