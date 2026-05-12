@@ -792,7 +792,16 @@ export function TreatyPostVoteShareFlow({
         return (
           <>
             <div className="space-y-4">
-              {alt ? <FlowParagraph>Cool. The 122 apocalypses haven&apos;t moved.</FlowParagraph> : null}
+              {alt ? (
+                <FlowParagraph>
+                  Cool. The{" "}
+                  <ParameterValue
+                    param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
+                    figures={3}
+                  />{" "}
+                  apocalypses haven&apos;t moved.
+                </FlowParagraph>
+              ) : null}
               <FlowParagraph>
                 <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} /> nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans.
               </FlowParagraph>

@@ -79,11 +79,20 @@ export type PublicSignatoryEntry =
 
 export interface PublicSignatoriesPage {
   currentUserSigner: PublicHumanSignatoryEntry | null;
+  currentUserStatus: PublicSignatoryUserStatus | null;
   signatories: PublicSignatoryEntry[];
   totalCount: number;
   page: number;
   pageSize: number;
   totalPages: number;
+}
+
+export interface PublicSignatoryUserStatus {
+  hasYesVote: boolean;
+  isPublic: boolean;
+  listed: boolean;
+  rank: number | null;
+  referredYesCount: number;
 }
 
 interface ReferendumSiteRecord {
@@ -185,6 +194,10 @@ export async function getReferendumSiteHomeData(
     publicOnly: true,
     referendumId: context.referendum.id,
   });
+  const recruitedVoteWhere = buildOfficialReferendumVoteWhere({
+    answer: VotePosition.YES,
+    referendumId: context.referendum.id,
+  });
 
   const requestedPage = Math.max(1, Math.floor(options.signersPage ?? 1));
 
@@ -197,12 +210,10 @@ export async function getReferendumSiteHomeData(
     referrerCounts,
     allOrganizationSignatories,
     organizationReferrerCounts,
+    currentUserProfile,
   ] = await Promise.all([
     prisma.referendumVote.count({
-      where: buildOfficialReferendumVoteWhere({
-        answer: VotePosition.YES,
-        referendumId: context.referendum.id,
-      }),
+      where: recruitedVoteWhere,
     }),
     prisma.referendumVote.count({
       where: buildRepresentedReferendumVoteWhere({
@@ -234,7 +245,7 @@ export async function getReferendumSiteHomeData(
     prisma.referendumVote.groupBy({
       by: ["referredByUserId"],
       where: {
-        ...publicSignersWhere,
+        ...recruitedVoteWhere,
         referredByUserId: { not: null },
       },
       _count: { referredByUserId: true },
@@ -258,14 +269,26 @@ export async function getReferendumSiteHomeData(
     prisma.referendumVote.groupBy({
       by: ["organizationId"],
       where: {
-        ...publicSignersWhere,
+        ...recruitedVoteWhere,
         organizationId: { not: null },
       },
       _count: { organizationId: true },
     }),
+    options.currentUserId
+      ? prisma.user.findUnique({
+          where: { id: options.currentUserId },
+          select: {
+            person: { select: { isPublic: true } },
+            referendumVotes: {
+              where: recruitedVoteWhere,
+              select: { id: true },
+              take: 1,
+            },
+          },
+        })
+      : Promise.resolve(null),
   ]);
 
-  const publicSignersTotal = allPublicSigners.length;
   const referredCountByUserId = new Map<string, number>();
   for (const row of referrerCounts) {
     if (row.referredByUserId) {
@@ -320,7 +343,7 @@ export async function getReferendumSiteHomeData(
       return {
         id: row.id,
         createdAt: row.createdAt,
-        kind: "organization",
+        kind: "organization" as const,
         referredYesCount,
         livesSaved: VOTER_LIVES_SAVED.value * referredYesCount,
         hoursPrevented:
@@ -329,7 +352,8 @@ export async function getReferendumSiteHomeData(
         statement: row.statement,
         organization: row.organization,
       };
-    });
+    })
+    .filter((entry) => entry.referredYesCount > 0);
 
   const rankedSignatories: PublicSignatoryEntry[] = [
     ...(ranked as PublicHumanSignatoryEntry[]),
@@ -347,6 +371,7 @@ export async function getReferendumSiteHomeData(
     }));
 
   const publicSignatoriesTotal = rankedSignatories.length;
+  const publicSignersTotal = ranked.length;
 
   const totalPages = Math.max(
     1,
@@ -375,6 +400,17 @@ export async function getReferendumSiteHomeData(
           entry.kind === "human" && entry.user.id === options.currentUserId,
       ) ?? null)
     : null;
+  const currentUserStatus =
+    options.currentUserId && currentUserProfile
+      ? {
+          hasYesVote: currentUserProfile.referendumVotes.length > 0,
+          isPublic: currentUserProfile.person?.isPublic ?? false,
+          listed: Boolean(currentUserSignatory),
+          rank: currentUserSignatory?.rank ?? null,
+          referredYesCount:
+            referredCountByUserId.get(options.currentUserId) ?? 0,
+        }
+      : null;
 
   const isTreatyCampaignSite =
     site.primaryReferendumSlug === TREATY_REFERENDUM_SLUG;
@@ -410,6 +446,7 @@ export async function getReferendumSiteHomeData(
     },
     publicSignatories: {
       currentUserSigner: currentUserSignatory,
+      currentUserStatus,
       signatories: signatoryRows,
       totalCount: publicSignatoriesTotal,
       page: signatoriesPage,

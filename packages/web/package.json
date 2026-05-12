@@ -29,6 +29,7 @@
     "e2e": "node scripts/run-playwright.mjs",
     "e2e:visual": "node scripts/run-playwright.mjs visual",
     "visual:review": "node scripts/build-visual-review.mjs",
+    "review:local": "node scripts/review-local.mjs",
     "messages:review": "node scripts/build-message-review.mjs",
     "e2e:demo": "playwright test e2e/demo-recording.spec.ts",
     "demo:narration": "tsx scripts/generate-narration.ts",

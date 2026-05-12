@@ -52,6 +52,10 @@ export interface ManagedTaskRecord {
   deadlinePolicy?: TaskDeadlinePolicyValue;
   sortOrder?: number;
   primaryEndpoint?: ManagedTaskPrimaryEndpoint | null;
+  /**
+   * Explicit soft-delete flag for rows owned by this managed collection.
+   * Removing a record from the array is not deletion and must not affect the DB.
+   */
   retired?: boolean;
 }
 

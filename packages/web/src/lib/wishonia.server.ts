@@ -22,7 +22,7 @@ export async function getWishoniaUserId(): Promise<string> {
 
   if (!user) {
     throw new Error(
-      `Wishonia user not seeded. Run: npx tsx packages/db/prisma/seed.ts --scope tasks`,
+      "Wishonia user not seeded. Run: pnpm db:sync:managed-data -- --apply",
     );
   }
 

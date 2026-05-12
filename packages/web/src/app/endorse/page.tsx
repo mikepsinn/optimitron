@@ -1,13 +1,11 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import {
-  GLOBAL_DISEASE_DEATHS_DAILY,
-  shareableSnippets,
-} from "@optimitron/data/parameters";
-import { ParameterValue } from "@/components/shared/ParameterValue";
+import { shareableSnippets } from "@optimitron/data/parameters";
+import { OrganizationGrantCalculator } from "@/components/organizations/OrganizationGrantCalculator";
 import { TreatyContent } from "@/components/treaty/TreatyContent";
 import type { ReferendumSiteLegalSection } from "@/content/referendum-sites/types";
 import { getCurrentUser } from "@/lib/auth-utils";
+import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
 import { getSiteMetadata } from "@/lib/metadata";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
@@ -16,24 +14,8 @@ import { ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { EndorseForm } from "./EndorseForm";
-import { OrganizationImpactCalculator } from "./OrganizationImpactCalculator";
 
 export const dynamic = "force-dynamic";
-
-const HOUR_ACTIONS = [
-  {
-    title: "Embed the iframe",
-    body: "One paste, then it works while you sleep.",
-  },
-  {
-    title: "Send one email",
-    body: "Pre-written. Your members already trust you. That is the asset.",
-  },
-  {
-    title: "Post once per channel",
-    body: "Link auto-credits responses to your organization.",
-  },
-] as const;
 
 function TreatyTextDisclosure({
   treatyMarkdown,
@@ -62,7 +44,7 @@ function TreatyTextDisclosure({
             href="#organization-endorsement-form"
             className="inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
           >
-            Join as Organization
+            Join as an Organization
           </a>
         </div>
       </div>
@@ -85,9 +67,9 @@ function LegalNotesDisclosure({
       </summary>
       <div className="mt-5 border-t border-foreground pt-5">
         <p className="max-w-3xl text-sm font-bold leading-7 text-muted-foreground">
-          Nonprofits can publicly support nonpartisan humanitarian treaty
-          advocacy. The notes below answer the common nonprofit question without
-          sending you away from the form.
+          Joining publicly supports a humanitarian treaty. It is not a donation,
+          candidate endorsement, party activity, ballot measure position, or
+          support for a pending bill.
         </p>
         <div className="mt-5 space-y-5 text-sm font-bold leading-7 text-foreground">
           {sections.map((section) => (
@@ -165,7 +147,9 @@ export default async function EndorsePage() {
   if (!site.primaryReferendumSlug) {
     return (
       <section className="mx-auto max-w-xl px-4 py-20 text-center">
-        <h1 className="text-3xl font-black uppercase">Join as Organization</h1>
+        <h1 className="text-3xl font-black uppercase">
+          Join as an Organization
+        </h1>
         <p className="mt-4 font-bold text-muted-foreground">
           No referendum is configured for this site.
         </p>
@@ -179,50 +163,22 @@ export default async function EndorsePage() {
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
-      <header className="mb-10">
-        <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-          {content.endorse.eyebrow}
-        </p>
+      <header className="mb-8">
         <h1 className="text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
-          Enter your audience. See the suffering you cause or prevent.
+          Join the International Campaign to End War and Disease
         </h1>
         <p className="mt-5 text-base font-bold leading-7 text-muted-foreground">
-          <ParameterValue
-            param={GLOBAL_DISEASE_DEATHS_DAILY}
-            valueOverride="150,000"
-          />{" "}
-          humans die from disease today. Most preventable. Your audience size
-          decides how much of it gets to keep happening.
+          Add your organization. Then use your member link, email starter,
+          website button, or iframe to help your audience answer the{" "}
+          {GLOBAL_SURVEY_NAME}.
+        </p>
+        <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
+          No donation. No candidate endorsement. One public humanitarian treaty
+          position.
         </p>
       </header>
 
-      <OrganizationImpactCalculator />
-
-      <section className="mt-10 border-2 border-foreground bg-background p-6">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-          Step 2 — One hour, three actions
-        </p>
-        <ol className="mt-4 space-y-4">
-          {HOUR_ACTIONS.map((action, index) => (
-            <li
-              key={action.title}
-              className="border-t border-foreground pt-4 first:border-t-0 first:pt-0"
-            >
-              <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-                {index + 1}. {action.title}
-              </p>
-              <p className="mt-1 text-sm font-bold leading-6 text-muted-foreground">
-                {action.body}
-              </p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <div
-        className="mt-10 scroll-mt-24"
-        id="organization-endorsement-form"
-      >
+      <div className="scroll-mt-24" id="organization-endorsement-form">
         <EndorseForm
           referendumSlug={site.primaryReferendumSlug}
           manageableOrgs={manageableOrgs.map((o) => ({
@@ -231,6 +187,21 @@ export default async function EndorsePage() {
             status: o.status,
           }))}
         />
+      </div>
+
+      <section className="mt-8 border-y border-foreground py-5">
+        <h2 className="text-sm font-black uppercase tracking-[0.14em] text-foreground">
+          After joining
+        </h2>
+        <p className="mt-2 text-sm font-bold leading-7 text-muted-foreground">
+          Join first. Your tools page gives you the member link, email starter,
+          website button, iframe, one-hour action checklist, and outreach grant
+          request draft for funding from the International Campaign.
+        </p>
+      </section>
+
+      <div className="mt-10">
+        <OrganizationGrantCalculator />
       </div>
 
       <LegalNotesDisclosure sections={content.legal.sections} />

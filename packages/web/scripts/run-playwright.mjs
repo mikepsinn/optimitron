@@ -37,14 +37,24 @@ const MODE_SPECS = {
     ? [
         "e2e/smoke.spec.ts",
         "e2e/contrast-audit.spec.ts",
+        "e2e/treaty-page-structure.spec.ts",
       ]
-    : ["e2e/smoke.spec.ts"],
+    : [
+        "e2e/smoke.spec.ts",
+        "e2e/treaty-page-structure.spec.ts",
+      ],
   contrast: ["e2e/contrast-audit.spec.ts"],
   mobile: ["e2e/mobile-responsiveness-audit.spec.ts"],
   "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],
   "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
   "treaty-reminder-one-human": ["e2e/treaty-reminder-one-human.spec.ts"],
-  visual: ["e2e/visual-regression.spec.ts"],
+  visual: [
+    "e2e/visual-regression.spec.ts",
+    "e2e/email-screenshots.spec.ts",
+  ],
+  // Kept as a standalone mode for ad-hoc local screenshot regeneration
+  // without running the full visual-regression suite.
+  "email-screenshots": ["e2e/email-screenshots.spec.ts"],
 };
 
 const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];

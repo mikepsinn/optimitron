@@ -127,14 +127,14 @@ describe("referendum vote sync", () => {
     });
   });
 
-  it("posts signed organization context with a pending treaty vote", async () => {
+  it("posts public organization survey slug with a pending treaty vote", async () => {
     mocks.getPendingDeclarationVote.mockReturnValue(null);
     mocks.getPendingTreatyVote.mockReturnValue({
       answer: "YES",
       referredBy: "ref-user",
       timestamp: "2026-03-23T12:00:00.000Z",
       organizationId: null,
-      orgContextToken: "signed-org-token",
+      organizationSlug: "institute-for-accelerated-medicine",
     });
 
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
@@ -150,7 +150,7 @@ describe("referendum vote sync", () => {
       expect.objectContaining({
         answer: "YES",
         ref: "ref-user",
-        orgContextToken: "signed-org-token",
+        organizationSlug: "institute-for-accelerated-medicine",
       }),
     );
   });

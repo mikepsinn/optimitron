@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
 import {
   ActivityType,
+  HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG,
   OrgStatus,
   ReferendumStatus,
   ReferendumVoteSource,
@@ -22,7 +23,11 @@ import { ensureSubjectForPerson } from "@/lib/subject.server";
 import { ensureHumanityVGovernmentPlaintiffParty } from "@/lib/humanity-v-government-case.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
-import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
+import { sendPostVoteShareEmail } from "@/lib/email/post-vote-share-email";
+import { sendReferralFirstConversionEmail } from "@/lib/email/referral-first-conversion-email";
+import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
+import { ROUTES } from "@/lib/routes";
+import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const log = createLogger("referendum-vote");
 
@@ -38,7 +43,7 @@ export async function POST(
       ref?: string;
       makePublic?: boolean;
       inviteToken?: string;
-      orgContextToken?: string;
+      organizationSlug?: string;
       /// Full URL the voter was on when they hit submit (window.location.href).
       /// Captured for forensic attribution — first-vote-wins, never overwritten.
       originUrl?: string;
@@ -85,10 +90,13 @@ export async function POST(
       }
     }
 
-    const orgContextVerification = verifyOrgContextToken(body.orgContextToken);
-    const verifiedOrganization = orgContextVerification.ok
+    const publicOrganizationSlug =
+      typeof body.organizationSlug === "string"
+        ? body.organizationSlug.trim()
+        : "";
+    const verifiedOrganization = publicOrganizationSlug
       ? await prisma.organization.findUnique({
-          where: { id: orgContextVerification.organizationId },
+          where: { slug: publicOrganizationSlug },
           select: { id: true, status: true, deletedAt: true },
         })
       : null;
@@ -207,6 +215,31 @@ export async function POST(
       log.error("Wish grant error", wishError);
     }
 
+    async function registerHumanityVGovernmentPlaintiff() {
+      try {
+        // Re-read person.isPublic so the plaintiff visibility reflects the
+        // makePublic toggle that may have just fired above.
+        const refreshedPerson = await prisma.person.findUnique({
+          where: { id: person.id },
+          select: { displayName: true, isPublic: true },
+        });
+        await prisma.$transaction(async (tx) => {
+          const subject = await ensureSubjectForPerson(tx, {
+            id: person.id,
+            displayName: refreshedPerson?.displayName ?? person.displayName,
+          });
+          await ensureHumanityVGovernmentPlaintiffParty(tx, {
+            createdByUserId: userId,
+            displayName: refreshedPerson?.displayName ?? person.displayName,
+            isPublic: refreshedPerson?.isPublic ?? false,
+            subjectId: subject.id,
+          });
+        });
+      } catch (plaintiffError) {
+        log.error("Plaintiff registration error", plaintiffError);
+      }
+    }
+
     if (referendum.slug === TREATY_REFERENDUM_SLUG) {
       try {
         await ensureUserTreatyTask({
@@ -216,34 +249,108 @@ export async function POST(
       } catch (taskError) {
         log.error("Treaty humanity-management task sync error", taskError);
       }
+    }
 
-      // Auto-register YES voters as plaintiffs on Humanity v. Government.
-      // Plaintiff = treaty signer = juror, one click. The case row is upserted
-      // by ensureHumanityVGovernmentPlaintiffParty so we don't need a separate
-      // seed; first plaintiff in creates the case. Skipped for NO/ABSTAIN since
-      // dissenting voters do not register a plaintiff claim.
-      if (answer === "YES") {
+    // Auto-register YES voters as plaintiffs on Humanity v. Government.
+    // Skipped for NO/ABSTAIN since dissenting or undecided voters do not
+    // register a plaintiff claim.
+    if (
+      answer === "YES" &&
+      (referendum.slug === TREATY_REFERENDUM_SLUG ||
+        referendum.slug === HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG)
+    ) {
+      await registerHumanityVGovernmentPlaintiff();
+    }
+
+    if (referendum.slug === TREATY_REFERENDUM_SLUG && answer === "YES") {
+      // Forward-friendly post-vote share email + first-conversion email to
+      // the referrer (if any). Both are deduped by emailLog dedupeKey so
+      // re-votes and subsequent referral conversions don't fire again. The
+      // two sends are independent: a voter share failure must not suppress
+      // the referrer's first-conversion email (or vice-versa).
+      type VoterRecord = {
+        id: string;
+        email: string;
+        referralCode: string | null;
+        person:
+          | {
+              id: string;
+              handle: string | null;
+              displayName: string | null;
+              image: string | null;
+              isPublic: boolean | null;
+            }
+          | null;
+      };
+      let voter: VoterRecord | null = null;
+      try {
+        voter = (await prisma.user.findUnique({
+          where: { id: userId },
+          select: {
+            ...userDisplaySelect,
+            referralCode: true,
+            // isPublic gates whether we surface this voter's name to the
+            // referrer below. Not part of userDisplaySelect because most
+            // display sites don't need it.
+            person: {
+              select: {
+                id: true,
+                handle: true,
+                displayName: true,
+                image: true,
+                isPublic: true,
+              },
+            },
+          },
+        })) as VoterRecord | null;
+
+        if (voter?.email) {
+          const referralUrl = buildUserReferralUrl({
+            handle: voter.person?.handle ?? null,
+            referralCode: voter.referralCode,
+          });
+          await sendPostVoteShareEmail({
+            voteId: vote.id,
+            userId,
+            toAddress: voter.email,
+            referralUrl,
+          });
+        }
+      } catch (postVoteShareError) {
+        log.error("Post-vote share email error", postVoteShareError);
+      }
+
+      if (vote.referredByUserId) {
         try {
-          // Re-read person.isPublic so the plaintiff visibility reflects the
-          // makePublic toggle that may have just fired above.
-          const refreshedPerson = await prisma.person.findUnique({
-            where: { id: person.id },
-            select: { displayName: true, isPublic: true },
+          const referrer = await prisma.user.findUnique({
+            where: { id: vote.referredByUserId },
+            select: {
+              ...userDisplaySelect,
+              referralCode: true,
+            },
           });
-          await prisma.$transaction(async (tx) => {
-            const subject = await ensureSubjectForPerson(tx, {
-              id: person.id,
-              displayName: refreshedPerson?.displayName ?? person.displayName,
+          if (referrer?.email) {
+            // Referral links can be shared anywhere (Twitter, group chats),
+            // so the "referrer" may not actually know the voter. Only
+            // expose the voter's display name when they've opted into a
+            // public profile; otherwise fall back to a generic label.
+            const voterDisplayName = voter?.person?.isPublic
+              ? getUserDisplayName(voter)
+              : "A new voter";
+            const referrerReferralUrl = buildUserReferralUrl({
+              handle: referrer.person?.handle ?? null,
+              referralCode: referrer.referralCode,
             });
-            await ensureHumanityVGovernmentPlaintiffParty(tx, {
-              createdByUserId: userId,
-              displayName: refreshedPerson?.displayName ?? person.displayName,
-              isPublic: refreshedPerson?.isPublic ?? false,
-              subjectId: subject.id,
+            await sendReferralFirstConversionEmail({
+              referrerUserId: vote.referredByUserId,
+              referrerEmail: referrer.email,
+              voterDisplayName,
+              dashboardUrl: `${getBaseUrl()}${ROUTES.dashboard}`,
+              referrerReferralUrl,
             });
-          });
-        } catch (plaintiffError) {
-          log.error("Plaintiff registration error", plaintiffError);
+          }
+        } catch (firstConversionError) {
+          log.error("Referral first-conversion email error", firstConversionError);
         }
       }
     }

@@ -40,6 +40,37 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
 
+**Write like Kurt Vonnegut.** Plain declaratives. Verb-first imperatives for buttons ("Do this.", "Sign.", "Done."). Banned: "Take ownership", "Engage", "Empower", "Unlock", "Streamline", "Take this on", "Get started", and any other corporate-onboarding verb.
+
+**Reuse before rewrite.** Before writing a new component, grep `packages/web/src/components` for similarly-shaped JSX (share box, signature box, counter, markdown render, parameter display). If you find a match, use it.
+
+**`<ParameterValue>` for every user-facing number.** Grep `packages/data/src/parameters/parameters-calculations-citations.ts` for a matching parameter before typing a number. Default `figures={3}` on calculator pages.
+
+**Catch users at peak commitment.** After a YES action, render the next step inline. Never punt with "the dashboard has X."
+
+**Git archaeology before "restore".** When asked to bring back an old layout: `git log -S "phrase"`, cite the source commit. Don't reconstruct from memory.
+
+**Verify the deployed state.** "tsc clean" is not "shipped." Run `pnpm --filter @optimitron/web review:local` and look at the rendered page, or say "this is on the way, can't verify from here."
+
+**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines. Deferred decisions ("we'll do X later", "real fix is upstream") go in TODO.md the same turn. Subagent prompts include the relevant TODO.md slice as context so they don't re-decide architecture in isolation.
+
+**Pre-architect Read + Stop signal** are now enforced by hooks (PreToolUse on Write to `packages/*/src/` etc.; UserPromptSubmit detecting "should it really / I thought / aren't we" phrases). When a hook fires, treat its output as authoritative — don't argue past it. The hook exists because the equivalent CLAUDE.md rule was being ignored.
+
+**Diagram-before-code** for non-trivial changes. When a change touches >1 system (DB + deploy + CI; UI + API + DB), or you estimate >100 lines new, or the user used "I thought we had / aren't we / why is this so" phrasing: draw current + proposed flow (ASCII boxes or terse prose) in chat BEFORE the Write/Edit. User reacts to the diagram, you iterate on text not code. Trivial fixes (typo, single-line, isolated bug) skip this.
+
+**Fetch the rendered page, don't infer from the codebase. AND fetch the right page.** When the user asks about UX, user journey, page copy, "is the page good" — fetch the actual rendered page first, then answer. Codebase = committed; rendered page = live; they drift (server/client boundaries, env routing, site variants, DB content).
+
+**Which page to fetch:**
+- Reviewing an unmerged PR → fetch the PR's **PREVIEW DEPLOY** via Vercel MCP (`web_fetch_vercel_url`) or via curl with the `_vercel_share` bypass token. Production is STALE relative to unmerged PR work — fetching warondisease.org for a question about "what /treaty looks like on PR 75" gives you the main branch's pre-PR rendering, which is wrong for the PR review.
+- Reviewing landed work / production behavior / "what does the live site show?" → fetch the production domain (warondisease.org, optimitron.com).
+- Local dev work → fetch http://localhost:3001 if dev server is running.
+
+Default to PREVIEW DEPLOY when the conversation context is "this PR / this branch / what does my recent commit look like." Default to PRODUCTION only when the user explicitly says "production" or asks about the live site separately from the PR.
+
+**Preview-link list format.** When generating a review-link list for the user: every URL must be ONE click — full path + `?_vercel_share=<token>&login=demo` (auth-required), or `&logout=1` (testing logged-out state), or both as TWO rows (HYBRID pages that render differently per auth state). NEVER output "click here to set the bypass cookie, then bare URLs" — that defeats the entire reason `?login=demo` / `?logout=1` query params exist. Format: a single markdown table with columns `Page | State | What changed`. State = "logged-out" / "demo logged-in".
+
+**Subagents** live in `.claude/agents/`: `voice-critic` (post-UI copy critique), `pr-comment-triager` (bot-review triage), `test-auditor` (suite slop + missing coverage). Their `.md` files have the full instructions.
+
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." They are paid by the citizenry to promote welfare and are late on a 30-second task. Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
 
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
@@ -165,6 +196,7 @@ The task tree has a single root: `optimize-earth` (taskKey `program:optimize-ear
 5. **Respect review-only turns.** If the user asks only for analysis, review, or a proposed copy/design, do not commit or push until they approve implementation or publishing.
 6. **Library packages stay runtime-safe.** No Prisma / runtime DB in `optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`.
 7. **Zod only at real boundaries** — HTTP, form, MCP, OAuth. Not internal helpers.
+8. **Calibrate before major refactors.** For multi-file refactors, deleting abstractions, or replacing auth/security controls, present 2-3 options with your recommendation first. Once a preference is clear for that decision class, proceed without re-asking.
 
 ## UI/UX Rules
 

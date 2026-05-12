@@ -51,7 +51,7 @@ export default function DonatePage() {
             apocalypses for disease eradication in{" "}
             <ParameterValue
               className="font-black"
-              figures={2}
+              figures={3}
               param={DFDA_QUEUE_CLEARANCE_YEARS}
             />{" "}
             years.
@@ -69,7 +69,7 @@ export default function DonatePage() {
               being alive. The 1% Treaty redirects{" "}
               <ParameterValue
                 className="font-black"
-                figures={1}
+                figures={3}
                 param={TREATY_REDUCTION_PCT}
               />{" "}
               of that spending to high-efficiency pragmatic clinical trials.
@@ -78,7 +78,7 @@ export default function DonatePage() {
               Under the current system, only{" "}
               <ParameterValue
                 className="font-black"
-                figures={2}
+                figures={3}
                 param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
               />{" "}
               diseases get their first effective treatment each year while{" "}

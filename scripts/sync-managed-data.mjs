@@ -40,20 +40,11 @@ function runManagedSync(label, args) {
 
 try {
   const mode = parseMode(process.argv.slice(2));
-  runManagedSync("task tree", [
+  runManagedSync("bootstrap/reference/task data", [
     "--filter",
     "@optimitron/db",
     "run",
     "sync:managed-data",
-    "--",
-    mode,
-  ]);
-  runManagedSync("task triggers", [
-    "--filter",
-    "@optimitron/web",
-    "exec",
-    "tsx",
-    "scripts/sync-task-triggers.ts",
     "--",
     mode,
   ]);

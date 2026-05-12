@@ -1,5 +1,18 @@
 # /court
 
+## Metadata
+
+- Page title: Court of Humanity | International Campaign to End War and Disease
+- Meta description: Should humans be able to sue a government that kills, injures, or ruins their family?
+- Canonical: https://warondisease.org/court
+- Open Graph title: Court of Humanity
+- Open Graph description: Should humans be able to sue a government that kills, injures, or ruins their family?
+- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Twitter title: Court of Humanity
+- Twitter description: Should humans be able to sue a government that kills, injures, or ruins their family?
+
+## Visible Page Copy
+
 - If a government kills, injures, or harms you or your family, should you have the same right to sue it that you would have if a corporation did the same?
 - NO
 - YES

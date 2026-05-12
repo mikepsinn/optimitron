@@ -1,7 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
-import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
+import { syncManagedData } from "../managed-data/index.js";
+import {
+  setManagedSeedDataClient,
+  syncManagedTreatyAccountabilityData,
+} from "../managed-data/managed-seed-data.js";
 import {
   PersonConditionStatus,
   PersonLifeStatus,
@@ -32,17 +36,16 @@ async function readBaselineCounts(prisma: PrismaClient) {
   };
 }
 
-describeIfDatabase("seedDatabase", () => {
+describeIfDatabase("syncManagedData", () => {
   const adapter = new PrismaPg({ connectionString: databaseUrl! });
   const prisma = new PrismaClient({ adapter });
 
   beforeAll(async () => {
-    await seedDatabase();
+    await syncManagedData(prisma, { apply: true });
   }, SEED_TEST_TIMEOUT_MS);
 
   afterAll(async () => {
     await prisma.$disconnect();
-    await disconnectSeedClient();
   });
 
   it("seeds baseline reference data", async () => {
@@ -191,7 +194,7 @@ describeIfDatabase("seedDatabase", () => {
   it("can run idempotently without duplicating baseline data", async () => {
     const firstCounts = await readBaselineCounts(prisma);
 
-    await seedDatabase();
+    await syncManagedData(prisma, { apply: true });
 
     const secondCounts = await readBaselineCounts(prisma);
 
@@ -234,7 +237,7 @@ describeIfDatabase("seedDatabase", () => {
       },
     });
 
-    await seedDatabase();
+    await syncManagedData(prisma, { apply: true });
 
     await expect(
       prisma.task.findUnique({ where: { id: "1-pct-treaty" } }),
@@ -247,6 +250,57 @@ describeIfDatabase("seedDatabase", () => {
     ).resolves.toMatchObject(originalOrganization);
   }, SEED_TEST_TIMEOUT_MS);
 
+  it("keeps canonical task-tree records owned by managed task sync", async () => {
+    await syncManagedData(prisma, { apply: true });
+
+    const canonicalTasks = await prisma.task.findMany({
+      where: {
+        id: {
+          in: [
+            "optimize-earth",
+            "1-pct-treaty",
+            "dfda",
+            "bed-nets-funding-gap",
+          ],
+        },
+      },
+      orderBy: { id: "asc" },
+      select: {
+        id: true,
+        parentTaskId: true,
+        status: true,
+        title: true,
+        deletedAt: true,
+      },
+    });
+
+    setManagedSeedDataClient(prisma);
+    await syncManagedTreatyAccountabilityData();
+
+    await expect(
+      prisma.task.findMany({
+        where: {
+          id: {
+            in: [
+              "optimize-earth",
+              "1-pct-treaty",
+              "dfda",
+              "bed-nets-funding-gap",
+            ],
+          },
+        },
+        orderBy: { id: "asc" },
+        select: {
+          id: true,
+          parentTaskId: true,
+          status: true,
+          title: true,
+          deletedAt: true,
+        },
+      }),
+    ).resolves.toEqual(canonicalTasks);
+  }, SEED_TEST_TIMEOUT_MS);
+
   it("seeds canonical referendum ballot text and content metadata", async () => {
     const referendums = await prisma.referendum.findMany({
       where: {
@@ -255,6 +309,7 @@ describeIfDatabase("seedDatabase", () => {
             "one-percent-treaty",
             "declaration-of-optimization",
             "court-of-humanity",
+            "court-humanity-v-government-verdict",
           ],
         },
         deletedAt: null,
@@ -272,7 +327,7 @@ describeIfDatabase("seedDatabase", () => {
       },
     });
 
-    expect(referendums).toHaveLength(3);
+    expect(referendums).toHaveLength(4);
     expect(referendums).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -297,11 +352,51 @@ describeIfDatabase("seedDatabase", () => {
           bodyMarkdown: expect.stringContaining("sovereign immunity"),
           contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         }),
+        expect.objectContaining({
+          slug: "court-humanity-v-government-verdict",
+          kind: ReferendumKind.COURT_CASE,
+          question: expect.stringContaining("full damages"),
+          bodyMarkdown: expect.stringContaining("find for Humanity"),
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
       ]),
     );
     for (const referendum of referendums) {
       expect(referendum.publishedAt).toBeInstanceOf(Date);
     }
+  }, SEED_TEST_TIMEOUT_MS);
+
+  it("seeds Humanity v Government as a public court case with a verdict referendum", async () => {
+    const courtCase = await prisma.courtCase.findUnique({
+      where: { slug: "humanity-v-government" },
+      select: {
+        isPublic: true,
+        juryReferendum: {
+          select: {
+            kind: true,
+            question: true,
+            slug: true,
+            status: true,
+          },
+        },
+        status: true,
+        summary: true,
+        title: true,
+      },
+    });
+
+    expect(courtCase).toMatchObject({
+      isPublic: true,
+      juryReferendum: {
+        kind: ReferendumKind.COURT_CASE,
+        question: expect.stringContaining("$2.74 million"),
+        slug: "court-humanity-v-government-verdict",
+        status: "ACTIVE",
+      },
+      status: "VOTING",
+      summary: expect.stringContaining("damages case"),
+      title: "Humanity v Government",
+    });
   }, SEED_TEST_TIMEOUT_MS);
 
   it("seeds task communication endpoint contracts for task-driven reminders", async () => {

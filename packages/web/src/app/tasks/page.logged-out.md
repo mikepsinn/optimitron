@@ -1,7 +1,20 @@
 # /tasks
 
+## Metadata
+
+- Page title: Earth Optimization Tasks
+- Meta description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
+- Canonical: https://warondisease.org/tasks
+- Open Graph title: Earth Optimization Tasks
+- Open Graph description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Ftasks
+- Twitter title: Earth Optimization Tasks
+- Twitter description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
+
+## Visible Page Copy
+
 ## EARTH OPTIMIZATION TASKS
-- Two sections. Humanity's job, then yours. Pick one and move healthy life years or income toward their 2040 targets.
+- A public to-do list for optimizing Earth. Each task names the human or organization, gives them a specific job, and shows the cost of waiting.
 ### HUMANITY'S TASKS
 - Sort
 - ASSIGNEE
@@ -11,10 +24,9 @@
 - WASTED BY DELAY ↓
 - TIME
 - REMIND
-- Promote the General Welfare
+- Optimize Earth
 - [initials]
 - YOU
-- due Dec 31
 - Remind
 ### YOUR TASKS
 #### VOTE ON THE 1% TREATY

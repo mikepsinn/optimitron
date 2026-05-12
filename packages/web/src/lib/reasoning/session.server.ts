@@ -15,8 +15,7 @@ const createId = () => nanoid();
 export type PrepareReasoningSessionInput = {
   hostRaw: string | null;
   organizationId: string | null;
-  orgContextVerified: boolean;
-  orgContextToken: string | null;
+  organizationResolved: boolean;
   localeKey: string;
   relationshipBucket: RelationshipBucket | null;
   referralSource: string | null;
@@ -94,7 +93,7 @@ export async function prepareReasoningSession(
     chainDepth: "90s",
     returningVsFirst,
     surface: input.surface,
-    orgContextVerified: input.orgContextVerified,
+    organizationResolved: input.organizationResolved,
     shareAttemptId: input.shareAttemptId,
     referredByUserId: input.referredByUserId,
     isControlHoldout: selection.isControlHoldout,
@@ -118,8 +117,7 @@ export async function prepareReasoningSession(
       variantSetId: selection.variantSetId,
       variantArmIds: selection.variantArmIds,
       organizationId: input.organizationId,
-      orgContextVerified: input.orgContextVerified,
-      orgContextToken: input.orgContextToken,
+      organizationResolved: input.organizationResolved,
       surface: input.surface,
       localeKey: input.localeKey,
       hostKey,
@@ -152,7 +150,7 @@ async function createInitialExposures(input: {
   chainDepth: "90s" | "deep";
   returningVsFirst: "returning" | "first";
   surface: Surface;
-  orgContextVerified: boolean;
+  organizationResolved: boolean;
   shareAttemptId: string | null;
   referredByUserId: string | null;
   isControlHoldout: boolean;
@@ -166,7 +164,8 @@ async function createInitialExposures(input: {
     slot: slotForSlotKey(slotKey),
     isControlHoldout: input.isControlHoldout,
     holdoutResolutionLevel: input.holdoutResolutionLevel,
-    orgContextVerified: input.orgContextVerified,
+    // Prisma column kept for now to avoid a schema migration in this batch.
+    orgContextVerified: input.organizationResolved,
     surface: input.surface,
     localeKey: input.localeKey,
     hostKey: input.hostKey,

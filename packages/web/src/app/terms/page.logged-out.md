@@ -1,5 +1,18 @@
 # /terms
 
+## Metadata
+
+- Page title: Terms - International Campaign to End War and Disease
+- Meta description: The rules for using this site.
+- Canonical: https://warondisease.org/terms
+- Open Graph title: Terms - International Campaign to End War and Disease
+- Open Graph description: The rules for using this site.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fterms
+- Twitter title: Terms - International Campaign to End War and Disease
+- Twitter description: The rules for using this site.
+
+## Visible Page Copy
+
 ## TERMS OF SERVICE
 - Last updated May 6, 2026
 ### 1. AGREEMENT

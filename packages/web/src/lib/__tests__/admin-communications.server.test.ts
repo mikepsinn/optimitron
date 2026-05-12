@@ -38,8 +38,10 @@ import {
   listAdminEmailLogs,
   listAdminTaskEmailCommunications,
 } from "../admin-communications.server";
+import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "../messaging";
 
 const sentAt = new Date("2026-05-06T12:00:00.000Z");
+const organizationTaskSubject = `New task: ${ORGANIZATION_ACTIVATION_TASK_TITLE}`;
 
 beforeEach(() => {
   for (const fn of Object.values(mocks)) fn.mockReset();
@@ -62,7 +64,7 @@ describe("admin communications", () => {
           providerMessageId: "provider-1",
           sentAt,
           status: "SENT",
-          subject: "New task: Share the Clinical Trial Abundance Survey",
+          subject: organizationTaskSubject,
           templateId: "task_assignment",
           toAddress: "team@example.org",
         },
@@ -71,7 +73,7 @@ describe("admin communications", () => {
         failedAt: null,
         id: "communication-1",
         metadataJson: {
-          subject: "New task: Share the Clinical Trial Abundance Survey",
+          subject: organizationTaskSubject,
           text: "Please embed the survey and share it with your members.",
         },
         purpose: "ASSIGNMENT",
@@ -92,7 +94,7 @@ describe("admin communications", () => {
         task: {
           id: "task-1",
           taskKey: "organization:org-1:activate",
-          title: "Share the Clinical Trial Abundance Survey",
+          title: ORGANIZATION_ACTIVATION_TASK_TITLE,
         },
         taskId: "task-1",
       },
@@ -120,9 +122,7 @@ describe("admin communications", () => {
       JSON.stringify(mocks.taskCommunicationFindMany.mock.calls[0]![0].where),
     ).toContain("team@example.org");
     expect(result.total).toBe(1);
-    expect(result.communications[0]?.subject).toBe(
-      "New task: Share the Clinical Trial Abundance Survey",
-    );
+    expect(result.communications[0]?.subject).toBe(organizationTaskSubject);
     expect(result.communications[0]?.messagePreview).toContain(
       "Please embed the survey",
     );

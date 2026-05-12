@@ -1,8 +1,21 @@
 # /people
 
-- DECENTRALIZED TO-DO LIST FOR HUMANITY
-## COORDINATE THE HUMANS WHO CAN END WAR AND DISEASE.
-- Find officials, lawyers, clinical researchers, organizers, funders, and other people with public tasks. Open a profile, see what they were asked to do, and remind them.
+## Metadata
+
+- Page title: Humans Who Can End War and Disease | International Campaign to End War and Disease
+- Meta description: Officials, lawyers, researchers, organizers, funders, and communicators who can help humanity end war and disease.
+- Canonical: https://warondisease.org/people
+- Open Graph title: Humans Who Can End War and Disease | International Campaign to End War and Disease
+- Open Graph description: Officials, lawyers, researchers, organizers, funders, and communicators who can help humanity end war and disease.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fpeople
+- Twitter title: Humans Who Can End War and Disease | International Campaign to End War and Disease
+- Twitter description: Officials, lawyers, researchers, organizers, funders, and communicators who can help humanity end war and disease.
+
+## Visible Page Copy
+
+- HUMANS WHO CAN END WAR AND DISEASE
+## FIND THE HUMAN WHO SHOULD DO SOMETHING.
+- Find officials, lawyers, clinical researchers, organizers, funders, and communicators who can help end war and disease. Open a profile, see the task, and remind the human.
 - SEE TASKS
 - REGISTER A PLAINTIFF
 - SEARCH
@@ -19,7 +32,6 @@
 - ROLE
 - TASK
 - OPEN
-- [initials]
 - Abd al-Hamid Dbeibeh
 - Government of Libya
 - Public official / LY / 1 task
@@ -32,6 +44,7 @@
 - Government of Sudan
 - Public official / SD / 1 task
 - Public official / SD
+- [initials]
 - Abdoulaye Maïga
 - Government of Mali
 - Public official / ML / 1 task

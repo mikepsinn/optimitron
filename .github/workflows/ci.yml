@@ -63,8 +63,13 @@ jobs:
       - name: Build
         run: pnpm --filter '!@optimitron/web' run build
 
-      - name: Verify managed data sync
-        run: pnpm db:sync:managed-data -- --dry-run
+      # Dropped the dry-run managed-data check that used to live here:
+      # the same script runs with `--apply` against a freshly-migrated
+      # CI Postgres in web-validate's seed step a few minutes later, and
+      # that hard check catches every schema-data drift the dry-run did,
+      # without the duplicate failure mode. `--dry-run` is still useful
+      # locally (`pnpm db:sync:managed-data --dry-run`) to preview a
+      # diff before pushing.
 
       - name: Typecheck
         run: pnpm --filter '!@optimitron/web' run typecheck
@@ -85,7 +90,9 @@ jobs:
       # peaceiris/actions-gh-pages needs write to push the visual review to
       # the long-lived `gh-pages` branch.
       contents: write
-      deployments: read
+      # `deployments: write` lets the "Create Visual review deployment"
+      # step post per-commit deployment annotations in the PR timeline.
+      deployments: write
       issues: write
       pull-requests: write
       statuses: write
@@ -172,17 +179,16 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
+      - name: Sync managed data (idempotent upserts; matches production)
+        # Single source of truth for production-worthy bootstrap/reference data,
+        # campaign records, and task triggers used by post-signin flows.
+        run: pnpm db:sync:managed-data -- --apply
+
       - name: Run Playwright smoke validation
         run: pnpm --filter @optimitron/web run e2e -- smoke
 
-      - name: Seed visual review data
-        run: |
-          pnpm --filter @optimitron/db run seed:bootstrap
-          pnpm --filter @optimitron/db run seed:demo
-          pnpm --filter @optimitron/db run seed:tasks
-          pnpm db:sync:managed-data -- --apply
-
       - name: Run Playwright visual review
+        id: visual_regression
         env:
           ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
           ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
@@ -209,11 +215,15 @@ jobs:
           rm -rf "$baseline_root"
           mkdir -p "$baseline_root"
 
+          # `--limit 5` instead of 20: the previous successful main run
+          # virtually always has the artifact. Iterating 20 deep mostly
+          # burned API calls + network setup time without finding anything
+          # the first 5 didn't.
           mapfile -t run_ids < <(gh run list \
             --workflow CI \
             --branch main \
             --status success \
-            --limit 20 \
+            --limit 5 \
             --json databaseId \
             --jq '.[].databaseId')
 
@@ -264,6 +274,13 @@ jobs:
             });
 
             for (const deployment of deployments) {
+              // Skip our own visual-review deployments — we set up
+              // `visual-review/pr-N` to drive the inline timeline annotation
+              // for the gh-pages review URL, but here we want the *app*
+              // preview URL (Vercel) to feed VISUAL_REVIEW_BASE_URL.
+              const env = deployment.environment || '';
+              if (env.startsWith('visual-review')) continue;
+
               const statuses = await github.rest.repos.listDeploymentStatuses({
                 owner,
                 repo,
@@ -282,11 +299,66 @@ jobs:
 
             return '';
 
+      - name: Post PR preview links comment
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.pr_preview_url.outputs.result != '' }}
+        uses: actions/github-script@v8
+        env:
+          PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
+        with:
+          script: |
+            const { execFileSync } = require('node:child_process');
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            // Pull changed files from the PR API (works with depth-1 checkout).
+            // Filter out deletions so the table doesn't link to 404s.
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: issue_number, per_page: 100,
+            });
+            const changed = files
+              .filter((f) => f.status !== 'removed')
+              .map((f) => f.filename);
+
+            const stdout = execFileSync(
+              process.execPath,
+              ['.github/scripts/generate-pr-preview-links.mjs'],
+              {
+                env: {
+                  ...process.env,
+                  CHANGED_FILES: JSON.stringify(changed),
+                },
+                encoding: 'utf8',
+              },
+            );
+            const body = stdout.trim();
+            if (!body) return;
+
+            const marker = '<!-- pr-preview-links -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number, body,
+              });
+            }
+
       - name: Build visual review index
         if: always()
         env:
           VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
+          # Feeds the per-route "Copy context" button on latest.html so the
+          # generated clipboard payload includes the right PR/branch/repo
+          # identifiers for whoever the reviewer is pasting it to.
+          VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
+          VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          VISUAL_REVIEW_REPO: ${{ github.repository }}
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
@@ -326,8 +398,14 @@ jobs:
       # One-time repo setup: Settings → Pages → Source must be set to
       # "Deploy from a branch" with branch `gh-pages` (root). The action
       # creates the branch on its first push.
+      # Gate the publish chain on the visual-regression step succeeding,
+      # not just on `!cancelled()`. A test failure produces incomplete
+      # screenshots ("62 missing pairs"); publishing that to gh-pages
+      # gives reviewers a misleading review URL. Real test breakage
+      # already surfaces as the web-validate job failing — the artifact
+      # upload still runs `always()` so debugging info isn't lost.
       - name: Prepare per-PR visual review directory
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ steps.visual_regression.outcome == 'success' && github.event_name == 'pull_request' }}
         id: prepare_pages
         shell: bash
         run: |
@@ -374,7 +452,7 @@ jobs:
           echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
 
       - name: Publish visual review to gh-pages
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ steps.visual_regression.outcome == 'success' && github.event_name == 'pull_request' }}
         id: visual_review_pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -387,8 +465,13 @@ jobs:
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
+      # Only post the status link AFTER peaceiris/actions-gh-pages
+      # actually succeeded — otherwise reviewers click through to a
+      # 404 (publish skipped or failed but status URL already pointed
+      # there). `steps.visual_review_pages.outcome == 'success'` ensures
+      # gh-pages has the path before we advertise it.
       - name: Post Visual review commit status
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.visual_review_pages.outcome == 'success' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -405,6 +488,51 @@ jobs:
               context: 'Visual review',
               description: shortSha,
               target_url,
+            });
+
+      # Create a GitHub Deployment + DeploymentStatus per commit so the PR
+      # timeline shows an inline "deployed to visual-review X minutes ago"
+      # annotation under each commit, the way Vercel's bot does. Each commit
+      # gets its own annotation linking to the per-commit gh-pages URL,
+      # which is immutable thanks to keep_files: true on the gh-pages
+      # publish step. transient_environment: true tells GitHub to retire
+      # older deployments for this environment automatically.
+      # Same publish-succeeded gate as the commit status above — the
+      # inline timeline annotation points to the same URL, no point
+      # posting it if gh-pages doesn't have the path yet.
+      - name: Create Visual review deployment
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.visual_review_pages.outcome == 'success' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const headSha = context.payload.pull_request.head.sha;
+            const shortSha = headSha.slice(0, 12);
+            const target_url = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/${shortSha}/latest.html`;
+            const environment = `visual-review/pr-${issue_number}`;
+
+            const { data: deployment } = await github.rest.repos.createDeployment({
+              owner,
+              repo,
+              ref: headSha,
+              environment,
+              auto_merge: false,
+              required_contexts: [],
+              transient_environment: true,
+              production_environment: false,
+              description: `Visual review · ${shortSha}`,
+            });
+
+            await github.rest.repos.createDeploymentStatus({
+              owner,
+              repo,
+              deployment_id: deployment.id,
+              state: 'success',
+              environment,
+              environment_url: target_url,
+              log_url: target_url,
+              description: 'Visual review ready',
             });
 
       - name: Upload Playwright artifacts
@@ -494,7 +622,9 @@ jobs:
           PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
         run: pnpm db:deploy
 
-      - name: Sync managed production data
+      - name: Sync canonical production data (idempotent upserts)
+        # Single managed sync for reference data, campaign records, treaty tasks,
+        # referendums, demo fixtures, and trigger blueprints.
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm db:sync:managed-data -- --apply

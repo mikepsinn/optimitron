@@ -38,7 +38,7 @@ export type PendingTreatyVoteState = {
   timestamp: string;
   wishocraticAllocation?: PendingWishocraticAllocation;
   organizationId: string | null;
-  orgContextToken?: string | null;
+  organizationSlug?: string | null;
   inviteToken?: string | null;
 };
 
@@ -407,8 +407,7 @@ export type ReasoningPersistedState = {
   variantSetId: string;
   variantArmIds: Record<string, string>;
   organizationId: string | null;
-  orgContextVerified: boolean;
-  orgContextToken: string | null;
+  organizationResolved: boolean;
   surface: "hosted" | "embed" | "direct-share" | "system-generated-share";
   localeKey: string;
   hostKey: string;

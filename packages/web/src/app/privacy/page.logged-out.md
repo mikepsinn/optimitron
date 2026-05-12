@@ -1,5 +1,18 @@
 # /privacy
 
+## Metadata
+
+- Page title: Privacy - International Campaign to End War and Disease
+- Meta description: What this site collects, why it collects it, and how to contact us.
+- Canonical: https://warondisease.org/privacy
+- Open Graph title: Privacy - International Campaign to End War and Disease
+- Open Graph description: What this site collects, why it collects it, and how to contact us.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fprivacy
+- Twitter title: Privacy - International Campaign to End War and Disease
+- Twitter description: What this site collects, why it collects it, and how to contact us.
+
+## Visible Page Copy
+
 ## PRIVACY POLICY
 - Last updated May 6, 2026
 ### 1. WHO WE ARE

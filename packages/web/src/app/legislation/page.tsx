@@ -1,12 +1,9 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import { getLegislationEntries } from "@/lib/legislation";
-import { getLegislationPath, ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import { getLegislationPath, legislationLink, ROUTES } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "Model Legislation",
-  description: "Evidence-based draft legislation generated from the Optimitron analysis pipeline.",
-};
+export const metadata = getRouteMetadata(legislationLink);
 
 export default function LegislationPage() {
   const entries = getLegislationEntries();

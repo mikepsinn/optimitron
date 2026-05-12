@@ -54,6 +54,8 @@ Until the 1% Treaty passes, this repo is in campaign mode.
 - `optimize-earth` exists as the root task key/id, and the canonical campaign
   task tree now syncs through managed data so source-controlled data,
   production rows, MCP, API, and pages cannot drift.
+- The managed canonical task sync work from `feature/managed-task-tree-sync` is now
+  on `main` via `PR #71` and drives production deploy via CI.
 - `/humanity-v-government` renders the operational case. `/court` exists but
   still needs the live Court surface, plaintiff/juror counter, and final
   treaty-as-verdict framing.
@@ -80,12 +82,10 @@ Ordered by funnel-stage impact. P0 = ship next; P1 = right after; P2 = before la
 ### P0 — Managed canonical data sync (seed replacement for semi-permanent rows)
 
 **Problem decided 2026-05-10:** normal Prisma migrations are the wrong tool for
-every title/task-tree/court/trigger tweak, but `seed.ts` alone is also wrong:
-production deploy currently runs `pnpm db:deploy` and `pnpm db:seed:triggers`,
-not `seed:tasks` or full `db:seed`. A seed edit will update fresh/local/CI DBs
-but will not automatically update production. Missing-from-seed also cannot
-safely imply "delete this row" because user-created records live in the same
-tables.
+every title/task-tree/court/trigger tweak. Production-worthy data belongs in
+managed sync, not in a separate seed-only path. Missing-from-manifest also
+cannot safely imply "delete this row" because user-created records live in the
+same tables.
 
 **Target pattern:** source-controlled managed data with an idempotent sync script.
 
@@ -98,10 +98,8 @@ tables.
   `retired: true`.
 - Add a package/root script such as `pnpm db:sync:managed-data`.
 - Run it on production deploy after `pnpm db:deploy` and before Vercel deploy.
-  Keep `db:seed:triggers` until triggers are folded into managed data.
-- Keep normal `seed.ts` for local/reference/demo/bootstrap convenience, but have
-  it call the same managed-data sync helpers where possible so fresh databases
-  and production converge.
+- Keep `packages/db/prisma/seed.ts` only as Prisma's tiny entrypoint shim.
+  Managed sync is the source of truth for local, CI, preview, and production.
 - Do not use "record missing from manifest" as a global delete rule. Deletion is
   safe only inside a named managed collection, and only for rows previously owned
   by that collection or explicitly marked retired.
@@ -113,9 +111,9 @@ seed-only cleanup approach with this, then retire old direct children like
 `dfda` / `bed-nets-funding-gap` through managed data rather than bespoke
 migrations for every future edit.
 
-**Branch status:** `feature/managed-task-tree-sync` adds managed sync for the
-canonical `Task` tree and task trigger blueprints, with dry-run/apply modes,
-seed reuse, and production deploy wiring.
+**Branch status:** `main` now includes this work in `PR #71` (`feature/managed-task-tree-sync`
+merged). Managed-task sync for the canonical `Task` tree and task trigger blueprints
+ships with dry-run/apply modes, seed reuse, and production deploy wiring.
 
 **Testing:** one focused unit/integration test for sync semantics:
 
@@ -206,6 +204,57 @@ This is the compaction-safe backlog of chat decisions that have not obviously
 landed yet. Some items also have detailed sections below; this list is the
 cross-check so they do not disappear into chat history.
 
+**2026-05-11 session — completed (on feature/treaty-dashboard-message-first / PR #75 unless noted)**
+
+- [x] Visual-review per-PR persistence (PR #76 merged). `peaceiris/actions-gh-pages` with `keep_files: true` to a long-lived `gh-pages` branch; each commit lands at `pr-N/<short_sha>/` so older review URLs survive newer pushes.
+- [x] LiveCounter visual-review mask (PR #76 merged). Component honors `__OPTIMITRON_VISUAL_REVIEW__` runtime flag, emits both `data-visual-mask="dynamic"` and `data-volatile` for screenshot + markdown-preview tooling.
+- [x] Lightbox on visual-review HTML — click a screenshot to open full-viewport, click again for 1:1 zoom, Esc/close button to dismiss.
+- [x] Email-template screenshots in visual review. `e2e/email-screenshots.spec.ts` renders magic-link / task-assignment / task-comment-notification / post-vote-share / referral-first-conversion / monthly-chain-digest at 720×1000 and feeds them into the same `screenshots/<project>/` tree the review HTML walks. Required adding the spec to `MODE_SPECS.visual` in `run-playwright.mjs`.
+- [x] Visual review toolbar: live route-name filter, Expand all / Collapse all, "Only show changed" (actually hides unchanged), `/` keyboard focuses the filter input.
+- [x] Per-route "📋 Copy context" button on visual review. Payload includes PR + branch + commit SHA, route + auth state, before/after screenshot URLs, and explicit "please `curl -O` these before responding" instructions for the coding agent. Embedded `data-context` JSON; JS click handler formats markdown and writes to clipboard.
+- [x] Inline PR-timeline deployment annotation per commit (Vercel-bot style), replacing the sticky comment. Uses `createDeployment` + `createDeploymentStatus` with `environment: visual-review/pr-N`.
+- [x] CSRF flake mitigation: `retries: isCI ? 2 : 0` in `playwright.config.ts`. `tasks-index-auth` had hit `ECONNRESET` on `/api/auth/csrf` three times in one session.
+- [x] Cancel-safe gh-pages publish — visual-review publish steps now gated on `!cancelled()` so a concurrency-cancelled run doesn't post a partial review with "62 missing pairs".
+- [x] Commit-status + deployment annotation only when publish succeeded — `steps.visual_review_pages.outcome == 'success'` gate so reviewers don't click dead links.
+- [x] CI baseline loop `--limit 20 → 5` for main `web-visual-review` artifact lookup. The previous successful main run virtually always has the artifact.
+- [x] Dashboard share card rewrite (`DashboardShareCard.tsx`). Replaced "Each voter who recruits two more is the campaign." marketing line with: Humanity Manager assignment frame + apocalypse math (122 apocalypses → 12.3× more clinical trials, 443yr → 36yr eradication timeline). Every number sourced from `@optimitron/data/parameters` via `<ParameterValue>` for citation popovers.
+- [x] `/treaty` restored to the original commit-`1c58293e` skim-and-sign layout. Single centered serif headline ("Please quickly skim and sign to end war and disease."), continuous treaty body, single signature box. No stepper, no slide split, no decorative dividers, no competing Court CTA. Added a `/treaty` Playwright regression test (`e2e/treaty-page-structure.spec.ts`) asserting headline + treaty body phrases + Yes/No buttons.
+- [x] `/treaty` body fallback. `getReferendumPageContent()` now falls back to bundled `shareableSnippets.onePercentTreatyText.markdown` when the DB row's `bodyMarkdown` is null/empty — previously preview deployments with unseeded DBs rendered only the headline + signature box.
+- [x] `/signatories` cleanup — removed top "Public record / Signatories / Humans and organizations…" block and the "Living votes / Represented humans / Memorial votes / Total voices" stats box. Just the leaderboard.
+- [x] `/tasks/[id]` cleanup — removed the verbose `<dl>` metadata sidebar (Owner / Progress / Time needed / Area / Completed / Updates) that duplicated header info. Kept Deaths-from-delay + Wasted-by-delay as inline tags above the markdown body. Effort hours moved into the inline header metadata strip.
+- [x] `HUMANITY_V_GOVERNMENT_CASE_NAME` canonical constant in `@optimitron/db/task-keys`, sourced by `humanityVGovernmentLink.label`, `/court` page copy, and managed-task-tree titles. Replaces the drift between "Humanity v. Government" and "Humanity v. Governments of Earth".
+- [x] CLAUDE.md voice rule reinforced — "Write like Kurt Vonnegut. Plain words. Short declaratives." Button labels and microcopy default to verb-first imperatives; banned list includes "Take ownership", "Engage", "Empower", "Unlock", "Streamline".
+- [x] Nav label rename: `tasksLink.label` "Tasks" → "To-Do List for Humanity", CTA "Open Tasks" → "Open the list".
+- [x] CodeRabbit cleanup (commit `5872a64b`): visual-review/* deployments excluded from preview-URL discovery; `<details>` route anchors carry `id="route-<slug>"` so copied URLs scroll; `getRecipientReferralUrl` failures no longer abort task-assignment / task-comment notification batches.
+
+**2026-05-11 session — discussed but not yet implemented**
+
+- Task-list rows fully clickable. Currently inner `<Link href={assigneeHref}>` on the avatar / name traps clicks and navigates to the assignee's person page instead of the task. Task lists (not the detail page) should treat the entire row as a single link to `/tasks/<id>`; assignee navigation lives on the detail page itself. Affects `task-row.tsx` across the `signer` / compact variants — replace inner `<Link>` wrappers with non-interactive spans.
+- Avatar next to assignee on `/tasks/[id]` header. Currently shows just "Assigned to <name>" as text; should render the assignee's avatar inline so the page matches the visual density of task lists.
+- Decide what to do with the task claim button (no consensus yet). Current behavior: logged-out users see nothing, logged-in users see "Claim Task". User flagged the verb "claim" as bad. Two open questions: (1) keep / drop the logged-out sign-in nudge entirely; (2) rename "Claim Task" to a Vonnegut-style verb ("Do this." is the working candidate — NOT "Take this on", that was rejected as corporate-onboarding).
+- Reframe `formatEnumLabel(viewerClaim.status)` output in the task-detail viewer state strip — current "Claimed" / "In Progress" / "Completed" / "Verified" labels leak the enum into user copy.
+- Remove drop-shadow on the Updates-section "Sign In" button + audit all other buttons that still carry hard-offset / soft shadows. CLAUDE.md already says "no shadows by default" — the Updates Sign-In on a logged-out task page is a known offender.
+- Investigate Neon DB branch-per-preview-deployment. Currently Vercel previews point at whatever `DATABASE_URL` is set on the preview environment — there's no managed-data sync against a per-PR DB, so previews show stale/missing seed data (which is why the `/treaty` row had a null `bodyMarkdown` and surfaced the page bug above). The Vercel Neon integration creates a branch per PR and runs migrations automatically; main alternative is a `sync-on-preview` workflow step that hits a preview-scoped DB.
+- [x] Drop the duplicate dry-run managed-data step from `core-validate`. Web-validate's `--apply` against the freshly-migrated CI Postgres catches the same drift and the dry-run step's diff was always identical (empty CI DB → "would create N rows" every time). Shipped in `0810ecaa`-era; web-validate now logs the plan before applying so the diff is still visible in CI logs.
+- [x] `voice-critic` Claude Code subagent at `.claude/agents/voice-critic.md`. Reads diffs against the Vonnegut voice rule, reuse-before-rewrite inventory, ParameterValue rule, peak-commitment rule, and significant-figures floor. Spawn after any user-facing copy / UI change.
+- [x] `pr-comment-triager` Claude Code subagent at `.claude/agents/pr-comment-triager.md`. Walks open PR comments, classifies valid vs. AI-slop, fixes valid ones in focused commits, resolves slop with on-thread reasons. Refuses to blindly comply with bots.
+- [x] `test-auditor` Claude Code subagent at `.claude/agents/test-auditor.md`. Walks the test suite for the slop patterns the Testing Rules section bans, finds flaky tests in CI history, identifies critical untested paths. Returns delete + add + flaky lists.
+- [x] Local review pipeline: `pnpm --filter @optimitron/web review:local` runs `copy:preview` (markdown extract) + Playwright visual regression + builds the review HTML + opens it. Requires `next dev` on :3001 separately. (Originally scoped a `review:watch` variant too; dropped pre-ship — full Playwright run is 2-4 min, so debouncing source changes into a watcher would burn cycles on results that arrive after the developer has moved on.)
+- Speedup attempt redo: path-filter `web-validate` so non-web PRs short-circuit. Previous attempt (`b50469063`) produced an unparseable workflow file; needs smaller incremental commits this time to isolate which construct GitHub objected to.
+- Build a `/dev/email/<template>` Next.js preview route that renders each email template's HTML server-side (no client JS, no DB round-trip required for templates that don't need one). Replace the `e2e/email-screenshots.spec.ts` direct imports of `…-email.server.ts` modules with `page.goto('/dev/email/post-vote-share')` and screenshot — that path avoids the Playwright-transformer/`@optimitron/db/dist` `export *` parsing problem that knocked email screenshots out of visual mode. Once that's in, re-add `email-screenshots.spec.ts` to `MODE_SPECS.visual`.
+- Add a banner on `latest.html` when missing-screenshot pairs exist, explaining cause (optional route absent on baseline, route skipped because returned 401/403/404, etc.) instead of just rendering N "not captured" boxes. The new publish gate (`steps.visual_regression.outcome == 'success'`) blocks the "all 62 missing" case, but legitimate per-route omissions still need explanation.
+- Vercel preview-ready watcher + auto-screenshot of changed routes. When a Vercel deployment for the current branch transitions to READY: identify routes changed by the PR (`git diff origin/main...HEAD --name-only` filtered to `packages/web/src/app/**/page.tsx`), use chrome-devtools MCP (via `mcp__claude_ai_Vercel__get_access_to_vercel_url` for auth-gated previews) to screenshot each route, write `packages/web/output/playwright/pr-watch/<deploy-id>/review.html`, surface the preview URL + local review HTML link inline in chat. Currently the `/loop` cron `0feea8a0` (every 15 min, auto-background pattern: foreground spawns bg agent + exits) hits gh+Vercel state but the actual screenshot pipeline isn't wired yet. Deferred 2026-05-11 to keep the foreground turn short.
+- Stop-hook check: detect "we should..." / "let's do that later" / "for now..." style deferrals in my own outputs and gate Stop until I capture them in TODO.md. Hard to detect reliably with regex; the memory rule `feedback_capture_decisions_in_todo` is the manual version for now.
+- **Unify seed.ts + managed-data sync** (decided 2026-05-11, implemented on `feature/treaty-dashboard-message-first`). End state: single `pnpm db:sync:managed-data -- --apply` runs in prod / preview / CI / local; `seed.ts` is only a Prisma entrypoint shim.
+  - [x] grandma-kay (commit `03c83520`)
+  - [x] demo-user (commit `47b900d7`)
+  - [x] reference data, catalog data, reasoning data, and treaty accountability tasks now live under `packages/db/src/managed-data`.
+  - [x] **task-triggers** — managed trigger blueprints and idempotent upsert sync live in `packages/db/src/managed-data`; runtime firing, resolvers, MCP admin tools, and interactive create/update helpers stay in `packages/web`.
+- [x] Add `Referendum` to the managed-data sync (commit `121e71df`). New `packages/db/src/managed-data/managed-referendums.ts` is the single source of truth for treaty + declaration + court-of-humanity. `syncManagedReferendums()` upserts on every deploy with content-hash change detection. `seed.ts` delegates to the same sync. CI ordering also fixed (`9891c60c`) — seed now runs before smoke, so the bundled-markdown fallback in `referendum-content.server.ts` now only fires for the legit preview-DB-with-null-body case and won't be exercised by the test path.
+- Extract the large `actions/github-script@v8` inline-JS blocks in `ci.yml` (Resolve PR preview URL, Create Visual review deployment) into versioned `.github/scripts/*.js` files. Inline-in-YAML is fine for <20 lines; the two listed are 24-28 lines with non-trivial logic worth diffing + linting.
+- Persisted organization grant request/application workflow. Current batch keeps grant impact as calculator/request framing only; add storage, review status, and automated foundation outreach in a later focused pass.
+- Repo-wide "122 apocalypses" copy audit. List every version, rank clarity/funniness, and normalize the strongest explanation after this merge.
+
 **Current branch hygiene**
 
 - After each push, keep working on local tasks while GitHub Actions run instead
@@ -290,6 +339,38 @@ cross-check so they do not disappear into chat history.
 
 **Public copy, messaging, and emails**
 
+- Post-vote forward email + first-conversion email shipped (PR3). Voter receives
+  a forward-friendly share kit on YES treaty vote. Referrer receives a single
+  "Your link worked. Round 1 of 32" email on their first conversion only —
+  never on subsequent conversions. Both deduped via `EmailLog.dedupeKey`.
+- Monthly chain digest shipped (PR #74). Cron at `0 14 1 * *` calls
+  `/api/cron/monthly-chain-digest`, which iterates every YES treaty voter
+  with an email and sends one of two variants picked by past-30-day direct
+  conversion count `N`:
+    - `N > 0`: positive reinforcement. Subject names the count + month;
+      body shows monthly + all-time totals + doubling-rounds math +
+      dashboard link + canonical share footer.
+    - `N == 0`: resend the forward kit. Subject `Still 30 seconds. Still
+      two humans you love.` Body is the canonical share message verbatim.
+      The zero-conversion user is exactly who needs the nudge; silence
+      would have treated unconverted as user-failure when it's actually
+      a we-failed-to-activate signal.
+  Deduped per user per calendar month via
+  `EmailLog.dedupeKey` = `monthly-chain-digest:{userId}:{yyyy-mm}`.
+  Future enhancement: replace direct count with a transitive recursive CTE
+  so the digest can show full chain size + which doubling round the user
+  is actually on, not just direct conversions.
+- `<ShareFooter>` retrofit shipped (PR #74) on `task-assignment-notification`
+  and `task-comment-notification`. Both fetch the recipient's referral URL
+  when `recipientUserId` is set and append the canonical share kit; external
+  recipients (leaders' offices) get the email without the footer.
+- [x] Email-template screenshots in the visual review. Implemented in
+  `packages/web/e2e/email-screenshots.spec.ts`: renders magic-link,
+  task-assignment, task-comment-notification, post-vote-share,
+  referral-first-conversion, and monthly-chain-digest with representative
+  tokens, screenshots them at email-client widths, and feeds them into the
+  same `screenshots/<project>/` tree that `build-visual-review.mjs` walks.
+  Email-* rows now appear alongside page screenshots in `latest.html`.
 - Move remaining dashboard/page copy into the messaging/copy-review system where
   practical, especially Treaty Dashboard text and major CTAs.
 - Continue internationalization groundwork by centralizing public copy in JSON or
@@ -307,18 +388,21 @@ cross-check so they do not disappear into chat history.
 
 **Campaign pages and funnels**
 
-- Add the plaintiff damages surface on `/plaintiffs` so visitors see the per-
+- [x] Add the plaintiff damages surface on `/plaintiffs` so visitors see the per-
   plaintiff recovery frame without first reading the case page.
-- Add a live plaintiff/juror counter on `/court`.
-- Finish `/court` as the Court of Humanity surface, with the case, verdict, and
+- [ ] Add a live plaintiff/juror counter on `/court`.
+- [ ] Finish `/court` as the Court of Humanity surface, with the case, verdict, and
   plaintiff/juror mental model connected to the 1% Treaty.
 - Decide/create the "summon jurors" route if existing referral pages do not give
   a clean standalone target.
 - Split dashboard vs president management: dashboard should link to president
   pressure; `/employees` or a clearer `/presidents` route should own the full
   president-management surface.
-- Add sitemap entries for public organizations, `/humanity-v-government`, and
+- [x] Add static/explicit sitemap coverage for `/humanity-v-government` and
   `/court`.
+- [x] Add sitemap entries for public organizations.
+- [ ] Split sitemap outputs when `500+` detail rows exist per type (tasks, people,
+  orgs) instead of silent truncation.
 
 **Navigation and information architecture**
 
@@ -895,6 +979,57 @@ consumed. Mail clients would not visually thread the conversation; in-app
   are defensible. Pure brand call; no code change blocking it. This is
   not the same decision as the War on Disease campaign default; do not
   reopen it while the treaty campaign is the active bottleneck.
+
+## Humanity v. Government — plaintiff-first reframe + Earth Optimization Day
+
+Strategic decision (2026-05-12): `/humanity-v-government`'s primary action becomes plaintiff registration, not the verdict vote. Plaintiffs are a stock that compounds (named, persistent, family-network-effected). Votes are a flow that decays (anonymous, easy to dismiss). A list of named dead is harder to ignore than a YES tally. The verdict vote moves to a seasonal mode tied to Earth Optimization Day.
+
+### `/humanity-v-government` rework
+
+- Hero: indictment + "if this were a corporation" framing (KEEP — it's the translation hook for non-legal readers) + single CTA "Name your dead" (plaintiff registration).
+- Render running plaintiff count near hero. Concrete artifact > tally tick.
+- Drop hero CTAs #2 ("Support the settlement" → `/vote`) and #3 ("Read the evidence" → external manual). Demote to footer.
+- Cut decorative redundancy: collapse "The case caption" `<dl>` block, merge "If this were a corporation" + "Why this is a case" into one section.
+- Move `DamagesSensitivityCalculator` up to be adjacent to / above the damages cards (it informs the vote; currently buried at page bottom).
+- "The usual defenses" → collapsed `<details>` disclosure.
+- Verdict vote widget stays but becomes a secondary action outside the EOD window.
+
+### Make damages counterfactual explicit
+
+Current copy says "since 1900, they spent $170T on war." Never makes the comparison explicit. Add one sentence stating: damages = what humanity would have had if governments had signed the 1% Treaty in 1900, freezing military spending and redirecting it to productive purposes (clinical trials, public goods). The numbers ($538K floor, $913K demand, $2.74M treble) ANSWER that counterfactual; right now they float without a baseline.
+
+### Earth Optimization Day (new — August 6, Hiroshima anniversary)
+
+- Annual global voting event. Aug 6 = the day humanity proved it could kill itself wholesale and decided not to stop.
+- Frame: "distributed denial of death attack on humanity" — concentrated global vote on both the Court of Humanity verdict in Humanity v. Government AND the 1% Treaty.
+- New page `/earth-optimization-day`. No existing implementation (only `earth-optimization-prize.ts` parameter + audio narration file).
+- Single config function `isEarthOptimizationDayWindow()` flips the site into EOD mode during a configurable window (e.g. Aug 1–13). During the window: `/humanity-v-government` hero CTA swaps from "Name a plaintiff" to "Vote the verdict"; landing page hero swaps to countdown + live tally.
+- Year-one MVP: countdown page + RSVP form + the two existing vote widgets. Mature version: live tally, post-event results page (verdict count, plaintiff count delta, treaty-vote delta).
+
+### Open questions before implementation
+
+1. **Plaintiff registration friction.** What's the current friction on `/plaintiffs`? Just name + cause-of-death, verified, or public/private toggle? Determines whether inline form on `/humanity-v-government` works or whether it has to link out.
+2. **Non-bereaved users.** Should users without a personal loss be able to register as "plaintiffs of conscience" (public figure / general category), or are they only verdict-voters?
+3. **Verdict vs treaty relationship.** Currently `/humanity-v-government`'s verdict and `/vote`'s treaty are separate referendums. Should a YES on the verdict imply a YES on the treaty (the settlement), or stay separate?
+4. **EOD frequency + scope.** Annual Aug 6 only, or include solstices / other dates? Country-specific variants?
+
+### Phase 2: extract treaty indictment to shared component
+
+The treaty's WHEREAS opening clauses (defined inside the treaty `markdown` parameter at `packages/data/src/parameters/parameters-calculations-citations.ts`) are the canonical indictment language. They're now hand-mirrored into `/humanity-v-government/page.tsx` JSX. Risk: drift between the treaty doc and the JSX rendering.
+
+Fix: extract the indictment clauses to structured TS constants under `@optimitron/data/messaging` (or similar). Build a `<TreatyIndictment>` React component that renders each clause with `<ParameterValue>` references baked in. Refactor BOTH the treaty markdown renderer AND `/humanity-v-government` to render from the shared source. Single source of truth, no drift risk.
+
+Touches: the treaty markdown rendering layer (`packages/web/src/components/referendum/reader-markdown-components.tsx`), the parameter `markdown` field (may need to be derived from the structured constants rather than hardcoded prose), and `/humanity-v-government`'s indictment section.
+
+### Sequence
+
+1. Counterfactual sentence into damages copy (small, immediate).
+2. Drop hero CTAs #2 + #3 on `/humanity-v-government`; swap primary CTA to plaintiff registration.
+3. Add running plaintiff count near hero (social proof).
+4. Cut decorative sections (case-caption `<dl>`, collapse defenses to `<details>`).
+5. Move `DamagesSensitivityCalculator` up near the vote / damages cards.
+6. *(Separate work)* Scaffold `/earth-optimization-day` page + `isEarthOptimizationDayWindow()` config.
+7. *(Separate work)* Hook EOD config into `/humanity-v-government` + landing CTA swap.
 
 ## Long-tail (parked, not 4B-blocking)
 

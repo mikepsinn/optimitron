@@ -22,6 +22,7 @@ import {
 } from "@/lib/tasks/task-notifications.server";
 import { recipientWithinRateLimits } from "@/lib/tasks/task-recipient-rate-limit.server";
 import { resolveTaskRecipients } from "@/lib/tasks/task-recipients.server";
+import { getRecipientReferralUrl } from "@/lib/referral-url-helpers.server";
 
 const log = createLogger("task-comment-notifications");
 
@@ -192,6 +193,19 @@ export async function notifyTaskCommentRecipients(input: {
         continue;
       }
 
+      // Optional share-footer decoration. A throw here would abort the
+      // entire notification batch — fall back to null per-recipient.
+      let recipientReferralUrl: string | null = null;
+      try {
+        recipientReferralUrl = await getRecipientReferralUrl(
+          recipient.userId ?? null,
+        );
+      } catch (lookupError) {
+        log.warn("Failed to resolve recipient referral URL", {
+          error: lookupError instanceof Error ? lookupError.message : String(lookupError),
+          userId: recipient.userId ?? null,
+        });
+      }
       const email = buildTaskCommentNotificationEmail({
         comment: {
           authorAvatarUrl: author.avatarUrl,
@@ -200,6 +214,7 @@ export async function notifyTaskCommentRecipients(input: {
         },
         cta: input.cta,
         recipientReason: recipient.reason ?? null,
+        recipientReferralUrl,
         replyInstruction: getTaskEmailReplyInstruction(),
         senderSignature: input.senderSignature,
         task,

@@ -1,16 +1,18 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import {
   BUDGET_LEGISLATION_SLUGS,
   deduplicateEfficiencyCategories,
 } from "@/lib/analysis-products";
-import { getBudgetCategoryPath, getLegislationPath, ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import {
+  efficiencyLink,
+  getBudgetCategoryPath,
+  getLegislationPath,
+  ROUTES,
+} from "@/lib/routes";
 import { usBudgetAnalysis } from "@/data/us-budget-analysis";
 
-export const metadata: Metadata = {
-  title: "Efficiency Rankings",
-  description: "Cheapest high-performing comparators for the current US budget analysis.",
-};
+export const metadata = getRouteMetadata(efficiencyLink);
 
 function formatCurrency(value: number): string {
   if (Math.abs(value) >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;

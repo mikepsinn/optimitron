@@ -1,112 +1,206 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 import {
-  CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
+  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
+  HUMANITY_V_GOVERNMENT_VERDICT_QUESTION,
+} from "@optimitron/data/referendums";
+import {
+  CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA,
   CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA,
   CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA,
-  DEMOCIDE_TOTAL_20TH_CENTURY,
+  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
+  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
+  GLOBAL_AVG_INCOME_2025,
+  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  PENTAGON_UNACCOUNTED_FUNDS,
+  WAR_CHILDREN_KILLED_SINCE_1900,
+  WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { authOptions } from "@/lib/auth";
 import { formatCount } from "@/lib/format-count";
-import { getHumanityVGovernmentPlaintiffCount } from "@/lib/humanity-v-government-case.server";
-import { getRouteMetadata } from "@/lib/metadata";
+import {
+  getHumanityVGovernmentPlaintiffCount,
+  getHumanityVGovernmentVerdictStats,
+} from "@/lib/humanity-v-government-case.server";
 import {
   HUMANITY_V_GOVERNMENT_MANUAL_URL,
   ROUTES,
-  humanityVGovernmentLink,
 } from "@/lib/routes";
 import { DamagesSensitivityCalculator } from "./DamagesSensitivityCalculator";
+import { HumanityVGovernmentVerdictVote } from "./HumanityVGovernmentVerdictVote";
+import { HUMANITY_V_GOVERNMENT_METADATA } from "./page-metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = getRouteMetadata(humanityVGovernmentLink);
+export const metadata = HUMANITY_V_GOVERNMENT_METADATA;
 
 const CASE_CAPTION = {
   plaintiff: "Humanity",
   defendants: "Governments of Earth, collectively",
   charge:
-    "Three counts of negligent mass homicide (Direct Killing, Regulatory Delay, Misallocation).",
+    "Three counts: direct killing, regulatory delay, and misallocation of public money away from keeping humans alive.",
 } as const;
 
 export default async function HumanityVGovernmentPage() {
-  const plaintiffCount = await getHumanityVGovernmentPlaintiffCount();
+  const session = await getServerSession(authOptions);
+  const [plaintiffCount, verdictStats] = await Promise.all([
+    getHumanityVGovernmentPlaintiffCount(),
+    getHumanityVGovernmentVerdictStats(session?.user?.id),
+  ]);
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
       <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-        Court of Humanity — Open case
+        Court of Humanity - Damages case
       </p>
       <h1 className="mt-3 text-4xl font-black uppercase leading-[1.05] text-foreground sm:text-6xl">
         {CASE_CAPTION.plaintiff} v. {CASE_CAPTION.defendants.split(",")[0]}
       </h1>
 
-      <section className="mt-8 border-2 border-foreground bg-background p-5">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          You are summoned
+      <section className="mt-8 border-2 border-foreground bg-background p-5 sm:p-6">
+        <p className="text-sm font-black uppercase tracking-[0.16em] text-muted-foreground">
+          The indictment
         </p>
-        <p className="mt-2 text-base font-bold leading-7 text-foreground">
-          You have been called as juror{" "}
-          <span className="tabular-nums" data-volatile="juror-number">
-            #{formatCount(plaintiffCount + 1)}
-          </span>
-          . You are also a named plaintiff. Your share of the demanded recovery:{" "}
-          <span className="font-black">$10.6M (NPV)</span> —{" "}
-          <span className="font-black">$25.2M (lifetime cohort)</span>.
+        <p className="mt-3 text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9">
+          Governments were hired to promote the general welfare, defined as
+          the median health and wealth of the citizenry. They collect{" "}
+          <ParameterValue
+            figures={3}
+            param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+            valueOverride="$36.5 trillion"
+          />{" "}
+          a year for the service.
         </p>
-        <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-          The verdict is the 1% Treaty. The case binds governments only when
-          four billion plaintiffs render it. Recruit two more jurors. The case
-          is the chain.
+        <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
+          The citizenry would like to actually receive this service at some
+          point.
         </p>
-        <Link
-          className="mt-5 inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground"
-          href={ROUTES.vote}
-        >
-          Render the verdict — sign the treaty
-        </Link>
+        <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
+          Instead, these public servants used{" "}
+          <ParameterValue
+            figures={3}
+            param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
+            valueOverride="$170 trillion"
+          />{" "}
+          of their salary to murder approximately{" "}
+          <ParameterValue
+            figures={3}
+            param={WAR_DEATHS_SINCE_1900}
+            valueOverride="310 million"
+          />{" "}
+          humans over the last century of their employment.
+        </p>
+        <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
+          The dead included roughly 930,000 doctors, 310,000 scientists,
+          620,000 engineers, 1.24 million nurses, 3.1 million teachers, and{" "}
+          <ParameterValue
+            figures={3}
+            param={WAR_CHILDREN_KILLED_SINCE_1900}
+            valueOverride="102 million"
+          />{" "}
+          children who will never grow up to replace them.
+        </p>
+        <p className="mt-3 text-base font-bold leading-7 text-foreground">
+          Murdering{" "}
+          <ParameterValue
+            figures={3}
+            param={WAR_DEATHS_SINCE_1900}
+            valueOverride="310 million"
+          />{" "}
+          of your employers is the opposite of promoting their welfare, and
+          would be grounds for termination in any other employment contract
+          humans have ever signed.
+        </p>
+        <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
+          Had governments not spent{" "}
+          <ParameterValue
+            figures={3}
+            param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
+            valueOverride="$170 trillion"
+          />{" "}
+          murdering those people and destroying everything they spent their
+          entire lives building, the average human alive today would earn{" "}
+          <ParameterValue
+            figures={3}
+            param={WAR_COUNTERFACTUAL_GDP_PER_CAPITA}
+            valueOverride="$333,636"
+          />{" "}
+          a year instead of{" "}
+          <ParameterValue
+            figures={3}
+            param={GLOBAL_AVG_INCOME_2025}
+            valueOverride="$14,375"
+          />
+          . Dead scientists do not discover things and exploded cities are
+          very expensive to fix.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <a
+            className="inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground"
+            href="#verdict"
+          >
+            Vote on the finding
+          </a>
+          <Link
+            className="inline-block border-2 border-foreground bg-background px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
+            href={ROUTES.vote}
+          >
+            Support the settlement
+          </Link>
+          <a
+            className="inline-block border-2 border-foreground bg-background px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
+            href={HUMANITY_V_GOVERNMENT_MANUAL_URL}
+            rel="noreferrer"
+            target="_blank"
+          >
+            Read the evidence
+          </a>
+        </div>
       </section>
 
-      <section className="mt-6 border-2 border-foreground bg-background p-5">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          Multiply your claim
-        </p>
-        <h2 className="mt-2 text-2xl font-black uppercase leading-tight text-foreground sm:text-3xl">
-          Register every deceased family member you can name.
+      <div id="verdict" className="mt-10 scroll-mt-24">
+        <HumanityVGovernmentVerdictVote
+          abstainCount={verdictStats.abstainCount}
+          existingAnswer={verdictStats.existingAnswer}
+          fullDamagesLabel={HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL}
+          noCount={verdictStats.noCount}
+          question={HUMANITY_V_GOVERNMENT_VERDICT_QUESTION}
+          referendumSlug={verdictStats.referendumSlug}
+          yesCount={verdictStats.yesCount}
+        />
+      </div>
+
+      <section className="mt-10">
+        <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+          If this were a corporation
         </h2>
-        <p className="mt-3 text-base font-bold leading-7 text-foreground">
-          Each registered estate is another named plaintiff with its own{" "}
-          <span className="font-black">$10.6M–$25.2M</span> share of the demanded
-          recovery. A descendant or next-of-kin files the wrongful-death claim
-          on behalf of the estate. This is how every real corporate class
-          action handles deceased victims.
-        </p>
-        <ul className="mt-4 space-y-2 text-sm font-bold leading-6 text-muted-foreground">
-          <li>
-            <span className="font-black text-foreground">4 grandparents</span>{" "}
-            registered = ~$42M–$100M added to your family claim.
-          </li>
-          <li>
-            <span className="font-black text-foreground">
-              + parents, aunts, uncles, siblings
-            </span>{" "}
-            who died of preventable disease or war = each an additional
-            $10.6M–$25.2M.
-          </li>
-          <li>
-            <span className="font-black text-foreground">
-              The dead have no juror function
-            </span>{" "}
-            — only living humans render the verdict — but they remain
-            plaintiffs whose estates are entitled to recovery.
-          </li>
-        </ul>
-        <Link
-          className="mt-5 inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground"
-          href={ROUTES.plaintiffs}
-        >
-          Register a deceased plaintiff
-        </Link>
+        <div className="mt-3 border-2 border-foreground bg-background p-5 text-base font-bold leading-7 text-muted-foreground">
+          <p>
+            If a corporation were paid{" "}
+            <ParameterValue
+              figures={3}
+              param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+              valueOverride="$36.5 trillion"
+            />{" "}
+            a year to promote the general welfare and misused the funds to
+            this degree, it would be prosecuted, fined, monitored, and its
+            officers imprisoned.
+          </p>
+          <p className="mt-3">
+            Pfizer paid $2.3 billion for health-care fraud. BP paid $20.8
+            billion for the Deepwater Horizon spill. Volkswagen paid $4.3
+            billion for cheating emissions tests and accepted a government
+            monitor.
+          </p>
+          <p className="mt-3 text-foreground">
+            The defendants here have a larger revenue, a larger customer
+            base, and a larger body count.
+          </p>
+        </div>
       </section>
 
       <section className="mt-10">
@@ -136,14 +230,76 @@ export default async function HumanityVGovernmentPage() {
             <dd className="text-foreground">{CASE_CAPTION.charge}</dd>
           </div>
           <div className="flex gap-4 pt-3">
-            <dt className="w-32 shrink-0 text-muted-foreground">Settlement</dt>
+            <dt className="w-32 shrink-0 text-muted-foreground">Remedy</dt>
             <dd className="text-foreground">
-              The 1% Treaty: redirect 1% of military spending to clinical
-              trials. Defendants who ratify accept the settlement. Defendants
-              who do not remain in default.
+              The 1% Treaty is the settlement: redirect 1% of military spending
+              to clinical trials. Not because governments became wise. Because
+              one percent is cheaper than the damages.
             </dd>
           </div>
         </dl>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+          Why this is a case
+        </h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="border-2 border-foreground bg-background p-4">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
+              Duty
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+              Governments accept compulsory payment to protect the public and
+              promote the general welfare. That is the job description.
+            </p>
+          </div>
+          <div className="border-2 border-foreground bg-background p-4">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
+              Breach
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+              They spend{" "}
+              <ParameterValue
+                figures={3}
+                param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+                valueOverride="604"
+              />{" "}
+              times more on military capacity than on government clinical
+              trials. Disease is what actually kills their citizens.
+            </p>
+          </div>
+          <div className="border-2 border-foreground bg-background p-4">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
+              Causation
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+              Some deaths were direct. Others happened because treatments were
+              delayed, trials were not funded, and the cure money became
+              hardware for organized killing.
+            </p>
+          </div>
+          <div className="border-2 border-foreground bg-background p-4">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
+              Damages
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+              The cautious floor is{" "}
+              <ParameterValue
+                figures={3}
+                param={CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA}
+                valueOverride="$538K"
+              />{" "}
+              per living human. The prosecutor's base demand is{" "}
+              <ParameterValue
+                figures={3}
+                param={CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA}
+                valueOverride="$913K"
+              />
+              .
+            </p>
+          </div>
+        </div>
       </section>
 
       <section className="mt-10">
@@ -153,7 +309,7 @@ export default async function HumanityVGovernmentPage() {
         <ol className="mt-3 space-y-4">
           <li className="border-2 border-foreground bg-background p-5">
             <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Count 1 — Direct Killing
+              Count 1 — Death by War
             </p>
             <p className="mt-2 text-3xl font-black tabular-nums text-foreground sm:text-4xl">
               <ParameterValue
@@ -163,13 +319,14 @@ export default async function HumanityVGovernmentPage() {
               deaths
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              War and conflict deaths since 1900. Defendants chose the policy
-              and proceeded.
+              The defendants, between 1900 and the present, did willfully and
+              with premeditation engage in the organized killing of 310 million
+              of their own employers.
             </p>
           </li>
           <li className="border-2 border-foreground bg-background p-5">
             <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Count 2 — Regulatory Delay
+              Count 2 — Death by Regulatory Delay
             </p>
             <p className="mt-2 text-3xl font-black tabular-nums text-foreground sm:text-4xl">
               <ParameterValue
@@ -179,24 +336,29 @@ export default async function HumanityVGovernmentPage() {
               deaths
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              Patients who died waiting 8.2 years for already-safe drugs to be
-              proven effective. 1962 Kefauver-Harris Amendments through today.
+              The defendants required an additional 8.2 years of efficacy
+              testing before letting humans access drugs already proven safe.
+              53 years of warnings. 102 million dead. &ldquo;We did not
+              know&rdquo; is no longer available as a defense.
             </p>
           </li>
           <li className="border-2 border-foreground bg-background p-5">
             <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Count 3 — Misallocation
+              Count 3 — Death by Misallocation
             </p>
             <p className="mt-2 text-3xl font-black tabular-nums text-foreground sm:text-4xl">
               <ParameterValue
-                param={DEMOCIDE_TOTAL_20TH_CENTURY}
-                valueOverride="262 million"
+                param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
+                valueOverride="37,778"
               />{" "}
-              deaths
+              trial-years
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              20th-century government democide. Resources spent on killing,
-              not on the disease that kills 150,000 humans every day.
+              Damages here are the counterfactual: what humanity would have
+              had if governments had frozen real military spending at 1900
+              levels and redirected the rest to keeping their citizens alive.
+              The war budget since 1913 alone could have funded 37,778 years
+              of government clinical trials.
             </p>
           </li>
         </ol>
@@ -204,88 +366,149 @@ export default async function HumanityVGovernmentPage() {
 
       <section className="mt-10">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          Demanded recovery, per plaintiff
+          The damages demand
         </h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Primary theory (NPV)
+              Cautious floor
             </p>
             <p className="mt-2 text-2xl font-black tabular-nums leading-none">
               <ParameterValue
                 figures={3}
-                param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
-                valueOverride="$10.6M"
+                param={CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA}
+                valueOverride="$538K"
               />
             </p>
             <p className="mt-1 text-xs font-bold text-muted-foreground">
-              Lost-prosperity-only, NPV at 3%, no-cure baseline.
-            </p>
-          </div>
-          <div className="border-2 border-foreground bg-foreground p-4 text-background">
-            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
-              Headline (cohort)
-            </p>
-            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              $25.2M
-            </p>
-            <p className="mt-1 text-xs font-bold text-background">
-              Lost-prosperity-only, lifetime, representative full-life cohort.
+              Per living human, before punitive theories.
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Constitutional ceiling
+              Prosecutor demand
             </p>
             <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              $9.13M
+              <ParameterValue
+                figures={3}
+                param={CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA}
+                valueOverride="$913K"
+              />
             </p>
             <p className="mt-1 text-xs font-bold text-muted-foreground">
-              State Farm-style 10× exposure, alternative pleading.
+              Adds drugs never developed because the trials were never funded.
+            </p>
+          </div>
+          <div className="border-2 border-foreground bg-foreground p-4 text-background">
+            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
+              Triple damages
+            </p>
+            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
+              <ParameterValue
+                className="text-background decoration-background/50"
+                figures={3}
+                param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
+                valueOverride="$2.74M"
+              />
+            </p>
+            <p className="mt-1 text-xs font-bold text-background">
+              The False Claims Act triples damages when a defendant defrauds
+              the government. Here, the defendants ARE the government,
+              defrauding the citizenry. Triple damages apply.
             </p>
           </div>
         </div>
         <p className="mt-4 text-sm font-bold leading-6 text-muted-foreground">
-          <span className="font-black text-foreground">Why $25.2M.</span>{" "}
-          Governments collected $36.5T/year to "promote the general welfare"
-          and underdelivered. The lost-prosperity theory compares delivered
-          welfare to a benchmark where disease was being seriously addressed;
-          the gap is the per-person deficiency. This is antitrust-style
-          lost-profits — the framework prosecutors actually win with against
-          corporate defendants. One coherent number, one comparison, no double-
-          counting deaths.
+          The demand is not one suspicious monster number. It is a ledger: war
+          deaths, regulatory delay deaths, destroyed property, missing public
+          money, and the cures never developed because the research budget was
+          busy becoming weapons.
         </p>
         <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
           <span className="font-black text-foreground">Alternative pleadings.</span>{" "}
-          If the Court rejects the lost-prosperity theory, body-count tiers
-          fall back: floor{" "}
+          If the court rejects the wider theory, the case still has the floor:{" "}
           <ParameterValue
             figures={3}
             param={CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA}
             valueOverride="$538K"
           />{" "}
-          per capita; FCA treble{" "}
+          per person. If it accepts a False Claims Act-style triple-damages
+          analogy,
+          exposure reaches{" "}
           <ParameterValue
             figures={3}
             param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
             valueOverride="$2.74M"
           />{" "}
-          per capita. Each tier is independently citable.
+          per person. The size of the number reflects the size of the death
+          toll. The defendants set both.
         </p>
-        <a
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+          The usual defenses
+        </h2>
+        <div className="mt-3 space-y-3">
+          <div className="border-2 border-foreground bg-background p-4">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
+              "These are policy disagreements."
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+              Negligent homicide requires duty, breach, causation, damages,
+              and foreseeable risk. The defendants meet all five.
+            </p>
+          </div>
+          <div className="border-2 border-foreground bg-background p-4">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
+              "You cannot sue a government."
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+              That is because governments wrote rules saying governments are
+              hard to sue. This is not a moral defense. It is a confession with
+              letterhead.
+            </p>
+          </div>
+          <div className="border-2 border-foreground bg-background p-4">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
+              "The deaths are counterfactual."
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+              Governments use counterfactual lives saved to justify budgets
+              every day. The same math counts bodies when the budget kills
+              people quietly instead.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-10 border-2 border-foreground bg-background p-5">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+          Plaintiffs
+        </p>
+        <h2 className="mt-2 text-2xl font-black uppercase leading-tight text-foreground sm:text-3xl">
+          Name the humans the case should count.
+        </h2>
+        <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
+          The case already has{" "}
+          <span className="tabular-nums" data-volatile="plaintiff-count">
+            {formatCount(plaintiffCount)}
+          </span>{" "}
+          named plaintiffs. If someone in your family died of war, regulatory
+          delay, or preventable disease, add them. A civilization should at
+          least be able to count its dead.
+        </p>
+        <Link
           className="mt-5 inline-block border-2 border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
-          href={HUMANITY_V_GOVERNMENT_MANUAL_URL}
-          rel="noreferrer"
-          target="_blank"
+          href={ROUTES.plaintiffs}
         >
-          Read the full damages analysis →
-        </a>
+          Add a plaintiff
+        </Link>
       </section>
 
       <div className="mt-10">
         <DamagesSensitivityCalculator />
       </div>
-
     </main>
   );
 }

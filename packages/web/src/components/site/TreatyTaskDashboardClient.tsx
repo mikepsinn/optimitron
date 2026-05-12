@@ -1,22 +1,17 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
-import { ReferralLinkBanner } from "@/components/dashboard/ReferralLinkBanner";
 import { Button } from "@/components/retroui/Button";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
-import type { TaskCardTask } from "@/components/tasks/task-card";
 import type { DashboardUser } from "@/types/dashboard";
 
 interface TreatyTaskDashboardClientProps {
   user: DashboardUser;
-  signerTasks: TaskCardTask[];
 }
 
 const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
@@ -37,26 +32,12 @@ const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
   },
 ];
 
-// Treaty-paper themed wrapper for the handle/referral-link card. Replaces the
-// default brutal-yellow Card so it sits naturally inside the treaty layout.
-const TREATY_BANNER_CLASSNAME =
-  "relative border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8 shadow-none mb-8";
-
 export function TreatyTaskDashboardClient({
   user: initialUser,
-  signerTasks,
 }: TreatyTaskDashboardClientProps) {
-  const router = useRouter();
-  const { update: updateSession } = useSession();
-  const [user, setUser] = useState(initialUser);
+  const user = initialUser;
   const requestOrigin = useRequestSiteOrigin();
   const referralLink = buildUserReferralUrl(user, requestOrigin);
-  const overdueSignerCount = signerTasks.length;
-
-  const refreshPage = () => {
-    void updateSession();
-    router.refresh();
-  };
 
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
@@ -76,17 +57,6 @@ export function TreatyTaskDashboardClient({
             <LogOut className="h-4 w-4 stroke-[2.5px]" />
           </Button>
         </div>
-
-        <ReferralLinkBanner
-          user={user}
-          referralLink={referralLink}
-          onUserChange={setUser}
-          onRefresh={refreshPage}
-          dismissible={false}
-          className={TREATY_BANNER_CLASSNAME}
-          userFraming="manager"
-          variant="treaty"
-        />
 
         <DashboardShareCard referralUrl={referralLink} />
 
@@ -116,25 +86,6 @@ export function TreatyTaskDashboardClient({
             ))}
           </ul>
         </details>
-
-        {overdueSignerCount > 0 ? (
-          <details className="group border border-[var(--treaty-ink)]/30 bg-[var(--treaty-paper)]">
-            <summary className="cursor-pointer list-none px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] marker:hidden">
-              <span className="inline-block w-4">▸</span>
-              Your assigned tasks ({overdueSignerCount})
-            </summary>
-            <p className="border-t border-[var(--treaty-ink)]/30 px-4 py-3 text-xs font-bold text-[var(--treaty-ink)]/70">
-              Per-leader sign-the-treaty reminders. Manage on{" "}
-              <Link
-                href={ROUTES.employees}
-                className="font-black underline"
-              >
-                /employees
-              </Link>
-              .
-            </p>
-          </details>
-        ) : null}
       </div>
     </div>
   );

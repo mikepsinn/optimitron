@@ -1,0 +1,104 @@
+/**
+ * Email template visual coverage.
+ *
+ * Each template is server-rendered by the `/dev/email/<template>` route
+ * (`packages/web/src/app/dev/email/[template]/route.ts`) using bland
+ * sample data. The spec navigates the browser to that URL and
+ * screenshots — same flow as page screenshots, no direct imports of
+ * `*-email.server.ts` modules. This avoids the Playwright transformer
+ * bug on `@optimitron/db/dist`'s `export *` syntax that previously
+ * knocked this spec out of `MODE_SPECS.visual`.
+ *
+ * Output lands in `screenshots/{project}/email-{name}-{project}.png`
+ * alongside page screenshots. `build-visual-review.mjs` picks it up
+ * automatically via its `collectScreenshots` walk.
+ *
+ * Sample data is intentionally bland — no real user IDs, no production
+ * referral codes — so the screenshots are safe to publish even when
+ * the preview is connected to production-derived data.
+ */
+
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import { test } from "@playwright/test";
+
+const EMAIL_VIEWPORT = { width: 720, height: 1000 } as const;
+const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
+
+async function captureEmail(
+  page: import("@playwright/test").Page,
+  template: string,
+  name: string,
+  testInfo: import("@playwright/test").TestInfo,
+) {
+  await page.setViewportSize(EMAIL_VIEWPORT);
+  // `?raw=1` returns the bare email HTML; the default route wraps it in a
+  // Gmail-mobile preview chrome which we don't want in the visual-regression
+  // screenshot.
+  await page.goto(`/dev/email/${template}?raw=1`, {
+    waitUntil: "domcontentloaded",
+  });
+  await page.waitForLoadState("networkidle").catch(() => undefined);
+
+  const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
+  await mkdir(screenshotDir, { recursive: true });
+  const filename = `${name}-${testInfo.project.name}.png`;
+  const screenshot = await page.screenshot({
+    fullPage: true,
+    path: path.join(screenshotDir, filename),
+  });
+  await testInfo.attach(filename, {
+    body: screenshot,
+    contentType: "image/png",
+  });
+}
+
+test.describe("email visual coverage", () => {
+  test("email-magic-link", async ({ page }, testInfo) => {
+    await captureEmail(page, "magic-link", "email-magic-link", testInfo);
+  });
+
+  test("email-post-vote-share", async ({ page }, testInfo) => {
+    await captureEmail(page, "post-vote-share", "email-post-vote-share", testInfo);
+  });
+
+  test("email-referral-first-conversion", async ({ page }, testInfo) => {
+    await captureEmail(
+      page,
+      "referral-first-conversion",
+      "email-referral-first-conversion",
+      testInfo,
+    );
+  });
+
+  test("email-task-assignment", async ({ page }, testInfo) => {
+    await captureEmail(page, "task-assignment", "email-task-assignment", testInfo);
+  });
+
+  test("email-monthly-digest-positive", async ({ page }, testInfo) => {
+    await captureEmail(
+      page,
+      "monthly-digest-positive",
+      "email-monthly-digest-positive",
+      testInfo,
+    );
+  });
+
+  test("email-monthly-digest-resend", async ({ page }, testInfo) => {
+    await captureEmail(
+      page,
+      "monthly-digest-resend",
+      "email-monthly-digest-resend",
+      testInfo,
+    );
+  });
+
+  test("email-task-comment-notification", async ({ page }, testInfo) => {
+    await captureEmail(
+      page,
+      "task-comment-notification",
+      "email-task-comment-notification",
+      testInfo,
+    );
+  });
+});

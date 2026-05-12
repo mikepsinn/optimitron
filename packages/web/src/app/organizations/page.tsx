@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
-import { getSignInPath, ROUTES } from "@/lib/routes";
+import { getOrganizationPath, getSignInPath, ROUTES } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -55,7 +55,7 @@ export default async function OrganizationsPage() {
           {organizations.map((organization) => (
             <li key={organization.id}>
               <Link
-                href={`/organizations/${organization.id}`}
+                href={getOrganizationPath(organization.slug)}
                 className="block border-2 border-foreground bg-background p-4 font-bold hover:bg-muted"
               >
                 <span className="block text-lg font-black uppercase">

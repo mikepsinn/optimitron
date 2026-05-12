@@ -76,60 +76,30 @@ function formatDueDate(value: Date | string | null | undefined) {
   });
 }
 
-function formatShortDate(value: Date | string | null | undefined) {
-  const date = getDisplayDate(value);
-  if (date == null) {
-    return null;
-  }
-
-  return date.toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "short",
-    timeZone: TASK_DATE_TIME_ZONE,
-    year: "numeric",
-  });
-}
-
-function formatEnumLabel(value: string | null | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  return value
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
-function formatTaskProgress(value: TaskStatus) {
-  switch (value) {
-    case TaskStatus.DRAFT:
-      return "Draft";
-    case TaskStatus.ACTIVE:
-      return "To do";
-    case TaskStatus.VERIFIED:
-      return "Done";
-    case TaskStatus.STALE:
-      return "Needs review";
-    default:
-      return formatEnumLabel(value) ?? "To do";
-  }
-}
-
 function formatEffortHours(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) {
     return null;
   }
-
   if (value < 1) {
     const minutes = Math.max(1, Math.round(value * 60));
     return `${minutes.toLocaleString("en-US")} ${minutes === 1 ? "minute" : "minutes"}`;
   }
-
   const rounded = Number(value.toFixed(value >= 10 ? 0 : 1));
   return `${rounded.toLocaleString("en-US")} ${rounded === 1 ? "hour" : "hours"}`;
 }
+
+// User-facing copy for the viewer's own claim status. Replaces a previous
+// `formatEnumLabel(TaskClaimStatus.X)` which leaked raw enum labels
+// ("Claimed", "In Progress") into user copy and prefixed with the system
+// term "Your claim:". Phrasings are Vonnegut-plain.
+const VIEWER_CLAIM_STATE_LABEL: Record<string, string> = {
+  CLAIMED: "You picked this up.",
+  IN_PROGRESS: "You're working on this.",
+  COMPLETED: "You marked it done. Awaiting verification.",
+  VERIFIED: "Done. Verified.",
+  REJECTED: "Your work needs revision.",
+  ABANDONED: "You stepped away.",
+};
 
 function getEndpointHref(
   endpoint:
@@ -205,21 +175,6 @@ function ActionLink({
     <Link className={className} href={href}>
       {children}
     </Link>
-  );
-}
-
-function DetailItem({ label, value }: { label: string; value: ReactNode }) {
-  if (value == null || value === "") {
-    return null;
-  }
-
-  return (
-    <div className="border-t border-foreground py-3 first:border-t-0">
-      <dt className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </dt>
-      <dd className="mt-1 text-sm font-bold text-foreground">{value}</dd>
-    </div>
   );
 }
 
@@ -347,17 +302,7 @@ export default async function TaskDetailPage({
   const assigneeHref = getAssigneeHref(task);
   const assigneeLabel = getAssigneeLabel(task);
   const dueLabel = formatDueDate(task.dueAt);
-  const completedLabel = formatShortDate(task.verifiedAt ?? task.completedAt);
   const effortLabel = formatEffortHours(task.estimatedEffortHours);
-  const progressLabel = formatTaskProgress(task.status);
-  const ownerDetail =
-    assigneeLabel && assigneeHref ? (
-      <Link className="underline underline-offset-4" href={assigneeHref}>
-        {assigneeLabel}
-      </Link>
-    ) : (
-      assigneeLabel
-    );
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -414,6 +359,7 @@ export default async function TaskDetailPage({
                 <span>{task.assigneeAffiliationSnapshot}</span>
               ) : null}
               {dueLabel ? <span>Due {dueLabel}</span> : null}
+              {effortLabel ? <span>~{effortLabel}</span> : null}
               {delayStats.isOverdue ? (
                 <span className="font-black text-foreground">
                   {formatDelayDuration(delayStats.currentDelayDays)} overdue
@@ -457,7 +403,7 @@ export default async function TaskDetailPage({
 
           {viewerClaim ? (
             <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Your claim: {formatEnumLabel(viewerClaim.status)}
+              {VIEWER_CLAIM_STATE_LABEL[viewerClaim.status] ?? ""}
             </p>
           ) : null}
 
@@ -470,36 +416,49 @@ export default async function TaskDetailPage({
           ) : null}
         </header>
 
-        <section className="grid gap-8 border-b border-foreground py-6 lg:grid-cols-[280px_1fr]">
-          <dl>
-            <DetailItem label="Owner" value={ownerDetail} />
-            <DetailItem label="Progress" value={progressLabel} />
-            <DetailItem label="Due date" value={dueLabel} />
-            <DetailItem label="Time needed" value={effortLabel} />
-            <DetailItem label="Area" value={formatEnumLabel(task.category)} />
-            <DetailItem label="Completed" value={completedLabel} />
+        {/* Delay-cost stats — kept (motivational, not duplicated in
+            header). Owner/Progress/Time-needed/Area/Completed/Updates were
+            previously listed in a verbose `<dl>` enterprise-CRM sidebar
+            that duplicated the header (Due date) and added field-label
+            chrome users don't act on. Per TODO line 224: keep title +
+            assignee + due date + primary action + markdown body +
+            comments, drop the rest. */}
+        {(delayStats.currentHumanLivesLost != null &&
+          delayStats.currentHumanLivesLost > 0) ||
+        (delayStats.currentEconomicValueUsdLost != null &&
+          delayStats.currentEconomicValueUsdLost > 0) ? (
+          <section
+            aria-label="Delay cost"
+            className="flex flex-wrap gap-x-8 gap-y-2 border-b border-foreground py-4 text-sm font-bold"
+          >
             {delayStats.currentHumanLivesLost != null &&
             delayStats.currentHumanLivesLost > 0 ? (
-              <DetailItem
-                label="Deaths from delay"
-                value={formatCompactCount(delayStats.currentHumanLivesLost)}
-              />
+              <span>
+                <span className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  Deaths from delay
+                </span>{" "}
+                <span className="ml-1 text-foreground">
+                  {formatCompactCount(delayStats.currentHumanLivesLost)}
+                </span>
+              </span>
             ) : null}
             {delayStats.currentEconomicValueUsdLost != null &&
             delayStats.currentEconomicValueUsdLost > 0 ? (
-              <DetailItem
-                label="Wasted by delay"
-                value={formatCompactCurrency(
-                  delayStats.currentEconomicValueUsdLost,
-                )}
-              />
+              <span>
+                <span className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  Wasted by delay
+                </span>{" "}
+                <span className="ml-1 text-foreground">
+                  {formatCompactCurrency(
+                    delayStats.currentEconomicValueUsdLost,
+                  )}
+                </span>
+              </span>
             ) : null}
-            <DetailItem
-              label="Updates"
-              value={commentFeed.total.toLocaleString("en-US")}
-            />
-          </dl>
+          </section>
+        ) : null}
 
+        <section className="border-b border-foreground py-6">
           <article className="min-w-0">
             <TaskDescription markdown={task.description} />
           </article>

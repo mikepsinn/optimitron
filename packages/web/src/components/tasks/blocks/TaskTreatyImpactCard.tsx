@@ -1,6 +1,13 @@
 import {
+  CURRENT_TRIAL_SLOTS_AVAILABLE,
+  DFDA_PATIENTS_FUNDABLE_ANNUALLY,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
+  DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_ANNUAL_FUNDING,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { BrutalCard } from "@/components/ui/brutal-card";
@@ -20,9 +27,20 @@ export function TaskTreatyImpactCard() {
           />
         </p>
         <p className="text-sm font-bold leading-relaxed">
-          Redirect 1% of US military spending ($8.86B/yr of $886B) into pragmatic
-          clinical trials at $929/patient. Funds 23.4M patient-years vs. 1.9M today.
-          Compresses the 443-year queue of 6,650 untreated diseases down to 36 years.
+          Redirect 1% of military spending (
+          <ParameterValue param={TREATY_ANNUAL_FUNDING} />/yr) into pragmatic
+          clinical trials at{" "}
+          <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />
+          /patient. Funds{" "}
+          <ParameterValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} />{" "}
+          patient-years vs.{" "}
+          <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} /> today.
+          Compresses the{" "}
+          <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} />-year
+          queue of{" "}
+          <ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} />{" "}
+          untreated diseases down to{" "}
+          <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} /> years.
           Preventable deaths averted across the compressed timeline:{" "}
           <ParameterValue
             param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}

@@ -1,11 +1,11 @@
 /**
  * /reasoning/embed — embeddable reasoning surface using the same runtime prep
- * as the hosted route. Signed org tokens add attribution; missing or invalid
- * tokens fall back to neutral public context so embeds keep propagating.
+ * as the hosted route. Public organization slugs add attribution; missing or
+ * unknown slugs fall back to neutral public context so embeds keep propagating.
  */
 
 import { headers } from "next/headers";
-import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
+import { getApprovedOrganizationForSurveySlug } from "@/lib/organization.server";
 import { resolveLocale } from "@/lib/reasoning/locale.server";
 import { prepareReasoningSession } from "@/lib/reasoning/session.server";
 import { ReasoningFlow } from "@/components/reasoning/ReasoningFlow";
@@ -25,17 +25,17 @@ export default async function EmbedPage({
   searchParams?: Promise<SearchParams>;
 }) {
   const params = (await searchParams) ?? {};
-  const token = firstString(params.token);
-  const verification = token ? verifyOrgContextToken(token) : null;
-  const organizationId = verification?.ok ? verification.organizationId : null;
-  const orgContextToken = verification?.ok ? token : null;
+  const organizationSlug =
+    firstString(params.organizationSlug) ?? firstString(params.org);
+  const organization = organizationSlug
+    ? await getApprovedOrganizationForSurveySlug(organizationSlug)
+    : null;
 
   const hdrs = await headers();
   const prepared = await prepareReasoningSession({
     hostRaw: hdrs.get("host"),
-    organizationId,
-    orgContextVerified: Boolean(verification?.ok),
-    orgContextToken,
+    organizationId: organization?.id ?? null,
+    organizationResolved: Boolean(organization),
     localeKey: (
       await resolveLocale({
         urlLocale: firstString(params.locale),

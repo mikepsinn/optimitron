@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
-import {
-  getApprovedOrganizationForSurveySlug,
-  getApprovedOrganizationSurveyContext,
-} from "@/lib/organization.server";
-import { ROUTES } from "@/lib/routes";
+import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
+import { getApprovedOrganizationForSurveySlug } from "@/lib/organization.server";
+import { ROUTES, trialSurveyLink } from "@/lib/routes";
 import { TREATY_FLOW_VARIANTS } from "@/lib/treaty-flow-variants";
 
 export async function generateMetadata({
@@ -19,9 +17,8 @@ export async function generateMetadata({
   if (!organization) return {};
 
   return {
-    title: `${organization.name} Trial Abundance Survey`,
-    description:
-      "A two-question survey about whether governments should fund more pragmatic clinical trials.",
+    title: `${organization.name} | ${GLOBAL_SURVEY_NAME}`,
+    description: trialSurveyLink.description,
   };
 }
 
@@ -31,19 +28,15 @@ export default async function OrganizationSurveyPage({
   params: Promise<{ organizationSlug: string }>;
 }) {
   const { organizationSlug } = await params;
-  const context = await getApprovedOrganizationSurveyContext(organizationSlug);
-  if (!context) notFound();
-  const { organization, orgContextToken } = context;
+  const organization = await getApprovedOrganizationForSurveySlug(organizationSlug);
+  if (!organization) notFound();
 
   return (
     <main className="min-h-screen bg-[var(--treaty-paper)]">
-      <section className="mx-auto max-w-3xl px-4 pb-2 pt-8 text-center">
+      <section className="mx-auto max-w-3xl px-4 pt-8 text-center">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--treaty-ink-muted)]">
           {organization.name}
         </p>
-        <h1 className="mt-3 text-3xl font-black uppercase tracking-tight text-[var(--treaty-ink)] sm:text-5xl">
-          Trial Abundance Survey
-        </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base font-bold leading-7 text-[var(--treaty-ink-soft)]">
           Two questions about government funding for pragmatic clinical trials.
           Responses from this link are credited to {organization.name}.
@@ -57,11 +50,11 @@ export default async function OrganizationSurveyPage({
       </section>
       <TreatyVoteFlow
         authCallbackUrl={ROUTES.dashboard}
-        copyMode="neutral"
         defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
-        orgContextToken={orgContextToken}
+        organizationSlug={organization.slug}
         postVoteCompletion="message"
         respectStoredFlowVariant={false}
+        sliderHeadline={GLOBAL_SURVEY_NAME}
         surface="neutral_org_survey"
       />
     </main>

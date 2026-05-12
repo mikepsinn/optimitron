@@ -1846,7 +1846,7 @@ model Unit {
 /// Sleep, Vital Sign, Lab Result, Environment, Economic, Policy, etc.
 /// legacy API reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/VariableCategory.php
 /// legacy API hardcoded categories: https://github.com/mikepsinn/curedao-api/blob/main/app/VariableCategories/
-/// Seed data with defaults implemented in packages/db/prisma/seed.ts (15+ categories)
+/// Managed data with defaults implemented in packages/db/src/managed-data (15+ categories)
 model VariableCategory {
   /// Unique identifier for this variable category
   id String @id @default(cuid())

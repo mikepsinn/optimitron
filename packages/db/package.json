@@ -21,6 +21,14 @@
     "./system-identities": {
       "types": "./dist/system-identities.d.ts",
       "default": "./dist/system-identities.js"
+    },
+    "./managed-data": {
+      "types": "./dist/managed-data/index.d.ts",
+      "default": "./dist/managed-data/index.js"
+    },
+    "./managed-task-triggers": {
+      "types": "./dist/managed-data/managed-task-triggers.d.ts",
+      "default": "./dist/managed-data/managed-task-triggers.js"
     }
   },
   "scripts": {
@@ -36,11 +44,7 @@
     "prisma:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
     "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
     "prisma:push": "prisma db push --schema prisma/schema.prisma",
-    "seed": "prisma db seed",
-    "seed:reference": "tsx prisma/seed.ts --scope reference",
-    "seed:bootstrap": "tsx prisma/seed.ts --scope bootstrap",
-    "seed:demo": "tsx prisma/seed.ts --scope demo",
-    "seed:tasks": "tsx prisma/seed.ts --scope tasks",
+    "seed": "tsx prisma/seed.ts",
     "sync:managed-data": "tsx scripts/sync-managed-data.ts"
   },
   "dependencies": {

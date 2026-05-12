@@ -3,10 +3,15 @@ import { readFileSync } from "node:fs";
 
 import {
   ROUTES,
+  courtLink,
   exploreLinks,
+  feedbackLink,
   getSignInPath,
+  humanityVGovernmentLink,
   isNavItemActive,
   navSections,
+  questionsLink,
+  voteLink,
 } from "../routes";
 
 function requireLink<T extends { href: string }>(href: string, links: T[]): T {
@@ -53,5 +58,37 @@ describe("navigation routes", () => {
     ).toBe(
       `/auth/signin?callbackUrl=${encodeURIComponent(ROUTES.wishocracy)}&ref=friend-123`,
     );
+  });
+
+  it("keeps Humanity v. Government social preview config on the NavItem", () => {
+    expect(humanityVGovernmentLink.socialPreview).toEqual(
+      expect.objectContaining({
+        title: "You May Be Owed $2.74 Million | Humanity v. Government",
+        image: expect.objectContaining({
+          url: "/humanity-v-government/opengraph-image",
+          width: 1200,
+          height: 630,
+        }),
+        blackWhiteTextOgImage: expect.objectContaining({
+          primaryLines: [
+            "You May Be Owed",
+            "$2.74 Million",
+            "Render Your Verdict",
+          ],
+        }),
+      }),
+    );
+  });
+
+  it("keeps route-level social images on public copy-review entry points", () => {
+    for (const link of [courtLink, voteLink, questionsLink, feedbackLink]) {
+      expect(link.socialPreview?.image).toEqual(
+        expect.objectContaining({
+          url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
+          width: 1200,
+          height: 630,
+        }),
+      );
+    }
   });
 });

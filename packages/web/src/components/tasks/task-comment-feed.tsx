@@ -585,7 +585,7 @@ export function TaskCommentFeed({
           <Button
             asChild
             size="sm"
-            className="w-full justify-center font-bold uppercase sm:w-auto"
+            className="w-full justify-center font-bold uppercase shadow-none hover:translate-y-0 active:translate-y-0 active:translate-x-0 sm:w-auto"
           >
             <Link href={signInHref}>Sign In</Link>
           </Button>

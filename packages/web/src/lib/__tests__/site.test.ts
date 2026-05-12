@@ -196,7 +196,6 @@ describe("site variant registry", () => {
     expect(labels).toEqual([
       "Sign the Treaty",
       "Manage Humanity",
-      "Fund Campaign",
       "Register a Plaintiff",
       "Remind Presidents",
     ]);
@@ -315,7 +314,6 @@ describe("site variant registry", () => {
       ROUTES.coalition,
       ROUTES.endorse,
       ROUTES.impact,
-      ROUTES.legal,
       ROUTES.treaty,
       ROUTES.donate,
     ];

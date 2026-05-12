@@ -65,7 +65,9 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ templateLabel: templates[index]?.label }),
-      }).catch(() => {})
+      }).catch((error) => {
+        console.error("[share-track] template share telemetry POST failed", error)
+      })
     } catch {
       // Clipboard API not available
     }

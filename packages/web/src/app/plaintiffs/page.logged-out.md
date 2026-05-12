@@ -1,5 +1,18 @@
 # /plaintiffs
 
+## Metadata
+
+- Page title: Register a Plaintiff | International Campaign to End War and Disease
+- Meta description: Sign the 1% Treaty for yourself or someone who can no longer sign. Humanity v. Government should count the victims, not wave at a fog bank.
+- Canonical: https://warondisease.org/plaintiffs
+- Open Graph title: Register a Plaintiff | International Campaign to End War and Disease
+- Open Graph description: Sign the 1% Treaty for yourself or someone who can no longer sign. Humanity v. Government should count the victims, not wave at a fog bank.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fplaintiffs
+- Twitter title: Register a Plaintiff | International Campaign to End War and Disease
+- Twitter description: Sign the 1% Treaty for yourself or someone who can no longer sign. Humanity v. Government should count the victims, not wave at a fog bank.
+
+## Visible Page Copy
+
 ## REGISTER PLAINTIFFS FOR HUMANITY V GOVERNMENT.
 - Please list everyone you love who was harmed by war, disease, or government failure, so they may be presented as evidence in the class action lawsuit Humanity v. Government.
 - Humanity v. Government

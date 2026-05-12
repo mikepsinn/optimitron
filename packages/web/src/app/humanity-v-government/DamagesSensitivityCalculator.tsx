@@ -15,9 +15,9 @@ import {
 /**
  * Sensitivity calculator for the Humanity v. Government damages tiers.
  *
- * Lets the reader stress-test the three most-disputed inputs (Value of
+ * Lets the reader adjust the three most-disputed inputs (Value of
  * Statistical Life, war-deaths-since-1900, efficacy-lag deaths total) and
- * watch the floor and FCA treble per-capita numbers update live. Default
+ * watch the floor and FCA treble per-person numbers update live. Default
  * values + non-tunable floor components are imported directly from
  * `@optimitron/data/parameters` so this calculator stays in sync with the
  * canonical numbers — change a parameter once, every surface that uses it
@@ -25,9 +25,8 @@ import {
  *
  * The lost-prosperity primary theory headline ($25.2M cohort / $10.6M NPV)
  * is *not* tunable here — its inputs are downstream of multiple manual
- * analyses and would require pulling that math into the client. The body-
- * count tiers below are exactly the kind of "dispute the assumptions"
- * surface a critic targets, so they're what the slider exposes.
+ * analyses and would require pulling that math into the client. The body-count
+ * tiers below are the parts most readers will want to tune first.
  */
 
 const GLOBAL_POPULATION = GLOBAL_POPULATION_2024.value;
@@ -164,30 +163,29 @@ export function DamagesSensitivityCalculator() {
     <section className="border-2 border-foreground bg-background p-5">
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          Stress-test the numbers
+          Damages calculator
         </p>
         <button
           className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground underline underline-offset-4 hover:text-foreground"
           onClick={reset}
           type="button"
         >
-          Reset to manual defaults
+          Reset
         </button>
       </div>
       <h2 className="mt-2 text-2xl font-black uppercase leading-tight text-foreground sm:text-3xl">
-        Argue with the assumptions. The case still pleads.
+        Use your own numbers.
       </h2>
       <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-        Tune VSL, body counts, and watch the floor and treble tiers update.
-        The point of this slider is rhetorical jiu-jitsu: every "you made up
-        the numbers" critique inverts to "tune it however you want — here
-        is the case at your numbers."
+        Set what you think a human life is worth in court dollars. Lower the
+        death counts if you want. The amount owed to each living human updates
+        below.
       </p>
 
       <div className="mt-5 space-y-4">
         <Slider
-          label="Value of Statistical Life"
-          help="Default $10M (EPA / FDA standard). DOT uses $13.7M. Critics arguing under-pricing of life argue $5M; critics arguing over-pricing argue $1M."
+          label="Court value of one human life"
+          help="Default $10M (EPA / FDA standard). DOT uses $13.7M. Use less if you think the dead should be cheaper."
           min={1_000_000}
           max={15_000_000}
           step={500_000}
@@ -196,8 +194,8 @@ export function DamagesSensitivityCalculator() {
           onChange={setVsl}
         />
         <Slider
-          label="War + conflict deaths since 1900"
-          help="Default 310M (Rummel democide 264M + battle 39M + collateral civilian 30M − overlap 25M). White's low estimate is 200M; Rummel-high-plus-military is 340M."
+          label="War deaths since 1900"
+          help="Default 310M (Rummel democide 264M + battle 39M + collateral civilian 30M minus overlap). White's low estimate is 200M; Rummel-high-plus-military is 340M."
           min={200_000_000}
           max={340_000_000}
           step={5_000_000}
@@ -206,8 +204,8 @@ export function DamagesSensitivityCalculator() {
           onChange={setWarDeaths}
         />
         <Slider
-          label="Efficacy-lag deaths (1962–today)"
-          help="Default 102M (Invisible Graveyard primary estimate). 95% CI 36.9M (low) to 214M (high) reflects uncertainty in the counterfactual treatment-availability assumption."
+          label="Regulatory-delay deaths"
+          help="Default 102M (Invisible Graveyard primary estimate). Low is 36.9M. High is 214M. These are patients who died while already-safe treatments waited for efficacy approval."
           min={36_900_000}
           max={214_000_000}
           step={1_000_000}
@@ -219,12 +217,12 @@ export function DamagesSensitivityCalculator() {
 
       <div className="mt-6 border-t-2 border-foreground pt-5">
         <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          Per-plaintiff demanded recovery, at your assumptions
+          What each living human is owed, at your assumptions
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Floor
+              Cautious floor
             </p>
             <p className="mt-2 text-2xl font-black tabular-nums leading-none">
               {formatUSDPerson(tiers.floorPerCapita)}
@@ -235,7 +233,7 @@ export function DamagesSensitivityCalculator() {
           </div>
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Prosecutor base ask
+              Base demand
             </p>
             <p className="mt-2 text-2xl font-black tabular-nums leading-none">
               {formatUSDPerson(tiers.askPerCapita)}
@@ -246,7 +244,7 @@ export function DamagesSensitivityCalculator() {
           </div>
           <div className="border-2 border-foreground bg-foreground p-4 text-background">
             <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
-              FCA treble
+              Triple damages
             </p>
             <p className="mt-2 text-2xl font-black tabular-nums leading-none">
               {formatUSDPerson(tiers.treblePerCapita)}
@@ -257,10 +255,11 @@ export function DamagesSensitivityCalculator() {
           </div>
         </div>
         <p className="mt-4 text-xs font-bold leading-5 text-muted-foreground">
-          Floor = war-VSL + lag-VSL + property/env ($50T) + excess military
-          ($135T) + Pentagon FCA ($4.92T). Base ask adds never-developed-drug
-          deaths VSL ($300M deaths × VSL). Treble = base ask × 3 (False Claims
-          Act multiplier).
+          Floor = war deaths + regulatory-delay deaths + property/environmental
+          destruction + excess military spending + Pentagon failed-audit
+          penalty. Base demand adds deaths from drugs never developed. Triple
+          damages means multiplying the base demand by three, as some fraud laws
+          do.
         </p>
       </div>
     </section>

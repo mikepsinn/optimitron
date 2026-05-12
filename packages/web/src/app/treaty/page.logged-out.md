@@ -1,8 +1,19 @@
 # /treaty
 
-- Should governments redirect 1% of military spending to pragmatic clinical trials and disease eradication by adopting the 1% Treaty?
-## PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE
-- Governments are paid $36 trillion a year to promote the general welfare. What allocation between military spending and clinical trials would best fulfill that duty?
+## Metadata
+
+- Page title: Sign the 1% Treaty
+- Meta description: Every country redirects 1% of military spending to clinical trials at the same time, cutting disease eradication from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
+- Canonical: https://warondisease.org/treaty
+- Open Graph title: Sign the 1% Treaty
+- Open Graph description: Every country redirects 1% of military spending to clinical trials at the same time, cutting disease eradication from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Ftreaty
+- Twitter title: Sign the 1% Treaty
+- Twitter description: Every country redirects 1% of military spending to clinical trials at the same time, cutting disease eradication from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
+
+## Visible Page Copy
+
+### PLEASE QUICKLY SKIM AND SIGN TO END WAR AND DISEASE.
 - WHEREAS, humanity pays governments approximately $36.5 trillion per year for the service of promoting the general welfare, defined as the median health and wealth of the citizenry;
 - $36.5 trillion
 - WHEREAS, the citizenry would like to actually receive this service at some point;
@@ -82,3 +93,7 @@
 - Article VIII: This treaty supersedes all conflicting domestic law. Including the subsection your legislature added at 2 a.m. last session specifically to make sure this couldn't happen.
 - Article IX: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in the history of planet Earth.
 - IN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.
+- Signed this day, May 12, 2026, in the year of our ongoing confusion.
+- SIGN
+- Display my name publicly on the signer list and leaderboards (recommended).
+- (recommended)

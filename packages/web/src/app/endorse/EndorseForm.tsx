@@ -455,7 +455,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
           ? isAuthenticated
             ? "Joining..."
             : "Saving..."
-          : "Join as Organization"}
+          : "Join as an Organization"}
       </button>
     </form>
   );

@@ -17,6 +17,43 @@ describe("metadata helpers", () => {
     expect(metadata.openGraph?.title).toBe("About");
   });
 
+  it("uses NavItem social preview config for route OG and Twitter images", () => {
+    const metadata = getRouteMetadata({
+      ...aboutLink,
+      socialPreview: {
+        title: "You May Be Owed $2.74 Million",
+        description: "Render your verdict.",
+        image: {
+          url: "/humanity-v-government/opengraph-image",
+          width: 1200,
+          height: 630,
+        },
+        blackWhiteTextOgImage: {
+          eyebrow: "Humanity v. Government",
+          primaryLines: ["You May Be Owed", "$2.74 Million"],
+          footer: "WarOnDisease.org",
+        },
+      },
+    });
+
+    expect(metadata.openGraph?.title).toBe("You May Be Owed $2.74 Million");
+    expect(metadata.openGraph?.description).toBe("Render your verdict.");
+    expect(metadata.openGraph?.images).toEqual([
+      {
+        url: "/humanity-v-government/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Humanity v. Government. You May Be Owed $2.74 Million. WarOnDisease.org.",
+      },
+    ]);
+    expect(metadata.twitter).toEqual({
+      card: "summary_large_image",
+      title: "You May Be Owed $2.74 Million",
+      description: "Render your verdict.",
+      images: ["/humanity-v-government/opengraph-image"],
+    });
+  });
+
   it("builds site metadata with host-specific canonicals", () => {
     const site = getSiteConfig("warOnDisease");
     const metadata = getSiteMetadata(
@@ -35,7 +72,7 @@ describe("metadata helpers", () => {
       "International Campaign to End War and Disease",
     );
     expect(metadata.twitter?.images).toEqual([
-      "/site-assets/warondisease/war-on-disease-og-1200x630.png",
+      "/api/og/route?path=%2Ftreaty",
     ]);
     expect(metadata.robots).toEqual({ index: true, follow: true });
   });

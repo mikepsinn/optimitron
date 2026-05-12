@@ -1,5 +1,18 @@
 # /employees
 
+## Metadata
+
+- Page title: Remind Presidents | International Campaign to End War and Disease
+- Meta description: You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.
+- Canonical: https://warondisease.org/employees
+- Open Graph title: Remind Presidents | International Campaign to End War and Disease
+- Open Graph description: You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Femployees
+- Twitter title: Remind Presidents | International Campaign to End War and Disease
+- Twitter description: You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.
+
+## Visible Page Copy
+
 ## PRESIDENT MANAGEMENT SYSTEM
 - You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
 #### SEND EARTH OPTIMIZATION TASK REMINDER
@@ -43,7 +56,7 @@
 - [money]
 - RATE: $9.90 trillion/year + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
 - $9.90 trillion/year
-### ↳ 193 employees have overdue tasks
+### ↳ 189 employees have overdue tasks
 - 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
 - Sort
 - ASSIGNEE
@@ -56,7 +69,6 @@
 - Remind
 - Li Qiang
 - Yulia Svyrydenko
-- [initials]
 - Mikhail Mishustin
 - Narendra Modi
 - Donald Tusk
@@ -64,6 +76,7 @@
 - Keir Starmer
 - Friedrich Merz
 - Sifi Ghrieb
+- [initials]
 - ← PREV
-- PAGE 1 / 20
+- PAGE 1 / 19
 - NEXT →

@@ -55,8 +55,57 @@ function getHeadersWithLocalSiteVariantOverride(
   return requestHeaders;
 }
 
+// `?login=demo` and `?logout=1` query params let preview-deploy
+// reviewers flip between useful auth states by tweaking the URL. Login params
+// are env-gated to non-production via the API
+// route itself. `?logout=1` is harmless on any environment.
+//
+// Middleware redirects to the matching `/api/dev/*` route (which does
+// the actual cookie work) with the original URL minus the param as
+// `?next=...` so the user lands back where they started after the auth
+// state flip.
+function handleDevAuthQueryParams(req: import("next/server").NextRequest) {
+  const params = req.nextUrl.searchParams;
+  const loginAs = params.get("login");
+  const logout = params.get("logout");
+
+  if (loginAs === "demo") {
+    // Allow-list, NOT deny-list. Vercel sets NODE_ENV=production on BOTH
+    // preview and production deploys, so a deny-list check breaks the
+    // feature on previews (the exact env it's designed for). Mirror the
+    // `isPreviewOrDev()` allow-list in /api/dev/login-as-demo/route.ts.
+    const isPreviewOrDev =
+      process.env.VERCEL_ENV === "preview" ||
+      process.env.VERCEL_ENV === "development" ||
+      process.env.NODE_ENV === "development";
+    if (!isPreviewOrDev) return null;
+    const stripped = req.nextUrl.clone();
+    stripped.searchParams.delete("login");
+    const next = `${stripped.pathname}${stripped.search}${stripped.hash}`;
+    const target = req.nextUrl.clone();
+    target.pathname = "/api/dev/login-as-demo";
+    target.search = `?next=${encodeURIComponent(next || "/")}`;
+    return NextResponse.redirect(target, 307);
+  }
+
+  if (logout === "1") {
+    const stripped = req.nextUrl.clone();
+    stripped.searchParams.delete("logout");
+    const next = `${stripped.pathname}${stripped.search}${stripped.hash}`;
+    const target = req.nextUrl.clone();
+    target.pathname = "/api/dev/logout";
+    target.search = `?next=${encodeURIComponent(next || "/")}`;
+    return NextResponse.redirect(target, 307);
+  }
+
+  return null;
+}
+
 export default withAuth(
   function middleware(req) {
+    const devAuthRedirect = handleDevAuthQueryParams(req);
+    if (devAuthRedirect) return devAuthRedirect;
+
     const overrideResolution = resolveLocalSiteVariantOverride({
       cookieSiteKey: req.cookies.get(SITE_VARIANT_OVERRIDE_COOKIE)?.value,
       host: req.headers.get("host"),
@@ -127,6 +176,17 @@ export default withAuth(
     },
     callbacks: {
       authorized: ({ req, token }) => {
+        // Let dev-auth query-param flows through to the middleware body even
+        // when the target path is auth-protected. Otherwise withAuth bounces
+        // `/dashboard?login=demo` to /auth/signin BEFORE our
+        // handleDevAuthQueryParams handler runs — the redirect to
+        // /api/dev/login-as-demo never gets the chance to mint the cookie.
+        // `?logout=1` doesn't need this branch (logout from auth pages is
+        // expected to redirect to sign-in if you're already logged out).
+        const params = req.nextUrl.searchParams;
+        const loginAs = params.get("login");
+        if (loginAs === "demo") return true;
+
         const authPaths = [
           ROUTES.dashboard,
           ROUTES.profile,

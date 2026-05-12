@@ -6,24 +6,24 @@
         "description": "Humanity currently spends enough on mass murder capacity for {apocalypseCount} apocalypses. This proposes we settle for {reducedApocalypseCount} and use the savings to eradicate disease {diseaseAcceleration} times faster."
       },
       "treaty": {
-        "title": "Treaty — 1% Treaty",
-        "description": "The entire text, then a box to sign it. It is shorter than your last software update."
+        "title": "Sign the 1% Treaty",
+        "description": "Every country redirects {treatyReduction} of military spending to clinical trials at the same time, cutting disease eradication from {statusQuoQueueYears} years to {dfdaQueueYears}. Nobody gets weaker. Everyone gets more medicine."
       },
       "dashboard": {
         "title": "Dashboard — 1% Treaty",
-        "description": "Your signature, your link, and a list of leaders who are still late on a thirty-second task."
+        "description": "Get humanity to agree to end war and disease. Share your link and remind presidents that their job is to promote the general welfare."
       },
       "tasks": {
-        "title": "Tasks — 1% Treaty",
-        "description": "The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are."
+        "title": "Earth Optimization Tasks",
+        "description": "The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs."
       },
       "endorse": {
-        "title": "Join as Organization — 1% Treaty",
-        "description": "Join the {campaignName} as an organization: {treatyTradePosition}."
+        "title": "Join as an Organization — 1% Treaty",
+        "description": "Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them."
       },
       "signatories": {
-        "title": "Signatories — 1% Treaty",
-        "description": "Organizations and humans who publicly signed the 1% Treaty."
+        "title": "The People Who Ended War and Disease",
+        "description": "The humans and organizations who signed the 1% Treaty and got humanity to agree to end war and disease."
       },
       "supporters": {
         "title": "Organizational Supporters — 1% Treaty",
@@ -44,7 +44,7 @@
         "href": "/treaty"
       },
       {
-        "label": "Join as Organization",
+        "label": "Join as an Organization",
         "href": "/endorse"
       },
       {
@@ -65,7 +65,7 @@
       ],
       "intro": "",
       "primaryCtaLabel": "Read and sign the treaty",
-      "secondaryCtaLabel": "Join as Organization",
+      "secondaryCtaLabel": "Join as an Organization",
       "treatyEyebrow": "Treaty text",
       "signTitle": "Sign the treaty now",
       "signBody": "Read it. Sign it. Then go remind your late employees — the ones your species pays to promote the general welfare — that their thirty-second task is overdue.",
@@ -98,11 +98,11 @@
       "description": "Organizations that publicly support the 1% Treaty through the {campaignName}.",
       "emptyTitle": "No organizational supporters yet.",
       "emptyBody": "Be the first organization willing to put this on the record: {treatyTradePosition}.",
-      "ctaLabel": "Join as Organization"
+      "ctaLabel": "Join as an Organization"
     },
     "endorse": {
-      "eyebrow": "Your Organization Can",
-      "title": "End War And Disease One Day Sooner",
+      "eyebrow": "Organizations",
+      "title": "Join the International Campaign to End War and Disease",
       "signInTitle": "Verify organization",
       "signInDescription": "Organization support uses verified accounts so nobody joins the campaign in your organization's name.",
       "signInLabel": "Verify",
@@ -145,9 +145,9 @@
           ]
         },
         {
-          "heading": "Treaty text",
+          "heading": "Read before joining",
           "paragraphs": [
-            "The treaty is short. The full text is collapsed on the organization signup page so your organization can read it without leaving."
+            "The 1% Treaty asks every nation to redirect 1% of military spending to high-efficiency pragmatic clinical trials. Read it before adding your organization."
           ],
           "links": []
         }

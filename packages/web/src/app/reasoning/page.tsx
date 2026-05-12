@@ -6,7 +6,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { resolveOrgFromHost } from "@/lib/reasoning/host-resolution.server";
 import { resolveLocale } from "@/lib/reasoning/locale.server";
-import { verifyOrgContextToken } from "@/lib/organization-context-token.server";
+import { getApprovedOrganizationForSurveySlug } from "@/lib/organization.server";
 import { prepareReasoningSession } from "@/lib/reasoning/session.server";
 import { ReasoningFlow } from "@/components/reasoning/ReasoningFlow";
 import {
@@ -30,15 +30,16 @@ export default async function ReasoningPage({
   const hostRaw = hdrs.get("host");
 
   const hostResolution = await resolveOrgFromHost(hostRaw);
-  const token = firstString(params.token);
+  const organizationSlug =
+    firstString(params.organizationSlug) ?? firstString(params.org);
+  const publicOrganization = organizationSlug
+    ? await getApprovedOrganizationForSurveySlug(organizationSlug)
+    : null;
   let organizationId = hostResolution.organizationId;
-  let orgContextVerified = hostResolution.verified;
-  if (token) {
-    const verification = verifyOrgContextToken(token);
-    if (verification.ok) {
-      organizationId = verification.organizationId;
-      orgContextVerified = true;
-    }
+  let organizationResolved = hostResolution.verified;
+  if (!organizationId && publicOrganization) {
+    organizationId = publicOrganization.id;
+    organizationResolved = true;
   }
 
   const locale = await resolveLocale({
@@ -50,8 +51,7 @@ export default async function ReasoningPage({
   const prepared = await prepareReasoningSession({
     hostRaw,
     organizationId,
-    orgContextVerified,
-    orgContextToken: token,
+    organizationResolved,
     localeKey: locale.localeKey,
     relationshipBucket: parseBucket(firstString(params.rel)),
     referralSource: firstString(params.ref),

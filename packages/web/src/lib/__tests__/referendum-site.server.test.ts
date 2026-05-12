@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   referendumVoteGroupBy: vi.fn(),
   organizationPositionCount: vi.fn(),
   organizationPositionFindMany: vi.fn(),
+  userFindUnique: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -29,6 +30,9 @@ vi.mock("@/lib/prisma", () => ({
     organizationReferendumPosition: {
       count: mocks.organizationPositionCount,
       findMany: mocks.organizationPositionFindMany,
+    },
+    user: {
+      findUnique: mocks.userFindUnique,
     },
   },
 }));
@@ -54,10 +58,12 @@ describe("referendum-site.server", () => {
     mocks.referendumVoteGroupBy.mockReset();
     mocks.organizationPositionCount.mockReset();
     mocks.organizationPositionFindMany.mockReset();
+    mocks.userFindUnique.mockReset();
     mocks.getTaskDetailData.mockResolvedValue(null);
     mocks.referendumVoteFindMany.mockResolvedValue([]);
     mocks.referendumVoteGroupBy.mockResolvedValue([]);
     mocks.organizationPositionFindMany.mockResolvedValue([]);
+    mocks.userFindUnique.mockResolvedValue(null);
   });
 
   it("requires approved orgs and approved YES positions in signatory queries", () => {
@@ -88,6 +94,13 @@ describe("referendum-site.server", () => {
 
     expect(data?.individualCount).toBe(12);
     expect(data?.organizationCount).toBe(3);
+    expect(mocks.referendumVoteCount).toHaveBeenNthCalledWith(1, {
+      where: expect.objectContaining({
+        answer: VotePosition.YES,
+        deletedAt: null,
+        referendumId: "ref_1",
+      }),
+    });
     expect(mocks.organizationPositionCount).toHaveBeenCalledWith({
       where: buildApprovedOrganizationPositionWhere("ref_1"),
     });
@@ -169,6 +182,10 @@ describe("referendum-site.server", () => {
         _count: { referredByUserId: 1 },
       },
     ]);
+    mocks.userFindUnique.mockResolvedValue({
+      person: { isPublic: true },
+      referendumVotes: [{ id: "vote_c" }],
+    });
 
     const data = await getReferendumSiteHomeData(
       getSiteConfig("warOnDisease"),
@@ -183,6 +200,13 @@ describe("referendum-site.server", () => {
     expect(publicSignatories?.currentUserSigner).toMatchObject({
       user: { id: "user_c" },
       rank: 3,
+    });
+    expect(publicSignatories?.currentUserStatus).toMatchObject({
+      hasYesVote: true,
+      isPublic: true,
+      listed: true,
+      rank: 3,
+      referredYesCount: 0,
     });
     expect(
       publicSignatories?.signatories

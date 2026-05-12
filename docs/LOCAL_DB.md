@@ -35,7 +35,7 @@ pnpm db:logs
 pnpm db:deploy
 pnpm db:test
 pnpm db:migrate
-pnpm db:seed
+pnpm db:sync:managed-data -- --apply
 pnpm db:reset
 ```
 

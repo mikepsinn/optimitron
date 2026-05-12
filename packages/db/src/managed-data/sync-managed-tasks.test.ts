@@ -453,6 +453,42 @@ describe("syncManagedTasks", () => {
     );
   });
 
+  it("does not delete a previously managed row just because it is absent from the current source list", async () => {
+    const client = new FakeManagedTaskClient({
+      tasks: [
+        makeTask({
+          id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
+        }),
+        makeTask({
+          contextJson: {
+            managedData: {
+              collectionKey: "test-tree",
+              recordId: "previously-managed",
+            },
+          },
+          id: "previously-managed",
+          taskKey: "program:test:previously-managed",
+          title: "Keep me unless explicitly retired",
+        }),
+      ],
+    });
+
+    const result = await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [activeRecord],
+    });
+
+    expect(result.retired).toEqual([]);
+    expect(client.tasks.find((task) => task.id === "previously-managed")).toMatchObject({
+      deletedAt: null,
+      status: TaskStatus.ACTIVE,
+      title: "Keep me unless explicitly retired",
+    });
+  });
+
   it("rejects taskKey ownership conflicts before applying writes", async () => {
     const client = new FakeManagedTaskClient({
       tasks: [

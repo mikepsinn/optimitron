@@ -1,4 +1,10 @@
 import {
+  buildOrganizationActivationTaskDescription,
+  getOrganizationActivationTaskKey,
+  GLOBAL_SURVEY_NAME,
+  ORGANIZATION_ACTIVATION_TASK_TITLE,
+} from "@optimitron/data/campaign";
+import {
   OrgStatus,
   OrgType,
   TaskCategory,
@@ -7,56 +13,13 @@ import {
   TaskStatus,
   type Prisma,
 } from "@optimitron/db";
-import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 import { prisma } from "@/lib/prisma";
-import { issueOrgContextToken } from "@/lib/organization-context-token.server";
 import { NONPROFIT_COALITION_STRATEGY_URL } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 import { getBaseUrl } from "@/lib/url";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
-
-function getOrganizationActivationTaskKey(organizationId: string) {
-  return `organization:${organizationId}:share-1-percent-treaty-survey`;
-}
-
-function buildOrganizationActivationTaskDescription(input: {
-  baseUrl: string;
-  organizationName: string;
-  organizationToolsUrl: string;
-  surveyUrl: string;
-}) {
-  const { organizationToolsUrl, surveyUrl } = input;
-  const legalUrl = `${input.baseUrl}/endorse#organization-legal-notes`;
-
-  return `Your organization joined the International Campaign to End War and Disease by publicly supporting the 1% Treaty. Now use the reach your members already trust: place the Clinical Trial Abundance Survey link on your site and share it once with your list.
-
-Why this task exists:
-- Members get a simple way to review the treaty and record their response.
-- Responses from your organization link are credited to ${input.organizationName}.
-- This is a policy survey, not a candidate endorsement.
-
-Do this:
-1. Open your organization tools page: ${organizationToolsUrl}
-2. Copy the member survey link, website button, or iframe.
-3. Put one of them on your website or in a newsletter.
-4. Ask members to review the treaty and record their response.
-
-Done when:
-- The survey is linked or embedded where members can find it.
-- At least one email, newsletter item, or social post sends members to the survey.
-- The organization URL stays intact so responses are credited to ${input.organizationName}.
-
-Clinical Trial Abundance Survey URL:
-${surveyUrl}
-
-Why organizations should share this:
-${NONPROFIT_COALITION_STRATEGY_URL}
-
-Legal notes:
-${legalUrl}`;
-}
 
 export async function ensureOrganizationTreatyActivationTask(
   input: {
@@ -82,6 +45,8 @@ export async function ensureOrganizationTreatyActivationTask(
   const surveyUrl = `${baseUrl}/survey/${organization.slug}`;
   const description = buildOrganizationActivationTaskDescription({
     baseUrl,
+    coalitionStrategyUrl: NONPROFIT_COALITION_STRATEGY_URL,
+    legalUrl: `${baseUrl}/endorse#organization-legal-notes`,
     organizationName: organization.name,
     organizationToolsUrl,
     surveyUrl,
@@ -531,16 +496,6 @@ export async function getApprovedOrganizationForSurveySlug(slug: string) {
   }
 
   return organization;
-}
-
-export async function getApprovedOrganizationSurveyContext(slug: string) {
-  const organization = await getApprovedOrganizationForSurveySlug(slug);
-  if (!organization) return null;
-
-  return {
-    organization,
-    orgContextToken: issueOrgContextToken(organization.id).encoded,
-  };
 }
 
 export class ForbiddenError extends Error {

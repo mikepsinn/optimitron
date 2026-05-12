@@ -68,8 +68,9 @@ export default async function TasksPage() {
             Earth Optimization Tasks
           </h1>
           <p className="mx-auto max-w-3xl text-base font-bold text-muted-foreground sm:text-lg">
-            Two sections. Humanity's job, then yours. Pick one and move
-            healthy life years or income toward their 2040 targets.
+            A public to-do list for optimizing Earth. Each task names the
+            human or organization, gives them a specific job, and shows the
+            cost of waiting.
           </p>
         </header>
 

@@ -3,6 +3,7 @@ import {
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters";
+import { CAMPAIGN_NAME } from "@optimitron/data/campaign";
 import {
   WAR_ON_DISEASE_CANONICAL_DOMAIN,
   WAR_ON_DISEASE_CANONICAL_ORIGIN,
@@ -257,8 +258,7 @@ const NO_FOOTER_COMPLIANCE_NOTICE = null;
 /// in compliance surfaces). Legacy campaign domains redirect into the War on
 /// Disease site; SEO + footer attribution should carry the campaign brand
 /// instead of the LLC name.
-const INTERNATIONAL_CAMPAIGN_ORG_NAME =
-  "International Campaign to End War and Disease";
+const INTERNATIONAL_CAMPAIGN_ORG_NAME = CAMPAIGN_NAME;
 const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
 const WAR_ON_DISEASE_LEGACY_NAME = "War on Disease";
 
@@ -343,7 +343,6 @@ const warOnDiseaseNavSections: NavSection[] = [
     items: [
       treatyLink,
       dashboardLink,
-      donateLink,
       plaintiffsLink,
       presidentManagementLink,
     ],
@@ -937,7 +936,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.legal,
       ROUTES.privacy,
       ROUTES.terms,
       ROUTES.impact,
@@ -963,7 +961,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.legal,
       ROUTES.privacy,
       ROUTES.terms,
       ROUTES.impact,
@@ -1201,7 +1198,6 @@ const REFERENDUM_SITE_CONTENT_PATH_PREFIXES = [
   ROUTES.coalition,
   ROUTES.endorse,
   ROUTES.impact,
-  ROUTES.legal,
 ] as const;
 
 export function requiresReferendumSiteContent(pathname: string): boolean {

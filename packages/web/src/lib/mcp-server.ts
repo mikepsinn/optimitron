@@ -7711,7 +7711,17 @@ export function createMcpServer(
                       toTaskId: taskId,
                     },
                   })
-                  .catch(() => undefined);
+                  .catch((error) => {
+                    // Edge may already exist from a prior run — don't block draft
+                    // creation. Our own DB write though, so log as error so a real
+                    // schema/constraint bug surfaces instead of getting swallowed.
+                    console.error("[mcp-server] taskEdge BLOCKS create failed", {
+                      blockerTaskId,
+                      taskId,
+                      error,
+                    });
+                    return undefined;
+                  });
               }
             }
 

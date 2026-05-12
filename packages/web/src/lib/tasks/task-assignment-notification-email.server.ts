@@ -4,6 +4,10 @@ import {
   getTaskUrl,
 } from "@/lib/email/task-notification";
 import { buildCoordinationFeedbackNote } from "@/lib/email/coordination-feedback-note";
+import {
+  buildShareFooterHtml,
+  buildShareFooterText,
+} from "@/lib/email/share-footer";
 
 export interface TaskAssignmentEmailInput {
   description: string;
@@ -11,6 +15,13 @@ export interface TaskAssignmentEmailInput {
   recipientName: string;
   replyInstruction?: string | null;
   title: string;
+  /**
+   * When the assignee is one of our users (not an external office),
+   * pass their personal referral URL so the share kit appears at the
+   * bottom of the email. Omit for external assignees — including the
+   * share kit on outreach emails to leaders' offices is off-brand.
+   */
+  recipientReferralUrl?: string | null;
 }
 
 export interface TaskAssignmentEmail {
@@ -67,6 +78,12 @@ export function buildTaskAssignmentNotificationEmail(
     replyEnabled: Boolean(replyInstruction),
   });
   const subject = `New task: ${input.title}`;
+  const shareFooterText = input.recipientReferralUrl
+    ? buildShareFooterText(input.recipientReferralUrl)
+    : "";
+  const shareFooterHtml = input.recipientReferralUrl
+    ? buildShareFooterHtml(input.recipientReferralUrl)
+    : "";
   const text = [
     `New task for ${input.recipientName}`,
     "",
@@ -80,6 +97,7 @@ export function buildTaskAssignmentNotificationEmail(
     feedbackNote.text,
     replyInstruction ? "" : null,
     replyInstruction,
+    shareFooterText || null,
   ]
     .filter((line): line is string => line !== null)
     .join("\n");
@@ -102,6 +120,7 @@ export function buildTaskAssignmentNotificationEmail(
           ? `<p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:#3f3f46;">${escapeHtml(replyInstruction)}</p>`
           : ""
       }
+      ${shareFooterHtml}
     </div>
   </div>
 </body>

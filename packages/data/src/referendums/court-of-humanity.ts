@@ -11,8 +11,7 @@
  * starts appearing in the auto-generated file, this module can be deleted
  * and the import in `packages/web/src/config/referendums.ts` switched to
  * `shareableSnippets.courtOfHumanityText`. Keep the export shape compatible
- * (`{ markdown, sourceFile, updatedAt, originalName }`) to make that
- * migration trivial.
+ * (`{ markdown, sourceFile, originalName }`) to make that migration trivial.
  *
  * Treaty body (`onePercentTreatyText`) intentionally stays in the
  * auto-generated file because the QMD pipeline already produces it.
@@ -72,6 +71,5 @@ NOW, THEREFORE, the undersigned humans, having noticed, hereby join the Court of
 IN WITNESS WHEREOF, the undersigned humans, being of sound mind (debatable) and tired of watching their governments kill their families with no consequences, hereby join the Court of Humanity.
 `,
   sourceFile: "knowledge/solution/court-of-humanity.qmd",
-  updatedAt: "2026-05-03",
   originalName: "court-of-humanity-text",
 } as const;
