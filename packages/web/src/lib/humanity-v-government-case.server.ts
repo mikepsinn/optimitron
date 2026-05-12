@@ -1,9 +1,26 @@
-import { CourtCasePartyRole, CourtCaseStatus } from "@optimitron/db";
+import {
+  CourtCasePartyRole,
+  CourtCaseStatus,
+  HUMANITY_V_GOVERNMENT_CASE_SLUG as DB_HUMANITY_V_GOVERNMENT_CASE_SLUG,
+  HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG,
+  VotePosition,
+} from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 
-export const HUMANITY_V_GOVERNMENT_CASE_SLUG = "humanity-v-government";
+export const HUMANITY_V_GOVERNMENT_CASE_SLUG =
+  DB_HUMANITY_V_GOVERNMENT_CASE_SLUG;
 export const HUMANITY_V_GOVERNMENT_CASE_TITLE = "Humanity v Government";
+
+export type HumanityVGovernmentVerdictAnswer = "YES" | "NO" | "ABSTAIN";
+
+export interface HumanityVGovernmentVerdictStats {
+  abstainCount: number;
+  existingAnswer: HumanityVGovernmentVerdictAnswer | null;
+  noCount: number;
+  referendumSlug: string;
+  yesCount: number;
+}
 
 type HumanityVGovernmentCaseClient = Pick<
   Prisma.TransactionClient,
@@ -31,6 +48,62 @@ export async function getHumanityVGovernmentPlaintiffCount(): Promise<number> {
       deletedAt: null,
     },
   });
+}
+
+export async function getHumanityVGovernmentVerdictStats(
+  userId?: string | null,
+): Promise<HumanityVGovernmentVerdictStats> {
+  const fallback = {
+    abstainCount: 0,
+    existingAnswer: null,
+    noCount: 0,
+    referendumSlug: HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG,
+    yesCount: 0,
+  } satisfies HumanityVGovernmentVerdictStats;
+
+  const referendum = await prisma.referendum.findUnique({
+    where: { slug: HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG },
+    select: { id: true },
+  });
+  if (!referendum) return fallback;
+
+  const [groupedCounts, existingVote] = await Promise.all([
+    prisma.referendumVote.groupBy({
+      by: ["answer"],
+      where: {
+        deletedAt: null,
+        referendumId: referendum.id,
+      },
+      _count: { _all: true },
+    }),
+    userId
+      ? prisma.referendumVote.findFirst({
+          where: {
+            deletedAt: null,
+            referendumId: referendum.id,
+            userId,
+          },
+          select: { answer: true },
+        })
+      : Promise.resolve(null),
+  ]);
+
+  const counts = new Map(
+    groupedCounts.map((row) => [row.answer, row._count._all]),
+  );
+
+  return {
+    ...fallback,
+    abstainCount: counts.get(VotePosition.ABSTAIN) ?? 0,
+    existingAnswer:
+      existingVote?.answer === VotePosition.YES ||
+      existingVote?.answer === VotePosition.NO ||
+      existingVote?.answer === VotePosition.ABSTAIN
+        ? existingVote.answer
+        : null,
+    noCount: counts.get(VotePosition.NO) ?? 0,
+    yesCount: counts.get(VotePosition.YES) ?? 0,
+  };
 }
 
 export async function ensureHumanityVGovernmentPlaintiffParty(

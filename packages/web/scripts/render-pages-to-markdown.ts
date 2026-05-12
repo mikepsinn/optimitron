@@ -5,7 +5,7 @@
  * Visits each public route on the running dev server (port 3001 by
  * default), extracts the visible text from <main>, writes per-route
  * markdown files next to the matching `page.tsx` so you can preview
- * what each page actually says before committing.
+ * page metadata and visible copy before committing.
  *
  * Output paths:
  *   src/app/treaty/page.tsx   -> src/app/treaty/page.logged-out.md
@@ -25,6 +25,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { mintDemoSessionCookie } from "./mint-demo-session";
+import { buildCopyPreviewMarkdown } from "../src/lib/copy-preview-markdown";
+import type { CopyPreviewMetadata } from "../src/lib/copy-preview-markdown";
 import { getRouteReviewSpecs } from "../src/lib/routes";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -91,13 +93,73 @@ function routeToDirPath(route: string): string {
   return outPath;
 }
 
-async function extractPage(page: import("@playwright/test").Page, route: string) {
+async function getHeadAttribute(
+  page: import("@playwright/test").Page,
+  selector: string,
+  attribute: "content" | "href",
+): Promise<string | null> {
+  const value = await page
+    .locator(selector)
+    .first()
+    .getAttribute(attribute)
+    .catch(() => null);
+  const cleaned = value?.replace(/\s+/g, " ").trim();
+  return cleaned && cleaned.length > 0 ? cleaned : null;
+}
+
+async function extractPageMetadata(
+  page: import("@playwright/test").Page,
+): Promise<CopyPreviewMetadata> {
+  const title = await page.title();
+  const cleanedTitle = title.replace(/\s+/g, " ").trim();
+
+  return {
+    canonical: await getHeadAttribute(page, 'link[rel="canonical"]', "href"),
+    description: await getHeadAttribute(
+      page,
+      'meta[name="description"]',
+      "content",
+    ),
+    openGraphDescription: await getHeadAttribute(
+      page,
+      'meta[property="og:description"]',
+      "content",
+    ),
+    openGraphImage: await getHeadAttribute(
+      page,
+      'meta[property="og:image"]',
+      "content",
+    ),
+    openGraphTitle: await getHeadAttribute(
+      page,
+      'meta[property="og:title"]',
+      "content",
+    ),
+    title: cleanedTitle.length > 0 ? cleanedTitle : null,
+    twitterDescription: await getHeadAttribute(
+      page,
+      'meta[name="twitter:description"]',
+      "content",
+    ),
+    twitterTitle: await getHeadAttribute(
+      page,
+      'meta[name="twitter:title"]',
+      "content",
+    ),
+  };
+}
+
+async function extractPage(
+  page: import("@playwright/test").Page,
+  route: string,
+): Promise<{ bodyMarkdown: string; metadata: CopyPreviewMetadata }> {
   await page.goto(`${BASE}${route}`, {
     waitUntil: "networkidle",
     timeout: 30000,
   });
   await page.waitForTimeout(400);
-  return page.evaluate(() => {
+  const metadata = await extractPageMetadata(page);
+  const bodyMarkdown = await page.evaluate(() => {
     const root = document.querySelector("main") ?? document.body;
     // Replace every `[data-volatile]` subtree with a deterministic placeholder
     // so wall-clock counters, DB-derived counts, and async-loading fallbacks
@@ -131,6 +193,8 @@ async function extractPage(page: import("@playwright/test").Page, route: string)
     }
     return out.join("\n");
   });
+
+  return { bodyMarkdown, metadata };
 }
 
 function cookieDomainFromBase(): string {
@@ -173,13 +237,14 @@ async function capturePass(
       const dir = routeToDirPath(route);
       const outPath = path.join(dir, filename);
       try {
-        const md = await extractPage(page, route);
+        const extracted = await extractPage(page, route);
         await mkdir(dir, { recursive: true });
-        // Deterministic: route as the only header. No timestamps, no
-        // capture metadata — every regeneration produces the same
-        // bytes for unchanged copy, so PR diffs only show real changes.
-        const header = `# ${route}\n\n`;
-        await writeFile(outPath, header + md + "\n", "utf8");
+        const markdown = buildCopyPreviewMarkdown({
+          bodyMarkdown: extracted.bodyMarkdown,
+          metadata: extracted.metadata,
+          route,
+        });
+        await writeFile(outPath, markdown, "utf8");
         console.log(`OK ${route}  ->  ${path.relative(WEB_ROOT, outPath)}`);
       } catch (err) {
         failures += 1;

@@ -48,7 +48,12 @@ export async function backfillUserLocationFromHeaders(
           where: { user: { id: userId }, countryCode: null },
           data: { countryCode: data.countryCode as string },
         })
-        .catch(() => {});
+        .catch((error) => {
+          // Person backfill is best-effort — the user.countryCode write above
+          // already succeeded, so we tolerate failure here. But it's our own
+          // DB write, so a failure is a real bug we should see and fix.
+          console.error("[GEO BACKFILL] Person countryCode backfill failed", userId, error);
+        });
     }
   } catch (error) {
     console.error("[GEO BACKFILL] Failed to backfill user location", userId, error);

@@ -9,6 +9,7 @@ import {
   DECLARATION_REFERENDUM_SLUG,
   TREATY_REFERENDUM_SLUG,
 } from "../constants.js";
+import { MANAGED_HUMANITY_V_GOVERNMENT_VERDICT } from "./managed-humanity-v-government.js";
 import {
   ReferendumKind,
   ReferendumStatus,
@@ -69,6 +70,7 @@ export const MANAGED_REFERENDUMS: readonly ManagedReferendumRecord[] = [
     bodyMarkdown: COURT_OF_HUMANITY_TEXT.markdown,
     status: ReferendumStatus.ACTIVE,
   },
+  MANAGED_HUMANITY_V_GOVERNMENT_VERDICT,
 ] as const;
 
 export function buildReferendumContentHash(input: {

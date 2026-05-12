@@ -179,7 +179,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: HUMANITY_V_GOVERNMENTS_TASK_ID,
     title: "Summon jurors",
     description:
-      `Invite humans to act as jurors by voting on the treaty and rendering a verdict in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
+      `Invite humans to act as jurors by voting on the verdict in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
     impactStatement:
       "A court for humanity needs a jury large enough to matter.",
     sortOrder: -760,
@@ -187,7 +187,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       label: "Open the referral dashboard",
       url: "/dashboard",
       instructions:
-        "Invite at least two humans to vote and render the verdict.",
+        "Invite at least two humans to vote on the case.",
     },
   },
   {
@@ -217,7 +217,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: HUMANITY_V_GOVERNMENTS_TASK_ID,
     title: "Render the verdict",
     description:
-      "Get a majority of humanity to render a verdict on whether governments are guilty of using public resources against the general welfare.",
+      "Get a majority of humanity to render a verdict on whether governments are liable for using public resources against the general welfare.",
     impactStatement:
       "The verdict becomes politically real when enough humans say it is real.",
     sortOrder: -740,

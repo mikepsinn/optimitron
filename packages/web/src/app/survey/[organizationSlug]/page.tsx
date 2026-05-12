@@ -54,7 +54,6 @@ export default async function OrganizationSurveyPage({
       </section>
       <TreatyVoteFlow
         authCallbackUrl={ROUTES.dashboard}
-        copyMode="neutral"
         defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
         organizationSlug={organization.slug}
         postVoteCompletion="message"

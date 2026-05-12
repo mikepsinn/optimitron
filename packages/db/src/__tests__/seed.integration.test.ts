@@ -254,6 +254,7 @@ describeIfDatabase("syncManagedData", () => {
             "one-percent-treaty",
             "declaration-of-optimization",
             "court-of-humanity",
+            "court-humanity-v-government-verdict",
           ],
         },
         deletedAt: null,
@@ -271,7 +272,7 @@ describeIfDatabase("syncManagedData", () => {
       },
     });
 
-    expect(referendums).toHaveLength(3);
+    expect(referendums).toHaveLength(4);
     expect(referendums).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -296,11 +297,51 @@ describeIfDatabase("syncManagedData", () => {
           bodyMarkdown: expect.stringContaining("sovereign immunity"),
           contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         }),
+        expect.objectContaining({
+          slug: "court-humanity-v-government-verdict",
+          kind: ReferendumKind.COURT_CASE,
+          question: expect.stringContaining("full damages"),
+          bodyMarkdown: expect.stringContaining("find for Humanity"),
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
       ]),
     );
     for (const referendum of referendums) {
       expect(referendum.publishedAt).toBeInstanceOf(Date);
     }
+  }, SEED_TEST_TIMEOUT_MS);
+
+  it("seeds Humanity v Government as a public court case with a verdict referendum", async () => {
+    const courtCase = await prisma.courtCase.findUnique({
+      where: { slug: "humanity-v-government" },
+      select: {
+        isPublic: true,
+        juryReferendum: {
+          select: {
+            kind: true,
+            question: true,
+            slug: true,
+            status: true,
+          },
+        },
+        status: true,
+        summary: true,
+        title: true,
+      },
+    });
+
+    expect(courtCase).toMatchObject({
+      isPublic: true,
+      juryReferendum: {
+        kind: ReferendumKind.COURT_CASE,
+        question: expect.stringContaining("$2.74 million"),
+        slug: "court-humanity-v-government-verdict",
+        status: "ACTIVE",
+      },
+      status: "VOTING",
+      summary: expect.stringContaining("damages case"),
+      title: "Humanity v Government",
+    });
   }, SEED_TEST_TIMEOUT_MS);
 
   it("seeds task communication endpoint contracts for task-driven reminders", async () => {

@@ -12,6 +12,10 @@ import {
   syncManagedIamOrganization,
 } from "./managed-iam-organization.js";
 import {
+  formatManagedHumanityVGovernmentCaseResult,
+  syncManagedHumanityVGovernmentCase,
+} from "./managed-humanity-v-government.js";
+import {
   formatManagedReferendumsResult,
   syncManagedReferendums,
 } from "./managed-referendums.js";
@@ -64,6 +68,9 @@ export interface SyncManagedDataResult {
   tasks: SyncManagedTasksResult;
   taskTriggers: SyncManagedTaskTriggersResult;
   referendums: Awaited<ReturnType<typeof syncManagedReferendums>>;
+  humanityVGovernmentCase: Awaited<
+    ReturnType<typeof syncManagedHumanityVGovernmentCase>
+  >;
   grandmaKay: Awaited<ReturnType<typeof syncManagedGrandmaKay>>;
   demoUser: Awaited<ReturnType<typeof syncManagedDemoUser>>;
   iamOrganization: Awaited<ReturnType<typeof syncManagedIamOrganization>>;
@@ -104,6 +111,11 @@ export async function syncManagedData(
   // Referendums first: tasks reference referendum slugs.
   const referendums = await syncManagedReferendums(prisma, { apply: options.apply });
 
+  const humanityVGovernmentCase = await syncManagedHumanityVGovernmentCase(prisma, {
+    apply: options.apply,
+    createdByUserId,
+  });
+
   if (options.apply) {
     await syncManagedTreatyAccountabilityData();
     treatyAccountabilityData.synced = true;
@@ -140,6 +152,7 @@ export async function syncManagedData(
     tasks,
     taskTriggers,
     referendums,
+    humanityVGovernmentCase,
     grandmaKay,
     demoUser,
     iamOrganization,
@@ -155,6 +168,7 @@ export function formatManagedDataResult(result: SyncManagedDataResult) {
       result.treatyAccountabilityData,
     ),
     formatManagedReferendumsResult(result.referendums),
+    formatManagedHumanityVGovernmentCaseResult(result.humanityVGovernmentCase),
     formatManagedTasksResult(result.tasks),
     formatManagedTaskTriggersResult(result.taskTriggers),
     formatManagedGrandmaKayResult(result.grandmaKay),
@@ -177,12 +191,14 @@ export {
   ensureManagedDataSystemUser,
   formatManagedDemoUserResult,
   formatManagedGrandmaKayResult,
+  formatManagedHumanityVGovernmentCaseResult,
   formatManagedIamOrganizationResult,
   formatManagedReferendumsResult,
   formatManagedTaskTriggersResult,
   formatManagedTasksResult,
   syncManagedDemoUser,
   syncManagedGrandmaKay,
+  syncManagedHumanityVGovernmentCase,
   syncManagedIamOrganization,
   syncManagedBootstrapData,
   syncManagedReferenceData,
@@ -196,6 +212,12 @@ export {
   GRANDMA_KAY_SOURCE_REF,
   GRANDMA_KAY_PERSON_CONDITION_ID,
 } from "./managed-grandma-kay.js";
+export {
+  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
+  MANAGED_HUMANITY_V_GOVERNMENT_CASE,
+  MANAGED_HUMANITY_V_GOVERNMENT_VERDICT,
+  getManagedHumanityVGovernmentMetadata,
+} from "./managed-humanity-v-government.js";
 export {
   IAM_ORGANIZATION_NAME,
   IAM_ORGANIZATION_SLUG,

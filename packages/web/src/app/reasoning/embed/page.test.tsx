@@ -3,9 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   headers: vi.fn(),
+  getApprovedOrganizationForSurveySlug: vi.fn(),
   prepareReasoningSession: vi.fn(),
   resolveLocale: vi.fn(),
-  verifyOrgContextToken: vi.fn(),
 }));
 
 vi.mock("next/headers", () => ({
@@ -16,8 +16,8 @@ vi.mock("@/components/reasoning/ReasoningFlow", () => ({
   ReasoningFlow: () => null,
 }));
 
-vi.mock("@/lib/organization-context-token.server", () => ({
-  verifyOrgContextToken: mocks.verifyOrgContextToken,
+vi.mock("@/lib/organization.server", () => ({
+  getApprovedOrganizationForSurveySlug: mocks.getApprovedOrganizationForSurveySlug,
 }));
 
 vi.mock("@/lib/reasoning/locale.server", () => ({
@@ -42,6 +42,7 @@ describe("EmbedPage", () => {
       }),
     );
     mocks.resolveLocale.mockResolvedValue({ localeKey: "en-US" });
+    mocks.getApprovedOrganizationForSurveySlug.mockResolvedValue(null);
     mocks.prepareReasoningSession.mockResolvedValue({
       arms: [],
       session: { id: "session-1" },
@@ -49,55 +50,53 @@ describe("EmbedPage", () => {
     });
   });
 
-  it("prepares a neutral public embed when no org token is present", async () => {
+  it("prepares a neutral public embed when no organization slug is present", async () => {
     await EmbedPage({ searchParams: Promise.resolve({}) });
 
-    expect(mocks.verifyOrgContextToken).not.toHaveBeenCalled();
+    expect(mocks.getApprovedOrganizationForSurveySlug).not.toHaveBeenCalled();
     expect(mocks.prepareReasoningSession).toHaveBeenCalledWith(
       expect.objectContaining({
         organizationId: null,
-        orgContextToken: null,
-        orgContextVerified: false,
+        organizationResolved: false,
         surface: "embed",
       }),
     );
   });
 
-  it("falls back to neutral public context when the org token is invalid", async () => {
-    mocks.verifyOrgContextToken.mockReturnValue({
-      ok: false,
-      reason: "bad-signature",
-    });
+  it("falls back to neutral public context when the organization slug is unknown", async () => {
+    mocks.getApprovedOrganizationForSurveySlug.mockResolvedValue(null);
 
     await EmbedPage({
-      searchParams: Promise.resolve({ token: "tampered-token" }),
+      searchParams: Promise.resolve({ org: "unknown-org" }),
     });
 
-    expect(mocks.verifyOrgContextToken).toHaveBeenCalledWith("tampered-token");
+    expect(mocks.getApprovedOrganizationForSurveySlug).toHaveBeenCalledWith(
+      "unknown-org",
+    );
     expect(mocks.prepareReasoningSession).toHaveBeenCalledWith(
       expect.objectContaining({
         organizationId: null,
-        orgContextToken: null,
-        orgContextVerified: false,
+        organizationResolved: false,
       }),
     );
   });
 
-  it("keeps verified org attribution when the org token is valid", async () => {
-    mocks.verifyOrgContextToken.mockReturnValue({
-      ok: true,
-      organizationId: "org_123",
+  it("keeps organization attribution when the public organization slug resolves", async () => {
+    mocks.getApprovedOrganizationForSurveySlug.mockResolvedValue({
+      id: "org_123",
+      slug: "institute-for-accelerated-medicine",
     });
 
     await EmbedPage({
-      searchParams: Promise.resolve({ token: "signed-token" }),
+      searchParams: Promise.resolve({
+        org: "institute-for-accelerated-medicine",
+      }),
     });
 
     expect(mocks.prepareReasoningSession).toHaveBeenCalledWith(
       expect.objectContaining({
         organizationId: "org_123",
-        orgContextToken: "signed-token",
-        orgContextVerified: true,
+        organizationResolved: true,
       }),
     );
   });

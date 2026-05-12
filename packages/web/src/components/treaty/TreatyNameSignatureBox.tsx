@@ -100,7 +100,6 @@ export function TreatyNameSignatureBox({
         inviteToken: null,
         timestamp: new Date().toISOString(),
         organizationId: null,
-        orgContextToken: null,
       });
     }
 

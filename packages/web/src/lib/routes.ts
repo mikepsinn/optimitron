@@ -5,6 +5,9 @@ import { slugify } from "@/lib/slugify";
 // into the browser bundle.
 import { HUMANITY_V_GOVERNMENT_CASE_NAME } from "@optimitron/db/task-keys";
 import {
+  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
+} from "@optimitron/data/referendums";
+import {
   fmtParam,
   DFDA_TRIAL_COST_REDUCTION_FACTOR,
   DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER,
@@ -31,6 +34,17 @@ const milToTrialRatio = Math.round(
 const bondReturn = fmtParam(VICTORY_BOND_ANNUAL_RETURN_PCT);
 const poolMultiple = `${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x`;
 const wishoniaAgencyCount = WISHONIA_AGENCIES.length;
+const humanityVGovernmentDamagesTitle =
+  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL.replace(
+    " million",
+    " Million",
+  );
+const warOnDiseaseDefaultSocialImage = {
+  alt: "Please take 30 seconds to end war and disease at WarOnDisease.org.",
+  height: 630,
+  url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
+  width: 1200,
+} as const;
 
 export const ROUTES = {
   home: "/",
@@ -144,6 +158,23 @@ export interface NavItem {
   authenticatedCopyPreview?: boolean;
   /** Stable screenshot/copy-review id when the path alone is ambiguous. */
   reviewName?: string;
+  /** Plain route-level social preview config. Rendering belongs in OG helpers. */
+  socialPreview?: {
+    title?: string;
+    description?: string;
+    image?: {
+      alt?: string;
+      height: number;
+      url: string;
+      width: number;
+    };
+    treatyOgImage?: {
+      eyebrow?: string;
+      footer?: string;
+      primaryLines: readonly string[];
+      secondaryLines?: readonly string[];
+    };
+  };
 }
 
 export const homeLink: NavItem = {
@@ -664,6 +695,9 @@ export const courtLink: NavItem = {
   tagline: "Public jury for government harm",
   copyPreview: true,
   screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
   cta: "Join the Court",
 };
 
@@ -682,6 +716,25 @@ export const humanityVGovernmentLink: NavItem = {
   tagline: "The case against government harm",
   copyPreview: true,
   screenshot: true,
+  socialPreview: {
+    title: `You May Be Owed ${humanityVGovernmentDamagesTitle} | Humanity v. Government`,
+    description: `Render your verdict in the Court of Humanity class action against the governments of Earth. The claim says each living human may be owed ${HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL} in full damages.`,
+    image: {
+      url: "/humanity-v-government/opengraph-image",
+      width: 1200,
+      height: 630,
+    },
+    treatyOgImage: {
+      eyebrow: "Humanity v. Government",
+      footer: "WarOnDisease.org",
+      primaryLines: [
+        "You May Be Owed",
+        humanityVGovernmentDamagesTitle,
+        "Render Your Verdict",
+      ],
+      secondaryLines: ["Court of Humanity class action"],
+    },
+  },
   cta: "Read the Case",
 };
 
@@ -695,6 +748,9 @@ export const voteLink: NavItem = {
   matchPrefixes: [ROUTES.vote],
   copyPreview: true,
   screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
   cta: "Vote Now",
 };
 
@@ -746,6 +802,9 @@ export const questionsLink: NavItem = {
   matchPrefixes: [ROUTES.questions],
   copyPreview: true,
   screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
   cta: "See the Questions",
 };
 
@@ -1048,6 +1107,9 @@ export const feedbackLink: NavItem = {
     "Tell us what is confusing, irritating, broken, or missing so this becomes a better to-do list for humanity.",
   copyPreview: true,
   screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
   cta: "Send Feedback",
 };
 

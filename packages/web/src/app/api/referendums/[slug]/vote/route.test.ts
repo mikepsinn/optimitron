@@ -18,7 +18,6 @@ const mocks = vi.hoisted(() => ({
   convertReferralInvitationForVote: vi.fn(),
   ensurePersonForUser: vi.fn(),
   ensureUserTreatyTask: vi.fn(),
-  verifyOrgContextToken: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -66,10 +65,6 @@ vi.mock("@/lib/tasks/user-treaty-task.server", () => ({
   ensureUserTreatyTask: mocks.ensureUserTreatyTask,
 }));
 
-vi.mock("@/lib/organization-context-token.server", () => ({
-  verifyOrgContextToken: mocks.verifyOrgContextToken,
-}));
-
 vi.mock("@/lib/wishes.server", () => ({
   grantWishes: mocks.grantWishes,
 }));
@@ -101,6 +96,11 @@ const ACTIVE_REFERENDUM = {
 const TREATY_REFERENDUM = {
   ...ACTIVE_REFERENDUM,
   slug: "one-percent-treaty",
+};
+
+const HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM = {
+  ...ACTIVE_REFERENDUM,
+  slug: "court-humanity-v-government-verdict",
 };
 
 describe("POST /api/referendums/[slug]/vote", () => {
@@ -139,7 +139,6 @@ describe("POST /api/referendums/[slug]/vote", () => {
         shareReferralUrl: "task_share",
       },
     });
-    mocks.verifyOrgContextToken.mockReturnValue({ ok: false, reason: "no-token" });
   });
 
   it("returns 401 when unauthenticated", async () => {
@@ -316,6 +315,29 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(
       mocks.ensureHumanityVGovernmentPlaintiffParty,
     ).not.toHaveBeenCalled();
+  });
+
+  it("registers a named plaintiff on a YES Humanity v Government verdict vote", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM);
+    const vote = { id: "vote_1", answer: "YES", userId: "user_1", referendumId: "ref_1" };
+    mocks.upsert.mockResolvedValue(vote);
+
+    const res = await POST(
+      makeRequest("court-humanity-v-government-verdict", { answer: "yes" }),
+      makeParams("court-humanity-v-government-verdict"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.ensureUserTreatyTask).not.toHaveBeenCalled();
+    expect(mocks.ensureHumanityVGovernmentPlaintiffParty).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        createdByUserId: "user_1",
+        displayName: "Mike",
+        subjectId: "subject_1",
+      }),
+    );
   });
 
   it("casts a NO vote successfully", async () => {
@@ -665,61 +687,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
   });
 
-  it("stores verified organization attribution alongside personal referral credit", async () => {
-    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "referrer_1" });
-    mocks.verifyOrgContextToken.mockReturnValue({
-      ok: true,
-      organizationId: "org_1",
-      payload: {
-        organizationId: "org_1",
-        issuedAt: "2026-04-29T00:00:00.000Z",
-        expiresAt: "2026-05-06T00:00:00.000Z",
-        sessionSalt: "salt",
-      },
-    });
-    mocks.organizationFindUnique.mockResolvedValue({
-      id: "org_1",
-      status: "APPROVED",
-      deletedAt: null,
-    });
-    mocks.upsert.mockResolvedValue({
-      id: "vote_1",
-      answer: "YES",
-      userId: "user_1",
-      referendumId: "ref_1",
-      referredByUserId: "referrer_1",
-      organizationId: "org_1",
-    });
-
-    await POST(
-      makeRequest("test-ref", {
-        answer: "YES",
-        ref: "friend123",
-        orgContextToken: "signed-org-token",
-      }),
-      makeParams("test-ref"),
-    );
-
-    expect(mocks.verifyOrgContextToken).toHaveBeenCalledWith("signed-org-token");
-    expect(mocks.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        // Org attribution is first-org-wins: set on create, never on update.
-        update: expect.not.objectContaining({ organizationId: expect.anything() }),
-        create: expect.objectContaining({
-          referredByUserId: "referrer_1",
-          organizationId: "org_1",
-        }),
-      }),
-    );
-  });
-
   it("stores approved public organization survey slug attribution without a signed token", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
     mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "referrer_1" });
-    mocks.verifyOrgContextToken.mockReturnValue({ ok: false, reason: "no-token" });
     mocks.organizationFindUnique.mockResolvedValue({
       id: "org_1",
       status: "APPROVED",
@@ -762,16 +733,6 @@ describe("POST /api/referendums/[slug]/vote", () => {
     // The upsert.update branch must never carry organizationId — first org wins.
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.verifyOrgContextToken.mockReturnValue({
-      ok: true,
-      organizationId: "org_b",
-      payload: {
-        organizationId: "org_b",
-        issuedAt: "2026-04-29T00:00:00.000Z",
-        expiresAt: "2026-05-06T00:00:00.000Z",
-        sessionSalt: "salt",
-      },
-    });
     mocks.organizationFindUnique.mockResolvedValue({
       id: "org_b",
       status: "APPROVED",
@@ -785,7 +746,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
 
     await POST(
-      makeRequest("test-ref", { answer: "NO", orgContextToken: "org-b-token" }),
+      makeRequest("test-ref", {
+        answer: "NO",
+        organizationSlug: "org-b",
+      }),
       makeParams("test-ref"),
     );
 
@@ -798,10 +762,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
   });
 
-  it("does not attribute an organization when the token signature is invalid", async () => {
+  it("does not attribute an organization when the public slug is unknown", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.verifyOrgContextToken.mockReturnValue({ ok: false, reason: "bad-signature" });
+    mocks.organizationFindUnique.mockResolvedValue(null);
     mocks.upsert.mockResolvedValue({
       id: "vote_1",
       answer: "YES",
@@ -810,11 +774,17 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
 
     await POST(
-      makeRequest("test-ref", { answer: "YES", orgContextToken: "tampered-token" }),
+      makeRequest("test-ref", {
+        answer: "YES",
+        organizationSlug: "unknown-org",
+      }),
       makeParams("test-ref"),
     );
 
-    expect(mocks.organizationFindUnique).not.toHaveBeenCalled();
+    expect(mocks.organizationFindUnique).toHaveBeenCalledWith({
+      where: { slug: "unknown-org" },
+      select: { id: true, status: true, deletedAt: true },
+    });
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         update: expect.not.objectContaining({ organizationId: expect.anything() }),
@@ -823,19 +793,9 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
   });
 
-  it("ignores signed organization attribution when the organization is no longer approved", async () => {
+  it("ignores public organization slug attribution when the organization is no longer approved", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.verifyOrgContextToken.mockReturnValue({
-      ok: true,
-      organizationId: "org_1",
-      payload: {
-        organizationId: "org_1",
-        issuedAt: "2026-04-29T00:00:00.000Z",
-        expiresAt: "2026-05-06T00:00:00.000Z",
-        sessionSalt: "salt",
-      },
-    });
     mocks.organizationFindUnique.mockResolvedValue({
       id: "org_1",
       status: "REJECTED",
@@ -851,13 +811,13 @@ describe("POST /api/referendums/[slug]/vote", () => {
     await POST(
       makeRequest("test-ref", {
         answer: "YES",
-        orgContextToken: "signed-org-token",
+        organizationSlug: "rejected-org",
       }),
       makeParams("test-ref"),
     );
 
     expect(mocks.organizationFindUnique).toHaveBeenCalledWith({
-      where: { id: "org_1" },
+      where: { slug: "rejected-org" },
       select: { id: true, status: true, deletedAt: true },
     });
     expect(mocks.upsert).toHaveBeenCalledWith(

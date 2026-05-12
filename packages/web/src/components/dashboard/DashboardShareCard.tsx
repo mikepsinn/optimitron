@@ -105,7 +105,9 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
       }),
       headers: { "Content-Type": "application/json" },
       method: "POST",
-    }).catch(() => {});
+    }).catch((error) => {
+      console.error("[share-track] dashboard share telemetry POST failed", error);
+    });
   }
 
   async function handleCopy() {
@@ -355,8 +357,8 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
       <label className="mt-6 block">
         <span className="sr-only">Share message</span>
         <textarea
-          className="block w-full resize-y border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-4 text-base font-bold leading-relaxed text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40"
-          rows={5}
+          className="block min-h-[13rem] w-full resize-y border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-4 text-base font-bold leading-relaxed text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40 sm:min-h-[10.5rem]"
+          rows={7}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           spellCheck

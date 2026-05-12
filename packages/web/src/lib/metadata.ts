@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { buildTreatyOgAltText } from "./treaty-og-image";
 import type { NavItem } from "./routes";
 import type { SiteConfig } from "./site";
 import {
@@ -20,6 +21,20 @@ export function getRouteMetadata(
   const title = item.label;
   const description = item.description ?? "";
   const { alternates, openGraph, ...restOverrides } = overrides ?? {};
+  const socialPreview = item.socialPreview;
+  const socialTitle = socialPreview?.title ?? title;
+  const socialDescription = socialPreview?.description ?? description;
+  const socialImageAlt =
+    socialPreview?.image?.alt ??
+    (socialPreview?.treatyOgImage
+      ? buildTreatyOgAltText(socialPreview.treatyOgImage)
+      : null);
+  const socialImage = socialPreview?.image
+    ? {
+        ...socialPreview.image,
+        ...(socialImageAlt ? { alt: socialImageAlt } : {}),
+      }
+    : null;
 
   return {
     title,
@@ -29,10 +44,21 @@ export function getRouteMetadata(
       ...alternates,
     },
     openGraph: {
-      title,
-      description,
+      title: socialTitle,
+      description: socialDescription,
+      ...(socialImage ? { images: [socialImage] } : {}),
       ...openGraph,
     },
+    ...(socialImage
+      ? {
+          twitter: {
+            card: "summary_large_image" as const,
+            title: socialTitle,
+            description: socialDescription,
+            images: [socialImage.url],
+          },
+        }
+      : {}),
     ...restOverrides,
   };
 }

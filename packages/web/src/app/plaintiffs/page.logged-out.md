@@ -1,5 +1,18 @@
 # /plaintiffs
 
+## Metadata
+
+- Page title: Register a Plaintiff | International Campaign to End War and Disease
+- Meta description: Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in Humanity v. Government.
+- Canonical: https://warondisease.org/plaintiffs
+- Open Graph title: Register a Plaintiff | International Campaign to End War and Disease
+- Open Graph description: Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in Humanity v. Government.
+- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Twitter title: Register a Plaintiff | International Campaign to End War and Disease
+- Twitter description: Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in Humanity v. Government.
+
+## Visible Page Copy
+
 ## REGISTER PLAINTIFFS FOR HUMANITY V GOVERNMENT.
 - Please list everyone you love who was harmed by war, disease, or government failure, so they may be presented as evidence in the class action lawsuit Humanity v. Government.
 - Humanity v. Government

@@ -94,7 +94,6 @@ async function postVote(
   answer: string,
   referredBy: string | null,
   inviteToken?: string | null,
-  orgContextToken?: string | null,
   organizationSlug?: string | null,
 ): Promise<boolean> {
   try {
@@ -105,7 +104,6 @@ async function postVote(
         answer,
         ref: referredBy ?? undefined,
         inviteToken: inviteToken ?? undefined,
-        orgContextToken: orgContextToken ?? undefined,
         organizationSlug: organizationSlug ?? undefined,
         // Full URL the voter was on at submit time. Server stores as
         // ReferendumVote.originUrl for variant + UTM forensics.
@@ -254,7 +252,6 @@ const treatyConfig: ReferendumConfig = {
       timestamp: new Date().toISOString(),
       organizationId: null,
       organizationSlug: null,
-      orgContextToken: null,
     }),
   clearPendingVote: () => storage.removePendingTreatyVote(),
   syncPending: async (session) => {
@@ -274,7 +271,6 @@ const treatyConfig: ReferendumConfig = {
           pending.answer,
           pending.referredBy,
           pending.inviteToken,
-          pending.orgContextToken,
           pending.organizationSlug,
         )
       : true;

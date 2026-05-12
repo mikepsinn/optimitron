@@ -196,6 +196,7 @@ The task tree has a single root: `optimize-earth` (taskKey `program:optimize-ear
 5. **Respect review-only turns.** If the user asks only for analysis, review, or a proposed copy/design, do not commit or push until they approve implementation or publishing.
 6. **Library packages stay runtime-safe.** No Prisma / runtime DB in `optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`.
 7. **Zod only at real boundaries** — HTTP, form, MCP, OAuth. Not internal helpers.
+8. **Calibrate before major refactors.** For multi-file refactors, deleting abstractions, or replacing auth/security controls, present 2-3 options with your recommendation first. Once a preference is clear for that decision class, proceed without re-asking.
 
 ## UI/UX Rules
 

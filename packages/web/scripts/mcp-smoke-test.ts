@@ -525,7 +525,8 @@ async function runTriggerRoundtripScenario() {
         parsed.result === "spawned" &&
         (parsed.spawnedTaskKeys?.length ?? 0) > 0;
     } catch {
-      /* ignore */
+      // Malformed JSON from dryRun = smoke-test failure; dryOk stays false and
+      // record() below reports it. Don't abort the rest of the suite.
     }
   }
   record(
@@ -554,7 +555,8 @@ async function runTriggerRoundtripScenario() {
         realTaskId = parsed.spawnedTaskIds[0] ?? null;
       }
     } catch {
-      /* ignore */
+      // Malformed JSON from real fire = smoke-test failure; realTaskId stays
+      // null and record() below reports it. Don't abort the rest of the suite.
     }
   }
   record(
@@ -583,7 +585,8 @@ async function runTriggerRoundtripScenario() {
           parsed.result === "spawned" &&
           (parsed.spawnedTaskIds?.[0] ?? "") === realTaskId;
       } catch {
-        /* ignore */
+        // Malformed JSON from refire = smoke-test failure; refireOk stays
+        // false and record() below reports it. Don't abort the rest of the suite.
       }
     }
     record(

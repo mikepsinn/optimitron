@@ -112,8 +112,7 @@ export type ReasoningState = {
   variantSetId: string;
   variantArmIds: VariantArmSelectionMap;
   organizationId: string | null;
-  orgContextVerified: boolean;
-  orgContextToken: string | null;
+  organizationResolved: boolean;
   surface: Surface;
   localeKey: string;
   hostKey: string;

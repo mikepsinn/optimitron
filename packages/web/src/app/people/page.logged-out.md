@@ -1,5 +1,18 @@
 # /people
 
+## Metadata
+
+- Page title: People | International Campaign to End War and Disease
+- Meta description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
+- Canonical: https://warondisease.org/people
+- Open Graph title: People | International Campaign to End War and Disease
+- Open Graph description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
+- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Twitter title: People | International Campaign to End War and Disease
+- Twitter description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
+
+## Visible Page Copy
+
 - DECENTRALIZED TO-DO LIST FOR HUMANITY
 ## COORDINATE THE HUMANS WHO CAN END WAR AND DISEASE.
 - Find officials, lawyers, clinical researchers, organizers, funders, and other people with public tasks. Open a profile, see what they were asked to do, and remind them.
@@ -19,7 +32,6 @@
 - ROLE
 - TASK
 - OPEN
-- [initials]
 - Abd al-Hamid Dbeibeh
 - Government of Libya
 - Public official / LY / 1 task
@@ -32,6 +44,7 @@
 - Government of Sudan
 - Public official / SD / 1 task
 - Public official / SD
+- [initials]
 - Abdoulaye Maïga
 - Government of Mali
 - Public official / ML / 1 task

@@ -1,5 +1,18 @@
 # /court
 
+## Metadata
+
+- Page title: Court of Humanity | International Campaign to End War and Disease
+- Meta description: Join the public jury and plaintiff class for government harm. If a government kills, injures, imprisons, or ruins your family, humanity should be able to hear the case.
+- Canonical: https://warondisease.org/court
+- Open Graph title: Court of Humanity
+- Open Graph description: Join the public jury and plaintiff class for government harm. If a government kills, injures, imprisons, or ruins your family, humanity should be able to hear the case.
+- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Twitter title: Court of Humanity
+- Twitter description: Join the public jury and plaintiff class for government harm. If a government kills, injures, imprisons, or ruins your family, humanity should be able to hear the case.
+
+## Visible Page Copy
+
 - If a government kills, injures, or harms you or your family, should you have the same right to sue it that you would have if a corporation did the same?
 - NO
 - YES

@@ -69,9 +69,7 @@ interface TreatyVoteFlowProps {
   authCallbackUrl?: string;
   className?: string;
   compactInitialScreen?: boolean;
-  copyMode?: "campaign" | "neutral";
   defaultFlowVariant?: TreatyFlowVariant;
-  orgContextToken?: string | null;
   organizationSlug?: string | null;
   postVoteBehavior?: "overlay" | "redirect";
   postVoteCompletion?: "share" | "message";
@@ -84,9 +82,7 @@ export function TreatyVoteFlow({
   authCallbackUrl = ROUTES.dashboard,
   className,
   compactInitialScreen = false,
-  copyMode = "campaign",
   defaultFlowVariant = DEFAULT_TREATY_FLOW_VARIANT,
-  orgContextToken = null,
   organizationSlug = null,
   postVoteBehavior = "overlay",
   postVoteCompletion = "share",
@@ -372,7 +368,6 @@ export function TreatyVoteFlow({
       wishocraticAllocation: buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
       organizationSlug: existingVote?.organizationSlug ?? organizationSlug,
-      orgContextToken: existingVote?.orgContextToken ?? orgContextToken,
     });
     trackSliderSubmitted({
       flowVariant,
@@ -418,7 +413,6 @@ export function TreatyVoteFlow({
         buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
       organizationSlug: existingVote?.organizationSlug ?? organizationSlug,
-      orgContextToken: existingVote?.orgContextToken ?? orgContextToken,
     });
 
     storage.clearVoteStatusCache();
@@ -701,19 +695,15 @@ export function TreatyVoteFlow({
               className={initialVoteShellClassName}
               contentClassName={initialVoteContentClassName}
             >
-              {copyMode === "neutral" ? null : (
-                <h1 className="mx-auto max-w-4xl text-center text-3xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
-                  Please Take 30 Seconds to End War and Disease
-                </h1>
-              )}
+              <h1 className="mx-auto max-w-4xl text-center text-3xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
+                Please Take 30 Seconds to End War and Disease
+              </h1>
 
               <TreatyFlowParagraph
                 dropCap
                 className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"
               >
-                {copyMode === "neutral"
-                  ? "Set the share of military spending you would prefer to redirect to pragmatic clinical trials."
-                  : VOTE_SECTION.sliderPrompt}
+                {VOTE_SECTION.sliderPrompt}
               </TreatyFlowParagraph>
 
               {/* Allocation Display */}
@@ -849,16 +839,10 @@ export function TreatyVoteFlow({
               className="overflow-y-auto py-6 sm:py-10"
               contentClassName="max-w-4xl justify-center space-y-6 py-8 sm:space-y-8 sm:py-12"
             >
-              {copyMode === "neutral" ? (
-                <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
-                  The proposal redirects 1% of military spending to pragmatic
-                  clinical trials.
-                </TreatyFlowParagraph>
-              ) : (
-                <div className="space-y-8 text-center">
-                  <div>
-                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
-                      Today&apos;s actual allocation
+              <div className="space-y-8 text-center">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
+                    Today&apos;s actual allocation
                     </div>
                     <div className="mt-3 grid grid-cols-2 gap-4 sm:gap-12">
                       <div className="text-center">
@@ -909,12 +893,9 @@ export function TreatyVoteFlow({
                     </div>
                   </div>
                 </div>
-              )}
 
               <div className="text-center text-xl font-black leading-tight text-[var(--treaty-ink)] sm:text-3xl md:text-4xl">
-                {copyMode === "neutral"
-                  ? "Should governments redirect 1% of military spending to pragmatic clinical trials?"
-                  : VOTE_SECTION.theQuestion}
+                {VOTE_SECTION.theQuestion}
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -985,20 +966,10 @@ export function TreatyVoteFlow({
               <TreatyFlowShell contentClassName="max-w-2xl">
                 <div className="space-y-4">
                   <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
-                    {copyMode === "neutral"
-                      ? "Save Your Response"
-                      : isContextFirstVariant
-                        ? "Vote counted."
-                        : "Save Your Vote"}
+                    {isContextFirstVariant ? "Vote counted." : "Save Your Vote"}
                   </p>
                   <p className="text-center text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
-                    {copyMode === "neutral" ? (
-                      <>
-                        Verify so your survey response counts in the final tally.
-                        If you came from an organization link, your response will
-                        be credited to that organization.
-                      </>
-                    ) : isContextFirstVariant ? (
+                    {isContextFirstVariant ? (
                       <>
                         Governments won&apos;t listen to bot votes. They barely
                         listen to human ones, but at least yours will be on
@@ -1030,9 +1001,9 @@ export function TreatyVoteFlow({
                   compact={true}
                   hideContainer
                   title={null}
-                  googleButtonLabel={copyMode === "neutral" || isContextFirstVariant ? "Verify with Google" : "Save with Google"}
-                  emailButtonLabel={copyMode === "neutral" || isContextFirstVariant ? "Verify by email" : "Email me a save link"}
-                  emailPendingButtonLabel={copyMode === "neutral" || isContextFirstVariant ? "Sending verification link..." : "Sending save link..."}
+                  googleButtonLabel={isContextFirstVariant ? "Verify with Google" : "Save with Google"}
+                  emailButtonLabel={isContextFirstVariant ? "Verify by email" : "Email me a save link"}
+                  emailPendingButtonLabel={isContextFirstVariant ? "Sending verification link..." : "Sending save link..."}
                   emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
                 />
               </TreatyFlowShell>
