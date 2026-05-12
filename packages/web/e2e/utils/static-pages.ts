@@ -41,7 +41,7 @@ export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
   "/mcp/authorize",
 ]);
 
-const CANDIDATE_REDIRECT_ONLY_PATHS = [ROUTES.impact];
+const CANDIDATE_REDIRECT_ONLY_PATHS = [ROUTES.impact, ROUTES.politicians];
 
 /** Routes that redirect off-app and should be tested as redirects, not pages. */
 export const REDIRECT_ONLY_PATHS: Set<string> = new Set(
