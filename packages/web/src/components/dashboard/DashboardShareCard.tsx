@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ComponentType } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Copy, Mail, Share2, Smartphone } from "lucide-react";
 import { FaFacebookF, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 import { ParameterValue } from "@/components/shared/ParameterValue";
@@ -17,6 +17,7 @@ import {
 import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
 import { ROUTES } from "@/lib/routes";
 import { buildShareMessage } from "@/lib/share-message";
+import { cn } from "@/lib/utils";
 
 interface DashboardShareCardProps {
   referralUrl: string;
@@ -29,13 +30,18 @@ type ShareButtonConfig = {
   href: string;
   icon: ComponentType<{ className?: string }>;
   label: string;
+  mobileOnly?: boolean;
   target?: "_blank";
 };
 
 function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(text);
+    return navigator.clipboard.writeText(text).catch(() => copyWithTextarea(text));
   }
+  return copyWithTextarea(text);
+}
+
+function copyWithTextarea(text: string): Promise<void> {
   const textarea = document.createElement("textarea");
   textarea.value = text;
   textarea.style.position = "fixed";
@@ -75,11 +81,18 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
     [referralUrl],
   );
   const [message, setMessage] = useState(defaultMessage);
+  const [nativeShareSupported, setNativeShareSupported] = useState(false);
   const [shareState, setShareState] = useState<ShareState>("idle");
   const shareUrls = useMemo(
     () => getShareUrls(message, referralUrl),
     [message, referralUrl],
   );
+
+  useEffect(() => {
+    setNativeShareSupported(
+      typeof navigator !== "undefined" && Boolean(navigator.share),
+    );
+  }, []);
 
   function resetShareState() {
     window.setTimeout(() => setShareState("idle"), 2000);
@@ -147,6 +160,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
       href: shareUrls.sms,
       icon: Smartphone,
       label: "Text",
+      mobileOnly: true,
     },
     {
       channel: "whatsapp" as const,
@@ -180,17 +194,19 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
   const secondaryButtonClass =
     "inline-flex min-h-11 items-center justify-center gap-2 border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-3 py-2 text-xs font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] transition-colors hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]";
 
+  const nativeButtonLabel =
+    shareState === "shared"
+      ? "Shared"
+      : "Share with two humans";
+
   const copyButtonLabel =
     shareState === "copied"
       ? "Copied"
       : shareState === "error"
         ? "Copy failed"
-        : "Copy";
+        : "Copy to clipboard";
 
-  const nativeButtonLabel =
-    shareState === "shared"
-      ? "Shared"
-      : "Share with two humans";
+  const PrimaryShareIcon = nativeShareSupported ? Share2 : Copy;
 
   function renderShareIcon(Icon: ComponentType<{ className?: string }>) {
     return <Icon className="h-4 w-4 shrink-0" />;
@@ -208,10 +224,6 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
     return `Share by ${label}`;
   }
 
-  function getButtonAriaLabel(label: string) {
-    return label === "Copy" ? "Copy share message" : label;
-  }
-
   function getStatusLabel() {
     return shareStatus ? <span className="sr-only" aria-live="polite">{shareStatus}</span> : null;
   }
@@ -221,7 +233,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
       <a
         key={button.channel}
         aria-label={getLinkAriaLabel(button.label)}
-        className={secondaryButtonClass}
+        className={cn(secondaryButtonClass, button.mobileOnly && "sm:hidden")}
         href={button.href}
         onClick={() => handleOutboundShare(button.channel)}
         rel={getLinkRel(button.target)}
@@ -236,8 +248,8 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
   function renderCopyButton() {
     return (
       <button
-        aria-label={getButtonAriaLabel(copyButtonLabel)}
-        className={secondaryButtonClass}
+        aria-label="Copy share message to clipboard"
+        className="inline-flex min-h-12 w-full items-center justify-center gap-2 border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] transition-colors hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]"
         onClick={() => void handleCopy()}
         type="button"
       >
@@ -352,17 +364,19 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
       </label>
 
       <div className="mt-4 space-y-3">
-        <button
-          type="button"
-          onClick={() => void handleNativeShare()}
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 border-2 border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] transition-colors hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)]"
-        >
-          <Share2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-          {nativeButtonLabel}
-        </button>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {nativeShareSupported ? (
+          <button
+            type="button"
+            onClick={() => void handleNativeShare()}
+            className="inline-flex min-h-12 w-full items-center justify-center gap-2 border-2 border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] transition-colors hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)]"
+          >
+            <PrimaryShareIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {nativeButtonLabel}
+          </button>
+        ) : null}
+        {renderCopyButton()}
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {shareButtons.map(renderShareButton)}
-          {renderCopyButton()}
         </div>
         {getStatusLabel()}
         {renderShareStatus()}
