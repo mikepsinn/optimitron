@@ -91,3 +91,4 @@ packages/web/public/media/
 .vercel
 .claude/scheduled_tasks.lock
 .codex-logs/dashboard-dev.pid
+.tmp-pr-comments.json
