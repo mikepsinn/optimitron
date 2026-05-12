@@ -75,8 +75,11 @@ interface TreatyVoteFlowProps {
   postVoteCompletion?: "share" | "message";
   postVoteRedirectUrl?: string;
   respectStoredFlowVariant?: boolean;
+  sliderHeadline?: string;
   surface?: string;
 }
+
+const DEFAULT_SLIDER_HEADLINE = "Please Take 30 Seconds to End War and Disease";
 
 export function TreatyVoteFlow({
   authCallbackUrl = ROUTES.dashboard,
@@ -88,6 +91,7 @@ export function TreatyVoteFlow({
   postVoteCompletion = "share",
   postVoteRedirectUrl = ROUTES.dashboard,
   respectStoredFlowVariant = true,
+  sliderHeadline = DEFAULT_SLIDER_HEADLINE,
   surface = "treaty_vote_flow",
 }: TreatyVoteFlowProps) {
   const searchParams = useSearchParams();
@@ -696,7 +700,7 @@ export function TreatyVoteFlow({
               contentClassName={initialVoteContentClassName}
             >
               <h1 className="mx-auto max-w-4xl text-center text-3xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
-                Please Take 30 Seconds to End War and Disease
+                {sliderHeadline}
               </h1>
 
               <TreatyFlowParagraph

@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Join as an Organization — 1% Treaty
-- Meta description: Join the International Campaign to End War and Disease as an organization: humanity should trade one of its 122 apocalypses of mass-murder capacity to compress the disease-eradication timeline from 443 years to 36 years.
+- Meta description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
 - Canonical: https://warondisease.org/endorse
 - Open Graph title: Join as an Organization — 1% Treaty
-- Open Graph description: Join the International Campaign to End War and Disease as an organization: humanity should trade one of its 122 apocalypses of mass-murder capacity to compress the disease-eradication timeline from 443 years to 36 years.
+- Open Graph description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fendorse
 - Twitter title: Join as an Organization — 1% Treaty
-- Twitter description: Join the International Campaign to End War and Disease as an organization: humanity should trade one of its 122 apocalypses of mass-murder capacity to compress the disease-eradication timeline from 443 years to 36 years.
+- Twitter description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
 
 ## Visible Page Copy
 
@@ -35,7 +35,7 @@
 - GRANT $ PER RESPONSE
 - GRANT REQUEST
 - $3,960
-- AT $2 PER SURVEY RESPONSE
+- ESTIMATED OUTREACH COST PER RESPONSE: $2
 - SURVEY RESPONSES
 - 1,980
 - FROM 66,000 PEOPLE REACHED
@@ -45,7 +45,7 @@
 - SUFFERING PREVENTED
 - 109,058
 - YEARS OF SUFFERING PREVENTED
-- 1,980 verified survey responses × 2.7 lives and 55 years prevented per response. At $2 per response, the outreach request is $3,960.
+- 1,980 verified survey responses × 2.7 lives and 55 years prevented per response. At an estimated outreach cost of $2 per response, the outreach request is $3,960.
 - 2.7
 - 55
 #### GRANT REQUEST DRAFT

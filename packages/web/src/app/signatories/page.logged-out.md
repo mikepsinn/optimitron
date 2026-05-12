@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: Signatories — 1% Treaty
-- Meta description: Organizations and humans who publicly signed the 1% Treaty.
+- Page title: The People Who Ended War and Disease
+- Meta description: The humans and organizations who signed the 1% Treaty and got humanity to agree to end war and disease.
 - Canonical: https://warondisease.org/signatories
-- Open Graph title: Signatories — 1% Treaty
-- Open Graph description: Organizations and humans who publicly signed the 1% Treaty.
+- Open Graph title: The People Who Ended War and Disease
+- Open Graph description: The humans and organizations who signed the 1% Treaty and got humanity to agree to end war and disease.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fsignatories
-- Twitter title: Signatories — 1% Treaty
-- Twitter description: Organizations and humans who publicly signed the 1% Treaty.
+- Twitter title: The People Who Ended War and Disease
+- Twitter description: The humans and organizations who signed the 1% Treaty and got humanity to agree to end war and disease.
 
 ## Visible Page Copy
 

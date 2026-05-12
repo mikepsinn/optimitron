@@ -2,19 +2,19 @@
 
 ## Metadata
 
-- Page title: Tasks — 1% Treaty
-- Meta description: The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.
+- Page title: Earth Optimization Tasks
+- Meta description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
 - Canonical: https://warondisease.org/tasks
-- Open Graph title: Tasks — 1% Treaty
-- Open Graph description: The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.
+- Open Graph title: Earth Optimization Tasks
+- Open Graph description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Ftasks
-- Twitter title: Tasks — 1% Treaty
-- Twitter description: The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.
+- Twitter title: Earth Optimization Tasks
+- Twitter description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
 
 ## Visible Page Copy
 
 ## EARTH OPTIMIZATION TASKS
-- Two sections. Humanity's job, then yours. Pick one and move healthy life years or income toward their 2040 targets.
+- A public to-do list for optimizing Earth. Each task names the human or organization, gives them a specific job, and shows the cost of waiting.
 ### HUMANITY'S TASKS
 - Sort
 - ASSIGNEE

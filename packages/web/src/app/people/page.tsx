@@ -207,15 +207,15 @@ export default async function PeoplePage({
         <header className="space-y-5">
           <div className="space-y-4">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-              Decentralized to-do list for humanity
+              Humans who can end war and disease
             </p>
             <h1 className="max-w-4xl text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
-              Coordinate the humans who can end war and disease.
+              Find the human who should do something.
             </h1>
             <p className="max-w-4xl text-lg font-bold leading-8 text-muted-foreground">
               Find officials, lawyers, clinical researchers, organizers,
-              funders, and other people with public tasks. Open a profile, see
-              what they were asked to do, and remind them.
+              funders, and communicators who can help end war and disease.
+              Open a profile, see the task, and remind the human.
             </p>
           </div>
 

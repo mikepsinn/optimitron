@@ -42,6 +42,10 @@ const DEFAULT_LOGGED_OUT_ROUTES = getRouteReviewSpecs("copyPreview").map(
 const DEFAULT_AUTHENTICATED_ROUTES = getRouteReviewSpecs(
   "authenticatedCopyPreview",
 ).map((spec) => spec.path);
+const GLOBAL_LOADING_TEXT = [
+  "Booting Earth Optimization System",
+  "Your civilization is very important to us.",
+];
 
 function parseRoutesFromArgs(): {
   authenticatedRoutes: string[];
@@ -157,6 +161,7 @@ async function extractPage(
     waitUntil: "networkidle",
     timeout: 30000,
   });
+  await waitForGlobalLoaderToClear(page);
   await page.waitForTimeout(400);
   const metadata = await extractPageMetadata(page);
   const bodyMarkdown = await page.evaluate(() => {
@@ -195,6 +200,21 @@ async function extractPage(
   });
 
   return { bodyMarkdown, metadata };
+}
+
+async function waitForGlobalLoaderToClear(
+  page: import("@playwright/test").Page,
+): Promise<void> {
+  await page
+    .waitForFunction(
+      (loadingText) => {
+        const bodyText = document.body.innerText ?? "";
+        return loadingText.every((text) => !bodyText.includes(text));
+      },
+      GLOBAL_LOADING_TEXT,
+      { timeout: 15_000 },
+    )
+    .catch(() => undefined);
 }
 
 function cookieDomainFromBase(): string {

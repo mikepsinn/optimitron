@@ -3,6 +3,7 @@ import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_REDUCTION_PCT,
   fmtParamValueOnly,
   fmtRaw,
 } from "@optimitron/data/parameters";
@@ -27,6 +28,7 @@ const dfdaQueueYears = Math.round(
   DFDA_QUEUE_CLEARANCE_YEARS.value,
 ).toLocaleString("en-US");
 const campaignName = CAMPAIGN_NAME;
+const treatyReduction = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 const treatyTradePosition = `humanity should trade one of its ${apocalypseCount} apocalypses of mass-murder capacity to compress the disease-eradication timeline from ${statusQuoQueueYears} years to ${dfdaQueueYears} years`;
 
 const onePercentTreatyMessageCatalog: OnePercentTreatyMessageCatalog =
@@ -78,8 +80,11 @@ const onePercentTreatyRenderedMessages = renderMessageTemplates(
   {
     apocalypseCount,
     campaignName,
+    dfdaQueueYears,
     diseaseAcceleration,
     reducedApocalypseCount,
+    statusQuoQueueYears,
+    treatyReduction,
     treatyTradePosition,
   },
   ["onePercentTreaty"],

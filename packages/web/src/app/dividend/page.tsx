@@ -1,17 +1,19 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import {
   getOptimizationDividendSummary,
   US_ADULT_POPULATION,
 } from "@/lib/analysis-products";
 import { DividendCalculator } from "@/components/landing/DividendCalculator";
-import { getBudgetCategoryPath, getLegislationPath, ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import {
+  dividendLink,
+  getBudgetCategoryPath,
+  getLegislationPath,
+  ROUTES,
+} from "@/lib/routes";
 import { usBudgetAnalysis } from "@/data/us-budget-analysis";
 
-export const metadata: Metadata = {
-  title: "Optimization Dividend",
-  description: "What each adult could receive if US spending matched the cheapest high-performing countries.",
-};
+export const metadata = getRouteMetadata(dividendLink);
 
 function formatCurrency(value: number): string {
   if (Math.abs(value) >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;

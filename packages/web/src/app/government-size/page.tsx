@@ -1,12 +1,9 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import { usGovernmentSizeAnalysis } from "@/lib/government-size-analysis";
-import { ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import { governmentSizeLink, ROUTES } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "Government Size Analysis",
-  description: "Cross-country panel estimate of the US-equivalent government spending floor.",
-};
+export const metadata = getRouteMetadata(governmentSizeLink);
 
 function formatCurrency(value: number): string {
   if (Math.abs(value) >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;

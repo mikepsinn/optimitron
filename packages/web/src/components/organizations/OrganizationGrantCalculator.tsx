@@ -1,6 +1,10 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import {
+  fmtParamValueOnly,
+  TREATY_REDUCTION_PCT,
+} from "@optimitron/data/parameters";
 import { Check, Copy } from "lucide-react";
 import { Dialog } from "@/components/retroui/Dialog";
 import { ParameterValue } from "@/components/shared/ParameterValue";
@@ -19,6 +23,7 @@ const DEFAULT_REACH_RATE = 30;
 const DEFAULT_VOTE_RATE = 2;
 const DEFAULT_SHARE_MULTIPLIER = 1.5;
 const DEFAULT_GRANT_COST_PER_VOTE = 2;
+const treatyReduction = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -250,9 +255,9 @@ export function OrganizationGrantCalculator({
       [
         `Outreach grant request draft: ${formatCurrency(estimate.grantAsk)}`,
         "",
-        `${grantApplicant} is applying for an outreach grant from the International Campaign to End War and Disease to conduct the ${GLOBAL_SURVEY_NAME} with our audience. The survey asks humans whether their government should ratify the 1% Treaty, which redirects 1% of military spending to pragmatic clinical trials.`,
+        `${grantApplicant} is applying for an outreach grant from the International Campaign to End War and Disease to conduct the ${GLOBAL_SURVEY_NAME} with our audience. The survey asks humans whether governments should redirect ${treatyReduction} of military spending to pragmatic clinical trials to help end war and disease.`,
         "",
-        `With this grant, we estimate we can reach ${formatNumber(estimate.humansReached)} people through our email list, social channels, and website. At ${formatCurrency(estimate.costPerVote)} per verified survey response, the grant would fund approximately ${formatNumber(estimate.verifiedVotes)} verified survey responses.`,
+        `With this grant, we estimate we can reach ${formatNumber(estimate.humansReached)} people through our email list, social channels, and website. At an estimated outreach cost of ${formatCurrency(estimate.costPerVote)} per verified survey response, the grant would support outreach expected to produce approximately ${formatNumber(estimate.verifiedVotes)} verified survey responses.`,
         "",
         `Campaign model impact: ${formatNumber(estimate.verifiedVotes)} verified survey responses x ${formatGrantMetric(FLOW_VOTER_LIVES_SAVED_ROUNDED.value)} lives and ${formatGrantMetric(FLOW_VOTER_SUFFERING_YEARS_PREVENTED.value)} years of suffering prevented per response = approximately ${formatNumber(estimate.livesSaved)} lives saved and ${formatNumber(estimate.sufferingYears)} years of suffering prevented.`,
         "",
@@ -337,7 +342,7 @@ export function OrganizationGrantCalculator({
               value={shareMultiplier}
             />
             <CalculatorInput
-              help="Estimated grant dollars needed per verified survey response. This sets the grant request and does not change the modeled impact per response."
+              help="Estimated outreach dollars needed per verified survey response. This sets the grant request and does not change the modeled impact per response."
               label="Grant $ per response"
               onChange={setGrantCostPerVote}
               step={0.1}
@@ -356,7 +361,8 @@ export function OrganizationGrantCalculator({
             {formatCurrency(estimate.grantAsk)}
           </p>
           <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-            at {formatCurrency(estimate.costPerVote)} per survey response
+            estimated outreach cost per response:{" "}
+            {formatCurrency(estimate.costPerVote)}
           </p>
         </div>
         <div className="border-2 border-foreground bg-background p-4">
@@ -403,7 +409,7 @@ export function OrganizationGrantCalculator({
           figures={2}
           param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED}
         />{" "}
-        years prevented per response. At{" "}
+        years prevented per response. At an estimated outreach cost of{" "}
         {formatCurrency(parsePositiveNumber(grantCostPerVote, 2))} per response,
         the outreach request is {formatCurrency(estimate.grantAsk)}.
       </p>

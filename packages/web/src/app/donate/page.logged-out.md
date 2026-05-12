@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Prevent 2 yrs of suffering for $1 | International Campaign to End War and Disease
-- Meta description: Use the calculator to buy expected lives saved or years of suffering prevented. Tax-deductible to a U.S. 501(c)(3).
+- Meta description: Fund survey outreach for the trade: one of humanity's 122 apocalypses for disease eradication in 36 years instead of 443.
 - Canonical: https://warondisease.org/donate
 - Open Graph title: Prevent 2 yrs of suffering for $1 | International Campaign to End War and Disease
-- Open Graph description: Use the calculator to buy expected lives saved or years of suffering prevented. Tax-deductible to a U.S. 501(c)(3).
+- Open Graph description: Fund survey outreach for the trade: one of humanity's 122 apocalypses for disease eradication in 36 years instead of 443.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fdonate
 - Twitter title: Prevent 2 yrs of suffering for $1 | International Campaign to End War and Disease
-- Twitter description: Use the calculator to buy expected lives saved or years of suffering prevented. Tax-deductible to a U.S. 501(c)(3).
+- Twitter description: Fund survey outreach for the trade: one of humanity's 122 apocalypses for disease eradication in 36 years instead of 443.
 
 ## Visible Page Copy
 

@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: Treaty — 1% Treaty
-- Meta description: The entire text, then a box to sign it. It is shorter than your last software update.
+- Page title: Sign the 1% Treaty
+- Meta description: Every country redirects 1% of military spending to clinical trials at the same time, cutting disease eradication from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
 - Canonical: https://warondisease.org/treaty
-- Open Graph title: Treaty — 1% Treaty
-- Open Graph description: The entire text, then a box to sign it. It is shorter than your last software update.
+- Open Graph title: Sign the 1% Treaty
+- Open Graph description: Every country redirects 1% of military spending to clinical trials at the same time, cutting disease eradication from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Ftreaty
-- Twitter title: Treaty — 1% Treaty
-- Twitter description: The entire text, then a box to sign it. It is shorter than your last software update.
+- Twitter title: Sign the 1% Treaty
+- Twitter description: Every country redirects 1% of military spending to clinical trials at the same time, cutting disease eradication from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
 
 ## Visible Page Copy
 

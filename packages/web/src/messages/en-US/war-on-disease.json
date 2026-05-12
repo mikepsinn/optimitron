@@ -6,24 +6,24 @@
         "description": "Humanity currently spends enough on mass murder capacity for {apocalypseCount} apocalypses. This proposes we settle for {reducedApocalypseCount} and use the savings to eradicate disease {diseaseAcceleration} times faster."
       },
       "treaty": {
-        "title": "Treaty — 1% Treaty",
-        "description": "The entire text, then a box to sign it. It is shorter than your last software update."
+        "title": "Sign the 1% Treaty",
+        "description": "Every country redirects {treatyReduction} of military spending to clinical trials at the same time, cutting disease eradication from {statusQuoQueueYears} years to {dfdaQueueYears}. Nobody gets weaker. Everyone gets more medicine."
       },
       "dashboard": {
         "title": "Dashboard — 1% Treaty",
-        "description": "Your signature, your link, and a list of leaders who are still late on a thirty-second task."
+        "description": "Get humanity to agree to end war and disease. Share your link and remind presidents that their job is to promote the general welfare."
       },
       "tasks": {
-        "title": "Tasks — 1% Treaty",
-        "description": "The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are."
+        "title": "Earth Optimization Tasks",
+        "description": "The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs."
       },
       "endorse": {
         "title": "Join as an Organization — 1% Treaty",
-        "description": "Join the {campaignName} as an organization: {treatyTradePosition}."
+        "description": "Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them."
       },
       "signatories": {
-        "title": "Signatories — 1% Treaty",
-        "description": "Organizations and humans who publicly signed the 1% Treaty."
+        "title": "The People Who Ended War and Disease",
+        "description": "The humans and organizations who signed the 1% Treaty and got humanity to agree to end war and disease."
       },
       "supporters": {
         "title": "Organizational Supporters — 1% Treaty",

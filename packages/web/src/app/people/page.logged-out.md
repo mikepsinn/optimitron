@@ -2,20 +2,20 @@
 
 ## Metadata
 
-- Page title: People | International Campaign to End War and Disease
-- Meta description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
+- Page title: Humans Who Can End War and Disease | International Campaign to End War and Disease
+- Meta description: Officials, lawyers, researchers, organizers, funders, and communicators who can help humanity end war and disease.
 - Canonical: https://warondisease.org/people
-- Open Graph title: People | International Campaign to End War and Disease
-- Open Graph description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
+- Open Graph title: Humans Who Can End War and Disease | International Campaign to End War and Disease
+- Open Graph description: Officials, lawyers, researchers, organizers, funders, and communicators who can help humanity end war and disease.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fpeople
-- Twitter title: People | International Campaign to End War and Disease
-- Twitter description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
+- Twitter title: Humans Who Can End War and Disease | International Campaign to End War and Disease
+- Twitter description: Officials, lawyers, researchers, organizers, funders, and communicators who can help humanity end war and disease.
 
 ## Visible Page Copy
 
-- DECENTRALIZED TO-DO LIST FOR HUMANITY
-## COORDINATE THE HUMANS WHO CAN END WAR AND DISEASE.
-- Find officials, lawyers, clinical researchers, organizers, funders, and other people with public tasks. Open a profile, see what they were asked to do, and remind them.
+- HUMANS WHO CAN END WAR AND DISEASE
+## FIND THE HUMAN WHO SHOULD DO SOMETHING.
+- Find officials, lawyers, clinical researchers, organizers, funders, and communicators who can help end war and disease. Open a profile, see the task, and remind the human.
 - SEE TASKS
 - REGISTER A PLAINTIFF
 - SEARCH

@@ -7,13 +7,14 @@ import { HUMANITY_V_GOVERNMENT_CASE_NAME } from "@optimitron/db/task-keys";
 import {
   HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
 } from "@optimitron/data/referendums";
+import { GLOBAL_SURVEY_NAME } from "@optimitron/data/campaign";
 import {
   fmtParam,
-  DFDA_TRIAL_COST_REDUCTION_FACTOR,
-  DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER,
-  IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT,
+  DFDA_QUEUE_CLEARANCE_YEARS,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-  PRIZE_POOL_HORIZON_MULTIPLE,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_REDUCTION_PCT,
   VICTORY_BOND_ANNUAL_RETURN_PCT,
 } from "@optimitron/data/parameters";
 import {
@@ -25,15 +26,21 @@ import {
 // from "@/lib/routes"` alongside the rest of the route catalog.
 export { HUMANITY_V_GOVERNMENT_CASE_NAME };
 // Precompute for descriptions (same pattern as demo-script.ts)
-const costReduction = Math.round(DFDA_TRIAL_COST_REDUCTION_FACTOR.value);
-const speedup = Math.round(DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER.value);
-const iabLobbyRatio = Math.round(IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT.value);
 const milToTrialRatio = Math.round(
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value,
 );
 const bondReturn = fmtParam(VICTORY_BOND_ANNUAL_RETURN_PCT);
-const poolMultiple = `${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x`;
 const wishoniaAgencyCount = WISHONIA_AGENCIES.length;
+const treatyReduction = fmtParam(TREATY_REDUCTION_PCT, 1);
+const statusQuoYears = Math.round(
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS.value,
+).toLocaleString("en-US");
+const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value).toLocaleString(
+  "en-US",
+);
+const apocalypseCount = Math.round(
+  NUCLEAR_WINTER_OVERKILL_FACTOR.value,
+).toLocaleString("en-US");
 const humanityVGovernmentDamagesTitle =
   HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL.replace(
     " million",
@@ -181,15 +188,16 @@ export const homeLink: NavItem = {
   href: ROUTES.home,
   label: "Home",
   emoji: "",
-  description: "Primary public landing page.",
-  tagline: "Primary public landing page",
+  description:
+    "Please take 30 seconds to end war and disease. Vote on the 1% Treaty, then give one human the same job.",
+  tagline: "Take 30 seconds to end war and disease",
   copyPreview: true,
   reviewName: "home",
   screenshot: true,
   socialPreview: {
     image: warOnDiseaseDefaultSocialImage,
   },
-  cta: "Go Home",
+  cta: "End War and Disease",
 };
 
 export function getBudgetCategoryPath(name: string): string {
@@ -250,7 +258,7 @@ export function isNavItemActive(pathname: string, item: NavItem): boolean {
 export const opgLink: NavItem = {
   href: ROUTES.opg,
   label: AGENCIES.dcbo.dName,
-  emoji: "📋",
+  emoji: AGENCIES.dcbo.emoji,
   description: AGENCIES.dcbo.description,
   tagline: AGENCIES.dcbo.tagline,
   cta: "See Policy Grades",
@@ -259,7 +267,7 @@ export const opgLink: NavItem = {
 export const obgLink: NavItem = {
   href: ROUTES.obg,
   label: AGENCIES.domb.dName,
-  emoji: "💰",
+  emoji: AGENCIES.domb.emoji,
   description: AGENCIES.domb.description,
   tagline: AGENCIES.domb.tagline,
   cta: "See Budget Analysis",
@@ -268,10 +276,9 @@ export const obgLink: NavItem = {
 export const dihLink: NavItem = {
   href: ROUTES.dih,
   label: AGENCIES.dih.dName,
-  emoji: "🧬",
-  description:
-    "Create and fund disease-focused institutes by what humans actually need cured.",
-  tagline: "Fund institutes for diseases humans need cured",
+  emoji: AGENCIES.dih.emoji,
+  description: AGENCIES.dih.description,
+  tagline: AGENCIES.dih.tagline,
   matchPrefixes: [ROUTES.dih],
   cta: "Open DIH",
 };
@@ -279,10 +286,9 @@ export const dihLink: NavItem = {
 export const dfdaLink: NavItem = {
   href: ROUTES.dfda,
   label: AGENCIES.dfda.dName,
-  emoji: "💊",
-  description:
-    "Compare conditions, treatments, trials, and outcomes before the brochure wins.",
-  tagline: "Compare treatments by outcomes",
+  emoji: AGENCIES.dfda.emoji,
+  description: AGENCIES.dfda.description,
+  tagline: AGENCIES.dfda.tagline,
   matchPrefixes: [ROUTES.dfda],
   cta: "Open DFDA",
 };
@@ -292,8 +298,8 @@ export const conditionsLink: NavItem = {
   label: "Conditions",
   emoji: "🩺",
   description:
-    "Browse medical conditions and the evidence attached to treatments and clinical trials.",
-  tagline: "Browse conditions and treatment evidence",
+    "Pick a disease and see the evidence. If there is almost none, that is the problem, helpfully labeled.",
+  tagline: "Find disease evidence",
   matchPrefixes: [ROUTES.conditions, "/conditions"],
   cta: "Browse Conditions",
 };
@@ -303,8 +309,8 @@ export const treatmentsLink: NavItem = {
   label: "Treatments",
   emoji: "💊",
   description:
-    "Compare treatments across conditions by trials, participants, effectiveness, and safety.",
-  tagline: "Compare treatments across conditions",
+    "See which treatments have trial evidence, how many humans were tested, and whether they helped or merely had a confident name.",
+  tagline: "Compare treatment evidence",
   matchPrefixes: [ROUTES.treatments, "/treatments"],
   cta: "Browse Treatments",
 };
@@ -312,7 +318,7 @@ export const treatmentsLink: NavItem = {
 export const dtreasuryLink: NavItem = {
   href: ROUTES.dtreasury,
   label: AGENCIES.dtreasury.dName,
-  emoji: "💸",
+  emoji: AGENCIES.dtreasury.emoji,
   description: AGENCIES.dtreasury.description,
   tagline: AGENCIES.dtreasury.tagline,
   matchPrefixes: [ROUTES.dtreasury],
@@ -323,7 +329,7 @@ export const dtreasuryLink: NavItem = {
 export const federalReserveLink: NavItem = {
   href: ROUTES.dtreasuryDfed,
   label: AGENCIES.dfed.dName,
-  emoji: "🏦",
+  emoji: AGENCIES.dfed.emoji,
   description: AGENCIES.dfed.description,
   tagline: AGENCIES.dfed.tagline,
 
@@ -333,7 +339,7 @@ export const federalReserveLink: NavItem = {
 export const dirsLink: NavItem = {
   href: ROUTES.dtreasuryDirs,
   label: AGENCIES.dirs.dName,
-  emoji: "🏦",
+  emoji: AGENCIES.dirs.emoji,
   description: AGENCIES.dirs.description,
   tagline: AGENCIES.dirs.tagline,
 
@@ -343,7 +349,7 @@ export const dirsLink: NavItem = {
 export const dssaLink: NavItem = {
   href: ROUTES.dtreasuryDssa,
   label: AGENCIES.dssa.dName,
-  emoji: "🍞",
+  emoji: AGENCIES.dssa.emoji,
   description: AGENCIES.dssa.description,
   tagline: AGENCIES.dssa.tagline,
 
@@ -353,7 +359,7 @@ export const dssaLink: NavItem = {
 export const departmentOfWarLink: NavItem = {
   href: ROUTES.ddod,
   label: AGENCIES.ddod.dName,
-  emoji: "💀",
+  emoji: AGENCIES.ddod.emoji,
   description: AGENCIES.ddod.description,
   tagline: AGENCIES.ddod.tagline,
 
@@ -452,8 +458,8 @@ export const dashboardLink: NavItem = {
   label: "Manage Humanity",
   emoji: "📊",
   description:
-    "Invite humans to vote on the 1% Treaty and track who still needs a reminder.",
-  tagline: "Copy your voting link and coordinate reminders",
+    "Get humanity to agree to end war and disease. Share your link and remind presidents to promote the general welfare.",
+  tagline: "Get humanity to agree",
   authenticatedCopyPreview: true,
   authenticatedScreenshot: true,
   cta: "Manage Humanity",
@@ -461,11 +467,11 @@ export const dashboardLink: NavItem = {
 
 export const tasksLink: NavItem = {
   href: ROUTES.tasks,
-  label: "To-Do List for Humanity",
+  label: "Earth Optimization Tasks",
   emoji: "🎯",
   description:
-    "Find public tasks that move health, income, and treaty adoption. Claim one or remind the person responsible.",
-  tagline: "Claim tasks or remind the person responsible",
+    "The to-do list humanity must finish to optimize Earth. Each task names who is responsible and what waiting costs.",
+  tagline: "What waiting costs",
   authenticatedScreenshot: true,
   copyPreview: true,
   reviewName: "tasks-index",
@@ -553,15 +559,16 @@ export const inviteVoterLink: NavItem = {
   href: DASHBOARD_INVITE_HREF,
   label: "Invite a Voter",
   emoji: "📨",
-  description: "Help one human vote on the 1% Treaty.",
-  tagline: "Help someone vote",
+  description:
+    "Give one human the 30-second vote: should every country redirect 1% of military spending to clinical trials?",
+  tagline: "Give one human the vote",
   cta: "Invite",
 };
 
 export const transparencyLink: NavItem = {
   href: ROUTES.dgao,
   label: AGENCIES.dgao.dName,
-  emoji: "🔍",
+  emoji: AGENCIES.dgao.emoji,
   description: AGENCIES.dgao.description,
   tagline: AGENCIES.dgao.tagline,
   matchPrefixes: [ROUTES.dgao],
@@ -680,9 +687,8 @@ export const treatyLink: NavItem = {
   href: ROUTES.treaty,
   label: "Sign the Treaty",
   emoji: "📜",
-  description:
-    "The full text of the treaty that redirects 1% of military spending to clinical trials. Read it, sign it, share it. Every signature from an official account is verified on the public ledger.",
-  tagline: "Read it, sign it, share it",
+  description: `The 1% Treaty redirects ${treatyReduction} of military spending to clinical trials, cutting the disease-eradication timeline from ${statusQuoYears} years to ${dfdaYears}. Nobody gets weaker. Everyone gets more medicine.`,
+  tagline: `Redirect ${treatyReduction} from weapons to medicine`,
   authenticatedScreenshot: true,
   copyPreview: true,
   screenshot: true,
@@ -694,8 +700,8 @@ export const courtLink: NavItem = {
   label: "Court of Humanity",
   emoji: "⚖️",
   description:
-    "Join the public jury and plaintiff class for government harm. If a government kills, injures, imprisons, or ruins your family, humanity should be able to hear the case.",
-  tagline: "Public jury for government harm",
+    "Should humans be able to sue a government that kills, injures, or ruins their family?",
+  tagline: "Sue governments?",
   copyPreview: true,
   screenshot: true,
   socialPreview: {
@@ -715,8 +721,8 @@ export const humanityVGovernmentLink: NavItem = {
   label: HUMANITY_V_GOVERNMENT_CASE_NAME,
   emoji: "⚖️",
   description:
-    "Governments were hired to promote the general welfare. They chose war instead. Now there's a legal theory for that.",
-  tagline: "The case against government harm",
+    "Governments were hired to promote the general welfare. Since 1900, they spent fortunes on war and left the sick in line. Vote on whether they owe humanity damages.",
+  tagline: "Do governments owe damages?",
   copyPreview: true,
   screenshot: true,
   socialPreview: {
@@ -745,9 +751,8 @@ export const voteLink: NavItem = {
   href: ROUTES.vote,
   label: "Vote",
   emoji: "🗳️",
-  description:
-    "Answer the 1% Treaty question. Thirty seconds. Then give the next human their voting task.",
-  tagline: "Answer the 1% Treaty question",
+  description: `One question, thirty seconds: should humanity trade one of its ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}?`,
+  tagline: "Answer one question for humanity",
   matchPrefixes: [ROUTES.vote],
   copyPreview: true,
   screenshot: true,
@@ -759,11 +764,11 @@ export const voteLink: NavItem = {
 
 export const peopleLink: NavItem = {
   href: ROUTES.people,
-  label: "People",
+  label: "Humans Who Can End War and Disease",
   emoji: "👥",
   description:
-    "1% Treaty work needs actual humans. Find people with public tasks and remind the right one.",
-  tagline: "1% Treaty task coordination",
+    "Officials, lawyers, researchers, organizers, funders, and communicators who can help humanity end war and disease.",
+  tagline: "Find the right human",
   authenticatedScreenshot: true,
   copyPreview: true,
   screenshot: true,
@@ -774,8 +779,8 @@ export const plaintiffsLink: NavItem = {
   href: ROUTES.plaintiffs,
   label: "Register a Plaintiff",
   emoji: "👥",
-  description: `Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in ${humanityVGovernmentLink.label}.`,
-  tagline: "Register yourself or a deceased relative as a plaintiff",
+  description: `Sign the 1% Treaty for yourself or someone who can no longer sign. ${humanityVGovernmentLink.label} should count the victims, not wave at a fog bank.`,
+  tagline: "Count the victims",
   authenticatedScreenshot: true,
   copyPreview: true,
   screenshot: true,
@@ -787,7 +792,7 @@ export const plaintiffsManageLink: NavItem = {
   href: ROUTES.plaintiffsManage,
   label: "Your Plaintiffs",
   description: `Edit the plaintiffs you registered for ${humanityVGovernmentLink.label}.`,
-  tagline: "Edit your plaintiffs",
+  tagline: "Edit registered plaintiffs",
   authenticatedCopyPreview: true,
   authenticatedScreenshot: true,
   copyPreview: false,
@@ -816,8 +821,8 @@ export const endorseLink: NavItem = {
   label: "Join as an Organization",
   emoji: "✍️",
   description:
-    "Join the International Campaign to End War and Disease as an organization.",
-  tagline: "Join as an organization",
+    "Your members probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with your audience.",
+  tagline: "Conduct the Global Survey",
   copyPreview: true,
   screenshot: true,
   cta: "Join as an Organization",
@@ -825,10 +830,11 @@ export const endorseLink: NavItem = {
 
 export const signatoriesLink: NavItem = {
   href: ROUTES.signatories,
-  label: "Signatories",
+  label: "People Who Ended War and Disease",
   emoji: "🏢",
-  description: "Organizations and humans publicly signed onto the 1% Treaty.",
-  tagline: "See who signed",
+  description:
+    "The humans and organizations who signed the 1% Treaty and got humanity to agree to end war and disease.",
+  tagline: "Who got humanity to agree",
   copyPreview: true,
   screenshot: true,
   cta: "See Signatories",
@@ -838,9 +844,8 @@ export const donateLink: NavItem = {
   href: ROUTES.donate,
   label: "Prevent 2 yrs of suffering for $1",
   emoji: "💝",
-  description:
-    "Use the calculator to buy expected lives saved or years of suffering prevented. Tax-deductible to a U.S. 501(c)(3).",
-  tagline: "Prevent 2 yrs of suffering for $1",
+  description: `Fund survey outreach for the trade: one of humanity's ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`,
+  tagline: "Fund survey outreach",
   copyPreview: true,
   screenshot: true,
   cta: "Open the calculator",
@@ -869,11 +874,10 @@ export const termsLink: NavItem = {
 
 export const trialSurveyLink: NavItem = {
   href: ROUTES.survey,
-  label: "Take Survey",
+  label: GLOBAL_SURVEY_NAME,
   emoji: "📝",
-  description:
-    "Answer two questions about government funding for pragmatic clinical trials.",
-  tagline: "Answer two survey questions",
+  description: `An educational survey about human values: should governments redirect ${treatyReduction} of military spending to pragmatic clinical trials and cut disease eradication from ${statusQuoYears} years to ${dfdaYears}?`,
+  tagline: "Survey human values",
   cta: "Take Survey",
 };
 
@@ -881,8 +885,9 @@ export const trialEmbedLink: NavItem = {
   href: ROUTES.organizations,
   label: "Embed Survey",
   emoji: "🧩",
-  description: "Get your organization's survey link and iframe code.",
-  tagline: "Survey link and iframe code",
+  description:
+    "Give your organization a survey link and iframe. Members respond from your site; responses stay attributed and count globally.",
+  tagline: "Put the survey on your site",
   authenticatedScreenshot: true,
   cta: "Embed Survey",
 };
@@ -891,9 +896,10 @@ export const prizeLink: NavItem = {
   href: ROUTES.prize,
   label: "Prize",
   emoji: "🏆",
-  description: `Fund the prize pool, recruit players, and get up to ${poolMultiple} back if the world misses the target.`,
-  tagline: `Deposit, recruit, win or get ${poolMultiple} back`,
-  cta: "Play the Game",
+  description:
+    "Rewards for measured outreach that gets more people to answer the Global Survey to End War and Disease.",
+  tagline: "Reward measured outreach",
+  cta: "See the Prize",
 };
 
 export const earthOptimizationPrizePaperLink: NavItem = {
@@ -911,9 +917,8 @@ export const aboutLink: NavItem = {
   href: ROUTES.about,
   label: "About",
   emoji: "ℹ️",
-  description:
-    "What this is, why it exists, and why an alien had to build it because your species wouldn't.",
-  tagline: "What this is, why it exists, and why an alien built it",
+  description: `A campaign to redirect ${treatyReduction} of military spending to clinical trials: disease eradication in ${dfdaYears} years instead of ${statusQuoYears}, for one apocalypse off the shelf.`,
+  tagline: "The 1% campaign",
   screenshot: true,
 
   cta: "Learn More",
@@ -947,7 +952,7 @@ export const contributeLink: NavItem = {
   label: "Contribute",
   emoji: "🤝",
   description:
-    "Four useful ways to help: vote, fund, code, or add useful data.",
+    "Help end war and disease: vote, fund outreach, write code, or add useful data.",
   tagline: "Vote, fund, code, or add useful data",
 
   cta: "Contribute",
