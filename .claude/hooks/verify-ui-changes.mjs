@@ -127,13 +127,25 @@ try {
     /\brails\b/, /\bsubstrate\b/, /\bprimitive\b/, /\bstack\b/,
     /\bpressure (?:the )?politicians?\b/, /\bpolitical pressure\b/,
   ];
+  // Voice gate only fires on user-facing copy. Skip internal docs / hook
+  // configs / agent definitions that legitimately LIST banned words as
+  // patterns to flag (e.g. voice-critic.md, CLAUDE.md, verify-ui-changes.mjs).
+  function isUserFacingFile(file) {
+    if (!file) return false;
+    if (file.startsWith(".claude/")) return false;
+    if (file === "CLAUDE.md" || file === "AGENTS.md" || file === "TODO.md") return false;
+    if (file.startsWith(".github/")) return false;
+    if (file.startsWith(".husky/")) return false;
+    return true;
+  }
   const voiceHits = [];
-  for (const line of addedLines) {
+  for (const { file, text } of added) {
+    if (!isUserFacingFile(file)) continue;
     for (const p of bannedExact) {
-      if (line.includes(p)) voiceHits.push(`  - '${p}' -> ${line.trim()}`);
+      if (text.includes(p)) voiceHits.push(`  - '${p}' -> ${text.trim()}`);
     }
     for (const rx of bannedRegex) {
-      if (rx.test(line)) voiceHits.push(`  - /${rx.source}/ -> ${line.trim()}`);
+      if (rx.test(text)) voiceHits.push(`  - /${rx.source}/ -> ${text.trim()}`);
     }
   }
   if (voiceHits.length) {
