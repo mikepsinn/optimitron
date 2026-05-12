@@ -303,6 +303,55 @@ jobs:
 
             return '';
 
+      - name: Post PR preview links comment
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.pr_preview_url.outputs.result != '' }}
+        uses: actions/github-script@v8
+        env:
+          PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
+        with:
+          script: |
+            const { execFileSync } = require('node:child_process');
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            // Pull changed files from the PR API (works with depth-1 checkout).
+            // Filter out deletions so the table doesn't link to 404s.
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: issue_number, per_page: 100,
+            });
+            const changed = files
+              .filter((f) => f.status !== 'removed')
+              .map((f) => f.filename);
+
+            const stdout = execFileSync(
+              process.execPath,
+              ['.github/scripts/generate-pr-preview-links.mjs'],
+              {
+                env: {
+                  ...process.env,
+                  CHANGED_FILES: JSON.stringify(changed),
+                },
+                encoding: 'utf8',
+              },
+            );
+            const body = stdout.trim();
+            if (!body) return;
+
+            const marker = '<!-- pr-preview-links -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number, body,
+              });
+            }
+
       - name: Build visual review index
         if: always()
         env:
