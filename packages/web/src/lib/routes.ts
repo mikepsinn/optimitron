@@ -67,7 +67,6 @@ export const ROUTES = {
   court: "/court",
   humanityVGovernment: "/humanity-v-government",
   vote: "/vote",
-  legal: "/legal",
   privacy: "/privacy",
   terms: "/terms",
   impact: "/impact",
@@ -785,17 +784,6 @@ export const donateLink: NavItem = {
   cta: "Open the calculator",
 };
 
-export const legalLink: NavItem = {
-  href: ROUTES.legal,
-  label: "Legal",
-  emoji: "⚖️",
-  description:
-    "Legal notes for organizations reviewing nonpartisan treaty support.",
-  tagline: "For organizations",
-  copyPreview: true,
-  cta: "Read Legal Notes",
-};
-
 export const privacyLink: NavItem = {
   href: ROUTES.privacy,
   label: "Privacy",
@@ -1472,7 +1460,6 @@ export const routeReviewNavItems = [
   peopleLink,
   questionsLink,
   feedbackLink,
-  legalLink,
   privacyLink,
   settingsLink,
   termsLink,

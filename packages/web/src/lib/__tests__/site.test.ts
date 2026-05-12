@@ -314,7 +314,6 @@ describe("site variant registry", () => {
       ROUTES.coalition,
       ROUTES.endorse,
       ROUTES.impact,
-      ROUTES.legal,
       ROUTES.treaty,
       ROUTES.donate,
     ];

@@ -936,7 +936,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.legal,
       ROUTES.privacy,
       ROUTES.terms,
       ROUTES.impact,
@@ -962,7 +961,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.legal,
       ROUTES.privacy,
       ROUTES.terms,
       ROUTES.impact,
@@ -1200,7 +1198,6 @@ const REFERENDUM_SITE_CONTENT_PATH_PREFIXES = [
   ROUTES.coalition,
   ROUTES.endorse,
   ROUTES.impact,
-  ROUTES.legal,
 ] as const;
 
 export function requiresReferendumSiteContent(pathname: string): boolean {
