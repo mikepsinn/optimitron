@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { buildTreatyOgAltText } from "./treaty-og-image";
+import { buildBlackWhiteTextOgAltTextForNavItem } from "./black-white-text-og-image";
 import type { NavItem } from "./routes";
 import type { SiteConfig } from "./site";
 import {
@@ -26,8 +26,8 @@ export function getRouteMetadata(
   const socialDescription = socialPreview?.description ?? description;
   const socialImageAlt =
     socialPreview?.image?.alt ??
-    (socialPreview?.treatyOgImage
-      ? buildTreatyOgAltText(socialPreview.treatyOgImage)
+    (socialPreview?.blackWhiteTextOgImage
+      ? buildBlackWhiteTextOgAltTextForNavItem(item)
       : null);
   const socialImage = socialPreview?.image
     ? {

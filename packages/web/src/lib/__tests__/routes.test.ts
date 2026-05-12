@@ -69,7 +69,7 @@ describe("navigation routes", () => {
           width: 1200,
           height: 630,
         }),
-        treatyOgImage: expect.objectContaining({
+        blackWhiteTextOgImage: expect.objectContaining({
           primaryLines: [
             "You May Be Owed",
             "$2.74 Million",

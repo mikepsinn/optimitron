@@ -168,7 +168,7 @@ export interface NavItem {
       url: string;
       width: number;
     };
-    treatyOgImage?: {
+    blackWhiteTextOgImage?: {
       eyebrow?: string;
       footer?: string;
       primaryLines: readonly string[];
@@ -724,7 +724,7 @@ export const humanityVGovernmentLink: NavItem = {
       width: 1200,
       height: 630,
     },
-    treatyOgImage: {
+    blackWhiteTextOgImage: {
       eyebrow: "Humanity v. Government",
       footer: "WarOnDisease.org",
       primaryLines: [

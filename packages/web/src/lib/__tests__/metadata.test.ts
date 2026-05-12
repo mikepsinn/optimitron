@@ -28,7 +28,7 @@ describe("metadata helpers", () => {
           width: 1200,
           height: 630,
         },
-        treatyOgImage: {
+        blackWhiteTextOgImage: {
           eyebrow: "Humanity v. Government",
           primaryLines: ["You May Be Owed", "$2.74 Million"],
           footer: "WarOnDisease.org",
