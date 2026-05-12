@@ -116,11 +116,6 @@ export async function syncManagedData(
     createdByUserId,
   });
 
-  if (options.apply) {
-    await syncManagedTreatyAccountabilityData();
-    treatyAccountabilityData.synced = true;
-  }
-
   const tasks = await syncManagedTasks(prisma as PrismaClient & ManagedTaskClient, {
     apply: options.apply,
     collectionKey: OPTIMIZE_EARTH_TASK_TREE_COLLECTION_KEY,
@@ -128,6 +123,11 @@ export async function syncManagedData(
     now: options.now,
     records: OPTIMIZE_EARTH_TASK_TREE,
   });
+
+  if (options.apply) {
+    await syncManagedTreatyAccountabilityData();
+    treatyAccountabilityData.synced = true;
+  }
 
   const taskTriggers = await syncManagedTaskTriggers(prisma, {
     apply: options.apply,
@@ -163,13 +163,13 @@ export function formatManagedDataResult(result: SyncManagedDataResult) {
   return [
     formatSimpleManagedDataResult("Reference data", result.referenceData),
     formatSimpleManagedDataResult("Bootstrap data", result.bootstrapData),
+    formatManagedReferendumsResult(result.referendums),
+    formatManagedHumanityVGovernmentCaseResult(result.humanityVGovernmentCase),
+    formatManagedTasksResult(result.tasks),
     formatSimpleManagedDataResult(
       "Treaty accountability data",
       result.treatyAccountabilityData,
     ),
-    formatManagedReferendumsResult(result.referendums),
-    formatManagedHumanityVGovernmentCaseResult(result.humanityVGovernmentCase),
-    formatManagedTasksResult(result.tasks),
     formatManagedTaskTriggersResult(result.taskTriggers),
     formatManagedGrandmaKayResult(result.grandmaKay),
     formatManagedDemoUserResult(result.demoUser),

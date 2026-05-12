@@ -980,6 +980,57 @@ consumed. Mail clients would not visually thread the conversation; in-app
   not the same decision as the War on Disease campaign default; do not
   reopen it while the treaty campaign is the active bottleneck.
 
+## Humanity v. Government — plaintiff-first reframe + Earth Optimization Day
+
+Strategic decision (2026-05-12): `/humanity-v-government`'s primary action becomes plaintiff registration, not the verdict vote. Plaintiffs are a stock that compounds (named, persistent, family-network-effected). Votes are a flow that decays (anonymous, easy to dismiss). A list of named dead is harder to ignore than a YES tally. The verdict vote moves to a seasonal mode tied to Earth Optimization Day.
+
+### `/humanity-v-government` rework
+
+- Hero: indictment + "if this were a corporation" framing (KEEP — it's the translation hook for non-legal readers) + single CTA "Name your dead" (plaintiff registration).
+- Render running plaintiff count near hero. Concrete artifact > tally tick.
+- Drop hero CTAs #2 ("Support the settlement" → `/vote`) and #3 ("Read the evidence" → external manual). Demote to footer.
+- Cut decorative redundancy: collapse "The case caption" `<dl>` block, merge "If this were a corporation" + "Why this is a case" into one section.
+- Move `DamagesSensitivityCalculator` up to be adjacent to / above the damages cards (it informs the vote; currently buried at page bottom).
+- "The usual defenses" → collapsed `<details>` disclosure.
+- Verdict vote widget stays but becomes a secondary action outside the EOD window.
+
+### Make damages counterfactual explicit
+
+Current copy says "since 1900, they spent $170T on war." Never makes the comparison explicit. Add one sentence stating: damages = what humanity would have had if governments had signed the 1% Treaty in 1900, freezing military spending and redirecting it to productive purposes (clinical trials, public goods). The numbers ($538K floor, $913K demand, $2.74M treble) ANSWER that counterfactual; right now they float without a baseline.
+
+### Earth Optimization Day (new — August 6, Hiroshima anniversary)
+
+- Annual global voting event. Aug 6 = the day humanity proved it could kill itself wholesale and decided not to stop.
+- Frame: "distributed denial of death attack on humanity" — concentrated global vote on both the Court of Humanity verdict in Humanity v. Government AND the 1% Treaty.
+- New page `/earth-optimization-day`. No existing implementation (only `earth-optimization-prize.ts` parameter + audio narration file).
+- Single config function `isEarthOptimizationDayWindow()` flips the site into EOD mode during a configurable window (e.g. Aug 1–13). During the window: `/humanity-v-government` hero CTA swaps from "Name a plaintiff" to "Vote the verdict"; landing page hero swaps to countdown + live tally.
+- Year-one MVP: countdown page + RSVP form + the two existing vote widgets. Mature version: live tally, post-event results page (verdict count, plaintiff count delta, treaty-vote delta).
+
+### Open questions before implementation
+
+1. **Plaintiff registration friction.** What's the current friction on `/plaintiffs`? Just name + cause-of-death, verified, or public/private toggle? Determines whether inline form on `/humanity-v-government` works or whether it has to link out.
+2. **Non-bereaved users.** Should users without a personal loss be able to register as "plaintiffs of conscience" (public figure / general category), or are they only verdict-voters?
+3. **Verdict vs treaty relationship.** Currently `/humanity-v-government`'s verdict and `/vote`'s treaty are separate referendums. Should a YES on the verdict imply a YES on the treaty (the settlement), or stay separate?
+4. **EOD frequency + scope.** Annual Aug 6 only, or include solstices / other dates? Country-specific variants?
+
+### Phase 2: extract treaty indictment to shared component
+
+The treaty's WHEREAS opening clauses (defined inside the treaty `markdown` parameter at `packages/data/src/parameters/parameters-calculations-citations.ts`) are the canonical indictment language. They're now hand-mirrored into `/humanity-v-government/page.tsx` JSX. Risk: drift between the treaty doc and the JSX rendering.
+
+Fix: extract the indictment clauses to structured TS constants under `@optimitron/data/messaging` (or similar). Build a `<TreatyIndictment>` React component that renders each clause with `<ParameterValue>` references baked in. Refactor BOTH the treaty markdown renderer AND `/humanity-v-government` to render from the shared source. Single source of truth, no drift risk.
+
+Touches: the treaty markdown rendering layer (`packages/web/src/components/referendum/reader-markdown-components.tsx`), the parameter `markdown` field (may need to be derived from the structured constants rather than hardcoded prose), and `/humanity-v-government`'s indictment section.
+
+### Sequence
+
+1. Counterfactual sentence into damages copy (small, immediate).
+2. Drop hero CTAs #2 + #3 on `/humanity-v-government`; swap primary CTA to plaintiff registration.
+3. Add running plaintiff count near hero (social proof).
+4. Cut decorative sections (case-caption `<dl>`, collapse defenses to `<details>`).
+5. Move `DamagesSensitivityCalculator` up near the vote / damages cards.
+6. *(Separate work)* Scaffold `/earth-optimization-day` page + `isEarthOptimizationDayWindow()` config.
+7. *(Separate work)* Hook EOD config into `/humanity-v-government` + landing CTA swap.
+
 ## Long-tail (parked, not 4B-blocking)
 
 Items that exist in earlier TODO revisions but do not move the 4B-votes needle today.

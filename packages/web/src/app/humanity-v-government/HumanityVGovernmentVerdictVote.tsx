@@ -163,6 +163,11 @@ export function HumanityVGovernmentVerdictVote({
         <span className="font-black text-foreground">{fullDamagesLabel}</span>{" "}
         per living human.
       </p>
+      <p className="mt-3 text-sm font-bold leading-6 text-foreground">
+        Voting no requires saying out loud: &ldquo;I believe my government
+        should be allowed to kill my family with no consequences.&rdquo; Few
+        ordinary humans want to say that sentence in public.
+      </p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
         {(["YES", "NO", "ABSTAIN"] as const).map((option) => {

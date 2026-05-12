@@ -11,10 +11,12 @@ import {
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
+  GLOBAL_AVG_INCOME_2025,
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   PENTAGON_UNACCOUNTED_FUNDS,
   WAR_CHILDREN_KILLED_SINCE_1900,
+  WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
@@ -64,7 +66,8 @@ export default async function HumanityVGovernmentPage() {
           The indictment
         </p>
         <p className="mt-3 text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9">
-          Governments were hired to promote the general welfare. They collect{" "}
+          Governments were hired to promote the general welfare, defined as
+          the median health and wealth of the citizenry. They collect{" "}
           <ParameterValue
             figures={3}
             param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
@@ -73,29 +76,67 @@ export default async function HumanityVGovernmentPage() {
           a year for the service.
         </p>
         <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
-          Instead, since 1900, they spent about{" "}
+          The citizenry would like to actually receive this service at some
+          point.
+        </p>
+        <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
+          Instead, these public servants used{" "}
           <ParameterValue
             figures={3}
             param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
             valueOverride="$170 trillion"
           />{" "}
-          on war and killed approximately{" "}
+          of their salary to murder approximately{" "}
           <ParameterValue
             figures={3}
             param={WAR_DEATHS_SINCE_1900}
             valueOverride="310 million"
           />{" "}
-          of their own employers: the citizenry.
+          humans over the last century of their employment.
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
-          The dead include roughly 930,000 doctors, 310,000 scientists, 620,000
-          engineers, 1.24 million nurses, 3.1 million teachers, and{" "}
+          The dead included roughly 930,000 doctors, 310,000 scientists,
+          620,000 engineers, 1.24 million nurses, 3.1 million teachers, and{" "}
           <ParameterValue
             figures={3}
             param={WAR_CHILDREN_KILLED_SINCE_1900}
             valueOverride="102 million"
           />{" "}
-          children who will not grow up to replace them.
+          children who will never grow up to replace them.
+        </p>
+        <p className="mt-3 text-base font-bold leading-7 text-foreground">
+          Murdering{" "}
+          <ParameterValue
+            figures={3}
+            param={WAR_DEATHS_SINCE_1900}
+            valueOverride="310 million"
+          />{" "}
+          of your employers is the opposite of promoting their welfare, and
+          would be grounds for termination in any other employment contract
+          humans have ever signed.
+        </p>
+        <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
+          Had governments not spent{" "}
+          <ParameterValue
+            figures={3}
+            param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
+            valueOverride="$170 trillion"
+          />{" "}
+          murdering those people and destroying everything they spent their
+          entire lives building, the average human alive today would earn{" "}
+          <ParameterValue
+            figures={3}
+            param={WAR_COUNTERFACTUAL_GDP_PER_CAPITA}
+            valueOverride="$333,636"
+          />{" "}
+          a year instead of{" "}
+          <ParameterValue
+            figures={3}
+            param={GLOBAL_AVG_INCOME_2025}
+            valueOverride="$14,375"
+          />
+          . Dead scientists do not discover things and exploded cities are
+          very expensive to fix.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
@@ -139,29 +180,25 @@ export default async function HumanityVGovernmentPage() {
         </h2>
         <div className="mt-3 border-2 border-foreground bg-background p-5 text-base font-bold leading-7 text-muted-foreground">
           <p>
-            If a corporation took{" "}
+            If a corporation were paid{" "}
             <ParameterValue
               figures={3}
               param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
               valueOverride="$36.5 trillion"
             />{" "}
-            a year to protect its customers, spent{" "}
-            <ParameterValue
-              figures={3}
-              param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
-              valueOverride="$170 trillion"
-            />{" "}
-            on weapons, failed to account for{" "}
-            <ParameterValue
-              figures={3}
-              param={PENTAGON_UNACCOUNTED_FUNDS}
-              valueOverride="$2.46 trillion"
-            />
-            , and left the customers dead, prosecutors would not call it a
-            policy disagreement.
+            a year to promote the general welfare and misused the funds to
+            this degree, it would be prosecuted, fined, monitored, and its
+            officers imprisoned.
+          </p>
+          <p className="mt-3">
+            Pfizer paid $2.3 billion for health-care fraud. BP paid $20.8
+            billion for the Deepwater Horizon spill. Volkswagen paid $4.3
+            billion for cheating emissions tests and accepted a government
+            monitor.
           </p>
           <p className="mt-3 text-foreground">
-            They would call it a case.
+            The defendants here have a larger revenue, a larger customer
+            base, and a larger body count.
           </p>
         </div>
       </section>
@@ -272,7 +309,7 @@ export default async function HumanityVGovernmentPage() {
         <ol className="mt-3 space-y-4">
           <li className="border-2 border-foreground bg-background p-5">
             <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Count 1 — Direct Killing
+              Count 1 — Death by War
             </p>
             <p className="mt-2 text-3xl font-black tabular-nums text-foreground sm:text-4xl">
               <ParameterValue
@@ -282,13 +319,14 @@ export default async function HumanityVGovernmentPage() {
               deaths
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              War, conflict, genocide, and policy famine since 1900. The
-              defendants chose the budgets, signed the orders, and proceeded.
+              The defendants, between 1900 and the present, did willfully and
+              with premeditation engage in the organized killing of 310 million
+              of their own employers.
             </p>
           </li>
           <li className="border-2 border-foreground bg-background p-5">
             <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Count 2 — Regulatory Delay
+              Count 2 — Death by Regulatory Delay
             </p>
             <p className="mt-2 text-3xl font-black tabular-nums text-foreground sm:text-4xl">
               <ParameterValue
@@ -298,13 +336,15 @@ export default async function HumanityVGovernmentPage() {
               deaths
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              Patients who died waiting 8.2 extra years for already-safe drugs
-              to be proven effective. The waiting room had a body count.
+              The defendants required an additional 8.2 years of efficacy
+              testing before letting humans access drugs already proven safe.
+              53 years of warnings. 102 million dead. &ldquo;We did not
+              know&rdquo; is no longer available as a defense.
             </p>
           </li>
           <li className="border-2 border-foreground bg-background p-5">
             <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Count 3 — Misallocation
+              Count 3 — Death by Misallocation
             </p>
             <p className="mt-2 text-3xl font-black tabular-nums text-foreground sm:text-4xl">
               <ParameterValue
@@ -314,9 +354,11 @@ export default async function HumanityVGovernmentPage() {
               trial-years
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              The war budget since 1913 could have funded nearly thirty-eight
-              thousand years of government clinical trials. They bought the
-              other thing.
+              Damages here are the counterfactual: what humanity would have
+              had if governments had frozen real military spending at 1900
+              levels and redirected the rest to keeping their citizens alive.
+              The war budget since 1913 alone could have funded 37,778 years
+              of government clinical trials.
             </p>
           </li>
         </ol>
@@ -370,7 +412,9 @@ export default async function HumanityVGovernmentPage() {
               />
             </p>
             <p className="mt-1 text-xs font-bold text-background">
-              Some fraud laws triple the damages. This is that argument.
+              The False Claims Act triples damages when a defendant defrauds
+              the government. Here, the defendants ARE the government,
+              defrauding the citizenry. Triple damages apply.
             </p>
           </div>
         </div>
@@ -396,8 +440,8 @@ export default async function HumanityVGovernmentPage() {
             param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
             valueOverride="$2.74M"
           />{" "}
-          per person. Governments will say this is too much money. They should
-          have thought of that before the mass casualty event.
+          per person. The size of the number reflects the size of the death
+          toll. The defendants set both.
         </p>
       </section>
 
@@ -411,9 +455,8 @@ export default async function HumanityVGovernmentPage() {
               "These are policy disagreements."
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              No. Negligent homicide does not require evil laughter. It requires
-              duty, breach, causation, damages, and foreseeable risk. Those are
-              the boring parts of law. They are also the parts that matter.
+              Negligent homicide requires duty, breach, causation, damages,
+              and foreseeable risk. The defendants meet all five.
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">

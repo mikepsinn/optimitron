@@ -16,13 +16,18 @@
 - COURT OF HUMANITY - DAMAGES CASE
 ## HUMANITY V. GOVERNMENTS OF EARTH
 - THE INDICTMENT
-- Governments were hired to promote the general welfare. They collect $36.5 trillion a year for the service.
+- Governments were hired to promote the general welfare, defined as the median health and wealth of the citizenry. They collect $36.5 trillion a year for the service.
 - $36.5 trillion
-- Instead, since 1900, they spent about $170 trillion on war and killed approximately 310 million of their own employers: the citizenry.
+- The citizenry would like to actually receive this service at some point.
+- Instead, these public servants used $170 trillion of their salary to murder approximately 310 million humans over the last century of their employment.
 - $170 trillion
 - 310 million
-- The dead include roughly 930,000 doctors, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and 102 million children who will not grow up to replace them.
+- The dead included roughly 930,000 doctors, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and 102 million children who will never grow up to replace them.
 - 102 million
+- Murdering 310 million of your employers is the opposite of promoting their welfare, and would be grounds for termination in any other employment contract humans have ever signed.
+- Had governments not spent $170 trillion murdering those people and destroying everything they spent their entire lives building, the average human alive today would earn $333,636 a year instead of $14,375. Dead scientists do not discover things and exploded cities are very expensive to fix.
+- $333,636
+- $14,375
 - VOTE ON THE FINDING
 - SUPPORT THE SETTLEMENT
 - READ THE EVIDENCE
@@ -30,14 +35,15 @@
 - Should the governments of Earth be found liable for preventable mass death and owe full damages of $2.74 million to each living human?
 - The 1% Treaty is the cheap settlement offer. This vote records the bigger claim: governments owe the full damages demand, currently $2.74 million per living human.
 - $2.74 million
+- Voting no requires saying out loud: “I believe my government should be allowed to kill my family with no consequences.” Few ordinary humans want to say that sentence in public.
 - FIND FOR HUMANITY
 - FIND FOR GOVERNMENTS
 - NOT SURE
 - If a majority of humanity votes yes, no money appears by magic. That would be convenient and therefore not how Earth works. It does create a public verdict every government, court, investor, and candidate has to answer.
 ### IF THIS WERE A CORPORATION
-- If a corporation took $36.5 trillion a year to protect its customers, spent $170 trillion on weapons, failed to account for $2.46 trillion, and left the customers dead, prosecutors would not call it a policy disagreement.
-- $2.46 trillion
-- They would call it a case.
+- If a corporation were paid $36.5 trillion a year to promote the general welfare and misused the funds to this degree, it would be prosecuted, fined, monitored, and its officers imprisoned.
+- Pfizer paid $2.3 billion for health-care fraud. BP paid $20.8 billion for the Deepwater Horizon spill. Volkswagen paid $4.3 billion for cheating emissions tests and accepted a government monitor.
+- The defendants here have a larger revenue, a larger customer base, and a larger body count.
 ### THE CASE CAPTION
 - [plaintiff-count]
 ### WHY THIS IS A CASE
@@ -53,19 +59,19 @@
 - $538K
 - $913K
 ### THE THREE COUNTS
-- COUNT 1 — DIRECT KILLING 310 million deaths War, conflict, genocide, and policy famine since 1900. The defendants chose the budgets, signed the orders, and proceeded.
-- COUNT 1 — DIRECT KILLING
+- COUNT 1 — DEATH BY WAR 310 million deaths The defendants, between 1900 and the present, did willfully and with premeditation engage in the organized killing of 310 million of their own employers.
+- COUNT 1 — DEATH BY WAR
 - 310 million deaths
-- War, conflict, genocide, and policy famine since 1900. The defendants chose the budgets, signed the orders, and proceeded.
-- COUNT 2 — REGULATORY DELAY 102 million deaths Patients who died waiting 8.2 extra years for already-safe drugs to be proven effective. The waiting room had a body count.
-- COUNT 2 — REGULATORY DELAY
+- The defendants, between 1900 and the present, did willfully and with premeditation engage in the organized killing of 310 million of their own employers.
+- COUNT 2 — DEATH BY REGULATORY DELAY 102 million deaths The defendants required an additional 8.2 years of efficacy testing before letting humans access drugs already proven safe. 53 years of warnings. 102 million dead. “We did not know” is no longer available as a defense.
+- COUNT 2 — DEATH BY REGULATORY DELAY
 - 102 million deaths
-- Patients who died waiting 8.2 extra years for already-safe drugs to be proven effective. The waiting room had a body count.
-- COUNT 3 — MISALLOCATION 37,778 trial-years The war budget since 1913 could have funded nearly thirty-eight thousand years of government clinical trials. They bought the other thing.
-- COUNT 3 — MISALLOCATION
+- The defendants required an additional 8.2 years of efficacy testing before letting humans access drugs already proven safe. 53 years of warnings. 102 million dead. “We did not know” is no longer available as a defense.
+- COUNT 3 — DEATH BY MISALLOCATION 37,778 trial-years Damages here are the counterfactual: what humanity would have had if governments had frozen real military spending at 1900 levels and redirected the rest to keeping their citizens alive. The war budget since 1913 alone could have funded 37,778 years of government clinical trials.
+- COUNT 3 — DEATH BY MISALLOCATION
 - 37,778 trial-years
 - 37,778
-- The war budget since 1913 could have funded nearly thirty-eight thousand years of government clinical trials. They bought the other thing.
+- Damages here are the counterfactual: what humanity would have had if governments had frozen real military spending at 1900 levels and redirected the rest to keeping their citizens alive. The war budget since 1913 alone could have funded 37,778 years of government clinical trials.
 ### THE DAMAGES DEMAND
 - CAUTIOUS FLOOR
 - Per living human, before punitive theories.
@@ -73,13 +79,13 @@
 - Adds drugs never developed because the trials were never funded.
 - TRIPLE DAMAGES
 - $2.74M
-- Some fraud laws triple the damages. This is that argument.
+- The False Claims Act triples damages when a defendant defrauds the government. Here, the defendants ARE the government, defrauding the citizenry. Triple damages apply.
 - The demand is not one suspicious monster number. It is a ledger: war deaths, regulatory delay deaths, destroyed property, missing public money, and the cures never developed because the research budget was busy becoming weapons.
-- Alternative pleadings. If the court rejects the wider theory, the case still has the floor: $538K per person. If it accepts a False Claims Act-style triple-damages analogy, exposure reaches $2.74M per person. Governments will say this is too much money. They should have thought of that before the mass casualty event.
+- Alternative pleadings. If the court rejects the wider theory, the case still has the floor: $538K per person. If it accepts a False Claims Act-style triple-damages analogy, exposure reaches $2.74M per person. The size of the number reflects the size of the death toll. The defendants set both.
 - Alternative pleadings.
 ### THE USUAL DEFENSES
 - "THESE ARE POLICY DISAGREEMENTS."
-- No. Negligent homicide does not require evil laughter. It requires duty, breach, causation, damages, and foreseeable risk. Those are the boring parts of law. They are also the parts that matter.
+- Negligent homicide requires duty, breach, causation, damages, and foreseeable risk. The defendants meet all five.
 - "YOU CANNOT SUE A GOVERNMENT."
 - That is because governments wrote rules saying governments are hard to sue. This is not a moral defense. It is a confession with letterhead.
 - "THE DEATHS ARE COUNTERFACTUAL."

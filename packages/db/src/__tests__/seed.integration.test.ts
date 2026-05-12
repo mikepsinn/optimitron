@@ -3,6 +3,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
 import { syncManagedData } from "../managed-data/index.js";
 import {
+  setManagedSeedDataClient,
+  syncManagedTreatyAccountabilityData,
+} from "../managed-data/managed-seed-data.js";
+import {
   PersonConditionStatus,
   PersonLifeStatus,
   OrgStatus,
@@ -244,6 +248,57 @@ describeIfDatabase("syncManagedData", () => {
     await expect(
       prisma.organization.findUnique({ where: { slug: "humanity" } }),
     ).resolves.toMatchObject(originalOrganization);
+  }, SEED_TEST_TIMEOUT_MS);
+
+  it("keeps canonical task-tree records owned by managed task sync", async () => {
+    await syncManagedData(prisma, { apply: true });
+
+    const canonicalTasks = await prisma.task.findMany({
+      where: {
+        id: {
+          in: [
+            "optimize-earth",
+            "1-pct-treaty",
+            "dfda",
+            "bed-nets-funding-gap",
+          ],
+        },
+      },
+      orderBy: { id: "asc" },
+      select: {
+        id: true,
+        parentTaskId: true,
+        status: true,
+        title: true,
+        deletedAt: true,
+      },
+    });
+
+    setManagedSeedDataClient(prisma);
+    await syncManagedTreatyAccountabilityData();
+
+    await expect(
+      prisma.task.findMany({
+        where: {
+          id: {
+            in: [
+              "optimize-earth",
+              "1-pct-treaty",
+              "dfda",
+              "bed-nets-funding-gap",
+            ],
+          },
+        },
+        orderBy: { id: "asc" },
+        select: {
+          id: true,
+          parentTaskId: true,
+          status: true,
+          title: true,
+          deletedAt: true,
+        },
+      }),
+    ).resolves.toEqual(canonicalTasks);
   }, SEED_TEST_TIMEOUT_MS);
 
   it("seeds canonical referendum ballot text and content metadata", async () => {
