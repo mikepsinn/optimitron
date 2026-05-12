@@ -72,7 +72,7 @@ describe("metadata helpers", () => {
       "International Campaign to End War and Disease",
     );
     expect(metadata.twitter?.images).toEqual([
-      "/site-assets/warondisease/war-on-disease-og-1200x630.png",
+      "/api/og/route?path=%2Ftreaty",
     ]);
     expect(metadata.robots).toEqual({ index: true, follow: true });
   });

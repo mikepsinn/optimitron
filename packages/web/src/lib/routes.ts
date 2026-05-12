@@ -186,6 +186,9 @@ export const homeLink: NavItem = {
   copyPreview: true,
   reviewName: "home",
   screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
   cta: "Go Home",
 };
 
@@ -1559,12 +1562,31 @@ export function getRouteReviewName(pathname: string): string {
   );
 }
 
+export function getInternalNavItemForPath(pathname: string): NavItem | null {
+  const normalizedPath = normalizeRoutePath(pathname);
+  const candidates = [...routeReviewNavItems, ...allNavLinks];
+  return (
+    candidates.find((item) => {
+      if (item.external || !item.href.startsWith("/")) {
+        return false;
+      }
+      return normalizeRoutePath(item.href) === normalizedPath;
+    }) ?? null
+  );
+}
+
 function getReviewPathFromNavItem(navItem: NavItem): string | null {
   const href = navItem.href.trim();
   if (!href.startsWith("/")) {
     return null;
   }
   return href.split(/[?#]/, 1)[0] || ROUTES.home;
+}
+
+function normalizeRoutePath(pathname: string): string {
+  const cleanPath = pathname.trim().split(/[?#]/, 1)[0] || ROUTES.home;
+  const withSlash = cleanPath.startsWith("/") ? cleanPath : `/${cleanPath}`;
+  return withSlash.length > 1 ? withSlash.replace(/\/+$/u, "") : ROUTES.home;
 }
 
 function dedupeRouteReviewSpecs(specs: RouteReviewSpec[]): RouteReviewSpec[] {

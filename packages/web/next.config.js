@@ -30,6 +30,10 @@ const nextConfig = {
   basePath: isStaticExport ? "/optimitron" : "",
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
   outputFileTracingIncludes: {
+    "/api/og/route": [
+      "./public/fonts/libre-baskerville-400.ttf",
+      "./public/fonts/libre-baskerville-700.ttf",
+    ],
     "/humanity-v-government/opengraph-image": [
       "./public/fonts/libre-baskerville-400.ttf",
       "./public/fonts/libre-baskerville-700.ttf",

@@ -42,6 +42,7 @@ describe("black-and-white text OG image helpers", () => {
         },
       }),
     ).toEqual({
+      footer: "WarOnDisease.org",
       primaryLines: ["You May Be Owed $2.74", "Million"],
       secondaryLines: [
         "Render your verdict in the Court of",

@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/signatories
 - Open Graph title: Signatories — 1% Treaty
 - Open Graph description: Organizations and humans who publicly signed the 1% Treaty.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fsignatories
 - Twitter title: Signatories — 1% Treaty
 - Twitter description: Organizations and humans who publicly signed the 1% Treaty.
 

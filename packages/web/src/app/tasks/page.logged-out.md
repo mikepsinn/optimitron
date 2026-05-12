@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/tasks
 - Open Graph title: Tasks — 1% Treaty
 - Open Graph description: The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Ftasks
 - Twitter title: Tasks — 1% Treaty
 - Twitter description: The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are.
 

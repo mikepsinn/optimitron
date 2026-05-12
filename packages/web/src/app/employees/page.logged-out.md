@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/employees
 - Open Graph title: Remind Presidents | International Campaign to End War and Disease
 - Open Graph description: You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Femployees
 - Twitter title: Remind Presidents | International Campaign to End War and Disease
 - Twitter description: You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.
 

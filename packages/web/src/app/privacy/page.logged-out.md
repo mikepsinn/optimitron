@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/privacy
 - Open Graph title: Privacy - International Campaign to End War and Disease
 - Open Graph description: What this site collects, why it collects it, and how to contact us.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fprivacy
 - Twitter title: Privacy - International Campaign to End War and Disease
 - Twitter description: What this site collects, why it collects it, and how to contact us.
 

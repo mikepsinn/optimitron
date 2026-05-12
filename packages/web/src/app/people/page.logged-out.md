@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/people
 - Open Graph title: People | International Campaign to End War and Disease
 - Open Graph description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fpeople
 - Twitter title: People | International Campaign to End War and Disease
 - Twitter description: 1% Treaty work needs actual humans. Find people with public tasks and remind the right one.
 

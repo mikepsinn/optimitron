@@ -84,6 +84,7 @@ export function getBlackWhiteTextOgImageCopyForNavItem(
     : [];
 
   return {
+    footer: "WarOnDisease.org",
     primaryLines: primaryLines.length ? primaryLines : [item.label],
     ...(secondaryLines.length ? { secondaryLines } : {}),
   };

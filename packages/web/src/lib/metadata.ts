@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
 import { buildBlackWhiteTextOgAltTextForNavItem } from "./black-white-text-og-image";
-import type { NavItem } from "./routes";
+import {
+  getInternalNavItemForPath,
+  type NavItem,
+} from "./routes";
 import type { SiteConfig } from "./site";
 import {
   getSiteIcons,
@@ -9,6 +12,39 @@ import {
   getSiteSocialImage,
   getSiteTwitterImage,
 } from "./site-assets";
+
+const GENERATED_ROUTE_OG_IMAGE_SIZE = {
+  height: 630,
+  width: 1200,
+} as const;
+
+function getGeneratedRouteOgImageUrl(pathname: string): string {
+  return `/api/og/route?path=${encodeURIComponent(pathname)}`;
+}
+
+function getRouteSocialImage(item: NavItem) {
+  const socialPreview = item.socialPreview;
+  const socialImageAlt =
+    socialPreview?.image?.alt ??
+    buildBlackWhiteTextOgAltTextForNavItem(item);
+
+  if (socialPreview?.image) {
+    return {
+      ...socialPreview.image,
+      alt: socialImageAlt,
+    };
+  }
+
+  if (item.external || !item.href.startsWith("/")) {
+    return null;
+  }
+
+  return {
+    ...GENERATED_ROUTE_OG_IMAGE_SIZE,
+    alt: socialImageAlt,
+    url: getGeneratedRouteOgImageUrl(item.href),
+  };
+}
 
 /**
  * Generate Next.js Metadata from a NavItem definition.
@@ -24,17 +60,7 @@ export function getRouteMetadata(
   const socialPreview = item.socialPreview;
   const socialTitle = socialPreview?.title ?? title;
   const socialDescription = socialPreview?.description ?? description;
-  const socialImageAlt =
-    socialPreview?.image?.alt ??
-    (socialPreview?.blackWhiteTextOgImage
-      ? buildBlackWhiteTextOgAltTextForNavItem(item)
-      : null);
-  const socialImage = socialPreview?.image
-    ? {
-        ...socialPreview.image,
-        ...(socialImageAlt ? { alt: socialImageAlt } : {}),
-      }
-    : null;
+  const socialImage = getRouteSocialImage(item);
 
   return {
     title,
@@ -84,6 +110,8 @@ export function getSiteMetadata(
     twitter,
     ...restOverrides
   } = metadataOverrides ?? {};
+  const routeNavItem = getInternalNavItemForPath(pathname);
+  const routeSocialImage = routeNavItem ? getRouteSocialImage(routeNavItem) : null;
 
   return {
     title: { absolute: page.title },
@@ -97,7 +125,7 @@ export function getSiteMetadata(
       title: page.title,
       description: page.description,
       siteName: site.name,
-      images: [getSiteSocialImage(site)],
+      images: [routeSocialImage ?? getSiteSocialImage(site)],
       type: "website",
       ...openGraph,
     },
@@ -105,7 +133,7 @@ export function getSiteMetadata(
       card: "summary_large_image",
       title: page.title,
       description: page.description,
-      images: [getSiteTwitterImage(site)],
+      images: [routeSocialImage?.url ?? getSiteTwitterImage(site)],
       ...twitter,
     },
     ...restOverrides,

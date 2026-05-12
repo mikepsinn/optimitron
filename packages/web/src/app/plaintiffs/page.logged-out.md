@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/plaintiffs
 - Open Graph title: Register a Plaintiff | International Campaign to End War and Disease
 - Open Graph description: Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in Humanity v. Government.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fplaintiffs
 - Twitter title: Register a Plaintiff | International Campaign to End War and Disease
 - Twitter description: Sign the 1% Treaty for someone who can no longer sign it themselves, so they can be listed as a plaintiff in Humanity v. Government.
 

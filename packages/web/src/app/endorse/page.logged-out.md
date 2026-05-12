@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/endorse
 - Open Graph title: Join as an Organization — 1% Treaty
 - Open Graph description: Join the International Campaign to End War and Disease as an organization: humanity should trade one of its 122 apocalypses of mass-murder capacity to compress the disease-eradication timeline from 443 years to 36 years.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fendorse
 - Twitter title: Join as an Organization — 1% Treaty
 - Twitter description: Join the International Campaign to End War and Disease as an organization: humanity should trade one of its 122 apocalypses of mass-murder capacity to compress the disease-eradication timeline from 443 years to 36 years.
 

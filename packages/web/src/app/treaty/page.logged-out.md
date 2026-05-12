@@ -7,7 +7,7 @@
 - Canonical: https://warondisease.org/treaty
 - Open Graph title: Treaty — 1% Treaty
 - Open Graph description: The entire text, then a box to sign it. It is shorter than your last software update.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Ftreaty
 - Twitter title: Treaty — 1% Treaty
 - Twitter description: The entire text, then a box to sign it. It is shorter than your last software update.
 

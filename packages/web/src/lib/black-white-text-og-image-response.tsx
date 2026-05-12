@@ -57,30 +57,38 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-function getImageType(size: BlackWhiteTextOgImageSize) {
-  if (size.height > size.width * 1.2) return "tall";
-  if (size.width > size.height * 2.2) return "wide";
-  return "standard";
-}
-
 function estimatePrimaryFontSize({
-  baseFontSize,
   copy,
   padding,
   size,
 }: {
-  baseFontSize: number;
   copy: BlackWhiteTextOgImageCopy;
   padding: number;
   size: BlackWhiteTextOgImageSize;
 }): number {
+  const averageSerifGlyphWidth = 0.54;
+  const averageBoldCapsGlyphWidth = 0.62;
   const longestPrimaryLine = Math.max(
     ...copy.primaryLines.map((line) => line.length),
     1,
   );
+  const longestSecondaryLine = Math.max(
+    ...(copy.secondaryLines ?? []).map((line) => line.length),
+    0,
+  );
   const availableWidth = size.width - padding * 2;
   const availableHeight = size.height - padding * 2;
-  const widthFit = availableWidth / (longestPrimaryLine * 0.56);
+  const primaryWidthFit =
+    availableWidth / (longestPrimaryLine * averageSerifGlyphWidth);
+  const secondaryWidthFit = longestSecondaryLine
+    ? availableWidth / (longestSecondaryLine * averageBoldCapsGlyphWidth * 0.33)
+    : Number.POSITIVE_INFINITY;
+  const footerWidthFit = copy.footer
+    ? availableWidth / (copy.footer.length * averageBoldCapsGlyphWidth * 0.31)
+    : Number.POSITIVE_INFINITY;
+  const eyebrowWidthFit = copy.eyebrow
+    ? availableWidth / (copy.eyebrow.length * averageBoldCapsGlyphWidth * 0.25)
+    : Number.POSITIVE_INFINITY;
   const primaryLineUnits = copy.primaryLines.length * 0.96;
   const eyebrowUnits = copy.eyebrow ? 0.51 : 0;
   const secondaryUnits = copy.secondaryLines?.length
@@ -91,7 +99,19 @@ function estimatePrimaryFontSize({
     availableHeight /
     Math.max(primaryLineUnits + eyebrowUnits + secondaryUnits + footerUnits, 1);
 
-  return Math.round(clamp(Math.min(baseFontSize, widthFit, heightFit), 32, 180));
+  return Math.round(
+    clamp(
+      Math.min(
+        primaryWidthFit,
+        secondaryWidthFit,
+        footerWidthFit,
+        eyebrowWidthFit,
+        heightFit,
+      ),
+      42,
+      230,
+    ),
+  );
 }
 
 function BlackWhiteTextOgImage({
@@ -101,16 +121,10 @@ function BlackWhiteTextOgImage({
   copy: BlackWhiteTextOgImageCopy;
   size: BlackWhiteTextOgImageSize;
 }) {
-  const imageType = getImageType(size);
-  const scale = Math.min(size.width / 1200, size.height / 630);
   const padding = Math.round(
     clamp(Math.min(size.width, size.height) * 0.09, 48, 170),
   );
-  const basePrimaryFontSize = Math.round(
-    clamp((imageType === "tall" ? 122 : imageType === "wide" ? 78 : 96) * scale, 54, 180),
-  );
   const primaryFontSize = estimatePrimaryFontSize({
-    baseFontSize: basePrimaryFontSize,
     copy,
     padding,
     size,
