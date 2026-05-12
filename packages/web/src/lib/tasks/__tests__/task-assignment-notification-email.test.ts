@@ -10,6 +10,7 @@ vi.mock("@/lib/email/task-notification", () => ({
 }));
 
 import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignment-notification-email.server";
+import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 
 describe("buildTaskAssignmentNotificationEmail", () => {
   it("emails the task contents with open and completion links", () => {
@@ -19,11 +20,11 @@ describe("buildTaskAssignmentNotificationEmail", () => {
       id: "task_iam",
       recipientName: "Institute for Accelerated Medicine",
       replyInstruction: "Reply to this email to add a comment to the task.",
-      title: "Share the Clinical Trial Abundance Survey with your members",
+      title: ORGANIZATION_ACTIVATION_TASK_TITLE,
     });
 
     expect(email.subject).toBe(
-      "New task: Share the Clinical Trial Abundance Survey with your members",
+      `New task: ${ORGANIZATION_ACTIVATION_TASK_TITLE}`,
     );
     expect(email.text).toContain(
       "New task for Institute for Accelerated Medicine",
@@ -43,7 +44,7 @@ describe("buildTaskAssignmentNotificationEmail", () => {
     );
     expect(email.text).toContain("https://warondisease.org/feedback");
     expect(email.html).toContain("Institute for Accelerated Medicine");
-    expect(email.html).toContain("Share the Clinical Trial Abundance Survey");
+    expect(email.html).toContain(ORGANIZATION_ACTIVATION_TASK_TITLE);
     expect(email.html).toContain("Open task");
     expect(email.html).toContain("Mark complete");
   });

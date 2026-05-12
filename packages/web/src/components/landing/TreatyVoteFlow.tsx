@@ -72,6 +72,7 @@ interface TreatyVoteFlowProps {
   copyMode?: "campaign" | "neutral";
   defaultFlowVariant?: TreatyFlowVariant;
   orgContextToken?: string | null;
+  organizationSlug?: string | null;
   postVoteBehavior?: "overlay" | "redirect";
   postVoteCompletion?: "share" | "message";
   postVoteRedirectUrl?: string;
@@ -86,6 +87,7 @@ export function TreatyVoteFlow({
   copyMode = "campaign",
   defaultFlowVariant = DEFAULT_TREATY_FLOW_VARIANT,
   orgContextToken = null,
+  organizationSlug = null,
   postVoteBehavior = "overlay",
   postVoteCompletion = "share",
   postVoteRedirectUrl = ROUTES.dashboard,
@@ -369,6 +371,7 @@ export function TreatyVoteFlow({
       timestamp,
       wishocraticAllocation: buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
+      organizationSlug: existingVote?.organizationSlug ?? organizationSlug,
       orgContextToken: existingVote?.orgContextToken ?? orgContextToken,
     });
     trackSliderSubmitted({
@@ -414,6 +417,7 @@ export function TreatyVoteFlow({
         getTreatyWishocraticAllocation(existingVote) ??
         buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
+      organizationSlug: existingVote?.organizationSlug ?? organizationSlug,
       orgContextToken: existingVote?.orgContextToken ?? orgContextToken,
     });
 
@@ -547,7 +551,14 @@ export function TreatyVoteFlow({
           >
             <div className="space-y-4">
               {preVoteDismissiveCount > 0 ? (
-                <TreatyFlowParagraph>Cool. The 122 apocalypses haven&apos;t moved.</TreatyFlowParagraph>
+                <TreatyFlowParagraph>
+                  Cool. The{" "}
+                  <ParameterValue
+                    param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
+                    figures={3}
+                  />{" "}
+                  apocalypses haven&apos;t moved.
+                </TreatyFlowParagraph>
               ) : null}
               <TreatyFlowParagraph>
                 <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} />{" "}

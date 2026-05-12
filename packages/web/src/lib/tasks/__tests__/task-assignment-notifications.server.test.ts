@@ -33,6 +33,7 @@ vi.mock("@/lib/email/task-notification", () => ({
 }));
 
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 
 function mockAssignedOrganizationTask(overrides?: {
   contactEmail?: string | null;
@@ -56,7 +57,7 @@ function mockAssignedOrganizationTask(overrides?: {
     description:
       "Put the survey link on your site and share it once with your members.",
     id: "task_iam",
-    title: "Share the Clinical Trial Abundance Survey with your members",
+    title: ORGANIZATION_ACTIVATION_TASK_TITLE,
   });
 }
 
@@ -95,8 +96,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
         recipientOrganizationId: "org_iam",
         recipientUserId: null,
         senderUserId: "demo-user-id",
-        subject:
-          "New task: Share the Clinical Trial Abundance Survey with your members",
+        subject: `New task: ${ORGANIZATION_ACTIVATION_TASK_TITLE}`,
         taskId: "task_iam",
       }),
     );

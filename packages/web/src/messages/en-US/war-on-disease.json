@@ -18,7 +18,7 @@
         "description": "The humans your species gives $36 trillion a year to promote the general welfare. Sorted by how late they are."
       },
       "endorse": {
-        "title": "Join as Organization — 1% Treaty",
+        "title": "Join as an Organization — 1% Treaty",
         "description": "Join the {campaignName} as an organization: {treatyTradePosition}."
       },
       "signatories": {
@@ -44,7 +44,7 @@
         "href": "/treaty"
       },
       {
-        "label": "Join as Organization",
+        "label": "Join as an Organization",
         "href": "/endorse"
       },
       {
@@ -65,7 +65,7 @@
       ],
       "intro": "",
       "primaryCtaLabel": "Read and sign the treaty",
-      "secondaryCtaLabel": "Join as Organization",
+      "secondaryCtaLabel": "Join as an Organization",
       "treatyEyebrow": "Treaty text",
       "signTitle": "Sign the treaty now",
       "signBody": "Read it. Sign it. Then go remind your late employees — the ones your species pays to promote the general welfare — that their thirty-second task is overdue.",
@@ -98,11 +98,11 @@
       "description": "Organizations that publicly support the 1% Treaty through the {campaignName}.",
       "emptyTitle": "No organizational supporters yet.",
       "emptyBody": "Be the first organization willing to put this on the record: {treatyTradePosition}.",
-      "ctaLabel": "Join as Organization"
+      "ctaLabel": "Join as an Organization"
     },
     "endorse": {
-      "eyebrow": "Your Organization Can",
-      "title": "End War And Disease One Day Sooner",
+      "eyebrow": "Organizations",
+      "title": "Join the International Campaign to End War and Disease",
       "signInTitle": "Verify organization",
       "signInDescription": "Organization support uses verified accounts so nobody joins the campaign in your organization's name.",
       "signInLabel": "Verify",
@@ -145,9 +145,9 @@
           ]
         },
         {
-          "heading": "Treaty text",
+          "heading": "Read before joining",
           "paragraphs": [
-            "The treaty is short. The full text is collapsed on the organization signup page so your organization can read it without leaving."
+            "The 1% Treaty asks every nation to redirect 1% of military spending to high-efficiency pragmatic clinical trials. Read it before adding your organization."
           ],
           "links": []
         }

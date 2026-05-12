@@ -9,17 +9,18 @@
  *
  * Re-running is safe — every trigger is upserted by triggerKey.
  *
- * This script builds a bare PrismaClient against DATABASE_URL and passes it
- * into the trigger admin helpers, so deploy-time sync does not write through
- * the web app singleton client.
+ * This compatibility wrapper builds a bare PrismaClient against DATABASE_URL
+ * and delegates to the canonical managed-data sync in @optimitron/db.
  */
 
 import "./load-env";
 
+import {
+  formatManagedTaskTriggersResult,
+  syncManagedTaskTriggers,
+} from "@optimitron/db/managed-task-triggers";
 import { PrismaClient } from "@optimitron/db";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS } from "../src/lib/triggers/blueprints/one-percent-treaty";
-import { createTaskTrigger, updateTaskTrigger } from "../src/lib/triggers/admin";
 
 function parseArgs(argv: string[]) {
   const args = argv.filter((arg) => arg !== "--");
@@ -59,24 +60,8 @@ const { apply } = parseArgs(process.argv.slice(2));
 
 async function main() {
   console.log(`[task-triggers] ${apply ? "apply" : "dry-run"}`);
-  for (const trigger of ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS) {
-    const existing = await prisma.taskTrigger.findUnique({
-      where: { triggerKey: trigger.triggerKey },
-    });
-    if (!apply) {
-      console.log(
-        `[task-triggers] would ${existing ? "update" : "create"} ${trigger.triggerKey}`,
-      );
-      continue;
-    }
-    if (existing) {
-      await updateTaskTrigger(trigger, { actorUserId: null }, prisma);
-      console.log(`[task-triggers] updated ${trigger.triggerKey}`);
-    } else {
-      await createTaskTrigger(trigger, { actorUserId: null }, prisma);
-      console.log(`[task-triggers] created ${trigger.triggerKey}`);
-    }
-  }
+  const result = await syncManagedTaskTriggers(prisma, { apply });
+  console.log(formatManagedTaskTriggersResult(result));
 }
 
 main()

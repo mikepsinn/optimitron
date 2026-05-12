@@ -43,6 +43,11 @@ export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
 
 const CANDIDATE_REDIRECT_ONLY_PATHS = [ROUTES.impact, ROUTES.politicians];
 
+const LEGACY_INTERNAL_REDIRECT_PATHS = getEnabledStaticPathsForSite(
+  SMOKE_TEST_SITE,
+  [ROUTES.campaign, ROUTES.coalition],
+);
+
 /** Routes that redirect off-app and should be tested as redirects, not pages. */
 export const REDIRECT_ONLY_PATHS: Set<string> = new Set(
   getEnabledStaticPathsForSite(SMOKE_TEST_SITE, CANDIDATE_REDIRECT_ONLY_PATHS),
@@ -52,6 +57,7 @@ export const REDIRECT_ONLY_PATHS: Set<string> = new Set(
 const SKIP_PATHS: Set<string> = new Set([
   ROUTES.signIn,
   ...REDIRECT_ONLY_PATHS,
+  ...LEGACY_INTERNAL_REDIRECT_PATHS,
 ]);
 
 function discoverStaticAppPages(

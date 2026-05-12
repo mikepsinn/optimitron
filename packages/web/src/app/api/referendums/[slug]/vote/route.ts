@@ -44,6 +44,7 @@ export async function POST(
       makePublic?: boolean;
       inviteToken?: string;
       orgContextToken?: string;
+      organizationSlug?: string;
       /// Full URL the voter was on when they hit submit (window.location.href).
       /// Captured for forensic attribution — first-vote-wins, never overwritten.
       originUrl?: string;
@@ -91,12 +92,21 @@ export async function POST(
     }
 
     const orgContextVerification = verifyOrgContextToken(body.orgContextToken);
+    const publicOrganizationSlug =
+      typeof body.organizationSlug === "string"
+        ? body.organizationSlug.trim()
+        : "";
     const verifiedOrganization = orgContextVerification.ok
       ? await prisma.organization.findUnique({
           where: { id: orgContextVerification.organizationId },
           select: { id: true, status: true, deletedAt: true },
         })
-      : null;
+      : publicOrganizationSlug
+        ? await prisma.organization.findUnique({
+            where: { slug: publicOrganizationSlug },
+            select: { id: true, status: true, deletedAt: true },
+          })
+        : null;
     const organizationId =
       verifiedOrganization &&
       verifiedOrganization.status === OrgStatus.APPROVED &&

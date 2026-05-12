@@ -1,46 +1,42 @@
 # /endorse
 
-- YOUR ORGANIZATION CAN
-## ENTER YOUR AUDIENCE. SEE THE SUFFERING YOU CAUSE OR PREVENT.
-- 150,000 humans die from disease today. Most preventable. Your audience size decides how much of it gets to keep happening.
-- 150,000
-- STEP 1
-### SIZE OF ORGANIZATION AND MEMBERSHIP.
-- Same numbers, two columns. Prevented if you act. Allowed if you do not.
-- YOUR AUDIENCE
-- EMAIL MEMBERS
-- MONTHLY SITE VISITORS
-- SOCIAL AUDIENCE
-- MONTHS ON WEBSITE
-- ASSUMPTIONS
-- AUDIENCE THAT SEES IT %
-- VERIFIED VOTE RATE %
-- MEMBER SHARE MULTIPLIER
-- FOUNDATION $ PER VOTE
-- IF YOU ACT
-- 5,346
-- LIVES SAVED
-- 109,058
-- YEARS OF SUFFERING PREVENTED
-- IF YOU DO NOT
-- PREVENTABLE DEATHS ALLOWED
-- YEARS OF SUFFERING ALLOWED
-- 1,980 verified votes × 2.7 lives and 55 years prevented per vote. At $2 per vote, funders fund $3,960 of outreach.
-- 2.7
-- 55
-- STEP 2 — ONE HOUR, THREE ACTIONS
-- 1. EMBED THE IFRAME One paste, then it works while you sleep.
-- 1. EMBED THE IFRAME
-- One paste, then it works while you sleep.
-- 2. SEND ONE EMAIL Pre-written. Your members already trust you. That is the asset.
-- 2. SEND ONE EMAIL
-- Pre-written. Your members already trust you. That is the asset.
-- 3. POST ONCE PER CHANNEL Link auto-credits responses to your organization.
-- 3. POST ONCE PER CHANNEL
-- Link auto-credits responses to your organization.
+## JOIN THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE
+- Add your organization. Then use your member link, email starter, website button, or iframe to help your audience answer the Global Survey to End War and Disease.
+- No donation. No candidate endorsement. One public humanitarian treaty position.
 - ORGANIZATION NAME *
 - WEBSITE
-- JOIN AS ORGANIZATION
+- JOIN AS AN ORGANIZATION
+### AFTER JOINING
+- Join first. Your tools page gives you the member link, email starter, website button, iframe, one-hour action checklist, and outreach grant request draft for funding from the International Campaign.
+### APPLY FOR A CAMPAIGN GRANT
+- Estimate the outreach grant your organization could request from the International Campaign to End War and Disease to run the Global Survey to End War and Disease through your audience. Campaign links and embeds keep attribution and impact measurement in one system.
+- OUTREACH CAPACITY
+- EMAIL LIST
+- MONTHLY SITE VISITORS
+- SOCIAL REACH
+- MONTHS EMBEDDED
+- ASSUMPTIONS
+- MESSAGE REACH %
+- SURVEY RESPONSE RATE %
+- MEMBER SHARING LIFT
+- GRANT $ PER RESPONSE
+- GRANT REQUEST
+- $3,960
+- AT $2 PER SURVEY RESPONSE
+- SURVEY RESPONSES
+- 1,980
+- FROM 66,000 PEOPLE REACHED
+- MODELED LIVES SAVED
+- 5,346
+- $0.74 PER MODELED LIFE SAVED
+- SUFFERING PREVENTED
+- 109,058
+- YEARS OF SUFFERING PREVENTED
+- 1,980 verified survey responses × 2.7 lives and 55 years prevented per response. At $2 per response, the outreach request is $3,960.
+- 2.7
+- 55
+#### CAMPAIGN GRANT REQUEST
+- COPY GRANT REQUEST
 - LEGAL NOTES FOR ORGANIZATIONS
 - READ THE 1% TREATY TEXT
 - Already joined? See the organizational supporters.

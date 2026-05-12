@@ -2,7 +2,7 @@ import {
   CombinationOperation,
   FillingType,
   Valence,
-} from "../../src/generated/prisma/enums.js";
+} from "../../generated/prisma/enums.js";
 
 export type GlobalVariableSeedRecord = {
   name: string;

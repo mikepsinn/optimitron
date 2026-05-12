@@ -8,8 +8,8 @@
  * callers don't have to change.
  *
  * To change the onboarding tree (titles, descriptions, subtask kinds,
- * action links, completion gate, etc.), edit the trigger blueprints under
- * `src/lib/triggers/blueprints/`
+ * action links, completion gate, etc.), edit the managed trigger blueprints in
+ * `packages/db/src/managed-data/managed-task-triggers.ts`
  * or update the trigger row over MCP via `updateTaskTrigger`. Don't add
  * spawn logic here.
  */

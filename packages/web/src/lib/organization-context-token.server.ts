@@ -9,8 +9,19 @@
 
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
-const SIGNING_KEY =
-  process.env.ORG_CONTEXT_SECRET ?? process.env.REASONING_ORG_CONTEXT_SECRET ?? "";
+const LOCAL_DEV_SIGNING_KEY = "optimitron-local-org-context-token-secret";
+
+function getSigningKey() {
+  const configured =
+    process.env.ORG_CONTEXT_SECRET ??
+    process.env.REASONING_ORG_CONTEXT_SECRET ??
+    "";
+  if (configured) return configured;
+
+  // Local review needs organization survey embeds to render without requiring
+  // production secrets. Production still fails closed when the key is absent.
+  return process.env.NODE_ENV === "production" ? "" : LOCAL_DEV_SIGNING_KEY;
+}
 
 export const TOKEN_DEFAULT_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
@@ -46,7 +57,8 @@ export function issueOrgContextToken(
   organizationId: string,
   options: { ttlSeconds?: number; now?: Date } = {},
 ): OrgContextToken {
-  if (!SIGNING_KEY) {
+  const signingKey = getSigningKey();
+  if (!signingKey) {
     throw new Error(
       "ORG_CONTEXT_SECRET (or legacy REASONING_ORG_CONTEXT_SECRET) is not configured; cannot issue org-context tokens",
     );
@@ -60,7 +72,7 @@ export function issueOrgContextToken(
     sessionSalt: randomHex(16),
   };
   const payloadB64 = base64UrlEncode(JSON.stringify(payload));
-  const signature = signPayload(payloadB64);
+  const signature = signPayload(payloadB64, signingKey);
   return {
     payload,
     signature,
@@ -80,7 +92,8 @@ export function verifyOrgContextToken(
   if (!encoded || encoded.length === 0) {
     return { ok: false, reason: "no-token" };
   }
-  if (!SIGNING_KEY) {
+  const signingKey = getSigningKey();
+  if (!signingKey) {
     return { ok: false, reason: "no-secret" };
   }
 
@@ -90,7 +103,7 @@ export function verifyOrgContextToken(
   }
   const [payloadB64, providedSig] = parts as [string, string];
 
-  const expectedSig = signPayload(payloadB64);
+  const expectedSig = signPayload(payloadB64, signingKey);
   if (!constantTimeEqual(providedSig, expectedSig)) {
     return { ok: false, reason: "bad-signature" };
   }
@@ -116,8 +129,8 @@ export function verifyOrgContextToken(
   return { ok: true, organizationId: payload.organizationId, payload };
 }
 
-function signPayload(payloadB64: string): string {
-  return createHmac("sha256", SIGNING_KEY).update(payloadB64).digest("hex");
+function signPayload(payloadB64: string, signingKey: string): string {
+  return createHmac("sha256", signingKey).update(payloadB64).digest("hex");
 }
 
 function constantTimeEqual(a: string, b: string): boolean {

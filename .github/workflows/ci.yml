@@ -179,14 +179,10 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
-      - name: Seed database (idempotent upserts; matches production)
-        # `pnpm db:seed` runs the whole `prisma/seed.ts` (all scopes — every
-        # function is `prisma.X.upsert()` so it's safe to re-run). It internally
-        # calls `syncManagedData()` for the tasks scope. This is the same
-        # command production runs on deploy, so CI exercises the real prod
-        # data-init path. Runs before smoke so the treaty-page-structure spec
-        # validates the real DB-backed render path.
-        run: pnpm db:seed
+      - name: Sync managed data (idempotent upserts; matches production)
+        # Single source of truth for production-worthy bootstrap/reference data,
+        # campaign records, and task triggers used by post-signin flows.
+        run: pnpm db:sync:managed-data -- --apply
 
       - name: Run Playwright smoke validation
         run: pnpm --filter @optimitron/web run e2e -- smoke
@@ -627,18 +623,11 @@ jobs:
         run: pnpm db:deploy
 
       - name: Sync canonical production data (idempotent upserts)
-        # `pnpm db:seed` runs every seed function in `prisma/seed.ts`, all of
-        # which use `prisma.X.upsert()` and are safe to re-run. It internally
-        # calls `syncManagedData()` for the `tasks` scope, so referendums,
-        # task tree, grandma-kay, and demo-user all sync as part of seed.
-        # Replaces the previous "db:sync:managed-data --apply" step which only
-        # synced the managed-data subset and left reference data (units,
-        # variable categories, jurisdictions, conflicts, drug timelines,
-        # wishocratic-items, treaty tasks) stale on production after every
-        # deploy.
+        # Single managed sync for reference data, campaign records, treaty tasks,
+        # referendums, demo fixtures, and trigger blueprints.
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm db:seed
+        run: pnpm db:sync:managed-data -- --apply
 
       - name: Deploy production artifact
         id: deploy

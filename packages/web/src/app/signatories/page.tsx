@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
 import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeaderboard";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
@@ -8,7 +9,8 @@ import { parsePositivePageParam } from "@/lib/pagination";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
 import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
-import { getSiteFromHeaders } from "@/lib/site";
+import { getRequestSiteOrigin, getSiteFromHeaders } from "@/lib/site";
+import { buildUserReferralUrl } from "@/lib/url";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +38,14 @@ export default async function SignatoriesPage({
   const content = requireReferendumSiteContent(site);
   const session = await getServerSession(authOptions);
   const params = (await searchParams) ?? {};
+  const requestOrigin = getRequestSiteOrigin({
+    host: hdrs.get("host"),
+    forwardedHost: hdrs.get("x-forwarded-host"),
+    forwardedProto: hdrs.get("x-forwarded-proto"),
+  });
+  const referralUrl = session?.user
+    ? buildUserReferralUrl(session.user, requestOrigin)
+    : `${requestOrigin}${ROUTES.vote}`;
 
   const homeData = await getReferendumSiteHomeData(site, {
     currentUserId: session?.user?.id ?? null,
@@ -55,9 +65,13 @@ export default async function SignatoriesPage({
     );
   }
 
+  const hasSignatorySurface =
+    homeData.publicSignatories.totalCount > 0 ||
+    Boolean(homeData.publicSignatories.currentUserStatus);
+
   return (
     <section className="mx-auto max-w-6xl px-4 py-16">
-      {homeData.publicSignatories.totalCount > 0 ? (
+      {hasSignatorySurface ? (
         <SignatoriesLeaderboard
           pagePathname={ROUTES.signatories}
           publicSignatories={homeData.publicSignatories}
@@ -88,6 +102,9 @@ export default async function SignatoriesPage({
           </div>
         </section>
       )}
+      <div className="mx-auto mt-10 max-w-3xl">
+        <DashboardShareCard referralUrl={referralUrl} />
+      </div>
     </section>
   );
 }

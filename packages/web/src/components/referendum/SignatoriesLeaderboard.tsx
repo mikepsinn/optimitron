@@ -3,12 +3,15 @@ import { fmtRaw } from "@optimitron/data/parameters";
 import { HelpCircle } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
 import { VoteCounterSplit } from "@/components/referendum/VoteCounterSplit";
+import { SignatoryVisibilityPanel } from "@/components/referendum/SignatoryVisibilityPanel";
 import { ImpactExplainer } from "@/components/shared/ImpactExplainer";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import type {
   PublicSignatoriesPage,
   PublicSignatoryEntry,
 } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
+import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
 import { cn } from "@/lib/utils";
 import {
   getUserDisplayAvatar,
@@ -40,17 +43,20 @@ export function SignatoriesLeaderboard({
   pagePathname = "/",
   voteCounterSplit,
 }: SignatoriesLeaderboardProps) {
-  const { currentUserSigner, signatories, totalCount, page, totalPages } =
-    publicSignatories;
-  if (totalCount === 0) {
+  const {
+    currentUserSigner,
+    currentUserStatus,
+    signatories,
+    totalCount,
+    page,
+    totalPages,
+  } = publicSignatories;
+  if (totalCount === 0 && !currentUserStatus) {
     return null;
   }
 
   return (
-    <section
-      id="signatories"
-      className="mt-16 border-t-2 border-foreground pt-12"
-    >
+    <section id="signatories" className="mt-16 pt-12">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 space-y-4 text-center">
           <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
@@ -58,7 +64,13 @@ export function SignatoriesLeaderboard({
           </h2>
           <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
             Allowing billions of people to suffer and die from disease so
-            humanity can preserve its 122-apocalypse mass-murder capacity is a
+            humanity can preserve its{" "}
+            <ParameterValue
+              className="font-black text-[var(--treaty-ink)]"
+              figures={3}
+              param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
+            />
+            -apocalypse mass-murder capacity is a
             conscious act of barbaric mass cruelty. Like slavery, it will be
             allowed to continue until enough people are brave enough to publicly
             state that it is morally wrong and incredibly stupid. These are
@@ -76,47 +88,60 @@ export function SignatoriesLeaderboard({
           ) : null}
         </div>
 
-        <div className="overflow-hidden border-2 border-foreground bg-background text-foreground">
-          <div className="hidden border-b-2 border-foreground px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground sm:grid sm:grid-cols-[minmax(0,1.8fr)_minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.8fr)] sm:gap-4">
-            <span>Signatory</span>
-            <ImpactExplainer
-              className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
-              label="Explain inverse kills impact math"
-              showFullAnalysisLink={false}
-            >
-              <span>Inverse kills</span>
-              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-            </ImpactExplainer>
-            <ImpactExplainer
-              className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
-              label="Explain hours of suffering prevented impact math"
-              showFullAnalysisLink={false}
-            >
-              <span>Hours of suffering prevented</span>
-              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-            </ImpactExplainer>
-            <span className="text-right">Voters recruited</span>
-          </div>
+        {currentUserStatus ? (
+          <SignatoryVisibilityPanel status={currentUserStatus} />
+        ) : null}
 
-          <ol>
-            {signatories.map((entry) => (
-              <SignatoryRow
-                key={entry.id}
-                entry={entry}
-                highlighted={
-                  entry.kind === "human" &&
-                  currentUserSigner?.user.id === entry.user.id
-                }
-                editHref={
-                  entry.kind === "human" &&
-                  currentUserSigner?.user.id === entry.user.id
-                    ? ROUTES.profile
-                    : undefined
-                }
-              />
-            ))}
-          </ol>
-        </div>
+        {totalCount > 0 ? (
+          <div className="overflow-hidden border-2 border-foreground bg-background text-foreground">
+            <div className="hidden border-b-2 border-foreground px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground sm:grid sm:grid-cols-[minmax(0,1.8fr)_minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.8fr)] sm:gap-4">
+              <span>Signatory</span>
+              <ImpactExplainer
+                className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
+                label="Explain inverse kills impact math"
+                showFullAnalysisLink={false}
+              >
+                <span>Inverse kills</span>
+                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+              </ImpactExplainer>
+              <ImpactExplainer
+                className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
+                label="Explain hours of suffering prevented impact math"
+                showFullAnalysisLink={false}
+              >
+                <span>Hours of suffering prevented</span>
+                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+              </ImpactExplainer>
+              <span className="text-right">Voters recruited</span>
+            </div>
+
+            <ol>
+              {signatories.map((entry) => (
+                <SignatoryRow
+                  key={entry.id}
+                  entry={entry}
+                  highlighted={
+                    entry.kind === "human" &&
+                    currentUserSigner?.user.id === entry.user.id
+                  }
+                  editHref={
+                    entry.kind === "human" &&
+                    currentUserSigner?.user.id === entry.user.id
+                      ? ROUTES.profile
+                      : undefined
+                  }
+                />
+              ))}
+            </ol>
+          </div>
+        ) : (
+          <div className="border-2 border-foreground bg-background p-8 text-center text-foreground">
+            <p className="text-lg font-black">No public signatories yet.</p>
+            <p className="mt-2 text-sm font-bold text-muted-foreground">
+              A treaty without signatories is paperwork. Fix that.
+            </p>
+          </div>
+        )}
 
         {totalPages > 1 ? (
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm font-black uppercase text-foreground">

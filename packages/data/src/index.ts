@@ -73,6 +73,9 @@ export * from './utils/index';
 export type { Parameter, Citation, SourceType, Confidence, ParameterName } from './parameters/index';
 export type { FormatParameterOptions } from './parameters/index';
 
+// Campaign-facing constants and pure copy builders
+export * from './campaign';
+
 // Hand-edited referendum bodies (use @optimitron/data/referendums for full access)
 // These are referendum content that doesn't yet flow through the auto-generated
 // QMD pipeline in parameters-calculations-citations.ts.

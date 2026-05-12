@@ -51,6 +51,7 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 import { POST } from "./route";
+import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 
 const ACTIVE_REFERENDUM = {
   id: "ref_1",
@@ -89,7 +90,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     });
     mocks.ensureOrganizationTreatyActivationTask.mockResolvedValue({
       id: "task_1",
-      title: "Share the Clinical Trial Abundance Survey with your members",
+      title: ORGANIZATION_ACTIVATION_TASK_TITLE,
     });
     mocks.positionFindUnique.mockResolvedValue(null);
     mocks.positionUpsert.mockResolvedValue({
@@ -256,7 +257,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     });
     mocks.ensureOrganizationTreatyActivationTask.mockResolvedValue({
       id: "task_iam",
-      title: "Share the Clinical Trial Abundance Survey with your members",
+      title: ORGANIZATION_ACTIVATION_TASK_TITLE,
     });
 
     const res = await POST(

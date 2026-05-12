@@ -715,6 +715,49 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
   });
 
+  it("stores approved public organization survey slug attribution without a signed token", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "referrer_1" });
+    mocks.verifyOrgContextToken.mockReturnValue({ ok: false, reason: "no-token" });
+    mocks.organizationFindUnique.mockResolvedValue({
+      id: "org_1",
+      status: "APPROVED",
+      deletedAt: null,
+    });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+      referredByUserId: "referrer_1",
+      organizationId: "org_1",
+    });
+
+    await POST(
+      makeRequest("test-ref", {
+        answer: "YES",
+        ref: "friend123",
+        organizationSlug: "trial-partner",
+      }),
+      makeParams("test-ref"),
+    );
+
+    expect(mocks.organizationFindUnique).toHaveBeenCalledWith({
+      where: { slug: "trial-partner" },
+      select: { id: true, status: true, deletedAt: true },
+    });
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.not.objectContaining({ organizationId: expect.anything() }),
+        create: expect.objectContaining({
+          referredByUserId: "referrer_1",
+          organizationId: "org_1",
+        }),
+      }),
+    );
+  });
+
   it("does not overwrite existing organization attribution on a revote", async () => {
     // The upsert.update branch must never carry organizationId — first org wins.
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });

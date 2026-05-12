@@ -201,7 +201,7 @@ Then `fireTaskTrigger` with `dryRun: true` to verify the rendered preview before
 
 **Implementation:** `packages/web/src/lib/triggers/{template,resolvers,event-filter,completion-gate,fire,admin,context}.ts`. The schema lives in `packages/db/prisma/schema.prisma` (`TaskTrigger`, `TaskSpawnSpec`, `TaskCommunicationSpawnSpec`, `TaskTriggerFire`).
 
-**Deploy requirement:** every production deploy MUST run `pnpm db:seed:triggers` AFTER `pnpm db:deploy` and BEFORE the new code goes live. The seed is idempotent (upsert on `triggerKey`) and is wired into `db:setup` for local development. CI's production-deploy step runs it automatically (see `.github/workflows/ci.yml`). If you add a new wired event source to the application code, ensure its corresponding trigger blueprint is seeded — otherwise `fireTaskTriggersForEvent` will return `filteredOut` (trigger not found) and the layered behavior won't run.
+**Deploy requirement:** every production deploy MUST run `pnpm db:sync:managed-data -- --apply` AFTER `pnpm db:deploy` and BEFORE the new code goes live. The sync is idempotent (upsert on stable managed keys) and is wired into `db:setup` for local development. CI runs it automatically (see `.github/workflows/ci.yml`). If you add a new wired event source to the application code, ensure its corresponding trigger blueprint is managed — otherwise `fireTaskTriggersForEvent` will return `filteredOut` (trigger not found) and the layered behavior won't run.
 
 **Parameter tokens:** every fired trigger context is augmented with `params.<slug>` values pre-resolved from `@optimitron/data/parameters`. The current set is in `packages/web/src/lib/triggers/context.ts` — extend that map when you need a new parameter in a template.
 

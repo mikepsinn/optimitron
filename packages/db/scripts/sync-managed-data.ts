@@ -20,8 +20,36 @@ function parseArgs(argv: string[]) {
   };
 }
 
+function isLocalDatabaseHost(hostname: string) {
+  const normalized = hostname.toLowerCase();
+  return (
+    normalized === "localhost" ||
+    normalized === "127.0.0.1" ||
+    normalized === "::1" ||
+    normalized === "postgres"
+  );
+}
+
+function assertRemoteApplyIsIntentional(connectionString: string, apply: boolean) {
+  if (!apply) return;
+
+  const url = new URL(connectionString);
+  if (isLocalDatabaseHost(url.hostname)) return;
+  if (process.env.CI === "true") return;
+  if (process.env.MANAGED_DATA_ALLOW_REMOTE_APPLY === "1") return;
+
+  throw new Error(
+    [
+      `Refusing local managed-data --apply against remote database host ${url.host}.`,
+      "Run --dry-run first, then set MANAGED_DATA_ALLOW_REMOTE_APPLY=1 only if this is intentional.",
+    ].join(" "),
+  );
+}
+
 const { apply, mode } = parseArgs(process.argv.slice(2));
-const adapter = new PrismaPg({ connectionString: loadDatabaseUrl() });
+const connectionString = loadDatabaseUrl();
+assertRemoteApplyIsIntentional(connectionString, apply);
+const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 try {

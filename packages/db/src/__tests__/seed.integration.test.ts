@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
-import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
+import { syncManagedData } from "../managed-data/index.js";
 import {
   PersonConditionStatus,
   PersonLifeStatus,
@@ -32,17 +32,16 @@ async function readBaselineCounts(prisma: PrismaClient) {
   };
 }
 
-describeIfDatabase("seedDatabase", () => {
+describeIfDatabase("syncManagedData", () => {
   const adapter = new PrismaPg({ connectionString: databaseUrl! });
   const prisma = new PrismaClient({ adapter });
 
   beforeAll(async () => {
-    await seedDatabase();
+    await syncManagedData(prisma, { apply: true });
   }, SEED_TEST_TIMEOUT_MS);
 
   afterAll(async () => {
     await prisma.$disconnect();
-    await disconnectSeedClient();
   });
 
   it("seeds baseline reference data", async () => {
@@ -191,7 +190,7 @@ describeIfDatabase("seedDatabase", () => {
   it("can run idempotently without duplicating baseline data", async () => {
     const firstCounts = await readBaselineCounts(prisma);
 
-    await seedDatabase();
+    await syncManagedData(prisma, { apply: true });
 
     const secondCounts = await readBaselineCounts(prisma);
 
@@ -234,7 +233,7 @@ describeIfDatabase("seedDatabase", () => {
       },
     });
 
-    await seedDatabase();
+    await syncManagedData(prisma, { apply: true });
 
     await expect(
       prisma.task.findUnique({ where: { id: "1-pct-treaty" } }),

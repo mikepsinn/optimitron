@@ -8,6 +8,11 @@ import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   fmtParam,
 } from "@optimitron/data/parameters";
+import {
+  GLOBAL_SURVEY_NAME,
+  HUMANITY_MANAGEMENT,
+  ORGANIZATION_ACTIVATION_TASK_TITLE,
+} from "@optimitron/data/campaign";
 
 /** Point name — single source of truth. Change here to rename everywhere. */
 export const POINT_NAME = "VOTE" as const;
@@ -20,6 +25,12 @@ export const REFERRAL_SHARE_LABEL =
 
 export const REFERRAL_SHARE_PROMPT =
   `${REFERRAL_SHARE_LABEL} It will significantly reduce the probability that they will suffer and die from horrible diseases.` as const;
+
+export {
+  GLOBAL_SURVEY_NAME,
+  HUMANITY_MANAGEMENT,
+  ORGANIZATION_ACTIVATION_TASK_TITLE,
+};
 
 // ---------------------------------------------------------------------------
 // User-framing vocabulary (variant-aware)
@@ -145,19 +156,6 @@ export const GAME = {
   /** Minimum pairwise comparisons to count as "completed" wishocracy (C(5,2) = 10) */
   wishocracyMinComparisons: 10,
 } as const;
-
-export const HUMANITY_MANAGEMENT = {
-  /** The phone-call training task requires one real call, not two. */
-  requiredPhoneCalls: 1,
-  /** Stage-1 training still requires two assigned humans. */
-  directHumanAssignments: 2,
-  /** Each contacted human is asked to recruit two more humans. */
-  propagationAsksPerHuman: 2,
-  callOneHumanTaskTitle: "Make one phone call. Outsource humanity management.",
-} as const;
-
-export const ORGANIZATION_ACTIVATION_TASK_TITLE =
-  "Share the Clinical Trial Abundance Survey with your members" as const;
 
 export const CTA = {
   playTheGame: "Play the Game",

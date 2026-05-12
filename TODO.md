@@ -82,12 +82,10 @@ Ordered by funnel-stage impact. P0 = ship next; P1 = right after; P2 = before la
 ### P0 — Managed canonical data sync (seed replacement for semi-permanent rows)
 
 **Problem decided 2026-05-10:** normal Prisma migrations are the wrong tool for
-every title/task-tree/court/trigger tweak, but `seed.ts` alone is also wrong:
-production deploy currently runs `pnpm db:deploy` and `pnpm db:seed:triggers`,
-not `seed:tasks` or full `db:seed`. A seed edit will update fresh/local/CI DBs
-but will not automatically update production. Missing-from-seed also cannot
-safely imply "delete this row" because user-created records live in the same
-tables.
+every title/task-tree/court/trigger tweak. Production-worthy data belongs in
+managed sync, not in a separate seed-only path. Missing-from-manifest also
+cannot safely imply "delete this row" because user-created records live in the
+same tables.
 
 **Target pattern:** source-controlled managed data with an idempotent sync script.
 
@@ -100,10 +98,8 @@ tables.
   `retired: true`.
 - Add a package/root script such as `pnpm db:sync:managed-data`.
 - Run it on production deploy after `pnpm db:deploy` and before Vercel deploy.
-  Keep `db:seed:triggers` until triggers are folded into managed data.
-- Keep normal `seed.ts` for local/reference/demo/bootstrap convenience, but have
-  it call the same managed-data sync helpers where possible so fresh databases
-  and production converge.
+- Keep `packages/db/prisma/seed.ts` only as Prisma's tiny entrypoint shim.
+  Managed sync is the source of truth for local, CI, preview, and production.
 - Do not use "record missing from manifest" as a global delete rule. Deletion is
   safe only inside a named managed collection, and only for rows previously owned
   by that collection or explicitly marked retired.
@@ -249,16 +245,15 @@ cross-check so they do not disappear into chat history.
 - Add a banner on `latest.html` when missing-screenshot pairs exist, explaining cause (optional route absent on baseline, route skipped because returned 401/403/404, etc.) instead of just rendering N "not captured" boxes. The new publish gate (`steps.visual_regression.outcome == 'success'`) blocks the "all 62 missing" case, but legitimate per-route omissions still need explanation.
 - Vercel preview-ready watcher + auto-screenshot of changed routes. When a Vercel deployment for the current branch transitions to READY: identify routes changed by the PR (`git diff origin/main...HEAD --name-only` filtered to `packages/web/src/app/**/page.tsx`), use chrome-devtools MCP (via `mcp__claude_ai_Vercel__get_access_to_vercel_url` for auth-gated previews) to screenshot each route, write `packages/web/output/playwright/pr-watch/<deploy-id>/review.html`, surface the preview URL + local review HTML link inline in chat. Currently the `/loop` cron `0feea8a0` (every 15 min, auto-background pattern: foreground spawns bg agent + exits) hits gh+Vercel state but the actual screenshot pipeline isn't wired yet. Deferred 2026-05-11 to keep the foreground turn short.
 - Stop-hook check: detect "we should..." / "let's do that later" / "for now..." style deferrals in my own outputs and gate Stop until I capture them in TODO.md. Hard to detect reliably with regex; the memory rule `feedback_capture_decisions_in_todo` is the manual version for now.
-- **Unify seed.ts + managed-data sync** (decided 2026-05-11, in progress). End state: single `pnpm db:sync:managed-data --apply` runs in prod / preview / CI / local; `seed.ts` becomes a vestigial shim.
+- **Unify seed.ts + managed-data sync** (decided 2026-05-11, implemented on `feature/treaty-dashboard-message-first`). End state: single `pnpm db:sync:managed-data -- --apply` runs in prod / preview / CI / local; `seed.ts` is only a Prisma entrypoint shim.
   - [x] grandma-kay (commit `03c83520`)
   - [x] demo-user (commit `47b900d7`)
-  - [ ] **task-triggers** — currently lives in `packages/web/scripts/sync-task-triggers.ts` with admin helpers in `packages/web/src/lib/triggers/admin.ts`. Migration requires moving the trigger admin logic from `packages/web` to `packages/db/src/managed-data/managed-task-triggers.ts` and updating the web script to delegate. **Architectural blocker:** crossing package boundaries; helpers depend on Prisma client patterns specific to packages/web. Deserves its own focused turn.
-  - [ ] **seedTreatyTasks** (~720 lines of country-leader-per-task generation) — loops `WORLD_LEADERS`, reads a leader-photo manifest from `packages/web/public/images/leaders/manifest.json`, creates one task per country. Substantial enough for its own migration; needs the photo-manifest dependency rethought (the manifest path crosses from db package into web public assets).
-  - [ ] **reference data** — units → variable categories → global variables → medical reference → jurisdictions. FK-chained, must be migrated together as a single coordinated batch (units before categories, categories before globals, etc). ~1000+ lines of careful per-category migration with correct sync ordering.
-  - [ ] **catalog data depending on reference data** — wishocratic-items (FK to jurisdiction), conflicts (FK to jurisdiction), drug-approval-timelines (FK to unit+category+global+jurisdiction). Blocked by reference-data migration; can only ship after that lands.
-  - Discovered 2026-05-11: my "small blast radius first" ordering was naive. The categories interlock via FKs, so the migration shape is really "bottom-up coordinated batch" not "one file at a time." Reference data should ship as one PR with all FK-dependent categories included.
+  - [x] reference data, catalog data, reasoning data, and treaty accountability tasks now live under `packages/db/src/managed-data`.
+  - [x] **task-triggers** — managed trigger blueprints and idempotent upsert sync live in `packages/db/src/managed-data`; runtime firing, resolvers, MCP admin tools, and interactive create/update helpers stay in `packages/web`.
 - [x] Add `Referendum` to the managed-data sync (commit `121e71df`). New `packages/db/src/managed-data/managed-referendums.ts` is the single source of truth for treaty + declaration + court-of-humanity. `syncManagedReferendums()` upserts on every deploy with content-hash change detection. `seed.ts` delegates to the same sync. CI ordering also fixed (`9891c60c`) — seed now runs before smoke, so the bundled-markdown fallback in `referendum-content.server.ts` now only fires for the legit preview-DB-with-null-body case and won't be exercised by the test path.
 - Extract the large `actions/github-script@v8` inline-JS blocks in `ci.yml` (Resolve PR preview URL, Create Visual review deployment) into versioned `.github/scripts/*.js` files. Inline-in-YAML is fine for <20 lines; the two listed are 24-28 lines with non-trivial logic worth diffing + linting.
+- Persisted organization grant request/application workflow. Current batch keeps grant impact as calculator/request framing only; add storage, review status, and automated foundation outreach in a later focused pass.
+- Repo-wide "122 apocalypses" copy audit. List every version, rank clarity/funniness, and normalize the strongest explanation after this merge.
 
 **Current branch hygiene**
 

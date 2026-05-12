@@ -55,9 +55,9 @@ function getHeadersWithLocalSiteVariantOverride(
   return requestHeaders;
 }
 
-// `?login=demo` and `?logout=1` query params let preview-deploy reviewers
-// flip between authed (as the demo user) and unauthed views by tweaking
-// the URL. `?login=demo` is env-gated to non-production via the API
+// `?login=demo` and `?logout=1` query params let preview-deploy
+// reviewers flip between useful auth states by tweaking the URL. Login params
+// are env-gated to non-production via the API
 // route itself. `?logout=1` is harmless on any environment.
 //
 // Middleware redirects to the matching `/api/dev/*` route (which does
@@ -184,7 +184,8 @@ export default withAuth(
         // `?logout=1` doesn't need this branch (logout from auth pages is
         // expected to redirect to sign-in if you're already logged out).
         const params = req.nextUrl.searchParams;
-        if (params.get("login") === "demo") return true;
+        const loginAs = params.get("login");
+        if (loginAs === "demo") return true;
 
         const authPaths = [
           ROUTES.dashboard,

@@ -178,8 +178,8 @@ export function getTaskPath(id: string): string {
   return `${ROUTES.tasks}/${id}`;
 }
 
-export function getOrganizationPath(id: string): string {
-  return `${ROUTES.organizations}/${id}`;
+export function getOrganizationPath(identifier: string): string {
+  return `${ROUTES.organizations}/${identifier}`;
 }
 
 export function getOrganizationSurveyPath(slug: string): string {
@@ -751,14 +751,14 @@ export const questionsLink: NavItem = {
 
 export const endorseLink: NavItem = {
   href: ROUTES.endorse,
-  label: "Join as Organization",
+  label: "Join as an Organization",
   emoji: "✍️",
   description:
     "Join the International Campaign to End War and Disease as an organization.",
   tagline: "Join as an organization",
   copyPreview: true,
   screenshot: true,
-  cta: "Join as Organization",
+  cta: "Join as an Organization",
 };
 
 export const signatoriesLink: NavItem = {
@@ -1505,9 +1505,7 @@ function getReviewPathFromNavItem(navItem: NavItem): string | null {
   return href.split(/[?#]/, 1)[0] || ROUTES.home;
 }
 
-function dedupeRouteReviewSpecs(
-  specs: RouteReviewSpec[],
-): RouteReviewSpec[] {
+function dedupeRouteReviewSpecs(specs: RouteReviewSpec[]): RouteReviewSpec[] {
   const seen = new Set<string>();
   return specs.filter((spec) => {
     const key = `${spec.name}:${spec.path}`;

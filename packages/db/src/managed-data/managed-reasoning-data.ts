@@ -1,5 +1,5 @@
 /**
- * Seed: /reasoning autonomous persuasion optimizer
+ * Managed data: /reasoning autonomous persuasion optimizer
  *
  * Seeds:
  *  - 4 VariantSets (canonical + 3 persona-tuned)
@@ -13,17 +13,14 @@
  * Idempotent: safe to re-run.
  */
 
-import { PrismaPg } from "@prisma/adapter-pg";
-import { pathToFileURL } from "node:url";
-import { PrismaClient } from "../src/generated/prisma/client.js";
-import { loadDatabaseUrl } from "../src/db-cli.ts";
+import { PrismaClient } from "../generated/prisma/client.js";
 import type { ParameterName } from "@optimitron/data/parameters";
 
 let prisma: PrismaClient;
 const DEFAULT_ARM_CHANNEL = "default";
 const p = <T extends ParameterName>(paramName: T) => `{${paramName}}`;
 
-export async function seedReasoningData(prismaClient: PrismaClient) {
+export async function syncManagedReasoningData(prismaClient: PrismaClient) {
   prisma = prismaClient;
   await seedSystemState();
   await seedLocaleConfigs();
@@ -36,7 +33,7 @@ export async function seedReasoningData(prismaClient: PrismaClient) {
   await seedDistributionTargets();
   await assertAssignmentRuleTargetsSeeded();
 
-  console.log("✓ reasoning seed complete");
+  console.log("✓ reasoning managed data synced");
 }
 
 async function seedSystemState() {
@@ -199,11 +196,11 @@ async function seedCanonicalArmsForSet(variantSetId: string) {
       nodeId: "paid-recursion",
       headline: "Paid recursion, not cult recursion",
       body:
-        `Your signature is worth ~${p("VOTER_LIVES_SAVED")} lives and ~${p("VOTER_SUFFERING_HOURS_PREVENTED")} hours of suffering prevented in expectation. Every person you forward to, up to the ${p("TREATY_CAMPAIGN_VOTING_BLOC_TARGET")} threshold, is worth the same. The forwarding is paid: referral bonuses pay VOTE points; bondholders earn ${p("VICTORY_BOND_ANNUAL_RETURN_PCT")}/yr. Money flows IN to forwarders, not UP a pyramid.`,
+        `Your signature is worth ~${p("VOTER_LIVES_SAVED")} lives and ~${p("VOTER_SUFFERING_HOURS_PREVENTED")} hours of suffering prevented in expectation. Every person you forward to, up to the ${p("GLOBAL_REGISTERED_VOTERS")} threshold, is worth the same. The forwarding is paid: referral bonuses pay VOTE points; bondholders earn ${p("VICTORY_BOND_ANNUAL_RETURN_PCT")}/yr. Money flows IN to forwarders, not UP a pyramid.`,
       sourceKeys: [
         "VOTER_LIVES_SAVED",
         "VOTER_SUFFERING_HOURS_PREVENTED",
-        "TREATY_CAMPAIGN_VOTING_BLOC_TARGET",
+        "GLOBAL_REGISTERED_VOTERS",
         "VICTORY_BOND_ANNUAL_RETURN_PCT",
       ],
       family: "SELF_INTEREST_ROI",
@@ -271,7 +268,7 @@ async function seedCanonicalArmsForSet(variantSetId: string) {
       steelman:
         "Either this is MLM (structurally) or the linearity assumption is wrong (reactance, relationship cost).",
       rebuttal:
-        `Four structural disanalogies to MLM: bounded goal (stops at ${p("TREATY_CAMPAIGN_VOTING_BLOC_TARGET")}), costless exit, money flows IN from campaign instruments (not UP a pyramid), no downline. Linearity: the claim is EV per expected signature produced, not per conversation. At 10% conversion the math is still net-positive.`,
+        `Four structural disanalogies to MLM: bounded goal (stops at ${p("GLOBAL_REGISTERED_VOTERS")}), costless exit, money flows IN from campaign instruments (not UP a pyramid), no downline. Linearity: the claim is EV per expected signature produced, not per conversation. At 10% conversion the math is still net-positive.`,
       adversarialSourceLabel: "MLM-psychology steelman",
       adversarialSourceUrl: "https://en.wikipedia.org/wiki/Multi-level_marketing",
     },
@@ -432,7 +429,7 @@ async function seedPersonaVariantSets(canonicalSetId: string): Promise<{
     ids[s.name] = set.id;
   }
   return {
-    analytical: ids.analytical!,
+    analytical: ids["analytical"]!,
     moral: ids["moral-emotional"]!,
     practical: ids["practical-self-interest"]!,
   };
@@ -582,7 +579,7 @@ async function applyPracticalOverrides(variantSetId: string) {
       sources: [
         { label: humanize("VOTER_LIVES_SAVED"), paramName: "VOTER_LIVES_SAVED" },
         { label: humanize("VOTER_SUFFERING_HOURS_PREVENTED"), paramName: "VOTER_SUFFERING_HOURS_PREVENTED" },
-        { label: humanize("TREATY_CAMPAIGN_VOTING_BLOC_TARGET"), paramName: "TREATY_CAMPAIGN_VOTING_BLOC_TARGET" },
+        { label: humanize("GLOBAL_REGISTERED_VOTERS"), paramName: "GLOBAL_REGISTERED_VOTERS" },
         { label: humanize("VICTORY_BOND_ANNUAL_RETURN_PCT"), paramName: "VICTORY_BOND_ANNUAL_RETURN_PCT" },
       ],
     },
@@ -829,11 +826,11 @@ async function seedSecretArms(variantSetId: string) {
       nodeId: "paid-recursion",
       headline: "Call 40. Two will continue. That's enough.",
       body:
-        `The system math is: if each person gets 2 others to keep the chain going, 32 doublings reaches ${p("TREATY_CAMPAIGN_VOTING_BLOC_TARGET")} — enough that no government ignores. The honest behavioral math: ~5–10% of anyone you ask actually does what they said yes to. You can't predict which ones. So call ~40 (everyone you love, one per day for 6 weeks). Most will say yes and do nothing. 2–4 will actually call their own 40. Those 2–4 are enough, because they do the same thing. Your signature is worth ~${p("VOTER_LIVES_SAVED")} lives and ~${p("VOTER_SUFFERING_HOURS_PREVENTED")} hours of suffering prevented. You aren't responsible for everyone on your list — you are responsible for calling them. Volume is the only protection against "most say yes and forget."`,
+        `The system math is: if each person gets 2 others to keep the chain going, 32 doublings reaches ${p("GLOBAL_REGISTERED_VOTERS")} — enough that no government ignores. The honest behavioral math: ~5–10% of anyone you ask actually does what they said yes to. You can't predict which ones. So call ~40 (everyone you love, one per day for 6 weeks). Most will say yes and do nothing. 2–4 will actually call their own 40. Those 2–4 are enough, because they do the same thing. Your signature is worth ~${p("VOTER_LIVES_SAVED")} lives and ~${p("VOTER_SUFFERING_HOURS_PREVENTED")} hours of suffering prevented. You aren't responsible for everyone on your list — you are responsible for calling them. Volume is the only protection against "most say yes and forget."`,
       sourceKeys: [
         "VOTER_LIVES_SAVED",
         "VOTER_SUFFERING_HOURS_PREVENTED",
-        "TREATY_CAMPAIGN_VOTING_BLOC_TARGET",
+        "GLOBAL_REGISTERED_VOTERS",
       ],
       family: "DIRECT_IMPERATIVE",
     },
@@ -1051,23 +1048,4 @@ async function seedSecretArms(variantSetId: string) {
       riskTier: "T1",
     });
   }
-}
-
-const isMainModule =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(process.argv[1]).href;
-
-if (isMainModule) {
-  const adapter = new PrismaPg({ connectionString: loadDatabaseUrl() });
-  const standalonePrisma = new PrismaClient({ adapter });
-
-  Promise.resolve()
-    .then(() => seedReasoningData(standalonePrisma))
-    .catch((error) => {
-      console.error(error);
-      process.exitCode = 1;
-    })
-    .finally(async () => {
-      await standalonePrisma.$disconnect();
-    });
 }

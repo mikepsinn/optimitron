@@ -31,7 +31,7 @@ export function buildShareFooterHtml(referralUrl: string): string {
       </p>
       <p style="margin:0;font-size:12px;line-height:1.6;color:#71717a;">
         Copy the line above into iMessage, WhatsApp, Signal, email — wherever
-        your people read you. Or send them straight to
+        humans read words that you write. Or send them straight to
         <a href="${escapedUrl}" style="color:#111827;font-weight:700;">${escapedUrl}</a>.
         ${FOOTER_TAGLINE}
       </p>

@@ -1,4 +1,4 @@
-import { CombinationOperation } from "../../src/generated/prisma/enums.js";
+import { CombinationOperation } from "../../generated/prisma/enums.js";
 
 export type VariableCategorySeedRecord = {
   name: string;

@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import { Dialog } from "@/components/retroui/Dialog"
 import { Badge } from "@/components/retroui/Badge"
-import { ExternalLink, Info, FlaskConical, BookOpen, X, type LucideIcon } from "lucide-react"
+import { ExternalLink, FlaskConical, BookOpen, X, type LucideIcon } from "lucide-react"
 import {
   fmtParam,
   fmtParamValueOnly,
@@ -58,13 +58,16 @@ export function ParameterValue({
         return fmtParamValueOnly(param, figures)
     }
   })()
+  const citation: Citation | undefined = param.sourceRef
+    ? citations[param.sourceRef]
+    : undefined
 
   const hasMetadata = [
     param.displayName,
     param.description,
     param.formula,
     param.latex,
-    param.sourceRef,
+    citation?.title,
     param.confidence,
     param.calculationsUrl,
     param.manualPageUrl,
@@ -92,9 +95,9 @@ export function ParameterValue({
       </Dialog.Trigger>
       <Dialog.Content
         size="screen"
-        className="!w-[95vw] !max-w-[900px] max-h-[90vh] !grid-cols-[minmax(0,1fr)] overflow-hidden"
+        className="!w-[95vw] !max-w-[900px] max-h-[90vh] !grid-cols-[minmax(0,1fr)] overflow-hidden border-2 border-foreground bg-background shadow-none"
       >
-        <div className="flex min-w-0 items-start justify-between gap-4 border-b-2 border-primary bg-primary px-4 py-3 text-primary-foreground">
+        <div className="flex min-w-0 items-start justify-between gap-4 border-b-2 border-foreground bg-foreground px-4 py-3 text-background">
           <h2 className="min-w-0 flex-1 break-words text-base font-black uppercase leading-tight">
             {param.displayName ?? "Parameter Details"}
           </h2>
@@ -102,7 +105,7 @@ export function ParameterValue({
             <button
               type="button"
               aria-label="Close"
-              className="shrink-0 border-2 border-primary-foreground p-1 hover:bg-primary-foreground/10"
+              className="shrink-0 border-2 border-background p-1 hover:bg-background/10"
             >
               <X className="h-4 w-4" />
             </button>
@@ -128,9 +131,7 @@ function ParameterDetailContent({
     : undefined
 
   const fullValue = fmtParam(param)
-  const showReferenceLabel = Boolean(!citation?.URL && param.sourceRef)
   const hasReferenceActions = Boolean(
-    showReferenceLabel ||
     param.calculationsUrl ||
     param.manualPageUrl
   )
@@ -153,13 +154,13 @@ function ParameterDetailContent({
       )}
 
       {param.latex ? (
-        <div className="min-w-0 max-w-full overflow-x-auto rounded-none border-2 border-primary bg-muted p-3">
+        <div className="min-w-0 max-w-full overflow-x-auto border-2 border-foreground bg-background p-3">
           <Latex block>{param.latex}</Latex>
         </div>
       ) : param.formula ? (
         <div className="text-sm break-words">
           <span className="font-bold">Formula: </span>
-          <code className="bg-muted px-1.5 py-0.5 rounded-none border-2 border-primary text-xs break-all">
+          <code className="border border-foreground bg-background px-1.5 py-0.5 text-xs break-all">
             {param.formula}
           </code>
         </div>
@@ -171,7 +172,7 @@ function ParameterDetailContent({
           {param.peerReviewed && (
             <Badge
               variant="outline"
-              className="text-[10px] px-1.5 py-0 h-5 font-bold uppercase border-primary bg-background text-foreground"
+              className="h-5 border-foreground bg-background px-1.5 py-0 text-[10px] font-bold uppercase text-foreground"
             >
               peer-reviewed
             </Badge>
@@ -179,7 +180,7 @@ function ParameterDetailContent({
           {param.conservative && (
             <Badge
               variant="outline"
-              className="text-[10px] px-1.5 py-0 h-5 font-bold uppercase border-primary bg-brutal-green text-brutal-green-foreground"
+              className="h-5 border-foreground bg-background px-1.5 py-0 text-[10px] font-bold uppercase text-foreground"
             >
               conservative estimate
             </Badge>
@@ -188,15 +189,9 @@ function ParameterDetailContent({
       ) : null}
 
       {(hasReferenceActions || hasCitationDetail) && (
-        <div className="space-y-3 pt-3 border-t-2 border-primary/20">
+        <div className="space-y-3 border-t border-foreground pt-3">
           {hasReferenceActions && (
             <div className="flex flex-wrap items-center gap-2">
-              {showReferenceLabel && (
-                <span className="text-xs text-muted-foreground font-bold flex items-center gap-1">
-                  <Info className="h-3.5 w-3.5" />
-                  Ref: {param.sourceRef?.replace(/-/g, " ")}
-                </span>
-              )}
               {param.calculationsUrl && (
                 <MetaLink
                   href={param.calculationsUrl}
@@ -245,7 +240,7 @@ function ConfidenceIntervalBlock({ param }: { param: Parameter }) {
   const highFmt = fmtParam({ ...param, value: high })
 
   return (
-    <div className="rounded-none border-2 border-primary/20 bg-muted p-3 text-sm">
+    <div className="border-2 border-foreground bg-background p-3 text-sm">
       <div className="font-black uppercase text-xs tracking-wider mb-1">
         Estimated Range
       </div>
@@ -277,7 +272,7 @@ function MetaLink({
       target="_blank"
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
-      className="inline-flex max-w-full items-center gap-1.5 rounded-none border-2 border-primary bg-background px-2 py-1 text-[10px] leading-tight text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-px hover:translate-y-px hover:shadow-none"
+      className="inline-flex max-w-full items-center gap-1.5 border-2 border-foreground bg-background px-2 py-1 text-[10px] leading-tight text-foreground hover:bg-foreground hover:text-background"
     >
       <Icon className="h-3 w-3 shrink-0" />
       <span className="font-black uppercase tracking-wide">{label}</span>

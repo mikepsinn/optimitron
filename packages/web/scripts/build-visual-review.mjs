@@ -95,6 +95,7 @@ const routeOrder = [
   "feedback",
   "settings",
   "organizations",
+  "organization-iam-public",
   "task-optimize-earth",
   "task-one-percent-treaty",
   "task-signer-canada",

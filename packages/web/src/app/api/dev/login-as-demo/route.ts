@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
 import { encode } from "next-auth/jwt";
+import { DEMO_USER_EMAIL } from "@optimitron/data/campaign";
 import { prisma } from "@/lib/prisma";
 
 // `/api/dev/login-as-demo?next=/some-path` — server-side mints a NextAuth
-// session JWT for the demo user (`demo@thinkbynumbers.org`) and sets the
-// session cookie, then redirects to `next`. Triggered by the middleware
-// when a request arrives with `?login=demo` query param (see
-// `packages/web/src/middleware.ts`).
+// session JWT for a non-production review user and sets the session cookie,
+// then redirects to `next`. Triggered by the middleware when a request arrives
+// with `?login=demo` query param (see `packages/web/src/middleware.ts`).
 //
 // Gated to non-production: returns 404 on prod to ensure the auth-bypass
 // surface only exists on preview / dev environments. Preview deploys are
 // already auth-gated by Vercel's bypass-cookie system, so the additional
 // auth-bypass-as-demo only works for people you've shared a preview with.
 //
-// Demo user is created on every deploy by managed-data's `syncManagedDemoUser`
-// (`packages/db/src/managed-data/managed-demo-user.ts`).
-
-const DEMO_EMAIL = "demo@thinkbynumbers.org";
+// The demo review user is created by managed-data.
 
 function isPreviewOrDev(): boolean {
   // Allow-list, not deny-list. Vercel sets NODE_ENV=production on BOTH
@@ -70,7 +67,7 @@ export async function GET(request: Request) {
   const next = sanitizeNext(url.searchParams.get("next"));
 
   const user = await prisma.user.findUnique({
-    where: { email: DEMO_EMAIL },
+    where: { email: DEMO_USER_EMAIL },
     select: {
       id: true,
       email: true,
@@ -83,7 +80,7 @@ export async function GET(request: Request) {
   });
   if (!user) {
     return new NextResponse(
-      `Demo user ${DEMO_EMAIL} not found in DB. Managed-data sync should have created it; run \`pnpm db:sync:managed-data --apply\` against this environment's database.`,
+      `Demo user ${DEMO_USER_EMAIL} not found in DB. Managed-data sync should have created it; run \`pnpm db:sync:managed-data -- --apply\` against this environment's database.`,
       { status: 500, headers: { "content-type": "text/plain" } },
     );
   }
@@ -108,7 +105,7 @@ export async function GET(request: Request) {
   });
 
   const name = cookieName(request);
-  const response = NextResponse.redirect(new URL(next, request.url), 307);
+  const response = NextResponse.redirect(new URL(next, request.url), 303);
   response.cookies.set({
     name,
     value: jwt,
