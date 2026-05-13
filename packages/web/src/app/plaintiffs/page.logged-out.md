@@ -14,7 +14,8 @@
 ## Visible Page Copy
 
 ## REGISTER PLAINTIFFS FOR HUMANITY V GOVERNMENT.
-- Anyone you love killed by war, disease, or government failure. They become plaintiffs in [Humanity v. Government](/humanity-v-government).
+- You pay your governments $36.5 trillion/year to promote your general welfare. Since 1900 they spent $170 trillion murdering 310 million of their employers — enough to fund 37,800 years of clinical trials at current funding levels.
+- Register anyone you love who was killed or harmed. The case in [Humanity v. Government](/humanity-v-government) seeks $10.6 million/person per murdered human in damages.
 - REGISTER PLAINTIFF
 ### WHO SHOULD BE A PLAINTIFF?
 - FIRST NAME
