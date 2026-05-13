@@ -1325,3 +1325,166 @@ Bring back here only if the work directly removes a P0/P1 gap above.
 - DIH feature migration (porting from `dih-neobrutalist`).
 - MCP queue sync items not on the 4B critical path (commission page, EV calculator,
   generic referendum system).
+
+### Prize treasury / crypto-donation options (researched 2026-05-13)
+
+Current state:
+
+- Existing Solidity is a single-asset stablecoin vault, not a multi-chain donation
+  router. `deposit()` accepts the configured `stablecoin`, supplies it to Aave,
+  and mints PRIZE ERC-20 shares (`packages/treasury-prize/contracts/VoterPrizeTreasury.sol:111-127`).
+  On failure after maturity, `claimRefund()` burns the caller's PRIZE shares and
+  withdraws stablecoin from Aave (`packages/treasury-prize/contracts/VoterPrizeTreasury.sol:140-156`).
+  On success after maturity + owner snapshot, `redeemVoteTokens()` pays each VOTE
+  holder by `balanceOf(voteToken) / voteTotalSupplySnapshot` from
+  `totalAssetsSnapshot` (`packages/treasury-prize/contracts/VoterPrizeTreasury.sol:167-185`,
+  `packages/treasury-prize/contracts/VoterPrizeTreasury.sol:210-221`). Metrics
+  are owner-reported and `thresholdMet` flips once both thresholds are met
+  (`packages/treasury-prize/contracts/VoterPrizeTreasury.sol:195-203`).
+  `maturityDuration` is constructor config, so "15 years" is deployment policy,
+  not hardcoded (`packages/treasury-prize/contracts/VoterPrizeTreasury.sol:76-98`).
+- Current token code already has transferable ERC-20 receipts. `VoterPrizeTreasury`
+  is `ERC20("Voter Prize Share", "PRIZE")` and mints shares to depositors
+  (`packages/treasury-prize/contracts/VoterPrizeTreasury.sol:28`,
+  `packages/treasury-prize/contracts/VoterPrizeTreasury.sol:83`,
+  `packages/treasury-prize/contracts/VoterPrizeTreasury.sol:126`). `VoteToken`
+  says VOTE is fully transferable and mints through owner-verified vote/nullifier
+  flow (`packages/treasury-prize/contracts/VoteToken.sol:9-17`,
+  `packages/treasury-prize/contracts/VoteToken.sol:35-42`,
+  `packages/treasury-prize/contracts/VoteToken.sol:82-88`).
+- Current win-condition parameters are source-backed and should be used in any
+  pitch instead of hand-entered targets: deadline 2040, HALE baseline/target/delta,
+  and median-income baseline/target/delta come from
+  `packages/data/src/parameters/earth-optimization-prize.ts:52-68`, with HALE
+  `63.3 -> 85.0` / `+21.7 years` and income `$18.7K -> $76.7K` in generated
+  parameters (`packages/data/src/parameters/parameters-calculations-citations.ts:1400-1416`,
+  `packages/data/src/parameters/parameters-calculations-citations.ts:4256-4269`,
+  `packages/data/src/parameters/parameters-calculations-citations.ts:7547-7561`,
+  `packages/data/src/parameters/parameters-calculations-citations.ts:7707-7721`,
+  `packages/data/src/parameters/parameters-calculations-citations.ts:7819-7833`).
+- `/donate` already has a charitable crypto route through Accelerated Medicine
+  Foundation / Endaoment. The page renders `WaysToGiveCard`
+  (`packages/web/src/app/donate/page.tsx:128-130`); the card exposes
+  "Crypto (BTC, ETH, USDC, 50+ coins)" and "Donate crypto through Endaoment"
+  when `NONPROFIT.endaomentOrgUrl` exists
+  (`packages/web/src/components/donate/WaysToGiveCard.tsx:167-183`), confirmed in
+  the logged-out snapshot (`packages/web/src/app/donate/page.logged-out.md:126-130`).
+  This is a 501(c)(3) donation path that auto-converts/receipts; it is not the
+  PRIZE treasury.
+- Existing TODO already parks "prize-pool deposit UI" and "DAO-governed funding"
+  until the vote/referral/court funnel is measurable (`TODO.md:1320-1323`).
+  CLAUDE keeps Prize, IAB, and WISH as separate mechanisms and says treaty-vote
+  conversion takes precedence (`CLAUDE.md:158-166`).
+- Manual/source docs add two important gates: PRIZE deposits start only after an
+  institutional host exists
+  (`E:/code/disease-eradication-plan/knowledge/strategy/earth-optimization-prize.qmd:87-97`),
+  and the fund chapter says not to hold crypto tokens because they are politically
+  radioactive for governments
+  (`E:/code/disease-eradication-plan/knowledge/economics/earth-optimization-prize-fund.qmd:176-180`).
+  The practical launch path is "VCX wrapped in a claim token" on Base in 3-6
+  months (`E:/code/disease-eradication-plan/knowledge/economics/earth-optimization-prize-fund.qmd:168-170`,
+  `E:/code/disease-eradication-plan/knowledge/economics/earth-optimization-prize-fund.qmd:207-209`),
+  but manual sources conflict on tradability: strategy FAQ says claims are not
+  sold inside the protocol
+  (`E:/code/disease-eradication-plan/knowledge/strategy/earth-optimization-prize.qmd:463-468`),
+  while the protocol spec says VOTE and PRIZE are transferable
+  (`E:/code/disease-eradication-plan/knowledge/appendix/earth-optimization-prize-protocol.qmd:204-206`,
+  `E:/code/disease-eradication-plan/knowledge/appendix/earth-optimization-prize-protocol.qmd:220-230`).
+  Resolve that before donor-facing copy.
+
+Option verdicts:
+
+1. **ADD TO TODO P1 after host signal - B, 15-year lock + claim token /
+   chain-treasury pitch.** Scope M if using the existing stablecoin PRIZE ERC-20;
+   XL if chain treasuries insist on native-token lockup. 4B-voters-impact:
+   medium-high if one major chain treasury signs because a visible pool gives
+   voters a reason to recruit and press a concrete number. Ship blockers:
+   institutional host, legal/tax/securities review, Base mainnet parameters,
+   oracle/snapshot governance, published investment policy, and the manual
+   tradability mismatch above. Gate: one credible host plus one chain treasury
+   willing to discuss a USDC/stablecoin contribution or off-chain native-token
+   conversion path.
+2. **ADD TO TODO P2 / fallback - D, Gnosis Safe multi-sig.** Scope S-M.
+   4B-voters-impact: small-medium as a credible holding account and public
+   balance page, not as the final prize. Ship blockers: signer set, chain choice,
+   public balance reporting, asset-conversion policy, custody liability, and
+   how/when Safe funds enter the PRIZE vault. Gate: host names signers and agrees
+   this is interim custody, not the mechanism.
+3. **EXISTS ALREADY - C, Endaoment crypto donation route.** Scope XS only if
+   copy/links need cleanup. 4B-voters-impact: small because it removes donation
+   friction but does not create the prize incentive. Ship blockers: none for the
+   current charitable route; crypto-prize earmarking would be new legal/accounting
+   work. Gate: only revisit if donors ask for a dedicated prize/endowment
+   designation.
+4. **SKIP - A, monthly distribution pool.** Scope L. 4B-voters-impact: small and
+   likely negative: it optimizes for a recurring payout contest instead of durable
+   4B proof, creates monthly accounting/tax/KYC/sybil pressure, and conflicts
+   with the 15-year outcome-gated design. Ship blockers: multi-chain intake,
+   verified monthly attribution, fraud review, payout compliance, and vote-timing
+   games. Gate: do not start until the treaty vote/referral/court funnel is
+   boring and measurable, and only if monthly cash incentives prove they add
+   votes better than the post-vote share flow.
+5. **SKIP - E, Earth Optimization DAO.** Scope XL. 4B-voters-impact: none-small
+   and probably negative before product-market proof; token governance adds
+   capture, legal, security, and narrative risk. Ship blockers: legal wrapper,
+   governance token, delegation, treasury policy, audits, voter-capture defenses.
+   Gate: real treasury + real voters first; consider only after the campaign
+   funnel works and governance is the actual bottleneck.
+
+Priority order:
+
+1. Write the chain-treasury pitch and resolve the B gates; do not invent a new
+   claim token unless the current PRIZE ERC-20 is legally or strategically wrong.
+2. Use a Gnosis Safe only as interim custody/public balance plumbing if a donor is
+   ready before the PRIZE vault is live.
+3. Leave Endaoment as the current charitable crypto donation route.
+4. Keep monthly distributions and DAO governance parked.
+
+Draft chain-treasury pitch (draft only; human approval before use):
+
+```text
+Subject: Lock tokens for 15 years. Buy a civilization upgrade.
+
+Your chain can fund the Earth Optimization Prize without dumping tokens or
+diluting supply.
+
+The offer is simple: contribute to the prize treasury, lock the position for
+15 years, and publish the balance. If humanity hits the published Prize targets
+for global healthy life expectancy and median income, verified VOTE holders split
+the pool. If not, PRIZE holders get their pro-rata claim on the realized treasury
+back.
+
+That gives your treasury a public-good bet with a refund branch, a visible
+scoreboard, and a reason for every holder to recruit voters instead of arguing
+on the internet for free.
+
+Current repo implementation: Base Sepolia prize-vault shape, PRIZE claim shares,
+VOTE holder redemption, owner-reported terminal metrics. Missing before launch:
+institutional host, mainnet parameters, legal review, and a published
+investment/custody policy.
+
+If you want your chain to be the first treasury that tried to make humanity less
+ridiculous, reply with the right grants/treasury contact.
+```
+
+### Donor-segmentation supplement (Claude follow-up 2026-05-13)
+
+Two donor segments, two pools. Don't unify them.
+
+| Segment | Pool | Purpose |
+|---|---|---|
+| Retail ($25–$1000) | 501(c)(3) → operations bank account | Ads, referral incentives, ops, salaries (mikepsinn's paycheck — load-bearing on whether the campaign continues) |
+| Chain treasuries / DAOs | `VoterPrizeTreasury.sol` direct or via Gnosis Safe interim | Locked 15yr, refunded on failure, distributed to VOTE holders on success |
+
+**Critical constraint:** the 501(c)(3) operations pool and the prize pool are NOT
+fungible. Don't divert Stripe-routed donations into the prize contract; the
+prize-side has its own crypto donation track. Burning out the operator =
+killing the campaign = killing the 4B-voters goal, so operations funding is
+upstream of every other line item.
+
+**Possible follow-up (parked):** a `/donate/dao` page variant pitching the
+lockup angle to chain treasuries specifically. Different ask, different copy,
+same site. Skip until the institutional-host gate is unblocked (per the
+strategy manual line cited above) — until then the chain-treasury pitch email
+draft above is the right surface, not a new page.
+
