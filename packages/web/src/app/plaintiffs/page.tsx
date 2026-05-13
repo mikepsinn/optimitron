@@ -178,22 +178,6 @@ export default async function PlaintiffsPage({
 
         <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
 
-        {filteredCount > 0 && !hasActiveBrowseState ? (
-          <p className="text-base font-bold leading-7 text-muted-foreground sm:text-lg">
-            <span className="font-black tabular-nums text-foreground">
-              {formatCount(filteredCount)}
-            </span>{" "}
-            humans already named. Their names are evidence in{" "}
-            <Link
-              className="underline underline-offset-4"
-              href={ROUTES.humanityVGovernment}
-            >
-              {humanityVGovernmentLink.label}
-            </Link>
-            .
-          </p>
-        ) : null}
-
         <section className="space-y-5 border-t border-border pt-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="space-y-2">

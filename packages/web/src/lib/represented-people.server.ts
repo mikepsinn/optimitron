@@ -7,6 +7,7 @@ import {
   type PersonDeathCauseCategory,
   type Prisma,
 } from "@optimitron/db";
+import { DEMO_USER_EMAIL } from "@optimitron/data/campaign";
 import { prisma } from "@/lib/prisma";
 import { getPersonHref } from "@/lib/person-href";
 import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
@@ -248,6 +249,11 @@ export async function getRepresentedPeopleGalleryData(
       ...(personFilterWhere ? [personFilterWhere] : []),
     ],
   };
+  // Hide parties registered via the demo account from the public gallery.
+  // Screenshot tooling logs in as `demo@thinkbynumbers.org` and creates
+  // throwaway plaintiffs ("CROP VIEWPORT HUMAN 1778...") that would otherwise
+  // pollute every public list with `ADDED BY DEMO USER` rows. Real users are
+  // unaffected.
   const plaintiffPartyWhere = (
     personWhere: Prisma.PersonWhereInput = visiblePersonWhere,
   ): Prisma.CourtCasePartyWhereInput => ({
@@ -255,6 +261,7 @@ export async function getRepresentedPeopleGalleryData(
     deletedAt: null,
     isPublic: true,
     role: CourtCasePartyRole.NAMED_PLAINTIFF,
+    NOT: { createdBy: { is: { email: DEMO_USER_EMAIL } } },
     subject: {
       deletedAt: null,
       person: personWhere,
