@@ -266,12 +266,15 @@ async function extractPage(
     const toMarkdown = (el: Element, allowHidden = false): string => {
       let buf = "";
       // Insert a space between adjacent element-emitted fragments when
-      // their boundary would collapse two alphanumeric runs together.
+      // their boundary would collapse two readable runs together. Two
+      // cases: alphanumeric-to-alphanumeric (word boundary), and
+      // sentence-terminator-to-alphanumeric (sibling block tags like
+      // <h3>year.</h3><p>That...</p> would otherwise render "year.That").
       const appendFragment = (fragment: string) => {
         if (!fragment) return;
         if (
           buf.length > 0 &&
-          /\w$/.test(buf) &&
+          (/\w$/.test(buf) || /[.!?:;,)]$/.test(buf)) &&
           /^[\w[]/.test(fragment)
         ) {
           buf += " ";
