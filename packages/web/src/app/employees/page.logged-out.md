@@ -46,7 +46,6 @@
 - RATE: $9.90 trillion/year + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
 ### ↳ 189 employees have overdue tasks
 - 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
-- SORT
 - ASSIGNEE
 - TASK
 - 💀 DEATHS FROM DELAY

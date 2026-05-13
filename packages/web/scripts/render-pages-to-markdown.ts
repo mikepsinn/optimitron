@@ -223,6 +223,27 @@ async function extractPage(
     const tags =
       "h1,h2,h3,h4,h5,h6,p,li,button,a,blockquote,td,th,figcaption,summary,label,span,pre,table";
     const tagSet = new Set(tags.split(","));
+    // Responsive duplication is a common Tailwind pattern: `<p class="lg:hidden">`
+    // pairs with `<div class="hidden lg:block">` to show one summary on mobile
+    // and an expanded version on desktop. At any single viewport, exactly one
+    // is visible; the other has `display: none`. The walker must respect this
+    // or the snapshot reads as if both versions ship together (caught when
+    // /people emitted "Public official / LY / 1 task" AND "Public official / LY"
+    // AND "1 task" on adjacent lines per row × 189 rows).
+    // `sr-only` is Tailwind's screen-reader-only utility — visible to assistive
+    // tech, invisible to sighted readers (1px clipped box). The DonationImpact-
+    // Calculator emits each slider label twice: once as a visible <label>,
+    // once as `<span class="sr-only">{label}</span>` paired with the input.
+    // Snapshot must respect the visual layer or the .md doubles every label.
+    const SR_ONLY_PATTERN = /(?:^|\s)(?:sm:|md:|lg:|xl:|2xl:)?sr-only(?:\s|$)/;
+    const isHiddenForRender = (el: Element): boolean => {
+      const style = getComputedStyle(el);
+      if (style.display === "none" || style.visibility === "hidden") return true;
+      if (typeof el.className === "string" && SR_ONLY_PATTERN.test(el.className)) {
+        return true;
+      }
+      return false;
+    };
     // Apply CSS text-transform so visually-uppercased text (treaty headers,
     // brutal buttons) renders uppercase in the .md, matching what the reader sees.
     const applyTransform = (text: string, el: Element): string => {
@@ -237,14 +258,15 @@ async function extractPage(
     // hyperlinks as [text](href). Non-anchor descendants flatten to text.
     // Arrow consts (not function declarations) so tsx doesn't inject
     // __name() calls that won't resolve in the browser context.
-    const toMarkdown = (el: Element): string => {
+    // Walk `el`'s children producing markdown. `allowHidden`=true bypasses the
+    // sr-only/display-none filter — used as a fallback when filtering would
+    // produce an empty Link (sr-only-only links carry the link's accessible
+    // name; without it the leader name vanishes — see task-row overlay Link
+    // at packages/web/src/components/tasks/task-row.tsx:701-708).
+    const toMarkdown = (el: Element, allowHidden = false): string => {
       let buf = "";
       // Insert a space between adjacent element-emitted fragments when
-      // their boundary would collapse two alphanumeric runs together
-      // (e.g. `<span>VOTE</span><span>TREATY</span>` -> `VOTE TREATY`
-      // instead of `VOTETREATY`). Consumers downstream collapse runs
-      // of whitespace via `\s+` -> ` ` so redundant spaces don't pile
-      // up. Caught by Copilot PR review on PR #79.
+      // their boundary would collapse two alphanumeric runs together.
       const appendFragment = (fragment: string) => {
         if (!fragment) return;
         if (
@@ -261,12 +283,18 @@ async function extractPage(
           buf += applyTransform(node.textContent ?? "", el);
         } else if (node.nodeType === 1 /* ELEMENT_NODE */) {
           const child = node as Element;
+          if (!allowHidden && isHiddenForRender(child)) continue;
           if (child.tagName === "A") {
             const href = child.getAttribute("href") ?? "";
-            const inner = toMarkdown(child).replace(/\s+/g, " ").trim();
+            let inner = toMarkdown(child, allowHidden).replace(/\s+/g, " ").trim();
+            // sr-only-only Link: fall back to unfiltered inner so the accessible
+            // name still ships in the snapshot.
+            if (!inner && child.children.length > 0) {
+              inner = toMarkdown(child, true).replace(/\s+/g, " ").trim();
+            }
             appendFragment(href && inner ? `[${inner}](${href})` : inner);
           } else {
-            appendFragment(toMarkdown(child));
+            appendFragment(toMarkdown(child, allowHidden));
           }
         }
       }
@@ -325,9 +353,21 @@ async function extractPage(
     };
     const seen = new Set<string>();
     const out: string[] = [];
+    // Also need to check ancestors — an element can be display:flex itself
+    // while sitting inside a `display: none` parent (e.g. the desktop variant
+    // of a responsive pair). querySelectorAll returns it but it isn't visible.
+    const hasHiddenAncestor = (el: Element): boolean => {
+      let p: Element | null = el;
+      while (p && p !== root) {
+        if (isHiddenForRender(p)) return true;
+        p = p.parentElement;
+      }
+      return false;
+    };
     for (const el of Array.from(root.querySelectorAll(tags))) {
       if (isLayoutTableCell(el)) continue;
       if (hasContainingTag(el)) continue;
+      if (hasHiddenAncestor(el)) continue;
       const tag = el.tagName.toLowerCase();
       let md: string;
       if (tag === "table") {
@@ -338,7 +378,10 @@ async function extractPage(
         md = text ? `\`\`\`text\n${text}\n\`\`\`` : "";
       } else if (tag === "a") {
         const href = el.getAttribute("href") ?? "";
-        const inner = toMarkdown(el).replace(/\s+/g, " ").trim();
+        let inner = toMarkdown(el).replace(/\s+/g, " ").trim();
+        if (!inner && el.children.length > 0) {
+          inner = toMarkdown(el, true).replace(/\s+/g, " ").trim();
+        }
         md = href && inner ? `[${inner}](${href})` : inner;
       } else {
         md = toMarkdown(el).replace(/\s+/g, " ").trim();

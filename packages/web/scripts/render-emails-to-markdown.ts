@@ -71,6 +71,19 @@ async function extractEmailMarkdown(
     const tags =
       "h1,h2,h3,h4,h5,h6,p,li,button,a,blockquote,td,th,figcaption,summary,label,span,pre,table";
     const tagSet = new Set(tags.split(","));
+    // See render-pages-to-markdown.ts for rationale: responsive duplication
+    // (Tailwind `lg:hidden` paired with `hidden lg:block`) renders both
+    // copies in the DOM but only one is visible at the current viewport. The
+    // walker must skip the `display: none` copy or the snapshot doubles up.
+    const SR_ONLY_PATTERN = /(?:^|\s)(?:sm:|md:|lg:|xl:|2xl:)?sr-only(?:\s|$)/;
+    const isHiddenForRender = (el: Element): boolean => {
+      const style = getComputedStyle(el);
+      if (style.display === "none" || style.visibility === "hidden") return true;
+      if (typeof el.className === "string" && SR_ONLY_PATTERN.test(el.className)) {
+        return true;
+      }
+      return false;
+    };
     const applyTransform = (text: string, el: Element): string => {
       const tt = getComputedStyle(el).textTransform;
       if (tt === "uppercase") return text.toUpperCase();
@@ -79,11 +92,8 @@ async function extractEmailMarkdown(
         return text.replace(/\b\p{L}/gu, (c) => c.toUpperCase());
       return text;
     };
-    const toMarkdown = (el: Element): string => {
+    const toMarkdown = (el: Element, allowHidden = false): string => {
       let buf = "";
-      // See render-pages-to-markdown.ts for the rationale: insert a
-      // space between adjacent element fragments when their boundary
-      // would collapse two alphanumeric runs together.
       const appendFragment = (fragment: string) => {
         if (!fragment) return;
         if (
@@ -100,12 +110,16 @@ async function extractEmailMarkdown(
           buf += applyTransform(node.textContent ?? "", el);
         } else if (node.nodeType === 1) {
           const child = node as Element;
+          if (!allowHidden && isHiddenForRender(child)) continue;
           if (child.tagName === "A") {
             const href = child.getAttribute("href") ?? "";
-            const inner = toMarkdown(child).replace(/\s+/g, " ").trim();
+            let inner = toMarkdown(child, allowHidden).replace(/\s+/g, " ").trim();
+            if (!inner && child.children.length > 0) {
+              inner = toMarkdown(child, true).replace(/\s+/g, " ").trim();
+            }
             appendFragment(href && inner ? `[${inner}](${href})` : inner);
           } else {
-            appendFragment(toMarkdown(child));
+            appendFragment(toMarkdown(child, allowHidden));
           }
         }
       }
@@ -159,6 +173,14 @@ async function extractEmailMarkdown(
       }
       return false;
     };
+    const hasHiddenAncestor = (el: Element): boolean => {
+      let p: Element | null = el;
+      while (p && p !== root) {
+        if (isHiddenForRender(p)) return true;
+        p = p.parentElement;
+      }
+      return false;
+    };
     type Block = { kind: "list" | "block"; text: string };
     const seen = new Set<string>();
     const out: Block[] = [];
@@ -166,6 +188,7 @@ async function extractEmailMarkdown(
       if (el.closest(skipSelector)) continue;
       if (isLayoutTableCell(el)) continue;
       if (hasContainingTag(el)) continue;
+      if (hasHiddenAncestor(el)) continue;
       const tag = el.tagName.toLowerCase();
       let md: string;
       if (tag === "table") {
@@ -176,7 +199,10 @@ async function extractEmailMarkdown(
         md = text ? `\`\`\`text\n${text}\n\`\`\`` : "";
       } else if (tag === "a") {
         const href = el.getAttribute("href") ?? "";
-        const inner = toMarkdown(el).replace(/\s+/g, " ").trim();
+        let inner = toMarkdown(el).replace(/\s+/g, " ").trim();
+        if (!inner && el.children.length > 0) {
+          inner = toMarkdown(el, true).replace(/\s+/g, " ").trim();
+        }
         md = href && inner ? `[${inner}](${href})` : inner;
       } else {
         md = toMarkdown(el).replace(/\s+/g, " ").trim();
