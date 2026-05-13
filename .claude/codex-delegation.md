@@ -65,3 +65,7 @@ with open(sys.argv[1]) as f:
 Always run this against the right session file (`ls -t ~/.codex/sessions/$(date +%Y)/$(date +%m)/$(date +%d)/rollout-*.jsonl | head -1`) before declaring an agent failed or succeeded — wrapper narration and filesystem state alone are insufficient.
 
 **Always verify the working tree matches what Codex claims.** Run `git diff --stat` after every Codex dispatch and compare line counts to what Codex says it did. If Codex says "now 266 lines" and `wc -l` says 1490, something reverted the edits — investigate before committing or re-dispatching.
+
+**Watch the agent_message stream while Codex runs, not just after.** Mid-flight, Codex sometimes does something stupid (reads the wrong file, applies the wrong rule, derails into unrelated work). Tailing the session JSONL or periodically polling `agent_message` events gives you the chance to redirect before Codex burns 3M tokens on a wrong path. Don't just wait for the completion notification and read the diff — that's strictly reactive.
+
+**When Codex's claim conflicts with your understanding or the filesystem, ASK CODEX.** Don't guess. Use `codex exec resume <uuid> "<short factual question>"` to query the same session — Codex has full context on what it did and can explain. Example: "You said the file is 266 lines, but on disk it's 1490 with empty git diff. Did your edits write to a sandbox? What path did you actually write to?" Treat the agent as an interlocutor on its own work, not a black box.
