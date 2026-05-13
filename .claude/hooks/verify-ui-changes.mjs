@@ -314,8 +314,9 @@ ${sample}`);
     pushViolation("VONNEGUT", copyChanges.length, formatList(
       `BLATHER REVIEW: page.tsx or page.logged-out.md changed.
 
-Run \`/qa\` now. It fires voice-critic + cold-stranger-ux + visual-design-auditor
-(+ test-auditor if tests changed, + security-threat-review if auth paths touched)
+Run gstack's chain first: \`/design-review\` (auto-fixes visual slop) and \`/qa\`
+(auto-fixes functional bugs). Then run \`/qa-editorial\` for the project-specific
+layer — fires voice-critic + cold-stranger-ux (+ test-auditor if tests changed)
 in parallel and returns one consolidated punch list with a SHIP / NEEDS FIXES
 verdict. No need to remember which critic to invoke.
 
@@ -326,7 +327,7 @@ If you want to spot-check manually first, walk every line and ask:
   4. Stripe-keynote sentence ("primitive that...", "off-ramp")? → rewrite as plain declarative.
   5. Adjective stack with no number? → replace with a number or delete.
 
-But /qa makes this automatic. Use it.`,
+But /qa-editorial + gstack's chain make this automatic. Use them.`,
       copyChanges,
       "",
     ), { blocking: false });
