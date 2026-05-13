@@ -173,10 +173,13 @@ async function extractPage(
       timeout: 30000,
     });
     const status = response?.status() ?? null;
-    const redirectedFromStatus =
-      response?.request().redirectedFrom()?.response()
-        ? (await response.request().redirectedFrom()!.response()!).status()
-        : null;
+    const redirectedFromRequest = response?.request().redirectedFrom();
+    const redirectedFromResponse = redirectedFromRequest
+      ? await redirectedFromRequest.response()
+      : null;
+    const redirectedFromStatus = redirectedFromResponse
+      ? redirectedFromResponse.status()
+      : null;
     await waitForGlobalLoaderToClear(page);
     await page.waitForTimeout(settleMs);
     return { status, redirectedFromStatus };
@@ -296,15 +299,25 @@ async function extractPage(
     // markdown table.
     const isLayoutTable = (el: Element): boolean =>
       el.tagName === "TABLE" && el.getAttribute("role") === "presentation";
+    const isLayoutTableCell = (el: Element): boolean => {
+      const tag = el.tagName.toLowerCase();
+      if (tag !== "td" && tag !== "th") return false;
+      const table = el.closest("table");
+      return table ? isLayoutTable(table) : false;
+    };
     // Skip an element if it's inside a containing tag the walker will also
     // visit (e.g. an <a> inside a <p>): the parent's markdown already
     // includes the [text](href) form, so the standalone visit would be a dup.
-    // Layout tables don't count as a containing tag — their children should
-    // be captured as their own bullets.
+    // Layout tables (and their cells) don't count as a containing tag — their
+    // children should be captured as their own bullets.
     const hasContainingTag = (el: Element): boolean => {
       let p = el.parentElement;
       while (p && p !== root) {
-        if (tagSet.has(p.tagName.toLowerCase()) && !isLayoutTable(p))
+        if (
+          tagSet.has(p.tagName.toLowerCase()) &&
+          !isLayoutTable(p) &&
+          !isLayoutTableCell(p)
+        )
           return true;
         p = p.parentElement;
       }
@@ -313,12 +326,16 @@ async function extractPage(
     const seen = new Set<string>();
     const out: string[] = [];
     for (const el of Array.from(root.querySelectorAll(tags))) {
+      if (isLayoutTableCell(el)) continue;
       if (hasContainingTag(el)) continue;
       const tag = el.tagName.toLowerCase();
       let md: string;
       if (tag === "table") {
         if (isLayoutTable(el)) continue;
         md = tableToMarkdown(el);
+      } else if (tag === "pre") {
+        const text = (el as HTMLElement).innerText.trim();
+        md = text ? `\`\`\`text\n${text}\n\`\`\`` : "";
       } else if (tag === "a") {
         const href = el.getAttribute("href") ?? "";
         const inner = toMarkdown(el).replace(/\s+/g, " ").trim();
