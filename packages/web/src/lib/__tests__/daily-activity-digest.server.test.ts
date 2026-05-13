@@ -63,7 +63,6 @@ describe("daily activity digest", () => {
     process.env.ATPROTO_DID = "did:plc:optimitron";
     process.env.ATPROTO_PASSWORD = "app-password";
     process.env.NEXTAUTH_URL = OPTIMITRON_CANONICAL_ORIGIN;
-    process.env.NEXT_PUBLIC_BASE_URL = OPTIMITRON_CANONICAL_ORIGIN;
     process.env.TREASURY_CHAIN_ID = "84532";
     delete process.env.DAILY_DIGEST_TIME_ZONE;
     delete process.env.ATPROTO_PDS_URL;

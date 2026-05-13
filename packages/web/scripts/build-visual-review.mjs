@@ -25,7 +25,7 @@ const pageLinkBaseUrl = parseOptionalUrl(
   process.env.VISUAL_REVIEW_BASE_URL ??
     (process.env.CI === "true"
       ? null
-      : process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL),
+      : process.env.BASE_URL ?? process.env.NEXTAUTH_URL),
 );
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
 const assetRoot = path.join(outputRoot, "assets");

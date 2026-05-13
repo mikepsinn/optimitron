@@ -522,7 +522,11 @@ export async function markReferralInvitationCopied(input: {
         referralCode: invitation.referrer.referralCode,
       }
     : null;
-  const inviteUrl = buildUserInviteReferralUrl(referrerForUrl, invitation.inviteToken, getBaseUrl());
+  const inviteUrl = buildUserInviteReferralUrl(
+    referrerForUrl,
+    invitation.inviteToken,
+    getBaseUrl(),
+  );
   const templateBody = buildDefaultReferralInvitationMessage({
     messageFormat: invitation.messageFormat,
     recipientName: invitation.recipientName,

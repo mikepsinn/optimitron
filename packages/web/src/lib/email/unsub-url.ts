@@ -1,6 +1,6 @@
-import { getEmailBaseUrl } from "@/lib/email/email-urls";
 import type { EmailScope } from "@/lib/email/scopes";
 import { signUnsubToken } from "@/lib/email/unsub-token";
+import { getBaseUrl } from "@/lib/url";
 
 interface BuildUnsubscribeUrlInput {
   userId: string;
@@ -17,7 +17,7 @@ interface BuildUnsubscribeUrlInput {
  * header. One function so we never have mismatched URLs.
  */
 export function buildUnsubscribeUrl(input: BuildUnsubscribeUrlInput): string {
-  const base = (input.baseUrl ?? getEmailBaseUrl()).replace(/\/+$/, "");
+  const base = (input.baseUrl ?? getBaseUrl()).replace(/\/+$/, "");
   const token = signUnsubToken({
     userId: input.userId,
     scope: input.scope,

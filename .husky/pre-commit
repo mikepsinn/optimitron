@@ -3,18 +3,15 @@ set -e
 
 pnpm exec lint-staged
 
-# === Copy preview markdown regen ===
-if git diff --cached --name-only -- packages/web/src packages/web/public packages/web/scripts/render-pages-to-markdown.ts packages/web/package.json | grep -q .; then
-  if ! node -e "fetch('http://127.0.0.1:3001/api/auth/csrf',{signal:AbortSignal.timeout(2000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
-    echo "Copy preview markdown needs the local web server at http://127.0.0.1:3001."
-    echo "Start or reuse it with: pnpm --filter @optimitron/web dev:fast"
-    exit 1
-  fi
-
-  pnpm --filter @optimitron/web run copy:preview -- --no-authed
-  if ! git diff --quiet -- packages/web/src/app/page.logged-out.md 'packages/web/src/app/**/page.logged-out.md'; then
-    echo "Copy preview markdown was refreshed."
-    echo "Review the page.logged-out.md diffs against docs/h2ewd.md, stage them, then commit again."
-    exit 1
-  fi
+# === Copy preview markdown reminder (not auto-run) ===
+# Previously this block auto-ran `pnpm copy:preview` on every commit
+# that touched packages/web/src — Playwright + 16 routes ≈ 30-60s,
+# required the dev server, and failed the commit if any .md changed
+# (forcing a re-stage + re-commit cycle). Total cost: 1-2 minutes per
+# UI commit. Moved to a manual step; CI catches drift at PR time.
+if git diff --cached --name-only -- packages/web/src/app 'packages/web/src/lib/email' 'packages/web/src/lib/tasks' | grep -qE '\.(tsx?|md)$'; then
+  echo "→ Reminder: if user-facing copy or email templates changed, run:"
+  echo "    pnpm --filter @optimitron/web copy:preview"
+  echo "    pnpm --filter @optimitron/web email:preview-md"
+  echo "  (CI will fail if .md snapshots drift from rendered output.)"
 fi

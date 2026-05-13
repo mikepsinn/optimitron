@@ -92,3 +92,8 @@ packages/web/public/media/
 .claude/scheduled_tasks.lock
 .codex-logs/dashboard-dev.pid
 .tmp-pr-comments.json
+# Codex CLI session scratch — one-shot prompt files + diagnostic scripts.
+# `.codex/config.toml` IS committed; everything else under .codex/ is local.
+.codex/prompt-*.txt
+.codex/*-test.mjs
+.codex/last-commit-message.txt

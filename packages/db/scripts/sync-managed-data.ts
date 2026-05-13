@@ -35,7 +35,6 @@ function assertRemoteApplyIsIntentional(connectionString: string, apply: boolean
 
   const url = new URL(connectionString);
   if (isLocalDatabaseHost(url.hostname)) return;
-  if (process.env.CI === "true") return;
   if (process.env.MANAGED_DATA_ALLOW_REMOTE_APPLY === "1") return;
 
   throw new Error(

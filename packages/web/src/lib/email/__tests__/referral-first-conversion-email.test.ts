@@ -1,8 +1,7 @@
+import React from "react";
 import { describe, expect, it } from "vitest";
-import {
-  buildReferralFirstConversionHtml,
-  buildReferralFirstConversionText,
-} from "../referral-first-conversion-email";
+import { ReferralFirstConversionReactEmail } from "../referral-first-conversion-react-email";
+import { renderReactEmailBody } from "../render-react-email";
 
 const SAMPLE = {
   voterDisplayName: "Jamie Voter",
@@ -10,26 +9,34 @@ const SAMPLE = {
   referrerReferralUrl: "https://warondisease.org/vote/AB12CD",
 };
 
-describe("referral-first-conversion email builders", () => {
-  it("names the voter who triggered the conversion", () => {
-    const html = buildReferralFirstConversionHtml(SAMPLE);
+async function renderReferralFirstConversionEmail(
+  input: typeof SAMPLE = SAMPLE,
+) {
+  return renderReactEmailBody(
+    React.createElement(ReferralFirstConversionReactEmail, input),
+  );
+}
+
+describe("referral-first-conversion email template", () => {
+  it("names the voter who triggered the conversion", async () => {
+    const { html } = await renderReferralFirstConversionEmail();
     expect(html).toContain("Jamie Voter");
   });
 
-  it("links to the recipient's dashboard for ongoing stats", () => {
-    const html = buildReferralFirstConversionHtml(SAMPLE);
-    const text = buildReferralFirstConversionText(SAMPLE);
+  it("links to the recipient's dashboard for ongoing stats", async () => {
+    const { html, text } = await renderReferralFirstConversionEmail();
     expect(html).toContain(SAMPLE.dashboardUrl);
     expect(text).toContain(SAMPLE.dashboardUrl);
   });
 
-  it("is explicit that this is the first-only email — no per-vote spam", () => {
-    const html = buildReferralFirstConversionHtml(SAMPLE);
-    expect(html).toContain("no per-vote pings");
+  it("is explicit that this is the first-only email — no per-vote spam", async () => {
+    const { html, text } = await renderReferralFirstConversionEmail();
+    expect(html).toContain("No per-vote pings");
+    expect(text).toContain("No per-vote pings");
   });
 
-  it("escapes voter display names so a hostile name cannot inject HTML", () => {
-    const html = buildReferralFirstConversionHtml({
+  it("escapes voter display names so a hostile name cannot inject HTML", async () => {
+    const { html } = await renderReferralFirstConversionEmail({
       ...SAMPLE,
       voterDisplayName: "<script>alert(1)</script>",
     });
@@ -37,17 +44,15 @@ describe("referral-first-conversion email builders", () => {
     expect(html).toContain("&lt;script&gt;");
   });
 
-  it("appends the canonical share footer with the referrer's referral URL", () => {
-    const html = buildReferralFirstConversionHtml(SAMPLE);
-    const text = buildReferralFirstConversionText(SAMPLE);
-    // Share footer leads with the eyebrow and contains the canonical message
+  it("appends the canonical share footer with the referrer's referral URL", async () => {
+    const { html, text } = await renderReferralFirstConversionEmail();
+    // Share footer leads with the forward prompt and contains the canonical message
     // body keyed by the referrer's own URL — so the recipient can copy/paste
     // it into any channel without going back to the website.
-    expect(html).toContain("Recruit two more humans");
+    expect(html).toContain("Forward this");
     expect(html).toContain(SAMPLE.referrerReferralUrl);
     expect(html).toContain("I love you");
-    expect(text).toContain("Recruit two more humans");
+    expect(text).toContain("Forward this");
     expect(text).toContain(SAMPLE.referrerReferralUrl);
   });
-
 });

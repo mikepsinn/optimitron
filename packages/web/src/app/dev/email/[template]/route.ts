@@ -1,87 +1,29 @@
 import { NextResponse } from "next/server";
-import { buildMagicLinkHtml } from "@/lib/email/magic-link-render";
-import { buildMonthlyChainDigestHtml } from "@/lib/email/monthly-chain-digest-email";
-import { buildPostVoteShareHtml } from "@/lib/email/post-vote-share-email";
-import { buildReferralFirstConversionHtml } from "@/lib/email/referral-first-conversion-email";
-import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignment-notification-email.server";
-import { buildTaskCommentNotificationEmail } from "@/lib/tasks/task-comment-notification-email.server";
+import {
+  buildFullPreviewHtml,
+  renderPreviewBodyHtml,
+} from "@/lib/email/preview-envelope";
+import {
+  getEmailPreview,
+  listEmailPreviewTemplateIds,
+} from "@/lib/email/preview-registry";
 
 // `/dev/email/<template>` — server-side renders each email template with
-// representative sample tokens and returns the raw HTML. Replaces the
-// Playwright spec's direct imports of `*-email.server.ts` modules (which
-// hit a transformer bug on `@optimitron/db/dist`'s `export *`) — the
-// spec now uses `page.goto('/dev/email/<template>')` and screenshots
-// the rendered page like any other route.
+// representative sample tokens and returns the raw HTML. Templates +
+// their envelope metadata live in `@/lib/email/preview-registry`, which
+// pulls each builder file's `*_PREVIEW` const into one iterable.
+//
+// Query params:
+//   ?raw=1   — bare HTML body (used by the Playwright screenshot spec).
+//   ?full=1  — wrap with metadata header (From/Subject/Reply-To/Trigger),
+//              substitute the unsub-URL placeholder, append the Wishonia
+//              signature (when not skipped), and tack on an unsubscribe
+//              footer. Used by `render-emails-to-markdown.ts`.
+//   default  — Gmail-mobile responsive wrapper around the bare body.
 //
 // Gated to non-production: returns 404 on prod to avoid exposing email
 // internals + sample copy publicly.
 
-const SAMPLE_REFERRAL = "https://warondisease.org/vote/SAMPLE";
-const SAMPLE_DASHBOARD = "https://warondisease.org/dashboard";
-
-const renderers: Record<string, () => string> = {
-  "magic-link": () =>
-    buildMagicLinkHtml(
-      "https://warondisease.local/api/auth/callback/email?token=SAMPLE",
-      "warondisease.local",
-      { brandColor: "#111827", buttonText: "#ffffff" },
-    ),
-  "post-vote-share": () => buildPostVoteShareHtml(SAMPLE_REFERRAL),
-  "referral-first-conversion": () =>
-    buildReferralFirstConversionHtml({
-      voterDisplayName: "Sample Voter",
-      dashboardUrl: SAMPLE_DASHBOARD,
-      referrerReferralUrl: SAMPLE_REFERRAL,
-    }),
-  "task-assignment": () =>
-    buildTaskAssignmentNotificationEmail({
-      description:
-        "The 1% Treaty needs your country's signature. Sign the document, share the link with two people you love, and verify that your local treaty signer has been contacted.\n\nThis is a sample task description rendered into the email template.",
-      id: "sample-task-id",
-      recipientName: "Sample Assignee",
-      replyInstruction: "Reply to this email to leave a comment on the task.",
-      title: "Sign the 1% Treaty for {country}",
-      recipientReferralUrl: SAMPLE_REFERRAL,
-    }).html,
-  "monthly-digest-positive": () =>
-    buildMonthlyChainDigestHtml({
-      monthlyConversionCount: 7,
-      totalConversionCount: 19,
-      referralUrl: SAMPLE_REFERRAL,
-      dashboardUrl: SAMPLE_DASHBOARD,
-      monthLabel: "May 2026",
-    }),
-  "monthly-digest-resend": () =>
-    buildMonthlyChainDigestHtml({
-      monthlyConversionCount: 0,
-      totalConversionCount: 0,
-      referralUrl: SAMPLE_REFERRAL,
-      dashboardUrl: SAMPLE_DASHBOARD,
-      monthLabel: "May 2026",
-    }),
-  "task-comment-notification": () =>
-    buildTaskCommentNotificationEmail({
-      task: { id: "sample-task-id", title: "Sign the 1% Treaty" },
-      comment: {
-        authorAvatarUrl: null,
-        authorName: "Sample Author",
-        message:
-          "I just signed and forwarded the share message to four of my family members. Two of them have already voted.",
-      },
-      recipientReason: "You are assigned to this task.",
-      replyInstruction: "Reply to this email to leave a comment on the task.",
-      recipientReferralUrl: SAMPLE_REFERRAL,
-    }).html,
-};
-
-// Gmail-mobile-like wrapper that surrounds the email body in an iframe
-// scaled to phone width (~420px). The iframe isolates the email's own
-// inline styles from the wrapper chrome. Reviewers on mobile (or desktop
-// with narrow viewport) get a faithful rendering of how Gmail's mobile
-// app actually displays the email.
-//
-// Use `?raw=1` to get the bare email HTML (e.g. for the Playwright
-// screenshot spec, which page.goto's this URL).
 function escapeForSrcdoc(html: string): string {
   return html.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
@@ -129,19 +71,22 @@ export async function GET(
   }
 
   const { template } = await params;
-  const renderer = renderers[template];
-  if (!renderer) {
-    const available = Object.keys(renderers).join(", ");
+  const preview = getEmailPreview(template);
+  if (!preview) {
+    const available = listEmailPreviewTemplateIds().join(", ");
     return new NextResponse(
       `Unknown email template: "${template}". Available: ${available}`,
       { status: 404, headers: { "content-type": "text/plain" } },
     );
   }
 
-  const html = renderer();
   const url = new URL(request.url);
   const wantsRaw = url.searchParams.get("raw") === "1";
+  const wantsFull = url.searchParams.get("full") === "1";
 
+  const html = wantsFull
+    ? await buildFullPreviewHtml(preview)
+    : await renderPreviewBodyHtml(preview);
   const body = wantsRaw ? html : buildMobilePreviewWrapper(template, html);
   return new NextResponse(body, {
     headers: { "content-type": "text/html; charset=utf-8" },

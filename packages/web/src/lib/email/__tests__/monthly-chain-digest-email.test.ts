@@ -1,15 +1,39 @@
+import React from "react";
 import { describe, expect, it } from "vitest";
+import { MonthlyChainDigestReactEmail } from "../monthly-chain-digest-react-email";
 import {
-  buildMonthlyChainDigestHtml,
   buildMonthlyChainDigestSubject,
-  buildMonthlyChainDigestText,
+  type MonthlyChainDigestInput,
 } from "../monthly-chain-digest-email";
+import { renderReactEmailBody } from "../render-react-email";
 
-const BASE = {
+const BASE: Omit<
+  MonthlyChainDigestInput,
+  "monthlyConversionCount" | "totalConversionCount"
+> = {
+  completedEmployees: [
+    { displayName: "Ada Lovelace", completedAt: "2026-05-04" },
+    { displayName: "Jonas Salk", completedAt: "2026-05-08" },
+  ],
   referralUrl: "https://warondisease.org/vote/SAMPLE",
   dashboardUrl: "https://warondisease.org/dashboard",
   monthLabel: "May 2026",
+  overdueEmployeeCount: 2,
+  overdueEmployees: [
+    { displayName: "Jake Smith" },
+    { displayName: "Maria Chen" },
+  ],
+  overduePresidentCount: 189,
+  overduePresidents: [
+    { displayName: "President Example", countryLabel: "Example Republic" },
+  ],
 };
+
+async function renderMonthlyDigest(input: MonthlyChainDigestInput) {
+  return renderReactEmailBody(
+    React.createElement(MonthlyChainDigestReactEmail, { input }),
+  );
+}
 
 describe("monthly chain digest — positive variant (N > 0)", () => {
   const input = {
@@ -20,35 +44,42 @@ describe("monthly chain digest — positive variant (N > 0)", () => {
 
   it("subject names the count + month for opens", () => {
     expect(buildMonthlyChainDigestSubject(input)).toBe(
-      "7 more voters joined through your link in May 2026",
+      "Humanity Management: 7 employees completed the task",
     );
   });
 
   it("subject singularizes when N == 1", () => {
     expect(
       buildMonthlyChainDigestSubject({ ...input, monthlyConversionCount: 1 }),
-    ).toBe("1 more voter joined through your link in May 2026");
+    ).toBe("Humanity Management: 1 employee completed the task");
   });
 
-  it("html surfaces monthly + total counts and the doubling-rounds math", () => {
-    const html = buildMonthlyChainDigestHtml(input);
-    expect(html).toContain("7 more voters joined");
+  it("html surfaces completed employees, overdue employees, late presidents, and the doubling-rounds math", async () => {
+    const { html } = await renderMonthlyDigest(input);
+    expect(html).toContain("7 employees completed");
+    expect(html).toContain("Ada Lovelace");
+    expect(html).toContain("Jake Smith");
+    expect(html).toContain("189");
+    expect(html).toContain("President Example");
     expect(html).toContain("19");
     expect(html).toContain("32 doubling rounds");
     expect(html).toContain("4,300,000,000");
   });
 
-  it("html appends the canonical share footer with referral URL", () => {
-    const html = buildMonthlyChainDigestHtml(input);
-    expect(html).toContain("Recruit two more humans");
-    expect(html).toContain("I love you");
+  it("html includes copy-paste reminders with the referral URL", async () => {
+    const { html } = await renderMonthlyDigest(input);
+    expect(html).toContain("You are late on a 30-second task");
+    expect(html).toContain("Dear President [name]");
     expect(html).toContain(BASE.referralUrl);
   });
 
-  it("plaintext mirrors html content", () => {
-    const text = buildMonthlyChainDigestText(input);
-    expect(text).toContain("May 2026 chain digest");
-    expect(text).toContain("7 more voters joined");
+  it("plaintext mirrors html content", async () => {
+    const { text } = await renderMonthlyDigest(input);
+    expect(text).toContain("Humanity Management Status Report - May 2026");
+    expect(text.toLowerCase()).toContain("7 employees completed");
+    expect(text).toContain("Ada Lovelace");
+    expect(text).toContain("Jake Smith");
+    expect(text).toContain("Dear President [name]");
     expect(text).toContain("4,300,000,000");
     expect(text).toContain(BASE.referralUrl);
   });
@@ -63,23 +94,25 @@ describe("monthly chain digest — resend variant (N == 0)", () => {
 
   it("subject pivots to forward-kit framing", () => {
     expect(buildMonthlyChainDigestSubject(input)).toBe(
-      "Still 30 seconds. Still two humans you love.",
+      "Humanity Management: no employees completed the task",
     );
   });
 
-  it("html is the canonical share message body, not a stats digest", () => {
-    const html = buildMonthlyChainDigestHtml(input);
-    expect(html).toContain("I love you");
-    expect(html).toContain("suffer and die of horrible diseases");
+  it("html is a management report with reminder copy, not a nudge email", async () => {
+    const { html } = await renderMonthlyDigest(input);
+    expect(html).toContain("No employees completed the 30-second task");
+    expect(html).toContain("Late employee reminder");
+    expect(html).toContain("Dear President [name]");
     expect(html).toContain(BASE.referralUrl);
-    expect(html).toContain("End war and disease");
-    // The zero-month variant does NOT lead with a count
-    expect(html).not.toContain("chain digest");
+    expect(html).not.toContain("send them a nudge");
   });
 
-  it("plaintext fallback contains the canonical message", () => {
-    const text = buildMonthlyChainDigestText(input);
-    expect(text).toContain("I love you");
+  it("plaintext fallback contains the management reminders", async () => {
+    const { text } = await renderMonthlyDigest(input);
+    expect(text.toLowerCase()).toContain(
+      "no employees completed the 30-second task",
+    );
+    expect(text).toContain("Dear President [name]");
     expect(text).toContain(BASE.referralUrl);
   });
 });

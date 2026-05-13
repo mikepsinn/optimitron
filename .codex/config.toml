@@ -1,0 +1,15 @@
+# Codex CLI project-level config.
+#
+# Read by `codex exec` and the `codex-plugin-cc` Claude Code plugin for any
+# /codex:* invocation in this repo. Overrides ~/.codex/config.toml on a
+# per-key basis (this file wins; other settings inherit).
+#
+# Plugin source: https://github.com/openai/codex-plugin-cc
+# Config docs: https://developers.openai.com/codex/cli/reference
+
+# Pick the most-capable reasoning tier on every invocation. The plugin's
+# /codex:adversarial-review benefits most from this — that command exists
+# specifically to challenge design decisions, so weak reasoning is wasted
+# effort. /codex:rescue (task delegation) also wants the higher tier when
+# the task is non-trivial.
+model_reasoning_effort = "high"

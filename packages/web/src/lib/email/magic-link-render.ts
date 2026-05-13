@@ -37,9 +37,11 @@ const magicLinkCopyBySite: Record<SiteKey, MagicLinkCopy> = {
   },
 };
 
-function getMagicLinkCopy(host: string): MagicLinkCopy {
+export function getMagicLinkCopy(host: string): MagicLinkCopy {
   return magicLinkCopyBySite[getSiteFromHost(host).key];
 }
+
+export const MAGIC_LINK_TEMPLATE_ID = "magic-link";
 
 export function buildMagicLinkSubject(host: string) {
   if (getSiteFromHost(host).key === "warOnDisease") {
@@ -96,3 +98,37 @@ export function buildMagicLinkText(url: string, host: string) {
     copy.notRequested,
   ].join("\n");
 }
+
+import React from "react";
+import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
+import { MagicLinkReactEmail } from "@/lib/email/magic-link-react-email";
+import type { EmailPreview } from "@/lib/email/preview-envelope";
+
+const SAMPLE_MAGIC_LINK_HOST = "warondisease.local";
+const SAMPLE_MAGIC_LINK_URL =
+  "https://warondisease.local/api/auth/callback/email?token=SAMPLE";
+
+export const MAGIC_LINK_PREVIEW: EmailPreview = {
+  templateId: MAGIC_LINK_TEMPLATE_ID,
+  displayName: "Sign-in link (passwordless auth)",
+  trigger:
+    "Fires when a user submits the sign-in email form. Auth provider (NextAuth) dispatches a single-use callback URL signed with the auth secret; clicking it completes the sign-in flow.",
+  scope: "auth",
+  from: () => formatDefaultSystemEmailFromHeader(),
+  subject: () => buildMagicLinkSubject(SAMPLE_MAGIC_LINK_HOST),
+  skipWishoniaSignature: false,
+  render: () =>
+    buildMagicLinkHtml(SAMPLE_MAGIC_LINK_URL, SAMPLE_MAGIC_LINK_HOST, {
+      brandColor: "#111827",
+      buttonText: "#ffffff",
+    }),
+  renderReact: () => {
+    const copy = getMagicLinkCopy(SAMPLE_MAGIC_LINK_HOST);
+    return React.createElement(MagicLinkReactEmail, {
+      url: SAMPLE_MAGIC_LINK_URL,
+      intro: copy.intro,
+      buttonLabel: copy.buttonLabel,
+      notRequested: copy.notRequested,
+    });
+  },
+};

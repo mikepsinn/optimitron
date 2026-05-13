@@ -22,17 +22,6 @@
         ]
       }
     ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/verify-ui-changes.mjs",
-            "timeout": 8000
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [

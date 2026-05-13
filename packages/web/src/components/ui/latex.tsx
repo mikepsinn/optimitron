@@ -1,7 +1,19 @@
 "use client"
 
+import { useEffect } from "react"
 import { InlineMath, BlockMath } from 'react-katex'
-import 'katex/dist/katex.min.css'
+
+// Dynamic import keeps the CSS off the module top so Node-side render scripts
+// don't crash trying to parse a `.css` file. Loads once on first client render.
+let katexCssLoaded = false
+function useEnsureKatexStyles() {
+  useEffect(() => {
+    if (katexCssLoaded) return
+    katexCssLoaded = true
+    // @ts-expect-error — bundler-only side-effect import.
+    void import("katex/dist/katex.min.css")
+  }, [])
+}
 
 interface LatexProps {
   children: string
@@ -10,6 +22,7 @@ interface LatexProps {
 }
 
 export function Latex({ children, block = false, className = '' }: LatexProps) {
+  useEnsureKatexStyles()
   if (block) {
     return (
       <div className={`my-4 w-full max-w-full overflow-x-auto ${className}`}>

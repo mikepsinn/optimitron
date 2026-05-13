@@ -1,34 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getEmailBaseUrl, prefixEmailImage } from "../email/email-urls";
-
-describe("getEmailBaseUrl", () => {
-  const originalBase = process.env.NEXT_PUBLIC_BASE_URL;
-
-  afterEach(() => {
-    if (originalBase === undefined) delete process.env.NEXT_PUBLIC_BASE_URL;
-    else process.env.NEXT_PUBLIC_BASE_URL = originalBase;
-  });
-
-  it("returns the production canonical origin when NEXT_PUBLIC_BASE_URL is unset", () => {
-    delete process.env.NEXT_PUBLIC_BASE_URL;
-    expect(getEmailBaseUrl()).toBe("https://optimitron.com");
-  });
-
-  it("returns a configured https base URL", () => {
-    process.env.NEXT_PUBLIC_BASE_URL = "https://preview.optimitron.com";
-    expect(getEmailBaseUrl()).toBe("https://preview.optimitron.com");
-  });
-
-  it("falls back to the canonical origin for localhost values", () => {
-    process.env.NEXT_PUBLIC_BASE_URL = "http://localhost:3001";
-    expect(getEmailBaseUrl()).toBe("https://optimitron.com");
-  });
-
-  it("strips trailing slashes", () => {
-    process.env.NEXT_PUBLIC_BASE_URL = "https://foo.example.com/";
-    expect(getEmailBaseUrl()).toBe("https://foo.example.com");
-  });
-});
+import { describe, expect, it } from "vitest";
+import { prefixEmailImage } from "../email/email-urls";
 
 describe("prefixEmailImage", () => {
   it("returns empty string for null/empty input", () => {

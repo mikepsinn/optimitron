@@ -1,21 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import type { ComponentType } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Copy, Mail, Share2, Smartphone } from "lucide-react";
 import { FaFacebookF, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import {
-  DFDA_QUEUE_CLEARANCE_YEARS,
-  DFDA_TRIAL_CAPACITY_MULTIPLIER,
-  GLOBAL_POPULATION_2024,
-  GLOBAL_WARHEAD_COUNT,
-  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-} from "@optimitron/data/parameters";
-import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
-import { ROUTES } from "@/lib/routes";
+import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion";
 import { buildShareMessage } from "@/lib/share-message";
 import { cn } from "@/lib/utils";
 
@@ -275,84 +264,12 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
 
   return (
     <section className="border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--treaty-ink)]/60">
-        Humanity Manager · Assignment 1
-      </p>
-      <h2 className="mt-2 text-2xl font-black uppercase leading-tight tracking-tight sm:text-3xl">
-        Trade one apocalypse for{" "}
-        <ParameterValue
-          className="font-black"
-          figures={3}
-          param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-        />
-        × more clinical trials.
-      </h2>
-      <div className="mt-4 space-y-3 text-sm font-bold leading-7 text-[var(--treaty-ink)] sm:text-base">
-        <p>
-          You have been promoted to Humanity Manager at Earth
-          Optimization Services LLC. Responsible for{" "}
-          <ParameterValue
-            className="font-black"
-            figures={1}
-            param={GLOBAL_POPULATION_2024}
-          />{" "}
-          humans. First task: get them to ratify the{" "}
-          <Link
-            href={ROUTES.treaty}
-            className="underline decoration-dotted underline-offset-2 hover:no-underline"
-          >
-            1% Treaty
-          </Link>
-          .
-        </p>
-        <p>
-          Earth owns{" "}
-          <ParameterValue
-            className="font-black"
-            figures={3}
-            param={GLOBAL_WARHEAD_COUNT}
-          />{" "}
-          nuclear warheads.{" "}
-          <ParameterValue
-            className="font-black"
-            figures={3}
-            param={NUCLEAR_WINTER_WARHEAD_THRESHOLD}
-          />{" "}
-          of them ends civilization. That is{" "}
-          <ParameterValue
-            className="font-black"
-            figures={3}
-            param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
-          />{" "}
-          apocalypses on the shelf. Spend one apocalypse on{" "}
-          <ParameterValue
-            className="font-black"
-            figures={3}
-            param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-          />
-          × more clinical trials and the disease-eradication timeline
-          collapses from{" "}
-          <ParameterValue
-            className="font-black"
-            figures={3}
-            param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-          />{" "}
-          years to{" "}
-          <ParameterValue
-            className="font-black"
-            figures={2}
-            param={DFDA_QUEUE_CLEARANCE_YEARS}
-          />
-          .
-        </p>
-        <p className="text-[var(--treaty-ink)]/70">
-          To get there: send the message below to two humans you love.
-          They send it to two. 32 rounds reaches every adult on Earth.
-          Getting humans to agree on one thing is the first step to any
-          civilizational upgrade. You are responsible for this step. It cannot
-          be completed without you.
-        </p>
-      </div>
+      <HumanityManagerPromotion
+        target="browser"
+        renderParam={(param, figures) => (
+          <ParameterValue className="font-black" figures={figures} param={param} />
+        )}
+      />
 
       <label className="mt-6 block">
         <span className="sr-only">Share message</span>

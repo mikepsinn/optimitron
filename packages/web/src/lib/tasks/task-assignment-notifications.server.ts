@@ -161,7 +161,7 @@ export async function notifyTaskAssigneeOfAssignment(input: {
         userId: recipient.userId,
       });
     }
-    const email = buildTaskAssignmentNotificationEmail({
+    const email = await buildTaskAssignmentNotificationEmail({
       description: task.description,
       id: task.id,
       recipientName: recipient.name,

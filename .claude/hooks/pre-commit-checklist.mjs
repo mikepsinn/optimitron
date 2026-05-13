@@ -28,17 +28,26 @@ if (!command) process.exit(0);
 
 // Only intercept `git commit`. Match the command being passed to Bash —
 // covers `git commit`, `git commit -m "..."`, `cd X && git commit ...`,
-// and `git -C path commit`. Skips `git commit-tree` and other false positives.
+// `git -C path commit`, and `git -c key=value commit`. Skips
+// `git commit-tree` and other false positives.
+//
+// Codex review (2026-05-12) caught that the previous `\s+-[A-Za-z]\S*`
+// only matched `-XValue` joined forms, not the space-separated `-X Value`
+// forms like `-C path` or `-c user.name=foo` that git accepts before the
+// subcommand. The optional `(\s+\S+)?` group covers space-separated values.
 if (
-  !/(^|[\s;]|&&|\|\|)git(\s+-[A-Za-z]\S*)*\s+commit(\s|$)/.test(command)
+  !/(^|[\s;]|&&|\|\|)git(\s+-[A-Za-z]\S*(\s+\S+)?)*\s+commit(\s|$)/.test(command)
 ) {
   process.exit(0);
 }
 
-// Delegate. verify-ui-changes.mjs tolerates missing stdin.
+// Delegate. Pipe the original hookData JSON to the child so it can
+// detect commit-attempt mode (`hookData.tool_name === "Bash"`) and emit
+// full per-file detail instead of the terse Stop-mode one-liner.
 const verifyScript = join(__dirname, "verify-ui-changes.mjs");
 const result = spawnSync(process.execPath, [verifyScript], {
-  stdio: ["ignore", "inherit", "inherit"],
+  input: JSON.stringify(hookData),
+  stdio: ["pipe", "inherit", "inherit"],
 });
 
 process.exit(result.status ?? 0);

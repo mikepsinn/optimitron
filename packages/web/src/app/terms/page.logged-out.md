@@ -59,5 +59,4 @@
 - Earth Optimization Services LLC
 - Email: hello@warondisease.org
 - Website: warondisease.org
-- See also: Privacy Policy
-- Privacy Policy
+- See also: [Privacy Policy](/privacy)

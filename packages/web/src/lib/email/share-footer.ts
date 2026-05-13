@@ -14,9 +14,11 @@
 import { escapeHtml } from "@/lib/email/magic-link-render";
 import { buildShareMessage } from "@/lib/share-message";
 
-const FOOTER_EYEBROW = "Recruit two more humans";
+const FOOTER_EYEBROW = "Forward this";
 const FOOTER_TAGLINE =
   "32 doubling rounds × 2 referrals each = 4,300,000,000 humans reached.";
+const FORWARD_LINE =
+  "Forward this email to every human you love and do not want to suffer and die of horrible diseases.";
 
 export function buildShareFooterHtml(referralUrl: string): string {
   const message = escapeHtml(buildShareMessage(referralUrl));
@@ -25,6 +27,9 @@ export function buildShareFooterHtml(referralUrl: string): string {
     <div style="margin-top:48px;padding-top:24px;border-top:2px solid #111827;font-family:Arial,sans-serif;color:#111827;">
       <p style="margin:0 0 12px;font-size:12px;line-height:1.6;color:#71717a;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;">
         ${FOOTER_EYEBROW}
+      </p>
+      <p style="margin:0 0 12px;font-size:14px;line-height:1.7;font-weight:700;">
+        ${escapeHtml(FORWARD_LINE)}
       </p>
       <p style="margin:0 0 12px;font-size:14px;line-height:1.7;font-weight:700;">
         ${message}
@@ -45,6 +50,8 @@ export function buildShareFooterText(referralUrl: string): string {
     "—",
     "",
     FOOTER_EYEBROW,
+    "",
+    FORWARD_LINE,
     "",
     buildShareMessage(referralUrl),
     "",

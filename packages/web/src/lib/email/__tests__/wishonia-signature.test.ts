@@ -10,8 +10,8 @@ import {
   selectWishoniaSignature,
 } from "../wishonia-signature";
 
-vi.mock("@/lib/email/email-urls", () => ({
-  getEmailBaseUrl: () => "https://test.example",
+vi.mock("@/lib/url", () => ({
+  getBaseUrl: () => "https://test.example",
 }));
 
 afterEach(() => {

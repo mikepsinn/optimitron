@@ -219,6 +219,52 @@ describe("syncManagedTaskTriggers", () => {
     });
   });
 
+  it("does not update when child specs only differ by read order", async () => {
+    const client = new FakeTaskTriggerClient();
+    const multiSpecTrigger: ManagedTaskTriggerInput = {
+      ...baseTrigger,
+      spawnSpecs: [
+        {
+          ...baseTrigger.spawnSpecs![0]!,
+          kind: "zeta",
+          isParent: true,
+          titleTemplate: "Zeta",
+        },
+        {
+          ...baseTrigger.spawnSpecs![0]!,
+          kind: "alpha",
+          isParent: false,
+          titleTemplate: "Alpha",
+        },
+      ],
+      communicationSpawnSpecs: [
+        {
+          kind: "zeta",
+          subjectTemplate: "Zeta",
+          bodyTextTemplate: "Zeta body",
+          dedupeKeyTemplate: "managed:test:zeta",
+        },
+        {
+          kind: "alpha",
+          subjectTemplate: "Alpha",
+          bodyTextTemplate: "Alpha body",
+          dedupeKeyTemplate: "managed:test:alpha",
+        },
+      ],
+    };
+
+    await syncWithFake(client, { apply: true, records: [multiSpecTrigger] });
+
+    await expect(
+      syncWithFake(client, { apply: true, records: [multiSpecTrigger] }),
+    ).resolves.toMatchObject({
+      mode: "apply",
+      created: [],
+      updated: [],
+      unchanged: ["managed:test"],
+    });
+  });
+
   it("soft-disables explicitly retired triggers only", async () => {
     const client = new FakeTaskTriggerClient();
     await syncWithFake(client, { apply: true, records: [baseTrigger] });

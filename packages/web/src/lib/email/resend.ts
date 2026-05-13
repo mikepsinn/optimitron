@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { render } from "@react-email/components";
 import { Resend } from "resend";
 import { serverEnv } from "@/lib/env";
 import { canSendEmailToUser } from "@/lib/email/can-send.server";
@@ -7,10 +6,10 @@ import {
   DEFAULT_UNSUBSCRIBE_EMAIL,
   formatDefaultSystemEmailFromHeader,
 } from "@/lib/email/from-address";
-import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
+import { composeOutboundEmailBody } from "@/lib/email/preview-envelope";
+import { renderReactEmailBody } from "@/lib/email/render-react-email";
 import { isTransactionalScope } from "@/lib/email/scopes";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
-import { appendWishoniaSignature } from "@/lib/email/wishonia-signature";
 import type { EmailScope } from "@/lib/email/scopes";
 
 interface BaseMessage {
@@ -181,29 +180,44 @@ function resolveUnsubscribeUrl(message: BaseMessage): string | null {
   });
 }
 
-function replaceUnsubscribePlaceholder<
-  T extends { html: string; text: string },
->(message: T, unsubscribeUrl: string | null): T {
-  if (!unsubscribeUrl) {
-    return message;
+// Fail-loud guard at the send boundary: refuse to dispatch any email whose
+// composed body OR generated headers contain an unreachable token. Catches
+// localhost / loopback URLs (would 404 in the recipient's mail client) and
+// unsubstituted `{{UNSUBSCRIBE_URL}}` placeholders (the substitution step
+// somewhere upstream forgot to run). Private — test through the three send
+// paths.
+//
+// Word-boundary regex for hostnames avoids false positives like
+// "notlocalhostish"; IPv6 loopback uses a separate branch since `[` is a
+// non-word character that breaks `\b`.
+//
+// Codex review (2026-05-12) caught that the `List-Unsubscribe` header
+// (built separately via `buildUnsubscribeUrl()` → `getBaseUrl()`) could
+// contain localhost while the body is clean. Now scans headers too.
+function assertEmailSafe(input: {
+  html: string;
+  text: string;
+  headers?: Record<string, string>;
+}): void {
+  const headerString = input.headers
+    ? Object.entries(input.headers)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join("\n")
+    : "";
+  const combined = `${input.html}\n${input.text}\n${headerString}`;
+  const hostRegex =
+    /\b(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\b|\[::1\](?::\d+)?/i;
+  const offenders: string[] = [];
+  const hostMatch = combined.match(hostRegex);
+  if (hostMatch) offenders.push(hostMatch[0]);
+  if (combined.includes("{{UNSUBSCRIBE_URL}}")) {
+    offenders.push("{{UNSUBSCRIBE_URL}}");
   }
-  if (
-    !message.html.includes(EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER) &&
-    !message.text.includes(EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER)
-  ) {
-    return message;
+  if (offenders.length) {
+    throw new Error(
+      `Refusing to send email: payload contains unreachable token(s) [${offenders.join(", ")}]`,
+    );
   }
-  return {
-    ...message,
-    html: message.html.replaceAll(
-      EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER,
-      unsubscribeUrl,
-    ),
-    text: message.text.replaceAll(
-      EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER,
-      unsubscribeUrl,
-    ),
-  };
 }
 
 function normalizeEmailList(emails: readonly string[] | null | undefined) {
@@ -269,15 +283,16 @@ export async function sendResendEmail(
     return buildMockSendResult(unsubscribeUrl);
   }
 
-  /// Skip Wishonia auto-sign when the caller set a per-message `from`. A real
-  /// human (e.g. a referrer inviting a friend) is the sender — Wishonia
-  /// signing on top would double-attribute. The share-email path renders its
-  /// own sender sign-off in the body via buildSenderSignature*.
-  const body = replaceUnsubscribePlaceholder(message, unsubscribeUrl);
-  const signed =
-    body.from || body.skipWishoniaSignature
-      ? body
-      : appendWishoniaSignature(body);
+  // Substitute the unsubscribe URL + append the Wishonia signature unless
+  // the caller has its own sender identity (per-message `from`) or has
+  // explicitly opted out. Shared with the preview pipeline so previews
+  // and real sends compose identically.
+  const signed = composeOutboundEmailBody(message, {
+    skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
+    hasFromOverride: Boolean(message.from),
+    unsubscribeUrl: unsubscribeUrl ?? "",
+  });
+  assertEmailSafe({ ...signed, headers });
   const resend = getResendClient();
   const bcc = resolveBcc(message);
   const response = await resend.emails.send({
@@ -325,18 +340,16 @@ export async function sendReactEmail(
   }
 
   const resend = getResendClient();
-  const renderedHtml = await render(message.react);
-  const renderedText = await render(message.react, { plainText: true });
-  const body = replaceUnsubscribePlaceholder(
-    { html: renderedHtml, text: renderedText },
-    unsubscribeUrl,
+  const rendered = await renderReactEmailBody(message.react);
+  const signed = composeOutboundEmailBody(
+    rendered,
+    {
+      skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
+      hasFromOverride: Boolean(message.from),
+      unsubscribeUrl: unsubscribeUrl ?? "",
+    },
   );
-  /// See sendResendEmail for why we gate on `from`.
-  const signed = message.from
-    ? body
-    : message.skipWishoniaSignature
-      ? body
-      : appendWishoniaSignature(body);
+  assertEmailSafe({ ...signed, headers });
 
   const bcc = resolveBcc(message);
   const response = await resend.emails.send({
@@ -376,12 +389,13 @@ export async function sendExternalResendEmail(
     return buildMockSendResult(unsubscribeUrl);
   }
 
-  /// See sendResendEmail for why we gate on `from`.
-  const body = replaceUnsubscribePlaceholder(message, unsubscribeUrl);
-  const signed =
-    body.from || body.skipWishoniaSignature
-      ? body
-      : appendWishoniaSignature(body);
+  // Shared composer: substitute unsub URL + apply Wishonia signature gate.
+  const signed = composeOutboundEmailBody(message, {
+    skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
+    hasFromOverride: Boolean(message.from),
+    unsubscribeUrl: unsubscribeUrl ?? "",
+  });
+  assertEmailSafe({ ...signed, headers });
   const resend = getResendClient();
   const bcc = resolveBcc(message);
   const response = await resend.emails.send({

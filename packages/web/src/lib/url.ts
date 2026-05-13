@@ -1,15 +1,10 @@
 import { getHandleOrReferralCode } from "@/lib/referral.client";
-import { clientEnv } from "@/lib/env";
 import { ROUTES } from "@/lib/routes";
 import { getConfiguredSiteOrigin } from "@/lib/site";
 
 export function getBaseUrl(): string {
   if (typeof window !== "undefined" && window.location?.origin) {
     return window.location.origin;
-  }
-
-  if (clientEnv.NEXT_PUBLIC_BASE_URL) {
-    return clientEnv.NEXT_PUBLIC_BASE_URL;
   }
 
   return getConfiguredSiteOrigin({ allowLocalFallback: true });

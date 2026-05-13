@@ -47,8 +47,7 @@
 - We keep information for as long as needed to operate the site, maintain campaign records, prevent fraud, resolve disputes, comply with law, and keep security logs. Public campaign records and plaintiff or memorial records may stay visible after an account is closed unless we agree or are required to remove them.
 ### 8. YOUR CHOICES
 - Depending on where you live, you may be able to request access, correction, deletion, portability, or limits on certain uses of your personal information. You can also unsubscribe from non-essential email.
-- Send requests to hello@warondisease.org. We may need to verify your identity before changing account or campaign records.
-- hello@warondisease.org
+- Send requests to [hello@warondisease.org](mailto:hello@warondisease.org). We may need to verify your identity before changing account or campaign records.
 ### 9. SECURITY
 - We use technical and organizational safeguards designed to protect personal information. No internet service is perfectly secure, so do not send information you would not want handled by a web application.
 ### 10. CHILDREN
@@ -60,5 +59,4 @@
 - Earth Optimization Services LLC
 - Email: hello@warondisease.org
 - Website: warondisease.org
-- See also: Terms of Service
-- Terms of Service
+- See also: [Terms of Service](/terms)
