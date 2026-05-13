@@ -51,6 +51,28 @@ If a future Claude session is tempted to use the Agent path because it looks mor
 
 `.codex/config.toml` pins `model = "gpt-5.5"` + `model_reasoning_effort = "xhigh"` — strongest tier for the hardest async tasks.
 
+## Pre-commit preflight (qa-passed gate)
+
+Before any commit touching user-facing files (anything under `packages/web/src/app/`, `packages/web/src/components/`, `packages/web/src/lib/email/`, `packages/web/src/lib/tasks/`, or any `.md` snapshot), dispatch a Codex preflight agent with a goal-only prompt:
+
+> "Validate this staged changeset. Read `git diff --cached --name-only` and `git diff --cached`. Decide what's relevant to regenerate (markdown snapshots? email previews? screenshots? none?), what tests to run, what artifacts to review. Run everything relevant. Read the output. Fix every problem you find. Iterate until clean. Don't ship until you'd put your own name on the commit. Report what you fixed and what's left."
+
+**Don't enumerate file globs, test commands, or scope schemas.** Codex decides from the diff. Listing them is the same micromanaging anti-pattern as [[state-the-goal-not-the-script]].
+
+When Codex returns clean, add a line to the commit message:
+
+```
+qa-passed: <one-line summary of what Codex found and fixed>
+```
+
+If Codex says nothing needs to run (e.g. the diff is pure meta-config that snuck through the gate), make the rationale explicit:
+
+```
+qa-passed: skipped — pure meta-config (.claude/, CLAUDE.md, .codex/, hooks)
+```
+
+The `verify-ui-changes.mjs` hook checks for the `qa-passed:` line on every commit touching user-facing files and blocks if missing.
+
 ## Verify before relaying
 
 Codex hallucinates. Inspect each non-trivial diff before reporting success.
