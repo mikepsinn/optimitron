@@ -17,6 +17,7 @@ import {
 } from "@/lib/email/suppression.server";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { verifyUnsubToken } from "@/lib/email/unsub-token";
+import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
@@ -30,18 +31,34 @@ interface ParsedRequest {
   action: "unsubscribe" | "resubscribe";
 }
 
-async function parseParams(request: Request): Promise<ParsedRequest | { error: string; status: number }> {
+interface ParsedBody {
+  form: URLSearchParams | null;
+  oneClickUnsubscribe: boolean;
+}
+
+async function parseFormBody(request: Request): Promise<ParsedBody> {
+  if (request.method !== "POST") {
+    return { form: null, oneClickUnsubscribe: false };
+  }
+
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/x-www-form-urlencoded")) {
+    return { form: null, oneClickUnsubscribe: false };
+  }
+
+  const form = new URLSearchParams(await request.text());
+  return {
+    form,
+    oneClickUnsubscribe: form.get("List-Unsubscribe") === "One-Click",
+  };
+}
+
+function parseParams(
+  request: Request,
+  body: URLSearchParams | null,
+): ParsedRequest | { error: string; status: number } {
   const url = new URL(request.url);
   const query = url.searchParams;
-
-  // POST may carry the one-click body per RFC 8058.
-  let body: URLSearchParams | null = null;
-  if (request.method === "POST") {
-    const contentType = request.headers.get("content-type") ?? "";
-    if (contentType.includes("application/x-www-form-urlencoded")) {
-      body = new URLSearchParams(await request.text());
-    }
-  }
 
   const userId = query.get("u") ?? body?.get("u") ?? "";
   const scopeRaw = query.get("s") ?? body?.get("s") ?? "";
@@ -71,6 +88,14 @@ async function parseParams(request: Request): Promise<ParsedRequest | { error: s
   return { userId, scope: scopeRaw, emailLogId, token, action };
 }
 
+async function getRecipientEmail(userId: string): Promise<string | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true },
+  });
+  return user?.email?.trim().toLowerCase() || null;
+}
+
 function renderErrorHtml(message: string): string {
   return `<!doctype html>
 <html lang="en">
@@ -83,6 +108,50 @@ function renderErrorHtml(message: string): string {
   <main style="max-width:560px;margin:60px auto;padding:32px 20px;background:#ffffff;border:3px solid #111827;">
     <h1 style="margin:0 0 12px;font-size:22px;font-weight:900;text-transform:uppercase;">Unsubscribe failed</h1>
     <p style="margin:0;font-size:15px;line-height:1.5;">${escapeHtml(message)}</p>
+  </main>
+</body>
+</html>`;
+}
+
+function renderPromptHtml(input: {
+  userId: string;
+  scope: EmailScope;
+  emailLogId: string | null;
+  action: "unsubscribe" | "resubscribe";
+  error?: string;
+}): string {
+  const scopeLabel = EMAIL_SCOPES[input.scope].label;
+  const isUnsub = input.action === "unsubscribe";
+  const headline = isUnsub ? "Confirm unsubscribe" : "Confirm resubscribe";
+  const button = isUnsub ? "Unsubscribe" : "Resubscribe";
+  const formAction = buildUnsubscribeUrl({
+    userId: input.userId,
+    scope: input.scope,
+    emailLogId: input.emailLogId ?? undefined,
+  });
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Unsubscribe — Optimitron</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+</head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,sans-serif;color:#111827;">
+  <main style="max-width:560px;margin:60px auto;padding:32px 24px;background:#ffffff;border:2px solid #111827;">
+    <h1 style="margin:0 0 12px;font-size:24px;font-weight:900;line-height:1.1;">${escapeHtml(headline)}</h1>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">
+      This changes the <strong>${escapeHtml(scopeLabel)}</strong> email setting for the human who received the email. If the email was forwarded to you, this is not your switch.
+    </p>
+    ${input.error ? `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;font-weight:700;color:#991b1b;">${escapeHtml(input.error)}</p>` : ""}
+    <form method="POST" action="${escapeHtml(formAction)}" style="margin:0 0 16px;">
+      <input type="hidden" name="action" value="${input.action}" />
+      <label for="confirmEmail" style="display:block;margin:0 0 8px;font-size:13px;line-height:1.4;font-weight:900;text-transform:uppercase;letter-spacing:.08em;">Recipient email</label>
+      <input id="confirmEmail" name="confirmEmail" type="email" autocomplete="email" required placeholder="name@example.com" style="display:block;width:100%;box-sizing:border-box;margin:0 0 16px;padding:12px 14px;border:2px solid #111827;font-size:16px;line-height:1.4;color:#111827;background:#ffffff;" />
+      <button type="submit" style="cursor:pointer;display:inline-block;background:#111827;color:#ffffff;padding:12px 20px;text-decoration:none;font-weight:900;border:2px solid #111827;font-size:14px;letter-spacing:.05em;text-transform:uppercase;">${escapeHtml(button)}</button>
+    </form>
+    <p style="margin:0;font-size:12px;line-height:1.5;">
+      <a href="${SETTINGS_HREF}" style="color:#111827;font-weight:700;">Manage all email preferences</a>
+    </p>
   </main>
 </body>
 </html>`;
@@ -108,14 +177,6 @@ function renderConfirmationHtml(input: {
     : input.scopeEnabled
       ? `You are subscribed again to <strong>${escapeHtml(scopeLabel)}</strong>.`
       : `We removed the individual block for <strong>${escapeHtml(scopeLabel)}</strong>, but your master opt-out is still active. Turn non-essential email back on in Settings to receive it.`;
-  const toggleLabel = isUnsub ? "Resubscribe" : "Unsubscribe";
-  const toggleAction = isUnsub ? "resubscribe" : "unsubscribe";
-  const formAction = buildUnsubscribeUrl({
-    userId: input.userId,
-    scope: input.scope,
-    emailLogId: input.emailLogId ?? undefined,
-  });
-  const showToggle = !(input.action === "resubscribe" && input.masterSuppressed && !input.scopeEnabled);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -123,16 +184,12 @@ function renderConfirmationHtml(input: {
 <title>Unsubscribe — Optimitron</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;color:#111827;">
-  <main style="max-width:560px;margin:60px auto;padding:32px 24px;background:#FFE66D;border:3px solid #111827;box-shadow:8px 8px 0px 0px rgba(0,0,0,1);">
+<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,sans-serif;color:#111827;">
+  <main style="max-width:560px;margin:60px auto;padding:32px 24px;background:#ffffff;border:2px solid #111827;">
     <h1 style="margin:0 0 12px;font-size:24px;font-weight:900;text-transform:uppercase;line-height:1.1;">${escapeHtml(headline)}</h1>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.5;">${body}</p>
-    ${showToggle ? `<form method="POST" action="${escapeHtml(formAction)}" style="margin:0 0 12px;">
-      <input type="hidden" name="action" value="${toggleAction}" />
-      <button type="submit" style="cursor:pointer;display:inline-block;background:#111827;color:#ffffff;padding:12px 20px;text-decoration:none;font-weight:900;border:3px solid #111827;font-size:14px;letter-spacing:.05em;text-transform:uppercase;">${escapeHtml(toggleLabel)}</button>
-    </form>` : ""}
     <p style="margin:0;font-size:12px;line-height:1.5;">
-      <a href="${SETTINGS_HREF}" style="color:#111827;font-weight:700;">Manage all email preferences →</a>
+      <a href="${SETTINGS_HREF}" style="color:#111827;font-weight:700;">Manage all email preferences</a>
     </p>
   </main>
 </body>
@@ -148,64 +205,98 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
-async function handle(request: Request, respondWithHtml: boolean) {
-  const parsed = await parseParams(request);
+function htmlResponse(html: string, status = 200) {
+  return new NextResponse(html, {
+    status,
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+}
+
+async function applyPreferenceChange(input: {
+  parsed: ParsedRequest;
+  via: UnsubscribeVia;
+}) {
+  if (input.parsed.action === "resubscribe") {
+    await applyResubscribe({
+      userId: input.parsed.userId,
+      scope: input.parsed.scope,
+      emailLogId: input.parsed.emailLogId,
+      via: input.via,
+    });
+  } else {
+    await applyUnsubscribe({
+      userId: input.parsed.userId,
+      scope: input.parsed.scope,
+      emailLogId: input.parsed.emailLogId,
+      via: input.via,
+    });
+  }
+}
+
+async function handle(request: Request) {
+  const body = await parseFormBody(request);
+  const parsed = parseParams(request, body.form);
   if ("error" in parsed) {
-    return respondWithHtml
-      ? new NextResponse(renderErrorHtml(parsed.error), {
-          status: parsed.status,
-          headers: { "Content-Type": "text/html; charset=utf-8" },
-        })
+    return request.method === "GET"
+      ? htmlResponse(renderErrorHtml(parsed.error), parsed.status)
       : NextResponse.json({ error: parsed.error }, { status: parsed.status });
   }
 
-  const via: UnsubscribeVia = request.method === "POST" ? "POST" : "GET";
-  try {
-    if (parsed.action === "resubscribe") {
-      await applyResubscribe({
-        userId: parsed.userId,
-        scope: parsed.scope,
-        emailLogId: parsed.emailLogId,
-        via,
-      });
-    } else {
-      await applyUnsubscribe({
-        userId: parsed.userId,
-        scope: parsed.scope,
-        emailLogId: parsed.emailLogId,
-        via,
-      });
-    }
-  } catch (error) {
-    console.error("[UNSUBSCRIBE] Failed to apply", parsed, error);
-    return respondWithHtml
-      ? new NextResponse(renderErrorHtml("Something went wrong. Please try again."), {
-          status: 500,
-          headers: { "Content-Type": "text/html; charset=utf-8" },
-        })
-      : NextResponse.json({ error: "Internal error." }, { status: 500 });
+  if (request.method === "GET") {
+    return htmlResponse(renderPromptHtml(parsed));
   }
 
-  if (respondWithHtml) {
-    const state = await getEmailSuppressionStateForUser(parsed.userId);
-    const masterSuppressed = state ? isMasterSuppressed(state) : false;
-    const scopeEnabled = state ? isSendAllowed(parsed.scope, state) : false;
-    return new NextResponse(renderConfirmationHtml({
+  const via: UnsubscribeVia = "POST";
+  try {
+    if (body.oneClickUnsubscribe) {
+      await applyPreferenceChange({
+        parsed: { ...parsed, action: "unsubscribe" },
+        via,
+      });
+      return new NextResponse(null, { status: 204 });
+    }
+
+    const confirmedEmail = body.form?.get("confirmEmail")?.trim().toLowerCase();
+    const recipientEmail = await getRecipientEmail(parsed.userId);
+    if (!recipientEmail) {
+      return htmlResponse(
+        renderErrorHtml("We could not find the recipient for this link."),
+        404,
+      );
+    }
+    if (!confirmedEmail || confirmedEmail !== recipientEmail) {
+      return htmlResponse(
+        renderPromptHtml({
+          ...parsed,
+          error:
+            "That email address does not match the person this link belongs to.",
+        }),
+        400,
+      );
+    }
+
+    await applyPreferenceChange({ parsed, via });
+  } catch (error) {
+    console.error("[UNSUBSCRIBE] Failed to apply", parsed, error);
+    return htmlResponse(renderErrorHtml("Something went wrong. Please try again."), 500);
+  }
+
+  const state = await getEmailSuppressionStateForUser(parsed.userId);
+  const masterSuppressed = state ? isMasterSuppressed(state) : false;
+  const scopeEnabled = state ? isSendAllowed(parsed.scope, state) : false;
+  return htmlResponse(
+    renderConfirmationHtml({
       ...parsed,
       masterSuppressed,
       scopeEnabled,
-    }), {
-      status: 200,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
-    });
-  }
-  return new NextResponse(null, { status: 204 });
+    }),
+  );
 }
 
 export async function GET(request: Request) {
-  return handle(request, /* respondWithHtml */ true);
+  return handle(request);
 }
 
 export async function POST(request: Request) {
-  return handle(request, /* respondWithHtml */ false);
+  return handle(request);
 }

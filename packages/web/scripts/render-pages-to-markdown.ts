@@ -156,15 +156,59 @@ async function extractPageMetadata(
 async function extractPage(
   page: import("@playwright/test").Page,
   route: string,
-): Promise<{ bodyMarkdown: string; metadata: CopyPreviewMetadata }> {
-  await page.goto(`${BASE}${route}`, {
-    waitUntil: "networkidle",
-    timeout: 30000,
-  });
-  await waitForGlobalLoaderToClear(page);
-  await page.waitForTimeout(400);
-  const metadata = await extractPageMetadata(page);
+): Promise<{
+  bodyMarkdown: string;
+  metadata: CopyPreviewMetadata;
+  redirectedFromStatus: number | null;
+}> {
+  // Two failure modes recur on this DB-shared / Next-streaming setup:
+  //  1. The route hits a transient 404 (dev-server compile mid-flight,
+  //     Neon DB blip, or other race) and we capture "PAGE NOT FOUND".
+  //  2. domcontentloaded fires before <head> meta tags hydrate, so the
+  //     metadata extraction returns null for every field.
+  // Retry once with a longer settle when either symptom shows up.
+  const tryExtract = async (settleMs: number) => {
+    const response = await page.goto(`${BASE}${route}`, {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
+    const status = response?.status() ?? null;
+    const redirectedFromStatus =
+      response?.request().redirectedFrom()?.response()
+        ? (await response.request().redirectedFrom()!.response()!).status()
+        : null;
+    await waitForGlobalLoaderToClear(page);
+    await page.waitForTimeout(settleMs);
+    return { status, redirectedFromStatus };
+  };
+  const { redirectedFromStatus } = await tryExtract(400);
+  let metadata = await extractPageMetadata(page);
+  let bodyText = await page
+    .locator("body")
+    .innerText()
+    .catch(() => "");
+  const allMetaMissing =
+    !metadata.title &&
+    !metadata.description &&
+    !metadata.canonical &&
+    !metadata.openGraphTitle;
+  const bodyLooks404 = /page not found|404/i.test(bodyText.slice(0, 500));
+  if (allMetaMissing || bodyLooks404) {
+    await tryExtract(2000);
+    metadata = await extractPageMetadata(page);
+  }
   const bodyMarkdown = await page.evaluate(() => {
+    // tsx/esbuild injects __name(...) wrappers for named functions/arrows.
+    // Shim it inside page.evaluate so those calls resolve in the browser.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as unknown as { __name?: (t: unknown, n: string) => unknown };
+    if (typeof w.__name === "undefined") {
+      w.__name = (target, value) =>
+        Object.defineProperty(target as object, "name", {
+          value,
+          configurable: true,
+        });
+    }
     const root = document.querySelector("main") ?? document.body;
     // Replace every `[data-volatile]` subtree with a deterministic placeholder
     // so wall-clock counters, DB-derived counts, and async-loading fallbacks
@@ -174,32 +218,113 @@ async function extractPage(
       el.replaceChildren(document.createTextNode(`[${label}]`));
     }
     const tags =
-      "h1,h2,h3,h4,h5,h6,p,li,button,a,blockquote,td,th,figcaption,summary,label,span";
+      "h1,h2,h3,h4,h5,h6,p,li,button,a,blockquote,td,th,figcaption,summary,label,span,pre,table";
+    const tagSet = new Set(tags.split(","));
+    // Apply CSS text-transform so visually-uppercased text (treaty headers,
+    // brutal buttons) renders uppercase in the .md, matching what the reader sees.
+    const applyTransform = (text: string, el: Element): string => {
+      const tt = getComputedStyle(el).textTransform;
+      if (tt === "uppercase") return text.toUpperCase();
+      if (tt === "lowercase") return text.toLowerCase();
+      if (tt === "capitalize")
+        return text.replace(/\b\p{L}/gu, (c) => c.toUpperCase());
+      return text;
+    };
+    // Walk an element's descendants and produce markdown that preserves
+    // hyperlinks as [text](href). Non-anchor descendants flatten to text.
+    // Arrow consts (not function declarations) so tsx doesn't inject
+    // __name() calls that won't resolve in the browser context.
+    const toMarkdown = (el: Element): string => {
+      let buf = "";
+      for (const node of Array.from(el.childNodes)) {
+        if (node.nodeType === 3 /* TEXT_NODE */) {
+          buf += applyTransform(node.textContent ?? "", el);
+        } else if (node.nodeType === 1 /* ELEMENT_NODE */) {
+          const child = node as Element;
+          if (child.tagName === "A") {
+            const href = child.getAttribute("href") ?? "";
+            const inner = toMarkdown(child).replace(/\s+/g, " ").trim();
+            if (href && inner) buf += `[${inner}](${href})`;
+            else buf += inner;
+          } else {
+            buf += toMarkdown(child);
+          }
+        }
+      }
+      return buf;
+    };
+    // Render an HTML <table> as a GFM markdown table. First row becomes the
+    // header line; if it's all <td> with no <th>, we still treat it as the
+    // header — markdown requires a divider row regardless.
+    const tableToMarkdown = (table: Element): string => {
+      const rows = Array.from(table.querySelectorAll("tr"));
+      if (rows.length === 0) return "";
+      const cellsForRow = (tr: Element): string[] =>
+        Array.from(tr.querySelectorAll("th,td")).map((cell) => {
+          const text = toMarkdown(cell).replace(/\s+/g, " ").trim();
+          // Escape pipes inside cells so they don't break the table syntax.
+          return text.replace(/\|/g, "\\|") || " ";
+        });
+      const headerCells = cellsForRow(rows[0]!);
+      if (headerCells.length === 0) return "";
+      const headerLine = `| ${headerCells.join(" | ")} |`;
+      const dividerLine = `| ${headerCells.map(() => "---").join(" | ")} |`;
+      const bodyLines = rows.slice(1).map(
+        (tr) => `| ${cellsForRow(tr).join(" | ")} |`,
+      );
+      return [headerLine, dividerLine, ...bodyLines].join("\n");
+    };
+    // Layout tables (role="presentation") are not data — they're spacing
+    // shims, common in email HTML and the occasional page card. Walk
+    // descendants as a flat content sequence instead of rendering as a
+    // markdown table.
+    const isLayoutTable = (el: Element): boolean =>
+      el.tagName === "TABLE" && el.getAttribute("role") === "presentation";
+    // Skip an element if it's inside a containing tag the walker will also
+    // visit (e.g. an <a> inside a <p>): the parent's markdown already
+    // includes the [text](href) form, so the standalone visit would be a dup.
+    // Layout tables don't count as a containing tag — their children should
+    // be captured as their own bullets.
+    const hasContainingTag = (el: Element): boolean => {
+      let p = el.parentElement;
+      while (p && p !== root) {
+        if (tagSet.has(p.tagName.toLowerCase()) && !isLayoutTable(p))
+          return true;
+        p = p.parentElement;
+      }
+      return false;
+    };
     const seen = new Set<string>();
     const out: string[] = [];
     for (const el of Array.from(root.querySelectorAll(tags))) {
-      const text = (el as HTMLElement).innerText
-        ?.replace(/\s+/g, " ")
-        .trim();
-      if (!text || text.length < 2) continue;
-      if (seen.has(text)) continue;
-      // Skip nodes whose text equals a child's text (avoids dupes).
-      const childTexts = Array.from(el.children).map((c) =>
-        (c as HTMLElement).innerText?.replace(/\s+/g, " ").trim(),
-      );
-      if (childTexts.some((t) => t === text)) continue;
-      seen.add(text);
+      if (hasContainingTag(el)) continue;
       const tag = el.tagName.toLowerCase();
+      let md: string;
+      if (tag === "table") {
+        if (isLayoutTable(el)) continue;
+        md = tableToMarkdown(el);
+      } else if (tag === "a") {
+        const href = el.getAttribute("href") ?? "";
+        const inner = toMarkdown(el).replace(/\s+/g, " ").trim();
+        md = href && inner ? `[${inner}](${href})` : inner;
+      } else {
+        md = toMarkdown(el).replace(/\s+/g, " ").trim();
+      }
+      if (!md || md.length < 2) continue;
+      if (seen.has(md)) continue;
+      seen.add(md);
       const headerLevel = tag.match(/^h([1-6])$/)?.[1];
       const prefix = headerLevel
         ? `${"#".repeat(Math.min(6, Number(headerLevel) + 1))} `
-        : "- ";
-      out.push(prefix + text);
+        : tag === "table"
+          ? ""
+          : "- ";
+      out.push(prefix + md);
     }
     return out.join("\n");
   });
 
-  return { bodyMarkdown, metadata };
+  return { bodyMarkdown, metadata, redirectedFromStatus };
 }
 
 async function waitForGlobalLoaderToClear(
@@ -259,8 +384,16 @@ async function capturePass(
       try {
         const extracted = await extractPage(page, route);
         await mkdir(dir, { recursive: true });
+        // When the route returned 3xx (typically auth-required pages
+        // redirecting logged-out users to /signin or the campaign root),
+        // prepend a marker so the snapshot is self-documenting. Without
+        // this, the .md just shows the redirect-target content + the
+        // target's metadata, which is confusing without context.
+        const redirectMarker = extracted.redirectedFromStatus
+          ? `> Route returned HTTP ${extracted.redirectedFromStatus}; snapshot below captures the redirect target (typically the logged-out fallback page for an auth-required route).\n\n`
+          : "";
         const markdown = buildCopyPreviewMarkdown({
-          bodyMarkdown: extracted.bodyMarkdown,
+          bodyMarkdown: redirectMarker + extracted.bodyMarkdown,
           metadata: extracted.metadata,
           route,
         });

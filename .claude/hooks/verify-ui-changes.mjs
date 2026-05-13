@@ -89,7 +89,16 @@ try {
   );
   const claudeMd = allChanged.includes("CLAUDE.md");
 
+  // Structured violations: each item has { name, count, message }. The
+  // Stop-hook emit path summarizes (one-line). The PreToolUse(Bash) emit
+  // path (i.e. an actual git-commit attempt) shows the full message.
   const violations = [];
+  // True when called from the PreToolUse Bash hook (commit attempt) —
+  // any time `hookData.tool_name` is set. Falsy on Stop firings.
+  const isCommitAttempt = Boolean(hookData?.tool_name);
+  function pushViolation(name, count, message) {
+    violations.push({ name, count, message });
+  }
 
   // --- Check 1: UI changes without a fresh screenshot ---------------------
   if (uiFiles.length) {
@@ -106,7 +115,7 @@ try {
       newestScreenshotMs = newestFileMtime(ScreenshotDir, /\.png$/);
     }
     if (!newestScreenshotMs || newestScreenshotMs < lastUiMtime) {
-      violations.push(formatList(
+      pushViolation("SCREENSHOT", uiFiles.length, formatList(
         `SCREENSHOT GATE: UI files changed but no PNG under ${ScreenshotDir} is newer than them.`,
         uiFiles,
         `Action: figure out which routes these affect, screenshot each (auth + unauth where relevant) via
@@ -150,7 +159,7 @@ try {
   }
   if (voiceHits.length) {
     const sample = unique(voiceHits).slice(0, 12).join("\n");
-    violations.push(`VOICE GATE: banned vocabulary in added copy. Rewrite per CLAUDE.md Wishonia voice + Vonnegut rule
+    pushViolation("VOICE", voiceHits.length, `VOICE GATE: banned vocabulary in added copy. Rewrite per CLAUDE.md Wishonia voice + Vonnegut rule
 (plain declaratives, numbers beat adjectives, no corporate verbs, no infrastructure metaphors).
 ${sample}`);
   }
@@ -170,7 +179,7 @@ ${sample}`);
   }
   if (paramHits.length) {
     const sample = paramHits.slice(0, 8).join("\n");
-    violations.push(`PARAMETER GATE: hardcoded number(s) in JSX. Use <ParameterValue paramId="..." figures={3} /> so the
+    pushViolation("PARAMETER", paramHits.length, `PARAMETER GATE: hardcoded number(s) in JSX. Use <ParameterValue paramId="..." figures={3} /> so the
 citation popover + sig-fig rule fires. Grep packages/data/src/parameters/parameters-calculations-citations.ts
 for a matching parameter; add one if it's truly new. Override with '// allow-hardcoded' on the line
 only when there's no underlying datum (rare).
@@ -182,7 +191,7 @@ ${sample}`);
     // Count + lines that belong to CLAUDE.md specifically, not the whole diff.
     const claudeAdded = added.filter((a) => a.file === "CLAUDE.md").length;
     if (claudeAdded > 12) {
-      violations.push(`CLAUDE.MD BLOAT GATE: CLAUDE.md grew by ~${claudeAdded} added lines. The file's own meta-rule says
+      pushViolation("CLAUDE.MD_BLOAT", claudeAdded, `CLAUDE.MD BLOAT GATE: CLAUDE.md grew by ~${claudeAdded} added lines. The file's own meta-rule says
 "minimum words to convey the rule. One example only." Move detail into .claude/agents/*.md or
 .claude/<topic>.md. Trim before committing.`);
     }
@@ -194,7 +203,7 @@ ${sample}`);
       /^packages\/web\/src\/app\/.+\/page\.tsx$/.test(f),
     );
     if (tsxPageChanges.length) {
-      violations.push(formatList(
+      pushViolation("COPY_SNAPSHOT", tsxPageChanges.length, formatList(
         "COPY-SNAPSHOT GATE: page.tsx files changed but no matching page.logged-out.md updated.",
         tsxPageChanges,
         `  Action: run 'pnpm --filter @optimitron/web copy:preview' to regenerate snapshots, diff the .md
@@ -220,7 +229,7 @@ ${sample}`);
   }
   if (swallowHits.length) {
     const sample = swallowHits.slice(0, 6).join("\n");
-    violations.push(`ERROR-SWALLOW GATE: silent error swallowing in added lines. Catches must rethrow with context,
+    pushViolation("ERROR_SWALLOW", swallowHits.length, `ERROR-SWALLOW GATE: silent error swallowing in added lines. Catches must rethrow with context,
 log via log.error / console.error / Sentry.captureException, or have a one-line comment naming why
 the silence is intentional. Our own infrastructure failing (our endpoints, our DB writes, our code
 paths) is always an ERROR, not a warning — warnings get ignored. Warn only for things outside our
@@ -230,7 +239,7 @@ ${sample}`);
 
   // --- Check 7: email template changes -----------------------------------
   if (emailFiles.length) {
-    violations.push(formatList(
+    pushViolation("EMAIL_MINIMALISM", emailFiles.length, formatList(
       "EMAIL MINIMALISM GATE: email template / sender changed.",
       emailFiles,
       `  Action: re-read feedback_email_minimalism — one CTA, no chrome, no system internals leaking.
@@ -245,7 +254,7 @@ ${sample}`);
     ...copyFiles,
   ]);
   if (copyChanges.length) {
-    violations.push(formatList(
+    pushViolation("VONNEGUT", copyChanges.length, formatList(
       `VONNEGUT / BLATHER GATE: page.tsx or page.logged-out.md changed. Read the rendered copy. Goal: a
 5th grader follows it, nothing said twice, no Stripe-keynote sentences, one primary CTA per screen
 above the fold on mobile. Spawn voice-critic on the .md diff if scope is non-trivial.`,
@@ -256,7 +265,7 @@ above the fold on mobile. Spawn voice-critic on the .md diff if scope is non-tri
 
   // --- Check 7c: stupid tests gate ----------------------------------------
   if (testFiles.length) {
-    violations.push(formatList(
+    pushViolation("STUPID_TEST", testFiles.length, formatList(
       `STUPID TEST GATE: test file(s) changed. For each new test: name the bug it would catch. If you
 can't, delete it. No tests for symmetry, documentation, or to silence a bot.`,
       testFiles,
@@ -266,7 +275,7 @@ can't, delete it. No tests for symmetry, documentation, or to silence a bot.`,
 
   // --- Check 7d: reuse / no-duplication gate ------------------------------
   if (newReusableFiles.length) {
-    violations.push(formatList(
+    pushViolation("REUSE", newReusableFiles.length, formatList(
       `REUSE GATE: new file(s) under components/ or lib/. Before commit: grep for an existing component/
 function that does the same job. Don't duplicate. Don't add an abstraction nobody extends yet.
 Recent miss: org-context-token (full HMAC system for no real threat — should have trusted the URL slug).`,
@@ -278,10 +287,26 @@ Recent miss: org-context-token (full HMAC system for no real threat — should h
   // --- Emit ---------------------------------------------------------------
   if (!violations.length) process.exit(0);
 
-  const banner = `[verify-ui-changes hook] ${violations.length} gate(s) failed. Address each before stopping:`;
-  const body = violations.join("\n\n");
+  if (isCommitAttempt) {
+    // Pre-commit: full detail. The commit is actively being attempted;
+    // reviewer needs to see every per-file violation.
+    const banner = `[verify-ui-changes hook] ${violations.length} gate(s) failed. Address each before stopping:`;
+    const body = violations.map((v) => v.message).join("\n\n");
+    process.stderr.write(
+      `${banner}\n\n${body}\n\n(Commit clears the gate, but only commit AFTER you have addressed each violation above. For each NON-OBVIOUS fix, present 2-3 options via AskUserQuestion — recommendation first + one-line reason — before refactoring. Skip asking only when the fix is mechanical/obvious (typo, missing import, formatter). Calibrate first, then act; don't refactor then ask.)\n`,
+    );
+    process.exit(2);
+  }
+
+  // Stop hook: one-line summary. The user hasn't asked to commit yet —
+  // listing every file each turn is noise. The summary is enough signal
+  // to know what would block a commit attempt; full detail lands when
+  // the commit is actually tried (via the PreToolUse path).
+  const summary = violations
+    .map((v) => `${v.name}(${v.count})`)
+    .join(", ");
   process.stderr.write(
-    `${banner}\n\n${body}\n\n(Commit clears the gate, but only commit AFTER you have addressed each violation above. For each NON-OBVIOUS fix, present 2-3 options via AskUserQuestion — recommendation first + one-line reason — before refactoring. Skip asking only when the fix is mechanical/obvious (typo, missing import, formatter). Calibrate first, then act; don't refactor then ask.)\n`,
+    `[verify-ui-changes] ${violations.length} gate(s) would block a commit: ${summary}. Run 'git commit' for per-file detail.\n`,
   );
   process.exit(2);
 } catch {

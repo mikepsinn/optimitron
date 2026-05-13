@@ -13,8 +13,8 @@ import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignmen
 import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 
 describe("buildTaskAssignmentNotificationEmail", () => {
-  it("emails the task contents with open and completion links", () => {
-    const email = buildTaskAssignmentNotificationEmail({
+  it("emails the task contents with a single Open Task CTA", async () => {
+    const email = await buildTaskAssignmentNotificationEmail({
       description:
         "Put the survey link on your site.\n\nThen share it once with your members.",
       id: "task_iam",
@@ -31,21 +31,20 @@ describe("buildTaskAssignmentNotificationEmail", () => {
     );
     expect(email.text).toContain("Put the survey link on your site.");
     expect(email.text).toContain(
-      "Open task: https://warondisease.org/tasks/task_iam",
-    );
-    expect(email.text).toContain(
-      "Mark complete: https://warondisease.org/tasks/task_iam#complete",
+      "Open task https://warondisease.org/tasks/task_iam",
     );
     expect(email.text).toContain(
       "Reply to this email to add a comment to the task.",
     );
-    expect(email.text).toContain(
+    // Minimalism guard: drop the secondary "Mark complete" CTA and the
+    // "we are building a decentralized to-do list" feedback chrome.
+    expect(email.text).not.toContain("Mark complete");
+    expect(email.text).not.toContain(
       "We are building a decentralized to-do list for humanity",
     );
-    expect(email.text).toContain("https://warondisease.org/feedback");
     expect(email.html).toContain("Institute for Accelerated Medicine");
     expect(email.html).toContain(ORGANIZATION_ACTIVATION_TASK_TITLE);
     expect(email.html).toContain("Open task");
-    expect(email.html).toContain("Mark complete");
+    expect(email.html).not.toContain("Mark complete");
   });
 });

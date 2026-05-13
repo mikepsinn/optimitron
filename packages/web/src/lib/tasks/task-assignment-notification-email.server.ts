@@ -1,13 +1,17 @@
+import React from "react";
 import {
-  getTaskCompletionUrl,
   getTaskEmailReplyInstruction,
   getTaskUrl,
 } from "@/lib/email/task-notification";
-import { buildCoordinationFeedbackNote } from "@/lib/email/coordination-feedback-note";
+import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
 import {
-  buildShareFooterHtml,
-  buildShareFooterText,
-} from "@/lib/email/share-footer";
+  SAMPLE_REFERRAL_URL,
+  SAMPLE_TASK_ID,
+  SAMPLE_TASK_REPLY_ADDRESS,
+  type EmailPreview,
+} from "@/lib/email/preview-envelope";
+import { renderReactEmailBody } from "@/lib/email/render-react-email";
+import { TaskAssignmentReactEmail } from "@/lib/tasks/task-assignment-react-email";
 
 export interface TaskAssignmentEmailInput {
   description: string;
@@ -30,101 +34,58 @@ export interface TaskAssignmentEmail {
   text: string;
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function paragraphsFromText(text: string) {
-  return text
-    .trim()
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-}
-
-function renderDescriptionHtml(description: string) {
-  return paragraphsFromText(description)
-    .map(
-      (paragraph) =>
-        `<p style="margin:0 0 16px;font-size:16px;line-height:1.55;white-space:pre-wrap;">${escapeHtml(paragraph)}</p>`,
-    )
-    .join("");
-}
-
-function buildCtaHtml(input: { label: string; url: string; variant: "primary" | "secondary" }) {
-  const style =
-    input.variant === "primary"
-      ? "display:inline-block;background:#111827;color:#ffffff;padding:14px 24px;text-decoration:none;font-weight:900;border:2px solid #111827;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:0 8px 8px 0;"
-      : "display:inline-block;background:#ffffff;color:#111827;padding:14px 24px;text-decoration:none;font-weight:900;border:2px solid #111827;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:0 0 8px 0;";
-
-  return `<a href="${escapeHtml(input.url)}" style="${style}">${escapeHtml(input.label)}</a>`;
-}
-
-export function buildTaskAssignmentNotificationEmail(
+export async function buildTaskAssignmentNotificationEmail(
   input: TaskAssignmentEmailInput,
-): TaskAssignmentEmail {
+): Promise<TaskAssignmentEmail> {
   const taskUrl = getTaskUrl(input.id);
-  const completionUrl = getTaskCompletionUrl(input.id);
   const replyInstruction =
     input.replyInstruction === undefined
       ? getTaskEmailReplyInstruction()
       : input.replyInstruction;
-  const feedbackNote = buildCoordinationFeedbackNote({
-    replyEnabled: Boolean(replyInstruction),
-  });
   const subject = `New task: ${input.title}`;
-  const shareFooterText = input.recipientReferralUrl
-    ? buildShareFooterText(input.recipientReferralUrl)
-    : "";
-  const shareFooterHtml = input.recipientReferralUrl
-    ? buildShareFooterHtml(input.recipientReferralUrl)
-    : "";
-  const text = [
-    `New task for ${input.recipientName}`,
-    "",
-    input.title,
-    "",
-    input.description.trim(),
-    "",
-    `Open task: ${taskUrl}`,
-    `Mark complete: ${completionUrl}`,
-    "",
-    feedbackNote.text,
-    replyInstruction ? "" : null,
-    replyInstruction,
-    shareFooterText || null,
-  ]
-    .filter((line): line is string => line !== null)
-    .join("\n");
+  const body = await renderReactEmailBody(
+    React.createElement(TaskAssignmentReactEmail, {
+      description: input.description,
+      recipientName: input.recipientName,
+      replyInstruction,
+      taskUrl,
+      title: input.title,
+      recipientReferralUrl: input.recipientReferralUrl,
+    }),
+  );
 
-  const html = `<!doctype html>
-<html lang="en">
-<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,sans-serif;color:#111827;">
-  <div style="padding:32px 16px;">
-    <div style="max-width:600px;margin:0 auto;">
-      <p style="margin:0 0 12px;font-size:12px;line-height:1.4;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#3f3f46;">New task for ${escapeHtml(input.recipientName)}</p>
-      <h1 style="margin:0 0 24px;font-size:28px;line-height:1.15;font-weight:900;">${escapeHtml(input.title)}</h1>
-      <div style="border-top:2px solid #111827;border-bottom:2px solid #111827;padding:24px 0;margin:0 0 24px;">
-        ${renderDescriptionHtml(input.description)}
-      </div>
-      ${buildCtaHtml({ label: "Open task", url: taskUrl, variant: "primary" })}
-      ${buildCtaHtml({ label: "Mark complete", url: completionUrl, variant: "secondary" })}
-      ${feedbackNote.html}
-      ${
-        replyInstruction
-          ? `<p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:#3f3f46;">${escapeHtml(replyInstruction)}</p>`
-          : ""
-      }
-      ${shareFooterHtml}
-    </div>
-  </div>
-</body>
-</html>`;
-
-  return { html, subject, text };
+  return { ...body, subject };
 }
+
+export const TASK_ASSIGNMENT_TEMPLATE_ID = "task-assignment";
+
+const SAMPLE_ASSIGNMENT_INPUT = {
+  description:
+    "The 1% Treaty needs your country's signature. Sign the document, share the link with two people you love, and verify that your local treaty signer has been contacted.\n\nThis is a sample task description rendered into the email template.",
+  id: SAMPLE_TASK_ID,
+  recipientName: "Sample Assignee",
+  replyInstruction: "Reply to this email to leave a comment on the task.",
+  title: "Sign the 1% Treaty for {country}",
+  recipientReferralUrl: SAMPLE_REFERRAL_URL,
+};
+
+export const TASK_ASSIGNMENT_PREVIEW: EmailPreview = {
+  templateId: TASK_ASSIGNMENT_TEMPLATE_ID,
+  displayName: "You were assigned a new task",
+  trigger:
+    "Fires when a task is assigned to a user — either by a manual edit on the task page, or automatically when a task trigger blueprint runs (e.g. post-signup onboarding tasks, country-specific treaty-signer tasks). Reply-To routes inbound replies back as task comments.",
+  scope: "task_notifications",
+  from: () => formatDefaultSystemEmailFromHeader(),
+  subject: () => `New task: ${SAMPLE_ASSIGNMENT_INPUT.title}`,
+  replyTo: () => SAMPLE_TASK_REPLY_ADDRESS,
+  skipWishoniaSignature: false,
+  renderReact: () =>
+    React.createElement(TaskAssignmentReactEmail, {
+      description: SAMPLE_ASSIGNMENT_INPUT.description,
+      recipientName: SAMPLE_ASSIGNMENT_INPUT.recipientName,
+      replyInstruction: SAMPLE_ASSIGNMENT_INPUT.replyInstruction,
+      taskUrl: getTaskUrl(SAMPLE_ASSIGNMENT_INPUT.id),
+      title: SAMPLE_ASSIGNMENT_INPUT.title,
+      recipientReferralUrl: SAMPLE_ASSIGNMENT_INPUT.recipientReferralUrl,
+    }),
+};

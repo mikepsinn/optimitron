@@ -843,13 +843,25 @@ function managedTaskTriggerNeedsUpdate(
     existing.deletedAt !== null ||
     !sameJson(
       normalizeSpawnSpecRows(existing.spawnSpecs),
-      (record.spawnSpecs ?? []).map(toSpawnSpecCreate),
+      normalizeSpawnSpecInputs(record.spawnSpecs ?? []),
     ) ||
     !sameJson(
       normalizeCommunicationSpawnSpecRows(existing.communicationSpawnSpecs),
-      (record.communicationSpawnSpecs ?? []).map(toCommSpecCreate),
+      normalizeCommunicationSpawnSpecInputs(record.communicationSpawnSpecs ?? []),
     )
   );
+}
+
+function normalizeSpawnSpecInputs(
+  specs: ManagedTaskSpawnSpecInput[],
+): ManagedTaskSpawnSpecData[] {
+  return specs.map(toSpawnSpecCreate).sort(compareSpecData);
+}
+
+function normalizeCommunicationSpawnSpecInputs(
+  specs: ManagedTaskCommunicationSpawnSpecInput[],
+): ManagedTaskCommunicationSpawnSpecData[] {
+  return specs.map(toCommSpecCreate).sort(compareSpecData);
 }
 
 function normalizeSpawnSpecRows(

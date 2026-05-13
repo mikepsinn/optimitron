@@ -1,9 +1,6 @@
 import {
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
-  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
-  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
-  WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { headers } from "next/headers";
@@ -14,7 +11,6 @@ import { RepresentedPersonConversionForm } from "@/components/people/Represented
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { formatCount } from "@/lib/format-count";
 import { getSiteMetadata } from "@/lib/metadata";
-import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
 import {
   getRepresentedPeopleGalleryData,
   type RepresentedPeopleSortKey,
@@ -168,9 +164,8 @@ export default async function PlaintiffsPage({
             Register plaintiffs for Humanity v Government.
           </h1>
           <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
-            Please list everyone you love who was harmed by war, disease, or
-            government failure, so they may be presented as evidence in the
-            class action lawsuit{" "}
+            Anyone you love killed by war, disease, or government failure.
+            They become plaintiffs in{" "}
             <Link
               className="underline underline-offset-4"
               href={ROUTES.humanityVGovernment}
@@ -181,100 +176,23 @@ export default async function PlaintiffsPage({
           </p>
         </header>
 
-        <section
-          aria-label="Demanded recovery per registered plaintiff"
-          className="border-y-2 border-foreground bg-background py-8"
-        >
-          <div className="space-y-5">
-            <p className="text-xs font-black uppercase text-muted-foreground">
-              Demanded recovery per registered plaintiff
-            </p>
-            <div className="flex flex-wrap items-baseline gap-x-10 gap-y-3">
-              <div className="flex flex-col gap-1">
-                <span className="text-5xl font-black uppercase leading-none sm:text-6xl">
-                  <ParameterValue
-                    param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
-                    figures={2}
-                  />
-                </span>
-                <span className="text-xs font-black uppercase text-muted-foreground">
-                  NPV at 3% perpetuity
-                </span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-5xl font-black uppercase leading-none sm:text-6xl">
-                  <ParameterValue
-                    param={LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA}
-                    figures={2}
-                  />
-                </span>
-                <span className="text-xs font-black uppercase text-muted-foreground">
-                  Lifetime cohort exposure
-                </span>
-              </div>
-            </div>
-            <p className="max-w-4xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
-              Your share of the demanded recovery in{" "}
-              <Link
-                className="underline underline-offset-4"
-                href={ROUTES.humanityVGovernment}
-              >
-                {humanityVGovernmentLink.label}
-              </Link>
-              . Each deceased family member you register as a fellow plaintiff
-              adds another full claim to the family share. Damages are what
-              the case pleads; payouts depend on whether four billion humans
-              render the verdict.
-            </p>
-          </div>
-        </section>
-
         <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
 
-        <section className="max-w-5xl space-y-4 text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
-          <p>
-            Governments are paid{" "}
-            <ParameterValue
-              className="font-black"
-              param={GOVERNMENTS_PAID_TO_PROMOTE_WELFARE}
-              figures={2}
-            />{" "}
-            a year to promote the general welfare. Over the last century, they
-            spent{" "}
-            <ParameterValue
-              className="font-black"
-              param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
-              figures={2}
-            />{" "}
-            murdering{" "}
-            <ParameterValue
-              className="font-black"
-              param={WAR_DEATHS_SINCE_1900}
-              figures={2}
-            />{" "}
-            humans.
+        {filteredCount > 0 && !hasActiveBrowseState ? (
+          <p className="text-base font-bold leading-7 text-muted-foreground sm:text-lg">
+            <span className="font-black tabular-nums text-foreground">
+              {formatCount(filteredCount)}
+            </span>{" "}
+            humans already named. Their names are evidence in{" "}
+            <Link
+              className="underline underline-offset-4"
+              href={ROUTES.humanityVGovernment}
+            >
+              {humanityVGovernmentLink.label}
+            </Link>
+            .
           </p>
-          <p>
-            This is the opposite of promoting their welfare and a breach of
-            their employment contract. That{" "}
-            <ParameterValue
-              className="font-black"
-              param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
-              figures={2}
-            />{" "}
-            would have funded{" "}
-            <ParameterValue
-              className="font-black"
-              param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
-              figures={2}
-            />{" "}
-            years of clinical trials at current government spending.
-          </p>
-          <p>
-            Therefore, it is very likely disease would have been eradicated long
-            ago were it not for this misallocation.
-          </p>
-        </section>
+        ) : null}
 
         <section className="space-y-5 border-t border-border pt-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -308,7 +226,7 @@ export default async function PlaintiffsPage({
 
           <section
             aria-label="Wall of faces"
-            className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8"
+            className="grid gap-2 grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8"
           >
             {people.length > 0 ? (
               people.map((person, index) => (
@@ -360,72 +278,63 @@ export default async function PlaintiffsPage({
         </section>
 
         <section className="space-y-3 border-t border-border pt-8">
-          <p className="text-xs font-black uppercase text-muted-foreground">
-            Questions
-          </p>
           <details className="border border-border bg-card p-4 text-card-foreground">
             <summary className="cursor-pointer text-lg font-black uppercase">
               Who belongs here?
             </summary>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Some humans cannot represent themselves. Dementia, severe illness,
-              disability, no internet, captivity, and death are all terrible UX.
-            </p>
-            <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Add a relative, patient, friend, neighbor, or dead human with
-              unfinished business. Use this for someone who belongs in Humanity
-              v Government.
+              Anyone you love who can&apos;t speak for themselves. Dementia,
+              severe illness, disability, captivity, no internet, or death.
+              Their names still count — they make preventable death harder to
+              hide. Add a relative, a patient, a friend, a neighbor, or anyone
+              with unfinished business with the governments of Earth.
             </p>
           </details>
-          <details className="border border-border bg-card p-4 text-card-foreground">
-            <summary className="cursor-pointer text-lg font-black uppercase">
-              The Invisible Graveyard
-            </summary>
-            <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Dead humans cannot file paperwork. Their names still count toward
-              making preventable death harder to hide.
-            </p>
-          </details>
-          <details className="border border-border bg-card p-4 text-card-foreground">
-            <summary className="cursor-pointer text-lg font-black uppercase">
-              Know a victim of war or disease?
-            </summary>
-            <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Add them to the plaintiff list for{" "}
-              <Link
-                className="underline underline-offset-4"
-                href={ROUTES.humanityVGovernment}
-              >
-                {humanityVGovernmentLink.label}
-              </Link>
-              , the class action against the governments of Earth. Governments
-              were hired to promote the general welfare. They spent{" "}
-              <ParameterValue
-                className="font-black"
-                param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
-                figures={2}
-              />{" "}
-              on war since 1913, while war and conflict killed{" "}
-              <ParameterValue
-                className="font-black"
-                param={WAR_DEATHS_SINCE_1900}
-                figures={2}
-              />{" "}
-              of their employers since 1900. That is not welfare. That is breach
-              of contract with artillery.
-            </p>
-            <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              The same money could have funded{" "}
-              <ParameterValue
-                className="font-black"
-                param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
-                figures={2}
-              />{" "}
-              of government clinical trials at current spending. Disease victims
-              belong here too. Medicine was the alternative purchase. The
-              complaint needs plaintiffs with names.
-            </p>
-          </details>
+        </section>
+
+        <section
+          aria-label="Damages claim"
+          className="border-t-2 border-foreground bg-background pt-8"
+        >
+          <p className="text-xs font-black uppercase text-muted-foreground">
+            The damages claim
+          </p>
+          <div className="mt-4 flex flex-wrap items-baseline gap-x-10 gap-y-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-4xl font-black uppercase leading-none sm:text-5xl">
+                <ParameterValue
+                  param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
+                  figures={2}
+                />
+              </span>
+              <span className="text-xs font-black uppercase text-muted-foreground">
+                Per murdered human (NPV at 3% perpetuity)
+              </span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-4xl font-black uppercase leading-none sm:text-5xl">
+                <ParameterValue
+                  param={LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA}
+                  figures={2}
+                />
+              </span>
+              <span className="text-xs font-black uppercase text-muted-foreground">
+                Lifetime cohort exposure per human
+              </span>
+            </div>
+          </div>
+          <p className="mt-5 max-w-4xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
+            These are case-bill numbers, not personal payouts. Each plaintiff
+            you name is one claim against a damages pool calculated against
+            every human governments killed since 1900. See{" "}
+            <Link
+              className="underline underline-offset-4"
+              href={ROUTES.humanityVGovernment}
+            >
+              {humanityVGovernmentLink.label}
+            </Link>{" "}
+            for the full damages schedule.
+          </p>
         </section>
       </section>
     </main>

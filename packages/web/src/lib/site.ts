@@ -1271,7 +1271,7 @@ export function getConfiguredSiteOrigin(options?: {
   allowLocalFallback?: boolean;
 }) {
   const envOrigin =
-    process.env.NEXT_PUBLIC_BASE_URL?.trim() ||
+    process.env.NEXTAUTH_URL?.trim() ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
 
   if (envOrigin) {
@@ -1282,7 +1282,7 @@ export function getConfiguredSiteOrigin(options?: {
     return OPTIMITRON_LOCAL_ORIGIN;
   }
 
-  return OPTIMITRON_CANONICAL_ORIGIN;
+  return WAR_ON_DISEASE_CANONICAL_ORIGIN;
 }
 
 export function isLocalHost(host: string) {

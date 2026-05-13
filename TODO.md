@@ -1031,6 +1031,283 @@ Touches: the treaty markdown rendering layer (`packages/web/src/components/refer
 6. *(Separate work)* Scaffold `/earth-optimization-day` page + `isEarthOptimizationDayWindow()` config.
 7. *(Separate work)* Hook EOD config into `/humanity-v-government` + landing CTA swap.
 
+## Treaty citation re-snapshot (after PR #75 merge)
+
+After this PR merges and CI runs `db:sync:managed-data --apply` against prod, the
+referendum row's `bodyMarkdown` will reflect the 3 upstream `manual_ref` fixes
+(`604` → `1-percent-treaty`, `96.7%` → `peace-dividend`, `$2.46T` → `humanity-v-government`,
+plus the `{{< var pentagon_unaccounted_funds >}}` substitution in 1-percent-treaty.qmd).
+The treaty/h-v-g/endorse `.md` snapshots in this PR still show the OLD URLs because
+the dev server reads the DB row, which is pre-sync at commit time.
+
+Follow-up: on the next PR after this one ships and CI redeploys prod, run
+`pnpm --filter @optimitron/web copy:preview` and commit the regenerated `.md`
+files. One-cycle drift, expected.
+
+The upstream changes (parameters.py + 1-percent-treaty.qmd) need a separate PR
+in `disease-eradication-plan` so the generated TS file stays in sync with its
+canonical source. Already authored locally in E:/code/disease-eradication-plan.
+
+## Email file renames for human-readable clarity
+
+User flagged that the current file names aren't natural-language ("the
+current file names are not incredibly clear what the fuck they're
+referring to"). Already updated each `*_PREVIEW`'s `displayName` to be
+clearer (shows in `.email.md`). The actual filenames + template-id slugs
+still use technical jargon and would need a cross-codebase rename.
+
+Proposed renames (touch many imports across the codebase — separate PR):
+
+| Current file / slug | Proposed |
+|---|---|
+| `magic-link-render.ts` / `magic-link` | `signin-link-email.ts` / `signin-link` |
+| `post-vote-share-email.ts` / `post-vote-share` | `share-kit-after-vote-email.ts` / `share-kit-after-vote` |
+| `referral-first-conversion-email.ts` / `referral-first-conversion` | `your-link-just-converted-email.ts` / `your-link-just-converted` |
+| `monthly-chain-digest-email.ts` / `monthly-chain-digest` | `humanity-manager-monthly-report-email.ts` / `humanity-manager-monthly-report` |
+| `task-assignment-notification-email.server.ts` / `task-assignment` | `task-assigned-to-you-email.server.ts` / `task-assigned-to-you` |
+| `task-comment-notification-email.server.ts` / `task-comment-notification` | `someone-replied-on-task-email.server.ts` / `someone-replied-on-task` |
+
+Each rename touches 5-10 import sites + the `.email.md` filename + the
+e2e spec's slug. Better as its own focused PR than bundled with the
+preview-envelope refactor.
+
+## Previewable email index page
+
+Currently `/dev/email/<template>` requires knowing the template slug.
+Add `/dev/email` (no template) that lists all `EMAIL_PREVIEWS` with
+their displayName + trigger + a link to each preview. Two queries:
+- Default: Gmail-mobile wrapper preview for each
+- `?raw=1`: index of raw body links for screenshot/markdown pipelines
+
+~30 lines in a new `page.tsx` under `/dev/email/`. Reuses the existing
+registry — no new abstractions needed.
+
+## Humanity Manager workforce panel — dashboard ⇄ digest reuse
+
+User asked: should the dashboard have a panel that mirrors the monthly
+digest's "Humanity Management Status Report" view? Both surfaces would
+share a component showing:
+
+1. **Direct reports who completed their task**: name + estimated downstream
+   vote count from each person's referral chain.
+2. **Overdue humans**: count + names of assigned humans who haven't voted
+   yet via this user's link.
+3. **Overdue presidents**: count + named heads of government still
+   missing the 30-second treaty task.
+4. **Total downstream impact**: multiplier chain math derived from this
+   user's actual converts × their own downstream depth (vs. the generic
+   "32 doubling rounds" abstraction).
+
+Reuse target: extract the new `MonthlyChainDigestReactEmail`'s data
+sections (`CompletedEmployees`, `StatusTable`, `ReminderSection`) into
+shared React components in `packages/web/src/lib/humanity-manager-*`
+or `components/shared/HumanityManager*`. Dashboard renders them with
+client-friendly primitives (`<table>` with treaty CSS vars,
+`<ParameterValue>` tooltips where useful). Email renders them with
+`@react-email/components` primitives.
+
+Data dependencies (not yet implemented in the server):
+- `completedEmployees: { displayName, completedAt, downstreamConversionCount }[]`
+- `overdueEmployees: { displayName }[]` + `overdueEmployeeCount`
+- `overduePresidents: { displayName, countryLabel }[]` + `overduePresidentCount`
+- `downstreamConversionDepth(userId): number` — recursive count of
+  conversions of conversions
+
+The digest already has the React-component sections + the input
+interface; the dashboard panel reuses them and the cron caller needs
+to populate the new arrays (currently passes empty arrays).
+
+Sequencing:
+1. Extract digest sections to shared module.
+2. Add dashboard panel consuming the shared sections.
+3. Wire server-side data: chain-depth query, overdue-employee query
+   (assigned-task-not-completed), overdue-president query (uses
+   existing `signatories` data for "treaty signers per country").
+4. Cron caller in `monthly-chain-digest.server.ts` populates from the
+   same queries the dashboard panel uses.
+
+## Post-vote-share email reframe — dashboard parity (DONE this commit)
+
+Both `DashboardShareCard.tsx` and `post-vote-share-react-email.tsx` now
+consume `packages/web/src/lib/humanity-manager-promotion.ts` as the
+single source of truth for the "Humanity Manager · Assignment 1"
+eyebrow + headline + 3-paragraph promotion prose. Dashboard renders the
+parameter values inline via `<ParameterValue>` (tooltips preserved);
+email renders them via `<strong>{fmtParamValueOnly(...)}</strong>`
+(no tooltips — emails can't host hover popovers). Adding a new
+parameter or copy edit goes in one place.
+
+**Known small regression**: the dashboard's paragraph 1 used to link
+"1% Treaty" to `/treaty` via inline `<Link>`. The structured-content
+shape doesn't support inline links yet (would require a richer chunk
+type). Dropped for now — the dashboard has plenty of other paths to
+`/treaty`. Add back later if a chunk-with-link variant feels worth it.
+
+## Monthly digest reframe — "Humanity Management Status Report"
+
+Current `monthly-chain-digest-email.ts` reads like startup-bro nudge spam.
+User pulled it up after the new `.email.md` snapshots and called it out:
+"Would Kurt Vonnegut write this shit? Send them a nudge. I hate that word."
+The `send them a nudge` phrase is banned. The whole frame is wrong.
+
+Reframe goal: the recipient is a **Humanity Manager** receiving a monthly
+status report on their direct reports (the 8 billion humans + the
+presidents who report to those humans). Tone is corporate-deadpan
+performance review — not pep talk.
+
+Proposed sections (in monthly-chain-digest-email.ts builders):
+
+1. **Header**: "Humanity Management Status Report — May 2026" /
+   "Your jurisdiction: 8 billion humans, 195 governments." Or whatever
+   the recipient's actual span of control is once we model that.
+
+2. **Direct reports update — humans who voted through your link**:
+   List the N humans who converted this month + their downstream chain
+   depth (each person they recruited, and so on). Conveys multiplier
+   chain-letter effect concretely instead of as the "32 doubling rounds"
+   abstraction.
+
+3. **Pending: humans on your span who have not voted**:
+   Count + a copy-pasteable share message ("I love you and don't want
+   you to die of disease..." or a Wishonia-voiced variant) the manager
+   can drop into iMessage / SMS / WhatsApp to remind specific humans.
+
+4. **Pending: presidents who have not signed**:
+   For the recipient's country (and others if they want), list named
+   leaders who haven't signed the treaty + a separate copy-pasteable
+   "remind your overdue president/employee" message they can drop into
+   social media (banned: "pressure," "political pressure" per CLAUDE.md
+   — frame as overdue 30-second task).
+
+5. **Total downstream impact**: multiplier chain math, but using THIS
+   manager's actual numbers — not the generic 4.3B ceiling. E.g.
+   "Your 7 direct converts brought 12 humans, who brought 4 humans.
+   Total downstream so far: 23 humans signed. At the chain's current
+   doubling rate, your line of influence reaches X humans by Y date."
+
+6. **One CTA**: Open dashboard for full detail. Drop the share-footer
+   chrome at the bottom — the copy-paste messages in sections 3 + 4 are
+   the share affordance.
+
+Banned phrasings to grep for during the rewrite:
+- "send them a nudge"
+- "your job this month is to..."
+- "keep going"
+- "humans you brought in"
+- Anything that reads as a coach pep-talking the recipient.
+
+Acceptable register: deadpan systems administration. "Quarterly objectives
+unmet for the following direct reports. Recommended action: attached
+templates."
+
+Tests: rewrite `monthly-chain-digest-email.test.ts` to assert the new
+sections render with the right fixture inputs. Update the .email.md
+snapshots via `pnpm --filter @optimitron/web email:preview-md`.
+
+## Email minimalism audit (partially addressed in this commit)
+
+The `.email.md` snapshots shipped in this commit revealed pre-existing
+violations of [[feedback_email_minimalism]]. Landed in this commit:
+
+- `task-assignment.email.md` — dropped "Mark complete" secondary CTA and
+  the "We are building a decentralized to-do list..." feedback chrome
+  paragraph. Now title eyebrow + H1 + description + Open Task + reply
+  instruction + share footer. Test updated.
+
+Still open (call sites are more nuanced — share-footer is value-dense
+and intentional per the [[feedback_email_minimalism]] "share-email flows
+override with action-oriented labels" guidance):
+
+- `monthly-digest-positive` / `monthly-digest-resend` / `referral-first-
+  conversion` — each has a primary CTA (Open Dashboard) plus the share
+  footer. Whether the share footer counts as a second CTA or as the
+  intentional value-dense secondary action is a judgment call. Defer
+  until the user looks at the rendered emails on mobile.
+
+Magic-link is compliant (button + "Didn't request this? Ignore it.").
+Task-comment-notification is compliant (single CTA + share footer).
+
+## Email markdown previews (deferred — bigger than estimated)
+
+Goal: voice-critic-able .md snapshots of outbound email copy. Currently the
+copy-preview pipeline only covers public pages reachable from the dev server.
+
+Initially estimated as a ~30-line bolt-on. Actual scope is larger because there
+is no email-template registry: outbound emails are composed inline at call
+sites with raw HTML strings or React Email components mid-function. There are
+no `/dev/email-preview/*` routes either.
+
+To do this properly:
+1. Add `src/emails/templates/<name>.tsx` files (one per discrete outbound
+   email — sign-in link, share-prompt, signer-reminder, etc.).
+2. Refactor the call sites in `src/lib/email/*.ts` to use those templates
+   via `react: <TemplateName .../>` so prod and previews render identical HTML.
+3. Add `pnpm --filter @optimitron/web email:preview-md` that imports each
+   template, calls `@react-email/components` `render()` with realistic fixtures,
+   pipes the HTML through a jsdom-driven version of the same DOM walker as
+   `render-pages-to-markdown.ts`, and writes `*.email.md` next to each template.
+4. Share the walker (extract to `packages/web/src/lib/dom-to-markdown.ts`)
+   so page-preview and email-preview both benefit from text-transform,
+   anchor-preservation, and table support.
+
+Touches: ~6 new template files, ~6 call-site refactors, 1 new script,
+1 extracted helper. Not 4B-blocking.
+
+## Claude Code automation candidates (from this session's recommender skill)
+
+Candidates flagged by `/claude-code-setup:claude-automation-recommender` and
+worth picking up when they hit a real friction point. Don't preemptively
+build all of them — wait for the second time the friction recurs.
+
+1. **Neon MCP server** — read-only Postgres access for inspecting the
+   prod-shared dev DB without spinning up tsx scripts. Critical caveat:
+   read-only only, dev DB is prod-shared.
+2. **context7 MCP server** — live docs lookup for Next.js 15 / Tailwind 4 /
+   Prisma 7 / React Email. This session's missed-CSS-import + missed
+   `"use client"` boundary issues would have been caught upfront.
+3. **`optimitron:regen-snapshots` skill** — package `pnpm copy:preview` +
+   `pnpm email:preview-md` as one slash command. User-only (writes files).
+4. **`optimitron:wishonia-voice-check` skill** — pass arbitrary copy to
+   the existing voice-critic agent without going through `.md` diff flow.
+5. **`PostToolUse(Edit|Write)` hook on `src/lib/email/*-react-email.tsx`** —
+   auto-regen `.email.md` snapshots at write time. Debounced to avoid
+   running on every keystroke.
+6. **`parameter-citation-verifier` subagent** — walk every `<ParameterValue>`
+   in `app/**/page.tsx`, verify `manualPageUrl` is topically aligned with
+   the qmd it points at. Would have caught the `604`→central-banks bug
+   before voice-critic exposed it.
+7. **`email-content-auditor` subagent** — content-based check on
+   `.email.md` (count CTAs, detect banned phrases like "send them a
+   nudge"), replacing the current filename-pattern EMAIL_MINIMALISM gate.
+
+## Codex review followups (caught by `codex exec` 2026-05-12)
+
+- Drop the orphaned [[share-footer.ts]] module (no callers after the
+  React Email migration). Move its `FOOTER_EYEBROW` / `FORWARD_LINE`
+  constants into `CampaignShareFooter` if anything still needs them.
+- `appendWishoniaSignature()` in [[wishonia-signature.ts]] now only used
+  by its own unit tests. Either delete + delete the tests, or wire it
+  back into a real send path. Decision needed.
+- Add a focused test in `resend.test.ts` forcing `getBaseUrl()` /
+  `buildUnsubscribeUrl()` to return localhost and asserting all three
+  send paths refuse before `resend.emails.send` — including a case
+  where localhost only appears in the `List-Unsubscribe` header.
+- Add an unsubscribe-route test where `verifyUnsubToken` returns false
+  for an RFC 8058 POST and asserts no DB mutation occurs.
+
+## Codex integration setup (DONE this commit, durable references)
+
+- `.codex/config.toml` ships `model_reasoning_effort = "high"`.
+- `openai/codex-plugin-cc` installed at user level; provides:
+  - `/codex:adversarial-review` — challenge a design decision
+  - `/codex:rescue` — delegate task as background subagent
+  - `/codex:review` — straight code review
+  - `/codex:status` / `/codex:result` / `/codex:cancel` — job management
+- Stop-time review gate enabled (`/codex:setup --enable-review-gate`).
+  Marks `needsReview: true` on Stop events but does not auto-spawn
+  Codex; Claude must invoke `/codex:review` to actually run.
+- Speech-to-text note: user dictates "Codex" as "Kodak" — treat as alias.
+
 ## Long-tail (parked, not 4B-blocking)
 
 Items that exist in earlier TODO revisions but do not move the 4B-votes needle today.

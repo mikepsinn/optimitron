@@ -1,14 +1,16 @@
-import {
-  buildSenderSignatureHtml,
-  buildSenderSignatureText,
-  type SenderSignature,
-} from "@/lib/email/wishonia-signature";
+import React from "react";
+import type { SenderSignature } from "@/lib/email/wishonia-signature";
+import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
 import {
-  buildShareFooterHtml,
-  buildShareFooterText,
-} from "@/lib/email/share-footer";
+  SAMPLE_REFERRAL_URL,
+  SAMPLE_TASK_ID,
+  SAMPLE_TASK_REPLY_ADDRESS,
+  type EmailPreview,
+} from "@/lib/email/preview-envelope";
+import { renderReactEmailBody } from "@/lib/email/render-react-email";
 import { ROUTES } from "@/lib/routes";
+import { TaskCommentNotificationReactEmail } from "@/lib/tasks/task-comment-notification-react-email";
 import { getBaseUrl } from "@/lib/url";
 
 export const COMMENT_NOTIFICATION_PLACEHOLDER =
@@ -64,15 +66,6 @@ export interface CommentNotificationEmail {
   text: string;
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
 function absoluteTaskUrl(taskId: string, baseUrl: string) {
   return new URL(`${ROUTES.tasks}/${taskId}`, baseUrl).toString();
 }
@@ -86,133 +79,9 @@ function absoluteUrl(url: string | null | undefined, baseUrl: string) {
   return `${baseUrl.replace(/\/+$/, "")}${path}`;
 }
 
-function authorInitial(authorName: string) {
-  return (authorName.trim()[0] ?? "?").toUpperCase();
-}
-
-function buildCtaHtml(input: {
-  cta: CommentNotificationCta;
-  variant: "primary" | "secondary";
-}) {
-  const styles =
-    input.variant === "primary"
-      ? "display:inline-block;background:#111827;color:#ffffff;padding:14px 24px;text-decoration:none;font-weight:900;border:2px solid #111827;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:0 8px 8px 0;"
-      : "display:inline-block;background:#ffffff;color:#111827;padding:14px 24px;text-decoration:none;font-weight:900;border:2px solid #111827;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:0 0 8px 0;";
-  return `<a href="${escapeHtml(input.cta.url)}" style="${styles}">${escapeHtml(input.cta.label)}</a>`;
-}
-
-function buildHtml(input: {
-  authorAvatarUrl: string;
-  authorName: string;
-  commentMessage: string;
-  cta: CommentNotificationCta | null;
-  secondaryCta: CommentNotificationCta | null;
-  senderSignature: SenderSignature | null;
-  recipientReason: string | null;
-  replyInstruction: string | null;
-  title: string;
-  unsubscribePlaceholder: string;
-  recipientReferralUrl: string | null;
-}) {
-  const titleEsc = escapeHtml(input.title);
-  const messageEsc = escapeHtml(input.commentMessage);
-  const authorEsc = escapeHtml(input.authorName);
-  const avatarHtml = input.authorAvatarUrl
-    ? `<img src="${escapeHtml(input.authorAvatarUrl)}" alt="${authorEsc}" width="44" height="44" style="display:block;width:44px;height:44px;border:2px solid #111827;background:#ffffff;object-fit:cover;" />`
-    : `<div style="width:44px;height:44px;border:2px solid #111827;background:#ffffff;color:#111827;font-size:18px;line-height:44px;text-align:center;font-weight:900;">${escapeHtml(authorInitial(input.authorName))}</div>`;
-  const ctaHtml = [
-    input.cta ? buildCtaHtml({ cta: input.cta, variant: "primary" }) : "",
-    input.secondaryCta
-      ? buildCtaHtml({ cta: input.secondaryCta, variant: "secondary" })
-      : "",
-  ].join("");
-  const signatureHtml = input.senderSignature
-    ? buildSenderSignatureHtml(input.senderSignature)
-    : "";
-  const reasonHtml = input.recipientReason
-    ? `<p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:#71717a;">${escapeHtml(input.recipientReason)}</p>`
-    : "";
-  const replyInstructionHtml = input.replyInstruction
-    ? `<p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:#3f3f46;">${escapeHtml(input.replyInstruction)}</p>`
-    : "";
-  const shareFooterHtml = input.recipientReferralUrl
-    ? buildShareFooterHtml(input.recipientReferralUrl)
-    : "";
-
-  return `<!doctype html>
-<html lang="en">
-<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,sans-serif;color:#111827;">
-  <div style="padding:32px 16px;">
-    <div style="max-width:560px;margin:0 auto;">
-      <h1 style="margin:0 0 20px;font-size:22px;line-height:1.3;font-weight:900;">${titleEsc}</h1>
-      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;border-collapse:collapse;width:100%;font-family:Arial,sans-serif;">
-        <tr>
-          <td valign="top" style="width:52px;padding:0 12px 0 0;">${avatarHtml}</td>
-          <td valign="top" style="border-left:3px solid #111827;padding:0 0 0 14px;">
-            <div style="margin:0 0 8px;font-size:13px;line-height:1.4;font-weight:900;color:#111827;text-transform:uppercase;">${authorEsc} commented</div>
-            <div style="margin:0;font-size:16px;line-height:1.6;white-space:pre-wrap;color:#111827;">${messageEsc}</div>
-          </td>
-        </tr>
-      </table>
-      ${ctaHtml}
-      ${replyInstructionHtml}
-      ${reasonHtml}
-      ${signatureHtml}
-      ${shareFooterHtml}
-      <p style="margin:32px 0 0;font-size:12px;line-height:1.6;color:#71717a;">
-        <a href="${input.unsubscribePlaceholder}" style="color:#71717a;">Unsubscribe</a>
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-function buildText(input: {
-  authorName: string;
-  commentMessage: string;
-  cta: CommentNotificationCta | null;
-  secondaryCta: CommentNotificationCta | null;
-  senderSignature: SenderSignature | null;
-  recipientReason: string | null;
-  replyInstruction: string | null;
-  title: string;
-  unsubscribePlaceholder: string;
-  recipientReferralUrl: string | null;
-}) {
-  return [
-    input.title,
-    "",
-    `${input.authorName} commented:`,
-    "",
-    input.commentMessage,
-    "",
-    input.cta ? `${input.cta.label}: ${input.cta.url}` : null,
-    input.cta ? "" : null,
-    input.secondaryCta
-      ? `${input.secondaryCta.label}: ${input.secondaryCta.url}`
-      : null,
-    input.secondaryCta ? "" : null,
-    input.replyInstruction,
-    input.replyInstruction ? "" : null,
-    input.recipientReason,
-    input.recipientReason ? "" : null,
-    input.senderSignature
-      ? buildSenderSignatureText(input.senderSignature)
-      : null,
-    input.senderSignature ? "" : null,
-    input.recipientReferralUrl
-      ? buildShareFooterText(input.recipientReferralUrl)
-      : null,
-    `Unsubscribe: ${input.unsubscribePlaceholder}`,
-  ]
-    .filter((line): line is string => line !== null)
-    .join("\n");
-}
-
-export function buildTaskCommentNotificationEmail(
+export async function buildTaskCommentNotificationEmail(
   input: CommentNotificationInput,
-): CommentNotificationEmail {
+): Promise<CommentNotificationEmail> {
   const baseUrl = input.baseUrl ?? getBaseUrl();
   const cta =
     input.cta === null
@@ -222,23 +91,69 @@ export function buildTaskCommentNotificationEmail(
           url: absoluteTaskUrl(input.task.id, baseUrl),
         });
   const authorName = input.comment.authorName?.trim() || "Someone";
-  const params = {
-    authorAvatarUrl: absoluteUrl(input.comment.authorAvatarUrl, baseUrl),
-    authorName,
-    commentMessage: input.comment.message,
-    cta,
-    recipientReason: input.recipientReason ?? null,
-    recipientReferralUrl: input.recipientReferralUrl ?? null,
-    replyInstruction: input.replyInstruction ?? null,
-    secondaryCta: input.secondaryCta ?? null,
-    senderSignature: input.senderSignature ?? null,
-    title: input.task.title,
-    unsubscribePlaceholder: COMMENT_NOTIFICATION_PLACEHOLDER,
-  };
+  const body = await renderReactEmailBody(
+    React.createElement(TaskCommentNotificationReactEmail, {
+      authorAvatarUrl: absoluteUrl(input.comment.authorAvatarUrl, baseUrl),
+      authorName,
+      commentMessage: input.comment.message,
+      cta,
+      recipientReason: input.recipientReason ?? null,
+      recipientReferralUrl: input.recipientReferralUrl ?? null,
+      replyInstruction: input.replyInstruction ?? null,
+      secondaryCta: input.secondaryCta ?? null,
+      senderSignature: input.senderSignature ?? null,
+      title: input.task.title,
+      unsubscribeUrl: COMMENT_NOTIFICATION_PLACEHOLDER,
+    }),
+  );
 
   return {
-    html: buildHtml(params),
+    ...body,
     subject: input.task.title,
-    text: buildText(params),
   };
 }
+
+export const TASK_COMMENT_NOTIFICATION_TEMPLATE_ID =
+  "task-comment-notification";
+
+const SAMPLE_COMMENT_INPUT = {
+  task: { id: SAMPLE_TASK_ID, title: "Sign the 1% Treaty" },
+  comment: {
+    authorAvatarUrl: null,
+    authorName: "Sample Author",
+    message:
+      "I just signed and forwarded the share message to four of my family members. Two of them have already voted.",
+  },
+  recipientReason: "You are assigned to this task.",
+  replyInstruction: "Reply to this email to leave a comment on the task.",
+  recipientReferralUrl: SAMPLE_REFERRAL_URL,
+} as const;
+
+export const TASK_COMMENT_NOTIFICATION_PREVIEW: EmailPreview = {
+  templateId: TASK_COMMENT_NOTIFICATION_TEMPLATE_ID,
+  displayName: "Someone replied on a task you're following",
+  trigger:
+    "Fires when someone posts a comment on a task that the recipient is assigned to, watching, or has previously commented on. Subject = task title only (no '{author}: ' prefix — sender identity is in the From header). Reply-To routes the recipient's reply back to the task as a new comment.",
+  scope: "task_notifications",
+  from: () => formatDefaultSystemEmailFromHeader(),
+  subject: () => SAMPLE_COMMENT_INPUT.task.title,
+  replyTo: () => SAMPLE_TASK_REPLY_ADDRESS,
+  skipWishoniaSignature: false,
+  renderReact: () =>
+    React.createElement(TaskCommentNotificationReactEmail, {
+      authorAvatarUrl: SAMPLE_COMMENT_INPUT.comment.authorAvatarUrl,
+      authorName: SAMPLE_COMMENT_INPUT.comment.authorName,
+      commentMessage: SAMPLE_COMMENT_INPUT.comment.message,
+      cta: {
+        label: "Open the task",
+        url: `${getBaseUrl()}${ROUTES.tasks}/${SAMPLE_COMMENT_INPUT.task.id}`,
+      },
+      recipientReason: SAMPLE_COMMENT_INPUT.recipientReason,
+      recipientReferralUrl: SAMPLE_COMMENT_INPUT.recipientReferralUrl,
+      replyInstruction: SAMPLE_COMMENT_INPUT.replyInstruction,
+      secondaryCta: null,
+      senderSignature: null,
+      title: SAMPLE_COMMENT_INPUT.task.title,
+      unsubscribeUrl: EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER,
+    }),
+};

@@ -12,7 +12,7 @@
  * Spec: docs/questions.md → Add Wishonia email signature task.
  */
 
-import { getEmailBaseUrl } from "@/lib/email/email-urls";
+import { getBaseUrl } from "@/lib/url";
 
 export const WISHONIA_AVATAR_PATH = "/sprites/wishonia/smirk-smile.png";
 
@@ -99,12 +99,11 @@ export function buildWishoniaSignatureText(
  * styles + a table layout because that's what survives Gmail / Outlook /
  * Apple Mail rendering quirks. Tested against the standard email client trio.
  *
- * Avatar `src` is built via `getEmailBaseUrl()` so the URL is absolute —
- * recipients can't render localhost.
+ * Avatar `src` is built via `getBaseUrl()` so the URL is absolute.
  */
 export function buildWishoniaSignatureHtml(
   selection: WishoniaSignatureSelection = selectWishoniaSignature(),
-  baseUrl: string = getEmailBaseUrl(),
+  baseUrl: string = getBaseUrl(),
 ): string {
   const avatar = `${baseUrl.replace(/\/+$/, "")}${WISHONIA_AVATAR_PATH}`;
   // Inline styles — most email clients strip <style> blocks.
@@ -115,11 +114,11 @@ export function buildWishoniaSignatureHtml(
       <img src="${avatar}" alt="Wishonia" width="80" height="80" style="display:block;width:80px;height:80px;border-radius:8px;background:#f4f4f5;border:0;outline:none;" />
     </td>
     <td valign="top" style="border-left:3px solid #111827;padding:0 0 0 16px;">
-      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Love,</div>
-      <div style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">🛸 Wishonia</div>
-      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(selection.title)}</div>
-      <div style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">Earth Optimization Services LLC</div>
-      <div style="font-size:12px;line-height:1.4;font-style:italic;color:#71717a;margin:2px 0 0 0;">${escapeHtml(selection.tagline)}</div>
+      <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Love,</p>
+      <p style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">🛸 Wishonia</p>
+      <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(selection.title)}</p>
+      <p style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">Earth Optimization Services LLC</p>
+      <p style="font-size:12px;line-height:1.4;font-style:italic;color:#71717a;margin:2px 0 0 0;">${escapeHtml(selection.tagline)}</p>
     </td>
   </tr>
 </table>`.trim();
@@ -190,10 +189,10 @@ export function buildSenderSignatureHtml(signature: SenderSignature): string {
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px 0 0 0;border-collapse:collapse;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
   <tr>
     <td valign="top" style="border-left:3px solid #111827;padding:0 0 0 16px;">
-      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Love,</div>
-      <div style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">${escapeHtml(signature.name)}</div>
-      <div style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(role)}</div>
-      <div style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">${escapeHtml(org)}</div>
+      <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Love,</p>
+      <p style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">${escapeHtml(signature.name)}</p>
+      <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(role)}</p>
+      <p style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">${escapeHtml(org)}</p>
     </td>
   </tr>
 </table>`.trim();

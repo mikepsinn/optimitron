@@ -138,25 +138,25 @@ describe("reply domain env", () => {
 });
 
 describe("app-URL helpers", () => {
-  const originalBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const originalNextAuthUrl = process.env.NEXTAUTH_URL;
+  const originalVercelUrl = process.env.VERCEL_URL;
 
   afterEach(() => {
-    if (originalBaseUrl !== undefined) {
-      process.env.NEXT_PUBLIC_BASE_URL = originalBaseUrl;
-    } else {
-      delete process.env.NEXT_PUBLIC_BASE_URL;
-    }
     if (originalNextAuthUrl !== undefined) {
       process.env.NEXTAUTH_URL = originalNextAuthUrl;
     } else {
       delete process.env.NEXTAUTH_URL;
     }
+    if (originalVercelUrl !== undefined) {
+      process.env.VERCEL_URL = originalVercelUrl;
+    } else {
+      delete process.env.VERCEL_URL;
+    }
     vi.resetModules();
   });
 
-  it("uses NEXT_PUBLIC_BASE_URL when set", async () => {
-    process.env.NEXT_PUBLIC_BASE_URL = "https://staging.warondisease.org";
+  it("uses NEXTAUTH_URL when set", async () => {
+    process.env.NEXTAUTH_URL = "https://staging.warondisease.org";
     vi.resetModules();
     const { getAppBaseUrl, getTaskUrl } = await import("../task-notification");
 
@@ -166,26 +166,31 @@ describe("app-URL helpers", () => {
     );
   });
 
-  it("strips trailing slash from the configured base", async () => {
-    process.env.NEXT_PUBLIC_BASE_URL = "https://example.com/";
+  it("strips trailing slash from NEXTAUTH_URL", async () => {
+    process.env.NEXTAUTH_URL = "https://warondisease.org/";
     vi.resetModules();
     const { getAppBaseUrl, getTaskUrl } = await import("../task-notification");
 
-    expect(getAppBaseUrl()).toBe("https://example.com");
-    expect(getTaskUrl("abc")).toBe("https://example.com/tasks/abc");
+    expect(getAppBaseUrl()).toBe("https://warondisease.org");
+    expect(getTaskUrl("abc")).toBe("https://warondisease.org/tasks/abc");
   });
 
-  it("falls back to a fixed production URL when no env vars are set", async () => {
-    delete process.env.NEXT_PUBLIC_BASE_URL;
+  it("uses VERCEL_URL when NEXTAUTH_URL is absent", async () => {
     delete process.env.NEXTAUTH_URL;
+    process.env.VERCEL_URL = "preview.example.vercel.app";
     vi.resetModules();
     const { getTaskUrl } = await import("../task-notification");
 
-    // Intentionally minimal: just verify the fallback is a real-looking URL
-    // and the task-url builder uses it. The exact fallback domain is an
-    // implementation detail — assertion is on shape, not value.
-    const url = getTaskUrl("xyz");
-    expect(url).toMatch(/^https?:\/\/.+\/tasks\/xyz$/);
+    expect(getTaskUrl("xyz")).toBe("https://preview.example.vercel.app/tasks/xyz");
+  });
+
+  it("falls back to the local dev origin when no env vars are set", async () => {
+    delete process.env.NEXTAUTH_URL;
+    delete process.env.VERCEL_URL;
+    vi.resetModules();
+    const { getTaskUrl } = await import("../task-notification");
+
+    expect(getTaskUrl("xyz")).toBe("http://localhost:3001/tasks/xyz");
   });
 });
 

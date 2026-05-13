@@ -42,6 +42,20 @@ vi.mock("@/lib/email/unsub-url", () => ({
   ),
 }));
 
+// The Wishonia signature's avatar `<img src>` uses `getBaseUrl()`, which
+// falls back to localhost in test runs (no canonical site origin env).
+// The new `assertEmailSafe` send-boundary guard correctly rejects any
+// body containing `localhost` — so we mock the base URL to a production
+// origin for these unit tests. Real-world prod sends have VERCEL_URL set
+// and never hit this fallback path.
+vi.mock("@/lib/url", () => ({
+  getBaseUrl: () => "https://optimitron.com",
+  buildUserReferralUrl: (id: string | null | undefined) =>
+    id ? `https://optimitron.com/vote/${id}` : "https://optimitron.com",
+  buildReferralUrl: (id: string | null | undefined) =>
+    id ? `https://optimitron.com/vote/${id}` : "https://optimitron.com",
+}));
+
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "../email/placeholders";
 import {
   DEFAULT_SYSTEM_EMAIL_FROM,

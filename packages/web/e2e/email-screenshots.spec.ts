@@ -75,20 +75,11 @@ test.describe("email visual coverage", () => {
     await captureEmail(page, "task-assignment", "email-task-assignment", testInfo);
   });
 
-  test("email-monthly-digest-positive", async ({ page }, testInfo) => {
+  test("email-monthly-chain-digest", async ({ page }, testInfo) => {
     await captureEmail(
       page,
-      "monthly-digest-positive",
-      "email-monthly-digest-positive",
-      testInfo,
-    );
-  });
-
-  test("email-monthly-digest-resend", async ({ page }, testInfo) => {
-    await captureEmail(
-      page,
-      "monthly-digest-resend",
-      "email-monthly-digest-resend",
+      "monthly-chain-digest",
+      "email-monthly-chain-digest",
       testInfo,
     );
   });

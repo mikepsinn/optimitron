@@ -12,13 +12,16 @@
  * referrals only the first triggers an email.
  */
 
-import { escapeHtml } from "@/lib/email/magic-link-render";
+import React from "react";
+import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
+import {
+  SAMPLE_DASHBOARD_URL,
+  SAMPLE_REFERRAL_URL,
+  type EmailPreview,
+} from "@/lib/email/preview-envelope";
+import { ReferralFirstConversionReactEmail } from "@/lib/email/referral-first-conversion-react-email";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import type { SendResult } from "@/lib/email/resend";
-import {
-  buildShareFooterHtml,
-  buildShareFooterText,
-} from "@/lib/email/share-footer";
 
 interface ReferralFirstConversionEmailInput {
   /** Referrer's `User.id` (the user whose link converted). */
@@ -36,67 +39,22 @@ interface ReferralFirstConversionEmailInput {
 export const REFERRAL_FIRST_CONVERSION_TEMPLATE_ID = "referral-first-conversion";
 export const REFERRAL_FIRST_CONVERSION_SUBJECT = "Your link worked.";
 
-export function buildReferralFirstConversionHtml(
-  input: Pick<
-    ReferralFirstConversionEmailInput,
-    "voterDisplayName" | "dashboardUrl" | "referrerReferralUrl"
-  >,
-): string {
-  const escapedDashboard = escapeHtml(input.dashboardUrl);
-  const escapedName = escapeHtml(input.voterDisplayName);
-  return `
-    <div style="padding:32px 16px;font-family:Arial,sans-serif;color:#111827;max-width:640px;margin:0 auto;">
-      <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#71717a;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;">
-        Your link worked. Round 1 of 32.
-      </p>
-      <p style="margin:0 0 16px;font-size:24px;line-height:1.4;font-weight:900;">
-        ${escapedName} just signed the 1% Treaty through your link.
-      </p>
-      <p style="margin:0 0 16px;font-size:16px;line-height:1.7;font-weight:700;">
-        The math: 32 doubling rounds × 2 referrals each = 4,300,000,000
-        humans — every adult on Earth.
-      </p>
-      <p style="margin:0 0 28px;font-size:16px;line-height:1.7;font-weight:700;">
-        The chain breaks the moment voters stop reaching 2 each. Your job:
-        keep going, and make sure ${escapedName} keeps going too. If everyone
-        in the chain averages just 2 conversions, every human alive votes.
-      </p>
-      <a
-        href="${escapedDashboard}"
-        style="display:inline-block;background:#111827;color:#ffffff;padding:16px 32px;text-decoration:none;font-weight:900;border:2px solid #111827;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;"
-      >
-        Open dashboard
-      </a>
-      <p style="margin:32px 0 0;font-size:13px;line-height:1.6;color:#71717a;">
-        Live conversion counts are on your dashboard. We only email on the
-        first conversion — no per-vote pings.
-      </p>
-      ${buildShareFooterHtml(input.referrerReferralUrl)}
-    </div>
-  `;
-}
-
-export function buildReferralFirstConversionText(
-  input: Pick<
-    ReferralFirstConversionEmailInput,
-    "voterDisplayName" | "dashboardUrl" | "referrerReferralUrl"
-  >,
-): string {
-  return [
-    "Your link worked. Round 1 of 32.",
-    "",
-    `${input.voterDisplayName} just signed the 1% Treaty through your link.`,
-    "",
-    "The math: 32 doubling rounds × 2 referrals each = 4,300,000,000 humans — every adult on Earth.",
-    "",
-    `The chain breaks the moment voters stop reaching 2 each. Your job: keep going, and make sure ${input.voterDisplayName} keeps going too. If everyone in the chain averages just 2 conversions, every human alive votes.`,
-    "",
-    `Open dashboard: ${input.dashboardUrl}`,
-    "",
-    "Live conversion counts are on your dashboard. We only email on the first conversion — no per-vote pings.",
-    buildShareFooterText(input.referrerReferralUrl),
-  ].join("\n");
-}
+export const REFERRAL_FIRST_CONVERSION_PREVIEW: EmailPreview = {
+  templateId: REFERRAL_FIRST_CONVERSION_TEMPLATE_ID,
+  displayName: "Your first referred voter just signed",
+  trigger:
+    "Fires exactly once per referrer — when the FIRST human signs the 1% Treaty through their referral link. Per-vote emails get spammy; only the first conversion triggers the email. Subsequent conversions are visible on /dashboard.",
+  scope: "onboarding",
+  from: () => formatDefaultSystemEmailFromHeader(),
+  subject: () => REFERRAL_FIRST_CONVERSION_SUBJECT,
+  skipWishoniaSignature: true,
+  renderReact: () =>
+    React.createElement(ReferralFirstConversionReactEmail, {
+      voterDisplayName: "Sample Voter",
+      dashboardUrl: SAMPLE_DASHBOARD_URL,
+      referrerReferralUrl: SAMPLE_REFERRAL_URL,
+    }),
+};
 
 export async function sendReferralFirstConversionEmail(
   input: ReferralFirstConversionEmailInput,
@@ -105,8 +63,11 @@ export async function sendReferralFirstConversionEmail(
     dedupeKey: `${REFERRAL_FIRST_CONVERSION_TEMPLATE_ID}:${input.referrerUserId}`,
     templateId: REFERRAL_FIRST_CONVERSION_TEMPLATE_ID,
     subject: REFERRAL_FIRST_CONVERSION_SUBJECT,
-    html: buildReferralFirstConversionHtml(input),
-    text: buildReferralFirstConversionText(input),
+    react: React.createElement(ReferralFirstConversionReactEmail, {
+      dashboardUrl: input.dashboardUrl,
+      referrerReferralUrl: input.referrerReferralUrl,
+      voterDisplayName: input.voterDisplayName,
+    }),
     userId: input.referrerUserId,
     toAddress: input.referrerEmail,
     scope: "onboarding",

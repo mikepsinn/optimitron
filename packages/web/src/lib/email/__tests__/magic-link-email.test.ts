@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   findUser: vi.fn(),
-  sendResendEmail: vi.fn(),
+  sendReactEmail: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -14,7 +14,7 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 vi.mock("@/lib/email/resend", () => ({
-  sendResendEmail: mocks.sendResendEmail,
+  sendReactEmail: mocks.sendReactEmail,
 }));
 
 import { sendMagicLinkEmail } from "@/lib/email/magic-link-email";
@@ -23,8 +23,8 @@ describe("sendMagicLinkEmail", () => {
   beforeEach(() => {
     mocks.findUser.mockReset();
     mocks.findUser.mockResolvedValue(null);
-    mocks.sendResendEmail.mockReset();
-    mocks.sendResendEmail.mockResolvedValue({ status: "sent" });
+    mocks.sendReactEmail.mockReset();
+    mocks.sendReactEmail.mockResolvedValue({ status: "sent" });
   });
 
   it("uses War on Disease copy for legacy Trial Abundance Survey sign-ins", async () => {
@@ -34,11 +34,14 @@ describe("sendMagicLinkEmail", () => {
       url: "https://trialabundancesurvey.org/api/auth/callback/email?token=abc",
     } as never);
 
-    expect(mocks.sendResendEmail).toHaveBeenCalledWith(
+    expect(mocks.sendReactEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "End war and disease",
-        text: expect.stringContaining("End war and disease"),
-        html: expect.stringContaining("End war and disease"),
+        react: expect.objectContaining({
+          props: expect.objectContaining({
+            buttonLabel: "End war and disease",
+          }),
+        }),
       }),
     );
   });
@@ -50,11 +53,14 @@ describe("sendMagicLinkEmail", () => {
       url: "https://warondisease.local/api/auth/callback/email?token=abc",
     } as never);
 
-    expect(mocks.sendResendEmail).toHaveBeenCalledWith(
+    expect(mocks.sendReactEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "End war and disease",
-        text: expect.stringContaining("End war and disease"),
-        html: expect.stringContaining("End war and disease"),
+        react: expect.objectContaining({
+          props: expect.objectContaining({
+            buttonLabel: "End war and disease",
+          }),
+        }),
       }),
     );
   });
@@ -66,12 +72,16 @@ describe("sendMagicLinkEmail", () => {
       url: "https://optimitron.local/api/auth/callback/email?token=abc",
     } as never);
 
-    expect(mocks.sendResendEmail).toHaveBeenCalledWith(
+    expect(mocks.sendReactEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         from: "Earth Optimization Services <hello@updates.warondisease.org>",
         subject: "Sign in to optimitron.local",
-        text: expect.stringContaining("Your sign-in link is below."),
-        html: expect.stringContaining("Your sign-in link is below."),
+        react: expect.objectContaining({
+          props: expect.objectContaining({
+            buttonLabel: "Sign in",
+            intro: "Your sign-in link is below.",
+          }),
+        }),
       }),
     );
   });

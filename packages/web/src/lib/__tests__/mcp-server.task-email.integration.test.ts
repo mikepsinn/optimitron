@@ -160,9 +160,7 @@ const db = vi.hoisted(() => {
 });
 
 vi.mock("@/lib/env", () => ({
-  clientEnv: {
-    NEXT_PUBLIC_BASE_URL: "https://warondisease.org",
-  },
+  clientEnv: {},
   serverEnv: {
     DATABASE_URL: "postgres://test/test",
     NEXTAUTH_SECRET: "test-secret",

@@ -206,7 +206,7 @@ export async function notifyTaskCommentRecipients(input: {
           userId: recipient.userId ?? null,
         });
       }
-      const email = buildTaskCommentNotificationEmail({
+      const email = await buildTaskCommentNotificationEmail({
         comment: {
           authorAvatarUrl: author.avatarUrl,
           authorName: author.name,

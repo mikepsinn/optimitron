@@ -38,6 +38,7 @@
     "fix:colors": "tsx scripts/fix-colors.ts",
     "extract:copy": "tsx scripts/extract-copy.ts",
     "copy:preview": "tsx scripts/render-pages-to-markdown.ts",
+    "email:preview-md": "tsx scripts/render-emails-to-markdown.ts",
     "extract:tasks": "tsx scripts/extract-tasks-from-manual.ts",
     "import:treaty-model": "tsx scripts/import-treaty-policy-model.ts",
     "sync:treaty-signers": "tsx scripts/sync-treaty-signers.ts",

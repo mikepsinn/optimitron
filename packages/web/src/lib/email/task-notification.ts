@@ -12,13 +12,7 @@
 import { sendExternalResendEmail, type SendResult } from "@/lib/email/resend";
 import { serverEnv } from "@/lib/env";
 import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@/lib/domains";
-import { getSiteConfig, type SiteKey } from "@/lib/site";
-
-const TASK_EMAIL_SITE_KEY: SiteKey = "warOnDisease";
-
-function getTaskEmailSiteOrigin() {
-  return getSiteConfig(TASK_EMAIL_SITE_KEY).canonicalOrigin;
-}
+import { getBaseUrl } from "@/lib/url";
 
 export function getReplyEmailDomain(): string {
   return serverEnv.REPLY_EMAIL_DOMAIN ?? WAR_ON_DISEASE_REPLY_DOMAIN;
@@ -45,18 +39,10 @@ export function getTaskEmailReplyInstruction(): string | null {
 }
 
 /**
- * Resolve the canonical app base URL for outbound email links. Reads in
- * priority order: NEXT_PUBLIC_BASE_URL (explicit, also available server-side
- * since NEXT_PUBLIC_ vars are inlined into the runtime), NEXTAUTH_URL (set
- * per deployment), then the War on Disease canonical origin. Always returned
- * without a trailing slash so callers can append `/path` directly.
+ * Resolve the canonical app base URL for outbound task email links.
  */
 export function getAppBaseUrl(): string {
-  const raw =
-    process.env.NEXT_PUBLIC_BASE_URL ??
-    serverEnv.NEXTAUTH_URL ??
-    getTaskEmailSiteOrigin();
-  return raw.replace(/\/$/, "");
+  return getBaseUrl();
 }
 
 /** Build the URL where a task can be viewed in the app. */

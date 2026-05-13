@@ -11,23 +11,24 @@
  * should keep their bespoke wrapper.
  */
 import { nanoid } from "nanoid";
+import type { ReactElement } from "react";
 import {
   claimEmailLog,
   markEmailLogStatus,
 } from "@/lib/email/email-log.server";
-import { sendResendEmail, type SendResult } from "@/lib/email/resend";
+import {
+  sendReactEmail,
+  sendResendEmail,
+  type SendResult,
+} from "@/lib/email/resend";
 
-interface SendDedupedEmailInput {
+interface SendDedupedEmailBaseInput {
   /** Dedupe scope. Two calls with the same `dedupeKey` will only send once. */
   dedupeKey: string;
   /** Stable template id stored on the EmailLog row, also used in logs. */
   templateId: string;
   /** Subject line stored on the EmailLog + delivered via Resend. */
   subject: string;
-  /** Plain-text body. */
-  text: string;
-  /** HTML body. */
-  html: string;
   /** Recipient's `User.id` — feeds suppression + unsubscribe URL. */
   userId: string;
   /** Recipient's email address. */
@@ -40,6 +41,30 @@ interface SendDedupedEmailInput {
    * Wishonia sign-off because the body owns the voice.
    */
   skipWishoniaSignature?: boolean;
+}
+
+interface SendDedupedHtmlEmailInput {
+  /** Plain-text body. */
+  text: string;
+  /** HTML body. */
+  html: string;
+  react?: never;
+}
+
+interface SendDedupedReactEmailInput {
+  /** React Email template. */
+  react: ReactElement;
+  html?: never;
+  text?: never;
+}
+
+type SendDedupedEmailInput = SendDedupedEmailBaseInput &
+  (SendDedupedHtmlEmailInput | SendDedupedReactEmailInput);
+
+function hasReactEmailContent(
+  input: SendDedupedEmailInput,
+): input is SendDedupedEmailBaseInput & SendDedupedReactEmailInput {
+  return Boolean(input.react);
 }
 
 export async function sendDedupedEmail(
@@ -63,16 +88,27 @@ export async function sendDedupedEmail(
   }
 
   try {
-    const result = await sendResendEmail({
-      emailLogId: claimed.emailLogId,
-      html: input.html,
-      scope: input.scope,
-      skipWishoniaSignature: input.skipWishoniaSignature,
-      subject: input.subject,
-      text: input.text,
-      to: input.toAddress,
-      userId: input.userId,
-    });
+    const result =
+      hasReactEmailContent(input)
+        ? await sendReactEmail({
+            emailLogId: claimed.emailLogId,
+            react: input.react,
+            scope: input.scope,
+            skipWishoniaSignature: input.skipWishoniaSignature,
+            subject: input.subject,
+            to: input.toAddress,
+            userId: input.userId,
+          })
+        : await sendResendEmail({
+            emailLogId: claimed.emailLogId,
+            html: input.html,
+            scope: input.scope,
+            skipWishoniaSignature: input.skipWishoniaSignature,
+            subject: input.subject,
+            text: input.text,
+            to: input.toAddress,
+            userId: input.userId,
+          });
 
     if (result.status === "sent") {
       await markEmailLogStatus({

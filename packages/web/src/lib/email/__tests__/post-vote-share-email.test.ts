@@ -1,29 +1,35 @@
+import React from "react";
 import { describe, expect, it } from "vitest";
-import {
-  buildPostVoteShareHtml,
-  buildPostVoteShareText,
-} from "../post-vote-share-email";
+import { PostVoteShareReactEmail } from "../post-vote-share-react-email";
+import { renderReactEmailBody } from "../render-react-email";
 
 const SAMPLE_URL = "https://warondisease.org/r/ABCD1234";
 
-describe("post-vote share email builders", () => {
-  it("renders forward-friendly HTML with the message body and a button", () => {
-    const html = buildPostVoteShareHtml(SAMPLE_URL);
+async function renderPostVoteShareEmail(referralUrl = SAMPLE_URL) {
+  return renderReactEmailBody(
+    React.createElement(PostVoteShareReactEmail, { referralUrl }),
+  );
+}
+
+describe("post-vote share email template", () => {
+  it("renders forward-friendly HTML with the message body and a button", async () => {
+    const { html } = await renderPostVoteShareEmail();
     expect(html).toContain(SAMPLE_URL);
-    expect(html).toContain("End war and disease");
-    expect(html).toContain("forward this to two humans");
+    expect(html).toContain("Share with two humans");
+    expect(html).toContain("Forward this email");
   });
 
-  it("escapes the URL so a hostile referral code cannot inject HTML", () => {
+  it("escapes the URL so a hostile referral code cannot inject HTML", async () => {
     const hostile = "https://warondisease.org/r/<script>alert(1)</script>";
-    const html = buildPostVoteShareHtml(hostile);
+    const { html } = await renderPostVoteShareEmail(hostile);
     expect(html).not.toContain("<script>");
     expect(html).toContain("&lt;script&gt;");
   });
 
-  it("plaintext fallback embeds the URL and forward math", () => {
-    const text = buildPostVoteShareText(SAMPLE_URL);
+  it("plaintext fallback embeds the URL and forward prompt", async () => {
+    const { text } = await renderPostVoteShareEmail();
     expect(text).toContain(SAMPLE_URL);
-    expect(text).toContain("4,300,000,000");
+    expect(text).toContain("Forward this email");
+    expect(text).toContain("wherever humans read your words");
   });
 });

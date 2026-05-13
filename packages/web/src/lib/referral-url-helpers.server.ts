@@ -4,8 +4,8 @@ import { buildUserReferralUrl } from "@/lib/url";
 /**
  * Look up a user's personal referral URL by id. Returns null when the user
  * is missing or the caller passed null. Used by transactional notification
- * builders (task assignment, task comment, etc.) to embed a "recruit two
- * more humans" share footer at the bottom of every engaged-user email.
+ * builders (task assignment, task comment, etc.) to embed a share footer at
+ * the bottom of every engaged-user email.
  *
  * Lives in its own module because it's referenced by two notification
  * pipelines (`task-assignment-notifications.server.ts`,

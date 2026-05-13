@@ -20,7 +20,6 @@ function isLocalDatabaseHost(hostname: string) {
 function assertRemoteSeedIsIntentional(connectionString: string) {
   const url = new URL(connectionString);
   if (isLocalDatabaseHost(url.hostname)) return;
-  if (process.env.CI === "true") return;
   if (process.env.MANAGED_DATA_ALLOW_REMOTE_APPLY === "1") return;
 
   throw new Error(

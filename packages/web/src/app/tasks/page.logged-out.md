@@ -16,7 +16,7 @@
 ## EARTH OPTIMIZATION TASKS
 - A public to-do list for optimizing Earth. Each task names the human or organization, gives them a specific job, and shows the cost of waiting.
 ### HUMANITY'S TASKS
-- Sort
+- SORT
 - ASSIGNEE
 - TASK
 - STATUS
@@ -24,10 +24,8 @@
 - WASTED BY DELAY ↓
 - TIME
 - REMIND
-- Optimize Earth
+- [Optimize Earth](/tasks/optimize-earth)
 - [initials]
 - YOU
-- Remind
 ### YOUR TASKS
-#### VOTE ON THE 1% TREATY
-- Redirect 1% of military spending to clinical trials. 30 seconds. One vote. The only task that matters until you cast it.
+- [VOTE ON THE 1% TREATYRedirect 1% of military spending to clinical trials. 30 seconds. One vote. The only task that matters until you cast it.→](/vote)

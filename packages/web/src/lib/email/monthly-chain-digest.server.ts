@@ -10,20 +10,28 @@
  * Driven by `app/api/cron/monthly-chain-digest/route.ts`.
  */
 
-import { ReferendumStatus, VotePosition } from "@optimitron/db";
+import React from "react";
+import {
+  ReferralInvitationStatus,
+  ReferendumStatus,
+  TaskStatus,
+  VotePosition,
+} from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import type { SendResult } from "@/lib/email/resend";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import {
   MONTHLY_CHAIN_DIGEST_TEMPLATE_ID,
-  buildMonthlyChainDigestHtml,
   buildMonthlyChainDigestSubject,
-  buildMonthlyChainDigestText,
+  type MonthlyChainDigestLeader,
+  type MonthlyChainDigestPerson,
   type MonthlyChainDigestInput,
 } from "@/lib/email/monthly-chain-digest-email";
+import { MonthlyChainDigestReactEmail } from "@/lib/email/monthly-chain-digest-react-email";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { ROUTES } from "@/lib/routes";
+import { TREATY_SIGNER_TASK_KEY_PREFIX } from "@/lib/tasks/task-keys";
 import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
 
 const log = createLogger("monthly-chain-digest");
@@ -43,6 +51,12 @@ interface DigestRecipient {
   handle: string | null;
   referralCode: string | null;
 }
+
+const PENDING_INVITATION_STATUSES: ReferralInvitationStatus[] = [
+  ReferralInvitationStatus.PENDING,
+  ReferralInvitationStatus.COPIED,
+  ReferralInvitationStatus.SENT,
+];
 
 function monthBucket(now: Date): string {
   const year = now.getUTCFullYear();
@@ -153,12 +167,37 @@ export async function publishMonthlyChainDigest(input?: {
     errors: [],
   };
 
+  const overduePresidentSnapshot = await loadOverduePresidentSnapshot(now);
+
   for (const recipient of recipients) {
     result.attempted += 1;
     try {
-      const [monthlyConversionCount, totalConversionCount] = await Promise.all(
-        [
-          prisma.referendumVote.count({
+      const [
+        monthlyConversionCount,
+        totalConversionCount,
+        completedEmployees,
+        overdueEmployeeCount,
+        overdueEmployees,
+      ] = await Promise.all([
+        prisma.referendumVote.count({
+          where: {
+            referendumId: referendum.id,
+            answer: VotePosition.YES,
+            referredByUserId: recipient.userId,
+            deletedAt: null,
+            createdAt: { gte: windowStart },
+          },
+        }),
+        prisma.referendumVote.count({
+          where: {
+            referendumId: referendum.id,
+            answer: VotePosition.YES,
+            referredByUserId: recipient.userId,
+            deletedAt: null,
+          },
+        }),
+        prisma.referendumVote
+          .findMany({
             where: {
               referendumId: referendum.id,
               answer: VotePosition.YES,
@@ -166,28 +205,75 @@ export async function publishMonthlyChainDigest(input?: {
               deletedAt: null,
               createdAt: { gte: windowStart },
             },
-          }),
-          prisma.referendumVote.count({
-            where: {
-              referendumId: referendum.id,
-              answer: VotePosition.YES,
-              referredByUserId: recipient.userId,
-              deletedAt: null,
+            orderBy: { createdAt: "desc" },
+            take: 8,
+            select: {
+              createdAt: true,
+              person: { select: { displayName: true } },
+              user: {
+                select: {
+                  email: true,
+                  person: { select: { displayName: true } },
+                },
+              },
             },
-          }),
-        ],
+          })
+          .then((votes): MonthlyChainDigestPerson[] =>
+            votes.map((vote) => ({
+              completedAt: vote.createdAt,
+              displayName:
+                vote.person.displayName ||
+                vote.user.person?.displayName ||
+                vote.user.email ||
+                "Employee",
+            })),
+          ),
+        prisma.referralInvitation.count({
+          where: {
+            deletedAt: null,
+            referrerUserId: recipient.userId,
+            status: { in: PENDING_INVITATION_STATUSES },
+            OR: [{ referendumId: referendum.id }, { referendumId: null }],
+          },
+        }),
+        prisma.referralInvitation
+          .findMany({
+            where: {
+              deletedAt: null,
+              referrerUserId: recipient.userId,
+              status: { in: PENDING_INVITATION_STATUSES },
+              OR: [{ referendumId: referendum.id }, { referendumId: null }],
+            },
+            orderBy: { createdAt: "asc" },
+            take: 8,
+            select: { recipientName: true },
+          })
+          .then((invitations): MonthlyChainDigestPerson[] =>
+            invitations.map((invitation) => ({
+              displayName: invitation.recipientName,
+            })),
+          ),
+      ]);
+
+      const baseUrl = getBaseUrl();
+      const referralUrl = buildUserReferralUrl(
+        {
+          handle: recipient.handle,
+          referralCode: recipient.referralCode,
+        },
+        baseUrl,
       );
 
-      const referralUrl = buildUserReferralUrl({
-        handle: recipient.handle,
-        referralCode: recipient.referralCode,
-      });
-
       const digestInput: MonthlyChainDigestInput = {
+        completedEmployees,
         monthlyConversionCount,
+        overdueEmployeeCount,
+        overdueEmployees,
+        overduePresidentCount: overduePresidentSnapshot.count,
+        overduePresidents: overduePresidentSnapshot.presidents,
         totalConversionCount,
         referralUrl,
-        dashboardUrl: `${getBaseUrl()}${ROUTES.dashboard}`,
+        dashboardUrl: `${baseUrl}${ROUTES.dashboard}`,
         monthLabel: label,
       };
 
@@ -234,11 +320,53 @@ async function sendMonthlyChainDigestEmail(input: {
     dedupeKey: `${MONTHLY_CHAIN_DIGEST_TEMPLATE_ID}:${input.userId}:${input.monthBucket}`,
     templateId: MONTHLY_CHAIN_DIGEST_TEMPLATE_ID,
     subject,
-    html: buildMonthlyChainDigestHtml(input.digestInput),
-    text: buildMonthlyChainDigestText(input.digestInput),
+    react: React.createElement(MonthlyChainDigestReactEmail, {
+      input: input.digestInput,
+    }),
     userId: input.userId,
     toAddress: input.toAddress,
     scope: "onboarding",
     skipWishoniaSignature: true,
   });
+}
+
+async function loadOverduePresidentSnapshot(
+  now: Date,
+): Promise<{ count: number; presidents: MonthlyChainDigestLeader[] }> {
+  const where = {
+    assigneePersonId: { not: null },
+    deletedAt: null,
+    dueAt: { lt: now },
+    status: { not: TaskStatus.VERIFIED },
+    taskKey: { startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:` },
+  } as const;
+
+  const [count, tasks] = await Promise.all([
+    prisma.task.count({ where }),
+    prisma.task.findMany({
+      where,
+      orderBy: [{ dueAt: "asc" }, { createdAt: "asc" }],
+      take: 8,
+      select: {
+        assigneeAffiliationSnapshot: true,
+        assigneePerson: {
+          select: {
+            currentAffiliation: true,
+            displayName: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  return {
+    count,
+    presidents: tasks.map((task) => ({
+      countryLabel:
+        task.assigneePerson?.currentAffiliation ||
+        task.assigneeAffiliationSnapshot ||
+        null,
+      displayName: task.assigneePerson?.displayName || "President",
+    })),
+  };
 }
