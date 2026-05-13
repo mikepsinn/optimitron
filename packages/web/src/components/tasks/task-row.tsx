@@ -278,12 +278,14 @@ export function TaskRow({
   task,
   variant = "default",
   hideAssignee = false,
+  now,
 }: {
   task: TaskCardTask;
   variant?: TaskListVariant;
   hideAssignee?: boolean;
+  now: Date | null;
 }) {
-  const delayStats = getTaskDelayStats(task);
+  const delayStats = now ? getTaskDelayStats(task, now) : null;
   const assignedToYou = isAssignedToYou(task);
   const targetLabel = assignedToYou
     ? "You"
@@ -302,36 +304,38 @@ export function TaskRow({
     .join("");
 
   const shareText = buildTaskShareText({
-    currentDelayDays: delayStats.currentDelayDays,
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
+    currentDelayDays: delayStats?.currentDelayDays ?? 0,
+    currentEconomicValueUsdLost: delayStats?.currentEconomicValueUsdLost ?? null,
+    currentHumanLivesLost: delayStats?.currentHumanLivesLost ?? null,
+    currentSufferingHoursLost: delayStats?.currentSufferingHoursLost ?? null,
     targetLabel,
     taskTitle: task.title,
   });
   const leaderHandle = getLeaderHandle(task);
 
-  const shareTokens = buildTaskShareTokens({
+  const shareTokens = now ? buildTaskShareTokens({
     countryCode,
-    currentDelayDays: delayStats.currentDelayDays,
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
+    currentDelayDays: delayStats?.currentDelayDays ?? 0,
+    currentEconomicValueUsdLost: delayStats?.currentEconomicValueUsdLost ?? null,
+    currentHumanLivesLost: delayStats?.currentHumanLivesLost ?? null,
+    currentSufferingHoursLost: delayStats?.currentSufferingHoursLost ?? null,
     governmentBudgetUsdPerYear: governmentBudgetUsd,
     leaderHandle,
     militaryToClinicalTrialsRatio,
     militaryBudgetUsdPerYear: assigneeBudget,
+    now,
     targetLabel,
     taskTitle: task.title,
-  });
+  }) : undefined;
 
   const pressurePrompt: string | null = null;
 
   const dueMs = getTaskDateMs(task.dueAt);
-  const isOverdue = dueMs != null && dueMs < Date.now();
+  const isOverdue = dueMs != null && now != null && dueMs < now.getTime();
+  const currentDelayDays = delayStats?.currentDelayDays ?? 0;
 
   const perDayDalys = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
-  const moneyWasted = delayStats.currentEconomicValueUsdLost;
+  const moneyWasted = delayStats?.currentEconomicValueUsdLost ?? null;
   // Per-second delay rates for live counters. Deaths derived from
   // delayDalysLostPerDayBase / 40 years-per-death; money from
   // delayEconomicValueUsdLostPerDayBase. Signer tasks will override these
@@ -385,7 +389,7 @@ export function TaskRow({
       task.assigneePerson?.currentAffiliation ?? task.roleTitle ?? null;
     const attribution = getSignerDelayAttribution(
       assigneeBudget,
-      delayStats.currentDelayDays,
+      delayStats?.currentDelayDays ?? 0,
     );
     // Per-second growth rates for the live counters — attribution share
     // × global daily disease numbers ÷ 86400 seconds.
@@ -394,35 +398,42 @@ export function TaskRow({
     const deathsPerSecond = (DAILY_DISEASE_DEATHS * share) / 86400;
     const usdPerSecond = (DAILY_DISEASE_COST_USD * share) / 86400;
     const canTick =
-      dueMs != null && dueMs < Date.now() && share > 0 && attribution != null;
+      dueMs != null &&
+      now != null &&
+      dueMs < now.getTime() &&
+      share > 0 &&
+      attribution != null;
     // Compact packed caption for mobile (desktop uses full numbers below).
     const deathsTextCompact =
       attribution != null ? formatCompactCount(attribution.deathsFromDelay) : "—";
     const wastedTextCompact =
       attribution != null ? formatCompactCurrency(attribution.wastedUsd) : "—";
     const signerShareText = buildTaskShareText({
-      currentDelayDays: delayStats.currentDelayDays,
-      currentEconomicValueUsdLost: attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
-      currentHumanLivesLost: attribution?.deathsFromDelay ?? delayStats.currentHumanLivesLost,
+      currentDelayDays: delayStats?.currentDelayDays ?? 0,
+      currentEconomicValueUsdLost:
+        attribution?.wastedUsd ?? delayStats?.currentEconomicValueUsdLost ?? null,
+      currentHumanLivesLost:
+        attribution?.deathsFromDelay ?? delayStats?.currentHumanLivesLost ?? null,
       currentSufferingHoursLost: null,
       targetLabel,
       taskTitle: task.title,
     });
-    const signerShareTokens = buildTaskShareTokens({
+    const signerShareTokens = now ? buildTaskShareTokens({
       countryCode,
-      currentDelayDays: delayStats.currentDelayDays,
+      currentDelayDays: delayStats?.currentDelayDays ?? 0,
       currentEconomicValueUsdLost:
-        attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
+        attribution?.wastedUsd ?? delayStats?.currentEconomicValueUsdLost ?? null,
       currentHumanLivesLost:
-        attribution?.deathsFromDelay ?? delayStats.currentHumanLivesLost,
+        attribution?.deathsFromDelay ?? delayStats?.currentHumanLivesLost ?? null,
       currentSufferingHoursLost: null,
       governmentBudgetUsdPerYear: governmentBudgetUsd,
       leaderHandle,
       militaryToClinicalTrialsRatio,
       militaryBudgetUsdPerYear: assigneeBudget,
+      now,
       targetLabel,
       taskTitle: task.title,
-    });
+    }) : undefined;
     return (
       <div
         className={`relative flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
@@ -752,8 +763,8 @@ export function TaskRow({
         <div className="mt-1 flex flex-wrap gap-1 lg:hidden">
           {isOverdue ? (
             <StatusBadge variant="overdue">
-              {delayStats.currentDelayDays > 365
-                ? `${formatDelayDuration(delayStats.currentDelayDays)} overdue`
+              {currentDelayDays > 365
+                ? `${formatDelayDuration(currentDelayDays)} overdue`
                 : "overdue"}
             </StatusBadge>
           ) : task.dueAt ? (
@@ -786,8 +797,8 @@ export function TaskRow({
       <div className="relative z-[1] hidden shrink-0 sm:block lg:hidden">
         {isOverdue ? (
           <StatusBadge variant="overdue">
-            {delayStats.currentDelayDays > 365
-              ? `${formatDelayDuration(delayStats.currentDelayDays)} overdue`
+            {currentDelayDays > 365
+              ? `${formatDelayDuration(currentDelayDays)} overdue`
               : "overdue"}
           </StatusBadge>
         ) : task.dueAt ? (

@@ -20,6 +20,24 @@
  *   - The URL appears inline rather than as a "click here" button so the
  *     same string works in plain-text and HTML inboxes alike.
  */
+const SHARE_MESSAGE_PREFIX =
+  "I love you and don't want you to suffer and die of horrible diseases so please take ";
+const SHARE_MESSAGE_TIME_TEXT = "30 seconds";
+const SHARE_MESSAGE_MIDDLE = " to vote on this stupid treaty at ";
+const SHARE_MESSAGE_SUFFIX =
+  " as it will reduce the likelihood you will suffer and die of horrible diseases.";
+
+export function getShareMessageParts(referralUrl: string) {
+  return {
+    prefix: SHARE_MESSAGE_PREFIX,
+    timeText: SHARE_MESSAGE_TIME_TEXT,
+    middle: SHARE_MESSAGE_MIDDLE,
+    referralUrl,
+    suffix: SHARE_MESSAGE_SUFFIX,
+  };
+}
+
 export function buildShareMessage(referralUrl: string): string {
-  return `I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to vote on this stupid treaty at ${referralUrl} as it will reduce the likelihood you will suffer and die of horrible diseases.`;
+  const parts = getShareMessageParts(referralUrl);
+  return `${parts.prefix}${parts.timeText}${parts.middle}${parts.referralUrl}${parts.suffix}`;
 }

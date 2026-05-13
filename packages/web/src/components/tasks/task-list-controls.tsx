@@ -9,6 +9,7 @@ import {
   type TaskSortKey,
 } from "./task-row";
 import type { TaskCardTask } from "./task-card";
+import { useHydratedNow } from "@/lib/use-hydrated-now";
 
 const SORT_OPTIONS: { key: TaskSortKey; label: string }[] = [
   { key: "deathsLockedIn", label: "Deaths From Delay" },
@@ -58,6 +59,7 @@ export function SortableTaskList({
   /** Hide the assignee column — useful on person profiles where every row shares the same assignee. */
   hideAssignee?: boolean;
 }) {
+  const now = useHydratedNow();
   const [sortKey, setSortKey] = useState<TaskSortKey>(defaultSortKey);
   const [sortDir, setSortDir] = useState<"asc" | "desc">(defaultSortDir);
   const [filter, setFilter] = useState("");
@@ -144,7 +146,13 @@ export function SortableTaskList({
             ? sorted.slice(page * pageSize, (page + 1) * pageSize)
             : sorted
           ).map((task) => (
-            <TaskRow key={task.id} task={task} variant={variant} hideAssignee={hideAssignee} />
+            <TaskRow
+              key={task.id}
+              task={task}
+              variant={variant}
+              hideAssignee={hideAssignee}
+              now={now}
+            />
           ))
         ) : (
           <div className="px-4 py-6 text-center text-xs font-bold text-muted-foreground">

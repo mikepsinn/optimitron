@@ -286,6 +286,8 @@ export interface TaskShareTokenInput {
   now?: Date;
   /** Full treaty URL with referral param. Defaults to warondisease.org/treaty. */
   treatyUrl?: string;
+  /** Stable seed for copy variations. Defaults to the task and target names. */
+  variationSeed?: string | null;
 }
 
 /** Zero-based index among the six templates → 1st/2nd reminder suffix. */
@@ -294,6 +296,16 @@ function yearToDateFraction(now: Date): number {
   const msInYear = Date.UTC(now.getUTCFullYear() + 1, 0, 1) - yearStart;
   const elapsed = now.getTime() - yearStart;
   return Math.max(0, Math.min(1, elapsed / msInYear));
+}
+
+function stableIndex(seed: string, length: number): number {
+  if (length <= 0) return 0;
+  let hash = 2166136261;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % length;
 }
 
 /**
@@ -352,12 +364,14 @@ export function buildTaskShareTokens(
         ? MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value
         : null;
 
-  // Random synonym for "military spending" — varies per render so
-  // shares from the same task don't all look identical on social feeds.
+  // Stable synonym for "military spending" so SSR and hydration render the
+  // same text while different tasks still get varied share copy.
+  const variationSeed =
+    input.variationSeed ??
+    `${input.taskTitle}|${input.targetLabel}|${input.countryCode ?? ""}`;
   const milSynonym =
-    MILITARY_SPENDING_SYNONYMS[
-      Math.floor(Math.random() * MILITARY_SPENDING_SYNONYMS.length)
-    ] ?? "military spending";
+    MILITARY_SPENDING_SYNONYMS[stableIndex(variationSeed, MILITARY_SPENDING_SYNONYMS.length)] ??
+    "military spending";
 
   return {
     leader_name: input.targetLabel,

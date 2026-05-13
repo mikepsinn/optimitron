@@ -1,4 +1,6 @@
 import type { SendVerificationRequestParams } from "next-auth/providers/email";
+import React from "react";
+import { renderReactEmailHtml } from "@/lib/email/render-react-email";
 import { getSiteFromHost, type SiteKey } from "@/lib/site";
 
 interface MagicLinkCopy {
@@ -63,29 +65,17 @@ export function escapeHtml(value: string) {
 export function buildMagicLinkHtml(
   url: string,
   host: string,
-  theme: SendVerificationRequestParams["theme"],
+  _theme: SendVerificationRequestParams["theme"],
 ) {
   const copy = getMagicLinkCopy(host);
-  const escapedUrl = escapeHtml(url);
-  const brandColor = theme.brandColor || "#111827";
-  const buttonText = theme.buttonText || "#ffffff";
-
-  return `
-    <div style="padding:32px 16px;font-family:Arial,sans-serif;color:#111827;">
-      <p style="margin:0 0 20px;font-size:16px;line-height:1.6;">
-        ${escapeHtml(copy.intro)}
-      </p>
-      <a
-        href="${escapedUrl}"
-        style="display:inline-block;background:${brandColor};color:${buttonText};padding:14px 24px;text-decoration:none;font-weight:700;border:2px solid #111827;"
-      >
-        ${escapeHtml(copy.buttonLabel)}
-      </a>
-      <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#71717a;">
-        ${escapeHtml(copy.notRequested)}
-      </p>
-    </div>
-  `;
+  return renderReactEmailHtml(
+    React.createElement(MagicLinkReactEmail, {
+      url,
+      intro: copy.intro,
+      buttonLabel: copy.buttonLabel,
+      notRequested: copy.notRequested,
+    }),
+  );
 }
 
 export function buildMagicLinkText(url: string, host: string) {
@@ -99,7 +89,6 @@ export function buildMagicLinkText(url: string, host: string) {
   ].join("\n");
 }
 
-import React from "react";
 import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
 import { MagicLinkReactEmail } from "@/lib/email/magic-link-react-email";
 import type { EmailPreview } from "@/lib/email/preview-envelope";
@@ -117,11 +106,6 @@ export const MAGIC_LINK_PREVIEW: EmailPreview = {
   from: () => formatDefaultSystemEmailFromHeader(),
   subject: () => buildMagicLinkSubject(SAMPLE_MAGIC_LINK_HOST),
   skipWishoniaSignature: false,
-  render: () =>
-    buildMagicLinkHtml(SAMPLE_MAGIC_LINK_URL, SAMPLE_MAGIC_LINK_HOST, {
-      brandColor: "#111827",
-      buttonText: "#ffffff",
-    }),
   renderReact: () => {
     const copy = getMagicLinkCopy(SAMPLE_MAGIC_LINK_HOST);
     return React.createElement(MagicLinkReactEmail, {

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
@@ -28,6 +30,7 @@ import {
 } from "@/lib/tasks/delay-attribution";
 import { isTreatyParentTaskKey } from "@/lib/tasks/task-keys";
 import { getTaskPath } from "@/lib/routes";
+import { useHydratedNow } from "@/lib/use-hydrated-now";
 
 function formatTotalEffort(hours: number | null | undefined): string | null {
   if (hours == null || hours <= 0) return null;
@@ -45,14 +48,17 @@ function getTaskDateMs(value: Date | string | null | undefined): number | null {
 }
 
 export function ProgramCard({ task }: { task: TaskCardTask }) {
-  const delayStats = getTaskDelayStats(task);
+  const now = useHydratedNow();
+  const delayStats = now ? getTaskDelayStats(task, now) : null;
   const overdueLabel =
-    delayStats.isOverdue && delayStats.currentDelayDays > 0
+    delayStats?.isOverdue && delayStats.currentDelayDays > 0
       ? formatDelayDuration(delayStats.currentDelayDays)
       : null;
-  const costOfDelay = getTreatyLevelCostOfDelay(delayStats.currentDelayDays);
+  const costOfDelay = delayStats
+    ? getTreatyLevelCostOfDelay(delayStats.currentDelayDays)
+    : null;
   const dueMs = getTaskDateMs(task.dueAt);
-  const canTick = dueMs != null && dueMs < Date.now();
+  const canTick = dueMs != null && now != null && dueMs < now.getTime();
   const isTreatyParent = isTreatyParentTaskKey(task.taskKey);
   const totalEffortLabel = formatTotalEffort(task.estimatedEffortHours);
 
@@ -176,8 +182,8 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
               />{" "}
               ×{" "}
               <span data-volatile="days-overdue">
-                {delayStats.currentDelayDays.toLocaleString()}{" "}
-                {delayStats.currentDelayDays === 1 ? "day" : "days"}
+                {delayStats?.currentDelayDays.toLocaleString() ?? "0"}{" "}
+                {delayStats?.currentDelayDays === 1 ? "day" : "days"}
               </span>
             </p>
           </div>

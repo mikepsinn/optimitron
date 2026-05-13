@@ -15,7 +15,7 @@ describe("post-vote share email template", () => {
   it("renders forward-friendly HTML with the message body and a button", async () => {
     const { html } = await renderPostVoteShareEmail();
     expect(html).toContain(SAMPLE_URL);
-    expect(html).toContain("Share with two humans");
+    expect(html).toContain("End war and disease");
     expect(html).toContain("Forward this email");
   });
 

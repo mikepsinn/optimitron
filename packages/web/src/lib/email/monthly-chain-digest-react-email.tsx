@@ -10,6 +10,9 @@ import {
   CampaignShareFooter,
   CampaignText,
 } from "@/lib/email/react-email-components";
+import { ParameterValue } from "@/components/shared/ParameterValue";
+import { SHARING_TIME_MINUTES } from "@optimitron/data/parameters";
+import { ReferralChainMath } from "@/lib/email/share-footer";
 import type {
   MonthlyChainDigestInput,
   MonthlyChainDigestLeader,
@@ -45,7 +48,12 @@ function PositiveMonthlyDigest({ input }: { input: MonthlyChainDigestInput }) {
         Humanity Management Status Report - {input.monthLabel}
       </CampaignEyebrow>
       <CampaignHeading>
-        {monthly} {employeesLabel} completed their 30-second task.
+        {monthly} {employeesLabel} completed their{" "}
+        <ParameterValue
+          param={SHARING_TIME_MINUTES}
+          valueOverride="30-second"
+        />{" "}
+        task.
       </CampaignHeading>
       <CampaignText>
         Total employees completed through your link, all time: {total}.
@@ -63,7 +71,7 @@ function PositiveMonthlyDigest({ input }: { input: MonthlyChainDigestInput }) {
         message={buildPresidentReminderMessage()}
       />
       <CampaignText>
-        The math: 32 doubling rounds x 2 referrals each = 4,300,000,000 humans.
+        The math: <ReferralChainMath />.
         The chain only reaches that ceiling if managers keep reminding late
         employees. This is why management exists, unfortunately.
       </CampaignText>
@@ -80,7 +88,12 @@ function ResendMonthlyDigest({ input }: { input: MonthlyChainDigestInput }) {
         Humanity Management Status Report - {input.monthLabel}
       </CampaignEyebrow>
       <CampaignHeading>
-        No employees completed the 30-second task through your link this month.
+        No employees completed the{" "}
+        <ParameterValue
+          param={SHARING_TIME_MINUTES}
+          valueOverride="30-second"
+        />{" "}
+        task through your link this month.
       </CampaignHeading>
       <StatusTable input={input} />
       <ReminderSection

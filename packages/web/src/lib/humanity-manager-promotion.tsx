@@ -2,19 +2,8 @@
  * Humanity Manager promotion — shared component rendered in BOTH the
  * dashboard's post-vote share card and the post-vote-share email.
  *
- * The caller passes a tiny `renderParam` function (and `target` prop for
- * the link/text/heading variants). The dashboard passes a renderer that
- * uses `<ParameterValue>` (with popover tooltips). The email passes one
- * that uses just `<strong>{fmtParamValueOnly(...)}</strong>` (no popover —
- * email clients can't host one).
- *
- * Why a callback instead of importing `<ParameterValue>` directly: the
- * dashboard's `<ParameterValue>` pulls in Radix Dialog + a Latex component
- * with module-top katex CSS imports. When `@react-email/components`
- * server-renders this for an email preview, that import chain trips Next.js
- * client-component boundaries and hangs the request. Keeping the shared
- * module free of dashboard-only deps is the constraint; the callback shape
- * is the minimal accommodation.
+ * Parameter values render through the adaptive `<ParameterValue>` facade:
+ * web gets the popover, email gets a manual-page link with inline styles.
  *
  * Interactive bits (textarea, share buttons) live in the dashboard wrapper —
  * those genuinely cannot run in email regardless of approach.
@@ -25,43 +14,33 @@ import * as React from "react";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
-  fmtParamValueOnly,
   GLOBAL_POPULATION_2024,
   GLOBAL_WARHEAD_COUNT,
   NUCLEAR_WINTER_WARHEAD_THRESHOLD,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   type Parameter,
 } from "@optimitron/data/parameters";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { ROUTES } from "@/lib/routes";
-import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
+import {
+  FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM,
+  FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
+  FLOW_REFERRALS_PER_VOTER,
+} from "@/lib/treaty-share-flow-parameters";
 import { getBaseUrl } from "@/lib/url";
 
 export type RenderTarget = "browser" | "email";
 
-/** Renderer for a single parameter value. Browser callers wrap the value
- *  in `<ParameterValue>` for citation tooltips. Email callers use the
- *  default below (bold text only). */
+/** Renderer for a single parameter value. Browser callers may override to add
+ *  local styling; email callers normally use the adaptive default. */
 export type RenderParam = (
   param: Parameter,
   figures: number,
 ) => React.ReactNode;
 
-const defaultEmailRenderParam: RenderParam = (param, figures) => {
-  const text = fmtParamValueOnly(param, figures);
-  // Wrap in a manual-chapter link when available so curious readers can
-  // click through — same affordance as the dashboard's popover.
-  if (param.manualPageUrl) {
-    return (
-      <a
-        href={param.manualPageUrl}
-        style={{ color: "#111827", textDecoration: "underline" }}
-      >
-        <strong>{text}</strong>
-      </a>
-    );
-  }
-  return <strong>{text}</strong>;
-};
+const defaultRenderParam: RenderParam = (param, figures) => (
+  <ParameterValue param={param} figures={figures} />
+);
 
 /** Promote a relative path to an absolute URL for email contexts. */
 function absoluteEmailUrl(href: string): string {
@@ -212,11 +191,10 @@ export function HumanityManagerPromotion({
   renderParam,
 }: {
   target: RenderTarget;
-  /** Required for `target="browser"` to enable ParameterValue tooltips.
-   *  Optional for `target="email"` — defaults to bold + manual-chapter link. */
+  /** Optional local styling hook for browser callers. */
   renderParam?: RenderParam;
 }) {
-  const rp = renderParam ?? defaultEmailRenderParam;
+  const rp = renderParam ?? defaultRenderParam;
   return (
     <>
       <PromoEyebrow target={target}>Humanity Manager · Assignment 1</PromoEyebrow>
@@ -242,11 +220,24 @@ export function HumanityManagerPromotion({
           {rp(DFDA_QUEUE_CLEARANCE_YEARS, 2)}.
         </PromoText>
         <PromoText target={target} muted>
-          To get there: send the message below to two humans you love. They
-          send it to two. 32 rounds reaches every adult on Earth. Getting
-          humans to agree on one thing is the first step to any civilizational
-          upgrade. You are responsible for this step. It cannot be completed
-          without you.
+          To get there: send the message below to{" "}
+          <ParameterValue
+            param={FLOW_REFERRALS_PER_VOTER}
+            valueOverride="two"
+          />{" "}
+          humans you love. They send it to{" "}
+          <ParameterValue
+            param={FLOW_REFERRALS_PER_VOTER}
+            valueOverride="two"
+          />
+          .{" "}
+          <ParameterValue
+            param={FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM}
+            display="integer"
+          />{" "}
+          rounds reaches every adult on Earth. Getting humans to agree on one
+          thing is the first step to any civilizational upgrade. You are
+          responsible for this step. It cannot be completed without you.
         </PromoText>
       </PromoBody>
     </>

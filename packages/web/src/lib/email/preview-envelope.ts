@@ -19,7 +19,6 @@
  * aggregates them. Adding a template = a new const + one registry entry.
  */
 
-import { render } from "@react-email/components";
 import type { ReactElement } from "react";
 import {
   buildWishoniaSignatureHtml,
@@ -30,6 +29,7 @@ import {
   type WishoniaSignatureSelection,
 } from "@/lib/email/wishonia-signature";
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
+import { renderReactEmailHtml } from "@/lib/email/render-react-email";
 import { isEmailScope, isTransactionalScope } from "@/lib/email/scopes";
 
 /** Realistic-looking sample values used by every preview renderer. */
@@ -195,7 +195,7 @@ export async function renderPreviewBodyHtml(
   preview: EmailPreview,
 ): Promise<string> {
   if (preview.renderReact) {
-    return render(preview.renderReact());
+    return renderReactEmailHtml(preview.renderReact());
   }
   if (preview.render) {
     return preview.render();

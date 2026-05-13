@@ -27,8 +27,9 @@ import {
 import {
   buildUserInviteReferralUrl,
   buildUserReferralUrl,
-  getBaseUrl,
 } from "@/lib/url";
+import { useHydratedNow } from "@/lib/use-hydrated-now";
+import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import {
   createReferralInvitationRequest,
   updateReferralInvitationRequest,
@@ -124,6 +125,8 @@ export function TreatyReminderComposer({
   surface = "post_vote_reminders",
 }: TreatyReminderComposerProps = {}) {
   const { data: session } = useSession();
+  const now = useHydratedNow();
+  const requestOrigin = useRequestSiteOrigin();
   const initialRecipientMode =
     defaultRecipientMode ?? (defaultCowardMode ? "humanity" : "president");
   const [recipientMode, setRecipientMode] =
@@ -143,7 +146,7 @@ export function TreatyReminderComposer({
     useState<GovernmentLeaderClientContext | null>(null);
 
   const countryCode =
-    session?.user?.countryCode || getCountryFromLocale() || "US";
+    session?.user?.countryCode || (now ? getCountryFromLocale() : null) || "US";
 
   useEffect(() => {
     const normalizedCountryCode = countryCode.trim().toUpperCase();
@@ -168,15 +171,20 @@ export function TreatyReminderComposer({
     };
   }, [countryCode]);
 
-  const baseUrl = referralBaseUrl ?? getBaseUrl();
+  const baseUrl = referralBaseUrl ?? requestOrigin;
   const referralIdentity = referralUser ?? session?.user ?? null;
   const referralUrl = referralIdentity
     ? buildUserReferralUrl(referralIdentity, baseUrl)
     : baseUrl;
   const delayDays = useMemo(
-    () => Math.max(0, Math.ceil((Date.now() - TREATY_DUE_AT.getTime()) / DAY_MS)),
-    [],
+    () => (
+      now
+        ? Math.max(0, Math.ceil((now.getTime() - TREATY_DUE_AT.getTime()) / DAY_MS))
+        : 0
+    ),
+    [now],
   );
+  const tokenNow = now ?? TREATY_DUE_AT;
 
   const recipientFirstName = getReferralInvitationFirstName(recipientName);
   const oneHumanTargetName = recipientFirstName || "there";
@@ -203,6 +211,7 @@ export function TreatyReminderComposer({
         leaderContext?.militaryToClinicalTrialsRatio ?? null,
       leaderHandle: null,
       citizenName: session?.user?.name || "A citizen",
+      now: tokenNow,
       treatyUrl: referralUrl,
     });
     return {
@@ -210,7 +219,7 @@ export function TreatyReminderComposer({
       leaderTokenBag: tokens,
       leaderName: targetLabel,
     };
-  }, [countryCode, delayDays, leaderContext, referralUrl, session?.user?.name]);
+  }, [countryCode, delayDays, leaderContext, referralUrl, session?.user?.name, tokenNow]);
 
   const { humanityTemplates, humanityTokenBag } = useMemo(() => {
     const delay = getTreatyLevelCostOfDelay(delayDays);
@@ -222,13 +231,14 @@ export function TreatyReminderComposer({
       currentHumanLivesLost: delay?.deathsFromDelay ?? null,
       currentSufferingHoursLost: null,
       citizenName: session?.user?.name || "A citizen",
+      now: tokenNow,
       treatyUrl: referralUrl,
     });
     return {
       humanityTemplates: getUsableShareTemplates(tokens, "humanity"),
       humanityTokenBag: tokens,
     };
-  }, [delayDays, referralUrl, session?.user?.name]);
+  }, [delayDays, referralUrl, session?.user?.name, tokenNow]);
 
   const { oneHumanTemplates, oneHumanTokenBag } = useMemo(() => {
     const delay = getTreatyLevelCostOfDelay(delayDays);
@@ -240,13 +250,14 @@ export function TreatyReminderComposer({
       currentHumanLivesLost: delay?.deathsFromDelay ?? null,
       currentSufferingHoursLost: null,
       citizenName: session?.user?.name || "A citizen",
+      now: tokenNow,
       treatyUrl: referralUrl,
     });
     return {
       oneHumanTemplates: getUsableShareTemplates(tokens, "one_human"),
       oneHumanTokenBag: tokens,
     };
-  }, [delayDays, oneHumanTargetName, referralUrl, session?.user?.name]);
+  }, [delayDays, oneHumanTargetName, referralUrl, session?.user?.name, tokenNow]);
 
   const [selectedLeaderTemplateId, setSelectedLeaderTemplateId] = useState<string | null>(
     () => pickDefaultShareTemplateId(leaderTemplates, "leader"),
