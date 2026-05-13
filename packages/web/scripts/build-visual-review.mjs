@@ -30,14 +30,14 @@ const pageLinkBaseUrl = parseOptionalUrl(
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
 const assetRoot = path.join(outputRoot, "assets");
 const latestHtmlPath = path.join(outputRoot, "latest.html");
-// 0.5% — high enough that font-antialiasing noise + 1–2px date-text shifts on
-// pages we did not touch (e.g. /treaty WHEREAS dates, /employees DAYS OVERDUE
-// counters) do NOT trigger "changed". Real UI changes (copy rewrites, removed
-// blocks, restored moral framing) easily clear 5–15%. Override with the env
-// var if a regression slips through under 0.5%.
+// 0.1% — tight. The previous 0.5% was a workaround for live-clock drift
+// (/treaty "Signed this day, May 13, 2026", /employees overdue counters);
+// that drift is now eliminated upstream by freezeClock (e2e/helpers/
+// freeze-clock.ts). If pages drift again, fix the SOURCE of the drift
+// (mask with data-volatile or freezeClock), don't widen the threshold.
 const diffPixelRatioThreshold = parseNumberEnv(
   "VISUAL_REVIEW_DIFF_RATIO",
-  0.005,
+  0.001,
 );
 const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
 const allowIncompleteReview =
