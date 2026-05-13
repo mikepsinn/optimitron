@@ -24,6 +24,16 @@ Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scrip
 5. **Regenerate affected `.md` snapshots and screenshots** after any content/component change. Use `node packages/web/scripts/affected-routes.mjs` to pipe changed-file paths into `render-pages-to-markdown.ts --routes=` for targeted regen; fall back to full regen when the change touches shared primitives.
 6. **Nothing committed without user approval.** Codex stages the changeset and reports; Claude relays the summary + diff scope; user OKs; then Claude commits on Codex's behalf (Codex can't touch `.git`).
 
+## Verification tool choice (use the cheapest that gives the answer)
+
+Codex has Playwright MCP wired up (`mcp__playwright__browser_navigate`, `browser_console_messages`, `browser_take_screenshot`, etc.). Use it for spot-checks during the fix-iterate loop — load a page, grab console errors, verify the symptom is gone. 5-15 seconds per route.
+
+DO NOT default to `pnpm --filter @optimitron/web run e2e -- visual --grep <route>` for iteration verification. That command boots a dev/prod server, compiles routes, runs screenshot capture + baseline comparison + Argos upload — 5-10 minutes per filter. Reserve it for the FINAL pre-merge verification pass after the fix is known to work.
+
+Same signal (does the page hydrate without React errors? does the layout look right?) at 50x the cost. Burning 10 minutes per fix-iteration cycle when the same answer is available in 10 seconds is the anti-pattern. Concrete failure: this session, the hydration-investigation Codex spent ~8 minutes of one verification run on `pnpm e2e visual --grep treaty` when the same fix could have been spot-checked via Playwright MCP in seconds.
+
+Include this in every Codex dispatch prompt for fix-iteration tasks: *"Use Playwright MCP (`mcp__playwright__browser_navigate` + `browser_console_messages`) for spot-checks during the iterate loop. Reserve `pnpm e2e visual` for the final verification pass."*
+
 ## One worktree, one branch, one dev server, one PR at a time
 
 **No `git worktree`. No parallel branches. No second PR while another is in flight.** Every Codex dispatch runs in the main checkout (`E:/code/optimitron`) against whatever branch is currently checked out. The user is on ONE feature branch driving ONE PR; Codex's edits land on THAT branch. If the user wants Codex to do something that genuinely doesn't belong in the current PR's scope, the answer is "wait until this PR merges" — NOT "spin up a worktree on a new branch."
