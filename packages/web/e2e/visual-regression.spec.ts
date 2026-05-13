@@ -28,8 +28,17 @@ const ARGOS_CSS = `
     display: none !important;
   }
 
-  /* Live counters and timestamps should not create noisy visual diffs. */
-  [data-visual-mask="dynamic"] {
+  /* Live counters and timestamps should not create noisy visual diffs.
+     Two mask attributes are supported for historical reasons:
+       - data-visual-mask="dynamic" + data-visual-placeholder="<text>" — older
+         attribute pair, still in some components.
+       - data-volatile="<label>" — newer single-attribute form, also consumed
+         by the markdown walker (scripts/render-pages-to-markdown.ts). The
+         value of data-volatile becomes the placeholder, wrapped in brackets,
+         so the screenshot displays "[deaths]" / "[money]" / "[days-overdue]"
+         matching the markdown snapshot. */
+  [data-visual-mask="dynamic"],
+  [data-volatile] {
     -webkit-text-fill-color: transparent !important;
     position: relative !important;
   }
@@ -37,6 +46,15 @@ const ARGOS_CSS = `
   [data-visual-mask="dynamic"]::after {
     color: currentColor !important;
     content: attr(data-visual-placeholder) !important;
+    left: 0;
+    position: absolute;
+    top: 0;
+    -webkit-text-fill-color: currentColor !important;
+  }
+
+  [data-volatile]::after {
+    color: currentColor !important;
+    content: "[" attr(data-volatile) "]" !important;
     left: 0;
     position: absolute;
     top: 0;

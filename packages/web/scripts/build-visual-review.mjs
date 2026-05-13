@@ -981,8 +981,16 @@ function renderPair(pair) {
     <div class="comparison">
       ${renderFigure(pair.before, "Before: main")}
       ${renderFigure(pair.after, "After: pull request")}
+      ${pair.diff?.diffRelPath ? renderDiffFigure(pair.diff.diffRelPath, pair.routeName, pair.projectName) : ""}
     </div>
   </article>`;
+}
+
+function renderDiffFigure(diffRelPath, routeName, projectName) {
+  return `<figure>
+    <figcaption>diff</figcaption>
+    <img src="${escapeHtml(`${diffRelPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${routeName} ${projectName} diff overlay`)}" loading="lazy">
+  </figure>`;
 }
 
 function renderFigure(screenshot, label) {
@@ -1057,10 +1065,11 @@ function comparePair(pair) {
       };
     }
 
+    const diffData = new Uint8Array(before.width * before.height * 4);
     const diffPixels = pixelmatch(
       before.data,
       after.data,
-      null,
+      diffData,
       before.width,
       before.height,
       { threshold: pixelmatchThreshold },
@@ -1068,8 +1077,20 @@ function comparePair(pair) {
     const totalPixels = before.width * before.height;
     const ratio = totalPixels > 0 ? diffPixels / totalPixels : 0;
     const changed = ratio > diffPixelRatioThreshold;
+    // Only write the diff PNG when there's an actual diff to highlight -
+    // saving thousands of empty diff PNGs is wasted disk + asset upload time.
+    let diffRelPath = null;
+    if (changed) {
+      const afterDir = path.dirname(pair.after.assetPath);
+      const diffPng = new PNG({ width: before.width, height: before.height });
+      diffPng.data = Buffer.from(diffData);
+      const diffAssetPath = path.join(afterDir, buildDiffFileName(pair.after.fileName));
+      writeFileSync(diffAssetPath, PNG.sync.write(diffPng));
+      diffRelPath = toPosix(path.relative(outputRoot, diffAssetPath));
+    }
     return {
       changed,
+      diffRelPath,
       label: `${formatPercent(ratio)} changed`,
       missing: false,
       statusClass: changed ? "changed" : "unchanged",
@@ -1084,6 +1105,11 @@ function comparePair(pair) {
       statusClass: "error",
     };
   }
+}
+
+function buildDiffFileName(fileName) {
+  const baseName = path.basename(fileName, ".png").replace(/-(before|after)$/i, "");
+  return `${baseName}-diff.png`;
 }
 
 function summarizeGroups(groups) {
