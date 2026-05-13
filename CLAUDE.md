@@ -44,6 +44,8 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Reuse before rewrite.** Before writing a new component, grep `packages/web/src/components` for similarly-shaped JSX (share box, signature box, counter, markdown render, parameter display). If you find a match, use it.
 
+**Manual-search before proposing copy.** Any agent that writes or critiques user-facing text — gstack subagents, voice-critic, direct Claude edits — MUST call `mcp__optimitron-tasks__searchManual` (or `askWishonia`) before suggesting replacement wording. The manual is the source of truth for voice; quoting from it beats inventing fresh prose. If the manual returns nothing usable, say so explicitly in the proposal so the reader knows you checked. **Fallback for agents without optimitron MCP access:** the manual's search index is a static, unauthenticated JSON file at `https://manual.warondisease.org/assets/json/search-index.json` — curl it directly and grep entries by keyword. Individual pages are at `https://manual.warondisease.org/<path>` (also unauthenticated). No login, no token, no MCP wiring required.
+
 **`<ParameterValue>` for every user-facing number.** Grep `packages/data/src/parameters/parameters-calculations-citations.ts` for a matching parameter before typing a number. Default `figures={3}` on calculator pages.
 
 **Catch users at peak commitment.** After a YES action, render the next step inline. Never punt with "the dashboard has X."
