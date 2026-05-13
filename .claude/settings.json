@@ -16,6 +16,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node .claude/safety-gate.mjs hook",
+            "timeout": 3000
+          },
+          {
+            "type": "command",
             "command": "node .claude/hooks/pre-commit-checklist.mjs",
             "timeout": 10000
           }

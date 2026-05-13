@@ -50,8 +50,35 @@ function checkPath(targetPath) {
   fail(`Freeze gate: ${target} is outside ${base}`);
 }
 
+// Hook mode: invoked by Claude Code's PreToolUse:Bash hook. Reads stdin JSON
+// of the form { tool_name, tool_input: { command, ... } } and checks the
+// extracted command via the same checkCommand path.
+if (mode === "hook") {
+  let raw = "";
+  try {
+    raw = await new Promise((resolve, reject) => {
+      let buf = "";
+      process.stdin.setEncoding("utf8");
+      process.stdin.on("data", (chunk) => (buf += chunk));
+      process.stdin.on("end", () => resolve(buf));
+      process.stdin.on("error", reject);
+    });
+  } catch {
+    process.exit(0);
+  }
+  if (!raw || !raw.trim()) process.exit(0);
+  try {
+    const hookData = JSON.parse(raw);
+    const cmd = hookData?.tool_input?.command;
+    if (typeof cmd === "string" && cmd.length > 0) checkCommand(cmd);
+  } catch {
+    // Malformed JSON or non-Bash invocation — fail open.
+  }
+  process.exit(0);
+}
+
 if (mode === "command") checkCommand(value);
 if (mode === "path") checkPath(value);
 
-console.error("Usage: node .claude/safety-gate.mjs command \"<shell>\" | path \"<file>\"");
+console.error("Usage: node .claude/safety-gate.mjs command \"<shell>\" | path \"<file>\" | hook <stdin-json>");
 process.exit(64);
