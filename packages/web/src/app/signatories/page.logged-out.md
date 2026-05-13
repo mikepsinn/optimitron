@@ -19,15 +19,15 @@
 - Inverse kills
 - Hours of suffering prevented
 - VOTERS RECRUITED
-- [#1Mike Sinn](/people/mike)26.0 INVERSE KILLS26.04.68 MILLION HOURS OF SUFFERING PREVENTED4.68 MILLION9 VOTERS RECRUITED9
-- [#2Nikhil Yadala](/people/empirical-trailblazer)7.81 INVERSE KILLS7.811.40 MILLION HOURS OF SUFFERING PREVENTED1.40 MILLION2 VOTERS RECRUITED2
-- [#3Wishonia](/people/wishonia)2.60 INVERSE KILLS2.60468,000 HOURS OF SUFFERING PREVENTED468,0000 VOTERS RECRUITED0
+- [#1 Mike Sinn](/people/mike)26.0 INVERSE KILLS 26.0 4.68 MILLION HOURS OF SUFFERING PREVENTED 4.68 MILLION 9 VOTERS RECRUITED 9
+- [#2 Nikhil Yadala](/people/empirical-trailblazer)7.81 INVERSE KILLS 7.81 1.40 MILLION HOURS OF SUFFERING PREVENTED 1.40 MILLION 2 VOTERS RECRUITED 2
+- [#3 Wishonia](/people/wishonia)2.60 INVERSE KILLS 2.60 468,000 HOURS OF SUFFERING PREVENTED 468,000 0 VOTERS RECRUITED 0
 - HUMANITY MANAGER · ASSIGNMENT 1
 ### TRADE ONE APOCALYPSE FOR 12.3× MORE CLINICAL TRIALS.
 - You have been promoted to Humanity Manager at Earth Optimization Services LLC. Responsible for 8 billion humans. First task: get them to ratify the [1% Treaty](/treaty).
 - Earth owns 12,200 nuclear warheads. 100 of them ends civilization. That is 122 apocalypses on the shelf. Spend one apocalypse on 12.3× more clinical trials and the disease-eradication timeline collapses from 443 years to 36.
 - To get there: send the message below to two humans you love. They send it to two. 32 rounds reaches every adult on Earth. Getting humans to agree on one thing is the first step to any civilizational upgrade. You are responsible for this step. It cannot be completed without you.
-- Share messageI love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to click this button at http://127.0.0.1:3001/vote as it will reduce the chance you will suffer and die of horrible diseases.
+- Share message I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to click this button at http://127.0.0.1:3001/vote as it will reduce the chance you will suffer and die of horrible diseases.
 - COPY TO CLIPBOARD
 - [TEXT](sms:?&body=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20click%20this%20button%20at%20http%3A%2F%2F127.0.0.1%3A3001%2Fvote%20as%20it%20will%20reduce%20the%20chance%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
 - [WHATSAPP](https://wa.me/?text=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20click%20this%20button%20at%20http%3A%2F%2F127.0.0.1%3A3001%2Fvote%20as%20it%20will%20reduce%20the%20chance%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)

@@ -236,6 +236,23 @@ async function extractPage(
     // __name() calls that won't resolve in the browser context.
     const toMarkdown = (el: Element): string => {
       let buf = "";
+      // Insert a space between adjacent element-emitted fragments when
+      // their boundary would collapse two alphanumeric runs together
+      // (e.g. `<span>VOTE</span><span>TREATY</span>` -> `VOTE TREATY`
+      // instead of `VOTETREATY`). Consumers downstream collapse runs
+      // of whitespace via `\s+` -> ` ` so redundant spaces don't pile
+      // up. Caught by Copilot PR review on PR #79.
+      const appendFragment = (fragment: string) => {
+        if (!fragment) return;
+        if (
+          buf.length > 0 &&
+          /\w$/.test(buf) &&
+          /^[\w[]/.test(fragment)
+        ) {
+          buf += " ";
+        }
+        buf += fragment;
+      };
       for (const node of Array.from(el.childNodes)) {
         if (node.nodeType === 3 /* TEXT_NODE */) {
           buf += applyTransform(node.textContent ?? "", el);
@@ -244,10 +261,9 @@ async function extractPage(
           if (child.tagName === "A") {
             const href = child.getAttribute("href") ?? "";
             const inner = toMarkdown(child).replace(/\s+/g, " ").trim();
-            if (href && inner) buf += `[${inner}](${href})`;
-            else buf += inner;
+            appendFragment(href && inner ? `[${inner}](${href})` : inner);
           } else {
-            buf += toMarkdown(child);
+            appendFragment(toMarkdown(child));
           }
         }
       }
