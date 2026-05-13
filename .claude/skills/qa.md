@@ -10,13 +10,19 @@ When the user types `/qa`, run all the project's editorial + UX critics over the
 
 ## What to fire
 
-Three subagents IN PARALLEL via the `Agent` tool (single message, multiple tool calls):
+Up to five subagents IN PARALLEL via the `Agent` tool (single message, multiple tool calls):
 
-1. **`voice-critic`** — Copy critique against project voice rules. Catches startup-bro phrasing, banned vocabulary (engage, empower, off-ramp, primitive), tautological hints under headings, adjective stacks with no number, Stripe-keynote sentences. Spawn it pointing at the same files the user changed in this branch.
+1. **`voice-critic`** — Copy critique against project voice rules. Catches startup-bro phrasing, banned vocabulary (engage, empower, off-ramp, primitive), tautological hints under headings, adjective stacks with no number, Stripe-keynote sentences. Required to call `mcp__optimitron-tasks__searchManual` before proposing replacement copy, and to grep `parameters-calculations-citations.ts` for every hardcoded user-facing number.
 2. **`cold-stranger-ux`** — Zero-context first-time reader reaction. Drives a real browser at iPhone-14 viewport, takes screenshots, reacts in plain English. Catches confusing UX, missing case-for-action, would-bail moments.
-3. **`test-auditor`** — Test suite slop + missing coverage. Catches "tests added for symmetry / documentation / to silence a bot" and missing regression tests for fixed bugs.
+3. **`visual-design-auditor`** — Visual slop audit. Third critic beside voice (copy) and cold-stranger (UX): is the visual design actually good against the treaty editorial style?
+4. **`test-auditor`** — Test suite slop + missing coverage. Catches "tests added for symmetry / documentation / to silence a bot" and missing regression tests for fixed bugs.
+5. **`security-threat-review`** — OWASP Top 10 + STRIDE pass. Conditional: fire only when the diff touches an auth/session/signature/token/consent path (look for matches in `packages/web/src/lib/auth*`, `packages/web/src/app/api/**`, `*-token*`, `*-consent*`, `*signature*` files).
 
-If no test files changed in this branch, skip the `test-auditor` invocation. If no UI changed, skip `cold-stranger-ux`.
+Skip rules:
+- No `.tsx` / `.md` content changed → skip `voice-critic`.
+- No UI changed → skip `cold-stranger-ux` and `visual-design-auditor`.
+- No test files changed → skip `test-auditor`.
+- No auth/security paths changed → skip `security-threat-review` (it's heavy; don't fire it on every commit).
 
 ## Scope each invocation
 
@@ -26,22 +32,25 @@ For `voice-critic`, scope to the changed `.tsx` files + their regenerated `.md` 
 
 ## Output format
 
-After all three return, produce ONE numbered punch list:
+After all return, produce ONE numbered punch list:
 
 ```
 ## /qa findings on <branch> (HEAD <short-sha>)
 
 ### Voice (N findings)
 1. <file>:<line> — <what's wrong> — <fix or "intentional?">
-2. ...
 
 ### Cold-stranger UX (N findings)
 1. <page>: <what a stranger would think / where they'd bail>
-2. ...
+
+### Visual design (N findings)
+1. <component/page>: <visual slop or treaty-style violation>
 
 ### Tests (N findings)
 1. <test file>: <stupid test reason OR missing regression coverage>
-2. ...
+
+### Security (N findings, only if security-threat-review fired)
+1. <file>:<line>: <OWASP/STRIDE finding with confidence>
 
 ### Verdict
 SHIP / NEEDS FIXES BEFORE COMMIT / NEEDS USER DECISION
