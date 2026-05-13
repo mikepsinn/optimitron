@@ -241,7 +241,8 @@ cross-check so they do not disappear into chat history.
 - [x] `test-auditor` Claude Code subagent at `.claude/agents/test-auditor.md`. Walks the test suite for the slop patterns the Testing Rules section bans, finds flaky tests in CI history, identifies critical untested paths. Returns delete + add + flaky lists.
 - [x] Local review pipeline: `pnpm --filter @optimitron/web review:local` runs `copy:preview` (markdown extract) + Playwright visual regression + builds the review HTML + opens it. Requires `next dev` on :3001 separately. (Originally scoped a `review:watch` variant too; dropped pre-ship — full Playwright run is 2-4 min, so debouncing source changes into a watcher would burn cycles on results that arrive after the developer has moved on.)
 - Speedup attempt redo: path-filter `web-validate` so non-web PRs short-circuit. Previous attempt (`b50469063`) produced an unparseable workflow file; needs smaller incremental commits this time to isolate which construct GitHub objected to.
-- Build a `/dev/email/<template>` Next.js preview route that renders each email template's HTML server-side (no client JS, no DB round-trip required for templates that don't need one). Replace the `e2e/email-screenshots.spec.ts` direct imports of `…-email.server.ts` modules with `page.goto('/dev/email/post-vote-share')` and screenshot — that path avoids the Playwright-transformer/`@optimitron/db/dist` `export *` parsing problem that knocked email screenshots out of visual mode. Once that's in, re-add `email-screenshots.spec.ts` to `MODE_SPECS.visual`.
+- [x] Build a `/dev/email/<template>` Next.js preview route that renders each email template's HTML server-side (no client JS, no DB round-trip required for templates that don't need one). Replace the `e2e/email-screenshots.spec.ts` direct imports of `…-email.server.ts` modules with `page.goto('/dev/email/post-vote-share')` and screenshot — that path avoids the Playwright-transformer/`@optimitron/db/dist` `export *` parsing problem that knocked email screenshots out of visual mode. Once that's in, re-add `email-screenshots.spec.ts` to `MODE_SPECS.visual`.
+  ✅ ef0d55f1
 - Add a banner on `latest.html` when missing-screenshot pairs exist, explaining cause (optional route absent on baseline, route skipped because returned 401/403/404, etc.) instead of just rendering N "not captured" boxes. The new publish gate (`steps.visual_regression.outcome == 'success'`) blocks the "all 62 missing" case, but legitimate per-route omissions still need explanation.
 - Vercel preview-ready watcher + auto-screenshot of changed routes. When a Vercel deployment for the current branch transitions to READY: identify routes changed by the PR (`git diff origin/main...HEAD --name-only` filtered to `packages/web/src/app/**/page.tsx`), use chrome-devtools MCP (via `mcp__claude_ai_Vercel__get_access_to_vercel_url` for auth-gated previews) to screenshot each route, write `packages/web/output/playwright/pr-watch/<deploy-id>/review.html`, surface the preview URL + local review HTML link inline in chat. Currently the `/loop` cron `0feea8a0` (every 15 min, auto-background pattern: foreground spawns bg agent + exits) hits gh+Vercel state but the actual screenshot pipeline isn't wired yet. Deferred 2026-05-11 to keep the foreground turn short.
 - Stop-hook check: detect "we should..." / "let's do that later" / "for now..." style deferrals in my own outputs and gate Stop until I capture them in TODO.md. Hard to detect reliably with regex; the memory rule `feedback_capture_decisions_in_todo` is the manual version for now.
@@ -291,18 +292,21 @@ cross-check so they do not disappear into chat history.
 - Reuses existing Resend pipeline + reply-handling + unsubscribe-on-reply rails.
 - No subsequent drips. Reminder spam is explicitly banned (see PR #66
   "Disable generic overdue email reminders").
+  ✅ ef0d55f1 / fba4ce79
+  ⚠️ Stale: canonical share-message wording now lives in `packages/web/src/lib/share-message.ts`.
 
 **Visual review and preview workflow**
 
 - [x] Visual review surfaces a `Visual review` commit status pointing to the
   SHA-pinned gallery in the merge box (PR #71), replacing the 6-link bot
   comment that buried the actual gallery under filler.
-- Add email-template screenshots to the visual review HTML. Render each email
+- [x] Add email-template screenshots to the visual review HTML. Render each email
   template (`buildMagicLinkHtml`, task-assignment, task-comment-notification,
   inbound-monitor-forward, the future post-vote forward email) with a
   representative token set, screenshot, and emit alongside the page
   screenshots in `latest.html`. Reviewers currently can't see email copy
   without setting up Resend locally + emailing themselves a test.
+  ✅ ef0d55f1
 - Add the Central Time generation timestamp to visual review HTML.
 - Use commit-hash or otherwise cache-busted GitHub Pages paths for generated
   visual reviews so a new PR comment cannot show an old cached `latest.html`.
@@ -316,9 +320,10 @@ cross-check so they do not disappear into chat history.
 - Add a preview/dev-only demo-session route or query flow so visual-review links
   can open the exact route as the demo user or as logged-out without manual
   sign-in.
-- Stop animation false positives by waiting for landing animations and animated
+- [x] Stop animation false positives by waiting for landing animations and animated
   counters to settle before screenshots. Prefer deterministic settling over a
   loose pixel threshold.
+  ✅ 79b7e037 / 07deeb61
 - Ensure animated counters such as deaths/wasted-by-delay are not blank in
   screenshots unless intentionally hidden.
 - Continue speeding up visual tests with route metadata, fewer hard-coded
@@ -430,17 +435,17 @@ user-facing work in this order:
 
 1. Simplify the logged-in dashboard into the core action checklist: sign treaty,
    render verdict, register plaintiff, summon jurors, pressure presidents.
-2. Simplify `/tasks/[id]` into the universal black-and-white task layout:
-   header, assignee/due date, primary action, markdown body, comments, complete
-   or reassign controls, admin disclosures.
+2. Then handle messaging/email cleanup: central template registry, no generic
+   reminder spam, optional plaintiff email only if the notice is useful, and the
+   lightweight "forward to someone better-fit" task-assignment mailto.
 3. Finish `/court` and the plaintiff/juror counter so the Court of Humanity
    frame connects cleanly to the 1% Treaty verdict.
 4. Fix visual-review friction that wastes PR-review time: cache-busted pages,
    before-left/after-right layout, missing-pair failures, preview links, and
    deterministic animation settling.
-5. Then handle messaging/email cleanup: central template registry, no generic
-   reminder spam, optional plaintiff email only if the notice is useful, and the
-   lightweight "forward to someone better-fit" task-assignment mailto.
+5. Simplify `/tasks/[id]` into the universal black-and-white task layout:
+   header, assignee/due date, primary action, markdown body, comments, complete
+   or reassign controls, admin disclosures.
 
 ### P0 — Court of Humanity integration on `/court`
 
@@ -516,6 +521,8 @@ pipeline unless a real failure appears.
 
 ### P1 — "Forward to someone better-fit" on assignment emails (lightweight)
 
+⚠️ Stale path: assignment email body now lives in `packages/web/src/lib/tasks/task-assignment-react-email.tsx`; the server wrapper remains `packages/web/src/lib/tasks/task-assignment-notification-email.server.ts`.
+
 Every assignment email today gives the recipient two options: do the
 task or ignore it. Ignoring is the path of least resistance. Adding a
 third path — *forward to someone better-fit* — turns an opt-out into a
@@ -567,6 +574,8 @@ side-by-side, then an explanation of the family-share frame and the
 4B-vote enforcement gate.
 
 ### P1 — Centralize communication templates (audit findings 2026-05-08)
+
+⚠️ Stale after `ef0d55f1`: email previews now use `packages/web/src/lib/email/preview-registry.ts`, React Email components under `packages/web/src/lib/email/` and `packages/web/src/lib/tasks/`, and `/dev/email/<template>`.
 
 Audit of every outbound-comm copy locus in the repo, in service of the
 human's question "should we have a TS library or MCP tool for generating
@@ -1128,6 +1137,8 @@ Sequencing:
 
 ## Post-vote-share email reframe — dashboard parity (DONE this commit)
 
+✅ ef0d55f1
+
 Both `DashboardShareCard.tsx` and `post-vote-share-react-email.tsx` now
 consume `packages/web/src/lib/humanity-manager-promotion.ts` as the
 single source of truth for the "Humanity Manager · Assignment 1"
@@ -1144,6 +1155,9 @@ type). Dropped for now — the dashboard has plenty of other paths to
 `/treaty`. Add back later if a chunk-with-link variant feels worth it.
 
 ## Monthly digest reframe — "Humanity Management Status Report"
+
+✅ ef0d55f1
+⚠️ Stale: current implementation uses `packages/web/src/lib/email/monthly-chain-digest-react-email.tsx`; remaining open work is the dashboard/data reuse section above.
 
 Current `monthly-chain-digest-email.ts` reads like startup-bro nudge spam.
 User pulled it up after the new `.email.md` snapshots and called it out:
@@ -1213,6 +1227,7 @@ violations of [[feedback_email_minimalism]]. Landed in this commit:
   the "We are building a decentralized to-do list..." feedback chrome
   paragraph. Now title eyebrow + H1 + description + Open Task + reply
   instruction + share footer. Test updated.
+  ✅ ef0d55f1
 
 Still open (call sites are more nuanced — share-footer is value-dense
 and intentional per the [[feedback_email_minimalism]] "share-email flows
@@ -1228,6 +1243,8 @@ Magic-link is compliant (button + "Didn't request this? Ignore it.").
 Task-comment-notification is compliant (single CTA + share footer).
 
 ## Email markdown previews (deferred — bigger than estimated)
+
+⚠️ Stale after `ef0d55f1` / `8aa60da8` / `751f6e8e` / `dab4c358`: previews now use `packages/web/src/lib/email/preview-registry.ts`, `packages/web/src/app/dev/email/[template]/route.ts`, `packages/web/scripts/render-emails-to-markdown.ts`, and `packages/web/scripts/render-pages-to-markdown.ts`; there is no `packages/web/src/lib/dom-to-markdown.ts`.
 
 Goal: voice-critic-able .md snapshots of outbound email copy. Currently the
 copy-preview pipeline only covers public pages reachable from the dev server.
@@ -1297,6 +1314,9 @@ build all of them — wait for the second time the friction recurs.
 
 ## Codex integration setup (DONE this commit, durable references)
 
+✅ 8e20636a / 74212079 / 7d3d989f / 6d07b24d
+⚠️ Stale: `.codex/config.toml` now uses `gpt-5.5` with `model_reasoning_effort = "xhigh"`, and `.claude/codex-delegation.md` uses Bash + `codex exec`, not an Agent-tool rescue path.
+
 - `.codex/config.toml` ships `model_reasoning_effort = "high"`.
 - `openai/codex-plugin-cc` installed at user level; provides:
   - `/codex:adversarial-review` — challenge a design decision
@@ -1308,7 +1328,7 @@ build all of them — wait for the second time the friction recurs.
   Codex; Claude must invoke `/codex:review` to actually run.
 - Speech-to-text note: user dictates "Codex" as "Kodak" — treat as alias.
 
-## Long-tail (parked, not 4B-blocking)
+## Below-the-fold (parked, not 4B-blocking)
 
 Items that exist in earlier TODO revisions but do not move the 4B-votes needle today.
 Bring back here only if the work directly removes a P0/P1 gap above.
@@ -1327,6 +1347,8 @@ Bring back here only if the work directly removes a P0/P1 gap above.
   generic referendum system).
 
 ### Prize treasury / crypto-donation options (researched 2026-05-13)
+
+✅ ed13a0ff
 
 Current state:
 
@@ -1469,6 +1491,8 @@ ridiculous, reply with the right grants/treasury contact.
 
 ### Donor-segmentation supplement (Claude follow-up 2026-05-13)
 
+✅ ed13a0ff
+
 Two donor segments, two pools. Don't unify them.
 
 | Segment | Pool | Purpose |
@@ -1487,4 +1511,3 @@ lockup angle to chain treasuries specifically. Different ask, different copy,
 same site. Skip until the institutional-host gate is unblocked (per the
 strategy manual line cited above) — until then the chain-treasury pitch email
 draft above is the right surface, not a new page.
-
