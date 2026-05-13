@@ -6,6 +6,7 @@ import {
   DEFAULT_PEER_SHARE_TEMPLATE_ID,
 } from "@/lib/tasks/share-templates";
 import { renderTemplate } from "@/lib/tasks/render-template";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 export interface SecretChainPitchProps {
   /** Viewer-facing name ({citizen_name}) — defaults to "A citizen". */
@@ -84,7 +85,7 @@ export function SecretChainPitch({
         <button
           type="button"
           onClick={() => void handleCopy()}
-          className="mt-3 w-full border-2 border-foreground bg-foreground px-4 py-2 font-black uppercase text-background hover:bg-background hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
+          className={`${defaultButtonClassName} mt-3 w-full px-4 py-2 disabled:opacity-30`}
           disabled={!renderedMessage}
         >
           {copied ? "Copied →" : "Copy Message"}

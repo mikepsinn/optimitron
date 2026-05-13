@@ -9,6 +9,7 @@ import { Share2, Vote, ArrowRight } from "lucide-react"
 import { getHandleOrReferralCode } from "@/lib/referral.client"
 import { cn } from "@/lib/utils"
 import { DASHBOARD_REFERRAL_HREF, ROUTES } from "@/lib/routes"
+import { defaultButtonClassName } from "@/components/ui/default-button"
 
 interface VoteOrShareButtonProps {
   variant?: "default" | "hero" | "nav" | "cta" | "inline"
@@ -108,21 +109,10 @@ export function VoteOrShareButton({
     xl: "h-20 px-8 text-xl sm:text-2xl",
   }
 
-  const variantClasses = {
-    default: "bg-background hover:bg-background/90 text-foreground",
-    hero: "bg-foreground hover:bg-foreground/90 text-background",
-    nav: "bg-background hover:bg-background/90",
-    cta: "bg-background hover:bg-background/90 text-foreground",
-    inline: "bg-transparent hover:bg-background/10 p-0 h-auto",
-  }
-
   const buttonClassName = cn(
-    "font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-    "hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-    "transition-all flex items-center justify-center gap-2",
+    defaultButtonClassName,
     sizeClasses[size],
-    variantClasses[variant],
-    variant === "inline" && "shadow-none border-0 hover:shadow-none",
+    variant === "inline" && "min-h-0 border-0 bg-transparent p-0 text-foreground hover:bg-transparent hover:text-foreground hover:underline",
     className
   )
 

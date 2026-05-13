@@ -12,6 +12,8 @@ import {
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   fmtParam,
 } from "@optimitron/data/parameters";
+import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 const YEARS = 20;
 const DEFAULT_INCOME = US_MEDIAN_HOUSEHOLD_INCOME_2023.value;
 
@@ -72,11 +74,11 @@ export function PersonalIncomeChart({ surface = "light" }: PersonalIncomeChartPr
     ? "text-white/70 hover:text-white"
     : "text-muted-foreground hover:text-foreground";
   const inactiveToggleClass = isDarkSurface
-    ? "bg-transparent text-white border-white/40 shadow-none hover:bg-white hover:text-black"
-    : "bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]";
+    ? cn(defaultButtonClassName, "border-white bg-transparent text-white hover:bg-white hover:text-black")
+    : defaultButtonClassName;
   const activeToggleClass = isDarkSurface
-    ? "bg-white text-black shadow-none translate-x-[2px] translate-y-[2px]"
-    : "bg-foreground text-background shadow-none translate-x-[2px] translate-y-[2px]";
+    ? cn(defaultButtonClassName, "border-white bg-white text-black")
+    : cn(defaultButtonClassName, "bg-foreground text-background");
 
   const scenario = scenarios[scenarioIdx]!;
   const current = useMemo(() => computeTrajectory(income, CURRENT_RATE, YEARS), [income]);
@@ -187,7 +189,7 @@ export function PersonalIncomeChart({ surface = "light" }: PersonalIncomeChartPr
             </div>
             <button
               onClick={() => setIncome(DEFAULT_INCOME)}
-              className={`text-xs font-bold underline transition-colors ${resetButtonClass}`}
+              className={cn(defaultButtonClassName, "min-h-10 px-3 py-2 text-xs")}
             >
               Reset to median
             </button>
@@ -199,11 +201,10 @@ export function PersonalIncomeChart({ surface = "light" }: PersonalIncomeChartPr
               <button
                 key={s.id}
                 onClick={() => setScenarioIdx(i)}
-                className={`px-4 py-2 text-xs font-black uppercase border-4 border-primary transition-all ${
-                  scenarioIdx === i
-                    ? activeToggleClass
-                    : inactiveToggleClass
-                }`}
+                className={cn(
+                  scenarioIdx === i ? activeToggleClass : inactiveToggleClass,
+                  "min-h-10 px-4 py-2 text-xs",
+                )}
               >
                 {s.label}
               </button>

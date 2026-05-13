@@ -10,6 +10,7 @@ import {
   splitIntoSlides,
 } from "@/components/referendum/ReferendumStepper";
 import { Button } from "@/components/retroui/Button";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
@@ -85,7 +86,7 @@ export function TreatyContent({
           </p>
           <Button
             asChild
-            className="mt-4 inline-flex border border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] shadow-none transition-colors hover:translate-y-0 hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)] active:translate-x-0 active:translate-y-0 sm:text-base"
+            className={`${defaultButtonClassName} mt-4 sm:text-base`}
             size="md"
             variant="outline"
           >

@@ -10,6 +10,8 @@ import { Dialog } from "@/components/retroui/Dialog";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
+import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
   FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
@@ -95,7 +97,7 @@ function FieldHelp({ help, label }: { help: string; label: string }) {
       <Dialog.Trigger asChild>
         <button
           aria-label={`What does ${label} mean?`}
-          className="inline-flex h-5 w-5 items-center justify-center border border-foreground bg-background text-[11px] font-black leading-none text-foreground hover:bg-foreground hover:text-background"
+          className={cn(defaultButtonClassName, "min-h-5 h-5 w-5 p-0 text-[11px] leading-none")}
           title={help}
           type="button"
         >
@@ -119,7 +121,7 @@ function FieldHelp({ help, label }: { help: string; label: string }) {
         <div className="border-t-2 border-foreground p-3 text-right">
           <Dialog.Close asChild>
             <button
-              className="border-2 border-foreground bg-foreground px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-background hover:bg-background hover:text-foreground"
+              className={cn(defaultButtonClassName, "min-h-10 px-4 py-2 text-xs tracking-[0.12em]")}
               type="button"
             >
               Got It
@@ -151,7 +153,7 @@ function GrantCopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={() => void handleCopy()}
-      className="inline-flex items-center justify-center gap-2 border-2 border-foreground bg-foreground px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-background hover:bg-background hover:text-foreground"
+      className={cn(defaultButtonClassName, "min-h-10 px-4 py-2 text-xs tracking-[0.12em]")}
     >
       {copyState === "copied" ? (
         <Check className="h-4 w-4" aria-hidden="true" />

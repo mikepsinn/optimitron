@@ -4,6 +4,8 @@ import * as ReactDialog from "@radix-ui/react-dialog";
 import { Check, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import Cropper, { type Area, type Point } from "react-easy-crop";
+import { defaultButtonClassName } from "@/components/ui/default-button";
+import { cn } from "@/lib/utils";
 
 const OUTPUT_SIZE = 1024;
 const MIN_ZOOM = 1;
@@ -181,7 +183,7 @@ export function SquarePhotoCropper({
             </ReactDialog.Title>
             <button
               aria-label="Cancel crop"
-              className="inline-flex min-h-10 items-center border border-foreground bg-background px-3 text-foreground disabled:opacity-40"
+              className={cn(defaultButtonClassName, "min-h-10 px-3 disabled:opacity-40")}
               disabled={isCropping}
               onClick={onCancel}
               type="button"
@@ -239,7 +241,7 @@ export function SquarePhotoCropper({
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <button
-              className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
+              className={cn(defaultButtonClassName, "tracking-[0.12em] disabled:opacity-40")}
               disabled={isCropping}
               onClick={onCancel}
               type="button"
@@ -247,7 +249,7 @@ export function SquarePhotoCropper({
               Cancel
             </button>
             <button
-              className="inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background disabled:opacity-40"
+              className={cn(defaultButtonClassName, "tracking-[0.12em] disabled:opacity-40")}
               disabled={!croppedAreaPixels || isCropping}
               onClick={() => void handleCrop()}
               type="button"

@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { Dialog } from "@/components/retroui/Dialog";
 import { DafDirectWidget } from "./DafDirectWidget";
 import { EarthOptimizationTaxCalculator } from "./EarthOptimizationTaxCalculator";
@@ -209,7 +210,7 @@ export function WaysToGiveCard() {
           <Button
             type="button"
             onClick={() => setCalcOpen(true)}
-            className="w-full border border-foreground bg-background text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
+            className={`${defaultButtonClassName} w-full`}
           >
             Open tax calculator
           </Button>

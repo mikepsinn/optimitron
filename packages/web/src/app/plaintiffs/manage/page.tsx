@@ -11,6 +11,7 @@ import { CourtCasePartyRole, PersonConditionStatus } from "@optimitron/db";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { ManageRepresentedPeopleClient } from "@/components/people/ManageRepresentedPeopleClient";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
 import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
@@ -85,7 +86,7 @@ function ManagePagination({
       <div className="flex flex-wrap items-center gap-2">
         {currentPage > 1 ? (
           <Link
-            className="inline-flex min-h-10 items-center border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+            className={`${defaultButtonClassName} min-h-10 px-4 text-xs`}
             href={pageUrl(currentPage - 1)}
           >
             Previous
@@ -100,7 +101,7 @@ function ManagePagination({
         </span>
         {currentPage < totalPages ? (
           <Link
-            className="inline-flex min-h-10 items-center border border-foreground bg-foreground px-4 text-xs font-black uppercase tracking-[0.14em] text-background"
+            className={`${defaultButtonClassName} min-h-10 px-4 text-xs`}
             href={pageUrl(currentPage + 1)}
           >
             Next

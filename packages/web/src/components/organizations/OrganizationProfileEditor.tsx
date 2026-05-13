@@ -8,6 +8,7 @@ import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
 import { SquarePhotoCropper } from "@/components/people/SquarePhotoCropper";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { uploadImageViaBackend } from "@/lib/image-upload.client";
 
 interface OrganizationProfile {
@@ -181,7 +182,7 @@ export function OrganizationProfileEditor({
           />
           <div className="flex flex-wrap gap-2">
             <Button
-              className="border border-foreground bg-background"
+              className={defaultButtonClassName}
               disabled={disabled}
               onClick={() => squareLogoInputRef.current?.click()}
               type="button"
@@ -194,7 +195,7 @@ export function OrganizationProfileEditor({
             </Button>
             {form.squareLogoUrl ? (
               <Button
-                className="border border-foreground bg-background"
+                className={defaultButtonClassName}
                 disabled={disabled}
                 onClick={() =>
                   setForm((current) => ({ ...current, squareLogoUrl: "" }))
@@ -246,7 +247,7 @@ export function OrganizationProfileEditor({
         />
         <div className="flex flex-wrap gap-2">
           <Button
-            className="border border-foreground bg-background"
+            className={defaultButtonClassName}
             disabled={disabled}
             onClick={() => wordmarkLogoInputRef.current?.click()}
             type="button"
@@ -257,7 +258,7 @@ export function OrganizationProfileEditor({
           </Button>
           {form.wordmarkLogoUrl ? (
             <Button
-              className="border border-foreground bg-background"
+              className={defaultButtonClassName}
               disabled={disabled}
               onClick={() =>
                 setForm((current) => ({ ...current, wordmarkLogoUrl: "" }))
@@ -369,7 +370,7 @@ export function OrganizationProfileEditor({
 
       <div className="flex flex-wrap items-center gap-3">
         <Button
-          className="border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background"
+          className={`${defaultButtonClassName} tracking-[0.12em]`}
           disabled={disabled || !form.name.trim()}
           onClick={() => void saveOrganization()}
           type="button"

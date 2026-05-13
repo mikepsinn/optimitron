@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { PublicSignatoryUserStatus } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 interface SignatoryVisibilityPanelProps {
   status: PublicSignatoryUserStatus;
@@ -83,7 +84,7 @@ export function SignatoryVisibilityPanel({
         <div className="flex shrink-0 flex-wrap gap-2">
           <button
             aria-pressed={isPublic}
-            className="border-2 border-foreground bg-foreground px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-background transition-colors hover:bg-background hover:text-foreground disabled:cursor-wait disabled:opacity-60"
+            className={`${defaultButtonClassName} min-h-10 px-4 py-2 text-xs tracking-[0.12em] disabled:cursor-wait disabled:opacity-60`}
             disabled={isSaving || isPending}
             onClick={() => void updateVisibility(!isPublic)}
             type="button"
@@ -92,14 +93,14 @@ export function SignatoryVisibilityPanel({
           </button>
           {!status.hasYesVote ? (
             <Link
-              className="border-2 border-foreground bg-background px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-foreground transition-colors hover:bg-foreground hover:text-background"
+              className={`${defaultButtonClassName} min-h-10 px-4 py-2 text-xs tracking-[0.12em]`}
               href={ROUTES.vote}
             >
               Sign Treaty
             </Link>
           ) : null}
           <Link
-            className="border-2 border-foreground bg-background px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-foreground transition-colors hover:bg-foreground hover:text-background"
+            className={`${defaultButtonClassName} min-h-10 px-4 py-2 text-xs tracking-[0.12em]`}
             href={ROUTES.profile}
           >
             Edit Profile

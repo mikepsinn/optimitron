@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 type VerdictAnswer = "YES" | "NO" | "ABSTAIN";
 
@@ -176,11 +178,11 @@ export function HumanityVGovernmentVerdictVote({
           return (
             <button
               key={option}
-              className={
-                isSelected
-                  ? "border-2 border-foreground bg-foreground px-4 py-3 text-sm font-black uppercase tracking-[0.06em] text-background"
-                  : "border-2 border-foreground bg-background px-4 py-3 text-sm font-black uppercase tracking-[0.06em] text-foreground hover:bg-foreground hover:text-background disabled:opacity-50"
-              }
+              className={cn(
+                defaultButtonClassName,
+                "px-4 tracking-[0.06em] disabled:opacity-50",
+                isSelected && "bg-foreground text-background",
+              )}
               disabled={Boolean(submittingAnswer)}
               onClick={() => void castVote(option)}
               type="button"

@@ -9,6 +9,7 @@ import {
 import { OrganizationGrantCalculator } from "@/components/organizations/OrganizationGrantCalculator";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TreatyContent } from "@/components/treaty/TreatyContent";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import type { ReferendumSiteLegalSection } from "@/content/referendum-sites/types";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
@@ -48,7 +49,7 @@ function TreatyTextDisclosure({
         <div className="mt-6 flex justify-center">
           <a
             href="#organization-endorsement-form"
-            className="inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+            className={defaultButtonClassName}
           >
             Join as an Organization
           </a>

@@ -7,6 +7,7 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion";
 import { buildShareMessage } from "@/lib/share-message";
 import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 interface DashboardShareCardProps {
   referralUrl: string;
@@ -183,7 +184,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
   ];
 
   const secondaryButtonClass =
-    "inline-flex min-h-11 items-center justify-center gap-2 border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-3 py-2 text-xs font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] transition-colors hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]";
+    cn(defaultButtonClassName, "min-h-11 px-3 py-2 text-xs tracking-[0.08em]");
 
   const nativeButtonLabel =
     shareState === "shared"
@@ -240,7 +241,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
     return (
       <button
         aria-label="Copy share message to clipboard"
-        className="inline-flex min-h-12 w-full items-center justify-center gap-2 border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] transition-colors hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]"
+        className={cn(defaultButtonClassName, "w-full px-6")}
         onClick={() => void handleCopy()}
         type="button"
       >
@@ -287,7 +288,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
           <button
             type="button"
             onClick={() => void handleNativeShare()}
-            className="inline-flex min-h-12 w-full items-center justify-center gap-2 border-2 border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)] transition-colors hover:bg-[var(--treaty-paper)] hover:text-[var(--treaty-ink)]"
+            className={cn(defaultButtonClassName, "w-full px-6")}
           >
             <PrimaryShareIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
             {nativeButtonLabel}

@@ -11,6 +11,7 @@ import {
 } from "@/lib/people-directory.server";
 import { peopleLink, plaintiffsLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 export const dynamic = "force-dynamic";
 
@@ -167,14 +168,14 @@ function PersonDirectoryRow({ person }: { person: PeopleDirectoryPerson }) {
 
       <div className="flex flex-wrap gap-2 lg:justify-end">
         <Link
-          className="inline-flex min-h-10 items-center border border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+          className={`${defaultButtonClassName} min-h-10 px-3 text-xs`}
           href={person.href}
         >
           Profile
         </Link>
         {taskHref ? (
           <Link
-            className="inline-flex min-h-10 items-center border border-foreground bg-foreground px-3 text-xs font-black uppercase tracking-[0.14em] text-background"
+            className={`${defaultButtonClassName} min-h-10 px-3 text-xs`}
             href={taskHref}
           >
             Task
@@ -221,13 +222,13 @@ export default async function PeoplePage({
 
           <div className="flex flex-wrap gap-3">
             <Link
-              className="inline-flex min-h-11 items-center border border-foreground bg-foreground px-4 text-xs font-black uppercase tracking-[0.14em] text-background"
+              className={`${defaultButtonClassName} min-h-11 px-4 text-xs`}
               href={ROUTES.tasks}
             >
               See tasks
             </Link>
             <Link
-              className="inline-flex min-h-11 items-center border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+              className={`${defaultButtonClassName} min-h-11 px-4 text-xs`}
               href={ROUTES.plaintiffs}
             >
               {plaintiffsLink.label}
@@ -251,7 +252,7 @@ export default async function PeoplePage({
               type="search"
             />
             <button
-              className="min-h-12 border border-foreground bg-foreground px-5 text-xs font-black uppercase tracking-[0.14em] text-background"
+              className={`${defaultButtonClassName} text-xs`}
               type="submit"
             >
               Search
@@ -334,7 +335,7 @@ export default async function PeoplePage({
                     </span>
                     {data.page < data.totalPages ? (
                       <Link
-                        className="inline-flex min-h-10 items-center border border-foreground bg-foreground px-4 text-xs font-black uppercase tracking-[0.14em] text-background"
+                        className={`${defaultButtonClassName} min-h-10 px-4 text-xs`}
                         href={buildDirectoryHref({
                           page: data.page + 1,
                           query: data.query,
@@ -360,7 +361,7 @@ export default async function PeoplePage({
                 and find work that needs an assignee.
               </p>
               <Link
-                className="mt-5 inline-flex min-h-11 items-center border border-foreground bg-foreground px-4 text-xs font-black uppercase tracking-[0.14em] text-background"
+                className={`${defaultButtonClassName} mt-5 min-h-11 px-4 text-xs`}
                 href={ROUTES.tasks}
               >
                 See tasks

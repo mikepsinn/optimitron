@@ -8,6 +8,7 @@ import { Card } from "@/components/retroui/Card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { buildTaskShareTokens } from "@/lib/tasks/accountability";
 import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import {
@@ -39,6 +40,7 @@ import {
   getReferralInvitationFirstName,
   type ReferralInvitationMessageFormat,
 } from "@/lib/referral-invitation-copy";
+import { cn } from "@/lib/utils";
 
 async function sha256Hex(input: string): Promise<string> {
   const bytes = new TextEncoder().encode(input);
@@ -724,13 +726,12 @@ export function TreatyReminderComposer({
               key={mode}
               type="button"
               aria-pressed={selected}
-              className={[
-                "min-h-11 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] transition-colors",
+              className={cn(
+                defaultButtonClassName,
+                "min-h-11 px-3 py-2 text-xs",
                 index > 0 ? "border-t-2 border-foreground sm:border-l-2 sm:border-t-0" : "",
-                selected
-                  ? "bg-foreground text-background"
-                  : "bg-background text-foreground hover:bg-muted",
-              ].join(" ")}
+                selected && "bg-foreground text-background",
+              )}
               onClick={() => {
                 setRecipientMode(mode);
                 setMessageCopyState("idle");
@@ -823,7 +824,7 @@ export function TreatyReminderComposer({
                   directChannelState != null ||
                   !trimmedRecipientName
                 }
-                className="min-h-10 justify-center border-2 border-foreground bg-background px-2 text-xs font-black uppercase tracking-[0.1em] text-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                className={cn(defaultButtonClassName, "min-h-10 px-2 text-xs tracking-[0.1em]")}
               >
                 <span className="mr-2 shrink-0">{icon}</span>
                 <span className="min-w-0 truncate">
@@ -845,7 +846,7 @@ export function TreatyReminderComposer({
                 sendState === "sent" ||
                 !trimmedRecipientName
               }
-              className="min-h-10 flex-1 justify-center border-2 border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.12em] text-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+              className={cn(defaultButtonClassName, "min-h-10 flex-1 px-3 text-xs tracking-[0.12em]")}
             >
               <Mail className="mr-2 h-4 w-4" aria-hidden="true" />
               <span className="min-w-0 truncate">
@@ -866,7 +867,7 @@ export function TreatyReminderComposer({
                 setRecipientEmail("");
                 resetInvitationState();
               }}
-              className="min-h-10 justify-center border-2 border-foreground bg-background px-3 text-xs font-black uppercase tracking-[0.12em] text-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+              className={cn(defaultButtonClassName, "min-h-10 px-3 text-xs tracking-[0.12em]")}
             >
               One more
             </Button>
