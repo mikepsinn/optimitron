@@ -264,9 +264,24 @@ ${sample}`);
   ]);
   if (copyChanges.length) {
     pushViolation("VONNEGUT", copyChanges.length, formatList(
-      `VONNEGUT / BLATHER GATE: page.tsx or page.logged-out.md changed. Read the rendered copy. Goal: a
-5th grader follows it, nothing said twice, no Stripe-keynote sentences, one primary CTA per screen
-above the fold on mobile. Spawn voice-critic on the .md diff if scope is non-trivial.`,
+      `BLATHER REVIEW CHECKLIST: page.tsx or page.logged-out.md changed. Before committing, OPEN each
+modified .md snapshot and READ IT VISUALLY. Apply critical judgment — do not skip, do not delegate to
+grep. Walk every line and ask:
+
+  1. Same prefix repeated on N adjacent list items? (e.g. "PLAINTIFF IN THE CASE ..." × 24).
+     -> Fold the prefix into a section heading or drop it. It belongs there once, not per row.
+  2. Tautological hint under a section heading? (e.g. "WHO SHOULD BE A PLAINTIFF?" followed by
+     "Use the name that belongs on the court record.")
+     -> Delete. The heading already promised the answer.
+  3. Count above a heading + grid that says the same thing? (e.g. "30 humans already named" above
+     "PLAINTIFFS IN HUMANITY V. GOVERNMENT" + a face grid)
+     -> Delete. The grid is the evidence.
+  4. Stripe-keynote sentence ("primitive that...", "the protocol that...", "off-ramp")?
+     -> Rewrite as plain declarative.
+  5. Adjective stack with no number ("transformative, powerful, scalable")?
+     -> Replace with one number or delete.
+
+If you find blather, fix the .tsx, re-render the .md, re-read it, then commit.`,
       copyChanges,
       "",
     ), { blocking: false });
