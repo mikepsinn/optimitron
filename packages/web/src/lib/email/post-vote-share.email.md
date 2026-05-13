@@ -30,7 +30,7 @@ Earth owns [12,200](https://manual.WarOnDisease.org/knowledge/appendix/extinctio
 
 To get there: send the message below to two humans you love. They send it to two. 32 rounds reaches every adult on Earth. Getting humans to agree on one thing is the first step to any civilizational upgrade. You are responsible for this step. It cannot be completed without you.
 
-I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to click this button at https://warondisease.org/vote/SAMPLE as it will reduce the chance you will suffer and die of horrible diseases.
+I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to vote on this stupid treaty at https://warondisease.org/vote/SAMPLE as it will reduce the likelihood you will suffer and die of horrible diseases.
 
 [SHARE WITH TWO HUMANS](https://warondisease.org/vote/SAMPLE)
 

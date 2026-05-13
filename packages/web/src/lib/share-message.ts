@@ -21,5 +21,5 @@
  *     same string works in plain-text and HTML inboxes alike.
  */
 export function buildShareMessage(referralUrl: string): string {
-  return `I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to click this button at ${referralUrl} as it will reduce the chance you will suffer and die of horrible diseases.`;
+  return `I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to vote on this stupid treaty at ${referralUrl} as it will reduce the likelihood you will suffer and die of horrible diseases.`;
 }
