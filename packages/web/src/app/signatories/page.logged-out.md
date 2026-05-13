@@ -19,9 +19,9 @@
 - Inverse kills
 - Hours of suffering prevented
 - VOTERS RECRUITED
-- [#1 Mike Sinn](/people/mike)26.0 4.68 MILLION 9
-- [#2 Nikhil Yadala](/people/empirical-trailblazer)7.81 1.40 MILLION 2
-- [#3 Wishonia](/people/wishonia)2.60 468,000 0
+- [#1 Mike Sinn](/people/mike) 26.0 4.68 MILLION 9
+- [#2 Nikhil Yadala](/people/empirical-trailblazer) 7.81 1.40 MILLION 2
+- [#3 Wishonia](/people/wishonia) 2.60 468,000 0
 - HUMANITY MANAGER · ASSIGNMENT 1
 ### TRADE ONE APOCALYPSE FOR 12.3× MORE CLINICAL TRIALS.
 - You have been promoted to Humanity Manager at Earth Optimization Services LLC. Responsible for 8 billion humans. First task: get them to ratify the [1% Treaty](/treaty).
