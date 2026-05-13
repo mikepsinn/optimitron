@@ -53,9 +53,15 @@ export function fmtParam(param: Parameter, figures = 3): string {
     return `${fmtRaw(value, figures)}x`;
   }
 
-  // Currency — "USD", "USD/year", "USD/patient"
+  // Currency — "USD", "USD/year", "USD/patient", "USD/DALY"
+  // Use the original `unit` (not `normalizedUnit`) when building the suffix
+  // so acronym denominators like DALY / QALY stay uppercase. Lowercasing
+  // is only used to match the prefix case-insensitively.
   if (normalizedUnit === "usd" || normalizedUnit.startsWith("usd/")) {
-    const perUnit = normalizedUnit.includes("/") ? `/${normalizedUnit.split("/").slice(1).join("/")}` : "";
+    const perUnit =
+      unit?.includes("/")
+        ? `/${unit.split("/").slice(1).join("/")}`
+        : "";
     return `$${fmtRaw(value, figures)}${perUnit}`;
   }
 
