@@ -43,15 +43,24 @@ try {
   if (!existsSync(join(RepoRoot, ".git"))) process.exit(0);
 
   // --- Diff / file lists ----------------------------------------------------
-  const diffNames = git("diff --name-only HEAD")
+  // Inspect ONLY staged content (--cached). The hook fires on `git commit`,
+  // and the only thing being committed is what's been staged via `git add`.
+  // Reading the entire working tree pulls in parallel agents' unstaged work,
+  // which used to force a `git stash --keep-index` dance to satisfy the hook —
+  // and that dance silently dropped Codex's edits at least once this session.
+  const diffNames = git("diff --cached --name-only")
     .split("\n")
     .filter(Boolean);
+  // Untracked files aren't staged-by-default; only flag them if they're in
+  // the staged set (paths-mode `git add` on a previously-untracked file).
+  const stagedSet = new Set(diffNames);
   const untracked = git("ls-files --others --exclude-standard")
     .split("\n")
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((f) => stagedSet.has(f));
   const allChanged = [...new Set([...diffNames, ...untracked])];
 
-  const diffBody = git("diff --unified=0 HEAD").split("\n");
+  const diffBody = git("diff --cached --unified=0").split("\n");
 
   // Lines added in the diff, with their owning file path tracked so JSX checks
   // can skip test files.
