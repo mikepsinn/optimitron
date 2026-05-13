@@ -329,3 +329,27 @@ Before picking a new task, scan with fresh eyes. **Delete on sight:**
 **Simplicity test:** could a junior developer understand this in 30 seconds? If not, simplify. This should not feel like enterprise Java.
 
 **What good looks like:** functions fit on one screen; files stay reviewable (30/300 line thresholds are smells, not caps); module names tell you what's inside; tests read like documentation; no unnecessary abstractions — just functions taking data and returning results.
+
+## gstack (REQUIRED — global install)
+
+**Before doing ANY work, verify gstack is installed:**
+
+```bash
+test -d ~/.claude/skills/gstack/bin && echo "GSTACK_OK" || echo "GSTACK_MISSING"
+```
+
+If GSTACK_MISSING: STOP. Do not proceed. Tell the user:
+
+> gstack is required for all AI-assisted work in this repo.
+> Install it:
+> ```bash
+> git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
+> cd ~/.claude/skills/gstack && ./setup --team
+> ```
+> Then restart your AI coding tool.
+
+Do not skip skills, ignore gstack errors, or work around missing gstack.
+
+Using gstack skills: After install, skills like /qa, /ship, /review, /investigate,
+and /browse are available. Use /browse for all web browsing.
+Use ~/.claude/skills/gstack/... for gstack file paths (the global path).
