@@ -37,9 +37,19 @@ FORWARD THIS
 
 Forward this email to every human you love and do not want to suffer and die of horrible diseases.
 
+↓ TAP AND HOLD TO COPY
+
 I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to click this button at https://warondisease.org/vote/SAMPLE as it will reduce the chance you will suffer and die of horrible diseases.
 
-Copy that into iMessage, WhatsApp, Signal, email, or wherever humans read words that you write. Or send them straight to https://warondisease.org/vote/SAMPLE. 32 doubling rounds x 2 referrals each = 4,300,000,000 humans reached.
+[TEXT](sms:?&body=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20click%20this%20button%20at%20https%3A%2F%2Fwarondisease.org%2Fvote%2FSAMPLE%20as%20it%20will%20reduce%20the%20chance%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
+
+[WHATSAPP](https://wa.me/?text=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20click%20this%20button%20at%20https%3A%2F%2Fwarondisease.org%2Fvote%2FSAMPLE%20as%20it%20will%20reduce%20the%20chance%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
+
+[EMAIL](mailto:?subject=Please%20complete%3A%20Vote%20on%20the%201%25%20Treaty&body=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20click%20this%20button%20at%20https%3A%2F%2Fwarondisease.org%2Fvote%2FSAMPLE%20as%20it%20will%20reduce%20the%20chance%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
+
+[POST](https://twitter.com/intent/tweet?text=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20click%20this%20button%20at%20https%3A%2F%2Fwarondisease.org%2Fvote%2FSAMPLE%20as%20it%20will%20reduce%20the%20chance%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
+
+Or send them straight to https://warondisease.org/vote/SAMPLE. 32 doubling rounds × 2 referrals each = 4,300,000,000 humans reached.
 
 [Unsubscribe](https://warondisease.org/api/email/unsubscribe?token=SAMPLE)
 
