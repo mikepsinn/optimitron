@@ -89,15 +89,24 @@ try {
   );
   const claudeMd = allChanged.includes("CLAUDE.md");
 
-  // Structured violations: each item has { name, count, message }. The
-  // Stop-hook emit path summarizes (one-line). The PreToolUse(Bash) emit
-  // path (i.e. an actual git-commit attempt) shows the full message.
+  // Structured violations: each item has { name, count, message, blocking }.
+  // - `blocking: true`  — real bug class (voice violations, hardcoded
+  //                       numbers, swallowed errors, copy-snapshot drift,
+  //                       CLAUDE.md bloat). Fails the commit.
+  // - `blocking: false` — advisory file-pattern match (email/page/test
+  //                       files changed; new lib file added). Prints the
+  //                       reminder but does NOT fail the commit. Real
+  //                       content concerns from these areas surface via
+  //                       voice-critic / Codex review / human review
+  //                       elsewhere.
+  // The Stop-hook emit path summarizes (one-line). The PreToolUse(Bash)
+  // emit path shows the full message.
   const violations = [];
   // True when called from the PreToolUse Bash hook (commit attempt) —
   // any time `hookData.tool_name` is set. Falsy on Stop firings.
   const isCommitAttempt = Boolean(hookData?.tool_name);
-  function pushViolation(name, count, message) {
-    violations.push({ name, count, message });
+  function pushViolation(name, count, message, options = {}) {
+    violations.push({ name, count, message, blocking: options.blocking !== false });
   }
 
   // --- Check 1: UI changes without a fresh screenshot ---------------------
@@ -121,7 +130,7 @@ try {
         `Action: figure out which routes these affect, screenshot each (auth + unauth where relevant) via
   the chrome-devtools or Playwright MCP, then READ the PNGs and verify the change landed AND nothing
   adjacent broke. Don't commit on faith.`,
-      ));
+      ), { blocking: false });
     }
   }
 
@@ -245,7 +254,7 @@ ${sample}`);
       `  Action: re-read feedback_email_minimalism — one CTA, no chrome, no system internals leaking.
   Run pnpm --filter @optimitron/web e2e:visual (email-screenshots mode) or render the template
   preview and inspect the rendered HTML before commit.`,
-    ));
+    ), { blocking: false });
   }
 
   // --- Check 7b: Vonnegut / blather gate on user-facing copy ---------------
@@ -260,7 +269,7 @@ ${sample}`);
 above the fold on mobile. Spawn voice-critic on the .md diff if scope is non-trivial.`,
       copyChanges,
       "",
-    ));
+    ), { blocking: false });
   }
 
   // --- Check 7c: stupid tests gate ----------------------------------------
@@ -270,7 +279,7 @@ above the fold on mobile. Spawn voice-critic on the .md diff if scope is non-tri
 can't, delete it. No tests for symmetry, documentation, or to silence a bot.`,
       testFiles,
       "",
-    ));
+    ), { blocking: false });
   }
 
   // --- Check 7d: reuse / no-duplication gate ------------------------------
@@ -281,34 +290,45 @@ function that does the same job. Don't duplicate. Don't add an abstraction nobod
 Recent miss: org-context-token (full HMAC system for no real threat — should have trusted the URL slug).`,
       newReusableFiles,
       "",
-    ));
+    ), { blocking: false });
   }
 
   // --- Emit ---------------------------------------------------------------
   if (!violations.length) process.exit(0);
 
+  const blocking = violations.filter((v) => v.blocking);
+  const advisory = violations.filter((v) => !v.blocking);
+
   if (isCommitAttempt) {
-    // Pre-commit: full detail. The commit is actively being attempted;
-    // reviewer needs to see every per-file violation.
-    const banner = `[verify-ui-changes hook] ${violations.length} gate(s) failed. Address each before stopping:`;
-    const body = violations.map((v) => v.message).join("\n\n");
-    process.stderr.write(
-      `${banner}\n\n${body}\n\n(Commit clears the gate, but only commit AFTER you have addressed each violation above. For each NON-OBVIOUS fix, present 2-3 options via AskUserQuestion — recommendation first + one-line reason — before refactoring. Skip asking only when the fix is mechanical/obvious (typo, missing import, formatter). Calibrate first, then act; don't refactor then ask.)\n`,
-    );
-    process.exit(2);
+    // Pre-commit: full detail. Blocking violations fail the commit;
+    // advisory ones print as reminders but exit 0 so the commit proceeds.
+    const sections = [];
+    if (blocking.length) {
+      sections.push(
+        `[verify-ui-changes] ${blocking.length} BLOCKING gate(s) failed — address each, then re-commit:\n\n${blocking.map((v) => v.message).join("\n\n")}`,
+      );
+    }
+    if (advisory.length) {
+      sections.push(
+        `[verify-ui-changes] ${advisory.length} advisory gate(s) — reminders, NOT blocking the commit:\n\n${advisory.map((v) => v.message).join("\n\n")}`,
+      );
+    }
+    process.stderr.write(`${sections.join("\n\n---\n\n")}\n`);
+    process.exit(blocking.length ? 2 : 0);
   }
 
-  // Stop hook: one-line summary. The user hasn't asked to commit yet —
-  // listing every file each turn is noise. The summary is enough signal
-  // to know what would block a commit attempt; full detail lands when
-  // the commit is actually tried (via the PreToolUse path).
+  // Stop hook: one-line summary. Marks advisory gates with [*] so the
+  // reader knows they're informational.
   const summary = violations
-    .map((v) => `${v.name}(${v.count})`)
+    .map((v) => `${v.name}(${v.count})${v.blocking ? "" : "*"}`)
     .join(", ");
   process.stderr.write(
-    `[verify-ui-changes] ${violations.length} gate(s) would block a commit: ${summary}. Run 'git commit' for per-file detail.\n`,
+    `[verify-ui-changes] ${blocking.length} blocking + ${advisory.length} advisory* gate(s): ${summary}. Run 'git commit' for per-file detail.\n`,
   );
-  process.exit(2);
+  // Stop hook: exit 0 if no blocking violations (advisory-only is just
+  // FYI, shouldn't block stopping). Exit 2 only when something real
+  // would fail.
+  process.exit(blocking.length ? 2 : 0);
 } catch {
   // Fail-open.
   process.exit(0);

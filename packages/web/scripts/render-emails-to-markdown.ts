@@ -77,6 +77,20 @@ async function extractEmailMarkdown(
     };
     const toMarkdown = (el: Element): string => {
       let buf = "";
+      // See render-pages-to-markdown.ts for the rationale: insert a
+      // space between adjacent element fragments when their boundary
+      // would collapse two alphanumeric runs together.
+      const appendFragment = (fragment: string) => {
+        if (!fragment) return;
+        if (
+          buf.length > 0 &&
+          /\w$/.test(buf) &&
+          /^[\w[]/.test(fragment)
+        ) {
+          buf += " ";
+        }
+        buf += fragment;
+      };
       for (const node of Array.from(el.childNodes)) {
         if (node.nodeType === 3) {
           buf += applyTransform(node.textContent ?? "", el);
@@ -85,10 +99,9 @@ async function extractEmailMarkdown(
           if (child.tagName === "A") {
             const href = child.getAttribute("href") ?? "";
             const inner = toMarkdown(child).replace(/\s+/g, " ").trim();
-            if (href && inner) buf += `[${inner}](${href})`;
-            else buf += inner;
+            appendFragment(href && inner ? `[${inner}](${href})` : inner);
           } else {
-            buf += toMarkdown(child);
+            appendFragment(toMarkdown(child));
           }
         }
       }

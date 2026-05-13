@@ -41,12 +41,29 @@ async function parseFormBody(request: Request): Promise<ParsedBody> {
     return { form: null, oneClickUnsubscribe: false };
   }
 
+  // RFC 8058 §3 lists BOTH `application/x-www-form-urlencoded` and
+  // `multipart/form-data` as acceptable content types for one-click
+  // unsubscribe POSTs. Mailbox providers in the wild use either —
+  // we have to accept both or some senders' one-click links 400.
+  // (PR #79 Codex review caught this regression.)
   const contentType = request.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/x-www-form-urlencoded")) {
+  let form: URLSearchParams | null = null;
+
+  if (contentType.includes("application/x-www-form-urlencoded")) {
+    form = new URLSearchParams(await request.text());
+  } else if (contentType.includes("multipart/form-data")) {
+    const formData = await request.formData();
+    form = new URLSearchParams();
+    for (const [key, value] of formData.entries()) {
+      // Skip File entries — unsubscribe params are all string-valued.
+      if (typeof value === "string") form.append(key, value);
+    }
+  }
+
+  if (!form) {
     return { form: null, oneClickUnsubscribe: false };
   }
 
-  const form = new URLSearchParams(await request.text());
   return {
     form,
     oneClickUnsubscribe: form.get("List-Unsubscribe") === "One-Click",

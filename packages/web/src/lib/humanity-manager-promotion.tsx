@@ -20,7 +20,6 @@
  * those genuinely cannot run in email regardless of approach.
  */
 
-import { Text } from "@react-email/components";
 import Link from "next/link";
 import * as React from "react";
 import {
@@ -109,7 +108,7 @@ function PromoEyebrow({
 }) {
   if (target === "email") {
     return (
-      <Text
+      <p
         style={{
           color: "#71717a",
           fontSize: "13px",
@@ -121,7 +120,7 @@ function PromoEyebrow({
         }}
       >
         {children}
-      </Text>
+      </p>
     );
   }
   return (
@@ -140,7 +139,7 @@ function PromoHeading({
 }) {
   if (target === "email") {
     return (
-      <Text
+      <p
         style={{
           color: "#111827",
           fontSize: "32px",
@@ -150,7 +149,7 @@ function PromoHeading({
         }}
       >
         {children}
-      </Text>
+      </p>
     );
   }
   return (
@@ -171,7 +170,7 @@ function PromoText({
 }) {
   if (target === "email") {
     return (
-      <Text
+      <p
         style={{
           color: muted ? "#71717a" : "#111827",
           fontSize: muted ? "13px" : "16px",
@@ -181,7 +180,7 @@ function PromoText({
         }}
       >
         {children}
-      </Text>
+      </p>
     );
   }
   return (
