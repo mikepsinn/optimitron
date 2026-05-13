@@ -14,8 +14,10 @@
 ## Visible Page Copy
 
 ## JOIN THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE
+- Allowing billions of humans to suffer and die from disease so governments can preserve 122-apocalypse mass-murder capacity is barbaric mass cruelty. Like slavery, it will persist until enough humans and institutions publicly state that it is morally wrong and incredibly stupid. Your organization can be one of those institutions.
+- None of us can end war and disease on our own. Ending it requires a majority of humanity agreeing to allocate resources in proportion to the degree to which each purpose promotes the general welfare. The [1% Treaty](/treaty) is intended to establish that agreement. Your organization and its members are part of the majority that must agree. Moving that agreement forward by one day prevents about 150,000 deaths from disease and roughly 2 billion days of suffering.
 - Add your organization. Then use your member link, email starter, website button, or iframe to help your audience answer the Global Survey to End War and Disease.
-- No donation. No candidate endorsement. One public humanitarian treaty position.
+- No donation. No candidate endorsement. One public humanitarian treaty position. [Why organizations should join](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy).
 - ORGANIZATION NAME *
 - WEBSITE
 - JOIN AS AN ORGANIZATION

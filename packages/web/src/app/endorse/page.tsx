@@ -1,7 +1,13 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import { shareableSnippets } from "@optimitron/data/parameters";
+import {
+  CURRENT_DISEASE_PATIENTS_GLOBAL,
+  GLOBAL_DISEASE_DEATHS_DAILY,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
+  shareableSnippets,
+} from "@optimitron/data/parameters";
 import { OrganizationGrantCalculator } from "@/components/organizations/OrganizationGrantCalculator";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TreatyContent } from "@/components/treaty/TreatyContent";
 import type { ReferendumSiteLegalSection } from "@/content/referendum-sites/types";
 import { getCurrentUser } from "@/lib/auth-utils";
@@ -10,7 +16,7 @@ import { getSiteMetadata } from "@/lib/metadata";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
 import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
-import { ROUTES } from "@/lib/routes";
+import { NONPROFIT_COALITION_STRATEGY_URL, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { EndorseForm } from "./EndorseForm";
@@ -167,15 +173,57 @@ export default async function EndorsePage() {
         <h1 className="text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
           Join the International Campaign to End War and Disease
         </h1>
-        <p className="mt-5 text-base font-bold leading-7 text-muted-foreground">
-          Add your organization. Then use your member link, email starter,
-          website button, or iframe to help your audience answer the{" "}
-          {GLOBAL_SURVEY_NAME}.
-        </p>
-        <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-          No donation. No candidate endorsement. One public humanitarian treaty
-          position.
-        </p>
+        <div className="mt-5 space-y-4 text-base font-bold leading-7 text-muted-foreground">
+          <p>
+            Allowing billions of humans to suffer and die from disease so
+            governments can preserve{" "}
+            <ParameterValue
+              param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+              valueOverride="122"
+            />
+            -apocalypse mass-murder capacity is barbaric mass cruelty. Like
+            slavery, it will persist until enough humans and institutions
+            publicly state that it is morally wrong and incredibly stupid. Your
+            organization can be one of those institutions.
+          </p>
+          <p>
+            None of us can end war and disease on our own. Ending it requires a
+            majority of humanity agreeing to allocate resources in proportion to
+            the degree to which each purpose promotes the general welfare. The{" "}
+            <Link href={ROUTES.treaty} className="underline underline-offset-4">
+              1% Treaty
+            </Link>{" "}
+            is intended to establish that agreement. Your organization and its
+            members are part of the majority that must agree. Moving that
+            agreement forward by one day prevents about{" "}
+            <ParameterValue
+              param={GLOBAL_DISEASE_DEATHS_DAILY}
+              valueOverride="150,000"
+            />{" "}
+            deaths from disease and roughly{" "}
+            <ParameterValue
+              param={CURRENT_DISEASE_PATIENTS_GLOBAL}
+              valueOverride="2 billion"
+            />{" "}
+            days of suffering.
+          </p>
+          <p>
+            Add your organization. Then use your member link, email starter,
+            website button, or iframe to help your audience answer the{" "}
+            {GLOBAL_SURVEY_NAME}.
+          </p>
+          <p className="text-sm">
+            No donation. No candidate endorsement. One public humanitarian
+            treaty position.{" "}
+            <Link
+              href={NONPROFIT_COALITION_STRATEGY_URL}
+              className="underline underline-offset-4"
+            >
+              Why organizations should join
+            </Link>
+            .
+          </p>
+        </div>
       </header>
 
       <div className="scroll-mt-24" id="organization-endorsement-form">
