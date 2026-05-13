@@ -39,7 +39,7 @@ Forward this email to every human you love and do not want to suffer and die of 
 
 ↓ TAP AND HOLD TO COPY
 
-I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to vote on this stupid treaty at https://warondisease.org/vote/SAMPLE as it will reduce the likelihood you will suffer and die of horrible diseases.
+I love you and don't want you to suffer and die of horrible diseases so please take [30 seconds](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) to vote on this stupid treaty at [https://warondisease.org/vote/SAMPLE](https://warondisease.org/vote/SAMPLE) as it will reduce the likelihood you will suffer and die of horrible diseases.
 
 [TEXT](sms:?&body=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20vote%20on%20this%20stupid%20treaty%20at%20https%3A%2F%2Fwarondisease.org%2Fvote%2FSAMPLE%20as%20it%20will%20reduce%20the%20likelihood%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
 
@@ -49,7 +49,7 @@ I love you and don't want you to suffer and die of horrible diseases so please t
 
 [POST](https://twitter.com/intent/tweet?text=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20vote%20on%20this%20stupid%20treaty%20at%20https%3A%2F%2Fwarondisease.org%2Fvote%2FSAMPLE%20as%20it%20will%20reduce%20the%20likelihood%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
 
-Or send them straight to https://warondisease.org/vote/SAMPLE. 32 doubling rounds × 2 referrals each = 4,300,000,000 humans reached.
+Or send them straight to [https://warondisease.org/vote/SAMPLE](https://warondisease.org/vote/SAMPLE). [32](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) doubling rounds × [2](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) referrals each = [4 billion](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans reached.
 
 Love,
 

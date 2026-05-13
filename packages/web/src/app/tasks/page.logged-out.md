@@ -16,7 +16,6 @@
 ## EARTH OPTIMIZATION TASKS
 - A public to-do list for optimizing Earth. Each task names the human or organization, gives them a specific job, and shows the cost of waiting.
 ### HUMANITY'S TASKS
-- SORT
 - ASSIGNEE
 - TASK
 - STATUS

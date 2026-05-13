@@ -28,11 +28,11 @@ You have been promoted to Humanity Manager at Earth Optimization Services LLC. R
 
 Earth owns [12,200](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear warheads. [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) of them ends civilization. That is [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses on the shelf. Spend one apocalypse on [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trials and the disease-eradication timeline collapses from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 
-To get there: send the message below to two humans you love. They send it to two. 32 rounds reaches every adult on Earth. Getting humans to agree on one thing is the first step to any civilizational upgrade. You are responsible for this step. It cannot be completed without you.
+To get there: send the message below to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans you love. They send it to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html). [32](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) rounds reaches every adult on Earth. Getting humans to agree on one thing is the first step to any civilizational upgrade. You are responsible for this step. It cannot be completed without you.
 
-I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to vote on this stupid treaty at https://warondisease.org/vote/SAMPLE as it will reduce the likelihood you will suffer and die of horrible diseases.
+I love you and don't want you to suffer and die of horrible diseases so please take [30 seconds](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) to vote on this stupid treaty at [https://warondisease.org/vote/SAMPLE](https://warondisease.org/vote/SAMPLE) as it will reduce the likelihood you will suffer and die of horrible diseases.
 
-[SHARE WITH TWO HUMANS](https://warondisease.org/vote/SAMPLE)
+[END WAR AND DISEASE](https://warondisease.org/vote/SAMPLE)
 
 Forward this email or copy the message above into iMessage, WhatsApp, Signal, or wherever humans read your words.
 
