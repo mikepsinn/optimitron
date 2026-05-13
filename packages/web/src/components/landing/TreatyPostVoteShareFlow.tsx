@@ -40,6 +40,7 @@ import {
   UNEXPLORED_RATIO,
 } from "@optimitron/data/parameters";
 import { copyTextToClipboard } from "@/lib/clipboard";
+import { cn } from "@/lib/utils";
 import {
   buildReferralInvitationMessage,
   getReferralInvitationFirstName,
@@ -178,13 +179,12 @@ function MessageModeToggle({
         return (
           <button
             aria-pressed={selected}
-            className={[
-              "min-h-14 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.16em] transition-colors sm:text-sm",
+            className={cn(
+              primaryButtonClass,
+              "min-h-14 px-3 py-3 text-center text-xs tracking-[0.16em] sm:text-sm",
               index > 0 ? "border-l border-[var(--treaty-ink)]" : "",
-              selected
-                ? "bg-[var(--treaty-ink)] text-[#fffaf0]"
-                : "bg-[var(--treaty-paper)] text-[var(--treaty-ink)] hover:bg-[#efe4cf]",
-            ].join(" ")}
+              selected && "bg-foreground text-background",
+            )}
             key={option.value}
             onClick={() => onChange(option.value)}
             type="button"

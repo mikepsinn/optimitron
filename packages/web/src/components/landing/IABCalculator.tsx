@@ -3,6 +3,8 @@
 import { useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
@@ -77,11 +79,11 @@ export function IABCalculator() {
               <button
                 key={preset}
                 onClick={() => setAmount(preset)}
-                className={`px-3 py-2 text-xs font-black border-4 border-primary transition-colors ${
-                  amount === preset
-                    ? "bg-foreground text-background"
-                    : "bg-background text-foreground hover:bg-muted"
-                }`}
+                className={cn(
+                  defaultButtonClassName,
+                  "min-h-10 px-3 py-2 text-xs",
+                  amount === preset && "bg-foreground text-background",
+                )}
               >
                 {formatUSD(preset)}
               </button>

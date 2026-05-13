@@ -16,6 +16,7 @@ import {
   storage,
   type PendingOrganizationEndorsementDraft,
 } from "@/lib/storage";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 interface ManageableOrg {
   id: string;
@@ -348,7 +349,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             href={organizationHref}
-            className="inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+            className={defaultButtonClassName}
           >
             Open Organization Tools
           </Link>
@@ -449,7 +450,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
       <button
         type="submit"
         disabled={submitting || formMode === "saving"}
-        className="w-full border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground disabled:opacity-50"
+        className={`${defaultButtonClassName} w-full disabled:opacity-50`}
       >
         {submitting || formMode === "saving"
           ? isAuthenticated

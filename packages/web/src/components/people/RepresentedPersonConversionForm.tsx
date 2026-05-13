@@ -23,6 +23,7 @@ import { ROUTES } from "@/lib/routes";
 import { storage, type PendingRepresentedPersonDraft } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 type FormMode = "idle" | "auth" | "saving" | "saved" | "syncing" | "error";
 
@@ -288,7 +289,7 @@ export function RepresentedPersonConversionForm({
         </h2>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button
-            className="border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background shadow-none hover:translate-x-0 hover:translate-y-0"
+            className={defaultButtonClassName}
             onClick={() => {
               setSavedPeople([]);
               setMode("idle");
@@ -298,7 +299,7 @@ export function RepresentedPersonConversionForm({
             Register another
           </Button>
           <Link
-            className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground"
+            className={defaultButtonClassName}
             href={addDetailsHref}
           >
             Add details
@@ -404,7 +405,7 @@ export function RepresentedPersonConversionForm({
 
           <div className="flex flex-wrap gap-3">
             <Button
-              className="min-h-12 border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0 disabled:opacity-40"
+              className={cn(defaultButtonClassName, "disabled:opacity-40")}
               disabled={!canSubmit || mode === "saving"}
               onClick={() => void submit()}
               type="button"

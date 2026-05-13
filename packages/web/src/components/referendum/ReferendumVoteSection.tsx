@@ -10,6 +10,7 @@ import { getSignInPath, ROUTES } from "@/lib/routes";
 import { REFERRAL } from "@/lib/messaging";
 import { storage } from "@/lib/storage";
 import { buildReferendumReferralUrl } from "@/lib/url";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 interface ReferendumVoteSectionProps {
   referendumSlug: string;
@@ -103,7 +104,7 @@ export function ReferendumVoteSection({
         </p>
         <a
           href={signInHref}
-          className="mt-4 inline-flex items-center justify-center border-4 border-primary bg-foreground px-6 py-2 text-sm font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+          className={`${defaultButtonClassName} mt-4 min-h-10 px-6 py-2`}
         >
           Sign In
         </a>
@@ -179,14 +180,14 @@ export function ReferendumVoteSection({
         <button
           onClick={() => void castVote("YES")}
           disabled={isSubmitting}
-          className="flex-1 border-4 border-primary bg-background py-4 text-xl font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+          className={`${defaultButtonClassName} flex-1 py-4 text-xl disabled:opacity-50`}
         >
           Yes
         </button>
         <button
           onClick={() => void castVote("NO")}
           disabled={isSubmitting}
-          className="flex-1 border-4 border-primary bg-brutal-red py-4 text-xl font-black uppercase text-brutal-red-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+          className={`${defaultButtonClassName} flex-1 py-4 text-xl disabled:opacity-50`}
         >
           No
         </button>

@@ -7,6 +7,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import type { RepresentedPeopleSortKey } from "@/lib/represented-people.server";
 
 interface ConflictOption {
@@ -160,7 +161,7 @@ export function PeopleFilterBar() {
             </p>
             {hasFilter ? (
               <Button
-                className="min-h-9 border border-border bg-transparent px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                className={`${defaultButtonClassName} min-h-9 px-3 text-xs`}
                 onClick={clearAll}
                 type="button"
               >

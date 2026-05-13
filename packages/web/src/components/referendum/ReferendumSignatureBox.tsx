@@ -13,6 +13,7 @@ import { ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
 import { getUserDisplayName } from "@/lib/user-display";
 import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 type ReferralUser = {
   handle?: string | null;
@@ -106,8 +107,8 @@ export function ReferendumSignatureBox({
     ? "text-[var(--treaty-ink-muted)]"
     : "text-primary-foreground";
   const buttonClass = isReader
-    ? "border-2 border-foreground bg-background px-8 py-3 text-lg font-black uppercase text-foreground shadow-none transition-colors hover:bg-muted disabled:opacity-30"
-    : "border-2 border-foreground bg-background px-8 py-3 text-lg font-black uppercase text-foreground transition-colors hover:bg-muted disabled:opacity-30";
+    ? cn(defaultButtonClassName, "px-8 text-lg disabled:opacity-30")
+    : cn(defaultButtonClassName, "px-8 text-lg disabled:opacity-30");
   const shareLabelClass = isReader
     ? "text-[var(--treaty-ink)] normal-case tracking-normal text-sm leading-6 font-bold"
     : "text-primary-foreground normal-case tracking-normal text-sm leading-6 font-bold";

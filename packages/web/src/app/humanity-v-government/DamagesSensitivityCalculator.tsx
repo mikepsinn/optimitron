@@ -11,6 +11,8 @@ import {
   WAR_DEATHS_SINCE_1900,
   WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE,
 } from "@optimitron/data/parameters";
+import { defaultButtonClassName } from "@/components/ui/default-button";
+import { cn } from "@/lib/utils";
 
 /**
  * Sensitivity calculator for the Humanity v. Government damages tiers.
@@ -166,7 +168,7 @@ export function DamagesSensitivityCalculator() {
           Damages calculator
         </p>
         <button
-          className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          className={cn(defaultButtonClassName, "min-h-10 px-3 py-2 text-xs tracking-[0.12em]")}
           onClick={reset}
           type="button"
         >

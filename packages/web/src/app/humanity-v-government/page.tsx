@@ -20,6 +20,7 @@ import {
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { authOptions } from "@/lib/auth";
 import { formatCount } from "@/lib/format-count";
 import {
@@ -140,19 +141,19 @@ export default async function HumanityVGovernmentPage() {
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
-            className="inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground"
+            className={`${defaultButtonClassName} px-6 tracking-[0.08em]`}
             href="#verdict"
           >
             Vote on the finding
           </a>
           <Link
-            className="inline-block border-2 border-foreground bg-background px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
+            className={`${defaultButtonClassName} px-6 tracking-[0.08em]`}
             href={ROUTES.vote}
           >
             Support the settlement
           </Link>
           <a
-            className="inline-block border-2 border-foreground bg-background px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
+            className={`${defaultButtonClassName} px-6 tracking-[0.08em]`}
             href={HUMANITY_V_GOVERNMENT_MANUAL_URL}
             rel="noreferrer"
             target="_blank"
@@ -499,7 +500,7 @@ export default async function HumanityVGovernmentPage() {
           least be able to count its dead.
         </p>
         <Link
-          className="mt-5 inline-block border-2 border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-foreground hover:bg-foreground hover:text-background"
+          className={`${defaultButtonClassName} mt-5 tracking-[0.08em]`}
           href={ROUTES.plaintiffs}
         >
           Add a plaintiff

@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/retroui/Checkbox";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { uploadImageViaBackend } from "@/lib/image-upload.client";
 import { buildDisplayNameFromParts } from "@/lib/person-name";
 import { ROUTES } from "@/lib/routes";
@@ -426,7 +427,7 @@ export function ManageRepresentedPeopleClient({
           You have no plaintiffs yet.
         </p>
         <Link
-          className="mt-5 inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background"
+          className={`${defaultButtonClassName} mt-5`}
           href={ROUTES.plaintiffs}
         >
           Register a plaintiff
@@ -465,7 +466,7 @@ export function ManageRepresentedPeopleClient({
               </div>
             </dl>
             <button
-              className="mt-4 min-h-11 w-full border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+              className={`${defaultButtonClassName} mt-4 min-h-11 w-full px-4 text-xs`}
               onClick={() => setEditingId(person.id)}
               type="button"
             >
@@ -513,7 +514,7 @@ export function ManageRepresentedPeopleClient({
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button
-                      className="min-h-11 border border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+                      className={`${defaultButtonClassName} min-h-11 px-4 text-xs`}
                       onClick={() => setEditingId(person.id)}
                       type="button"
                     >
@@ -552,7 +553,7 @@ export function ManageRepresentedPeopleClient({
                   <ReactDialog.Close asChild>
                     <button
                       aria-label="Close editor"
-                      className="inline-flex min-h-10 items-center border border-foreground bg-background px-3 text-foreground disabled:opacity-40"
+                      className={`${defaultButtonClassName} min-h-10 px-3 disabled:opacity-40`}
                       type="button"
                     >
                       <X className="h-4 w-4" aria-hidden="true" />
@@ -1069,7 +1070,7 @@ export function ManageRepresentedPeopleClient({
 
                     <div className="flex flex-wrap items-center gap-3">
                       <button
-                        className="min-h-12 border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background disabled:opacity-40"
+                        className={`${defaultButtonClassName} tracking-[0.12em] disabled:opacity-40`}
                         disabled={
                           savingId === editingPerson.id ||
                           deletingId === editingPerson.id ||
@@ -1083,7 +1084,7 @@ export function ManageRepresentedPeopleClient({
                           : "Save changes"}
                       </button>
                       <button
-                        className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 text-sm font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
+                        className={`${defaultButtonClassName} tracking-[0.12em] disabled:opacity-40`}
                         disabled={
                           savingId === editingPerson.id ||
                           deletingId === editingPerson.id
@@ -1144,7 +1145,7 @@ export function ManageRepresentedPeopleClient({
             ) : null}
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <button
-                className="inline-flex min-h-12 items-center border border-foreground bg-background px-5 text-sm font-black uppercase tracking-[0.12em] text-foreground disabled:opacity-40"
+                className={`${defaultButtonClassName} tracking-[0.12em] disabled:opacity-40`}
                 disabled={Boolean(deletingId)}
                 onClick={() => setDeleteCandidateId(null)}
                 type="button"
@@ -1152,7 +1153,7 @@ export function ManageRepresentedPeopleClient({
                 Cancel
               </button>
               <button
-                className="inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.12em] text-background disabled:opacity-40"
+                className={`${defaultButtonClassName} tracking-[0.12em] disabled:opacity-40`}
                 disabled={!deleteCandidate || Boolean(deletingId)}
                 onClick={() => {
                   if (deleteCandidate) void deletePerson(deleteCandidate);

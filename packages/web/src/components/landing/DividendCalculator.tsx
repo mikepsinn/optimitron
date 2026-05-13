@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 /**
  * Personal Dividend Calculator
@@ -97,11 +99,11 @@ export function DividendCalculator({
             <button
               key={n}
               onClick={() => setAdults(n)}
-              className={`border-2 border-primary px-4 py-2 text-sm font-black transition-all ${
-                adults === n
-                  ? "bg-foreground text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                  : "bg-background text-foreground hover:bg-muted"
-              }`}
+              className={cn(
+                defaultButtonClassName,
+                "min-h-10 px-4 py-2",
+                adults === n && "bg-foreground text-background",
+              )}
             >
               {n}
             </button>

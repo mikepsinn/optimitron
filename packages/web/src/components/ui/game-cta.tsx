@@ -1,17 +1,13 @@
 import Link from "next/link";
 import { CTA } from "@/lib/messaging";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 const variants = {
-  primary:
-    "bg-foreground text-background",
-  secondary:
-    "bg-foreground text-background",
-  outline:
-    "bg-background text-foreground",
-  yellow:
-    "bg-background text-foreground",
-  cyan:
-    "bg-background text-foreground",
+  primary: "",
+  secondary: "",
+  outline: "",
+  yellow: "",
+  cyan: "",
 } as const;
 
 const sizes = {
@@ -53,10 +49,7 @@ export function GameCTA({
   className = "",
 }: GameCTAProps) {
   const baseClasses = [
-    "inline-flex items-center justify-center gap-2",
-    "font-black uppercase",
-    "border border-foreground",
-    "transition-colors hover:bg-background hover:text-foreground",
+    defaultButtonClassName,
     variants[variant],
     sizes[size],
     className,

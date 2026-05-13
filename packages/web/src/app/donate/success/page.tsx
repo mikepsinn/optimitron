@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
 
@@ -91,14 +92,14 @@ function DonateSuccessInner() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button
                   asChild
-                  className="flex-1 justify-center border border-black bg-black text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black active:translate-x-0 active:translate-y-0"
+                  className={`${defaultButtonClassName} flex-1`}
                 >
                   <Link href={trackHref}>Track your impact</Link>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="flex-1 justify-center border border-black bg-white text-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
+                  className={`${defaultButtonClassName} flex-1`}
                 >
                   <Link href={DASHBOARD_INVITE_HREF}>Invite one voter</Link>
                 </Button>

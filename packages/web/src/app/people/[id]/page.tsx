@@ -10,6 +10,7 @@ import type { TaskCardTask } from "@/components/tasks/task-card";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { YEARS_PER_AVERTED_DEATH } from "@/components/tasks/task-row";
 import { Avatar } from "@/components/retroui/Avatar";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { isPublicOfficialPerson } from "@/lib/public-officials";
 import {
   aggregateTaskDelayStats,
@@ -315,7 +316,7 @@ function RepresentedPersonProfile({
               or a future legal proceeding.
             </p>
             <a
-              className="inline-block border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background"
+              className={defaultButtonClassName}
               download={`${person.handle ?? person.id}-evidence-package.json`}
               href={`/api/people/${person.handle ?? person.id}/evidence-package`}
             >
@@ -337,7 +338,7 @@ function RepresentedPersonProfile({
             welfare and spent the repair money on war.
           </p>
           <Link
-            className="mt-4 inline-flex min-h-12 items-center border border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background"
+            className={`${defaultButtonClassName} mt-4`}
             href={ROUTES.plaintiffs}
           >
             Register another plaintiff

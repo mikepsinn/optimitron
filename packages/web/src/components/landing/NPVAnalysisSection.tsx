@@ -4,6 +4,7 @@ import { Card } from "@/components/retroui/Card"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
 import { useState } from "react"
+import { defaultButtonClassName } from "@/components/ui/default-button"
 import {
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   DFDA_NPV_UPFRONT_COST_TOTAL,
@@ -154,7 +155,7 @@ export default function NPVAnalysisSection() {
         <div className="mb-12">
           <button
             onClick={() => setShowTable(!showTable)}
-            className="w-full bg-primary text-primary-foreground px-8 py-4 text-lg font-black uppercase border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all mb-6"
+            className={`${defaultButtonClassName} mb-6 w-full px-8 py-4 text-lg`}
           >
             {showTable ? "HIDE" : "SHOW"} YEAR-BY-YEAR CASH FLOW BREAKDOWN
           </button>

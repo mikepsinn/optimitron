@@ -8,6 +8,7 @@ import {
   fmtRaw,
 } from "@optimitron/data/parameters";
 import { Button } from "@/components/retroui/Button";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { Input } from "@/components/retroui/Input";
 import { STATES } from "@/lib/tax-optimizer/brackets";
 import {
@@ -284,7 +285,7 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
       <div className="grid gap-3 sm:grid-cols-2">
         <Button
           asChild
-          className="w-full justify-center border border-black bg-black text-white shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-white hover:text-black active:translate-x-0 active:translate-y-0"
+          className={`${defaultButtonClassName} w-full`}
         >
           <a
             href={`mailto:m@warondisease.org?subject=${encodeURIComponent(
@@ -306,7 +307,7 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
             type="button"
             variant="outline"
             onClick={onClose}
-            className="w-full justify-center border border-black shadow-none hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0"
+            className={`${defaultButtonClassName} w-full`}
           >
             Close
           </Button>

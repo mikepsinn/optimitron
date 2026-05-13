@@ -6,6 +6,7 @@ import { Button } from "@/components/retroui/Button"
 import { Input } from "@/components/retroui/Input"
 import { Label } from "@/components/retroui/Label"
 import { Textarea } from "@/components/retroui/Textarea"
+import { defaultButtonClassName } from "@/components/ui/default-button"
 import { getOrganizationManagementHref } from "@/lib/organization-links"
 import { ArrowRight, Loader2, CheckCircle } from "lucide-react"
 
@@ -92,7 +93,7 @@ export function OrganizationForm({ onSuccess, onCancel, compact = false, initial
                     <div className="flex justify-center">
                         <Button
                             onClick={() => router.push(getOrganizationManagementHref(createdOrg.id))}
-                            className="bg-foreground text-background border-4 border-primary hover:bg-foreground hover:text-foreground font-black uppercase"
+                            className={defaultButtonClassName}
                         >
                             Manage Organization
                         </Button>
@@ -160,7 +161,7 @@ export function OrganizationForm({ onSuccess, onCancel, compact = false, initial
                             variant="outline"
                             onClick={onCancel}
                             disabled={isCreating}
-                            className="border-4 border-primary font-bold uppercase"
+                            className={defaultButtonClassName}
                         >
                             Cancel
                         </Button>
@@ -168,7 +169,7 @@ export function OrganizationForm({ onSuccess, onCancel, compact = false, initial
                     <Button
                         type="submit"
                         disabled={isCreating}
-                        className="bg-foreground text-background border-4 border-primary hover:bg-foreground hover:text-foreground font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        className={defaultButtonClassName}
                     >
                         {isCreating ? (
                             <>

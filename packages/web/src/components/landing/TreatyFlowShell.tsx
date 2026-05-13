@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 
 const ink = "var(--treaty-ink)";
 const mutedInk = "var(--treaty-ink-muted)";
@@ -7,10 +8,10 @@ const paper = "var(--treaty-paper)";
 const paperRule = "#d8c7a4";
 
 export const treatyPrimaryButtonClass =
-  "min-h-12 justify-center gap-3 !border !border-black bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-black !shadow-none hover:!translate-x-0 hover:!translate-y-0 hover:bg-black hover:text-white active:!translate-x-0 active:!translate-y-0 disabled:cursor-not-allowed disabled:opacity-50";
+  defaultButtonClassName;
 
 export const treatySecondaryButtonClass =
-  "min-h-12 justify-center gap-3 !border !border-black bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-black !shadow-none hover:!translate-x-0 hover:!translate-y-0 hover:bg-black hover:text-white active:!translate-x-0 active:!translate-y-0 disabled:cursor-not-allowed disabled:opacity-50";
+  defaultButtonClassName;
 
 export const treatyInputClass =
   "!border !border-[var(--treaty-ink)] bg-[#fffdf8] text-[var(--treaty-ink)] !shadow-none [font-family:var(--v0-font-libre-baskerville)] placeholder:text-[var(--treaty-ink-muted)]/55 focus:!shadow-none focus-visible:outline-[var(--treaty-ink)]";

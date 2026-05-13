@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { fmtRaw } from "@optimitron/data/parameters";
 import { HelpCircle } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
@@ -223,7 +224,7 @@ function SignatoryRow({
           {editHref ? (
             <Link
               href={editHref}
-              className="inline-flex items-center border border-foreground bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-foreground transition-colors hover:bg-muted"
+              className={`${defaultButtonClassName} min-h-8 px-2 py-0.5 text-[10px]`}
             >
               Edit Profile
             </Link>

@@ -20,6 +20,7 @@ import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildPlaintiffsUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { SquarePhotoCropper } from "./SquarePhotoCropper";
 
 const CONFLICT_CAUSE_CATEGORIES = new Set<PersonDeathCauseCategory>([
@@ -640,7 +641,7 @@ export function RepresentedPersonForm({
                   type="file"
                 />
                 <Button
-                  className="min-h-11 border border-border bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                  className={cn(defaultButtonClassName, "min-h-11 px-3 text-xs")}
                   disabled={disabled || photoUploading}
                   onClick={() => photoInputRef.current?.click()}
                   type="button"
@@ -655,7 +656,7 @@ export function RepresentedPersonForm({
                 {imageUrl ? (
                   <Button
                     aria-label="Clear photo"
-                    className="min-h-11 border border-border bg-background px-3 text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                    className={cn(defaultButtonClassName, "min-h-11 px-3")}
                     disabled={disabled || photoUploading}
                     onClick={() => setImageUrl("")}
                     type="button"
@@ -964,7 +965,7 @@ export function RepresentedPersonForm({
                         </div>
                         <Button
                           aria-label={`Remove evidence ${index + 1}`}
-                          className="min-h-9 border border-border bg-background px-2 text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                          className={cn(defaultButtonClassName, "min-h-9 px-2")}
                           disabled={disabled}
                           onClick={() => removeEvidence(index)}
                           type="button"
@@ -990,7 +991,7 @@ export function RepresentedPersonForm({
                   type="file"
                 />
                 <Button
-                  className="min-h-10 border border-border bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                  className={cn(defaultButtonClassName, "min-h-10 px-3 text-xs")}
                   disabled={
                     disabled ||
                     !isPublic ||
@@ -1134,7 +1135,7 @@ export function RepresentedPersonForm({
                       </div>
                       <Button
                         aria-label={`Remove responsible party ${index + 1}`}
-                        className="min-h-11 border border-border bg-background px-3 text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                        className={cn(defaultButtonClassName, "min-h-11 px-3")}
                         disabled={disabled}
                         onClick={() => removeResponsibleParty(index)}
                         type="button"
@@ -1148,7 +1149,7 @@ export function RepresentedPersonForm({
 
               {responsibleParties.length < MAX_RESPONSIBLE_PARTIES ? (
                 <Button
-                  className="min-h-10 border border-border bg-background px-3 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                  className={cn(defaultButtonClassName, "min-h-10 px-3 text-xs")}
                   disabled={disabled}
                   onClick={addResponsibleParty}
                   type="button"
@@ -1286,7 +1287,7 @@ export function RepresentedPersonForm({
           ) : null}
 
           <Button
-            className="min-h-12 w-full border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0"
+            className={cn(defaultButtonClassName, "w-full tracking-[0.12em]")}
             disabled={disabled || !canSubmit}
             onClick={() => void submit()}
             type="button"
@@ -1322,7 +1323,7 @@ export function RepresentedPersonForm({
                 You registered <strong>{submittedDisplayName}</strong>.
               </p>
               <Button
-                className="min-h-12 w-full border border-foreground bg-foreground px-5 font-black uppercase tracking-[0.12em] text-background shadow-none hover:translate-x-0 hover:translate-y-0"
+                className={cn(defaultButtonClassName, "w-full tracking-[0.12em]")}
                 onClick={() => {
                   setStatus("idle");
                   setSubmittedDisplayName(null);
@@ -1338,7 +1339,7 @@ export function RepresentedPersonForm({
                 <div className="space-y-2">
                   <p className="text-sm font-bold">{shareText}</p>
                   <Button
-                    className="min-h-11 border border-border bg-transparent px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-muted"
+                    className={cn(defaultButtonClassName, "min-h-11 px-4 text-xs")}
                     onClick={() => void copyTextToClipboard(shareText)}
                     type="button"
                   >
