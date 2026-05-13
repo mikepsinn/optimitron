@@ -32,6 +32,17 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/surprise-signal.mjs",
+            "timeout": 5000
+          }
+        ]
+      }
     ]
   }
 }
