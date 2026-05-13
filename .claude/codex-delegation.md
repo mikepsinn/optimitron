@@ -48,3 +48,21 @@ The MCP path's only theoretical advantage is the auto-mode safety classifier; in
 ## Verify before relaying
 
 Codex hallucinates. Inspect each non-trivial diff before reporting success.
+
+**Read the agent_message events, not just `task_complete`.** Codex's session file at `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` contains the full conversation log. The final `task_complete` event sometimes has an empty `last_agent_message` even when Codex did real work — you'll miss its actual narration if you only tail the file. Mid-stream `agent_message` events are where Codex reports what it's actually doing, including stupid moves you'd want to redirect mid-flight. Extract them like:
+
+```python
+python -c "
+import json, sys
+with open(sys.argv[1]) as f:
+    for line in f:
+        d = json.loads(line)
+        p = d.get('payload', {})
+        if p.get('type') == 'agent_message':
+            print(p['message']); print('---')
+" <session-file>
+```
+
+Always run this against the right session file (`ls -t ~/.codex/sessions/$(date +%Y)/$(date +%m)/$(date +%d)/rollout-*.jsonl | head -1`) before declaring an agent failed or succeeded — wrapper narration and filesystem state alone are insufficient.
+
+**Always verify the working tree matches what Codex claims.** Run `git diff --stat` after every Codex dispatch and compare line counts to what Codex says it did. If Codex says "now 266 lines" and `wc -l` says 1490, something reverted the edits — investigate before committing or re-dispatching.
