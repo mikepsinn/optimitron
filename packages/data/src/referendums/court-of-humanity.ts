@@ -44,7 +44,7 @@ WHEREAS, the Court of Humanity does not require any government to consent to its
 
 WHEREAS, a court whose jurisdiction is human consent rather than sovereign consent has no problem getting humans to show up. The hard part has always been the other one;
 
-WHEREAS, the [International Criminal Court](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html) does not work because it requires the offending governments to either cooperate with prosecutions of themselves or be ignored when they refuse. The Court of Humanity replaces the cooperation gap with a capital-markets enforcement layer. Governments that refuse to honor judgments find their bondholders' lawyers — who are very good — pointed at them in their own domestic courts;
+WHEREAS, the [International Criminal Court](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html) does not work because it requires the offending governments to either cooperate with prosecutions of themselves or be ignored when they refuse. The Court of Humanity skips the cooperation problem. Bondholders, insurers, treaty parties, and procurement officers recognize its judgments first. Governments follow because their borrowing rates depend on it, and their own bondholders' lawyers — who are very good — point themselves at them in their own domestic courts;
 
 WHEREAS, those bondholders are aligned with the judgments because the judgments are the asset. Compliance pays. Non-compliance is a default event. Default events trigger cross-default clauses on every other instrument the same government has issued. Sovereign immunity stops at the bond market, where the king has been bowing for centuries;
 

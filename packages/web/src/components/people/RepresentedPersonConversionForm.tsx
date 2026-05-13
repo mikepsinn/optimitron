@@ -23,7 +23,7 @@ import { ROUTES } from "@/lib/routes";
 import { storage, type PendingRepresentedPersonDraft } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { cn } from "@/lib/utils";
-import { defaultButtonClassName } from "@/components/ui/default-button";
+import { defaultButtonClassName, primaryButtonClassName } from "@/components/ui/default-button";
 
 type FormMode = "idle" | "auth" | "saving" | "saved" | "syncing" | "error";
 
@@ -405,7 +405,7 @@ export function RepresentedPersonConversionForm({
 
           <div className="flex flex-wrap gap-3">
             <Button
-              className={cn(defaultButtonClassName, "disabled:opacity-40")}
+              className={cn(primaryButtonClassName, "disabled:opacity-40")}
               disabled={!canSubmit || mode === "saving"}
               onClick={() => void submit()}
               type="button"

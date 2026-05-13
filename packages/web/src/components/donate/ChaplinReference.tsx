@@ -20,7 +20,7 @@ export function ChaplinReference() {
         rel="noreferrer"
         className="underline"
       >
-        Watch on YouTube
+        Watch Chaplin&apos;s closing speech from The Great Dictator (1940)
       </a>
       .
     </video>

@@ -91,7 +91,7 @@
 - 12 At % success and 1.00x treaty scale, the model gives $0.18 per healthy life-year.That is 503x the cost-effectiveness of bed nets at the live assumptions. Your calculator will display an error, emit a tiny electronic scream, and attempt to leave the desk. This is correct. The published skeptical case assumes a 99% chance humanity fumbles this and still comes out 503x better than bed nets, where bed nets cost $89/DALY. This model suggests the treaty campaign may be the most cost-effective way to reduce human suffering per dollar spent. If that sounds insane, good. Change the assumptions or attack the citations.
 - Other ways to give
 - Major-gift routes that can reduce your taxes or processing fees. Not tax advice — talk to your CPA. U.S.-specific. Accelerated Medicine Foundation Inc, dba Institute for Accelerated Medicine is a 501(c)(3) public charity incorporated in Wyoming.
-- Open tax calculator
+- OPEN TAX CALCULATOR
 - Donor-Advised Fund (DAF) grant
 - Best if you parked a windfall in a DAF.
 - Recommend a grant from Fidelity Charitable, DAFgiving360 (formerly Schwab Charitable), BNY Mellon Charitable, Vanguard Charitable, or your DAF sponsor.
@@ -129,4 +129,4 @@
 - [DONATE CRYPTO THROUGH ENDAOMENT](https://app.endaoment.org/orgs/41-2555651)
 - Powered by Endaoment (a 501(c)(3); custodial; auto-receipt).
 - Anything unusual (wire transfer, in-kind goods, complex assets)? Email [donations@warondisease.org](mailto:donations@warondisease.org).
-- [Watch on YouTube](https://www.youtube.com/results?search_query=charlie+chaplin+the+great+dictator+speech)
+- [Watch Chaplin's closing speech from The Great Dictator (1940)](https://www.youtube.com/results?search_query=charlie+chaplin+the+great+dictator+speech)
