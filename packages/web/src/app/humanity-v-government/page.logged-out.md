@@ -50,9 +50,9 @@
 - DAMAGES
 - The cautious floor is $538K per living human. The prosecutor's base demand is $913K.
 ### THE THREE COUNTS
-- COUNT 1 — DEATH BY WAR310 million deathsThe defendants, between 1900 and the present, did willfully and with premeditation engage in the organized killing of 310 million of their own employers.
-- COUNT 2 — DEATH BY REGULATORY DELAY102 million deathsThe defendants required an additional 8.2 years of efficacy testing before letting humans access drugs already proven safe. 53 years of warnings. 102 million dead. “We did not know” is no longer available as a defense.
-- COUNT 3 — DEATH BY MISALLOCATION37,778 trial-yearsDamages here are the counterfactual: what humanity would have had if governments had frozen real military spending at 1900 levels and redirected the rest to keeping their citizens alive. The war budget since 1913 alone could have funded 37,778 years of government clinical trials.
+- COUNT 1 — DEATH BY WAR 310 million deaths The defendants, between 1900 and the present, did willfully and with premeditation engage in the organized killing of 310 million of their own employers.
+- COUNT 2 — DEATH BY REGULATORY DELAY 102 million deaths The defendants required an additional 8.2 years of efficacy testing before letting humans access drugs already proven safe. 53 years of warnings. 102 million dead. “We did not know” is no longer available as a defense.
+- COUNT 3 — DEATH BY MISALLOCATION 37,778 trial-years Damages here are the counterfactual: what humanity would have had if governments had frozen real military spending at 1900 levels and redirected the rest to keeping their citizens alive. The war budget since 1913 alone could have funded 37,778 years of government clinical trials.
 ### THE DAMAGES DEMAND
 - CAUTIOUS FLOOR
 - $538K

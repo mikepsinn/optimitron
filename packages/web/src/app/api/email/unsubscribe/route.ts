@@ -294,7 +294,8 @@ async function handle(request: Request) {
 
     await applyPreferenceChange({ parsed, via });
   } catch (error) {
-    console.error("[UNSUBSCRIBE] Failed to apply", parsed, error);
+    const { token: _token, ...safeParsed } = parsed;
+    console.error("[UNSUBSCRIBE] Failed to apply", safeParsed, error);
     return htmlResponse(renderErrorHtml("Something went wrong. Please try again."), 500);
   }
 

@@ -318,9 +318,6 @@ export function RepresentedPersonConversionForm({
           <h2 className="text-3xl font-black uppercase leading-tight">
             Who should be a plaintiff?
           </h2>
-          <p className="font-bold leading-7 text-muted-foreground">
-            Use the name that belongs on the court record.
-          </p>
         </div>
 
         <div className="space-y-4">

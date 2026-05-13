@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PersonLifeStatus } from "@optimitron/db/enums";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
 import { ROUTES } from "@/lib/routes";
 import type { RepresentedPersonCard } from "@/lib/represented-people.server";
@@ -42,9 +43,11 @@ export function PersonFaceTile({ person }: PersonFaceTileProps) {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 flex translate-y-full flex-col justify-end gap-1 bg-foreground/90 p-3 text-background opacity-0 transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
       >
-        <p className="text-[0.65rem] font-black uppercase tracking-[0.16em]">
-          {getRepresentedLifeStatusLabel(person.lifeStatus)}
-        </p>
+        {person.lifeStatus === PersonLifeStatus.DECEASED ? (
+          <p className="text-[0.65rem] font-black uppercase tracking-[0.16em]">
+            {getRepresentedLifeStatusLabel(person.lifeStatus)}
+          </p>
+        ) : null}
         <p className="line-clamp-2 text-base font-black uppercase leading-tight">
           {person.displayName}
         </p>

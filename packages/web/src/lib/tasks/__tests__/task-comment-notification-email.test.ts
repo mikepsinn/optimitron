@@ -107,7 +107,7 @@ describe("buildTaskCommentNotificationEmail", () => {
       cta: null,
     });
     expect(email.html).not.toContain("Open the task");
-    expect(email.text).not.toContain("Open the task:");
+    expect(email.text).not.toContain("Open the task");
   });
 
   it("renders a sender sign-off when senderSignature is set (share-email path)", async () => {
