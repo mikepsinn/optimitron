@@ -163,7 +163,7 @@ Single root: `optimize-earth` (taskKey `program:optimize-earth`). Both values co
 ## High-Value Defaults
 
 1. **One feature branch, one PR at a time. No git worktrees.** New work waits until current PR merges. Sequential, not parallel.
-2. **One dev server, always running on 3001.** Claude pre-warms `pnpm dev:fast` at session start if `curl -sS -m 3 http://127.0.0.1:3001` doesn't return 2xx/3xx. Every dispatched agent reuses it — never spawn its own. If `netstat -ano | findstr :3001` shows the port bound but `curl` fails, kill the PID and restart.
+2. **One dev server, always running on 3001.** Claude pre-warms `pnpm --filter @optimitron/web dev:fast > packages/web/.dev-server.log 2>&1` at session start if `curl -sS -m 3 http://127.0.0.1:3001` doesn't return 2xx/3xx. Every dispatched agent reuses it — never spawn its own. If `netstat -ano | findstr :3001` shows the port bound but `curl` fails, kill the PID and restart. Codex dispatch prompts include the log path; agents `tail` it after loading pages because 200 responses can hide runtime errors in stderr.
 3. **Feature branches** start with `feature/`, kebab-case.
 4. **Ship through pull requests.** Update the existing PR for a branch; create a new PR only when none exists.
 5. **Watch the PR after every push.** Fix valid failures/comments. **Triage bot reviewers critically** (Codex, Copilot, CodeRabbit, Vercel Agent Review) — use the `pr-comment-triager` subagent. Adding code or tests just to silence a bot is worse than the bot's nag.

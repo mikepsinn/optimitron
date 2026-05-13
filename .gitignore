@@ -6,7 +6,12 @@ node_modules/
 dist/
 *.tsbuildinfo
 .next/
+.next.stale-*/
 next-env.d.ts
+
+# Dev server log (pre-warmed by Claude with stdout/stderr redirection)
+.dev-server.log
+packages/*/.dev-server.log
 
 # IDE
 .idea/

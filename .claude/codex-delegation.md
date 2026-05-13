@@ -58,6 +58,20 @@ The mistake this rule prevents: I tried to run an "email-migration" Codex in a s
 
 **Dev server: one always running on 3001.** Claude (the orchestrator) pre-warms it at session start. Every Codex dispatch prompt must include the line: `"Dev server is already running at http://127.0.0.1:3001. Reuse it. Do NOT start your own."` If you're about to write a dispatch prompt that doesn't include that line, you forgot.
 
+**Dev server logs.** Pages render 200 with broken HTML and runtime errors only show up in stderr — never trust an HTTP status as proof of success. Pass the log path into every Codex dispatch so the agent can verify its own work.
+
+When Claude pre-warms the dev server, redirect output to `packages/web/.dev-server.log` (gitignored):
+
+```
+pnpm --filter @optimitron/web dev:fast > packages/web/.dev-server.log 2>&1 &
+```
+
+Then every Codex dispatch prompt for UI/rendering work includes:
+
+> Dev server logs are streaming to `packages/web/.dev-server.log`. After loading any page in your fix-iterate loop, `tail -50 packages/web/.dev-server.log` and grep for `uncaughtException`, `Error:`, `⨯`, `Failed to compile`. A 200 response with errors in the log = broken render. Do not declare a fix verified until the log is clean for the route you touched.
+
+If the dev server was started without that redirect (e.g., from a fresh laptop / IDE-triggered start), tell Codex: *"Dev server logs are not redirected to a file this session; load the page via Playwright MCP and use `browser_console_messages` for client-side errors. Ask the orchestrator to paste recent server stderr if you suspect a server-side issue."*
+
 ## Sequential agent coordination
 
 **When a follow-up task would overlap files an active agent owns**, queue it as a follow-up to that agent's session via `codex exec resume`:
