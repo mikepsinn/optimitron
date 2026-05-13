@@ -24,6 +24,22 @@ Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scrip
 5. **Regenerate affected `.md` snapshots and screenshots** after any content/component change. Use `node packages/web/scripts/affected-routes.mjs` to pipe changed-file paths into `render-pages-to-markdown.ts --routes=` for targeted regen; fall back to full regen when the change touches shared primitives.
 6. **Nothing committed without user approval.** Codex stages the changeset and reports; Claude relays the summary + diff scope; user OKs; then Claude commits on Codex's behalf (Codex can't touch `.git`).
 
+## NEVER kill the dev server
+
+The orchestrator (Claude / human dev) owns the dev server on 3001. Every Codex dispatch inherits this — agents are pure consumers, never managers.
+
+**Banned operations:**
+- `Stop-Process` / `kill` / `taskkill` against any node process bound to 3001
+- Cleanup steps that "stop the dev server I started" — you didn't start it; don't stop it
+- Wrapping `pnpm dev:fast` in a try/finally that kills on exit
+- Killing port-3001 processes "just to be safe" when starting your own (you should never start your own)
+
+**If the dev server is unresponsive:** report that fact and stop. Do NOT kill it and restart. The orchestrator will notice and restart if needed. Killing an unresponsive server can race with a slow compile that was about to finish.
+
+**Only acceptable termination case:** the orchestrator explicitly told you to kill it as part of a known-bad-state recovery. That permission must be explicit in the dispatch prompt — never inferred.
+
+Concrete failure case this rule prevents: this session, multiple Codex agents spawned their own `pnpm dev:fast`, dutifully cleaned up at end of verification, and the dev server vanished — leaving the next agent with no server to reuse. The orchestrator had to restart it manually each time. The new "agents reuse, never spawn" rule plus this "never kill" rule, together, eliminate the start-then-die cycle.
+
 ## Verification tool choice (use the cheapest that gives the answer)
 
 Codex has Playwright MCP wired up (`mcp__playwright__browser_navigate`, `browser_console_messages`, `browser_take_screenshot`, etc.). Use it for spot-checks during the fix-iterate loop — load a page, grab console errors, verify the symptom is gone. 5-15 seconds per route.

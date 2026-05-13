@@ -95,6 +95,21 @@ export default defineConfig({
         ]
       : []),
   ],
+  // Server lifecycle ownership:
+  //   - Local runs via `pnpm e2e`: run-playwright.mjs probes 3001 first; if a
+  //     dev server is responding it sets SKIP_SERVER=1 and Playwright stays out
+  //     of the lifecycle entirely. The orchestrator (Claude / human dev) owns
+  //     the dev server. Agents NEVER spawn their own — see CLAUDE.md "One dev
+  //     server, always running on 3001" and .claude/codex-delegation.md.
+  //   - CI runs: SKIP_SERVER is unset, so Playwright spawns its own `next
+  //     start` against the production build and tears it down at end. This is
+  //     the correct lifecycle in CI because there is no human orchestrator.
+  //   - Defensive: `reuseExistingServer: true` makes Playwright probe 3001
+  //     even when this block is active. If 3001 already responds, Playwright
+  //     leaves it alone (per Playwright docs: "will re-use the existing
+  //     server when available" and does NOT tear it down at end). So in the
+  //     edge case where SKIP_SERVER is somehow unset locally, the dev server
+  //     still survives.
   webServer: process.env.SKIP_SERVER
     ? undefined
     : {
