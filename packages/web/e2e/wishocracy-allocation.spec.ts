@@ -15,6 +15,7 @@
  */
 import { test, expect } from "@playwright/test";
 import path from "path";
+import { freezeClock } from "./helpers/freeze-clock";
 
 const SCREENSHOT_DIR = path.resolve(
   __dirname,
@@ -51,6 +52,8 @@ test.describe("Wishocracy allocation flow", () => {
   test("complete flow: intro → categories → comparisons → budget review", async ({
     page,
   }) => {
+    await freezeClock(page);
+
     // ─── Step 1: Navigate to /wishocracy ───
     const response = await page.goto("/wishocracy", {
       waitUntil: "networkidle",

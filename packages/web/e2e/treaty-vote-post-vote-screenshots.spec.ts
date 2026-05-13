@@ -7,6 +7,7 @@
 import { expect, test, type APIRequestContext, type Locator, type Page, type TestInfo } from "@playwright/test";
 import * as fs from "fs";
 import path from "path";
+import { freezeClock } from "./helpers/freeze-clock";
 import { DEMO_PASSWORD, signInUser } from "./utils/auth";
 
 interface TestUser {
@@ -140,6 +141,10 @@ async function completeSliderAndVote(page: Page) {
 test.describe("treaty vote and training screenshot audit", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(120_000);
+
+  test.beforeEach(async ({ page }) => {
+    await freezeClock(page);
+  });
 
   for (const viewportVariant of VIEWPORT_VARIANTS) {
     test(`captures fast vote and training (${viewportVariant.slug})`, async ({

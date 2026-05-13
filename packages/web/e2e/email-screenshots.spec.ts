@@ -21,6 +21,7 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { test } from "@playwright/test";
+import { freezeClock } from "./helpers/freeze-clock";
 
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
 
@@ -57,6 +58,10 @@ async function captureEmail(
 }
 
 test.describe("email visual coverage", () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeClock(page);
+  });
+
   test("email-magic-link", async ({ page }, testInfo) => {
     await captureEmail(page, "magic-link", "email-magic-link", testInfo);
   });

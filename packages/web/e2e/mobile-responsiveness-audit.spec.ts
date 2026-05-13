@@ -24,6 +24,7 @@ import {
   writeAuditReport,
   getDeduplicatedOverflows,
 } from "./utils/audit-helpers";
+import { freezeClock } from "./helpers/freeze-clock";
 import { PUBLIC_PAGE_PATHS } from "./utils/static-pages";
 
 // Force mobile viewport for this entire spec
@@ -66,6 +67,10 @@ const screenshotDir = path.resolve(
 
 test.beforeAll(() => {
   fs.mkdirSync(screenshotDir, { recursive: true });
+});
+
+test.beforeEach(async ({ page }) => {
+  await freezeClock(page);
 });
 
 for (const url of PAGES) {
