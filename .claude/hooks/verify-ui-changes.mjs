@@ -98,6 +98,45 @@ try {
   );
   const claudeMd = allChanged.includes("CLAUDE.md");
 
+  // --- qa-passed gate ----------------------------------------------------
+  // When a commit touches user-facing surfaces (UI components, page copy,
+  // email templates, library code that those import), require the commit
+  // message to contain a `qa-passed: <one-line summary>` promise. The
+  // promise is Claude's acknowledgement that a Codex preflight agent
+  // validated the change — ran relevant regens, ran relevant tests,
+  // reviewed generated markdown/screenshot diffs, fixed problems, and
+  // came back clean. The hook doesn't enforce the agent ran; it enforces
+  // the human-readable promise. See .claude/codex-delegation.md for the
+  // dispatch pattern Claude is supposed to follow.
+  const userFacingChanges = [...uiFiles, ...copyFiles, ...emailFiles];
+  if (userFacingChanges.length > 0 && hookData?.tool_name === "Bash") {
+    const cmd = hookData?.tool_input?.command ?? "";
+    // Pull the commit message body from `-m "..."`, `-m '...'`, or `-F <path>`.
+    // Heredoc form (`cat <<'EOF' ... EOF`) appears verbatim in the command
+    // string so a simple includes() also catches it.
+    const hasPromise = /qa[-\s]?passed\s*:/i.test(cmd);
+    if (!hasPromise) {
+      pushViolation(
+        "QA_PASSED",
+        userFacingChanges.length,
+        `QA-PASSED GATE: commit touches user-facing files but the message lacks a qa-passed promise.
+
+Dispatch a Codex preflight agent first. State the goal in plain English: validate this changeset, decide what's relevant to regen and test, run it, review the generated artifacts, fix any problems, iterate until clean. Don't enumerate file globs or test commands — Codex decides what's relevant from the diff itself.
+
+When Codex returns clean, add a line to your commit message like:
+  qa-passed: <one-line summary of what Codex found and fixed>
+
+If the touched files are genuinely not user-facing (false positive), say so explicitly:
+  qa-passed: skipped — <reason>
+
+Files in this changeset that triggered the gate:
+${userFacingChanges.slice(0, 8).map((f) => `  - ${f}`).join("\n")}${
+          userFacingChanges.length > 8 ? `\n  ... and ${userFacingChanges.length - 8} more` : ""
+        }`,
+      );
+    }
+  }
+
   // Structured violations: each item has { name, count, message, blocking }.
   // - `blocking: true`  — real bug class (voice violations, hardcoded
   //                       numbers, swallowed errors, copy-snapshot drift,
