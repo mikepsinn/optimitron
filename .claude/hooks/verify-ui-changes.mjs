@@ -98,6 +98,33 @@ try {
   );
   const claudeMd = allChanged.includes("CLAUDE.md");
 
+  // Structured violations: each item has { name, count, message, blocking }.
+  // - `blocking: true`  — real bug class (voice violations, hardcoded
+  //                       numbers, swallowed errors, copy-snapshot drift,
+  //                       CLAUDE.md bloat). Fails the commit.
+  // - `blocking: false` — advisory file-pattern match (email/page/test
+  //                       files changed; new lib file added). Prints the
+  //                       reminder but does NOT fail the commit. Real
+  //                       content concerns from these areas surface via
+  //                       voice-critic / Codex review / human review
+  //                       elsewhere.
+  // The Stop-hook emit path summarizes (one-line). The PreToolUse(Bash)
+  // emit path shows the full message.
+  //
+  // IMPORTANT: this block has to stay ABOVE every site that calls
+  // `pushViolation`. JavaScript hoists the function declaration but NOT
+  // the `const violations = []` binding it references — a forward call
+  // hits the TDZ and throws, the outer fail-open catch hides it, and
+  // every gate goes silent. CodeRabbit on PR #79 caught the original
+  // ordering bug.
+  const violations = [];
+  // True when called from the PreToolUse Bash hook (commit attempt) —
+  // any time `hookData.tool_name` is set. Falsy on Stop firings.
+  const isCommitAttempt = Boolean(hookData?.tool_name);
+  function pushViolation(name, count, message, options = {}) {
+    violations.push({ name, count, message, blocking: options.blocking !== false });
+  }
+
   // --- qa-passed gate ----------------------------------------------------
   // When a commit touches user-facing surfaces (UI components, page copy,
   // email templates, library code that those import), require the commit
@@ -135,26 +162,6 @@ ${userFacingChanges.slice(0, 8).map((f) => `  - ${f}`).join("\n")}${
         }`,
       );
     }
-  }
-
-  // Structured violations: each item has { name, count, message, blocking }.
-  // - `blocking: true`  — real bug class (voice violations, hardcoded
-  //                       numbers, swallowed errors, copy-snapshot drift,
-  //                       CLAUDE.md bloat). Fails the commit.
-  // - `blocking: false` — advisory file-pattern match (email/page/test
-  //                       files changed; new lib file added). Prints the
-  //                       reminder but does NOT fail the commit. Real
-  //                       content concerns from these areas surface via
-  //                       voice-critic / Codex review / human review
-  //                       elsewhere.
-  // The Stop-hook emit path summarizes (one-line). The PreToolUse(Bash)
-  // emit path shows the full message.
-  const violations = [];
-  // True when called from the PreToolUse Bash hook (commit attempt) —
-  // any time `hookData.tool_name` is set. Falsy on Stop firings.
-  const isCommitAttempt = Boolean(hookData?.tool_name);
-  function pushViolation(name, count, message, options = {}) {
-    violations.push({ name, count, message, blocking: options.blocking !== false });
   }
 
   // --- Check 1: UI changes without a fresh screenshot ---------------------
@@ -259,10 +266,30 @@ ${sample}`);
     const tsxPageChanges = uiFiles.filter((f) =>
       /^packages\/web\/src\/app\/.+\/page\.tsx$/.test(f),
     );
-    if (tsxPageChanges.length) {
-      pushViolation("COPY_SNAPSHOT", tsxPageChanges.length, formatList(
+    // Skip if a sibling page.logged-*.md was regenerated AFTER the staged
+    // page.tsx file's mtime — the preview script ran, just produced no
+    // content drift because the .tsx change was render-equivalent.
+    const tsxWithStaleSnapshot = tsxPageChanges.filter((tsxRel) => {
+      const tsxAbs = resolve(RepoRoot, tsxRel);
+      const dir = tsxAbs.replace(/[\\/][^\\/]+$/, "");
+      const tsxMtime = (() => {
+        try { return statSync(tsxAbs).mtimeMs; } catch { return 0; }
+      })();
+      try {
+        const siblings = readdirSync(dir).filter((f) =>
+          /^page\.logged-(in|out)\.md$/.test(f),
+        );
+        return !siblings.some((f) => {
+          try { return statSync(join(dir, f)).mtimeMs >= tsxMtime; } catch { return false; }
+        });
+      } catch {
+        return true;
+      }
+    });
+    if (tsxWithStaleSnapshot.length) {
+      pushViolation("COPY_SNAPSHOT", tsxWithStaleSnapshot.length, formatList(
         "COPY-SNAPSHOT GATE: page.tsx files changed but no matching page.logged-out.md updated.",
-        tsxPageChanges,
+        tsxWithStaleSnapshot,
         `  Action: run 'pnpm --filter @optimitron/web copy:preview' to regenerate snapshots, diff the .md
   output, then invoke the voice-critic subagent on the diff. Fix anything that drifts toward
   startup-bro or away from Wishonia/Vonnegut. Commit the .md files alongside the .tsx.`,

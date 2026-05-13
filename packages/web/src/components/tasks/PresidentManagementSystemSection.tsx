@@ -5,11 +5,13 @@ import { TreatyReminderComposer } from "@/components/landing/TreatyReminderCompo
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import type { TaskCardTask } from "@/components/tasks/task-card";
+import { countOverdueTasks } from "@/lib/tasks/overdue";
 import { useHydratedNow } from "@/lib/use-hydrated-now";
 
 interface PresidentManagementSystemSectionProps {
   children?: ReactNode;
   className?: string;
+  initialOverdueCount?: number;
   pageSize?: number;
   showComposer?: boolean;
   showIntro?: boolean;
@@ -17,24 +19,10 @@ interface PresidentManagementSystemSectionProps {
   treatyProgram: TaskCardTask | null;
 }
 
-function getTaskDueMs(task: TaskCardTask) {
-  if (!task.dueAt) return null;
-  return task.dueAt instanceof Date
-    ? task.dueAt.getTime()
-    : new Date(task.dueAt).getTime();
-}
-
-function countOverdueTasks(tasks: TaskCardTask[], now: Date) {
-  const nowMs = now.getTime();
-  return tasks.filter((task) => {
-    const dueMs = getTaskDueMs(task);
-    return dueMs != null && dueMs < nowMs;
-  }).length;
-}
-
 export function PresidentManagementSystemSection({
   children,
   className = "space-y-6",
+  initialOverdueCount = 0,
   pageSize,
   showComposer = true,
   showIntro = true,
@@ -42,7 +30,9 @@ export function PresidentManagementSystemSection({
   treatyProgram,
 }: PresidentManagementSystemSectionProps) {
   const now = useHydratedNow();
-  const overdueCount = now ? countOverdueTasks(signerTasks, now) : 0;
+  const overdueCount = now
+    ? countOverdueTasks(signerTasks, now)
+    : initialOverdueCount;
   const subtasksTitle =
     overdueCount > 0
       ? `↳ ${overdueCount} employees have overdue tasks`
