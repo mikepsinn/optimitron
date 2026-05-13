@@ -11,7 +11,7 @@ import {
 } from "@/lib/people-directory.server";
 import { peopleLink, plaintiffsLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
-import { defaultButtonClassName } from "@/components/ui/default-button";
+import { defaultButtonClassName, primaryButtonClassName } from "@/components/ui/default-button";
 
 export const dynamic = "force-dynamic";
 
@@ -222,7 +222,7 @@ export default async function PeoplePage({
 
           <div className="flex flex-wrap gap-3">
             <Link
-              className={`${defaultButtonClassName} min-h-11 px-4 text-xs`}
+              className={`${primaryButtonClassName} min-h-11 px-4 text-xs`}
               href={ROUTES.tasks}
             >
               See tasks
@@ -361,7 +361,7 @@ export default async function PeoplePage({
                 and find work that needs an assignee.
               </p>
               <Link
-                className={`${defaultButtonClassName} mt-5 min-h-11 px-4 text-xs`}
+                className={`${primaryButtonClassName} mt-5 min-h-11 px-4 text-xs`}
                 href={ROUTES.tasks}
               >
                 See tasks

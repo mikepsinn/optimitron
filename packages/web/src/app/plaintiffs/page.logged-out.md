@@ -37,4 +37,3 @@
 - PER MURDERED HUMAN (NPV AT 3% PERPETUITY)
 - $25 million/person
 - LIFETIME COHORT EXPOSURE PER HUMAN
-- These are case-bill numbers, not personal payouts. Each plaintiff you name is one claim against a damages pool calculated against every human governments killed since 1900. See [Humanity v. Government](/humanity-v-government) for the full damages schedule.

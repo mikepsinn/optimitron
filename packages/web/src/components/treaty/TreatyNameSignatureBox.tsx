@@ -8,7 +8,7 @@ import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildUserReferralUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
-import { defaultButtonClassName } from "@/components/ui/default-button";
+import { primaryButtonClassName } from "@/components/ui/default-button";
 
 /**
  * Document-style signature box for `/treaty` — the original UX from the
@@ -164,7 +164,7 @@ export function TreatyNameSignatureBox({
           type="button"
           onClick={() => void handleSubmit()}
           disabled={!name.trim() || submitting}
-          className={cn(defaultButtonClassName, "px-8 text-lg disabled:opacity-40")}
+          className={cn(primaryButtonClassName, "px-8 text-lg disabled:opacity-40")}
         >
           {submitting ? "..." : "Sign"}
         </button>

@@ -20,7 +20,7 @@ import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildPlaintiffsUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
-import { defaultButtonClassName } from "@/components/ui/default-button";
+import { defaultButtonClassName, primaryButtonClassName } from "@/components/ui/default-button";
 import { SquarePhotoCropper } from "./SquarePhotoCropper";
 
 const CONFLICT_CAUSE_CATEGORIES = new Set<PersonDeathCauseCategory>([
@@ -1287,7 +1287,7 @@ export function RepresentedPersonForm({
           ) : null}
 
           <Button
-            className={cn(defaultButtonClassName, "w-full tracking-[0.12em]")}
+            className={cn(primaryButtonClassName, "w-full tracking-[0.12em]")}
             disabled={disabled || !canSubmit}
             onClick={() => void submit()}
             type="button"

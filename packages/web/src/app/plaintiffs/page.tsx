@@ -337,18 +337,6 @@ export default async function PlaintiffsPage({
               </span>
             </div>
           </div>
-          <p className="mt-5 max-w-4xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
-            These are case-bill numbers, not personal payouts. Each plaintiff
-            you name is one claim against a damages pool calculated against
-            every human governments killed since 1900. See{" "}
-            <Link
-              className="underline underline-offset-4"
-              href={ROUTES.humanityVGovernment}
-            >
-              {humanityVGovernmentLink.label}
-            </Link>{" "}
-            for the full damages schedule.
-          </p>
         </section>
       </section>
     </main>
