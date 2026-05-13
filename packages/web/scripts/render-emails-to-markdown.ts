@@ -47,10 +47,14 @@ async function extractEmailMarkdown(
   page: import("@playwright/test").Page,
   slug: string,
 ): Promise<string> {
-  await page.goto(`${BASE}/dev/email/${slug}?raw=1&full=1`, {
+  const response = await page.goto(`${BASE}/dev/email/${slug}?raw=1&full=1`, {
     waitUntil: "networkidle",
     timeout: 30000,
   });
+  const status = response?.status();
+  if (status !== undefined && status >= 400) {
+    throw new Error(`HTTP ${status} from /dev/email/${slug}`);
+  }
   return await page.evaluate(() => {
     // tsx/esbuild injects __name(...) wrappers for named arrows; shim it.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
