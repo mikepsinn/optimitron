@@ -6,6 +6,13 @@ Claude Code's working pattern with the Codex CLI. Loaded by reference from CLAUD
 
 Programming work goes to Codex via `Bash` running `codex exec` directly, with `run_in_background: true`. The MCP-mediated Agent-tool path (`subagent_type: codex:codex-rescue`) is strictly worse — see "Why CLI not Agent tool" below — and is not used.
 
+**Dispatch shape that works:**
+```
+Bash(command: "codex exec --skip-git-repo-check '<prompt>'", run_in_background: true)
+```
+
+**Don't add a shell `&` inside the command.** The Bash tool already backgrounds via `run_in_background: true`; a second `&` makes the codex child detach from the bash subprocess, which exits immediately with status 0 — Claude then gets a "completed" notification while Codex is still running for minutes. Pair the dispatch with a `Monitor` watching the session JSONL for real progress.
+
 Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scripts) directly — those are quick and don't need a dispatch.
 
 ## Every Codex prompt must contain
