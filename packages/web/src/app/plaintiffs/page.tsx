@@ -1,6 +1,10 @@
 import {
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
+  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
+  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
+  WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { headers } from "next/headers";
@@ -163,17 +167,43 @@ export default async function PlaintiffsPage({
           <h1 className="max-w-4xl text-4xl font-black uppercase leading-none sm:text-6xl">
             Register plaintiffs for Humanity v Government.
           </h1>
-          <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
-            Anyone you love killed by war, disease, or government failure.
-            They become plaintiffs in{" "}
-            <Link
-              className="underline underline-offset-4"
-              href={ROUTES.humanityVGovernment}
-            >
-              {humanityVGovernmentLink.label}
-            </Link>
-            .
-          </p>
+          <div className="max-w-5xl space-y-4 text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
+            <p>
+              You pay your governments{" "}
+              <ParameterValue
+                figures={3}
+                param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+              />{" "}
+              to promote your general welfare. Since 1900 they spent{" "}
+              <ParameterValue
+                figures={3}
+                param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
+              />{" "}
+              murdering{" "}
+              <ParameterValue figures={3} param={WAR_DEATHS_SINCE_1900} />{" "}
+              of their employers — enough to fund{" "}
+              <ParameterValue
+                figures={3}
+                param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
+              />{" "}
+              years of clinical trials at current funding levels.
+            </p>
+            <p>
+              Register anyone you love who was killed or harmed. The case in{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.humanityVGovernment}
+              >
+                {humanityVGovernmentLink.label}
+              </Link>{" "}
+              seeks{" "}
+              <ParameterValue
+                figures={3}
+                param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
+              />{" "}
+              per murdered human in damages.
+            </p>
+          </div>
         </header>
 
         <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
