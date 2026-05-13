@@ -177,9 +177,33 @@ export const FLOW_GLOBAL_WARHEAD_COUNT: Parameter = createDerivedParameter(
   },
 );
 
+export const FLOW_REFERRALS_PER_VOTER: Parameter = createDerivedParameter(
+  FLOW_MAJORITY_OF_HUMANS_ON_EARTH,
+  {
+    value: 2,
+    parameterName: "FLOW_REFERRALS_PER_VOTER",
+    displayName: "Referrals per voter",
+    description:
+      "Binary referral target used in the treaty share-flow chain math.",
+    formula: "binary referral chain branching factor",
+    unit: "people",
+  },
+);
+
 export const FLOW_DOUBLING_ROUNDS_TO_TARGET = Math.ceil(
   Math.log2(FLOW_MAJORITY_OF_HUMANS_ON_EARTH.value),
 );
+
+export const FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM: Parameter =
+  createDerivedParameter(FLOW_MAJORITY_OF_HUMANS_ON_EARTH, {
+    value: FLOW_DOUBLING_ROUNDS_TO_TARGET,
+    parameterName: "FLOW_DOUBLING_ROUNDS_TO_TARGET",
+    displayName: "Doubling rounds to reach humanity",
+    description:
+      "Rounded count of binary referral rounds needed to reach the majority-of-humanity target.",
+    formula: "ceil(log2(FLOW_MAJORITY_OF_HUMANS_ON_EARTH))",
+    unit: "rounds",
+  });
 
 export const FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE = Math.round(
   FLOW_DOUBLING_ROUNDS_TO_TARGET / 4,

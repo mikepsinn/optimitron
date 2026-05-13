@@ -11,14 +11,19 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { EMAIL_COLORS } from "@/components/adaptive/email-styles";
+import {
+  EmailShareMessage,
+  ReferralChainMath,
+} from "@/lib/email/share-footer";
 import { buildChannelHref } from "@/lib/share-channels";
 import { buildShareMessage } from "@/lib/share-message";
 
 const colors = {
-  ink: "#111827",
-  muted: "#71717a",
-  paper: "#ffffff",
-  soft: "#f4f4f5",
+  ink: EMAIL_COLORS.foreground,
+  muted: EMAIL_COLORS.muted,
+  paper: EMAIL_COLORS.background,
+  soft: EMAIL_COLORS.soft,
 };
 
 const baseFont = "Arial, sans-serif";
@@ -316,7 +321,7 @@ export function CampaignShareFooter({ referralUrl }: { referralUrl: string }) {
             margin: 0,
           }}
         >
-          {message}
+          <EmailShareMessage referralUrl={referralUrl} />
         </Text>
       </Section>
       {/* One-tap share buttons. Each opens the relevant app with the message
@@ -332,8 +337,11 @@ export function CampaignShareFooter({ referralUrl }: { referralUrl: string }) {
         </CampaignButton>
       ))}
       <CampaignText muted>
-        Or send them straight to {referralUrl}. 32 doubling rounds × 2 referrals
-        each = 4,300,000,000 humans reached.
+        Or send them straight to{" "}
+        <a href={referralUrl} style={{ color: colors.ink, fontWeight: 700 }}>
+          {referralUrl}
+        </a>
+        . <ReferralChainMath />.
       </CampaignText>
     </Section>
   );

@@ -1,21 +1,20 @@
-# Codex CLI project-level config.
-#
-# Read by `codex exec` and the `codex-plugin-cc` Claude Code plugin for any
-# /codex:* invocation in this repo. Overrides ~/.codex/config.toml on a
-# per-key basis (this file wins; other settings inherit).
-#
-# Plugin source: https://github.com/openai/codex-plugin-cc
-# Config docs: https://developers.openai.com/codex/cli/reference
-
-# Use OpenAI's strongest current model and the strongest reasoning tier on
-# every invocation. The plugin's /codex:adversarial-review and /codex:rescue
-# both benefit from this — adversarial-review exists specifically to challenge
-# design decisions, and rescue handles non-trivial task delegation. Weak
-# reasoning is wasted effort for either use case.
-#
-# Model: gpt-5.5 is the recommended default for most Codex tasks per the
-#   April 2026 Codex update.
-# Reasoning: xhigh ("extra high") thinks for the longest period available;
-#   recommended for the hardest asynchronous agentic tasks.
 model = "gpt-5.5"
 model_reasoning_effort = "xhigh"
+
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+[mcp_servers.optimitron-local]
+url = "http://localhost:3001/api/mcp"
+
+[mcp_servers.optimitron-tasks]
+args = [
+    "--filter",
+    "@optimitron/web",
+    "exec",
+    "tsx",
+    "scripts/mcp-task-server.ts",
+]
+command = "pnpm"
+
+[mcp_servers.optimitron-tasks.env]
+MCP_USER_EMAIL = "m@thinkbynumbers.org"

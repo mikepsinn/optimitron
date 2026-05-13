@@ -7,6 +7,7 @@ import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildUserReferralUrl } from "@/lib/url";
+import { useHydratedNow } from "@/lib/use-hydrated-now";
 import { cn } from "@/lib/utils";
 import { primaryButtonClassName } from "@/components/ui/default-button";
 
@@ -39,13 +40,14 @@ export function TreatyNameSignatureBox({
   const [submitting, setSubmitting] = useState(false);
   const [signed, setSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const now = useHydratedNow();
 
   const referralUrl = useMemo(
     () => buildUserReferralUrl(session?.user),
     [session?.user],
   );
 
-  const today = new Date().toLocaleDateString("en-US", {
+  const today = now?.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -138,7 +140,9 @@ export function TreatyNameSignatureBox({
     );
   }
 
-  const resolvedTitle = `Signed this day, ${today}, in the year of our ongoing confusion.`;
+  const resolvedTitle = today
+    ? `Signed this day, ${today}, in the year of our ongoing confusion.`
+    : "";
 
   return (
     <div className={cn("mx-auto w-full max-w-md", className)}>

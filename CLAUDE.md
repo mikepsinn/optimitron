@@ -6,7 +6,7 @@
 
 Optimitron is an **Earth Optimization Machine** for coordinating 8 billion humans to maximize median healthy life-years and real median after-tax income. It connects pairwise preferences (RAPPA), outcome tracking (dFDA), causal inference, and optimal policy/budget generation into alignment software for governments — treated as misaligned superintelligences.
 
-The current public campaign is the **International Campaign to End War and Disease** at `warondisease.org`. Until the 1% Treaty passes, that campaign is the product. `optimitron.com` is the operating system and proof engine behind it: tasks, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent coordination.
+The current public campaign is the **International Campaign to End War and Disease** at `warondisease.org`. Until the 1% Treaty passes, that campaign is the product. `optimitron.com` is the operating system and proof engine behind it.
 
 Default priority order during campaign mode:
 
@@ -14,7 +14,7 @@ Default priority order during campaign mode:
 2. Increase referral propagation: each voter gets two more humans to vote.
 3. Get organizations to endorse, embed, and recruit their own people.
 4. Register plaintiffs and connect the case framing to voting.
-5. Pressure country leaders and treaty signers.
+5. Remind country leaders and treaty signers.
 6. Improve discoverability and trust in people, organization, task, and evidence pages.
 7. Preserve Optimitron's broader governance OS as the proof layer, not as a competing homepage.
 
@@ -24,7 +24,7 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Voice rules:**
 
-- **Deadpan** — state horrifying facts as though they are mildly interesting observations.
+- **Deadpan** — state horrifying facts as though mildly interesting observations.
 - **Data-first** — lead with specific numbers, costs, percentages, or ROI ratios. Numbers beat adjectives.
 - **Dry understatement, not outrage** — "It's almost like treating people like humans works better. Weird."
 - **Comparative** — contrast Earth's approach with what a rational civilisation would do. "On my planet..."
@@ -32,19 +32,13 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 - **Sardonic analogies** — "It's like buying 4.7 million cars and spending $1 on a mechanic."
 - **Criticise the system, never a party.** The data does the work.
 
-**Examples:**
-
-- "Singapore spends a quarter of what America spends on healthcare and their people live six years longer. It's like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible."
-- "Your FDA makes treatments wait 8.2 years AFTER they've already been proven safe. Just... sitting there. Being safe. While 102 million people died waiting."
-- "On my planet, governance takes about four minutes a week."
-
-**No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
+**No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). If a sentence could appear unchanged in a Stripe keynote, rewrite.
 
 **Write like Kurt Vonnegut.** Plain declaratives. Verb-first imperatives for buttons ("Do this.", "Sign.", "Done."). Banned: "Take ownership", "Engage", "Empower", "Unlock", "Streamline", "Take this on", "Get started", and any other corporate-onboarding verb.
 
 **Reuse before rewrite.** Before writing a new component, grep `packages/web/src/components` for similarly-shaped JSX (share box, signature box, counter, markdown render, parameter display). If you find a match, use it.
 
-**Manual-search before proposing copy.** Any agent that writes or critiques user-facing text — gstack subagents, voice-critic, direct Claude edits — MUST call `mcp__optimitron-tasks__searchManual` (or `askWishonia`) before suggesting replacement wording. The manual is the source of truth for voice; quoting from it beats inventing fresh prose. If the manual returns nothing usable, say so explicitly in the proposal so the reader knows you checked. **Fallback for agents without optimitron MCP access:** the manual's search index is a static, unauthenticated JSON file at `https://manual.warondisease.org/assets/json/search-index.json` — curl it directly and grep entries by keyword. Individual pages are at `https://manual.warondisease.org/<path>` (also unauthenticated). No login, no token, no MCP wiring required.
+**Manual-search before proposing copy.** Any agent that writes or critiques user-facing text MUST call `mcp__optimitron-tasks__searchManual` (or `askWishonia`) before suggesting replacement wording. Quoting from the manual beats inventing prose. If the manual returns nothing usable, say so explicitly. **Fallback for agents without MCP access:** the manual's search index is a static unauthenticated JSON file at `https://manual.warondisease.org/assets/json/search-index.json` — curl it directly and grep entries. Pages at `https://manual.warondisease.org/<path>`.
 
 **`<ParameterValue>` for every user-facing number.** Grep `packages/data/src/parameters/parameters-calculations-citations.ts` for a matching parameter before typing a number. Default `figures={3}` on calculator pages.
 
@@ -54,40 +48,33 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Verify the deployed state.** "tsc clean" is not "shipped." Run `pnpm --filter @optimitron/web review:local` and look at the rendered page, or say "this is on the way, can't verify from here."
 
-**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines. Deferred decisions ("we'll do X later", "real fix is upstream") go in TODO.md the same turn. Subagent prompts include the relevant TODO.md slice as context so they don't re-decide architecture in isolation.
+**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines. Deferred decisions go in TODO.md the same turn. Subagent prompts include the relevant TODO.md slice as context.
 
-**Pre-architect Read + Stop signal** are now enforced by hooks (PreToolUse on Write to `packages/*/src/` etc.; UserPromptSubmit detecting "should it really / I thought / aren't we" phrases). When a hook fires, treat its output as authoritative — don't argue past it. The hook exists because the equivalent CLAUDE.md rule was being ignored.
+**Hook-enforced rules.** Pre-architect Read on Write to `packages/*/src/` and "should it really / I thought / aren't we" detection on UserPromptSubmit are enforced by hooks. When a hook fires, treat its output as authoritative.
 
-**Diagram-before-code** for non-trivial changes. When a change touches >1 system (DB + deploy + CI; UI + API + DB), or you estimate >100 lines new, or the user used "I thought we had / aren't we / why is this so" phrasing: draw current + proposed flow (ASCII boxes or terse prose) in chat BEFORE the Write/Edit. User reacts to the diagram, you iterate on text not code. Trivial fixes (typo, single-line, isolated bug) skip this.
+**Diagram-before-code** for non-trivial changes. When a change touches >1 system (DB + deploy + CI; UI + API + DB), or you estimate >100 lines new, or the user used "I thought we had / aren't we / why is this so" phrasing: draw current + proposed flow (ASCII boxes or terse prose) in chat BEFORE the Write/Edit. Trivial fixes skip this.
 
-**Fetch the rendered page, don't infer from the codebase. AND fetch the right page.** When the user asks about UX, user journey, page copy, "is the page good" — fetch the actual rendered page first, then answer. Codebase = committed; rendered page = live; they drift (server/client boundaries, env routing, site variants, DB content).
+**Fetch the rendered page, don't infer from the codebase. AND fetch the right page.** Codebase = committed; rendered page = live; they drift.
 
-**Which page to fetch:**
-- Reviewing an unmerged PR → fetch the PR's **PREVIEW DEPLOY** via Vercel MCP (`web_fetch_vercel_url`) or via curl with the `_vercel_share` bypass token. Production is STALE relative to unmerged PR work — fetching warondisease.org for a question about "what /treaty looks like on PR 75" gives you the main branch's pre-PR rendering, which is wrong for the PR review.
-- Reviewing landed work / production behavior / "what does the live site show?" → fetch the production domain (warondisease.org, optimitron.com).
+- Reviewing an unmerged PR → fetch the PR's **PREVIEW DEPLOY** via Vercel MCP (`web_fetch_vercel_url`) or curl with the `_vercel_share` bypass token. Production is STALE relative to unmerged PR work.
+- Reviewing landed work / production behavior → fetch the production domain.
 - Local dev work → fetch http://localhost:3001 if dev server is running.
 
-**Reuse the dev server. Do not spawn a duplicate.** (Subordinate to the canonical "One dev server, always running on 3001" rule above.) Every dispatched agent inherits this: before any Playwright run / browser test / page fetch, `curl -sS -m 3 http://127.0.0.1:3001` — must return 2xx/3xx. If the port is bound but unresponsive (`netstat -ano | findstr :3001` on Windows / `lsof -ti :3001` on macOS/Linux shows a PID), kill the zombie and let the orchestrator restart it; do NOT spawn your own.
+**Preview-link list format.** Every URL must be ONE click — full path + `?_vercel_share=<token>&login=demo` (auth-required), or `&logout=1` (logged-out state), or both as TWO rows (HYBRID pages). NEVER output "click here to set the bypass cookie, then bare URLs." Format: single markdown table with columns `Page | State | What changed`.
 
-Default to PREVIEW DEPLOY when the conversation context is "this PR / this branch / what does my recent commit look like." Default to PRODUCTION only when the user explicitly says "production" or asks about the live site separately from the PR.
+**Subagents and skills.** Project-local subagents in `.claude/agents/`: `voice-critic`, `cold-stranger-ux`, `pr-comment-triager`, `test-auditor`. Project-local skills in `.claude/skills/`: `qa-editorial`, `verify-slide`. **Use gstack first for generic work** (`/review`, `/design-review`, `/qa`, `/cso`, `/investigate`, `/office-hours`, `/plan-ceo-review`, `/ship`, `/context-save`, `/context-restore`). Then run `/qa-editorial` for the Wishonia-voice / cold-stranger / parameter-citation layer gstack can't see.
 
-**Preview-link list format.** When generating a review-link list for the user: every URL must be ONE click — full path + `?_vercel_share=<token>&login=demo` (auth-required), or `&logout=1` (testing logged-out state), or both as TWO rows (HYBRID pages that render differently per auth state). NEVER output "click here to set the bypass cookie, then bare URLs" — that defeats the entire reason `?login=demo` / `?logout=1` query params exist. Format: a single markdown table with columns `Page | State | What changed`. State = "logged-out" / "demo logged-in".
+**Gstack memory split.** Two memory systems coexist. **Behavioral feedback** (rules about how the agent should act) → `C:/Users/m/.claude/projects/E--code-optimitron/memory/feedback_*.md`, indexed in `MEMORY.md`. **Codebase / environment facts** → `gstack-learnings-log` via `~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"...","type":"pattern|pitfall|preference|architecture|tool|operational","key":"slug","insight":"...","confidence":1-10,"source":"observed"}'`. Auto-loaded at every gstack skill start. The injection scrubber rejects insights containing "override", "do not flag", "ignore previous" — rephrase.
 
-**Subagents and skills.** Project-local subagents live in `.claude/agents/` — the differentiated ones gstack can't do: `voice-critic` (Wishonia voice + manual search), `cold-stranger-ux` (zero-context UX reaction at iPhone-14 viewport), `pr-comment-triager` (bot-review triage), `test-auditor` (suite slop + missing coverage). Project-local skills live in `.claude/skills/`: `qa-editorial` (the project-specific editorial layer that runs AFTER gstack's auto-fix chain), `verify-slide` (game slide screenshot check). **Use gstack first for generic work**: `/review`, `/design-review` (auto-fixes visual slop), `/qa` (auto-fixes functional bugs), `/cso` (OWASP+STRIDE), `/investigate` (root cause), `/office-hours` (pre-code product interrogation), `/plan-ceo-review` (scope challenge), `/ship` (open PR), `/context-save` + `/context-restore` (session checkpointing between long PRs). Then run `/qa-editorial` for the Wishonia-voice / cold-stranger / parameter-citation layer gstack can't see.
+**Gstack artifacts sync.** `~/.gstack/` is a git repo pushing to https://github.com/mikepsinn/gstack-artifacts-mikepsinn (private). Learnings + checkpoints + plans sync across machines via HTTPS push. Laptop bootstrap commands live in SETUP.md.
 
-**Gstack memory split.** Two memory systems coexist; pick the right one. **Behavioral feedback** (rules about how the agent should act — "verify subagent claims before relaying", "use preview URLs not localhost") → `C:/Users/m/.claude/projects/E--code-optimitron/memory/feedback_*.md`, indexed in `MEMORY.md`. **Codebase / environment facts** (operational quirks, intentional API patterns, env-gating gotchas — discoveries the NEXT session shouldn't re-derive) → `gstack-learnings-log` via `~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"...","type":"pattern|pitfall|preference|architecture|tool|operational","key":"slug","insight":"...","confidence":1-10,"source":"observed"}'`. Auto-loaded at every gstack skill start (top-3 shown). The injection scrubber rejects insights containing "override", "do not flag", "ignore previous", etc. — rephrase ("display-formatting prop", "should check env gating before").
+**Codex delegation.** Programming work goes to Codex agents by default; meta-config (this file, `.codex/config.toml`, hooks) Claude edits directly. Full protocol in [`.claude/codex-delegation.md`](.claude/codex-delegation.md).
 
-**Gstack artifacts sync.** `~/.gstack/` is a git repo pushing to https://github.com/mikepsinn/gstack-artifacts-mikepsinn (private). Learnings + checkpoints + plans sync across machines. Configured for HTTPS push (the default `gstack-artifacts-init` forces SSH which we don't use). **Laptop bootstrap:** `git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup --team && ~/.claude/skills/gstack/bin/gstack-brain-restore https://github.com/mikepsinn/gstack-artifacts-mikepsinn.git && ~/.claude/skills/gstack/bin/gstack-config set artifacts_sync_mode full`.
-
-**Codex delegation.** Programming work goes to Codex agents by default; meta-config (this file, `.codex/config.toml`, hooks) Claude edits directly. Full protocol — verbatim user-message quoting, investigate-before-coding, push-back-on-non-goal-aligned-work, regen-affected-snapshots, no-commit-without-approval, queue-overlapping-tasks-to-active-agent — lives in [`.claude/codex-delegation.md`](.claude/codex-delegation.md).
-
-**Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." They are paid by the citizenry to promote welfare and are late on a 30-second task. Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
+**Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
 
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
 
 ## Papers (algorithm source of truth)
-
-Read the relevant section before implementing. QMDs contain the math, schemas, parameter values, and worked examples.
 
 | Package      | Paper                                                     | URL                                  |
 | ------------ | --------------------------------------------------------- | ------------------------------------ |
@@ -98,16 +85,14 @@ Read the relevant section before implementing. QMDs contain the math, schemas, p
 | Welfare      | Optimocracy — two-metric welfare function                 | https://optimocracy.warondisease.org |
 | Treasury     | Incentive Alignment Bonds                                 | https://iab.warondisease.org         |
 
-Source QMDs: `github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/`. Read the section you need, not the whole file.
+Source QMDs: `github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/`.
 
-## Research Tools (use these before guessing)
+## Research Tools
 
-Before grepping random files or guessing at facts about the manual, plan, or parameters, use the MCP server tools already wired up in `.mcp.json` as `optimitron-tasks`:
+- **`mcp__optimitron-tasks__searchManual`** — `{ query, maxResults? }` → TF-IDF retrieval over the manual + parameters. **Use first** for any factual question. No Gemini cost.
+- **`mcp__optimitron-tasks__askWishonia`** — `{ question }` → full RAG pipeline, in-character answer with citations. Use when synthesis across sources or when writing user-facing copy that cites the manual.
 
-- **`mcp__optimitron-tasks__searchManual`** — `{ query, maxResults? }` → TF-IDF retrieval over the manual + parameters, returns raw context with citations. **Use first** for any factual question ("what's the current DALY burden?", "where does the 0.5% tx tax come from?"). No Gemini cost.
-- **`mcp__optimitron-tasks__askWishonia`** — `{ question }` → full RAG pipeline, returns an in-character Wishonia answer with citations. Use when the question benefits from synthesis across multiple sources or when writing user-facing copy that cites the manual.
-
-The server is defined in `packages/web/src/lib/mcp-server.ts`; both tools are backed by `retrieveManualContext()` in `packages/web/src/lib/manual-search.server.ts`. There is no CLI wrapper — the MCP tools are the interface.
+Both backed by `retrieveManualContext()` in `packages/web/src/lib/manual-search.server.ts`. No CLI wrapper.
 
 ## Architecture
 
@@ -134,30 +119,10 @@ optimitron/packages/
 **Hard rules:**
 
 - `optimizer` depends on nothing. **Domain-agnostic** — never reference "drugs", "policies", "budgets", "politicians". Use: predictor, outcome, variable, measurement, effect.
-- Library packages (`optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`) must be runtime-safe: no Prisma client, no runtime DB imports, must work in the browser. They may `import type` from `@optimitron/db` only.
-- `@optimitron/db` exports pure TS interfaces (all packages), Zod schemas (namespaced `schemas`, runtime boundaries only), and the Prisma client (**web/API layer only**). `db` may consume curated catalogs from `data` when that removes duplication.
+- Library packages (`optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`) must be runtime-safe: no Prisma client, no runtime DB imports, must work in the browser. `import type` from `@optimitron/db` only.
+- `@optimitron/db` exports pure TS interfaces, Zod schemas (namespaced `schemas`, runtime boundaries only), and the Prisma client (**web/API layer only**). `db` may consume curated catalogs from `data`.
 - **Prisma 7** + `@prisma/adapter-pg`. The `datasource` block in `schema.prisma` intentionally omits `url` — the connection is configured at runtime via the adapter. **Never** add `url = env("DATABASE_URL")`.
-
-## Core Insight: Optimizer is Universal
-
-`@optimitron/optimizer` takes any two time series and answers: does X cause Y, by how much, what's the optimal X. Pipeline: **temporal alignment → Bradford Hill → Predictor Impact Score → optimal value.**
-
-| Domain        | Predictor       | Outcome           | Question                         |
-| ------------- | --------------- | ----------------- | -------------------------------- |
-| Health        | Drug/Supplement | Symptom/Biomarker | Does magnesium improve sleep?    |
-| Policy        | Policy change   | Welfare metric    | Does tobacco tax reduce smoking? |
-| Budget        | Spending level  | Welfare metric    | Optimal education budget?        |
-| Business      | Ad spend        | Revenue           | Optimal marketing budget?        |
-| Agriculture   | Fertilizer      | Crop yield        | Optimal fertilizer level?        |
-| Manufacturing | Temperature     | Defect rate       | What minimizes defects?          |
-
-A business analyst should be able to `npm install @optimitron/optimizer` for revenue optimization without ever seeing the word "government".
-
-## Jurisdiction Model ("Government OS")
-
-Any jurisdiction (city, county, state, country) deploys Optimitron as its governance OS. The libraries are already jurisdiction-agnostic; the jurisdiction-specific parts are **configuration, not code**. Think Shopify for governments.
-
-Every DB model has a `jurisdictionId`. Items, officials, data fetchers all scope to jurisdiction. Cross-jurisdiction comparison ("City A spends X on education and gets Y; City B spends Z...") is a first-class feature. `optimizer`/`wishocracy`/`opg`/`obg` are already jurisdiction-agnostic; `web` handles multi-tenancy (auth, routing, tenant isolation).
+- Every DB model has a `jurisdictionId`; libs are jurisdiction-agnostic, `web` handles multi-tenancy.
 
 ## Treasury: Three Independent Mechanisms
 
@@ -165,82 +130,77 @@ Don't mix them. Don't put one on another's page. Don't conflate their economics.
 
 | Mechanism                               | Page        | Purpose                                                 | Contracts                                            | Flow                                                                                                                                                                                                                                                                                                                                                                           |
 | --------------------------------------- | ----------- | ------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Earth Optimization Prize** (Phase 1)  | `/prize`    | Fund referendum proving demand for the 1% Treaty        | `VoteToken`, `VoterPrizeTreasury` (Base Sepolia)     | Deposit USDC → Aave yield → share referral → World ID voters → referrer earns VOTE 1:1. **Success:** VOTE holders claim prize share. **Failure** (15yr): depositors claim principal + ~4.2× yield (`$100 × 1.10^15 = $418`). Dominant assurance — break-even P = 0.0067%, zero downside. In campaign mode, this supports referral incentives; treaty-vote conversion takes precedence. |
-| **Incentive Alignment Bonds** (Phase 2) | IAB pages   | Raise ~$1B to lobby the 1% Treaty once demand is proven | `IABVault`, `IABSplitter`, `PublicGoodsPool`         | Investors buy bonds → capital funds lobbying → treaty passes → $27B/yr splits 80% trials / 10% investors (272% annual) / 10% aligned-politician super PACs. **If treaty fails, bonds lose everything.** Not an assurance contract. Real investment, real risk.                                                                                                                 |
+| **Earth Optimization Prize** (Phase 1)  | `/prize`    | Fund referendum proving demand for the 1% Treaty        | `VoteToken`, `VoterPrizeTreasury` (Base Sepolia)     | Deposit USDC → Aave yield → share referral → World ID voters → referrer earns VOTE 1:1. **Success:** VOTE holders claim prize share. **Failure** (15yr): depositors claim principal + ~4.2× yield (`$100 × 1.10^15 = $418`). Dominant assurance — break-even P = 0.0067%, zero downside. |
+| **Incentive Alignment Bonds** (Phase 2) | IAB pages   | Raise ~$1B to lobby the 1% Treaty once demand is proven | `IABVault`, `IABSplitter`, `PublicGoodsPool`         | Investors buy bonds → capital funds lobbying → treaty passes → $27B/yr splits 80% trials / 10% investors (272% annual) / 10% aligned-politician super PACs. **If treaty fails, bonds lose everything.** Not an assurance contract.                                                                                                                 |
 | **$WISH Token / UBI**                   | `/treasury` | Replace welfare + IRS + inflationary monetary policy    | `WishToken`, `WishocraticTreasury`, `UBIDistributor` | Flat 0.5% tx tax (no income tax/filing), UBI at poverty line, algorithmic 0% inflation, tx taxes + productivity gains allocated by 8B people via Wishocracy RAPPA.                                                                                                                                                                                                             |
 
 Separation is enforced at every layer: contract imports, ABI targets, route descriptions, copy, and `voice-config.ts` (which explicitly gags Wishonia from mentioning IABs on prize pages). Do not reintroduce a shared component, ABI import, parameter, or copy string between the prize-side and IAB-side code paths.
 
-Supporting: `AlignmentScoreOracle`, `PoliticalIncentiveAllocator` (on-chain alignment scoring).
-
 ## Display Identity: Person owns it
 
-`Person` owns every public-facing identity field: `displayName`, `handle`, `image`, `bio`, `headline`, `coverImage`, `website`, `isPublic`. `User` is the auth/account record — credentials, preferences, demographics, geo. There is **no mirror, no fallback, no transitional state**: any display read goes through `Person`.
+`Person` owns every public-facing identity field: `displayName`, `handle`, `image`, `bio`, `headline`, `coverImage`, `website`, `isPublic`. `User` is the auth/account record. **No mirror, no fallback** — display reads go through `Person`.
 
 - **Reads:** `getUserDisplayName/Handle/Avatar/Href/Label` from `@/lib/user-display`. Helpers read `user.person.X` only.
-- **Queries:** spread `userDisplaySelect` into the Prisma select (joins Person automatically). It selects the User keys (`id`, `email`) plus the Person fields the helpers need.
+- **Queries:** spread `userDisplaySelect` into the Prisma select (joins Person automatically).
 - **URLs:** `getPersonHref(person)` from `@/lib/person-href`. Never `/people/${id}`.
 - **Profile edits:** `/api/dashboard/profile` writes Person directly. Handle uniqueness checks `Person.handle`.
-- **OAuth/signup:** the auth adapter and credentials signup route create the User with auth fields only, then call `ensurePersonForUser(userId, { displayName, image })` which seeds the Person with a unique handle.
+- **OAuth/signup:** the auth adapter and credentials signup route create the User with auth fields only, then call `ensurePersonForUser(userId, { displayName, image })`.
 
 ## Page Metadata
 
-`packages/web/src/lib/routes.ts` is the single source of truth for page titles + descriptions. Each `NavItem` has `label`, `description`, `emoji`. Pages use `getRouteMetadata(link)` from `@/lib/metadata.ts`. All descriptions in Wishonia's voice.
+`packages/web/src/lib/routes.ts` is the single source of truth for page titles + descriptions. Each `NavItem` has `label`, `description`, `emoji`. Pages use `getRouteMetadata(link)` from `@/lib/metadata.ts`. Descriptions in Wishonia's voice.
 
 ## Task Tree
 
-The task tree has a single root: `optimize-earth` (taskKey `program:optimize-earth`). Both values come from `OPTIMIZE_EARTH_ROOT_TASK_ID` / `OPTIMIZE_EARTH_ROOT_TASK_KEY` exported from `@optimitron/db` — the prisma seed and web code import the same constants, so the literal string only exists in one place. Every other program is a child of the root because every program is a bet on moving the two welfare numbers — median healthy life-years and median income — toward their 2040 targets. The tree _is_ the persuasion argument: walking up the parent chain from any claimable task lands a voter on their primary motivator.
+Single root: `optimize-earth` (taskKey `program:optimize-earth`). Both values come from `OPTIMIZE_EARTH_ROOT_TASK_ID` / `OPTIMIZE_EARTH_ROOT_TASK_KEY` in `@optimitron/db`. Every program is a child because every program is a bet on moving HALE or median income toward 2040 targets. The tree _is_ the persuasion argument.
 
-- **Targets**: `earthOptimizationPrizeWinCondition` in `packages/data/src/parameters/earth-optimization-prize.ts`. Single source of truth for HALE baseline/target, median-income baseline/target, and the 2040 deadline. Reads from the generated `TREATY_*` parameter constants — do not duplicate the numbers anywhere else. Manual refs: `manual.warondisease.org/knowledge/strategy/earth-optimization-prize.html`, `.../economics/gdp-trajectories.html`.
-- **Attribution**: use `computeParentContributionShare(parent, child)` in `packages/web/src/lib/tasks/impact.ts`. Computes `child.delta / parent.delta` for HALE and income. Nothing stored, nothing to drift.
-- **Adding a new program**: it must be a child of `optimize-earth` (or of one of the programs beneath it; reference via `OPTIMIZE_EARTH_ROOT_TASK_ID`). Do not add a new `parentTaskId: null` task. If a task isn't a bet on HALE or income, it should not exist.
-- **Ancestors on task detail**: `getTaskAncestors(taskId)` walks `parentTaskId` up to root (depth-capped, cycle-safe). Use this, not ad-hoc recursive Prisma selects.
-- **Onboarding tasks** (dashboard welcome tasks) stay out of this tree — they're private onboarding state, not part of the global prize tree.
+- **Targets**: `earthOptimizationPrizeWinCondition` in `packages/data/src/parameters/earth-optimization-prize.ts`. Single source of truth for HALE/income baselines, targets, and the 2040 deadline. Reads `TREATY_*` parameter constants — don't duplicate numbers.
+- **Attribution**: `computeParentContributionShare(parent, child)` in `packages/web/src/lib/tasks/impact.ts`. Computes `child.delta / parent.delta`. Nothing stored.
+- **Adding a new program**: child of `optimize-earth` or a descendant. No new `parentTaskId: null` task. If a task isn't a bet on HALE or income, it should not exist.
+- **Ancestors**: `getTaskAncestors(taskId)` (depth-capped, cycle-safe). Not ad-hoc recursive Prisma selects.
+- **Onboarding tasks** stay out of this tree.
 
 ## High-Value Defaults
 
-1. **One feature branch at a time. One PR at a time. No git worktrees.** All work — Claude, Codex agents, gstack subagents, project-local subagents — happens in the main checkout, on whatever branch is currently checked out. Never `git worktree add`. Never open a second PR while another is in flight. Sequential work: finish the current PR, merge, then start the next. If something genuinely doesn't belong in the current PR's scope, it WAITS until the current PR merges — it does not get a parallel branch/PR/worktree. Parallelism via worktrees costs disk, port conflicts, cognitive overhead, and merge complexity; it almost never pays back.
-2. **One dev server, always running on 3001.** Claude (orchestrator) pre-warms `pnpm dev:fast` at session start if `curl -sS -m 3 http://127.0.0.1:3001` doesn't return 2xx/3xx. Every dispatched agent (Codex, gstack subagents, project-local subagents) is told the dev server is running and MUST reuse it — never spawn its own. If `netstat -ano | findstr :3001` shows the port bound but `curl` fails, a zombie is squatting — kill the PID, restart. Applies on Windows, macOS, Linux equally.
-3. **Use feature branches for implementation.** New implementation branches start with `feature/`, followed by a short kebab-case description. Example: `feature/international-campaign-site-name`.
-4. **Ship through pull requests.** When feature work is done and checks pass, commit the intended changes, push the branch, and update the existing pull request for that branch or task. Create a new pull request only when no open PR exists for the work.
-5. **Watch the PR after every push.** Check GitHub Actions, deployment checks, and review comments. Fix valid failures/comments, push again, and watch again. **Triage review comments critically — do not blindly comply with bot reviewers (Codex, Copilot, CodeRabbit, Vercel Agent Review).** For each comment ask: does this point at a real bug that hits a real path, or is it AI slop / hypothetical / style preference / consistency-for-its-own-sake? If the latter, mark the thread resolved with a one-line reason ("hypothetical, no triggering path", "stylistic, current shape is intentional", "already addressed in commit X"). If the former, fix it and mark resolved. Adding code or tests just to silence a bot is worse than the bot's nag — it adds maintenance surface forever in exchange for one-time review noise. The same rule applies to suggestions to extract constants, add symmetry assertions, normalize naming, or split functions for "readability": do them only when they improve the codebase, not because a bot mentioned them.
-6. **Never merge pull requests.** Once checks are green and there are no unresolved valid review complaints, report that the pull request is ready and let the user review the diff and merge it.
-7. **Respect review-only turns.** If the user asks only for analysis, review, or a proposed copy/design, do not commit or push until they approve implementation or publishing.
+1. **One feature branch, one PR at a time. No git worktrees.** New work waits until current PR merges. Sequential, not parallel.
+2. **One dev server, always running on 3001.** Claude pre-warms `pnpm dev:fast` at session start if `curl -sS -m 3 http://127.0.0.1:3001` doesn't return 2xx/3xx. Every dispatched agent reuses it — never spawn its own. If `netstat -ano | findstr :3001` shows the port bound but `curl` fails, kill the PID and restart.
+3. **Feature branches** start with `feature/`, kebab-case.
+4. **Ship through pull requests.** Update the existing PR for a branch; create a new PR only when none exists.
+5. **Watch the PR after every push.** Fix valid failures/comments. **Triage bot reviewers critically** (Codex, Copilot, CodeRabbit, Vercel Agent Review) — use the `pr-comment-triager` subagent. Adding code or tests just to silence a bot is worse than the bot's nag.
+6. **Never merge pull requests.** Report ready; user merges.
+7. **Respect review-only turns.** Analysis/review/proposed copy → don't commit or push until approval.
 8. **Library packages stay runtime-safe.** No Prisma / runtime DB in `optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`.
 9. **Zod only at real boundaries** — HTTP, form, MCP, OAuth. Not internal helpers.
-10. **Calibrate before major refactors.** For multi-file refactors, deleting abstractions, or replacing auth/security controls, present 2-3 options with your recommendation first. Once a preference is clear for that decision class, proceed without re-asking.
+10. **Calibrate before major refactors.** Present 2-3 options with your recommendation first. Once a preference is clear for that decision class, proceed without re-asking.
 
 ## UI/UX Rules
 
-The near-term goal is to get a verified majority of humanity to vote for the 1% Treaty. Every UI decision optimizes for voting, referral, endorsement, plaintiff registration, leader pressure, or trust in the quantified case. Decoration loses by default.
+Near-term goal: get a verified majority of humanity to vote for the 1% Treaty. Every UI decision optimizes for voting, referral, endorsement, plaintiff registration, leader outreach, or trust in the quantified case. Decoration loses by default.
 
-- **Screenshot UI changes.** After changing UI, capture affected pages/states before considering the work complete. Inspect screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and responsive problems.
-- **Use local before/after review artifacts.** For meaningful visual changes, capture before and after screenshots when feasible and generate a local HTML review page under `packages/web/output/playwright/`, either side-by-side or with the previous screenshot above the updated screenshot for each page/state/viewport. Always write or copy the current review page to `packages/web/output/playwright/review/latest.html` so the user can bookmark one local file and refresh it. Copy referenced screenshot assets beside `latest.html` or rewrite image paths relative to that stable file, then verify the stable page has no broken image references. Link that stable file in the handoff with a clickable local file link and a plain filesystem path.
-- **Link the edited local pages.** When UI or route/page changes are ready for review and a local dev server is available, include direct local dev URLs for every edited page or relevant state, such as `http://127.0.0.1:3001/path`, so the user can open the live page in addition to the screenshot review artifact.
-- **Baseline screenshot worktrees need built workspace deps.** If you create a clean `git worktree` to capture before screenshots, either run a normal install or run the relevant workspace build after `pnpm install --ignore-scripts`; otherwise packages that export from `dist/` can fail at render time.
-- **Run ad-hoc Playwright scripts from `packages/web`.** Use `pnpm --dir packages/web exec node ...` or run from `packages/web` with `pnpm exec` so `@playwright/test` resolves from the web app's dev dependencies.
-- **Treat screenshots as sensitive by default.** Local and preview environments may be connected to production or production-derived databases, so screenshots can contain names, emails, tasks, admin data, or other sensitive content.
-- **Do not commit or upload screenshot artifacts by default.** Keep images and HTML review pages local unless the user explicitly asks and the screenshots are confirmed sanitized. Do not put screenshots, screenshot HTML, or local screenshot/HTML paths in public PR bodies or comments by default; share local review links in chat before committing UI changes and wait for approval unless the user explicitly waives review.
-- **Migrate toward the War on Disease treaty style.** New or touched public UI should use the simple black-and-white style used by the `warondisease.org` variant: white paper, black ink, thin black rules, square corners, restrained typography, and no decorative color. Reuse existing primitives only when they render in that style; otherwise simplify the surface instead of adding neobrutalist chrome.
-- **Big, clear, legible.** Headings `text-4xl sm:text-5xl md:text-6xl font-black uppercase`. Body `text-base font-bold` minimum. Hero numbers (death counters, cost, time) as large as the viewport allows.
-- **Cut ruthlessly.** For every page ask: **what can I remove, hide, or collapse that would increase the chance a human actually completes the task on this page?** Delete it. Collapse secondary info into accordions or sub-pages. One primary CTA per screen, visible without scrolling.
-- **Make actions look actionable.** If a link starts or completes a user task, especially an external workflow, render it as a clear button or command control, not only as inline text. Use plain inline links for references, citations, navigation, and secondary reading. If the user is expected to copy an exact value into another site, email, form, wallet, bank portal, legal document, or message, provide a compact copy affordance near that value. Primary task actions get buttons; exact reusable values get copy buttons; explanatory text stays text.
-- **No blather.** No "welcome to", "let's take a moment", "in this section we'll", "we're excited to". State the fact, state the action, stop. Every word load-bearing. If deleting it doesn't hurt, delete it. Max one adjective per noun. Numbers beat adjectives. A shocking fact beats a paragraph explaining the fact.
-- **Completion test:** cover the bottom half of the screen with your hand. If a user seeing only the top half doesn't know what to do next, restructure.
+- **Screenshot UI changes.** After changing UI, capture affected pages/states. Inspect for layout breakage, overlapping text, missing content, broken styling, responsive problems.
+- **Local before/after review artifacts.** For meaningful visual changes, generate `packages/web/output/playwright/review/latest.html` as a stable side-by-side review page. Copy referenced screenshot assets beside `latest.html`. Link clickable local file + plain filesystem path in the handoff.
+- **Link the edited local pages.** Include direct local dev URLs (`http://127.0.0.1:3001/path`) so the user can open the live page alongside the screenshot review.
+- **Screenshots are sensitive.** Local/preview envs may hit prod-derived databases; screenshots can contain names, emails, admin data. Don't commit screenshot artifacts or put paths in public PR bodies. Share locally; wait for approval.
+- **War on Disease treaty style.** New or touched public UI: white paper, black ink, thin black rules, square corners, restrained typography, no decorative color. When in doubt, simplify rather than add neobrutalist chrome.
+- **Big, clear, legible.** Headings `text-4xl sm:text-5xl md:text-6xl font-black uppercase`. Body `text-base font-bold` minimum. Hero numbers as large as the viewport allows.
+- **Cut ruthlessly.** For every page: **what can I remove or collapse that would increase the chance a human actually completes the task on this page?** One primary CTA per screen, visible without scrolling.
+- **Make actions look actionable.** Primary task actions = buttons. Exact reusable values = copy buttons. Inline links for citations / navigation / secondary reading.
+- **No blather.** No "welcome to", "let's take a moment", "in this section we'll", "we're excited to". State the fact, state the action, stop. Numbers beat adjectives.
+- **Completion test:** cover the bottom half of the screen. If a user seeing only the top half doesn't know what to do next, restructure.
 
 ## Testing Rules (non-negotiable)
 
 **When to write a test:**
 
-- ✅ Pure functions with fallback/branching logic (helpers, parsers, formatters, selectors)
-- ✅ State transitions inside `$transaction` or multi-step DB writes (profile edits, vote tallies, claim status)
+- ✅ Pure functions with fallback/branching logic
+- ✅ State transitions inside `$transaction` or multi-step DB writes
 - ✅ Boundary conversions (Prisma row → DTO, OAuth profile → User row, session → client)
-- ✅ Regression fixes — failing test before the fix, in the same change
-- ❌ Framework passthroughs (wrappers that just call `findUnique`)
-- ❌ UI rendering snapshots — brittle, low signal
+- ✅ Regression fixes — failing test before the fix, same change
+- ❌ Framework passthroughs
+- ❌ UI rendering snapshots
 - ❌ Tests that transcribe the implementation line-by-line
-- ❌ Tests added "for symmetry" with another test, "for documentation", "for consistency", or because a bot reviewer asked. If the test would not catch a bug or guard a regression in code we actually ship, do not write it. Maintenance cost is forever; signal is zero.
-- ❌ Tests that mock the entire surface they're supposedly testing. If you mock `notifyTaskAssigneeOfAssignment` and then assert `notifyTaskAssigneeOfAssignment` was called, the test only verifies you can call the mock. Test the boundary, not the wiring.
+- ❌ Tests added "for symmetry", "for documentation", "for consistency", or because a bot reviewer asked
+- ❌ Tests that mock the entire surface they're supposedly testing. Test the boundary, not the wiring.
 
 **Non-flaky or don't bother:**
 
@@ -248,65 +208,60 @@ The near-term goal is to get a verified majority of humanity to vote for the 1% 
 - No real network / LLM calls — mock at the import boundary
 - No `Math.random`, `Date.now`, `crypto.randomUUID` in assertions
 - No relying on Prisma row order unless you `orderBy`
-- No shared mutable state between tests — each `it` is independent
+- No shared mutable state between tests
 - If it needs `retry` or `sleep` to pass, it's wrong
 
 **Self-verification is mandatory:**
 
 - Before handing back any non-trivial change, run the affected package test suite: `pnpm --filter @optimitron/<pkg> test`
-- If the change touches shared types/schemas, run `pnpm check` across the graph
-- Fix every failure yourself. The user reviews working code, not a broken suite.
-- If an existing test breaks because of a justified shape change, update it — never `skip` or disable.
+- If the change touches shared types/schemas, run `pnpm check`
+- Fix every failure yourself. Never `skip` an existing test.
 - If you can't reproduce a failure locally, say so explicitly. Don't guess-fix.
 
-**Scope:** write the minimum tests that would have caught the bug you just fixed or the regression the change could plausibly introduce. One `describe` per module, one `it` per behavior. Tests read like documentation — name them after behavior, not implementation.
+**Scope:** minimum tests that would have caught the bug you fixed or the regression the change could plausibly introduce. One `describe` per module, one `it` per behavior. Name after behavior, not implementation.
+
+**Run ad-hoc Playwright scripts from `packages/web`** so `@playwright/test` resolves: `pnpm --dir packages/web exec node ...`.
 
 ## Visual Style Rules (enforced)
 
 Contrast audit: `pnpm --filter @optimitron/web exec playwright test e2e/contrast-audit.spec.ts --project=default`.
 
-**Default style:** black-and-white treaty/editorial UI. Use semantic tokens and the treaty CSS variables already used by `warondisease.org`: `background`, `foreground`, `border`, `input`, `ring`, `card`, `popover`, `muted`, `muted-foreground`, `primary`, `primary-foreground`, `current`, `inherit`, `transparent`, `var(--treaty-paper)`, `var(--treaty-ink)`, `var(--treaty-ink-soft)`, and `var(--treaty-ink-muted)`.
+**Default style:** black-and-white treaty/editorial UI. Use semantic tokens and the treaty CSS variables already used by `warondisease.org`: `background`, `foreground`, `border`, `input`, `ring`, `card`, `popover`, `muted`, `muted-foreground`, `primary`, `primary-foreground`, `var(--treaty-paper)`, `var(--treaty-ink)`, `var(--treaty-ink-soft)`, `var(--treaty-ink-muted)`.
 
-**Migration rule:** when touching public UI, remove neobrutalist styling instead of copying it forward. Replace `brutal-*` fills, oversized hard shadows, colored panels, gradients, thick novelty borders, and rounded cards with the black-and-white treaty tokens above. Admin-only status chips, charts, game/demo/Sierra screens, and email-client markup may keep their own specialized colors when the color carries functional meaning.
+**Migration rule:** when touching public UI, remove neobrutalist styling instead of copying it forward. Replace `brutal-*` fills, hard shadows, colored panels, gradients, thick novelty borders, rounded cards with treaty tokens. Admin chips, charts, game/demo screens, and email markup may keep specialized colors.
 
 **Never use:**
 
 - Opacity modifiers on black/white (`text-black/50`, `bg-white/70`) -> `text-muted-foreground` / `text-foreground`
-- Hardcoded `bg-white` / `text-white` / `bg-black` / `text-black` in components -> `bg-background`, `bg-foreground`, `text-foreground`, or `text-background`
+- Hardcoded `bg-white` / `text-white` / `bg-black` / `text-black` -> `bg-background`, `bg-foreground`, `text-foreground`, or `text-background`
 - Tailwind color scales (`bg-emerald-100`, `text-gray-500`) -> semantic or treaty tokens
 - Hardcoded hex (`#ef4444`, `#666`, `#f5f5f5`) -> CSS custom properties
 - Beige/cream/sand/tan backgrounds
-- Gradients, bokeh/orb decoration, illustrative SVG backgrounds, and ornamental color blocks
+- Gradients, bokeh/orb decoration, illustrative SVG backgrounds, ornamental color blocks
 - New `brutal-*` tokens on public treaty/campaign surfaces
-- Hard offset shadows and soft shadows on public treaty/campaign surfaces
-- Rounded cards and large radii; use square corners (`rounded-none`) unless an existing form primitive requires a tiny control radius
-- **Exception:** `emails/` may use inline hex because email clients require it.
+- Shadows on public treaty/campaign surfaces
+- Rounded cards and large radii; use square corners (`rounded-none`)
+- **Exception:** `emails/` may use inline hex.
 
 ## Design Primitives
 
-Reference implementation: the current `warondisease.org` variant and its treaty document surfaces.
+Use primitives for behavior and accessibility, not for inherited decoration. Prefer simple semantic markup with `bg-background text-foreground border-foreground` when the existing primitive would add color, hard shadows, or neobrutalist framing.
 
-Use primitives for behavior and accessibility, not for inherited decoration. Prefer simple semantic markup with `bg-background text-foreground border-foreground` when the existing primitive would add color, hard shadows, arcade motion, or neobrutalist framing.
+**RetroUI (`components/retroui/`):** use existing controls (forms, dialogs, menus, tooltips, tables, accordions, tabs, alerts, avatars, progress, breadcrumbs, calendars, carousels, commands, loaders, charts) when they fit the black-and-white tokens. Keep the compound pattern: `<Card.Header>`, not `<CardHeader>`.
 
-### RetroUI (`components/retroui/`)
+**Domain primitives (`components/ui/`):** avoid `BrutalCard`, colored `StatCard` variants, `ArcadeTag`, hard-shadow CTA blocks on public treaty/campaign pages. Migrate to unframed sections, thin bordered tables, simple counters, document-like layouts.
 
-Use existing RetroUI controls for forms, dialogs, menus, tooltips, tables, accordions, tabs, alerts, avatars, progress, breadcrumbs, calendars, carousels, commands, loaders, and charts when they already fit the black-and-white token system. Keep the compound pattern: `<Card.Header>`, not `<CardHeader>`.
+**Styling conventions:**
 
-### Domain primitives (`components/ui/`)
-
-Use domain primitives only when they help structure the page without adding colored neobrutalist styling. Avoid `BrutalCard`, colored `StatCard` variants, `ArcadeTag`, hard-shadow CTA blocks, and other legacy brutal/demo styling on public treaty/campaign pages. When touching those pages, migrate toward unframed sections, thin bordered tables, simple counters, and document-like layouts.
-
-### Styling conventions
-
-- **Borders:** use `border` or `border-2` with `border-foreground`/`border-border`. Avoid `border-4` unless the existing surface is explicitly admin/game/demo.
-- **Shadows:** no shadows by default. Do not add hard-offset or soft shadows to treaty/campaign UI.
-- **Hover:** keep it quiet: underline links, invert black/white buttons, or use `bg-muted`. Avoid push-down arcade motion.
-- **Typography:** headings `font-black uppercase`; body `font-bold` (700) minimum — never `font-medium/normal/light`; subtle text `text-muted-foreground font-bold`.
-- **Sections:** use white/background bands and black rules. Do not alternate colored brutal sections on public treaty/campaign pages.
+- **Borders:** `border` or `border-2` with `border-foreground`/`border-border`. No `border-4` outside admin/game/demo.
+- **Shadows:** none by default on treaty/campaign UI.
+- **Hover:** underline links, invert black/white buttons, or `bg-muted`. No push-down arcade motion.
+- **Typography:** headings `font-black uppercase`; body `font-bold` (700) minimum; subtle text `text-muted-foreground font-bold`.
+- **Sections:** white/background bands and black rules. No alternating colored brutal sections on public pages.
 
 ## Environment Variables
 
-All env vars in **root `.env`** (not `packages/web/.env`). Next.js picks them up via the workspace. Local dev: `NEXTAUTH_URL=http://localhost:3001`.
+All env vars in **root `.env`** (not `packages/web/.env`). Local dev: `NEXTAUTH_URL=http://localhost:3001`.
 
 ## Tooling
 
@@ -318,48 +273,22 @@ All env vars in **root `.env`** (not `packages/web/.env`). Next.js picks them up
 
 ## Type Safety & Linting
 
-Before handing back any change: `pnpm check` (typecheck + lint + test). Fix every failure yourself. The user reviews working code, not a broken suite.
+Before handing back any change: `pnpm check` (typecheck + lint + test). Fix every failure yourself.
 
-- **Never** run `pnpm build` / `next build` — the dev server handles compilation. Only run a full build if explicitly asked.
-- `tsc` on a single file doesn't work (jsx/alias); use the project-level `pnpm check` or `pnpm --filter @optimitron/<pkg> exec tsc --noEmit`.
+- **Never** run `pnpm build` / `next build` — the dev server handles compilation. Only on explicit ask.
+- `tsc` on a single file doesn't work (jsx/alias); use `pnpm check` or `pnpm --filter @optimitron/<pkg> exec tsc --noEmit`.
 - **TypeScript strict mode ON** — `noUncheckedIndexedAccess`, `noImplicitOverride`. ESLint strict.
 - **No `any`** — use proper types or `unknown` with guards. No floating promises. No unused vars (prefix `_` if intentional). All tsconfigs extend `tsconfig.base.json`.
 
-## Self-Review: Be Ruthlessly Critical
+## Self-Review
 
-Before picking a new task, scan with fresh eyes. **Delete on sight:**
-
-- **Dead code** — unused imports, unreachable branches, commented-out code
-- **Copy-paste** — extract to shared function
-- **Over-engineering** — abstract bases nobody extends, factories creating one thing
-- **Wrong abstractions** — 8-parameter functions, methods mixing concerns
-- **Magic numbers** — named constants citing the paper
-- **Stale TODOs** — do it or delete it
-
-**Simplicity test:** could a junior developer understand this in 30 seconds? If not, simplify. This should not feel like enterprise Java.
-
-**What good looks like:** functions fit on one screen; files stay reviewable (30/300 line thresholds are smells, not caps); module names tell you what's inside; tests read like documentation; no unnecessary abstractions — just functions taking data and returning results.
+- **Magic numbers** — named constants citing the paper.
+- **Stale TODOs** — do it or delete it.
+- **Wrong abstractions** — 8-parameter functions, methods mixing concerns. Replace.
+- **What good looks like:** functions fit on one screen; module names tell you what's inside; tests read like documentation; no unnecessary abstractions — functions taking data, returning results.
 
 ## gstack (REQUIRED — global install)
 
-**Before doing ANY work, verify gstack is installed:**
+If `~/.claude/skills/gstack/bin` is missing, STOP and tell the user to install (see SETUP.md or `https://github.com/garrytan/gstack`). Do not skip skills, ignore gstack errors, or work around missing gstack.
 
-```bash
-test -d ~/.claude/skills/gstack/bin && echo "GSTACK_OK" || echo "GSTACK_MISSING"
-```
-
-If GSTACK_MISSING: STOP. Do not proceed. Tell the user:
-
-> gstack is required for all AI-assisted work in this repo.
-> Install it:
-> ```bash
-> git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
-> cd ~/.claude/skills/gstack && ./setup --team
-> ```
-> Then restart your AI coding tool.
-
-Do not skip skills, ignore gstack errors, or work around missing gstack.
-
-Using gstack skills: After install, skills like /qa, /ship, /review, /investigate,
-and /browse are available. Use /browse for all web browsing.
-Use ~/.claude/skills/gstack/... for gstack file paths (the global path).
+After install, use gstack skills (`/qa`, `/ship`, `/review`, `/investigate`, `/browse`) for generic work. Use `/browse` for all web browsing.

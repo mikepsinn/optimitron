@@ -20,7 +20,7 @@
 
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { freezeClock } from "./helpers/freeze-clock";
 
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
@@ -29,6 +29,7 @@ async function captureEmail(
   page: import("@playwright/test").Page,
   template: string,
   name: string,
+  expectedText: string,
   testInfo: import("@playwright/test").TestInfo,
 ) {
   // Use the project's configured viewport (desktop: 1920x1080,
@@ -39,9 +40,11 @@ async function captureEmail(
   // `?raw=1` returns the bare email HTML; the default route wraps it in a
   // Gmail-mobile preview chrome which we don't want in the visual-regression
   // screenshot.
-  await page.goto(`/dev/email/${template}?raw=1`, {
+  const response = await page.goto(`/dev/email/${template}?raw=1`, {
     waitUntil: "domcontentloaded",
   });
+  expect(response?.status()).toBeLessThan(400);
+  await expect(page.locator("body")).toContainText(expectedText);
   await page.waitForLoadState("networkidle").catch(() => undefined);
 
   const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
@@ -63,11 +66,23 @@ test.describe("email visual coverage", () => {
   });
 
   test("email-magic-link", async ({ page }, testInfo) => {
-    await captureEmail(page, "magic-link", "email-magic-link", testInfo);
+    await captureEmail(
+      page,
+      "magic-link",
+      "email-magic-link",
+      "Your sign-in link is below.",
+      testInfo,
+    );
   });
 
   test("email-post-vote-share", async ({ page }, testInfo) => {
-    await captureEmail(page, "post-vote-share", "email-post-vote-share", testInfo);
+    await captureEmail(
+      page,
+      "post-vote-share",
+      "email-post-vote-share",
+      "Trade one apocalypse",
+      testInfo,
+    );
   });
 
   test("email-referral-first-conversion", async ({ page }, testInfo) => {
@@ -75,12 +90,19 @@ test.describe("email visual coverage", () => {
       page,
       "referral-first-conversion",
       "email-referral-first-conversion",
+      "Sample Voter just signed",
       testInfo,
     );
   });
 
   test("email-task-assignment", async ({ page }, testInfo) => {
-    await captureEmail(page, "task-assignment", "email-task-assignment", testInfo);
+    await captureEmail(
+      page,
+      "task-assignment",
+      "email-task-assignment",
+      "New task for Sample Assignee",
+      testInfo,
+    );
   });
 
   test("email-monthly-chain-digest", async ({ page }, testInfo) => {
@@ -88,6 +110,7 @@ test.describe("email visual coverage", () => {
       page,
       "monthly-chain-digest",
       "email-monthly-chain-digest",
+      "7 employees completed",
       testInfo,
     );
   });
@@ -97,6 +120,7 @@ test.describe("email visual coverage", () => {
       page,
       "task-comment-notification",
       "email-task-comment-notification",
+      "Sample Author commented",
       testInfo,
     );
   });

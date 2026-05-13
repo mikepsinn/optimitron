@@ -56,14 +56,15 @@ describe("monthly chain digest — positive variant (N > 0)", () => {
 
   it("html surfaces completed employees, overdue employees, late presidents, and the doubling-rounds math", async () => {
     const { html } = await renderMonthlyDigest(input);
+    const normalized = html.replaceAll("<!-- -->", "");
     expect(html).toContain("7 employees completed");
     expect(html).toContain("Ada Lovelace");
     expect(html).toContain("Jake Smith");
     expect(html).toContain("189");
     expect(html).toContain("President Example");
     expect(html).toContain("19");
-    expect(html).toContain("32 doubling rounds");
-    expect(html).toContain("4,300,000,000");
+    expect(normalized).toContain(">32</a> doubling rounds");
+    expect(normalized).toContain(">4 billion</a> humans reached");
   });
 
   it("html includes copy-paste reminders with the referral URL", async () => {
@@ -80,7 +81,7 @@ describe("monthly chain digest — positive variant (N > 0)", () => {
     expect(text).toContain("Ada Lovelace");
     expect(text).toContain("Jake Smith");
     expect(text).toContain("Dear President [name]");
-    expect(text).toContain("4,300,000,000");
+    expect(text).toContain("4 billion");
     expect(text).toContain(BASE.referralUrl);
   });
 });
@@ -109,9 +110,8 @@ describe("monthly chain digest — resend variant (N == 0)", () => {
 
   it("plaintext fallback contains the management reminders", async () => {
     const { text } = await renderMonthlyDigest(input);
-    expect(text.toLowerCase()).toContain(
-      "no employees completed the 30-second task",
-    );
+    expect(text.toLowerCase()).toContain("no employees completed the 30-second");
+    expect(text.toLowerCase()).toContain("task through your link");
     expect(text).toContain("Dear President [name]");
     expect(text).toContain(BASE.referralUrl);
   });

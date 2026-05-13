@@ -7,6 +7,11 @@ import {
   CampaignShareFooter,
   CampaignText,
 } from "@/lib/email/react-email-components";
+import {
+  DoublingRoundsValue,
+  ReferralAskValue,
+  ReferralChainMath,
+} from "@/lib/email/share-footer";
 
 export function ReferralFirstConversionReactEmail({
   dashboardUrl,
@@ -19,17 +24,20 @@ export function ReferralFirstConversionReactEmail({
 }) {
   return (
     <CampaignEmailShell preview={`${voterDisplayName} voted through your link.`}>
-      <CampaignEyebrow>Your link worked. Round 1 of 32.</CampaignEyebrow>
+      <CampaignEyebrow>
+        Your link worked. Round 1 of <DoublingRoundsValue />.
+      </CampaignEyebrow>
       <CampaignHeading>
         {voterDisplayName} just signed the 1% Treaty through your link.
       </CampaignHeading>
       <CampaignText>
-        The math: 32 doubling rounds x 2 referrals each = 4,300,000,000 humans,
-        every adult on Earth.
+        The math: <ReferralChainMath resultSuffix="humans" />, every adult on
+        Earth.
       </CampaignText>
       <CampaignText>
-        The chain breaks when voters stop reaching two humans each. Your job:
-        keep going, and make sure {voterDisplayName} keeps going too.
+        The chain breaks when voters stop reaching{" "}
+        <ReferralAskValue word /> humans each. Your job: keep going, and make
+        sure {voterDisplayName} keeps going too.
       </CampaignText>
       <CampaignButton href={dashboardUrl}>Open dashboard</CampaignButton>
       <CampaignText muted>

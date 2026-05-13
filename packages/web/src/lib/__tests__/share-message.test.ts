@@ -14,4 +14,12 @@ describe("buildShareMessage", () => {
     expect(message).toContain("suffer and die of horrible diseases");
     expect(message).toContain("30 seconds");
   });
+
+  it("preserves the current treaty-vote wording", () => {
+    const message = buildShareMessage(SAMPLE_URL);
+    expect(message).toContain("vote on this stupid treaty");
+    expect(message).toContain("likelihood");
+    expect(message).not.toContain("click this button");
+    expect(message).not.toContain("chance you will suffer");
+  });
 });
