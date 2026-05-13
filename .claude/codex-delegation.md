@@ -24,16 +24,24 @@ Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scrip
 5. **Regenerate affected `.md` snapshots and screenshots** after any content/component change. Use `node packages/web/scripts/affected-routes.mjs` to pipe changed-file paths into `render-pages-to-markdown.ts --routes=` for targeted regen; fall back to full regen when the change touches shared primitives.
 6. **Nothing committed without user approval.** Codex stages the changeset and reports; Claude relays the summary + diff scope; user OKs; then Claude commits on Codex's behalf (Codex can't touch `.git`).
 
-## Multi-agent coordination
+## One worktree, one branch, one dev server, one PR at a time
 
-**Don't artificially scope agents to non-overlapping files.** Parallel `codex exec` dispatches on the same codebase are fine; gaps in coverage cost more than rare same-file collisions.
+**No `git worktree`. No parallel branches. No second PR while another is in flight.** Every Codex dispatch runs in the main checkout (`E:/code/optimitron`) against whatever branch is currently checked out. The user is on ONE feature branch driving ONE PR; Codex's edits land on THAT branch. If the user wants Codex to do something that genuinely doesn't belong in the current PR's scope, the answer is "wait until this PR merges" — NOT "spin up a worktree on a new branch."
 
-**When a new task would overlap files an active agent owns**, queue it as a follow-up to that agent's session instead of racing a parallel one. Use `codex exec resume`:
+The mistake this rule prevents: I tried to run an "email-migration" Codex in a separate `../optimitron-emails` worktree on `feature/email-parameter-values` while another Codex was working in the main worktree on the live PR branch. Two dev servers fought over port 3001, the hydration-investigation agent's dev-server attempt timed out on EADDRINUSE, I burned a chat turn diagnosing the port conflict, and the resulting branch is now an orphan that has to be cherry-picked back into the live PR. None of this would have happened in a single worktree on a single branch.
+
+**Dev server: one always running on 3001.** Claude (the orchestrator) pre-warms it at session start. Every Codex dispatch prompt must include the line: `"Dev server is already running at http://127.0.0.1:3001. Reuse it. Do NOT start your own."` If you're about to write a dispatch prompt that doesn't include that line, you forgot.
+
+## Sequential agent coordination
+
+**When a follow-up task would overlap files an active agent owns**, queue it as a follow-up to that agent's session via `codex exec resume`:
 
 - `codex exec resume <uuid> "follow-up prompt"` — explicit, robust. Capture the UUID right after dispatch by globbing `~/.codex/sessions/$(date +%Y)/$(date +%m)/$(date +%d)/rollout-*.jsonl` (newest = the one you just spawned). UUID is the trailing hex segment of the filename.
 - `codex exec resume --last "follow-up prompt"` — convenient but risky if other Codex sessions ran in between in the same cwd.
 
 The session UUID is the only handle you get; capture it at dispatch time and store it for the life of the follow-up chain.
+
+**Two Codex agents may run in parallel ONLY if the user has explicitly authorized them on disjoint file scopes within the same branch AND the second agent's work is genuinely additive to the first (not a coordinated refactor).** Default is one agent at a time on the current branch; parallel is the exception, not the norm.
 
 ## Why CLI not Agent tool
 
