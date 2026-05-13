@@ -22,7 +22,6 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { test } from "@playwright/test";
 
-const EMAIL_VIEWPORT = { width: 720, height: 1000 } as const;
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
 
 async function captureEmail(
@@ -31,7 +30,11 @@ async function captureEmail(
   name: string,
   testInfo: import("@playwright/test").TestInfo,
 ) {
-  await page.setViewportSize(EMAIL_VIEWPORT);
+  // Use the project's configured viewport (desktop: 1920x1080,
+  // mobile: 390x844 iPhone 14) so the mobile screenshot actually shows the
+  // email at a phone width. Previously this spec hardcoded a 720x1000 override
+  // which made desktop and mobile screenshots identical and inserted ~60px of
+  // empty padding around the React Email 600px container.
   // `?raw=1` returns the bare email HTML; the default route wraps it in a
   // Gmail-mobile preview chrome which we don't want in the visual-regression
   // screenshot.

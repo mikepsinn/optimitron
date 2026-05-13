@@ -11,6 +11,7 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { buildChannelHref } from "@/lib/share-channels";
 import { buildShareMessage } from "@/lib/share-message";
 
 const colors = {
@@ -241,6 +242,23 @@ export function CampaignMetricTable({
 }
 
 export function CampaignShareFooter({ referralUrl }: { referralUrl: string }) {
+  const message = buildShareMessage(referralUrl);
+  const shareChannelInput = {
+    message,
+    shareText: "Vote on the 1% Treaty",
+    taskUrl: referralUrl,
+    taskTitle: "Vote on the 1% Treaty",
+  };
+  // Four share-link buttons matching the dashboard/signatories share buttons.
+  // All URI schemes (sms:, mailto:, https://wa.me, twitter intent) are
+  // email-client-safe and open the user's iMessage / Mail / WhatsApp / browser
+  // with the message pre-filled. One-tap forwarding from inside the email.
+  const channels = [
+    { channel: "sms" as const, label: "Text" },
+    { channel: "whatsapp" as const, label: "WhatsApp" },
+    { channel: "email" as const, label: "Email" },
+    { channel: "x" as const, label: "Post" },
+  ];
   return (
     <Section
       style={{
@@ -266,11 +284,56 @@ export function CampaignShareFooter({ referralUrl }: { referralUrl: string }) {
         Forward this email to every human you love and do not want to suffer and
         die of horrible diseases.
       </CampaignText>
-      <CampaignText>{buildShareMessage(referralUrl)}</CampaignText>
+      {/* Boxed share message: signals "this is an artifact to send" rather than
+          body copy. iOS tap-and-hold inside gets a free Select All → Copy. */}
+      <Section
+        style={{
+          backgroundColor: colors.soft,
+          border: `1px solid ${colors.ink}`,
+          margin: "0 0 16px",
+          padding: "16px",
+        }}
+      >
+        <Text
+          style={{
+            color: colors.muted,
+            fontSize: "11px",
+            fontWeight: "700",
+            letterSpacing: "0.14em",
+            lineHeight: "1.6",
+            margin: "0 0 8px",
+            textTransform: "uppercase",
+          }}
+        >
+          ↓ Tap and hold to copy
+        </Text>
+        <Text
+          style={{
+            color: colors.ink,
+            fontSize: "16px",
+            fontWeight: "700",
+            lineHeight: "1.7",
+            margin: 0,
+          }}
+        >
+          {message}
+        </Text>
+      </Section>
+      {/* One-tap share buttons. Each opens the relevant app with the message
+          pre-filled. Stacked vertically so they work on mobile email clients
+          where horizontal table layouts misrender. */}
+      {channels.map(({ channel, label }) => (
+        <CampaignButton
+          key={channel}
+          href={buildChannelHref(channel, shareChannelInput)}
+          variant="secondary"
+        >
+          {label}
+        </CampaignButton>
+      ))}
       <CampaignText muted>
-        Copy that into iMessage, WhatsApp, Signal, email, or wherever humans
-        read words that you write. Or send them straight to {referralUrl}. 32
-        doubling rounds x 2 referrals each = 4,300,000,000 humans reached.
+        Or send them straight to {referralUrl}. 32 doubling rounds × 2 referrals
+        each = 4,300,000,000 humans reached.
       </CampaignText>
     </Section>
   );
