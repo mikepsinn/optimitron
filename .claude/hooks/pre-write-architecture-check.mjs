@@ -63,7 +63,7 @@ try {
   const msg = `[pre-write architecture check] You are about to CREATE a new file:
   ${relPath}
 
-This hook fires for new files in architectural paths (packages/*/src/, prisma/, scripts/, .github/workflows/, .claude/agents/). The user has called out the pattern — I default to creating new files / abstractions when the smallest fix is one line in a config or a delegation to an existing function. Before writing this file, answer in chat:
+This hook fires for new files in architectural paths (packages/*/src/, prisma/, scripts/, .github/workflows/, .claude/agents/). The user has called out the pattern — I default to creating new files / abstractions when a one-line change in a config or a delegation to an existing function would do the job. Before writing this file, answer in chat:
 
 1. **What is the actual user-facing problem?** Name it in one sentence.
 
@@ -73,9 +73,9 @@ This hook fires for new files in architectural paths (packages/*/src/, prisma/, 
    - Existing functions in the same area — is there already an idempotent version?
    - The relevant section of TODO.md — has a decision been recorded?
 
-3. **What is the smallest possible fix?** If the answer is "add a new file", justify why a one-line change in a config / package.json / existing function would NOT work.
+3. **What is the BEST fix?** "Best" = solves the root cause without creating new maintenance debt. Small is preferred only when it's also correct — a one-line workaround that masks a real bug is NOT the right move. If the best fix legitimately needs a new file, justify why; if a one-line config / package.json / existing-function delegation actually solves it, prefer that.
 
-4. **Has the user signaled this should be simple?** If YES, you almost certainly haven't found the smallest fix yet. Stop and re-explore.
+4. **Has the user signaled this should be simple?** If YES, re-explore: are you reaching for an abstraction the existing system already provides? But "simple" never means "shippable workaround that hides a real bug" — if the smallest viable change is a band-aid, name that openly and propose the real fix.
 
 After answering these in chat, retry the Write. The hook will allow it within 5 minutes once you've responded.`;
 
