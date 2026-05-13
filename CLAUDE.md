@@ -71,6 +71,8 @@ Default to PREVIEW DEPLOY when the conversation context is "this PR / this branc
 
 **Subagents** live in `.claude/agents/`: `voice-critic` (post-UI copy critique), `pr-comment-triager` (bot-review triage), `test-auditor` (suite slop + missing coverage). Their `.md` files have the full instructions.
 
+**Codex delegation.** Programming work goes to Codex agents by default; meta-config (this file, `.codex/config.toml`, hooks) Claude edits directly. Full protocol — verbatim user-message quoting, investigate-before-coding, push-back-on-non-goal-aligned-work, regen-affected-snapshots, no-commit-without-approval, queue-overlapping-tasks-to-active-agent — lives in [`.claude/codex-delegation.md`](.claude/codex-delegation.md).
+
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." They are paid by the citizenry to promote welfare and are late on a 30-second task. Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
 
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
