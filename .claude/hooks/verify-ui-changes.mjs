@@ -273,24 +273,21 @@ ${sample}`);
   ]);
   if (copyChanges.length) {
     pushViolation("VONNEGUT", copyChanges.length, formatList(
-      `BLATHER REVIEW CHECKLIST: page.tsx or page.logged-out.md changed. Before committing, OPEN each
-modified .md snapshot and READ IT VISUALLY. Apply critical judgment — do not skip, do not delegate to
-grep. Walk every line and ask:
+      `BLATHER REVIEW: page.tsx or page.logged-out.md changed.
 
-  1. Same prefix repeated on N adjacent list items? (e.g. "PLAINTIFF IN THE CASE ..." × 24).
-     -> Fold the prefix into a section heading or drop it. It belongs there once, not per row.
-  2. Tautological hint under a section heading? (e.g. "WHO SHOULD BE A PLAINTIFF?" followed by
-     "Use the name that belongs on the court record.")
-     -> Delete. The heading already promised the answer.
-  3. Count above a heading + grid that says the same thing? (e.g. "30 humans already named" above
-     "PLAINTIFFS IN HUMANITY V. GOVERNMENT" + a face grid)
-     -> Delete. The grid is the evidence.
-  4. Stripe-keynote sentence ("primitive that...", "the protocol that...", "off-ramp")?
-     -> Rewrite as plain declarative.
-  5. Adjective stack with no number ("transformative, powerful, scalable")?
-     -> Replace with one number or delete.
+Run \`/qa\` now. It fires voice-critic + cold-stranger-ux + visual-design-auditor
+(+ test-auditor if tests changed, + security-threat-review if auth paths touched)
+in parallel and returns one consolidated punch list with a SHIP / NEEDS FIXES
+verdict. No need to remember which critic to invoke.
 
-If you find blather, fix the .tsx, re-render the .md, re-read it, then commit.`,
+If you want to spot-check manually first, walk every line and ask:
+  1. Same prefix repeated on N adjacent list items? → fold into header or drop.
+  2. Tautological hint under a section heading? → delete.
+  3. Count above a heading + grid that says the same thing? → delete.
+  4. Stripe-keynote sentence ("primitive that...", "off-ramp")? → rewrite as plain declarative.
+  5. Adjective stack with no number? → replace with a number or delete.
+
+But /qa makes this automatic. Use it.`,
       copyChanges,
       "",
     ), { blocking: false });
