@@ -12,6 +12,7 @@ import path from "node:path";
 import { forceAnimationsComplete } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
+import { freezeClock } from "./helpers/freeze-clock";
 
 const ARGOS_CSS = `
   *, *::before, *::after {
@@ -70,6 +71,10 @@ test.describe("route visual regression", () => {
       ),
       "utf8",
     );
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await freezeClock(page);
   });
 
   for (const route of VISUAL_ROUTES) {

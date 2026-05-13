@@ -13,6 +13,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { forceAnimationsComplete, writeAuditReport } from "./utils/audit-helpers";
 import { getContrastViolations } from "./utils/computed-contrast";
+import { freezeClock } from "./helpers/freeze-clock";
 
 // Desktop viewport for keyboard navigation
 test.use({ viewport: { width: 1920, height: 1080 } });
@@ -118,6 +119,7 @@ async function auditCurrentSlide(
 test("demo slide audit — all slides, desktop + mobile", async ({ page }) => {
   test.setTimeout(600_000); // 10 min
   fs.mkdirSync(screenshotDir, { recursive: true });
+  await freezeClock(page);
 
   const allIssues: SlideIssue[] = [];
   const seenSlides = new Set<string>();

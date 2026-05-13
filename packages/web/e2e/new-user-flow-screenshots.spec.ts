@@ -18,6 +18,7 @@ import * as fs from "fs";
 import path from "path";
 import { buildMagicLinkHtml } from "@/lib/email/magic-link-render";
 import { SITE_VARIANT_OVERRIDE_HEADER, type SiteKey } from "@/lib/site";
+import { freezeClock } from "./helpers/freeze-clock";
 import { DEMO_PASSWORD } from "./utils/auth";
 
 interface VariantConfig {
@@ -617,6 +618,7 @@ test.describe("new-user funnel screenshot audit", () => {
         });
         const page = await context.newPage();
         try {
+          await freezeClock(page);
           const outcome = await captureVariant(variant, viewport, page);
           collected.push(outcome);
           if (outcome.frames.length === 0) {
