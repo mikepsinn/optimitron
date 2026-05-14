@@ -1,15 +1,15 @@
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { SHARING_TIME_MINUTES } from "@optimitron/data/parameters";
-import { ParameterValue } from "@/components/shared/ParameterValue";
+import { ParameterValueEmail } from "@/components/shared/ParameterValue.email";
 import { renderReactEmailHtml } from "@/lib/email/render-react-email";
 
 describe("ParameterValue email rendering", () => {
-  it("uses the adaptive parameter API but renders an email-safe manual link", async () => {
+  it("renders an email-safe manual link, no Dialog button or radix wrapper", async () => {
     const html = await renderReactEmailHtml(
       <p>
         Please take{" "}
-        <ParameterValue
+        <ParameterValueEmail
           param={SHARING_TIME_MINUTES}
           valueOverride="30 seconds"
         />{" "}
