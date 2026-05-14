@@ -44,10 +44,10 @@ vi.mock("@/lib/email/unsub-url", () => ({
 
 // The Wishonia signature's avatar `<img src>` uses `getBaseUrl()`, which
 // falls back to localhost in test runs (no canonical site origin env).
-// The new `assertEmailSafe` send-boundary guard correctly rejects any
-// body containing `localhost` — so we mock the base URL to a production
-// origin for these unit tests. Real-world prod sends have VERCEL_URL set
-// and never hit this fallback path.
+// The `assertEmailSafe` send-boundary guard rejects any body whose URLs
+// point at loopback hosts (`http://localhost`, etc.) — so we mock the
+// base URL to a production origin for these unit tests. Real-world prod
+// sends have VERCEL_URL set and never hit this fallback path.
 vi.mock("@/lib/url", () => ({
   getBaseUrl: () => "https://optimitron.com",
   buildUserReferralUrl: (id: string | null | undefined) =>

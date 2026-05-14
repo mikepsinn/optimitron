@@ -187,9 +187,11 @@ function resolveUnsubscribeUrl(message: BaseMessage): string | null {
 // somewhere upstream forgot to run). Private — test through the three send
 // paths.
 //
-// Word-boundary regex for hostnames avoids false positives like
-// "notlocalhostish"; IPv6 loopback uses a separate branch since `[` is a
-// non-word character that breaks `\b`.
+// The host regex requires a `http://` or `https://` scheme prefix. Without
+// it, a user-controlled task title or comment body containing the bare word
+// "localhost" (e.g. "Login broken on localhost") would trip the guard and
+// silently fail the whole batch. We only care about actual URLs that would
+// dead-link in the recipient's client.
 //
 // Codex review (2026-05-12) caught that the `List-Unsubscribe` header
 // (built separately via `buildUnsubscribeUrl()` → `getBaseUrl()`) could
@@ -206,7 +208,7 @@ function assertEmailSafe(input: {
     : "";
   const combined = `${input.html}\n${input.text}\n${headerString}`;
   const hostRegex =
-    /\b(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\b|\[::1\](?::\d+)?/i;
+    /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(?::\d+)?/i;
   const offenders: string[] = [];
   const hostMatch = combined.match(hostRegex);
   if (hostMatch) offenders.push(hostMatch[0]);
