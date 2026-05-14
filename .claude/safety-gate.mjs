@@ -37,7 +37,11 @@ function checkCommand(command) {
     [/\bdocker\s+(rm\s+-f|system\s+prune)\b/i, "destructive docker cleanup"],
   ];
 
-  const hasShellSeparator = /(?:&&|\|\||;|\|(?!\|))/.test(text);
+  // Single `&` (background), newline, `&&`, `||`, `;`, and `|` all chain a
+  // following command. The carve-out for `rm -rf node_modules` only applies
+  // to single-clause commands — never compound.
+  const hasShellSeparator =
+    /(?:&&|\|\||;|\n|\|(?!\|)|&(?!&))/.test(text);
   const safeDelete = /\b(remove-item|rm)\b[\s\S]*(node_modules|\.next|dist|build|\.turbo|coverage|__pycache__|\.cache)\b/i;
   const isSafeCleanupSingleClause =
     safeDelete.test(text) && !hasShellSeparator;

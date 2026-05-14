@@ -35,10 +35,18 @@ try {
   // Extract the prompt argument. Codex usage:
   //   codex exec [--flag ...] '<prompt>'
   //   codex exec resume <uuid> '<prompt>'
-  // The prompt is the last single-quoted argument.
-  const promptMatch = cmd.match(/'([\s\S]*)'\s*$/) || cmd.match(/"([\s\S]*)"\s*$/);
-  if (!promptMatch) process.exit(0);
-  const prompt = promptMatch[1];
+  // The prompt is the last single-quoted argument. Find the position of the
+  // first quote and the last closing quote (must be followed by end-or-pipe-
+  // trailing-whitespace) so we don't get confused by embedded `'\''` escapes
+  // or trailing `| tail -3` style suffixes.
+  const trimmed = cmd.replace(/\s*(?:\d?>&?\d?|\|.*|2>&1.*)*\s*$/, "");
+  const m =
+    trimmed.match(/'([\s\S]*?)'\s*$/) ||
+    trimmed.match(/"([\s\S]*?)"\s*$/) ||
+    cmd.match(/'([\s\S]*)'\s*$/) ||
+    cmd.match(/"([\s\S]*)"\s*$/);
+  if (!m) process.exit(0);
+  const prompt = m[1];
   if (prompt.length < 200) process.exit(0); // tiny prompts are fine
 
   // Walk lines, skip blockquotes (`>` prefix — verbatim user quote).

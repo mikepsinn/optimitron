@@ -29,7 +29,8 @@ Do not let lower items crowd out higher ones.
 2. Increase referral propagation: each voter gets two more humans to vote.
 3. Get organizations to endorse, embed, and recruit their own people.
 4. Register plaintiffs and connect the case framing to voting.
-5. Pressure country leaders and treaty signers.
+5. Remind country leaders and treaty signers — they are paid by the
+   citizenry to promote welfare and are late on a 30-second task.
 6. Improve discoverability and trust in people, organization, task, and evidence
    pages.
 7. Preserve Optimitron's broader governance OS as the proof layer, not as a
