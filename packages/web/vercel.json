@@ -3,7 +3,8 @@
   "buildCommand": "pnpm run build:vercel",
   "git": {
     "deploymentEnabled": {
-      "main": false
+      "main": false,
+      "gh-pages": false
     }
   },
   "crons": [
