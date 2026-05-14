@@ -59,13 +59,14 @@ export function createHumanityManagerPromotion({
         <PromoBody>
           <PromoText>
             You have been promoted to Humanity Manager at Earth Optimization
-            Services LLC. Responsible for{" "}
+            Services LLC. You now have{" "}
             <ParameterValue
               className="font-black"
               figures={1}
               param={GLOBAL_POPULATION_2024}
             />{" "}
-            humans. First task: get them to ratify the{" "}
+            direct reports — humans you are responsible for getting to spend
+            30 seconds voting on the{" "}
             <PromoLink href={ROUTES.treaty}>1% Treaty</PromoLink>.
           </PromoText>
           <PromoText>
@@ -109,27 +110,45 @@ export function createHumanityManagerPromotion({
             .
           </PromoText>
           <PromoText muted>
-            To get there: send the message below to{" "}
+            You probably do not have time to persuade{" "}
+            <ParameterValue
+              param={GLOBAL_POPULATION_2024}
+              presentation="inline"
+              figures={1}
+            />{" "}
+            humans yourself. Fortunately, you may hire subordinate humanity
+            managers. Send the message below to{" "}
             <ParameterValue
               param={FLOW_REFERRALS_PER_VOTER}
               presentation="inline"
               valueOverride="two"
             />{" "}
-            humans you love. They send it to{" "}
+            humans you love and they become your subordinate humanity
+            managers. They hire{" "}
             <ParameterValue
               param={FLOW_REFERRALS_PER_VOTER}
               presentation="inline"
               valueOverride="two"
-            />
-            .{" "}
+            />{" "}
+            more. You earn one Earth Optimization Point per recruited voter,
+            redeemable for a share of the{" "}
+            <PromoLink href={ROUTES.prize}>Earth Optimization Prize</PromoLink>{" "}
+            once the referendum closes. After{" "}
             <ParameterValue
               display="integer"
               param={FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM}
               presentation="inline"
             />{" "}
-            rounds reaches every adult on Earth. Getting humans to agree on one
-            thing is the first step to any civilizational upgrade. You are
-            responsible for this step. It cannot be completed without you.
+            doubling rounds, you are trying to get a majority of humans on
+            Earth to agree to sacrifice one apocalypse for the{" "}
+            <ParameterValue
+              className="font-black"
+              figures={2}
+              param={DFDA_QUEUE_CLEARANCE_YEARS}
+              presentation="inline"
+            />
+            -year disease-eradication timeline. It cannot be completed without
+            you.
           </PromoText>
         </PromoBody>
       </>

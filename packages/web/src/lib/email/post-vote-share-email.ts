@@ -36,7 +36,8 @@ interface PostVoteShareEmailInput {
 }
 
 export const POST_VOTE_SHARE_TEMPLATE_ID = "post-vote-share";
-export const POST_VOTE_SHARE_SUBJECT = "End war and disease";
+export const POST_VOTE_SHARE_SUBJECT =
+  "🎉 Congratulations! You've been promoted to Humanity Manager! 🥳";
 
 export const POST_VOTE_SHARE_PREVIEW: EmailPreview = {
   templateId: POST_VOTE_SHARE_TEMPLATE_ID,
