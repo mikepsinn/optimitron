@@ -14,12 +14,14 @@ import {
 // pulls each builder file's `*_PREVIEW` const into one iterable.
 //
 // Query params:
-//   ?raw=1   — bare HTML body (used by the Playwright screenshot spec).
-//   ?full=1  — wrap with metadata header (From/Subject/Reply-To/Trigger),
-//              substitute the unsub-URL placeholder, append the Wishonia
-//              signature (when not skipped), and tack on an unsubscribe
-//              footer. Used by `render-emails-to-markdown.ts`.
-//   default  — Gmail-mobile responsive wrapper around the bare body.
+//   default  — envelope (From/Subject/Reply-To/Trigger) + body + Wishonia
+//              signature + unsubscribe footer, wrapped in the Gmail-mobile
+//              responsive frame. The full human-review experience on mobile.
+//   ?raw=1   — bare HTML body only, no wrapper, no envelope. Used by the
+//              Playwright screenshot spec for visual-regression diffs.
+//   ?raw=1&full=1 — bare HTML with envelope + body + signature + unsub
+//              (no mobile wrapper). Used by `render-emails-to-markdown.ts`
+//              when generating committed `.email.md` snapshots.
 //
 // Gated to non-production: returns 404 on prod to avoid exposing email
 // internals + sample copy publicly.
@@ -82,7 +84,10 @@ export async function GET(
 
   const url = new URL(request.url);
   const wantsRaw = url.searchParams.get("raw") === "1";
-  const wantsFull = url.searchParams.get("full") === "1";
+  // Default to full (envelope + body) when no raw flag is set, so the
+  // no-params human-review URL shows the complete email. Tooling URLs
+  // (?raw=1 for screenshots, ?raw=1&full=1 for snapshots) are unchanged.
+  const wantsFull = url.searchParams.get("full") === "1" || !wantsRaw;
 
   const html = wantsFull
     ? await buildFullPreviewHtml(preview)
