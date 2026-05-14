@@ -76,10 +76,20 @@ export interface SyncManagedDataResult {
   iamOrganization: Awaited<ReturnType<typeof syncManagedIamOrganization>>;
 }
 
+async function timeStep<T>(label: string, fn: () => Promise<T>): Promise<T> {
+  const start = Date.now();
+  try {
+    return await fn();
+  } finally {
+    console.log(`[managed-data] ${label}: ${Date.now() - start}ms`);
+  }
+}
+
 export async function syncManagedData(
   prisma: PrismaClient,
   options: SyncManagedDataOptions,
 ): Promise<SyncManagedDataResult> {
+  const totalStart = Date.now();
   setManagedSeedDataClient(prisma);
 
   const referenceData = { synced: false, dryRun: !options.apply };
@@ -87,10 +97,10 @@ export async function syncManagedData(
   const treatyAccountabilityData = { synced: false, dryRun: !options.apply };
 
   if (options.apply) {
-    await syncManagedReferenceData();
+    await timeStep("reference-data", () => syncManagedReferenceData());
     referenceData.synced = true;
 
-    await syncManagedBootstrapData();
+    await timeStep("bootstrap-data", () => syncManagedBootstrapData());
     bootstrapData.synced = true;
   }
 
@@ -100,50 +110,68 @@ export async function syncManagedData(
     if (!options.apply) {
       createdByUserId = "managed-data-dry-run-user";
     } else {
-      const user = await ensureManagedDataSystemUser(
-        prisma as PrismaClient & ManagedTaskClient & ManagedIdentityClient,
-        options.now,
+      const user = await timeStep("system-user", () =>
+        ensureManagedDataSystemUser(
+          prisma as PrismaClient & ManagedTaskClient & ManagedIdentityClient,
+          options.now,
+        ),
       );
       createdByUserId = user.id;
     }
   }
 
   // Referendums first: tasks reference referendum slugs.
-  const referendums = await syncManagedReferendums(prisma, { apply: options.apply });
+  const referendums = await timeStep("referendums", () =>
+    syncManagedReferendums(prisma, { apply: options.apply }),
+  );
 
-  const humanityVGovernmentCase = await syncManagedHumanityVGovernmentCase(prisma, {
-    apply: options.apply,
-    createdByUserId,
-  });
+  const humanityVGovernmentCase = await timeStep("humanity-v-government", () =>
+    syncManagedHumanityVGovernmentCase(prisma, {
+      apply: options.apply,
+      createdByUserId,
+    }),
+  );
 
-  const tasks = await syncManagedTasks(prisma as PrismaClient & ManagedTaskClient, {
-    apply: options.apply,
-    collectionKey: OPTIMIZE_EARTH_TASK_TREE_COLLECTION_KEY,
-    createdByUserId,
-    now: options.now,
-    records: OPTIMIZE_EARTH_TASK_TREE,
-  });
+  const tasks = await timeStep("tasks", () =>
+    syncManagedTasks(prisma as PrismaClient & ManagedTaskClient, {
+      apply: options.apply,
+      collectionKey: OPTIMIZE_EARTH_TASK_TREE_COLLECTION_KEY,
+      createdByUserId,
+      now: options.now,
+      records: OPTIMIZE_EARTH_TASK_TREE,
+    }),
+  );
 
   if (options.apply) {
-    await syncManagedTreatyAccountabilityData();
+    await timeStep("treaty-accountability", () =>
+      syncManagedTreatyAccountabilityData(),
+    );
     treatyAccountabilityData.synced = true;
   }
 
-  const taskTriggers = await syncManagedTaskTriggers(prisma, {
-    apply: options.apply,
-    now: options.now,
-  });
+  const taskTriggers = await timeStep("task-triggers", () =>
+    syncManagedTaskTriggers(prisma, {
+      apply: options.apply,
+      now: options.now,
+    }),
+  );
 
   // Grandma Kay has FK on the treaty referendum + needs the Wishonia user.
-  const grandmaKay = await syncManagedGrandmaKay(prisma, { apply: options.apply });
+  const grandmaKay = await timeStep("grandma-kay", () =>
+    syncManagedGrandmaKay(prisma, { apply: options.apply }),
+  );
 
   // Demo user is independent.
-  const demoUser = await syncManagedDemoUser(prisma, { apply: options.apply });
+  const demoUser = await timeStep("demo-user", () =>
+    syncManagedDemoUser(prisma, { apply: options.apply }),
+  );
 
   // IAM is the campaign nonprofit org fixture + owner account.
-  const iamOrganization = await syncManagedIamOrganization(prisma, {
-    apply: options.apply,
-  });
+  const iamOrganization = await timeStep("iam-organization", () =>
+    syncManagedIamOrganization(prisma, { apply: options.apply }),
+  );
+
+  console.log(`[managed-data] TOTAL: ${Date.now() - totalStart}ms`);
 
   return {
     referenceData,
