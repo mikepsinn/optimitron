@@ -109,7 +109,7 @@ export function CampaignText({
       style={{
         color: muted ? colors.muted : colors.ink,
         fontSize: muted ? "13px" : "16px",
-        fontWeight: muted ? "400" : "700",
+        fontWeight: "700",
         lineHeight: muted ? "1.6" : "1.7",
         margin: "0 0 16px",
       }}

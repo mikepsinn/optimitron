@@ -40,8 +40,11 @@ const BASE = process.env.PREVIEW_BASE_URL ?? "http://127.0.0.1:3001";
 // production canonical so the snapshots match what ships.
 const CANONICAL_BASE = process.env.PREVIEW_CANONICAL_BASE_URL ??
   "https://warondisease.org";
+// Lookahead requires a URL boundary char (or end of string) after the
+// loopback origin so we don't partial-match longer hostnames like
+// `localhostfoo.example.com`.
 const LOOPBACK_ORIGIN_RX =
-  /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?/gi;
+  /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?(?=[/:?#"'\s)\\]]|$)/gi;
 
 function canonicalizeLoopbackUrls(body: string): string {
   return body.replace(LOOPBACK_ORIGIN_RX, CANONICAL_BASE);

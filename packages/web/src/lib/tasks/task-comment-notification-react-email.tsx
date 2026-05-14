@@ -184,7 +184,7 @@ function SenderSignatureBlock({ signature }: { signature: SenderSignature }) {
         style={{
           color: ink,
           fontSize: "14px",
-          fontWeight: "600",
+          fontWeight: "700",
           lineHeight: "1.4",
           margin: "8px 0 0",
         }}
