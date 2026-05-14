@@ -97,18 +97,14 @@ try {
 
   const matchedStr = [...new Set(matched)].slice(0, 3).join(" / ");
 
-  const msg = `[surprise-signal hook] The user's prompt contains a "this should be simpler" phrase: ${matchedStr}
+  const msg = `[surprise-signal hook] User's prompt contains a "this should be simpler" phrase: ${matchedStr}
 
-The user is pushing back on complexity. STOP and re-explore before responding — don't pattern-match to "build more."
+STOP and re-explore before responding — don't pattern-match to "build more."
 
-1. STOP whatever next step you had planned.
-2. Re-explore the existing system relevant to what the user is questioning. Specifically grep the deploy workflow, package.json scripts, existing functions in the area. Don't rely on session memory.
-3. **If the question is about UX / user journey / page copy / "what does X look like" / "what's on the page":** fetch the PR's PREVIEW DEPLOY via the Vercel MCP \`web_fetch_vercel_url\` (or curl with \`_vercel_share\` token). NOT production (production may be stale relative to unmerged PRs). NOT inferring from \`page.tsx\` source (server/client boundaries + site variants + DB content cause drift).
-4. State explicitly in chat what you found that already handles (or doesn't handle) the user's concern.
-5. **Find the BEST fix, not the smallest.** "Best" = solves the root cause without creating maintenance debt. Small is preferred only when it's also correct. A one-line workaround that masks a real bug is NOT the right move; if the smallest viable change is a band-aid, name that openly and propose the real fix.
-6. If after re-exploring you genuinely need a non-trivial fix, say so AND quote the specific evidence from the deploy/config files that justifies it.
-
-Don't outline a migration plan or add new abstractions just to feel productive. Acknowledge + re-explore + propose the best fix.`;
+1. STOP the next step you had planned.
+2. Re-explore the existing system relevant to the question (grep deploy workflow, package.json scripts, existing functions). Don't rely on session memory. If the question is about UX / page copy / "what does X look like," fetch the PR's PREVIEW DEPLOY (Vercel MCP \`web_fetch_vercel_url\` or curl with \`_vercel_share\`), NOT production or page.tsx source.
+3. State in chat what you found that already handles (or doesn't handle) the user's concern.
+4. **Find the BEST fix, not the smallest.** A one-line workaround masking a real bug is not the right move; if the smallest viable change is a band-aid, name that openly and propose the real fix.`;
 
   process.stdout.write(msg + "\n");
   process.exit(0);

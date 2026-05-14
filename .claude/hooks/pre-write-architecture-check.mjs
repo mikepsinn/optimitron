@@ -60,24 +60,16 @@ try {
 
   // --- Emit checklist ----------------------------------------------------
   const relPath = filePath.replace(/.*[/\\]packages[/\\]/, "packages/");
-  const msg = `[pre-write architecture check] You are about to CREATE a new file:
+  const msg = `[pre-write architecture check] About to CREATE a new file:
   ${relPath}
 
-This hook fires for new files in architectural paths (packages/*/src/, prisma/, scripts/, .github/workflows/, .claude/agents/). The user has called out the pattern — I default to creating new files / abstractions when a one-line change in a config or a delegation to an existing function would do the job. Before writing this file, answer in chat:
+Hook fires for new files in architectural paths (packages/*/src/, prisma/, scripts/, .github/workflows/, .claude/agents/). I default to new files / abstractions when a one-line change in config or a delegation to an existing function would do. Answer in chat before retrying:
 
-1. **What is the actual user-facing problem?** Name it in one sentence.
+1. **What is the actual user-facing problem?** One sentence.
+2. **What does the existing system already do for this area?** Grep at least one of: .github/workflows/ci.yml, package.json scripts, existing functions in the same dir, the relevant TODO.md section.
+3. **What is the BEST fix?** Solves the root cause without new maintenance debt. A one-line workaround masking a real bug is NOT the right move — name that openly if the smallest viable change is a band-aid, then propose the real fix. If a new file legitimately is the best fix, justify why.
 
-2. **What does the existing system already do for this area?** Specifically grep / Read at least one of:
-   - The deploy workflow (.github/workflows/ci.yml) — what does production currently run?
-   - package.json scripts — is there an existing command that does the work?
-   - Existing functions in the same area — is there already an idempotent version?
-   - The relevant section of TODO.md — has a decision been recorded?
-
-3. **What is the BEST fix?** "Best" = solves the root cause without creating new maintenance debt. Small is preferred only when it's also correct — a one-line workaround that masks a real bug is NOT the right move. If the best fix legitimately needs a new file, justify why; if a one-line config / package.json / existing-function delegation actually solves it, prefer that.
-
-4. **Has the user signaled this should be simple?** If YES, re-explore: are you reaching for an abstraction the existing system already provides? But "simple" never means "shippable workaround that hides a real bug" — if the smallest viable change is a band-aid, name that openly and propose the real fix.
-
-After answering these in chat, retry the Write. The hook will allow it within 5 minutes once you've responded.`;
+Retry within 5 minutes after answering and the hook allows it through.`;
 
   process.stderr.write(msg + "\n");
   process.exit(2);
