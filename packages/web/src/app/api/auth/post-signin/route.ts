@@ -41,10 +41,22 @@ function sanitizeLandingUrl(raw: string): string | null {
     : sanitized;
 }
 
+async function readPostSigninBody(request: Request): Promise<Record<string, unknown>> {
+  const text = await request.text();
+  if (!text.trim()) {
+    return {};
+  }
+
+  const parsed = JSON.parse(text);
+  return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+    ? (parsed as Record<string, unknown>)
+    : {};
+}
+
 export async function POST(request: Request) {
   try {
     const { userId } = await requireAuth();
-    const body = await request.json();
+    const body = await readPostSigninBody(request);
 
     const result = await applyPostSigninSync({
       userId,

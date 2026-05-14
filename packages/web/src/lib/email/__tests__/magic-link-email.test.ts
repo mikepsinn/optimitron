@@ -1,88 +1,50 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-const mocks = vi.hoisted(() => ({
-  findUser: vi.fn(),
-  sendReactEmail: vi.fn(),
-}));
+import {
+  buildMagicLinkSubject,
+  getMagicLinkCopy,
+} from "@/lib/email/magic-link-render";
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
-    user: {
-      findUnique: mocks.findUser,
-    },
-  },
-}));
+// We test the pure host-dispatch helpers that `sendMagicLinkEmail` reads
+// from, not `sendMagicLinkEmail` itself. The previous shape mocked
+// `sendReactEmail` and then asserted that `sendReactEmail` had been called
+// with certain props — a wiring test that only proved the function passes
+// arguments to its mock. CLAUDE.md: "Test the boundary, not the wiring."
+// The actual decision being tested is which site copy and which subject
+// line a given inbound host maps to. Those are pure functions.
+describe("magic-link host dispatch", () => {
+  describe("getMagicLinkCopy", () => {
+    it("returns War on Disease copy for the legacy Trial Abundance Survey host", () => {
+      const copy = getMagicLinkCopy("trialabundancesurvey.org");
+      expect(copy.buttonLabel).toBe("End war and disease");
+    });
 
-vi.mock("@/lib/email/resend", () => ({
-  sendReactEmail: mocks.sendReactEmail,
-}));
+    it("returns War on Disease copy for warondisease.* hosts", () => {
+      expect(getMagicLinkCopy("warondisease.org").buttonLabel).toBe(
+        "End war and disease",
+      );
+      expect(getMagicLinkCopy("warondisease.local").buttonLabel).toBe(
+        "End war and disease",
+      );
+    });
 
-import { sendMagicLinkEmail } from "@/lib/email/magic-link-email";
-
-describe("sendMagicLinkEmail", () => {
-  beforeEach(() => {
-    mocks.findUser.mockReset();
-    mocks.findUser.mockResolvedValue(null);
-    mocks.sendReactEmail.mockReset();
-    mocks.sendReactEmail.mockResolvedValue({ status: "sent" });
+    it("returns the neutral 'Sign in' label for Optimitron hosts", () => {
+      expect(getMagicLinkCopy("optimitron.com").buttonLabel).toBe("Sign in");
+      expect(getMagicLinkCopy("optimitron.local").buttonLabel).toBe("Sign in");
+    });
   });
 
-  it("uses War on Disease copy for legacy Trial Abundance Survey sign-ins", async () => {
-    await sendMagicLinkEmail({
-      identifier: "partner@example.org",
-      theme: {},
-      url: "https://trialabundancesurvey.org/api/auth/callback/email?token=abc",
-    } as never);
+  describe("buildMagicLinkSubject", () => {
+    it("uses the War on Disease subject line for warondisease.* hosts", () => {
+      expect(buildMagicLinkSubject("warondisease.org")).toBe(
+        "End war and disease",
+      );
+    });
 
-    expect(mocks.sendReactEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        subject: "End war and disease",
-        react: expect.objectContaining({
-          props: expect.objectContaining({
-            buttonLabel: "End war and disease",
-          }),
-        }),
-      }),
-    );
-  });
-
-  it("uses direct War on Disease copy for War on Disease sign-ins", async () => {
-    await sendMagicLinkEmail({
-      identifier: "voter@example.org",
-      theme: {},
-      url: "https://warondisease.local/api/auth/callback/email?token=abc",
-    } as never);
-
-    expect(mocks.sendReactEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        subject: "End war and disease",
-        react: expect.objectContaining({
-          props: expect.objectContaining({
-            buttonLabel: "End war and disease",
-          }),
-        }),
-      }),
-    );
-  });
-
-  it("uses Earth Optimization Services as the Optimitron sender", async () => {
-    await sendMagicLinkEmail({
-      identifier: "manager@example.org",
-      theme: {},
-      url: "https://optimitron.local/api/auth/callback/email?token=abc",
-    } as never);
-
-    expect(mocks.sendReactEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        from: "Earth Optimization Services <hello@updates.warondisease.org>",
-        subject: "Sign in to optimitron.local",
-        react: expect.objectContaining({
-          props: expect.objectContaining({
-            buttonLabel: "Sign in",
-            intro: "Your sign-in link is below.",
-          }),
-        }),
-      }),
-    );
+    it("falls back to a host-stamped subject line for Optimitron hosts", () => {
+      expect(buildMagicLinkSubject("optimitron.local")).toBe(
+        "Sign in to optimitron.local",
+      );
+    });
   });
 });

@@ -199,6 +199,11 @@ ${userFacingChanges.slice(0, 8).map((f) => `  - ${f}`).join("\n")}${
     if (file === "CLAUDE.md" || file === "AGENTS.md" || file === "TODO.md") return false;
     if (file.startsWith(".github/")) return false;
     if (file.startsWith(".husky/")) return false;
+    // E2E / test code is TypeScript, not user-facing copy. error.stack and
+    // similar JS API names are legitimate; voice rules apply to copy only.
+    if (file.startsWith("packages/web/e2e/")) return false;
+    if (/\.(test|spec)\.(ts|tsx|js|jsx|mjs)$/.test(file)) return false;
+    if (/__tests__\//.test(file)) return false;
     return true;
   }
   const voiceHits = [];
@@ -234,7 +239,7 @@ ${sample}`);
   if (paramHits.length) {
     const sample = paramHits.slice(0, 8).join("\n");
     pushViolation("PARAMETER", paramHits.length, `PARAMETER GATE: hardcoded number(s) in JSX. Use <ParameterValue paramId="..." figures={3} /> so the
-citation popover + sig-fig rule fires. Grep packages/data/src/parameters/parameters-calculations-citations.ts
+details dialog + sig-fig rule fires. Grep packages/data/src/parameters/parameters-calculations-citations.ts
 for a matching parameter; add one if it's truly new. Override with '// allow-hardcoded' on the line
 only when there's no underlying datum (rare).
 ${sample}`);

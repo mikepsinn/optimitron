@@ -1,7 +1,7 @@
 import React from "react";
 import { SHARING_TIME_MINUTES } from "@optimitron/data/parameters";
 import { EMAIL_STYLES } from "@/components/adaptive/email-styles";
-import { ParameterValue } from "@/components/shared/ParameterValue";
+import { ParameterValueEmail as ParameterValue } from "@/components/shared/ParameterValue.email";
 import { buildShareMessage, getShareMessageParts } from "@/lib/share-message";
 import {
   FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM,

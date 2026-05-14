@@ -23,6 +23,20 @@ export const runtime = "nodejs";
 
 const SETTINGS_HREF = "/settings#email-preferences";
 
+// Treaty palette declared inline because this route returns standalone
+// `text/html` that doesn't share Next.js' globals.css scope. CLAUDE.md bans
+// raw hex literals in browser-rendered surfaces; defining the variables
+// once at `:root` lets the rest of the doc reference them through
+// `var(--treaty-*)`.
+const TREATY_STYLE_BLOCK = `<style>
+  :root {
+    --treaty-paper: #ffffff;
+    --treaty-ink: #000000;
+    --treaty-page-bg: #f4f4f5;
+    --treaty-error-ink: #991b1b;
+  }
+</style>`;
+
 interface ParsedRequest {
   userId: string;
   scope: EmailScope;
@@ -120,9 +134,10 @@ function renderErrorHtml(message: string): string {
 <meta charset="utf-8" />
 <title>Unsubscribe — Optimitron</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+${TREATY_STYLE_BLOCK}
 </head>
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;color:#111827;">
-  <main style="max-width:560px;margin:60px auto;padding:32px 20px;background:#ffffff;border:3px solid #111827;">
+<body style="margin:0;padding:0;background:var(--treaty-page-bg);font-family:Arial,sans-serif;color:var(--treaty-ink);">
+  <main style="max-width:560px;margin:60px auto;padding:32px 20px;background:var(--treaty-paper);border:3px solid var(--treaty-ink);">
     <h1 style="margin:0 0 12px;font-size:22px;font-weight:900;text-transform:uppercase;">Unsubscribe failed</h1>
     <p style="margin:0;font-size:15px;line-height:1.5;">${escapeHtml(message)}</p>
   </main>
@@ -152,22 +167,23 @@ function renderPromptHtml(input: {
 <meta charset="utf-8" />
 <title>Unsubscribe — Optimitron</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+${TREATY_STYLE_BLOCK}
 </head>
-<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,sans-serif;color:#111827;">
-  <main style="max-width:560px;margin:60px auto;padding:32px 24px;background:#ffffff;border:2px solid #111827;">
+<body style="margin:0;padding:0;background:var(--treaty-paper);font-family:Arial,sans-serif;color:var(--treaty-ink);">
+  <main style="max-width:560px;margin:60px auto;padding:32px 24px;background:var(--treaty-paper);border:2px solid var(--treaty-ink);">
     <h1 style="margin:0 0 12px;font-size:24px;font-weight:900;line-height:1.1;">${escapeHtml(headline)}</h1>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">
       This changes the <strong>${escapeHtml(scopeLabel)}</strong> email setting for the human who received the email. If the email was forwarded to you, this is not your switch.
     </p>
-    ${input.error ? `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;font-weight:700;color:#991b1b;">${escapeHtml(input.error)}</p>` : ""}
+    ${input.error ? `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;font-weight:700;color:var(--treaty-error-ink);">${escapeHtml(input.error)}</p>` : ""}
     <form method="POST" action="${escapeHtml(formAction)}" style="margin:0 0 16px;">
       <input type="hidden" name="action" value="${input.action}" />
       <label for="confirmEmail" style="display:block;margin:0 0 8px;font-size:13px;line-height:1.4;font-weight:900;text-transform:uppercase;letter-spacing:.08em;">Recipient email</label>
-      <input id="confirmEmail" name="confirmEmail" type="email" autocomplete="email" required placeholder="name@example.com" style="display:block;width:100%;box-sizing:border-box;margin:0 0 16px;padding:12px 14px;border:2px solid #111827;font-size:16px;line-height:1.4;color:#111827;background:#ffffff;" />
-      <button type="submit" style="cursor:pointer;display:inline-block;background:#111827;color:#ffffff;padding:12px 20px;text-decoration:none;font-weight:900;border:2px solid #111827;font-size:14px;letter-spacing:.05em;text-transform:uppercase;">${escapeHtml(button)}</button>
+      <input id="confirmEmail" name="confirmEmail" type="email" autocomplete="email" required placeholder="name@example.com" style="display:block;width:100%;box-sizing:border-box;margin:0 0 16px;padding:12px 14px;border:2px solid var(--treaty-ink);font-size:16px;line-height:1.4;color:var(--treaty-ink);background:var(--treaty-paper);" />
+      <button type="submit" style="cursor:pointer;display:inline-block;background:var(--treaty-ink);color:var(--treaty-paper);padding:12px 20px;text-decoration:none;font-weight:900;border:2px solid var(--treaty-ink);font-size:14px;letter-spacing:.05em;text-transform:uppercase;">${escapeHtml(button)}</button>
     </form>
     <p style="margin:0;font-size:12px;line-height:1.5;">
-      <a href="${SETTINGS_HREF}" style="color:#111827;font-weight:700;">Manage all email preferences</a>
+      <a href="${SETTINGS_HREF}" style="color:var(--treaty-ink);font-weight:700;">Manage all email preferences</a>
     </p>
   </main>
 </body>
@@ -200,13 +216,14 @@ function renderConfirmationHtml(input: {
 <meta charset="utf-8" />
 <title>Unsubscribe — Optimitron</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+${TREATY_STYLE_BLOCK}
 </head>
-<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,sans-serif;color:#111827;">
-  <main style="max-width:560px;margin:60px auto;padding:32px 24px;background:#ffffff;border:2px solid #111827;">
+<body style="margin:0;padding:0;background:var(--treaty-paper);font-family:Arial,sans-serif;color:var(--treaty-ink);">
+  <main style="max-width:560px;margin:60px auto;padding:32px 24px;background:var(--treaty-paper);border:2px solid var(--treaty-ink);">
     <h1 style="margin:0 0 12px;font-size:24px;font-weight:900;text-transform:uppercase;line-height:1.1;">${escapeHtml(headline)}</h1>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.5;">${body}</p>
     <p style="margin:0;font-size:12px;line-height:1.5;">
-      <a href="${SETTINGS_HREF}" style="color:#111827;font-weight:700;">Manage all email preferences</a>
+      <a href="${SETTINGS_HREF}" style="color:var(--treaty-ink);font-weight:700;">Manage all email preferences</a>
     </p>
   </main>
 </body>

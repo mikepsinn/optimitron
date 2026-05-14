@@ -11,13 +11,15 @@ export type VisualRoute = {
   openMenu?: boolean;
   path: string;
   required: boolean;
+  requiredSelector?: string;
   requiredText?: RegExp;
 };
 
-const PRESIDENT_TASK_LIST_TEXT = /employees have overdue tasks/i;
+const PRESIDENT_TASK_LIST_SELECTOR =
+  '[data-visual-section="president-task-list"]';
 
-const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
-  [ROUTES.employees, PRESIDENT_TASK_LIST_TEXT],
+const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
+  [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
 ]);
 
 const SPECIAL_STATE_ROUTES: VisualRoute[] = [
@@ -54,7 +56,7 @@ const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = getRouteReviewSpecs("screenshot"
     name,
     path,
     required: true,
-    requiredText: REQUIRED_TEXT_BY_PATH.get(path),
+    requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
   }));
 
 const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = getRouteReviewSpecs(
@@ -66,7 +68,7 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = getRouteReviewSpecs(
     path,
     required: true,
     authenticated: true,
-    requiredText: REQUIRED_TEXT_BY_PATH.get(path),
+    requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
   }));
 
 export const VISUAL_ROUTES: VisualRoute[] = dedupeRoutes([

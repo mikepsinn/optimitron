@@ -318,12 +318,12 @@ async function signInUserInBrowser(page: Page, credentials: Required<Pick<TestUs
   return Boolean(session.json?.user?.id);
 }
 
-function renderEmailPreviewDocument(input: {
+async function renderEmailPreviewDocument(input: {
   host: string;
   label: string;
   url: string;
 }) {
-  const html = buildMagicLinkHtml(input.url, input.host, {});
+  const html = await buildMagicLinkHtml(input.url, input.host, {});
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -353,12 +353,15 @@ async function captureEmailPreview(
 ) {
   const magicLinkUrl = `https://${outcome.variant.host}/api/auth/callback/email?token=preview-${encodeURIComponent(user.email)}`;
   await page.setContent(
-    renderEmailPreviewDocument({
+    await renderEmailPreviewDocument({
       host: outcome.variant.host,
       label: outcome.variant.label,
       url: magicLinkUrl,
     }),
     { waitUntil: "domcontentloaded" },
+  );
+  await expect(page.getByTestId("magic-link-email-preview")).toContainText(
+    "Your sign-in link is below.",
   );
   await captureStep(outcome, dir, stepState, "magic-link-email", (filePath) =>
     captureElement(page.getByTestId("magic-link-email-preview"), filePath),

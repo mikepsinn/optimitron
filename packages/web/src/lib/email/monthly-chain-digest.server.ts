@@ -212,7 +212,6 @@ export async function publishMonthlyChainDigest(input?: {
               person: { select: { displayName: true } },
               user: {
                 select: {
-                  email: true,
                   person: { select: { displayName: true } },
                 },
               },
@@ -221,10 +220,13 @@ export async function publishMonthlyChainDigest(input?: {
           .then((votes): MonthlyChainDigestPerson[] =>
             votes.map((vote) => ({
               completedAt: vote.createdAt,
+              // CLAUDE.md Display Identity: read displayName from Person only.
+              // The previous chain leaked the referred user's auth email to
+              // the referrer when no Person displayName was set; we use the
+              // generic "Employee" placeholder instead.
               displayName:
-                vote.person.displayName ||
-                vote.user.person?.displayName ||
-                vote.user.email ||
+                vote.person.displayName?.trim() ||
+                vote.user.person?.displayName?.trim() ||
                 "Employee",
             })),
           ),

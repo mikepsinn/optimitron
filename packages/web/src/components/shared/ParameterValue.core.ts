@@ -17,12 +17,12 @@ export interface ParameterValueProps {
   display?: "auto" | "integer" | "withUnit";
   /** Significant figures (default 3) */
   figures?: number;
-  /** Show popover with metadata on hover (default: true) */
-  showPopover?: boolean;
+  /** Web presentation (default "interactive"). Email always stays link-safe. */
+  presentation?: "interactive" | "inline";
   /** Additional CSS classes for the value */
   className?: string;
   /**
-   * Override the rendered text (popover metadata still uses `param`). Useful
+   * Override the rendered text (metadata details still use `param`). Useful
    * when the displayed value is derived from `param` but needs custom
    * formatting the auto-formatter can't express — e.g., a percentage
    * computed from a ratio with a fixed decimal count.

@@ -69,4 +69,33 @@ describe("post-signin auth route", () => {
       userUpdated: true,
     });
   });
+
+  it("treats an authenticated empty request body as no post-sign-in context", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.applyPostSigninSync.mockResolvedValue({
+      referralRecorded: false,
+      userUpdated: false,
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/auth/post-signin", {
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.applyPostSigninSync).toHaveBeenCalledWith({
+      userId: "user_1",
+      name: null,
+      newsletterSubscribed: undefined,
+      referralCode: null,
+      shareAttemptId: null,
+      signupLandingUrl: null,
+    });
+    await expect(response.json()).resolves.toEqual({
+      success: true,
+      referralRecorded: false,
+      userUpdated: false,
+    });
+  });
 });
