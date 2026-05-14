@@ -160,6 +160,16 @@ Do not let lower items crowd out higher ones.
   supporter pages can be indexed.
 - Keep neutral partner/embed copy where full Wishonia voice would make adoption
   harder. Partner-safe is not the same as bland.
+- Adopt the "Authorized Earth Optimization Services Provider" framing for
+  partner orgs in campaign-facing copy. Extends the corporate-promotion voice
+  from the post-vote-share email: voters are Humanity Managers at Earth
+  Optimization Services LLC; partner orgs are Authorized Earth Optimization
+  Services Providers, each with a vendor-style certification badge they can
+  display. Update `/endorse` to register orgs under this category. Per the
+  neutral-partner-copy note above: keep the application form itself
+  professional enough not to scare off serious nonprofits — AEOSP framing
+  lives in campaign-facing pages, shared snippets, and the badge artifact,
+  not the onboarding form.
 
 ## P1 - Plaintiffs and Court Framing
 
@@ -202,7 +212,7 @@ Do not let lower items crowd out higher ones.
   `/earth-optimization-day`, countdown/RSVP, existing verdict/treaty widgets, and
   `isEarthOptimizationDayWindow()` before seasonal CTA swaps.
 
-## P1 - Pressure Leaders and Treaty Signers
+## P1 - Remind Leaders and Treaty Signers
 
 - Keep `/employees` as the president-accountability surface for now. Consider
   `/presidents` rename later if it improves comprehension.
