@@ -146,17 +146,7 @@ try {
       pushViolation(
         "QA_PASSED",
         userFacingChanges.length,
-        `QA-PASSED GATE: commit touches user-facing files but the message lacks a qa-passed promise.
-
-Dispatch a Codex preflight agent first. State the goal in plain English: validate this changeset, decide what's relevant to regen and test, run it, review the generated artifacts, fix any problems, iterate until clean. Don't enumerate file globs or test commands — Codex decides what's relevant from the diff itself.
-
-When Codex returns clean, add a line to your commit message like:
-  qa-passed: <one-line summary of what Codex found and fixed>
-
-If the touched files are genuinely not user-facing (false positive), say so explicitly:
-  qa-passed: skipped — <reason>
-
-Files in this changeset that triggered the gate:
+        `QA-PASSED GATE: commit touches user-facing files but the message lacks a \`qa-passed:\` line. Dispatch a Codex preflight per .claude/codex-delegation.md ("Pre-commit preflight" section), then add \`qa-passed: <summary>\` or \`qa-passed: skipped — <reason>\` to the message.
 ${userFacingChanges.slice(0, 8).map((f) => `  - ${f}`).join("\n")}${
           userFacingChanges.length > 8 ? `\n  ... and ${userFacingChanges.length - 8} more` : ""
         }`,
@@ -339,22 +329,7 @@ ${sample}`);
   ]);
   if (copyChanges.length) {
     pushViolation("VONNEGUT", copyChanges.length, formatList(
-      `BLATHER REVIEW: page.tsx or page.logged-out.md changed.
-
-Run gstack's chain first: \`/design-review\` (auto-fixes visual slop) and \`/qa\`
-(auto-fixes functional bugs). Then run \`/qa-editorial\` for the project-specific
-layer — fires voice-critic + cold-stranger-ux (+ test-auditor if tests changed)
-in parallel and returns one consolidated punch list with a SHIP / NEEDS FIXES
-verdict. No need to remember which critic to invoke.
-
-If you want to spot-check manually first, walk every line and ask:
-  1. Same prefix repeated on N adjacent list items? → fold into header or drop.
-  2. Tautological hint under a section heading? → delete.
-  3. Count above a heading + grid that says the same thing? → delete.
-  4. Stripe-keynote sentence ("primitive that...", "off-ramp")? → rewrite as plain declarative.
-  5. Adjective stack with no number? → replace with a number or delete.
-
-But /qa-editorial + gstack's chain make this automatic. Use them.`,
+      "BLATHER REVIEW: page.tsx or page.logged-out.md changed. Run `/qa-editorial` (fires voice-critic + cold-stranger-ux + test-auditor in parallel; returns one SHIP / NEEDS FIXES punch list).",
       copyChanges,
       "",
     ), { blocking: false });
@@ -373,9 +348,7 @@ can't, delete it. No tests for symmetry, documentation, or to silence a bot.`,
   // --- Check 7d: reuse / no-duplication gate ------------------------------
   if (newReusableFiles.length) {
     pushViolation("REUSE", newReusableFiles.length, formatList(
-      `REUSE GATE: new file(s) under components/ or lib/. Before commit: grep for an existing component/
-function that does the same job. Don't duplicate. Don't add an abstraction nobody extends yet.
-Recent miss: org-context-token (full HMAC system for no real threat — should have trusted the URL slug).`,
+      "REUSE GATE: new file under components/ or lib/. Grep for an existing component/function that does the same job before committing. Don't add an abstraction nobody extends yet.",
       newReusableFiles,
       "",
     ), { blocking: false });
