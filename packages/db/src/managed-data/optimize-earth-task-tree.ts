@@ -57,7 +57,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     description: [
       "The root task for civilization: increase median healthy life years and median after-tax income by forcing public resources toward welfare-maximizing work.",
       "",
-      "The current bottleneck is ending war and disease. Everything below this task should either help humans vote, recruit two more humans, register plaintiffs, summon jurors, pressure leaders, or make the 1% Treaty credible enough to pass.",
+      "Current cost of delay: humanity is losing about $101 trillion per year to the [Political Dysfunction Tax](https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html) — the gap between realized welfare and what a non-dysfunctional government would produce. That is the burn rate every child task below this one is fighting against.",
+      "",
+      "The current bottleneck is ending war and disease. Everything below this task should either help humans vote, recruit two more humans, register plaintiffs, summon jurors, remind leaders, or make the 1% Treaty credible enough to pass.",
     ].join("\n"),
     impactStatement:
       "Every task below exists to move humanity from delay to welfare.",
