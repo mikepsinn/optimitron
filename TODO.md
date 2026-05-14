@@ -47,6 +47,34 @@ Do not let lower items crowd out higher ones.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
 
+## Active Handoff - 2026-05-13
+
+- Codex hook cleanup: Mike prefers deleting repo-local `.codex` hooks instead of
+  condensing them. The intended change is to remove `.codex/hooks.json` and
+  `.codex/hooks/*`; keep `.codex/agents/*` and `.codex/config.toml` MCP config.
+  The hooks were mostly Claude-Code guardrails and add friction/background risk
+  for Codex.
+- Adaptive email rendering: the bug was a process-wide `renderSurface` global
+  leaking between async email renders and normal web renders. The safer shape is
+  React context via `EmailRenderSurface`, plus a regression test proving an async
+  email render does not affect a web render. Watch the `"use client"` boundary:
+  if `components/adaptive/index.tsx` or `ParameterValue.tsx` must be client-side
+  for web pages, also verify `/dev/email/*` still renders server-side.
+- Verification already run for the adaptive/email fix: `pnpm --filter
+  @optimitron/web exec tsc --noEmit`; focused Vitest suite covering adaptive
+  components, `ParameterValue.email`, share footer, monthly digest, post-vote
+  share email, first-conversion email, magic-link host dispatch, and share
+  message; direct `renderPreviewBodyHtml` for all six email previews. The dev
+  `/dev/email/*?raw=1&full=1` route timed out while `copy:preview` had the Next
+  dev server overloaded, so re-check it after the server is calm/restarted.
+- Parallel-agent boundary: `packages/web/src/app/employees/page.tsx`,
+  `packages/web/src/components/tasks/PresidentManagementSystemSection.tsx`, and
+  `packages/web/src/lib/tasks/overdue.ts` were already staged by another agent.
+  Do not unstage, revert, or fold them into unrelated commits.
+- Process note: another `copy:preview` run drove the Next dev child above 10 GB
+  private memory. I stopped only the `copy:preview` worker chain; the shared
+  `3001` dev server stayed up and root responded afterward.
+
 ## P0 - Increase Treaty Vote Conversion
 
 ### Keep `/treaty` boring and fast

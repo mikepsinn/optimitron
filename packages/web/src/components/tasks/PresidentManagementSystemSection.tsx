@@ -56,12 +56,14 @@ export function PresidentManagementSystemSection({
       {children}
 
       {treatyProgram ? (
-        <ProgramTaskSection
-          task={treatyProgram}
-          subtasks={signerTasks}
-          subtasksTitle={subtasksTitle}
-          pageSize={pageSize}
-        />
+        <div data-visual-section="president-task-list">
+          <ProgramTaskSection
+            task={treatyProgram}
+            subtasks={signerTasks}
+            subtasksTitle={subtasksTitle}
+            pageSize={pageSize}
+          />
+        </div>
       ) : null}
     </section>
   );

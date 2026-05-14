@@ -4,7 +4,7 @@ import {
   CampaignEmailShell,
   CampaignText,
 } from "@/lib/email/react-email-components";
-import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion";
+import { HumanityManagerPromotionEmail } from "@/lib/humanity-manager-promotion.email";
 import { EmailShareMessage } from "@/lib/email/share-footer";
 
 export function PostVoteShareReactEmail({
@@ -14,7 +14,7 @@ export function PostVoteShareReactEmail({
 }) {
   return (
     <CampaignEmailShell preview="You have been promoted to Humanity Manager.">
-      <HumanityManagerPromotion target="email" />
+      <HumanityManagerPromotionEmail />
       <CampaignText>
         <EmailShareMessage referralUrl={referralUrl} />
       </CampaignText>

@@ -5,7 +5,7 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { renderReactEmailHtml } from "@/lib/email/render-react-email";
 
 describe("ParameterValue email rendering", () => {
-  it("uses the same component API but renders an email-safe manual link", async () => {
+  it("uses the adaptive parameter API but renders an email-safe manual link", async () => {
     const html = await renderReactEmailHtml(
       <p>
         Please take{" "}

@@ -16,9 +16,15 @@ function ok(message = "ok") {
 
 function checkCommand(command) {
   const text = command.trim();
-  const safeDelete = /\b(remove-item|rm)\b[\s\S]*(node_modules|\.next|dist|build|\.turbo|coverage|__pycache__|\.cache)\b/i;
-  if (safeDelete.test(text)) ok("safe cleanup command");
 
+  // CodeRabbit/Claude review on PR #79 flagged that `safeDelete` previously
+  // ran before the blocked list, so a compound command like
+  // `rm -rf node_modules && rm -rf /` would `ok()` out on the first clause
+  // and the second clause's recursive-rm / DROP TABLE / force-push never got
+  // inspected. We now check blocked patterns FIRST. The build-artifact
+  // shortcut still exists but is gated on the WHOLE command containing no
+  // shell-separator-style continuations, so it cannot be used as a prefix to
+  // smuggle a second clause through.
   const blocked = [
     [/\brm\s+(-[^\s]*r[^\s]*|-.*recursive)/i, "recursive delete"],
     [/\bRemove-Item\b[\s\S]*\b-Recurse\b/i, "recursive delete"],
@@ -31,11 +37,22 @@ function checkCommand(command) {
     [/\bdocker\s+(rm\s+-f|system\s+prune)\b/i, "destructive docker cleanup"],
   ];
 
+  const hasShellSeparator = /(?:&&|\|\||;|\|(?!\|))/.test(text);
+  const safeDelete = /\b(remove-item|rm)\b[\s\S]*(node_modules|\.next|dist|build|\.turbo|coverage|__pycache__|\.cache)\b/i;
+  const isSafeCleanupSingleClause =
+    safeDelete.test(text) && !hasShellSeparator;
+
   for (const [pattern, label] of blocked) {
     if (pattern.test(text)) {
+      // Carve-out: standalone "rm -rf node_modules" stays allowed. Compound
+      // commands containing && / || / ; / | are never carved out, even when
+      // their first clause looks safe.
+      if (label === "recursive delete" && isSafeCleanupSingleClause) continue;
       fail(`Safety gate: ${label}. Get explicit human approval before running:\n${text}`);
     }
   }
+
+  if (isSafeCleanupSingleClause) ok("safe cleanup command");
   ok("command allowed");
 }
 

@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Copy, Mail, Share2, Smartphone } from "lucide-react";
 import { FaFacebookF, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
-import { ParameterValue } from "@/components/shared/ParameterValue";
-import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion";
+import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion.web";
 import { buildShareMessage } from "@/lib/share-message";
 import { cn } from "@/lib/utils";
 import { defaultButtonClassName } from "@/components/ui/default-button";
@@ -265,12 +264,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
 
   return (
     <section className="border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8">
-      <HumanityManagerPromotion
-        target="browser"
-        renderParam={(param, figures) => (
-          <ParameterValue className="font-black" figures={figures} param={param} />
-        )}
-      />
+      <HumanityManagerPromotion />
 
       <label className="mt-6 block">
         <span className="sr-only">Share message</span>

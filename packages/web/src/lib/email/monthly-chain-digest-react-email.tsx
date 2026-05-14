@@ -10,7 +10,7 @@ import {
   CampaignShareFooter,
   CampaignText,
 } from "@/lib/email/react-email-components";
-import { ParameterValue } from "@/components/shared/ParameterValue";
+import { ParameterValueEmail as ParameterValue } from "@/components/shared/ParameterValue.email";
 import { SHARING_TIME_MINUTES } from "@optimitron/data/parameters";
 import { ReferralChainMath } from "@/lib/email/share-footer";
 import type {

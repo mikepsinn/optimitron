@@ -25,7 +25,7 @@ If the answer to all five is yes, you have no violations to report. Say so.
 Each finding is a hypothesis until you've verified it. **Before claiming a violation, read the source of whatever you're judging:**
 
 - "Number isn't using `<ParameterValue>`" → grep `parameters-calculations-citations.ts` to confirm a matching parameter exists. If no parameter exists, the fix is to add one, not to wrap nothing.
-- "`<ParameterValue valueOverride="...">` defeats the component" → read `components/shared/ParameterValue.tsx` first. `valueOverride` is the INTENDED API for attaching the citation popover while controlling display text. Not a violation.
+- "`<ParameterValue valueOverride="...">` defeats the component" → read `components/shared/ParameterValue.tsx` first. `valueOverride` is the INTENDED API for attaching the details dialog while controlling display text. Not a violation.
 - "Duplicate component" → grep for the existing component, confirm it has the same shape. Different responsibilities ≠ duplicate.
 - "Banned phrase" → confirm the phrase actually appears in user-facing rendered text (not a comment, not a test fixture, not a variable name).
 

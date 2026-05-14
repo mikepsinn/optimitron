@@ -1,5 +1,3 @@
-"use client";
-
 interface CivilizationOsLoaderProps {
   message?: string;
   submessage?: string;
@@ -60,7 +58,7 @@ export function CivilizationOsLoaderMark({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .earth-os-progress {
           animation: earth-os-progress 1.4s steps(7, end) infinite;
           transform-origin: left;
@@ -137,7 +135,7 @@ export function CivilizationOsSpinner({ message, size = 'md' }: CivilizationOsLo
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes spin {
           0% {
             transform: rotate(0deg);

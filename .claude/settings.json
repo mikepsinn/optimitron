@@ -23,6 +23,11 @@
             "type": "command",
             "command": "node .claude/hooks/pre-commit-checklist.mjs",
             "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/codex-dispatch-blather.mjs",
+            "timeout": 3000
           }
         ]
       },

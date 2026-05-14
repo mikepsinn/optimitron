@@ -122,10 +122,14 @@ test.describe("route visual regression", () => {
         });
       }
 
-      if (route.requiredText) {
+      if (route.requiredSelector) {
         // Regression guard: these visual pages must keep exposing the
         // president/signer task list. Do not delete without Mike's explicit
         // approval.
+        await expect(page.locator(route.requiredSelector)).toBeVisible();
+      }
+
+      if (route.requiredText) {
         await expect(page.getByText(route.requiredText)).toBeVisible();
       }
 
@@ -171,7 +175,7 @@ async function openVisualRoute(page: Page, routePath: string) {
 
   page.on("pageerror", (error) => {
     if (!error.message.includes("Hydration")) {
-      errors.push(error.message);
+      errors.push(error.stack ?? error.message);
     }
   });
 
@@ -209,8 +213,27 @@ async function openSideMenu(
   page: Page,
   { expectSettings = false }: { expectSettings?: boolean } = {},
 ) {
-  await page.getByRole("button", { name: "Open menu" }).click();
+  const trigger = page.getByRole("button", { name: "Open menu" });
   const dialog = page.getByRole("dialog");
+  await expect(trigger).toBeVisible();
+
+  let openError: unknown;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await trigger.click();
+    try {
+      await expect(dialog).toBeVisible({ timeout: 3_000 });
+      openError = undefined;
+      break;
+    } catch (error) {
+      openError = error;
+      await page.waitForTimeout(500);
+    }
+  }
+
+  if (openError) {
+    throw openError;
+  }
+
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("link", { name: /Manage Humanity/i })).toBeVisible();
   if (expectSettings) {

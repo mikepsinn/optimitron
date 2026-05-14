@@ -24,7 +24,7 @@ HUMANITY MANAGER · ASSIGNMENT 1
 
 Trade one apocalypse for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trials.
 
-You have been promoted to Humanity Manager at Earth Optimization Services LLC. Responsible for [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) humans. First task: get them to ratify the [1% Treaty](http://localhost:3001/treaty).
+You have been promoted to Humanity Manager at Earth Optimization Services LLC. Responsible for [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) humans. First task: get them to ratify the [1% Treaty](https://warondisease.org/treaty).
 
 Earth owns [12,200](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear warheads. [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) of them ends civilization. That is [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses on the shelf. Spend one apocalypse on [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trials and the disease-eradication timeline collapses from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 

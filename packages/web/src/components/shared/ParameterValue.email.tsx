@@ -10,6 +10,7 @@ export function ParameterValueEmail({
   display = "auto",
   figures = 3,
   param,
+  presentation: _presentation,
   valueOverride,
 }: ParameterValueProps) {
   const text = formatParameterValueText({

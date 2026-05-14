@@ -24,6 +24,25 @@ Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scrip
 5. **Regenerate affected `.md` snapshots and screenshots** after any content/component change. Use `node packages/web/scripts/affected-routes.mjs` to pipe changed-file paths into `render-pages-to-markdown.ts --routes=` for targeted regen; fall back to full regen when the change touches shared primitives.
 6. **Nothing committed without user approval.** Codex stages the changeset and reports; Claude relays the summary + diff scope; user OKs; then Claude commits on Codex's behalf (Codex can't touch `.git`).
 
+## NEVER run `next build` / `pnpm build`
+
+`next build` writes to `.next/` (route manifests, server chunks, build IDs) that the running dev server is concurrently reading. When build and dev share the same `.next/`, the dev server starts logging `ENOENT` on missing-or-mid-write manifest files and stops returning bytes on every route. The fix is an orchestrator restart of the dev server. This will burn 5-10 minutes of investigation time every single time.
+
+**Banned, no exceptions during a Codex session unless the orchestrator explicitly says otherwise:**
+- `pnpm build`
+- `pnpm --filter @optimitron/web build`
+- `next build` directly
+- Any script that calls `next build` transitively
+
+**For "is the bundle compile-clean" sanity-check use ONLY:**
+- `pnpm --filter @optimitron/web exec tsc --noEmit` or `typecheck:fast` — type-graph only, doesn't touch `.next/`
+- Focused vitest suites — Node-only, doesn't touch `.next/`
+- ESLint — Node-only, doesn't touch `.next/`
+
+If you truly need a production-build sanity check (rare), tell the orchestrator first so the dev server can be stopped, build run, dev server restarted. Don't do it concurrently with a live dev server.
+
+Concrete failure this rule prevents: this session, Codex ran `next build` as "offline sanity check" while the orchestrator dev server was running. Build succeeded but the dev server's `.next/server/.../manifest.json` reads started returning `ENOENT`. Every subsequent route hung. Cost: ~15 min of "is this a real bug or a dev-server problem" investigation before the orchestrator restart cleared it.
+
 ## NEVER kill the dev server
 
 The orchestrator (Claude / human dev) owns the dev server on 3001. Every Codex dispatch inherits this — agents are pure consumers, never managers.
