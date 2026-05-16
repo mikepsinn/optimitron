@@ -16,7 +16,11 @@ const ROUTES_TO_SMOKE = [
   {
     path: "/",
     expectedH1: "Please Take 30 Seconds to End War and Disease",
-    source: "TreatyVoteFlow default headline",
+    expectedH1ByHost: {
+      "optimitron.com": "Play the Earth Optimization Game!",
+      "www.optimitron.com": "Play the Earth Optimization Game!",
+    },
+    source: "site root heading",
   },
   {
     path: "/treaty",
@@ -106,10 +110,14 @@ const ERROR_MARKERS = [
 
 async function main() {
   const startedAt = new Date();
-  const target = resolveTarget();
-  const bypassSecret = (process.env.VERCEL_AUTOMATION_BYPASS_SECRET ?? "").trim();
+  const targets = resolveTargets();
+  const environment = targets[0]?.environment ?? "Production";
+  const targetUrl = formatTargetUrls(targets);
+  const bypassSecret = (
+    process.env.VERCEL_AUTOMATION_BYPASS_SECRET ?? ""
+  ).trim();
 
-  if (target.environment === "Preview" && !bypassSecret) {
+  if (environment === "Preview" && !bypassSecret) {
     // Fail loud. The previous skip-with-warning was an escape hatch
     // that silently masked smoke for ~24 hours because the secret
     // wasn't set. The secret is retrievable in one curl + jq +
@@ -119,14 +127,12 @@ async function main() {
     console.error(
       "[smoke-deploy] FAIL: VERCEL_AUTOMATION_BYPASS_SECRET is not set in the GitHub Preview environment.",
     );
+    console.error("[smoke-deploy] Retrieve and set in one command:");
     console.error(
-      "[smoke-deploy] Retrieve and set in one command:",
+      '[smoke-deploy]   curl -H "Authorization: Bearer $VERCEL_TOKEN" \\',
     );
     console.error(
-      "[smoke-deploy]   curl -H \"Authorization: Bearer $VERCEL_TOKEN\" \\",
-    );
-    console.error(
-      "[smoke-deploy]     \"https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID\" \\",
+      '[smoke-deploy]     "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \\',
     );
     console.error(
       "[smoke-deploy]     | jq -r '.protectionBypass | keys[0]' \\",
@@ -143,17 +149,19 @@ async function main() {
       success: false,
       skipped: false,
       reason: "VERCEL_AUTOMATION_BYPASS_SECRET not configured",
-      environment: target.environment,
-      targetUrl: target.baseUrl.href,
+      environment,
+      targetUrl,
+      targetUrls: targets.map((target) => target.baseUrl.href),
       startedAt: startedAt.toISOString(),
       durationMs: 0,
       routes: [],
       failures: [
         {
           path: "(setup)",
+          targetUrl,
           status: null,
           error:
-            "VERCEL_AUTOMATION_BYPASS_SECRET missing from GitHub Preview environment. Run: curl -H \"Authorization: Bearer $VERCEL_TOKEN\" \"https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID\" | jq -r '.protectionBypass | keys[0]' | gh secret set VERCEL_AUTOMATION_BYPASS_SECRET --env Preview",
+            'VERCEL_AUTOMATION_BYPASS_SECRET missing from GitHub Preview environment. Run: curl -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" | jq -r \'.protectionBypass | keys[0]\' | gh secret set VERCEL_AUTOMATION_BYPASS_SECRET --env Preview',
           matchedErrorMarker: null,
         },
       ],
@@ -163,21 +171,26 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(
-    `Smoke testing ${target.environment} deployment ${target.baseUrl.href}`,
-  );
+  for (const target of targets) {
+    console.log(
+      `Smoke testing ${target.environment} deployment ${target.baseUrl.href}`,
+    );
+  }
 
   const routeResults = await Promise.all(
-    ROUTES_TO_SMOKE.map((route) =>
-      smokeRoute({ route, target, bypassSecret }),
+    targets.flatMap((target) =>
+      ROUTES_TO_SMOKE.map((route) =>
+        smokeRoute({ route, target, bypassSecret }),
+      ),
     ),
   );
   const durationMs = Date.now() - startedAt.getTime();
   const failures = routeResults.filter((result) => !result.ok);
   const summary = {
     success: failures.length === 0,
-    environment: target.environment,
-    targetUrl: target.baseUrl.href,
+    environment,
+    targetUrl,
+    targetUrls: targets.map((target) => target.baseUrl.href),
     startedAt: startedAt.toISOString(),
     durationMs,
     routes: routeResults,
@@ -191,25 +204,26 @@ async function main() {
     const label = result.ok ? "PASS" : "FAIL";
     const status = result.status ? `HTTP ${result.status}` : "no response";
     console.log(
-      `${label} ${result.path} ${status} ${result.durationMs}ms after ${result.attempts.length} attempt(s)`,
+      `${label} ${formatResultTarget(result)}${result.path} ${status} ${result.durationMs}ms after ${result.attempts.length} attempt(s)`,
     );
   }
 
   if (failures.length > 0) {
     console.error(
-      `Deploy smoke failed for ${failures.length} of ${routeResults.length} route(s).`,
+      `Deploy smoke failed for ${failures.length} of ${routeResults.length} route check(s).`,
     );
     process.exitCode = 1;
     return;
   }
 
   console.log(
-    `Deploy smoke passed for ${routeResults.length} route(s) in ${durationMs}ms.`,
+    `Deploy smoke passed for ${routeResults.length} route check(s) in ${durationMs}ms.`,
   );
 }
 
 async function smokeRoute({ route, target, bypassSecret }) {
   const url = new URL(route.path, target.baseUrl);
+  const expectedH1 = resolveExpectedH1(route, target.baseUrl.hostname);
   const attempts = [];
   const startedAt = Date.now();
 
@@ -217,6 +231,7 @@ async function smokeRoute({ route, target, bypassSecret }) {
     const attemptResult = await fetchAndAssert({
       route,
       url,
+      expectedH1,
       bypassSecret,
       attempt,
     });
@@ -225,7 +240,9 @@ async function smokeRoute({ route, target, bypassSecret }) {
     if (attemptResult.ok) {
       return summarizeRouteResult({
         route,
+        target,
         url,
+        expectedH1,
         startedAt,
         attempts,
         finalAttempt: attemptResult,
@@ -239,14 +256,22 @@ async function smokeRoute({ route, target, bypassSecret }) {
 
   return summarizeRouteResult({
     route,
+    target,
     url,
+    expectedH1,
     startedAt,
     attempts,
     finalAttempt: attempts.at(-1),
   });
 }
 
-async function fetchAndAssert({ route, url, bypassSecret, attempt }) {
+async function fetchAndAssert({
+  route,
+  url,
+  expectedH1,
+  bypassSecret,
+  attempt,
+}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   const attemptStartedAt = Date.now();
@@ -269,7 +294,7 @@ async function fetchAndAssert({ route, url, bypassSecret, attempt }) {
     const body = await response.text();
     const h1Texts = extractH1Texts(body);
     const matchedErrorMarker = findErrorMarker(body);
-    const normalizedExpectedH1 = normalizeText(route.expectedH1);
+    const normalizedExpectedH1 = normalizeText(expectedH1);
     const hasExpectedH1 = h1Texts.some(
       (text) => normalizeText(text) === normalizedExpectedH1,
     );
@@ -315,15 +340,24 @@ async function fetchAndAssert({ route, url, bypassSecret, attempt }) {
   }
 }
 
-function summarizeRouteResult({ route, url, startedAt, attempts, finalAttempt }) {
+function summarizeRouteResult({
+  route,
+  target,
+  url,
+  expectedH1,
+  startedAt,
+  attempts,
+  finalAttempt,
+}) {
   return {
     path: route.path,
+    targetUrl: target.baseUrl.href,
     url: url.href,
     source: route.source,
     ok: Boolean(finalAttempt?.ok),
     status: finalAttempt?.status ?? null,
     finalUrl: finalAttempt?.finalUrl ?? url.href,
-    expectedH1: route.expectedH1,
+    expectedH1,
     h1Texts: finalAttempt?.h1Texts ?? [],
     missingExpectedH1: finalAttempt?.missingExpectedH1 ?? true,
     matchedErrorMarker: finalAttempt?.matchedErrorMarker ?? null,
@@ -333,20 +367,48 @@ function summarizeRouteResult({ route, url, startedAt, attempts, finalAttempt })
   };
 }
 
-function resolveTarget() {
+function resolveExpectedH1(route, hostname) {
+  return (
+    route.expectedH1ByHost?.[String(hostname).toLowerCase()] ?? route.expectedH1
+  );
+}
+
+function resolveTargets() {
   const previewUrl = (process.env.PREVIEW_URL ?? "").trim();
   const prodUrl = (process.env.PROD_URL ?? "").trim();
+  const prodUrls = (process.env.PROD_URLS ?? "").trim();
+  const prodTargetValue = prodUrls || prodUrl;
 
-  if (previewUrl && prodUrl) {
-    throw new Error("Set PREVIEW_URL or PROD_URL, not both.");
+  if (previewUrl && prodTargetValue) {
+    throw new Error("Set PREVIEW_URL or PROD_URL/PROD_URLS, not both.");
   }
 
-  if (!previewUrl && !prodUrl) {
-    throw new Error("Set PREVIEW_URL or PROD_URL before running deploy smoke.");
+  if (!previewUrl && !prodTargetValue) {
+    throw new Error(
+      "Set PREVIEW_URL, PROD_URL, or PROD_URLS before running deploy smoke.",
+    );
   }
 
   const environment = previewUrl ? "Preview" : "Production";
-  const rawUrl = previewUrl || prodUrl;
+  const rawUrls = previewUrl ? [previewUrl] : parseTargetUrls(prodTargetValue);
+  if (rawUrls.length === 0) {
+    throw new Error(`${environment} URL list did not contain any URLs.`);
+  }
+
+  return rawUrls.map((rawUrl) => ({
+    environment,
+    baseUrl: normalizeTargetUrl(rawUrl, environment),
+  }));
+}
+
+function parseTargetUrls(value) {
+  return String(value)
+    .split(/[,\s]+/u)
+    .map((url) => url.trim())
+    .filter(Boolean);
+}
+
+function normalizeTargetUrl(rawUrl, environment) {
   let baseUrl;
   try {
     baseUrl = new URL(rawUrl);
@@ -362,7 +424,23 @@ function resolveTarget() {
     baseUrl.pathname = `${baseUrl.pathname}/`;
   }
 
-  return { environment, baseUrl };
+  return baseUrl;
+}
+
+function formatTargetUrls(targets) {
+  return targets.map((target) => target.baseUrl.href).join(", ");
+}
+
+function formatResultTarget(result) {
+  if (!result.targetUrl) {
+    return "";
+  }
+
+  try {
+    return `${new URL(result.targetUrl).hostname} `;
+  } catch {
+    return `${result.targetUrl} `;
+  }
 }
 
 function extractH1Texts(html) {
@@ -438,9 +516,8 @@ function codePointToString(codePoint, fallback) {
 function findErrorMarker(body) {
   const lowerBody = body.toLowerCase();
   return (
-    ERROR_MARKERS.find((marker) =>
-      lowerBody.includes(marker.toLowerCase()),
-    ) ?? null
+    ERROR_MARKERS.find((marker) => lowerBody.includes(marker.toLowerCase())) ??
+    null
   );
 }
 
@@ -507,18 +584,22 @@ function buildMarkdownSummary(summary) {
   ];
 
   if (summary.success) {
-    lines.push(`Checked ${summary.routes.length} route(s).`, "");
+    const targetCount = summary.targetUrls?.length ?? 1;
+    lines.push(
+      `Checked ${summary.routes.length} route check(s) across ${targetCount} target(s).`,
+      "",
+    );
     return `${lines.join("\n")}\n`;
   }
 
   lines.push(
-    "| Route | Status | Missing h1 | Error marker | Details |",
-    "| --- | --- | --- | --- | --- |",
+    "| Target | Route | Status | Missing h1 | Error marker | Details |",
+    "| --- | --- | --- | --- | --- | --- |",
   );
 
   for (const failure of summary.failures) {
     lines.push(
-      `| ${escapeMarkdownTableCell(failure.path)} | ${escapeMarkdownTableCell(
+      `| ${escapeMarkdownTableCell(formatFailureTarget(failure))} | ${escapeMarkdownTableCell(failure.path)} | ${escapeMarkdownTableCell(
         failure.status ? String(failure.status) : "no response",
       )} | ${escapeMarkdownTableCell(
         failure.missingExpectedH1 ? failure.expectedH1 : "no",
@@ -530,6 +611,18 @@ function buildMarkdownSummary(summary) {
 
   lines.push("");
   return `${lines.join("\n")}\n`;
+}
+
+function formatFailureTarget(failure) {
+  if (!failure.targetUrl) {
+    return "n/a";
+  }
+
+  try {
+    return new URL(failure.targetUrl).hostname;
+  } catch {
+    return failure.targetUrl;
+  }
 }
 
 function escapeMarkdownTableCell(value) {
@@ -547,7 +640,11 @@ main().catch(async (error) => {
   const summary = {
     success: false,
     environment: process.env.PREVIEW_URL ? "Preview" : "Production",
-    targetUrl: process.env.PREVIEW_URL || process.env.PROD_URL || "",
+    targetUrl:
+      process.env.PREVIEW_URL ||
+      process.env.PROD_URLS ||
+      process.env.PROD_URL ||
+      "",
     startedAt: new Date().toISOString(),
     durationMs: 0,
     routes: [],
