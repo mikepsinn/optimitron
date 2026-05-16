@@ -241,18 +241,108 @@ jobs:
         id: visual_regression
         run: pnpm --filter @optimitron/web run e2e -- visual
 
+      - name: Upload PR visual screenshots for review publishing
+        if: ${{ github.event_name == 'pull_request' && steps.visual_regression.outcome == 'success' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: web-pr-visual-screenshots
+          path: packages/web/screenshots
+          if-no-files-found: error
+
+      - name: Build visual review index
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          VISUAL_REVIEW_COMMIT_SHA: ${{ github.sha }}
+          VISUAL_REVIEW_BASE_URL: ""
+          VISUAL_REVIEW_PR_NUMBER: ""
+          VISUAL_REVIEW_HEAD_BRANCH: ${{ github.ref_name }}
+          VISUAL_REVIEW_REPO: ${{ github.repository }}
+        run: pnpm --filter @optimitron/web run visual:review
+
+      - name: Summarize visual review
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        run: |
+          {
+            echo "## Visual review"
+            echo
+            echo "- Open the \`web-visual-review\` artifact from this run."
+            echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
+            echo "- Use the generated gallery for before/after diffs and changed-only review."
+            echo "- Captured routes are defined in \`packages/web/e2e/visual-regression.spec.ts\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Playwright visual review
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: web-visual-review
+          path: |
+            packages/web/output/playwright/review
+            packages/web/screenshots
+            packages/web/playwright-report
+            packages/web/test-results
+          if-no-files-found: ignore
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: web-playwright-artifacts
+          path: |
+            packages/web/playwright-report
+            packages/web/screenshots
+            packages/web/public/img/screenshots
+            packages/web/test-results
+          if-no-files-found: ignore
+
+  web-visual-review:
+    name: web-visual-review
+    if: ${{ github.event_name == 'pull_request' && needs.web-e2e-validate.result == 'success' }}
+    needs: web-e2e-validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+      deployments: write
+      issues: write
+      pull-requests: write
+      statuses: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download PR visual screenshots
+        uses: actions/download-artifact@v6
+        with:
+          name: web-pr-visual-screenshots
+          path: packages/web/screenshots
+
       - name: Preserve PR visual screenshots
-        if: always() && github.event_name == 'pull_request'
         shell: bash
         run: |
           rm -rf packages/web/output/playwright/pr-screenshots
-          if [ -d packages/web/screenshots ]; then
-            mkdir -p packages/web/output/playwright
-            cp -R packages/web/screenshots packages/web/output/playwright/pr-screenshots
-          fi
+          mkdir -p packages/web/output/playwright
+          cp -R packages/web/screenshots packages/web/output/playwright/pr-screenshots
 
       - name: Resolve main visual baseline
-        if: always() && github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -262,10 +352,6 @@ jobs:
           rm -rf "$baseline_root"
           mkdir -p "$baseline_root"
 
-          # `--limit 5` instead of 20: the previous successful main run
-          # virtually always has the artifact. Iterating 20 deep mostly
-          # burned API calls + network setup time without finding anything
-          # the first 5 didn't.
           mapfile -t run_ids < <(gh run list \
             --workflow CI \
             --branch main \
@@ -287,9 +373,7 @@ jobs:
                   echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$screenshots_dir" >> "$GITHUB_ENV"
                   echo "Downloaded visual baseline from main run $run_id."
                   rm -rf packages/web/screenshots
-                  if [ -d "$pr_screenshots" ]; then
-                    cp -R "$pr_screenshots" packages/web/screenshots
-                  fi
+                  cp -R "$pr_screenshots" packages/web/screenshots
                   exit 0
                 fi
               done
@@ -300,12 +384,9 @@ jobs:
 
           echo "No usable main web-visual-review artifact found; visual review will show after screenshots only."
           rm -rf packages/web/screenshots
-          if [ -d "$pr_screenshots" ]; then
-            cp -R "$pr_screenshots" packages/web/screenshots
-          fi
+          cp -R "$pr_screenshots" packages/web/screenshots
 
       - name: Resolve PR preview URL
-        if: always() && github.event_name == 'pull_request'
         id: pr_preview_url
         uses: actions/github-script@v8
         with:
@@ -321,10 +402,6 @@ jobs:
             });
 
             for (const deployment of deployments) {
-              // Skip our own visual-review deployments — we set up
-              // `visual-review/pr-N` to drive the inline timeline annotation
-              // for the gh-pages review URL, but here we want the *app*
-              // preview URL (Vercel) to feed VISUAL_REVIEW_BASE_URL.
               const env = deployment.environment || '';
               if (env.startsWith('visual-review')) continue;
 
@@ -347,7 +424,7 @@ jobs:
             return '';
 
       - name: Post PR preview links comment
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.pr_preview_url.outputs.result != '' }}
+        if: ${{ !cancelled() && steps.pr_preview_url.outputs.result != '' }}
         uses: actions/github-script@v8
         env:
           PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
@@ -357,8 +434,6 @@ jobs:
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
 
-            // Pull changed files from the PR API (works with depth-1 checkout).
-            // Filter out deletions so the table doesn't link to 404s.
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner, repo, pull_number: issue_number, per_page: 100,
             });
@@ -398,13 +473,10 @@ jobs:
       - name: Build visual review index
         if: always()
         env:
-          VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
-          # Feeds the per-route "Copy context" button on latest.html so the
-          # generated clipboard payload includes the right PR/branch/repo
-          # identifiers for whoever the reviewer is pasting it to.
           VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
-          VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}
         run: pnpm --filter @optimitron/web run visual:review
 
@@ -433,26 +505,7 @@ jobs:
             packages/web/test-results
           if-no-files-found: ignore
 
-      # Publish the per-PR visual review to the long-lived `gh-pages` branch
-      # so reviews from different PRs don't clobber each other. The previous
-      # setup used `actions/deploy-pages`, which atomically REPLACES the
-      # entire Pages site each deploy — so whenever any PR's CI finished,
-      # every other PR's review URL went 404 until that PR's CI ran again.
-      #
-      # `peaceiris/actions-gh-pages` with `keep_files: true` writes only the
-      # current PR's directory and preserves everything else on `gh-pages`.
-      #
-      # One-time repo setup: Settings → Pages → Source must be set to
-      # "Deploy from a branch" with branch `gh-pages` (root). The action
-      # creates the branch on its first push.
-      # Gate the publish chain on the visual-regression step succeeding,
-      # not just on `!cancelled()`. A test failure produces incomplete
-      # screenshots ("62 missing pairs"); publishing that to gh-pages
-      # gives reviewers a misleading review URL. Real test breakage
-      # already surfaces as the web-validate job failing — the artifact
-      # upload still runs `always()` so debugging info isn't lost.
       - name: Prepare per-PR visual review directory
-        if: ${{ steps.visual_regression.outcome == 'success' && github.event_name == 'pull_request' }}
         id: prepare_pages
         shell: bash
         run: |
@@ -465,20 +518,12 @@ jobs:
           mkdir -p "$commit_dir" "$latest_dir"
           cp -R packages/web/output/playwright/review/. "$commit_dir/"
           cp -R packages/web/output/playwright/review/. "$latest_dir/"
-          # `latest.html` is the entry point the build script writes. Also
-          # publish it as `index.html` so bare `pr-N/latest/` and
-          # `pr-N/<sha>/` directory URLs (no filename) resolve to the review
-          # page instead of returning 404.
           if [ -f "$commit_dir/latest.html" ]; then
             cp "$commit_dir/latest.html" "$commit_dir/index.html"
           fi
           if [ -f "$latest_dir/latest.html" ]; then
             cp "$latest_dir/latest.html" "$latest_dir/index.html"
           fi
-          # Seed `.nojekyll` and a root `index.html` at the publish root so the
-          # gh-pages site doesn't try to render through Jekyll and so the
-          # bare https://<user>.github.io/<repo>/ URL renders something
-          # meaningful. `keep_files: true` preserves these across deploys.
           publish_root="packages/web/output/playwright/pages-per-pr"
           touch "$publish_root/.nojekyll"
           cat > "$publish_root/index.html" <<'HTML'
@@ -499,7 +544,6 @@ jobs:
           echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
 
       - name: Publish visual review to gh-pages
-        if: ${{ steps.visual_regression.outcome == 'success' && github.event_name == 'pull_request' }}
         id: visual_review_pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -512,13 +556,8 @@ jobs:
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
-      # Only post the status link AFTER peaceiris/actions-gh-pages
-      # actually succeeded — otherwise reviewers click through to a
-      # 404 (publish skipped or failed but status URL already pointed
-      # there). `steps.visual_review_pages.outcome == 'success'` ensures
-      # gh-pages has the path before we advertise it.
       - name: Post Visual review commit status
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.visual_review_pages.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -537,18 +576,8 @@ jobs:
               target_url,
             });
 
-      # Create a GitHub Deployment + DeploymentStatus per commit so the PR
-      # timeline shows an inline "deployed to visual-review X minutes ago"
-      # annotation under each commit, the way Vercel's bot does. Each commit
-      # gets its own annotation linking to the per-commit gh-pages URL,
-      # which is immutable thanks to keep_files: true on the gh-pages
-      # publish step. transient_environment: true tells GitHub to retire
-      # older deployments for this environment automatically.
-      # Same publish-succeeded gate as the commit status above — the
-      # inline timeline annotation points to the same URL, no point
-      # posting it if gh-pages doesn't have the path yet.
       - name: Create Visual review deployment
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.visual_review_pages.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -581,16 +610,6 @@ jobs:
               log_url: target_url,
               description: 'Visual review ready',
             });
-
-      - name: Upload Playwright artifacts
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: web-playwright-artifacts
-          path: |
-            packages/web/playwright-report
-            packages/web/public/img/screenshots
-          if-no-files-found: ignore
 
   web-validate:
     name: web-validate
