@@ -15,6 +15,68 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      web: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
+      web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Treat manual runs as web-impacting
+        id: manual
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Detect web-impacting changes
+        id: filter
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            web_files_changed:
+              - '.github/workflows/**'
+              - '.github/scripts/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - 'tsconfig*.json'
+              - 'vitest*.ts'
+              - 'packages/**/*.ts'
+              - 'packages/**/*.tsx'
+              - 'packages/**/*.js'
+              - 'packages/**/*.jsx'
+              - 'packages/**/*.mjs'
+              - 'packages/**/*.cjs'
+              - 'packages/**/*.json'
+              - 'packages/**/*.css'
+              - 'packages/**/*.scss'
+              - 'packages/**/*.sql'
+              - 'packages/**/*.prisma'
+              - 'packages/**/*.yml'
+              - 'packages/**/*.yaml'
+              - 'packages/**/*.png'
+              - 'packages/**/*.jpg'
+              - 'packages/**/*.jpeg'
+              - 'packages/**/*.webp'
+              - 'packages/**/*.svg'
+              - 'packages/db/prisma/**'
+              - 'packages/db/src/managed-data/**'
+              - 'packages/web/src/**'
+              - 'packages/web/public/**'
+
   core-validate:
     name: core-validate
     if: github.event_name != 'push'
@@ -140,6 +202,7 @@ jobs:
   web-e2e-validate:
     name: web-e2e-validate
     if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -175,26 +238,36 @@ jobs:
           --health-retries=5
 
     steps:
+      - name: Skip web e2e validation
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') != true }}
+        shell: bash
+        run: echo "No web-impacting files changed; skipping Playwright install, smoke validation, and visual review."
+
       - name: Checkout
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/checkout@v6
         with:
           submodules: recursive
 
       - name: Enable Corepack
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         run: pnpm install --frozen-lockfile
 
       - name: Cache Next.js build
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/cache@v4
         with:
           path: packages/web/.next/cache
@@ -204,17 +277,21 @@ jobs:
             nextjs-${{ runner.os }}-
 
       - name: Apply database migrations
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         run: pnpm db:deploy
 
       - name: Build web workspace dependencies
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         run: pnpm --filter @optimitron/web run build:workspace-deps
 
       - name: Build web app
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: pnpm --filter @optimitron/web run build:fast
 
       - name: Cache Playwright browsers
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         id: playwright-cache
         uses: actions/cache@v4
         with:
@@ -222,27 +299,30 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('packages/web/package.json') }}
 
       - name: Install Playwright browser
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && steps.playwright-cache.outputs.cache-hit != 'true' }}
         run: pnpm --filter @optimitron/web exec playwright install --with-deps chromium
 
       - name: Install Playwright system deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && steps.playwright-cache.outputs.cache-hit == 'true' }}
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
       - name: Sync managed data (idempotent upserts; matches production)
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         # Single source of truth for production-worthy bootstrap/reference data,
         # campaign records, and task triggers used by post-signin flows.
         run: pnpm db:sync:managed-data -- --apply
 
       - name: Run Playwright smoke validation
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         run: pnpm --filter @optimitron/web run e2e -- smoke
 
       - name: Run Playwright visual review
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         id: visual_regression
         run: pnpm --filter @optimitron/web run e2e -- visual
 
       - name: Upload PR visual screenshots for review publishing
-        if: ${{ github.event_name == 'pull_request' && steps.visual_regression.outcome == 'success' }}
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && github.event_name == 'pull_request' && steps.visual_regression.outcome == 'success' }}
         uses: actions/upload-artifact@v6
         with:
           name: web-pr-visual-screenshots
@@ -250,7 +330,7 @@ jobs:
           if-no-files-found: error
 
       - name: Build visual review index
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && github.event_name != 'pull_request' }}
         env:
           VISUAL_REVIEW_COMMIT_SHA: ${{ github.sha }}
           VISUAL_REVIEW_BASE_URL: ""
@@ -260,7 +340,7 @@ jobs:
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && github.event_name != 'pull_request' }}
         shell: bash
         run: |
           {
@@ -273,7 +353,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Playwright visual review
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v6
         with:
           name: web-visual-review
@@ -285,7 +365,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Playwright artifacts
-        if: failure()
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && failure() }}
         uses: actions/upload-artifact@v6
         with:
           name: web-playwright-artifacts
@@ -298,8 +378,10 @@ jobs:
 
   web-visual-review:
     name: web-visual-review
-    if: ${{ github.event_name == 'pull_request' && needs.web-e2e-validate.result == 'success' }}
-    needs: web-e2e-validate
+    if: ${{ github.event_name == 'pull_request' && needs.web-e2e-validate.result == 'success' && fromJSON(needs.changes.outputs.web || 'false') == true }}
+    needs:
+      - changes
+      - web-e2e-validate
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
