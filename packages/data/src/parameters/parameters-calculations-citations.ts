@@ -4229,6 +4229,32 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL: Paramet
   manualPageTitle: "Humanity v. Government",
 };
 
+export const CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR: Parameter = {
+  value: 1913,
+  parameterName: "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR",
+  unit: "year",
+  displayName: "Counterfactual Disease Eradication Start Year",
+  description: "Start year for the Fed-era military-spending counterfactual used to estimate when disease should have been functionally eradicated. Anchored to the founding of the Federal Reserve and the cumulative military-spending baseline cited in the Declaration of Optimization.",
+  sourceType: "definition",
+  confidence: "low",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html",
+  manualPageTitle: "Declaration of Optimization",
+};
+
+export const CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR: Parameter = {
+  value: 1949,
+  parameterName: "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR",
+  unit: "year",
+  displayName: "Counterfactual Disease Eradication Year",
+  description: "Counterfactual year by which disease should have been functionally eradicated if governments had redirected Fed-era war spending into treaty-scale clinical trial capacity. Computed as start-year (1913) plus the queue-clearance time at 12.3x trial capacity (443 / 12.3 = 36 years).",
+  sourceType: "calculated",
+  sourceRef: "calculated",
+  confidence: "low",
+  formula: "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR + round(DFDA_QUEUE_CLEARANCE_YEARS)",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html",
+  manualPageTitle: "Declaration of Optimization",
+};
+
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS: Parameter = {
   value: 7.252613228602291e+16,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS",
