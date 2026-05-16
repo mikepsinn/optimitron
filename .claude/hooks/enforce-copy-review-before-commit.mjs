@@ -68,9 +68,12 @@ try {
   const command = String(hookData?.tool_input?.command ?? "");
   if (!command) process.exit(0);
 
-  // Match `git commit` invocations only. Allow `git commit-tree`, etc.
-  // to pass through. `git -C foo commit` also matches.
-  if (!/\bgit\s+(?:-[CcS]\s+\S+\s+)*commit\b/.test(command)) process.exit(0);
+  // Match `git commit` invocations only. Use a negative lookahead so
+  // `commit-tree`, `commit-graph`, etc. are excluded (the `\b` boundary
+  // alone fires on `commit-tree` because `-` is a non-word char). Also
+  // allow common config prefixes like `git -c user.email=foo commit`,
+  // `git -C path commit`, `git -S commit`.
+  if (!/\bgit\s+(?:-[CcSP]\s*\S+\s+)*commit(?!\S)/.test(command)) process.exit(0);
 
   // Read staged diff name-only via git.
   let stagedFiles = [];
@@ -139,11 +142,24 @@ try {
   }
 
   // Heuristic: did I show a before/after?
-  const ct = chatText.toLowerCase();
+  //
+  // Require explicit labeled markers matching the template the hook
+  // prints on failure. The prior "any `before` near any `after` within
+  // 400 chars" was a near-no-op — incidental prose like "before commit,
+  // review changes; after that, ship" satisfied it, and "the header was
+  // too long; now shorter" satisfied the `was…now` fallback. Mike's
+  // template uses **BEFORE:** / **AFTER:** so we require those tokens
+  // (case-insensitive, optional markdown bolding) — they don't appear
+  // in narrative prose.
+  const ctRaw = chatText; // keep case for marker detection
+  const ct = ctRaw.toLowerCase();
+  const hasBeforeMarker = /(\*\*|__|^|\n)\s*before\s*[:\*]/i.test(ctRaw);
+  const hasAfterMarker = /(\*\*|__|^|\n)\s*after\s*[:\*]/i.test(ctRaw);
+  const hasOldNewMarkers =
+    /(\*\*|__|^|\n)\s*old\s*[:\*]/i.test(ctRaw) &&
+    /(\*\*|__|^|\n)\s*new\s*[:\*]/i.test(ctRaw);
   const showsBeforeAfter =
-    (/\bbefore\b[\s\S]{0,400}\bafter\b/.test(ct)) ||
-    (/\bold\b[:\s][\s\S]{0,400}\bnew\b/.test(ct)) ||
-    (/\bwas\b[\s\S]{0,200}\bnow\b/.test(ct));
+    (hasBeforeMarker && hasAfterMarker) || hasOldNewMarkers;
 
   if (showsBeforeAfter && askedThisTurn) process.exit(0);
 

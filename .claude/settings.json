@@ -13,6 +13,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-snapshot-handedit.mjs\"",
             "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-theory-of-mind-on-copy-edit.mjs\"",
+            "timeout": 5000
           }
         ]
       },

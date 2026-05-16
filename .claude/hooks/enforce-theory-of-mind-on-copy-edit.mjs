@@ -162,7 +162,9 @@ try {
     /\bthe (user|visitor) (is|are|wants|sees|reads|views|arrives)\b/.test(ct) ||
     /\bpeople who\b/.test(ct);
 
-  // Goal: concrete desired action
+  // Goal: concrete desired action. Allow verb-form variants (taps, drags,
+  // clicks, signs) so a natural-English sentence like "voter drags the
+  // slider then taps SUBMIT" registers as a Goal hit.
   const goalHit =
     /\bgoal\b/.test(ct) ||
     /\bwe want\b/.test(ct) ||
@@ -171,12 +173,14 @@ try {
     /\bthe conversion\b/.test(ct) ||
     /\bcta\b/.test(ct) ||
     /\bnext step\b/.test(ct) ||
-    /\b(click|sign|register|endorse|donate|vote|share|subscribe|scroll to|fill (in|out)|submit|tap)\s+(the|a|on|to|down|→)?/i.test(ct);
+    /\bsingle .{0,15}action\b/.test(ct) ||
+    /\bconversion event\b/.test(ct) ||
+    /\b(click|sign|register|endorse|donate|vote|share|subscribe|submit|tap|drag|scroll|fill)s?(ed|ing)?\b/.test(ct);
 
   // Theory of mind: explicit reader simulation
   const tomHit =
     /\btheory of mind\b/.test(ct) ||
-    /\bblocker(s)?\b/.test(ct) ||
+    /\bblockers?\b/.test(ct) ||
     /\bwhat (stops|blocks|prevents|makes|gets) them\b/.test(ct) ||
     /\bthey (fear|worry|wonder|hesitate|think|expect)\b/.test(ct) ||
     /\bconvert(s|ed|ing|er)?\b/.test(ct) ||
