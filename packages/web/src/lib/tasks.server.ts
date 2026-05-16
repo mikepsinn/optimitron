@@ -17,6 +17,7 @@ import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import { getSearchTerms, scoreSearchRecord } from "@/lib/site-search";
 import { canonicalizeSiteUrl } from "@/lib/site";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { userDisplaySelect } from "@/lib/user-display";
 import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
@@ -69,6 +70,7 @@ const personTaskProfilePersonSelect = {
       answer: VotePosition.YES,
       deletedAt: null,
       isPublic: true,
+      referendum: { deletedAt: null },
       voteSource: ReferendumVoteSource.SELF,
     },
     orderBy: { createdAt: "desc" },
@@ -102,6 +104,10 @@ const personTaskProfilePersonSelect = {
               answer: VotePosition.YES,
               deletedAt: null,
               isPublic: true,
+              referendum: {
+                deletedAt: null,
+                slug: TREATY_REFERENDUM_SLUG,
+              },
               voteSource: ReferendumVoteSource.SELF,
             },
           },
