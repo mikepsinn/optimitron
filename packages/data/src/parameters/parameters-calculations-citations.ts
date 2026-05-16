@@ -4197,6 +4197,22 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE: 
   manualPageTitle: "Humanity v. Government",
 };
 
+export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_PER_CAPITA: Parameter = {
+  value: 5314340.315768355,
+  parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_PER_CAPITA",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_per_capita",
+  unit: "USD/person",
+  displayName: "Corporate Damages Prosecutor Gross Pleading Exposure Per Living Human",
+  description: "Gross death-based pleading exposure per living human if the judgment were distributed as universal residual restitution. This is not a final award.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL / GLOBAL_POPULATION_2024",
+  latex: "\\begin{gathered}\nD_{corp,plead,gross,pc} = \\frac{D_{corp,plead,gross}}{Pop_{global}} = \\frac{\\$42500T}{8B} = \\$5.31M\n\\\\[0.5em]\n\\text{where } D_{corp,plead,gross} = D_{corp,floor} + D_{corp,med,gross} = \\$4310T + \\$38200T = \\$42500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [2262175.2814962254, 8482391.365931023],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL: Parameter = {
   value: 4.251472252614684e+16,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL",
@@ -4225,6 +4241,22 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS: Pa
   formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE + CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE",
   latex: "\\begin{gathered}\nD_{corp,plead,DALY} = D_{corp,floor} + D_{corp,med,gross} + D_{corp,DALY,gross} = \\$4310T + \\$38200T + \\$30000T = \\$72500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } D_{corp,DALY,gross} = DALYs_{post,disease} \\times Value_{QALY} = 200B \\times \\$150K = \\$30000T\n\\\\[0.5em]\n\\text{where } DALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\end{gathered}",
   confidenceInterval: [3.704105926007588e+16, 9.918255649446518e+16],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS_PER_CAPITA: Parameter = {
+  value: 9065766.535752865,
+  parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS_PER_CAPITA",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_with_dalys_per_capita",
+  unit: "USD/person",
+  displayName: "Corporate Damages Prosecutor Gross Pleading Exposure With DALYs Per Living Human",
+  description: "Gross stacked pleading exposure per living human if the death and DALY pleading stack were distributed as universal residual restitution. This is not a final award.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS / GLOBAL_POPULATION_2024",
+  latex: "\\begin{gathered}\nD_{corp,plead,DALY,pc} = \\frac{D_{corp,plead,DALY}}{Pop_{global}} = \\frac{\\$72500T}{8B} = \\$9.07M\n\\\\[0.5em]\n\\text{where } D_{corp,plead,DALY} = D_{corp,floor} + D_{corp,med,gross} + D_{corp,DALY,gross} = \\$4310T + \\$38200T + \\$30000T = \\$72500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } D_{corp,DALY,gross} = DALYs_{post,disease} \\times Value_{QALY} = 200B \\times \\$150K = \\$30000T\n\\\\[0.5em]\n\\text{where } DALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\end{gathered}",
+  confidenceInterval: [4573012.000524101, 12479765.152367432],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
   manualPageTitle: "Humanity v. Government",
 };
@@ -11595,8 +11627,10 @@ export const parameters = {
   CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE,
   CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE,
   CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE,
+  CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_PER_CAPITA,
   CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL,
   CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS,
+  CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS_PER_CAPITA,
   CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_PER_CAPITA,
   CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL,
   CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA,
@@ -14349,9 +14383,9 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 728,
+  total: 730,
   external: 226,
-  calculated: 362,
+  calculated: 364,
   definitions: 140,
   citations: 165,
 } as const;

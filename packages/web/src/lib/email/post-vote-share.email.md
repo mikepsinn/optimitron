@@ -22,7 +22,7 @@
 
 HUMANITY MANAGER · ASSIGNMENT 1
 
-Forward this message.
+Forward this message to everyone you don't want to suffer and die of horrible diseases.
 
 You are now Humanity Manager for [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) humans. Get them to spend [30 seconds](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) voting on the [1% Treaty](http://localhost:3001/treaty). The trade: one of Earth's [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) stored apocalypses for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trials, pulling disease eradication from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 

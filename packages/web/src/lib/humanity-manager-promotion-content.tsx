@@ -46,7 +46,8 @@ export function createHumanityManagerPromotion({
       <>
         <PromoEyebrow>Humanity Manager · Assignment 1</PromoEyebrow>
         <PromoHeading>
-          Forward this message.
+          Forward this message to everyone you don't want to suffer and die of
+          horrible diseases.
         </PromoHeading>
         <PromoBody>
           <PromoText>

@@ -27,30 +27,21 @@
 - Add your organization. Publicly support the [1% Treaty](/treaty) once. Then use the member link, email starter, website button, or iframe to help your audience answer the Global Survey to End War and Disease.
 - Join first. Your tools page gives you the member link, email starter, website button, iframe, one-hour action checklist, and outreach grant request draft for funding from the International Campaign.
 ### APPLY FOR A CAMPAIGN GRANT
-- Estimate the outreach grant your organization could request from the International Campaign to End War and Disease to run the Global Survey to End War and Disease through your audience. Campaign links and embeds keep attribution and impact measurement in one system.
-- OUTREACH CAPACITY
-- EMAIL LIST
-- MONTHLY SITE VISITORS
-- SOCIAL REACH
-- MONTHS EMBEDDED
-- ASSUMPTIONS
-- MESSAGE REACH %
-- SURVEY RESPONSE RATE %
-- MEMBER SHARING LIFT
-- GRANT $ PER RESPONSE
+- Use this after you join: one email, one social post, and a website embed can turn your existing audience into verified responses to the Global Survey to End War and Disease. The estimate starts with the grant request and lives saved. Change the assumptions below if you need to.
 - GRANT REQUEST
 - $3,960
 - ESTIMATED OUTREACH COST PER RESPONSE: $2
-- SURVEY RESPONSES
-- 1,980
-- FROM 66,000 PEOPLE REACHED
 - MODELED LIVES SAVED
 - 5,346
 - $0.74 PER MODELED LIFE SAVED
+- SURVEY RESPONSES
+- 1,980
+- FROM 66,000 PEOPLE REACHED
 - SUFFERING PREVENTED
 - 109,058
 - YEARS OF SUFFERING PREVENTED
 - 1,980 verified survey responses × [2.7](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) lives and [55](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) years prevented per response. At an estimated outreach cost of $2 per response, the outreach request is $3,960.
+#### SHOW ASSUMPTIONS
 #### GRANT REQUEST DRAFT
 - COPY REQUEST DRAFT
 - LEGAL NOTES FOR ORGANIZATIONS

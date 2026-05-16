@@ -22,6 +22,9 @@
 - LAST NAME
 - I have permission or legal authority to add this person, or they are deceased and I am their family member or personal representative.
 - I understand public plaintiff cards, photos, comments, memorial details, and evidence may be visible to anyone.
+### IF ANYONE IN YOUR FAMILY DIED OF DISEASE AFTER [1949](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html), THEIR DEATH WAS WRONGFUL.
+- The declaration says the war budget could have funded [37,778](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) government trial-years. Status quo clears the disease queue in [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years at [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) first treatments per year. The treaty makes trial capacity [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)x larger, so the queue clears in [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years. Count from [1913](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) and the counterfactual eradication year is [1949](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html). After that line, disease death is not fate. It is government negligence of the general welfare.
+- [REGISTER A PLAINTIFF](#register-plaintiff)
 - PUBLIC PLAINTIFFS
 ### PLAINTIFFS IN [HUMANITY V. GOVERNMENT](/humanity-v-government)
 - [NIKHIL YADALA“Trying to solve suffering at scale, and improving human flourishing without increasing the suffering. ”ADDED BY NIKHIL YADALA](/people/empirical-trailblazer)
