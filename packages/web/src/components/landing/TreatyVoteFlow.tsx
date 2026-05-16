@@ -173,31 +173,26 @@ export function TreatyVoteFlow({
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
   const initialVoteShellClassName = compactInitialScreen
-    ? "min-h-0 overflow-visible px-0 py-0 sm:px-0 sm:py-0"
+    ? "min-h-0 overflow-visible px-4 py-0 sm:px-8 sm:py-0"
     : "py-3 sm:py-10";
   // Cut mobile vertical spacing so the submit button (which appears after
   // first slider drag) fits in the viewport. TreatyFlowShell defaults to
   // `space-y-10 py-10` between children; on mobile that adds ~120px of
   // gap stacked across headline / paragraph / allocation / submit, which
-  // pushes the submit below the fold. Desktop spacing unchanged via sm:.
+  // pushes the submit below the fold.
   const initialVoteContentClassName = compactInitialScreen
-    ? "max-w-4xl flex-none justify-start py-0 sm:py-0"
+    ? "max-w-4xl flex-none justify-start space-y-3 py-2 sm:space-y-6 sm:py-0"
     : "max-w-4xl space-y-5 py-4 sm:space-y-10 sm:py-12";
 
-  // After the user releases the slider, scroll the just-revealed submit
-  // button into view (block: 'nearest' — scrolls only the minimum to make
-  // it visible). Triggered on pointerup so we don't disrupt the active
-  // drag interaction; only fires once userHasDragged is true (submit
-  // button is mounted).
+  // Give AnimatePresence a moment to mount the submit button before scrolling.
   const handleSliderRelease = () => {
     if (typeof window === "undefined") return;
-    // requestAnimationFrame defers until the AnimatePresence mount completes.
-    window.requestAnimationFrame(() => {
+    window.setTimeout(() => {
       submitButtonRef.current?.scrollIntoView({
         behavior: "smooth",
-        block: "nearest",
+        block: "center",
       });
-    });
+    }, 75);
   };
 
   useEffect(() => {
@@ -758,22 +753,22 @@ export function TreatyVoteFlow({
               className={initialVoteShellClassName}
               contentClassName={initialVoteContentClassName}
             >
-              <h1 className="mx-auto max-w-4xl text-center text-3xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
+              <h1 className="mx-auto max-w-4xl text-center text-2xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
                 {sliderHeadline}
               </h1>
 
               <TreatyFlowParagraph
                 dropCap
-                className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"
+                className="mx-auto max-w-3xl text-base leading-7 sm:text-2xl sm:leading-10"
               >
                 {VOTE_SECTION.sliderPrompt}
               </TreatyFlowParagraph>
 
               {/* Allocation Display */}
-              <div className="space-y-8">
-                <div className="grid grid-cols-2 gap-4 sm:gap-12">
+              <div className="space-y-3 sm:space-y-8">
+                <div className="grid grid-cols-2 gap-3 sm:gap-12">
                   <div className="text-center">
-                    <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
+                    <div className="mb-1 text-4xl font-black text-[var(--treaty-ink)] sm:mb-2 sm:text-6xl">
                       {militaryAllocation}%
                     </div>
                     <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
@@ -781,7 +776,7 @@ export function TreatyVoteFlow({
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
+                    <div className="mb-1 text-4xl font-black text-[var(--treaty-ink)] sm:mb-2 sm:text-6xl">
                       {clinicalTrialsAllocation}%
                     </div>
                     <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
@@ -791,7 +786,7 @@ export function TreatyVoteFlow({
                 </div>
 
                 {/* Slider with Animation */}
-                <div className="relative px-2 pb-10 pt-3">
+                <div className="relative px-0 pb-3 pt-1 sm:px-2 sm:pb-10 sm:pt-3">
                   <AnimatePresence>
                     {showAnimation && !userHasDragged && (
                       <>
