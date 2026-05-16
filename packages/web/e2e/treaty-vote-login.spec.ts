@@ -111,17 +111,17 @@ test("signed-in user can sign out from the dashboard", async ({ page }) => {
   // Confirm we stayed on /dashboard (i.e. the jwt-callback regression is fixed).
   expect(page.url()).toMatch(/\/dashboard/);
 
-  // The main DashboardClient's "SIGN OUT" button is the one rendered on the
-  // default host. The ReferendumSiteDashboardClient logout is covered by the
-  // unit tests (its surface is only rendered on the treaty host, which needs
-  // host-header manipulation unavailable in a generic Playwright run).
-  const signOutButton = page.locator(
-    "button:has-text('Sign Out'), button:has-text('SIGN OUT')",
-  );
-  await expect(signOutButton.first()).toBeVisible({ timeout: 10_000 });
+  const menuTrigger = page.getByRole("button", { name: "Open menu" });
+  await expect(menuTrigger).toBeVisible({ timeout: 10_000 });
+  await menuTrigger.click();
+
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible({ timeout: 10_000 });
+  const signOutButton = dialog.getByRole("button", { name: /Sign Out/i });
+  await expect(signOutButton).toBeVisible({ timeout: 10_000 });
   await Promise.all([
     page.waitForURL((url) => url.pathname === "/", { timeout: 10_000 }),
-    signOutButton.first().click(),
+    signOutButton.click(),
   ]);
 
   // Re-visiting /dashboard should now redirect to /auth/signin.
