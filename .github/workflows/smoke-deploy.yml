@@ -15,7 +15,7 @@ permissions:
 #    Deployment Protection -> Protection Bypass for Automation.
 # 3. Add the same secret to Production if you want production smoke to hit the
 #    exact protected *.vercel.app deployment URL. Without it, production smoke
-#    uses the public warondisease.org alias, which is the user-facing surface.
+#    uses the public production aliases so host-specific outages stay visible.
 
 jobs:
   smoke:
@@ -48,6 +48,7 @@ jobs:
           DEPLOYMENT_JSON: ${{ toJSON(github.event.deployment) }}
           DEPLOYMENT_STATUS_JSON: ${{ toJSON(github.event.deployment_status) }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com' }}
         run: |
           node <<'NODE'
           const fs = require("node:fs");
@@ -82,21 +83,39 @@ jobs:
             environment === "Production" &&
             parsedUrl.hostname.endsWith(".vercel.app") &&
             !bypassSecret;
-          const smokeUrl = isProtectedVercelDeploymentUrl
-            ? "https://warondisease.org"
-            : targetUrl;
+          const publicProductionSmokeUrls = parseUrlList(
+            process.env.PUBLIC_PRODUCTION_SMOKE_URLS,
+          );
+          const smokeUrls = isProtectedVercelDeploymentUrl
+            ? publicProductionSmokeUrls
+            : [targetUrl];
+
+          if (isProtectedVercelDeploymentUrl && smokeUrls.length === 0) {
+            throw new Error(
+              "PUBLIC_PRODUCTION_SMOKE_URLS must include at least one public production URL when Production deployment protection is enabled without a bypass secret.",
+            );
+          }
 
           if (isProtectedVercelDeploymentUrl) {
             console.log(
-              "Production deployment URL is Vercel-protected and no Production bypass secret is configured; smoking the public production domain instead.",
+              "Production deployment URL is Vercel-protected and no Production bypass secret is configured; smoking the public production domains instead.",
             );
           }
 
           fs.appendFileSync(
             process.env.GITHUB_OUTPUT,
-            `environment=${environment}\nurl=${smokeUrl}\nsource_url=${targetUrl}\n`,
+            `environment=${environment}\nurl=${smokeUrls[0]}\nurls=${smokeUrls.join(",")}\nsource_url=${targetUrl}\n`,
           );
-          console.log(`Resolved ${environment} smoke target: ${smokeUrl}`);
+          console.log(
+            `Resolved ${environment} smoke target(s): ${smokeUrls.join(", ")}`,
+          );
+
+          function parseUrlList(value) {
+            return String(value || "")
+              .split(/[,\s]+/u)
+              .map((url) => url.trim())
+              .filter(Boolean);
+          }
           NODE
 
       - name: Run deploy smoke
@@ -104,6 +123,7 @@ jobs:
         env:
           PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
           PROD_URL: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.url || '' }}
+          PROD_URLS: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.urls || '' }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
         run: |
