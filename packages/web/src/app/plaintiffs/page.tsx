@@ -1,6 +1,4 @@
 import {
-  CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR,
-  CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR,
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
@@ -11,6 +9,7 @@ import {
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
+import type { Parameter } from "@optimitron/data/parameters";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -36,6 +35,38 @@ const VALID_SORT_KEYS: RepresentedPeopleSortKey[] = [
   "died-closest-to-cure",
 ];
 const PLAINTIFFS_PAGE_SIZE = 24;
+const CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR = {
+  value: 1913,
+  parameterName: "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR",
+  unit: "year",
+  displayName: "Counterfactual Disease Eradication Start Year",
+  description:
+    "Start year for the Fed-era military-spending counterfactual used to estimate when disease should have been functionally eradicated.",
+  sourceType: "definition",
+  confidence: "low",
+  manualPageUrl:
+    "https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html",
+  manualPageTitle: "Declaration of Optimization",
+} satisfies Parameter;
+const CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR = {
+  value:
+    CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR.value +
+    Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value),
+  parameterName: "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR",
+  unit: "year",
+  displayName: "Counterfactual Disease Eradication Year",
+  description:
+    "Counterfactual year by which disease should have been functionally eradicated if governments had redirected Fed-era war spending into treaty-scale clinical trial capacity.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula:
+    "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR + round(DFDA_QUEUE_CLEARANCE_YEARS)",
+  latex:
+    "\\begin{gathered}\nY_{counterfactual} = 1913 + round(35.96) = 1949\n\\\\[0.5em]\nT_{queue,trial} = \\frac{443}{12.3} = 36\n\\end{gathered}",
+  manualPageUrl:
+    "https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html",
+  manualPageTitle: "Declaration of Optimization",
+} satisfies Parameter;
 const FILTER_PARAM_KEYS = new Set([
   "cause",
   "conditionId",
