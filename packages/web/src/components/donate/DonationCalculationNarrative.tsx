@@ -18,11 +18,9 @@ import {
   GLOBAL_DISEASE_DEATHS_PER_MINUTE,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_REGISTERED_VOTERS,
-  GLOBAL_WARHEAD_COUNT,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
-  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
   POLITICAL_SUCCESS_PROBABILITY,
   SAFE_COMPOUNDS_COUNT,
   STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT,
@@ -35,6 +33,8 @@ import {
   UNEXPLORED_RATIO,
   WILLING_TRIAL_PARTICIPANTS_GLOBAL,
 } from "@optimitron/data/parameters";
+import { NUCLEAR_OVERKILL_ALZHEIMERS_TAGLINE } from "@optimitron/data/campaign";
+import { ParameterTemplate } from "@/components/shared/ParameterTemplate";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import type { DonationImpactDerived } from "./donation-impact-calc";
 
@@ -337,7 +337,7 @@ export function DonationCalculationNarrative({
           />{" "}
           every minute. Every minute of delay, 104 humans permanently stop. With
           the current live assumptions, the model estimates{" "}
-          <strong>{formatQuantity(derived.livesSaved)}</strong> expected deaths
+          <strong>{formatQuantity(derived.livesSaved)}</strong> deaths
           prevented and <strong>{formatQuantity(sufferingYears)}</strong> years
           of suffering and disability prevented.
         </NarrativeStep>
@@ -376,26 +376,19 @@ export function DonationCalculationNarrative({
             param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
           />{" "}
           times less than military spending. Your chance of dying from disease
-          is 100%. Your current budget does not reflect this. Earth owns{" "}
-          <ParameterValue
-            className="font-black"
-            figures={3}
-            param={GLOBAL_WARHEAD_COUNT}
-          />{" "}
-          nuclear warheads.{" "}
-          <ParameterValue
-            className="font-black"
-            figures={2}
-            param={NUCLEAR_WINTER_WARHEAD_THRESHOLD}
-          />{" "}
-          is enough for nuclear winter. We have{" "}
-          <ParameterValue
-            className="font-black"
-            figures={3}
-            param={NUCLEAR_WINTER_OVERKILL_FACTOR}
-          />{" "}
-          apocalypses&apos; worth of weapons. Keep the deterrent. Spend one
-          slice curing every disease.
+          is 100%. Your current budget does not reflect this.{" "}
+          <ParameterTemplate
+            template={NUCLEAR_OVERKILL_ALZHEIMERS_TAGLINE}
+            values={{
+              NUCLEAR_WINTER_OVERKILL_FACTOR: (
+                <ParameterValue
+                  className="font-black"
+                  figures={3}
+                  param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+                />
+              ),
+            }}
+          />
         </NarrativeStep>
 
         <NarrativeStep
@@ -459,10 +452,11 @@ export function DonationCalculationNarrative({
         >
           That is{" "}
           <strong>{formatQuantity(derived.vsBedNetsMultiplier)}x</strong> the
-          cost-effectiveness of bed nets at the live assumptions. Your
-          calculator will display an error, emit a tiny electronic scream, and
-          attempt to leave the desk. This is correct. The published skeptical
-          case assumes a 99% chance humanity fumbles this and still comes out{" "}
+          cost-effectiveness of bed nets at the live assumptions. If the number
+          looks absurd, good — that is the if-it-works case. Dial the slider
+          down to the published skeptical case (1% success, which assumes a 99%
+          chance humanity fumbles this) and the treaty campaign still comes
+          out{" "}
           <ParameterValue
             className="font-black"
             figures={3}
@@ -475,9 +469,9 @@ export function DonationCalculationNarrative({
             figures={2}
             param={BED_NETS_COST_PER_DALY}
           />
-          . This model suggests the treaty campaign may be the most
-          cost-effective way to reduce human suffering per dollar spent. If that
-          sounds insane, good. Change the assumptions or attack the citations.
+          . Either direction, this model suggests the treaty campaign may be
+          the most cost-effective way to reduce human suffering per dollar
+          spent. Attack the citations or change the assumptions.
         </NarrativeStep>
       </ol>
     </section>

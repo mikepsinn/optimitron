@@ -156,8 +156,8 @@ export function TreasuryAllocationViz() {
             </h3>
             <p className="text-xs font-bold leading-relaxed">
               Aligned politicians are funded through the Incentive Alignment
-              Bond mechanism &mdash; 10% of IAB revenue flows to the political
-              incentive layer. $WISH tax and IABs are completely separate
+              Bond mechanism &mdash; 10% of IAB revenue funds aligned-politician
+              Super PACs. $WISH tax and IABs are completely separate
               systems. No outcomes? No funding. Simple.
             </p>
           </div>

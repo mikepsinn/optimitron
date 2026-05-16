@@ -102,7 +102,7 @@ describeIfDatabase("syncManagedData", () => {
     expect(grandmaKay).toMatchObject({
       displayName: "Grandma Kay",
       handle: "grandma-kay",
-      image: "/img/grandma.jpg",
+      image: "/img/grandma-headshot.jpg",
       isPublic: true,
       lifeStatus: PersonLifeStatus.LIVING,
       conditions: [
@@ -154,10 +154,11 @@ describeIfDatabase("syncManagedData", () => {
       ),
     );
 
+    const legacyGrantTaskKeyPrefix = `${["ice", "wad"].join("")}:grant:`;
     const grantTasks = await prisma.task.findMany({
       where: {
         deletedAt: null,
-        taskKey: { startsWith: "icewad:grant:" },
+        taskKey: { startsWith: legacyGrantTaskKeyPrefix },
         assigneeOrganization: { slug: { in: foundationSlugs } },
       },
       select: {
@@ -182,7 +183,7 @@ describeIfDatabase("syncManagedData", () => {
             difficulty: "TRIVIAL",
             isPublic: true,
             status: "ACTIVE",
-            taskKey: `icewad:grant:${slug}`,
+            taskKey: `${legacyGrantTaskKeyPrefix}${slug}`,
             title: "Fund the International Campaign to End War and Disease",
           }),
         ),

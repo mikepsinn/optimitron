@@ -16,15 +16,13 @@
 - COURT OF HUMANITY - DAMAGES CASE
 ## HUMANITY V. GOVERNMENTS OF EARTH
 - THE INDICTMENT
-- Governments were hired to promote the general welfare, defined as the median health and wealth of the citizenry. They collect $36.5 trillion a year for the service.
+- You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare — i.e. maximize median healthy life years and median after-tax inflation-adjusted income.
 - The citizenry would like to actually receive this service at some point.
-- Instead, these public servants used $170 trillion of their salary to murder approximately 310 million humans over the last century of their employment.
-- The dead included roughly 930,000 doctors, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and 102 million children who will never grow up to replace them.
-- Murdering 310 million of your employers is the opposite of promoting their welfare, and would be grounds for termination in any other employment contract humans have ever signed.
-- Had governments not spent $170 trillion murdering those people and destroying everything they spent their entire lives building, the average human alive today would earn $333,636 a year instead of $14,375. Dead scientists do not discover things and exploded cities are very expensive to fix.
+- Instead, these public servants used [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their salary to murder approximately [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans over the last century of their employment.
+- The dead included roughly 930,000 doctors, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them.
+- Murdering your employers is the opposite of promoting their welfare, and would be grounds for termination in any other employment contract humans have ever signed.
+- Had governments not spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering those people and destroying everything they spent their entire lives building, the average human alive today would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html). Dead scientists do not discover things and exploded cities are very expensive to fix. [Read the evidence](https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html).
 - [VOTE ON THE FINDING](#verdict)
-- [SUPPORT THE SETTLEMENT](/vote)
-- [READ THE EVIDENCE](https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html)
 - VOTE ON THE FINDING
 ### SHOULD GOVERNMENTS OWE YOU FULL DAMAGES?
 - Should the governments of Earth be found liable for preventable mass death and owe full damages of $2.74 million to each living human?
@@ -33,9 +31,8 @@
 - FIND FOR HUMANITY
 - FIND FOR GOVERNMENTS
 - NOT SURE
-- If a majority of humanity votes yes, no money appears by magic. That would be convenient and therefore not how Earth works. It does create a public verdict every government, court, investor, and candidate has to answer.
 ### IF THIS WERE A CORPORATION
-- If a corporation were paid $36.5 trillion a year to promote the general welfare and misused the funds to this degree, it would be prosecuted, fined, monitored, and its officers imprisoned.
+- If a corporation were paid [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare and misused the funds to this degree, it would be prosecuted, fined, monitored, and its officers imprisoned.
 - Pfizer paid $2.3 billion for health-care fraud. BP paid $20.8 billion for the Deepwater Horizon spill. Volkswagen paid $4.3 billion for cheating emissions tests and accepted a government monitor.
 - The defendants here have a larger revenue, a larger customer base, and a larger body count.
 ### THE CASE CAPTION
@@ -44,27 +41,19 @@
 - DUTY
 - Governments accept compulsory payment to protect the public and promote the general welfare. That is the job description.
 - BREACH
-- They spend 604 times more on military capacity than on government clinical trials. Disease is what actually kills their citizens.
+- They spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times more on military capacity than on government clinical trials. Disease is what actually kills their citizens.
 - CAUSATION
 - Some deaths were direct. Others happened because treatments were delayed, trials were not funded, and the cure money became hardware for organized killing.
 - DAMAGES
-- The cautious floor is $538K per living human. The prosecutor's base demand is $913K.
+- The full claim is per living human, because every surviving employer inherited the bill for the policy that killed the others.
 ### THE THREE COUNTS
-- COUNT 1 — DEATH BY WAR 310 million deaths The defendants, between 1900 and the present, did willfully and with premeditation engage in the organized killing of 310 million of their own employers.
-- COUNT 2 — DEATH BY REGULATORY DELAY 102 million deaths The defendants required an additional 8.2 years of efficacy testing before letting humans access drugs already proven safe. 53 years of warnings. 102 million dead. “We did not know” is no longer available as a defense.
-- COUNT 3 — DEATH BY MISALLOCATION 37,778 trial-years Damages here are the counterfactual: what humanity would have had if governments had frozen real military spending at 1900 levels and redirected the rest to keeping their citizens alive. The war budget since 1913 alone could have funded 37,778 years of government clinical trials.
+- COUNT 1 — DEATH BY WAR [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) deaths The defendants, between 1900 and the present, did willfully and with premeditation engage in the organized killing of [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their own employers.
+- COUNT 2 — DEATH BY REGULATORY DELAY [102 million](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) deaths The defendants required an additional [8.2 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of efficacy testing before letting humans access drugs already proven safe. 53 years of warnings. [102 million](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) dead. “We did not know” is no longer available as a defense.
+- COUNT 3 — DEATH BY MISALLOCATION [37,778](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) trial-years Damages here are the counterfactual: what humanity would have had if governments had frozen real military spending at 1900 levels and redirected the rest to keeping their citizens alive. The war budget since 1913 alone could have funded [37,778](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) years of government clinical trials.
 ### THE DAMAGES DEMAND
-- CAUTIOUS FLOOR
-- $538K
-- Per living human, before punitive theories.
-- PROSECUTOR DEMAND
-- $913K
-- Adds drugs never developed because the trials were never funded.
-- TRIPLE DAMAGES
-- $2.74M
-- The False Claims Act triples damages when a defendant defrauds the government. Here, the defendants ARE the government, defrauding the citizenry. Triple damages apply.
-- The demand is not one suspicious monster number. It is a ledger: war deaths, regulatory delay deaths, destroyed property, missing public money, and the cures never developed because the research budget was busy becoming weapons.
-- Alternative pleadings. If the court rejects the wider theory, the case still has the floor: $538K per person. If it accepts a False Claims Act-style triple-damages analogy, exposure reaches $2.74M per person. The size of the number reflects the size of the death toll. The defendants set both.
+- FULL DAMAGES CLAIM
+- [$2.74M](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html)
+- Per living human. The False Claims Act triples damages when a defendant defrauds the government. Here, the defendants ARE the government, defrauding the citizenry. Triple damages apply.
 ### THE USUAL DEFENSES
 - "THESE ARE POLICY DISAGREEMENTS."
 - Negligent homicide requires duty, breach, causation, damages, and foreseeable risk. The defendants meet all five.
@@ -90,8 +79,7 @@
 - 102M
 - Default 102M (Invisible Graveyard primary estimate). Low is 36.9M. High is 214M. These are patients who died while already-safe treatments waited for efficacy approval.
 - WHAT EACH LIVING HUMAN IS OWED, AT YOUR ASSUMPTIONS
-- Total: $4.31Q
-- BASE DEMAND
-- Total: $7.31Q
+- FULL DAMAGES DEMAND
+- $2.74M
 - Total: $21.92Q
-- Floor = war deaths + regulatory-delay deaths + property/environmental destruction + excess military spending + Pentagon failed-audit penalty. Base demand adds deaths from drugs never developed. Triple damages means multiplying the base demand by three, as some fraud laws do.
+- The demand counts war deaths, regulatory-delay deaths, property/environmental destruction, excess military spending, the Pentagon failed-audit penalty, and drugs never developed because the trial money went to weapons. The False Claims Act analogy triples the body-count claim.

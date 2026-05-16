@@ -58,13 +58,10 @@ describe("HumanityVGovernmentVerdictVote", () => {
     await act(async () => {
       root.render(
         <HumanityVGovernmentVerdictVote
-          abstainCount={0}
           existingAnswer={null}
           fullDamagesLabel="$2.74 million"
-          noCount={0}
           question="Should governments owe full damages?"
           referendumSlug="court-humanity-v-government-verdict"
-          yesCount={0}
         />,
       );
     });
@@ -96,13 +93,10 @@ describe("HumanityVGovernmentVerdictVote", () => {
     await act(async () => {
       root.render(
         <HumanityVGovernmentVerdictVote
-          abstainCount={0}
           existingAnswer={null}
           fullDamagesLabel="$2.74 million"
-          noCount={0}
           question="Should governments owe full damages?"
           referendumSlug="court-humanity-v-government-verdict"
-          yesCount={0}
         />,
       );
     });

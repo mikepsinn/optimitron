@@ -40,10 +40,84 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
-          # prompt: 'Update the pull request description to include a summary of changes.'
+  # Auto-dispatched when Mike taps the 💬 button on a Vercel preview's
+  # visual-review HTML (packages/web/scripts/build-visual-review.mjs).
+  # That button opens a GitHub issue with title prefix "Visual review —"
+  # and a body containing the per-screen context (route, auth, viewing,
+  # screenshot URL, originating PR number) plus Mike's typed complaint.
+  # Closes the review→complaint→fix loop without copy-paste back into chat.
+  claude-visual-review-complaint:
+    # Security: this job runs anthropics/claude-code-action with
+    # contents:write + pull-requests:write. Without the author-association
+    # gate, anyone who can open an issue in the repo could trigger a
+    # write-capable Claude Code run just by titling their issue
+    # "Visual review —". Restrict to OWNER / MEMBER / COLLABORATOR — same
+    # set that GitHub's own branch protection treats as trusted.
+    if: |
+      github.event_name == 'issues' &&
+      github.event.action == 'opened' &&
+      startsWith(github.event.issue.title, 'Visual review —') &&
+      (
+        github.event.issue.author_association == 'OWNER' ||
+        github.event.issue.author_association == 'MEMBER' ||
+        github.event.issue.author_association == 'COLLABORATOR'
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
+      - name: Run Claude Code on visual-review complaint
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          prompt: |
+            You've been auto-dispatched on a visual-review complaint Mike
+            filed from his phone while reviewing the Vercel preview HTML
+            for an open pull request. The issue body contains the full
+            per-screen context block produced by build-visual-review.mjs:
+            route, auth state, viewing (diff / before / after / markdown-
+            diff), screenshot URL, and a line "Originating PR: #N".
+
+            Your job: take Mike's complaint at face value and fix it
+            against the originating PR's branch, not main.
+
+            Steps:
+              1. Parse the issue body. Extract the originating PR number
+                 from the "Originating PR: #N" line. Extract the route,
+                 auth state, project (Mobile / Desktop), and viewing.
+              2. `gh pr view <N> --json headRefName -q .headRefName` to
+                 get the branch name. `git fetch origin && git checkout
+                 <branch>` to land on it.
+              3. Read the user-facing code for that route — usually
+                 packages/web/src/app/<route-slug>/page.tsx and any
+                 components it imports. For markdown-diff complaints,
+                 check page.<authState>.md alongside.
+              4. Make the smallest focused fix that addresses Mike's
+                 specific complaint at the bottom of the issue body.
+                 Don't rearchitect. Don't refactor. Don't bundle.
+                 Follow Wishonia voice rules in CLAUDE.md if the change
+                 is copy. Call mcp__optimitron-tasks__searchManual before
+                 inventing prose. Use <ParameterValue> for any number.
+              5. Commit with a message that references this issue (#X)
+                 and the PR (#N). Push to the PR branch.
+              6. Post a comment on THIS issue summarizing: what you
+                 changed (file:line refs), the commit SHA, and one line
+                 telling Mike to re-pull the regenerated visual-review
+                 HTML once CI finishes to verify on his phone.
+              7. If Mike's complaint is ambiguous or you can't safely
+                 fix it without his clarification, post a comment asking
+                 ONE specific clarifying question. Do not guess.
+            Stay focused. The whole point of this pipeline is that Mike
+            can complain quickly and you turn it around without him
+            leaving the review HTML.

@@ -5,19 +5,21 @@ import {
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_REDUCTION_PCT,
 } from "@optimitron/data/parameters";
+import { TRADE_ONE_APOCALYPSE_HEADLINE } from "@optimitron/data/campaign";
 import { headers } from "next/headers";
 import { ChaplinReference } from "@/components/donate/ChaplinReference";
 import { DonationImpactCalculator } from "@/components/donate/DonationImpactCalculator";
 import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
 import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
+import { ParameterTemplate } from "@/components/shared/ParameterTemplate";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getSiteMetadata } from "@/lib/metadata";
 import { donateLink, onePercentTreatyPaperLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
-import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
 
 export async function generateMetadata() {
   const hdrs = await headers();
@@ -42,19 +44,32 @@ export default function DonatePage() {
             The 1% Treaty
           </p>
           <h1 className="mt-2 text-3xl font-black uppercase leading-tight sm:text-5xl">
-            Trade one of humanity&apos;s{" "}
-            <ParameterValue
-              className="font-black"
-              figures={3}
-              param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
-            />{" "}
-            apocalypses for disease eradication in{" "}
-            <ParameterValue
-              className="font-black"
-              figures={3}
-              param={DFDA_QUEUE_CLEARANCE_YEARS}
-            />{" "}
-            years.
+            <ParameterTemplate
+              template={TRADE_ONE_APOCALYPSE_HEADLINE}
+              values={{
+                NUCLEAR_WINTER_OVERKILL_FACTOR: (
+                  <ParameterValue
+                    className="font-black"
+                    figures={3}
+                    param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+                  />
+                ),
+                DFDA_QUEUE_CLEARANCE_YEARS: (
+                  <ParameterValue
+                    className="font-black"
+                    figures={2}
+                    param={DFDA_QUEUE_CLEARANCE_YEARS}
+                  />
+                ),
+                STATUS_QUO_QUEUE_CLEARANCE_YEARS: (
+                  <ParameterValue
+                    className="font-black"
+                    figures={3}
+                    param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                  />
+                ),
+              }}
+            />
           </h1>
           <div className="mt-4 max-w-4xl space-y-3 text-base font-bold leading-7 sm:text-lg sm:leading-8">
             <p>

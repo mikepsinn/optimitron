@@ -15,6 +15,8 @@ import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
 import { storage } from "@/lib/storage";
 
 const logger = createLogger("auth-form");
+const SIGN_IN_LINK_SENT_MESSAGE =
+  "Sign-in link sent. Check spam if you do not see it within 60 seconds.";
 
 interface ProviderFlags {
   demo?: boolean;
@@ -37,12 +39,14 @@ interface AuthFormProps {
   emailPendingButtonLabel?: string;
   /** Divider label shown between the Google button and the email form. Default "or use email". */
   emailDividerLabel?: string;
-  /** Message shown below the success alert after a magic link is sent */
+  /** Message shown below the confirmation after a magic link is sent */
   emailSuccessFooter?: string;
   /** When true, skip the bordered/shadowed outer container (use inside a Card that already provides the box). */
   hideContainer?: boolean;
   /** Pre-resolved provider flags from the server — skips the client-side fetch when provided */
   providers?: ProviderFlags;
+  /** Return false to stop auth when the surrounding form is incomplete. */
+  onBeforeAuth?: () => boolean | void;
 }
 
 export function AuthForm({
@@ -61,11 +65,14 @@ export function AuthForm({
   emailSuccessFooter,
   hideContainer = false,
   providers,
+  onBeforeAuth,
 }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [infoMessage, setInfoMessage] = useState("");
-  const [pendingAction, setPendingAction] = useState<"google" | "magic" | "demo" | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [pendingAction, setPendingAction] = useState<
+    "google" | "magic" | "demo" | null
+  >(null);
 
   const isLoading = pendingAction !== null;
   const isDocument = variant === "document";
@@ -83,8 +90,13 @@ export function AuthForm({
   const containerClassName = hideContainer
     ? "w-full"
     : isDocument
-    ? "w-full border border-black bg-white p-5 text-black shadow-none"
-    : "w-full border border-neutral-950 bg-white p-6 shadow-none sm:p-7";
+      ? "w-full border border-black bg-white p-4 text-black shadow-none"
+      : compact
+        ? "w-full border border-foreground bg-background p-4 shadow-none sm:p-5"
+        : "w-full border border-neutral-950 bg-white p-5 shadow-none sm:p-6";
+  const titleWrapperClassName = compact
+    ? "mb-3 text-center"
+    : "mb-4 text-center";
   const titleClassName = isDocument
     ? "text-2xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]"
     : "text-2xl font-semibold tracking-tight text-neutral-950";
@@ -94,10 +106,12 @@ export function AuthForm({
   const dividerClassName = isDocument
     ? "flex items-center gap-3 text-xs font-bold uppercase text-black"
     : "flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500";
-  const dividerLineClassName = isDocument ? "h-px flex-1 bg-black/30" : "h-px flex-1 bg-neutral-200";
+  const dividerLineClassName = isDocument
+    ? "h-px flex-1 bg-black/30"
+    : "h-px flex-1 bg-neutral-200";
   const referralClassName = isDocument
-    ? "mb-4 text-center text-xs font-bold uppercase text-black"
-    : "mb-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500";
+    ? "mb-3 text-center text-xs font-bold uppercase text-black"
+    : "mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500";
   const labelClassName = isDocument
     ? "font-bold uppercase text-black"
     : "text-xs font-semibold uppercase tracking-[0.14em] text-neutral-700";
@@ -113,6 +127,19 @@ export function AuthForm({
   const demoButtonClassName = isDocument
     ? `w-full justify-center !border !border-black bg-white font-black uppercase text-black !shadow-none hover:!translate-x-0 hover:!translate-y-0 hover:bg-black hover:text-white active:!translate-x-0 active:!translate-y-0 ${buttonClassName}`
     : `w-full justify-center !border !border-neutral-950 !bg-white font-semibold !text-neutral-950 !shadow-none hover:!translate-x-0 hover:!translate-y-0 hover:!bg-neutral-50 active:!translate-x-0 active:!translate-y-0 ${buttonClassName}`;
+  const alertClassName = compact ? "mb-3" : "mb-4";
+  const controlsSpacingClassName = compact ? "space-y-3" : "space-y-4";
+  const formSpacingClassName = compact ? "space-y-3" : "space-y-4";
+  const fieldSpacingClassName = compact ? "space-y-1.5" : "space-y-2";
+  const confirmationClassName = compact
+    ? "flex min-h-24 flex-col items-center justify-center text-center"
+    : "flex min-h-28 flex-col items-center justify-center text-center";
+  const confirmationTextClassName = isDocument
+    ? "text-sm font-black uppercase leading-6 text-foreground"
+    : "text-sm font-semibold leading-6 text-muted-foreground";
+  const confirmationFooterClassName = isDocument
+    ? "mt-2 text-xs font-bold leading-5 text-muted-foreground"
+    : "mt-2 text-xs font-semibold leading-5 text-muted-foreground";
 
   useEffect(() => {
     if (!initialError) {
@@ -120,9 +147,14 @@ export function AuthForm({
     }
 
     setError(initialError);
+    setHasSubmitted(false);
   }, [initialError]);
 
   function persistAuthContext() {
+    if (onBeforeAuth?.() === false) {
+      return false;
+    }
+
     if (referralCode !== undefined) {
       if (referralCode) {
         storage.setSignupReferral(referralCode);
@@ -141,20 +173,21 @@ export function AuthForm({
 
     storage.clearSignupName();
     storage.clearSignupSubscribe();
+    return true;
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setInfoMessage("");
+    setHasSubmitted(false);
     setPendingAction("magic");
 
     try {
       if (!email.trim()) {
-        throw new Error("Email is required for a magic link.");
+        throw new Error("Email is required for a sign-in link.");
       }
 
-      persistAuthContext();
+      if (!persistAuthContext()) return;
 
       const result = await signIn("email", {
         email: email.trim(),
@@ -163,14 +196,17 @@ export function AuthForm({
       });
 
       if (result?.error) {
-        throw new Error("Unable to send a magic link right now.");
+        throw new Error("Unable to send a sign-in link right now.");
       }
 
-      setInfoMessage("Check your email for a sign-in link.");
+      setHasSubmitted(true);
     } catch (caughtError) {
       logger.error("Magic-link request failed", caughtError);
+      setHasSubmitted(false);
       setError(
-        caughtError instanceof Error ? caughtError.message : "Unable to send a magic link right now.",
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Unable to send a sign-in link right now.",
       );
     } finally {
       setPendingAction(null);
@@ -179,16 +215,21 @@ export function AuthForm({
 
   async function handleGoogleSignIn() {
     setError("");
-    setInfoMessage("");
+    setHasSubmitted(false);
     setPendingAction("google");
 
     try {
-      persistAuthContext();
+      if (!persistAuthContext()) {
+        setPendingAction(null);
+        return;
+      }
       await signIn("google", { callbackUrl });
     } catch (caughtError) {
       logger.error("Google sign-in failed", caughtError);
       setError(
-        caughtError instanceof Error ? caughtError.message : "Unable to continue with Google.",
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Unable to continue with Google.",
       );
       setPendingAction(null);
     }
@@ -196,10 +237,15 @@ export function AuthForm({
 
   async function handleDemoSignIn() {
     setError("");
-    setInfoMessage("");
+    setHasSubmitted(false);
     setPendingAction("demo");
 
     try {
+      if (!persistAuthContext()) {
+        setPendingAction(null);
+        return;
+      }
+
       const result = await signIn("credentials", {
         email: "demo@thinkbynumbers.org",
         password: "demo1234",
@@ -215,7 +261,9 @@ export function AuthForm({
     } catch (caughtError) {
       logger.error("Demo sign-in failed", caughtError);
       setError(
-        caughtError instanceof Error ? caughtError.message : "Demo sign-in failed.",
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Demo sign-in failed.",
       );
       setPendingAction(null);
     }
@@ -224,34 +272,45 @@ export function AuthForm({
   return (
     <div className={containerClassName}>
       {title || subtitle ? (
-        <div className="mb-5 text-center">
+        <div className={titleWrapperClassName}>
           {title ? <h2 className={titleClassName}>{title}</h2> : null}
-          {subtitle ? (
-            <p className={subtitleClassName}>{subtitle}</p>
-          ) : null}
+          {subtitle ? <p className={subtitleClassName}>{subtitle}</p> : null}
         </div>
       ) : null}
 
-      {error ? <AlertCard type="error" message={error} className="mb-4" variant="minimal" /> : null}
-      {infoMessage ? (
-        <>
-          <AlertCard type="info" message={infoMessage} className="mb-4" variant="minimal" />
-          {emailSuccessFooter ? (
-            <p className="mb-4 text-center text-xs font-semibold text-neutral-500">
-              {emailSuccessFooter}
-            </p>
-          ) : null}
-        </>
+      {error ? (
+        <AlertCard
+          type="error"
+          message={error}
+          className={alertClassName}
+          variant="minimal"
+        />
       ) : null}
 
       {referralCode ? (
-        <p className={referralClassName}>
-          Referral detected: {referralCode}
-        </p>
+        <p className={referralClassName}>Referral detected: {referralCode}</p>
       ) : null}
 
-      <div className="space-y-4">
-        {demoLoginEnabled && (
+      <div className={controlsSpacingClassName}>
+        {hasSubmitted ? (
+          <div
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className={confirmationClassName}
+          >
+            <p className={confirmationTextClassName}>
+              {SIGN_IN_LINK_SENT_MESSAGE}
+            </p>
+            {emailSuccessFooter ? (
+              <p className={confirmationFooterClassName}>
+                {emailSuccessFooter}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {!hasSubmitted && demoLoginEnabled && (
           <>
             <Button
               type="button"
@@ -261,7 +320,9 @@ export function AuthForm({
                 void handleDemoSignIn();
               }}
             >
-              {pendingAction === "demo" ? "Signing in..." : "Try Demo — No Account Needed"}
+              {pendingAction === "demo"
+                ? "Signing in..."
+                : "Try Demo — No Account Needed"}
             </Button>
 
             <div className={dividerClassName}>
@@ -272,7 +333,7 @@ export function AuthForm({
           </>
         )}
 
-        {googleEnabled ? (
+        {!hasSubmitted && googleEnabled ? (
           <Button
             type="button"
             variant="outline"
@@ -287,7 +348,7 @@ export function AuthForm({
           </Button>
         ) : null}
 
-        {googleEnabled && magicLinkEnabled ? (
+        {!hasSubmitted && googleEnabled && magicLinkEnabled ? (
           <div className={dividerClassName}>
             <span className={dividerLineClassName} />
             <span>{emailDividerLabel}</span>
@@ -295,14 +356,14 @@ export function AuthForm({
           </div>
         ) : null}
 
-        {magicLinkEnabled ? (
+        {!hasSubmitted && magicLinkEnabled ? (
           <form
-            className="space-y-4"
+            className={formSpacingClassName}
             onSubmit={(event) => {
               void handleSubmit(event);
             }}
           >
-            <div className="space-y-2">
+            <div className={fieldSpacingClassName}>
               <Label className={labelClassName} htmlFor="auth-email">
                 Email
               </Label>
@@ -331,7 +392,7 @@ export function AuthForm({
           </form>
         ) : null}
 
-        {!googleEnabled && !magicLinkEnabled ? (
+        {!hasSubmitted && !googleEnabled && !magicLinkEnabled ? (
           <AlertCard
             type="warning"
             message="No sign-in methods are enabled for this environment."

@@ -14,7 +14,7 @@
 
 import { getBaseUrl } from "@/lib/url";
 
-export const WISHONIA_AVATAR_PATH = "/sprites/wishonia/smirk-smile.png";
+export const WISHONIA_AVATAR_PATH = "/sprites/wishonia/happy-smile.png";
 
 export const WISHONIA_TITLES: readonly string[] = [
   "Chief Optimization Officer",
@@ -94,7 +94,7 @@ export function buildWishoniaSignatureText(
 }
 
 /**
- * Two-cell HTML signature with a Wishonia avatar (smirk-smile sprite — used
+ * Two-cell HTML signature with a Wishonia avatar (happy-smile sprite — used
  * elsewhere as her canonical face) and the title/tagline lines. Uses inline
  * styles + a table layout because that's what survives Gmail / Outlook /
  * Apple Mail rendering quirks. Tested against the standard email client trio.

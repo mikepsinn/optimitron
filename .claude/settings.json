@@ -6,8 +6,43 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/pre-write-architecture-check.mjs",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-write-architecture-check.mjs\"",
             "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-snapshot-handedit.mjs\"",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-snapshot-handedit.mjs\"",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-options-in-chat-before-askuserquestion.mjs\"",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-codex-rescue-agent.mjs\"",
+            "timeout": 3000
           }
         ]
       },
@@ -16,17 +51,32 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/safety-gate.mjs hook",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/safety-gate.mjs\" hook",
             "timeout": 3000
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/pre-commit-checklist.mjs",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-checklist.mjs\"",
             "timeout": 10000
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/codex-dispatch-blather.mjs",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/codex-dispatch-blather.mjs\"",
+            "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-codex-protocol.mjs\"",
+            "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-manual-search-in-copy-dispatch.mjs\"",
+            "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-audience-and-goal-on-ui-dispatch.mjs\"",
             "timeout": 3000
           }
         ]
@@ -41,13 +91,86 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/review-loop-gate.mjs\" --post-edit",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/review-loop-gate.mjs\" --post-edit",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/review-loop-gate.mjs\" --post-edit",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/review-loop-gate.mjs\" --post-ask",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/post-push-watch-pr.mjs\"",
+            "timeout": 8000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/review-loop-gate.mjs\" --stop",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/session-start-pr-check.mjs",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-pr-check.mjs\"",
             "timeout": 15000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/dev-server-check.mjs\"",
+            "timeout": 8000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/review-loop-gate.mjs\" --session-start",
+            "timeout": 3000
           }
         ]
       }
@@ -57,7 +180,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/surprise-signal.mjs",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/surprise-signal.mjs\"",
             "timeout": 5000
           }
         ]

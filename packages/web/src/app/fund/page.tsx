@@ -19,21 +19,21 @@ export const metadata = getRouteMetadata(fundLink);
 const fundingPaths = [
   {
     title: "Fund The Prize Pool",
-    body: "The current on-chain path is the Earth Optimization Prize. Deposit into the pool, recruit voters, and make the demand for the treaty legible.",
+    body: "Deposit into the Earth Optimization Prize. Bring in verified voters. Make treaty demand expensive to ignore.",
     href: ROUTES.prize,
     variant: "secondary" as const,
     color: "pink" as const,
   },
   {
     title: "Fund The Bottleneck",
-    body: "Use the public task queue to see the current highest-value bottlenecks, who owns them, and what concrete work still needs to happen.",
+    body: "Open the task queue. Pay for the blocker that actually moves votes, organizations, or leaders.",
     href: ROUTES.tasks,
     variant: "yellow" as const,
     color: "yellow" as const,
   },
   {
     title: "Check The Proof",
-    body: "If a funding ask cannot point to a measurable scoreboard, overdue task list, or politician page, it is not grounded enough yet.",
+    body: "If the ask cannot point to a scoreboard, overdue task, or leader page, keep your money.",
     href: ROUTES.scoreboard,
     variant: "cyan" as const,
     color: "cyan" as const,
@@ -43,11 +43,15 @@ const fundingPaths = [
 export default function FundPage() {
   return (
     <div>
-      <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
+      <SectionContainer
+        bgColor="background"
+        borderPosition="bottom"
+        padding="lg"
+      >
         <Container>
           <SectionHeader
             title="Fund Optimization"
-            subtitle="Put money into the highest-value bottlenecks instead of into generic hope. The system should tell you what the next dollar actually unlocks."
+            subtitle="Put money where it moves votes, organizations, leaders, or measurable treaty demand."
             size="lg"
           />
 
@@ -60,17 +64,9 @@ export default function FundPage() {
                 Money In, Accountable Work Out
               </h2>
               <p className="mb-4 text-base font-bold leading-relaxed text-background/85">
-                The product direction is simple: funding should flow into the
-                best currently grounded bottleneck, not into a vague nonprofit
-                bucket. The public queue, the overdue leader pages, the
-                scoreboard, and the proof surfaces exist so each spend can be
-                audited against real outcomes.
-              </p>
-              <p className="mb-6 text-sm font-bold leading-relaxed text-background/75">
-                Today, the live funding rail is the Earth Optimization Prize.
-                The broader procurement layer is still being built, so this page
-                routes you to the current working funding path and the proof
-                surfaces that justify it.
+                The live funding rail is the Earth Optimization Prize. Use the
+                public queue and scoreboards to check what each dollar should
+                unlock before you send it.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <GameCTA href={ROUTES.prize} variant="primary">
@@ -90,10 +86,13 @@ export default function FundPage() {
                 Grounding
               </p>
               <ul className="space-y-3 text-sm font-bold leading-relaxed text-foreground">
-                <li>The scoreboard defines the end metrics.</li>
-                <li>The task list shows the current bottlenecks.</li>
-                <li>The politician and government pages show who is failing publicly.</li>
-                <li>The manual specifies the expected-value math and prize mechanics.</li>
+                <li>Scoreboards define the end metrics.</li>
+                <li>Tasks show current bottlenecks.</li>
+                <li>Leader pages show who is overdue.</li>
+                <li>
+                  The manual specifies the expected-value math and prize
+                  mechanics.
+                </li>
               </ul>
               <NavItemLink
                 item={earthOptimizationPrizeDetailsLink}
@@ -112,7 +111,13 @@ export default function FundPage() {
         <Container>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {fundingPaths.map((path) => (
-              <BrutalCard key={path.title} bgColor={path.color} shadowSize={8} padding="lg" hover>
+              <BrutalCard
+                key={path.title}
+                bgColor={path.color}
+                shadowSize={8}
+                padding="lg"
+                hover
+              >
                 <h3 className="mb-3 text-2xl font-black uppercase text-foreground">
                   {path.title}
                 </h3>
@@ -136,9 +141,8 @@ export default function FundPage() {
                 What To Demand
               </h3>
               <p className="mb-4 text-base font-bold text-foreground">
-                Funding asks should be specific: what task, what ceiling price,
-                what proof surface, what expected downstream value, and what
-                counts as done.
+                Demand a task, ceiling price, proof surface, expected value, and
+                done condition.
               </p>
               <GameCTA href={tasksLink.href} variant="secondary">
                 See Live Tasks
@@ -150,9 +154,8 @@ export default function FundPage() {
                 What To Reject
               </h3>
               <p className="mb-4 text-base font-bold text-foreground">
-                Generic fundraising fluff, unsourced strategy decks, and work
-                that cannot be tied back to a real bottleneck should not get
-                paid just because it sounds important.
+                Reject generic fundraising fluff, unsourced strategy decks, and
+                work that cannot name the bottleneck it clears.
               </p>
               <GameCTA href={scoreboardLink.href} variant="secondary">
                 Check Outcome Metrics

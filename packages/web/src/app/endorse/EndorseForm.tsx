@@ -37,6 +37,10 @@ interface SavedOrganization {
   taskId?: string | null;
 }
 
+type OrganizationEndorsementDraft = PendingOrganizationEndorsementDraft & {
+  donationUrl?: string;
+};
+
 function createDraftId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -66,6 +70,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
   );
   const [name, setName] = useState("");
   const [website, setWebsite] = useState("");
+  const [donationUrl, setDonationUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formMode, setFormMode] = useState<FormMode>("idle");
@@ -124,6 +129,9 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
           setEntryMode("new");
           setName(first.organizationName);
           setWebsite(first.website ?? "");
+          setDonationUrl(
+            (first as OrganizationEndorsementDraft).donationUrl ?? "",
+          );
           setError(
             "I could not finish adding that organization yet. The draft is still here.",
           );
@@ -151,13 +159,15 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
   function resetNewOrganizationFields() {
     setName("");
     setWebsite("");
+    setDonationUrl("");
     currentDraftIdRef.current = null;
   }
 
-  function buildDraft(): PendingOrganizationEndorsementDraft {
+  function buildDraft(): OrganizationEndorsementDraft {
     currentDraftIdRef.current ??= createDraftId();
     return {
       clientDraftId: currentDraftIdRef.current,
+      donationUrl: donationUrl.trim() || undefined,
       organizationName: name.trim(),
       originUrl:
         typeof window !== "undefined" ? window.location.href : undefined,
@@ -347,10 +357,7 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
           button, iframe, and email starter.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link
-            href={organizationHref}
-            className={defaultButtonClassName}
-          >
+          <Link href={organizationHref} className={defaultButtonClassName}>
             Open Organization Tools
           </Link>
           {taskHref ? (
@@ -439,6 +446,22 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
               placeholder="https://example.org"
               className="w-full border-2 border-foreground bg-background px-3 py-2 font-bold text-foreground"
             />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              Donation URL
+            </label>
+            <input
+              type="url"
+              value={donationUrl}
+              onChange={(e) => setDonationUrl(e.target.value)}
+              placeholder="https://example.org/donate"
+              className="w-full border-2 border-foreground bg-background px-3 py-2 font-bold text-foreground"
+            />
+            <p className="mt-1 text-xs font-bold leading-5 text-muted-foreground">
+              Optional. Adds a small Donate to{" "}
+              {name.trim() || "your organization"} link on your public page.
+            </p>
           </div>
         </div>
       ) : null}

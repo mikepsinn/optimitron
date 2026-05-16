@@ -35,14 +35,6 @@ function getFallbackInitials(value: string) {
   );
 }
 
-function formatCategory(value: string) {
-  return value
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
 function buildDirectoryHref({
   page,
   query,
@@ -83,8 +75,6 @@ export async function generateMetadata() {
 }
 
 function PersonDirectoryRow({ person }: { person: PeopleDirectoryPerson }) {
-  const topTask = person.openTaskPreview[0] ?? null;
-  const verifiedTask = person.verifiedTaskPreview[0] ?? null;
   const roleText = [
     person.isPublicFigure ? "Public official" : null,
     person.countryCode,
@@ -95,36 +85,28 @@ function PersonDirectoryRow({ person }: { person: PeopleDirectoryPerson }) {
     person.publicTaskCount === 1 ? "" : "s"
   }`;
   const metadata = [roleText || "Person", taskCount];
-  const taskHref = topTask
-    ? `${ROUTES.tasks}/${topTask.id}`
-    : verifiedTask
-      ? `${ROUTES.tasks}/${verifiedTask.id}`
-      : null;
-  const taskLabel = topTask ? "Next task" : verifiedTask ? "Verified work" : "";
-  const task = topTask ?? verifiedTask;
 
   return (
-    <article className="grid gap-4 border-b border-border bg-background px-4 py-4 text-foreground lg:grid-cols-[minmax(240px,1.35fr)_minmax(140px,0.65fr)_minmax(260px,1.35fr)_minmax(104px,auto)] lg:items-center">
+    <Link
+      aria-label={`Open ${person.displayName} profile`}
+      className="group grid gap-4 border-b border-border bg-background px-4 py-4 text-foreground transition-colors hover:bg-muted/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground lg:grid-cols-[minmax(240px,1.35fr)_minmax(140px,0.65fr)] lg:items-center"
+      href={person.href}
+    >
       <div className="flex min-w-0 items-start gap-3">
-        <Link className="shrink-0" href={person.href}>
-          <Avatar className="h-12 w-12 border border-border bg-background">
-            <Avatar.Image
-              alt={person.displayName}
-              src={person.image ?? undefined}
-            />
-            <Avatar.Fallback className="bg-background text-sm font-black">
-              {getFallbackInitials(person.displayName)}
-            </Avatar.Fallback>
-          </Avatar>
-        </Link>
+        <Avatar className="h-12 w-12 shrink-0 border border-border bg-background">
+          <Avatar.Image
+            alt={person.displayName}
+            src={person.image ?? undefined}
+          />
+          <Avatar.Fallback className="bg-background text-sm font-black">
+            {getFallbackInitials(person.displayName)}
+          </Avatar.Fallback>
+        </Avatar>
         <div className="min-w-0">
           <h2 className="break-words text-base font-black leading-6">
-            <Link
-              className="underline-offset-4 hover:underline"
-              href={person.href}
-            >
+            <span className="underline-offset-4 group-hover:underline">
               {person.displayName}
-            </Link>
+            </span>
           </h2>
           {person.headline || person.affiliation ? (
             <p className="mt-1 break-words text-sm font-bold leading-6 text-muted-foreground">
@@ -142,47 +124,7 @@ function PersonDirectoryRow({ person }: { person: PeopleDirectoryPerson }) {
           ))}
         </div>
       </div>
-
-      <div className="min-w-0">
-        {task && taskHref ? (
-          <>
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-              {taskLabel}
-            </p>
-            <Link
-              className="mt-1 block break-words text-sm font-black leading-6 underline-offset-4 hover:underline"
-              href={taskHref}
-            >
-              {task.title}
-            </Link>
-            <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-              {formatCategory(task.category)}
-            </p>
-          </>
-        ) : (
-          <p className="text-sm font-bold text-muted-foreground">
-            No public task preview.
-          </p>
-        )}
-      </div>
-
-      <div className="flex flex-wrap gap-2 lg:justify-end">
-        <Link
-          className={`${defaultButtonClassName} min-h-10 px-3 text-xs`}
-          href={person.href}
-        >
-          Profile
-        </Link>
-        {taskHref ? (
-          <Link
-            className={`${defaultButtonClassName} min-h-10 px-3 text-xs`}
-            href={taskHref}
-          >
-            Task
-          </Link>
-        ) : null}
-      </div>
-    </article>
+    </Link>
   );
 }
 
@@ -295,11 +237,9 @@ export default async function PeoplePage({
           {data.people.length > 0 ? (
             <>
               <div className="overflow-hidden border border-border bg-background">
-                <div className="hidden border-b border-border px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground lg:grid lg:grid-cols-[minmax(240px,1.35fr)_minmax(140px,0.65fr)_minmax(260px,1.35fr)_minmax(104px,auto)]">
+                <div className="hidden border-b border-border px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground lg:grid lg:grid-cols-[minmax(240px,1.35fr)_minmax(140px,0.65fr)]">
                   <span>Person</span>
                   <span>Role</span>
-                  <span>Task</span>
-                  <span className="text-right">Open</span>
                 </div>
                 {data.people.map((person) => (
                   <PersonDirectoryRow key={person.id} person={person} />

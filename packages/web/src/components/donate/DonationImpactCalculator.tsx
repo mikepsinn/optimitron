@@ -42,7 +42,9 @@ const VOTES_STEP = 10_000_000;
 
 const SUCCESS_MIN = POLITICAL_SUCCESS_PROBABILITY.value;
 const SUCCESS_MAX = 1;
-const SUCCESS_DEFAULT = POLITICAL_SUCCESS_PROBABILITY.value;
+// Default 10% - Ottawa Treaty-anchored central estimate. Slider goes 1%
+// (skeptical floor) to 100% (if it works).
+const SUCCESS_DEFAULT = 0.10;
 const SUCCESS_STEP = 0.01;
 
 const REDUCTION_MIN = 0.005;
@@ -204,14 +206,6 @@ export function DonationImpactCalculator() {
               See how this is calculated ↓
             </a>
           </p>
-          <div className="border-2 border-foreground p-3 text-sm font-bold leading-6">
-            <p>
-              At the default assumptions, $1 buys about{" "}
-              {formatQuantity(livesPerDollar)} expected lives and{" "}
-              {formatQuantity(sufferingYearsPerDollar)} years of suffering and
-              disability prevented.
-            </p>
-          </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {(Object.keys(FIELD_LABELS) as Field[]).map((field) => (
@@ -353,7 +347,7 @@ export function DonationImpactCalculator() {
             valueText={`${(successProbability * 100).toFixed(successProbability < 0.1 ? 1 : 0)}%`}
             inputScale={100}
             suffix="%"
-            footnote="Default 1%. Drag to 100% for the if-it-works case."
+            footnote="Default 10%. Drag to 1% for the skeptical floor or 100% for the if-it-works case."
             min={SUCCESS_MIN}
             max={SUCCESS_MAX}
             step={SUCCESS_STEP}

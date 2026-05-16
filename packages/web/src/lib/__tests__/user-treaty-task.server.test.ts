@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const fireMocks = vi.hoisted(() => ({
   fireTaskTrigger: vi.fn(),
   fireTaskTriggersForEvent: vi.fn().mockResolvedValue([]),
+  syncPerVerifiedVoterTaskImpactEstimate: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -15,6 +16,11 @@ vi.mock("@/lib/triggers", () => ({
   fireTaskTriggersForEvent: fireMocks.fireTaskTriggersForEvent,
   buildTriggerContext: (extras: Record<string, unknown> = {}) => extras,
   buildTriggerParams: () => ({}),
+}));
+
+vi.mock("@/lib/tasks/per-verified-voter-impact.server", () => ({
+  syncPerVerifiedVoterTaskImpactEstimate:
+    fireMocks.syncPerVerifiedVoterTaskImpactEstimate,
 }));
 
 import {
@@ -299,6 +305,7 @@ describe("user treaty task tree", () => {
   beforeEach(() => {
     fireMocks.fireTaskTrigger.mockReset();
     fireMocks.fireTaskTriggersForEvent.mockReset();
+    fireMocks.syncPerVerifiedVoterTaskImpactEstimate.mockReset();
     fireMocks.fireTaskTriggersForEvent.mockResolvedValue([]);
   });
 
@@ -330,6 +337,12 @@ describe("user treaty task tree", () => {
       seeded.subtaskIds.completeTraining,
     );
     expect(result.subtaskStatuses.shareReferralUrl).toBe(TaskStatus.ACTIVE);
+    expect(
+      fireMocks.syncPerVerifiedVoterTaskImpactEstimate,
+    ).toHaveBeenCalledWith(
+      expect.anything(),
+      seeded.subtaskIds.signTreatyPersonally,
+    );
   });
 
   it("ensureUserTreatyTask reports created=false on subsequent fires", async () => {

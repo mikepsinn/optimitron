@@ -13,8 +13,8 @@ export function WishocracyLinkCard() {
         <p className="text-background mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
           This treasury handles UBI — every citizen gets an equal share of the
           transaction tax. Politicians are funded separately through Incentive
-          Alignment Bonds, where 10% of treaty revenue flows to the political
-          incentive layer. Your Wishocracy preferences determine what
+          Alignment Bonds, where 10% of treaty revenue funds aligned-politician
+          Super PACs. Your Wishocracy preferences determine what
           &ldquo;aligned&rdquo; means for both systems.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">

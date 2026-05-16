@@ -19,6 +19,7 @@ export function ReferendumSiteInlineSign({
   title,
   variant = "reader",
   showPrivacyToggle,
+  publicVoteDefault,
   showReaderShell = false,
 }: {
   referendumSlug: string | null;
@@ -28,6 +29,7 @@ export function ReferendumSiteInlineSign({
   title?: string;
   variant?: "stepper" | "reader";
   showPrivacyToggle?: boolean;
+  publicVoteDefault?: boolean;
   showReaderShell?: boolean;
 }) {
   if (!referendumSlug) {
@@ -72,8 +74,13 @@ export function ReferendumSiteInlineSign({
       }
       postSignRedirectUrl={postSignRedirectUrl}
       referralCode={effectiveReferralCode}
-      storePendingVote={(name, answer) =>
-        config.storePendingVote(name, effectiveReferralCode, answer)
+      storePendingVote={(name, answer, makePublic) =>
+        config.storePendingVote(
+          name,
+          effectiveReferralCode,
+          answer,
+          makePublic,
+        )
       }
       clearPendingVote={() => config.clearPendingVote()}
       shareText={config.shareText}
@@ -90,6 +97,9 @@ export function ReferendumSiteInlineSign({
       emailPendingButtonLabel={config.action.emailPendingButtonLabel}
       buildShareUrl={config.action.buildShareUrl}
       showPrivacyToggle={showPrivacyToggle ?? config.showPrivacyToggle ?? false}
+      publicVoteDefault={
+        publicVoteDefault ?? config.inlineVoteMakePublic ?? true
+      }
     />
   );
 }

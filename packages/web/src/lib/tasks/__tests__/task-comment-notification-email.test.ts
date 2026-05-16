@@ -101,6 +101,20 @@ describe("buildTaskCommentNotificationEmail", () => {
     expect(email.html).toContain("Open task");
   });
 
+  it("renders the template-driven share footer when the recipient has a referral URL", async () => {
+    const email = await buildTaskCommentNotificationEmail({
+      ...baseInput,
+      recipientReferralUrl: "https://warondisease.org/vote/SAMPLE",
+    });
+    expect(email.html).toContain("Forward this");
+    expect(email.html).toContain("Hi there");
+    expect(email.html).toContain("respond to this stupid survey");
+    expect(email.html).toContain("https://warondisease.org/vote/SAMPLE");
+    expect(email.html).not.toContain("{treaty_url}");
+    expect(email.text).toContain("Hi there");
+    expect(email.text).not.toContain("{target_name}");
+  });
+
   it("suppresses the CTA when explicitly null", async () => {
     const email = await buildTaskCommentNotificationEmail({
       ...baseInput,

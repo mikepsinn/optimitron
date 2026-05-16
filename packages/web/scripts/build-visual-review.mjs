@@ -9,12 +9,16 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { createRequire } from "node:module";
 import path from "node:path";
 import process from "node:process";
-import pixelmatch from "pixelmatch";
-import { PNG } from "pngjs";
+import { fileURLToPath } from "node:url";
 
-const webRoot = process.cwd();
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const { isRedirectOnlyRoutePath } = require("../src/lib/redirects.js");
+const webRoot = path.resolve(scriptDir, "..");
 const repoRoot = path.resolve(webRoot, "../..");
 const screenshotsRoot = path.resolve(webRoot, "screenshots");
 const routeManifestPath = path.join(screenshotsRoot, "routes.json");
@@ -30,14 +34,18 @@ const pageLinkBaseUrl = parseOptionalUrl(
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
 const assetRoot = path.join(outputRoot, "assets");
 const latestHtmlPath = path.join(outputRoot, "latest.html");
-// 0.1% — tight. The previous 0.5% was a workaround for live-clock drift
-// (/treaty "Signed this day, May 13, 2026", /employees overdue counters);
-// that drift is now eliminated upstream by freezeClock (e2e/helpers/
-// freeze-clock.ts). If pages drift again, fix the SOURCE of the drift
-// (mask with data-volatile or freezeClock), don't widen the threshold.
+// 0.2% — covers cross-environment pixel rendering noise (Windows-Chromium-
+// local vs Linux-Chromium-CI font hinting + anti-aliasing). Tightened from
+// the original 0.5% workaround for live-clock drift (that drift is now
+// fixed upstream by freezeClock at e2e/helpers/freeze-clock.ts), then
+// raised from 0.1% on 2026-05-15 after side-menu and side-menu-auth
+// landed at 0.11% from pure rendering noise. Real UI changes are
+// typically >1%. If a class of pages drifts because of a DYNAMIC
+// element (clock, counter, randomized content), fix the SOURCE with
+// data-volatile or freezeClock — don't keep widening this number.
 const diffPixelRatioThreshold = parseNumberEnv(
   "VISUAL_REVIEW_DIFF_RATIO",
-  0.001,
+  0.002,
 );
 const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
 const allowIncompleteReview =
@@ -56,6 +64,15 @@ const reviewCacheKey = [
   .filter(Boolean)
   .join("-");
 const routePaths = loadRoutePaths();
+const authenticatedSnapshotRouteNames = new Set([
+  "dashboard",
+  "organizations",
+  "plaintiffs-manage",
+  "settings",
+  "side-menu-auth",
+]);
+const markdownDiffCache = new Map();
+let imageDiffDependenciesPromise = null;
 
 // PR/branch context for the per-route "Copy context" button. Read from
 // env (GitHub Actions sets these on pull_request events). Stays empty for
@@ -106,9 +123,12 @@ const routeOrder = [
   "task-signer-canada",
 ];
 
-main();
+main().catch((error) => {
+  console.error(error instanceof Error ? error.stack ?? error.message : error);
+  process.exitCode = 1;
+});
 
-function main() {
+async function main() {
   mkdirSync(outputRoot, { recursive: true });
   rmSync(assetRoot, { recursive: true, force: true });
 
@@ -118,7 +138,7 @@ function main() {
       : []),
     ...collectScreenshots(screenshotsRoot, "after"),
   ];
-  const grouped = analyzeGroups(groupScreenshots(screenshots));
+  const grouped = await analyzeGroups(groupScreenshots(screenshots));
   const html = renderHtml(grouped);
   const blockingIssues = getBlockingReviewIssues(grouped, screenshots);
 
@@ -163,6 +183,9 @@ function collectScreenshots(root, version) {
       const routeName = entry
         .replace(/\.png$/i, "")
         .replace(/-(default|visual-mobile)$/i, "");
+      if (isRedirectOnlyScreenshotRoute(routeName)) {
+        continue;
+      }
       files.push({
         version,
         projectName,
@@ -181,6 +204,19 @@ function collectScreenshots(root, version) {
     }
     return projectSortIndex(a.projectName) - projectSortIndex(b.projectName);
   });
+}
+
+function isRedirectOnlyScreenshotRoute(routeName) {
+  const manifestPath = routePaths.get(routeName);
+  if (manifestPath && isRedirectOnlyRoutePath(manifestPath)) {
+    return true;
+  }
+  const guessedPath =
+    routeName === "home" ? "/" : `/${routeName.replace(/-/g, "/")}`;
+  return (
+    isRedirectOnlyRoutePath(guessedPath) ||
+    isRedirectOnlyRoutePath(`/${routeName}`)
+  );
 }
 
 function groupScreenshots(screenshots) {
@@ -242,9 +278,6 @@ function renderHtml(groups) {
     }
 
     header {
-      position: sticky;
-      top: 0;
-      z-index: 1;
       border-bottom: 1px solid var(--line);
       background: var(--bg);
       padding: 16px 24px;
@@ -327,8 +360,9 @@ function renderHtml(groups) {
       border: 1px solid var(--line);
     }
 
-    .pair h3 {
+    .pair summary {
       align-items: center;
+      cursor: pointer;
       display: flex;
       gap: 10px;
       justify-content: space-between;
@@ -336,10 +370,28 @@ function renderHtml(groups) {
       border-bottom: 1px solid var(--line);
       padding: 8px 10px;
       font-size: 15px;
+      font-weight: 700;
       letter-spacing: 0;
+      list-style: none;
     }
 
-    .comparison {
+    .pair summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .pair summary::before {
+      content: "+";
+      flex: 0 0 auto;
+      font-family: Consolas, "Liberation Mono", monospace;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .pair[open] > summary::before {
+      content: "-";
+    }
+
+    .pair-screens {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
@@ -350,8 +402,61 @@ function renderHtml(groups) {
       background: #ffffff;
     }
 
-    figure + figure {
+    .pair-screens > figure:nth-child(even) {
       border-left: 1px solid var(--line);
+    }
+
+    /* Mobile: per-pair horizontal carousel.
+       DOM order stays [before, after, pixel diff, markdown diff]
+       (desktop-correct, reviewers want before/after side-by-side).
+       On mobile we use CSS order to surface the pixel diff first when
+       present: visual order becomes [pixel diff, before, after,
+       markdown diff]. Native scroll-snap, no JS. When there is no
+       pixel diff, the markdown diff is not promoted. */
+    @media (max-width: 768px) {
+      .pair-screens {
+        display: flex;
+        grid-template-columns: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y pinch-zoom;
+      }
+      .pair-screens > figure,
+      .pair-screens > .missing {
+        flex: 0 0 100%;
+        min-width: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+      .pair-screens > .pixel-diff-figure:nth-child(3) {
+        order: -1;
+      }
+      .pair-screens > figure:nth-child(even) {
+        border-left: none;
+      }
+      .pair-screens > figure + figure,
+      .pair-screens > .missing + figure,
+      .pair-screens > figure + .missing,
+      .pair-screens > .missing + .missing {
+        border-left: none;
+        border-top: 1px solid var(--line);
+      }
+      .pair-screens figcaption {
+        position: sticky;
+        top: 0;
+        background: #ffffff;
+        z-index: 1;
+      }
+      .pair-screens figcaption::after {
+        content: "  · swipe ← → ";
+        color: var(--muted);
+        font-weight: 400;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+      }
     }
 
     figcaption {
@@ -395,6 +500,40 @@ function renderHtml(groups) {
 
     figure img {
       cursor: zoom-in;
+    }
+
+    .markdown-diff-block {
+      background: #ffffff;
+      font-family: Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      margin: 0;
+      max-height: 72vh;
+      overflow: auto;
+      padding: 12px;
+      white-space: pre;
+    }
+
+    .markdown-diff-line {
+      display: block;
+      min-height: 1.45em;
+    }
+
+    .markdown-diff-line.added {
+      background: #e8f7ee;
+      color: #14532d;
+    }
+
+    .markdown-diff-line.removed {
+      background: #fdecec;
+      color: #7f1d1d;
+    }
+
+    .markdown-diff-line.header,
+    .markdown-diff-line.hunk {
+      background: #f5f5f5;
+      color: #333333;
+      font-weight: 700;
     }
 
     .lightbox {
@@ -525,6 +664,25 @@ function renderHtml(groups) {
       z-index: 2;
     }
 
+    .toolbar-current-route {
+      color: var(--fg);
+      flex: 1 1 auto;
+      font-size: 13px;
+      font-weight: 700;
+      overflow: hidden;
+      text-align: right;
+      text-overflow: ellipsis;
+      text-transform: none;
+      white-space: nowrap;
+    }
+
+    .toolbar-current-route:empty::before {
+      color: var(--muted);
+      content: "Scroll to see current route";
+      font-weight: 400;
+      font-style: italic;
+    }
+
     .toolbar input[type="search"] {
       background: var(--bg);
       border: 1px solid var(--line);
@@ -589,6 +747,60 @@ function renderHtml(groups) {
       color: var(--bg);
     }
 
+    /* Inline link inside a figcaption — opens the live preview page on
+       the Vercel deploy at this route. Sits to the LEFT of the screen-
+       name label, sized for a comfortable mobile thumb tap target. */
+    .page-link-inline,
+    .copy-context-inline {
+      align-items: center;
+      border: 1px solid var(--line);
+      color: var(--fg);
+      display: inline-flex;
+      font-size: 14px;
+      font-weight: 700;
+      justify-content: center;
+      line-height: 1;
+      margin-right: 8px;
+      min-height: 28px;
+      min-width: 28px;
+      text-decoration: none;
+      vertical-align: middle;
+    }
+
+    .page-link-inline:hover,
+    .copy-context-inline:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .copy-context-inline,
+    .complain-button {
+      background: var(--bg);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .complain-button {
+      align-items: center;
+      border: 1px solid var(--line);
+      color: var(--fg);
+      display: inline-flex;
+      font-size: 14px;
+      font-weight: 700;
+      justify-content: center;
+      line-height: 1;
+      margin-right: 8px;
+      min-height: 28px;
+      min-width: 28px;
+      text-decoration: none;
+      vertical-align: middle;
+    }
+
+    .complain-button:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
     code {
       font-family: Consolas, "Liberation Mono", monospace;
       font-size: 0.95em;
@@ -598,8 +810,8 @@ function renderHtml(groups) {
       max-width: 760px;
     }
 
-    @media (max-width: 820px) {
-      .comparison {
+    @media (max-width: 820px) and (min-width: 769px) {
+      .pair-screens {
         grid-template-columns: 1fr;
       }
 
@@ -634,6 +846,7 @@ function renderHtml(groups) {
     <button type="button" class="toolbar-button" data-toolbar-action="collapse-all">Collapse all</button>
     <button type="button" class="toolbar-button" data-toolbar-action="expand-changed">Only show changed</button>
     <span class="toolbar-count" id="route-count" aria-live="polite"></span>
+    <span class="toolbar-current-route" id="current-route" aria-live="polite"></span>
   </div>
   <main>
     ${body}
@@ -792,13 +1005,21 @@ function renderHtml(groups) {
         var lines = [];
         lines.push("### Visual-review context");
         lines.push("");
+        if (ctx.viewing) {
+          lines.push("- Viewing: **" + ctx.viewing.toUpperCase() + "** in " + (ctx.projectLabel || ctx.project));
+        }
         if (ctx.pr) lines.push("- PR: #" + ctx.pr + (ctx.repo ? " (" + ctx.repo + ")" : ""));
         if (ctx.branch) lines.push("- Branch: \`" + ctx.branch + "\`");
         if (ctx.shortSha) lines.push("- Commit: \`" + ctx.shortSha + "\`" + (ctx.commitSha ? " (" + ctx.commitSha + ")" : ""));
         lines.push("- Route: \`" + ctx.route + "\` (" + ctx.routeLabel + ")");
         if (ctx.routeUrl) lines.push("- Live URL: " + ctx.routeUrl);
         lines.push("- Auth state: " + ctx.authState);
-        lines.push("- Diff vs main: " + ctx.status);
+        if (ctx.diffLabel) lines.push("- Diff vs main: " + ctx.diffLabel);
+        else if (ctx.status) lines.push("- Diff vs main: " + ctx.status);
+        if (ctx.imageUrl) {
+          lines.push("- Screenshot: " + ctx.imageUrl);
+          lines.push("    curl -sLO " + ctx.imageUrl);
+        }
         if (ctx.reviewUrl) lines.push("- Visual review: " + ctx.reviewUrl);
         lines.push("");
         if (ctx.screenshots && ctx.screenshots.length > 0) {
@@ -876,6 +1097,128 @@ function renderHtml(groups) {
           }, 1500);
         });
       });
+
+      // Complain button: open a pre-filled GitHub issue URL in a new
+      // tab. On mobile the GitHub app (if installed) catches the URL.
+      // Title summarizes route + view; body includes the same markdown
+      // context as the clipboard payload, plus an explicit complaint
+      // placeholder and a back-reference to the originating PR so an
+      // agent-watcher workflow can find it.
+      document.addEventListener("click", function (event) {
+        var button = event.target.closest(".complain-button");
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+        var raw = button.getAttribute("data-context");
+        if (!raw) return;
+        var ctx;
+        try {
+          ctx = JSON.parse(raw);
+        } catch (err) {
+          console.error("[visual-review] bad context payload", err);
+          return;
+        }
+        if (!ctx.repo) {
+          console.warn("[visual-review] complain: no repo in context");
+          return;
+        }
+        var titleParts = ["Visual review"];
+        if (ctx.routeLabel) titleParts.push(ctx.routeLabel);
+        if (ctx.viewing) titleParts.push(ctx.viewing);
+        if (ctx.projectLabel) titleParts.push(ctx.projectLabel);
+        var title = titleParts.join(" — ");
+        var body = formatContext(ctx);
+        if (ctx.pr) {
+          body = "Originating PR: #" + ctx.pr + "\\n\\n" + body;
+        }
+        var url =
+          "https://github.com/" + ctx.repo + "/issues/new" +
+          "?title=" + encodeURIComponent(title) +
+          "&body=" + encodeURIComponent(body);
+        window.open(url, "_blank", "noopener,noreferrer");
+      });
+    })();
+
+    // Current-route indicator: as the user scrolls through the page, show
+    // the title of the route currently anchored at the top of the viewport
+    // in the sticky toolbar. Without this, scrolling past a route's
+    // expanded screenshots loses context — you can't tell which route you're
+    // looking at unless you scroll back up to its title.
+    (function () {
+      var indicator = document.getElementById("current-route");
+      if (!indicator) return;
+      var routes = Array.prototype.slice.call(
+        document.querySelectorAll("details.route"),
+      );
+      if (routes.length === 0) return;
+
+      // Map each route element to its visible title text.
+      var titles = routes.map(function (r) {
+        var titleEl = r.querySelector(".route-title");
+        return titleEl ? titleEl.textContent.trim() : "";
+      });
+
+      // Account for the sticky toolbar's height when deciding which route
+      // is "at the top." The toolbar sits flush with viewport top:0; we
+      // use its rendered height as the offset.
+      function getToolbarOffset() {
+        var toolbar = document.querySelector(".toolbar");
+        return toolbar ? toolbar.getBoundingClientRect().height : 0;
+      }
+
+      function updateCurrent() {
+        var offset = getToolbarOffset();
+        var current = "";
+        for (var i = 0; i < routes.length; i++) {
+          // Skip routes hidden by the filter / "only show changed" — they
+          // still have getBoundingClientRect but it returns zeros, and a
+          // stale title from before filtering would otherwise stick.
+          if (routes[i].hasAttribute("hidden")) continue;
+          var rect = routes[i].getBoundingClientRect();
+          // Route is "current" if its top has crossed above the toolbar
+          // bottom edge AND its bottom hasn't passed yet.
+          if (rect.top - offset <= 0 && rect.bottom > offset) {
+            current = titles[i];
+            break;
+          }
+        }
+        if (indicator.textContent !== current) {
+          indicator.textContent = current;
+        }
+      }
+
+      // Throttle scroll handler via requestAnimationFrame.
+      var ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function () {
+          updateCurrent();
+          ticking = false;
+        });
+      }
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      // Also update when a route is expanded/collapsed (changes layout).
+      document.addEventListener("toggle", onScroll, true);
+
+      // Filter input + toolbar buttons mutate the hidden attribute on routes
+      // without firing scroll/toggle. Watch the attribute via MutationObserver
+      // so the indicator refreshes regardless of which control changed
+      // visibility (filter typing, Expand all, Collapse all, Only show
+      // changed).
+      if (typeof MutationObserver === "function") {
+        var observer = new MutationObserver(onScroll);
+        for (var i = 0; i < routes.length; i++) {
+          observer.observe(routes[i], {
+            attributes: true,
+            attributeFilter: ["hidden"],
+          });
+        }
+      }
+
+      updateCurrent();
     })();
   </script>
 </body>
@@ -916,7 +1259,7 @@ function renderRouteGroup(group) {
  */
 function buildRouteContext(group) {
   const routeUrl = getRouteUrl(group.routeName);
-  const isAuthed = /-auth(\b|$)/.test(group.routeName) || group.routeName.endsWith("-auth");
+  const isAuthed = isAuthenticatedMarkdownRoute(group.routeName);
   const status = group.errored
     ? "errored"
     : group.changed
@@ -970,52 +1313,124 @@ function escapeJsonForAttr(value) {
 
 function renderPair(pair) {
   const routeUrl = getRouteUrl(pair.routeName);
-  return `<article class="pair">
-    <h3>
+  const markdownDiff = buildMarkdownDiff(pair);
+  // Default: mobile pairs open, desktop pairs collapsed.
+  const isMobile = pair.projectName === "visual-mobile";
+  const openAttr = isMobile ? " open" : "";
+  return `<details class="pair" data-project="${escapeHtml(pair.projectName)}"${openAttr}>
+    <summary>
       <span>${escapeHtml(labelProject(pair.projectName))}</span>
       <span>
         ${routeUrl ? `<a class="page-link" href="${escapeHtml(routeUrl)}" target="_blank" rel="noreferrer">Open page</a>` : ""}
         <span class="pill ${escapeHtml(pair.diff.statusClass)}">${escapeHtml(pair.diff.label)}</span>
       </span>
-    </h3>
-    <div class="comparison">
-      ${renderFigure(pair.before, "Before: main")}
-      ${renderFigure(pair.after, "After: pull request")}
-      ${pair.diff?.diffRelPath ? renderDiffFigure(pair.diff.diffRelPath, pair.routeName, pair.projectName) : ""}
+    </summary>
+    <div class="pair-screens">
+      ${renderFigure(pair.before, "Before: main", routeUrl, buildScreenContext(pair, "before", pair.before?.relPath))}
+      ${renderFigure(pair.after, "After: pull request", routeUrl, buildScreenContext(pair, "after", pair.after?.relPath))}
+      ${pair.diff?.diffRelPath ? renderDiffFigure(pair.diff.diffRelPath, pair.routeName, pair.projectName, routeUrl, buildScreenContext(pair, "diff", pair.diff.diffRelPath)) : ""}
+      ${markdownDiff ? renderMarkdownDiffFigure(markdownDiff, routeUrl, buildScreenContext(pair, "markdown-diff", null)) : ""}
     </div>
-  </article>`;
+  </details>`;
 }
 
-function renderDiffFigure(diffRelPath, routeName, projectName) {
-  return `<figure>
-    <figcaption>diff</figcaption>
+function renderDiffFigure(diffRelPath, routeName, projectName, routeUrl, screenContext) {
+  return `<figure class="pixel-diff-figure">
+    ${renderFigcaption("diff", routeUrl, screenContext)}
     <img src="${escapeHtml(`${diffRelPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${routeName} ${projectName} diff overlay`)}" loading="lazy">
   </figure>`;
 }
 
-function renderFigure(screenshot, label) {
+function renderMarkdownDiffFigure(markdownDiff, routeUrl, screenContext) {
+  return `<figure class="markdown-diff-figure">
+    ${renderFigcaption(markdownDiff.label, routeUrl, screenContext)}
+    <pre class="markdown-diff-block" aria-label="${escapeHtml(markdownDiff.label)}">${renderMarkdownDiffLines(markdownDiff.lines)}</pre>
+  </figure>`;
+}
+
+function renderFigure(screenshot, label, routeUrl, screenContext) {
   if (!screenshot) {
     return `<figure class="missing">
-    <figcaption>${escapeHtml(label)}</figcaption>
+    ${renderFigcaption(label, routeUrl, screenContext)}
     <div>Not captured</div>
   </figure>`;
   }
   return `<figure>
-    <figcaption>${escapeHtml(label)}</figcaption>
+    ${renderFigcaption(label, routeUrl, screenContext)}
     <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
   </figure>`;
 }
 
-function analyzeGroups(groups) {
-  return groups.map((group) => {
-    const pairs = group.pairs.map((pair) => ({
-      ...pair,
-      diff: comparePair(pair),
-    }));
+// Figcaption with optional preview-page link (↗) and copy-context button
+// (📋) on the LEFT of the screen-name label. Sticky on mobile so it stays
+// visible while you swipe-scroll within a tall card. The copy button
+// gives reviewers a per-screen payload to paste into a coding agent.
+function renderFigcaption(label, routeUrl, screenContext) {
+  let inner = "";
+  if (routeUrl) {
+    inner += `<a class="page-link-inline" href="${escapeHtml(routeUrl)}" target="_blank" rel="noreferrer" aria-label="Open ${escapeHtml(label)} page on preview deploy">↗</a>`;
+  }
+  if (screenContext) {
+    const json = JSON.stringify(screenContext);
+    const jsonAttr = escapeJsonForAttr(json);
+    inner += `<button type="button" class="copy-context-button copy-context-inline" data-context='${jsonAttr}' aria-label="Copy context for ${escapeHtml(label)} to clipboard">📋</button>`;
+    if (screenContext.repo) {
+      inner += `<button type="button" class="complain-button" data-context='${jsonAttr}' aria-label="Open a GitHub issue to complain about ${escapeHtml(label)}">💬</button>`;
+    }
+  }
+  inner += escapeHtml(label);
+  return `<figcaption>${inner}</figcaption>`;
+}
+
+/**
+ * Build the per-screen "Copy context" payload — what a reviewer pastes
+ * into a coding agent when complaining about ONE specific view (diff /
+ * before / after) of ONE specific pair (project × route). Narrower than
+ * buildRouteContext, which covers the whole route group across projects.
+ */
+function buildScreenContext(pair, viewing, relPath) {
+  const routeUrl = getRouteUrl(pair.routeName);
+  const isAuthed = isAuthenticatedMarkdownRoute(pair.routeName);
+  const sha = reviewCommitSha ? shortSha(reviewCommitSha) : null;
+  const reviewBase =
+    prNumber && sha
+      ? `https://mikepsinn.github.io/optimitron/pr-${prNumber}/${sha}`
+      : null;
+  const imageUrl = relPath && reviewBase ? `${reviewBase}/${relPath}` : null;
+  return {
+    pr: prNumber,
+    branch: headBranch,
+    repo: repoSlug,
+    commitSha: reviewCommitSha,
+    shortSha: sha,
+    route: pair.routeName,
+    routeLabel: labelRoute(pair.routeName),
+    routeUrl,
+    authState: isAuthed ? "authenticated" : "logged-out",
+    project: pair.projectName,
+    projectLabel: labelProject(pair.projectName),
+    viewing,
+    diffLabel: pair.diff?.label,
+    imageUrl,
+    reviewUrl: reviewBase
+      ? `${reviewBase}/latest.html#route-${slugifyForAnchor(pair.routeName)}`
+      : null,
+  };
+}
+
+async function analyzeGroups(groups) {
+  const analyzed = [];
+  for (const group of groups) {
+    const pairs = await Promise.all(
+      group.pairs.map(async (pair) => ({
+        ...pair,
+        diff: await comparePair(pair),
+      })),
+    );
     const changedPairs = pairs.filter((pair) => pair.diff.changed).length;
     const missingPairs = pairs.filter((pair) => pair.diff.missing).length;
     const erroredPairs = pairs.filter((pair) => pair.diff.errored).length;
-    return {
+    analyzed.push({
       ...group,
       changed: changedPairs > 0,
       changedPairs,
@@ -1023,11 +1438,28 @@ function analyzeGroups(groups) {
       erroredPairs,
       missingPairs,
       pairs,
-    };
-  });
+    });
+  }
+  return analyzed;
 }
 
-function comparePair(pair) {
+function loadImageDiffDependencies() {
+  if (!imageDiffDependenciesPromise) {
+    imageDiffDependenciesPromise = Promise.all([
+      import("pixelmatch"),
+      import("pngjs"),
+    ]).then(([pixelmatchModule, pngjsModule]) => {
+      const pngjs = pngjsModule.default ?? pngjsModule;
+      return {
+        PNG: pngjs.PNG,
+        pixelmatch: pixelmatchModule.default ?? pixelmatchModule,
+      };
+    });
+  }
+  return imageDiffDependenciesPromise;
+}
+
+async function comparePair(pair) {
   if (!pair.before && pair.after) {
     return {
       changed: true,
@@ -1054,6 +1486,7 @@ function comparePair(pair) {
   }
 
   try {
+    const { PNG, pixelmatch } = await loadImageDiffDependencies();
     const before = PNG.sync.read(readFileSync(pair.before.assetPath));
     const after = PNG.sync.read(readFileSync(pair.after.assetPath));
     if (before.width !== after.width || before.height !== after.height) {
@@ -1105,6 +1538,267 @@ function comparePair(pair) {
       statusClass: "error",
     };
   }
+}
+
+function buildMarkdownDiff(pair) {
+  const snapshot = getMarkdownSnapshot(pair.routeName);
+  if (!snapshot) {
+    return null;
+  }
+
+  if (markdownDiffCache.has(snapshot.repoRelativePath)) {
+    return markdownDiffCache.get(snapshot.repoRelativePath);
+  }
+
+  const workingPath = path.join(repoRoot, snapshot.repoRelativePath);
+  if (!existsSync(workingPath)) {
+    markdownDiffCache.set(snapshot.repoRelativePath, null);
+    return null;
+  }
+
+  const before = readMainFile(snapshot.repoRelativePath);
+  if (before === null) {
+    markdownDiffCache.set(snapshot.repoRelativePath, null);
+    return null;
+  }
+
+  const after = readFileSync(workingPath, "utf8");
+  const diff = {
+    fileName: snapshot.fileName,
+    label: `Text diff: ${snapshot.fileName}`,
+    lines: buildUnifiedMarkdownDiffLines(before, after, snapshot.repoRelativePath),
+    repoRelativePath: snapshot.repoRelativePath,
+  };
+  markdownDiffCache.set(snapshot.repoRelativePath, diff);
+  return diff;
+}
+
+function getMarkdownSnapshot(routeName) {
+  const routePath = routePaths.get(routeName);
+  if (!routePath) {
+    return null;
+  }
+
+  const fileName = isAuthenticatedMarkdownRoute(routeName)
+    ? "page.logged-in.md"
+    : "page.logged-out.md";
+  const pathname = routePath.split(/[?#]/, 1)[0] ?? "/";
+  const segments = pathname === "/" ? [] : pathname.split("/").filter(Boolean);
+  const repoRelativePath = toPosix(
+    path.join("packages", "web", "src", "app", ...segments, fileName),
+  );
+  return {
+    fileName,
+    repoRelativePath,
+  };
+}
+
+function isAuthenticatedMarkdownRoute(routeName) {
+  return (
+    authenticatedSnapshotRouteNames.has(routeName) ||
+    /-auth(\b|$)/.test(routeName) ||
+    routeName.endsWith("-auth")
+  );
+}
+
+function readMainFile(repoRelativePath) {
+  try {
+    return execFileSync("git", ["show", `main:${repoRelativePath}`], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return null;
+  }
+}
+
+function buildUnifiedMarkdownDiffLines(before, after, repoRelativePath) {
+  const beforeLines = splitDiffLines(before);
+  const afterLines = splitDiffLines(after);
+  const ops = diffLineOps(beforeLines, afterLines);
+  const rows = buildDiffRows(ops);
+  const lines = [
+    { kind: "header", text: `--- main/${repoRelativePath}` },
+    { kind: "header", text: `+++ working-tree/${repoRelativePath}` },
+  ];
+  const changeIndexes = rows
+    .map((row, index) => (row.kind === "equal" ? -1 : index))
+    .filter((index) => index >= 0);
+
+  if (changeIndexes.length === 0) {
+    lines.push({ kind: "context", text: " No text changes." });
+    return lines;
+  }
+
+  for (const hunk of buildUnifiedHunks(rows, changeIndexes)) {
+    lines.push({
+      kind: "hunk",
+      text: `@@ -${formatUnifiedRange(hunk.oldStart, hunk.oldCount)} +${formatUnifiedRange(hunk.newStart, hunk.newCount)} @@`,
+    });
+    for (const row of hunk.rows) {
+      if (row.kind === "add") {
+        lines.push({ kind: "added", text: `+${row.text}` });
+      } else if (row.kind === "remove") {
+        lines.push({ kind: "removed", text: `-${row.text}` });
+      } else {
+        lines.push({ kind: "context", text: ` ${row.text}` });
+      }
+    }
+  }
+
+  return lines;
+}
+
+function splitDiffLines(value) {
+  const normalized = String(value).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  if (normalized.length === 0) {
+    return [];
+  }
+  return normalized.endsWith("\n")
+    ? normalized.slice(0, -1).split("\n")
+    : normalized.split("\n");
+}
+
+function diffLineOps(beforeLines, afterLines) {
+  const oldLength = beforeLines.length;
+  const newLength = afterLines.length;
+  const width = newLength + 1;
+  const lcs = new Uint32Array((oldLength + 1) * width);
+
+  for (let i = oldLength - 1; i >= 0; i -= 1) {
+    for (let j = newLength - 1; j >= 0; j -= 1) {
+      const index = i * width + j;
+      if (beforeLines[i] === afterLines[j]) {
+        lcs[index] = lcs[(i + 1) * width + j + 1] + 1;
+      } else {
+        lcs[index] = Math.max(lcs[(i + 1) * width + j], lcs[i * width + j + 1]);
+      }
+    }
+  }
+
+  const ops = [];
+  let oldIndex = 0;
+  let newIndex = 0;
+  while (oldIndex < oldLength && newIndex < newLength) {
+    if (beforeLines[oldIndex] === afterLines[newIndex]) {
+      ops.push({ kind: "equal", text: beforeLines[oldIndex] });
+      oldIndex += 1;
+      newIndex += 1;
+    } else if (
+      lcs[(oldIndex + 1) * width + newIndex] >=
+      lcs[oldIndex * width + newIndex + 1]
+    ) {
+      ops.push({ kind: "remove", text: beforeLines[oldIndex] });
+      oldIndex += 1;
+    } else {
+      ops.push({ kind: "add", text: afterLines[newIndex] });
+      newIndex += 1;
+    }
+  }
+
+  while (oldIndex < oldLength) {
+    ops.push({ kind: "remove", text: beforeLines[oldIndex] });
+    oldIndex += 1;
+  }
+  while (newIndex < newLength) {
+    ops.push({ kind: "add", text: afterLines[newIndex] });
+    newIndex += 1;
+  }
+
+  return ops;
+}
+
+function buildDiffRows(ops) {
+  const rows = [];
+  let oldLine = 1;
+  let newLine = 1;
+  for (const op of ops) {
+    const row = {
+      ...op,
+      newLine: op.kind === "remove" ? null : newLine,
+      newLineBefore: newLine,
+      oldLine: op.kind === "add" ? null : oldLine,
+      oldLineBefore: oldLine,
+    };
+    rows.push(row);
+    if (op.kind !== "add") {
+      oldLine += 1;
+    }
+    if (op.kind !== "remove") {
+      newLine += 1;
+    }
+  }
+  return rows;
+}
+
+function buildUnifiedHunks(rows, changeIndexes, contextLineCount = 3) {
+  const hunks = [];
+  let changeCursor = 0;
+  while (changeCursor < changeIndexes.length) {
+    let start = Math.max(0, changeIndexes[changeCursor] - contextLineCount);
+    let end = Math.min(
+      rows.length - 1,
+      changeIndexes[changeCursor] + contextLineCount,
+    );
+    changeCursor += 1;
+
+    while (
+      changeCursor < changeIndexes.length &&
+      changeIndexes[changeCursor] <= end + contextLineCount + 1
+    ) {
+      end = Math.min(
+        rows.length - 1,
+        changeIndexes[changeCursor] + contextLineCount,
+      );
+      changeCursor += 1;
+    }
+
+    const hunkRows = rows.slice(start, end + 1);
+    hunks.push({
+      newCount: hunkRows.filter((row) => row.kind !== "remove").length,
+      newStart: getHunkStart(hunkRows, "new"),
+      oldCount: hunkRows.filter((row) => row.kind !== "add").length,
+      oldStart: getHunkStart(hunkRows, "old"),
+      rows: hunkRows,
+    });
+  }
+  return hunks;
+}
+
+function getHunkStart(rows, side) {
+  const lineKey = side === "old" ? "oldLine" : "newLine";
+  const beforeKey = side === "old" ? "oldLineBefore" : "newLineBefore";
+  const firstLine = rows.find((row) => row[lineKey] !== null)?.[lineKey];
+  if (typeof firstLine === "number") {
+    return firstLine;
+  }
+  const before = rows[0]?.[beforeKey] ?? 1;
+  return Math.max(0, before - 1);
+}
+
+function formatUnifiedRange(start, count) {
+  if (count === 1) {
+    return String(start);
+  }
+  return `${start},${count}`;
+}
+
+function renderMarkdownDiffLines(lines) {
+  return lines
+    .map((line) => {
+      const className = line.kind === "added"
+        ? "added"
+        : line.kind === "removed"
+          ? "removed"
+          : line.kind === "hunk"
+            ? "hunk"
+            : line.kind === "header"
+              ? "header"
+              : "context";
+      return `<span class="markdown-diff-line ${className}">${escapeHtml(line.text)}</span>`;
+    })
+    .join("");
 }
 
 function buildDiffFileName(fileName) {

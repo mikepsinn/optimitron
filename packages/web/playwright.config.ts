@@ -6,23 +6,10 @@ const outputDir = process.env.PLAYWRIGHT_OUTPUT_DIR
   ? path.resolve(process.env.PLAYWRIGHT_OUTPUT_DIR)
   : screenshotDir;
 const isCI = Boolean(process.env.CI);
-const enableArgosReporter = process.env.ARGOS_VISUAL === "1";
-const reporter: "html" | ReporterDescription[] = enableArgosReporter
-  ? [
-      ["line"],
-      ["html", { open: "never" }],
-      [
-        "@argos-ci/playwright/reporter",
-        {
-          buildName: "route-visuals",
-          uploadToArgos: isCI,
-          ignoreUploadFailures: process.env.ARGOS_IGNORE_UPLOAD_FAILURES === "1",
-        },
-      ],
-    ]
-  : isCI
-    ? [["line"], ["html", { open: "never" }]]
-    : "html";
+const enableVisualReviewProjects = process.env.ROUTE_VISUAL_REVIEW === "1";
+const reporter: "html" | ReporterDescription[] = isCI
+  ? [["line"], ["html", { open: "never" }]]
+  : "html";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -40,6 +27,18 @@ export default defineConfig({
   outputDir,
   use: {
     baseURL: process.env.BASE_URL ?? "http://localhost:3001",
+    // When running against a Vercel preview deploy with deployment
+    // protection enabled, attach the automation bypass header so
+    // every request gets past Vercel's auth gate. Locally the env
+    // var is unset, so this becomes a no-op.
+    ...(process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+      ? {
+          extraHTTPHeaders: {
+            "x-vercel-protection-bypass":
+              process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+          },
+        }
+      : {}),
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -80,7 +79,7 @@ export default defineConfig({
         ...devices["iPhone 14"],
       },
     },
-    ...(enableArgosReporter
+    ...(enableVisualReviewProjects
       ? [
           {
             name: "visual-mobile",

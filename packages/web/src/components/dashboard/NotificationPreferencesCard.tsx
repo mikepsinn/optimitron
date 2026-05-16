@@ -1,21 +1,31 @@
 "use client"
 
 import { Card } from "@/components/retroui/Card"
-import { Button } from "@/components/retroui/Button"
+import { Accordion } from "@/components/retroui/Accordion"
+import { Checkbox } from "@/components/retroui/Checkbox"
 import { Label } from "@/components/retroui/Label"
 import type { DashboardNotificationPreference } from "@/types/dashboard"
 import { useState } from "react"
 
-const NOTIFICATION_TYPES = [
+type NotificationType = {
+  type: string
+  label: string
+  description: string
+}
+
+const CAMPAIGN_NOTIFICATION_TYPES = [
   { type: "REFERRAL_SIGNUP", label: "Referral Sign-ups", description: "When someone you referred joins" },
   { type: "REFERENDUM_MILESTONE", label: "Referendum Milestones", description: "Progress updates on referendums" },
-  { type: "BADGE_EARNED", label: "Badge Earned", description: "When you earn a new badge" },
-  { type: "DEPOSIT_CONFIRMED", label: "Deposit Confirmed", description: "When your prize deposit is confirmed" },
   { type: "SURVEY_INVITE", label: "Survey Invites", description: "Invitations to participate in surveys" },
+] as const satisfies readonly NotificationType[]
+
+const MORE_NOTIFICATION_TYPES = [
   { type: "DAILY_CHECKIN_REMINDER", label: "Daily Check-in", description: "Reminder to log your measurements" },
   { type: "ORGANIZATION_INVITE", label: "Organization Invites", description: "Invitations to join organizations" },
   { type: "SYSTEM_ANNOUNCEMENT", label: "System Announcements", description: "Platform updates and news" },
-] as const
+  { type: "BADGE_EARNED", label: "Badge Earned", description: "When you earn a new badge" },
+  { type: "DEPOSIT_CONFIRMED", label: "Deposit Confirmed", description: "When your prize deposit is confirmed" },
+] as const satisfies readonly NotificationType[]
 
 const CHANNELS = [
   { channel: "EMAIL", label: "Email" },
@@ -36,14 +46,13 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
     return pref?.enabled ?? true
   }
 
-  const togglePreference = async (type: string, channel: string) => {
+  const updatePreference = async (type: string, channel: string, enabled: boolean) => {
     try {
       setIsUpdating(true)
-      const currentValue = isEnabled(type, channel)
       await fetch("/api/dashboard/notification-preferences", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, channel, enabled: !currentValue }),
+        body: JSON.stringify({ type, channel, enabled }),
       })
       onRefresh()
     } catch (error) {
@@ -53,57 +62,68 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
     }
   }
 
+  const renderPreferenceRow = (nt: NotificationType) => (
+    <div
+      key={nt.type}
+      className="border-2 border-foreground bg-background p-4"
+    >
+      <div>
+        <Label className="text-sm font-bold uppercase">{nt.label}</Label>
+        <p className="mt-1 text-xs text-muted-foreground">{nt.description}</p>
+      </div>
+      <div
+        className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2"
+        role="group"
+        aria-label={`${nt.label} notification channels`}
+      >
+        {CHANNELS.map((ch) => {
+          const enabled = isEnabled(nt.type, ch.channel)
+          const checkboxId = `notification-${nt.type.toLowerCase()}-${ch.channel.toLowerCase()}`
+
+          return (
+            <div key={ch.channel} className="inline-flex items-center gap-2">
+              <Checkbox
+                id={checkboxId}
+                checked={enabled}
+                onCheckedChange={(checked) => updatePreference(nt.type, ch.channel, checked === true)}
+                disabled={isUpdating}
+                className="border-2 border-foreground accent-foreground"
+              />
+              <Label
+                htmlFor={checkboxId}
+                className="cursor-pointer select-none text-xs font-bold uppercase text-foreground"
+              >
+                {ch.label}
+              </Label>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+
   return (
-    <Card className="border-4 border-primary mb-8">
+    <Card className="mb-8 border-2 border-foreground bg-background shadow-none">
       <Card.Header>
         <Card.Title className="text-2xl font-black uppercase">NOTIFICATION PREFERENCES</Card.Title>
         <Card.Description className="font-bold">Choose how and when to be bothered.</Card.Description>
       </Card.Header>
-      <Card.Content className="space-y-4">
-        {/* Channel headers */}
-        <div className="hidden sm:grid grid-cols-[1fr_repeat(3,80px)] gap-2 px-4 pb-2 border-b-2 border-primary">
-          <div />
-          {CHANNELS.map((ch) => (
-            <div key={ch.channel} className="text-center">
-              <Label className="text-xs font-black uppercase">{ch.label}</Label>
-            </div>
-          ))}
-        </div>
+      <Card.Content className="space-y-3">
+        {CAMPAIGN_NOTIFICATION_TYPES.map(renderPreferenceRow)}
 
-        {/* Preference rows */}
-        {NOTIFICATION_TYPES.map((nt) => (
-          <div
-            key={nt.type}
-            className="grid grid-cols-1 sm:grid-cols-[1fr_repeat(3,80px)] gap-2 p-4 border-4 border-primary bg-background items-center"
+        <Accordion type="single" collapsible>
+          <Accordion.Item
+            value="more-notifications"
+            className="rounded-none border-2 border-foreground bg-background shadow-none hover:shadow-none data-[state=open]:shadow-none"
           >
-            <div>
-              <Label className="text-sm font-bold uppercase">{nt.label}</Label>
-              <p className="text-xs text-muted-foreground">{nt.description}</p>
-            </div>
-            {CHANNELS.map((ch) => {
-              const enabled = isEnabled(nt.type, ch.channel)
-              return (
-                <div key={ch.channel} className="flex sm:justify-center">
-                  <Button
-                    size="sm"
-                    onClick={() => togglePreference(nt.type, ch.channel)}
-                    variant={enabled ? "default" : "outline"}
-                    className="border-4 border-primary w-16"
-                    disabled={isUpdating}
-                  >
-                    {enabled ? "ON" : "OFF"}
-                  </Button>
-                </div>
-              )
-            })}
-          </div>
-        ))}
-
-        <div className="p-4 border-2 border-dashed border-primary bg-background">
-          <p className="text-sm font-bold text-center">
-            Notifications are only useful if you can ignore the useless ones.
-          </p>
-        </div>
+            <Accordion.Header className="px-4 py-3 text-left text-sm font-bold uppercase text-foreground">
+              <span>More notifications</span>
+            </Accordion.Header>
+            <Accordion.Content unstyled className="space-y-3 border-t-2 border-foreground p-3 sm:p-4">
+              {MORE_NOTIFICATION_TYPES.map(renderPreferenceRow)}
+            </Accordion.Content>
+          </Accordion.Item>
+        </Accordion>
       </Card.Content>
     </Card>
   )

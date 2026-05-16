@@ -30,72 +30,16 @@
 ### 189 PEOPLE WITH TASKS
 - PERSON
 - ROLE
-- TASK
-- OPEN
-### [Abd al-Hamid Dbeibeh](/people/abd-al-hamid-dbeibeh-ly)
-- Government of Libya
-- Public official / LY
-- 1 task
-- NEXT TASK
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-ly)
-- GOVERNANCE
-- [PROFILE](/people/abd-al-hamid-dbeibeh-ly)
-- [TASK](/tasks/1-pct-treaty-signer-ly)
-### [Abdalla Hamdok](/people/abdalla-hamdok-sd)
-- Government of Sudan
-- Public official / SD
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-sd)
-- [PROFILE](/people/abdalla-hamdok-sd)
-- [TASK](/tasks/1-pct-treaty-signer-sd)
-- [[initials]](/people/abdoulaye-maiga-ml)
-### [Abdoulaye Maïga](/people/abdoulaye-maiga-ml)
-- Government of Mali
-- Public official / ML
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-ml)
-- [PROFILE](/people/abdoulaye-maiga-ml)
-- [TASK](/tasks/1-pct-treaty-signer-ml)
-### [Abdoulkader Kamil Mohamed](/people/abdoulkader-kamil-mohamed-dj)
-- Government of Djibouti
-- Public official / DJ
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-dj)
-- [PROFILE](/people/abdoulkader-kamil-mohamed-dj)
-- [TASK](/tasks/1-pct-treaty-signer-dj)
-### [Abdulla Aripov](/people/abdulla-aripov-uz)
-- Government of Uzbekistan
-- Public official / UZ
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-uz)
-- [PROFILE](/people/abdulla-aripov-uz)
-- [TASK](/tasks/1-pct-treaty-signer-uz)
-### [Abiy Ahmed](/people/abiy-ahmed-et)
-- Government of Ethiopia
-- Public official / ET
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-et)
-- [PROFILE](/people/abiy-ahmed-et)
-- [TASK](/tasks/1-pct-treaty-signer-et)
-### [Adama Barrow](/people/adama-barrow-gm)
-- Government of Gambia
-- Public official / GM
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-gm)
-- [PROFILE](/people/adama-barrow-gm)
-- [TASK](/tasks/1-pct-treaty-signer-gm)
-### [Adylbek Kasymaliev](/people/adylbek-kasymaliev-kg)
-- Government of Kyrgyzstan
-- Public official / KG
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-kg)
-- [PROFILE](/people/adylbek-kasymaliev-kg)
-- [TASK](/tasks/1-pct-treaty-signer-kg)
-### [Alaksandar Turčyn](/people/alaksandar-turcyn-by)
-- Government of Belarus
-- Public official / BY
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-by)
-- [PROFILE](/people/alaksandar-turcyn-by)
-- [TASK](/tasks/1-pct-treaty-signer-by)
-### [Alexandru Munteanu](/people/alexandru-munteanu-md)
-- Government of Moldova
-- Public official / MD
-- [Sign the 1% Treaty](/tasks/1-pct-treaty-signer-md)
-- [PROFILE](/people/alexandru-munteanu-md)
-- [TASK](/tasks/1-pct-treaty-signer-md)
+- [Abd al-Hamid Dbeibeh Government of Libya Public official / LY 1 task](/people/abd-al-hamid-dbeibeh-ly)
+- [Abdalla Hamdok Government of Sudan Public official / SD 1 task](/people/abdalla-hamdok-sd)
+- [[initials]Abdoulaye Maïga Government of Mali Public official / ML 1 task](/people/abdoulaye-maiga-ml)
+- [Abdoulkader Kamil Mohamed Government of Djibouti Public official / DJ 1 task](/people/abdoulkader-kamil-mohamed-dj)
+- [Abdulla Aripov Government of Uzbekistan Public official / UZ 1 task](/people/abdulla-aripov-uz)
+- [Abiy Ahmed Government of Ethiopia Public official / ET 1 task](/people/abiy-ahmed-et)
+- [Adama Barrow Government of Gambia Public official / GM 1 task](/people/adama-barrow-gm)
+- [Adylbek Kasymaliev Government of Kyrgyzstan Public official / KG 1 task](/people/adylbek-kasymaliev-kg)
+- [Alaksandar Turčyn Government of Belarus Public official / BY 1 task](/people/alaksandar-turcyn-by)
+- [Alexandru Munteanu Government of Moldova Public official / MD 1 task](/people/alexandru-munteanu-md)
 - 1-10 OF 189
 - PREVIOUS
 - PAGE 1 OF 19

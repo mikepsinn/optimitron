@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   ensureSubjectForPerson: vi.fn(),
   organizationFindUnique: vi.fn(),
   personFindUnique: vi.fn(),
+  personUpdate: vi.fn(),
   prismaTransaction: vi.fn(),
   requireAuth: vi.fn(),
   findUnique: vi.fn(),
@@ -29,7 +30,7 @@ vi.mock("@/lib/prisma", () => ({
     $transaction: mocks.prismaTransaction,
     activity: { create: mocks.activityCreate },
     organization: { findUnique: mocks.organizationFindUnique },
-    person: { findUnique: mocks.personFindUnique },
+    person: { findUnique: mocks.personFindUnique, update: mocks.personUpdate },
     referendum: { findUnique: mocks.findUnique },
     referendumVote: { upsert: mocks.upsert },
   },
@@ -111,6 +112,11 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.checkBadgesAfterWish.mockResolvedValue(undefined);
     mocks.grantWishes.mockResolvedValue(null);
     mocks.organizationFindUnique.mockResolvedValue(null);
+    mocks.personUpdate.mockResolvedValue({
+      id: "person_1",
+      displayName: "Mike",
+      isPublic: true,
+    });
     mocks.syncReferralVoteTokenMintForVote.mockResolvedValue(null);
     mocks.resolveInvitationReferrer.mockResolvedValue(null);
     mocks.convertReferralInvitationForVote.mockResolvedValue(null);
@@ -144,7 +150,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("returns 401 when unauthenticated", async () => {
     mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
 
-    const res = await POST(makeRequest("test-ref", { answer: "YES" }), makeParams("test-ref"));
+    const res = await POST(
+      makeRequest("test-ref", { answer: "YES" }),
+      makeParams("test-ref"),
+    );
 
     expect(res.status).toBe(401);
     await expect(res.json()).resolves.toEqual({ error: "Unauthorized" });
@@ -153,7 +162,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("returns 400 for invalid answer value", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
 
-    const res = await POST(makeRequest("test-ref", { answer: "MAYBE" }), makeParams("test-ref"));
+    const res = await POST(
+      makeRequest("test-ref", { answer: "MAYBE" }),
+      makeParams("test-ref"),
+    );
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
@@ -176,10 +188,15 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(null);
 
-    const res = await POST(makeRequest("nope", { answer: "YES" }), makeParams("nope"));
+    const res = await POST(
+      makeRequest("nope", { answer: "YES" }),
+      makeParams("nope"),
+    );
 
     expect(res.status).toBe(404);
-    await expect(res.json()).resolves.toEqual({ error: "Referendum not found" });
+    await expect(res.json()).resolves.toEqual({
+      error: "Referendum not found",
+    });
     expect(mocks.findUnique).toHaveBeenCalledWith({
       where: { slug: "nope", deletedAt: null },
     });
@@ -187,9 +204,15 @@ describe("POST /api/referendums/[slug]/vote", () => {
 
   it("returns 400 when referendum is not ACTIVE", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.findUnique.mockResolvedValue({ ...ACTIVE_REFERENDUM, status: "CLOSED" });
+    mocks.findUnique.mockResolvedValue({
+      ...ACTIVE_REFERENDUM,
+      status: "CLOSED",
+    });
 
-    const res = await POST(makeRequest("test-ref", { answer: "YES" }), makeParams("test-ref"));
+    const res = await POST(
+      makeRequest("test-ref", { answer: "YES" }),
+      makeParams("test-ref"),
+    );
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
@@ -211,7 +234,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.upsert.mockResolvedValue(vote);
     mocks.grantWishes.mockResolvedValue({ amount: 2 });
 
-    const res = await POST(makeRequest("test-ref", { answer: "yes" }), makeParams("test-ref"));
+    const res = await POST(
+      makeRequest("test-ref", { answer: "yes" }),
+      makeParams("test-ref"),
+    );
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
@@ -221,7 +247,9 @@ describe("POST /api/referendums/[slug]/vote", () => {
       convertedReferralInvitation: null,
     });
     expect(mocks.upsert).toHaveBeenCalledWith({
-      where: { referendumId_personId: { referendumId: "ref_1", personId: "person_1" } },
+      where: {
+        referendumId_personId: { referendumId: "ref_1", personId: "person_1" },
+      },
       update: {
         answer: "YES",
         deletedAt: null,
@@ -268,10 +296,54 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
   });
 
+  it("records the submitted signer name and public preference on the profile and vote", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    const vote = {
+      id: "vote_private",
+      answer: "YES",
+      personId: "person_1",
+      userId: "user_1",
+      referendumId: "ref_1",
+      isPublic: false,
+      voteSource: "SELF",
+    };
+    mocks.upsert.mockResolvedValue(vote);
+
+    const res = await POST(
+      makeRequest("test-ref", {
+        answer: "YES",
+        displayName: "  Mike Sinn  ",
+        makePublic: false,
+      }),
+      makeParams("test-ref"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.personUpdate).toHaveBeenCalledWith({
+      where: { id: "person_1" },
+      data: {
+        displayName: "Mike Sinn",
+        isPublic: false,
+      },
+    });
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.objectContaining({ isPublic: false }),
+        create: expect.objectContaining({ isPublic: false }),
+      }),
+    );
+  });
+
   it("syncs the treaty task without sending a vote-receipt email", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(TREATY_REFERENDUM);
-    const vote = { id: "vote_1", answer: "YES", userId: "user_1", referendumId: "ref_1" };
+    const vote = {
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+    };
     mocks.upsert.mockResolvedValue(vote);
 
     const res = await POST(
@@ -319,8 +391,15 @@ describe("POST /api/referendums/[slug]/vote", () => {
 
   it("registers a named plaintiff on a YES Humanity v Government verdict vote", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.findUnique.mockResolvedValue(HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM);
-    const vote = { id: "vote_1", answer: "YES", userId: "user_1", referendumId: "ref_1" };
+    mocks.findUnique.mockResolvedValue(
+      HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM,
+    );
+    const vote = {
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+    };
     mocks.upsert.mockResolvedValue(vote);
 
     const res = await POST(
@@ -343,10 +422,18 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("casts a NO vote successfully", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    const vote = { id: "vote_2", answer: "NO", userId: "user_1", referendumId: "ref_1" };
+    const vote = {
+      id: "vote_2",
+      answer: "NO",
+      userId: "user_1",
+      referendumId: "ref_1",
+    };
     mocks.upsert.mockResolvedValue(vote);
 
-    const res = await POST(makeRequest("test-ref", { answer: "no" }), makeParams("test-ref"));
+    const res = await POST(
+      makeRequest("test-ref", { answer: "no" }),
+      makeParams("test-ref"),
+    );
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
@@ -365,10 +452,18 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("upserts (updates) an existing vote", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    const updatedVote = { id: "vote_1", answer: "ABSTAIN", userId: "user_1", referendumId: "ref_1" };
+    const updatedVote = {
+      id: "vote_1",
+      answer: "ABSTAIN",
+      userId: "user_1",
+      referendumId: "ref_1",
+    };
     mocks.upsert.mockResolvedValue(updatedVote);
 
-    const res = await POST(makeRequest("test-ref", { answer: "ABSTAIN" }), makeParams("test-ref"));
+    const res = await POST(
+      makeRequest("test-ref", { answer: "ABSTAIN" }),
+      makeParams("test-ref"),
+    );
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
@@ -393,12 +488,19 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("resolves referrer from ref parameter", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "referrer_1" });
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({
+      id: "referrer_1",
+    });
     mocks.upsert.mockResolvedValue({ id: "vote_1" });
 
-    await POST(makeRequest("test-ref", { answer: "YES", ref: "friend123" }), makeParams("test-ref"));
+    await POST(
+      makeRequest("test-ref", { answer: "YES", ref: "friend123" }),
+      makeParams("test-ref"),
+    );
 
-    expect(mocks.findUserByHandleOrReferralCode).toHaveBeenCalledWith("friend123");
+    expect(mocks.findUserByHandleOrReferralCode).toHaveBeenCalledWith(
+      "friend123",
+    );
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({ referredByUserId: "referrer_1" }),
@@ -412,7 +514,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "user_1" });
     mocks.upsert.mockResolvedValue({ id: "vote_1" });
 
-    await POST(makeRequest("test-ref", { answer: "YES", ref: "myself" }), makeParams("test-ref"));
+    await POST(
+      makeRequest("test-ref", { answer: "YES", ref: "myself" }),
+      makeParams("test-ref"),
+    );
 
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -426,7 +531,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
     mocks.upsert.mockResolvedValue({ id: "vote_1" });
 
-    await POST(makeRequest("test-ref", { answer: "YES" }), makeParams("test-ref"));
+    await POST(
+      makeRequest("test-ref", { answer: "YES" }),
+      makeParams("test-ref"),
+    );
 
     expect(mocks.findUserByHandleOrReferralCode).not.toHaveBeenCalled();
     expect(mocks.upsert).toHaveBeenCalledWith(
@@ -608,7 +716,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
 
     const res = await POST(
-      makeRequest("one-percent-treaty", { answer: "YES", inviteToken: "token_1" }),
+      makeRequest("one-percent-treaty", {
+        answer: "YES",
+        inviteToken: "token_1",
+      }),
       makeParams("one-percent-treaty"),
     );
 
@@ -632,7 +743,10 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.upsert.mockResolvedValue({ id: "vote_1", answer: "YES" });
     mocks.activityCreate.mockRejectedValue(new Error("activity down"));
 
-    const res = await POST(makeRequest("test-ref", { answer: "YES" }), makeParams("test-ref"));
+    const res = await POST(
+      makeRequest("test-ref", { answer: "YES" }),
+      makeParams("test-ref"),
+    );
 
     expect(res.status).toBe(200);
     expect(mocks.grantWishes).toHaveBeenCalledWith({
@@ -690,7 +804,9 @@ describe("POST /api/referendums/[slug]/vote", () => {
   it("stores approved public organization survey slug attribution without a signed token", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
-    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "referrer_1" });
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({
+      id: "referrer_1",
+    });
     mocks.organizationFindUnique.mockResolvedValue({
       id: "org_1",
       status: "APPROVED",
@@ -720,7 +836,9 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        update: expect.not.objectContaining({ organizationId: expect.anything() }),
+        update: expect.not.objectContaining({
+          organizationId: expect.anything(),
+        }),
         create: expect.objectContaining({
           referredByUserId: "referrer_1",
           organizationId: "org_1",
@@ -755,7 +873,9 @@ describe("POST /api/referendums/[slug]/vote", () => {
 
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        update: expect.not.objectContaining({ organizationId: expect.anything() }),
+        update: expect.not.objectContaining({
+          organizationId: expect.anything(),
+        }),
         // create still carries the new org so a brand-new voter from Org B is attributed.
         create: expect.objectContaining({ organizationId: "org_b" }),
       }),
@@ -787,8 +907,12 @@ describe("POST /api/referendums/[slug]/vote", () => {
     });
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        update: expect.not.objectContaining({ organizationId: expect.anything() }),
-        create: expect.not.objectContaining({ organizationId: expect.anything() }),
+        update: expect.not.objectContaining({
+          organizationId: expect.anything(),
+        }),
+        create: expect.not.objectContaining({
+          organizationId: expect.anything(),
+        }),
       }),
     );
   });

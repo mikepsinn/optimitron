@@ -24,9 +24,7 @@ export default async function OrganizationsPage() {
           Organization Campaign Tools
         </h1>
         <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
-          Share the treaty survey from an official organization link. Responses
-          are credited to your organization without making a candidate
-          endorsement.
+          Create or open an organization link, then share or embed the survey.
         </p>
         {organizations.length > 0 ? (
           <Link

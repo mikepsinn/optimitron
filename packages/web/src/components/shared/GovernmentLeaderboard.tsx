@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useId, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   type GovernmentMetrics,
@@ -11,10 +11,11 @@ import {
   getMilitaryToGovernmentClinicalTrialRatio,
   getMilitaryToGovernmentMedicalResearchRatio,
 } from "@optimitron/data/datasets/government-spending-ratios";
-import { SlidersHorizontal } from "lucide-react";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
 import { Popover } from "@/components/retroui/Popover";
 import { Checkbox } from "@/components/retroui/Checkbox";
+import { Select } from "@/components/retroui/Select";
 import { SpendingBar } from "@/components/ui/spending-bar";
 import { ColumnHelp } from "@/components/ui/column-help";
 import {
@@ -81,6 +82,11 @@ interface GovernmentLeaderboardProps {
    * `getMemorialAttributionsByGovernment` from `lib/prosecution-data.server.ts`.
    */
   memorialAttributionsByCountry?: Record<string, number>;
+  /**
+   * ISO country codes whose 1% Treaty signer task is verified. Omit when the
+   * server cannot load treaty signer status.
+   */
+  signedCountryCodes?: string[];
 }
 
 function GovernmentRowLink({
@@ -199,10 +205,272 @@ const COLUMN_HELP_TEXT: Record<string, string> = {
   researchRatio: "Military spending per $1 of total government medical research spending.",
 };
 
+const MOBILE_SORT_KEY_ORDER: SortKey[] = [
+  "trialRatio",
+  "killed",
+  "militarySpending",
+  "memorialDeaths",
+  "hale",
+  "medianIncome",
+  "lifeExpectancy",
+  "militaryPerCapitaPPP",
+  "healthSpending",
+  "researchRatio",
+  "country",
+];
+
+const MOBILE_DETAIL_KEY_ORDER: SortKey[] = [
+  "trialRatio",
+  "killed",
+  "militarySpending",
+  "memorialDeaths",
+  "hale",
+  "lifeExpectancy",
+  "medianIncome",
+  "militaryPerCapitaPPP",
+  "healthSpending",
+  "researchRatio",
+];
+
+function getAvailableMetricKeys(
+  memorialAttributionsByCountry?: Record<string, number>,
+): SortKey[] {
+  return MOBILE_DETAIL_KEY_ORDER.filter(
+    (key) => key !== "memorialDeaths" || memorialAttributionsByCountry != null,
+  );
+}
+
+function getAvailableSortKeys(
+  memorialAttributionsByCountry?: Record<string, number>,
+): SortKey[] {
+  return MOBILE_SORT_KEY_ORDER.filter(
+    (key) => key !== "memorialDeaths" || memorialAttributionsByCountry != null,
+  );
+}
+
+function getMobilePrimaryMetricKey(
+  sortKey: SortKey,
+  memorialAttributionsByCountry?: Record<string, number>,
+): SortKey {
+  if (
+    sortKey !== "country" &&
+    sortKey !== "rank" &&
+    (sortKey !== "memorialDeaths" || memorialAttributionsByCountry != null)
+  ) {
+    return sortKey;
+  }
+
+  return GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY;
+}
+
+function getMetricValueText(
+  gov: GovernmentMetrics,
+  key: SortKey,
+  memorialAttributionsByCountry?: Record<string, number>,
+): string {
+  const income =
+    gov.medianIncome?.value ??
+    (gov.gdpPerCapita.value - gov.governmentSpendingPerCapita.value);
+
+  switch (key) {
+    case "country":
+      return gov.name;
+    case "rank":
+      return formatRatio(getMilitaryToGovernmentClinicalTrialRatio(gov) ?? 0);
+    case "killed":
+      return gov.militaryDeathsCaused.value.toLocaleString();
+    case "hale":
+      return gov.hale?.value.toFixed(1) ?? "—";
+    case "lifeExpectancy":
+      return gov.lifeExpectancy.value.toFixed(1);
+    case "medianIncome":
+      return formatUSD(income);
+    case "militaryPerCapitaPPP": {
+      const value = getMilitarySpendingPerCapitaPPP(gov);
+      return value !== null ? formatUSD(value) : "—";
+    }
+    case "militarySpending":
+      return formatUSD(gov.militarySpendingAnnual.value);
+    case "healthSpending":
+      return formatUSD(gov.healthSpendingPerCapita.value);
+    case "trialRatio": {
+      const value = getMilitaryToGovernmentClinicalTrialRatio(gov);
+      return value !== null ? formatRatio(value) : "—";
+    }
+    case "researchRatio": {
+      const value = getMilitaryToGovernmentMedicalResearchRatio(gov);
+      return value !== null ? formatRatio(value) : "—";
+    }
+    case "memorialDeaths":
+      return (memorialAttributionsByCountry?.[gov.code] ?? 0).toLocaleString();
+  }
+}
+
+function GovernmentMobileSort({
+  sortKey,
+  onSortKeyChange,
+  memorialAttributionsByCountry,
+}: {
+  sortKey: SortKey;
+  onSortKeyChange: (key: SortKey) => void;
+  memorialAttributionsByCountry?: Record<string, number>;
+}) {
+  const sortId = useId();
+  const options = getAvailableSortKeys(memorialAttributionsByCountry);
+  const selectedSortKey = options.includes(sortKey)
+    ? sortKey
+    : GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY;
+
+  return (
+    <div className="flex w-full flex-col gap-1 lg:hidden">
+      <label
+        htmlFor={sortId}
+        className="text-xs font-black uppercase text-muted-foreground"
+      >
+        Sort by
+      </label>
+      <Select
+        value={selectedSortKey}
+        onValueChange={(value) => onSortKeyChange(value as SortKey)}
+      >
+        <Select.Trigger
+          id={sortId}
+          className="h-10 w-full rounded-none border-2 border-primary bg-background text-sm font-black uppercase text-foreground"
+        >
+          <Select.Value />
+        </Select.Trigger>
+        <Select.Content className="border-2 border-primary">
+          {options.map((key) => (
+            <Select.Item
+              key={key}
+              value={key}
+              className="text-sm font-bold text-foreground"
+            >
+              {GOVERNMENT_LEADERBOARD_COLUMN_META[key].label}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select>
+    </div>
+  );
+}
+
+function GovernmentMobileRows({
+  govs,
+  sortKey,
+  memorialAttributionsByCountry,
+  signedCountryCodes,
+}: {
+  govs: GovernmentMetrics[];
+  sortKey: SortKey;
+  memorialAttributionsByCountry?: Record<string, number>;
+  signedCountryCodes?: string[];
+}) {
+  const primaryMetricKey = getMobilePrimaryMetricKey(
+    sortKey,
+    memorialAttributionsByCountry,
+  );
+  const detailMetricKeys = getAvailableMetricKeys(memorialAttributionsByCountry);
+  const signedCountryCodeSet = useMemo(
+    () => new Set(signedCountryCodes?.map((code) => code.toUpperCase()) ?? []),
+    [signedCountryCodes],
+  );
+  const hasTreatyStatus = signedCountryCodes != null;
+
+  return (
+    <div className="space-y-2 lg:hidden">
+      {govs.map((gov, index) => {
+        const detailHref = `/governments/${gov.code}`;
+        const treatySigned = signedCountryCodeSet.has(gov.code.toUpperCase());
+
+        return (
+          <details
+            key={gov.code}
+            className="group border-2 border-primary bg-background text-foreground"
+          >
+            <summary className="cursor-pointer list-none px-3 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary [&::-webkit-details-marker]:hidden">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="shrink-0 text-xs font-black text-muted-foreground">
+                      #{index + 1}
+                    </span>
+                    <span className="shrink-0 text-lg leading-none">{gov.flag}</span>
+                    <span className="truncate text-sm font-black text-foreground">
+                      {gov.name}
+                    </span>
+                  </div>
+                  {hasTreatyStatus && (
+                    <p className="mt-1 text-xs font-black uppercase text-muted-foreground">
+                      Treaty: {treatySigned ? "Signed" : "Unsigned"}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="text-[0.65rem] font-black uppercase text-muted-foreground">
+                    {GOVERNMENT_LEADERBOARD_COLUMN_META[primaryMetricKey].label}
+                  </div>
+                  <div className="text-sm font-black text-foreground">
+                    {getMetricValueText(
+                      gov,
+                      primaryMetricKey,
+                      memorialAttributionsByCountry,
+                    )}
+                  </div>
+                </div>
+                <ChevronDown
+                  aria-hidden="true"
+                  className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                />
+              </div>
+            </summary>
+
+            <div className="border-t-2 border-primary px-3 py-3">
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-2">
+                {hasTreatyStatus && (
+                  <div>
+                    <dt className="text-[0.65rem] font-black uppercase text-muted-foreground">
+                      1% Treaty
+                    </dt>
+                    <dd className="text-sm font-black text-foreground">
+                      {treatySigned ? "Signed" : "Unsigned"}
+                    </dd>
+                  </div>
+                )}
+                {detailMetricKeys.map((key) => (
+                  <div key={key}>
+                    <dt className="text-[0.65rem] font-black uppercase text-muted-foreground">
+                      {GOVERNMENT_LEADERBOARD_COLUMN_META[key].label}
+                    </dt>
+                    <dd className="text-sm font-black text-foreground">
+                      {getMetricValueText(
+                        gov,
+                        key,
+                        memorialAttributionsByCountry,
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <Link
+                href={detailHref}
+                className="mt-3 inline-flex border-2 border-primary px-3 py-2 text-xs font-black uppercase text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                Open report card
+              </Link>
+            </div>
+          </details>
+        );
+      })}
+    </div>
+  );
+}
+
 export function GovernmentLeaderboard({
   limit,
   compact = false,
   memorialAttributionsByCountry,
+  signedCountryCodes,
 }: GovernmentLeaderboardProps) {
   const [rankMode, setRankMode] = useState<RankMode>("worst");
   const [sortKey, setSortKey] = useState<SortKey>(
@@ -310,6 +578,15 @@ export function GovernmentLeaderboard({
     }
   };
 
+  const handleMobileSort = (key: SortKey) => {
+    setSortKey(key);
+    if (key === "country") {
+      setSortAsc(true);
+    } else if (key !== "trialRatio" && key !== "rank") {
+      setSortAsc(false);
+    }
+  };
+
   const handleRankMode = (mode: RankMode) => {
     setRankMode(mode);
     setSortKey("trialRatio");
@@ -328,12 +605,12 @@ export function GovernmentLeaderboard({
     <div className="bg-background text-foreground border-0 sm:border-4 sm:border-primary p-0 sm:p-4 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       {/* Rank mode toggle + search */}
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-2 gap-2 sm:gap-4">
-        <div className="flex gap-2">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
           <Button
             size="sm"
             variant={rankMode === "worst" ? "default" : "outline"}
             onClick={() => handleRankMode("worst")}
-            className="text-xs font-black uppercase"
+            className="w-full text-xs font-black uppercase sm:w-auto"
           >
             Worst Governments
           </Button>
@@ -341,17 +618,24 @@ export function GovernmentLeaderboard({
             size="sm"
             variant={rankMode === "least-bad" ? "default" : "outline"}
             onClick={() => handleRankMode("least-bad")}
-            className="text-xs font-black uppercase"
+            className="w-full text-xs font-black uppercase sm:w-auto"
           >
             Least Bad Governments
           </Button>
         </div>
-        <div className="flex items-end gap-2 w-full sm:w-auto">
-          <ColumnPicker
-            compact={compact}
-            overrides={columnOverrides}
-            onToggle={handleColumnToggle}
+        <div className="flex w-full flex-col gap-2 sm:w-auto lg:flex-row lg:items-end">
+          <GovernmentMobileSort
+            sortKey={sortKey}
+            onSortKeyChange={handleMobileSort}
+            memorialAttributionsByCountry={memorialAttributionsByCountry}
           />
+          <div className="hidden lg:block">
+            <ColumnPicker
+              compact={compact}
+              overrides={columnOverrides}
+              onToggle={handleColumnToggle}
+            />
+          </div>
           <input
             type="text"
             placeholder="Search country..."
@@ -365,8 +649,15 @@ export function GovernmentLeaderboard({
         Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
       </p>
 
+      <GovernmentMobileRows
+        govs={govs}
+        sortKey={sortKey}
+        memorialAttributionsByCountry={memorialAttributionsByCountry}
+        signedCountryCodes={signedCountryCodes}
+      />
+
       {/* Table */}
-      <div className="border-0 sm:border-2 sm:border-primary overflow-x-auto">
+      <div className="hidden overflow-x-auto border-2 border-primary lg:block">
         <table className="w-full">
           <thead>
             <tr className="border-b-4 border-primary">

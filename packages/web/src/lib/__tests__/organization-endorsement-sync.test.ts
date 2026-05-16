@@ -31,6 +31,7 @@ import {
 const draft = {
   clientDraftId: "org_draft_1",
   description: "A serious organization.",
+  donationUrl: "https://example.org/donate",
   organizationName: "Coalition for Testable Medicine",
   originUrl: "https://warondisease.org/endorse",
   referendumSlug: "one-percent-treaty",
@@ -98,6 +99,14 @@ describe("organization endorsement sync", () => {
         body: expect.stringContaining("Coalition for Testable Medicine"),
       }),
     );
+    const postedBody = JSON.parse(
+      fetchMock.mock.calls[0]?.[1]?.body as string,
+    ) as {
+      newOrganization?: { donationUrl?: string | null };
+    };
+    expect(postedBody.newOrganization?.donationUrl).toBe(
+      "https://example.org/donate",
+    );
     expect(mocks.removePendingOrganizationEndorsements).toHaveBeenCalledWith([
       "org_draft_1",
     ]);
@@ -138,9 +147,9 @@ describe("organization endorsement sync", () => {
 
     await syncPendingOrganizationEndorsements();
 
-    expect(mocks.setPendingOrganizationEndorsementsSyncLock).toHaveBeenCalledTimes(
-      3,
-    );
+    expect(
+      mocks.setPendingOrganizationEndorsementsSyncLock,
+    ).toHaveBeenCalledTimes(3);
     expect(mocks.removePendingOrganizationEndorsements).toHaveBeenCalledWith([
       "org_draft_1",
     ]);

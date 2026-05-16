@@ -5,11 +5,10 @@ import {
   HUMANITY_V_GOVERNMENT_VERDICT_QUESTION,
 } from "@optimitron/data/referendums";
 import {
-  CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA,
-  CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA,
   CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  EFFICACY_LAG_YEARS,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   GLOBAL_AVG_INCOME_2025,
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
@@ -20,6 +19,7 @@ import {
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 import { authOptions } from "@/lib/auth";
 import { formatCount } from "@/lib/format-count";
@@ -66,16 +66,7 @@ export default async function HumanityVGovernmentPage() {
         <p className="text-sm font-black uppercase tracking-[0.16em] text-muted-foreground">
           The indictment
         </p>
-        <p className="mt-3 text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9">
-          Governments were hired to promote the general welfare, defined as
-          the median health and wealth of the citizenry. They collect{" "}
-          <ParameterValue
-            figures={3}
-            param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
-            valueOverride="$36.5 trillion"
-          />{" "}
-          a year for the service.
-        </p>
+        <WelfareClaim className="mt-3 block text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9" />
         <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
           The citizenry would like to actually receive this service at some
           point.
@@ -106,14 +97,8 @@ export default async function HumanityVGovernmentPage() {
           children who will never grow up to replace them.
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-foreground">
-          Murdering{" "}
-          <ParameterValue
-            figures={3}
-            param={WAR_DEATHS_SINCE_1900}
-            valueOverride="310 million"
-          />{" "}
-          of your employers is the opposite of promoting their welfare, and
-          would be grounds for termination in any other employment contract
+          Murdering your employers is the opposite of promoting their welfare,
+          and would be grounds for termination in any other employment contract
           humans have ever signed.
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
@@ -137,7 +122,16 @@ export default async function HumanityVGovernmentPage() {
             valueOverride="$14,375"
           />
           . Dead scientists do not discover things and exploded cities are
-          very expensive to fix.
+          very expensive to fix.{" "}
+          <a
+            className="text-foreground underline underline-offset-2"
+            href={HUMANITY_V_GOVERNMENT_MANUAL_URL}
+            rel="noreferrer"
+            target="_blank"
+          >
+            Read the evidence
+          </a>
+          .
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
@@ -146,32 +140,15 @@ export default async function HumanityVGovernmentPage() {
           >
             Vote on the finding
           </a>
-          <Link
-            className={`${defaultButtonClassName} px-6 tracking-[0.08em]`}
-            href={ROUTES.vote}
-          >
-            Support the settlement
-          </Link>
-          <a
-            className={`${defaultButtonClassName} px-6 tracking-[0.08em]`}
-            href={HUMANITY_V_GOVERNMENT_MANUAL_URL}
-            rel="noreferrer"
-            target="_blank"
-          >
-            Read the evidence
-          </a>
         </div>
       </section>
 
       <div id="verdict" className="mt-10 scroll-mt-24">
         <HumanityVGovernmentVerdictVote
-          abstainCount={verdictStats.abstainCount}
           existingAnswer={verdictStats.existingAnswer}
           fullDamagesLabel={HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL}
-          noCount={verdictStats.noCount}
           question={HUMANITY_V_GOVERNMENT_VERDICT_QUESTION}
           referendumSlug={verdictStats.referendumSlug}
-          yesCount={verdictStats.yesCount}
         />
       </div>
 
@@ -285,19 +262,9 @@ export default async function HumanityVGovernmentPage() {
               Damages
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              The cautious floor is{" "}
-              <ParameterValue
-                figures={3}
-                param={CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA}
-                valueOverride="$538K"
-              />{" "}
-              per living human. The prosecutor's base demand is{" "}
-              <ParameterValue
-                figures={3}
-                param={CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA}
-                valueOverride="$913K"
-              />
-              .
+              The full claim is per living human, because every surviving
+              employer inherited the bill for the policy that killed the
+              others.
             </p>
           </div>
         </div>
@@ -321,7 +288,12 @@ export default async function HumanityVGovernmentPage() {
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
               The defendants, between 1900 and the present, did willfully and
-              with premeditation engage in the organized killing of 310 million
+              with premeditation engage in the organized killing of{" "}
+              <ParameterValue
+                figures={3}
+                param={WAR_DEATHS_SINCE_1900}
+                valueOverride="310 million"
+              />{" "}
               of their own employers.
             </p>
           </li>
@@ -337,10 +309,21 @@ export default async function HumanityVGovernmentPage() {
               deaths
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              The defendants required an additional 8.2 years of efficacy
-              testing before letting humans access drugs already proven safe.
-              53 years of warnings. 102 million dead. &ldquo;We did not
-              know&rdquo; is no longer available as a defense.
+              The defendants required an additional{" "}
+              <ParameterValue
+                figures={2}
+                param={EFFICACY_LAG_YEARS}
+                valueOverride="8.2 years"
+              />{" "}
+              of efficacy testing before letting humans access drugs already
+              proven safe. 53 years of warnings.{" "}
+              <ParameterValue
+                figures={3}
+                param={EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL}
+                valueOverride="102 million"
+              />{" "}
+              dead. &ldquo;We did not know&rdquo; is no longer available as a
+              defense.
             </p>
           </li>
           <li className="border-2 border-foreground bg-background p-5">
@@ -358,8 +341,13 @@ export default async function HumanityVGovernmentPage() {
               Damages here are the counterfactual: what humanity would have
               had if governments had frozen real military spending at 1900
               levels and redirected the rest to keeping their citizens alive.
-              The war budget since 1913 alone could have funded 37,778 years
-              of government clinical trials.
+              The war budget since 1913 alone could have funded{" "}
+              <ParameterValue
+                figures={3}
+                param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
+                valueOverride="37,778"
+              />{" "}
+              years of government clinical trials.
             </p>
           </li>
         </ol>
@@ -369,81 +357,23 @@ export default async function HumanityVGovernmentPage() {
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
           The damages demand
         </h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          <div className="border-2 border-foreground bg-background p-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Cautious floor
-            </p>
-            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              <ParameterValue
-                figures={3}
-                param={CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA}
-                valueOverride="$538K"
-              />
-            </p>
-            <p className="mt-1 text-xs font-bold text-muted-foreground">
-              Per living human, before punitive theories.
-            </p>
-          </div>
-          <div className="border-2 border-foreground bg-background p-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Prosecutor demand
-            </p>
-            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              <ParameterValue
-                figures={3}
-                param={CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA}
-                valueOverride="$913K"
-              />
-            </p>
-            <p className="mt-1 text-xs font-bold text-muted-foreground">
-              Adds drugs never developed because the trials were never funded.
-            </p>
-          </div>
-          <div className="border-2 border-foreground bg-foreground p-4 text-background">
-            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
-              Triple damages
-            </p>
-            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              <ParameterValue
-                className="text-background decoration-background/50"
-                figures={3}
-                param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
-                valueOverride="$2.74M"
-              />
-            </p>
-            <p className="mt-1 text-xs font-bold text-background">
-              The False Claims Act triples damages when a defendant defrauds
-              the government. Here, the defendants ARE the government,
-              defrauding the citizenry. Triple damages apply.
-            </p>
-          </div>
+        <div className="mt-3 border-2 border-foreground bg-background p-5">
+          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+            Full damages claim
+          </p>
+          <p className="mt-2 text-4xl font-black tabular-nums leading-none text-foreground sm:text-5xl">
+            <ParameterValue
+              figures={3}
+              param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
+              valueOverride="$2.74M"
+            />
+          </p>
+          <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
+            Per living human. The False Claims Act triples damages when a
+            defendant defrauds the government. Here, the defendants ARE the
+            government, defrauding the citizenry. Triple damages apply.
+          </p>
         </div>
-        <p className="mt-4 text-sm font-bold leading-6 text-muted-foreground">
-          The demand is not one suspicious monster number. It is a ledger: war
-          deaths, regulatory delay deaths, destroyed property, missing public
-          money, and the cures never developed because the research budget was
-          busy becoming weapons.
-        </p>
-        <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-          <span className="font-black text-foreground">Alternative pleadings.</span>{" "}
-          If the court rejects the wider theory, the case still has the floor:{" "}
-          <ParameterValue
-            figures={3}
-            param={CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA}
-            valueOverride="$538K"
-          />{" "}
-          per person. If it accepts a False Claims Act-style triple-damages
-          analogy,
-          exposure reaches{" "}
-          <ParameterValue
-            figures={3}
-            param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
-            valueOverride="$2.74M"
-          />{" "}
-          per person. The size of the number reflects the size of the death
-          toll. The defendants set both.
-        </p>
       </section>
 
       <section className="mt-10">

@@ -56,6 +56,10 @@ interface PoliticianScorecardTableProps {
   /** Show a dynamic heading that updates with the rank mode toggle */
   showTitle?: boolean;
   subtitle?: string;
+  rankModeLabels?: {
+    worst: string;
+    leastBad: string;
+  };
 }
 
 const COLUMN_HELP = {
@@ -74,6 +78,10 @@ export function PoliticianScorecardTable({
   limit,
   showTitle = false,
   subtitle,
+  rankModeLabels = {
+    worst: "Worst Players",
+    leastBad: "Least Bad Players",
+  },
 }: PoliticianScorecardTableProps) {
   const compact = limit != null;
   const [rankMode, setRankMode] = useState<RankMode>("worst");
@@ -153,7 +161,8 @@ export function PoliticianScorecardTable({
 
   const hdrClass = `p-2 text-xs font-black uppercase text-muted-foreground whitespace-nowrap text-left${compact ? "" : " cursor-pointer hover:text-foreground transition-colors"}`;
 
-  const dynamicTitle = rankMode === "worst" ? "Worst Players" : "Least Bad Players";
+  const dynamicTitle =
+    rankMode === "worst" ? rankModeLabels.worst : rankModeLabels.leastBad;
 
   return (
     <div className="bg-background text-foreground border-0 sm:border-4 sm:border-primary p-0 sm:p-4 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -195,7 +204,7 @@ export function PoliticianScorecardTable({
             onClick={() => handleRankMode("worst")}
             className="text-xs font-black uppercase"
           >
-            Worst Players
+            {rankModeLabels.worst}
           </Button>
           <Button
             size="sm"
@@ -203,7 +212,7 @@ export function PoliticianScorecardTable({
             onClick={() => handleRankMode("least-bad")}
             className="text-xs font-black uppercase"
           >
-            Least Bad Players
+            {rankModeLabels.leastBad}
           </Button>
         </div>
         <input
@@ -296,7 +305,7 @@ export function PoliticianScorecardTable({
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black text-background w-8 shrink-0">RX</span>
+                        <span className="text-[10px] font-black text-foreground w-8 shrink-0">RX</span>
                         <SpendingBar
                           value={s.clinicalTrialDollarsVotedFor}
                           max={maxTrials}

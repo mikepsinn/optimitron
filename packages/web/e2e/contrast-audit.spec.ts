@@ -41,6 +41,15 @@ const CRITICAL_PUBLIC_PATHS = new Set([
   "/tools",
   "/treaty",
 ]);
+const MIN_FONT_SIZE_PX = 14;
+const EMAIL_TEMPLATE_IDS = [
+  "magic-link",
+  "monthly-chain-digest",
+  "post-vote-share",
+  "referral-first-conversion",
+  "task-assignment",
+  "task-comment-notification",
+];
 
 function isSevereContrastFailure(ratio: number, required: number): boolean {
   return ratio < (required <= 3 ? SEVERE_LARGE_CONTRAST_RATIO : SEVERE_NORMAL_CONTRAST_RATIO);
@@ -70,6 +79,10 @@ const PAGES: AuditPage[] = [
     requiresAuth: false,
     url: `/demo#${id}`,
   })),
+  ...EMAIL_TEMPLATE_IDS.map((id) => ({
+    requiresAuth: false,
+    url: `/dev/email/${id}?raw=1&full=1`,
+  })),
 ];
 
 // ── Types ───────────────────────────────────────────────────────
@@ -86,7 +99,16 @@ interface ContrastViolation {
   expected: string;
 }
 
+interface FontSizeViolation {
+  page: string;
+  viewport: string;
+  selector: string;
+  computedSize: string;
+  nearestTextSnippet: string;
+}
+
 const allViolations: ContrastViolation[] = [];
+const allFontSizeViolations: FontSizeViolation[] = [];
 
 console.log(`[contrast-audit] scope=${CONTRAST_SCOPE} pages=${PAGES.length}`);
 
@@ -125,25 +147,114 @@ function assertAuditLocation(
   page: import("@playwright/test").Page,
   url: string,
 ) {
-  const [expectedPath, expectedHash] = url.split("#");
+  const expected = new URL(url, "http://audit.local");
   const current = new URL(page.url());
 
   expect(
     current.pathname,
     `${url} redirected to ${current.pathname} before contrast auditing.`,
-  ).toBe(expectedPath);
+  ).toBe(expected.pathname);
+
+  if (expected.search) {
+    expect(
+      current.search,
+      `${url} should preserve its query during contrast auditing.`,
+    ).toBe(expected.search);
+  }
 
   // The demo player resolves `/demo#<slideId>` to the first matching segment and
   // then normalizes the hash to that segment id for sharing. For contrast audits
   // we only need to verify that the correct slide rendered, which
   // `navigateAndSettle()` already does, so exact hash preservation is not stable
   // or meaningful for `/demo`.
-  if (expectedHash && expectedPath !== "/demo") {
+  if (expected.hash && expected.pathname !== "/demo") {
     expect(
       current.hash,
       `${url} should preserve its hash target during contrast auditing.`,
-    ).toBe(`#${expectedHash}`);
+    ).toBe(expected.hash);
   }
+}
+
+async function getFontSizeViolations(
+  page: import("@playwright/test").Page,
+): Promise<Omit<FontSizeViolation, "page" | "viewport">[]> {
+  return page.locator("body").evaluateAll((roots, minFontSizePx) => {
+    function buildSelector(el: Element): string {
+      const tag = el.tagName.toLowerCase();
+      const id = el.id ? `#${el.id}` : "";
+      const cls =
+        el.className && typeof el.className === "string"
+          ? "." +
+            el.className
+              .trim()
+              .split(/\s+/)
+              .slice(0, 3)
+              .join(".")
+          : "";
+      return `${tag}${id}${cls}`;
+    }
+
+    function isHidden(el: HTMLElement): boolean {
+      let current: HTMLElement | null = el;
+      while (current) {
+        const style = window.getComputedStyle(current);
+        if (
+          style.display === "none" ||
+          style.visibility === "hidden" ||
+          style.opacity === "0"
+        ) {
+          return true;
+        }
+        current = current.parentElement;
+      }
+      return false;
+    }
+
+    const violations: {
+      selector: string;
+      computedSize: string;
+      nearestTextSnippet: string;
+    }[] = [];
+
+    for (const root of roots) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        const textNode = node;
+        const rawText = textNode.textContent ?? "";
+        const text = rawText.replace(/\s+/g, " ").trim();
+        const parent = textNode.parentElement;
+        node = walker.nextNode();
+
+        if (!text || !parent) continue;
+        if (["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE"].includes(parent.tagName)) continue;
+        if (parent.closest('[data-allow-small="footnote"]')) continue;
+
+        const htmlParent = parent as HTMLElement;
+        if (isHidden(htmlParent)) continue;
+
+        const range = document.createRange();
+        range.selectNodeContents(textNode);
+        const hasRenderedRect = Array.from(range.getClientRects()).some(
+          (rect) => rect.width > 0 && rect.height > 0,
+        );
+        range.detach();
+        if (!hasRenderedRect) continue;
+
+        const style = window.getComputedStyle(htmlParent);
+        const fontSize = Number.parseFloat(style.fontSize);
+        if (Number.isFinite(fontSize) && fontSize < minFontSizePx) {
+          violations.push({
+            selector: buildSelector(parent),
+            computedSize: style.fontSize,
+            nearestTextSnippet: text.slice(0, 80),
+          });
+        }
+      }
+    }
+
+    return violations;
+  }, MIN_FONT_SIZE_PX);
 }
 
 // ── Desktop pass (default viewport from config) ─────────────────
@@ -234,10 +345,42 @@ test.describe("Contrast — desktop", () => {
         }
       }
 
+      const fontSizeViolations = (await getFontSizeViolations(page)).map((v) => ({
+        page: url,
+        viewport: "desktop",
+        ...v,
+      }));
+
+      if (fontSizeViolations.length > 0) {
+        allFontSizeViolations.push(...fontSizeViolations);
+
+        console.log(`\n${"=".repeat(60)}`);
+        console.log(
+          `FONT-SIZE VIOLATIONS (desktop): ${url} (${fontSizeViolations.length})`,
+        );
+        console.log("=".repeat(60));
+        for (const v of fontSizeViolations) {
+          console.log(
+            `  ${v.page} | ${v.selector} | ${v.computedSize} | "${v.nearestTextSnippet}"`,
+          );
+        }
+      }
+
       expect(
         pageViolations.length,
         `${url} has ${pageViolations.length} severe desktop contrast violation(s). See playwright-report/contrast-audit.json for details.`,
       ).toBe(0);
+
+      // Font-size audit is currently WARN-ONLY. Strict-fail would
+      // immediately fail on ~140 pre-existing violations across
+      // legacy surfaces (text-xs in landing components, etc.).
+      // Migration plan: log violations now, ratchet to fail-on-new-
+      // additions after a focused cleanup pass. See TODO.md.
+      if (fontSizeViolations.length > 0) {
+        console.warn(
+          `[font-size warn] ${url} has ${fontSizeViolations.length} desktop violation(s) — see contrast-audit.json. Strict-fail enabled once pre-existing violations are cleaned up.`,
+        );
+      }
     });
   }
 });
@@ -335,10 +478,38 @@ test.describe("Contrast — mobile", () => {
         }
       }
 
+      const fontSizeViolations = (await getFontSizeViolations(page)).map((v) => ({
+        page: url,
+        viewport: "mobile",
+        ...v,
+      }));
+
+      if (fontSizeViolations.length > 0) {
+        allFontSizeViolations.push(...fontSizeViolations);
+
+        console.log(`\n${"=".repeat(60)}`);
+        console.log(
+          `FONT-SIZE VIOLATIONS (mobile): ${url} (${fontSizeViolations.length})`,
+        );
+        console.log("=".repeat(60));
+        for (const v of fontSizeViolations) {
+          console.log(
+            `  ${v.page} | ${v.selector} | ${v.computedSize} | "${v.nearestTextSnippet}"`,
+          );
+        }
+      }
+
       expect(
         pageViolations.length,
         `${url} has ${pageViolations.length} severe mobile contrast violation(s). See playwright-report/contrast-audit.json for details.`,
       ).toBe(0);
+
+      // Font-size audit is currently WARN-ONLY (see desktop pass).
+      if (fontSizeViolations.length > 0) {
+        console.warn(
+          `[font-size warn] ${url} has ${fontSizeViolations.length} mobile violation(s) — see contrast-audit.json. Strict-fail enabled once pre-existing violations are cleaned up.`,
+        );
+      }
     });
   }
 });
@@ -394,11 +565,26 @@ test.afterAll(() => {
     console.log("\n✅ No contrast violations found across all pages!");
   }
 
+  if (allFontSizeViolations.length > 0) {
+    console.log(`\n${"#".repeat(60)}`);
+    console.log(`TOTAL FONT-SIZE VIOLATIONS: ${allFontSizeViolations.length}`);
+    console.log("#".repeat(60));
+    for (const v of allFontSizeViolations) {
+      console.log(
+        `${v.page} | ${v.viewport} | ${v.selector} | ${v.computedSize} | "${v.nearestTextSnippet}"`,
+      );
+    }
+  } else {
+    console.log("\nNo font-size violations found across all pages!");
+  }
+
   // Write JSON report
   const reportPath = writeAuditReport("contrast-audit", {
     timestamp: new Date().toISOString(),
     totalViolations: allViolations.length,
+    totalFontSizeViolations: allFontSizeViolations.length,
     violations: allViolations,
+    fontSizeViolations: allFontSizeViolations,
   });
   console.log(`\nReport written to: ${reportPath}`);
 });

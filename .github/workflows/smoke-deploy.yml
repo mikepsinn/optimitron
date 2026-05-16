@@ -1,0 +1,354 @@
+name: Deploy smoke
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+  deployments: read
+  issues: write
+  pull-requests: read
+
+# Operator setup for protected Vercel previews:
+# 1. Open GitHub Settings -> Environments -> Preview -> Environment secrets.
+# 2. Add VERCEL_AUTOMATION_BYPASS_SECRET with the Vercel project secret from
+#    Deployment Protection -> Protection Bypass for Automation.
+
+jobs:
+  smoke:
+    name: Smoke deployed URL
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment_url != '' &&
+      (startsWith(github.event.deployment_status.environment_url, 'https://') ||
+        startsWith(github.event.deployment_status.environment_url, 'http://')) &&
+      !startsWith(github.event.deployment.environment, 'visual-review') &&
+      !startsWith(github.event.deployment_status.environment, 'visual-review')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com') || contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org')) && 'Production' || 'Preview' }}
+      deployment: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Resolve smoke target
+        id: target
+        env:
+          DEPLOYMENT_JSON: ${{ toJSON(github.event.deployment) }}
+          DEPLOYMENT_STATUS_JSON: ${{ toJSON(github.event.deployment_status) }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const deployment = JSON.parse(process.env.DEPLOYMENT_JSON || "{}");
+          const status = JSON.parse(process.env.DEPLOYMENT_STATUS_JSON || "{}");
+          const environmentName = String(
+            status.environment || deployment.environment || "",
+          );
+          const targetUrl = String(status.environment_url || "").trim();
+          if (!targetUrl) {
+            throw new Error("deployment_status did not include environment_url.");
+          }
+
+          const parsedUrl = new URL(targetUrl);
+          const productionHosts = new Set([
+            "warondisease.org",
+            "www.warondisease.org",
+            "optimitron.com",
+            "www.optimitron.com",
+            "onepercenttreaty.org",
+            "www.onepercenttreaty.org",
+          ]);
+          const isProduction =
+            /^production$/i.test(environmentName) ||
+            productionHosts.has(parsedUrl.hostname.toLowerCase());
+          const environment = isProduction ? "Production" : "Preview";
+
+          fs.appendFileSync(
+            process.env.GITHUB_OUTPUT,
+            `environment=${environment}\nurl=${targetUrl}\n`,
+          );
+          console.log(`Resolved ${environment} smoke target: ${targetUrl}`);
+          NODE
+
+      - name: Run deploy smoke
+        id: smoke
+        env:
+          PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
+          PROD_URL: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.url || '' }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
+        run: |
+          set +e
+          node packages/web/scripts/smoke-deploy.mjs
+          exit_code=$?
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Comment on preview failure
+        if: always() && steps.target.outputs.environment == 'Preview' && steps.smoke.outputs.exit_code != '0'
+        uses: actions/github-script@v8
+        env:
+          SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
+        with:
+          script: |
+            const fs = require("node:fs");
+            const { owner, repo } = context.repo;
+            const result = JSON.parse(
+              fs.readFileSync(process.env.SMOKE_DEPLOY_RESULT_FILE, "utf8"),
+            );
+            const sha =
+              context.payload.deployment?.sha ||
+              context.payload.deployment?.ref ||
+              context.sha;
+            const pulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              {
+                owner,
+                repo,
+                commit_sha: sha,
+                per_page: 100,
+              },
+            );
+            const pull = pulls.find((pr) => pr.state === "open") || pulls[0];
+            if (!pull) {
+              core.warning(`No pull request found for deployment commit ${sha}.`);
+              return;
+            }
+
+            const failures = result.failures || [];
+            const rows = failures.map((failure) => {
+              const status = failure.status ? String(failure.status) : "no response";
+              const marker = failure.matchedErrorMarker || "none";
+              const detail = truncate(failure.error || "failed", 180);
+              return `| \`${failure.path}\` | ${escapeCell(status)} | ${escapeCell(marker)} | ${escapeCell(detail)} |`;
+            });
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
+            const marker = "<!-- deploy-smoke-preview-failure -->";
+            const body = [
+              marker,
+              "### Preview deploy smoke failed",
+              "",
+              `Target: ${result.targetUrl}`,
+              `Run: ${runUrl}`,
+              "",
+              "| Route | Status | Error marker | Detail |",
+              "| --- | --- | --- | --- |",
+              ...rows,
+              "",
+              "The smoke request uses the Vercel automation bypass header and checks HTTP 200, owned error markers, and expected h1 text.",
+            ].join("\n");
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: pull.number,
+              per_page: 100,
+            });
+            const existing = comments.find(
+              (comment) => comment.body && comment.body.includes(marker),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull.number,
+                body,
+              });
+            }
+
+            function truncate(value, maxLength) {
+              const text = String(value).replace(/\s+/g, " ").trim();
+              return text.length > maxLength
+                ? `${text.slice(0, maxLength - 1)}...`
+                : text;
+            }
+
+            function escapeCell(value) {
+              return String(value).replace(/\|/g, "\\|");
+            }
+
+      - name: Post production failure to Slack
+        if: always() && steps.target.outputs.environment == 'Production' && steps.smoke.outputs.exit_code != '0'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          main().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+
+          async function main() {
+            const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+            if (!webhookUrl) {
+              console.warn("SLACK_WEBHOOK_URL is missing; production smoke failure was not posted to Slack.");
+              return;
+            }
+
+            const result = JSON.parse(
+              fs.readFileSync(process.env.SMOKE_DEPLOY_RESULT_FILE, "utf8"),
+            );
+            const failures = result.failures || [];
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const failureLines = failures
+              .map((failure) => {
+                const status = failure.status ? `HTTP ${failure.status}` : "no response";
+                const marker = failure.matchedErrorMarker
+                  ? ` marker: ${failure.matchedErrorMarker}`
+                  : "";
+                return `- ${failure.path}: ${status}${marker} - ${truncate(
+                  failure.error || "failed",
+                  160,
+                )}`;
+              })
+              .join("\n");
+            const text = [
+              "Production deploy smoke failed",
+              `Target: ${result.targetUrl}`,
+              `Run: ${runUrl}`,
+              failureLines,
+            ]
+              .filter(Boolean)
+              .join("\n");
+
+            const response = await fetch(webhookUrl, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ text }),
+            });
+            if (!response.ok) {
+              throw new Error(`Slack webhook returned HTTP ${response.status}.`);
+            }
+          }
+
+          function truncate(value, maxLength) {
+            const textValue = String(value).replace(/\s+/g, " ").trim();
+            return textValue.length > maxLength
+              ? `${textValue.slice(0, maxLength - 1)}...`
+              : textValue;
+          }
+          NODE
+
+      - name: Fail deploy smoke
+        if: always() && steps.smoke.outputs.exit_code != '0'
+        run: exit "${{ steps.smoke.outputs.exit_code }}"
+
+  playwright-preview:
+    # Run the smoke Playwright suite against the live preview deploy so we
+    # exercise the masked-prod-fork Neon branch under real Vercel routing.
+    # The web-validate Playwright run uses a synthetic CI Postgres, so a
+    # regression that only triggers on prod-shape data (volume, FK density,
+    # masking artifacts) would slip past web-validate. This job catches it
+    # without extending the critical path — it runs in parallel with the
+    # existing smoke job on the same deployment_status event.
+    name: Playwright preview smoke
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment_url != '' &&
+      (startsWith(github.event.deployment_status.environment_url, 'https://') ||
+        startsWith(github.event.deployment_status.environment_url, 'http://')) &&
+      !startsWith(github.event.deployment.environment, 'visual-review') &&
+      !startsWith(github.event.deployment_status.environment, 'visual-review') &&
+      github.event.deployment.environment != 'Production' &&
+      github.event.deployment.environment != 'production' &&
+      github.event.deployment_status.environment != 'Production' &&
+      github.event.deployment_status.environment != 'production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: Preview
+      deployment: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web workspace dependencies
+        # Without this, Playwright fails at import time on @optimitron/db,
+        # @optimitron/data, etc. (transitive imports from e2e/utils/*).
+        # Same step as web-validate (ci.yml line 152).
+        run: pnpm --filter @optimitron/web run build:workspace-deps
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('packages/web/package.json') }}
+
+      - name: Install Playwright browser
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @optimitron/web exec playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter @optimitron/web exec playwright install-deps chromium
+
+      - name: Run Playwright smoke against preview
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          PLAYWRIGHT_SMOKE_SCOPE: critical
+          # SKIP_SERVER=1 disables the local `next start` that Playwright
+          # would otherwise try to launch (playwright.config.ts L125). We
+          # are pointing at a deployed URL; no local server needed.
+          SKIP_SERVER: "1"
+          # The smoke suite uses request.get with the configured baseURL +
+          # extraHTTPHeaders from playwright.config.ts (which picks up
+          # VERCEL_AUTOMATION_BYPASS_SECRET when set).
+        run: |
+          if [ -z "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then
+            echo "::error::VERCEL_AUTOMATION_BYPASS_SECRET is not set in the GitHub Preview environment. The secret is fetchable via Vercel API:"
+            echo "::error::  curl -H 'Authorization: Bearer \$VERCEL_TOKEN' 'https://api.vercel.com/v9/projects/\$VERCEL_PROJECT_ID?teamId=\$VERCEL_ORG_ID' | jq -r '.protectionBypass | keys[0]'"
+            echo "::error::Then: gh secret set VERCEL_AUTOMATION_BYPASS_SECRET --env Preview --body <value>"
+            exit 1
+          fi
+          # --project=default runs the headless project. Without this,
+          # Playwright runs all projects including demo-recording, which
+          # has headless: false and crashes in CI (no display).
+          pnpm --filter @optimitron/web exec playwright test e2e/smoke.spec.ts --project=default --reporter=list
+
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-preview-${{ github.run_id }}
+          path: |
+            packages/web/playwright-report/
+            packages/web/test-results/
+          retention-days: 7
+          if-no-files-found: ignore

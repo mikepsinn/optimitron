@@ -29,7 +29,7 @@ async function captureEmail(
   page: import("@playwright/test").Page,
   template: string,
   name: string,
-  expectedText: string,
+  expectedText: string | readonly string[],
   testInfo: import("@playwright/test").TestInfo,
 ) {
   // Use the project's configured viewport (desktop: 1920x1080,
@@ -44,7 +44,12 @@ async function captureEmail(
     waitUntil: "domcontentloaded",
   });
   expect(response?.status()).toBeLessThan(400);
-  await expect(page.locator("body")).toContainText(expectedText);
+  const expectedPhrases = Array.isArray(expectedText)
+    ? expectedText
+    : [expectedText];
+  for (const expectedPhrase of expectedPhrases) {
+    await expect(page.locator("body")).toContainText(expectedPhrase);
+  }
   await page.waitForLoadState("networkidle").catch(() => undefined);
 
   const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
@@ -80,7 +85,12 @@ test.describe("email visual coverage", () => {
       page,
       "post-vote-share",
       "email-post-vote-share",
-      "Trade one apocalypse",
+      [
+        "Forward this message",
+        "122 stored apocalypses",
+        "COPY THIS MESSAGE",
+        "1% Treaty",
+      ],
       testInfo,
     );
   });

@@ -1,20 +1,18 @@
 /**
  * Route visual coverage for PR review.
  *
- * Argos compares PR screenshots against the default branch and only surfaces
- * meaningful visual diffs. Local runs still attach screenshots to the
- * Playwright HTML report, which keeps the manual review fallback available.
+ * The self-built visual review compares PR screenshots against the default
+ * branch and publishes a mobile-friendly HTML gallery for review.
  */
 import { expect, test, type Page } from "@playwright/test";
-import { argosScreenshot } from "@argos-ci/playwright";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { forceAnimationsComplete } from "./utils/audit-helpers";
+import { forceAnimationsComplete, waitForPaint } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
 import { freezeClock } from "./helpers/freeze-clock";
 
-const ARGOS_CSS = `
+const VISUAL_REVIEW_CSS = `
   *, *::before, *::after {
     animation: none !important;
     transition: none !important;
@@ -65,13 +63,21 @@ const ARGOS_CSS = `
     visibility: hidden !important;
   }
 
-  /* Argos full-page stabilization can expose hover-only nav tooltips. */
+  /* Full-page screenshot stabilization can expose hover-only nav tooltips. */
   [data-nav-tooltip] {
     display: none !important;
   }
 `;
 const OPTIONAL_ROUTE_SKIP_STATUSES = new Set([401, 403, 404]);
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
+const REVIEW_AFTER_ROOT = path.resolve(
+  process.cwd(),
+  "output",
+  "playwright",
+  "review",
+  "assets",
+  "after",
+);
 const ROUTE_MANIFEST_PATH = path.join(SCREENSHOT_ROOT, "routes.json");
 
 test.describe("route visual regression", () => {
@@ -134,32 +140,19 @@ test.describe("route visual regression", () => {
       }
 
       await waitForVisualIdle(page);
-      const attachments = await argosScreenshot(
-        page,
-        `${route.name}-${testInfo.project.name}`,
-        {
-          argosCSS: ARGOS_CSS,
-          fullPage: true,
-          threshold: 0.55,
-        },
-      );
-
+      const screenshotFileName = `${route.name}.png`;
+      const reviewScreenshotDir = path.join(REVIEW_AFTER_ROOT, testInfo.project.name);
       const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
+      const reviewScreenshotPath = path.join(reviewScreenshotDir, screenshotFileName);
+      const screenshotPath = path.join(screenshotDir, screenshotFileName);
+      await mkdir(reviewScreenshotDir, { recursive: true });
       await mkdir(screenshotDir, { recursive: true });
-      const screenshotAttachment = attachments.find(
-        (attachment) => attachment.contentType === "image/png",
-      );
-      expect(
-        screenshotAttachment,
-        `${route.name} should produce an Argos screenshot attachment`,
-      ).toBeTruthy();
-      await copyFile(
-        screenshotAttachment!.path,
-        path.join(
-          screenshotDir,
-          `${route.name}-${testInfo.project.name}.png`,
-        ),
-      );
+      await page.screenshot({ path: reviewScreenshotPath, fullPage: true });
+      await copyFile(reviewScreenshotPath, screenshotPath);
+      await testInfo.attach(`${route.name}-${testInfo.project.name}`, {
+        path: reviewScreenshotPath,
+        contentType: "image/png",
+      });
     });
   }
 });
@@ -183,7 +176,6 @@ async function openVisualRoute(page: Page, routePath: string) {
     waitUntil: "domcontentloaded",
     timeout: 90_000,
   });
-  await page.waitForTimeout(2_000);
   await forceAnimationsComplete(page);
 
   expect(errors, `${routePath} should not throw client-side errors`).toEqual([]);
@@ -196,8 +188,8 @@ async function normalizeVisualPage(page: Page) {
     window.scrollTo(0, 0);
   });
 
-  await page.addStyleTag({ content: ARGOS_CSS });
-  await page.waitForTimeout(250);
+  await page.addStyleTag({ content: VISUAL_REVIEW_CSS });
+  await waitForPaint(page);
 }
 
 async function waitForVisualIdle(page: Page) {
@@ -242,5 +234,5 @@ async function openSideMenu(
     await expect(dialog.getByRole("link", { name: /Sign In/i })).toBeVisible();
   }
   await forceAnimationsComplete(page);
-  await page.waitForTimeout(250);
+  await waitForPaint(page);
 }

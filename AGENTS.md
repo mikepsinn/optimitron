@@ -92,6 +92,7 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.
 - For treaty/vote/referral copy, optimize for voting, sharing, embedding, and task completion, not explaining the whole system.
 - **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
+- Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
 - Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
 - When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
 

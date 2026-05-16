@@ -16,6 +16,10 @@ import { getHandleOrReferralCode } from "@/lib/referral.client";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  NUCLEAR_OVERKILL_BUTTON_REJECT_RESPONSE,
+  NUCLEAR_OVERKILL_FULL_EXPLANATION,
+} from "@optimitron/data/campaign";
+import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
@@ -23,6 +27,7 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
+import { ParameterTemplate } from "@/components/shared/ParameterTemplate";
 // Convert the ratio to percentages so the reality-check matches the format
 // the user just used on the slider (their answer was a %, today's reality
 // should also be a %). Module-level so the math runs once, not per render.
@@ -65,6 +70,20 @@ import {
 
 type PreVoteScreen = "apology" | "grandma" | "apocalypse" | "slider";
 
+const fullExplanationSentences =
+  NUCLEAR_OVERKILL_FULL_EXPLANATION.match(/[^.]+\./g)?.map((sentence) =>
+    sentence.trim(),
+  ) ?? [];
+
+if (fullExplanationSentences.length !== 3) {
+  throw new Error("NUCLEAR_OVERKILL_FULL_EXPLANATION must be three sentences.");
+}
+
+const fullExplanationParagraphs = [
+  fullExplanationSentences[0]!,
+  fullExplanationSentences.slice(1).join(" "),
+] as const;
+
 interface TreatyVoteFlowProps {
   authCallbackUrl?: string;
   className?: string;
@@ -80,6 +99,32 @@ interface TreatyVoteFlowProps {
 }
 
 const DEFAULT_SLIDER_HEADLINE = "Please Take 30 Seconds to End War and Disease";
+const CHOICE_CARD_SETTLED_SCROLL_DELAY_MS = 500;
+
+function NuclearOverkillTemplate({ template }: { template: string }) {
+  return (
+    <ParameterTemplate
+      template={template}
+      values={{
+        GLOBAL_WARHEAD_COUNT: (
+          <ParameterValue param={FLOW_GLOBAL_WARHEAD_COUNT} figures={2} />
+        ),
+        NUCLEAR_WINTER_OVERKILL_FACTOR: (
+          <ParameterValue
+            param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
+            figures={3}
+          />
+        ),
+        NUCLEAR_WINTER_WARHEAD_THRESHOLD: (
+          <ParameterValue
+            param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD}
+            figures={1}
+          />
+        ),
+      }}
+    />
+  );
+}
 
 export function TreatyVoteFlow({
   authCallbackUrl = ROUTES.dashboard,
@@ -123,6 +168,8 @@ export function TreatyVoteFlow({
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const submitButtonRef = useRef<HTMLDivElement>(null);
+  const choiceCardRef = useRef<HTMLDivElement>(null);
+  const shouldScrollChoiceCardRef = useRef(false);
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
   const initialVoteShellClassName = compactInitialScreen
@@ -377,6 +424,7 @@ export function TreatyVoteFlow({
       flowVariant,
       militaryAllocationPercent: militaryAllocation,
     });
+    shouldScrollChoiceCardRef.current = true;
     setSliderSubmitted(true);
     setShowSlider(false);
     setSliderTutorialFinished(true);
@@ -385,6 +433,27 @@ export function TreatyVoteFlow({
       void syncPendingReferendumVotes(session);
     }
   };
+
+  useEffect(() => {
+    if (!sliderSubmitted || !shouldScrollChoiceCardRef.current) return;
+
+    const scrollChoiceCardToTop = () => {
+      choiceCardRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    };
+    const animationFrameId = window.requestAnimationFrame(scrollChoiceCardToTop);
+    const settledScrollId = window.setTimeout(() => {
+      scrollChoiceCardToTop();
+      shouldScrollChoiceCardRef.current = false;
+    }, CHOICE_CARD_SETTLED_SCROLL_DELAY_MS);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(settledScrollId);
+    };
+  }, [sliderSubmitted]);
 
   const clinicalTrialsAllocation = 100 - militaryAllocation;
 
@@ -550,26 +619,16 @@ export function TreatyVoteFlow({
             <div className="space-y-4">
               {preVoteDismissiveCount > 0 ? (
                 <TreatyFlowParagraph>
-                  Cool. The{" "}
-                  <ParameterValue
-                    param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
-                    figures={3}
-                  />{" "}
-                  apocalypses haven&apos;t moved.
+                  <NuclearOverkillTemplate
+                    template={NUCLEAR_OVERKILL_BUTTON_REJECT_RESPONSE}
+                  />
                 </TreatyFlowParagraph>
               ) : null}
-              <TreatyFlowParagraph>
-                <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} />{" "}
-                nuclear weapons exploding triggers a nuclear winter that
-                collapses the food chain and kills most humans.
-              </TreatyFlowParagraph>
-              <TreatyFlowParagraph>
-                Humanity has about{" "}
-                <ParameterValue param={FLOW_GLOBAL_WARHEAD_COUNT} figures={2} />{" "}
-                nuclear weapons. That&apos;s{" "}
-                <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} />{" "}
-                apocalypses of mass murder capacity.
-              </TreatyFlowParagraph>
+              {fullExplanationParagraphs.map((paragraph) => (
+                <TreatyFlowParagraph key={paragraph}>
+                  <NuclearOverkillTemplate template={paragraph} />
+                </TreatyFlowParagraph>
+              ))}
               <TreatyFlowParagraph>
                 You can only ruin Earth once. The other{" "}
                 <ParameterValue param={FLOW_WASTEFUL_APOCALYPSES} figures={3} />{" "}
@@ -639,9 +698,9 @@ export function TreatyVoteFlow({
           ) : (
             <TreatyFlowShell
               className="py-6 sm:py-10"
-              contentClassName="max-w-2xl justify-center py-10 sm:py-12"
+              contentClassName="max-w-2xl justify-center space-y-6 py-6 sm:py-8"
             >
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
                   Save your vote.
                 </p>
@@ -833,6 +892,7 @@ export function TreatyVoteFlow({
       <AnimatePresence>
         {sliderSubmitted && (
           <motion.div
+            ref={choiceCardRef}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -967,8 +1027,8 @@ export function TreatyVoteFlow({
                 </div>
               </TreatyFlowShell>
             ) : (
-              <TreatyFlowShell contentClassName="max-w-2xl">
-                <div className="space-y-4">
+              <TreatyFlowShell contentClassName="max-w-2xl space-y-6 py-6 sm:py-8">
+                <div className="space-y-3">
                   <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
                     {isContextFirstVariant ? "Vote counted." : "Save Your Vote"}
                   </p>

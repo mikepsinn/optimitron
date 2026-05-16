@@ -23,6 +23,7 @@ import {
   navigateAndSettle,
   writeAuditReport,
   getDeduplicatedOverflows,
+  waitForPaint,
 } from "./utils/audit-helpers";
 import { freezeClock } from "./helpers/freeze-clock";
 import { PUBLIC_PAGE_PATHS } from "./utils/static-pages";
@@ -84,11 +85,11 @@ for (const url of PAGES) {
     await page.evaluate(() => {
       window.scrollTo(0, document.documentElement.scrollHeight);
     });
-    await page.waitForTimeout(500);
+    await waitForPaint(page);
     await page.evaluate(() => {
       window.scrollTo(0, 0);
     });
-    await page.waitForTimeout(300);
+    await waitForPaint(page);
 
     // --- 1. Horizontal overflow ---
     const scrollInfo = await page.evaluate(() => ({

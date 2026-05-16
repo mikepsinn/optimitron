@@ -26,6 +26,8 @@ import { getImpactReceipts } from "@/lib/impact-receipts.server";
 import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import { DASHBOARD_REFERRAL_HASH, ROUTES } from "@/lib/routes";
 import { GAME } from "@/lib/messaging";
+import { loadHumanityManagerStatus } from "@/lib/humanity-manager-status.server";
+import { getBaseUrl } from "@/lib/url";
 import type {
   DashboardData,
   LeaderboardEntry,
@@ -135,9 +137,18 @@ export async function getDashboardData(
     }),
   ]);
   const completedSet = new Set(completedReasons.map((r) => r.reason));
-  const [wishBalance, impactReceipts] = await Promise.all([
+  const [wishBalance, impactReceipts, humanityManagerStatus] = await Promise.all([
     getWishBalance(userId),
     getImpactReceipts(userId),
+    loadHumanityManagerStatus({
+      baseUrl: getBaseUrl(),
+      user: {
+        downstreamConversionCount: user.downstreamConversionCount ?? 0,
+        handle: getUserDisplayHandle(user),
+        referralCode: user.referralCode,
+      },
+      userId,
+    }),
   ]);
 
   // High-value quests — the core game loop
@@ -291,6 +302,7 @@ export async function getDashboardData(
     },
     questChecklist,
     impactReceipts,
+    humanityManagerStatus,
   };
 }
 

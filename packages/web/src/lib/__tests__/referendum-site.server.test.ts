@@ -8,6 +8,7 @@ import { VOTER_LIVES_SAVED } from "@optimitron/data/parameters";
 
 const mocks = vi.hoisted(() => ({
   getTaskDetailData: vi.fn(),
+  referendumFindMany: vi.fn(),
   referendumFindUnique: vi.fn(),
   referendumVoteCount: vi.fn(),
   referendumVoteFindMany: vi.fn(),
@@ -20,6 +21,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     referendum: {
+      findMany: mocks.referendumFindMany,
       findUnique: mocks.referendumFindUnique,
     },
     referendumVote: {
@@ -52,6 +54,7 @@ import { getSiteConfig } from "@/lib/site";
 describe("referendum-site.server", () => {
   beforeEach(() => {
     mocks.getTaskDetailData.mockReset();
+    mocks.referendumFindMany.mockReset();
     mocks.referendumFindUnique.mockReset();
     mocks.referendumVoteCount.mockReset();
     mocks.referendumVoteFindMany.mockReset();
@@ -60,6 +63,7 @@ describe("referendum-site.server", () => {
     mocks.organizationPositionFindMany.mockReset();
     mocks.userFindUnique.mockReset();
     mocks.getTaskDetailData.mockResolvedValue(null);
+    mocks.referendumFindMany.mockResolvedValue([]);
     mocks.referendumVoteFindMany.mockResolvedValue([]);
     mocks.referendumVoteGroupBy.mockResolvedValue([]);
     mocks.organizationPositionFindMany.mockResolvedValue([]);
@@ -88,9 +92,7 @@ describe("referendum-site.server", () => {
     mocks.referendumVoteCount.mockResolvedValue(12);
     mocks.organizationPositionCount.mockResolvedValue(3);
 
-    const data = await getReferendumSiteHomeData(
-      getSiteConfig("warOnDisease"),
-    );
+    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
 
     expect(data?.individualCount).toBe(12);
     expect(data?.organizationCount).toBe(3);
@@ -175,11 +177,18 @@ describe("referendum-site.server", () => {
     mocks.referendumVoteGroupBy.mockResolvedValue([
       {
         referredByUserId: "user_b",
-        _count: { referredByUserId: 2 },
+        userId: "referred_1",
+        _count: { userId: 1 },
+      },
+      {
+        referredByUserId: "user_b",
+        userId: "referred_2",
+        _count: { userId: 1 },
       },
       {
         referredByUserId: "user_a",
-        _count: { referredByUserId: 1 },
+        userId: "referred_3",
+        _count: { userId: 1 },
       },
     ]);
     mocks.userFindUnique.mockResolvedValue({
@@ -215,7 +224,71 @@ describe("referendum-site.server", () => {
     ).toEqual(["user_b", "user_a", "user_c"]);
   });
 
-  it("ranks organizational signatories beside humans by verified voters recruited", async () => {
+  it("queries public signatories across treaty and declaration referendum signatures", async () => {
+    mocks.referendumFindUnique.mockResolvedValue({
+      id: "ref_treaty",
+      title: "1% Treaty",
+      description: "desc",
+    });
+    mocks.referendumFindMany.mockResolvedValue([
+      { id: "ref_treaty", slug: "one-percent-treaty" },
+      { id: "ref_declaration", slug: "declaration-of-optimization" },
+    ]);
+    mocks.referendumVoteCount.mockResolvedValue(2);
+    mocks.organizationPositionCount.mockResolvedValue(0);
+    mocks.referendumVoteFindMany.mockResolvedValue([
+      {
+        id: "vote_treaty",
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        userId: "user_treaty",
+        user: {
+          id: "user_treaty",
+          name: "Treaty Signer",
+          username: "treaty",
+          image: null,
+          email: "treaty@example.com",
+          person: null,
+        },
+      },
+      {
+        id: "vote_declaration",
+        createdAt: new Date("2026-01-02T00:00:00.000Z"),
+        userId: "user_declaration",
+        user: {
+          id: "user_declaration",
+          name: "Declaration Signer",
+          username: "declaration",
+          image: null,
+          email: "declaration@example.com",
+          person: null,
+        },
+      },
+    ]);
+
+    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
+
+    expect(mocks.referendumFindMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        slug: { in: ["one-percent-treaty", "declaration-of-optimization"] },
+      },
+      select: { id: true, slug: true },
+    });
+    expect(mocks.referendumVoteFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          referendumId: { in: ["ref_treaty", "ref_declaration"] },
+        }),
+      }),
+    );
+    expect(
+      data?.publicSignatories.signatories
+        .filter((entry) => entry.kind === "human")
+        .map((entry) => entry.user.id),
+    ).toEqual(["user_treaty", "user_declaration"]);
+  });
+
+  it("ranks signatories by total attributable signatures", async () => {
     mocks.referendumFindUnique.mockResolvedValue({
       id: "ref_4",
       title: "1% Treaty",
@@ -242,7 +315,8 @@ describe("referendum-site.server", () => {
       .mockResolvedValueOnce([
         {
           referredByUserId: "user_a",
-          _count: { referredByUserId: 2 },
+          userId: "referred_a",
+          _count: { userId: 1 },
         },
       ])
       .mockResolvedValueOnce([
@@ -268,9 +342,7 @@ describe("referendum-site.server", () => {
       },
     ]);
 
-    const data = await getReferendumSiteHomeData(
-      getSiteConfig("warOnDisease"),
-    );
+    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
     const publicSignatories = (
       data as { publicSignatories?: PublicSignatoriesPage } | null
     )?.publicSignatories;
@@ -283,8 +355,15 @@ describe("referendum-site.server", () => {
     expect(publicSignatories?.totalCount).toBe(2);
     expect(publicSignatories?.signatories[0]).toMatchObject({
       kind: "organization",
+      totalSignatureCount: 3,
       referredYesCount: 3,
       livesSaved: VOTER_LIVES_SAVED.value * 3,
+    });
+    expect(publicSignatories?.signatories[1]).toMatchObject({
+      kind: "human",
+      totalSignatureCount: 2,
+      referredYesCount: 1,
+      livesSaved: VOTER_LIVES_SAVED.value * 2,
     });
   });
 });

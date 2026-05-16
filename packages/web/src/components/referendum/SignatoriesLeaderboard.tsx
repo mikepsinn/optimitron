@@ -21,7 +21,11 @@ import {
 } from "@/lib/user-display";
 
 interface SignatoriesLeaderboardProps {
-  publicSignatories: PublicSignatoriesPage;
+  className?: string;
+  publicSignatories: PublicSignatoriesPage | null;
+  limit?: number;
+  showEmptyState?: boolean;
+  showIntro?: boolean;
   /**
    * Route path used for pagination links (e.g. "/", "/treaty"). The component
    * appends `?signersPage=N#signatories`. Defaults to "/".
@@ -40,54 +44,63 @@ interface SignatoriesLeaderboardProps {
 }
 
 export function SignatoriesLeaderboard({
+  className,
   publicSignatories,
+  limit,
   pagePathname = "/",
+  showEmptyState = false,
+  showIntro = true,
   voteCounterSplit,
 }: SignatoriesLeaderboardProps) {
-  const {
-    currentUserSigner,
-    currentUserStatus,
-    signatories,
-    totalCount,
-    page,
-    totalPages,
-  } = publicSignatories;
-  if (totalCount === 0 && !currentUserStatus) {
+  const currentUserSigner = publicSignatories?.currentUserSigner ?? null;
+  const currentUserStatus = publicSignatories?.currentUserStatus ?? null;
+  const signatories = publicSignatories?.signatories ?? [];
+  const totalCount = publicSignatories?.totalCount ?? 0;
+  const page = publicSignatories?.page ?? 1;
+  const totalPages = publicSignatories?.totalPages ?? 1;
+  const displayedSignatories =
+    limit === undefined ? signatories : signatories.slice(0, limit);
+
+  if (displayedSignatories.length === 0 && !currentUserStatus) {
+    if (showEmptyState) {
+      return <SignatoriesEmptyState />;
+    }
     return null;
   }
 
   return (
-    <section id="signatories" className="mt-16 pt-12">
+    <section id="signatories" className={cn("mt-16 pt-12", className)}>
       <div className="mx-auto max-w-4xl">
-        <div className="mb-8 space-y-4 text-center">
-          <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
-            The People Who Ended War and Disease
-          </h2>
-          <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
-            Allowing billions of people to suffer and die from disease so
-            humanity can preserve its{" "}
-            <ParameterValue
-              className="font-black text-[var(--treaty-ink)]"
-              figures={3}
-              param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
-            />
-            -apocalypse mass-murder capacity is a
-            conscious act of barbaric mass cruelty. Like slavery, it will be
-            allowed to continue until enough people are brave enough to publicly
-            state that it is morally wrong and incredibly stupid. These are
-            those people.
-          </p>
-          {voteCounterSplit ? (
-            <VoteCounterSplit
-              className="mx-auto max-w-md text-left"
-              liveVotes={voteCounterSplit.liveVotes}
-              linkMemorialToPeople
-              memorialVotes={voteCounterSplit.memorialVotes}
-              representedVotes={voteCounterSplit.representedVotes}
-              showMemorialIcon={false}
-            />
-          ) : null}
-        </div>
+        {showIntro ? (
+          <div className="mb-8 space-y-4 text-center">
+            <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
+              The People Who Ended War and Disease
+            </h2>
+            <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
+              Allowing billions of people to suffer and die from disease so
+              humanity can preserve its{" "}
+              <ParameterValue
+                className="font-black text-[var(--treaty-ink)]"
+                figures={3}
+                param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
+              />
+              -apocalypse mass-murder capacity is a conscious act of barbaric
+              mass cruelty. Like slavery, it will be allowed to continue until
+              enough people are brave enough to publicly state that it is
+              morally wrong and incredibly stupid. These are those people.
+            </p>
+            {voteCounterSplit ? (
+              <VoteCounterSplit
+                className="mx-auto max-w-md text-left"
+                liveVotes={voteCounterSplit.liveVotes}
+                linkMemorialToPeople
+                memorialVotes={voteCounterSplit.memorialVotes}
+                representedVotes={voteCounterSplit.representedVotes}
+                showMemorialIcon={false}
+              />
+            ) : null}
+          </div>
+        ) : null}
 
         {currentUserStatus ? (
           <SignatoryVisibilityPanel status={currentUserStatus} />
@@ -95,16 +108,8 @@ export function SignatoriesLeaderboard({
 
         {totalCount > 0 ? (
           <div className="overflow-hidden border-2 border-foreground bg-background text-foreground">
-            <div className="hidden border-b-2 border-foreground px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground sm:grid sm:grid-cols-[minmax(0,1.8fr)_minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.8fr)] sm:gap-4">
+            <div className="hidden border-b-2 border-foreground px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground sm:grid sm:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] sm:gap-4">
               <span>Signatory</span>
-              <ImpactExplainer
-                className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
-                label="Explain inverse kills impact math"
-                showFullAnalysisLink={false}
-              >
-                <span>Inverse kills</span>
-                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-              </ImpactExplainer>
               <ImpactExplainer
                 className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
                 label="Explain hours of suffering prevented impact math"
@@ -113,11 +118,10 @@ export function SignatoriesLeaderboard({
                 <span>Hours of suffering prevented</span>
                 <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
               </ImpactExplainer>
-              <span className="text-right">Voters recruited</span>
             </div>
 
             <ol>
-              {signatories.map((entry) => (
+              {displayedSignatories.map((entry) => (
                 <SignatoryRow
                   key={entry.id}
                   entry={entry}
@@ -136,15 +140,10 @@ export function SignatoriesLeaderboard({
             </ol>
           </div>
         ) : (
-          <div className="border-2 border-foreground bg-background p-8 text-center text-foreground">
-            <p className="text-lg font-black">No public signatories yet.</p>
-            <p className="mt-2 text-sm font-bold text-muted-foreground">
-              A treaty without signatories is paperwork. Fix that.
-            </p>
-          </div>
+          <SignatoriesEmptyState />
         )}
 
-        {totalPages > 1 ? (
+        {limit === undefined && totalPages > 1 ? (
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm font-black uppercase text-foreground">
             {page > 1 ? (
               <Link
@@ -199,6 +198,9 @@ function SignatoryRow({
   const href = isHuman
     ? getUserDisplayHref(entry.user)
     : getSafeHttpUrl(entry.organization.website);
+  const donationHref = isHuman
+    ? null
+    : getSafeHttpUrl(entry.organization.donationUrl);
   const initials =
     name
       .split(/\s+/)
@@ -218,9 +220,19 @@ function SignatoryRow({
           <span className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
             #{entry.rank}
           </span>
-          <p className="truncate text-sm font-black text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:text-lg">
-            {name}
-          </p>
+          {href && !editHref && !isHuman ? (
+            <a
+              href={href}
+              rel="noreferrer"
+              className="truncate text-sm font-black text-foreground underline-offset-4 hover:underline [font-family:var(--v0-font-libre-baskerville)] sm:text-lg"
+            >
+              {name}
+            </a>
+          ) : (
+            <p className="truncate text-sm font-black text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:text-lg">
+              {name}
+            </p>
+          )}
           {editHref ? (
             <Link
               href={editHref}
@@ -230,6 +242,15 @@ function SignatoryRow({
             </Link>
           ) : null}
         </div>
+        {donationHref ? (
+          <a
+            href={donationHref}
+            rel="noreferrer"
+            className="mt-1 inline-block text-xs font-bold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Donate to {name}
+          </a>
+        ) : null}
       </div>
     </>
   );
@@ -237,7 +258,7 @@ function SignatoryRow({
   const inner = (
     <div
       className={cn(
-        "flex flex-col gap-3 px-4 pt-4 pb-0 transition-colors sm:grid sm:grid-cols-[minmax(0,1.8fr)_minmax(0,0.95fr)_minmax(0,1.1fr)_minmax(0,0.8fr)] sm:items-center sm:gap-4 sm:px-5 sm:py-4",
+        "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 transition-colors sm:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] sm:gap-4 sm:px-5 sm:py-4",
         href && !editHref && "hover:bg-background",
         highlighted && "bg-background",
       )}
@@ -250,56 +271,39 @@ function SignatoryRow({
           >
             {identity}
           </Link>
-        ) : href && !editHref ? (
-          <a
-            href={href}
-            rel="noreferrer"
-            className="flex min-w-0 items-center gap-3 hover:underline"
-          >
-            {identity}
-          </a>
         ) : (
           identity
         )}
       </div>
 
-      <div className="-mx-4 grid grid-cols-3 border-t-2 border-foreground sm:mx-0 sm:contents sm:border-t-0">
-        <ImpactExplainer
-          className="inline-flex min-h-[4.75rem] w-full items-center justify-center border-r-2 border-foreground bg-background px-2 py-2 text-center text-[10px] font-black uppercase leading-tight tracking-[0.08em] text-foreground hover:bg-background sm:min-h-0 sm:justify-end sm:rounded-sm sm:border-0 sm:bg-transparent sm:px-1 sm:py-0.5 sm:text-right sm:text-lg sm:tracking-normal sm:hover:underline"
-          label={`Explain inverse kills impact math for ${name}`}
-          showFullAnalysisLink={false}
-        >
-          <span className="sm:hidden">
-            {fmtRaw(entry.livesSaved)} Inverse kills
-          </span>
-          <span className="hidden sm:inline">{fmtRaw(entry.livesSaved)}</span>
-        </ImpactExplainer>
-        <ImpactExplainer
-          className="inline-flex min-h-[4.75rem] w-full items-center justify-center border-r-2 border-foreground bg-background px-2 py-2 text-center text-[10px] font-black uppercase leading-tight tracking-[0.08em] text-foreground hover:bg-background sm:min-h-0 sm:justify-end sm:rounded-sm sm:border-0 sm:bg-transparent sm:px-1 sm:py-0.5 sm:text-right sm:text-lg sm:tracking-normal sm:hover:underline"
-          label={`Explain hours of suffering prevented impact math for ${name}`}
-          showFullAnalysisLink={false}
-        >
-          <span className="sm:hidden">
-            {fmtRaw(entry.hoursPrevented)} Hours of suffering prevented
-          </span>
-          <span className="hidden sm:inline">
-            {fmtRaw(entry.hoursPrevented)}
-          </span>
-        </ImpactExplainer>
-        <div className="inline-flex min-h-[4.75rem] w-full items-center justify-center bg-background px-2 py-2 text-center text-[10px] font-black uppercase leading-tight tracking-[0.08em] text-foreground sm:min-h-0 sm:block sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-right sm:text-lg sm:tracking-normal">
-          <span className="sm:hidden">
-            {entry.referredYesCount.toLocaleString()} Voters recruited
-          </span>
-          <span className="hidden sm:inline">
-            {entry.referredYesCount.toLocaleString()}
-          </span>
-        </div>
-      </div>
+      <ImpactExplainer
+        className="flex min-w-[7rem] flex-col items-end justify-center px-1 py-0.5 text-right text-foreground hover:underline"
+        label={`Explain hours of suffering prevented impact math for ${name}`}
+        showFullAnalysisLink={false}
+      >
+        <span className="text-xl font-black uppercase tabular-nums leading-none sm:text-2xl">
+          {fmtRaw(entry.hoursPrevented)}
+        </span>
+        <span className="mt-1 max-w-[8rem] text-[10px] font-black uppercase leading-tight tracking-[0.12em] text-muted-foreground sm:max-w-none sm:text-[11px]">
+          Hours of suffering prevented
+        </span>
+      </ImpactExplainer>
     </div>
   );
 
   return (
     <li className="border-t-2 border-foreground first:border-t-0">{inner}</li>
+  );
+}
+
+function SignatoriesEmptyState() {
+  return (
+    <div className="border-2 border-foreground bg-background p-8 text-center text-foreground">
+      <p className="text-lg font-black">No public signatories yet.</p>
+      <p className="mt-2 text-sm font-bold text-muted-foreground">
+        A treaty without signatories is paperwork. Fix that.
+      </p>
+    </div>
   );
 }
 

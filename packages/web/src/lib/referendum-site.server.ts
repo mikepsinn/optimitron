@@ -12,6 +12,7 @@ import {
 import { getReferendumSiteContent } from "@/content/referendum-sites";
 import type { ReferendumSiteContent } from "@/content/referendum-sites";
 import type { TaskCardTask } from "@/components/tasks/task-card";
+import { DECLARATION_SLUG } from "@/lib/declaration";
 import { prisma } from "@/lib/prisma";
 import type { SiteConfig } from "@/lib/site";
 import { getTaskDetailData } from "@/lib/tasks.server";
@@ -35,6 +36,7 @@ export interface PublicSignerEntry {
   createdAt: Date;
   kind?: "human";
   rank: number;
+  totalSignatureCount: number;
   referredYesCount: number;
   livesSaved: number;
   hoursPrevented: number;
@@ -59,6 +61,7 @@ export interface PublicOrganizationSignatoryEntry {
   createdAt: Date;
   kind: "organization";
   rank: number;
+  totalSignatureCount: number;
   referredYesCount: number;
   livesSaved: number;
   hoursPrevented: number;
@@ -68,6 +71,7 @@ export interface PublicOrganizationSignatoryEntry {
     id: string;
     name: string;
     slug: string;
+    donationUrl: string | null;
     squareLogoUrl: string | null;
     website: string | null;
   };
@@ -128,6 +132,7 @@ export type ReferendumSiteSupporterRecord =
       organization: {
         select: {
           description: true;
+          donationUrl: true;
           id: true;
           name: true;
           slug: true;
@@ -189,14 +194,43 @@ export async function getReferendumSiteHomeData(
     return null;
   }
 
+  const signatoryReferendumSlugs = Array.from(
+    new Set(
+      [context.site.primaryReferendumSlug, DECLARATION_SLUG].filter(
+        (slug): slug is string => Boolean(slug),
+      ),
+    ),
+  );
+  const signatoryReferendums = await prisma.referendum.findMany({
+    where: {
+      deletedAt: null,
+      slug: { in: signatoryReferendumSlugs },
+    },
+    select: { id: true, slug: true },
+  });
+  const signatoryReferendumIds = Array.from(
+    new Set([
+      context.referendum.id,
+      ...signatoryReferendums.map((referendum) => referendum.id),
+    ]),
+  );
+  const signatoryReferendumIdFilter =
+    signatoryReferendumIds.length === 1
+      ? signatoryReferendumIds[0]
+      : signatoryReferendumIds;
+
   const publicSignersWhere = buildOfficialReferendumVoteWhere({
     answer: VotePosition.YES,
     publicOnly: true,
-    referendumId: context.referendum.id,
+    referendumId: signatoryReferendumIdFilter,
   });
   const recruitedVoteWhere = buildOfficialReferendumVoteWhere({
     answer: VotePosition.YES,
     referendumId: context.referendum.id,
+  });
+  const recruitedSignatoryVoteWhere = buildOfficialReferendumVoteWhere({
+    answer: VotePosition.YES,
+    referendumId: signatoryReferendumIdFilter,
   });
 
   const requestedPage = Math.max(1, Math.floor(options.signersPage ?? 1));
@@ -243,12 +277,12 @@ export async function getReferendumSiteHomeData(
       orderBy: { createdAt: "desc" },
     }),
     prisma.referendumVote.groupBy({
-      by: ["referredByUserId"],
+      by: ["referredByUserId", "userId"],
       where: {
-        ...recruitedVoteWhere,
+        ...recruitedSignatoryVoteWhere,
         referredByUserId: { not: null },
       },
-      _count: { referredByUserId: true },
+      _count: { userId: true },
     }),
     prisma.organizationReferendumPosition.findMany({
       where: buildApprovedOrganizationPositionWhere(context.referendum.id),
@@ -261,6 +295,7 @@ export async function getReferendumSiteHomeData(
             website: true,
             squareLogoUrl: true,
             description: true,
+            donationUrl: true,
           },
         },
       },
@@ -280,7 +315,7 @@ export async function getReferendumSiteHomeData(
           select: {
             person: { select: { isPublic: true } },
             referendumVotes: {
-              where: recruitedVoteWhere,
+              where: recruitedSignatoryVoteWhere,
               select: { id: true },
               take: 1,
             },
@@ -294,7 +329,7 @@ export async function getReferendumSiteHomeData(
     if (row.referredByUserId) {
       referredCountByUserId.set(
         row.referredByUserId,
-        row._count.referredByUserId,
+        (referredCountByUserId.get(row.referredByUserId) ?? 0) + 1,
       );
     }
   }
@@ -310,24 +345,39 @@ export async function getReferendumSiteHomeData(
 
   // Sort by referral count desc (tiebreak: earliest signup first), then
   // assign global ranks so page 2+ carries the correct #N across pages.
-  const ranked: PublicSignerEntry[] = allPublicSigners
+  const earliestPublicSignerByUserId = new Map<
+    string,
+    (typeof allPublicSigners)[number]
+  >();
+  for (const row of allPublicSigners) {
+    const current = earliestPublicSignerByUserId.get(row.userId);
+    if (!current || row.createdAt.getTime() < current.createdAt.getTime()) {
+      earliestPublicSignerByUserId.set(row.userId, row);
+    }
+  }
+
+  const ranked: PublicSignerEntry[] = Array.from(
+    earliestPublicSignerByUserId.values(),
+  )
     .map((row) => {
       const referredYesCount = referredCountByUserId.get(row.userId) ?? 0;
-      const multiplier = 1 + referredYesCount;
+      const totalSignatureCount = 1 + referredYesCount;
       return {
         id: row.id,
         createdAt: row.createdAt,
         kind: "human" as const,
+        totalSignatureCount,
         referredYesCount,
-        livesSaved: VOTER_LIVES_SAVED.value * multiplier,
-        hoursPrevented: VOTER_SUFFERING_HOURS_PREVENTED.value * multiplier,
+        livesSaved: VOTER_LIVES_SAVED.value * totalSignatureCount,
+        hoursPrevented:
+          VOTER_SUFFERING_HOURS_PREVENTED.value * totalSignatureCount,
         rank: 0,
         user: row.user as UserForDisplay,
       };
     })
     .sort((a, b) => {
-      if (b.referredYesCount !== a.referredYesCount) {
-        return b.referredYesCount - a.referredYesCount;
+      if (b.totalSignatureCount !== a.totalSignatureCount) {
+        return b.totalSignatureCount - a.totalSignatureCount;
       }
       return a.createdAt.getTime() - b.createdAt.getTime();
     })
@@ -337,31 +387,33 @@ export async function getReferendumSiteHomeData(
     }));
 
   const organizationSignatoryEntries: PublicOrganizationSignatoryEntry[] =
-    allOrganizationSignatories.map((row) => {
-      const referredYesCount =
-        referredCountByOrganizationId.get(row.organizationId) ?? 0;
-      return {
-        id: row.id,
-        createdAt: row.createdAt,
-        kind: "organization" as const,
-        referredYesCount,
-        livesSaved: VOTER_LIVES_SAVED.value * referredYesCount,
-        hoursPrevented:
-          VOTER_SUFFERING_HOURS_PREVENTED.value * referredYesCount,
-        rank: 0,
-        statement: row.statement,
-        organization: row.organization,
-      };
-    })
-    .filter((entry) => entry.referredYesCount > 0);
+    allOrganizationSignatories
+      .map((row) => {
+        const referredYesCount =
+          referredCountByOrganizationId.get(row.organizationId) ?? 0;
+        return {
+          id: row.id,
+          createdAt: row.createdAt,
+          kind: "organization" as const,
+          totalSignatureCount: referredYesCount,
+          referredYesCount,
+          livesSaved: VOTER_LIVES_SAVED.value * referredYesCount,
+          hoursPrevented:
+            VOTER_SUFFERING_HOURS_PREVENTED.value * referredYesCount,
+          rank: 0,
+          statement: row.statement,
+          organization: row.organization,
+        };
+      })
+      .filter((entry) => entry.referredYesCount > 0);
 
   const rankedSignatories: PublicSignatoryEntry[] = [
     ...(ranked as PublicHumanSignatoryEntry[]),
     ...organizationSignatoryEntries,
   ]
     .sort((a, b) => {
-      if (b.referredYesCount !== a.referredYesCount) {
-        return b.referredYesCount - a.referredYesCount;
+      if (b.totalSignatureCount !== a.totalSignatureCount) {
+        return b.totalSignatureCount - a.totalSignatureCount;
       }
       return a.createdAt.getTime() - b.createdAt.getTime();
     })
@@ -475,6 +527,7 @@ export async function getReferendumSiteSupportersData(
           website: true,
           squareLogoUrl: true,
           description: true,
+          donationUrl: true,
         },
       },
     },

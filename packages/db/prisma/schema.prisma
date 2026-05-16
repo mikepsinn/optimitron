@@ -1368,6 +1368,9 @@ model User {
   /// Human-shareable referral code
   referralCode String @unique @default(cuid())
 
+  /// Cached converted invitation count across this user's referral tree
+  downstreamConversionCount Int @default(0)
+
   /// Set once the user has completed email verification
   emailVerified DateTime?
 

@@ -27,6 +27,7 @@ import { fileURLToPath } from "node:url";
 import { mintDemoSessionCookie } from "./mint-demo-session";
 import { buildCopyPreviewMarkdown } from "../src/lib/copy-preview-markdown";
 import type { CopyPreviewMetadata } from "../src/lib/copy-preview-markdown";
+import { isRedirectOnlyRoutePath } from "../src/lib/redirect-review";
 import { getRouteReviewSpecs } from "../src/lib/routes";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -35,13 +36,18 @@ const APP_DIR = path.resolve(WEB_ROOT, "src/app");
 
 const BASE = process.env.PREVIEW_BASE_URL ?? "http://127.0.0.1:3001";
 const SITE_KEY = process.env.PREVIEW_SITE_KEY ?? "warOnDisease";
-
-const DEFAULT_LOGGED_OUT_ROUTES = getRouteReviewSpecs("copyPreview").map(
-  (spec) => spec.path,
+const ROUTES_PER_BROWSER = Math.max(
+  1,
+  Number.parseInt(process.env.COPY_PREVIEW_ROUTES_PER_BROWSER ?? "8", 10) || 8,
 );
-const DEFAULT_AUTHENTICATED_ROUTES = getRouteReviewSpecs(
-  "authenticatedCopyPreview",
-).map((spec) => spec.path);
+
+const DEFAULT_LOGGED_OUT_ROUTES = filterRedirectOnlyRoutes(
+  getRouteReviewSpecs("copyPreview").map((spec) => spec.path),
+);
+const DEFAULT_AUTHENTICATED_ROUTES = filterRedirectOnlyRoutes(
+  getRouteReviewSpecs("authenticatedCopyPreview").map((spec) => spec.path),
+);
+const DEFAULT_AUTHENTICATED_ROUTE_SET = new Set(DEFAULT_AUTHENTICATED_ROUTES);
 const GLOBAL_LOADING_TEXT = [
   "Booting Earth Optimization System",
   "Your civilization is very important to us.",
@@ -58,15 +64,23 @@ function parseRoutesFromArgs(): {
       loggedOutRoutes: DEFAULT_LOGGED_OUT_ROUTES,
     };
   }
-  const routes = arg
-    .slice("--routes=".length)
-    .split(",")
-    .map((r) => r.trim())
-    .filter(Boolean);
+  const routes = filterRedirectOnlyRoutes(
+    arg
+      .slice("--routes=".length)
+      .split(",")
+      .map((r) => r.trim())
+      .filter(Boolean),
+  );
   return {
-    authenticatedRoutes: routes,
+    authenticatedRoutes: routes.filter((route) =>
+      DEFAULT_AUTHENTICATED_ROUTE_SET.has(route),
+    ),
     loggedOutRoutes: routes,
   };
+}
+
+function filterRedirectOnlyRoutes(routes: string[]): string[] {
+  return routes.filter((route) => !isRedirectOnlyRoutePath(route));
 }
 
 function routeToDirPath(route: string): string {
@@ -254,8 +268,18 @@ async function extractPage(
         return text.replace(/\b\p{L}/gu, (c) => c.toUpperCase());
       return text;
     };
+    const getMarkdownHref = (el: Element): string =>
+      el.getAttribute("href") ??
+      el.getAttribute("data-copy-preview-href") ??
+      "";
+    const withMarkdownLink = (el: Element, inner: string): string => {
+      const href = getMarkdownHref(el);
+      return href && inner ? `[${inner}](${href})` : inner;
+    };
     // Walk an element's descendants and produce markdown that preserves
-    // hyperlinks as [text](href). Non-anchor descendants flatten to text.
+    // hyperlinks as [text](href). ParameterValue buttons/spans expose a
+    // data-copy-preview-href so source-backed values keep their source in
+    // page.logged-out.md even though the live UI opens a details dialog.
     // Arrow consts (not function declarations) so tsx doesn't inject
     // __name() calls that won't resolve in the browser context.
     // Walk `el`'s children producing markdown. `allowHidden`=true bypasses the
@@ -287,15 +311,14 @@ async function extractPage(
         } else if (node.nodeType === 1 /* ELEMENT_NODE */) {
           const child = node as Element;
           if (!allowHidden && isHiddenForRender(child)) continue;
-          if (child.tagName === "A") {
-            const href = child.getAttribute("href") ?? "";
+          if (child.tagName === "A" || child.hasAttribute("data-copy-preview-href")) {
             let inner = toMarkdown(child, allowHidden).replace(/\s+/g, " ").trim();
             // sr-only-only Link: fall back to unfiltered inner so the accessible
             // name still ships in the snapshot.
             if (!inner && child.children.length > 0) {
               inner = toMarkdown(child, true).replace(/\s+/g, " ").trim();
             }
-            appendFragment(href && inner ? `[${inner}](${href})` : inner);
+            appendFragment(withMarkdownLink(child, inner));
           } else {
             appendFragment(toMarkdown(child, allowHidden));
           }
@@ -379,13 +402,12 @@ async function extractPage(
       } else if (tag === "pre") {
         const text = (el as HTMLElement).innerText.trim();
         md = text ? `\`\`\`text\n${text}\n\`\`\`` : "";
-      } else if (tag === "a") {
-        const href = el.getAttribute("href") ?? "";
+      } else if (tag === "a" || el.hasAttribute("data-copy-preview-href")) {
         let inner = toMarkdown(el).replace(/\s+/g, " ").trim();
         if (!inner && el.children.length > 0) {
           inner = toMarkdown(el, true).replace(/\s+/g, " ").trim();
         }
-        md = href && inner ? `[${inner}](${href})` : inner;
+        md = withMarkdownLink(el, inner);
       } else {
         md = toMarkdown(el).replace(/\s+/g, " ").trim();
       }
@@ -490,43 +512,56 @@ async function capturePass(
   }
 }
 
+async function captureRoutes(
+  routes: string[],
+  filename: "page.logged-out.md" | "page.logged-in.md",
+  options: { authCookie?: { name: string; value: string } } = {},
+): Promise<number> {
+  let failures = 0;
+  for (let index = 0; index < routes.length; index += ROUTES_PER_BROWSER) {
+    const batch = routes.slice(index, index + ROUTES_PER_BROWSER);
+    const browser = await chromium.launch();
+    try {
+      failures += await capturePass(browser, batch, filename, options);
+    } finally {
+      await browser.close();
+    }
+  }
+  return failures;
+}
+
 async function main() {
   const { authenticatedRoutes, loggedOutRoutes } = parseRoutesFromArgs();
   const skipAuthed = process.argv.includes("--no-authed");
-  const browser = await chromium.launch();
   let failures = 0;
-  try {
-    console.log("--- Logged-out pass ---");
-    failures += await capturePass(browser, loggedOutRoutes, "page.logged-out.md");
+  console.log("--- Logged-out pass ---");
+  failures += await captureRoutes(loggedOutRoutes, "page.logged-out.md");
 
-    if (skipAuthed) {
-      console.log("\n(--no-authed; skipping authenticated pass)");
-    } else if (authenticatedRoutes.length === 0) {
-      console.log("\n(no authenticated copy-preview routes configured)");
-    } else {
-      try {
-        const authCookie = await mintDemoSessionCookie();
-        console.log(
-          `\n--- Authenticated pass (cookie minted offline for ${process.env.COPY_PREVIEW_USER_EMAIL ?? "m@thinkbynumbers.org"}) ---`,
-        );
-        failures += await capturePass(browser, authenticatedRoutes, "page.logged-in.md", {
-          authCookie,
-        });
-      } catch (err) {
-        failures += authenticatedRoutes.length;
-        const message = err instanceof Error ? err.message : String(err);
-        console.warn(
-          `\n(skipping authenticated pass: ${message})\n` +
-            `Set NEXTAUTH_SECRET in .env and ensure the demo user exists, ` +
-            `or pass --no-authed to silence this.`,
-        );
-      }
+  if (skipAuthed) {
+    console.log("\n(--no-authed; skipping authenticated pass)");
+  } else if (authenticatedRoutes.length === 0) {
+    console.log("\n(no authenticated copy-preview routes configured)");
+  } else {
+    try {
+      const authCookie = await mintDemoSessionCookie();
+      console.log(
+        `\n--- Authenticated pass (cookie minted offline for ${process.env.COPY_PREVIEW_USER_EMAIL ?? "m@thinkbynumbers.org"}) ---`,
+      );
+      failures += await captureRoutes(authenticatedRoutes, "page.logged-in.md", {
+        authCookie,
+      });
+    } catch (err) {
+      failures += authenticatedRoutes.length;
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(
+        `\n(skipping authenticated pass: ${message})\n` +
+          `Set NEXTAUTH_SECRET in .env and ensure the demo user exists, ` +
+          `or pass --no-authed to silence this.`,
+      );
     }
-    if (failures > 0) {
-      throw new Error(`Copy preview failed for ${failures} route(s).`);
-    }
-  } finally {
-    await browser.close();
+  }
+  if (failures > 0) {
+    throw new Error(`Copy preview failed for ${failures} route(s).`);
   }
 }
 

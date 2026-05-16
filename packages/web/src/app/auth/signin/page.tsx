@@ -9,7 +9,7 @@ function getAuthErrorMessage(error: string | null) {
     case "AccessDenied":
       return "Access denied.";
     case "Verification":
-      return "That magic link is invalid or has expired.";
+      return "That sign-in link is invalid or has expired.";
     default:
       return null;
   }

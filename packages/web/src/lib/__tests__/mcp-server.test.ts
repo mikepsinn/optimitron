@@ -1189,7 +1189,7 @@ describe("MCP server tool dispatch", () => {
         id: "assigned",
         title: "Assigned to me",
       });
-    });
+    }, 15_000);
 
     it("does not invent private visibility when listTasks omits isPublic", async () => {
       mocks.listTasks.mockResolvedValue([

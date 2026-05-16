@@ -38,7 +38,9 @@ import {
 } from "../generated/prisma/client.js";
 import {
   OPTIMIZE_EARTH_ROOT_TASK_ID,
+  REFERRAL_INVITATION_TASK_KEY_PREFIX,
   TREATY_PARENT_TASK_ID,
+  USER_TREATY_TASK_KEY_PREFIX,
 } from "../task-keys.js";
 import {
   US_WISHOCRATIC_JURISDICTION,
@@ -56,9 +58,15 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   EVENTUALLY_AVOIDABLE_DALY_PCT,
   GLOBAL_ANNUAL_DALY_BURDEN,
+  GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT,
+  GLOBAL_REGISTERED_VOTERS,
+  STANDARD_ECONOMIC_QALY_VALUE_USD,
+  TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   earthOptimizationPrizeWinCondition,
   EARTH_OPTIMIZATION_PRIZE_INCOME_GROWTH_EFFECT_PP_PER_YEAR,
   shareableSnippets,
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
 import { syncManagedReasoningData } from "./managed-reasoning-data.js";
 import { GLOBAL_VARIABLE_SEED_DATA } from "./seed-data/global-variables.js";
@@ -314,6 +322,13 @@ async function seedMedicalReferenceData(
   unitMap: Record<string, string>,
   catMap: Record<string, string>,
 ) {
+  if (process.env["MANAGED_DATA_SKIP_MEDICAL_REFERENCE"] === "1") {
+    console.warn(
+      "🧬 Skipping medical reference data (MANAGED_DATA_SKIP_MEDICAL_REFERENCE=1)",
+    );
+    return;
+  }
+
   console.log("🧬 Seeding medical conditions, intervention evidence, and rankings...");
 
   const conditionCategoryId = catMap["Condition"];
@@ -1150,6 +1165,12 @@ const TREATY_NET_COST_USD = TREATY_INFINITE_NEGATIVE_COST;
 // 30 seconds per signature × 193 leaders = 5,790 seconds ≈ 1.61 hours.
 const TREATY_SECONDS_PER_SIGNATURE = 30;
 const TREATY_PER_SIGNER_EFFORT_HOURS = TREATY_SECONDS_PER_SIGNATURE / 3600;
+const TREATY_IMPACT_CALCULATIONS_URL =
+  "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html";
+const TREATY_PER_VERIFIED_VOTER_METHODOLOGY_KEY =
+  "treaty-per-verified-voter-lifetime";
+const TREATY_PER_VERIFIED_VOTER_PARAMETER_SET_HASH_SUFFIX =
+  "global-registered-voters";
 const TREATY_SIGNER_CONTACT_TEMPLATE = [
   "Your employee has not finished {{taskTitle}}. It is a thirty-second task. One signature. A wrist movement.",
   "It has been sitting on a desk for {{delayLabel}}. A desk. Not a war. A desk.",
@@ -1236,7 +1257,42 @@ export async function syncManagedTreatyAccountabilityData() {
   const accelerationYears = DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS.value; // 212 years
   const annualAvoidableDalys = GLOBAL_ANNUAL_DALY_BURDEN.value * EVENTUALLY_AVOIDABLE_DALY_PCT.value; // 2.67B/yr
   const delayDalysPerDay = annualAvoidableDalys / 365;
-  const delayEconPerDay = delayDalysPerDay * 150_000; // $150K/QALY standard valuation
+  const delayEconPerDay =
+    delayDalysPerDay * STANDARD_ECONOMIC_QALY_VALUE_USD.value;
+  const targetVoterCount = GLOBAL_REGISTERED_VOTERS.value;
+  const perVerifiedVoterImpact = {
+    estimatedCashCostUsdBase:
+      GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT.value,
+    expectedEconomicValueUsdBase: totalEconValue / targetVoterCount,
+    expectedDalysAvertedBase: totalDalys / targetVoterCount,
+    delayEconomicValueUsdLostPerDayBase:
+      delayEconPerDay / targetVoterCount,
+    delayDalysLostPerDayBase: delayDalysPerDay / targetVoterCount,
+    successProbabilityBase: 1,
+    benefitDurationYears: accelerationYears,
+    metrics: [
+      {
+        metricKey: "lives_saved_if_success",
+        unit: VOTER_LIVES_SAVED.unit ?? "",
+        baseValue: VOTER_LIVES_SAVED.value,
+        displayGroup: "human-impact",
+        metadataJson: {
+          calculationsUrl: VOTER_LIVES_SAVED.calculationsUrl,
+          parameterName: VOTER_LIVES_SAVED.parameterName,
+        },
+      },
+      {
+        metricKey: "suffering_hours_if_success",
+        unit: VOTER_SUFFERING_HOURS_PREVENTED.unit ?? "",
+        baseValue: VOTER_SUFFERING_HOURS_PREVENTED.value,
+        displayGroup: "human-impact",
+        metadataJson: {
+          calculationsUrl: VOTER_SUFFERING_HOURS_PREVENTED.calculationsUrl,
+          parameterName: VOTER_SUFFERING_HOURS_PREVENTED.parameterName,
+        },
+      },
+    ],
+  } satisfies SeedTaskImpactInput;
   const { hale } = earthOptimizationPrizeWinCondition;
 
   await syncTaskImpactEstimate({
@@ -1269,16 +1325,29 @@ export async function syncManagedTreatyAccountabilityData() {
       benefitDurationYears: accelerationYears,
     },
     methodologyKey: "treaty-lifetime-parameters",
-    calculationsUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
+    calculationsUrl: TREATY_IMPACT_CALCULATIONS_URL,
   });
 
   console.log("  ✓ Canonical task impact estimates");
 
+  const perVerifiedVoterImpactCount =
+    await backfillPerVerifiedVoterTaskImpactEstimates(perVerifiedVoterImpact);
+  console.log(
+    `  ✓ ${perVerifiedVoterImpactCount} per-verified-voter task impact estimates`,
+  );
+
   // --- Foundation grant accountability tasks ---
   // Same public-accountability pattern as the head-of-state treaty tasks:
   // name the institution, assign the tiny concrete action, mark it overdue.
-  const ICEWAD_GRANT_DALYS_PER_USD = 564.972;
-  const ICEWAD_GRANT_ECON_VALUE_PER_USD = ICEWAD_GRANT_DALYS_PER_USD * 150_000;
+  const IC2EWD_GRANT_DALYS_PER_USD =
+    1 / TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG.value;
+  const IC2EWD_GRANT_ECON_VALUE_PER_USD =
+    IC2EWD_GRANT_DALYS_PER_USD *
+    STANDARD_ECONOMIC_QALY_VALUE_USD.value;
+  const legacyCampaignKeyStem = ["ice", "wad"].join("");
+  const legacyGrantTaskIdPrefix = `${legacyCampaignKeyStem}-grant`;
+  const legacyGrantTaskKeyPrefix = `${legacyCampaignKeyStem}:grant`;
+  const legacyGrantMethodologyKey = `${legacyCampaignKeyStem}-one-dollar-grant`;
   const foundationGrantOrganizations = [
     {
       name: "Survival and Flourishing Fund",
@@ -1342,8 +1411,8 @@ export async function syncManagedTreatyAccountabilityData() {
 
     await createTaskWithImpact({
       task: {
-        id: `icewad-grant-${slug}`,
-        taskKey: `icewad:grant:${slug}`,
+        id: `${legacyGrantTaskIdPrefix}-${slug}`,
+        taskKey: `${legacyGrantTaskKeyPrefix}:${slug}`,
         parentTaskId: TREATY_PARENT_TASK_ID,
         assigneeOrganizationId: organization.id,
         title: "Fund the International Campaign to End War and Disease",
@@ -1378,7 +1447,7 @@ export async function syncManagedTreatyAccountabilityData() {
         sortOrder: -75 + index,
         claimPolicy: "ASSIGNED_ONLY",
         skillTags: ["grantmaking", "global-health", "fundraising"],
-        interestTags: ["icewad", "one-percent-treaty", "foundation", "grant"],
+        interestTags: [legacyCampaignKeyStem, "one-percent-treaty", "foundation", "grant"],
         estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
       },
       primaryEndpoint: {
@@ -1389,16 +1458,16 @@ export async function syncManagedTreatyAccountabilityData() {
       },
       impact: {
         estimatedCashCostUsdBase: 1,
-        expectedEconomicValueUsdBase: ICEWAD_GRANT_ECON_VALUE_PER_USD,
-        expectedDalysAvertedBase: ICEWAD_GRANT_DALYS_PER_USD,
-        delayEconomicValueUsdLostPerDayBase: ICEWAD_GRANT_ECON_VALUE_PER_USD / 365,
-        delayDalysLostPerDayBase: ICEWAD_GRANT_DALYS_PER_USD / 365,
+        expectedEconomicValueUsdBase: IC2EWD_GRANT_ECON_VALUE_PER_USD,
+        expectedDalysAvertedBase: IC2EWD_GRANT_DALYS_PER_USD,
+        delayEconomicValueUsdLostPerDayBase: IC2EWD_GRANT_ECON_VALUE_PER_USD / 365,
+        delayDalysLostPerDayBase: IC2EWD_GRANT_DALYS_PER_USD / 365,
         successProbabilityBase: 0.25,
         benefitDurationYears: 1,
       },
-      methodologyKey: "icewad-one-dollar-grant",
+      methodologyKey: legacyGrantMethodologyKey,
       parameterSetHashSuffix: slug,
-      calculationsUrl: "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
+      calculationsUrl: TREATY_IMPACT_CALCULATIONS_URL,
     });
   }
 
@@ -1590,6 +1659,39 @@ export async function syncManagedTreatyAccountabilityData() {
   console.log(`  ✓ ${created} signer tasks with leader photos`);
 }
 
+async function backfillPerVerifiedVoterTaskImpactEstimates(
+  impact: SeedTaskImpactInput,
+) {
+  const voterLeafTasks = await prisma.task.findMany({
+    where: {
+      deletedAt: null,
+      OR: [
+        { taskKey: { startsWith: `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:` } },
+        {
+          taskKey: {
+            startsWith: `${USER_TREATY_TASK_KEY_PREFIX}:`,
+            endsWith: ":signTreatyPersonally",
+          },
+        },
+      ],
+    },
+    select: { id: true },
+  });
+
+  for (const task of voterLeafTasks) {
+    await syncTaskImpactEstimate({
+      taskId: task.id,
+      impact,
+      methodologyKey: TREATY_PER_VERIFIED_VOTER_METHODOLOGY_KEY,
+      parameterSetHashSuffix:
+        TREATY_PER_VERIFIED_VOTER_PARAMETER_SET_HASH_SUFFIX,
+      calculationsUrl: TREATY_IMPACT_CALCULATIONS_URL,
+    });
+  }
+
+  return voterLeafTasks.length;
+}
+
 let cachedSeedWishoniaUserId: string | null = null;
 
 /**
@@ -1615,6 +1717,29 @@ async function seedWishoniaUser() {
 // managed-data and is upserted by `pnpm db:sync:managed-data --apply`.
 // See `packages/db/src/managed-data/managed-grandma-kay.ts`.
 
+type SeedTaskImpactMetric = {
+  metricKey: string;
+  unit: string;
+  baseValue: number;
+  lowValue?: number | null;
+  highValue?: number | null;
+  displayGroup?: string | null;
+  metadataJson?: Prisma.InputJsonValue;
+};
+
+type SeedTaskImpactInput = {
+  estimatedCashCostUsdBase: number;
+  expectedEconomicValueUsdBase: number;
+  expectedDalysAvertedBase: number;
+  delayEconomicValueUsdLostPerDayBase: number;
+  delayDalysLostPerDayBase: number;
+  successProbabilityBase: number;
+  benefitDurationYears: number;
+  medianHealthyLifeYearsEffectBase?: number;
+  medianIncomeGrowthEffectPpPerYearBase?: number;
+  metrics?: SeedTaskImpactMetric[];
+};
+
 /**
  * Helper: upsert a task + impact estimate set + LIFETIME frame.
  * Idempotent — safe to re-run after changing description/impact values without
@@ -1633,17 +1758,7 @@ async function createTaskWithImpact(input: {
     sourceUrl?: string | null;
     url?: string | null;
   } | null;
-  impact: {
-    estimatedCashCostUsdBase: number;
-    expectedEconomicValueUsdBase: number;
-    expectedDalysAvertedBase: number;
-    delayEconomicValueUsdLostPerDayBase: number;
-    delayDalysLostPerDayBase: number;
-    successProbabilityBase: number;
-    benefitDurationYears: number;
-    medianHealthyLifeYearsEffectBase?: number;
-    medianIncomeGrowthEffectPpPerYearBase?: number;
-  };
+  impact: SeedTaskImpactInput;
   methodologyKey: string;
   parameterSetHashSuffix?: string;
   calculationsUrl?: string;
@@ -1697,17 +1812,7 @@ async function createTaskWithImpact(input: {
 
 async function syncTaskImpactEstimate(input: {
   taskId: string;
-  impact: {
-    estimatedCashCostUsdBase: number;
-    expectedEconomicValueUsdBase: number;
-    expectedDalysAvertedBase: number;
-    delayEconomicValueUsdLostPerDayBase: number;
-    delayDalysLostPerDayBase: number;
-    successProbabilityBase: number;
-    benefitDurationYears: number;
-    medianHealthyLifeYearsEffectBase?: number;
-    medianIncomeGrowthEffectPpPerYearBase?: number;
-  };
+  impact: SeedTaskImpactInput;
   methodologyKey: string;
   parameterSetHashSuffix?: string;
   calculationsUrl?: string;
@@ -1738,7 +1843,7 @@ async function syncTaskImpactEstimate(input: {
     data: { currentImpactEstimateSetId: estimateSet.id },
   });
 
-  await prisma.taskImpactFrameEstimate.create({
+  const frame = await prisma.taskImpactFrameEstimate.create({
     data: {
       taskImpactEstimateSetId: estimateSet.id,
       frameKey: "LIFETIME",
@@ -1759,6 +1864,21 @@ async function syncTaskImpactEstimate(input: {
       medianIncomeGrowthEffectPpPerYearBase: input.impact.medianIncomeGrowthEffectPpPerYearBase,
     },
   });
+
+  if (input.impact.metrics?.length) {
+    await prisma.taskImpactMetric.createMany({
+      data: input.impact.metrics.map((metric) => ({
+        taskImpactFrameEstimateId: frame.id,
+        metricKey: metric.metricKey,
+        unit: metric.unit,
+        baseValue: metric.baseValue,
+        lowValue: metric.lowValue ?? null,
+        highValue: metric.highValue ?? null,
+        displayGroup: metric.displayGroup ?? null,
+        metadataJson: metric.metadataJson ?? undefined,
+      })),
+    });
+  }
 }
 
 function inferSeedEndpointKind(input: { email: string | null; url: string | null }) {

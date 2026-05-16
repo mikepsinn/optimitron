@@ -1,9 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/retroui/Button"
-import { LogOut } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { buildUserReferralUrl } from "@/lib/url"
 import { ImpactLedgerCard } from "@/components/dashboard/ImpactLedgerCard"
@@ -17,6 +15,7 @@ import { OrganizationsCard } from "@/components/dashboard/OrganizationsCard"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { ShareTemplatesCard } from "@/components/dashboard/ShareTemplatesCard"
 import { ReferralInvitationStatusCard } from "@/components/dashboard/ReferralInvitationStatusCard"
+import { HumanityManagerStatusPanel } from "@/components/dashboard/HumanityManagerStatusPanel"
 import { TreatyReminderComposer } from "@/components/landing/TreatyReminderComposer"
 import { SortableTaskList } from "@/components/tasks/task-list-controls"
 import type { TaskCardTask } from "@/components/tasks/task-card"
@@ -26,7 +25,6 @@ import { useRequestSiteOrigin } from "@/lib/request-site-origin"
 import {
   DASHBOARD_INVITE_SECTION_ID,
   DASHBOARD_REFERRAL_SECTION_ID,
-  ROUTES,
 } from "@/lib/routes"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
@@ -54,23 +52,9 @@ export function EarthOptimizationDashboardClient({
     <div className="min-h-screen bg-[var(--treaty-paper)] pb-20 text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
         <header className="mb-10 border-b border-[var(--treaty-ink)]/30 pb-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-black uppercase tracking-tight sm:text-4xl">
-                EARTH OPTIMIZATION
-              </h1>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => {
-                void signOut({ callbackUrl: ROUTES.home })
-              }}
-              className="min-h-11 border border-[var(--treaty-ink)] bg-transparent px-3 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[#efe4cf] sm:px-4"
-            >
-              <LogOut className="h-4 w-4 stroke-[2.5px]" />
-              <span className="hidden sm:inline">SIGN OUT</span>
-            </Button>
-          </div>
+          <h1 className="text-2xl font-black uppercase tracking-tight sm:text-4xl">
+            EARTH OPTIMIZATION
+          </h1>
         </header>
 
         <section className="mx-auto mb-10 max-w-2xl space-y-4" id={DASHBOARD_INVITE_SECTION_ID}>
@@ -80,6 +64,10 @@ export function EarthOptimizationDashboardClient({
             referralUser={user}
           />
           <ReferralInvitationStatusCard />
+        </section>
+
+        <section className="mx-auto mb-10 max-w-4xl">
+          <HumanityManagerStatusPanel status={initialData.humanityManagerStatus} />
         </section>
 
         <section className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2" id={DASHBOARD_REFERRAL_SECTION_ID}>

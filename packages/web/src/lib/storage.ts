@@ -34,6 +34,8 @@ export type PendingWishocraticAllocation = WishocraticAllocationInput & {
 
 export type PendingTreatyVoteState = {
   answer: string;
+  displayName?: string;
+  makePublic?: boolean;
   referredBy: string | null;
   timestamp: string;
   wishocraticAllocation?: PendingWishocraticAllocation;
@@ -72,11 +74,15 @@ export type DeclarationSignedState = {
 
 export type PendingDeclarationVoteState = {
   answer: string;
+  displayName?: string;
+  makePublic?: boolean;
   timestamp: string;
 };
 
 export type PendingCourtOfHumanityVoteState = {
   answer: string;
+  displayName?: string;
+  makePublic?: boolean;
   referredBy: string | null;
   timestamp: string;
 };

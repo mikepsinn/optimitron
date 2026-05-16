@@ -266,6 +266,9 @@ ${sample}`);
     // content drift because the .tsx change was render-equivalent.
     const tsxWithStaleSnapshot = tsxPageChanges.filter((tsxRel) => {
       const tsxAbs = resolve(RepoRoot, tsxRel);
+      // Deletions have no snapshot to regenerate. The .md gets cleaned
+      // up alongside the .tsx (or never existed for redirect-only stubs).
+      if (!existsSync(tsxAbs)) return false;
       const dir = tsxAbs.replace(/[\\/][^\\/]+$/, "");
       const tsxMtime = (() => {
         try { return statSync(tsxAbs).mtimeMs; } catch { return 0; }

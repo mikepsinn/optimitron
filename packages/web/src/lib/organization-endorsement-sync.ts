@@ -22,6 +22,10 @@ export interface OrganizationEndorsementSyncResult {
   syncedOrganizations: SyncedOrganizationEndorsement[];
 }
 
+type OrganizationEndorsementDraft = PendingOrganizationEndorsementDraft & {
+  donationUrl?: string;
+};
+
 function createOwnerId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -64,9 +68,11 @@ function renewLock(ownerId: string): boolean {
 }
 
 function draftPayload(draft: PendingOrganizationEndorsementDraft) {
+  const donationUrl = (draft as OrganizationEndorsementDraft).donationUrl;
   return {
     newOrganization: {
       description: draft.description ?? null,
+      donationUrl: donationUrl ?? null,
       name: draft.organizationName,
       website: draft.website ?? null,
     },

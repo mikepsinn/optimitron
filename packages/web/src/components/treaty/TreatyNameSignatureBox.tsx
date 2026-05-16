@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
+import { getReferendumConfig, REFERENDUM_ANSWER } from "@/config/referendums";
 import { storage } from "@/lib/storage";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildUserReferralUrl } from "@/lib/url";
@@ -20,19 +21,28 @@ import { primaryButtonClassName } from "@/components/ui/default-button";
  *
  * Submission semantics:
  *   - Logged-in: POST the YES vote directly.
- *   - Logged-out: stash the pending YES vote in storage and render the
- *     AuthForm inline so the user finishes signing via email/Google.
- *     The pending vote gets cleared automatically on the next session
- *     by `treatyConfig.syncPending` (in `config/referendums.ts`).
+ *   - Logged-out: stash the pending YES vote in storage, then render the
+ *     AuthForm so the user finishes signing via email.
+ *     The pending vote gets cleared automatically on the next session by
+ *     the matching referendum config's `syncPending`.
  *
- * The typed name itself isn't sent over the wire — the API records the
- * authenticated user as the signer. The field is there because signing
- * a document is a "type your name" gesture, not a "click Yes" gesture.
+ * The typed name and public-profile choice are sent with the vote so the
+ * signer list can display the human who signed, when they consent.
  */
 export function TreatyNameSignatureBox({
+  authCallbackUrl,
   className,
+  inlineAuthForLoggedOut = false,
+  referralCode,
+  referendumSlug = TREATY_REFERENDUM_SLUG,
+  title,
 }: {
+  authCallbackUrl?: string;
   className?: string;
+  inlineAuthForLoggedOut?: boolean;
+  referralCode?: string | null;
+  referendumSlug?: string;
+  title?: string;
 }) {
   const { data: session, status } = useSession();
   const [name, setName] = useState("");
@@ -46,6 +56,11 @@ export function TreatyNameSignatureBox({
     () => buildUserReferralUrl(session?.user),
     [session?.user],
   );
+  const referendumConfig = getReferendumConfig(referendumSlug);
+  const resolvedAuthCallbackUrl =
+    authCallbackUrl ?? referendumConfig?.authCallbackUrl ?? "/treaty";
+  const resolvedSignatureTitle = title ?? referendumConfig?.title;
+  const showInlineAuth = inlineAuthForLoggedOut && status !== "authenticated";
 
   const today = now?.toLocaleDateString("en-US", {
     year: "numeric",
@@ -53,24 +68,43 @@ export function TreatyNameSignatureBox({
     day: "numeric",
   });
 
+  function stagePendingSignature() {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setError("Enter your name to sign.");
+      return false;
+    }
+
+    const resolvedReferralCode = referralCode ?? storage.getSignupReferral();
+    referendumConfig?.storePendingVote(
+      trimmed,
+      resolvedReferralCode ?? null,
+      REFERENDUM_ANSWER.YES,
+      makePublic,
+    );
+    setError(null);
+    return true;
+  }
+
   async function handleSubmit() {
     const trimmed = name.trim();
     if (!trimmed || submitting) return;
     setSubmitting(true);
     setError(null);
 
-    const referralCode = storage.getSignupReferral();
+    const resolvedReferralCode = referralCode ?? storage.getSignupReferral();
 
     if (status === "authenticated") {
       try {
         const response = await fetch(
-          `/api/referendums/${TREATY_REFERENDUM_SLUG}/vote`,
+          `/api/referendums/${referendumSlug}/vote`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              answer: "YES",
-              ref: referralCode ?? undefined,
+              answer: REFERENDUM_ANSWER.YES,
+              displayName: trimmed,
+              ref: resolvedReferralCode ?? undefined,
               makePublic,
               originUrl:
                 typeof window !== "undefined"
@@ -80,9 +114,9 @@ export function TreatyNameSignatureBox({
           },
         );
         if (!response.ok) {
-          const body = (await response.json().catch(() => null)) as
-            | { error?: string }
-            | null;
+          const body = (await response.json().catch(() => null)) as {
+            error?: string;
+          } | null;
           throw new Error(body?.error ?? "Failed to record signature.");
         }
       } catch (signError) {
@@ -95,15 +129,10 @@ export function TreatyNameSignatureBox({
         return;
       }
     } else {
-      // Persist the pending YES vote — `treatyConfig.syncPending` picks
-      // this up on the next session and submits it.
-      storage.setPendingTreatyVote({
-        answer: "YES",
-        referredBy: referralCode ?? null,
-        inviteToken: null,
-        timestamp: new Date().toISOString(),
-        organizationId: null,
-      });
+      if (!stagePendingSignature()) {
+        setSubmitting(false);
+        return;
+      }
     }
 
     setSubmitting(false);
@@ -135,21 +164,30 @@ export function TreatyNameSignatureBox({
         <p className="mb-6 text-center text-sm font-bold text-muted-foreground">
           Verify your identity to record your signature.
         </p>
-        <AuthForm callbackUrl="/treaty" compact />
+        <AuthForm
+          callbackUrl={resolvedAuthCallbackUrl}
+          compact
+          providers={{ demo: false, email: true, google: false }}
+          variant="document"
+        />
       </div>
     );
   }
 
-  const resolvedTitle = today
-    ? `Signed this day, ${today}, in the year of our ongoing confusion.`
-    : "";
+  const resolvedTitle = resolvedSignatureTitle?.includes("{date}")
+    ? today
+      ? resolvedSignatureTitle.replace("{date}", today)
+      : ""
+    : (resolvedSignatureTitle ?? "");
 
   return (
     <div className={cn("mx-auto w-full max-w-md", className)}>
       <p className="mb-6 text-center text-xl font-bold text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
         {resolvedTitle}
       </p>
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div
+        className={cn("flex flex-col gap-3", !showInlineAuth && "sm:flex-row")}
+      >
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -164,14 +202,19 @@ export function TreatyNameSignatureBox({
           aria-label="Your name"
           autoComplete="name"
         />
-        <button
-          type="button"
-          onClick={() => void handleSubmit()}
-          disabled={!name.trim() || submitting}
-          className={cn(primaryButtonClassName, "px-8 text-lg disabled:opacity-40")}
-        >
-          {submitting ? "..." : "Sign"}
-        </button>
+        {!showInlineAuth ? (
+          <button
+            type="button"
+            onClick={() => void handleSubmit()}
+            disabled={!name.trim() || submitting}
+            className={cn(
+              primaryButtonClassName,
+              "px-8 text-lg disabled:opacity-40",
+            )}
+          >
+            {submitting ? "..." : "Sign"}
+          </button>
+        ) : null}
       </div>
       <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm font-bold text-[var(--treaty-ink)]">
         <input
@@ -185,6 +228,19 @@ export function TreatyNameSignatureBox({
           <span className="opacity-70">(recommended)</span>.
         </span>
       </label>
+      {showInlineAuth ? (
+        <div className="mt-5">
+          <AuthForm
+            callbackUrl={resolvedAuthCallbackUrl}
+            compact
+            hideContainer
+            onBeforeAuth={stagePendingSignature}
+            providers={{ demo: false, email: true, google: false }}
+            title={null}
+            variant="document"
+          />
+        </div>
+      ) : null}
       {error ? (
         <p className="mt-3 text-center text-xs font-bold uppercase text-foreground">
           {error}

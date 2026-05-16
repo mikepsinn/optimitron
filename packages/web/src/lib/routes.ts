@@ -21,6 +21,11 @@ import {
   AGENCIES,
   WISHONIA_AGENCIES,
 } from "@optimitron/data/datasets/wishonia-agencies";
+import {
+  WELFARE_CLAIM_AMOUNT_TEXT,
+  WELFARE_CLAIM_METRIC_TEXT,
+  WELFARE_CLAIM_TEXT,
+} from "@/components/shared/WelfareClaim.core";
 
 // Re-export so web consumers can `import { HUMANITY_V_GOVERNMENT_CASE_NAME }
 // from "@/lib/routes"` alongside the rest of the route catalog.
@@ -483,8 +488,7 @@ export const presidentManagementLink: NavItem = {
   href: ROUTES.employees,
   label: "Remind Presidents",
   emoji: "🪪",
-  description:
-    "You give these people $37 trillion a year to promote the general welfare. Track who signed the 1% Treaty and remind the overdue ones.",
+  description: `You pay these people ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare — i.e. ${WELFARE_CLAIM_METRIC_TEXT}. Track who signed the 1% Treaty and remind the overdue ones.`,
   tagline: "Remind presidents to promote the general welfare",
   copyPreview: true,
   screenshot: true,
@@ -664,10 +668,10 @@ export const politicianLeaderboardLink: NavItem = {
 export const scoreboardLink: NavItem = {
   href: ROUTES.scoreboard,
   label: "Humanity's Scoreboard",
-  emoji: "🕹️",
+  emoji: "📊",
   description:
-    "Two numbers: how long you live without disease and how much a normal person earns. Not GDP. Not billionaire wealth. The median. Everything else on this site exists to move these two numbers up.",
-  tagline: "Two numbers: disease-free lifespan and median income",
+    "The governments and politicians spending the most on weapons instead of medicine, plus the humans collecting signatures to stop them.",
+  tagline: "Worst leaders, best signature collectors",
   matchPrefixes: [ROUTES.scoreboard],
   screenshot: true,
 
@@ -720,8 +724,7 @@ export const humanityVGovernmentLink: NavItem = {
   href: ROUTES.humanityVGovernment,
   label: HUMANITY_V_GOVERNMENT_CASE_NAME,
   emoji: "⚖️",
-  description:
-    "Governments were hired to promote the general welfare. Since 1900, they spent fortunes on war and left the sick in line. Vote on whether they owe humanity damages.",
+  description: `${WELFARE_CLAIM_TEXT} Since 1900 they spent fortunes on war and left the sick in line. Vote on whether they owe humanity damages.`,
   tagline: "Do governments owe damages?",
   copyPreview: true,
   screenshot: true,

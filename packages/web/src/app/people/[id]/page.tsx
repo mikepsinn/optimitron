@@ -11,6 +11,7 @@ import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { YEARS_PER_AVERTED_DEATH } from "@/components/tasks/task-row";
 import { Avatar } from "@/components/retroui/Avatar";
 import { defaultButtonClassName } from "@/components/ui/default-button";
+import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { isPublicOfficialPerson } from "@/lib/public-officials";
 import {
   aggregateTaskDelayStats,
@@ -334,8 +335,8 @@ function RepresentedPersonProfile({
             >
               {humanityVGovernmentLink.label}
             </Link>
-            . The claim is simple: governments were hired to promote the general
-            welfare and spent the repair money on war.
+            . The claim is simple: <WelfareClaim /> They spent the repair
+            money on war.
           </p>
           <Link
             className={`${defaultButtonClassName} mt-4`}
@@ -423,8 +424,7 @@ export default async function PersonDetailPage({
               ) : null}
               {isPublicOfficialPerson(person) ? (
                 <p className="text-xs font-bold text-muted-foreground">
-                  Job: Promote General Welfare (i.e. maximize median health and
-                  wealth)
+                  Job: <WelfareClaim variant="metric" />
                 </p>
               ) : null}
             </div>

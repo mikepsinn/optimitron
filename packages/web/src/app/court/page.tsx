@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { ReferendumStepperPage } from "@/components/referendum/ReferendumStepperPage";
+import { TreatyNameSignatureBox } from "@/components/treaty/TreatyNameSignatureBox";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
@@ -38,6 +39,13 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
         authCallbackUrl={dashboardUrl}
         postSignRedirectUrl={dashboardUrl}
       />
+      <section id="sign-below-court" className="px-4 pb-16">
+        <TreatyNameSignatureBox
+          authCallbackUrl="/court"
+          referralCode={referralCode}
+          referendumSlug={COURT_OF_HUMANITY_SLUG}
+        />
+      </section>
     </div>
   );
 }

@@ -2,7 +2,6 @@ import {
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
-  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
@@ -13,6 +12,7 @@ import { PeopleFilterBar } from "@/components/people/PeopleFilterBar";
 import { PersonFaceTile } from "@/components/people/PersonFaceTile";
 import { RepresentedPersonConversionForm } from "@/components/people/RepresentedPersonConversionForm";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { formatCount } from "@/lib/format-count";
 import { getSiteMetadata } from "@/lib/metadata";
 import {
@@ -169,12 +169,7 @@ export default async function PlaintiffsPage({
           </h1>
           <div className="max-w-5xl space-y-4 text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
             <p>
-              You pay your governments{" "}
-              <ParameterValue
-                figures={3}
-                param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
-              />{" "}
-              to promote your general welfare. Since 1900 they spent{" "}
+              <WelfareClaim /> Since 1900 they spent{" "}
               <ParameterValue
                 figures={3}
                 param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}

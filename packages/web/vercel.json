@@ -25,6 +25,10 @@
       "schedule": "*/15 * * * *"
     },
     {
+      "path": "/api/cron/refresh-user-downstream-cache",
+      "schedule": "0 4 * * 0"
+    },
+    {
       "path": "/api/cron/aggregate-relationships",
       "schedule": "0 */6 * * *"
     },

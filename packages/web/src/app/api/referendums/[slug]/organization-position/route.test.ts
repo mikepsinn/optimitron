@@ -183,6 +183,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
           name: "  The Useful Institute  ",
           type: OrgType.NONPROFIT,
           website: "https://useful.example",
+          donationUrl: "https://useful.example/donate",
           description: "An organization with a spine.",
         },
       }),
@@ -201,7 +202,7 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
         type: OrgType.NONPROFIT,
         website: "https://useful.example/",
         description: "An organization with a spine.",
-        donationUrl: null,
+        donationUrl: "https://useful.example/donate",
         squareLogoUrl: null,
         wordmarkLogoUrl: null,
         contactEmail: null,
@@ -332,6 +333,26 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       error: "Invalid website URL",
+    });
+    expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
+    expect(mocks.positionUpsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsafe donation URLs before creating a new organization", async () => {
+    const res = await POST(
+      makeRequest({
+        position: "YES",
+        newOrganization: {
+          name: "  The Useful Institute  ",
+          donationUrl: "javascript:alert(1)",
+        },
+      }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      error: "Invalid donation URL",
     });
     expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
     expect(mocks.positionUpsert).not.toHaveBeenCalled();

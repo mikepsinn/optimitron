@@ -10,12 +10,68 @@
  *   SKIP_SERVER=1 BASE_URL=http://localhost:3333 npx playwright test e2e/smoke.spec.ts
  */
 import { test, expect, type Page } from "@playwright/test";
-import {
-  AUTH_REQUIRED_PATHS,
-  PUBLIC_PAGE_PATHS,
-  REDIRECT_ONLY_PATHS,
-} from "./utils/static-pages";
 import { signInDemoUser } from "./utils/auth";
+import { ROUTES } from "@/lib/routes";
+
+const ERROR_BOUNDARY_FALLBACK_PATTERNS = [
+  /something went wrong/i,
+  /application error/i,
+  /client-side exception/i,
+  /server-side exception/i,
+  /an error occurred in the server components render/i,
+  /internal server error/i,
+  /runtime error/i,
+  /switched to client rendering because the server rendering errored/i,
+];
+
+const SMOKE_SCOPE = process.env.PLAYWRIGHT_SMOKE_SCOPE === "critical"
+  ? "critical"
+  : "full";
+const CRITICAL_SMOKE_PATHS = new Set<string>([
+  ROUTES.home,
+  ROUTES.treaty,
+  ROUTES.vote,
+  ROUTES.legislation,
+  ROUTES.plaintiffs,
+  ROUTES.endorse,
+  ROUTES.tasks,
+  ROUTES.dashboard,
+]);
+const CRITICAL_AUTH_REQUIRED_PATHS = new Set<string>([
+  ROUTES.dashboard,
+]);
+const CRITICAL_PUBLIC_PAGE_PATHS = [...CRITICAL_SMOKE_PATHS].filter(
+  (path) => !CRITICAL_AUTH_REQUIRED_PATHS.has(path),
+);
+
+function loadStaticPages() {
+  // Keep critical smoke independent from full-route discovery so the fastest
+  // preview guard can still catch page-level runtime fallbacks.
+  return require("./utils/static-pages") as typeof import("./utils/static-pages");
+}
+
+function filterSmokePaths(paths: Iterable<string>) {
+  const list = [...paths];
+  if (SMOKE_SCOPE !== "critical") return list;
+  return list.filter((path) => CRITICAL_SMOKE_PATHS.has(path));
+}
+
+const staticPages = SMOKE_SCOPE === "critical"
+  ? null
+  : loadStaticPages();
+const SMOKE_PUBLIC_PAGE_PATHS = SMOKE_SCOPE === "critical"
+  ? CRITICAL_PUBLIC_PAGE_PATHS
+  : filterSmokePaths(staticPages?.PUBLIC_PAGE_PATHS ?? []);
+const SMOKE_REDIRECT_ONLY_PATHS = SMOKE_SCOPE === "critical"
+  ? []
+  : filterSmokePaths(staticPages?.REDIRECT_ONLY_PATHS ?? []);
+const SMOKE_AUTH_REQUIRED_PATHS = SMOKE_SCOPE === "critical"
+  ? [...CRITICAL_AUTH_REQUIRED_PATHS]
+  : filterSmokePaths(staticPages?.AUTH_REQUIRED_PATHS ?? []);
+
+console.log(
+  `[smoke] scope=${SMOKE_SCOPE} public=${SMOKE_PUBLIC_PAGE_PATHS.length} redirects=${SMOKE_REDIRECT_ONLY_PATHS.length} auth=${SMOKE_AUTH_REQUIRED_PATHS.length}`,
+);
 
 async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
   skipOnClientError?: boolean;
@@ -42,7 +98,17 @@ async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
   expect(status).toBeLessThan(400);
   expect(errors).toEqual([]);
 
+  const visibleText = await page.locator("body").innerText();
   const title = await page.title();
+  const renderedPageText = `${title}\n${visibleText}`;
+  const matchedFallback = ERROR_BOUNDARY_FALLBACK_PATTERNS.find((pattern) =>
+    pattern.test(renderedPageText)
+  );
+  expect(
+    matchedFallback?.source ?? null,
+    `${path} should render real page content, not a Next.js error-boundary fallback`,
+  ).toBeNull();
+
   expect(title, `<title> should not be empty`).toBeTruthy();
 
   const description = await page
@@ -59,13 +125,13 @@ async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
 // Public pages — no auth needed
 // ---------------------------------------------------------------------------
 
-for (const path of PUBLIC_PAGE_PATHS) {
+for (const path of SMOKE_PUBLIC_PAGE_PATHS) {
   test(`${path} loads without errors and has valid metadata`, async ({ page }) => {
     await expectPageLoadsWithMetadata(page, path);
   });
 }
 
-for (const path of REDIRECT_ONLY_PATHS) {
+for (const path of SMOKE_REDIRECT_ONLY_PATHS) {
   test(`${path} redirects to its canonical content`, async ({ request }) => {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.status()).toBeGreaterThanOrEqual(300);
@@ -78,7 +144,7 @@ for (const path of REDIRECT_ONLY_PATHS) {
 // Auth-required pages — sign in with demo account first
 // ---------------------------------------------------------------------------
 
-for (const path of [...AUTH_REQUIRED_PATHS]) {
+for (const path of SMOKE_AUTH_REQUIRED_PATHS) {
   test(`${path} loads without errors and has valid metadata (authenticated)`, async ({ page }) => {
     const signedIn = await signInDemoUser(page);
     if (!signedIn) {

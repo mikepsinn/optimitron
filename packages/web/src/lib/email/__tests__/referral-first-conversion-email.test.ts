@@ -51,8 +51,13 @@ describe("referral-first-conversion email template", () => {
     // it into any channel without going back to the website.
     expect(html).toContain("Forward this");
     expect(html).toContain(SAMPLE.referrerReferralUrl);
-    expect(html).toContain("I love you");
+    expect(html).toContain("Hi there");
+    expect(html).toContain("I love you very much");
+    expect(html).toContain("respond to this stupid survey");
+    expect(html).not.toContain("{treaty_url}");
     expect(text).toContain("Forward this");
     expect(text).toContain(SAMPLE.referrerReferralUrl);
+    expect(text).toContain("Hi there");
+    expect(text).not.toContain("{target_name}");
   });
 });

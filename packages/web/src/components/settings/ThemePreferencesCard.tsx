@@ -1,28 +1,22 @@
 "use client"
 
-import { Moon, Sun } from "lucide-react"
 import { Card } from "@/components/retroui/Card"
 import { Button } from "@/components/retroui/Button"
 import { useTheme } from "@/components/ThemeProvider"
+import { cn } from "@/lib/utils"
 import type { Theme } from "@/lib/theme"
 
 const THEMES: Array<{
   value: Theme
   label: string
-  description: string
-  icon: typeof Sun
 }> = [
   {
     value: "light",
     label: "Light",
-    description: "Default app theme. Better match for the main site surfaces.",
-    icon: Sun,
   },
   {
     value: "dark",
     label: "Dark",
-    description: "Optional retro mode for the people who still want the gloom.",
-    icon: Moon,
   },
 ]
 
@@ -30,44 +24,34 @@ export function ThemePreferencesCard() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <Card className="border-4 border-primary mb-8">
-      <Card.Header>
-        <Card.Title className="text-2xl font-black uppercase">DISPLAY</Card.Title>
-        <Card.Description className="font-bold">
-          Light is the default. Dark mode lives here instead of in the navbar.
-        </Card.Description>
-      </Card.Header>
-      <Card.Content className="space-y-4">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <Card className="border-2 border-foreground bg-background">
+      <Card.Content className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-sm font-black uppercase text-foreground">
+          Theme
+        </span>
+        <div className="grid grid-cols-2 gap-2 sm:flex">
           {THEMES.map((option) => {
-            const Icon = option.icon
             const selected = option.value === theme
 
             return (
               <Button
                 key={option.value}
                 type="button"
-                variant={selected ? "default" : "outline"}
+                variant="outline"
+                size="sm"
+                aria-pressed={selected}
                 onClick={() => setTheme(option.value)}
-                className="min-h-[88px] w-full justify-start gap-3 border-4 border-primary px-4 py-4 text-left"
+                className={cn(
+                  "min-h-10 justify-center border-2 border-foreground px-4 text-sm font-black uppercase shadow-none hover:translate-y-0 active:translate-x-0 active:translate-y-0 sm:min-w-24",
+                  selected
+                    ? "bg-foreground text-background hover:bg-foreground"
+                    : "bg-background text-foreground hover:bg-muted",
+                )}
               >
-                <Icon className="h-5 w-5 shrink-0 stroke-[3px]" />
-                <span className="flex flex-col">
-                  <span className="text-sm font-black uppercase">{option.label}</span>
-                  <span className="text-xs font-bold normal-case opacity-80">
-                    {option.description}
-                  </span>
-                </span>
+                {option.label}
               </Button>
             )
           })}
-        </div>
-
-        <div className="border-2 border-dashed border-primary bg-muted p-4">
-          <p className="text-sm font-bold">
-            Theme preference is saved in this browser only. Demo and presentation views can still
-            force dark mode when they need it.
-          </p>
         </div>
       </Card.Content>
     </Card>

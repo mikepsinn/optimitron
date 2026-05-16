@@ -111,9 +111,9 @@ async function main() {
   }
 
   if (mode === "visual") {
-    env.ARGOS_VISUAL = "1";
+    env.ROUTE_VISUAL_REVIEW = "1";
   } else {
-    delete env.ARGOS_VISUAL;
+    delete env.ROUTE_VISUAL_REVIEW;
   }
 
   const playwrightArgs = ["test", ...MODE_SPECS[mode], ...appendDefaultProjectArg(passthroughArgs, mode)];
@@ -277,13 +277,13 @@ Modes:
              Regenerate the cross-variant new-user funnel screenshots
   treaty-screenshots
              Regenerate the treaty vote/post-vote screenshots
-  visual     Capture curated route screenshots for Argos visual PR review
+  visual     Capture curated route screenshots for visual PR review
 
 Behavior:
   - In CI, uses the Playwright-managed built server path
   - Locally, reuses BASE_URL or a running server on ${DEFAULT_BASE_URL} when available
   - Locally, new-user-flow-screenshots requires a running dev server unless E2E_ALLOW_PRODUCTION_FALLBACK=1 is set
   - If no local server is running, falls back to an existing production build
-  - visual runs desktop and mobile projects and enables the Argos reporter
+  - visual runs desktop and mobile projects and writes visual review screenshots
 `);
 }

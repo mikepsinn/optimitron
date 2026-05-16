@@ -80,8 +80,65 @@ jobs:
       - name: Test
         run: pnpm --filter '!@optimitron/web' run test
 
-  web-validate:
-    name: web-validate
+  web-static-validate:
+    name: web-static-validate
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
+      NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
+      NEXTAUTH_URL: http://127.0.0.1:3001
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: optimitron_web_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d optimitron_web_ci"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply database migrations
+        run: pnpm db:deploy
+
+      - name: Build web workspace dependencies
+        run: pnpm --filter @optimitron/web run build:workspace-deps
+
+      - name: Typecheck web app
+        run: pnpm --filter @optimitron/web run typecheck:fast
+
+      - name: Run web unit tests
+        run: pnpm --filter @optimitron/web run test
+
+  web-e2e-validate:
+    name: web-e2e-validate
     if: github.event_name != 'push' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -152,12 +209,6 @@ jobs:
       - name: Build web workspace dependencies
         run: pnpm --filter @optimitron/web run build:workspace-deps
 
-      - name: Typecheck web app
-        run: pnpm --filter @optimitron/web run typecheck:fast
-
-      - name: Run web unit tests
-        run: pnpm --filter @optimitron/web run test
-
       - name: Build web app
         env:
           NODE_OPTIONS: --max-old-space-size=6144
@@ -188,9 +239,6 @@ jobs:
 
       - name: Run Playwright visual review
         id: visual_regression
-        env:
-          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
-          ARGOS_IGNORE_UPLOAD_FAILURES: ${{ secrets.ARGOS_TOKEN == '' && '1' || '0' }}
         run: pnpm --filter @optimitron/web run e2e -- visual
 
       - name: Preserve PR visual screenshots
@@ -369,7 +417,7 @@ jobs:
             echo
             echo "- Open the \`web-visual-review\` artifact from this run."
             echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
-            echo "- Use the Argos check on the pull request for before/after diffs and changed-only review."
+            echo "- Use the generated gallery for before/after diffs and changed-only review."
             echo "- Captured routes are defined in \`packages/web/e2e/visual-regression.spec.ts\`."
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -544,16 +592,37 @@ jobs:
             packages/web/public/img/screenshots
           if-no-files-found: ignore
 
+  web-validate:
+    name: web-validate
+    if: always() && (github.event_name != 'push' || github.ref == 'refs/heads/main')
+    needs:
+      - web-static-validate
+      - web-e2e-validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify web validation lanes passed
+        shell: bash
+        run: |
+          static_result="${{ needs.web-static-validate.result }}"
+          e2e_result="${{ needs.web-e2e-validate.result }}"
+          echo "web-static-validate: $static_result"
+          echo "web-e2e-validate: $e2e_result"
+          if [ "$static_result" != "success" ] || [ "$e2e_result" != "success" ]; then
+            exit 1
+          fi
+
   sync-preview-managed-data:
     name: sync-preview-managed-data
     if: github.event_name == 'pull_request'
     needs: web-validate
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 30
     environment:
       name: Preview
     permissions:
       contents: read
+      pull-requests: read
     env:
       CI: true
       VERCEL_CLI_VERSION: 50.37.3
@@ -567,50 +636,94 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Check Preview Vercel token
-        id: preview_vercel_token
+      - name: Detect preview database sync changes
+        id: preview_data_changes
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { pathToFileURL } = require('node:url');
+            const filter = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/preview-managed-data-filter.mjs`).href
+            );
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            const filenames = files
+              .filter((file) => file.status !== 'removed')
+              .map((file) => file.filename);
+            const matches = filter.getPreviewManagedDataSyncMatches(filenames);
+            const medicalMatches = filter.getPreviewMedicalReferenceSyncMatches(filenames);
+            const shouldSync = matches.length > 0;
+            const skipMedicalReference = shouldSync && medicalMatches.length === 0;
+            core.setOutput('should_sync', shouldSync ? 'true' : 'false');
+            core.setOutput('matched_files', matches.join('\n'));
+            core.setOutput('medical_reference_files', medicalMatches.join('\n'));
+            core.setOutput('skip_medical_reference', skipMedicalReference ? '1' : '0');
+            core.setOutput('changed_file_count', String(filenames.length));
+            if (!shouldSync) {
+              await core.summary
+                .addHeading('Preview database sync')
+                .addRaw(`Skipped: ${filenames.length} changed file(s), none touch managed-data, schema, masking, or preview seed inputs.`)
+                .write();
+            }
+
+      - name: Check Preview database sync secrets
+        if: steps.preview_data_changes.outputs.should_sync == 'true'
+        id: preview_secrets
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         shell: bash
         run: |
-          if [ -n "$VERCEL_TOKEN" ]; then
+          missing=()
+          if [ -z "$VERCEL_TOKEN" ]; then
+            missing+=("VERCEL_TOKEN")
+          fi
+
+          if [ "${#missing[@]}" -eq 0 ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           echo "configured=false" >> "$GITHUB_OUTPUT"
-          echo "::warning::Preview managed-data sync skipped because the GitHub Preview environment is missing VERCEL_TOKEN."
+          echo "::error::Preview database sync is blocked: the GitHub Preview environment is missing ${missing[*]}. Add the secrets in repo Settings → Environments → Preview before retrying."
           {
             echo "## Preview database sync"
             echo
-            echo "- Skipped: add the \`VERCEL_TOKEN\` secret to the GitHub \`Preview\` environment so CI can pull the branch-specific Vercel preview database env."
+            echo "Blocked: GitHub Preview environment is missing required secrets."
+            for name in "${missing[@]}"; do
+              echo "- Missing \`$name\`."
+            done
           } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
 
       - name: Enable Corepack
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Pull Vercel preview settings
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=preview --git-branch "$PREVIEW_GIT_BRANCH" --token "$VERCEL_TOKEN"
 
       - name: Export preview database env
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         shell: bash
         run: |
           node <<'NODE'
@@ -643,7 +756,16 @@ jobs:
             throw new Error(`Vercel preview env did not include DATABASE_URL in ${envPath}.`);
           }
 
-          for (const key of ["DATABASE_URL", "DATABASE_URL_UNPOOLED"]) {
+          const exportedKeys = [
+            "DATABASE_URL",
+            "DATABASE_URL_UNPOOLED",
+            "NEON_PROJECT_ID",
+            "NEON_BRANCH_ID",
+            "NEON_DATABASE_NAME",
+            "PGDATABASE",
+          ];
+
+          for (const key of exportedKeys) {
             const value = parsed[key];
             if (!value) continue;
             console.log(`::add-mask::${value}`);
@@ -659,19 +781,55 @@ jobs:
           NODE
 
       - name: Apply preview database migrations
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
         run: pnpm db:deploy
 
+      - name: Apply preview database anonymization
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          database_url="${DATABASE_URL_UNPOOLED:-${DATABASE_URL:-}}"
+          if [ -z "$database_url" ]; then
+            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the pulled Vercel preview env."
+            exit 1
+          fi
+
+          echo "::add-mask::$database_url"
+
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+
+          psql "$database_url" --set ON_ERROR_STOP=1 --file packages/db/prisma/anonymization-setup.sql
+          psql "$database_url" --set ON_ERROR_STOP=1 --file packages/db/prisma/anonymization-updates.sql
+
+      - name: Verify preview masking applied to rows
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        shell: bash
+        run: node packages/web/scripts/verify-preview-masking.mjs
+
       - name: Sync preview managed data
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           MANAGED_DATA_ALLOW_REMOTE_APPLY: "1"
+          MANAGED_DATA_SKIP_MEDICAL_REFERENCE: ${{ steps.preview_data_changes.outputs.skip_medical_reference }}
         run: pnpm db:sync:managed-data -- --apply
 
+      - name: Cleanup pulled Vercel env files
+        if: always() && steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        shell: bash
+        run: rm -f .vercel/.env*.local .vercel/*.env*
+
       - name: Summarize preview database sync
-        if: steps.preview_vercel_token.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        env:
+          MANAGED_DATA_SKIP_MEDICAL_REFERENCE: ${{ steps.preview_data_changes.outputs.skip_medical_reference }}
         shell: bash
         run: |
           {
@@ -679,7 +837,12 @@ jobs:
             echo
             echo "- Pulled Vercel preview env for \`$PREVIEW_GIT_BRANCH\`."
             echo "- Applied Prisma migrations to the branch preview database."
-            echo "- Synced managed data with idempotent upserts."
+            echo "- Applied preview anonymization setup and direct SQL masking updates."
+            echo "- Verified sampled masked row shapes after the update pass."
+            echo "- Synced managed data with idempotent upserts after masking."
+            if [ "$MANAGED_DATA_SKIP_MEDICAL_REFERENCE" = "1" ]; then
+              echo "- Skipped medical reference rows because no medical dataset or seed-data files changed; disposable CI still runs the full local sync."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
   deploy-production:

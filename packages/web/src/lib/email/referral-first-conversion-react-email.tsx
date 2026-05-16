@@ -9,6 +9,7 @@ import {
 } from "@/lib/email/react-email-components";
 import {
   DoublingRoundsValue,
+  EMAIL_SHARE_TEMPLATE_ID,
   ReferralAskValue,
   ReferralChainMath,
 } from "@/lib/email/share-footer";
@@ -44,7 +45,10 @@ export function ReferralFirstConversionReactEmail({
         Live conversion counts are on your dashboard. We only email on the first
         conversion. No per-vote pings.
       </CampaignText>
-      <CampaignShareFooter referralUrl={referrerReferralUrl} />
+      <CampaignShareFooter
+        referralUrl={referrerReferralUrl}
+        templateId={EMAIL_SHARE_TEMPLATE_ID}
+      />
     </CampaignEmailShell>
   );
 }

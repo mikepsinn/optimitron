@@ -173,6 +173,58 @@ describe("ReferendumSignatureBox", () => {
     expect(storePendingVote).toHaveBeenCalledWith(
       undefined,
       REFERENDUM_ANSWER.NO,
+      undefined,
+    );
+  });
+
+  it("submits a private vote when the inline flow is not a public-signature surface", async () => {
+    const storePendingVote = vi.fn();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    } as Response);
+
+    await act(async () => {
+      root.render(
+        <ReferendumSignatureBox
+          referendumSlug="court-of-humanity"
+          title="Vote"
+          authPromptText="Verify"
+          storePendingVote={storePendingVote}
+          clearPendingVote={vi.fn()}
+          shareText="Share"
+          emailSubject="Subject"
+          publicVoteDefault={false}
+        />,
+      );
+    });
+
+    expect(
+      container.textContent?.includes("Display my name publicly"),
+    ).toBe(false);
+
+    const yesButton = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent === "Yes",
+    );
+    expect(yesButton).toBeDefined();
+
+    await act(async () => {
+      Simulate.click(yesButton!);
+    });
+
+    const voteBody = JSON.parse(
+      String(vi.mocked(globalThis.fetch).mock.calls[0]?.[1]?.body),
+    );
+    expect(voteBody).toEqual(
+      expect.objectContaining({
+        answer: REFERENDUM_ANSWER.YES,
+        makePublic: false,
+      }),
+    );
+    expect(storePendingVote).toHaveBeenCalledWith(
+      undefined,
+      REFERENDUM_ANSWER.YES,
+      false,
     );
   });
 });
