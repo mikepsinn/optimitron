@@ -2,14 +2,12 @@ import {
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
-  DFDA_QUEUE_CLEARANCE_YEARS,
-  DFDA_TRIAL_CAPACITY_MULTIPLIER,
   LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
-  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS,
+  WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR,
+  WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
-import type { Parameter } from "@optimitron/data/parameters";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -35,38 +33,6 @@ const VALID_SORT_KEYS: RepresentedPeopleSortKey[] = [
   "died-closest-to-cure",
 ];
 const PLAINTIFFS_PAGE_SIZE = 24;
-const CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR = {
-  value: 1913,
-  parameterName: "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR",
-  unit: "year",
-  displayName: "Counterfactual Disease Eradication Start Year",
-  description:
-    "Start year for the Fed-era military-spending counterfactual used to estimate when disease should have been functionally eradicated.",
-  sourceType: "definition",
-  confidence: "low",
-  manualPageUrl:
-    "https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html",
-  manualPageTitle: "Declaration of Optimization",
-} satisfies Parameter;
-const CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR = {
-  value:
-    CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR.value +
-    Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value),
-  parameterName: "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR",
-  unit: "year",
-  displayName: "Counterfactual Disease Eradication Year",
-  description:
-    "Counterfactual year by which disease should have been functionally eradicated if governments had redirected Fed-era war spending into treaty-scale clinical trial capacity.",
-  sourceType: "calculated",
-  confidence: "low",
-  formula:
-    "CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR + round(DFDA_QUEUE_CLEARANCE_YEARS)",
-  latex:
-    "\\begin{gathered}\nY_{counterfactual} = 1913 + round(35.96) = 1949\n\\\\[0.5em]\nT_{queue,trial} = \\frac{443}{12.3} = 36\n\\end{gathered}",
-  manualPageUrl:
-    "https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html",
-  manualPageTitle: "Declaration of Optimization",
-} satisfies Parameter;
 const FILTER_PARAM_KEYS = new Set([
   "cause",
   "conditionId",
@@ -179,9 +145,6 @@ export default async function PlaintiffsPage({
   );
   const showBrowseTools =
     hasActiveBrowseState || filteredCount >= PLAINTIFFS_PAGE_SIZE;
-  const cumulativeTrialYearsDisplay = Math.round(
-    CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS.value,
-  ).toLocaleString("en-US");
   const filterParams = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     const flat = Array.isArray(value) ? value[0] : value;
@@ -215,8 +178,8 @@ export default async function PlaintiffsPage({
                 param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
               />{" "}
               murdering{" "}
-              <ParameterValue figures={3} param={WAR_DEATHS_SINCE_1900} />{" "}
-              of their employers — enough to fund{" "}
+              <ParameterValue figures={3} param={WAR_DEATHS_SINCE_1900} /> of
+              their employers — enough to fund{" "}
               <ParameterValue
                 figures={3}
                 param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
@@ -241,10 +204,6 @@ export default async function PlaintiffsPage({
           </div>
         </header>
 
-        <section id="register-plaintiff" aria-label="Register a plaintiff">
-          <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
-        </section>
-
         <section
           aria-labelledby="wrongful-death-cutoff"
           className="space-y-5 border-t-2 border-foreground pt-8"
@@ -253,52 +212,50 @@ export default async function PlaintiffsPage({
             id="wrongful-death-cutoff"
             className="max-w-5xl text-4xl font-black uppercase leading-none sm:text-5xl"
           >
-            If anyone in your family died of disease after{" "}
+            If someone you love died of disease in or after{" "}
             <ParameterValue
               display="integer"
-              param={CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR}
+              param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
             />
-            , their death was wrongful.
+            , or aging in or after{" "}
+            <ParameterValue
+              display="integer"
+              param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
+            />
+            , it is wrongful death.
           </h2>
           <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
-            The declaration says the war budget could have funded{" "}
-            <ParameterValue
-              param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
-              valueOverride={cumulativeTrialYearsDisplay}
-            />{" "}
-            government trial-years. Status quo clears the disease queue in{" "}
+            The cited math counts the time to build medical tools and clear the
+            treatment queue, then puts the disease line at{" "}
             <ParameterValue
               display="integer"
-              param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-            />{" "}
-            years at{" "}
-            <ParameterValue
-              display="integer"
-              param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
-            />{" "}
-            first treatments per year. The treaty makes trial capacity{" "}
-            <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} />x larger,
-            so the queue clears in{" "}
-            <ParameterValue display="integer" param={DFDA_QUEUE_CLEARANCE_YEARS} />{" "}
-            years. Count from{" "}
-            <ParameterValue
-              display="integer"
-              param={CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_START_YEAR}
-            />{" "}
-            and the counterfactual eradication year is{" "}
-            <ParameterValue
-              display="integer"
-              param={CORPORATE_DAMAGES_COUNTERFACTUAL_ERADICATION_YEAR}
+              param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
             />
-            . After that line, disease death is not fate. It is government
-            negligence of the general welfare.
+            . Aging gets about{" "}
+            <ParameterValue
+              display="integer"
+              param={WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS}
+            />{" "}
+            more years and lands at{" "}
+            <ParameterValue
+              display="integer"
+              param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
+            />
+            ; biology was harder, not innocent.
+          </p>
+          <p className="max-w-5xl text-lg font-black uppercase leading-8 sm:text-2xl sm:leading-10">
+            It is wrongful death.
           </p>
           <Link
             className="inline-flex border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
             href="#register-plaintiff"
           >
-            Register a plaintiff
+            REGISTER A PLAINTIFF
           </Link>
+        </section>
+
+        <section id="register-plaintiff" aria-label="Register a plaintiff">
+          <RepresentedPersonConversionForm referendumSlug={referendumSlug} />
         </section>
 
         <section className="space-y-5 border-t border-border pt-8">
