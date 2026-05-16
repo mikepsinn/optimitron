@@ -89,7 +89,7 @@ describe("Wishonia signature module", () => {
   describe("buildWishoniaSignatureHtml", () => {
     it("includes the absolute avatar URL from the email base", () => {
       const html = buildWishoniaSignatureHtml({ title: "X", tagline: "Y" });
-      expect(html).toContain("https://test.example/sprites/wishonia/smirk-smile.png");
+      expect(html).toContain("https://test.example/sprites/wishonia/happy-smile.png");
     });
 
     it("includes the canonical sign-off, name, and company", () => {

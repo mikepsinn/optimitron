@@ -14,14 +14,17 @@
 ## Visible Page Copy
 
 ## JOIN THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE
-- Allowing billions of humans to suffer and die from disease so governments can preserve 122-apocalypse mass-murder capacity is barbaric mass cruelty. Like slavery, it will persist until enough humans and institutions publicly state that it is morally wrong and incredibly stupid. Your organization can be one of those institutions.
-- None of us can end war and disease on our own. Ending it requires a majority of humanity agreeing to allocate resources in proportion to the degree to which each purpose promotes the general welfare. The [1% Treaty](/treaty) is intended to establish that agreement. Your organization and its members are part of the majority that must agree. Moving that agreement forward by one day prevents about 150,000 deaths from disease and roughly 2 billion days of suffering.
-- Add your organization. Then use your member link, email starter, website button, or iframe to help your audience answer the Global Survey to End War and Disease.
-- No donation. No candidate endorsement. One public humanitarian treaty position. [Why organizations should join](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy).
+- Allowing billions of humans to suffer and die from disease so governments can preserve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)-apocalypse mass-murder capacity is barbaric mass cruelty. Like slavery, it will persist until enough humans and institutions publicly state that it is morally wrong and incredibly stupid. Your organization can be one of those institutions.
+- None of us can end war and disease on our own. Ending it requires a majority of humanity agreeing to allocate resources in proportion to the degree to which each purpose promotes the general welfare. Your organization and its members are part of the majority that must agree. Moving that agreement forward by one day prevents about [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) deaths from disease and roughly [2 billion](https://manual.WarOnDisease.org/knowledge/solution/dfda.html) days of suffering.
+- [Why organizations should join](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy).
 - ORGANIZATION NAME *
 - WEBSITE
+- DONATION URL
+- Optional. Adds a small Donate to your organization link on your public page.
 - JOIN AS AN ORGANIZATION
 ### AFTER JOINING
+- No donation to us. No candidate endorsement. One public humanitarian treaty position.
+- Add your organization. Publicly support the [1% Treaty](/treaty) once. Then use the member link, email starter, website button, or iframe to help your audience answer the Global Survey to End War and Disease.
 - Join first. Your tools page gives you the member link, email starter, website button, iframe, one-hour action checklist, and outreach grant request draft for funding from the International Campaign.
 ### APPLY FOR A CAMPAIGN GRANT
 - Estimate the outreach grant your organization could request from the International Campaign to End War and Disease to run the Global Survey to End War and Disease through your audience. Campaign links and embeds keep attribution and impact measurement in one system.
@@ -47,7 +50,7 @@
 - SUFFERING PREVENTED
 - 109,058
 - YEARS OF SUFFERING PREVENTED
-- 1,980 verified survey responses × 2.7 lives and 55 years prevented per response. At an estimated outreach cost of $2 per response, the outreach request is $3,960.
+- 1,980 verified survey responses × [2.7](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) lives and [55](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) years prevented per response. At an estimated outreach cost of $2 per response, the outreach request is $3,960.
 #### GRANT REQUEST DRAFT
 - COPY REQUEST DRAFT
 - LEGAL NOTES FOR ORGANIZATIONS
@@ -78,9 +81,9 @@
 - WHEREAS, this is the conflict resolution strategy of four-year-olds except four-year-olds eventually get tired and take a nap, and these governments have failed to apply naps to foreign policy;
 - WHEREAS, the governments of Earth possess nuclear weapons sufficient to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times but have not cured Alzheimer's once (which is particularly wasteful given we only have one civilization to destroy);
 - WHEREAS, your employees spend [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year on their capacity for mass murder, which is enough to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every man, woman, and child every year, even though it would require at most 2 bullets per person to murder everyone;
-- WHEREAS, governments spend [604](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) dollars on the capacity for orphan manufacturing for every one dollar spent on the trials that might cure what is actually going to kill their citizens;
-- WHEREAS, the Department of "Defense" has "misplaced" $2.46 trillion, failed seven consecutive audits trying to find it, and then requested additional trillions without explanation or apology (Not to belabor the point, but that money could have funded [547](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) years of clinical trials at current funding levels, possibly saving billions of lives and preventing quadrillions of hours of suffering, so we would appreciate it if you would have them be more careful in the future);
-- WHEREAS, pre-WW2 U.S. military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) lower than today's peacetime budget, even after adjusting for inflation. The U.S. still won World War II, then cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years and produced the fastest growth in median standard of living in history.
+- WHEREAS, governments spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) dollars on the capacity for orphan manufacturing for every one dollar spent on the trials that might cure what is actually going to kill their citizens;
+- WHEREAS, the Department of "Defense" has "misplaced" [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html), failed seven consecutive audits trying to find it, and then requested additional trillions without explanation or apology (Not to belabor the point, but that money could have funded [547](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) years of clinical trials at current funding levels, possibly saving billions of lives and preventing quadrillions of hours of suffering, so we would appreciate it if you would have them be more careful in the future);
+- WHEREAS, pre-WW2 U.S. military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) lower than today's peacetime budget, even after adjusting for inflation. The U.S. still won World War II, then cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years and produced the fastest growth in median standard of living in history.
 - WHEREAS, unless the human genome has significantly degraded in the two generations since, a one percent improvement in resource allocation should be manageable;
 - WHEREAS, global military spending has been growing [2.76%](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) a year for twenty years. If no one tells it to stop, every human alive will pay about [$402,488](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) over their lifetime (mostly funding explosions in countries they cannot find on a map). A one percent cut tells it to stop. That saves the average person about [$290,052](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) ([the peace dividend](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html));
 - WHEREAS, [diseases kill more people than all wars combined](https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html) and, unlike wars, do not even have the decency to be quick about it;

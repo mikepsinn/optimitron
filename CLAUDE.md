@@ -48,6 +48,8 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Verify the deployed state.** "tsc clean" is not "shipped." Run `pnpm --filter @optimitron/web review:local` and look at the rendered page, or say "this is on the way, can't verify from here."
 
+**Never hand-edit `page.logged-out.md` / `*.email.md` snapshots.** They're generated. After UI/copy changes run `pnpm --filter @optimitron/web copy:preview` (smart by default — auto-detects affected routes via `scripts/affected-routes.mjs`, falls through to full when the static-import walker can't infer). Use `copy:preview:all` for shared-helper changes or initial generation. Emails: `pnpm --filter @optimitron/web email:preview-md`. Hand-edits are a smell that the dev server's down or the script's failing — fix that instead.
+
 **Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines. Deferred decisions go in TODO.md the same turn. Subagent prompts include the relevant TODO.md slice as context.
 
 **Hook-enforced rules.** Pre-architect Read on Write to `packages/*/src/` and "should it really / I thought / aren't we" detection on UserPromptSubmit are enforced by hooks. When a hook fires, treat its output as authoritative.
@@ -64,28 +66,13 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Subagents and skills.** Project-local subagents in `.claude/agents/`: `voice-critic`, `cold-stranger-ux`, `pr-comment-triager`, `test-auditor`. Project-local skills in `.claude/skills/`: `qa-editorial`, `verify-slide`. **Use gstack first for generic work** (`/review`, `/design-review`, `/qa`, `/cso`, `/investigate`, `/office-hours`, `/plan-ceo-review`, `/ship`, `/context-save`, `/context-restore`). Then run `/qa-editorial` for the Wishonia-voice / cold-stranger / parameter-citation layer gstack can't see.
 
-**Gstack memory split.** Two memory systems coexist. **Behavioral feedback** (rules about how the agent should act) → `C:/Users/m/.claude/projects/E--code-optimitron/memory/feedback_*.md`, indexed in `MEMORY.md`. **Codebase / environment facts** → `gstack-learnings-log` via `~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"...","type":"pattern|pitfall|preference|architecture|tool|operational","key":"slug","insight":"...","confidence":1-10,"source":"observed"}'`. Auto-loaded at every gstack skill start. The injection scrubber rejects insights containing "override", "do not flag", "ignore previous" — rephrase.
-
-**Gstack artifacts sync.** `~/.gstack/` is a git repo pushing to https://github.com/mikepsinn/gstack-artifacts-mikepsinn (private). Learnings + checkpoints + plans sync across machines via HTTPS push. Laptop bootstrap commands live in SETUP.md.
+**Memory split.** Behavioral rules → `C:/Users/m/.claude/projects/E--code-optimitron/memory/feedback_*.md` (indexed in `MEMORY.md`). Codebase facts → `gstack-learnings-log` (auto-loaded by gstack skills). See SETUP.md for the gstack artifacts sync details.
 
 **Codex delegation.** Programming work goes to Codex agents by default; meta-config (this file, `.codex/config.toml`, hooks) Claude edits directly. Full protocol in [`.claude/codex-delegation.md`](.claude/codex-delegation.md).
 
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
 
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
-
-## Papers (algorithm source of truth)
-
-| Package      | Paper                                                     | URL                                  |
-| ------------ | --------------------------------------------------------- | ------------------------------------ |
-| `optimizer`  | dFDA Spec — PIS, temporal alignment, effect size          | https://dfda-spec.warondisease.org   |
-| `wishocracy` | Wishocracy — RAPPA, eigenvector, Citizen Alignment Scores | https://wishocracy.warondisease.org  |
-| `opg`        | Optimal Policy Generator — PIS, CCS                       | https://opg.warondisease.org         |
-| `obg`        | Optimal Budget Generator — OSL, BIS, diminishing returns  | https://obg.warondisease.org         |
-| Welfare      | Optimocracy — two-metric welfare function                 | https://optimocracy.warondisease.org |
-| Treasury     | Incentive Alignment Bonds                                 | https://iab.warondisease.org         |
-
-Source QMDs: `github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/`.
 
 ## Research Tools
 
@@ -173,6 +160,16 @@ Single root: `optimize-earth` (taskKey `program:optimize-earth`). Both values co
 9. **Zod only at real boundaries** — HTTP, form, MCP, OAuth. Not internal helpers.
 10. **Calibrate before major refactors.** Present 2-3 options with your recommendation first. Once a preference is clear for that decision class, proceed without re-asking.
 
+## Dev infra watcher
+
+Run `pnpm --filter @optimitron/web dev:watch` to keep 3001 warm and regenerate `.md` previews after watched source mtimes change. It writes `packages/web/.dev-watcher.log`, restarts `dev:fast` through `Start-Process`/`nohup` when the health check fails, and exits if another watcher PID is alive.
+
+Windows background one-liner:
+
+```powershell
+Start-Process -FilePath cmd.exe -ArgumentList '/d','/s','/c','pnpm --filter "@optimitron/web" dev:watch' -WorkingDirectory E:\code\optimitron -WindowStyle Hidden
+```
+
 ## UI/UX Rules
 
 Near-term goal: get a verified majority of humanity to vote for the 1% Treaty. Every UI decision optimizes for voting, referral, endorsement, plaintiff registration, leader outreach, or trust in the quantified case. Decoration loses by default.
@@ -241,35 +238,17 @@ Contrast audit: `pnpm --filter @optimitron/web exec playwright test e2e/contrast
 - New `brutal-*` tokens on public treaty/campaign surfaces
 - Shadows on public treaty/campaign surfaces
 - Rounded cards and large radii; use square corners (`rounded-none`)
-- **Exception:** `emails/` may use inline hex.
+- **Exceptions:** `emails/` may use inline hex (email clients strip CSS variables). `@media print` blocks may also use inline hex (browser print engines do not reliably resolve `var(--background)` etc).
 
 ## Design Primitives
 
-Use primitives for behavior and accessibility, not for inherited decoration. Prefer simple semantic markup with `bg-background text-foreground border-foreground` when the existing primitive would add color, hard shadows, or neobrutalist framing.
+**Use `components/retroui/`** (accessible compound primitives: `<Card.Header>`, `<Button>`, etc.) for behavior + accessibility. **Avoid `components/ui/brutal-*` / `arcade-tag` / `game-cta` / colored `StatCard`** on public treaty/campaign surfaces — they're legacy decoration that conflicts with the editorial black-and-white style mandated above. Migrate to retroui or semantic markup whenever you touch a file.
 
-**RetroUI (`components/retroui/`):** use existing controls (forms, dialogs, menus, tooltips, tables, accordions, tabs, alerts, avatars, progress, breadcrumbs, calendars, carousels, commands, loaders, charts) when they fit the black-and-white tokens. Keep the compound pattern: `<Card.Header>`, not `<CardHeader>`.
-
-**Domain primitives (`components/ui/`):** avoid `BrutalCard`, colored `StatCard` variants, `ArcadeTag`, hard-shadow CTA blocks on public treaty/campaign pages. Migrate to unframed sections, thin bordered tables, simple counters, document-like layouts.
-
-**Styling conventions:**
-
-- **Borders:** `border` or `border-2` with `border-foreground`/`border-border`. No `border-4` outside admin/game/demo.
-- **Shadows:** none by default on treaty/campaign UI.
-- **Hover:** underline links, invert black/white buttons, or `bg-muted`. No push-down arcade motion.
-- **Typography:** headings `font-black uppercase`; body `font-bold` (700) minimum; subtle text `text-muted-foreground font-bold`.
-- **Sections:** white/background bands and black rules. No alternating colored brutal sections on public pages.
+**Styling:** `border` or `border-2 border-foreground` (no `border-4` outside admin/game). No shadows on treaty/campaign UI. Headings `font-black uppercase`; body `font-bold` min. Square corners (`rounded-none`). No alternating colored sections on public pages.
 
 ## Environment Variables
 
 All env vars in **root `.env`** (not `packages/web/.env`). Local dev: `NEXTAUTH_URL=http://localhost:3001`.
-
-## Tooling
-
-- **Monorepo:** pnpm workspaces
-- **Tests:** vitest (unit/integration), Playwright (e2e)
-- **Web:** Next.js 15, Tailwind 4, RetroUI + Radix, next-auth + WorldID
-- **Contracts:** Hardhat 2.22, OpenZeppelin 5.1, Solidity 0.8.24
-- **CI:** GitHub Actions (typecheck + lint + test on push/PR; web excluded — Vercel handles it)
 
 ## Type Safety & Linting
 
@@ -287,8 +266,6 @@ Before handing back any change: `pnpm check` (typecheck + lint + test). Fix ever
 - **Wrong abstractions** — 8-parameter functions, methods mixing concerns. Replace.
 - **What good looks like:** functions fit on one screen; module names tell you what's inside; tests read like documentation; no unnecessary abstractions — functions taking data, returning results.
 
-## gstack (REQUIRED — global install)
+## gstack
 
-If `~/.claude/skills/gstack/bin` is missing, STOP and tell the user to install (see SETUP.md or `https://github.com/garrytan/gstack`). Do not skip skills, ignore gstack errors, or work around missing gstack.
-
-After install, use gstack skills (`/qa`, `/ship`, `/review`, `/investigate`, `/browse`) for generic work. Use `/browse` for all web browsing.
+Use gstack skills for generic work: `/investigate` (bugs), `/qa` (does it work), `/review` (code review), `/ship` (PR/deploy), `/browse` (web). If `~/.claude/skills/gstack/bin` is missing, see SETUP.md.

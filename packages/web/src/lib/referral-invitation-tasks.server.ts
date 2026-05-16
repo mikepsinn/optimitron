@@ -17,6 +17,9 @@ import type { Prisma, PrismaClient } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { buildTriggerContext, fireTaskTrigger } from "@/lib/triggers";
 import { getReferralInvitationFirstName } from "@/lib/referral-invitation-copy";
+import {
+  syncPerVerifiedVoterTaskImpactEstimate,
+} from "@/lib/tasks/per-verified-voter-impact.server";
 
 type ReferralInvitationTaskClient =
   | Pick<PrismaClient, "task" | "taskComment" | "taskCommunicationEndpoint">
@@ -98,6 +101,8 @@ db: Prisma.TransactionClient | typeof prisma = prisma,
       } satisfies Prisma.InputJsonObject,
     },
   });
+
+  await syncPerVerifiedVoterTaskImpactEstimate(db, parent.taskId);
 
   return parent.taskId;
 }

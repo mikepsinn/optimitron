@@ -101,6 +101,25 @@ export default function AboutPage() {
             inference on all of it, and tells you what actually works. You&apos;re
             welcome.
           </p>
+          <section
+            aria-label="Campaign coordinator"
+            className="border-l-2 border-foreground pl-4"
+          >
+            <p className="text-sm font-bold leading-relaxed text-muted-foreground">
+              Coordinator:{" "}
+              <span className="text-foreground">Mike Sinn</span> coordinates the
+              International Campaign to End War and Disease. Human audit trail:{" "}
+              <a
+                href="https://mikesinn.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                mikesinn.com
+              </a>
+              .
+            </p>
+          </section>
           <p className="text-muted-foreground font-bold leading-relaxed">
             The public side focuses on healthy life years, income, and the
             policies and budgets that shape them. The personal side lets you
@@ -298,3 +317,5 @@ export default function AboutPage() {
     </div>
   );
 }
+
+// dev-watcher smoke 1778895406419

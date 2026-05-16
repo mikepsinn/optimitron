@@ -617,9 +617,9 @@ export function ReferendumStepper({
           <div className="mx-auto w-full max-w-4xl">
             <div className="mx-auto w-full max-w-2xl space-y-10">
               <div className="space-y-8">
-                <p className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
+                <h1 className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
                   {introText}
-                </p>
+                </h1>
                 <div className="mx-auto max-w-md">{signatureContent}</div>
               </div>
               {slides.map((slide, i) => (

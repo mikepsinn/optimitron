@@ -112,8 +112,16 @@ export interface ManagedTaskClient {
 
 export type ManagedIdentityClient = WishoniaUserClient;
 
+export interface ManagedTransactionOptions {
+  maxWait?: number;
+  timeout?: number;
+}
+
 export interface ManagedTransactionClient extends ManagedTaskClient {
-  $transaction<T>(callback: (client: ManagedTaskClient) => Promise<T>): Promise<T>;
+  $transaction<T>(
+    callback: (client: ManagedTaskClient) => Promise<T>,
+    options?: ManagedTransactionOptions,
+  ): Promise<T>;
 }
 
 export interface SyncManagedTasksOptions {
@@ -515,11 +523,18 @@ export async function syncManagedTasks(
     typeof (client as ManagedTransactionClient).$transaction === "function";
 
   if (shouldUseTransaction) {
-    return (client as ManagedTransactionClient).$transaction((transactionClient) =>
-      syncManagedTasks(transactionClient, {
-        ...options,
-        useTransaction: false,
-      }),
+    return (client as ManagedTransactionClient).$transaction(
+      (transactionClient) =>
+        syncManagedTasks(transactionClient, {
+          ...options,
+          useTransaction: false,
+        }),
+      // Default Prisma interactive-transaction timeout is 5s. The masked
+      // preview branch has prod-fork volume (~5k tasks + triggers +
+      // communications), and the sync ran 5272ms over the 5000ms limit.
+      // CI sync is one-shot per deploy, not a hot path; 60s + a longer
+      // maxWait keep this in one atomic tx instead of fanning out per-row.
+      { timeout: 60_000, maxWait: 10_000 },
     );
   }
 

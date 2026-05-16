@@ -28,7 +28,7 @@ export default function AgenciesIndexPage() {
             {" "}
             {totalAgencies}
             {" "}
-            optimized agencies cover the stack: money, audits, housing, justice,
+            optimized agencies handle money, audits, housing, justice,
             education, environment, and the bits your species currently staffs
             with queues, waivers, and lobbyists.
           </p>

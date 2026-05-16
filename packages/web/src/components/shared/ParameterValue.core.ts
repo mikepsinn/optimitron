@@ -55,6 +55,10 @@ export function getParameterCitation(param: Parameter): Citation | undefined {
   return param.sourceRef ? citations[param.sourceRef] : undefined;
 }
 
+export function getParameterReferenceUrl(param: Parameter): string | null {
+  return param.manualPageUrl ?? param.calculationsUrl ?? null;
+}
+
 export function hasParameterMetadata(param: Parameter) {
   const citation = getParameterCitation(param);
   return [

@@ -76,7 +76,7 @@ describe('task tree helpers', () => {
     expect(summary.rootCount).toBe(1);
     expect(summary.nodeCount).toBe(3);
     expect(summary.leafCount).toBe(2);
-    expect(summary.maxDepth).toBe(2);
+    expect(summary.deepestLevel).toBe(2);
     expect(summary.publicCount).toBe(3);
   });
 

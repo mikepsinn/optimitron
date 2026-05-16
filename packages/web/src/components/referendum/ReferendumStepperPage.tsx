@@ -51,6 +51,7 @@ export function ReferendumStepperPage({
         postSignRedirectUrl={postSignRedirectUrl}
         variant={mode}
         showReaderShell={false}
+        publicVoteDefault={config.inlineVoteMakePublic}
       />
     );
 

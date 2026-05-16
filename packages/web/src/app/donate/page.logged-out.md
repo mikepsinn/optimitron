@@ -14,14 +14,13 @@
 ## Visible Page Copy
 
 - THE 1% TREATY
-## TRADE ONE OF HUMANITY'S 122 APOCALYPSES FOR DISEASE ERADICATION IN 36.0 YEARS.
-- Humans spend $2.72 trillion every year on stuff designed specifically to make humans stop being alive. The 1% Treaty redirects 1.00% of that spending to high-efficiency pragmatic clinical trials.
-- Under the current system, only 15.0 diseases get their first effective treatment each year while 6,650 diseases are still waiting. That is why the disease-eradication timeline is 443 years. The proposal is simple: humanity should trade one of its 122 apocalypses of mass-murder capacity to compress the disease-eradication timeline from 443 years to 36 years.
+## TRADE ONE OF HUMANITY'S [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) APOCALYPSES FOR DISEASE ERADICATION IN [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS INSTEAD OF [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+- Humans spend [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) every year on stuff designed specifically to make humans stop being alive. The 1% Treaty redirects [1.00%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of that spending to high-efficiency pragmatic clinical trials.
+- Under the current system, only [15.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases get their first effective treatment each year while [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases are still waiting. That is why the disease-eradication timeline is [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years. The proposal is simple: humanity should trade one of its [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses of mass-murder capacity to compress the disease-eradication timeline from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
 - Your donation helps reach the humans needed to prove humanity wants this.
 - For the full economic analysis, read the [1% Treaty impact analysis](https://impact.warondisease.org).
 ### HOW MUCH DEATH AND SUFFERING DO YOU WANT TO PREVENT?
 - Enter a donation amount, a lives-saved target, or years of suffering prevented. The other boxes recalculate from the treaty campaign model. These are probability-adjusted estimates, not a receipt from the universe. [See how this is calculated ↓](#how-this-is-calculated)
-- At the default assumptions, $1 buys about 0.107 expected lives and 2.20 years of suffering and disability prevented.
 - YOUR DONATION (USD)
 - LIVES SAVED
 - YEARS OF SUFFERING AND DISABILITY PREVENTED
@@ -41,54 +40,54 @@
 - Cost to reach one voter
 - $2.00. Meta and Google petition CPC. Cheaper if it goes viral.
 - Political success probability
-- 1.0%. Default 1%. Drag to 100% for the if-it-works case.
+- 10%. Default 10%. Drag to 1% for the skeptical floor or 100% for the if-it-works case.
 - Share of military spending the treaty redirects
 - 1.00%. Default 1% — the treaty as written. Linear above 1%.
 - Lives saved per $1
-- 0.107
+- 1.07
 - Years of suffering prevented per $1
-- 2.20
+- 22.0
 - Cost per life saved
-- $9.31
+- $0.93
 - Cost per year of suffering and disability prevented
-- $0.45
+- $0.05
 - Cost-effectiveness vs bed nets
-- 503×
+- 5,031×
 - Total campaign cost
 - $1,000,000,000
 - Live derivation
 - Campaign cost
 - 500,000,000 people × $2.00
 - Expected lives saved
-- 107,455,177
-- 10,745,517,749 conditional lives × 1.0% success × 1.00 treaty scale
+- 1,074,551,775
+- 10,745,517,749 conditional lives × 10% success × 1.00 treaty scale
 - Expected healthy life-years
-- 5,652,436,734
-- 565,243,673,351 conditional DALYs × 1.0% success × 1.00 treaty scale
+- 56,524,367,335
+- 565,243,673,351 conditional DALYs × 10% success × 1.00 treaty scale
 - Healthy life-years per $1
-- 5.65
-- 5,652,436,734 healthy life-years ÷ $1,000,000,000
+- 56.5
+- 56,524,367,335 healthy life-years ÷ $1,000,000,000
 - Cost per healthy life-year
-- $0.18
-- $1,000,000,000 ÷ 5,652,436,734 healthy life-years
-- $89 bed nets ÷ $0.18 treaty
+- $0.02
+- $1,000,000,000 ÷ 56,524,367,335 healthy life-years
+- $89 bed nets ÷ $0.02 treaty
 - Years of suffering prevented
-- 2,204,450,326
-- 19,310,984,856,364 suffering hours ÷ 8,760
+- 22,044,503,261
+- 193,109,848,563,635 suffering hours ÷ 8,760
 ### HOW THIS IS CALCULATED
 - Click sourced constants for citations. The boxed numbers are the same live assumptions as the calculator above. Simple math: addition mostly, some multiplication.
-- 1 Only 15 diseases get their first effective treatment each year. That is the throughput of every drug regulator on the planet, combined. This means your Food and Drug Administration has not administered drugs for most food-and-drug-related problems.
-- 2 About 6,650 diseases are still waiting. That backlog is the treatment queue, and it is longer than any queue humans have ever voluntarily stood in, which is saying something because you invented Disneyland.
-- 3 At the current discovery rate, finding treatments for all of them takes 443 years. The average untreated disease waits 222 years for its first treatment. Everyone currently alive will be dead before we finish. This is the current timeline. There are 9,500 known safe compounds, and 99.7% of their potential uses have never been tested.
-- 4 You'd volunteer for trials faster, but so would 1.08 billion other patients. The current system has 1.9 million slots. It is like a billion people drowning in line for the two available life jackets.
-- 5 Current trials cost about $41,000 per patient. Most of that cost is on-site monitoring, not science. Your current system is somehow worse than panic.
-- 6 Pragmatic decentralized trials cost $929 per patient. The RECOVERY trial showed this kind of thing works in reality, during a pandemic, while panicking. Same statistical power, real-world data, no on-site visits.
-- 7 The treaty redirects $27.2 billion/year. $21.8 billion funds 23.4 million trial patients. No grant committees deciding which diseases are fashionable this year. The patient subsidy follows the patient. That is 12.3x current global capacity: more trials, more disease coverage, same pool of compounds.
-- 8 The queue compresses from 443 years to 36.0 years. Remember that billion patients drowning in line? Your decentralized FDA will hand out 23.4 million. The physical upper bound is 566x current capacity. The average disease gets its first treatment 204 years sooner. Add 8.2 years of removed efficacy lag: 212 years sooner.
-- 9 150,000 people die from disease every day. That is 104 every minute. Every minute of delay, 104 humans permanently stop. With the current live assumptions, the model estimates 107,455,177 expected deaths prevented and 2,204,450,326 years of suffering and disability prevented.
-- 10 Humans spend $2.72 trillion every year on stuff designed specifically to make humans stop being alive. Move % to high-efficiency pragmatic clinical trials. Government spending on clinical trials is 604 times less than military spending. Your chance of dying from disease is 100%. Your current budget does not reflect this. Earth owns 12,200 nuclear warheads. 100 is enough for nuclear winter. We have 122 apocalypses' worth of weapons. Keep the deterrent. Spend one slice curing every disease.
+- 1 Only [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases get their first effective treatment each year. That is the throughput of every drug regulator on the planet, combined. This means your Food and Drug Administration has not administered drugs for most food-and-drug-related problems.
+- 2 About [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases are still waiting. That backlog is the treatment queue, and it is longer than any queue humans have ever voluntarily stood in, which is saying something because you invented Disneyland.
+- 3 At the current discovery rate, finding treatments for all of them takes [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years. The average untreated disease waits [222](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years for its first treatment. Everyone currently alive will be dead before we finish. This is the current timeline. There are [9,500](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) known safe compounds, and [99.7%](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) of their potential uses have never been tested.
+- 4 You'd volunteer for trials faster, but so would [1.08 billion](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) other patients. The current system has [1.9 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) slots. It is like a billion people drowning in line for the two available life jackets.
+- 5 Current trials cost about [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient. Most of that cost is on-site monitoring, not science. Your current system is somehow worse than panic.
+- 6 Pragmatic decentralized trials cost [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient. The RECOVERY trial showed this kind of thing works in reality, during a pandemic, while panicking. Same statistical power, real-world data, no on-site visits.
+- 7 The treaty redirects [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). [$21.8 billion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) funds [23.4 million](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) trial patients. No grant committees deciding which diseases are fashionable this year. The patient subsidy follows the patient. That is [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) current global capacity: more trials, more disease coverage, same pool of compounds.
+- 8 The queue compresses from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years. Remember that billion patients drowning in line? Your decentralized FDA will hand out [23.4 million](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html). The physical upper bound is [566x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) current capacity. The average disease gets its first treatment [204](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner. Add [8.2](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years of removed efficacy lag: [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner.
+- 9 [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) people die from disease every day. That is [104](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) every minute. Every minute of delay, 104 humans permanently stop. With the current live assumptions, the model estimates 1,074,551,775 deaths prevented and 22,044,503,261 years of suffering and disability prevented.
+- 10 Humans spend [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) every year on stuff designed specifically to make humans stop being alive. Move % to high-efficiency pragmatic clinical trials. Government spending on clinical trials is [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times less than military spending. Your chance of dying from disease is 100%. Your current budget does not reflect this. Your governments possess nuclear weapons sufficient to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times but have not cured Alzheimer's once.
 - 11 To pass the treaty: reach humans at $ each. That makes the campaign cost $1,000,000,000. Everyone thinks this is crazy because everyone else thinks this is crazy. Right now every human who wants less war and disease assumes they are the weird one. The referendum is the moment they find out they are everyone.
-- 12 At % success and 1.00x treaty scale, the model gives $0.18 per healthy life-year. That is 503x the cost-effectiveness of bed nets at the live assumptions. Your calculator will display an error, emit a tiny electronic scream, and attempt to leave the desk. This is correct. The published skeptical case assumes a 99% chance humanity fumbles this and still comes out 503x better than bed nets, where bed nets cost $89/DALY. This model suggests the treaty campaign may be the most cost-effective way to reduce human suffering per dollar spent. If that sounds insane, good. Change the assumptions or attack the citations.
+- 12 At % success and 1.00x treaty scale, the model gives $0.02 per healthy life-year. That is 5,031x the cost-effectiveness of bed nets at the live assumptions. If the number looks absurd, good — that is the if-it-works case. Dial the slider down to the published skeptical case (1% success, which assumes a 99% chance humanity fumbles this) and the treaty campaign still comes out [503](https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html)x better than bed nets, where bed nets cost [$89/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Either direction, this model suggests the treaty campaign may be the most cost-effective way to reduce human suffering per dollar spent. Attack the citations or change the assumptions.
 - Other ways to give
 - Major-gift routes that can reduce your taxes or processing fees. Not tax advice — talk to your CPA. U.S.-specific. Accelerated Medicine Foundation Inc, dba Institute for Accelerated Medicine is a 501(c)(3) public charity incorporated in Wyoming.
 - OPEN TAX CALCULATOR

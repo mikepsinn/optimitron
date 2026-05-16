@@ -13,6 +13,7 @@ import {
 import * as React from "react";
 import { EMAIL_COLORS } from "@/components/adaptive/email-styles";
 import {
+  buildEmailShareTemplateText,
   EmailShareMessage,
   ReferralChainMath,
 } from "@/lib/email/share-footer";
@@ -246,8 +247,18 @@ export function CampaignMetricTable({
   );
 }
 
-export function CampaignShareFooter({ referralUrl }: { referralUrl: string }) {
-  const message = buildShareMessage(referralUrl);
+export function CampaignShareFooter({
+  referralUrl,
+  targetName,
+  templateId,
+}: {
+  referralUrl: string;
+  targetName?: string;
+  templateId?: string;
+}) {
+  const message = templateId
+    ? buildEmailShareTemplateText({ referralUrl, targetName, templateId })
+    : buildShareMessage(referralUrl);
   const shareChannelInput = {
     message,
     shareText: "Vote on the 1% Treaty",
@@ -321,7 +332,11 @@ export function CampaignShareFooter({ referralUrl }: { referralUrl: string }) {
             margin: 0,
           }}
         >
-          <EmailShareMessage referralUrl={referralUrl} />
+          <EmailShareMessage
+            referralUrl={referralUrl}
+            targetName={targetName}
+            templateId={templateId}
+          />
         </Text>
       </Section>
       {/* One-tap share buttons. Each opens the relevant app with the message

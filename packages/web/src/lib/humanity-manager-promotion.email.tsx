@@ -37,7 +37,17 @@ function PromoEyebrow({ children }: { children: React.ReactNode }) {
 }
 
 function PromoHeading({ children }: { children: React.ReactNode }) {
-  return <p style={EMAIL_STYLES.largeHeadline}>{children}</p>;
+  return (
+    <p
+      style={{
+        ...EMAIL_STYLES.largeHeadline,
+        fontSize: "26px",
+        margin: "0 0 12px",
+      }}
+    >
+      {children}
+    </p>
+  );
 }
 
 function PromoText({
@@ -48,7 +58,18 @@ function PromoText({
   muted?: boolean;
 }) {
   return (
-    <p style={muted ? EMAIL_STYLES.smallMutedParagraph : EMAIL_STYLES.paragraph}>
+    <p
+      style={
+        muted
+          ? EMAIL_STYLES.smallMutedParagraph
+          : {
+              ...EMAIL_STYLES.paragraph,
+              fontSize: "14px",
+              lineHeight: "1.55",
+              margin: "0 0 12px",
+            }
+      }
+    >
       {children}
     </p>
   );

@@ -81,7 +81,7 @@ export const EMAIL_STYLES = {
   },
   smallMutedParagraph: {
     color: EMAIL_COLORS.muted,
-    fontSize: "12px",
+    fontSize: "14px",
     lineHeight: 1.6,
     margin: 0,
   },

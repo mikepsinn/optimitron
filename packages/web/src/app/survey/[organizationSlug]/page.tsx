@@ -13,7 +13,8 @@ export async function generateMetadata({
   params: Promise<{ organizationSlug: string }>;
 }): Promise<Metadata> {
   const { organizationSlug } = await params;
-  const organization = await getApprovedOrganizationForSurveySlug(organizationSlug);
+  const organization =
+    await getApprovedOrganizationForSurveySlug(organizationSlug);
   if (!organization) return {};
 
   return {
@@ -28,26 +29,18 @@ export default async function OrganizationSurveyPage({
   params: Promise<{ organizationSlug: string }>;
 }) {
   const { organizationSlug } = await params;
-  const organization = await getApprovedOrganizationForSurveySlug(organizationSlug);
+  const organization =
+    await getApprovedOrganizationForSurveySlug(organizationSlug);
   if (!organization) notFound();
 
   return (
     <main className="min-h-screen bg-[var(--treaty-paper)]">
-      <section className="mx-auto max-w-3xl px-4 pt-8 text-center">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--treaty-ink-muted)]">
-          {organization.name}
-        </p>
-        <p className="mx-auto mt-4 max-w-2xl text-base font-bold leading-7 text-[var(--treaty-ink-soft)]">
-          Two questions about government funding for pragmatic clinical trials.
-          Responses from this link are credited to {organization.name}.
-        </p>
-        <Link
-          href="/"
-          className="mt-4 inline-block text-xs font-black uppercase tracking-wide text-[var(--treaty-ink)] underline"
-        >
+      <header className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 text-xs font-black uppercase tracking-wide text-[var(--treaty-ink-muted)]">
+        <p className="truncate">{organization.name}</p>
+        <Link href="/" className="shrink-0 text-[var(--treaty-ink)] underline">
           Survey Home
         </Link>
-      </section>
+      </header>
       <TreatyVoteFlow
         authCallbackUrl={ROUTES.dashboard}
         defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}

@@ -46,7 +46,89 @@ const REDIRECTS = [
   { source: "/federal-reserve", destination: "/agencies/dtreasury/dfed", permanent: true },
   { source: "/department-of-war", destination: "/agencies/ddod", permanent: true },
   { source: "/treasury", destination: "/agencies/dtreasury", permanent: true },
-  { source: "/politicians", destination: "/politicians/US", permanent: false },
+  { source: "/politicians", destination: "/governments/US/politicians", permanent: false },
+  { source: "/politicians/:jurisdictionCode", destination: "/governments/:jurisdictionCode/politicians", permanent: false },
+
+  // /people/manage was the staging name; canonical is /plaintiffs/manage.
+  // Edge redirect (Next.js preserves query string automatically). Replaces
+  // the page.tsx that called redirect() inside a Server Component —
+  // Next.js was statically pre-rendering it and converting the server
+  // redirect into a meta-refresh + client hop (200 OK), not a real 307.
+  { source: "/people/manage", destination: "/plaintiffs/manage", permanent: true },
+  { source: "/campaign", destination: "/signatories", permanent: true },
+  { source: "/coalition", destination: "/signatories", permanent: true },
+
+  // /find-trials belongs to the dfda.earth site (see site.ts canonicalPrefixes
+  // for the dfda site object). InterventionCard generates relative
+  // /find-trials links via generatePatientTrialSearchPath; when rendered on
+  // warondisease.org pages they land here. 301 to the canonical surface,
+  // preserving any path tail + query string (Next preserves the query
+  // automatically for redirect responses).
+  { source: "/find-trials", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials", permanent: true },
+  { source: "/find-trials/:path*", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials/:path*", permanent: true },
 ];
 
-module.exports = { REDIRECTS };
+const EXTRA_REDIRECT_ONLY_ROUTE_SOURCES = [
+  // Route handler whose only behavior is a site-aware redirect.
+  "/impact",
+];
+
+const REDIRECT_ONLY_ROUTE_SOURCES = [
+  ...REDIRECTS.filter((redirect) => !redirect.has).map((redirect) => redirect.source),
+  ...EXTRA_REDIRECT_ONLY_ROUTE_SOURCES,
+];
+
+function redirectSourceToReviewPath(source) {
+  if (!source.startsWith("/") || source.includes("*")) {
+    return null;
+  }
+  return source.replace(/:([A-Za-z][A-Za-z0-9_]*)/g, "[$1]");
+}
+
+function normalizePathname(pathname) {
+  const raw = String(pathname ?? "").trim();
+  if (!raw) return "/";
+  const withoutHash = raw.split("#", 1)[0] ?? raw;
+  const withoutQuery = withoutHash.split("?", 1)[0] ?? withoutHash;
+  const withSlash = withoutQuery.startsWith("/") ? withoutQuery : `/${withoutQuery}`;
+  return withSlash.length > 1 ? withSlash.replace(/\/+$/, "") : withSlash;
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function sourceToMatcher(source) {
+  if (!source.startsWith("/") || source.includes("*")) {
+    return null;
+  }
+  const pattern = source
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => (segment.startsWith(":") ? "[^/]+" : escapeRegex(segment)))
+    .join("/");
+  return new RegExp(`^/${pattern}/?$`);
+}
+
+const REDIRECT_ONLY_REVIEW_PATHS = Array.from(
+  new Set(REDIRECT_ONLY_ROUTE_SOURCES.map(redirectSourceToReviewPath).filter(Boolean)),
+).sort();
+
+const REDIRECT_ONLY_ROUTE_MATCHERS = REDIRECT_ONLY_ROUTE_SOURCES
+  .map(sourceToMatcher)
+  .filter(Boolean);
+
+function getRedirectOnlyRoutePaths() {
+  return REDIRECT_ONLY_REVIEW_PATHS;
+}
+
+function isRedirectOnlyRoutePath(pathname) {
+  const normalized = normalizePathname(pathname);
+  return REDIRECT_ONLY_ROUTE_MATCHERS.some((matcher) => matcher.test(normalized));
+}
+
+module.exports = {
+  REDIRECTS,
+  getRedirectOnlyRoutePaths,
+  isRedirectOnlyRoutePath,
+};

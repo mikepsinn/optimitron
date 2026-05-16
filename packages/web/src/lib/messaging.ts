@@ -13,6 +13,7 @@ import {
   HUMANITY_MANAGEMENT,
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 } from "@optimitron/data/campaign";
+import { WELFARE_CLAIM_TEXT } from "@/components/shared/WelfareClaim.core";
 
 /** Point name — single source of truth. Change here to rename everywhere. */
 export const POINT_NAME = "VOTE" as const;
@@ -25,6 +26,9 @@ export const REFERRAL_SHARE_LABEL =
 
 export const REFERRAL_SHARE_PROMPT =
   `${REFERRAL_SHARE_LABEL} It will significantly reduce the probability that they will suffer and die from horrible diseases.` as const;
+
+// Welfare claim text lives in WelfareClaim.core so string-only contexts
+// do not import the React component. JSX surfaces should use WelfareClaim.
 
 export {
   GLOBAL_SURVEY_NAME,
@@ -274,8 +278,7 @@ export const VOTE_SECTION = {
   // Humanity v. Government: governments are paid ~$36T/yr to promote
   // the general welfare and underdeliver. Voters' welfare-findings
   // become evidence in the case; preferences alone would not.
-  sliderPrompt:
-    "Governments are paid $36 trillion a year to promote the general welfare. What allocation between military spending and clinical trials would best fulfill that duty?",
+  sliderPrompt: `${WELFARE_CLAIM_TEXT} What allocation between military spending and clinical trials would best fulfill that duty?`,
   realityCheck:
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:

@@ -10,8 +10,13 @@ pnpm exec lint-staged
 # (forcing a re-stage + re-commit cycle). Total cost: 1-2 minutes per
 # UI commit. Moved to a manual step; CI catches drift at PR time.
 if git diff --cached --name-only -- packages/web/src/app 'packages/web/src/lib/email' 'packages/web/src/lib/tasks' | grep -qE '\.(tsx?|md)$'; then
-  echo "→ Reminder: if user-facing copy or email templates changed, run:"
-  echo "    pnpm --filter @optimitron/web copy:preview"
+  echo "→ Reminder: user-facing copy or email templates changed."
+  echo "  Regen snapshots (NEVER hand-edit .md):"
+  echo "    pnpm --filter @optimitron/web copy:preview       # smart: only affected routes"
   echo "    pnpm --filter @optimitron/web email:preview-md"
-  echo "  (CI will fail if .md snapshots drift from rendered output.)"
+  echo "  Use copy:preview:all for shared-helper / global-CSS / new-route changes."
+  if ! curl -sS -m 2 -o /dev/null http://127.0.0.1:3001 2>/dev/null; then
+    echo "  WARN: dev server NOT responding on :3001 — start it first (orchestrator only)."
+  fi
+  echo "  (CI fails if .md snapshots drift from rendered output.)"
 fi

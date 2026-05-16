@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { DECLARATION_SLUG } from "@/lib/declaration";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
@@ -10,6 +11,9 @@ const mocks = vi.hoisted(() => ({
   getPendingTreatyVote: vi.fn(),
   removePendingTreatyVote: vi.fn(),
   setPendingTreatyVote: vi.fn(),
+  getPendingCourtOfHumanityVote: vi.fn(),
+  removePendingCourtOfHumanityVote: vi.fn(),
+  setPendingCourtOfHumanityVote: vi.fn(),
   setVoteStatusCache: vi.fn(),
   getHandleOrReferralCode: vi.fn(),
 }));
@@ -23,6 +27,9 @@ vi.mock("@/lib/storage", () => ({
     getPendingTreatyVote: mocks.getPendingTreatyVote,
     removePendingTreatyVote: mocks.removePendingTreatyVote,
     setPendingTreatyVote: mocks.setPendingTreatyVote,
+    getPendingCourtOfHumanityVote: mocks.getPendingCourtOfHumanityVote,
+    removePendingCourtOfHumanityVote: mocks.removePendingCourtOfHumanityVote,
+    setPendingCourtOfHumanityVote: mocks.setPendingCourtOfHumanityVote,
     setVoteStatusCache: mocks.setVoteStatusCache,
   },
 }));
@@ -41,6 +48,8 @@ describe("referendum vote sync", () => {
     mocks.removePendingDeclarationVote.mockReset();
     mocks.getPendingTreatyVote.mockReset();
     mocks.removePendingTreatyVote.mockReset();
+    mocks.getPendingCourtOfHumanityVote.mockReset();
+    mocks.removePendingCourtOfHumanityVote.mockReset();
     mocks.setVoteStatusCache.mockReset();
     mocks.getHandleOrReferralCode.mockReset();
     mocks.getHandleOrReferralCode.mockReturnValue("demo-referral");
@@ -50,6 +59,7 @@ describe("referendum vote sync", () => {
   it("is a no-op when nothing is staged", async () => {
     mocks.getPendingDeclarationVote.mockReturnValue(null);
     mocks.getPendingTreatyVote.mockReturnValue(null);
+    mocks.getPendingCourtOfHumanityVote.mockReturnValue(null);
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 
@@ -58,16 +68,22 @@ describe("referendum vote sync", () => {
     expect(fetchMock).not.toHaveBeenCalled();
     expect(mocks.removePendingDeclarationVote).not.toHaveBeenCalled();
     expect(mocks.removePendingTreatyVote).not.toHaveBeenCalled();
+    expect(mocks.removePendingCourtOfHumanityVote).not.toHaveBeenCalled();
   });
 
   it("posts and clears a pending declaration vote on success", async () => {
     mocks.getPendingDeclarationVote.mockReturnValue({
       answer: "YES",
+      displayName: "Mike Sinn",
+      makePublic: false,
       timestamp: "2026-03-23T12:00:00.000Z",
     });
     mocks.getPendingTreatyVote.mockReturnValue(null);
+    mocks.getPendingCourtOfHumanityVote.mockReturnValue(null);
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({}) });
     vi.stubGlobal("fetch", fetchMock);
 
     await syncPendingReferendumVotes({ user: { id: "u1" } } as never);
@@ -75,7 +91,17 @@ describe("referendum vote sync", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
       `/api/referendums/${DECLARATION_SLUG}/vote`,
-      expect.objectContaining({ method: "POST" }),
+      expect.objectContaining({
+        method: "POST",
+        body: expect.any(String),
+      }),
+    );
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toEqual(
+      expect.objectContaining({
+        answer: "YES",
+        displayName: "Mike Sinn",
+        makePublic: false,
+      }),
     );
     expect(mocks.removePendingDeclarationVote).toHaveBeenCalledTimes(1);
     expect(mocks.setVoteStatusCache).toHaveBeenCalledWith({
@@ -100,6 +126,7 @@ describe("referendum vote sync", () => {
       },
       organizationId: null,
     });
+    mocks.getPendingCourtOfHumanityVote.mockReturnValue(null);
 
     const fetchMock = vi
       .fn()
@@ -136,8 +163,11 @@ describe("referendum vote sync", () => {
       organizationId: null,
       organizationSlug: "institute-for-accelerated-medicine",
     });
+    mocks.getPendingCourtOfHumanityVote.mockReturnValue(null);
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({}) });
     vi.stubGlobal("fetch", fetchMock);
 
     await syncPendingReferendumVotes({ user: { id: "u1" } } as never);
@@ -170,8 +200,11 @@ describe("referendum vote sync", () => {
       },
       organizationId: null,
     });
+    mocks.getPendingCourtOfHumanityVote.mockReturnValue(null);
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({}) });
     vi.stubGlobal("fetch", fetchMock);
 
     await syncPendingReferendumVotes();
@@ -183,6 +216,47 @@ describe("referendum vote sync", () => {
     );
     expect(mocks.removePendingTreatyVote).not.toHaveBeenCalled();
     expect(mocks.setVoteStatusCache).not.toHaveBeenCalled();
+  });
+
+  it("posts and clears a private pending Court vote on success", async () => {
+    mocks.getPendingDeclarationVote.mockReturnValue(null);
+    mocks.getPendingTreatyVote.mockReturnValue(null);
+    mocks.getPendingCourtOfHumanityVote.mockReturnValue({
+      answer: "YES",
+      displayName: "Mike Sinn",
+      makePublic: false,
+      referredBy: "court-ref",
+      timestamp: "2026-03-23T12:00:00.000Z",
+    });
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({}) });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await syncPendingReferendumVotes({ user: { id: "u1" } } as never);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `/api/referendums/${COURT_OF_HUMANITY_SLUG}/vote`,
+      expect.objectContaining({
+        method: "POST",
+        body: expect.any(String),
+      }),
+    );
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toEqual(
+      expect.objectContaining({
+        answer: "YES",
+        displayName: "Mike Sinn",
+        makePublic: false,
+        ref: "court-ref",
+      }),
+    );
+    expect(mocks.removePendingCourtOfHumanityVote).toHaveBeenCalledTimes(1);
+    expect(mocks.setVoteStatusCache).toHaveBeenCalledWith({
+      hasVoted: true,
+      voteAnswer: "YES",
+      referralCode: "demo-referral",
+    });
   });
 
   it("keeps staged treaty data when the allocation sync fails", async () => {
@@ -200,6 +274,7 @@ describe("referendum vote sync", () => {
       },
       organizationId: null,
     });
+    mocks.getPendingCourtOfHumanityVote.mockReturnValue(null);
 
     const fetchMock = vi
       .fn()

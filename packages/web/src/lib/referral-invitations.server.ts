@@ -35,6 +35,7 @@ import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const INVITE_TOKEN_SIZE = 24;
 const CREATE_LIMIT_PER_HOUR = 50;
+const DOWNSTREAM_CONVERSION_INCREMENT_MAX_DEPTH = 32;
 
 export function isValidInvitationEmail(email: string | null | undefined): boolean {
   if (!email) return false;
@@ -119,6 +120,60 @@ function getShareAttemptChannel(input: {
     case ReferralInvitationContactMethod.COPY:
     default:
       return "manual-share";
+  }
+}
+
+async function incrementDownstreamConversionCountsForAncestors(
+  tx: Prisma.TransactionClient,
+  input: {
+    directReferrerUserId: string;
+    voterUserId: string;
+  },
+) {
+  const seenAncestorIds = new Set<string>();
+  let currentAncestorIds = [input.directReferrerUserId];
+
+  for (
+    let depth = 0;
+    depth < DOWNSTREAM_CONVERSION_INCREMENT_MAX_DEPTH && currentAncestorIds.length > 0;
+    depth += 1
+  ) {
+    const uniqueAncestorIds = [...new Set(currentAncestorIds)].filter(
+      (ancestorId) =>
+        ancestorId &&
+        ancestorId !== input.voterUserId &&
+        !seenAncestorIds.has(ancestorId),
+    );
+    if (uniqueAncestorIds.length === 0) return;
+
+    for (const ancestorId of uniqueAncestorIds) {
+      seenAncestorIds.add(ancestorId);
+      await tx.user.update({
+        where: { id: ancestorId },
+        data: { downstreamConversionCount: { increment: 1 } },
+      });
+    }
+
+    const parentEdges = await tx.referralInvitation.findMany({
+      where: {
+        convertedVote: {
+          is: {
+            deletedAt: null,
+            userId: { in: uniqueAncestorIds },
+          },
+        },
+        deletedAt: null,
+        status: ReferralInvitationStatus.CONVERTED,
+      },
+      select: { referrerUserId: true },
+    });
+
+    currentAncestorIds = parentEdges
+      .map((edge) => edge.referrerUserId)
+      .filter(
+        (ancestorId) =>
+          ancestorId !== input.voterUserId && !seenAncestorIds.has(ancestorId),
+      );
   }
 }
 
@@ -657,6 +712,10 @@ export async function convertReferralInvitationForVote(input: {
         convertedVoteId: input.voteId,
         convertedAt: now,
       },
+    });
+    await incrementDownstreamConversionCountsForAncestors(tx, {
+      directReferrerUserId: invitation.referrerUserId,
+      voterUserId: input.voterUserId,
     });
 
     let completionNotification: {

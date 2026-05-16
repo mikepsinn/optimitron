@@ -21,6 +21,7 @@ import {
 } from "@/components/landing/TreatyFlowShell";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TreatyMechanismExplainer } from "@/components/shared/TreatyMechanismExplainer";
+import { ParameterTemplate } from "@/components/shared/ParameterTemplate";
 import {
   trackTreatyPostVotePromotion,
   trackTreatyPostVoteDetailsExpanded,
@@ -34,11 +35,16 @@ import {
   EVENTUALLY_AVOIDABLE_DEATH_PCT,
   GLOBAL_DISEASE_DEATHS_DAILY,
   HOURS_PER_YEAR,
+  NUCLEAR_OVERKILL_SPARE_LAYERS,
   SAFE_COMPOUNDS_COUNT,
   TREATY_HALE_GAIN_YEAR_15,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   UNEXPLORED_RATIO,
 } from "@optimitron/data/parameters";
+import {
+  NUCLEAR_OVERKILL_BUTTON_REJECT_RESPONSE,
+  NUCLEAR_OVERKILL_TRADE_PITCH,
+} from "@optimitron/data/campaign";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 import {
@@ -68,7 +74,6 @@ import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
   FLOW_VOTER_SUFFERING_HOURS_PREVENTED,
   FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
-  FLOW_WASTEFUL_APOCALYPSES,
   formatFlowWords,
 } from "@/lib/treaty-share-flow-parameters";
 import { embedShareAttemptId } from "@/lib/share-channels";
@@ -106,6 +111,21 @@ const dismissButtonClass = treatySecondaryButtonClass;
 const majorityHumanityText = formatFlowWords(FLOW_MAJORITY_OF_HUMANS_ON_EARTH, 1);
 const voterLivesSavedText = formatFlowWords(FLOW_VOTER_LIVES_SAVED_ROUNDED, 2);
 const draftInviteUrl = "warondisease.org";
+const tradePitchSentences =
+  NUCLEAR_OVERKILL_TRADE_PITCH.match(/[^.]+\./g)?.map((sentence) =>
+    sentence.trim(),
+  ) ?? [];
+
+if (tradePitchSentences.length !== 6) {
+  throw new Error("NUCLEAR_OVERKILL_TRADE_PITCH must be six sentences.");
+}
+
+const tradePitchParagraphs = [
+  tradePitchSentences[0]!,
+  tradePitchSentences.slice(1, 3).join(" "),
+  tradePitchSentences.slice(3, 5).join(" "),
+  tradePitchSentences[5]!,
+] as const;
 
 function FlowParagraph({
   children,
@@ -123,6 +143,34 @@ function FlowParagraph({
 
 function FlowButtonRow({ children }: { children: ReactNode }) {
   return <TreatyFlowButtonRow>{children}</TreatyFlowButtonRow>;
+}
+
+function NuclearOverkillTemplate({ template }: { template: string }) {
+  return (
+    <ParameterTemplate
+      template={template}
+      values={{
+        GLOBAL_WARHEAD_COUNT: (
+          <ParameterValue param={FLOW_GLOBAL_WARHEAD_COUNT} figures={2} />
+        ),
+        NUCLEAR_OVERKILL_SPARE_LAYERS: (
+          <ParameterValue param={NUCLEAR_OVERKILL_SPARE_LAYERS} figures={3} />
+        ),
+        NUCLEAR_WINTER_OVERKILL_FACTOR: (
+          <ParameterValue
+            param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
+            figures={3}
+          />
+        ),
+        NUCLEAR_WINTER_WARHEAD_THRESHOLD: (
+          <ParameterValue
+            param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD}
+            figures={1}
+          />
+        ),
+      }}
+    />
+  );
 }
 
 function DetailsBlock({
@@ -317,7 +365,7 @@ function PromotionScreen({ onChoice }: { onChoice: (target: "friend" | "humanity
         </FlowParagraph>
         <dl className="space-y-3 border-y border-[var(--treaty-ink)]/30 py-4 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] sm:text-base">
           <div>
-            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink-muted)]">Direct reports</dt>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink-muted)]">Employees</dt>
             <dd>~8 billion humans</dd>
           </div>
           <div>
@@ -794,22 +842,16 @@ export function TreatyPostVoteShareFlow({
             <div className="space-y-4">
               {alt ? (
                 <FlowParagraph>
-                  Cool. The{" "}
-                  <ParameterValue
-                    param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
-                    figures={3}
-                  />{" "}
-                  apocalypses haven&apos;t moved.
+                  <NuclearOverkillTemplate
+                    template={NUCLEAR_OVERKILL_BUTTON_REJECT_RESPONSE}
+                  />
                 </FlowParagraph>
               ) : null}
-              <FlowParagraph>
-                <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} /> nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans.
-              </FlowParagraph>
-              <FlowParagraph>
-                Humanity has about <ParameterValue param={FLOW_GLOBAL_WARHEAD_COUNT} figures={2} /> nuclear weapons. That&apos;s <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} /> apocalypses of mass murder capacity.
-              </FlowParagraph>
-              <FlowParagraph>You can only ruin Earth once. The other <ParameterValue param={FLOW_WASTEFUL_APOCALYPSES} figures={3} /> are just wasteful.</FlowParagraph>
-              <FlowParagraph>The 1% Treaty asks you to trade one apocalypse for something slightly nicer.</FlowParagraph>
+              {tradePitchParagraphs.map((paragraph) => (
+                <FlowParagraph key={paragraph}>
+                  <NuclearOverkillTemplate template={paragraph} />
+                </FlowParagraph>
+              ))}
             </div>
             <FlowButtonRow>
               <Button className={dismissButtonClass} onClick={() => go("math", true)}>
@@ -1141,11 +1183,11 @@ export function TreatyPostVoteShareFlow({
                 <p className="text-center text-xl font-black leading-tight sm:text-left">
                   When {recipientLabel} votes: +<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of suffering prevented. +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
                 </p>
-                <FlowParagraph>{`${recipientLabel} added to your direct reports. We'll notify you when they complete the task.`}</FlowParagraph>
+                <FlowParagraph>{`${recipientLabel} added to your employees. We'll notify you when they complete the task.`}</FlowParagraph>
               </div>
             ) : (
               <div className="space-y-4">
-                <FlowParagraph>{`${recipientLabel} added to your direct reports. Pending: `}<strong>{sentCount}</strong>{` lifetimes / `}<strong>{pendingLives}</strong>{` lives.`}</FlowParagraph>
+                <FlowParagraph>{`${recipientLabel} added to your employees. Pending: `}<strong>{sentCount}</strong>{` lifetimes / `}<strong>{pendingLives}</strong>{` lives.`}</FlowParagraph>
                 {milestone ? <FlowParagraph>{milestone}</FlowParagraph> : null}
               </div>
             )}

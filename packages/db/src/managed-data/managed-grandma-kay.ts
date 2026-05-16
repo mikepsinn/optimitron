@@ -34,7 +34,7 @@ export async function syncManagedGrandmaKay(
     update: {
       displayName: "Grandma Kay",
       handle: "grandma-kay",
-      image: "/img/grandma.jpg",
+      image: "/img/grandma-headshot.jpg",
       isPublic: true,
       lifeStatus: PersonLifeStatus.LIVING,
     },
@@ -42,7 +42,7 @@ export async function syncManagedGrandmaKay(
       createdByUserId: user.id,
       displayName: "Grandma Kay",
       handle: "grandma-kay",
-      image: "/img/grandma.jpg",
+      image: "/img/grandma-headshot.jpg",
       isPublic: true,
       lifeStatus: PersonLifeStatus.LIVING,
       sourceRef: GRANDMA_KAY_SOURCE_REF,

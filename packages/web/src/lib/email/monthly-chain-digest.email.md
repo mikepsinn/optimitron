@@ -12,7 +12,7 @@
 | --- | --- |
 | From | International Campaign to End War and Disease &lt;hello@updates.warondisease.org&gt; |
 | Subject | Humanity Management: 7 employees completed the task |
-| Trigger | Fires once per month per user via cron, deduped on user+yyyy-mm. Reports which direct reports voted through the user's link, which assigned humans are still late, and how many presidents still have not completed their 30-second treaty task. |
+| Trigger | Fires once per month per user via cron, deduped on user+yyyy-mm. Reports which employees voted through the user's link, which assigned humans are still late, and how many presidents still have not completed their 30-second treaty task. |
 | Scope | onboarding |
 | Wishonia signature | Skipped |
 
@@ -46,13 +46,13 @@ LATE EMPLOYEE REMINDER
 
 3 assigned humans have not completed the 30-second vote yet. Examples: Jake Smith, Maria Chen, Uncle Dave.
 
-Hi [name]. You are late on a 30-second task: please vote yes or no on the 1% Treaty so humanity can prove it agrees to end war and disease. https://warondisease.org/vote/SAMPLE
+Yeahhh, hi Jake Smith. Quick workflow update from the Department of Civilization Made a Spreadsheet and It Is Bad. If you could go ahead and vote on the 1% Treaty, that'd be great: https://warondisease.org/vote/SAMPLE It takes about 30 seconds. That is less time than deciding whether the leftovers in your fridge are food or a threat. Small note for the agenda: the treaty trades 1% of military spending for 12.3× more clinical trials. That compresses disease eradication from 443 years to 36. Mathematically it drops mass-murder capacity from 122 apocalypses to 120.8 — and, just to be clear, you can only have one apocalypse. (Humanity has 12,241 warheads, nuclear winter takes ~100, the other 12,141 are decorative.) The 121 spare apocalypses will not be missed. 36 years also means you, personally, might watch the world's last disease get cured. 443 years means your great-great-great-grandchildren still won't. Just so you have the timeline in front of you. The personal math is also rude: 21.7 additional healthy years per human and $3.48M additional lifetime income per person. HR says we should call this a wellness benefit. Before you flag this as 'unrealistic' on the agenda — pre-WWII US military spending was 96.7% lower than today, inflation-adjusted. The US still won WWII, then cut military spending 87.6% in two years and produced the largest economic expansion in history. The same governments later banned chemical weapons (1993, 193 countries), biological weapons (1975, 187 countries), and landmines (1997, 164 countries) — weapons they actually like using. This one just asks them to buy 1% fewer of them. That's it. Also 1.8K people have died waiting for cures since I sent you this. We are trying to make that number stop going up. So if you could vote, then send this to two more humans who prefer not dying from preventable diseases, that'd be great.
 
 LATE PRESIDENT REMINDER
 
 189 presidents and heads of government still have not completed their 30-second treaty task. Examples: President Example (Example Republic), Prime Minister Sample (Sample Kingdom), Chancellor Demo (Demo Federation).
 
-Dear President [name], your citizens pay you to promote the general welfare. Please complete the 30-second task and sign the 1% Treaty: redirect 1% of military spending to clinical trials.
+Yeahhh, hi President Example, if you could go ahead and sign the 1% Treaty, that'd be great. It's at https://warondisease.org/vote/SAMPLE. You just type your name and click submit. Should take about 30 seconds. So if you could just go ahead and do that, that'd be terrific. Oh, and I'm going to need you to be aware that 4.5K people have died waiting for cures since we assigned this to you. You know. Because of the delayed disease eradication. So. Yeah. So if you could just sign that. And maybe stop spending $604 on murder infrastructure for every $1 on clinical trials. That'd be great.
 
 The math: [32](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) doubling rounds × [2](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) referrals each = [4 billion](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans reached. The chain only reaches that ceiling if managers keep reminding late employees. This is why management exists, unfortunately.
 

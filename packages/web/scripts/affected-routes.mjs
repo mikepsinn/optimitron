@@ -20,6 +20,7 @@
  */
 
 import { execFileSync } from "node:child_process";
+import { createRequire } from "node:module";
 import {
   existsSync,
   readdirSync,
@@ -30,6 +31,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const { isRedirectOnlyRoutePath } = require("../src/lib/redirects.js");
 const WEB_ROOT = path.resolve(__dirname, "..");
 const REPO_ROOT = path.resolve(WEB_ROOT, "../..");
 const APP_DIR = path.join(WEB_ROOT, "src/app");
@@ -66,14 +69,19 @@ for (const pageFile of pages) {
   const imports = collectImportSet(pageFile);
   for (const changed of changedAbsPaths) {
     if (imports.has(changed)) {
-      affectedRoutes.push(pageFileToRoute(pageFile));
+      const route = pageFileToRoute(pageFile);
+      if (!isRedirectOnlyRoutePath(route)) {
+        affectedRoutes.push(route);
+      }
       break;
     }
   }
 }
 
-process.stdout.write(affectedRoutes.join(","));
-if (affectedRoutes.length > 0) {
+const uniqueAffectedRoutes = Array.from(new Set(affectedRoutes));
+
+process.stdout.write(uniqueAffectedRoutes.join(","));
+if (uniqueAffectedRoutes.length > 0) {
   process.stdout.write("\n");
 }
 

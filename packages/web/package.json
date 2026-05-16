@@ -10,6 +10,7 @@
     "kill-port": "node -e \"try{require('child_process').execSync('npx kill-port 3001',{stdio:'ignore'})}catch{}\"",
     "dev": "pnpm run kill-port && pnpm run ensure-env && pnpm run build:workspace-deps && cross-env NODE_OPTIONS=--max-old-space-size=6144 next dev --port 3001 --turbopack",
     "dev:fast": "pnpm run ensure-env && cross-env NODE_OPTIONS=--max-old-space-size=6144 next dev --port 3001 --turbopack",
+    "dev:watch": "node scripts/dev-watcher.mjs",
     "build": "pnpm run ensure-env && pnpm run validate:content && pnpm run build:workspace-deps && cross-env NODE_OPTIONS=--max-old-space-size=6144 next build",
     "build:vercel": "node scripts/run-with-timeout.mjs 420 pnpm run build",
     "build:fast": "pnpm run ensure-env && pnpm run validate:content && next build",
@@ -37,7 +38,8 @@
     "audit:colors": "tsx scripts/audit-colors.ts",
     "fix:colors": "tsx scripts/fix-colors.ts",
     "extract:copy": "tsx scripts/extract-copy.ts",
-    "copy:preview": "tsx scripts/render-pages-to-markdown.ts",
+    "copy:preview": "node scripts/copy-preview-smart.mjs",
+    "copy:preview:all": "tsx scripts/render-pages-to-markdown.ts",
     "email:preview-md": "tsx scripts/render-emails-to-markdown.ts",
     "extract:tasks": "tsx scripts/extract-tasks-from-manual.ts",
     "import:treaty-model": "tsx scripts/import-treaty-policy-model.ts",
@@ -142,7 +144,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@argos-ci/playwright": "^6.6.4",
     "@aws-sdk/client-s3": "^3.1037.0",
     "@axe-core/playwright": "^4.11.1",
     "@next/bundle-analyzer": "^16.2.2",

@@ -63,6 +63,13 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "Every task below exists to move humanity from delay to welfare.",
+    // Overdue — `getTaskDelayStats` multiplies the per-day delay rates by
+    // `currentDelayDays`, which is zero when `dueAt` is null. Without this the
+    // root row shows $0 wasted / 0 deaths-from-delay even though the per-day
+    // rates are wired correctly. 2024-12-31 is "civilization should have been
+    // optimized by now"; child program tasks below set their own dueAt where
+    // an explicit deadline is appropriate.
+    dueAt: new Date("2024-12-31T00:00:00.000Z"),
     sortOrder: -1000,
     primaryEndpoint: {
       label: "Open the Optimize Earth task tree",

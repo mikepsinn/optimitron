@@ -21,16 +21,6 @@ export default function NotFound() {
               hasn&apos;t lost a page in 4,237 years. You lot can&apos;t even
               keep track of a URL.
             </p>
-            <p className="text-lg font-bold leading-relaxed">
-              To be fair, your species also loses approximately $2.1 trillion
-              annually to administrative inefficiency, so misplacing a web page
-              is relatively on-brand.
-            </p>
-            <p className="text-lg font-bold leading-relaxed">
-              The page you&apos;re looking for has either been moved, deleted,
-              or — and I cannot stress how likely this is — never existed in the
-              first place. Much like your evidence-based policymaking.
-            </p>
           </div>
         </section>
 

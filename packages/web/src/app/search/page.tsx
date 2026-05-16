@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { Search } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Input } from "@/components/retroui/Input";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
 import { ROUTES, searchLink } from "@/lib/routes";
@@ -21,10 +20,10 @@ const SITE_BASE_ORIGIN = new URL(SITE_ORIGIN).origin;
 const sampleQueries = [
   "treaty",
   "clinical trials",
-  "politician alignment",
-  "task signer",
+  "leader reminders",
+  "signatories",
   "government waste",
-  "MCP",
+  "donation math",
 ];
 
 type SearchScope = "all" | "manual" | "pages" | "tasks";
@@ -168,7 +167,7 @@ function SearchTab({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-2 border-b-4 px-1 py-3 text-sm font-black uppercase tracking-[0.14em] transition-colors ${
+      className={`inline-flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-black uppercase tracking-[0.14em] transition-colors ${
         isActive
           ? "border-primary text-foreground"
           : "border-transparent text-muted-foreground hover:text-foreground"
@@ -283,7 +282,7 @@ export default async function SearchPage({
               <Input
                 aria-label="Search the site"
                 autoFocus
-                className="h-14 border-4 border-primary bg-background pl-12 text-base font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:max-w-3xl"
+                className="h-14 rounded-none border-2 border-foreground bg-background pl-12 text-base font-bold md:max-w-3xl"
                 defaultValue={query}
                 name="q"
                 placeholder="Search pages, tasks, treaty docs, policy analysis..."
@@ -293,7 +292,7 @@ export default async function SearchPage({
             {scope !== "all" ? <input type="hidden" name="scope" value={scope} /> : null}
             <button
               type="submit"
-              className="inline-flex h-14 items-center justify-center border-4 border-primary bg-foreground px-6 text-sm font-black uppercase tracking-[0.14em] text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+              className="inline-flex h-14 items-center justify-center border-2 border-foreground bg-foreground px-6 text-sm font-black uppercase tracking-[0.14em] text-background transition-colors hover:bg-background hover:text-foreground"
             >
               Search
             </button>
@@ -347,13 +346,13 @@ export default async function SearchPage({
             </section>
 
             {visibleResults.length === 0 ? (
-              <BrutalCard bgColor="background" padding="lg" className="max-w-3xl">
+              <section className="max-w-3xl border-2 border-foreground bg-background p-6">
                 <h2 className="text-2xl font-black uppercase text-foreground">No Matches</h2>
                 <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
                   Try a broader term, a person name, a system name, or a concrete phrase like
                   &quot;clinical trials&quot; or &quot;fund optimization&quot;.
                 </p>
-              </BrutalCard>
+              </section>
             ) : null}
 
             {visibleResults.length > 0 ? (
@@ -373,35 +372,24 @@ export default async function SearchPage({
             ) : null}
           </>
         ) : (
-          <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="max-w-3xl space-y-5">
-              <h1 className="text-4xl font-black tracking-tight text-foreground md:text-5xl">
-                Search Optimitron
-              </h1>
-              <p className="text-base font-bold leading-7 text-muted-foreground">
-                Search site pages, tasks, and the manual index from one screen.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {sampleQueries.map((sampleQuery) => (
-                  <Link
-                    key={sampleQuery}
-                    href={`${ROUTES.search}?q=${encodeURIComponent(sampleQuery)}`}
-                    className="rounded-full border border-primary/30 px-4 py-2 text-sm font-bold text-foreground transition-colors hover:border-primary hover:bg-primary/5"
-                  >
-                    {sampleQuery}
-                  </Link>
-                ))}
-              </div>
+          <section className="max-w-3xl space-y-5">
+            <h1 className="text-4xl font-black tracking-tight text-foreground md:text-5xl">
+              Search Optimitron
+            </h1>
+            <p className="text-base font-bold leading-7 text-muted-foreground">
+              Find pages, tasks, and manual entries.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {sampleQueries.map((sampleQuery) => (
+                <Link
+                  key={sampleQuery}
+                  href={`${ROUTES.search}?q=${encodeURIComponent(sampleQuery)}`}
+                  className="border border-foreground px-4 py-2 text-sm font-bold text-foreground transition-colors hover:bg-foreground hover:text-background"
+                >
+                  {sampleQuery}
+                </Link>
+              ))}
             </div>
-
-            <BrutalCard bgColor="background" padding="lg" className="h-fit">
-              <h2 className="text-lg font-black uppercase text-foreground">Indexed Sources</h2>
-              <div className="mt-4 space-y-3 text-sm font-bold leading-6 text-muted-foreground">
-                <p>Site pages from the shared route registry.</p>
-                <p>Tasks visible to the current user.</p>
-                <p>The published manual retrieval index.</p>
-              </div>
-            </BrutalCard>
           </section>
         )}
       </div>

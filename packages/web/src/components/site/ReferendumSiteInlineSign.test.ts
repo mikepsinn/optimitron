@@ -49,6 +49,7 @@ describe("ReferendumSiteInlineSign", () => {
     });
 
     expect(element.props.referralCode).toBe("alice");
+    expect(element.props.publicVoteDefault).toBe(false);
     expect(element.props.submitLabel).toBe("Join");
     expect(element.props.submittingLabel).toBe("Joining...");
     expect(element.props.authTitle).toBe("Finish Joining");
@@ -84,11 +85,17 @@ describe("ReferendumSiteInlineSign", () => {
 
     expect(element.props.referralCode).toBe("stored-ref");
 
-    element.props.storePendingVote("Example Member", REFERENDUM_ANSWER.NO);
+    element.props.storePendingVote(
+      "Example Member",
+      REFERENDUM_ANSWER.NO,
+      false,
+    );
 
     expect(storageMocks.setPendingCourtOfHumanityVote).toHaveBeenCalledWith(
       expect.objectContaining({
         answer: REFERENDUM_ANSWER.NO,
+        displayName: "Example Member",
+        makePublic: false,
         referredBy: "stored-ref",
       }),
     );

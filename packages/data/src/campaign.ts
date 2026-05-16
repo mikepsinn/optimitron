@@ -23,6 +23,8 @@ export const HUMANITY_MANAGEMENT = {
   callOneHumanTaskTitle: "Make one phone call. Outsource humanity management.",
 } as const;
 
+export * from "./campaign/nuclear-overkill-framing";
+
 export function getOrganizationActivationTaskKey(organizationId: string) {
   return `organization:${organizationId}:${ORGANIZATION_ACTIVATION_TASK_KEY_SUFFIX}`;
 }

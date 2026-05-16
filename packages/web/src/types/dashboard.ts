@@ -1,4 +1,5 @@
 import type { OrgType } from "@optimitron/db";
+import type { HumanityManagerStatusInput } from "@/lib/humanity-manager-status-content";
 
 export interface DashboardUser {
   id: string;
@@ -117,6 +118,7 @@ export interface DashboardData {
   globalProgress: DashboardProgress;
   questChecklist: QuestItem[];
   impactReceipts: DashboardImpactReceipts;
+  humanityManagerStatus: HumanityManagerStatusInput;
 }
 
 export interface LeaderboardEntry {

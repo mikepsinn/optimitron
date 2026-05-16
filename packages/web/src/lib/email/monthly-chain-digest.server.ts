@@ -31,6 +31,8 @@ import {
 import { MonthlyChainDigestReactEmail } from "@/lib/email/monthly-chain-digest-react-email";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { ROUTES } from "@/lib/routes";
+import { getTaskDelayStats } from "@/lib/tasks/accountability";
+import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import { TREATY_SIGNER_TASK_KEY_PREFIX } from "@/lib/tasks/task-keys";
 import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
 
@@ -50,6 +52,13 @@ interface DigestRecipient {
   email: string;
   handle: string | null;
   referralCode: string | null;
+}
+
+interface MonthlyReminderTask {
+  completedAt: Date | null;
+  dueAt: Date | null;
+  status: TaskStatus;
+  verifiedAt: Date | null;
 }
 
 const PENDING_INVITATION_STATUSES: ReferralInvitationStatus[] = [
@@ -248,11 +257,25 @@ export async function publishMonthlyChainDigest(input?: {
             },
             orderBy: { createdAt: "asc" },
             take: 8,
-            select: { recipientName: true },
+            select: {
+              recipientName: true,
+              recipient: { select: { displayName: true } },
+              task: {
+                select: {
+                  completedAt: true,
+                  dueAt: true,
+                  status: true,
+                  verifiedAt: true,
+                },
+              },
+            },
           })
           .then((invitations): MonthlyChainDigestPerson[] =>
             invitations.map((invitation) => ({
-              displayName: invitation.recipientName,
+              ...buildMonthlyReminderDelayFields(invitation.task, now),
+              displayName:
+                invitation.recipient?.displayName?.trim() ||
+                invitation.recipientName,
             })),
           ),
       ]);
@@ -332,6 +355,21 @@ async function sendMonthlyChainDigestEmail(input: {
   });
 }
 
+function buildMonthlyReminderDelayFields(
+  task: MonthlyReminderTask | null,
+  now: Date,
+): Pick<MonthlyChainDigestPerson, "currentDelayDays" | "currentHumanLivesLost"> {
+  if (!task) return {};
+  const stats = getTaskDelayStats(task, now);
+  if (!stats.isOverdue) return {};
+  const treatyCost = getTreatyLevelCostOfDelay(stats.currentDelayDays);
+  return {
+    currentDelayDays: stats.currentDelayDays,
+    currentHumanLivesLost:
+      stats.currentHumanLivesLost ?? treatyCost?.deathsFromDelay ?? null,
+  };
+}
+
 async function loadOverduePresidentSnapshot(
   now: Date,
 ): Promise<{ count: number; presidents: MonthlyChainDigestLeader[] }> {
@@ -353,10 +391,15 @@ async function loadOverduePresidentSnapshot(
         assigneeAffiliationSnapshot: true,
         assigneePerson: {
           select: {
+            countryCode: true,
             currentAffiliation: true,
             displayName: true,
           },
         },
+        completedAt: true,
+        dueAt: true,
+        status: true,
+        verifiedAt: true,
       },
     }),
   ]);
@@ -364,6 +407,8 @@ async function loadOverduePresidentSnapshot(
   return {
     count,
     presidents: tasks.map((task) => ({
+      ...buildMonthlyReminderDelayFields(task, now),
+      countryCode: task.assigneePerson?.countryCode ?? null,
       countryLabel:
         task.assigneePerson?.currentAffiliation ||
         task.assigneeAffiliationSnapshot ||

@@ -6400,6 +6400,17 @@ export const NUCLEAR_WINTER_OVERKILL_FACTOR: Parameter = {
   manualPageTitle: "The Apocalypse Markup",
 };
 
+export const NUCLEAR_OVERKILL_SPARE_LAYERS: Parameter = {
+  ...NUCLEAR_WINTER_OVERKILL_FACTOR,
+  value: Math.max(0, Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value) - 1),
+  parameterName: "NUCLEAR_OVERKILL_SPARE_LAYERS",
+  unit: "count",
+  displayName: "Nuclear Overkill Spare Layers",
+  description:
+    "Rounded nuclear-winter-scale destructive capacity left after the first civilization-ending threshold.",
+  formula: "round(NUCLEAR_WINTER_OVERKILL_FACTOR) - 1",
+};
+
 export const PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT: Parameter = {
   value: 113571000000.0,
   parameterName: "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
@@ -11298,6 +11309,7 @@ export const parameters = {
   MISALLOCATION_FACTOR_DEATH_VS_SAVING,
   MRNA_THERAPEUTIC_COMBINATIONS,
   NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT,
+  NUCLEAR_OVERKILL_SPARE_LAYERS,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   PEACE_DIVIDEND_CONFLICT_REDUCTION,

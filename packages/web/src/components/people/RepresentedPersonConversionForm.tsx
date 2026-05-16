@@ -281,10 +281,7 @@ export function RepresentedPersonConversionForm({
     const addDetailsHref = getRepresentedPersonDetailsHref(savedPeople);
     return (
       <section className={shellClass} data-testid="represented-person-saved">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-          Plaintiff registered
-        </p>
-        <h2 className="mt-3 text-3xl font-black uppercase leading-tight">
+        <h2 className="text-3xl font-black uppercase leading-tight">
           You registered {names || "them"}.
         </h2>
         <div className="mt-6 flex flex-wrap gap-3">
@@ -313,11 +310,8 @@ export function RepresentedPersonConversionForm({
     <section className={shellClass} data-testid="represented-person-form">
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-3">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-            Register plaintiff
-          </p>
           <h2 className="text-3xl font-black uppercase leading-tight">
-            Who should be a plaintiff?
+            Register plaintiff
           </h2>
         </div>
 

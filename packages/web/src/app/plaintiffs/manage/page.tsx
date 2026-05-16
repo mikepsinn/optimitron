@@ -11,11 +11,11 @@ import { CourtCasePartyRole, PersonConditionStatus } from "@optimitron/db";
 import { PersonDeathCauseCategory } from "@optimitron/db/enums";
 import { ManageRepresentedPeopleClient } from "@/components/people/ManageRepresentedPeopleClient";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
 import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
-import { GOVERNMENTS_PAID_TO_PROMOTE_WELFARE } from "@/lib/people-parameters";
 import { splitDisplayNameIntoNameParts } from "@/lib/person-name";
 import { prisma } from "@/lib/prisma";
 import {
@@ -297,14 +297,7 @@ export default async function ManagePeoplePage({
               , the Court of Humanity class action.
             </p>
             <p>
-              Humanity pays governments{" "}
-              <ParameterValue
-                className="font-black"
-                figures={2}
-                param={GOVERNMENTS_PAID_TO_PROMOTE_WELFARE}
-              />{" "}
-              a year to promote the general welfare. Over the last century, they
-              spent{" "}
+              <WelfareClaim /> Over the last century, they spent{" "}
               <ParameterValue
                 className="font-black"
                 figures={2}

@@ -111,16 +111,16 @@ export async function detectVelocityAnomaly(params: {
 }
 
 /* ================================================================
- * Referral graph cycle — A refers B refers A (any cycle ≤ maxDepth)
+ * Referral graph cycle — A refers B refers A within the configured search limit.
  * ================================================================ */
 
 export async function detectReferralCycle(params: {
   userId: string;
-  maxDepth: number;
+  depthLimit: number;
 }): Promise<CycleFinding | null> {
   let current = params.userId;
   const seen = new Set<string>([current]);
-  for (let depth = 1; depth <= params.maxDepth; depth++) {
+  for (let depth = 1; depth <= params.depthLimit; depth++) {
     const refs = await prisma.reasoningOutcomeRecord.findMany({
       where: { userId: current, outcomeKind: "VOTE" },
       take: 1,

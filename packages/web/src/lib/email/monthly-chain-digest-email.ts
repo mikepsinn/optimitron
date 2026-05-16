@@ -21,10 +21,15 @@ export const MONTHLY_CHAIN_DIGEST_TEMPLATE_ID = "monthly-chain-digest";
 export interface MonthlyChainDigestPerson {
   displayName: string;
   completedAt?: Date | string | null;
+  currentDelayDays?: number | null;
+  currentHumanLivesLost?: number | null;
 }
 
 export interface MonthlyChainDigestLeader {
+  countryCode?: string | null;
   countryLabel?: string | null;
+  currentDelayDays?: number | null;
+  currentHumanLivesLost?: number | null;
   displayName: string;
 }
 
@@ -35,9 +40,9 @@ export interface MonthlyChainDigestInput {
   totalConversionCount: number;
   /** People who completed the 30-second task through this user's link this month. */
   completedEmployees: MonthlyChainDigestPerson[];
-  /** Direct reports created by this user that have not converted yet. */
+  /** Employees created by this user that have not converted yet. */
   overdueEmployeeCount: number;
-  /** Sample of overdue direct reports, oldest first. */
+  /** Sample of overdue employees, oldest first. */
   overdueEmployees: MonthlyChainDigestPerson[];
   /** Global count of overdue heads of government. */
   overduePresidentCount: number;
@@ -64,7 +69,7 @@ export const MONTHLY_CHAIN_DIGEST_PREVIEW: EmailPreview = {
   templateId: MONTHLY_CHAIN_DIGEST_TEMPLATE_ID,
   displayName: "Monthly Humanity Manager status report",
   trigger:
-    "Fires once per month per user via cron, deduped on user+yyyy-mm. Reports which direct reports voted through the user's link, which assigned humans are still late, and how many presidents still have not completed their 30-second treaty task.",
+    "Fires once per month per user via cron, deduped on user+yyyy-mm. Reports which employees voted through the user's link, which assigned humans are still late, and how many presidents still have not completed their 30-second treaty task.",
   scope: "onboarding",
   from: () => formatDefaultSystemEmailFromHeader(),
   subject: () =>
@@ -88,18 +93,45 @@ const MONTHLY_CHAIN_DIGEST_FIXTURE: MonthlyChainDigestInput = {
   monthlyConversionCount: 7,
   overdueEmployeeCount: 3,
   overdueEmployees: [
-    { displayName: "Jake Smith" },
-    { displayName: "Maria Chen" },
-    { displayName: "Uncle Dave" },
+    {
+      currentDelayDays: 12,
+      currentHumanLivesLost: 1800,
+      displayName: "Jake Smith",
+    },
+    {
+      currentDelayDays: 8,
+      currentHumanLivesLost: 1200,
+      displayName: "Maria Chen",
+    },
+    {
+      currentDelayDays: 4,
+      currentHumanLivesLost: 600,
+      displayName: "Uncle Dave",
+    },
   ],
   overduePresidentCount: 189,
   overduePresidents: [
-    { displayName: "President Example", countryLabel: "Example Republic" },
     {
+      countryCode: "US",
+      countryLabel: "Example Republic",
+      currentDelayDays: 30,
+      currentHumanLivesLost: 4500,
+      displayName: "President Example",
+    },
+    {
+      countryCode: "GB",
       displayName: "Prime Minister Sample",
       countryLabel: "Sample Kingdom",
+      currentDelayDays: 27,
+      currentHumanLivesLost: 4050,
     },
-    { displayName: "Chancellor Demo", countryLabel: "Demo Federation" },
+    {
+      countryCode: "DE",
+      countryLabel: "Demo Federation",
+      currentDelayDays: 24,
+      currentHumanLivesLost: 3600,
+      displayName: "Chancellor Demo",
+    },
   ],
   totalConversionCount: 19,
   referralUrl: SAMPLE_REFERRAL_URL,

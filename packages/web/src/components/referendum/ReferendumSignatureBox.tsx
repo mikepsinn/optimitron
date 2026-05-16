@@ -30,6 +30,7 @@ export interface ReferendumSignatureBoxProps {
   storePendingVote: (
     name: string | undefined,
     answer: ReferendumAnswer,
+    makePublic?: boolean,
   ) => void;
   clearPendingVote: () => void;
   shareText: string;
@@ -54,6 +55,8 @@ export interface ReferendumSignatureBoxProps {
    * so we don't lose the user's privacy choice through the auth redirect.
    */
   showPrivacyToggle?: boolean;
+  /** Default public visibility for this vote when no toggle is rendered. */
+  publicVoteDefault?: boolean;
 }
 
 export function ReferendumSignatureBox({
@@ -78,6 +81,7 @@ export function ReferendumSignatureBox({
   emailPendingButtonLabel = "Sending Finish-Signing Link...",
   buildShareUrl = buildUserReferralUrl,
   showPrivacyToggle = false,
+  publicVoteDefault = true,
 }: ReferendumSignatureBoxProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -89,7 +93,7 @@ export function ReferendumSignatureBox({
     null,
   );
   const [error, setError] = useState<string | null>(null);
-  const [makePublic, setMakePublic] = useState(true);
+  const [makePublic, setMakePublic] = useState(publicVoteDefault);
 
   const referralUrl = buildShareUrl(session?.user);
   const isReader = variant === "reader";
@@ -134,6 +138,9 @@ export function ReferendumSignatureBox({
     setSubmittingAnswer(answer);
     setError(null);
 
+    const shouldSubmitPublicFlag =
+      showPrivacyToggle || publicVoteDefault === false;
+
     if (status === "authenticated") {
       try {
         const response = await fetch(
@@ -144,7 +151,7 @@ export function ReferendumSignatureBox({
             body: JSON.stringify({
               answer,
               ref: referralCode ?? undefined,
-              ...(showPrivacyToggle ? { makePublic } : {}),
+              ...(shouldSubmitPublicFlag ? { makePublic } : {}),
               originUrl:
                 typeof window !== "undefined"
                   ? window.location.href
@@ -158,7 +165,11 @@ export function ReferendumSignatureBox({
           } | null;
           throw new Error(body?.error ?? "Failed to record signature.");
         }
-        storePendingVote(undefined, answer);
+        storePendingVote(
+          undefined,
+          answer,
+          shouldSubmitPublicFlag ? makePublic : undefined,
+        );
         clearPendingVote();
       } catch (signError) {
         setError(
@@ -171,7 +182,11 @@ export function ReferendumSignatureBox({
         return;
       }
     } else {
-      storePendingVote(undefined, answer);
+      storePendingVote(
+        undefined,
+        answer,
+        shouldSubmitPublicFlag ? makePublic : undefined,
+      );
     }
 
     setSigning(false);

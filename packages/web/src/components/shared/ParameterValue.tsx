@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import {
   formatParameterValueText,
   getParameterCitation,
+  getParameterReferenceUrl,
   hasParameterMetadata,
   type ParameterValueProps,
 } from "@/components/shared/ParameterValue.core";
@@ -39,9 +40,17 @@ export function ParameterValue({
     valueOverride,
   });
   const hasMetadata = hasParameterMetadata(param);
+  const referenceUrl = getParameterReferenceUrl(param);
 
   if (presentation === "inline" || !hasMetadata) {
-    return <span className={className}>{text}</span>;
+    return (
+      <span
+        className={className}
+        data-copy-preview-href={referenceUrl ?? undefined}
+      >
+        {text}
+      </span>
+    );
   }
 
   return (
@@ -49,6 +58,7 @@ export function ParameterValue({
       <Dialog.Trigger asChild>
         <button
           type="button"
+          data-copy-preview-href={referenceUrl ?? undefined}
           className={cn(
             "cursor-help underline decoration-dotted underline-offset-2 decoration-foreground/30 inline text-left",
             className,

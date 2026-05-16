@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => {
     prisma: {
       task: { update: vi.fn() },
     },
+    syncPerVerifiedVoterTaskImpactEstimate: vi.fn(),
     tx,
   };
 });
@@ -20,6 +21,11 @@ vi.mock("@/lib/prisma", () => ({
 vi.mock("@/lib/triggers", () => ({
   buildTriggerContext: (extras: Record<string, unknown> = {}) => extras,
   fireTaskTrigger: mocks.fireTaskTrigger,
+}));
+
+vi.mock("@/lib/tasks/per-verified-voter-impact.server", () => ({
+  syncPerVerifiedVoterTaskImpactEstimate:
+    mocks.syncPerVerifiedVoterTaskImpactEstimate,
 }));
 
 import { createReferralInvitationTask } from "@/lib/referral-invitation-tasks.server";
@@ -78,6 +84,10 @@ describe("createReferralInvitationTask", () => {
     );
     expect(mocks.tx.task.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: "task_1" } }),
+    );
+    expect(mocks.syncPerVerifiedVoterTaskImpactEstimate).toHaveBeenCalledWith(
+      mocks.tx,
+      "task_1",
     );
     expect(mocks.prisma.task.update).not.toHaveBeenCalled();
   });

@@ -8,10 +8,16 @@ import {
 const mocks = vi.hoisted(() => {
   const tx = {
     person: { upsert: vi.fn() },
-    referralInvitation: { create: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+    referralInvitation: {
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
     task: { updateMany: vi.fn() },
     taskComment: { create: vi.fn() },
-    user: { updateMany: vi.fn() },
+    user: { update: vi.fn(), updateMany: vi.fn() },
   };
 
   return {
@@ -257,8 +263,10 @@ describe("convertReferralInvitationForVote", () => {
       convertedVoteId: "vote_1",
       status: "CONVERTED",
     });
+    mocks.tx.referralInvitation.findMany.mockResolvedValue([]);
     mocks.tx.task.updateMany.mockResolvedValue({ count: 1 });
     mocks.tx.taskComment.create.mockResolvedValue({ id: "comment_1" });
+    mocks.tx.user.update.mockResolvedValue({ id: "referrer_1" });
     mocks.tx.user.updateMany.mockResolvedValue({ count: 1 });
   });
 
@@ -320,5 +328,41 @@ describe("convertReferralInvitationForVote", () => {
         "Jane voted on the 1% Treaty. This referral task is now verified.",
       taskId: "task_1",
     });
+  });
+
+  it("increments downstream conversion counts through a three-level referrer chain", async () => {
+    mocks.prisma.referralInvitation.findFirst.mockResolvedValue({
+      id: "invite_leaf",
+      convertedVoteId: null,
+      recipientName: "Leaf Voter",
+      recipientPersonId: null,
+      referendumId: "ref_1",
+      referrerUserId: "ancestor_3",
+      status: "PENDING",
+      taskId: null,
+    });
+    mocks.tx.referralInvitation.findMany
+      .mockResolvedValueOnce([{ referrerUserId: "ancestor_2" }])
+      .mockResolvedValueOnce([{ referrerUserId: "ancestor_1" }])
+      .mockResolvedValueOnce([]);
+
+    await convertReferralInvitationForVote({
+      inviteToken: "token_leaf",
+      referendumId: "ref_1",
+      voterUserId: "voter_leaf",
+      voteId: "vote_leaf",
+    });
+
+    expect(mocks.tx.user.update).toHaveBeenCalledTimes(3);
+    expect(mocks.tx.user.update.mock.calls.map(([input]) => input.where.id)).toEqual([
+      "ancestor_3",
+      "ancestor_2",
+      "ancestor_1",
+    ]);
+    for (const [input] of mocks.tx.user.update.mock.calls) {
+      expect(input.data).toEqual({
+        downstreamConversionCount: { increment: 1 },
+      });
+    }
   });
 });

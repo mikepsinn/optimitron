@@ -5,11 +5,26 @@ import {
   type VotePosition,
 } from "@optimitron/db";
 
-export function buildOfficialReferendumVoteWhere(input: {
-  answer?: VotePosition | `${VotePosition}`;
-  publicOnly?: boolean;
-  referendumId?: string;
-} = {}): Prisma.ReferendumVoteWhereInput {
+type ReferendumIdFilter = string | string[];
+
+function buildReferendumIdWhere(
+  referendumId?: ReferendumIdFilter,
+): Prisma.ReferendumVoteWhereInput {
+  if (!referendumId) {
+    return {};
+  }
+  return Array.isArray(referendumId)
+    ? { referendumId: { in: referendumId } }
+    : { referendumId };
+}
+
+export function buildOfficialReferendumVoteWhere(
+  input: {
+    answer?: VotePosition | `${VotePosition}`;
+    publicOnly?: boolean;
+    referendumId?: ReferendumIdFilter;
+  } = {},
+): Prisma.ReferendumVoteWhereInput {
   return {
     ...(input.answer ? { answer: input.answer as VotePosition } : {}),
     deletedAt: null,
@@ -19,16 +34,18 @@ export function buildOfficialReferendumVoteWhere(input: {
       ...(input.publicOnly ? { isPublic: true } : {}),
       lifeStatus: PersonLifeStatus.LIVING,
     },
-    ...(input.referendumId ? { referendumId: input.referendumId } : {}),
+    ...buildReferendumIdWhere(input.referendumId),
     voteSource: ReferendumVoteSource.SELF,
   };
 }
 
-export function buildRepresentedReferendumVoteWhere(input: {
-  answer?: VotePosition | `${VotePosition}`;
-  publicOnly?: boolean;
-  referendumId?: string;
-} = {}): Prisma.ReferendumVoteWhereInput {
+export function buildRepresentedReferendumVoteWhere(
+  input: {
+    answer?: VotePosition | `${VotePosition}`;
+    publicOnly?: boolean;
+    referendumId?: ReferendumIdFilter;
+  } = {},
+): Prisma.ReferendumVoteWhereInput {
   return {
     ...(input.answer ? { answer: input.answer as VotePosition } : {}),
     deletedAt: null,
@@ -38,16 +55,18 @@ export function buildRepresentedReferendumVoteWhere(input: {
       ...(input.publicOnly ? { isPublic: true } : {}),
       lifeStatus: { in: [PersonLifeStatus.UNKNOWN, PersonLifeStatus.LIVING] },
     },
-    ...(input.referendumId ? { referendumId: input.referendumId } : {}),
+    ...buildReferendumIdWhere(input.referendumId),
     voteSource: ReferendumVoteSource.REPRESENTED,
   };
 }
 
-export function buildMemorialReferendumVoteWhere(input: {
-  answer?: VotePosition | `${VotePosition}`;
-  publicOnly?: boolean;
-  referendumId?: string;
-} = {}): Prisma.ReferendumVoteWhereInput {
+export function buildMemorialReferendumVoteWhere(
+  input: {
+    answer?: VotePosition | `${VotePosition}`;
+    publicOnly?: boolean;
+    referendumId?: ReferendumIdFilter;
+  } = {},
+): Prisma.ReferendumVoteWhereInput {
   return {
     ...(input.answer ? { answer: input.answer as VotePosition } : {}),
     deletedAt: null,
@@ -72,7 +91,7 @@ export function buildMemorialReferendumVoteWhere(input: {
           }
         : {}),
     },
-    ...(input.referendumId ? { referendumId: input.referendumId } : {}),
+    ...buildReferendumIdWhere(input.referendumId),
     voteSource: ReferendumVoteSource.REPRESENTED,
   };
 }

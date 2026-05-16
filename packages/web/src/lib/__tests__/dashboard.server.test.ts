@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock prisma before importing the module under test
 vi.mock("@/lib/prisma", () => ({
@@ -35,6 +35,14 @@ vi.mock("@/lib/impact-receipts.server", () => ({
   getImpactReceipts: vi.fn(),
 }))
 
+vi.mock("@/lib/humanity-manager-status.server", () => ({
+  loadHumanityManagerStatus: vi.fn(),
+}))
+
+vi.mock("@/lib/url", () => ({
+  getBaseUrl: vi.fn(() => "https://warondisease.org"),
+}))
+
 // Mock auth
 vi.mock("@/lib/auth", () => ({
   authOptions: {},
@@ -43,9 +51,25 @@ vi.mock("@/lib/auth", () => ({
 import { prisma } from "@/lib/prisma";
 import { getWishBalance } from "@/lib/wishes.server"
 import { getImpactReceipts } from "@/lib/impact-receipts.server"
+import { loadHumanityManagerStatus } from "@/lib/humanity-manager-status.server"
 import { getDashboardData } from "../dashboard.server";
 
+const HUMANITY_MANAGER_STATUS_FIXTURE = {
+  completedEmployees: [],
+  directConversionCount: 1,
+  downstreamConversionCount: 7,
+  overdueEmployeeCount: 0,
+  overdueEmployees: [],
+  overduePresidentCount: 0,
+  overduePresidents: [],
+  reminders: [],
+};
+
 describe("getDashboardData", () => {
+  beforeEach(() => {
+    vi.mocked(loadHumanityManagerStatus).mockReset();
+  });
+
   it("throws when user is not found", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValueOnce(null);
 
@@ -61,6 +85,7 @@ describe("getDashboardData", () => {
       email: "test@example.com",
       bio: "Hello",
       referralCode: "ref-123",
+      downstreamConversionCount: 7,
       image: null,
       newsletterSubscribed: true,
       person: {
@@ -134,6 +159,9 @@ describe("getDashboardData", () => {
       items: [],
       walletCount: 0,
     });
+    vi.mocked(loadHumanityManagerStatus).mockResolvedValueOnce(
+      HUMANITY_MANAGER_STATUS_FIXTURE,
+    );
     vi.mocked(prisma.wishPoint.findMany).mockResolvedValueOnce([
       { reason: "DAILY_CHECKIN" },
     ] as any);
@@ -162,6 +190,20 @@ describe("getDashboardData", () => {
       "PRIZE_DEPOSIT",
     ]);
     expect(result.impactReceipts).toEqual({ items: [], walletCount: 0 });
+    expect(result.humanityManagerStatus).toBe(
+      HUMANITY_MANAGER_STATUS_FIXTURE,
+    );
+    expect(loadHumanityManagerStatus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        baseUrl: "https://warondisease.org",
+        user: expect.objectContaining({
+          downstreamConversionCount: 7,
+          handle: "testuser",
+          referralCode: "ref-123",
+        }),
+        userId: "user-1",
+      }),
+    );
     // REFERRAL stays incomplete until the user hits the gameplay goal.
     const referralQuest = result.questChecklist.find((q) => q.reason === "REFERRAL");
     expect(referralQuest?.completed).toBe(false);

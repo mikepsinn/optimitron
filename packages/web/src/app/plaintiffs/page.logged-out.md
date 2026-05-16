@@ -14,10 +14,9 @@
 ## Visible Page Copy
 
 ## REGISTER PLAINTIFFS FOR HUMANITY V GOVERNMENT.
-- You pay your governments $36.5 trillion/year to promote your general welfare. Since 1900 they spent $170 trillion murdering 310 million of their employers — enough to fund 37,800 years of clinical trials at current funding levels.
-- Register anyone you love who was killed or harmed. The case in [Humanity v. Government](/humanity-v-government) seeks $10.6 million/person per murdered human in damages.
-- REGISTER PLAINTIFF
-### WHO SHOULD BE A PLAINTIFF?
+- You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare — i.e. maximize median healthy life years and median after-tax inflation-adjusted income. Since 1900 they spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their employers — enough to fund [37,800](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) years of clinical trials at current funding levels.
+- Register anyone you love who was killed or harmed. The case in [Humanity v. Government](/humanity-v-government) seeks [$10.6 million/person](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html) per murdered human in damages.
+### REGISTER PLAINTIFF
 - FIRST NAME
 - MIDDLE NAME OPTIONAL
 - LAST NAME
@@ -33,7 +32,7 @@
 - WHO BELONGS HERE?
 - Anyone you love who can't speak for themselves. Dementia, severe illness, disability, captivity, no internet, or death. Their names still count — they make preventable death harder to hide. Add a relative, a patient, a friend, a neighbor, or anyone with unfinished business with the governments of Earth.
 - THE DAMAGES CLAIM
-- $11 million/person
+- [$11 million/person](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html)
 - PER MURDERED HUMAN (NPV AT 3% PERPETUITY)
-- $25 million/person
+- [$25 million/person](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html)
 - LIFETIME COHORT EXPOSURE PER HUMAN

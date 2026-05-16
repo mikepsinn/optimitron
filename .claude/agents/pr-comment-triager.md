@@ -72,27 +72,55 @@ After each commit:
 git push origin <branch>
 ```
 
-## Step 4: Resolve stupid items
+## Step 4: Reply to each comment individually, then resolve
 
-For each thread classified STUPID, resolve via GraphQL mutation:
+**The user wants to scroll through the PR comments and see a reply right after each bot comment** so it's obvious every item has been addressed. **Do NOT post one summary comment that covers everything.** Reply per-comment.
+
+### Inline review-thread comments
+
+For each thread, post a reply IN the thread (so it shows up indented under the original), then resolve the thread:
 
 ```bash
+# Reply in the thread — replaces the parent comment ID with the bot's comment ID
+gh api repos/mikepsinn/optimitron/pulls/N/comments/<COMMENT_DATABASE_ID>/replies \
+  -f body="<your verdict, one or two lines, code-specific>"
+
+# Then mark the thread resolved
 gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "..."}) { thread { isResolved } } }'
 ```
 
-Then post a single PR-level summary comment via `gh pr comment N --body "..."` that lists every stupid thread with a one-line reason. Don't post per-thread reply comments — the on-thread resolution is enough, and a single summary reads better.
+### PR-level issue comments from bots
 
-The summary comment shape:
+GitHub doesn't natively thread issue-comments. Post one reply per bot comment as a new issue-comment that quotes the bot comment URL so the chronological scroll shows reply-immediately-after-bot:
 
+```bash
+gh pr comment N --body "$(cat <<'EOF'
+Re: <link to the bot comment, copy the comment's permalink>
+
+<verdict — one or two lines, code-specific>
+EOF
+)"
 ```
-Triaged N CodeRabbit/Copilot threads (commit <sha>).
 
-**Valid — fixed (M):**
-- <path:line> — what was wrong and what was changed.
+For repeated bot test/ping noise (e.g. `claude[bot]` posting "test" / "test-ping"), minimize them with `minimizeComment` (`classifier: OUTDATED`) instead of replying — they're not real comments.
 
-**Stupid — resolved no change (K):**
-- <path:line> — one-line reason (specific to the code, not generic).
-```
+### Reply body shape
+
+Each reply must be:
+
+- **Short**: one or two lines. The body of the work goes in the commit message, not in PR replies.
+- **Code-specific**: name the file/line/commit. Generic dismissals ("not applicable", "won't fix") erode trust.
+- **Honest verdict**: either "Fixed in <sha>" / "Already fixed in <sha>" / "Won't fix because <code-specific reason>" / "False positive — <line> already does <X>".
+
+Examples:
+
+> Fixed in 73bc8979 — narrowed `assertEmailSafe` to require `http(s)://` scheme so prose containing the bare word "localhost" no longer trips the send-boundary guard.
+
+> Already fixed — `react-email-components.tsx:112` is `fontWeight: "700"` (commit a04b1355).
+
+> Won't fix — `PersonalIncomeChart.tsx` was untouched on this branch; the hardcoded `bg-white` is a pre-existing pattern across the landing-light component family that needs to migrate together, not a one-off patch.
+
+> False positive — `safety-gate.mjs:44` already covers newline AND single-`&`: `(?:&&|\|\||;|\n|\|(?!\|)|&(?!&))`.
 
 ## Step 5: Report back to the parent agent
 

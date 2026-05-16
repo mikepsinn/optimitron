@@ -1,4 +1,5 @@
 import { allNavLinks, type NavItem } from "@/lib/routes";
+import { isRedirectOnlyRoutePath } from "@/lib/redirect-review";
 import {
   getAllSiteConfigs,
   getSiteFromHost,
@@ -116,7 +117,9 @@ function pagePathsForSite(site: SiteConfig) {
     if (isStaticPathEnabledForSite(site, prefix)) paths.add(prefix);
   }
 
-  return [...paths].sort();
+  return [...paths]
+    .filter((pathname) => !isRedirectOnlyRoutePath(pathname))
+    .sort();
 }
 
 function appSitePages(site: SiteConfig): SitePageInventoryEntry[] {

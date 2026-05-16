@@ -63,7 +63,7 @@ Concrete failure case this rule prevents: this session, multiple Codex agents sp
 
 Codex has Playwright MCP wired up (`mcp__playwright__browser_navigate`, `browser_console_messages`, `browser_take_screenshot`, etc.). Use it for spot-checks during the fix-iterate loop — load a page, grab console errors, verify the symptom is gone. 5-15 seconds per route.
 
-DO NOT default to `pnpm --filter @optimitron/web run e2e -- visual --grep <route>` for iteration verification. That command boots a dev/prod server, compiles routes, runs screenshot capture + baseline comparison + Argos upload — 5-10 minutes per filter. Reserve it for the FINAL pre-merge verification pass after the fix is known to work.
+DO NOT default to `pnpm --filter @optimitron/web run e2e -- visual --grep <route>` for iteration verification. That command boots a dev/prod server, compiles routes, and runs screenshot capture — 5-10 minutes per filter. Reserve it for the FINAL pre-merge verification pass after the fix is known to work.
 
 Same signal (does the page hydrate without React errors? does the layout look right?) at 50x the cost. Burning 10 minutes per fix-iteration cycle when the same answer is available in 10 seconds is the anti-pattern. Concrete failure: this session, the hydration-investigation Codex spent ~8 minutes of one verification run on `pnpm e2e visual --grep treaty` when the same fix could have been spot-checked via Playwright MCP in seconds.
 
@@ -113,6 +113,54 @@ The `subagent_type: codex:codex-rescue` Agent path is MCP-mediated and strictly 
 - The classifier's "safety net" is the only theoretical upside, and Claude already applies per-task safety judgment manually.
 
 If a future Claude session is tempted to use the Agent path because it looks more integrated: it isn't. The direct CLI path has the same `run_in_background: true` notification UX from Bash, plus everything above.
+
+## Plan-first protocol for substantial work
+
+Default for any Codex dispatch that touches >1 system, >100 lines, schema/CI, or matches the "I thought we had / why is this so" phrasing in CLAUDE.md HVD#13 (Diagram-before-code). Skip only for trivial single-file renames / one-liners / copy edits.
+
+**Six steps. No skipping. No reordering.**
+
+1. **Claude drafts the plan file.** Location: gstack convention (`~/.gstack/projects/<slug>/plans/<task-slug>.md`) or a project-local `.claude/plans/<task-slug>.md` if gstack isn't initialized for the repo. Required sections:
+   - **Brief** — problem restated in Claude's own words.
+   - **Research log** — REQUIRED before anything else. AI knowledge cutoffs make every vendor/API/tool assumption suspect. Before drafting current/proposed state, WebSearch + WebFetch the relevant vendor docs from the last 12 months. List: search queries run, URLs of canonical docs + their last-updated date if visible, any changelog entries from the last 6 months, anything that contradicts an assumption I'd otherwise have made from training data. If touching a third-party tool/API/SDK, the research log MUST cite the vendor's current docs (not "I think this works like X"). Examples of failures this catches: "Codex app-server is experimental, probably overkill" (false — it's the documented integration point), "Neon anonymized branches would be a 1-2 day project" (false — built-in feature GA late 2025).
+   - **Current state — ASCII diagram** — boxes/arrows of the systems involved.
+   - **Proposed state — ASCII diagram** — boxes/arrows after the change.
+   - **Step list** — checkboxes Codex will tick off during implementation.
+   - **Risks** — things that could go sideways.
+   - **Files to touch** — Codex's expected scope.
+   - **ALERTS** — orchestrator-edited, Codex re-reads top of every Phase-3 turn.
+   - **Agent log** — Codex appends after each meaningful action.
+
+2. **Codex criticizes the plan.** Dispatch via `codex review` (preferred for plan critique — adversarial, "tries to break") or `codex exec` with an explicit instruction to investigate the code AND argue against the plan: name what's wrong, what's missing, what's overcomplicated, what's a worse fix than the alternative. Codex must read the actual files referenced in the plan, not just react to the prose. Codex MUST also verify Claude's `## Research log` — re-WebSearch anything not cited with a recent vendor doc URL, name anything Claude assumed that's contradicted by current docs. Codex writes its critique INTO the plan file under a `## Codex critique (round N)` section.
+
+3. **Claude + Codex iterate until agreement.** Claude responds to Codex's critique in the same plan file (`## Claude response (round N)`). If still disagreeing, dispatch Codex again. Stop when either: (a) both agree, OR (b) the disagreement is a taste call that needs Mike. Two rounds max — if not converged, escalate to step 4 as "Claude + Codex disagree on X, see plan file."
+
+4. **Tell Mike the plan.** Summary in chat: plan file path, key decisions, any unresolved disagreements between Claude and Codex. Mike reads the plan file directly (it's the single source of truth).
+
+5. **Mike approves, fixes, or rejects.** Mike edits the plan file directly OR responds in chat with redirects. Claude applies Mike's changes to the plan file. Loop back to step 4 if Mike's redirect was substantial.
+
+6. **Codex implements.** Dispatch via direct `codex exec` (not the Agent wrapper — blocked by `.claude/hooks/block-codex-rescue-agent.mjs` anyway). Prompt includes: plan file path, the discipline rule "before any tool call, Read `<plan-path>` and check `## ALERTS`", and "append to `## Agent log` after each meaningful action; tick `## Step list` checkboxes as you go." Mike + Claude can edit `## ALERTS` mid-flight; Codex picks up on next turn boundary (turn-boundary latency, not real interrupt — use `codex app-server` upgrade for that, see below).
+
+**For trivial dispatches**, skip steps 1–5. Dispatch directly via `codex exec` with a tight self-contained prompt. Trivial = single-file rename, one-liner, copy edit, OR something already designed in a prior plan file.
+
+**If unsure whether a dispatch is substantial enough**: it is. Defaulting to plan-first costs maybe 20 minutes; defaulting to direct dispatch costs the kind of failures today's session demonstrated (anonymized-preview Codex run wasted, no plan, no visibility).
+
+## Dispatch transport: prefer `@openai/codex-sdk` (or app-server)
+
+**Default: `@openai/codex-sdk` npm package.** Official Node 18+ TypeScript SDK that wraps the codex CLI and exchanges JSONL events over stdin/stdout — gives us streamed agent events, parallel threads with stable IDs, and the protocol primitives (`turn/steer`, `turn/interrupt`) without writing a JSON-RPC client ourselves. **Not "couple hours of work" — it's `npm install @openai/codex-sdk`.** Previous claim was a stale-training-data error; see `feedback_websearch_vendor_capabilities_first.md`.
+
+When NOT to use the SDK:
+- **Truly trivial one-shots** (single-file rename, copy edit). Direct `codex exec '...' < NUL > log 2>&1` is cheaper than spawning an SDK process. Bypass the protocol with `trivial: <reason>` (per the enforce-codex-protocol hook).
+- **Custom low-level transport needs** (WebSocket with auth, embedding in non-Node service). Use `codex app-server --listen ws://...` directly with bindings generated via `codex app-server generate-ts`.
+
+**NOT `codex mcp-server`** — that's the wrong direction (lets Codex consume external MCP tools; doesn't let Claude drive Codex).
+
+**Status:** SDK not yet adopted in this repo. The dispatch-side code still goes through Bash → `codex exec`. The `enforce-codex-protocol` hook accepts both shapes (any `codex exec` / `codex review` invocation with a plan-file or trivial bypass). Adopt the SDK when we hit the first failure mode `codex exec` doesn't cover (mid-turn steering, parallel agents needing live coordination). Tracked in TODO.md.
+
+Sources:
+- [Codex App Server (OpenAI Developers)](https://developers.openai.com/codex/app-server)
+- [`@openai/codex-sdk` on npm](https://www.npmjs.com/package/@openai/codex-sdk)
+- [Codex SDK overview](https://developers.openai.com/codex/sdk)
 
 ## Config
 

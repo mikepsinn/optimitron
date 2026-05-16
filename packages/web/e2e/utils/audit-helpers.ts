@@ -72,8 +72,7 @@ export async function forceAnimationsComplete(page: Page): Promise<void> {
     });
   });
 
-  // Give the browser a tick to repaint
-  await page.waitForTimeout(200);
+  await waitForPaint(page);
 }
 
 /**
@@ -95,8 +94,7 @@ export async function navigateAndSettle(
     await waitForDemoSlide(page, slideId);
     await freezeDemoPlayback(page);
   } else {
-    // Regular page — wait for hydration
-    await page.waitForTimeout(2000);
+    await waitForPaint(page);
   }
 
   // Force all animated content to be visible
@@ -118,6 +116,16 @@ async function freezeDemoPlayback(page: Page): Promise<void> {
   });
 
   await page.waitForTimeout(150);
+}
+
+export async function waitForPaint(page: Page): Promise<void> {
+  await retryAfterNavigation(page, async () => {
+    await page.evaluate(() => new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => resolve());
+      });
+    }));
+  });
 }
 
 /**

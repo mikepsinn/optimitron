@@ -62,10 +62,12 @@ export interface ReferendumConfig {
   signedBody: string;
   action: ReferendumActionConfig;
   showPrivacyToggle?: boolean;
+  inlineVoteMakePublic?: boolean;
   storePendingVote: (
     name: string | undefined,
     referralCode: string | null,
     answer: ReferendumAnswer,
+    makePublic?: boolean,
   ) => void;
   clearPendingVote: () => void;
   syncPending: (session?: Session | null) => Promise<void>;
@@ -95,6 +97,8 @@ async function postVote(
   referredBy: string | null,
   inviteToken?: string | null,
   organizationSlug?: string | null,
+  displayName?: string | null,
+  makePublic?: boolean,
 ): Promise<boolean> {
   try {
     const res = await fetch(`/api/referendums/${slug}/vote`, {
@@ -105,6 +109,8 @@ async function postVote(
         ref: referredBy ?? undefined,
         inviteToken: inviteToken ?? undefined,
         organizationSlug: organizationSlug ?? undefined,
+        displayName: displayName ?? undefined,
+        makePublic,
         // Full URL the voter was on at submit time. Server stores as
         // ReferendumVote.originUrl for variant + UTM forensics.
         originUrl:
@@ -203,7 +209,7 @@ const declarationConfig: ReferendumConfig = {
   signedBody:
     "Share your link. Every signature is one more reason your government will pretend it always supported this.",
   action: signAction,
-  storePendingVote: (name, _referralCode, answer) => {
+  storePendingVote: (name, _referralCode, answer, makePublic) => {
     if (answer === REFERENDUM_ANSWER.YES) {
       storage.setDeclarationSigned({
         signedAt: new Date().toISOString(),
@@ -212,6 +218,8 @@ const declarationConfig: ReferendumConfig = {
     }
     storage.setPendingDeclarationVote({
       answer,
+      displayName: name,
+      makePublic,
       timestamp: new Date().toISOString(),
     });
   },
@@ -219,7 +227,15 @@ const declarationConfig: ReferendumConfig = {
   syncPending: async (session) => {
     const pending = storage.getPendingDeclarationVote();
     if (!pending) return;
-    const ok = await postVote(DECLARATION_SLUG, pending.answer, null);
+    const ok = await postVote(
+      DECLARATION_SLUG,
+      pending.answer,
+      null,
+      null,
+      null,
+      pending.displayName,
+      pending.makePublic,
+    );
     if (!ok) return;
     storage.removePendingDeclarationVote();
     cacheVoteStatus(session, pending.answer);
@@ -244,9 +260,11 @@ const treatyConfig: ReferendumConfig = {
   signedTitle: "Thank you for ending war and disease!",
   signedBody: `For each person you get to sign with your link, you will be personally to blame for saving ${fmtRaw(VOTER_LIVES_SAVED.value, 2)} lives and preventing ${fmtRaw(VOTER_SUFFERING_HOURS_PREVENTED.value, 2)} hours of suffering.`,
   action: signAction,
-  storePendingVote: (_name, referralCode, answer) =>
+  storePendingVote: (name, referralCode, answer, makePublic) =>
     storage.setPendingTreatyVote({
       answer,
+      displayName: name,
+      makePublic,
       referredBy: referralCode,
       inviteToken: null,
       timestamp: new Date().toISOString(),
@@ -272,6 +290,8 @@ const treatyConfig: ReferendumConfig = {
           pending.referredBy,
           pending.inviteToken,
           pending.organizationSlug,
+          pending.displayName,
+          pending.makePublic,
         )
       : true;
 
@@ -308,10 +328,12 @@ const courtOfHumanityConfig: ReferendumConfig = {
   signedBody:
     "For each human you bring into the Court with your link, the jury grows by one and sovereign immunity weakens by an amount your governments' lawyers will quietly notice.",
   action: joinAction,
-  showPrivacyToggle: true,
-  storePendingVote: (_name, referralCode, answer) =>
+  inlineVoteMakePublic: false,
+  storePendingVote: (name, referralCode, answer, makePublic) =>
     storage.setPendingCourtOfHumanityVote({
       answer,
+      displayName: name,
+      makePublic,
       referredBy: referralCode,
       timestamp: new Date().toISOString(),
     }),
@@ -323,6 +345,10 @@ const courtOfHumanityConfig: ReferendumConfig = {
       COURT_OF_HUMANITY_SLUG,
       pending.answer,
       pending.referredBy,
+      null,
+      null,
+      pending.displayName,
+      pending.makePublic,
     );
     if (!ok) return;
     storage.removePendingCourtOfHumanityVote();

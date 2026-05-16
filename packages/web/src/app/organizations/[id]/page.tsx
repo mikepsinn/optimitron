@@ -15,10 +15,7 @@ import {
 } from "@/lib/routes";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { buildOrganizationSurveyUrl } from "@/lib/site";
-import {
-  getUserDisplayName,
-  userDisplaySelect,
-} from "@/lib/user-display";
+import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +60,7 @@ export default async function OrganizationPage({
       })
     : null;
   const organizationSurveyUrl = buildOrganizationSurveyUrl(org.slug);
+  const donationHref = getSafeHttpUrl(org.donationUrl);
   const embeddedSurveyPath = getOrganizationSurveyPath(org.slug);
   const memberSurveyUrl = referralIdentifier
     ? buildOrganizationSurveyUrl(org.slug, {
@@ -80,11 +78,11 @@ Hi,
 
 ${org.name} joined the International Campaign to End War and Disease by publicly supporting the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.
 
-Please answer the ${GLOBAL_SURVEY_NAME} here:
+Please answer the ${GLOBAL_SURVEY_NAME}:
 
 ${organizationSurveyUrl}
 
-Responses from this link are credited to ${org.name}. This is a policy survey, not a candidate endorsement.`;
+This is a policy survey, not a candidate endorsement.`;
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
@@ -111,6 +109,15 @@ Responses from this link are credited to ${org.name}. This is a policy survey, n
             {org.website}
           </a>
         ) : null}
+        {donationHref ? (
+          <a
+            href={donationHref}
+            rel="noreferrer"
+            className="mt-2 block text-sm font-bold text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            Donate to {org.name}
+          </a>
+        ) : null}
         {org.description ? (
           <p className="mt-4 text-sm font-bold leading-7 text-muted-foreground">
             {org.description}
@@ -121,53 +128,11 @@ Responses from this link are credited to ${org.name}. This is a policy survey, n
       <div className="space-y-10">
         {org.status === "APPROVED" ? (
           <>
-            <section className="border border-foreground bg-background p-5">
+            <section>
               <h2 className="mb-3 text-lg font-black uppercase text-foreground">
                 Share this organization&apos;s survey
               </h2>
-              <p className="text-sm font-bold leading-7 text-muted-foreground">
-                Anyone on {org.name}&apos;s team can share this link or put the
-                survey on a website. Responses stay credited to {org.name}.
-                Manager access is only needed to edit the profile or members.
-              </p>
-              <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm font-bold leading-7 text-foreground">
-                <li>
-                  Share the survey URL in an email, newsletter, or social post.
-                </li>
-                <li>
-                  Embed the website button or iframe on a page your members see.
-                </li>
-                <li>
-                  Keep the organization URL intact so responses are credited
-                  here.
-                </li>
-              </ol>
-              <p className="mt-4 text-sm font-bold leading-7 text-muted-foreground">
-                For the case behind this, read{" "}
-                <a
-                  href={NONPROFIT_COALITION_STRATEGY_URL}
-                  className="underline underline-offset-4"
-                >
-                  why organizations should share this
-                </a>
-                .
-              </p>
-            </section>
-
-            <section>
-              <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                {GLOBAL_SURVEY_NAME}
-              </h2>
               <div className="space-y-4">
-                <div>
-                  <p className="mb-2 text-sm font-bold text-muted-foreground">
-                    Take the survey
-                  </p>
-                  <OrganizationSurveyFrame
-                    src={embeddedSurveyPath}
-                    title={iframeTitle}
-                  />
-                </div>
                 <OrganizationCopyField
                   label="Survey URL"
                   value={organizationSurveyUrl}
@@ -190,6 +155,26 @@ Responses from this link are credited to ${org.name}. This is a policy survey, n
                   multiline
                   value={iframeCode}
                 />
+                <div>
+                  <p className="mb-2 text-sm font-bold text-muted-foreground">
+                    Survey preview
+                  </p>
+                  <OrganizationSurveyFrame
+                    src={embeddedSurveyPath}
+                    title={iframeTitle}
+                  />
+                </div>
+                <p className="text-sm font-bold leading-7 text-muted-foreground">
+                  Keep the organization URL intact so responses credit{" "}
+                  {org.name}. Board needs a memo?{" "}
+                  <a
+                    href={NONPROFIT_COALITION_STRATEGY_URL}
+                    className="underline underline-offset-4"
+                  >
+                    Use this one
+                  </a>
+                  .
+                </p>
               </div>
             </section>
           </>
@@ -199,8 +184,8 @@ Responses from this link are credited to ${org.name}. This is a policy survey, n
               Public survey not active yet
             </h2>
             <p className="text-sm font-bold leading-7 text-muted-foreground">
-              This organization exists, but its public survey link and embed
-              are available after campaign approval.
+              This organization exists, but its public survey link and embed are
+              available after campaign approval.
             </p>
           </section>
         )}
@@ -315,4 +300,16 @@ function escapeHtml(value: string): string {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function getSafeHttpUrl(value: string | null | undefined) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
 }

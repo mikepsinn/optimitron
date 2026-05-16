@@ -1,9 +1,12 @@
 import { GOVERNMENTS } from "@optimitron/data/datasets/government-report-cards";
 import { getGovernmentProfile } from "@optimitron/data/datasets/governments";
+import { TaskStatus } from "@optimitron/db";
+import { TREATY_SIGNER_TASK_KEY_PREFIX } from "@optimitron/db/task-keys";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { GameCTA } from "@/components/ui/game-cta";
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
 import { GovernmentScatterplot } from "@/components/shared/GovernmentScatterplot";
+import { prisma } from "@/lib/prisma";
 import { getMemorialAttributionsByGovernment } from "@/lib/prosecution-data.server";
 import { governmentsLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
@@ -30,6 +33,28 @@ function formatNumber(value: number): string {
   return value.toLocaleString();
 }
 
+async function getSignedTreatyCountryCodes(): Promise<string[] | undefined> {
+  try {
+    const signerTasks = await prisma.task.findMany({
+      where: {
+        deletedAt: null,
+        status: TaskStatus.VERIFIED,
+        taskKey: { startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:` },
+      },
+      select: { taskKey: true },
+    });
+
+    return signerTasks
+      .map((task) =>
+        task.taskKey?.slice(`${TREATY_SIGNER_TASK_KEY_PREFIX}:`.length).toUpperCase(),
+      )
+      .filter((code): code is string => Boolean(code));
+  } catch (error) {
+    console.error("Failed to load signed treaty country codes", error);
+    return undefined;
+  }
+}
+
 export default async function GovernmentsPage() {
   const auditedGovernmentProfiles = GOVERNMENTS
     .map((government) => getGovernmentProfile(government.code))
@@ -46,6 +71,7 @@ export default async function GovernmentsPage() {
   } catch (error) {
     console.error("Failed to load memorial attributions for governments page", error);
   }
+  const signedTreatyCountryCodes = await getSignedTreatyCountryCodes();
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
@@ -84,7 +110,10 @@ export default async function GovernmentsPage() {
           trials, from largest ratio to smallest. Click any column to sort by a
           different metric.
         </p>
-        <GovernmentLeaderboard memorialAttributionsByCountry={memorialAttributionsByCountry} />
+        <GovernmentLeaderboard
+          memorialAttributionsByCountry={memorialAttributionsByCountry}
+          signedCountryCodes={signedTreatyCountryCodes}
+        />
       </section>
 
       <section className="mb-16">

@@ -70,7 +70,7 @@ export default async function SignatoriesPage({
     Boolean(homeData.publicSignatories.currentUserStatus);
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16">
+    <section className="mx-auto max-w-6xl px-4 pb-12 pt-4 sm:pt-8 [&>#signatories]:mt-0 [&>#signatories]:pt-0">
       {hasSignatorySurface ? (
         <SignatoriesLeaderboard
           pagePathname={ROUTES.signatories}

@@ -15,20 +15,13 @@ import { defaultButtonClassName } from "@/components/ui/default-button";
 import { cn } from "@/lib/utils";
 
 /**
- * Sensitivity calculator for the Humanity v. Government damages tiers.
+ * Sensitivity calculator for the Humanity v. Government damages demand.
  *
  * Lets the reader adjust the three most-disputed inputs (Value of
  * Statistical Life, war-deaths-since-1900, efficacy-lag deaths total) and
- * watch the floor and FCA treble per-person numbers update live. Default
- * values + non-tunable floor components are imported directly from
- * `@optimitron/data/parameters` so this calculator stays in sync with the
- * canonical numbers — change a parameter once, every surface that uses it
- * (case page, calculator, manual cross-references) updates.
- *
- * The lost-prosperity primary theory headline ($25.2M cohort / $10.6M NPV)
- * is *not* tunable here — its inputs are downstream of multiple manual
- * analyses and would require pulling that math into the client. The body-count
- * tiers below are the parts most readers will want to tune first.
+ * watch the full per-person demand update live. Default values + fixed
+ * components are imported directly from `@optimitron/data/parameters` so the
+ * calculator stays in sync with the canonical numbers.
  */
 
 const GLOBAL_POPULATION = GLOBAL_POPULATION_2024.value;
@@ -137,21 +130,20 @@ export function DamagesSensitivityCalculator() {
   const [warDeaths, setWarDeaths] = useState(DEFAULT_WAR_DEATHS);
   const [lagDeaths, setLagDeaths] = useState(DEFAULT_LAG_DEATHS);
 
-  const tiers = useMemo(() => {
+  const demand = useMemo(() => {
     const warVSL = warDeaths * vsl;
     const lagVSL = lagDeaths * vsl;
     const neverDevVSL = NEVER_DEVELOPED_DEATHS * vsl;
-    const floorTotal =
-      warVSL + lagVSL + PROPERTY_ENV_USD + EXCESS_MILITARY_USD + PENTAGON_FCA_USD;
-    const baseAskTotal = floorTotal + neverDevVSL;
-    const trebleTotal = baseAskTotal * FCA_TREBLE;
+    const bodyCountTotal =
+      warVSL +
+      lagVSL +
+      PROPERTY_ENV_USD +
+      EXCESS_MILITARY_USD +
+      PENTAGON_FCA_USD;
+    const fullDamagesTotal = (bodyCountTotal + neverDevVSL) * FCA_TREBLE;
     return {
-      floorTotal,
-      baseAskTotal,
-      trebleTotal,
-      floorPerCapita: floorTotal / GLOBAL_POPULATION,
-      askPerCapita: baseAskTotal / GLOBAL_POPULATION,
-      treblePerCapita: trebleTotal / GLOBAL_POPULATION,
+      fullDamagesPerCapita: fullDamagesTotal / GLOBAL_POPULATION,
+      fullDamagesTotal,
     };
   }, [vsl, warDeaths, lagDeaths]);
 
@@ -168,7 +160,10 @@ export function DamagesSensitivityCalculator() {
           Damages calculator
         </p>
         <button
-          className={cn(defaultButtonClassName, "min-h-10 px-3 py-2 text-xs tracking-[0.12em]")}
+          className={cn(
+            defaultButtonClassName,
+            "min-h-10 px-3 py-2 text-xs tracking-[0.12em]",
+          )}
           onClick={reset}
           type="button"
         >
@@ -221,47 +216,25 @@ export function DamagesSensitivityCalculator() {
         <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
           What each living human is owed, at your assumptions
         </p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          <div className="border-2 border-foreground bg-background p-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Cautious floor
-            </p>
-            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              {formatUSDPerson(tiers.floorPerCapita)}
-            </p>
-            <p className="mt-1 text-xs font-bold text-muted-foreground">
-              Total: {formatUSDLarge(tiers.floorTotal)}
-            </p>
-          </div>
-          <div className="border-2 border-foreground bg-background p-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
-              Base demand
-            </p>
-            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              {formatUSDPerson(tiers.askPerCapita)}
-            </p>
-            <p className="mt-1 text-xs font-bold text-muted-foreground">
-              Total: {formatUSDLarge(tiers.baseAskTotal)}
-            </p>
-          </div>
+        <div className="mt-3">
           <div className="border-2 border-foreground bg-foreground p-4 text-background">
             <p className="text-[11px] font-black uppercase tracking-[0.12em] text-background">
-              Triple damages
+              Full damages demand
             </p>
-            <p className="mt-2 text-2xl font-black tabular-nums leading-none">
-              {formatUSDPerson(tiers.treblePerCapita)}
+            <p className="mt-2 text-4xl font-black tabular-nums leading-none sm:text-5xl">
+              {formatUSDPerson(demand.fullDamagesPerCapita)}
             </p>
             <p className="mt-1 text-xs font-bold text-background">
-              Total: {formatUSDLarge(tiers.trebleTotal)}
+              Total: {formatUSDLarge(demand.fullDamagesTotal)}
             </p>
           </div>
         </div>
         <p className="mt-4 text-xs font-bold leading-5 text-muted-foreground">
-          Floor = war deaths + regulatory-delay deaths + property/environmental
-          destruction + excess military spending + Pentagon failed-audit
-          penalty. Base demand adds deaths from drugs never developed. Triple
-          damages means multiplying the base demand by three, as some fraud laws
-          do.
+          The demand counts war deaths, regulatory-delay deaths,
+          property/environmental destruction, excess military spending, the
+          Pentagon failed-audit penalty, and drugs never developed because the
+          trial money went to weapons. The False Claims Act analogy triples the
+          body-count claim.
         </p>
       </div>
     </section>

@@ -1,162 +1,113 @@
-import { GameCTA } from "@/components/ui/game-cta";
-import { StatCardGrid } from "@/components/ui/stat-card";
-import { NumberedStepCard } from "@/components/ui/numbered-step-card";
-import { POINT, POINTS, REFERRAL } from "@/lib/messaging";
+import { headers } from "next/headers";
+import type { ReactNode } from "react";
 import {
-  fmtParam,
-  PRIZE_POOL_HORIZON_MULTIPLE,
-} from "@optimitron/data/parameters";
-import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
-import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
-import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
-import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
-import { getGlobalVerifiedVoteCount } from "@/lib/verified-votes.server";
-import { prisma } from "@/lib/prisma";
-import { ROUTES, scoreboardLink } from "@/lib/routes";
+  POLITICIAN_SCORECARDS,
+  SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO,
+} from "@optimitron/data/datasets/us-politician-scorecards";
+import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeaderboard";
+import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
+import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
 import { getRouteMetadata } from "@/lib/metadata";
-
-async function getGameStats() {
-  try {
-    const [deposits, voteMintsCount, globalVoters] = await Promise.all([
-      prisma.prizeTreasuryDeposit.findMany({
-        where: { deletedAt: null },
-        select: { amount: true },
-      }),
-      prisma.voteTokenMint.count({
-        where: { status: "CONFIRMED", deletedAt: null },
-      }),
-      getGlobalVerifiedVoteCount(),
-    ]);
-
-    const totalDeposited = deposits.reduce(
-      (sum, d) => sum + BigInt(d.amount),
-      0n,
-    );
-    // USDC has 6 decimals
-    const poolUSD = Number(totalDeposited) / 1e6;
-
-    return {
-      poolUSD,
-      verifiedVoters: globalVoters,
-      votePoints: voteMintsCount,
-    };
-  } catch {
-    // No DB connection — return zeros gracefully
-    return { poolUSD: 0, verifiedVoters: 0, votePoints: 0 };
-  }
-}
+import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
+import { scoreboardLink } from "@/lib/routes";
+import { getSiteConfig, getSiteFromHeaders } from "@/lib/site";
 
 export const metadata = getRouteMetadata(scoreboardLink);
 
+const politicianScorecards = POLITICIAN_SCORECARDS.map((politician) => ({
+  bioguideId: politician.id.toUpperCase(),
+  name: politician.name,
+  party: politician.party,
+  state: politician.district ?? "",
+  chamber: politician.chamber ?? "",
+  militaryDollarsVotedFor: politician.destructiveDollarsVotedFor,
+  clinicalTrialDollarsVotedFor: politician.clinicalTrialDollarsVotedFor,
+  ratio: politician.militaryToTrialsRatio,
+}));
+
 export default async function ScoreboardPage() {
-  const stats = await getGameStats();
+  const hdrs = await headers();
+  const requestSite = getSiteFromHeaders(hdrs);
+  const signatorySite = requestSite.primaryReferendumSlug
+    ? requestSite
+    : getSiteConfig("warOnDisease");
+  const referendumData = await getReferendumSiteHomeData(signatorySite);
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-      {/* Hero */}
-      <section className="mb-12 space-y-3 text-center">
-        <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
-          The Earth Optimization Game
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      <section className="mb-12 space-y-4 text-center">
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">
+          Humanity&apos;s Scoreboard
         </p>
-        <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
-          HIGH SCORES
+        <h1 className="text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl md:text-6xl">
+          Who Is Winning and Losing
         </h1>
-        <p className="mx-auto max-w-2xl text-lg font-bold text-muted-foreground">
-          The objective: redirect Earth&apos;s resources from the things making
-          you poorest and deadest to the things that make you healthiest and
-          wealthiest. The only way to lose is to not play.
+        <p className="mx-auto max-w-3xl text-lg font-bold leading-8 text-muted-foreground">
+          The worst governments, the worst politicians, and the humans
+          collecting signatures for the 1% Treaty. Civilization is easier to
+          debug when the table has names.
         </p>
       </section>
 
-      {/* Humanity's Scoreboard — the two metrics that define the game */}
-      <section className="mb-12">
-        <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
-          The Two Numbers That Matter
-        </h2>
-        <HumanityScoreboard />
-      </section>
+      <ScoreboardSection
+        title="Worst Governments"
+        description="Ranked by military spending per dollar of government clinical trial funding. Higher is worse. This is not subtle."
+      >
+        <GovernmentLeaderboard limit={10} compact />
+      </ScoreboardSection>
 
-      {/* GDP Trajectory Chart */}
-      <section className="mb-12">
-        <div className="border border-foreground bg-background p-6">
-          <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-2 text-center">
-            Why There&apos;s a Timer
-          </h2>
-          <p className="text-sm font-bold text-muted-foreground text-center mb-4 max-w-2xl mx-auto">
-            The destructive economy (military + cybercrime) is growing at 15%/yr.
-            Productive GDP grows at 3%/yr. At current rates, destruction hits 50%
-            of GDP and the game is over. The treaty and optimal governance
-            trajectories show what happens when you redirect resources.
-          </p>
-          <GdpTrajectoryChart />
-        </div>
-      </section>
-
-      {/* Live Game Stats */}
-      <section className="mb-12">
-        <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
-          Live Game Status
-        </h2>
-        <StatCardGrid
-          columns={4}
-          stats={[
-            { label: "Prize Pool", value: `$${stats.poolUSD.toLocaleString()}`, description: `grows at ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15yr`, size: "sm" },
-            { label: "Verified Voters", value: stats.verifiedVoters.toLocaleString(), description: `of ${fmtParam({...MAJORITY_OF_HUMANS_ON_EARTH, unit: ""})} target`, size: "sm" },
-            { label: `${POINTS} Earned`, value: stats.votePoints.toLocaleString(), description: REFERRAL.earnOneShort, size: "sm" },
-            { label: "Time Remaining", value: <CollapseCountdownTimer size="sm" showLabel={false} />, size: "sm" },
-          ]}
+      <ScoreboardSection
+        title="Worst Politicians"
+        description="The same ranking from the Optimitron landing page: how much each representative voted toward weapons compared with testing medicines."
+      >
+        <PoliticianScorecardTable
+          scorecards={politicianScorecards}
+          systemWideRatio={SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO}
+          limit={10}
+          rankModeLabels={{
+            worst: "Worst Politicians",
+            leastBad: "Least Bad Politicians",
+          }}
         />
-      </section>
+      </ScoreboardSection>
 
-      {/* How the Game Works */}
-      <section className="mb-12">
-        <div className="border border-foreground bg-background p-8">
-          <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
-            How to Play
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <NumberedStepCard
-              step={1}
-              title="Deposit"
-              description={`Put your money in the machine. Get PRIZE shares. Projected growth is ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15 years if the campaign misses its targets.`}
-              color="pink"
-            />
-            <NumberedStepCard
-              step={2}
-              title="Recruit"
-              description={`Share your link. ${REFERRAL.earnOne} It's a referral chain where the thing at the top is not dying from preventable diseases.`}
-              color="yellow"
-            />
-            <NumberedStepCard
-              step={3}
-              title="Score"
-              description={`15 years later: metrics hit targets → VOTE holders split the pool. Metrics miss → depositors get ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back. Nobody loses.`}
-              color="cyan"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Wishonia comment */}
-      <section className="mb-12">
-        <div className="border border-foreground bg-background text-foreground p-6">
-          <p className="text-sm font-bold leading-relaxed text-center">
-            On Wishonia, we solved this in year 12. You lot have been arguing
-            about it for 4,237 years. The scoreboard makes the campaign size
-            impossible to ignore. Updated in real time. Visible to everyone.
-            The only question is whether you join before or after it becomes
-            embarrassing not to.
-          </p>
-        </div>
-      </section>
-
-      {/* CTAs */}
-      <section className="text-center">
-        <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <GameCTA href="/prize">Play the Game</GameCTA>
-          <GameCTA href={ROUTES.wishocracy} variant="yellow">Make Your Allocation</GameCTA>
-          <GameCTA href="/politicians" variant="outline">Politician Leaderboard</GameCTA>
-        </div>
-      </section>
+      <ScoreboardSection
+        title="Signature Leaderboard"
+        description="Top signatories by verified treaty signatures attributed to them. This is the part where the species notices it has thumbs."
+      >
+        <SignatoriesLeaderboard
+          className="mt-0 pt-0"
+          limit={10}
+          pagePathname={scoreboardLink.href}
+          publicSignatories={referendumData?.publicSignatories ?? null}
+          showEmptyState
+          showIntro={false}
+        />
+      </ScoreboardSection>
     </div>
+  );
+}
+
+function ScoreboardSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="mb-14 border-t-2 border-foreground pt-10 last:mb-0">
+      <div className="mb-6 space-y-2">
+        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground sm:text-3xl">
+          {title}
+        </h2>
+        <p className="max-w-3xl text-base font-bold leading-7 text-muted-foreground">
+          {description}
+        </p>
+      </div>
+      {children}
+    </section>
   );
 }

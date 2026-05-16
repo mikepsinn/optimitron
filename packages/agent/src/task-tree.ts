@@ -29,7 +29,7 @@ export interface TaskTreeNode {
 
 export interface TaskTreeSummary {
   leafCount: number;
-  maxDepth: number;
+  deepestLevel: number;
   nodeCount: number;
   publicCount: number;
   rootCount: number;
@@ -104,7 +104,7 @@ function summarizeNodes(nodes: TaskTreeNode[], depth: number): TaskTreeSummary {
   let nodeCount = 0;
   let leafCount = 0;
   let publicCount = 0;
-  let maxDepth = depth;
+  let deepestLevel = depth;
 
   for (const node of nodes) {
     nodeCount += 1;
@@ -115,7 +115,7 @@ function summarizeNodes(nodes: TaskTreeNode[], depth: number): TaskTreeSummary {
     const children = node.children ?? [];
     if (children.length === 0) {
       leafCount += 1;
-      maxDepth = Math.max(maxDepth, depth);
+      deepestLevel = Math.max(deepestLevel, depth);
       continue;
     }
 
@@ -123,12 +123,12 @@ function summarizeNodes(nodes: TaskTreeNode[], depth: number): TaskTreeSummary {
     nodeCount += childSummary.nodeCount;
     leafCount += childSummary.leafCount;
     publicCount += childSummary.publicCount;
-    maxDepth = Math.max(maxDepth, childSummary.maxDepth);
+    deepestLevel = Math.max(deepestLevel, childSummary.deepestLevel);
   }
 
   return {
     leafCount,
-    maxDepth,
+    deepestLevel,
     nodeCount,
     publicCount,
     rootCount: nodes.length,

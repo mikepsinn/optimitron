@@ -30,6 +30,13 @@ try {
   if (hookData.tool_name !== "Bash") process.exit(0);
 
   const cmd = hookData?.tool_input?.command ?? "";
+  // Skip commands that mention codex inside quoted/heredoc strings
+  // rather than invoking it. `git commit -m "... codex exec ..."`
+  // would otherwise fire this hook on every protocol-related commit.
+  const firstToken = String(cmd).trim().split(/\s+/)[0] ?? "";
+  if (/^(git|gh|grep|rg|find|cat|head|tail|sed|awk|echo|printf|ls|cd|node|pnpm|npm|yarn|tsx|powershell)$/i.test(firstToken)) {
+    process.exit(0);
+  }
   if (!/\bcodex\s+exec\b/.test(cmd)) process.exit(0);
 
   // Extract the prompt argument. Codex usage:

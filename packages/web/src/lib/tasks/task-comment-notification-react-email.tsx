@@ -7,6 +7,7 @@ import {
   CampaignShareFooter,
   CampaignText,
 } from "@/lib/email/react-email-components";
+import { EMAIL_SHARE_TEMPLATE_ID } from "@/lib/email/share-footer";
 import type { SenderSignature } from "@/lib/email/wishonia-signature";
 
 const ink = "#111827";
@@ -134,7 +135,10 @@ export function TaskCommentNotificationReactEmail({
       ) : null}
       {senderSignature ? <SenderSignatureBlock signature={senderSignature} /> : null}
       {recipientReferralUrl ? (
-        <CampaignShareFooter referralUrl={recipientReferralUrl} />
+        <CampaignShareFooter
+          referralUrl={recipientReferralUrl}
+          templateId={EMAIL_SHARE_TEMPLATE_ID}
+        />
       ) : null}
       <Text
         style={{

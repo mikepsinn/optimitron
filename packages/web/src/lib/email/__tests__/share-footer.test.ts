@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { SHARING_TIME_MINUTES } from "@optimitron/data/parameters";
 import { FLOW_MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/treaty-share-flow-parameters";
 import {
+  buildEmailShareTemplateText,
   buildShareFooterHtml,
   buildShareFooterText,
 } from "@/lib/email/share-footer";
@@ -28,5 +29,15 @@ describe("share footer", () => {
     expect(text).toContain("4 billion humans reached");
     expect(text).not.toContain("<a ");
     expect(text).not.toContain("[4 billion]");
+  });
+
+  it("renders the existing one-human template for email share-kit migrations", () => {
+    const text = buildEmailShareTemplateText({ referralUrl: SAMPLE_URL });
+    expect(text).toContain("Hi there");
+    expect(text).toContain("I love you very much");
+    expect(text).toContain("respond to this stupid survey");
+    expect(text).toContain(SAMPLE_URL);
+    expect(text).not.toContain("{target_name}");
+    expect(text).not.toContain("{treaty_url}");
   });
 });

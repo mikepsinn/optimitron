@@ -11,13 +11,10 @@ import { cn } from "@/lib/utils";
 type VerdictAnswer = "YES" | "NO" | "ABSTAIN";
 
 interface HumanityVGovernmentVerdictVoteProps {
-  abstainCount: number;
   existingAnswer: VerdictAnswer | null;
   fullDamagesLabel: string;
-  noCount: number;
   question: string;
   referendumSlug: string;
-  yesCount: number;
 }
 
 const ANSWER_LABELS: Record<VerdictAnswer, string> = {
@@ -32,18 +29,11 @@ function normalizeVerdictAnswer(value: string | null): VerdictAnswer | null {
   return null;
 }
 
-function countLabel(value: number) {
-  return new Intl.NumberFormat("en-US").format(value);
-}
-
 export function HumanityVGovernmentVerdictVote({
-  abstainCount,
   existingAnswer,
   fullDamagesLabel,
-  noCount,
   question,
   referendumSlug,
-  yesCount,
 }: HumanityVGovernmentVerdictVoteProps) {
   const searchParams = useSearchParams();
   const { status } = useSession();
@@ -54,11 +44,6 @@ export function HumanityVGovernmentVerdictVote({
     useState<VerdictAnswer | null>(null);
   const [error, setError] = useState<string | null>(null);
   const autoSubmitKeyRef = useRef<string | null>(null);
-  const [counts, setCounts] = useState<Record<VerdictAnswer, number>>({
-    YES: yesCount,
-    NO: noCount,
-    ABSTAIN: abstainCount,
-  });
 
   const callbackUrl = useMemo(() => {
     const encoded = pendingAuthAnswer ? `?verdict=${pendingAuthAnswer}` : "";
@@ -92,12 +77,6 @@ export function HumanityVGovernmentVerdictVote({
         throw new Error(body?.error ?? "Failed to record verdict.");
       }
 
-      setCounts((current) => {
-        const updated = { ...current };
-        if (answer) updated[answer] = Math.max(0, updated[answer] - 1);
-        updated[nextAnswer] += 1;
-        return updated;
-      });
       setAnswer(nextAnswer);
       setPendingAuthAnswer(null);
     } catch (voteError) {
@@ -204,40 +183,6 @@ export function HumanityVGovernmentVerdictVote({
           {error}
         </p>
       ) : null}
-
-      <dl className="mt-5 grid gap-3 border-t-2 border-foreground pt-4 text-sm font-bold sm:grid-cols-3">
-        <div>
-          <dt className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-            For Humanity
-          </dt>
-          <dd className="mt-1 text-2xl font-black tabular-nums text-foreground">
-            {countLabel(counts.YES)}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-            For Governments
-          </dt>
-          <dd className="mt-1 text-2xl font-black tabular-nums text-foreground">
-            {countLabel(counts.NO)}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-            Not Sure
-          </dt>
-          <dd className="mt-1 text-2xl font-black tabular-nums text-foreground">
-            {countLabel(counts.ABSTAIN)}
-          </dd>
-        </div>
-      </dl>
-
-      <p className="mt-4 text-xs font-bold leading-5 text-muted-foreground">
-        If a majority of humanity votes yes, no money appears by magic. That
-        would be convenient and therefore not how Earth works. It does create a
-        public verdict every government, court, investor, and candidate has to
-        answer.
-      </p>
     </section>
   );
 }

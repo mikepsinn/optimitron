@@ -22,6 +22,9 @@ import {
   getUserTreatySubtaskKey as getUserTreatySubtaskKeyShared,
   getUserTreatyTaskKey as getUserTreatyTaskKeyShared,
 } from "@/lib/tasks/task-keys";
+import {
+  syncPerVerifiedVoterTaskImpactEstimate,
+} from "@/lib/tasks/per-verified-voter-impact.server";
 
 export const USER_TREATY_TASK_TITLE =
   "Get 4 billion people to vote on the 1% Treaty";
@@ -135,6 +138,11 @@ export async function ensureUserTreatyTask(
     subtaskIds[kind] = c.taskId;
     subtaskStatuses[kind] = c.status;
   }
+
+  await syncPerVerifiedVoterTaskImpactEstimate(
+    db,
+    subtaskIds.signTreatyPersonally,
+  );
 
   return {
     created: parent.wasCreated,

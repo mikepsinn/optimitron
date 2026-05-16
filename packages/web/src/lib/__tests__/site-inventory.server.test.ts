@@ -24,6 +24,21 @@ describe("site inventory", () => {
     ).toBe(true);
     expect(
       result.pages.some(
+        (page) => page.url === "https://warondisease.org/campaign",
+      ),
+    ).toBe(false);
+    expect(
+      result.pages.some(
+        (page) => page.url === "https://warondisease.org/coalition",
+      ),
+    ).toBe(false);
+    expect(
+      result.pages.some(
+        (page) => page.url === "https://warondisease.org/impact",
+      ),
+    ).toBe(false);
+    expect(
+      result.pages.some(
         (page) => page.url === "https://warondisease.org/reasoning",
       ),
     ).toBe(false);

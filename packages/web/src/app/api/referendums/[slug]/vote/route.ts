@@ -40,6 +40,7 @@ export async function POST(
     const { slug } = await params;
     const body = (await request.json()) as {
       answer: string;
+      displayName?: string;
       ref?: string;
       makePublic?: boolean;
       inviteToken?: string;
@@ -56,6 +57,12 @@ export async function POST(
         { status: 400 },
       );
     }
+    const submittedDisplayName =
+      typeof body.displayName === "string"
+        ? body.displayName.trim().replace(/\s+/g, " ")
+        : "";
+    const makePublic =
+      typeof body.makePublic === "boolean" ? body.makePublic : true;
 
     const referendum = await prisma.referendum.findUnique({
       where: { slug, deletedAt: null },
@@ -84,7 +91,9 @@ export async function POST(
       }
     }
     if (!referredByUserId && body.inviteToken) {
-      const invitationReferrer = await resolveInvitationReferrer(body.inviteToken);
+      const invitationReferrer = await resolveInvitationReferrer(
+        body.inviteToken,
+      );
       if (invitationReferrer && invitationReferrer.referrerUserId !== userId) {
         referredByUserId = invitationReferrer.referrerUserId;
       }
@@ -109,7 +118,8 @@ export async function POST(
     /// Full URL the voter was on (e.g. https://warondisease.org/vote?ref=alice).
     /// Captured at insert time from the client. Variant key is derivable from
     /// the URL host on demand. First-vote-wins — revote does not overwrite.
-    const originUrl = typeof body.originUrl === "string" ? body.originUrl : null;
+    const originUrl =
+      typeof body.originUrl === "string" ? body.originUrl : null;
     const person = await ensurePersonForUser(userId);
     const vote = await prisma.referendumVote.upsert({
       where: {
@@ -123,7 +133,7 @@ export async function POST(
       update: {
         answer: answer as VotePosition,
         deletedAt: null,
-        isPublic: true,
+        isPublic: makePublic,
         userId,
         voteSource: ReferendumVoteSource.SELF,
       },
@@ -134,7 +144,7 @@ export async function POST(
         answer: answer as VotePosition,
         voteSource: ReferendumVoteSource.SELF,
         referredByUserId,
-        isPublic: true,
+        isPublic: makePublic,
         originUrl,
         ...(organizationId ? { organizationId } : {}),
       },
@@ -152,17 +162,24 @@ export async function POST(
       log.error("Referral invitation conversion error", invitationError);
     }
 
-    // Apply public-profile intent from the signature-box checkbox. Person owns
-    // the public-profile flag; we route the toggle through personId. Only
-    // writes when the caller sent an explicit boolean AND it differs from the
-    // current state (avoids redundant writes).
-    if (typeof body.makePublic === "boolean") {
-      if (person.isPublic !== body.makePublic) {
-        await prisma.person.update({
-          where: { id: person.id },
-          data: { isPublic: body.makePublic },
-        });
-      }
+    // Person owns the public-profile and display-name fields used by signer
+    // lists. The vote keeps its own public flag so users can hide a specific
+    // signature without changing old private votes into public signatories.
+    const personUpdateData: { displayName?: string; isPublic?: boolean } = {};
+    if (submittedDisplayName && submittedDisplayName !== person.displayName) {
+      personUpdateData.displayName = submittedDisplayName;
+    }
+    if (
+      typeof body.makePublic === "boolean" &&
+      person.isPublic !== makePublic
+    ) {
+      personUpdateData.isPublic = makePublic;
+    }
+    if (Object.keys(personUpdateData).length > 0) {
+      await prisma.person.update({
+        where: { id: person.id },
+        data: personUpdateData,
+      });
     }
 
     let activityId: string | undefined;
@@ -272,15 +289,13 @@ export async function POST(
         id: string;
         email: string;
         referralCode: string | null;
-        person:
-          | {
-              id: string;
-              handle: string | null;
-              displayName: string | null;
-              image: string | null;
-              isPublic: boolean | null;
-            }
-          | null;
+        person: {
+          id: string;
+          handle: string | null;
+          displayName: string | null;
+          image: string | null;
+          isPublic: boolean | null;
+        } | null;
       };
       let voter: VoterRecord | null = null;
       try {
@@ -350,7 +365,10 @@ export async function POST(
             });
           }
         } catch (firstConversionError) {
-          log.error("Referral first-conversion email error", firstConversionError);
+          log.error(
+            "Referral first-conversion email error",
+            firstConversionError,
+          );
         }
       }
     }
@@ -366,9 +384,6 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     log.error("Error", error);
-    return NextResponse.json(
-      { error: "Failed to cast vote" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to cast vote" }, { status: 500 });
   }
 }
