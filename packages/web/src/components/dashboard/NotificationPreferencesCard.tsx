@@ -103,7 +103,10 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
   )
 
   return (
-    <Card className="mb-8 border-2 border-foreground bg-background shadow-none">
+    <Card
+      data-testid="notification-preferences-card"
+      className="mb-8 border-2 border-foreground bg-background shadow-none"
+    >
       <Card.Header>
         <Card.Title className="text-2xl font-black uppercase">NOTIFICATION PREFERENCES</Card.Title>
         <Card.Description className="font-bold">Choose how and when to be bothered.</Card.Description>

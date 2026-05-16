@@ -1871,6 +1871,96 @@ export const MEDICAL_QALY_THRESHOLD: Parameter = {
   manualPageTitle: "United States Efficiency Audit",
 };
 
+export const MEDICAL_TOOLCHAIN_BRAIN_INITIATIVE_PLANNED_BUDGET: Parameter = {
+  value: 4500000000.0,
+  parameterName: "MEDICAL_TOOLCHAIN_BRAIN_INITIATIVE_PLANNED_BUDGET",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_toolchain_brain_initiative_planned_budget",
+  unit: "USD",
+  displayName: "Medical Toolchain BRAIN Initiative Planned Budget",
+  description: "Planned NIH BRAIN Initiative commitment described in the BRAIN 2025 scientific vision.",
+  sourceType: "external",
+  sourceRef: "nih-brain-initiative-planned-budget",
+  sourceUrl: "https://braininitiative.nih.gov/vision/nih-brain-initiative-reports/brain-2025-scientific-vision",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const MEDICAL_TOOLCHAIN_CRISPR_NIH_FUNDING_2011_2018: Parameter = {
+  value: 3100000000.0,
+  parameterName: "MEDICAL_TOOLCHAIN_CRISPR_NIH_FUNDING_2011_2018",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_toolchain_crispr_nih_funding_2011_2018",
+  unit: "USD",
+  displayName: "Medical Toolchain NIH CRISPR Funding, FY2011-FY2018",
+  description: "Rounded NIH CRISPR-related research funding for FY2011-FY2018 from CRS Table 1.",
+  sourceType: "external",
+  sourceRef: "crs-crispr-nih-funding-2011-2018",
+  sourceUrl: "https://www.congress.gov/crs_external_products/R/PDF/R44824/R44824.7.pdf",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const MEDICAL_TOOLCHAIN_HGP_COST_USD: Parameter = {
+  value: 2700000000.0,
+  parameterName: "MEDICAL_TOOLCHAIN_HGP_COST_USD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_toolchain_hgp_cost_usd",
+  unit: "USD",
+  displayName: "Medical Toolchain Human Genome Project Cost",
+  description: "Approximate Human Genome Project cost used as an observed medical-toolchain anchor.",
+  sourceType: "external",
+  sourceRef: "human-genome-and-genetic-editing",
+  sourceUrl: "https://www.genome.gov/11006929/2003-release-international-consortium-completes-hgp",
+  confidence: "medium",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const MEDICAL_TOOLCHAIN_HITECH_EHR_INCENTIVE_ESTIMATED_SPENDING: Parameter = {
+  value: 30000000000.0,
+  parameterName: "MEDICAL_TOOLCHAIN_HITECH_EHR_INCENTIVE_ESTIMATED_SPENDING",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_toolchain_hitech_ehr_incentive_estimated_spending",
+  unit: "USD",
+  displayName: "Medical Toolchain HITECH EHR Incentive Estimated Spending",
+  description: "GAO estimate of Medicare and Medicaid EHR incentive program spending from 2011 through 2019.",
+  sourceType: "external",
+  sourceRef: "hitech-ehr-incentive-estimated-spending",
+  sourceUrl: "https://www.gao.gov/products/gao-12-481",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const MEDICAL_TOOLCHAIN_OWS_POTENTIAL_VACCINE_AWARDS: Parameter = {
+  value: 18000000000.0,
+  parameterName: "MEDICAL_TOOLCHAIN_OWS_POTENTIAL_VACCINE_AWARDS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_toolchain_ows_potential_vaccine_awards",
+  unit: "USD",
+  displayName: "Medical Toolchain Operation Warp Speed Potential Vaccine Awards",
+  description: "GAO-reported total potential estimated value of Operation Warp Speed vaccine candidate awards.",
+  sourceType: "external",
+  sourceRef: "operation-warp-speed-potential-vaccine-awards",
+  sourceUrl: "https://www.gao.gov/assets/gao-21-207.pdf",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const MEDICAL_TOOLCHAIN_PCORNET_INFRASTRUCTURE_FUNDING: Parameter = {
+  value: 325000000.0,
+  parameterName: "MEDICAL_TOOLCHAIN_PCORNET_INFRASTRUCTURE_FUNDING",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_toolchain_pcornet_infrastructure_funding",
+  unit: "USD",
+  displayName: "Medical Toolchain PCORnet Infrastructure Funding Anchor",
+  description: "Rounded PCORI-funded PCORnet Studies amount from the Q4 2025 PCORnet dashboard. Used as a network-scale pragmatic-trial infrastructure anchor.",
+  sourceType: "external",
+  sourceRef: "pcornet-infrastructure-funding",
+  sourceUrl: "https://pcornet.org/wp-content/uploads/2026/01/EXTERNAL_PCORnetDashboard.Q4.v2.FINAL_.pdf",
+  confidence: "medium",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
 export const MENTAL_HEALTH_PRODUCTIVITY_LOSS_PER_CAPITA: Parameter = {
   value: 2000.0,
   parameterName: "MENTAL_HEALTH_PRODUCTIVITY_LOSS_PER_CAPITA",
@@ -4055,6 +4145,86 @@ export const CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL: Parameter = {
   formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_VSL",
   latex: "\\begin{gathered}\nD_{corp,ask} = D_{corp,floor} + V_{neverdev,VSL} = \\$4310T + \\$3000T = \\$7310T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } V_{neverdev,VSL} = Deaths_{neverdev} \\times VSL = 300M \\times \\$10M = \\$3000T\n\\end{gathered}",
   confidenceInterval: [3892493716349089.5, 1.0340149635944944e+16],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE: Parameter = {
+  value: 1.783085302091402e+16,
+  parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_aging_intake_exposure",
+  unit: "USD",
+  displayName: "Corporate Damages Prosecutor Gross Aging Intake Exposure",
+  description: "Gross pleading exposure for the overlapping aging intake class valued at VSL. Displayed separately because it overlaps with the broader disease-death class.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS * VALUE_OF_STATISTICAL_LIFE",
+  latex: "\\begin{gathered}\nD_{corp,aging,gross} = N_{plaintiffs,aging} \\times VSL = 1.78B \\times \\$10M = \\$17800T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,aging} = T_{post,aging} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 35 \\times 55M \\times 92.6\\% = 1.78B\n\\\\[0.5em]\n\\text{where } T_{post,aging} = Y_{plead,end} - Y_{aging,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{aging,plead} = Y_{disease,plead} + T_{aging,lag} = 1{,}950 + 40 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [-3240433850791136.0, 3.4362615569364576e+16],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE: Parameter = {
+  value: 3.0011409759876064e+16,
+  parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_disease_daly_exposure",
+  unit: "USD",
+  displayName: "Corporate Damages Prosecutor Gross Disease DALY Exposure",
+  description: "Gross pleading exposure for post-cutoff disease DALYs valued at the standard QALY value. This is disease-year and suffering exposure, not a final non-duplicative award.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS * STANDARD_ECONOMIC_QALY_VALUE_USD",
+  latex: "\\begin{gathered}\nD_{corp,DALY,gross} = DALYs_{post,disease} \\times Value_{QALY} = 200B \\times \\$150K = \\$30000T\n\\\\[0.5em]\n\\text{where } DALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1.6290743642563936e+16, 3.4375762231099856e+16],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE: Parameter = {
+  value: 3.820897075910147e+16,
+  parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_medical_misallocation_exposure",
+  unit: "USD",
+  displayName: "Corporate Damages Prosecutor Gross Medical Misallocation Exposure",
+  description: "Gross pleading exposure for post-cutoff medical misallocation disease plaintiffs valued at VSL. This is pleading exposure, not a final non-duplicative award.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS * VALUE_OF_STATISTICAL_LIFE",
+  latex: "\\begin{gathered}\nD_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1.4842476689391028e+16, 6.219030813469708e+16],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL: Parameter = {
+  value: 4.251472252614684e+16,
+  parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_total",
+  unit: "USD",
+  displayName: "Corporate Damages Prosecutor Gross Pleading Exposure Total",
+  description: "Aggressive prosecutor gross pleading exposure: strict non-duplicative floor plus gross medical misallocation exposure. This is gross pleading exposure, not a final award.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE",
+  latex: "\\begin{gathered}\nD_{corp,plead,gross} = D_{corp,floor} + D_{corp,med,gross} = \\$4310T + \\$38200T = \\$42500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1.831173502728708e+16, 6.740650064213561e+16],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS: Parameter = {
+  value: 7.252613228602291e+16,
+  parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_with_dalys",
+  unit: "USD",
+  displayName: "Corporate Damages Prosecutor Gross Pleading Exposure With DALYs",
+  description: "Aggressive prosecutor stacked gross pleading exposure: strict floor plus post-cutoff disease-death VSL exposure plus post-cutoff disease DALY exposure. This intentionally shows the full pleading stack and may overlap; it is not a final non-duplicative award.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE + CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE",
+  latex: "\\begin{gathered}\nD_{corp,plead,DALY} = D_{corp,floor} + D_{corp,med,gross} + D_{corp,DALY,gross} = \\$4310T + \\$38200T + \\$30000T = \\$72500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } D_{corp,DALY,gross} = DALYs_{post,disease} \\times Value_{QALY} = 200B \\times \\$150K = \\$30000T\n\\\\[0.5em]\n\\text{where } DALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\end{gathered}",
+  confidenceInterval: [3.704105926007588e+16, 9.918255649446518e+16],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
   manualPageTitle: "Humanity v. Government",
 };
@@ -6288,6 +6458,21 @@ export const MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN: Parameter = {
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
 };
 
+export const MEDICAL_TOOLCHAIN_OBSERVED_ANCHOR_COSTS: Parameter = {
+  value: 58625000000.0,
+  parameterName: "MEDICAL_TOOLCHAIN_OBSERVED_ANCHOR_COSTS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_toolchain_observed_anchor_costs",
+  unit: "USD",
+  displayName: "Observed Medical Toolchain Anchor Costs",
+  description: "Sum of observed anchor costs for major medical toolchain programs. This is anchor evidence for the prosecutor reserve, not a claim that these programs alone cure disease.",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "HGP + CRISPR + BRAIN + PCORnet + HITECH + OWS",
+  latex: "\\begin{gathered}\nC_{tool,anchors} \\\\\n= C_{tool,HGP} + C_{tool,CRISPR} + C_{tool,BRAIN} \\\\\n+ C_{tool,PCORnet} + C_{tool,EHR} + C_{tool,OWS} \\\\\n= \\$2.7B + \\$3.1B + \\$4.5B + \\$325M + \\$30B + \\$18B \\\\\n= \\$58.6B\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
 export const MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = {
   value: 45.333333333333336,
   parameterName: "MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO",
@@ -6398,17 +6583,6 @@ export const NUCLEAR_WINTER_OVERKILL_FACTOR: Parameter = {
   confidenceInterval: [42.57726523263751, 196.5850911895582],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
   manualPageTitle: "The Apocalypse Markup",
-};
-
-export const NUCLEAR_OVERKILL_SPARE_LAYERS: Parameter = {
-  ...NUCLEAR_WINTER_OVERKILL_FACTOR,
-  value: Math.max(0, Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value) - 1),
-  parameterName: "NUCLEAR_OVERKILL_SPARE_LAYERS",
-  unit: "count",
-  displayName: "Nuclear Overkill Spare Layers",
-  description:
-    "Rounded nuclear-winter-scale destructive capacity left after the first civilization-ending threshold.",
-  formula: "round(NUCLEAR_WINTER_OVERKILL_FACTOR) - 1",
 };
 
 export const PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT: Parameter = {
@@ -8654,6 +8828,21 @@ export const WAR_LIFE_YEARS_LOST_SINCE_1900: Parameter = {
   manualPageTitle: "The Cost of War",
 };
 
+export const WAR_MEDICAL_TOOLCHAIN_PRIZE_OVERPAY_MULTIPLE: Parameter = {
+  value: 341.1513859275053,
+  parameterName: "WAR_MEDICAL_TOOLCHAIN_PRIZE_OVERPAY_MULTIPLE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_medical_toolchain_prize_overpay_multiple",
+  unit: "x",
+  displayName: "War Medical Toolchain Prize Overpay Multiple",
+  description: "How many times larger the prosecutor's medical-toolchain prize reserve is than the observed anchor costs listed here.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_MEDICAL_TOOLCHAIN_PRIZE_BUDGET / MEDICAL_TOOLCHAIN_OBSERVED_ANCHOR_COSTS",
+  latex: "\\begin{gathered}\nm_{tool,overpay} = \\frac{C_{tool,prize}}{C_{tool,anchors}} = \\frac{\\$20T}{\\$58.6B} = 341\n\\\\[0.5em]\n\\text{where } C_{tool,anchors} = C_{tool,HGP} + C_{tool,CRISPR} + C_{tool,BRAIN} + C_{tool,PCORnet} + C_{tool,EHR} + C_{tool,OWS} = \\$2.7B + \\$3.1B + \\$4.5B + \\$325M + \\$30B + \\$18B = \\$58.6B\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
 export const WAR_QALY_VALUE_LOST_SINCE_1900: Parameter = {
   value: 1255500000000000.0,
   parameterName: "WAR_QALY_VALUE_LOST_SINCE_1900",
@@ -8684,6 +8873,54 @@ export const WAR_TOTAL_COST_SINCE_1900: Parameter = {
   confidenceInterval: [785869556473870.0, 2117806833549536.8],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
   manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_AGING_CONTROL_SENSITIVITY_YEAR: Parameter = {
+  value: 1990.0,
+  parameterName: "WAR_TRIAL_REDIRECT_AGING_CONTROL_SENSITIVITY_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_aging_control_sensitivity_year",
+  unit: "year",
+  displayName: "War-Redirect Biological Aging Control Year",
+  description: "Counterfactual calendar year when biological aging becomes a treatable risk factor in the aggressive medical-redirect model. Uses the calculated aging pleading cutoff year.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR",
+  latex: "\\begin{gathered}\nY_{aging,redirect} = Y_{aging,plead} = 1{,}990 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{aging,plead} = Y_{disease,plead} + T_{aging,lag} = 1{,}950 + 40 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1966.0, 2031.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR: Parameter = {
+  value: 1990.0,
+  parameterName: "WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_aging_pleading_cutoff_year",
+  unit: "year",
+  displayName: "War-Redirect Aging Pleading Cutoff Year",
+  description: "Aggressive prosecutor pleading cutoff year for presumptive aging-death plaintiffs. Calculated as the disease cutoff plus the geroscience lag assumption.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR + WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS",
+  latex: "\\begin{gathered}\nY_{aging,plead} = Y_{disease,plead} + T_{aging,lag} = 1{,}950 + 40 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1966.0, 2031.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR: Parameter = {
+  value: 1950.0,
+  parameterName: "WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_disease_pleading_cutoff_year",
+  unit: "year",
+  displayName: "War-Redirect Disease Pleading Cutoff Year",
+  description: "Aggressive prosecutor pleading cutoff year for presumptive disease-death plaintiffs. Calculated as the 1900 redirect start year plus medical-toolchain bootstrap years plus the treaty-scale therapeutic queue-clearance years.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "round(WAR_TRIAL_REDIRECT_START_YEAR + WAR_TRIAL_REDIRECT_TOOLCHAIN_BOOTSTRAP_YEARS + DFDA_QUEUE_CLEARANCE_YEARS)",
+  latex: "\\begin{gathered}\nY_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1926.0, 1991.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
 };
 
 export const WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE: Parameter = {
@@ -8718,6 +8955,165 @@ export const WAR_TRIAL_REDIRECT_EXCESS_MILITARY_TRIAL_YEARS: Parameter = {
   confidenceInterval: [22443.88907745716, 44091.74233598829],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
   manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_INFECTIOUS_DISEASE_CONTROL_YEAR: Parameter = {
+  value: 1950.0,
+  parameterName: "WAR_TRIAL_REDIRECT_INFECTIOUS_DISEASE_CONTROL_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_infectious_disease_control_year",
+  unit: "year",
+  displayName: "War-Redirect Infectious Disease Control Year",
+  description: "Counterfactual calendar year for practical infectious-disease control in the aggressive medical-redirect model. Uses the calculated disease pleading cutoff year.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR",
+  latex: "\\begin{gathered}\nY_{infectious,redirect} = Y_{disease,plead} = 1{,}950 = 1{,}950\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1926.0, 1991.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_NET_TRIAL_BUDGET: Parameter = {
+  value: 150000000000000.0,
+  parameterName: "WAR_TRIAL_REDIRECT_NET_TRIAL_BUDGET",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_net_trial_budget",
+  unit: "USD",
+  displayName: "War Trial Redirect Net Trial Budget After Toolchain Reserve",
+  description: "Cumulative military spending since the Federal Reserve era after reserving the aggressive prosecutor's medical-toolchain prize budget.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "CUMULATIVE_MILITARY_SPENDING_FED_ERA - WAR_MEDICAL_TOOLCHAIN_PRIZE_BUDGET",
+  latex: "\\begin{gathered}\nB_{trials,net} \\\\\n= Spending_{mil,cum,fed} - C_{tool,prize} \\\\\n= \\$170T - \\$20T \\\\\n= \\$150T\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_NONAGING_DISEASE_CONTROL_YEAR: Parameter = {
+  value: 1950.0,
+  parameterName: "WAR_TRIAL_REDIRECT_NONAGING_DISEASE_CONTROL_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_nonaging_disease_control_year",
+  unit: "year",
+  displayName: "War-Redirect Major Non-Aging Disease Control Year",
+  description: "Counterfactual calendar year for practical control of major non-aging disease burden in the aggressive medical-redirect model. Uses the calculated disease pleading cutoff year.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR",
+  latex: "\\begin{gathered}\nY_{disease,redirect} = Y_{disease,plead} = 1{,}950 = 1{,}950\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1926.0, 1991.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED: Parameter = {
+  value: 161463939720.12918,
+  parameterName: "WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_patient_slots_funded",
+  unit: "patient-slots",
+  displayName: "War Trial Redirect Patient Slots Funded",
+  description: "Patient-slots funded by the net redirected war budget at pragmatic trial cost per patient. Patient-slots are repeated experimental opportunities, not unique people.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_NET_TRIAL_BUDGET / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT",
+  latex: "\\begin{gathered}\nN_{slots,war} = \\frac{B_{trials,net}}{Cost_{pragmatic,pt}} = \\frac{\\$150T}{\\$929} = 161B\n\\\\[0.5em]\n\\text{where } B_{trials,net} = Spending_{mil,cum,fed} - C_{tool,prize} = \\$170T - \\$20T = \\$150T\n\\end{gathered}",
+  confidenceInterval: [65239753911.206116, 668082298224.2614],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_PER_LIVING_HUMAN: Parameter = {
+  value: 20.18299246501615,
+  parameterName: "WAR_TRIAL_REDIRECT_PATIENT_SLOTS_PER_LIVING_HUMAN",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_patient_slots_per_living_human",
+  unit: "patient-slots/person",
+  displayName: "War Trial Redirect Patient Slots Per Living Human",
+  description: "Patient-slots funded per living human, used to avoid implying hundreds of billions of unique patients. It means repeated trial opportunities across time and indications.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED / GLOBAL_POPULATION_2024",
+  latex: "\\begin{gathered}\nN_{slots,pc} = \\frac{N_{slots,war}}{Pop_{global}} = \\frac{161B}{8B} = 20.2\n\\\\[0.5em]\n\\text{where } N_{slots,war} = \\frac{B_{trials,net}}{Cost_{pragmatic,pt}} = \\frac{\\$150T}{\\$929} = 161B\n\\\\[0.5em]\n\\text{where } B_{trials,net} = Spending_{mil,cum,fed} - C_{tool,prize} = \\$170T - \\$20T = \\$150T\n\\end{gathered}",
+  confidenceInterval: [7.986529736696173, 85.31954236967228],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS: Parameter = {
+  value: 1783085302.091402,
+  parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_aging_plaintiffs",
+  unit: "plaintiffs",
+  displayName: "War Trial Redirect Post-Cutoff Aging Plaintiffs",
+  description: "Aggressive prosecutor aging intake count after the aging cutoff year. This overlaps with the broader disease-death plaintiff class because the annual-deaths parameter covers all disease and aging deaths; it is an intake class, not an additive damages line.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS * GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES * EVENTUALLY_AVOIDABLE_DEATH_PCT",
+  latex: "\\begin{gathered}\nN_{plaintiffs,aging} = T_{post,aging} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 35 \\times 55M \\times 92.6\\% = 1.78B\n\\\\[0.5em]\n\\text{where } T_{post,aging} = Y_{plead,end} - Y_{aging,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{aging,plead} = Y_{disease,plead} + T_{aging,lag} = 1{,}950 + 40 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [-348922159.99768925, 2697128060.997609],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS: Parameter = {
+  value: 35.0,
+  parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_aging_years",
+  unit: "years",
+  displayName: "War Trial Redirect Post-Cutoff Aging Years",
+  description: "Inclusive number of years in the aggressive prosecutor aging-death intake window.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_PLEADING_END_YEAR - WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR + 1",
+  latex: "\\begin{gathered}\nT_{post,aging} = Y_{plead,end} - Y_{aging,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{aging,plead} = Y_{disease,plead} + T_{aging,lag} = 1{,}950 + 40 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [-6.0, 59.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS: Parameter = {
+  value: 200076065065.84042,
+  parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_disease_dalys",
+  unit: "DALYs",
+  displayName: "War Trial Redirect Post-Cutoff Disease DALYs",
+  description: "Aggressive prosecutor estimate of post-cutoff avoidable disease DALYs. This measures disease-years, disability, and suffering after the disease cutoff, separate from the death-plaintiff VSL count.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS * GLOBAL_ANNUAL_DALY_BURDEN * EVENTUALLY_AVOIDABLE_DALY_PCT",
+  latex: "\\begin{gathered}\nDALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [90567719058.0023, 254664875895.50497],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS: Parameter = {
+  value: 3820897075.910147,
+  parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_disease_plaintiffs",
+  unit: "plaintiffs",
+  displayName: "War Trial Redirect Post-Cutoff Disease Plaintiffs",
+  description: "Aggressive prosecutor pleading count for post-cutoff disease-death plaintiffs: inclusive years from the disease cutoff through the pleading end year, multiplied by annual disease deaths and the eventually avoidable death share.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS * GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES * EVENTUALLY_AVOIDABLE_DEATH_PCT",
+  latex: "\\begin{gathered}\nN_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1813224267.827481, 4619750777.528809],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS: Parameter = {
+  value: 75.0,
+  parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_disease_years",
+  unit: "years",
+  displayName: "War Trial Redirect Post-Cutoff Disease Years",
+  description: "Inclusive number of years in the aggressive prosecutor disease-death plaintiff window.",
+  sourceType: "calculated",
+  confidence: "low",
+  formula: "WAR_TRIAL_REDIRECT_PLEADING_END_YEAR - WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR + 1",
+  latex: "\\begin{gathered}\nT_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [34.0, 99.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
 };
 
 export const WILLING_TRIAL_PARTICIPANTS_GLOBAL: Parameter = {
@@ -10811,6 +11207,20 @@ export const WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900: Parameter = {
   manualPageTitle: "The Cost of War",
 };
 
+export const WAR_MEDICAL_TOOLCHAIN_PRIZE_BUDGET: Parameter = {
+  value: 20000000000000.0,
+  parameterName: "WAR_MEDICAL_TOOLCHAIN_PRIZE_BUDGET",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_medical_toolchain_prize_budget",
+  unit: "USD",
+  displayName: "War Medical Toolchain Prize Budget",
+  description: "Aggressive prosecutor reserve for buying the missing medical toolchain: prizes, diagnostics, EHRs, sequencing, AI, factories, surveillance, and pragmatic-trial infrastructure before counting remaining money as direct trial capacity.",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [5000000000000.0, 50000000000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
 export const WAR_PROPERTY_DESTRUCTION_SINCE_1900: Parameter = {
   value: 45000000000000.0,
   parameterName: "WAR_PROPERTY_DESTRUCTION_SINCE_1900",
@@ -10827,44 +11237,56 @@ export const WAR_PROPERTY_DESTRUCTION_SINCE_1900: Parameter = {
   manualPageTitle: "The Cost of War",
 };
 
-export const WAR_TRIAL_REDIRECT_AGING_CONTROL_SENSITIVITY_YEAR: Parameter = {
-  value: 2015.0,
-  parameterName: "WAR_TRIAL_REDIRECT_AGING_CONTROL_SENSITIVITY_YEAR",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_aging_control_sensitivity_year",
-  unit: "year",
-  displayName: "War-Redirect Biological Aging Control Year (Sensitivity)",
-  description: "Exploratory sensitivity year for when a 1900 treaty freezing military spending and redirecting avoided military growth to pragmatic trials might have made biological aging a treatable risk factor. Included only to show what the same trial platform could surface if geroscience became testable at population scale; not part of the central historical damages estimate.",
+export const WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS: Parameter = {
+  value: 40.0,
+  parameterName: "WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_aging_lag_after_disease_control_years",
+  unit: "years",
+  displayName: "War-Redirect Aging Lag After Disease Control",
+  description: "Additional lag after broad disease-control capacity before biological aging becomes a treatable risk factor in the aggressive prosecutor model.",
   sourceType: "definition",
   confidence: "low",
-  confidenceInterval: [1985.0, 2060.0],
+  confidenceInterval: [10.0, 65.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
   manualPageTitle: "The Cost of War",
 };
 
-export const WAR_TRIAL_REDIRECT_INFECTIOUS_DISEASE_CONTROL_YEAR: Parameter = {
-  value: 1950.0,
-  parameterName: "WAR_TRIAL_REDIRECT_INFECTIOUS_DISEASE_CONTROL_YEAR",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_infectious_disease_control_year",
+export const WAR_TRIAL_REDIRECT_PLEADING_END_YEAR: Parameter = {
+  value: 2024.0,
+  parameterName: "WAR_TRIAL_REDIRECT_PLEADING_END_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_pleading_end_year",
   unit: "year",
-  displayName: "War-Redirect Infectious Disease Control Year",
-  description: "Counterfactual calendar year by which a 1900 treaty freezing military spending and redirecting avoided military growth to pragmatic trials could plausibly have achieved practical control of major infectious diseases. Practical control means effective prevention, treatment, or elimination in most places, not literal extinction of every pathogen.",
+  displayName: "War-Redirect Pleading End Year",
+  description: "End year for the aggressive prosecutor post-cutoff plaintiff count.",
   sourceType: "definition",
-  confidence: "low",
-  confidenceInterval: [1935.0, 1975.0],
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
+  manualPageTitle: "Humanity v. Government",
+};
+
+export const WAR_TRIAL_REDIRECT_START_YEAR: Parameter = {
+  value: 1900.0,
+  parameterName: "WAR_TRIAL_REDIRECT_START_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_start_year",
+  unit: "year",
+  displayName: "War-Redirect Medical Counterfactual Start Year",
+  description: "Start year for the aggressive prosecutor medical redirect counterfactual.",
+  sourceType: "definition",
+  confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
   manualPageTitle: "The Cost of War",
 };
 
-export const WAR_TRIAL_REDIRECT_NONAGING_DISEASE_CONTROL_YEAR: Parameter = {
-  value: 1990.0,
-  parameterName: "WAR_TRIAL_REDIRECT_NONAGING_DISEASE_CONTROL_YEAR",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_nonaging_disease_control_year",
-  unit: "year",
-  displayName: "War-Redirect Major Non-Aging Disease Control Year",
-  description: "Counterfactual calendar year by which a 1900 treaty freezing military spending and redirecting avoided military growth to pragmatic trials could plausibly have delivered effective prevention, treatment, or control for most major non-aging disease burden. This is a scenario parameter for historical opportunity-cost reasoning, not a measured historical fact.",
+export const WAR_TRIAL_REDIRECT_TOOLCHAIN_BOOTSTRAP_YEARS: Parameter = {
+  value: 14.0,
+  parameterName: "WAR_TRIAL_REDIRECT_TOOLCHAIN_BOOTSTRAP_YEARS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_toolchain_bootstrap_years",
+  unit: "years",
+  displayName: "War-Redirect Medical Toolchain Bootstrap Years",
+  description: "Assumed years to build the missing medical toolchain before the queue-clearance clock runs at full force: diagnostics, EHRs, sequencing, AI, factories, surveillance, and trial infrastructure. Set so the central queue model yields a 1950 disease cutoff.",
   sourceType: "definition",
   confidence: "low",
-  confidenceInterval: [1965.0, 2015.0],
+  confidenceInterval: [0.0, 40.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
   manualPageTitle: "The Cost of War",
 };
@@ -11027,6 +11449,12 @@ export const parameters = {
   LOBBYIST_SALARY_MIN_K,
   MEASLES_VACCINATION_ROI,
   MEDICAL_QALY_THRESHOLD,
+  MEDICAL_TOOLCHAIN_BRAIN_INITIATIVE_PLANNED_BUDGET,
+  MEDICAL_TOOLCHAIN_CRISPR_NIH_FUNDING_2011_2018,
+  MEDICAL_TOOLCHAIN_HGP_COST_USD,
+  MEDICAL_TOOLCHAIN_HITECH_EHR_INCENTIVE_ESTIMATED_SPENDING,
+  MEDICAL_TOOLCHAIN_OWS_POTENTIAL_VACCINE_AWARDS,
+  MEDICAL_TOOLCHAIN_PCORNET_INFRASTRUCTURE_FUNDING,
   MENTAL_HEALTH_PRODUCTIVITY_LOSS_PER_CAPITA,
   NATO_DEFENSE_SPENDING_ANNUAL,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
@@ -11164,6 +11592,11 @@ export const parameters = {
   CORPORATE_DAMAGES_PROPERTY_ENVIRONMENTAL_DESTRUCTION,
   CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA,
   CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL,
+  CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE,
+  CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE,
+  CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE,
+  CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL,
+  CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS,
   CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_PER_CAPITA,
   CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL,
   CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA,
@@ -11303,13 +11736,13 @@ export const parameters = {
   LOST_PROSPERITY_NPV_PERPETUITY_PER_CAPITA,
   LOST_PROSPERITY_NPV_PERPETUITY_TOTAL,
   MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN,
+  MEDICAL_TOOLCHAIN_OBSERVED_ANCHOR_COSTS,
   MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   MILITARY_VS_MEDICAL_RESEARCH_RATIO,
   MISALLOCATION_FACTOR_DEATH_VS_SAVING,
   MRNA_THERAPEUTIC_COMBINATIONS,
   NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT,
-  NUCLEAR_OVERKILL_SPARE_LAYERS,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   PEACE_DIVIDEND_CONFLICT_REDUCTION,
@@ -11451,10 +11884,24 @@ export const parameters = {
   WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL,
   WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA,
   WAR_LIFE_YEARS_LOST_SINCE_1900,
+  WAR_MEDICAL_TOOLCHAIN_PRIZE_OVERPAY_MULTIPLE,
   WAR_QALY_VALUE_LOST_SINCE_1900,
   WAR_TOTAL_COST_SINCE_1900,
+  WAR_TRIAL_REDIRECT_AGING_CONTROL_SENSITIVITY_YEAR,
+  WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR,
+  WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR,
   WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE,
   WAR_TRIAL_REDIRECT_EXCESS_MILITARY_TRIAL_YEARS,
+  WAR_TRIAL_REDIRECT_INFECTIOUS_DISEASE_CONTROL_YEAR,
+  WAR_TRIAL_REDIRECT_NET_TRIAL_BUDGET,
+  WAR_TRIAL_REDIRECT_NONAGING_DISEASE_CONTROL_YEAR,
+  WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED,
+  WAR_TRIAL_REDIRECT_PATIENT_SLOTS_PER_LIVING_HUMAN,
+  WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS,
+  WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS,
+  WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS,
+  WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS,
+  WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS,
   WILLING_TRIAL_PARTICIPANTS_GLOBAL,
   WISHONIA_DISEASE_CURE_FRACTION_15YR,
   WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL,
@@ -11604,10 +12051,12 @@ export const parameters = {
   WAR_COUNTERFACTUAL_ANNUAL_GROWTH_BOOST,
   WAR_DEATHS_SINCE_1900,
   WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900,
+  WAR_MEDICAL_TOOLCHAIN_PRIZE_BUDGET,
   WAR_PROPERTY_DESTRUCTION_SINCE_1900,
-  WAR_TRIAL_REDIRECT_AGING_CONTROL_SENSITIVITY_YEAR,
-  WAR_TRIAL_REDIRECT_INFECTIOUS_DISEASE_CONTROL_YEAR,
-  WAR_TRIAL_REDIRECT_NONAGING_DISEASE_CONTROL_YEAR,
+  WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS,
+  WAR_TRIAL_REDIRECT_PLEADING_END_YEAR,
+  WAR_TRIAL_REDIRECT_START_YEAR,
+  WAR_TRIAL_REDIRECT_TOOLCHAIN_BOOTSTRAP_YEARS,
   WISHOCRATIC_CROWD_ALPHA,
   _CASCADE_GENERATIONS,
   _R0,
@@ -11950,6 +12399,20 @@ export const citations: Record<string, Citation> = {
         issued: { 'date-parts': [[2024]] },
         'container-title': "Journal of Development Studies",
         URL: "https://www.tandfonline.com/doi/full/10.1080/00220388.2024.2445533",
+  },
+  "crs-crispr-nih-funding-2011-2018": {
+        id: "crs-crispr-nih-funding-2011-2018",
+        type: "report",
+        title: "Advanced Gene Editing: CRISPR-Cas9",
+        author: [
+          {
+            literal: "Congressional Research Service"
+          },
+        ],
+        issued: { 'date-parts': [[2018]] },
+        publisher: "Congressional Research Service",
+        URL: "https://www.congress.gov/crs_external_products/R/PDF/R44824/R44824.7.pdf",
+        note: "Table 1 reports NIH CRISPR-related funding totaling \\$3,083,419,930 for FY2011-FY2018.",
   },
   "cs-global-wealth-report-2023": {
         id: "cs-global-wealth-report-2023",
@@ -12502,6 +12965,20 @@ export const citations: Record<string, Citation> = {
         URL: "https://pmc.ncbi.nlm.nih.gov/articles/PMC5954824/",
         note: "PMC: California Universal Health Care | CEPR: Government Investment | PMC: Health Sector Investment & Growth | ODI: Fiscal Multipliers Review",
   },
+  "hitech-ehr-incentive-estimated-spending": {
+        id: "hitech-ehr-incentive-estimated-spending",
+        type: "report",
+        title: "Electronic Health Records: First Year of CMS's Incentive Programs Shows Opportunities to Improve Processes to Verify Providers Met Requirements",
+        author: [
+          {
+            literal: "U.S. Government Accountability Office"
+          },
+        ],
+        issued: { 'date-parts': [[2012]] },
+        publisher: "U.S. Government Accountability Office",
+        URL: "https://www.gao.gov/products/gao-12-481",
+        note: "GAO states Medicare and Medicaid EHR incentive program spending was estimated to total \\$30 billion from 2011 through 2019.",
+  },
   "hsieh-moretti2019": {
         id: "hsieh-moretti2019",
         type: "article-journal",
@@ -12882,6 +13359,19 @@ export const citations: Record<string, Citation> = {
         issued: { 'date-parts': [[2011]] },
         URL: "https://necrometrics.com/all20c.htm",
   },
+  "nih-brain-initiative-planned-budget": {
+        id: "nih-brain-initiative-planned-budget",
+        type: "webpage",
+        title: "BRAIN 2025: A Scientific Vision",
+        author: [
+          {
+            literal: "National Institutes of Health BRAIN Initiative"
+          },
+        ],
+        issued: { 'date-parts': [[2014]] },
+        URL: "https://braininitiative.nih.gov/vision/nih-brain-initiative-reports/brain-2025-scientific-vision",
+        note: "The BRAIN 2025 scientific vision set the NIH component plan; NIH notices describe the plan as a sustained federal commitment of \\$4.5 billion over 12 years.",
+  },
   "nih-budget-fy2025": {
         id: "nih-budget-fy2025",
         type: "article-journal",
@@ -13002,6 +13492,20 @@ export const citations: Record<string, Citation> = {
         URL: "https://www.opensecrets.org/revolving-door",
         note: "OpenSecrets, Revolving Door",
   },
+  "operation-warp-speed-potential-vaccine-awards": {
+        id: "operation-warp-speed-potential-vaccine-awards",
+        type: "report",
+        title: "Operation Warp Speed Vaccine Candidate Awards Potential Value",
+        author: [
+          {
+            literal: "U.S. Government Accountability Office"
+          },
+        ],
+        issued: { 'date-parts': [[2020]] },
+        publisher: "U.S. Government Accountability Office",
+        URL: "https://www.gao.gov/assets/gao-21-207.pdf",
+        note: "GAO reported Operation Warp Speed vaccine candidate awards with obligations of at least \\$10 billion and total potential estimated value of at least \\$18 billion.",
+  },
   "papanicolas2018": {
         id: "papanicolas2018",
         type: "article-journal",
@@ -13029,6 +13533,19 @@ export const citations: Record<string, Citation> = {
         'container-title': "Trials: Patients' Willingness Survey",
         URL: "https://trialsjournal.biomedcentral.com/articles/10.1186/s13063-015-1105-3",
         note: "Trials: Patients' Willingness Survey | Applied Clinical Trials: Patient Participation | PMC: Study Design Factors",
+  },
+  "pcornet-infrastructure-funding": {
+        id: "pcornet-infrastructure-funding",
+        type: "webpage",
+        title: "PCORnet Quarterly Progress Report, Q4 2025",
+        author: [
+          {
+            literal: "PCORnet"
+          },
+        ],
+        issued: { 'date-parts': [[2026]] },
+        URL: "https://pcornet.org/wp-content/uploads/2026/01/EXTERNAL_PCORnetDashboard.Q4.v2.FINAL_.pdf",
+        note: "The dashboard reports PCORI funding for PCORnet Studies of \\$324,785,410, rounded here to \\$325 million as a network-scale infrastructure anchor.",
   },
   "pentagon-unaccounted-2-5t": {
         id: "pentagon-unaccounted-2-5t",
@@ -13832,11 +14349,11 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 700,
-  external: 220,
-  calculated: 342,
-  definitions: 138,
-  citations: 160,
+  total: 728,
+  external: 226,
+  calculated: 362,
+  definitions: 140,
+  citations: 165,
 } as const;
 
 // ============================================================================
