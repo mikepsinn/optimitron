@@ -4,7 +4,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { readerMarkdownComponents } from "@/components/referendum/reader-markdown-components";
+import { JsonLdScript } from "@/components/site/JsonLdScript";
 import { TreatyNameSignatureBox } from "@/components/treaty/TreatyNameSignatureBox";
+import { buildTreatyStructuredData } from "@/lib/campaign-structured-data";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
 import { ROUTES, treatyLink } from "@/lib/routes";
@@ -37,6 +39,8 @@ export async function generateMetadata(): Promise<Metadata> {
  * of interactions.
  */
 export default async function TreatyPage() {
+  const hdrs = await headers();
+  const site = getSiteFromHeaders(hdrs);
   const referendumContent = await getReferendumPageContent(
     TREATY_REFERENDUM_SLUG,
   );
@@ -44,6 +48,7 @@ export default async function TreatyPage() {
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+      <JsonLdScript data={buildTreatyStructuredData(site)} />
       <section className="space-y-10">
         <h2 className="text-center text-4xl font-black uppercase tracking-[0.08em] text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
           Please quickly skim and sign to end war and disease.

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { headers } from "next/headers";
 import {
   HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
   HUMANITY_V_GOVERNMENT_VERDICT_QUESTION,
@@ -20,8 +21,12 @@ import {
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { WelfareClaim } from "@/components/shared/WelfareClaim";
+import { JsonLdScript } from "@/components/site/JsonLdScript";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 import { authOptions } from "@/lib/auth";
+import {
+  buildHumanityVGovernmentStructuredData,
+} from "@/lib/campaign-structured-data";
 import { formatCount } from "@/lib/format-count";
 import {
   getHumanityVGovernmentPlaintiffCount,
@@ -31,6 +36,7 @@ import {
   HUMANITY_V_GOVERNMENT_MANUAL_URL,
   ROUTES,
 } from "@/lib/routes";
+import { getSiteFromHeaders } from "@/lib/site";
 import { DamagesSensitivityCalculator } from "./DamagesSensitivityCalculator";
 import { HumanityVGovernmentVerdictVote } from "./HumanityVGovernmentVerdictVote";
 import { HUMANITY_V_GOVERNMENT_METADATA } from "./page-metadata";
@@ -47,6 +53,8 @@ const CASE_CAPTION = {
 } as const;
 
 export default async function HumanityVGovernmentPage() {
+  const hdrs = await headers();
+  const site = getSiteFromHeaders(hdrs);
   const session = await getServerSession(authOptions);
   const [plaintiffCount, verdictStats] = await Promise.all([
     getHumanityVGovernmentPlaintiffCount(),
@@ -55,6 +63,7 @@ export default async function HumanityVGovernmentPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+      <JsonLdScript data={buildHumanityVGovernmentStructuredData(site)} />
       <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
         Court of Humanity - Damages case
       </p>

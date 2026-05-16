@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { ReferendumStepperPage } from "@/components/referendum/ReferendumStepperPage";
+import { JsonLdScript } from "@/components/site/JsonLdScript";
 import { TreatyNameSignatureBox } from "@/components/treaty/TreatyNameSignatureBox";
+import { buildCourtStructuredData } from "@/lib/campaign-structured-data";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
@@ -31,6 +33,7 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLdScript data={buildCourtStructuredData(site)} />
       <ReferendumStepperPage
         slug={COURT_OF_HUMANITY_SLUG}
         referralCode={referralCode}

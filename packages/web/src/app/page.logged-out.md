@@ -14,5 +14,5 @@
 ## Visible Page Copy
 
 ## PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE
-- You pay governments $36.5 trillion a year to promote the general welfare — i.e. maximize median healthy life years and median after-tax inflation-adjusted income. What allocation between military spending and clinical trials would best fulfill that duty?
+- You pay governments $36.5 trillion a year to promote the general welfare (health and wealth). What allocation between military spending and clinical trials would best fulfill that duty?
 - SLIDE ME

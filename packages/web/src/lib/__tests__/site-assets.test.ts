@@ -57,13 +57,15 @@ describe("site-specific SEO assets", () => {
   it("emits robots data on the canonical host without indexing private account routes", () => {
     const site = getSiteConfig("warOnDisease");
     const robots = getSiteRobots(site);
+    const rules = Array.isArray(robots.rules) ? robots.rules : [robots.rules];
+    const defaultRule = rules.find((rule) => rule.userAgent === "*");
 
     expect(robots.host).toBe("https://warondisease.org");
     expect(robots.sitemap).toEqual(["https://warondisease.org/sitemap.xml"]);
-    expect(robots.rules).toEqual(
+    expect(defaultRule).toEqual(
       expect.objectContaining({
         userAgent: "*",
-        allow: "/",
+        allow: expect.arrayContaining(["/", "/api/agent/"]),
         disallow: expect.arrayContaining([
           "/api",
           "/auth",
@@ -74,6 +76,31 @@ describe("site-specific SEO assets", () => {
       }),
     );
     expect(JSON.stringify(robots.rules)).not.toContain("/vote");
+  });
+
+  it("allows agent API discovery for search and user-triggered AI crawlers", () => {
+    const robots = getSiteRobots(getSiteConfig("warOnDisease"));
+    const rules = Array.isArray(robots.rules) ? robots.rules : [robots.rules];
+
+    for (const userAgent of [
+      "OAI-SearchBot",
+      "Claude-SearchBot",
+      "Claude-User",
+      "PerplexityBot",
+      "Perplexity-User",
+      "Googlebot",
+      "GoogleOther",
+    ]) {
+      expect(rules).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            userAgent,
+            allow: expect.arrayContaining(["/", "/api/agent/"]),
+            disallow: expect.arrayContaining(["/api"]),
+          }),
+        ]),
+      );
+    }
   });
 
   it("redirects legacy root asset paths to the active site's copied assets", () => {

@@ -99,20 +99,45 @@ export function getSiteManifest(site: SiteConfig): MetadataRoute.Manifest {
 }
 
 export function getSiteRobots(site: SiteConfig): MetadataRoute.Robots {
+  const privateDisallows = [
+    "/api",
+    "/admin",
+    "/auth",
+    ROUTES.dashboard,
+    ROUTES.profile,
+    ROUTES.settings,
+    "/_next",
+  ];
+  const publicAllows = ["/", "/api/agent/"];
+  const aiCrawlerUserAgents = [
+    "OAI-SearchBot",
+    "GPTBot",
+    "ChatGPT-User",
+    "ClaudeBot",
+    "Claude-User",
+    "Claude-SearchBot",
+    "PerplexityBot",
+    "Perplexity-User",
+    "PerplexityUser",
+    "Googlebot",
+    "GoogleOther",
+    "Google-CloudVertexBot",
+    "Google-Extended",
+  ];
+
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: [
-        "/api",
-        "/admin",
-        "/auth",
-        ROUTES.dashboard,
-        ROUTES.profile,
-        ROUTES.settings,
-        "/_next",
-      ],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: publicAllows,
+        disallow: privateDisallows,
+      },
+      ...aiCrawlerUserAgents.map((userAgent) => ({
+        userAgent,
+        allow: publicAllows,
+        disallow: privateDisallows,
+      })),
+    ],
     sitemap: [`${site.canonicalOrigin}/sitemap.xml`],
     host: site.canonicalOrigin,
   };

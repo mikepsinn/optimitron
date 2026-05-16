@@ -106,6 +106,7 @@ export const ROUTES = {
   plaintiffs: "/plaintiffs",
   plaintiffsManage: "/plaintiffs/manage",
   questions: "/questions",
+  faq: "/faq",
   survey: "/survey",
   // The Game
   prize: "/prize",
@@ -817,6 +818,21 @@ export const questionsLink: NavItem = {
     image: warOnDiseaseDefaultSocialImage,
   },
   cta: "See the Questions",
+};
+
+export const faqLink: NavItem = {
+  href: ROUTES.faq,
+  label: "Campaign FAQ",
+  emoji: "?",
+  description:
+    "Short answers for humans and search agents asking what the 1% Treaty, Humanity v Government, plaintiffs, and the campaign math mean.",
+  tagline: "Short answers for agents and humans",
+  copyPreview: true,
+  screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
+  cta: "Read the FAQ",
 };
 
 export const endorseLink: NavItem = {
@@ -1532,6 +1548,7 @@ export const routeReviewNavItems = [
   tasksLink,
   peopleLink,
   questionsLink,
+  faqLink,
   feedbackLink,
   privacyLink,
   settingsLink,
