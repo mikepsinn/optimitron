@@ -207,7 +207,7 @@ export default async function PlaintiffsPage({
               .{" "}
               <a
                 className="text-sm underline underline-offset-4"
-                href="https://manual.warondisease.org/knowledge/appendix/parameters-and-calculations.html"
+                href="https://manual.WarOnDisease.org/knowledge/appendix/parameters-and-calculations.html"
                 rel="noopener noreferrer"
                 target="_blank"
               >
