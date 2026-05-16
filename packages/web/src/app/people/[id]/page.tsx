@@ -1,29 +1,29 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { PersonLifeStatus } from "@optimitron/db/enums";
+import { VOTER_SUFFERING_HOURS_PREVENTED } from "@optimitron/data/parameters";
+import { PersonLifeStatus, VotePosition } from "@optimitron/db/enums";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import type { TaskCardTask } from "@/components/tasks/task-card";
-import { SortableTaskList } from "@/components/tasks/task-list-controls";
-import { YEARS_PER_AVERTED_DEATH } from "@/components/tasks/task-row";
+import { SufferingPreventedMetric } from "@/components/referendum/SignatoriesLeaderboard";
 import { Avatar } from "@/components/retroui/Avatar";
-import { defaultButtonClassName } from "@/components/ui/default-button";
-import { WelfareClaim } from "@/components/shared/WelfareClaim";
-import { isPublicOfficialPerson } from "@/lib/public-officials";
+import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import {
-  aggregateTaskDelayStats,
-  formatCompactCount,
-  formatCompactCurrency,
-} from "@/lib/tasks/accountability";
+  defaultButtonClassName,
+  primaryButtonClassName,
+} from "@/components/ui/default-button";
+import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
+import { DECLARATION_SLUG } from "@/lib/declaration";
+import { prisma } from "@/lib/prisma";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import {
   humanityVGovernmentLink,
-  peopleLink,
   plaintiffsLink,
   ROUTES,
 } from "@/lib/routes";
@@ -31,7 +31,12 @@ import {
   getRepresentedPersonProfileData,
   type RepresentedPersonProfileData,
 } from "@/lib/represented-people.server";
-import { getSiteFromHeaders } from "@/lib/site";
+import {
+  getRequestSiteOrigin,
+  getSiteFromHeaders,
+} from "@/lib/site";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
+import { buildUserReferralUrl } from "@/lib/url";
 
 const PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS = 300;
 
@@ -47,6 +52,47 @@ const getCachedPersonTaskProfileData = unstable_cache(
   { revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS },
 );
 
+type PersonTaskProfileData = NonNullable<
+  Awaited<ReturnType<typeof getPersonTaskProfileData>>
+>;
+type PublicProfilePerson = PersonTaskProfileData["person"];
+type PublicProfileVote = PublicProfilePerson["referendumVotes"][number];
+
+const CAMPAIGN_TASK_TERMS = [
+  "1% treaty",
+  "one-percent-treaty",
+  "war on disease",
+  "war-on-disease",
+  "humanity v government",
+  "humanity-v-government",
+  "court of humanity",
+  "plaintiff",
+  "referendum",
+  "global survey",
+] as const;
+
+async function getVisitorTreatyStatus(userId: string | null) {
+  if (!userId) {
+    return { hasSignedTreaty: false };
+  }
+
+  const vote = await prisma.referendumVote.findFirst({
+    where: {
+      ...buildOfficialReferendumVoteWhere({
+        answer: VotePosition.YES,
+      }),
+      referendum: {
+        deletedAt: null,
+        slug: TREATY_REFERENDUM_SLUG,
+      },
+      userId,
+    },
+    select: { id: true },
+  });
+
+  return { hasSignedTreaty: Boolean(vote) };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -55,9 +101,12 @@ export async function generateMetadata({
   const { id } = await params;
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
-  const representedData = await getRepresentedPersonProfileData(id);
+  const [representedData, data] = await Promise.all([
+    getRepresentedPersonProfileData(id),
+    getPersonTaskProfileData(id, null),
+  ]);
 
-  if (representedData) {
+  if (representedData && (!data || !shouldUseCampaignProfile(data.person))) {
     const isDeceased =
       representedData.person.lifeStatus === PersonLifeStatus.DECEASED;
     const condition = representedData.memorial?.conditionLabel ?? null;
@@ -92,8 +141,6 @@ export async function generateMetadata({
     };
   }
 
-  const data = await getPersonTaskProfileData(id, null);
-
   if (!data) {
     return {
       title: { absolute: `Person | ${site.name}` },
@@ -101,21 +148,20 @@ export async function generateMetadata({
     };
   }
 
-  const isOfficial = isPublicOfficialPerson(data.person);
+  const treatyVote = getVoteBySlug(data.person, TREATY_REFERENDUM_SLUG);
+  const description = treatyVote
+    ? `${data.person.displayName} signed the 1% Treaty. Add your name.`
+    : `${data.person.displayName}'s public campaign profile. Sign the 1% Treaty.`;
 
   return {
     title: { absolute: `${data.person.displayName} | ${site.name}` },
-    description: isOfficial
-      ? `${data.person.displayName}'s employee performance review.`
-      : `${data.person.displayName}'s public task profile.`,
+    description,
     robots: { index: true, follow: true },
     metadataBase: new URL(site.canonicalOrigin),
     openGraph: {
       siteName: site.name,
       title: data.person.displayName,
-      description: isOfficial
-        ? `${data.person.displayName}'s employee performance review.`
-        : `${data.person.displayName}'s public task profile.`,
+      description,
     },
   };
 }
@@ -141,6 +187,93 @@ function formatDate(value: Date | null) {
     year: "numeric",
     timeZone: "UTC",
   }).format(value);
+}
+
+function formatIsoDate(value: Date | string | null | undefined) {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  return date.toISOString().slice(0, 10);
+}
+
+function formatHumanCount(value: number) {
+  return Math.max(0, value).toLocaleString("en-US");
+}
+
+function formatRecruitmentPhrase(value: number) {
+  const count = Math.max(0, value);
+  const noun = count === 1 ? "human" : "humans";
+  return `recruited ${formatHumanCount(count)} ${noun}`;
+}
+
+function getVoteBySlug(
+  person: PublicProfilePerson,
+  slug: string,
+): PublicProfileVote | null {
+  return (
+    person.referendumVotes.find(
+      (vote) => vote.referendum.slug === slug,
+    ) ?? null
+  );
+}
+
+function shouldUseCampaignProfile(person: PublicProfilePerson) {
+  return Boolean(person.user) || person.referendumVotes.length > 0;
+}
+
+function getTrustSignal(person: PublicProfilePerson) {
+  const treatyVote = getVoteBySlug(person, TREATY_REFERENDUM_SLUG);
+  const recruitedCount = person.user?._count.referendumReferrals ?? 0;
+
+  if (treatyVote) {
+    const signedDate = formatIsoDate(treatyVote.createdAt);
+    const parts = [
+      signedDate
+        ? `Signed the 1% Treaty ${signedDate}`
+        : "Signed the 1% Treaty",
+    ];
+    if (recruitedCount > 0) {
+      parts.push(formatRecruitmentPhrase(recruitedCount));
+    }
+    return parts.join(", ");
+  }
+
+  const affiliation = person.currentAffiliation?.trim();
+  if (
+    affiliation &&
+    /\b(institute|medicine|research|university|hospital|clinic|lab|foundation|mit)\b/i.test(
+      affiliation,
+    )
+  ) {
+    return affiliation;
+  }
+
+  return "Public campaign profile";
+}
+
+function getCampaignTaskText(task: TaskCardTask) {
+  return [
+    task.taskKey,
+    task.title,
+    task.description,
+    task.parentTask?.title,
+    ...task.interestTags,
+    ...task.skillTags,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function isCampaignTask(task: TaskCardTask) {
+  const haystack = getCampaignTaskText(task);
+  return CAMPAIGN_TASK_TERMS.some((term) => haystack.includes(term));
+}
+
+function buildForwardReferralHref(referralUrl: string) {
+  const subject = "Sign the 1% Treaty";
+  const body = `I signed the 1% Treaty. Add your name: ${referralUrl}`;
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function RepresentedPersonProfile({
@@ -358,162 +491,210 @@ export default async function PersonDetailPage({
   const { id } = await params;
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
-  const representedData = userId
-    ? await getRepresentedPersonProfileData(id)
-    : await getCachedRepresentedPersonProfileData(id);
+  const [representedData, data] = await Promise.all([
+    userId
+      ? getRepresentedPersonProfileData(id)
+      : getCachedRepresentedPersonProfileData(id),
+    userId
+      ? getPersonTaskProfileData(id, userId)
+      : getCachedPersonTaskProfileData(id),
+  ]);
 
-  if (representedData) {
+  if (representedData && (!data || !shouldUseCampaignProfile(data.person))) {
     return <RepresentedPersonProfile data={representedData} />;
   }
-
-  const data = userId
-    ? await getPersonTaskProfileData(id, userId)
-    : await getCachedPersonTaskProfileData(id);
 
   if (!data) {
     notFound();
   }
 
-  const { openTasks, person, verifiedTasks } = data;
+  const hdrs = await headers();
+  const requestOrigin = getRequestSiteOrigin({
+    host: hdrs.get("host"),
+    forwardedHost: hdrs.get("x-forwarded-host"),
+    forwardedProto: hdrs.get("x-forwarded-proto"),
+  });
+  const visitorStatus = await getVisitorTreatyStatus(userId);
+  const { person, verifiedTasks } = data;
   const fallbackInitials = getFallbackInitials(person.displayName);
-  const openSummary = aggregateTaskDelayStats(openTasks);
-
-  const openTasksTyped = openTasks as unknown as TaskCardTask[];
   const verifiedTyped = verifiedTasks as unknown as TaskCardTask[];
-
-  const netEconomicImpact = verifiedTyped.reduce((sum, task) => {
-    const v = task.impact?.selectedFrame?.expectedEconomicValueUsdBase;
-    return v != null ? sum + v : sum;
-  }, 0);
-  const netLivesSaved = verifiedTyped.reduce((sum, task) => {
-    const d = task.impact?.selectedFrame?.expectedDalysAvertedBase;
-    return d != null ? sum + d / YEARS_PER_AVERTED_DEATH : sum;
-  }, 0);
-
-  const hasAnyTasks = openTasks.length > 0 || verifiedTyped.length > 0;
+  const campaignTasks = verifiedTyped.filter(isCampaignTask).slice(0, 6);
+  const treatyVote = getVoteBySlug(person, TREATY_REFERENDUM_SLUG);
+  const courtVote = getVoteBySlug(person, DECLARATION_SLUG);
+  const recruitedCount = person.user?._count.referendumReferrals ?? 0;
+  const plaintiffCount = person.user?._count.createdCourtCaseParties ?? 0;
+  const signatureCount = (treatyVote ? 1 : 0) + recruitedCount;
+  const hoursPrevented =
+    VOTER_SUFFERING_HOURS_PREVENTED.value * signatureCount;
+  const profileReferralUrl = person.user
+    ? buildUserReferralUrl(
+        { handle: person.handle, referralCode: person.user.referralCode },
+        requestOrigin,
+      )
+    : `${requestOrigin}${ROUTES.vote}`;
+  const visitorReferralUrl = session?.user
+    ? buildUserReferralUrl(session.user, requestOrigin)
+    : null;
+  const shouldShowVisitorReferral =
+    visitorStatus.hasSignedTreaty && Boolean(visitorReferralUrl);
+  const signatureRows = person.referendumVotes;
+  const activityRows = [
+    {
+      label: "Treaty signed",
+      value: treatyVote
+        ? (formatIsoDate(treatyVote.createdAt) ?? "Yes")
+        : "Not public",
+    },
+    {
+      label: "Court signed",
+      value: courtVote
+        ? (formatIsoDate(courtVote.createdAt) ?? "Yes")
+        : "Not public",
+    },
+    {
+      label: "Plaintiffs registered",
+      value: formatHumanCount(plaintiffCount),
+    },
+    {
+      label: "Humans recruited",
+      value: formatHumanCount(recruitedCount),
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8">
-        <header className="space-y-4">
-          <nav className="text-sm font-bold">
-            <Link className="underline underline-offset-4" href={ROUTES.people}>
-              {peopleLink.label}
-            </Link>
-            <span className="mx-2 text-muted-foreground">/</span>
-            <span className="text-muted-foreground">{person.displayName}</span>
-          </nav>
-          <div className="flex items-start gap-4">
-            <Avatar className="h-20 w-20 shrink-0 border-2 border-foreground bg-muted">
-              <Avatar.Image
-                alt={person.displayName}
-                src={person.image ?? undefined}
-              />
-              <Avatar.Fallback className="bg-foreground font-black text-background">
+    <div className="min-h-screen bg-background pb-20 text-foreground">
+      <div className="mx-auto flex max-w-4xl flex-col px-4 pb-16 pt-6 sm:pt-10">
+        <header className="flex flex-col gap-4 border-b-2 border-foreground pb-6 sm:flex-row sm:items-center">
+          <Avatar className="h-28 w-28 shrink-0 border-2 border-foreground bg-background sm:h-32 sm:w-32">
+            {person.image ? (
+              <Avatar.Image alt={person.displayName} src={person.image} />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-muted text-3xl font-black uppercase text-foreground">
                 {fallbackInitials || "?"}
-              </Avatar.Fallback>
-            </Avatar>
-            <div className="min-w-0 space-y-1">
-              <h1 className="text-3xl font-bold leading-tight sm:text-4xl">
-                {person.displayName}
-              </h1>
-              {person.currentAffiliation ? (
-                <p className="text-sm font-bold text-muted-foreground">
-                  {person.currentAffiliation}
-                </p>
-              ) : null}
-              {isPublicOfficialPerson(person) ? (
-                <p className="text-xs font-bold text-muted-foreground">
-                  Job: <WelfareClaim variant="metric" />
-                </p>
-              ) : null}
-            </div>
-          </div>
-          {person.bio?.trim() ? (
-            <p className="max-w-4xl text-sm font-bold text-muted-foreground">
-              {person.bio}
+              </div>
+            )}
+          </Avatar>
+          <div className="min-w-0">
+            <h1 className="text-4xl font-black uppercase leading-none [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
+              {person.displayName}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm font-black uppercase leading-6 tracking-[0.12em] text-muted-foreground">
+              {getTrustSignal(person)}
             </p>
-          ) : null}
+          </div>
         </header>
 
-        {/* Stats — overdue clock + net completed impact */}
-        {hasAnyTasks ? (
-          <section className="space-y-2">
-            <h2 className="text-lg font-bold uppercase tracking-wide">
-              Employee Performance
-            </h2>
-            <div className="grid gap-3 border-2 border-foreground bg-background p-4 sm:grid-cols-3 lg:grid-cols-5">
+        <section className="border-b-2 border-foreground py-6">
+          <SufferingPreventedMetric
+            className="items-start px-0 py-0 text-left hover:no-underline"
+            hoursPrevented={hoursPrevented}
+            label="Hours of suffering prevented"
+            name={person.displayName}
+            valueClassName="text-5xl sm:text-6xl md:text-7xl"
+          />
+        </section>
+
+        <section className="border-b-2 border-foreground py-6">
+          {shouldShowVisitorReferral && visitorReferralUrl ? (
+            <div className="space-y-4">
+              <a
+                className={`${primaryButtonClassName} w-full sm:w-auto`}
+                href={buildForwardReferralHref(visitorReferralUrl)}
+              >
+                Forward My Referral
+              </a>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  Overdue Tasks
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Your referral URL
                 </p>
-                <p className="mt-1 text-2xl font-bold">
-                  {openTasks.length.toLocaleString("en-US")}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  DALYs Lost From Delay
-                </p>
-                <p className="mt-1 text-2xl font-bold">
-                  {formatCompactCount(openSummary.currentHumanLivesLost)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  Economic Loss From Delay
-                </p>
-                <p className="mt-1 text-2xl font-bold">
-                  {formatCompactCurrency(
-                    openSummary.currentEconomicValueUsdLost,
-                  )}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  Net Lives Saved
-                </p>
-                <p className="mt-1 text-2xl font-bold">
-                  {formatCompactCount(netLivesSaved)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  Net $ Saved
-                </p>
-                <p className="mt-1 text-2xl font-bold">
-                  {formatCompactCurrency(netEconomicImpact)}
-                </p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <p className="min-h-12 break-all border border-foreground bg-background px-3 py-3 text-sm font-bold">
+                    {visitorReferralUrl}
+                  </p>
+                  <CopyLinkButton
+                    className="min-h-12 justify-center rounded-none border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-foreground hover:text-background hover:shadow-none active:translate-x-0 active:translate-y-0 active:shadow-none"
+                    copiedLabel="Copied"
+                    idleLabel="Copy"
+                    url={visitorReferralUrl}
+                  />
+                </div>
               </div>
             </div>
-          </section>
-        ) : null}
+          ) : (
+            <a
+              className={`${primaryButtonClassName} w-full sm:w-auto`}
+              href={profileReferralUrl}
+            >
+              Sign the Treaty
+            </a>
+          )}
+        </section>
 
-        {openTasksTyped.length > 0 ? (
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold uppercase tracking-wide">
-              Overdue Tasks
-            </h2>
-            <SortableTaskList
-              tasks={openTasksTyped}
-              variant="signer"
-              hideAssignee
-            />
-          </section>
-        ) : null}
+        <section className="grid gap-3 border-b-2 border-foreground py-6 sm:grid-cols-4">
+          {activityRows.map((row) => (
+            <div className="border border-foreground p-4" key={row.label}>
+              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                {row.label}
+              </p>
+              <p className="mt-2 text-2xl font-black tabular-nums">
+                {row.value}
+              </p>
+            </div>
+          ))}
+        </section>
 
-        {verifiedTyped.length > 0 ? (
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold uppercase tracking-wide">
-              Completed Tasks
+        <section className="border-b-2 border-foreground py-8">
+          <h2 className="text-2xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)]">
+            Public Signatures
+          </h2>
+          {signatureRows.length > 0 ? (
+            <ul className="mt-4 divide-y divide-foreground border border-foreground">
+              {signatureRows.map((vote) => (
+                <li
+                  className="grid gap-2 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                  key={vote.id}
+                >
+                  <Link
+                    className="font-black underline-offset-4 hover:underline"
+                    href={`${ROUTES.referendum}/${vote.referendum.slug}`}
+                  >
+                    {vote.referendum.title}
+                  </Link>
+                  <span className="text-sm font-black uppercase tracking-[0.12em] text-muted-foreground">
+                    {formatIsoDate(vote.createdAt) ?? "Signed"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 font-bold text-muted-foreground">
+              No public referendum signatures yet.
+            </p>
+          )}
+        </section>
+
+        {campaignTasks.length > 0 ? (
+          <section className="py-8">
+            <h2 className="text-2xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)]">
+              Public Campaign Tasks
             </h2>
-            <SortableTaskList
-              tasks={verifiedTyped}
-              variant="completed"
-              defaultSortKey="verifiedAt"
-              defaultSortDir="desc"
-              hideAssignee
-            />
+            <ul className="mt-4 divide-y divide-foreground border border-foreground">
+              {campaignTasks.map((task) => (
+                <li className="p-4" key={task.id}>
+                  <Link
+                    className="font-black underline-offset-4 hover:underline"
+                    href={`${ROUTES.tasks}/${task.id}`}
+                  >
+                    {task.title}
+                  </Link>
+                  {task.verifiedAt ? (
+                    <p className="mt-1 text-sm font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                      Completed {formatIsoDate(task.verifiedAt) ?? ""}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
           </section>
         ) : null}
       </div>

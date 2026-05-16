@@ -53,6 +53,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     path: "/organizations/institute-for-accelerated-medicine",
     required: false,
   },
+  { name: "people-mike", path: "/people/mike", required: false },
   { name: "task-optimize-earth", path: "/tasks/optimize-earth", required: false },
   { name: "task-one-percent-treaty", path: "/tasks/1-pct-treaty", required: false },
   { name: "task-signer-canada", path: "/tasks/1-pct-treaty-signer-ca", required: false },

@@ -1,11 +1,14 @@
 import {
+  CourtCasePartyRole,
   OrgType,
+  ReferendumVoteSource,
   TaskCategory,
   TaskClaimPolicy,
   TaskClaimStatus,
   TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
+  VotePosition,
   type Prisma,
 } from "@optimitron/db";
 import { upsertTrustedOrganization } from "@/lib/organization.server";
@@ -51,6 +54,64 @@ const CLAIM_STATUSES_THAT_BLOCK_RECLAIM = [
   TaskClaimStatus.COMPLETED,
   TaskClaimStatus.VERIFIED,
 ] as const;
+
+const personTaskProfilePersonSelect = {
+  bio: true,
+  countryCode: true,
+  currentAffiliation: true,
+  displayName: true,
+  handle: true,
+  id: true,
+  image: true,
+  isPublicFigure: true,
+  referendumVotes: {
+    where: {
+      answer: VotePosition.YES,
+      deletedAt: null,
+      isPublic: true,
+      voteSource: ReferendumVoteSource.SELF,
+    },
+    orderBy: { createdAt: "desc" },
+    select: {
+      createdAt: true,
+      id: true,
+      publicComment: true,
+      referendum: {
+        select: {
+          slug: true,
+          title: true,
+        },
+      },
+    },
+  },
+  sourceRef: true,
+  sourceUrl: true,
+  user: {
+    select: {
+      _count: {
+        select: {
+          createdCourtCaseParties: {
+            where: {
+              deletedAt: null,
+              isPublic: true,
+              role: CourtCasePartyRole.NAMED_PLAINTIFF,
+            },
+          },
+          referendumReferrals: {
+            where: {
+              answer: VotePosition.YES,
+              deletedAt: null,
+              isPublic: true,
+              voteSource: ReferendumVoteSource.SELF,
+            },
+          },
+        },
+      },
+      id: true,
+      referralCode: true,
+    },
+  },
+} satisfies Prisma.PersonSelect;
 
 const sourceArtifactSelect = {
   artifactType: true,
@@ -1381,34 +1442,12 @@ export async function getPersonTaskProfileData(
   // the first misses.
   let person = await prisma.person.findFirst({
     where: { deletedAt: null, handle: handleOrId },
-    select: {
-      bio: true,
-      countryCode: true,
-      currentAffiliation: true,
-      displayName: true,
-      handle: true,
-      id: true,
-      image: true,
-      isPublicFigure: true,
-      sourceRef: true,
-      sourceUrl: true,
-    },
+    select: personTaskProfilePersonSelect,
   });
   if (!person) {
     person = await prisma.person.findFirst({
       where: { deletedAt: null, id: handleOrId },
-      select: {
-        bio: true,
-        countryCode: true,
-        currentAffiliation: true,
-        displayName: true,
-        handle: true,
-        id: true,
-        image: true,
-        isPublicFigure: true,
-        sourceRef: true,
-        sourceUrl: true,
-      },
+      select: personTaskProfilePersonSelect,
     });
   }
   if (!person) {

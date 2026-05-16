@@ -113,6 +113,7 @@ const routeOrder = [
   "tasks-index-auth",
   "people",
   "people-auth",
+  "people-mike",
   "questions",
   "feedback",
   "settings",

@@ -43,6 +43,43 @@ interface SignatoriesLeaderboardProps {
   };
 }
 
+export function SufferingPreventedMetric({
+  className,
+  hoursPrevented,
+  label,
+  name,
+  valueClassName,
+}: {
+  className?: string;
+  hoursPrevented: number;
+  label?: string;
+  name: string;
+  valueClassName?: string;
+}) {
+  return (
+    <ImpactExplainer
+      className={cn(
+        "flex min-w-[7rem] flex-col items-end justify-center px-1 py-0.5 text-right text-foreground hover:underline",
+        className,
+      )}
+      label={`Explain hours of suffering prevented impact math for ${name}`}
+      showFullAnalysisLink={false}
+    >
+      <span
+        className={cn(
+          "text-xl font-black uppercase tabular-nums leading-none sm:text-2xl",
+          valueClassName,
+        )}
+      >
+        {fmtRaw(hoursPrevented)}
+      </span>
+      <span className="mt-1 max-w-[8rem] text-[10px] font-black uppercase leading-tight tracking-[0.12em] text-muted-foreground sm:max-w-none sm:text-[11px]">
+        {label ?? "Hours of suffering prevented"}
+      </span>
+    </ImpactExplainer>
+  );
+}
+
 export function SignatoriesLeaderboard({
   className,
   publicSignatories,
@@ -276,18 +313,10 @@ function SignatoryRow({
         )}
       </div>
 
-      <ImpactExplainer
-        className="flex min-w-[7rem] flex-col items-end justify-center px-1 py-0.5 text-right text-foreground hover:underline"
-        label={`Explain hours of suffering prevented impact math for ${name}`}
-        showFullAnalysisLink={false}
-      >
-        <span className="text-xl font-black uppercase tabular-nums leading-none sm:text-2xl">
-          {fmtRaw(entry.hoursPrevented)}
-        </span>
-        <span className="mt-1 max-w-[8rem] text-[10px] font-black uppercase leading-tight tracking-[0.12em] text-muted-foreground sm:max-w-none sm:text-[11px]">
-          Hours of suffering prevented
-        </span>
-      </ImpactExplainer>
+      <SufferingPreventedMetric
+        hoursPrevented={entry.hoursPrevented}
+        name={name}
+      />
     </div>
   );
 

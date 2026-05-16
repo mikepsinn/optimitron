@@ -440,6 +440,28 @@ Do not let lower items crowd out higher ones.
   lives in campaign-facing pages, shared snippets, and the badge artifact,
   not the onboarding form.
 
+## P1 - Person/Org Conversion Surfaces (post-PR #81)
+
+Roadmap from Mike's 2026-05-15 brainstorm. /people/[id] redesign lands in PR #81; the rest follow once that merges. Ship in this order for maximum reuse.
+
+- **PR-A: Foundation-action seed tasks.** Seed `optimize-earth` task tree with concrete user actions: donate $1, print poster, hang flyer, social-share. New task category `campaign-action`. Hours-prevented impact metric per task. One file: `packages/db/src/managed-data/managed-seed-data.ts`. Smallest, lowest risk; unlocks PR-B and PR-C.
+
+- **PR-B: `/orgs/[slug]` task display.** Mirror `/people/[id]` conversion-surface pattern onto org pages. Reuse `SufferingPreventedMetric` (extracted in #81). Wire `getOrganizationTasks` MCP to a page consumer. Primary CTA: ENDORSE (visitor not in org) vs SHARE (visitor's org already endorsed). Below-fold: org-completed tasks + member leaderboard.
+
+- **PR-C: Add-org + assign-task UX.** Backend primitives exist (`createOrganization` + `createTask` MCP). New surfaces: `/orgs/[slug]/admin/tasks` for org admin self-assignment; `/admin/assign-task` (superuser, Mike-only) for cross-org. Gate behind superuser role until proper moderation. Audience: org admin who endorsed via `/endorse`, wants to coordinate their members.
+
+- **PR-D: Hand-curated public-figure catalog.** Seed Person rows for top 50-100 public figures (scientists, politicians, celebrities). Each row: displayName, handle (`mlk`, `einstein`, `gates`), 50-word deadpan-Wishonia bio, 1-3 attributed campaign-relevant actions with documented public-statement sources, impact-estimate (DALYs averted, methodology-cited from `parameters-calculations-citations.ts`), `isPublicFigure: true` flag (new bool on Person). `/people/<famous-slug>` renders with "Public-figure record" eyebrow. Visitors can co-sign the figure's position.
+
+- **PR-E: AI-cataloged public-figure activity (deferred).** Scale PR-D with NER on Wikipedia/news/govt records → impact-attribution model → manual-review pipeline. Scaffolding only after PR-D's manual seed proves the UX works. Not on the campaign critical path.
+
+**Out-of-scope for this roadmap:** peer-task-assignment on `/people/[id]` (Mike deferred 2026-05-15; needs whitelist/opt-in moderation design — separate plan).
+
+**Shared component reuse:** all five PRs share `SufferingPreventedMetric` (extracted in #81). No new design primitive.
+
+**Risks:** public-figure attribution disputes (use only documented public statements; label "historical position, not active endorsement"); spam on `/admin/assign-task` (superuser-gated); org-task display competing with conversion CTA (keep task list below the fold).
+
+Drafted plan: `.claude/plans/campaign-impact-attribution-roadmap.md` (not yet reviewed; Mike declined full `/autoplan` review for speed).
+
 ## P1 - Plaintiffs and Court Framing
 
 ### `/humanity-v-government` plaintiff-first rework
