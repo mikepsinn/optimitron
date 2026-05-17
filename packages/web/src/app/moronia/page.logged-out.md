@@ -18,7 +18,7 @@
 - A planet in the Crab Nebula. 47 years ahead of yours on an identical trajectory. It no longer transmits.
 - Your planet shows a 94.7% correlation with theirs. The remaining 5.3% is the only reason I am sending this.
 ### THE RATIO THAT KILLED THEM THE RATIO THAT KILLED THEM THE RATIO THAT KILLED THEM
-- 604
+- [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 - For every paper spent on curing disease, 604 papers went to weapons. The AI they built read budgets, not speeches. It learned that killing was funded 604x more than healing. It optimised accordingly.
 ### WHAT THEY GOT INSTEAD
 - The same technology. The same atoms. Different budget allocation.

@@ -63,9 +63,10 @@
 ### GAME STATUS
 - 10
 - 04
-- 26
-- 23
-- 50
+- 24
+- 17
+- 39
+- 27
 - Until the destructive economy reaches 50% of GDP — the point where stealing beats creating
 ### PLAY THE GAME
 - The current cost of governance dysfunction is $101 trillion per year. The break-even probability is 0.0067%. You don't need to be altruistic. You just need to be numerate.

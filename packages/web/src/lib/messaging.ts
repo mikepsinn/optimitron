@@ -22,7 +22,7 @@ export const POINT = `${POINT_NAME} Point` as const;
 export const POINTS = `${POINT_NAME} Points` as const;
 
 export const REFERRAL_SHARE_LABEL =
-  "Immediately share this link with everyone you do not want to suffer and die from horrible diseases." as const;
+  "Forward this message to everyone you don't want to suffer and die of horrible diseases." as const;
 
 export const REFERRAL_SHARE_PROMPT =
   `${REFERRAL_SHARE_LABEL} It will significantly reduce the probability that they will suffer and die from horrible diseases.` as const;
