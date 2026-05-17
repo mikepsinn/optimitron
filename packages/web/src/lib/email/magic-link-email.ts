@@ -38,6 +38,7 @@ export async function sendMagicLinkEmail({
       notRequested: copy.notRequested,
     }),
     skipSuppressionCheck: true,
+    skipWishoniaSignature: true,
   });
 
   if (result.status !== "sent") {

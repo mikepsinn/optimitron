@@ -19,8 +19,8 @@ const optimitronCopy: MagicLinkCopy = {
 };
 
 const warOnDiseaseCopy: MagicLinkCopy = {
-  buttonLabel: "End war and disease",
-  intro: defaultIntro,
+  buttonLabel: "Save my vote",
+  intro: "Click the button below to verify your email and save your vote.",
   notRequested: defaultNotRequested,
 };
 
@@ -47,7 +47,7 @@ export const MAGIC_LINK_TEMPLATE_ID = "magic-link";
 
 export function buildMagicLinkSubject(host: string) {
   if (getSiteFromHost(host).key === "warOnDisease") {
-    return "End war and disease";
+    return "Save your 1% Treaty vote";
   }
 
   return `Sign in to ${host}`;
@@ -105,7 +105,7 @@ export const MAGIC_LINK_PREVIEW: EmailPreview = {
   scope: "auth",
   from: () => formatDefaultSystemEmailFromHeader(),
   subject: () => buildMagicLinkSubject(SAMPLE_MAGIC_LINK_HOST),
-  skipWishoniaSignature: false,
+  skipWishoniaSignature: true,
   renderReact: () => {
     const copy = getMagicLinkCopy(SAMPLE_MAGIC_LINK_HOST);
     return React.createElement(MagicLinkReactEmail, {

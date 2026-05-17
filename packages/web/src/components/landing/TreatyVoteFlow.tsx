@@ -104,7 +104,7 @@ export interface TreatyVoteFlowProps {
   surface?: string;
 }
 
-const DEFAULT_SLIDER_HEADLINE = "Please Take 30 Seconds to End War and Disease";
+const DEFAULT_SLIDER_HEADLINE = "Drag the slider to split the money.";
 const CHOICE_CARD_SETTLED_SCROLL_DELAY_MS = 500;
 
 function PragmaticClinicalTrialsDefinition({
@@ -186,9 +186,13 @@ function DefaultSliderPrompt() {
         param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
         valueOverride={formatWelfareClaimAmountText()}
       />{" "}
-      a year to promote the general welfare (i.e. maximize median health and
-      wealth). Of the money available for military/weapons and clinical trials,
-      how much should go to each?
+      a year to promote the general welfare: health and wealth. Of the money
+      available for military/weapons and{" "}
+      <PragmaticClinicalTrialsDefinition>
+        pragmatic clinical trials
+      </PragmaticClinicalTrialsDefinition>
+      {", "}
+      move the slider to show the split governments should use.
     </>
   );
 }
@@ -473,6 +477,19 @@ export function TreatyVoteFlow({
 
   const isContextFirstVariant =
     flowVariant === TREATY_FLOW_VARIANTS.contextFirstV2;
+  const isSurveyCompletion = postVoteCompletion === "message";
+  const saveTitle = isSurveyCompletion
+    ? "Save Your Response"
+    : "Save Your 1% Treaty Vote";
+  const emailSaveLabel = isSurveyCompletion
+    ? "Email me a link to save my response"
+    : "Email me a link to save my vote";
+  const emailSavePendingLabel = isSurveyCompletion
+    ? "Sending response-save link..."
+    : "Sending vote-save link...";
+  const emailSaveSuccessFooter = isSurveyCompletion
+    ? "Your response is recorded. Open the email to save it."
+    : VOTE_SECTION.emailSuccessFooter;
 
   const advancePreVote = (next: PreVoteScreen, dismissive = false) => {
     const nextDismissiveCount = dismissive
@@ -894,7 +911,14 @@ export function TreatyVoteFlow({
                 </div>
 
                 {/* Slider with Animation */}
-                <div className="relative px-0 pb-3 pt-1 sm:px-2 sm:pb-10 sm:pt-3">
+                <div
+                  className={cn(
+                    "relative px-0 pt-1 sm:px-2 sm:pt-3",
+                    showAnimation && !userHasDragged
+                      ? "pb-20 sm:pb-24"
+                      : "pb-3 sm:pb-10",
+                  )}
+                >
                   <AnimatePresence>
                     {showAnimation && !userHasDragged && (
                       <>
@@ -903,14 +927,14 @@ export function TreatyVoteFlow({
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="pointer-events-none absolute -top-20 z-10 hidden sm:block"
+                          className="pointer-events-none absolute top-16 z-10 sm:top-20"
                           style={{
-                            left: `clamp(0rem, calc(${animatedValue}% - 4.5rem), calc(100% - 9rem))`,
+                            left: `clamp(0rem, calc(${animatedValue}% - 2.75rem), calc(100% - 5.5rem))`,
                           }}
                         >
-                          <div className="border border-black bg-white px-4 py-2">
-                            <p className="whitespace-nowrap text-xs font-black uppercase tracking-[0.22em] text-black">
-                              Slide me
+                          <div className="w-[5.5rem] border border-black bg-white px-2 py-1 text-center sm:py-2">
+                            <p className="whitespace-nowrap text-[10px] font-black uppercase tracking-[0.18em] text-black sm:text-xs sm:tracking-[0.22em]">
+                              Drag me
                             </p>
                           </div>
                         </motion.div>
@@ -980,7 +1004,7 @@ export function TreatyVoteFlow({
                       onClick={handleSliderSubmit}
                       className={`${treatyPrimaryButtonClass} w-full text-base sm:text-lg`}
                     >
-                      SUBMIT
+                      SUBMIT THIS SPLIT
                     </Button>
                   </motion.div>
                 )}
@@ -1132,7 +1156,7 @@ export function TreatyVoteFlow({
               <TreatyFlowShell contentClassName="max-w-2xl space-y-6 py-6 sm:py-8">
                 <div className="space-y-3">
                   <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[var(--treaty-ink)] sm:text-3xl">
-                    {isContextFirstVariant ? "Vote counted." : "Save Your Vote"}
+                    {isContextFirstVariant ? "Vote counted." : saveTitle}
                   </p>
                   <p className="text-center text-base font-bold leading-8 text-[var(--treaty-ink-soft)] sm:text-lg">
                     {isContextFirstVariant ? (
@@ -1168,9 +1192,9 @@ export function TreatyVoteFlow({
                   hideContainer
                   title={null}
                   googleButtonLabel={isContextFirstVariant ? "Verify with Google" : "Save with Google"}
-                  emailButtonLabel={isContextFirstVariant ? "Verify by email" : "Email me a save link"}
-                  emailPendingButtonLabel={isContextFirstVariant ? "Sending verification link..." : "Sending save link..."}
-                  emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
+                  emailButtonLabel={isContextFirstVariant ? "Verify by email" : emailSaveLabel}
+                  emailPendingButtonLabel={isContextFirstVariant ? "Sending verification link..." : emailSavePendingLabel}
+                  emailSuccessFooter={emailSaveSuccessFooter}
                 />
               </TreatyFlowShell>
             )}

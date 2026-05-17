@@ -274,13 +274,13 @@ export const VOTE_SECTION = {
   // Humanity v. Government: governments are paid ~$36T/yr to promote
   // the general welfare and underdeliver. Voters' welfare-findings
   // become evidence in the case; preferences alone would not.
-  sliderPrompt: `You pay governments ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare (i.e. maximize median health and wealth). Of the money available for military/weapons and clinical trials, how much should go to each?`,
+  sliderPrompt: `You pay governments ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare: health and wealth. Of the money available for military/weapons and pragmatic clinical trials, move the slider to show the split governments should use.`,
   realityCheck:
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:
     "Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?",
   emailSuccessFooter:
-    `Your vote is locked in. Now share your link to start earning ${POINT_NAME} Points.`,
+    `Your 1% Treaty vote is saved. Now share your link to start earning ${POINT_NAME} Points.`,
 };
 
 export const VOTE_VALUE = {

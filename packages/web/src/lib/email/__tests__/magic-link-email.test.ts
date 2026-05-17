@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  MAGIC_LINK_PREVIEW,
+  buildMagicLinkText,
   buildMagicLinkSubject,
   getMagicLinkCopy,
 } from "@/lib/email/magic-link-render";
@@ -16,15 +18,15 @@ describe("magic-link host dispatch", () => {
   describe("getMagicLinkCopy", () => {
     it("returns War on Disease copy for the legacy Trial Abundance Survey host", () => {
       const copy = getMagicLinkCopy("trialabundancesurvey.org");
-      expect(copy.buttonLabel).toBe("End war and disease");
+      expect(copy.buttonLabel).toBe("Save my vote");
     });
 
     it("returns War on Disease copy for warondisease.* hosts", () => {
       expect(getMagicLinkCopy("warondisease.org").buttonLabel).toBe(
-        "End war and disease",
+        "Save my vote",
       );
       expect(getMagicLinkCopy("warondisease.local").buttonLabel).toBe(
-        "End war and disease",
+        "Save my vote",
       );
     });
 
@@ -37,7 +39,7 @@ describe("magic-link host dispatch", () => {
   describe("buildMagicLinkSubject", () => {
     it("uses the War on Disease subject line for warondisease.* hosts", () => {
       expect(buildMagicLinkSubject("warondisease.org")).toBe(
-        "End war and disease",
+        "Save your 1% Treaty vote",
       );
     });
 
@@ -45,6 +47,20 @@ describe("magic-link host dispatch", () => {
       expect(buildMagicLinkSubject("optimitron.local")).toBe(
         "Sign in to optimitron.local",
       );
+    });
+  });
+
+  describe("buildMagicLinkText", () => {
+    it("tells War on Disease voters the link saves their 1% Treaty vote", () => {
+      expect(
+        buildMagicLinkText("https://warondisease.org/callback", "warondisease.org"),
+      ).toContain("Click the button below to verify your email and save your vote.");
+    });
+  });
+
+  describe("MAGIC_LINK_PREVIEW", () => {
+    it("does not append the Wishonia signature to transactional sign-in mail", () => {
+      expect(MAGIC_LINK_PREVIEW.skipWishoniaSignature).toBe(true);
     });
   });
 });
