@@ -194,6 +194,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/kill-zombie-codex-on-session-start.mjs\"",
+            "timeout": 6000
+          },
+          {
+            "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-pr-check.mjs\"",
             "timeout": 15000
           },
