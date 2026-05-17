@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   auditSentryPreview,
+  buildAuditFailureMarkdown,
   buildMarkdownReport,
   eventMatchesDeployment,
 } from "./audit-sentry-preview.mjs";
@@ -122,6 +123,16 @@ test("renders a compact PR comment body", () => {
   assert.match(markdown, /<!-- sentry-preview-audit -->/);
   assert.match(markdown, /OPTIMITRON-WEB-7X/);
   assert.match(markdown, /preview\.example\.vercel\.app\/dashboard/);
+});
+
+test("renders Sentry permission failures without tokens", () => {
+  const markdown = buildAuditFailureMarkdown(
+    new Error("Sentry API returned HTTP 403: permission denied"),
+  );
+
+  assert.match(markdown, /Sentry preview audit failed/);
+  assert.match(markdown, /event:read/);
+  assert.doesNotMatch(markdown, /Bearer/);
 });
 
 function jsonResponse(value) {

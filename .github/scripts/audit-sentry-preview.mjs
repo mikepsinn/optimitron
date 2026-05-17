@@ -198,6 +198,19 @@ export function buildStepSummary(report) {
   return `${lines.join("\n")}\n`;
 }
 
+export function buildAuditFailureMarkdown(error) {
+  return [
+    "<!-- sentry-preview-audit -->",
+    "### Sentry preview audit failed",
+    "",
+    "The preview smoke test ran, but the Sentry audit could not query issues.",
+    "",
+    `Error: \`${truncate(error?.message ?? error, 500)}\``,
+    "",
+    "Check that the GitHub secret used by this job has Sentry `org:read`, `project:read`, and `event:read` scopes.",
+  ].join("\n");
+}
+
 async function listIssues(input) {
   const params = new URLSearchParams({
     environment: input.environment,
@@ -386,8 +399,16 @@ function sleep(ms) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
+  main().catch(async (error) => {
     console.error(error);
+    const markdown = `${buildAuditFailureMarkdown(error)}\n`;
+    const markdownFile = process.env.SENTRY_AUDIT_MARKDOWN_FILE;
+    if (markdownFile) {
+      await writeFile(markdownFile, markdown, "utf8");
+    }
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown, "utf8");
+    }
     process.exitCode = 1;
   });
 }

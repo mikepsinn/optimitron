@@ -7,7 +7,7 @@ permissions:
   contents: read
   deployments: read
   issues: write
-  pull-requests: read
+  pull-requests: write
 
 # Operator setup for protected Vercel deployments:
 # 1. Open GitHub Settings -> Environments -> Preview -> Environment secrets.
@@ -387,7 +387,9 @@ jobs:
         if: always()
         env:
           PREVIEW_URL: ${{ github.event.deployment_status.environment_url }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          # Dedicated read token should have org:read, project:read, event:read.
+          # The release-upload SENTRY_AUTH_TOKEN may not be allowed to read issues.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_PREVIEW_AUDIT_TOKEN || secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_AUDIT_INITIAL_DELAY_MS: "15000"
           SENTRY_AUDIT_LOOKBACK_MINUTES: "30"
           SENTRY_AUDIT_MARKDOWN_FILE: ${{ runner.temp }}/sentry-preview-audit.md
@@ -408,6 +410,7 @@ jobs:
       - name: Comment on Sentry preview errors
         if: always() && steps.sentry_audit.outputs.exit_code != '0'
         uses: actions/github-script@v8
+        continue-on-error: true
         env:
           SENTRY_AUDIT_MARKDOWN_FILE: ${{ runner.temp }}/sentry-preview-audit.md
         with:
