@@ -172,4 +172,42 @@ describe("TreatyVoteFlow", () => {
 
     expect(scrollIntoView).toHaveBeenCalledTimes(2);
   });
+
+  it("centers the submit button after slider release", async () => {
+    await act(async () => {
+      root.render(
+        <TreatyVoteFlow
+          defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
+          respectStoredFlowVariant={false}
+        />,
+      );
+    });
+
+    const slider = container.querySelector<HTMLInputElement>(
+      'input[type="range"]',
+    );
+    expect(slider).not.toBeNull();
+
+    await act(async () => {
+      slider!.value = "70";
+      Simulate.change(slider!);
+    });
+
+    scrollIntoView.mockClear();
+    await act(async () => {
+      Simulate.pointerUp(slider!);
+    });
+
+    expect(scrollIntoView).not.toHaveBeenCalled();
+
+    await act(async () => {
+      vi.advanceTimersByTime(75);
+    });
+
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "center",
+    });
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+  });
 });

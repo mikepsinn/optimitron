@@ -8,7 +8,6 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { REFERENDUM_ANSWER, type ReferendumAnswer } from "@/config/referendums";
 import { SecretChainPitch } from "@/components/referendum/SecretChainPitch";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
-import { REFERRAL_SHARE_LABEL } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
 import { getUserDisplayName } from "@/lib/user-display";
@@ -273,7 +272,7 @@ export function ReferendumSignatureBox({
           <>
             <SecretChainPitch citizenName={getUserDisplayName(session?.user)} />
             <ShareLinkButtons
-              label={REFERRAL_SHARE_LABEL}
+              label="Share this link"
               shareText={shareText}
               url={referralUrl}
               emailSubject={emailSubject}

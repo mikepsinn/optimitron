@@ -41,6 +41,6 @@
 - Article V: The [1% Treaty](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) is hereby established as the standing settlement offer. Governments may accept the Treaty's terms — redirecting 1% of annual military spending to pragmatic clinical trials, with bondholder and political-incentive structures attached — in exchange for prospective liability caps on Court of Humanity claims arising from acts predating Treaty ratification. Signing gives them a settlement price. Refusing keeps the claims, judgments, and bondholder lawyers pointed at them.
 - Article VI: Membership in the Court of Humanity is irrevocable for the lifetime of the member, but no member may bind their heirs or descendants. Each subsequent generation joins by their own consent. The Court has no head of state, no annual budget, no dues, and no way to be voted out by anyone other than its own members. In this respect it resembles every other institution your species has ever built that actually works.
 - IN WITNESS WHEREOF, the undersigned humans, being of sound mind (debatable) and tired of watching their governments kill their families with no consequences, hereby join the Court of Humanity.
-- Joined this day, May 15, 2026, in the year of our ongoing confusion.
+- Joined this day, May 17, 2026, in the year of our ongoing confusion.
 - SIGN
 - Display my name publicly on the signer list and leaderboards (recommended).

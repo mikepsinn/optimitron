@@ -18,6 +18,18 @@ const logger = createLogger("auth-form");
 const SIGN_IN_LINK_SENT_MESSAGE =
   "Sign-in link sent. Check spam if you do not see it within 60 seconds.";
 
+function detectEmbeddedFrame(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}
+
 interface ProviderFlags {
   demo?: boolean;
   email: boolean;
@@ -73,13 +85,14 @@ export function AuthForm({
   const [pendingAction, setPendingAction] = useState<
     "google" | "magic" | "demo" | null
   >(null);
+  const [isEmbeddedFrame, setIsEmbeddedFrame] = useState(false);
 
   const isLoading = pendingAction !== null;
   const isDocument = variant === "document";
   const fieldClassName = compact ? "h-11 text-base" : "h-12 text-base";
   const buttonClassName = compact ? "h-11 text-sm" : "h-12 text-base";
   const magicLinkEnabled = providers?.email ?? true;
-  const googleEnabled = providers?.google ?? true;
+  const googleEnabled = (providers?.google ?? true) && !isEmbeddedFrame;
   const demoLoginEnabled =
     providers?.demo ??
     isDemoLoginEnabled({
@@ -149,6 +162,10 @@ export function AuthForm({
     setError(initialError);
     setHasSubmitted(false);
   }, [initialError]);
+
+  useEffect(() => {
+    setIsEmbeddedFrame(detectEmbeddedFrame());
+  }, []);
 
   function persistAuthContext() {
     if (onBeforeAuth?.() === false) {

@@ -14,12 +14,10 @@
 ## Visible Page Copy
 
 ## REGISTER PLAINTIFFS FOR HUMANITY V GOVERNMENT.
-- You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare — i.e. maximize median healthy life years and median after-tax inflation-adjusted income. Since 1900 they spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their employers — enough to fund [37,800](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) years of clinical trials at current funding levels.
-- Register anyone you love who was killed or harmed. The case in [Humanity v. Government](/humanity-v-government) seeks [$10.6 million/person](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html) per murdered human in damages.
-### IF SOMEONE YOU LOVE DIED OF DISEASE IN OR AFTER [1950](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html), OR AGING IN OR AFTER [1990](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html), IT IS WRONGFUL DEATH.
-- The cited math counts the time to build medical tools and clear the treatment queue, then puts the disease line at [1950](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html). Aging gets about [40](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) more years and lands at [1990](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html); biology was harder, not innocent.
-- IT IS WRONGFUL DEATH.
-- [REGISTER A PLAINTIFF](#register-plaintiff)
+- You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare — i.e. maximize median healthy life years and median after-tax inflation-adjusted income. Since 1900 they spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people.
+- Had they adopted the [1% Treaty](/treaty) and frozen military spending in 1900, that money would have funded [37,800](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) years of clinical trials. Disease would have been eradicated by [1950](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html). Aging reversed by [1990](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html). [methodology](https://manual.WarOnDisease.org/knowledge/appendix/parameters-and-calculations.html)
+- Every disease case since [1950](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) and every aging death since [1990](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) is misallocation harm — wrongful, attributable, registerable.
+- Register anyone you know who suffered disease since [1950](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) or died since [1990](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html).
 ### REGISTER PLAINTIFF
 - FIRST NAME
 - MIDDLE NAME OPTIONAL

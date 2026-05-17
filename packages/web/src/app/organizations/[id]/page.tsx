@@ -1,5 +1,11 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import {
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_REDUCTION_PCT,
+  fmtParamValueOnly,
+} from "@optimitron/data/parameters";
 import { OrganizationCopyField } from "@/components/organizations/OrganizationCopyField";
 import { OrganizationGrantCalculator } from "@/components/organizations/OrganizationGrantCalculator";
 import { OrganizationProfileEditor } from "@/components/organizations/OrganizationProfileEditor";
@@ -9,12 +15,17 @@ import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import {
+  PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL,
   getOrganizationSurveyPath,
-  NONPROFIT_COALITION_STRATEGY_URL,
-  ROUTES,
 } from "@/lib/routes";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { buildOrganizationSurveyUrl } from "@/lib/site";
+import {
+  FLOW_GLOBAL_WARHEAD_COUNT,
+  FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
+  FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+  formatFlowWords,
+} from "@/lib/treaty-share-flow-parameters";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 export const dynamic = "force-dynamic";
@@ -38,13 +49,6 @@ export default async function OrganizationPage({
           user: { select: userDisplaySelect },
         },
         orderBy: { joinedAt: "asc" },
-      },
-      referendumPositions: {
-        where: { deletedAt: null },
-        include: {
-          referendum: { select: { id: true, slug: true, title: true } },
-        },
-        orderBy: { updatedAt: "desc" },
       },
     },
   });
@@ -71,18 +75,68 @@ export default async function OrganizationPage({
   const escapedIframeTitle = escapeHtml(iframeTitle);
   const iframeCode = `<iframe src="${organizationSurveyUrl}" title="${escapedIframeTitle}" width="100%" height="760" style="border:0;max-width:100%;"></iframe>`;
   const buttonCode = `<a href="${organizationSurveyUrl}" style="display:inline-block;border:1px solid #000;padding:12px 16px;color:#000;text-decoration:none;font-weight:700;">Take the ${GLOBAL_SURVEY_NAME}</a>`;
-  const emailSubject = "30 seconds to end war and disease";
+  const nuclearWinterWarheadThreshold = formatFlowWords(
+    FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+    3,
+  );
+  const globalWarheadCount = formatFlowWords(FLOW_GLOBAL_WARHEAD_COUNT, 3);
+  const apocalypseCount = formatFlowWords(
+    FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
+    3,
+  );
+  const treatyReduction = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
+  const trialCapacityMultiplier = fmtParamValueOnly(
+    DFDA_TRIAL_CAPACITY_MULTIPLIER,
+    3,
+  );
+  const diseaseEradicationYears = fmtParamValueOnly(
+    DFDA_QUEUE_CLEARANCE_YEARS,
+    2,
+  );
+  const statusQuoYears = fmtParamValueOnly(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 3);
+  const emailSubject = "Please take 30 seconds to end war and disease";
   const emailBody = `Subject: ${emailSubject}
 
-Hi,
+It currently requires about ${nuclearWinterWarheadThreshold} nuclear weapons to create a nuclear winter, destroy the food system, and cause an apocalypse. Humanity currently has about ${globalWarheadCount} nuclear weapons, sufficient to cause at least ${apocalypseCount} of these apocalypses.
 
-${org.name} joined the International Campaign to End War and Disease by publicly supporting the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.
+Sacrificing one apocalypse of this mass-murder capacity by redirecting ${treatyReduction} of military spending to fund high-efficiency pragmatic clinical trials could increase the pace of medical research ${trialCapacityMultiplier} times. This could compress the time required to find the first treatment for all diseases from ${statusQuoYears} years to ${diseaseEradicationYears} years.
 
-Please answer the ${GLOBAL_SURVEY_NAME}:
-
-${organizationSurveyUrl}
-
-This is a policy survey, not a candidate endorsement.`;
+Please take this survey to share your opinion on this proposal:
+${organizationSurveyUrl}`;
+  const linkedSurveyUrl = linkHtml(
+    organizationSurveyUrl,
+    organizationSurveyUrl,
+  );
+  const emailHtmlBody = [
+    `<p><strong>Subject:</strong> ${escapeHtml(emailSubject)}</p>`,
+    `<p>It currently requires about ${linkHtml(
+      nuclearWinterWarheadThreshold,
+      FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD.manualPageUrl,
+    )} nuclear weapons to create a nuclear winter, destroy the food system, and cause an apocalypse. Humanity currently has about ${linkHtml(
+      globalWarheadCount,
+      FLOW_GLOBAL_WARHEAD_COUNT.manualPageUrl,
+    )} nuclear weapons, sufficient to cause at least ${linkHtml(
+      apocalypseCount,
+      FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR.manualPageUrl,
+    )} of these apocalypses.</p>`,
+    `<p>Sacrificing one apocalypse of this mass-murder capacity by redirecting ${linkHtml(
+      treatyReduction,
+      TREATY_REDUCTION_PCT.manualPageUrl,
+    )} of military spending to fund high-efficiency ${linkHtml(
+      "pragmatic clinical trials",
+      PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL,
+    )} could increase the pace of medical research ${linkHtml(
+      trialCapacityMultiplier,
+      DFDA_TRIAL_CAPACITY_MULTIPLIER.manualPageUrl,
+    )} times. This could compress the time required to find the first treatment for all diseases from ${linkHtml(
+      statusQuoYears,
+      STATUS_QUO_QUEUE_CLEARANCE_YEARS.manualPageUrl,
+    )} years to ${linkHtml(
+      diseaseEradicationYears,
+      DFDA_QUEUE_CLEARANCE_YEARS.manualPageUrl,
+    )} years.</p>`,
+    `<p>Please take this survey to share your opinion on this proposal:<br />${linkedSurveyUrl}</p>`,
+  ].join("\n");
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
@@ -139,7 +193,14 @@ This is a policy survey, not a candidate endorsement.`;
                 />
                 <OrganizationCopyField
                   label="Email starter"
-                  minRows={10}
+                  minRows={14}
+                  multiline
+                  value={emailBody}
+                />
+                <OrganizationCopyField
+                  htmlValue={emailHtmlBody}
+                  label="Email starter (linked)"
+                  minRows={14}
                   multiline
                   value={emailBody}
                 />
@@ -165,15 +226,7 @@ This is a policy survey, not a candidate endorsement.`;
                   />
                 </div>
                 <p className="text-sm font-bold leading-7 text-muted-foreground">
-                  Keep the organization URL intact so responses credit{" "}
-                  {org.name}. Board needs a memo?{" "}
-                  <a
-                    href={NONPROFIT_COALITION_STRATEGY_URL}
-                    className="underline underline-offset-4"
-                  >
-                    Use this one
-                  </a>
-                  .
+                  Use the organization URL above so responses credit {org.name}.
                 </p>
               </div>
             </section>
@@ -252,42 +305,6 @@ This is a policy survey, not a candidate endorsement.`;
             </section>
           </>
         ) : null}
-
-        <section>
-          <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            Referendum positions
-          </h2>
-          {org.referendumPositions.length === 0 ? (
-            <p className="text-sm font-bold text-muted-foreground">
-              This organization has not joined the campaign yet.{" "}
-              <Link href={ROUTES.endorse} className="underline">
-                Join as an organization
-              </Link>
-              .
-            </p>
-          ) : (
-            <ul className="space-y-3">
-              {org.referendumPositions.map((p) => (
-                <li
-                  key={p.id}
-                  className="border border-foreground bg-background p-3 text-sm font-bold"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <span>{p.referendum.title}</span>
-                    <span className="shrink-0 text-xs uppercase text-muted-foreground">
-                      {p.position} · {p.status.toLowerCase()}
-                    </span>
-                  </div>
-                  {p.statement ? (
-                    <p className="mt-2 italic text-muted-foreground">
-                      &ldquo;{p.statement}&rdquo;
-                    </p>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
       </div>
     </section>
   );
@@ -300,6 +317,12 @@ function escapeHtml(value: string): string {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function linkHtml(label: string, href: string | null | undefined): string {
+  const escapedLabel = escapeHtml(label);
+  if (!href) return escapedLabel;
+  return `<a href="${escapeHtml(href)}">${escapedLabel}</a>`;
 }
 
 function getSafeHttpUrl(value: string | null | undefined) {

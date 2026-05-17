@@ -21,7 +21,7 @@
 - [💰OPTIMAL BUDGET GENERATOR Find the cheapest high performer per budget category](/obg)
 - [💀GOVERNMENT REPORT CARDS Every government ranked by who it keeps alive](/governments)
 - [🏛️POLITICIAN LEADERBOARD How your representatives actually vote vs what you want](/governments/US/politicians)
-- [🕹️HUMANITY'S SCOREBOARD Two numbers: disease-free lifespan and median income](/scoreboard)
+- [📊HUMANITY'S SCOREBOARD Worst leaders, best signature collectors](/scoreboard)
 ### HEALTH
 - [🧬OPTIMAL INSTITUTES OF HEALTH 97% clinical trials, 3% overhead — the exact mirror of your NIH](/agencies/dih)
 - [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](/agencies/dfda)

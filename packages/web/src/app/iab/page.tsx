@@ -61,7 +61,6 @@ export default function IABPage() {
           </p>
         </div>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <GameCTA href="#how-it-works" variant="primary">Learn About IABs</GameCTA>
           <GameCTA href="https://iab.warondisease.org" variant="outline" external>Read the Paper</GameCTA>
           <GameCTA href="/prize" variant="cyan">Phase 1: Prize</GameCTA>
         </div>
@@ -89,7 +88,7 @@ export default function IABPage() {
             </div>
             <p className="text-sm font-bold leading-relaxed">
               Subsidizes patient participation in large-scale pragmatic trials.
-              Real patients, real conditions, real data — not the {fmtParam(TRADITIONAL_PHASE3_COST_PER_PATIENT)}/patient
+              Real patients, real conditions, real data — not the {fmtParam(TRADITIONAL_PHASE3_COST_PER_PATIENT)}{" "}
               Phase III process that takes {fmtParam(EFFICACY_LAG_YEARS)} after safety is already
               proven. This is the part that actually cures the diseases.
             </p>

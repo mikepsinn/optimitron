@@ -51,7 +51,7 @@
 ### SIGNATURE LEADERBOARD
 - Top signatories by verified treaty signatures attributed to them. This is the part where the species notices it has thumbs.
 - SIGNATORY
-- Hours of suffering prevented
-- [#1 Mike Sinn](/people/mike) 4.68 MILLION HOURS OF SUFFERING PREVENTED
-- [#2 Nikhil Yadala](/people/empirical-trailblazer) 1.40 MILLION HOURS OF SUFFERING PREVENTED
-- [#3 Wishonia](/people/wishonia) 468,000 HOURS OF SUFFERING PREVENTED
+- HOURS OF SUFFERING PREVENTED
+- [#1 Mike Sinn](/people/mike) 4.68 MILLION
+- [#2 Nikhil Yadala](/people/empirical-trailblazer) 1.40 MILLION
+- [#3 Wishonia](/people/wishonia) 468,000

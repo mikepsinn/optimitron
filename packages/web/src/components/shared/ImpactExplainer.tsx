@@ -11,10 +11,16 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  HOURS_PER_YEAR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-  formatParameter,
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
+import {
+  formatParameterValueText,
+  type ParameterValueProps,
+} from "@/components/shared/ParameterValue.core"
 import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
 import {
   MINUTES_PER_PERSUASION,
@@ -22,7 +28,6 @@ import {
   VOTING_BLOC_TARGET,
   LIVES_PER_HOUR,
   SUFFERING_YEARS_PER_HOUR,
-  IMPACT_PER_VOTE,
 } from "@/lib/impact-ledger"
 import { formatNumberShort } from "@/lib/formatters"
 
@@ -67,10 +72,14 @@ export function ImpactExplainer({
       <Dialog.Content
         size="screen"
         title="Impact Math Explainer"
-        className="!w-[95vw] !max-w-[760px] max-h-[90vh] !grid-cols-[minmax(0,1fr)] overflow-hidden"
+        className="!w-[95vw] !max-w-[760px] max-h-[90vh] !grid-cols-[minmax(0,1fr)] overflow-hidden border-2 border-foreground bg-background text-foreground shadow-none"
       >
+        <Dialog.Description className="sr-only">
+          Explains how recruited treaty votes translate into lives saved and
+          suffering prevented.
+        </Dialog.Description>
         <div className="flex min-w-0 items-start justify-between gap-4 border-b-2 border-primary bg-primary px-4 py-3 text-primary-foreground">
-          <h2 className="min-w-0 flex-1 text-base font-black uppercase leading-tight">
+          <h2 className="min-w-0 flex-1 text-lg font-black uppercase leading-tight">
             The Math Behind Your Impact
           </h2>
           <Dialog.Close asChild>
@@ -83,59 +92,99 @@ export function ImpactExplainer({
             </button>
           </Dialog.Close>
         </div>
-        <div className="min-w-0 max-h-[calc(90vh-56px)] overflow-auto p-4">
-          <div className="space-y-4 text-sm font-semibold">
+        <div className="min-w-0 max-h-[calc(90vh-56px)] overflow-auto p-5">
+          <div className="space-y-5 text-base font-semibold leading-7">
             <p>
               Here&apos;s how the number of votes you recruit actually translates into fewer dead people:
             </p>
 
-            <div className="space-y-3">
-              <div className="flex items-start gap-2">
-                <UsersRound className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <UsersRound className="mt-0.5 h-5 w-5 shrink-0" />
                 <div>
-                  <p className="text-xs font-black uppercase">
-                    Treaty target: {formatNumberShort(VOTING_BLOC_TARGET)} people
+                  <p className="text-base font-black uppercase leading-7">
+                    Treaty target:{" "}
+                    <ManualParameterValue
+                      param={MAJORITY_OF_HUMANS_ON_EARTH}
+                      valueOverride={formatNumberShort(VOTING_BLOC_TARGET)}
+                    />{" "}
+                    people
                   </p>
-                  <p className="text-xs">
-                    {formatParameter(MAJORITY_OF_HUMANS_ON_EARTH, { compact: false })} is a majority of humans on Earth.
+                  <p className="text-sm leading-7 sm:text-base">
+                    <ManualParameterValue
+                      display="withUnit"
+                      param={MAJORITY_OF_HUMANS_ON_EARTH}
+                    />{" "}
+                    is a majority of humans on Earth.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2">
-                <Zap className="mt-0.5 h-4 w-4 shrink-0" />
+              <div className="flex items-start gap-3">
+                <Zap className="mt-0.5 h-5 w-5 shrink-0" />
                 <div>
-                  <p className="text-xs font-black uppercase">
-                    Timeline shift: {formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS)} earlier
+                  <p className="text-base font-black uppercase leading-7">
+                    Timeline shift:{" "}
+                    <ManualParameterValue
+                      display="withUnit"
+                      param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS}
+                    />{" "}
+                    earlier
                   </p>
-                  <p className="text-xs">
-                    Eliminate the {formatParameter(EFFICACY_LAG_YEARS)} wait after safety testing, plus clear the queue of{" "}
-                    {formatParameter(DISEASES_WITHOUT_EFFECTIVE_TREATMENT, { compact: false })} untreated diseases{" "}
-                    {formatParameter(DFDA_TRIAL_CAPACITY_MULTIPLIER)} faster ({formatParameter(STATUS_QUO_QUEUE_CLEARANCE_YEARS)} →{" "}
-                    {formatParameter(DFDA_QUEUE_CLEARANCE_YEARS)}).
+                  <p className="text-sm leading-7 sm:text-base">
+                    Eliminate the{" "}
+                    <ManualParameterValue
+                      display="withUnit"
+                      figures={2}
+                      param={EFFICACY_LAG_YEARS}
+                    />{" "}
+                    wait after safety testing, plus clear the queue of{" "}
+                    <ManualParameterValue
+                      param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+                    />{" "}
+                    untreated diseases{" "}
+                    <ManualParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} />{" "}
+                    faster (
+                    <ManualParameterValue
+                      display="withUnit"
+                      param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                    />{" "}
+                    →{" "}
+                    <ManualParameterValue
+                      display="withUnit"
+                      figures={2}
+                      param={DFDA_QUEUE_CLEARANCE_YEARS}
+                    />
+                    ).
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2">
-                <HeartPulse className="mt-0.5 h-4 w-4 shrink-0" />
+              <div className="flex items-start gap-3">
+                <HeartPulse className="mt-0.5 h-5 w-5 shrink-0" />
                 <div>
-                  <p className="text-xs font-black uppercase">
-                    Per vote: ~{IMPACT_PER_VOTE.lives.toFixed(1)} lives, ~{(IMPACT_PER_VOTE.sufferingHours / 8760).toFixed(0)} years of suffering prevented
+                  <p className="text-base font-black uppercase leading-7">
+                    Per vote: ~
+                    <ManualParameterValue
+                      param={VOTER_LIVES_SAVED}
+                      valueOverride={VOTER_LIVES_SAVED.value.toFixed(1)}
+                    />{" "}
+                    lives, ~
+                    <SufferingYearsPerVoteValue /> years of suffering prevented
                   </p>
-                  <p className="text-xs">
+                  <p className="text-sm leading-7 sm:text-base">
                     Your share of the one-time benefit when we reach the treaty target.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2">
-                <Clock3 className="mt-0.5 h-4 w-4 shrink-0" />
+              <div className="flex items-start gap-3">
+                <Clock3 className="mt-0.5 h-5 w-5 shrink-0" />
                 <div>
-                  <p className="text-xs font-black uppercase">
+                  <p className="text-base font-black uppercase leading-7">
                     Per hour of outreach: ~{LIVES_PER_HOUR.toFixed(0)} lives, ~{SUFFERING_YEARS_PER_HOUR.toFixed(0)} years
                   </p>
-                  <p className="text-xs">
+                  <p className="text-sm leading-7 sm:text-base">
                     {MINUTES_PER_PERSUASION} min/conversation × {Math.round(VOTES_PER_HOUR)} conversations ={" "}
                     {Math.round(VOTES_PER_HOUR)} votes/hour.
                   </p>
@@ -146,15 +195,64 @@ export function ImpactExplainer({
             {showFullAnalysisLink ? (
               <Link
                 href={ROUTES.impact}
-                className="inline-flex items-center gap-2 text-xs font-black text-foreground underline"
+                className="inline-flex items-center gap-2 text-sm font-black text-foreground underline"
               >
                 See the full analysis
-                <ArrowUpRight className="h-3 w-3" />
+                <ArrowUpRight className="h-4 w-4" />
               </Link>
             ) : null}
           </div>
         </div>
       </Dialog.Content>
     </Dialog>
+  )
+}
+
+function ManualParameterValue({
+  className,
+  display = "auto",
+  figures = 3,
+  param,
+  valueOverride,
+}: Pick<
+  ParameterValueProps,
+  "className" | "display" | "figures" | "param" | "valueOverride"
+>) {
+  const text = formatParameterValueText({
+    display,
+    figures,
+    param,
+    valueOverride,
+  })
+  const referenceUrl = param.manualPageUrl
+
+  if (!referenceUrl) {
+    return <span className={className}>{text}</span>
+  }
+
+  return (
+    <a
+      href={referenceUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(event) => event.stopPropagation()}
+      className={cn(
+        "font-black underline decoration-dotted underline-offset-4 hover:decoration-solid",
+        className,
+      )}
+    >
+      {text}
+    </a>
+  )
+}
+
+function SufferingYearsPerVoteValue() {
+  return (
+    <ManualParameterValue
+      param={VOTER_SUFFERING_HOURS_PREVENTED}
+      valueOverride={(
+        VOTER_SUFFERING_HOURS_PREVENTED.value / HOURS_PER_YEAR.value
+      ).toFixed(0)}
+    />
   )
 }

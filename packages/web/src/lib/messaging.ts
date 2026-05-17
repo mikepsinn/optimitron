@@ -13,19 +13,13 @@ import {
   HUMANITY_MANAGEMENT,
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 } from "@optimitron/data/campaign";
-import { WELFARE_CLAIM_TEXT } from "@/components/shared/WelfareClaim.core";
+import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
 
 /** Point name — single source of truth. Change here to rename everywhere. */
 export const POINT_NAME = "VOTE" as const;
 /** Pre-built variants so components don't need template literals */
 export const POINT = `${POINT_NAME} Point` as const;
 export const POINTS = `${POINT_NAME} Points` as const;
-
-export const REFERRAL_SHARE_LABEL =
-  "Immediately share this link with everyone you do not want to suffer and die from horrible diseases." as const;
-
-export const REFERRAL_SHARE_PROMPT =
-  `${REFERRAL_SHARE_LABEL} It will significantly reduce the probability that they will suffer and die from horrible diseases.` as const;
 
 // Welfare claim text lives in WelfareClaim.core so string-only contexts
 // do not import the React component. JSX surfaces should use WelfareClaim.
@@ -96,7 +90,8 @@ const MANAGER_VOCAB: UserFramingVocabulary = {
     longName: "Earth Optimization Services LLC",
   },
   recruitCtaShort: "Hire two humanity managers",
-  shareLinkPrompt: REFERRAL_SHARE_PROMPT,
+  shareLinkPrompt:
+    "Share your link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Each humanity manager you hire earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per humanity manager hired`,
   verifyAndEarn: `Verify with World ID, then share your link. Each humanity manager you hire earns you 1 ${POINT}.`,
@@ -119,7 +114,8 @@ const VOTER_VOCAB: UserFramingVocabulary = {
     longName: "Earth Optimization Services LLC",
   },
   recruitCtaShort: "Recruit verified voters",
-  shareLinkPrompt: REFERRAL_SHARE_PROMPT,
+  shareLinkPrompt:
+    "Share your vote link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Every verified voter you bring in earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per verified voter recruited`,
   verifyAndEarn: `Verify with World ID, then share your link. Each verified voter who uses it earns you 1 ${POINT}.`,
@@ -278,7 +274,7 @@ export const VOTE_SECTION = {
   // Humanity v. Government: governments are paid ~$36T/yr to promote
   // the general welfare and underdeliver. Voters' welfare-findings
   // become evidence in the case; preferences alone would not.
-  sliderPrompt: `${WELFARE_CLAIM_TEXT} What allocation between military spending and clinical trials would best fulfill that duty?`,
+  sliderPrompt: `You pay governments ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare (i.e. maximize median health and wealth). Of the money available for military/weapons and clinical trials, how much should go to each?`,
   realityCheck:
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:

@@ -32,3 +32,28 @@ export function copyTextToClipboard(text: string): Promise<void> {
   document.body.removeChild(textarea);
   return ok ? Promise.resolve() : Promise.reject(new Error("Copy failed"));
 }
+
+export function copyHtmlToClipboard({
+  html,
+  text,
+}: {
+  html: string;
+  text: string;
+}): Promise<void> {
+  if (
+    typeof navigator !== "undefined" &&
+    navigator.clipboard?.write &&
+    typeof ClipboardItem !== "undefined"
+  ) {
+    const item = new ClipboardItem({
+      "text/html": new Blob([html], { type: "text/html" }),
+      "text/plain": new Blob([text], { type: "text/plain" }),
+    });
+
+    return navigator.clipboard
+      .write([item])
+      .catch(() => copyTextToClipboard(text));
+  }
+
+  return copyTextToClipboard(text);
+}

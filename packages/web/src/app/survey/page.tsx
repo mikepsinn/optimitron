@@ -1,16 +1,17 @@
-import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
 import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
 import { getRouteMetadata } from "@/lib/metadata";
 import { ROUTES, trialSurveyLink } from "@/lib/routes";
 import { TREATY_FLOW_VARIANTS } from "@/lib/treaty-flow-variants";
+import { SurveyVoteFlowClient } from "./SurveyVoteFlowClient";
 
 export const metadata = getRouteMetadata(trialSurveyLink);
 
 export default function SurveyPage() {
   return (
     <main className="min-h-screen bg-[var(--treaty-paper)]">
-      <TreatyVoteFlow
+      <SurveyVoteFlowClient
         authCallbackUrl={ROUTES.dashboard}
+        compactInitialScreen
         defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
         postVoteCompletion="message"
         respectStoredFlowVariant={false}

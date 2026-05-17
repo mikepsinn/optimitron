@@ -8,6 +8,7 @@ import { getAllSiteConfigs, getSiteFromHeaders } from "@/lib/site";
 import { isLocalSiteVariantOverrideEnabled } from "@/lib/site-dev-override";
 import { DevSiteVariantSwitcher } from "@/components/site/DevSiteVariantSwitcher";
 import { SiteChromeFrame } from "@/components/site/SiteChromeFrame";
+import { CampaignActionFab } from "@/components/site/CampaignActionFab";
 
 export async function SiteChrome({
   children,
@@ -41,6 +42,7 @@ export async function SiteChrome({
             sites={devSiteOptions}
           />
         ) : null}
+        <CampaignActionFab />
         {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
       </>
     );
@@ -61,6 +63,7 @@ export async function SiteChrome({
           sites={devSiteOptions}
         />
       ) : null}
+      <CampaignActionFab />
       <Analytics />
       {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
     </>

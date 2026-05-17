@@ -50,6 +50,6 @@
 - Article VIII: This treaty supersedes all conflicting domestic law. Including the subsection your legislature added at 2 a.m. last session specifically to make sure this couldn't happen.
 - Article IX: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in the history of planet Earth.
 - IN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.
-- Signed this day, May 15, 2026, in the year of our ongoing confusion.
+- Signed this day, May 17, 2026, in the year of our ongoing confusion.
 - SIGN
 - Display my name publicly on the signer list and leaderboards (recommended).

@@ -6,6 +6,11 @@ export interface HumanityManagerStatusPerson {
   displayName: string;
 }
 
+export interface HumanityManagerStatusCompletedEmployee
+  extends HumanityManagerStatusPerson {
+  downstreamConversionCount: number;
+}
+
 export interface HumanityManagerStatusLeader {
   countryLabel?: string | null;
   displayName: string;
@@ -20,7 +25,7 @@ export interface HumanityManagerStatusReminder {
 }
 
 export interface HumanityManagerStatusInput {
-  completedEmployees: HumanityManagerStatusPerson[];
+  completedEmployees: HumanityManagerStatusCompletedEmployee[];
   directConversionCount: number;
   downstreamConversionCount: number;
   overdueEmployeeCount: number;
@@ -37,7 +42,7 @@ interface StatusMetric {
 
 interface HumanityManagerStatusComponents {
   CompletedEmployees: React.ComponentType<{
-    employees: HumanityManagerStatusPerson[];
+    employees: HumanityManagerStatusCompletedEmployee[];
     total: number;
   }>;
   Eyebrow: React.ComponentType<{ children: React.ReactNode }>;

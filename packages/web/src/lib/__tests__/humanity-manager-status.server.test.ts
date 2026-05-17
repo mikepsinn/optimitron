@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   prisma: {
+    $queryRaw: vi.fn(),
     referralInvitation: {
       count: vi.fn(),
       findMany: vi.fn(),
@@ -23,6 +24,7 @@ describe("loadHumanityManagerStatus", () => {
   beforeEach(() => {
     mocks.prisma.referralInvitation.count.mockReset();
     mocks.prisma.referralInvitation.findMany.mockReset();
+    mocks.prisma.$queryRaw.mockReset();
     mocks.prisma.task.count.mockReset();
     mocks.prisma.task.findMany.mockReset();
   });
@@ -38,6 +40,7 @@ describe("loadHumanityManagerStatus", () => {
           convertedVote: {
             createdAt: new Date("2026-05-02T00:00:00.000Z"),
             person: { displayName: "Ada Lovelace" },
+            userId: "user_ada",
             user: { person: { displayName: null } },
           },
           recipientName: "Ada",
@@ -49,6 +52,12 @@ describe("loadHumanityManagerStatus", () => {
           recipientName: "Jake Smith",
         },
       ]);
+    mocks.prisma.$queryRaw.mockResolvedValueOnce([
+      {
+        convertedUserId: "user_ada",
+        downstreamConversionCount: 3n,
+      },
+    ]);
     mocks.prisma.task.count.mockResolvedValueOnce(1);
     mocks.prisma.task.findMany.mockResolvedValueOnce([
       {
@@ -87,6 +96,7 @@ describe("loadHumanityManagerStatus", () => {
     expect(result.downstreamConversionCount).toBe(7);
     expect(result.completedEmployees[0]).toMatchObject({
       displayName: "Ada Lovelace",
+      downstreamConversionCount: 3,
     });
     expect(result.overdueEmployees[0]).toMatchObject({
       displayName: "Jake Smith",

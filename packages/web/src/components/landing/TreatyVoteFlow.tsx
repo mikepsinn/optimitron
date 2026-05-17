@@ -1,10 +1,11 @@
 "use client";
 
 import { Button } from "@/components/retroui/Button";
+import { Dialog } from "@/components/retroui/Dialog";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { CheckSquare, Hand, Square } from "lucide-react";
+import { CheckSquare, ExternalLink, Hand, Square, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
@@ -20,10 +21,13 @@ import {
   NUCLEAR_OVERKILL_FULL_EXPLANATION,
 } from "@optimitron/data/campaign";
 import {
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TRADITIONAL_PHASE3_COST_PER_PATIENT,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
@@ -39,8 +43,9 @@ import {
   trackTreatyFlowScreenAdvanced,
   trackVoteSubmitted,
 } from "@/lib/analytics";
-import { ROUTES } from "@/lib/routes";
+import { PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL, ROUTES } from "@/lib/routes";
 import { VOTE_SECTION } from "@/lib/messaging";
+import { formatWelfareClaimAmountText } from "@/components/shared/WelfareClaim.core";
 import {
   buildTreatyWishocraticAllocation,
   getMilitaryAllocationPercentFromPendingTreatyVote,
@@ -84,7 +89,7 @@ const fullExplanationParagraphs = [
   fullExplanationSentences.slice(1).join(" "),
 ] as const;
 
-interface TreatyVoteFlowProps {
+export interface TreatyVoteFlowProps {
   authCallbackUrl?: string;
   className?: string;
   compactInitialScreen?: boolean;
@@ -95,11 +100,98 @@ interface TreatyVoteFlowProps {
   postVoteRedirectUrl?: string;
   respectStoredFlowVariant?: boolean;
   sliderHeadline?: string;
+  sliderPrompt?: ReactNode;
   surface?: string;
 }
 
 const DEFAULT_SLIDER_HEADLINE = "Please Take 30 Seconds to End War and Disease";
 const CHOICE_CARD_SETTLED_SCROLL_DELAY_MS = 500;
+
+function PragmaticClinicalTrialsDefinition({
+  children = "pragmatic clinical trials",
+  className,
+}: {
+  children?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <Dialog>
+      <Dialog.Trigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "inline cursor-help underline decoration-dotted underline-offset-4 decoration-[var(--treaty-ink)]/40 hover:decoration-[var(--treaty-ink)]",
+            className,
+          )}
+        >
+          {children}
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Content
+        title="Pragmatic clinical trials"
+        className="!w-[calc(100vw-2rem)] !max-w-xl !grid-cols-[minmax(0,1fr)] overflow-hidden rounded-none border-2 border-foreground bg-background text-foreground shadow-none"
+      >
+        <div className="flex min-w-0 items-start justify-between gap-4 border-b-2 border-foreground bg-foreground px-4 py-3 text-background">
+          <h2 className="min-w-0 flex-1 break-words text-base font-black uppercase leading-tight">
+            Pragmatic clinical trials
+          </h2>
+          <Dialog.Close asChild>
+            <button
+              type="button"
+              aria-label="Close"
+              className="shrink-0 border-2 border-background p-1 hover:bg-background/10"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </Dialog.Close>
+        </div>
+        <div className="space-y-4 p-4 text-left text-sm font-bold leading-7 text-muted-foreground sm:text-base">
+          <p>
+            Trials built into ordinary healthcare: broad patients, normal
+            clinical settings, and outcomes that matter in real life.
+          </p>
+          <p>
+            The model estimate is{" "}
+            <ParameterValue
+              param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
+              presentation="inline"
+            />{" "}
+            per patient, versus{" "}
+            <ParameterValue
+              param={TRADITIONAL_PHASE3_COST_PER_PATIENT}
+              presentation="inline"
+            />{" "}
+            for conventional Phase 3 trials.
+          </p>
+          <a
+            href={PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 border-2 border-foreground px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-foreground hover:bg-foreground hover:text-background"
+          >
+            Read the manual
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </Dialog.Content>
+    </Dialog>
+  );
+}
+
+function DefaultSliderPrompt() {
+  return (
+    <>
+      You pay governments{" "}
+      <ParameterValue
+        param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+        valueOverride={formatWelfareClaimAmountText()}
+      />{" "}
+      a year to promote the general welfare (i.e. maximize median health and
+      wealth). Of the money available for military/weapons and clinical trials,
+      how much should go to each?
+    </>
+  );
+}
 
 function NuclearOverkillTemplate({ template }: { template: string }) {
   return (
@@ -137,6 +229,7 @@ export function TreatyVoteFlow({
   postVoteRedirectUrl = ROUTES.dashboard,
   respectStoredFlowVariant = true,
   sliderHeadline = DEFAULT_SLIDER_HEADLINE,
+  sliderPrompt = <DefaultSliderPrompt />,
   surface = "treaty_vote_flow",
 }: TreatyVoteFlowProps) {
   const searchParams = useSearchParams();
@@ -168,37 +261,45 @@ export function TreatyVoteFlow({
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const submitButtonRef = useRef<HTMLDivElement>(null);
+  const sliderReleaseTimeoutRef = useRef<number | null>(null);
   const choiceCardRef = useRef<HTMLDivElement>(null);
   const shouldScrollChoiceCardRef = useRef(false);
   const animationFrameRef = useRef<number | null>(null);
   const postVoteRedirectStartedRef = useRef(false);
   const initialVoteShellClassName = compactInitialScreen
-    ? "min-h-0 overflow-visible px-0 py-0 sm:px-0 sm:py-0"
+    ? "min-h-0 overflow-visible px-4 py-0 sm:px-8 sm:py-0"
     : "py-3 sm:py-10";
   // Cut mobile vertical spacing so the submit button (which appears after
   // first slider drag) fits in the viewport. TreatyFlowShell defaults to
   // `space-y-10 py-10` between children; on mobile that adds ~120px of
   // gap stacked across headline / paragraph / allocation / submit, which
-  // pushes the submit below the fold. Desktop spacing unchanged via sm:.
+  // pushes the submit below the fold.
   const initialVoteContentClassName = compactInitialScreen
-    ? "max-w-4xl flex-none justify-start py-0 sm:py-0"
+    ? "max-w-4xl flex-none justify-start space-y-3 py-2 sm:space-y-6 sm:py-0"
     : "max-w-4xl space-y-5 py-4 sm:space-y-10 sm:py-12";
 
-  // After the user releases the slider, scroll the just-revealed submit
-  // button into view (block: 'nearest' — scrolls only the minimum to make
-  // it visible). Triggered on pointerup so we don't disrupt the active
-  // drag interaction; only fires once userHasDragged is true (submit
-  // button is mounted).
+  // Give AnimatePresence a moment to mount the submit button before scrolling.
   const handleSliderRelease = () => {
     if (typeof window === "undefined") return;
-    // requestAnimationFrame defers until the AnimatePresence mount completes.
-    window.requestAnimationFrame(() => {
+    if (sliderReleaseTimeoutRef.current !== null) {
+      window.clearTimeout(sliderReleaseTimeoutRef.current);
+    }
+    sliderReleaseTimeoutRef.current = window.setTimeout(() => {
+      sliderReleaseTimeoutRef.current = null;
       submitButtonRef.current?.scrollIntoView({
         behavior: "smooth",
-        block: "nearest",
+        block: "center",
       });
-    });
+    }, 75);
   };
+
+  useEffect(() => {
+    return () => {
+      if (sliderReleaseTimeoutRef.current !== null) {
+        window.clearTimeout(sliderReleaseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setIsMounted(true);
@@ -758,22 +859,22 @@ export function TreatyVoteFlow({
               className={initialVoteShellClassName}
               contentClassName={initialVoteContentClassName}
             >
-              <h1 className="mx-auto max-w-4xl text-center text-3xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
+              <h1 className="mx-auto max-w-4xl text-center text-2xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
                 {sliderHeadline}
               </h1>
 
               <TreatyFlowParagraph
                 dropCap
-                className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"
+                className="mx-auto max-w-3xl text-base leading-7 sm:text-2xl sm:leading-10"
               >
-                {VOTE_SECTION.sliderPrompt}
+                {sliderPrompt}
               </TreatyFlowParagraph>
 
               {/* Allocation Display */}
-              <div className="space-y-8">
-                <div className="grid grid-cols-2 gap-4 sm:gap-12">
+              <div className="space-y-3 sm:space-y-8">
+                <div className="grid grid-cols-2 gap-3 sm:gap-12">
                   <div className="text-center">
-                    <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
+                    <div className="mb-1 text-4xl font-black text-[var(--treaty-ink)] sm:mb-2 sm:text-6xl">
                       {militaryAllocation}%
                     </div>
                     <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
@@ -781,17 +882,19 @@ export function TreatyVoteFlow({
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="mb-2 text-5xl font-black text-[var(--treaty-ink)] sm:text-6xl">
+                    <div className="mb-1 text-4xl font-black text-[var(--treaty-ink)] sm:mb-2 sm:text-6xl">
                       {clinicalTrialsAllocation}%
                     </div>
                     <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
-                      Clinical Trials
+                      <PragmaticClinicalTrialsDefinition className="uppercase">
+                        Pragmatic Clinical Trials
+                      </PragmaticClinicalTrialsDefinition>
                     </div>
                   </div>
                 </div>
 
                 {/* Slider with Animation */}
-                <div className="relative px-2 pb-10 pt-3">
+                <div className="relative px-0 pb-3 pt-1 sm:px-2 sm:pb-10 sm:pt-3">
                   <AnimatePresence>
                     {showAnimation && !userHasDragged && (
                       <>
@@ -800,10 +903,9 @@ export function TreatyVoteFlow({
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="absolute -top-20 z-10 pointer-events-none"
+                          className="pointer-events-none absolute -top-20 z-10 hidden sm:block"
                           style={{
-                            left: `${animatedValue}%`,
-                            transform: "translateX(-50%)",
+                            left: `clamp(0rem, calc(${animatedValue}% - 4.5rem), calc(100% - 9rem))`,
                           }}
                         >
                           <div className="border border-black bg-white px-4 py-2">

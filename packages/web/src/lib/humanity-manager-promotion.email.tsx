@@ -9,45 +9,9 @@ import * as React from "react";
 import { EMAIL_STYLES } from "@/components/adaptive/email-styles";
 import { ParameterValueEmail as ParameterValue } from "@/components/shared/ParameterValue.email";
 import { createHumanityManagerPromotion } from "@/lib/humanity-manager-promotion-content";
-import { getBaseUrl } from "@/lib/url";
-
-/** Promote a relative path to an absolute URL for email contexts. */
-function absoluteEmailUrl(href: string): string {
-  if (/^https?:\/\//i.test(href)) return href;
-  const base = getBaseUrl().replace(/\/+$/, "");
-  return `${base}${href.startsWith("/") ? href : `/${href}`}`;
-}
-
-function PromoLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a href={absoluteEmailUrl(href)} style={EMAIL_STYLES.plainLink}>
-      {children}
-    </a>
-  );
-}
 
 function PromoEyebrow({ children }: { children: React.ReactNode }) {
   return <p style={EMAIL_STYLES.eyebrow}>{children}</p>;
-}
-
-function PromoHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <p
-      style={{
-        ...EMAIL_STYLES.largeHeadline,
-        fontSize: "26px",
-        margin: "0 0 12px",
-      }}
-    >
-      {children}
-    </p>
-  );
 }
 
 function PromoText({
@@ -83,7 +47,5 @@ export const HumanityManagerPromotionEmail = createHumanityManagerPromotion({
   ParameterValue,
   PromoBody,
   PromoEyebrow,
-  PromoHeading,
-  PromoLink,
   PromoText,
 });

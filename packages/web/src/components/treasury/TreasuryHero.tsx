@@ -20,18 +20,12 @@ export function TreasuryHero() {
           bureaucracy. No applications. Just proof you exist.
         </p>
         <p className="text-muted-foreground font-bold leading-relaxed">
-          Politician funding? That&apos;s handled by Incentive Alignment Bonds
-          — outcome-gated, not transaction-gated. Politicians only get paid when
+          Politician funding? That&apos;s handled by Incentive Alignment Bonds —
+          outcome-gated, not transaction-gated. Politicians only get paid when
           the treaty produces results. This treasury is purely for citizens.
         </p>
       </div>
       <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-        <a
-          href="#connect"
-          className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
-        >
-          Register for UBI
-        </a>
         <NavItemLink
           item={iabLink}
           variant="custom"

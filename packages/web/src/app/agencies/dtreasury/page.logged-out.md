@@ -55,7 +55,6 @@
 ## EVERY TRANSACTION FUNDS YOUR UBI
 - On my planet, the treasury runs itself. A small transaction tax on every $WISH transfer flows here automatically. Then 100% of it gets split equally among every verified citizen. No IRS. No welfare bureaucracy. No applications. Just proof you exist.
 - Politician funding? That's handled by Incentive Alignment Bonds — outcome-gated, not transaction-gated. Politicians only get paid when the treaty produces results. This treasury is purely for citizens.
-- [REGISTER FOR UBI](#connect)
 - [POLITICIAN FUNDING (IABS)](/iab)
 ### TREASURY STATUS
 - DEMO

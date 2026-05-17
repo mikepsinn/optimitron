@@ -19,14 +19,19 @@ export function PostVoteShareReactEmail({
     <CampaignEmailShell preview="You have been promoted to Humanity Manager.">
       <HumanityManagerPromotionEmail />
       <CampaignText>
-        <strong>COPY THIS MESSAGE:</strong> Copy it and forward it to two
-        friends right now.
+        <strong>TAP AND HOLD TO COPY THIS MESSAGE:</strong>
       </CampaignText>
       <CampaignCopyBlock>{shareMessage}</CampaignCopyBlock>
-      <CampaignButton href={referralUrl}>End war and disease</CampaignButton>
       <CampaignText muted>
         Paste it into WhatsApp, SMS, email, Signal, or wherever your friends
-        read words from you.
+        read words you write.
+      </CampaignText>
+      <CampaignButton href={referralUrl}>End war and disease</CampaignButton>
+      <CampaignText>
+        <strong>
+          Forward this email to everyone you do not want to suffer and die of
+          horrible diseases.
+        </strong>
       </CampaignText>
     </CampaignEmailShell>
   );

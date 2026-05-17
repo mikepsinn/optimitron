@@ -17,14 +17,13 @@
 ## INCENTIVE ALIGNMENT BONDS
 - After the [Earth Optimization Prize referendum](/prize) proves demand, IABs raise ~$1B to lobby for the 1% Treaty. Your money funds the campaign. Treaty succeeds? 272% projected annual returns as $2.72 billion/year in treaty revenue flows to bondholders. Treaty fails? The money was spent trying. That's how investments work.
 - IABs are Phase 2. Phase 1 is proving demand via the referendum. If you haven't deposited in the Prize yet, start there — it funds the awareness campaign that makes IABs possible.
-- [LEARN ABOUT IABS](#how-it-works)
 - [READ THE PAPER](https://iab.warondisease.org)
 - [PHASE 1: PRIZE](/prize)
 ### WHERE TREATY REVENUE GOES
 - The 1% Treaty redirects $27.2 billion/year from military spending to pragmatic clinical trials. That revenue is split by smart contract. No committees. No discretion. Just arithmetic.
 - 80%
 #### PRAGMATIC CLINICAL TRIALS
-- Subsidizes patient participation in large-scale pragmatic trials. Real patients, real conditions, real data — not the $41,000/patient/patient Phase III process that takes 8.20 years after safety is already proven. This is the part that actually cures the diseases.
+- Subsidizes patient participation in large-scale pragmatic trials. Real patients, real conditions, real data — not the $41,000/patient Phase III process that takes 8.20 years after safety is already proven. This is the part that actually cures the diseases.
 - ~$21.8 BILLION/YEAR
 - 10%
 #### PROJECTED BONDHOLDER RETURNS
@@ -46,7 +45,7 @@
 - $100,000
 - Your $1,000 went to lobbyists, Super PACs, and the awareness campaign. The money was spent trying to pass the treaty.
 - This is a real investment with real risk — not a savings account.
-- 272%
+- [272%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html)
 - 10% of treaty revenue flows to bondholders proportionally. Plus your personal lifetime income increases by $3.5M–$47.2M — just for being alive when the treaty passes.
 - That's everyone. Not just bondholders. Everyone.
 - BREAK-EVEN PROBABILITY

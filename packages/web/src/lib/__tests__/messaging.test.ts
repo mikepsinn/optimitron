@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   REFERRAL,
-  REFERRAL_SHARE_LABEL,
-  REFERRAL_SHARE_PROMPT,
   PRIZE_CTA_COPY,
   getUserFramingVocabulary,
   type UserFramingVocabulary,
@@ -15,7 +13,6 @@ describe("getUserFramingVocabulary", () => {
     expect(vocab.recruit.noun).toBe("humanity manager");
     expect(vocab.recruit.nounPlural).toBe("humanity managers");
     expect(vocab.recruitedActivityVerb).toBe("hired a humanity manager");
-    expect(vocab.shareLinkPrompt).toBe(REFERRAL_SHARE_PROMPT);
     expect(vocab.org.longName).toBe("Earth Optimization Services LLC");
   });
 
@@ -25,7 +22,6 @@ describe("getUserFramingVocabulary", () => {
     expect(vocab.recruit.noun).toBe("voter");
     expect(vocab.recruit.nounPlural).toBe("voters");
     expect(vocab.recruitedActivityVerb).toBe("recruited a voter");
-    expect(vocab.shareLinkPrompt).toBe(REFERRAL_SHARE_PROMPT);
     expect(vocab.org.longName).toBe("Earth Optimization Services LLC");
   });
 

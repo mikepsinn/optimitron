@@ -1,5 +1,6 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import { classifyAiCrawler } from "@/lib/agent-readable/ai-crawler-detection";
 import { ROUTES } from "@/lib/routes";
 import { getSiteStaticAssetRedirectPath } from "@/lib/site-assets";
 import {
@@ -14,6 +15,14 @@ import {
 import { resolveLocalSiteVariantOverride } from "@/lib/site-dev-override";
 
 const LOCAL_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+const AI_CRAWLER_LOG_PRIVATE_PREFIXES = [
+  "/admin",
+  "/auth",
+  ROUTES.dashboard,
+  ROUTES.profile,
+  ROUTES.settings,
+  "/_next",
+];
 
 export function isMicrositeAllowed(pathname: string): boolean {
   return isSiteRouteAllowed(getSiteFromHost("warondisease.org"), pathname);
@@ -53,6 +62,69 @@ function getHeadersWithLocalSiteVariantOverride(
   }
 
   return requestHeaders;
+}
+
+function isPublicAiCrawlerLogPath(
+  site: ReturnType<typeof getSiteFromHeaders>,
+  pathname: string,
+) {
+  if (pathname === "/api/agent" || pathname.startsWith("/api/agent/")) {
+    return true;
+  }
+
+  if (pathname.startsWith("/api/")) {
+    return false;
+  }
+
+  if (
+    AI_CRAWLER_LOG_PRIVATE_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    )
+  ) {
+    return false;
+  }
+
+  return isSiteRouteAllowed(site, pathname);
+}
+
+function getReferrerOrigin(referrer: string | null) {
+  if (!referrer) return null;
+  try {
+    return new URL(referrer).origin;
+  } catch {
+    return null;
+  }
+}
+
+function getCoarseIsoHour() {
+  const date = new Date();
+  date.setUTCMinutes(0, 0, 0);
+  return date.toISOString();
+}
+
+function logAiCrawlerRequest(
+  req: import("next/server").NextRequest,
+  site: ReturnType<typeof getSiteFromHeaders>,
+) {
+  if (req.method !== "GET" && req.method !== "HEAD") return;
+  if (!isPublicAiCrawlerLogPath(site, req.nextUrl.pathname)) return;
+
+  const classification = classifyAiCrawler(req.headers.get("user-agent"));
+  const logUnknown = process.env.LOG_UNKNOWN_AI_CRAWLERS === "1";
+  if (!classification.isKnownAiCrawler && !logUnknown) return;
+
+  console.info(
+    "[ai-crawler-request]",
+    JSON.stringify({
+      aiCrawlerFamily: classification.provider,
+      aiCrawlerPurpose: classification.purpose,
+      botToken: classification.token,
+      host: req.headers.get("host")?.split(":")[0]?.toLowerCase() ?? null,
+      pathname: req.nextUrl.pathname,
+      referrerOrigin: getReferrerOrigin(req.headers.get("referer")),
+      timestamp: getCoarseIsoHour(),
+    }),
+  );
 }
 
 // `?login=demo` and `?logout=1` query params let preview-deploy
@@ -118,6 +190,7 @@ export default withAuth(
       overrideResolution,
     );
     const site = getSiteFromHeaders(requestHeaders);
+    logAiCrawlerRequest(req, site);
 
     if (overrideResolution.stripQueryParam) {
       const url = req.nextUrl.clone();
@@ -206,5 +279,6 @@ export default withAuth(
 export const config = {
   matcher: [
     "/((?!api|_next/static|_next/image|sitemap.xml|robots.txt|icon|apple-icon|opengraph-image|_error).*)",
+    "/api/agent/:path*",
   ],
 };

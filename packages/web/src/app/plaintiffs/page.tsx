@@ -3,7 +3,6 @@ import {
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
-  WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS,
   WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR,
   WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR,
   WAR_DEATHS_SINCE_1900,
@@ -178,81 +177,71 @@ export default async function PlaintiffsPage({
                 param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
               />{" "}
               murdering{" "}
-              <ParameterValue figures={3} param={WAR_DEATHS_SINCE_1900} /> of
-              their employers — enough to fund{" "}
+              <ParameterValue figures={3} param={WAR_DEATHS_SINCE_1900} />{" "}
+              people.
+            </p>
+            <p>
+              Had they adopted the{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.treaty}
+              >
+                1% Treaty
+              </Link>{" "}
+              and frozen military spending in 1900, that money would have
+              funded{" "}
               <ParameterValue
                 figures={3}
                 param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
               />{" "}
-              years of clinical trials at current funding levels.
-            </p>
-            <p>
-              Register anyone you love who was killed or harmed. The case in{" "}
-              <Link
-                className="underline underline-offset-4"
-                href={ROUTES.humanityVGovernment}
-              >
-                {humanityVGovernmentLink.label}
-              </Link>{" "}
-              seeks{" "}
+              years of clinical trials. Disease would have been eradicated by{" "}
               <ParameterValue
-                figures={3}
-                param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
+                display="integer"
+                param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
+              />
+              . Aging reversed by{" "}
+              <ParameterValue
+                display="integer"
+                param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
+              />
+              .{" "}
+              <a
+                className="text-sm underline underline-offset-4"
+                href="https://manual.WarOnDisease.org/knowledge/appendix/parameters-and-calculations.html"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                methodology
+              </a>
+            </p>
+            <p className="text-foreground">
+              Every disease case since{" "}
+              <ParameterValue
+                display="integer"
+                param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
               />{" "}
-              per murdered human in damages.
+              and every aging death since{" "}
+              <ParameterValue
+                display="integer"
+                param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
+              />{" "}
+              is misallocation harm — wrongful, attributable, registerable.
+            </p>
+            <p className="text-foreground">
+              Register anyone you know who suffered disease since{" "}
+              <ParameterValue
+                display="integer"
+                param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
+              />{" "}
+              or died since{" "}
+              <ParameterValue
+                display="integer"
+                param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
+              />
+              .
             </p>
           </div>
         </header>
-
-        <section
-          aria-labelledby="wrongful-death-cutoff"
-          className="space-y-5 border-t-2 border-foreground pt-8"
-        >
-          <h2
-            id="wrongful-death-cutoff"
-            className="max-w-5xl text-4xl font-black uppercase leading-none sm:text-5xl"
-          >
-            If someone you love died of disease in or after{" "}
-            <ParameterValue
-              display="integer"
-              param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
-            />
-            , or aging in or after{" "}
-            <ParameterValue
-              display="integer"
-              param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
-            />
-            , it is wrongful death.
-          </h2>
-          <p className="max-w-5xl text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
-            The cited math counts the time to build medical tools and clear the
-            treatment queue, then puts the disease line at{" "}
-            <ParameterValue
-              display="integer"
-              param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
-            />
-            . Aging gets about{" "}
-            <ParameterValue
-              display="integer"
-              param={WAR_TRIAL_REDIRECT_AGING_LAG_AFTER_DISEASE_CONTROL_YEARS}
-            />{" "}
-            more years and lands at{" "}
-            <ParameterValue
-              display="integer"
-              param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
-            />
-            ; biology was harder, not innocent.
-          </p>
-          <p className="max-w-5xl text-lg font-black uppercase leading-8 sm:text-2xl sm:leading-10">
-            It is wrongful death.
-          </p>
-          <Link
-            className="inline-flex border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
-            href="#register-plaintiff"
-          >
-            REGISTER A PLAINTIFF
-          </Link>
-        </section>
 
         <section id="register-plaintiff" aria-label="Register a plaintiff">
           <RepresentedPersonConversionForm referendumSlug={referendumSlug} />

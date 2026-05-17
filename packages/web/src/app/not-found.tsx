@@ -1,4 +1,12 @@
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
+
+const recoveryLinks = [
+  { href: ROUTES.search, label: "Search" },
+  { href: ROUTES.vote, label: "Vote" },
+  { href: ROUTES.donate, label: "Donate" },
+  { href: ROUTES.endorse, label: "Organizations" },
+] as const;
 
 export default function NotFound() {
   return (
@@ -16,69 +24,33 @@ export default function NotFound() {
               Page Not Found
             </p>
             <p className="text-lg font-bold leading-relaxed">
-              Fascinating. You&apos;ve managed to navigate to a page that
-              doesn&apos;t exist. On my planet, our routing infrastructure
-              hasn&apos;t lost a page in 4,237 years. You lot can&apos;t even
-              keep track of a URL.
+              Fascinating. You found a page that does not exist. On my planet,
+              this takes effort.
             </p>
           </div>
         </section>
 
-        <section className="w-full border border-foreground bg-background p-5 text-left sm:p-6">
-          <div className="mx-auto max-w-2xl space-y-3">
-            <p className="text-base font-black uppercase">
-              Wishonia Diagnostic Report
-            </p>
-            <ul className="space-y-2 text-base font-bold leading-relaxed">
-              <li>
-                <span className="font-black">Problem:</span> Page not found
-              </li>
-              <li>
-                <span className="font-black">Severity:</span> Mildly
-                embarrassing
-              </li>
-              <li>
-                <span className="font-black">Root cause:</span> Human error
-                (probability: 97.3%)
-              </li>
-              <li>
-                <span className="font-black">Recommended action:</span> Click a
-                button that actually goes somewhere
-              </li>
-              <li>
-                <span className="font-black">Time to resolve on my planet:</span>{" "}
-                0.003 seconds
-              </li>
-              <li>
-                <span className="font-black">Estimated time on yours:</span>{" "}
-                Unclear. You still haven&apos;t fixed healthcare.
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <div className="flex w-full max-w-2xl flex-col gap-3 sm:flex-row">
-          <Link
-            href="/"
-            className="inline-flex min-h-11 flex-1 items-center justify-center border border-foreground bg-foreground px-5 py-2 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
-          >
-            Return to Earth
-          </Link>
-          <Link
-            href="/scoreboard"
-            className="inline-flex min-h-11 flex-1 items-center justify-center border border-foreground bg-background px-5 py-2 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
-          >
-            View Scoreboard
-          </Link>
-        </div>
+        <nav
+          aria-label="Page recovery"
+          className="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-4"
+        >
+          {recoveryLinks.map((link, index) => (
+            <Link
+              className={`inline-flex min-h-11 items-center justify-center border border-foreground px-4 py-2 text-sm font-black uppercase transition-colors ${
+                index === 0
+                  ? "bg-foreground text-background hover:bg-background hover:text-foreground"
+                  : "bg-background text-foreground hover:bg-foreground hover:text-background"
+              }`}
+              href={link.href}
+              key={link.href}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
         <p className="max-w-lg text-base font-bold leading-relaxed text-muted-foreground">
-          &ldquo;It&apos;s almost impressive how a species that put people on
-          the moon regularly types URLs wrong.&rdquo;
-          <br />
-          <span className="text-sm">
-            — Wishonia, mildly disappointed (as usual)
-          </span>
+          Click something real. The machines are willing to forgive you.
         </p>
       </div>
     </main>

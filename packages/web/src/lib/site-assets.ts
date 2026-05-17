@@ -1,5 +1,6 @@
 import type { Metadata, MetadataRoute } from "next";
 import type { SiteConfig, SiteKey } from "@/lib/site";
+import { AI_CRAWLER_USER_AGENTS } from "@/lib/agent-readable/ai-crawler-detection";
 import { ROUTES } from "@/lib/routes";
 
 export function getSiteManifestPath(site: SiteConfig) {
@@ -99,20 +100,30 @@ export function getSiteManifest(site: SiteConfig): MetadataRoute.Manifest {
 }
 
 export function getSiteRobots(site: SiteConfig): MetadataRoute.Robots {
+  const privateDisallows = [
+    "/api",
+    "/admin",
+    "/auth",
+    ROUTES.dashboard,
+    ROUTES.profile,
+    ROUTES.settings,
+    "/_next",
+  ];
+  const publicAllows = ["/", "/api/agent/"];
+
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: [
-        "/api",
-        "/admin",
-        "/auth",
-        ROUTES.dashboard,
-        ROUTES.profile,
-        ROUTES.settings,
-        "/_next",
-      ],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: publicAllows,
+        disallow: privateDisallows,
+      },
+      ...AI_CRAWLER_USER_AGENTS.map((userAgent) => ({
+        userAgent,
+        allow: publicAllows,
+        disallow: privateDisallows,
+      })),
+    ],
     sitemap: [`${site.canonicalOrigin}/sitemap.xml`],
     host: site.canonicalOrigin,
   };

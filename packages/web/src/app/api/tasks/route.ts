@@ -23,6 +23,7 @@ const TASK_VISIBILITY_FILTER = {
 
 const CreateTaskBodySchema = z.object({
   assigneeOrganizationId: z.string().nullish(),
+  assigneePersonIdentifier: z.string().nullish(),
   assigneePersonId: z.string().nullish(),
   category: z.nativeEnum(TaskCategory).nullish(),
   claimPolicy: z.nativeEnum(TaskClaimPolicy).nullish(),
@@ -42,6 +43,34 @@ const CreateTaskBodySchema = z.object({
   status: z.nativeEnum(TaskStatus).nullish(),
   title: z.string().min(1),
 });
+
+function normalizeAssigneePersonIdentifier(value?: string | null) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+
+  let candidate = trimmed;
+  try {
+    const url = new URL(candidate);
+    const segments = url.pathname.split("/").filter(Boolean);
+    const peopleIndex = segments.findIndex((segment) => segment === "people");
+    candidate =
+      peopleIndex >= 0
+        ? (segments[peopleIndex + 1] ?? "")
+        : (segments[segments.length - 1] ?? "");
+  } catch {
+    const pathOnly = candidate.split(/[?#]/u, 1)[0] ?? "";
+    const segments = pathOnly.split("/").filter(Boolean);
+    candidate = segments[segments.length - 1] ?? pathOnly;
+  }
+
+  try {
+    candidate = decodeURIComponent(candidate);
+  } catch {
+    // Keep the raw candidate if the user pasted a malformed escape sequence.
+  }
+
+  return candidate.replace(/^@/u, "").trim() || null;
+}
 
 export async function GET(request: Request) {
   try {
@@ -90,7 +119,39 @@ export async function POST(request: Request) {
   try {
     const { userId } = await requireAuth();
     const parsed = CreateTaskBodySchema.parse(await request.json());
-    const { dueAt, parentTaskId, ...rest } = parsed;
+    const { assigneePersonIdentifier, dueAt, parentTaskId, ...rest } = parsed;
+    let assigneePersonId = rest.assigneePersonId ?? null;
+
+    if (!assigneePersonId && assigneePersonIdentifier) {
+      const identifier = normalizeAssigneePersonIdentifier(
+        assigneePersonIdentifier,
+      );
+      if (!identifier) {
+        return NextResponse.json(
+          { error: "Person handle or URL is required." },
+          { status: 400 },
+        );
+      }
+
+      const person = await prisma.person.findFirst({
+        where: {
+          deletedAt: null,
+          OR: [
+            { id: identifier },
+            { handle: identifier },
+            { handle: identifier.toLowerCase() },
+          ],
+        },
+        select: { id: true },
+      });
+      if (!person) {
+        return NextResponse.json(
+          { error: "Person not found." },
+          { status: 404 },
+        );
+      }
+      assigneePersonId = person.id;
+    }
 
     if (parentTaskId) {
       const parent = await prisma.task.findFirst({
@@ -118,6 +179,7 @@ export async function POST(request: Request) {
     // tree.
     const task = await createTask(userId, {
       ...rest,
+      assigneePersonId,
       dueAt: dueAt == null ? null : new Date(dueAt),
       claimPolicy: parentTaskId
         ? TaskClaimPolicy.ASSIGNED_ONLY

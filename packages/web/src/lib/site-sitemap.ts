@@ -5,6 +5,7 @@ import {
 } from "@optimitron/data/datasets/medical";
 import { ROUTES } from "@/lib/routes";
 import { isSiteRouteAllowed, type SiteConfig } from "@/lib/site";
+import { getAgentReadableSitemapRoutes } from "@/lib/agent-readable/agent-sitemap";
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 type ChangeFrequency = NonNullable<SitemapEntry["changeFrequency"]>;
@@ -182,6 +183,10 @@ export function getSitemapForSite(
   }
 
   for (const route of dynamicMedicalRoutes(site)) {
+    routesByPath.set(route.path, route);
+  }
+
+  for (const route of getAgentReadableSitemapRoutes(site)) {
     routesByPath.set(route.path, route);
   }
 

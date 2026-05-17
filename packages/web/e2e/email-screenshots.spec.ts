@@ -85,12 +85,7 @@ test.describe("email visual coverage", () => {
       page,
       "post-vote-share",
       "email-post-vote-share",
-      [
-        "Forward this message to everyone you don't want to suffer and die of horrible diseases.",
-        "122 stored apocalypses",
-        "COPY THIS MESSAGE",
-        "1% Treaty",
-      ],
+      "https://warondisease.org/vote/SAMPLE",
       testInfo,
     );
   });

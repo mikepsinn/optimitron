@@ -7,6 +7,7 @@ import { VoteCounterSplit } from "@/components/referendum/VoteCounterSplit";
 import { SignatoryVisibilityPanel } from "@/components/referendum/SignatoryVisibilityPanel";
 import { ImpactExplainer } from "@/components/shared/ImpactExplainer";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { formatNumberShort } from "@/lib/formatters";
 import type {
   PublicSignatoriesPage,
   PublicSignatoryEntry,
@@ -48,14 +49,23 @@ export function SufferingPreventedMetric({
   hoursPrevented,
   label,
   name,
+  compactOnMobile = false,
+  showLabel = true,
   valueClassName,
 }: {
+  compactOnMobile?: boolean;
   className?: string;
   hoursPrevented: number;
   label?: string;
   name: string;
+  showLabel?: boolean;
   valueClassName?: string;
 }) {
+  const fullValue = fmtRaw(hoursPrevented);
+  const compactValue = formatNumberShort(hoursPrevented, {
+    significantDigits: 3,
+  });
+
   return (
     <ImpactExplainer
       className={cn(
@@ -71,11 +81,20 @@ export function SufferingPreventedMetric({
           valueClassName,
         )}
       >
-        {fmtRaw(hoursPrevented)}
+        {compactOnMobile ? (
+          <>
+            <span className="sm:hidden">{compactValue}</span>
+            <span className="hidden sm:inline">{fullValue}</span>
+          </>
+        ) : (
+          fullValue
+        )}
       </span>
-      <span className="mt-1 max-w-[8rem] text-[10px] font-black uppercase leading-tight tracking-[0.12em] text-muted-foreground sm:max-w-none sm:text-[11px]">
-        {label ?? "Hours of suffering prevented"}
-      </span>
+      {showLabel ? (
+        <span className="mt-1 max-w-[8rem] text-[10px] font-black uppercase leading-tight tracking-[0.12em] text-muted-foreground sm:max-w-none sm:text-[11px]">
+          {label ?? "Hours of suffering prevented"}
+        </span>
+      ) : null}
     </ImpactExplainer>
   );
 }
@@ -145,14 +164,16 @@ export function SignatoriesLeaderboard({
 
         {totalCount > 0 ? (
           <div className="overflow-hidden border-2 border-foreground bg-background text-foreground">
-            <div className="hidden border-b-2 border-foreground px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground sm:grid sm:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] sm:gap-4">
+            <div className="grid grid-cols-1 gap-2 border-b-2 border-foreground px-4 py-3 text-[11px] font-black uppercase tracking-[0.08em] text-muted-foreground sm:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] sm:gap-4 sm:px-5 sm:tracking-[0.14em]">
               <span>Signatory</span>
               <ImpactExplainer
-                className="inline-flex items-center justify-end gap-1 text-right text-inherit hover:text-foreground"
+                className="inline-flex max-w-[13rem] items-start gap-1 text-left text-inherit hover:text-foreground sm:max-w-none sm:items-center sm:justify-end sm:text-right"
                 label="Explain hours of suffering prevented impact math"
                 showFullAnalysisLink={false}
               >
-                <span>Hours of suffering prevented</span>
+                <span className="whitespace-normal leading-tight">
+                  HOURS OF SUFFERING PREVENTED
+                </span>
                 <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
               </ImpactExplainer>
             </div>
@@ -314,8 +335,12 @@ function SignatoryRow({
       </div>
 
       <SufferingPreventedMetric
+        className="min-w-[4.75rem] sm:min-w-[7rem]"
+        compactOnMobile
         hoursPrevented={entry.hoursPrevented}
         name={name}
+        showLabel={false}
+        valueClassName="text-lg sm:text-2xl"
       />
     </div>
   );

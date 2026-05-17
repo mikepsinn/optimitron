@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
@@ -12,8 +19,8 @@ type VerdictAnswer = "YES" | "NO" | "ABSTAIN";
 
 interface HumanityVGovernmentVerdictVoteProps {
   existingAnswer: VerdictAnswer | null;
-  fullDamagesLabel: string;
-  question: string;
+  fullDamagesLabel: ReactNode;
+  question: ReactNode;
   referendumSlug: string;
 }
 
@@ -139,15 +146,9 @@ export function HumanityVGovernmentVerdictVote({
         {question}
       </p>
       <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-        The 1% Treaty is the cheap settlement offer. This vote records the
-        bigger claim: governments owe the full damages demand, currently{" "}
-        <span className="font-black text-foreground">{fullDamagesLabel}</span>{" "}
-        per living human.
-      </p>
-      <p className="mt-3 text-sm font-bold leading-6 text-foreground">
-        Voting no requires saying out loud: &ldquo;I believe my government
-        should be allowed to kill my family with no consequences.&rdquo; Few
-        ordinary humans want to say that sentence in public.
+        Record the finding after reading the case. If governments are liable,
+        the demand is{" "}
+        <span className="font-black text-foreground">{fullDamagesLabel}</span>.
       </p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">

@@ -1,27 +1,31 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import {
-  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
-  HUMANITY_V_GOVERNMENT_VERDICT_QUESTION,
-} from "@optimitron/data/referendums";
+import { headers } from "next/headers";
 import {
   CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  DFDA_QUEUE_CLEARANCE_YEARS,
   EFFICACY_LAG_YEARS,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   GLOBAL_AVG_INCOME_2025,
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-  PENTAGON_UNACCOUNTED_FUNDS,
+  PHARMA_LIVES_SAVED_ANNUAL,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_REDUCTION_PCT,
   WAR_CHILDREN_KILLED_SINCE_1900,
   WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { WelfareClaim } from "@/components/shared/WelfareClaim";
+import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
+import { JsonLdScript } from "@/components/site/JsonLdScript";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 import { authOptions } from "@/lib/auth";
+import {
+  buildHumanityVGovernmentStructuredData,
+} from "@/lib/campaign-structured-data";
 import { formatCount } from "@/lib/format-count";
 import {
   getHumanityVGovernmentPlaintiffCount,
@@ -31,6 +35,7 @@ import {
   HUMANITY_V_GOVERNMENT_MANUAL_URL,
   ROUTES,
 } from "@/lib/routes";
+import { getSiteFromHeaders } from "@/lib/site";
 import { DamagesSensitivityCalculator } from "./DamagesSensitivityCalculator";
 import { HumanityVGovernmentVerdictVote } from "./HumanityVGovernmentVerdictVote";
 import { HUMANITY_V_GOVERNMENT_METADATA } from "./page-metadata";
@@ -47,6 +52,8 @@ const CASE_CAPTION = {
 } as const;
 
 export default async function HumanityVGovernmentPage() {
+  const hdrs = await headers();
+  const site = getSiteFromHeaders(hdrs);
   const session = await getServerSession(authOptions);
   const [plaintiffCount, verdictStats] = await Promise.all([
     getHumanityVGovernmentPlaintiffCount(),
@@ -55,6 +62,7 @@ export default async function HumanityVGovernmentPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+      <JsonLdScript data={buildHumanityVGovernmentStructuredData(site)} />
       <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
         Court of Humanity - Damages case
       </p>
@@ -66,10 +74,16 @@ export default async function HumanityVGovernmentPage() {
         <p className="text-sm font-black uppercase tracking-[0.16em] text-muted-foreground">
           The indictment
         </p>
-        <WelfareClaim className="mt-3 block text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9" />
-        <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
-          The citizenry would like to actually receive this service at some
-          point.
+        <p className="mt-3 text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9">
+          Governments are paid{" "}
+          <ParameterValue
+            figures={3}
+            param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+            valueOverride="$36.5 trillion"
+          />{" "}
+          a year to promote the general welfare, defined here as maximizing
+          median healthy life expectancy and median after-tax
+          inflation-adjusted income.
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
           Instead, these public servants used{" "}
@@ -87,8 +101,9 @@ export default async function HumanityVGovernmentPage() {
           humans over the last century of their employment.
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
-          The dead included roughly 930,000 doctors, 310,000 scientists,
-          620,000 engineers, 1.24 million nurses, 3.1 million teachers, and{" "}
+          These murdered humans included roughly 930,000 doctors, 310,000
+          scientists, 620,000 engineers, 1.24 million nurses, 3.1 million
+          teachers, and{" "}
           <ParameterValue
             figures={3}
             param={WAR_CHILDREN_KILLED_SINCE_1900}
@@ -133,28 +148,11 @@ export default async function HumanityVGovernmentPage() {
           </a>
           .
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <a
-            className={`${defaultButtonClassName} px-6 tracking-[0.08em]`}
-            href="#verdict"
-          >
-            Vote on the finding
-          </a>
-        </div>
       </section>
-
-      <div id="verdict" className="mt-10 scroll-mt-24">
-        <HumanityVGovernmentVerdictVote
-          existingAnswer={verdictStats.existingAnswer}
-          fullDamagesLabel={HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL}
-          question={HUMANITY_V_GOVERNMENT_VERDICT_QUESTION}
-          referendumSlug={verdictStats.referendumSlug}
-        />
-      </div>
 
       <section className="mt-10">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          If this were a corporation
+          If governments were a corporation
         </h2>
         <div className="mt-3 border-2 border-foreground bg-background p-5 text-base font-bold leading-7 text-muted-foreground">
           <p>
@@ -169,14 +167,9 @@ export default async function HumanityVGovernmentPage() {
             officers imprisoned.
           </p>
           <p className="mt-3">
-            Pfizer paid $2.3 billion for health-care fraud. BP paid $20.8
-            billion for the Deepwater Horizon spill. Volkswagen paid $4.3
-            billion for cheating emissions tests and accepted a government
-            monitor.
-          </p>
-          <p className="mt-3 text-foreground">
-            The defendants here have a larger revenue, a larger customer
-            base, and a larger body count.
+            The corporate analogy is conservative: ordinary corporations do not
+            have the legal power to compel payment from every human under their
+            jurisdiction.
           </p>
         </div>
       </section>
@@ -210,9 +203,8 @@ export default async function HumanityVGovernmentPage() {
           <div className="flex gap-4 pt-3">
             <dt className="w-32 shrink-0 text-muted-foreground">Remedy</dt>
             <dd className="text-foreground">
-              The 1% Treaty is the settlement: redirect 1% of military spending
-              to clinical trials. Not because governments became wise. Because
-              one percent is cheaper than the damages.
+              Record the finding, count the plaintiffs, and make the damages
+              demand public enough that governments have to answer it.
             </dd>
           </div>
         </dl>
@@ -228,8 +220,9 @@ export default async function HumanityVGovernmentPage() {
               Duty
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              Governments accept compulsory payment to protect the public and
-              promote the general welfare. That is the job description.
+              The duty purchased by that {WELFARE_CLAIM_AMOUNT_TEXT} annual
+              payment is measurable: maximize median healthy life expectancy
+              and median after-tax inflation-adjusted income.
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">
@@ -237,14 +230,20 @@ export default async function HumanityVGovernmentPage() {
               Breach
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              They spend{" "}
+              Governments spend{" "}
               <ParameterValue
                 figures={3}
                 param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
                 valueOverride="604"
               />{" "}
-              times more on military capacity than on government clinical
-              trials. Disease is what actually kills their citizens.
+              times more on weapons than on testing which medicines work. The
+              1% Treaty asks them to redirect{" "}
+              <ParameterValue
+                figures={2}
+                param={TREATY_REDUCTION_PCT}
+                valueOverride="1%"
+              />{" "}
+              of military spending to pragmatic clinical trials.
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">
@@ -252,9 +251,20 @@ export default async function HumanityVGovernmentPage() {
               Causation
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              Some deaths were direct. Others happened because treatments were
-              delayed, trials were not funded, and the cure money became
-              hardware for organized killing.
+              At the current discovery rate, finding first treatments for the
+              remaining untreated diseases takes{" "}
+              <ParameterValue
+                figures={3}
+                param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                valueOverride="443 years"
+              />
+              . The treaty model compresses that queue to{" "}
+              <ParameterValue
+                figures={2}
+                param={DFDA_QUEUE_CLEARANCE_YEARS}
+                valueOverride="36 years"
+              />
+              .
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">
@@ -262,9 +272,9 @@ export default async function HumanityVGovernmentPage() {
               Damages
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              The full claim is per living human, because every surviving
-              employer inherited the bill for the policy that killed the
-              others.
+              The full claim is per living human because the survivors inherited
+              the missing scientists, doctors, children, treatments, income, and
+              public money destroyed by the policy.
             </p>
           </div>
         </div>
@@ -316,14 +326,20 @@ export default async function HumanityVGovernmentPage() {
                 valueOverride="8.2 years"
               />{" "}
               of efficacy testing before letting humans access drugs already
-              proven safe. 53 years of warnings.{" "}
+              proven safe. The damages model multiplies that post-safety lag
+              by{" "}
+              <ParameterValue
+                figures={3}
+                param={PHARMA_LIVES_SAVED_ANNUAL}
+                valueOverride="12.4 million"
+              />{" "}
+              lives saved per year by existing drugs, yielding{" "}
               <ParameterValue
                 figures={3}
                 param={EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL}
                 valueOverride="102 million"
               />{" "}
-              dead. &ldquo;We did not know&rdquo; is no longer available as a
-              defense.
+              deaths.
             </p>
           </li>
           <li className="border-2 border-foreground bg-background p-5">
@@ -365,16 +381,19 @@ export default async function HumanityVGovernmentPage() {
             <ParameterValue
               figures={3}
               param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
-              valueOverride="$2.74M"
             />
           </p>
           <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-            Per living human. The False Claims Act triples damages when a
-            defendant defrauds the government. Here, the defendants ARE the
-            government, defrauding the citizenry. Triple damages apply.
+            The False Claims Act triples damages when a defendant defrauds the
+            government. Here, the defendants ARE the government, defrauding the
+            citizenry. Triple damages apply.
           </p>
         </div>
       </section>
+
+      <div className="mt-10">
+        <DamagesSensitivityCalculator />
+      </div>
 
       <section className="mt-10">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
@@ -413,6 +432,29 @@ export default async function HumanityVGovernmentPage() {
         </div>
       </section>
 
+      <div id="verdict" className="mt-10 scroll-mt-24">
+        <HumanityVGovernmentVerdictVote
+          existingAnswer={verdictStats.existingAnswer}
+          fullDamagesLabel={
+            <ParameterValue
+              figures={3}
+              param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
+            />
+          }
+          question={
+            <>
+              Should the governments of Earth be found liable for preventable
+              mass death and owe full damages of{" "}
+              <ParameterValue
+                figures={3}
+                param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
+              />?
+            </>
+          }
+          referendumSlug={verdictStats.referendumSlug}
+        />
+      </div>
+
       <section className="mt-10 border-2 border-foreground bg-background p-5">
         <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
           Plaintiffs
@@ -427,7 +469,7 @@ export default async function HumanityVGovernmentPage() {
           </span>{" "}
           named plaintiffs. If someone in your family died of war, regulatory
           delay, or preventable disease, add them. A civilization should at
-          least be able to count its dead.
+          least be able to count these murdered humans.
         </p>
         <Link
           className={`${defaultButtonClassName} mt-5 tracking-[0.08em]`}
@@ -436,10 +478,6 @@ export default async function HumanityVGovernmentPage() {
           Add a plaintiff
         </Link>
       </section>
-
-      <div className="mt-10">
-        <DamagesSensitivityCalculator />
-      </div>
     </main>
   );
 }

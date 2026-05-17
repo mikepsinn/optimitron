@@ -25,6 +25,19 @@ describe("site sitemap routing", () => {
         ROUTES.vote,
         ROUTES.donate,
         ROUTES.employees,
+        "/llms.txt",
+        "/llms-full.txt",
+        "/treaty.md",
+        "/court.md",
+        "/humanity-v-government.md",
+        "/plaintiffs.md",
+        "/faq",
+        "/faq.md",
+        "/api/agent/manifest",
+        "/api/agent/campaign-state",
+        "/api/agent/signatories",
+        "/api/agent/plaintiffs",
+        "/api/agent/parameters",
       ]),
     );
     expect(paths).not.toContain(ROUTES.reasoning);
@@ -46,5 +59,7 @@ describe("site sitemap routing", () => {
     expect(paths).not.toContain(`${ROUTES.agencies}/dfda/treatments`);
     expect(paths.some((path) => path.startsWith("/conditions/"))).toBe(true);
     expect(paths.some((path) => path.startsWith("/treatments/"))).toBe(true);
+    expect(paths).not.toContain("/llms.txt");
+    expect(paths).not.toContain("/api/agent/campaign-state");
   });
 });

@@ -1,10 +1,7 @@
 "use client";
 
-import { LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
-import { Button } from "@/components/retroui/Button";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
@@ -46,16 +43,6 @@ export function TreatyTaskDashboardClient({
           <h1 className="text-3xl font-black uppercase tracking-tight sm:text-4xl">
             Humanity Management Dashboard
           </h1>
-          <Button
-            variant="outline"
-            data-testid="sign-out-button"
-            onClick={() => {
-              void signOut({ callbackUrl: ROUTES.home });
-            }}
-            className="min-h-11 border border-[var(--treaty-ink)] bg-transparent px-3 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-[#efe4cf]"
-          >
-            <LogOut className="h-4 w-4 stroke-[2.5px]" />
-          </Button>
         </div>
 
         <DashboardShareCard referralUrl={referralLink} />

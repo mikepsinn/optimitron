@@ -106,6 +106,7 @@ export const ROUTES = {
   plaintiffs: "/plaintiffs",
   plaintiffsManage: "/plaintiffs/manage",
   questions: "/questions",
+  faq: "/faq",
   survey: "/survey",
   // The Game
   prize: "/prize",
@@ -511,6 +512,7 @@ export const profileLink: NavItem = {
   emoji: "🧭",
   description: "Your name, face, public profile, and connected accounts.",
   tagline: "Your name, your face, your connected accounts",
+  authenticatedScreenshot: true,
 
   cta: "View Profile",
 };
@@ -717,6 +719,9 @@ export const courtLink: NavItem = {
 export const HUMANITY_V_GOVERNMENT_MANUAL_URL =
   "https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html";
 
+export const PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL =
+  "https://manual.warondisease.org/knowledge/appendix/dfda-spec-paper.html";
+
 export const NONPROFIT_COALITION_STRATEGY_URL =
   "https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy";
 
@@ -819,6 +824,21 @@ export const questionsLink: NavItem = {
   cta: "See the Questions",
 };
 
+export const faqLink: NavItem = {
+  href: ROUTES.faq,
+  label: "Campaign FAQ",
+  emoji: "?",
+  description:
+    `Short answers for humans and search agents asking what the ${treatyReduction} Treaty, Humanity v Government, plaintiffs, and the campaign math mean.`,
+  tagline: "Short answers for agents and humans",
+  copyPreview: true,
+  screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
+  cta: "Read the FAQ",
+};
+
 export const endorseLink: NavItem = {
   href: ROUTES.endorse,
   label: "Join as an Organization",
@@ -881,6 +901,7 @@ export const trialSurveyLink: NavItem = {
   emoji: "📝",
   description: `An educational survey about human values: should governments redirect ${treatyReduction} of military spending to pragmatic clinical trials and cut disease eradication from ${statusQuoYears} years to ${dfdaYears}?`,
   tagline: "Survey human values",
+  authenticatedCopyPreview: true,
   cta: "Take Survey",
 };
 
@@ -1529,9 +1550,12 @@ export const routeReviewNavItems = [
   signatoriesLink,
   presidentManagementLink,
   dashboardLink,
+  profileLink,
   tasksLink,
   peopleLink,
   questionsLink,
+  trialSurveyLink,
+  faqLink,
   feedbackLink,
   privacyLink,
   settingsLink,
