@@ -15,12 +15,12 @@ const REQUEST_TIMEOUT_MS = Number(
 const ROUTES_TO_SMOKE = [
   {
     path: "/",
-    expectedH1: "Please Take 30 Seconds to End War and Disease",
+    expectedH1: "Drag the slider to split the money.",
     expectedH1ByHost: {
       "optimitron.com": "Play the Earth Optimization Game!",
       "www.optimitron.com": "Play the Earth Optimization Game!",
     },
-    source: "site root heading",
+    source: "landing vote slider heading",
   },
   {
     path: "/treaty",
