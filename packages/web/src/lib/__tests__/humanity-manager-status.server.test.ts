@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { VotePosition } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
   prisma: {
@@ -6,6 +7,9 @@ const mocks = vi.hoisted(() => ({
     referralInvitation: {
       count: vi.fn(),
       findMany: vi.fn(),
+    },
+    referendumVote: {
+      count: vi.fn(),
     },
     task: {
       count: vi.fn(),
@@ -18,12 +22,16 @@ vi.mock("@/lib/prisma", () => ({
   prisma: mocks.prisma,
 }));
 
-import { loadHumanityManagerStatus } from "../humanity-manager-status.server";
+import {
+  getKFactorForUser,
+  loadHumanityManagerStatus,
+} from "../humanity-manager-status.server";
 
 describe("loadHumanityManagerStatus", () => {
   beforeEach(() => {
     mocks.prisma.referralInvitation.count.mockReset();
     mocks.prisma.referralInvitation.findMany.mockReset();
+    mocks.prisma.referendumVote.count.mockReset();
     mocks.prisma.$queryRaw.mockReset();
     mocks.prisma.task.count.mockReset();
     mocks.prisma.task.findMany.mockReset();
@@ -32,7 +40,8 @@ describe("loadHumanityManagerStatus", () => {
   it("uses cached downstream User columns while direct referral rows stay live", async () => {
     mocks.prisma.referralInvitation.count
       .mockResolvedValueOnce(2)
-      .mockResolvedValueOnce(1);
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(4);
     mocks.prisma.referralInvitation.findMany
       .mockResolvedValueOnce([
         {
@@ -80,6 +89,7 @@ describe("loadHumanityManagerStatus", () => {
         title: "Sign the 1% Treaty",
       },
     ]);
+    mocks.prisma.referendumVote.count.mockResolvedValueOnce(3);
 
     const result = await loadHumanityManagerStatus({
       baseUrl: "https://warondisease.org",
@@ -94,6 +104,7 @@ describe("loadHumanityManagerStatus", () => {
 
     expect(result.directConversionCount).toBe(2);
     expect(result.downstreamConversionCount).toBe(7);
+    expect(result.kFactor30d).toBe(0.75);
     expect(result.completedEmployees[0]).toMatchObject({
       displayName: "Ada Lovelace",
       downstreamConversionCount: 3,
@@ -110,5 +121,47 @@ describe("loadHumanityManagerStatus", () => {
     );
     expect(result.reminders[1]?.message).toContain("President Example");
     expect(result.reminders[1]?.message).not.toMatch(/\{\w+\}/);
+  });
+});
+
+describe("getKFactorForUser", () => {
+  beforeEach(() => {
+    mocks.prisma.referralInvitation.count.mockReset();
+    mocks.prisma.referendumVote.count.mockReset();
+  });
+
+  it("counts 30-day treaty YES referral votes over invitations and returns 0 with no invitations", async () => {
+    const now = new Date("2026-05-17T12:00:00.000Z");
+    const since = new Date("2026-04-17T12:00:00.000Z");
+
+    mocks.prisma.referendumVote.count
+      .mockResolvedValueOnce(2)
+      .mockResolvedValueOnce(5);
+    mocks.prisma.referralInvitation.count
+      .mockResolvedValueOnce(4)
+      .mockResolvedValueOnce(0);
+
+    await expect(getKFactorForUser("user_1", now)).resolves.toBe(0.5);
+    await expect(getKFactorForUser("user_zero", now)).resolves.toBe(0);
+
+    expect(mocks.prisma.referendumVote.count).toHaveBeenNthCalledWith(1, {
+      where: {
+        answer: VotePosition.YES,
+        createdAt: { gte: since, lte: now },
+        deletedAt: null,
+        referredByUserId: "user_1",
+        referendum: {
+          deletedAt: null,
+          slug: "one-percent-treaty",
+        },
+      },
+    });
+    expect(mocks.prisma.referralInvitation.count).toHaveBeenNthCalledWith(1, {
+      where: {
+        createdAt: { gte: since, lte: now },
+        deletedAt: null,
+        referrerUserId: "user_1",
+      },
+    });
   });
 });

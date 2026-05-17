@@ -1,6 +1,7 @@
 import {
   ReferralInvitationStatus,
   TaskStatus,
+  VotePosition,
 } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
@@ -31,10 +32,12 @@ import {
   getAssigneeTwitterHandle,
 } from "@/lib/tasks/task-context";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildTaskUrl, buildUserInviteReferralUrl } from "@/lib/url";
 
 const STATUS_SAMPLE_LIMIT = 8;
 const DAY_MS = 1000 * 60 * 60 * 24;
+const K_FACTOR_WINDOW_DAYS = 30;
 
 const PENDING_INVITATION_STATUSES: ReferralInvitationStatus[] = [
   ReferralInvitationStatus.PENDING,
@@ -84,6 +87,42 @@ function daysBetween(now: Date, value: Date | string | null | undefined): number
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return 0;
   return Math.max(0, Math.ceil((now.getTime() - date.getTime()) / DAY_MS));
+}
+
+export async function getKFactorForUser(
+  userId: string,
+  now = new Date(),
+): Promise<number> {
+  const since = new Date(now.getTime() - K_FACTOR_WINDOW_DAYS * DAY_MS);
+  const createdAt = {
+    gte: since,
+    lte: now,
+  };
+
+  const [referredYesVotes, invitationsSent] = await Promise.all([
+    prisma.referendumVote.count({
+      where: {
+        answer: VotePosition.YES,
+        createdAt,
+        deletedAt: null,
+        referredByUserId: userId,
+        referendum: {
+          deletedAt: null,
+          slug: TREATY_REFERENDUM_SLUG,
+        },
+      },
+    }),
+    prisma.referralInvitation.count({
+      where: {
+        createdAt,
+        deletedAt: null,
+        referrerUserId: userId,
+      },
+    }),
+  ]);
+
+  if (invitationsSent <= 0) return 0;
+  return referredYesVotes / Math.max(invitationsSent, 1);
 }
 
 function formatCompletedInvitation(
@@ -331,6 +370,7 @@ export async function loadHumanityManagerStatus(input: {
     overdueEmployees,
     overduePresidentCount,
     overduePresidentTasks,
+    kFactor30d,
   ] = await Promise.all([
     prisma.referralInvitation.count({ where: convertedInvitationWhere }),
     prisma.referralInvitation.findMany({
@@ -388,6 +428,7 @@ export async function loadHumanityManagerStatus(input: {
       take: STATUS_SAMPLE_LIMIT,
       where: overduePresidentWhere,
     }),
+    getKFactorForUser(input.userId, now),
   ]);
 
   const employeeReminders = overdueEmployees
@@ -420,6 +461,7 @@ export async function loadHumanityManagerStatus(input: {
     ),
     directConversionCount,
     downstreamConversionCount: clampNumber(input.user.downstreamConversionCount),
+    kFactor30d,
     overdueEmployeeCount,
     overdueEmployees: overdueEmployees.map((invitation) => ({
       displayName: invitation.recipientName,

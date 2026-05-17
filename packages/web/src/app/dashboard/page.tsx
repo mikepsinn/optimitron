@@ -9,9 +9,10 @@ import { getTasksPageData } from "@/lib/tasks.server";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { EarthOptimizationDashboardClient } from "@/components/dashboard/EarthOptimizationDashboardClient";
 import { TreatyTaskDashboardClient } from "@/components/site/TreatyTaskDashboardClient";
+import { loadHumanityManagerStatus } from "@/lib/humanity-manager-status.server";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
-import { getSiteFromHeaders } from "@/lib/site";
+import { getRequestSiteOrigin, getSiteFromHeaders } from "@/lib/site";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { getProfileIdentityData } from "@/lib/profile-identity.server";
@@ -76,8 +77,24 @@ export default async function DashboardPage({
       redirect(getSignInPath(ROUTES.dashboard));
     }
 
+    const humanityManagerStatus = await loadHumanityManagerStatus({
+      baseUrl: getRequestSiteOrigin({
+        forwardedHost: hdrs.get("x-forwarded-host"),
+        forwardedProto: hdrs.get("x-forwarded-proto"),
+        host: hdrs.get("host"),
+      }),
+      user: {
+        downstreamConversionCount:
+          profileData.user.downstreamConversionCount ?? 0,
+        handle: profileData.user.handle,
+        referralCode: profileData.user.referralCode,
+      },
+      userId,
+    });
+
     return (
       <TreatyTaskDashboardClient
+        humanityManagerStatus={humanityManagerStatus}
         user={profileData.user}
       />
     );

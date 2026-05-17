@@ -28,6 +28,7 @@ export interface HumanityManagerStatusInput {
   completedEmployees: HumanityManagerStatusCompletedEmployee[];
   directConversionCount: number;
   downstreamConversionCount: number;
+  kFactor30d: number;
   overdueEmployeeCount: number;
   overdueEmployees: HumanityManagerStatusPerson[];
   overduePresidentCount: number;
@@ -60,6 +61,11 @@ interface HumanityManagerStatusComponents {
 
 function formatCount(value: number): string {
   return Math.max(0, value).toLocaleString("en-US");
+}
+
+function formatKFactor(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "0.00";
+  return value.toFixed(2);
 }
 
 function formatPeopleSample(people: HumanityManagerStatusPerson[]): string {
@@ -120,6 +126,10 @@ export function createHumanityManagerStatus({
       {
         label: "Employees completed",
         value: formatCount(input.directConversionCount),
+      },
+      {
+        label: "Votes per invite (30d)",
+        value: formatKFactor(input.kFactor30d),
       },
       {
         label: "Employees still late",

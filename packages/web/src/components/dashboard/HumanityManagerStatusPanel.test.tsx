@@ -27,6 +27,7 @@ const STATUS_FIXTURE: HumanityManagerStatusInput = {
   ],
   directConversionCount: 2,
   downstreamConversionCount: 7,
+  kFactor30d: 0.75,
   overdueEmployeeCount: 1,
   overdueEmployees: [{ displayName: "Jake Smith" }],
   overduePresidentCount: 1,

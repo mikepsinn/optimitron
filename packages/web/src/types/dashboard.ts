@@ -10,6 +10,7 @@ export interface DashboardUser {
   headline: string | null;
   website: string | null;
   coverImage: string | null;
+  downstreamConversionCount?: number | null;
   isPublic: boolean;
   referralCode: string;
   image: string | null;

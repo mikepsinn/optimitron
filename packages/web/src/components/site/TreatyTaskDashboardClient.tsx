@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
+import { HumanityManagerStatusPanel } from "@/components/dashboard/HumanityManagerStatusPanel";
+import type { HumanityManagerStatusInput } from "@/lib/humanity-manager-status-content";
 import { ROUTES } from "@/lib/routes";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
 import type { DashboardUser } from "@/types/dashboard";
 
 interface TreatyTaskDashboardClientProps {
+  humanityManagerStatus: HumanityManagerStatusInput;
   user: DashboardUser;
 }
 
@@ -30,6 +33,7 @@ const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
 ];
 
 export function TreatyTaskDashboardClient({
+  humanityManagerStatus,
   user: initialUser,
 }: TreatyTaskDashboardClientProps) {
   const user = initialUser;
@@ -46,6 +50,8 @@ export function TreatyTaskDashboardClient({
         </div>
 
         <DashboardShareCard referralUrl={referralLink} />
+
+        <HumanityManagerStatusPanel status={humanityManagerStatus} />
 
         <details className="group border border-[var(--treaty-ink)]/30 bg-[var(--treaty-paper)]">
           <summary className="cursor-pointer list-none px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] marker:hidden">

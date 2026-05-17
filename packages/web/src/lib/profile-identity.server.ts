@@ -209,6 +209,7 @@ export async function getProfileIdentityData(
       headline: user.person?.headline ?? null,
       website: user.person?.website ?? null,
       coverImage: user.person?.coverImage ?? null,
+      downstreamConversionCount: user.downstreamConversionCount,
       isPublic: user.person?.isPublic ?? false,
       referralCode: user.referralCode,
       image: getUserDisplayAvatar(user),
