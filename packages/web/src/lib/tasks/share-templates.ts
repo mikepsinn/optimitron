@@ -414,7 +414,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       `At the current discovery rate, finding treatments for all diseases takes ~{eradication_years_status_quo} years. You personally will be dead within 80 years, which I mention not to be rude but because you seem weirdly calm about it.`,
       ``,
-      `Redirecting 1% of current military spending to pragmatic clinical trials could increase trial capacity {trial_capacity_multiplier}x and shorten the disease eradication timeline to to ~{eradication_years_treaty} years.`,
+      `Redirecting 1% of current military spending to pragmatic clinical trials could increase trial capacity {trial_capacity_multiplier}x and shorten the disease eradication timeline to ~{eradication_years_treaty} years.`,
       ``,
       `Sign: {treaty_url}. 30 seconds.`,
     ].join("\n"),

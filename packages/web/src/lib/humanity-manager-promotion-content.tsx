@@ -49,7 +49,7 @@ export function createHumanityManagerPromotion({
               figures={3}
               param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
             />{" "}
-            apocalypses apocalypses worth of mass murder capacity for{" "}
+            apocalypses worth of mass murder capacity for{" "}
             <ParameterValue
               className="font-black"
               figures={3}
