@@ -10,6 +10,8 @@ import { notFound } from "next/navigation";
 import { SufferingPreventedMetric } from "@/components/referendum/SignatoriesLeaderboard";
 import { Avatar } from "@/components/retroui/Avatar";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
+import { PublicProfileOwnerControls } from "@/components/profile/PublicProfileOwnerControls";
+import { PersonTaskAssignmentAction } from "@/components/people/PersonTaskAssignmentAction";
 import {
   defaultButtonClassName,
   primaryButtonClassName,
@@ -25,8 +27,10 @@ import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classifi
 import {
   humanityVGovernmentLink,
   plaintiffsLink,
+  getSignInPath,
   ROUTES,
 } from "@/lib/routes";
+import { getPersonHref } from "@/lib/person-href";
 import {
   getRepresentedPersonProfileData,
   type RepresentedPersonProfileData,
@@ -484,6 +488,11 @@ export default async function PersonDetailPage({
   });
   const visitorStatus = await getVisitorTreatyStatus(userId);
   const { openTasks, person, verifiedTasks } = data;
+  const isOwnProfile = Boolean(userId && person.user?.id === userId);
+  const publicProfileHref = getPersonHref(person);
+  const publicProfileUrl = `${requestOrigin}${publicProfileHref}`;
+  const assignTaskCallbackHref = `${publicProfileHref}?assignTask=1`;
+  const assignTaskSignInHref = getSignInPath(assignTaskCallbackHref);
   const fallbackInitials = getFallbackInitials(person.displayName);
   const treatyVote = getVoteBySlug(person, TREATY_REFERENDUM_SLUG);
   const courtVote = getVoteBySlug(person, DECLARATION_SLUG);
@@ -530,6 +539,14 @@ export default async function PersonDetailPage({
   return (
     <div className="min-h-screen bg-background pb-20 text-foreground">
       <div className="mx-auto flex max-w-4xl flex-col px-4 pb-16 pt-6 sm:pt-10">
+        {isOwnProfile ? (
+          <PublicProfileOwnerControls
+            initialIsPublic={person.isPublic}
+            publicProfileHref={publicProfileHref}
+            publicProfileUrl={publicProfileUrl}
+          />
+        ) : null}
+
         <header className="flex flex-col gap-4 border-b-2 border-foreground pb-6 sm:flex-row sm:items-center">
           <Avatar className="h-28 w-28 shrink-0 border-2 border-foreground bg-background sm:h-32 sm:w-32">
             {person.image ? (
@@ -563,12 +580,21 @@ export default async function PersonDetailPage({
         <section className="border-b-2 border-foreground py-6">
           {shouldShowVisitorReferral && visitorReferralUrl ? (
             <div className="space-y-4">
-              <a
-                className={`${primaryButtonClassName} w-full sm:w-auto`}
-                href={buildForwardReferralHref(visitorReferralUrl)}
-              >
-                Forward My Referral
-              </a>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <a
+                  className={`${primaryButtonClassName} w-full sm:w-auto`}
+                  href={buildForwardReferralHref(visitorReferralUrl)}
+                >
+                  Forward My Referral
+                </a>
+                <PersonTaskAssignmentAction
+                  callbackUrl={assignTaskCallbackHref}
+                  isAuthenticated={Boolean(userId)}
+                  personId={person.id}
+                  personName={person.displayName}
+                  signInHref={assignTaskSignInHref}
+                />
+              </div>
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
                   Your referral URL
@@ -587,12 +613,21 @@ export default async function PersonDetailPage({
               </div>
             </div>
           ) : (
-            <a
-              className={`${primaryButtonClassName} w-full sm:w-auto`}
-              href={profileReferralUrl}
-            >
-              Sign the Treaty
-            </a>
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a
+                className={`${primaryButtonClassName} w-full sm:w-auto`}
+                href={profileReferralUrl}
+              >
+                Sign the Treaty
+              </a>
+              <PersonTaskAssignmentAction
+                callbackUrl={assignTaskCallbackHref}
+                isAuthenticated={Boolean(userId)}
+                personId={person.id}
+                personName={person.displayName}
+                signInHref={assignTaskSignInHref}
+              />
+            </div>
           )}
         </section>
 

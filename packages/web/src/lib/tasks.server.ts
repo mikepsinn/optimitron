@@ -64,6 +64,7 @@ const personTaskProfilePersonSelect = {
   handle: true,
   id: true,
   image: true,
+  isPublic: true,
   isPublicFigure: true,
   referendumVotes: {
     where: {
@@ -1457,6 +1458,11 @@ export async function getPersonTaskProfileData(
     });
   }
   if (!person) {
+    return null;
+  }
+
+  const isViewerOwner = Boolean(userId && person.user?.id === userId);
+  if (!person.isPublic && !isViewerOwner) {
     return null;
   }
 

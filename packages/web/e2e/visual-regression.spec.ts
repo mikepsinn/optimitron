@@ -169,6 +169,10 @@ async function openVisualRoute(page: Page, routePath: string) {
     waitUntil: "domcontentloaded",
     timeout: 90_000,
   });
+  await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => {
+    // Some streaming pages keep subresources open; screenshots only need the
+    // final document after redirects settle.
+  });
   await forceAnimationsComplete(page);
 
   expect(errors, `${routePath} should not throw client-side errors`).toEqual([]);

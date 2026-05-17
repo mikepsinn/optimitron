@@ -249,6 +249,7 @@ describe("tasks server", () => {
       handle: "ada",
       id: "person_ada",
       image: null,
+      isPublic: true,
       isPublicFigure: false,
       referendumVotes: [],
       sourceRef: null,
@@ -282,6 +283,59 @@ describe("tasks server", () => {
     );
     expect(data?.openTasks.map((task) => task.id)).toEqual(["task_open"]);
     expect(data?.verifiedTasks.map((task) => task.id)).toEqual(["task_done"]);
+  });
+
+  it("does not expose a private person task profile to other viewers", async () => {
+    mocks.prisma.personFindFirst.mockResolvedValue({
+      bio: null,
+      countryCode: null,
+      currentAffiliation: null,
+      displayName: "Ada Lovelace",
+      handle: "ada",
+      id: "person_ada",
+      image: null,
+      isPublic: false,
+      isPublicFigure: false,
+      referendumVotes: [],
+      sourceRef: null,
+      sourceUrl: null,
+      user: { id: "owner_user", referralCode: "owner" },
+    });
+
+    const data = await getPersonTaskProfileData("ada", "other_user");
+
+    expect(data).toBeNull();
+    expect(mocks.prisma.taskFindMany).not.toHaveBeenCalled();
+  });
+
+  it("lets the owner view their private person task profile", async () => {
+    mocks.prisma.personFindFirst.mockResolvedValue({
+      bio: null,
+      countryCode: null,
+      currentAffiliation: null,
+      displayName: "Ada Lovelace",
+      handle: "ada",
+      id: "person_ada",
+      image: null,
+      isPublic: false,
+      isPublicFigure: false,
+      referendumVotes: [],
+      sourceRef: null,
+      sourceUrl: null,
+      user: { id: "owner_user", referralCode: "owner" },
+    });
+    mocks.prisma.taskFindMany.mockResolvedValue([
+      mockTask({
+        id: "task_open",
+        status: TaskStatus.ACTIVE,
+        title: "Open public task",
+      }),
+    ]);
+
+    const data = await getPersonTaskProfileData("ada", "owner_user");
+
+    expect(data?.person.id).toBe("person_ada");
+    expect(data?.openTasks.map((task) => task.id)).toEqual(["task_open"]);
   });
 
   it("searchTasks without a user searches public tasks only", async () => {

@@ -77,6 +77,9 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
   const [navQuery, setNavQuery] = useState("");
   const isAuthenticated = status === "authenticated";
   const user = session?.user ?? null;
+  const publicProfileHref = user?.personId
+    ? `${ROUTES.people}/${user.handle ?? user.personId}`
+    : null;
   const quickAction = config.quickAction ?? null;
   const quickActionHref = quickAction
     ? isAuthenticated
@@ -345,6 +348,18 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                 <div className="mt-4 space-y-2 border-t border-border pt-4">
                   {isAuthenticated ? (
                     <>
+                      {publicProfileHref ? (
+                        <SheetClose asChild>
+                          <Link
+                            href={publicProfileHref}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-colors hover:bg-muted"
+                            title={profileLink.cta}
+                            aria-label={profileLink.cta}
+                          >
+                            {profileLink.cta}
+                          </Link>
+                        </SheetClose>
+                      ) : null}
                       <SheetClose asChild>
                         <Link
                           href={profileLink.href}
