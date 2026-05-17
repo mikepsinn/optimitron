@@ -2,10 +2,6 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import {
-  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
-  HUMANITY_V_GOVERNMENT_VERDICT_QUESTION,
-} from "@optimitron/data/referendums";
-import {
   CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
@@ -14,7 +10,7 @@ import {
   GLOBAL_AVG_INCOME_2025,
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-  PENTAGON_UNACCOUNTED_FUNDS,
+  PHARMA_LIVES_SAVED_ANNUAL,
   WAR_CHILDREN_KILLED_SINCE_1900,
   WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
@@ -143,15 +139,6 @@ export default async function HumanityVGovernmentPage() {
         </p>
       </section>
 
-      <div id="verdict" className="mt-10 scroll-mt-24">
-        <HumanityVGovernmentVerdictVote
-          existingAnswer={verdictStats.existingAnswer}
-          fullDamagesLabel={HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL}
-          question={HUMANITY_V_GOVERNMENT_VERDICT_QUESTION}
-          referendumSlug={verdictStats.referendumSlug}
-        />
-      </div>
-
       <section className="mt-10">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
           If governments were a corporation
@@ -210,9 +197,8 @@ export default async function HumanityVGovernmentPage() {
           <div className="flex gap-4 pt-3">
             <dt className="w-32 shrink-0 text-muted-foreground">Remedy</dt>
             <dd className="text-foreground">
-              The 1% Treaty is the settlement: redirect 1% of military spending
-              to clinical trials. Not because governments became wise. Because
-              one percent is cheaper than the damages.
+              Record the finding, count the plaintiffs, and make the damages
+              demand public enough that governments have to answer it.
             </dd>
           </div>
         </dl>
@@ -316,14 +302,20 @@ export default async function HumanityVGovernmentPage() {
                 valueOverride="8.2 years"
               />{" "}
               of efficacy testing before letting humans access drugs already
-              proven safe. 53 years of warnings.{" "}
+              proven safe. The damages model multiplies that post-safety lag
+              by{" "}
+              <ParameterValue
+                figures={3}
+                param={PHARMA_LIVES_SAVED_ANNUAL}
+                valueOverride="12.4 million"
+              />{" "}
+              lives saved per year by existing drugs, yielding{" "}
               <ParameterValue
                 figures={3}
                 param={EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL}
                 valueOverride="102 million"
               />{" "}
-              dead. &ldquo;We did not know&rdquo; is no longer available as a
-              defense.
+              deaths.
             </p>
           </li>
           <li className="border-2 border-foreground bg-background p-5">
@@ -365,16 +357,19 @@ export default async function HumanityVGovernmentPage() {
             <ParameterValue
               figures={3}
               param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
-              valueOverride="$2.74M"
             />
           </p>
           <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-            Per living human. The False Claims Act triples damages when a
-            defendant defrauds the government. Here, the defendants ARE the
-            government, defrauding the citizenry. Triple damages apply.
+            The False Claims Act triples damages when a defendant defrauds the
+            government. Here, the defendants ARE the government, defrauding the
+            citizenry. Triple damages apply.
           </p>
         </div>
       </section>
+
+      <div className="mt-10">
+        <DamagesSensitivityCalculator />
+      </div>
 
       <section className="mt-10">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
@@ -413,6 +408,29 @@ export default async function HumanityVGovernmentPage() {
         </div>
       </section>
 
+      <div id="verdict" className="mt-10 scroll-mt-24">
+        <HumanityVGovernmentVerdictVote
+          existingAnswer={verdictStats.existingAnswer}
+          fullDamagesLabel={
+            <ParameterValue
+              figures={3}
+              param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
+            />
+          }
+          question={
+            <>
+              Should the governments of Earth be found liable for preventable
+              mass death and owe full damages of{" "}
+              <ParameterValue
+                figures={3}
+                param={CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA}
+              />?
+            </>
+          }
+          referendumSlug={verdictStats.referendumSlug}
+        />
+      </div>
+
       <section className="mt-10 border-2 border-foreground bg-background p-5">
         <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
           Plaintiffs
@@ -436,10 +454,6 @@ export default async function HumanityVGovernmentPage() {
           Add a plaintiff
         </Link>
       </section>
-
-      <div className="mt-10">
-        <DamagesSensitivityCalculator />
-      </div>
     </main>
   );
 }

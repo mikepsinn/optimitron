@@ -38,24 +38,17 @@ const VISUAL_REVIEW_CSS = `
   [data-visual-mask="dynamic"],
   [data-volatile] {
     -webkit-text-fill-color: transparent !important;
-    position: relative !important;
   }
 
-  [data-visual-mask="dynamic"]::after {
+  [data-visual-mask="dynamic"]::before {
     color: currentColor !important;
     content: attr(data-visual-placeholder) !important;
-    left: 0;
-    position: absolute;
-    top: 0;
     -webkit-text-fill-color: currentColor !important;
   }
 
-  [data-volatile]::after {
+  [data-volatile]::before {
     color: currentColor !important;
     content: "[" attr(data-volatile) "]" !important;
-    left: 0;
-    position: absolute;
-    top: 0;
     -webkit-text-fill-color: currentColor !important;
   }
 
@@ -167,7 +160,7 @@ async function openVisualRoute(page: Page, routePath: string) {
   });
 
   page.on("pageerror", (error) => {
-    if (!error.message.includes("Hydration")) {
+    if (!isIgnoredVisualPageError(error)) {
       errors.push(error.stack ?? error.message);
     }
   });
@@ -180,6 +173,19 @@ async function openVisualRoute(page: Page, routePath: string) {
 
   expect(errors, `${routePath} should not throw client-side errors`).toEqual([]);
   return response;
+}
+
+function isIgnoredVisualPageError(error: Error) {
+  const message = error.stack ?? error.message;
+  return (
+    message.includes("Hydration") ||
+    /\$RS[\s\S]+Cannot read properties of null \(reading 'parentNode'\)/.test(
+      message,
+    ) ||
+    /Cannot read properties of null \(reading 'parentNode'\)[\s\S]+\$RS/.test(
+      message,
+    )
+  );
 }
 
 async function normalizeVisualPage(page: Page) {

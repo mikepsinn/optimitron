@@ -3,21 +3,15 @@ import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   GLOBAL_POPULATION_2024,
-  SHARING_TIME_MINUTES,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters";
 import type { ParameterValueProps } from "@/components/shared/ParameterValue.core";
-import { ROUTES } from "@/lib/routes";
 import {
   FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
   FLOW_REFERRALS_PER_VOTER,
 } from "@/lib/treaty-share-flow-parameters";
 
 type ParameterValueComponent = React.ComponentType<ParameterValueProps>;
-type PromoLinkComponent = React.ComponentType<{
-  href: string;
-  children: React.ReactNode;
-}>;
 type PromoTextComponent = React.ComponentType<{
   children: React.ReactNode;
   muted?: boolean;
@@ -28,8 +22,6 @@ interface HumanityManagerPromotionComponents {
   ParameterValue: ParameterValueComponent;
   PromoBody: PromoBlockComponent;
   PromoEyebrow: PromoBlockComponent;
-  PromoHeading: PromoBlockComponent;
-  PromoLink: PromoLinkComponent;
   PromoText: PromoTextComponent;
 }
 
@@ -37,46 +29,33 @@ export function createHumanityManagerPromotion({
   ParameterValue,
   PromoBody,
   PromoEyebrow,
-  PromoHeading,
-  PromoLink,
   PromoText,
 }: HumanityManagerPromotionComponents) {
   return function HumanityManagerPromotion() {
     return (
       <>
         <PromoEyebrow>Humanity Manager · Assignment 1</PromoEyebrow>
-        <PromoHeading>
-          Forward this message to everyone you don't want to suffer and die of
-          horrible diseases.
-        </PromoHeading>
         <PromoBody>
           <PromoText>
-            You are now Humanity Manager for{" "}
+            🥳Congratulations! You've been promoted to Humanity Manager at Earth Optimization Services, LLC. You are responsible for getting{" "}
             <ParameterValue
               className="font-black"
               figures={1}
               param={GLOBAL_POPULATION_2024}
             />{" "}
-            humans. Get them to spend{" "}
-            <ParameterValue
-              param={SHARING_TIME_MINUTES}
-              presentation="inline"
-              valueOverride="30 seconds"
-            />{" "}
-            voting on the <PromoLink href={ROUTES.treaty}>1% Treaty</PromoLink>.
-            The trade: one of Earth's{" "}
+            humans to agree to trade one of Earth's{" "}
             <ParameterValue
               className="font-black"
               figures={3}
               param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
             />{" "}
-            stored apocalypses for{" "}
+            apocalypses apocalypses worth of mass murder capacity for{" "}
             <ParameterValue
               className="font-black"
               figures={3}
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
             />
-            × more clinical trials, pulling disease eradication from{" "}
+            × more clinical trials, compressing the disease eradication timeline from{" "}
             <ParameterValue
               className="font-black"
               figures={3}
@@ -90,7 +69,7 @@ export function createHumanityManagerPromotion({
             />.
           </PromoText>
           <PromoText>
-            Send this message to{" "}
+            Hire 2 subordinates by sending this message to{" "}
             <ParameterValue
               param={FLOW_REFERRALS_PER_VOTER}
               presentation="inline"
@@ -102,10 +81,7 @@ export function createHumanityManagerPromotion({
               presentation="inline"
               valueOverride="two"
             />{" "}
-            more. After enough rounds, everyone votes. You earn one Earth
-            Optimization Point per recruited voter, redeemable for a share of
-            the{" "}
-            <PromoLink href={ROUTES.prize}>Earth Optimization Prize</PromoLink>.
+            more and after 32 of these doublings, the majority of humanity has agreed to transcend war and disease!
           </PromoText>
         </PromoBody>
       </>

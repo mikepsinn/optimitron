@@ -1,4 +1,10 @@
-import { TaskClaimPolicy, TaskClaimStatus, TaskStatus } from "@optimitron/db";
+import {
+  TaskCategory,
+  TaskClaimPolicy,
+  TaskClaimStatus,
+  TaskDifficulty,
+  TaskStatus,
+} from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -12,6 +18,7 @@ const mocks = vi.hoisted(() => ({
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskFindMany: vi.fn(),
+    personFindFirst: vi.fn(),
     transaction: vi.fn(),
     userFindUniqueOrThrow: vi.fn(),
   },
@@ -40,6 +47,9 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.prisma.taskFindFirst,
       findMany: mocks.prisma.taskFindMany,
     },
+    person: {
+      findFirst: mocks.prisma.personFindFirst,
+    },
     user: {
       findUniqueOrThrow: mocks.prisma.userFindUniqueOrThrow,
     },
@@ -62,6 +72,7 @@ import {
   completeTaskClaim,
   createTask,
   getTaskDetailData,
+  getPersonTaskProfileData,
   listTasks,
   searchTasks,
   updateTaskCreatedByUser,
@@ -98,6 +109,47 @@ function lastTaskFindManyArgs() {
     [Record<string, unknown>]
   >;
   return calls.at(-1)?.[0] ?? {};
+}
+
+function mockTask(overrides: Record<string, unknown> = {}) {
+  return {
+    _count: { childTasks: 0 },
+    actualCashCostUsd: null,
+    actualEffortSeconds: null,
+    assigneeAffiliationSnapshot: null,
+    assigneeOrganization: null,
+    assigneePerson: null,
+    category: TaskCategory.OTHER,
+    claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+    claims: [],
+    communicationEndpoints: [],
+    completedAt: null,
+    completionEvidence: null,
+    contextJson: null,
+    createdByUserId: "user_creator",
+    currentImpactEstimateSet: null,
+    description: "Do the task.",
+    difficulty: TaskDifficulty.BEGINNER,
+    dueAt: null,
+    estimatedEffortHours: null,
+    id: "task_1",
+    incomingEdges: [],
+    interestTags: [],
+    isPublic: true,
+    maxClaims: null,
+    outgoingEdges: [],
+    parentTask: null,
+    parentTaskId: null,
+    roleTitle: null,
+    skillTags: [],
+    sortOrder: 0,
+    sourceArtifacts: [],
+    status: TaskStatus.ACTIVE,
+    taskKey: null,
+    title: "Do the task",
+    verifiedAt: null,
+    ...overrides,
+  };
 }
 
 describe("tasks server", () => {
@@ -186,6 +238,50 @@ describe("tasks server", () => {
       deletedAt: null,
       OR: [{ isPublic: true }, { createdByUserId: "user-a" }],
     });
+  });
+
+  it("gets only public assigned tasks for a person profile and splits open from verified", async () => {
+    mocks.prisma.personFindFirst.mockResolvedValue({
+      bio: null,
+      countryCode: null,
+      currentAffiliation: null,
+      displayName: "Ada Lovelace",
+      handle: "ada",
+      id: "person_ada",
+      image: null,
+      isPublicFigure: false,
+      referendumVotes: [],
+      sourceRef: null,
+      sourceUrl: null,
+      user: null,
+    });
+    mocks.prisma.taskFindMany.mockResolvedValue([
+      mockTask({
+        id: "task_open",
+        status: TaskStatus.ACTIVE,
+        title: "Open public task",
+      }),
+      mockTask({
+        id: "task_done",
+        status: TaskStatus.VERIFIED,
+        title: "Verified public task",
+        verifiedAt: new Date("2026-05-01T00:00:00.000Z"),
+      }),
+    ]);
+
+    const data = await getPersonTaskProfileData("ada", null);
+
+    expect(mocks.prisma.taskFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          assigneePersonId: "person_ada",
+          deletedAt: null,
+          isPublic: true,
+        },
+      }),
+    );
+    expect(data?.openTasks.map((task) => task.id)).toEqual(["task_open"]);
+    expect(data?.verifiedTasks.map((task) => task.id)).toEqual(["task_done"]);
   });
 
   it("searchTasks without a user searches public tasks only", async () => {

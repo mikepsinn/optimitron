@@ -14,5 +14,8 @@
 ## Visible Page Copy
 
 ## GLOBAL SURVEY TO END WAR AND DISEASE
-- Which split best improves health and real income?
+- You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare (i.e. maximize median health and wealth). Of the money available for military/weapons and clinical trials, how much should go to each?
 - SLIDE ME
+- IC2EWD SURVEY
+- [PRIVACY](/privacy)
+- [TERMS](/terms)

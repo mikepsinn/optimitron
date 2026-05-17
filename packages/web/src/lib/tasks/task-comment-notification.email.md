@@ -27,7 +27,7 @@ SAMPLE AUTHOR COMMENTED
 
 I just signed and forwarded the share message to four of my family members. Two of them have already voted.
 
-[OPEN THE TASK](https://warondisease.org/tasks/sample-task-id)
+[OPEN THE TASK](http://localhost:3001/tasks/sample-task-id)
 
 Reply to this email to leave a comment on the task.
 

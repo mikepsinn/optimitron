@@ -29,7 +29,7 @@ The 1% Treaty needs your country's signature. Sign the document, share the link 
 
 This is a sample task description rendered into the email template.
 
-[OPEN TASK](https://warondisease.org/tasks/sample-task-id)
+[OPEN TASK](http://localhost:3001/tasks/sample-task-id)
 
 Reply to this email to leave a comment on the task.
 

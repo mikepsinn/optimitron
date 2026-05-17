@@ -266,22 +266,18 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
     <section className="border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8">
       <HumanityManagerPromotion />
 
-      <label className="mt-6 block" htmlFor="dashboard-share-message">
-        <span className="block border-2 border-[var(--treaty-ink)] bg-[var(--treaty-ink)] px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-paper)]">
-          COPY THIS MESSAGE
-        </span>
-        <span className="mt-2 block text-sm font-bold leading-6 text-[var(--treaty-ink)]">
-          Forward it to two humans you love right now.
-        </span>
-        <textarea
-          id="dashboard-share-message"
-          className="mt-3 block min-h-[13rem] w-full resize-y border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-4 text-base font-bold leading-relaxed text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40 sm:min-h-[10.5rem]"
-          rows={7}
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          spellCheck
-        />
-      </label>
+      <div className="mt-6">
+        <label className="block" htmlFor="dashboard-share-message">
+          <textarea
+            id="dashboard-share-message"
+            className="mt-3 block min-h-[13rem] w-full resize-y border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-4 text-base font-bold leading-relaxed text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40 sm:min-h-[10.5rem]"
+            rows={7}
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            spellCheck
+          />
+        </label>
+      </div>
 
       <div className="mt-4 space-y-3">
         {nativeShareSupported ? (

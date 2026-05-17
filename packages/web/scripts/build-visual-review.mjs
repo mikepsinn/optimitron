@@ -119,6 +119,7 @@ const routeOrder = [
   "settings",
   "organizations",
   "organization-iam-public",
+  "organization-iam-survey",
   "task-optimize-earth",
   "task-one-percent-treaty",
   "task-signer-canada",
@@ -398,6 +399,16 @@ function renderHtml(groups) {
       align-items: start;
     }
 
+    @media (min-width: 1200px) {
+      .pair-screens.has-pixel-diff {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pair-screens.has-pixel-diff > figure:nth-child(3) {
+        border-left: 1px solid var(--line);
+      }
+    }
+
     figure {
       margin: 0;
       background: #ffffff;
@@ -405,6 +416,12 @@ function renderHtml(groups) {
 
     .pair-screens > figure:nth-child(even) {
       border-left: 1px solid var(--line);
+    }
+
+    .markdown-diff-figure {
+      border-left: 0 !important;
+      border-top: 1px solid var(--line);
+      grid-column: 1 / -1;
     }
 
     /* Mobile: per-pair horizontal carousel.
@@ -1315,6 +1332,7 @@ function escapeJsonForAttr(value) {
 function renderPair(pair) {
   const routeUrl = getRouteUrl(pair.routeName);
   const markdownDiff = buildMarkdownDiff(pair);
+  const hasPixelDiff = Boolean(pair.diff?.diffRelPath);
   // Default: mobile pairs open, desktop pairs collapsed.
   const isMobile = pair.projectName === "visual-mobile";
   const openAttr = isMobile ? " open" : "";
@@ -1326,7 +1344,7 @@ function renderPair(pair) {
         <span class="pill ${escapeHtml(pair.diff.statusClass)}">${escapeHtml(pair.diff.label)}</span>
       </span>
     </summary>
-    <div class="pair-screens">
+    <div class="pair-screens${hasPixelDiff ? " has-pixel-diff" : ""}">
       ${renderFigure(pair.before, "Before: main", routeUrl, buildScreenContext(pair, "before", pair.before?.relPath))}
       ${renderFigure(pair.after, "After: pull request", routeUrl, buildScreenContext(pair, "after", pair.after?.relPath))}
       ${pair.diff?.diffRelPath ? renderDiffFigure(pair.diff.diffRelPath, pair.routeName, pair.projectName, routeUrl, buildScreenContext(pair, "diff", pair.diff.diffRelPath)) : ""}

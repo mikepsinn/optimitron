@@ -1,10 +1,11 @@
 "use client";
 
 import { Button } from "@/components/retroui/Button";
+import { Dialog } from "@/components/retroui/Dialog";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { CheckSquare, Hand, Square } from "lucide-react";
+import { CheckSquare, ExternalLink, Hand, Square, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
@@ -20,10 +21,13 @@ import {
   NUCLEAR_OVERKILL_FULL_EXPLANATION,
 } from "@optimitron/data/campaign";
 import {
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TRADITIONAL_PHASE3_COST_PER_PATIENT,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
@@ -39,8 +43,9 @@ import {
   trackTreatyFlowScreenAdvanced,
   trackVoteSubmitted,
 } from "@/lib/analytics";
-import { ROUTES } from "@/lib/routes";
+import { PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL, ROUTES } from "@/lib/routes";
 import { VOTE_SECTION } from "@/lib/messaging";
+import { formatWelfareClaimAmountText } from "@/components/shared/WelfareClaim.core";
 import {
   buildTreatyWishocraticAllocation,
   getMilitaryAllocationPercentFromPendingTreatyVote,
@@ -84,7 +89,7 @@ const fullExplanationParagraphs = [
   fullExplanationSentences.slice(1).join(" "),
 ] as const;
 
-interface TreatyVoteFlowProps {
+export interface TreatyVoteFlowProps {
   authCallbackUrl?: string;
   className?: string;
   compactInitialScreen?: boolean;
@@ -101,6 +106,92 @@ interface TreatyVoteFlowProps {
 
 const DEFAULT_SLIDER_HEADLINE = "Please Take 30 Seconds to End War and Disease";
 const CHOICE_CARD_SETTLED_SCROLL_DELAY_MS = 500;
+
+function PragmaticClinicalTrialsDefinition({
+  children = "pragmatic clinical trials",
+  className,
+}: {
+  children?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <Dialog>
+      <Dialog.Trigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "inline cursor-help underline decoration-dotted underline-offset-4 decoration-[var(--treaty-ink)]/40 hover:decoration-[var(--treaty-ink)]",
+            className,
+          )}
+        >
+          {children}
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Content
+        title="Pragmatic clinical trials"
+        className="!w-[calc(100vw-2rem)] !max-w-xl !grid-cols-[minmax(0,1fr)] overflow-hidden rounded-none border-2 border-foreground bg-background text-foreground shadow-none"
+      >
+        <div className="flex min-w-0 items-start justify-between gap-4 border-b-2 border-foreground bg-foreground px-4 py-3 text-background">
+          <h2 className="min-w-0 flex-1 break-words text-base font-black uppercase leading-tight">
+            Pragmatic clinical trials
+          </h2>
+          <Dialog.Close asChild>
+            <button
+              type="button"
+              aria-label="Close"
+              className="shrink-0 border-2 border-background p-1 hover:bg-background/10"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </Dialog.Close>
+        </div>
+        <div className="space-y-4 p-4 text-left text-sm font-bold leading-7 text-muted-foreground sm:text-base">
+          <p>
+            Trials built into ordinary healthcare: broad patients, normal
+            clinical settings, and outcomes that matter in real life.
+          </p>
+          <p>
+            The model estimate is{" "}
+            <ParameterValue
+              param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
+              presentation="inline"
+            />{" "}
+            per patient, versus{" "}
+            <ParameterValue
+              param={TRADITIONAL_PHASE3_COST_PER_PATIENT}
+              presentation="inline"
+            />{" "}
+            for conventional Phase 3 trials.
+          </p>
+          <a
+            href={PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 border-2 border-foreground px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-foreground hover:bg-foreground hover:text-background"
+          >
+            Read the manual
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </Dialog.Content>
+    </Dialog>
+  );
+}
+
+function DefaultSliderPrompt() {
+  return (
+    <>
+      You pay governments{" "}
+      <ParameterValue
+        param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+        valueOverride={formatWelfareClaimAmountText()}
+      />{" "}
+      a year to promote the general welfare (i.e. maximize median health and
+      wealth). Of the money available for military/weapons and clinical trials,
+      how much should go to each?
+    </>
+  );
+}
 
 function NuclearOverkillTemplate({ template }: { template: string }) {
   return (
@@ -138,7 +229,7 @@ export function TreatyVoteFlow({
   postVoteRedirectUrl = ROUTES.dashboard,
   respectStoredFlowVariant = true,
   sliderHeadline = DEFAULT_SLIDER_HEADLINE,
-  sliderPrompt = VOTE_SECTION.sliderPrompt,
+  sliderPrompt = <DefaultSliderPrompt />,
   surface = "treaty_vote_flow",
 }: TreatyVoteFlowProps) {
   const searchParams = useSearchParams();
@@ -782,7 +873,9 @@ export function TreatyVoteFlow({
                       {clinicalTrialsAllocation}%
                     </div>
                     <div className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
-                      Clinical Trials
+                      <PragmaticClinicalTrialsDefinition className="uppercase">
+                        Pragmatic Clinical Trials
+                      </PragmaticClinicalTrialsDefinition>
                     </div>
                   </div>
                 </div>

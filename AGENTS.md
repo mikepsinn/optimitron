@@ -91,6 +91,8 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Do not leak implementation or planning terms into user copy: "site variant", "program graph", "initiative landing page", "approved organizations get", "route allowlist", etc.
 - Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.
 - For treaty/vote/referral copy, optimize for voting, sharing, embedding, and task completion, not explaining the whole system.
+- Before writing campaign copy, name the audience, desired action, and legal/quantitative anchor. Preserve the anchor when it creates trust or legitimacy; compress around it instead of replacing it.
+- On vote, survey, referral, and embed surfaces, choose words that increase the target action. Move precision that slows response into citations, expanders, and case pages.
 - **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
 - Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.

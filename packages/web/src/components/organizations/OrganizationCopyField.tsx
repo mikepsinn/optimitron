@@ -2,16 +2,18 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { copyTextToClipboard } from "@/lib/clipboard";
+import { copyHtmlToClipboard, copyTextToClipboard } from "@/lib/clipboard";
 
 type CopyState = "idle" | "copied" | "error";
 
 export function OrganizationCopyField({
+  htmlValue,
   label,
   minRows = 3,
   multiline = false,
   value,
 }: {
+  htmlValue?: string;
   label: string;
   minRows?: number;
   multiline?: boolean;
@@ -21,7 +23,11 @@ export function OrganizationCopyField({
 
   async function handleCopy() {
     try {
-      await copyTextToClipboard(value);
+      if (htmlValue) {
+        await copyHtmlToClipboard({ html: htmlValue, text: value });
+      } else {
+        await copyTextToClipboard(value);
+      }
       setCopyState("copied");
       window.setTimeout(() => setCopyState("idle"), 1600);
     } catch {
@@ -35,7 +41,9 @@ export function OrganizationCopyField({
       ? "Copied"
       : copyState === "error"
         ? "Copy Failed"
-        : "Copy";
+        : htmlValue
+          ? "Copy Rich"
+          : "Copy";
 
   return (
     <label className="block">

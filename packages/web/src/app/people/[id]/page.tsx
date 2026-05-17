@@ -7,7 +7,6 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
-import type { TaskCardTask } from "@/components/tasks/task-card";
 import { SufferingPreventedMetric } from "@/components/referendum/SignatoriesLeaderboard";
 import { Avatar } from "@/components/retroui/Avatar";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
@@ -15,6 +14,7 @@ import {
   defaultButtonClassName,
   primaryButtonClassName,
 } from "@/components/ui/default-button";
+import { PublicProfileTaskSection } from "@/components/tasks/PublicProfileTaskSection";
 import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
@@ -57,19 +57,6 @@ type PersonTaskProfileData = NonNullable<
 >;
 type PublicProfilePerson = PersonTaskProfileData["person"];
 type PublicProfileVote = PublicProfilePerson["referendumVotes"][number];
-
-const CAMPAIGN_TASK_TERMS = [
-  "1% treaty",
-  "one-percent-treaty",
-  "war on disease",
-  "war-on-disease",
-  "humanity v government",
-  "humanity-v-government",
-  "court of humanity",
-  "plaintiff",
-  "referendum",
-  "global survey",
-] as const;
 
 async function getVisitorTreatyStatus(userId: string | null) {
   if (!userId) {
@@ -249,25 +236,6 @@ function getTrustSignal(person: PublicProfilePerson) {
   }
 
   return "Public campaign profile";
-}
-
-function getCampaignTaskText(task: TaskCardTask) {
-  return [
-    task.taskKey,
-    task.title,
-    task.description,
-    task.parentTask?.title,
-    ...task.interestTags,
-    ...task.skillTags,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-}
-
-function isCampaignTask(task: TaskCardTask) {
-  const haystack = getCampaignTaskText(task);
-  return CAMPAIGN_TASK_TERMS.some((term) => haystack.includes(term));
 }
 
 function buildForwardReferralHref(referralUrl: string) {
@@ -515,10 +483,8 @@ export default async function PersonDetailPage({
     forwardedProto: hdrs.get("x-forwarded-proto"),
   });
   const visitorStatus = await getVisitorTreatyStatus(userId);
-  const { person, verifiedTasks } = data;
+  const { openTasks, person, verifiedTasks } = data;
   const fallbackInitials = getFallbackInitials(person.displayName);
-  const verifiedTyped = verifiedTasks as unknown as TaskCardTask[];
-  const campaignTasks = verifiedTyped.filter(isCampaignTask).slice(0, 6);
   const treatyVote = getVoteBySlug(person, TREATY_REFERENDUM_SLUG);
   const courtVote = getVoteBySlug(person, DECLARATION_SLUG);
   const recruitedCount = person.user?._count.referendumReferrals ?? 0;
@@ -673,30 +639,11 @@ export default async function PersonDetailPage({
           )}
         </section>
 
-        {campaignTasks.length > 0 ? (
-          <section className="py-8">
-            <h2 className="text-2xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)]">
-              Public Campaign Tasks
-            </h2>
-            <ul className="mt-4 divide-y divide-foreground border border-foreground">
-              {campaignTasks.map((task) => (
-                <li className="p-4" key={task.id}>
-                  <Link
-                    className="font-black underline-offset-4 hover:underline"
-                    href={`${ROUTES.tasks}/${task.id}`}
-                  >
-                    {task.title}
-                  </Link>
-                  {task.verifiedAt ? (
-                    <p className="mt-1 text-sm font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                      Completed {formatIsoDate(task.verifiedAt) ?? ""}
-                    </p>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+        <PublicProfileTaskSection
+          completedTasks={verifiedTasks}
+          openTasks={openTasks}
+          ownerName={person.displayName}
+        />
       </div>
     </div>
   );

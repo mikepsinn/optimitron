@@ -26,5 +26,7 @@
 - [Optimize Earth](/tasks/optimize-earth)
 - [initials]
 - YOU
+- [count]
+- [money]
 ### YOUR TASKS
 - [VOTE ON THE 1% TREATY Redirect 1% of military spending to clinical trials. 30 seconds. One vote. The only task that matters until you cast it.→](/vote)

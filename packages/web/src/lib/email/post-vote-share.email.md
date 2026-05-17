@@ -22,11 +22,9 @@
 
 HUMANITY MANAGER · ASSIGNMENT 1
 
-Forward this message to everyone you don't want to suffer and die of horrible diseases.
+🥳Congratulations! You've been promoted to Humanity Manager at Earth Optimization Services, LLC. You are responsible for getting [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) humans to agree to trade one of Earth's [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses apocalypses worth of mass murder capacity for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trials, compressing the disease eradication timeline from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 
-You are now Humanity Manager for [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) humans. Get them to spend [30 seconds](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) voting on the [1% Treaty](http://localhost:3001/treaty). The trade: one of Earth's [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) stored apocalypses for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trials, pulling disease eradication from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
-
-Send this message to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans you love. They send it to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) more. After enough rounds, everyone votes. You earn one Earth Optimization Point per recruited voter, redeemable for a share of the [Earth Optimization Prize](http://localhost:3001/prize).
+Hire 2 subordinates by sending this message to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans you love. They send it to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) more and after 32 of these doublings, the majority of humanity has agreed to transcend war and disease!
 
 COPY THIS MESSAGE: Copy it and forward it to two friends right now.
 
