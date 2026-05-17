@@ -63,10 +63,6 @@ vi.mock("@/components/shared/ShareLinkButtons", () => ({
   ShareLinkButtons: () => <div />,
 }));
 
-vi.mock("@/lib/messaging", () => ({
-  REFERRAL_SHARE_LABEL: "Share this link",
-}));
-
 vi.mock("@/lib/url", () => ({
   buildCourtReferralUrl: () => "https://example.org/court?ref=tester",
   buildUserReferralUrl: () => "https://example.org/ref",

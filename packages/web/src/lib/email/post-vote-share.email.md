@@ -26,14 +26,14 @@ HUMANITY MANAGER · ASSIGNMENT 1
 
 Hire 2 subordinates by sending this message to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans you love. They send it to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) more and after 32 of these doublings, the majority of humanity has agreed to transcend war and disease!
 
-Forward this message to everyone you don't want to suffer and die of horrible diseases.
-
-COPY THIS MESSAGE: Copy it and forward it to two friends right now.
+TAP AND HOLD TO COPY THIS MESSAGE:
 
 I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to vote on this stupid treaty at https://warondisease.org/vote/SAMPLE as it will reduce the likelihood you will suffer and die of horrible diseases.
 
+Paste it into WhatsApp, SMS, email, Signal, or wherever your friends read words you write.
+
 [END WAR AND DISEASE](https://warondisease.org/vote/SAMPLE)
 
-Paste it into WhatsApp, SMS, email, Signal, or wherever your friends read words from you.
+Forward this email to everyone you do not want to suffer and die of horrible diseases.
 
 [Unsubscribe](https://warondisease.org/api/email/unsubscribe?token=SAMPLE)

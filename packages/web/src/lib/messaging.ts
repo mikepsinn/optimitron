@@ -21,12 +21,6 @@ export const POINT_NAME = "VOTE" as const;
 export const POINT = `${POINT_NAME} Point` as const;
 export const POINTS = `${POINT_NAME} Points` as const;
 
-export const REFERRAL_SHARE_LABEL =
-  "Forward this message to everyone you don't want to suffer and die of horrible diseases." as const;
-
-export const REFERRAL_SHARE_PROMPT =
-  `${REFERRAL_SHARE_LABEL} It will significantly reduce the probability that they will suffer and die from horrible diseases.` as const;
-
 // Welfare claim text lives in WelfareClaim.core so string-only contexts
 // do not import the React component. JSX surfaces should use WelfareClaim.
 
@@ -96,7 +90,8 @@ const MANAGER_VOCAB: UserFramingVocabulary = {
     longName: "Earth Optimization Services LLC",
   },
   recruitCtaShort: "Hire two humanity managers",
-  shareLinkPrompt: REFERRAL_SHARE_PROMPT,
+  shareLinkPrompt:
+    "Share your link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Each humanity manager you hire earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per humanity manager hired`,
   verifyAndEarn: `Verify with World ID, then share your link. Each humanity manager you hire earns you 1 ${POINT}.`,
@@ -119,7 +114,8 @@ const VOTER_VOCAB: UserFramingVocabulary = {
     longName: "Earth Optimization Services LLC",
   },
   recruitCtaShort: "Recruit verified voters",
-  shareLinkPrompt: REFERRAL_SHARE_PROMPT,
+  shareLinkPrompt:
+    "Share your vote link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Every verified voter you bring in earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per verified voter recruited`,
   verifyAndEarn: `Verify with World ID, then share your link. Each verified voter who uses it earns you 1 ${POINT}.`,

@@ -5,7 +5,6 @@ import { Check, Copy, Save } from "lucide-react";
 import { Card } from "@/components/retroui/Card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
-import { REFERRAL_SHARE_PROMPT } from "@/lib/messaging";
 import { buildReferralUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import type { DashboardUser } from "@/types/dashboard";
@@ -76,7 +75,8 @@ export function ReferralLinkEditor({
   onUserChange,
   onRefresh,
   title = null,
-  description = REFERRAL_SHARE_PROMPT,
+  description =
+    "Share this link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   variant = "default",
   className,
 }: ReferralLinkEditorProps) {

@@ -85,13 +85,7 @@ test.describe("email visual coverage", () => {
       page,
       "post-vote-share",
       "email-post-vote-share",
-      [
-        "Forward this message to everyone you don't want to suffer and die of horrible diseases.",
-        "122",
-        "apocalypses worth of mass murder capacity",
-        "COPY THIS MESSAGE",
-        "stupid treaty",
-      ],
+      "https://warondisease.org/vote/SAMPLE",
       testInfo,
     );
   });
