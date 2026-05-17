@@ -87,9 +87,10 @@ test.describe("email visual coverage", () => {
       "email-post-vote-share",
       [
         "Forward this message to everyone you don't want to suffer and die of horrible diseases.",
-        "122 stored apocalypses",
+        "122",
+        "apocalypses worth of mass murder capacity",
         "COPY THIS MESSAGE",
-        "1% Treaty",
+        "stupid treaty",
       ],
       testInfo,
     );
