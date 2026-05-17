@@ -107,4 +107,5 @@ packages/web/public/media/
 .codex/*-test.mjs
 .codex/last-commit-message.txt
 .codex/last-anonymized-preview.txt
+.codex-tmp/
 .claude/state/

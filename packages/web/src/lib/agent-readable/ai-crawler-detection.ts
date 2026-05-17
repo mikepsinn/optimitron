@@ -34,6 +34,10 @@ const AI_CRAWLER_RULES: readonly AiCrawlerRule[] = [
   { token: "Google-Extended", provider: "google", purpose: "training" },
 ];
 
+export const AI_CRAWLER_USER_AGENTS = AI_CRAWLER_RULES.map(
+  (rule) => rule.token,
+);
+
 const FALLBACK_RULES: readonly AiCrawlerRule[] = [
   { token: "OpenAI", provider: "openai", purpose: "unknown" },
   { token: "Anthropic", provider: "anthropic", purpose: "unknown" },

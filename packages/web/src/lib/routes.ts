@@ -825,7 +825,7 @@ export const faqLink: NavItem = {
   label: "Campaign FAQ",
   emoji: "?",
   description:
-    "Short answers for humans and search agents asking what the 1% Treaty, Humanity v Government, plaintiffs, and the campaign math mean.",
+    `Short answers for humans and search agents asking what the ${treatyReduction} Treaty, Humanity v Government, plaintiffs, and the campaign math mean.`,
   tagline: "Short answers for agents and humans",
   copyPreview: true,
   screenshot: true,

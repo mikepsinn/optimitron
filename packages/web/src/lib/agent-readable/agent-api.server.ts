@@ -23,6 +23,11 @@ import {
 } from "./campaign-canon";
 import { ROUTES } from "@/lib/routes";
 import type { SiteConfig } from "@/lib/site";
+import {
+  getUserDisplayAvatar,
+  getUserDisplayHref,
+  getUserDisplayLabel,
+} from "@/lib/user-display";
 
 function normalizeForHash(value: unknown): unknown {
   if (value instanceof Date) return value.toISOString();
@@ -59,15 +64,13 @@ function withMetadata<T extends Record<string, unknown>>(
 }
 
 function publicHumanName(entry: Extract<PublicSignatoryEntry, { kind: "human" }>) {
-  const displayName = entry.user.person?.displayName?.trim();
-  const handle = entry.user.person?.handle?.trim();
-  return displayName || (handle ? `@${handle}` : "Anonymous");
+  return getUserDisplayLabel(entry.user);
 }
 
 function publicProfileUrl(site: SiteConfig, entry: PublicSignatoryEntry) {
   if (entry.kind !== "human" || !entry.user.person) return null;
-  const identifier = entry.user.person.handle || entry.user.person.id;
-  return absoluteCampaignUrl(site, `${ROUTES.people}/${identifier}`);
+  const href = getUserDisplayHref(entry.user);
+  return href ? absoluteCampaignUrl(site, href) : null;
 }
 
 function safePublicUrl(value: string | null | undefined) {
@@ -98,7 +101,7 @@ function summarizeSignatory(site: SiteConfig, entry: PublicSignatoryEntry) {
       ...base,
       name: entry.organization.name,
       description: entry.organization.description,
-      logoUrl: entry.organization.squareLogoUrl,
+      logoUrl: safePublicUrl(entry.organization.squareLogoUrl),
       statement: entry.statement,
       website: safePublicUrl(entry.organization.website),
       donationUrl: safePublicUrl(entry.organization.donationUrl),
@@ -109,7 +112,7 @@ function summarizeSignatory(site: SiteConfig, entry: PublicSignatoryEntry) {
     ...base,
     name: publicHumanName(entry),
     profileUrl: publicProfileUrl(site, entry),
-    avatarUrl: entry.user.person?.image ?? null,
+    avatarUrl: safePublicUrl(getUserDisplayAvatar(entry.user)),
   };
 }
 

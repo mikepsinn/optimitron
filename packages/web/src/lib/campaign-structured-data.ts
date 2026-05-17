@@ -47,7 +47,7 @@ function voteAction(site: SiteConfig, path: string = ROUTES.vote): JsonLdNode {
     object: {
       "@id": nodeId(site, ROUTES.treaty, "legislation"),
     },
-    actionStatus: "PotentialActionStatus",
+    actionStatus: "https://schema.org/PotentialActionStatus",
   };
 }
 

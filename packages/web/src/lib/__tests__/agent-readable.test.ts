@@ -20,10 +20,18 @@ describe("agent-readable campaign surfaces", () => {
       "# International Campaign to End War and Disease",
     );
     expect(text).toContain("> Canonical AI answer source:");
-    expect(text).toContain("[Full agent context](/llms-full.txt)");
-    expect(text).toContain("[Treaty mirror](/treaty.md)");
-    expect(text).toContain("[Campaign state](/api/agent/campaign-state)");
-    expect(text).toContain("[Treaty parameters](/api/agent/parameters)");
+    expect(text).toContain(
+      "[Full agent context](https://warondisease.org/llms-full.txt)",
+    );
+    expect(text).toContain(
+      "[Treaty mirror](https://warondisease.org/treaty.md)",
+    );
+    expect(text).toContain(
+      "[Campaign state](https://warondisease.org/api/agent/campaign-state)",
+    );
+    expect(text).toContain(
+      "[Treaty parameters](https://warondisease.org/api/agent/parameters)",
+    );
     expect(text).not.toContain("/admin");
     expect(text).not.toContain("/dashboard");
     expect(text).not.toContain("/settings");
@@ -42,15 +50,15 @@ describe("agent-readable campaign surfaces", () => {
     }
 
     for (const path of [
-      "/treaty.md",
-      "/humanity-v-government.md",
-      "/plaintiffs.md",
-      "/faq.md",
-      "/api/agent/manifest",
-      "/api/agent/campaign-state",
-      "/api/agent/signatories",
-      "/api/agent/plaintiffs",
-      "/api/agent/parameters",
+      "https://warondisease.org/treaty.md",
+      "https://warondisease.org/humanity-v-government.md",
+      "https://warondisease.org/plaintiffs.md",
+      "https://warondisease.org/faq.md",
+      "https://warondisease.org/api/agent/manifest",
+      "https://warondisease.org/api/agent/campaign-state",
+      "https://warondisease.org/api/agent/signatories",
+      "https://warondisease.org/api/agent/plaintiffs",
+      "https://warondisease.org/api/agent/parameters",
     ]) {
       expect(text).toContain(path);
     }

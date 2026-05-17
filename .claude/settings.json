@@ -13,11 +13,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-snapshot-handedit.mjs\"",
             "timeout": 3000
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-theory-of-mind-on-copy-edit.mjs\"",
-            "timeout": 5000
           }
         ]
       },
@@ -28,21 +23,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-snapshot-handedit.mjs\"",
             "timeout": 3000
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-theory-of-mind-on-copy-edit.mjs\"",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-theory-of-mind-on-copy-edit.mjs\"",
-            "timeout": 5000
           }
         ]
       },
@@ -192,11 +172,6 @@
     "SessionStart": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/kill-zombie-codex-on-session-start.mjs\"",
-            "timeout": 6000
-          },
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-pr-check.mjs\"",

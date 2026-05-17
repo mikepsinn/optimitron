@@ -73,7 +73,9 @@ try {
   // alone fires on `commit-tree` because `-` is a non-word char). Also
   // allow common config prefixes like `git -c user.email=foo commit`,
   // `git -C path commit`, `git -S commit`.
-  if (!/\bgit\s+(?:-[CcSP]\s*\S+\s+)*commit(?!\S)/.test(command)) process.exit(0);
+  if (!/\bgit\s+(?:(?:-[CcP]\s+\S+|-S(?:\s*\S+)?)\s+)*commit(?!\S)/.test(command)) {
+    process.exit(0);
+  }
 
   // Read staged diff name-only via git.
   let stagedFiles = [];

@@ -13,6 +13,7 @@ export const AGENT_CACHE_CONTROL =
   "public, s-maxage=3600, stale-while-revalidate=86400";
 
 export const AGENT_READABLE_CANONICAL_SITE_KEY = "warOnDisease" as const;
+export const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 
 export const MARKDOWN_MIRROR_PATHS = [
   { key: "treaty", path: "/treaty.md", title: "Treaty mirror" },
@@ -62,7 +63,7 @@ export const CAMPAIGN_FAQ_ITEMS = [
   {
     question: "What is the 1% Treaty?",
     answer:
-      "The 1% Treaty asks governments to redirect 1% of military spending to clinical trials, with incentives that make keeping the treaty more profitable than canceling it.",
+      `The 1% Treaty asks governments to redirect ${TREATY_REDUCTION_TEXT} of military spending to clinical trials, with incentives that make keeping the treaty more profitable than canceling it.`,
   },
   {
     question: "What is Humanity v Government?",
@@ -147,7 +148,6 @@ export function getAgentReadablePaths(site: SiteConfig): AgentReadablePaths {
 }
 
 export function getCampaignSummary() {
-  const treatyReduction = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
   const statusQuoYears = Math.round(
     STATUS_QUO_QUEUE_CLEARANCE_YEARS.value,
   ).toLocaleString("en-US");
@@ -155,5 +155,5 @@ export function getCampaignSummary() {
     DFDA_QUEUE_CLEARANCE_YEARS.value,
   ).toLocaleString("en-US");
 
-  return `${CAMPAIGN_NAME} asks humans to vote for the 1% Treaty: redirect ${treatyReduction} of military spending to clinical trials, compressing the disease-eradication timeline from ${statusQuoYears} years to ${acceleratedYears} years.`;
+  return `${CAMPAIGN_NAME} asks humans to vote for the 1% Treaty: redirect ${TREATY_REDUCTION_TEXT} of military spending to clinical trials, compressing the disease-eradication timeline from ${statusQuoYears} years to ${acceleratedYears} years.`;
 }

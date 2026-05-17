@@ -10,6 +10,7 @@ import {
   getSiteSocialImage,
   getSiteStaticAssetRedirectPath,
 } from "@/lib/site-assets";
+import { AI_CRAWLER_USER_AGENTS } from "@/lib/agent-readable/ai-crawler-detection";
 import { getSiteConfig } from "@/lib/site";
 
 describe("site-specific SEO assets", () => {
@@ -83,13 +84,8 @@ describe("site-specific SEO assets", () => {
     const rules = Array.isArray(robots.rules) ? robots.rules : [robots.rules];
 
     for (const userAgent of [
-      "OAI-SearchBot",
-      "Claude-SearchBot",
-      "Claude-User",
-      "PerplexityBot",
-      "Perplexity-User",
+      ...AI_CRAWLER_USER_AGENTS,
       "Googlebot",
-      "GoogleOther",
     ]) {
       expect(rules).toEqual(
         expect.arrayContaining([

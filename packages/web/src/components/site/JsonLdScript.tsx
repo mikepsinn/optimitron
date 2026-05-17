@@ -3,7 +3,9 @@ interface JsonLdScriptProps {
 }
 
 export function serializeJsonLd(data: unknown) {
-  return JSON.stringify(data).replace(/</g, "\\u003c");
+  const serialized = JSON.stringify(data);
+  if (serialized === undefined) return "null";
+  return serialized.replace(/</g, "\\u003c");
 }
 
 export function JsonLdScript({ data }: JsonLdScriptProps) {

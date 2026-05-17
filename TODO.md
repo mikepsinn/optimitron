@@ -460,7 +460,7 @@ Roadmap from Mike's 2026-05-15 brainstorm. /people/[id] redesign lands in PR #81
 
 **Risks:** public-figure attribution disputes (use only documented public statements; label "historical position, not active endorsement"); spam on `/admin/assign-task` (superuser-gated); org-task display competing with conversion CTA (keep task list below the fold).
 
-Drafted plan: `.claude/plans/campaign-impact-attribution-roadmap.md` (not yet reviewed; Mike declined full `/autoplan` review for speed).
+Durable summary lives here; no loose `.claude/plans/campaign-impact-attribution-roadmap.md` file should be kept unless a fresh plan review starts.
 
 ## P1 - Plaintiffs and Court Framing
 

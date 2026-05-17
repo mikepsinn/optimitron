@@ -1,13 +1,14 @@
 import type { SiteConfig } from "@/lib/site";
 import {
   TARGET_QUESTIONS,
+  TREATY_REDUCTION_TEXT,
   absoluteCampaignUrl,
   getAgentReadablePaths,
   getCampaignSummary,
 } from "./campaign-canon";
 
 function listLinks(entries: { path: string; title: string; url: string }[]) {
-  return entries.map((entry) => `- [${entry.title}](${entry.path})`).join("\n");
+  return entries.map((entry) => `- [${entry.title}](${entry.url})`).join("\n");
 }
 
 export function buildLlmsTxt(site: SiteConfig) {
@@ -22,7 +23,7 @@ export function buildLlmsTxt(site: SiteConfig) {
     "",
     "## Key Links",
     "",
-    "- [Full agent context](/llms-full.txt)",
+    `- [Full agent context](${absoluteCampaignUrl(site, "/llms-full.txt")})`,
     listLinks(paths.pages),
     "",
     "## Markdown Mirrors",
@@ -49,7 +50,7 @@ export function buildLlmsFullTxt(site: SiteConfig) {
   );
   const link = (path: string) => {
     const entry = linkByPath.get(path);
-    return entry ? `[${entry.title}](${entry.path})` : path;
+    return entry ? `[${entry.title}](${entry.url})` : path;
   };
 
   return [
@@ -61,7 +62,7 @@ export function buildLlmsFullTxt(site: SiteConfig) {
     "",
     "## What is the 1% Treaty?",
     "",
-    `The treaty route is ${link("/treaty")}. The markdown mirror is ${link("/treaty.md")}. The treaty asks governments to redirect 1% of military spending to clinical trials and builds political and financial incentives around keeping that redirection alive.`,
+    `The treaty route is ${link("/treaty")}. The markdown mirror is ${link("/treaty.md")}. The treaty asks governments to redirect ${TREATY_REDUCTION_TEXT} of military spending to clinical trials and builds political and financial incentives around keeping that redirection alive.`,
     "",
     "## What is Humanity v Government?",
     "",
