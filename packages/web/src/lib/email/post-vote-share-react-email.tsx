@@ -22,6 +22,10 @@ export function PostVoteShareReactEmail({
       <CampaignText>
         <strong>{REFERRAL_SHARE_LABEL}</strong>
       </CampaignText>
+      <CampaignText>
+        <strong>COPY THIS MESSAGE:</strong> Copy it and forward it to two
+        friends right now.
+      </CampaignText>
       <CampaignCopyBlock>{shareMessage}</CampaignCopyBlock>
       <CampaignButton href={referralUrl}>End war and disease</CampaignButton>
       <CampaignText muted>

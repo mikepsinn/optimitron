@@ -28,6 +28,8 @@ Hire 2 subordinates by sending this message to [two](https://manual.WarOnDisease
 
 Forward this message to everyone you don't want to suffer and die of horrible diseases.
 
+COPY THIS MESSAGE: Copy it and forward it to two friends right now.
+
 I love you and don't want you to suffer and die of horrible diseases so please take 30 seconds to vote on this stupid treaty at https://warondisease.org/vote/SAMPLE as it will reduce the likelihood you will suffer and die of horrible diseases.
 
 [END WAR AND DISEASE](https://warondisease.org/vote/SAMPLE)
