@@ -124,6 +124,23 @@ try {
       } else if (typeof content !== "string") {
         continue;
       }
+      // AskUserQuestion responses come through as text-content user
+      // messages prefixed with "User has answered your questions:". They
+      // are NOT new human-initiated messages — without this skip, every
+      // copy-review confirmation click resets the lastHumanIndex pointer,
+      // creating an infinite re-ask loop (Mike caught this 2026-05-17
+      // after 3 forced re-confirmations of the same diff).
+      const text =
+        typeof content === "string"
+          ? content
+          : Array.isArray(content)
+            ? content
+                .map((p) =>
+                  typeof p?.text === "string" ? p.text : "",
+                )
+                .join("")
+            : "";
+      if (/^\s*User has answered your questions:/i.test(text)) continue;
       lastHumanIndex = i;
     }
 

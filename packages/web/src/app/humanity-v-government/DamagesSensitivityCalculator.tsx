@@ -182,7 +182,7 @@ export function DamagesSensitivityCalculator() {
       <div className="mt-5 space-y-4">
         <Slider
           label="Court value of one human life"
-          help="Default $10M (EPA / FDA standard). DOT uses $13.7M. Use less if you think the dead should be cheaper."
+          help="Default $10M (EPA / FDA standard). DOT uses $13.7M. Use less if you think these murdered humans should be cheaper."
           min={1_000_000}
           max={15_000_000}
           step={500_000}

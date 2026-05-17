@@ -5,12 +5,15 @@ import {
   CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA,
   CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  DFDA_QUEUE_CLEARANCE_YEARS,
   EFFICACY_LAG_YEARS,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   GLOBAL_AVG_INCOME_2025,
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   PHARMA_LIVES_SAVED_ANNUAL,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_REDUCTION_PCT,
   WAR_CHILDREN_KILLED_SINCE_1900,
   WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
@@ -72,8 +75,15 @@ export default async function HumanityVGovernmentPage() {
           The indictment
         </p>
         <p className="mt-3 text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9">
-          You pay governments {WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the
-          general welfare (health and wealth).
+          Governments are paid{" "}
+          <ParameterValue
+            figures={3}
+            param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+            valueOverride="$36.5 trillion"
+          />{" "}
+          a year to promote the general welfare, defined here as maximizing
+          median healthy life expectancy and median after-tax
+          inflation-adjusted income.
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
           Instead, these public servants used{" "}
@@ -91,8 +101,9 @@ export default async function HumanityVGovernmentPage() {
           humans over the last century of their employment.
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
-          The dead included roughly 930,000 doctors, 310,000 scientists,
-          620,000 engineers, 1.24 million nurses, 3.1 million teachers, and{" "}
+          These murdered humans included roughly 930,000 doctors, 310,000
+          scientists, 620,000 engineers, 1.24 million nurses, 3.1 million
+          teachers, and{" "}
           <ParameterValue
             figures={3}
             param={WAR_CHILDREN_KILLED_SINCE_1900}
@@ -156,14 +167,9 @@ export default async function HumanityVGovernmentPage() {
             officers imprisoned.
           </p>
           <p className="mt-3">
-            Pfizer paid $2.3 billion for health-care fraud. BP paid $20.8
-            billion for the Deepwater Horizon spill. Volkswagen paid $4.3
-            billion for cheating emissions tests and accepted a government
-            monitor.
-          </p>
-          <p className="mt-3 text-foreground">
-            The defendants here have a larger revenue, a larger customer
-            base, and a larger body count.
+            The corporate analogy is conservative: ordinary corporations do not
+            have the legal power to compel payment from every human under their
+            jurisdiction.
           </p>
         </div>
       </section>
@@ -214,8 +220,9 @@ export default async function HumanityVGovernmentPage() {
               Duty
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              Governments accept compulsory payment to protect the public and
-              promote the general welfare. That is the job description.
+              The duty purchased by that {WELFARE_CLAIM_AMOUNT_TEXT} annual
+              payment is measurable: maximize median healthy life expectancy
+              and median after-tax inflation-adjusted income.
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">
@@ -223,14 +230,20 @@ export default async function HumanityVGovernmentPage() {
               Breach
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              They spend{" "}
+              Governments spend{" "}
               <ParameterValue
                 figures={3}
                 param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
                 valueOverride="604"
               />{" "}
-              times more on military capacity than on government clinical
-              trials. Disease is what actually kills their citizens.
+              times more on weapons than on testing which medicines work. The
+              1% Treaty asks them to redirect{" "}
+              <ParameterValue
+                figures={2}
+                param={TREATY_REDUCTION_PCT}
+                valueOverride="1%"
+              />{" "}
+              of military spending to pragmatic clinical trials.
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">
@@ -238,9 +251,20 @@ export default async function HumanityVGovernmentPage() {
               Causation
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              Some deaths were direct. Others happened because treatments were
-              delayed, trials were not funded, and the cure money became
-              hardware for organized killing.
+              At the current discovery rate, finding first treatments for the
+              remaining untreated diseases takes{" "}
+              <ParameterValue
+                figures={3}
+                param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                valueOverride="443 years"
+              />
+              . The treaty model compresses that queue to{" "}
+              <ParameterValue
+                figures={2}
+                param={DFDA_QUEUE_CLEARANCE_YEARS}
+                valueOverride="36 years"
+              />
+              .
             </p>
           </div>
           <div className="border-2 border-foreground bg-background p-4">
@@ -248,9 +272,9 @@ export default async function HumanityVGovernmentPage() {
               Damages
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-              The full claim is per living human, because every surviving
-              employer inherited the bill for the policy that killed the
-              others.
+              The full claim is per living human because the survivors inherited
+              the missing scientists, doctors, children, treatments, income, and
+              public money destroyed by the policy.
             </p>
           </div>
         </div>
@@ -445,7 +469,7 @@ export default async function HumanityVGovernmentPage() {
           </span>{" "}
           named plaintiffs. If someone in your family died of war, regulatory
           delay, or preventable disease, add them. A civilization should at
-          least be able to count its dead.
+          least be able to count these murdered humans.
         </p>
         <Link
           className={`${defaultButtonClassName} mt-5 tracking-[0.08em]`}

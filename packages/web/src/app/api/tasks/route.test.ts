@@ -4,7 +4,9 @@ const mocks = vi.hoisted(() => ({
   createTask: vi.fn(),
   getServerSession: vi.fn(),
   listTasks: vi.fn(),
+  personFindFirst: vi.fn(),
   requireAuth: vi.fn(),
+  taskFindFirst: vi.fn(),
 }));
 
 vi.mock("next-auth", () => ({
@@ -19,6 +21,13 @@ vi.mock("@/lib/auth-utils", () => ({
   requireAuth: mocks.requireAuth,
 }));
 
+vi.mock("@/lib/prisma", () => ({
+  prisma: {
+    person: { findFirst: mocks.personFindFirst },
+    task: { findFirst: mocks.taskFindFirst },
+  },
+}));
+
 vi.mock("@/lib/tasks.server", () => ({
   createTask: mocks.createTask,
   listTasks: mocks.listTasks,
@@ -31,7 +40,9 @@ describe("tasks route", () => {
     mocks.createTask.mockReset();
     mocks.getServerSession.mockReset();
     mocks.listTasks.mockReset();
+    mocks.personFindFirst.mockReset();
     mocks.requireAuth.mockReset();
+    mocks.taskFindFirst.mockReset();
   });
 
   it("lists tasks created by the current user when requested", async () => {
@@ -141,6 +152,55 @@ describe("tasks route", () => {
     );
     expect(mocks.createTask.mock.calls[0]?.[1]).not.toHaveProperty(
       "ownerUserId",
+    );
+  });
+
+  it("resolves an assigned task target from a person profile URL", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_creator" });
+    mocks.personFindFirst.mockResolvedValue({ id: "person_target" });
+    mocks.createTask.mockResolvedValue({
+      assigneePersonId: "person_target",
+      createdByUserId: "user_creator",
+      id: "task_3",
+      isPublic: true,
+      title: "Call your senator",
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({
+          assigneePersonIdentifier: "https://warondisease.org/people/Wishonia",
+          description: "Ask for a public yes on the treaty.",
+          isPublic: true,
+          title: "Call your senator",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.personFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            { handle: "Wishonia" },
+            { handle: "wishonia" },
+          ]),
+        }),
+      }),
+    );
+    expect(mocks.createTask).toHaveBeenCalledWith(
+      "user_creator",
+      expect.objectContaining({
+        assigneePersonId: "person_target",
+        description: "Ask for a public yes on the treaty.",
+        isPublic: true,
+        title: "Call your senator",
+      }),
+    );
+    expect(mocks.createTask.mock.calls[0]?.[1]).not.toHaveProperty(
+      "assigneePersonIdentifier",
     );
   });
 });
