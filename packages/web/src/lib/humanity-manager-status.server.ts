@@ -5,6 +5,7 @@ import {
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import {
+  type HumanityManagerStatusCompletedEmployee,
   type HumanityManagerStatusInput,
   type HumanityManagerStatusLeader,
   type HumanityManagerStatusPerson,
@@ -47,11 +48,35 @@ interface StatusUser {
   referralCode?: string | null;
 }
 
+interface DirectReferralDownstreamSqlRow {
+  convertedUserId: string | null;
+  downstreamConversionCount: bigint | number | string | null;
+}
+
 function clampNumber(value: number | null | undefined): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
     return 0;
   }
   return Math.floor(value);
+}
+
+function normalizeCount(value: bigint | number | string | null): number {
+  if (value == null) return 0;
+  const numeric = typeof value === "bigint" ? Number(value) : Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) return 0;
+  return Math.floor(numeric);
+}
+
+function buildDirectReferralDownstreamCountMap(
+  rows: DirectReferralDownstreamSqlRow[],
+): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const userId = row.convertedUserId?.trim();
+    if (!userId) continue;
+    counts.set(userId, normalizeCount(row.downstreamConversionCount));
+  }
+  return counts;
 }
 
 function daysBetween(now: Date, value: Date | string | null | undefined): number {
@@ -68,10 +93,13 @@ function formatCompletedInvitation(
       createdAt: Date | string;
       person?: { displayName: string | null } | null;
       user?: { person?: { displayName: string | null } | null } | null;
+      userId?: string | null;
     } | null;
     recipientName: string;
   },
-): HumanityManagerStatusPerson {
+  downstreamCountsByUserId: Map<string, number>,
+): HumanityManagerStatusCompletedEmployee {
+  const convertedUserId = invitation.convertedVote?.userId?.trim();
   return {
     completedAt: invitation.convertedAt ?? invitation.convertedVote?.createdAt ?? null,
     displayName:
@@ -79,7 +107,77 @@ function formatCompletedInvitation(
       invitation.convertedVote?.user?.person?.displayName?.trim() ||
       invitation.recipientName.trim() ||
       "Employee",
+    downstreamConversionCount: convertedUserId
+      ? (downstreamCountsByUserId.get(convertedUserId) ?? 0)
+      : 0,
   };
+}
+
+async function loadDirectReferralDownstreamCounts(
+  userId: string,
+): Promise<Map<string, number>> {
+  const rows = await prisma.$queryRaw<DirectReferralDownstreamSqlRow[]>`
+    WITH RECURSIVE converted_edges AS (
+      SELECT DISTINCT
+        ri."referrerUserId" AS "referrerUserId",
+        rv."userId" AS "convertedUserId"
+      FROM "ReferralInvitation" ri
+      INNER JOIN "ReferendumVote" rv
+        ON rv."id" = ri."convertedVoteId"
+      INNER JOIN "User" referrer
+        ON referrer."id" = ri."referrerUserId"
+       AND referrer."deletedAt" IS NULL
+      INNER JOIN "User" converted_user
+        ON converted_user."id" = rv."userId"
+       AND converted_user."deletedAt" IS NULL
+      WHERE ri."deletedAt" IS NULL
+        AND rv."deletedAt" IS NULL
+        AND ri."status"::text = ${ReferralInvitationStatus.CONVERTED}
+        AND ri."convertedVoteId" IS NOT NULL
+        AND ri."referrerUserId" <> rv."userId"
+    ),
+    direct_edges AS (
+      SELECT DISTINCT
+        edge."convertedUserId" AS "topUserId",
+        ARRAY[edge."referrerUserId", edge."convertedUserId"]::text[] AS path
+      FROM converted_edges edge
+      WHERE edge."referrerUserId" = ${userId}
+    ),
+    referral_tree AS (
+      SELECT
+        direct."topUserId",
+        edge."convertedUserId",
+        direct.path || edge."convertedUserId" AS path
+      FROM direct_edges direct
+      INNER JOIN converted_edges edge
+        ON edge."referrerUserId" = direct."topUserId"
+      WHERE NOT edge."convertedUserId" = ANY(direct.path)
+
+      UNION ALL
+
+      SELECT
+        tree."topUserId",
+        edge."convertedUserId",
+        tree.path || edge."convertedUserId"
+      FROM referral_tree tree
+      INNER JOIN converted_edges edge
+        ON edge."referrerUserId" = tree."convertedUserId"
+      WHERE NOT edge."convertedUserId" = ANY(tree.path)
+    ),
+    unique_downstream AS (
+      SELECT DISTINCT
+        "topUserId",
+        "convertedUserId"
+      FROM referral_tree
+    )
+    SELECT
+      "topUserId" AS "convertedUserId",
+      COUNT(*) AS "downstreamConversionCount"
+    FROM unique_downstream
+    GROUP BY "topUserId"
+  `;
+
+  return buildDirectReferralDownstreamCountMap(rows);
 }
 
 function pickRenderedReminder(input: {
@@ -228,6 +326,7 @@ export async function loadHumanityManagerStatus(input: {
   const [
     directConversionCount,
     convertedInvitations,
+    directReferralDownstreamCounts,
     overdueEmployeeCount,
     overdueEmployees,
     overduePresidentCount,
@@ -242,6 +341,7 @@ export async function loadHumanityManagerStatus(input: {
           select: {
             createdAt: true,
             person: { select: { displayName: true } },
+            userId: true,
             user: {
               select: {
                 person: { select: { displayName: true } },
@@ -254,6 +354,7 @@ export async function loadHumanityManagerStatus(input: {
       take: STATUS_SAMPLE_LIMIT,
       where: convertedInvitationWhere,
     }),
+    loadDirectReferralDownstreamCounts(input.userId),
     prisma.referralInvitation.count({ where: overdueInvitationWhere }),
     prisma.referralInvitation.findMany({
       orderBy: { createdAt: "asc" },
@@ -314,7 +415,9 @@ export async function loadHumanityManagerStatus(input: {
     .slice(0, 3);
 
   return {
-    completedEmployees: convertedInvitations.map(formatCompletedInvitation),
+    completedEmployees: convertedInvitations.map((invitation) =>
+      formatCompletedInvitation(invitation, directReferralDownstreamCounts),
+    ),
     directConversionCount,
     downstreamConversionCount: clampNumber(input.user.downstreamConversionCount),
     overdueEmployeeCount,

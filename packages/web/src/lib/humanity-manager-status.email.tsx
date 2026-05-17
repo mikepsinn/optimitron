@@ -8,8 +8,8 @@ import {
 } from "@/lib/email/react-email-components";
 import {
   createHumanityManagerStatus,
+  type HumanityManagerStatusCompletedEmployee,
   type HumanityManagerStatusInput,
-  type HumanityManagerStatusPerson,
   type HumanityManagerStatusReminder,
 } from "@/lib/humanity-manager-status-content";
 
@@ -65,7 +65,7 @@ function CompletedEmployees({
   employees,
   total,
 }: {
-  employees: HumanityManagerStatusPerson[];
+  employees: HumanityManagerStatusCompletedEmployee[];
   total: number;
 }) {
   if (employees.length === 0) return null;

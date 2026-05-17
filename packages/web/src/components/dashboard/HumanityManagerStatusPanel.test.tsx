@@ -19,7 +19,11 @@ import { HumanityManagerStatusPanel } from "./HumanityManagerStatusPanel";
 
 const STATUS_FIXTURE: HumanityManagerStatusInput = {
   completedEmployees: [
-    { completedAt: "2026-05-02", displayName: "Ada Lovelace" },
+    {
+      completedAt: "2026-05-02",
+      displayName: "Ada Lovelace",
+      downstreamConversionCount: 3,
+    },
   ],
   directConversionCount: 2,
   downstreamConversionCount: 7,
@@ -70,6 +74,8 @@ describe("HumanityManagerStatusPanel", () => {
     await act(async () => {
       root.render(<HumanityManagerStatusPanel status={STATUS_FIXTURE} />);
     });
+
+    expect(container.textContent).toContain("3 downstream votes from them");
 
     const button = Array.from(container.querySelectorAll("button")).find(
       (candidate) => candidate.textContent === "Copy",

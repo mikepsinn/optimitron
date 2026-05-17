@@ -4,8 +4,8 @@ import * as React from "react";
 import { Clipboard } from "lucide-react";
 import {
   createHumanityManagerStatus,
+  type HumanityManagerStatusCompletedEmployee,
   type HumanityManagerStatusInput,
-  type HumanityManagerStatusPerson,
   type HumanityManagerStatusReminder,
 } from "@/lib/humanity-manager-status-content";
 import { copyTextToClipboard } from "@/lib/clipboard";
@@ -89,7 +89,7 @@ function CompletedEmployees({
   employees,
   total,
 }: {
-  employees: HumanityManagerStatusPerson[];
+  employees: HumanityManagerStatusCompletedEmployee[];
   total: number;
 }) {
   if (employees.length === 0) {
@@ -110,10 +110,21 @@ function CompletedEmployees({
       <ul className="mt-3 space-y-2 text-sm font-bold leading-6">
         {employees.slice(0, 8).map((person) => {
           const date = formatMaybeDate(person.completedAt);
+          const downstreamVotes = Math.max(
+            0,
+            Math.floor(person.downstreamConversionCount),
+          );
+          const downstreamLabel =
+            downstreamVotes === 1
+              ? "1 downstream vote"
+              : `${downstreamVotes.toLocaleString("en-US")} downstream votes`;
           return (
             <li key={`${person.displayName}-${date ?? "completed"}`}>
               <span className="font-black">{person.displayName}</span>
-              {date ? ` completed it on ${date}.` : " completed it."}
+              {date ? ` completed it on ${date}` : " completed it"}
+              <span className="text-[var(--treaty-ink-muted)]">
+                {`; ${downstreamLabel} from them.`}
+              </span>
             </li>
           );
         })}
