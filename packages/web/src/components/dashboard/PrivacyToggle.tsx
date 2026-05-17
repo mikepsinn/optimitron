@@ -38,12 +38,14 @@ export function PrivacyToggle({
         />
 
         <div className="relative z-10 flex w-1/2 items-center justify-center gap-2">
+          <span aria-hidden className="text-lg">🔒</span>
           <span className={cn("font-black tracking-tight transition-colors", !isPublic ? "text-foreground" : "text-muted-foreground")}>
             PRIVATE
           </span>
         </div>
 
         <div className="relative z-10 flex w-1/2 items-center justify-center gap-2">
+          <span aria-hidden className="text-lg">🌍</span>
           <span className={cn("font-black tracking-tight transition-colors", isPublic ? "text-background" : "text-muted-foreground")}>
             PUBLIC
           </span>

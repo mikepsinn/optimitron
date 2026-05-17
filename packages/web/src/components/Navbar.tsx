@@ -19,9 +19,10 @@ import { getSiteVariantUiConfig, type SiteNavConfig } from "@/config/site-varian
 import { getPersonHref } from "@/lib/person-href";
 import {
   ROUTES,
+  editProfileLink,
   getSignInPath,
   isNavItemActive,
-  profileLink,
+  publicProfileLink,
   searchLink,
   settingsLink,
   type NavItem,
@@ -29,6 +30,21 @@ import {
 
 function getNavItemAriaLabel(item: NavItem): string {
   return item.description ? `${item.label}: ${item.description}` : item.label;
+}
+
+export function getAuthenticatedProfileLinks(
+  publicProfileHref: string | null,
+): NavItem[] {
+  const links = [editProfileLink];
+
+  if (publicProfileHref) {
+    links.push({
+      ...publicProfileLink,
+      href: publicProfileHref,
+    });
+  }
+
+  return links;
 }
 
 function AvatarButton({
@@ -81,6 +97,8 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
   const publicProfileHref = user?.personId
     ? getPersonHref({ id: user.personId, handle: user.handle ?? null })
     : null;
+  const authenticatedProfileLinks =
+    getAuthenticatedProfileLinks(publicProfileHref);
   const quickAction = config.quickAction ?? null;
   const quickActionHref = quickAction
     ? isAuthenticated
@@ -349,28 +367,18 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                 <div className="mt-4 space-y-2 border-t border-border pt-4">
                   {isAuthenticated ? (
                     <>
-                      {publicProfileHref ? (
-                        <SheetClose asChild>
+                      {authenticatedProfileLinks.map((item) => (
+                        <SheetClose asChild key={item.href}>
                           <Link
-                            href={publicProfileHref}
+                            href={item.href}
                             className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-colors hover:bg-muted"
-                            title={profileLink.cta}
-                            aria-label={profileLink.cta}
+                            title={item.description}
+                            aria-label={getNavItemAriaLabel(item)}
                           >
-                            {profileLink.cta}
+                            {item.emoji} {item.label}
                           </Link>
                         </SheetClose>
-                      ) : null}
-                      <SheetClose asChild>
-                        <Link
-                          href={profileLink.href}
-                          className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-colors hover:bg-muted"
-                          title={profileLink.description}
-                          aria-label={`${profileLink.label}: ${profileLink.description}`}
-                        >
-                          {profileLink.emoji} {profileLink.label}
-                        </Link>
-                      </SheetClose>
+                      ))}
                       <SheetClose asChild>
                         <Link
                           href={settingsLink.href}

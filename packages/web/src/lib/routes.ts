@@ -506,15 +506,23 @@ export const searchLink: NavItem = {
   cta: "Search Site",
 };
 
-export const profileLink: NavItem = {
+export const editProfileLink: NavItem = {
   href: ROUTES.profile,
-  label: "Profile",
-  emoji: "🧭",
-  description: "Your name, face, public profile, and connected accounts.",
-  tagline: "Your name, your face, your connected accounts",
+  label: "Edit Profile",
+  emoji: "✏️",
+  description: "Edit your bio, photo, privacy, and connected accounts.",
+  tagline: "Edit bio, photo, privacy, and accounts",
   authenticatedScreenshot: true,
+  cta: "Edit Profile",
+};
 
-  cta: "View Profile",
+export const publicProfileLink: NavItem = {
+  href: "",
+  label: "View Public Profile",
+  emoji: "🌐",
+  description: "See your profile the way other humans see it.",
+  tagline: "See what other humans see",
+  cta: "View Public Profile",
 };
 
 export const declarationLink: NavItem = {
@@ -1058,7 +1066,7 @@ export const navSections: NavSection[] = [
       treatyLink,
       wishoniaWorldLink,
       moroniaLink,
-      profileLink,
+      editProfileLink,
       transmitLink,
       censusLink,
       checkInLink,
@@ -1124,7 +1132,7 @@ export const footerAppLinks: NavItem[] = [
   dashboardLink,
   tasksLink,
   presidentManagementLink,
-  profileLink,
+  editProfileLink,
   censusLink,
   settingsLink,
   transmitLink,
@@ -1550,7 +1558,7 @@ export const routeReviewNavItems = [
   signatoriesLink,
   presidentManagementLink,
   dashboardLink,
-  profileLink,
+  editProfileLink,
   tasksLink,
   peopleLink,
   questionsLink,

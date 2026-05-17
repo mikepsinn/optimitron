@@ -333,7 +333,7 @@ export function ProfileCard({
                   target="_blank"
                   className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
                 >
-                  View Profile <ExternalLink className="w-3 h-3" />
+                  Preview public profile <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
               <div className="flex gap-2">

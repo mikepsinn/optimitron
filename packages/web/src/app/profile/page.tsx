@@ -5,12 +5,12 @@ import { PublicProfileTaskSection } from "@/components/tasks/PublicProfileTaskSe
 import { authOptions } from "@/lib/auth";
 import { getUserPersonHref } from "@/lib/person-href";
 import { getProfileIdentityData } from "@/lib/profile-identity.server";
-import { getSignInPath, profileLink, ROUTES } from "@/lib/routes";
+import { getSignInPath, editProfileLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { getUserDisplayName } from "@/lib/user-display";
 
-export const metadata = getRouteMetadata(profileLink);
+export const metadata = getRouteMetadata(editProfileLink);
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);

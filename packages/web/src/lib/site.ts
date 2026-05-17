@@ -32,7 +32,6 @@ import {
   peopleLink,
   plaintiffsLink,
   privacyLink,
-  profileLink,
   signatoriesLink,
   termsLink,
   tasksLink,
