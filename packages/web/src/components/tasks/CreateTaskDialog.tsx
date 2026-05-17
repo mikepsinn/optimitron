@@ -233,7 +233,10 @@ export function CreateTaskDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                resetTaskForm();
+                onOpenChange(false);
+              }}
               className="min-h-11 border border-foreground bg-background px-4 text-sm font-black uppercase text-foreground shadow-none hover:translate-x-0 hover:translate-y-0"
             >
               Cancel

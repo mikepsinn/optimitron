@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/retroui/Input";
 import { Accordion } from "@/components/retroui/Accordion";
 import { getSiteVariantUiConfig, type SiteNavConfig } from "@/config/site-variant-ui";
+import { getPersonHref } from "@/lib/person-href";
 import {
   ROUTES,
   getSignInPath,
@@ -78,7 +79,7 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
   const isAuthenticated = status === "authenticated";
   const user = session?.user ?? null;
   const publicProfileHref = user?.personId
-    ? `${ROUTES.people}/${user.handle ?? user.personId}`
+    ? getPersonHref({ id: user.personId, handle: user.handle ?? null })
     : null;
   const quickAction = config.quickAction ?? null;
   const quickActionHref = quickAction

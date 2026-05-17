@@ -110,7 +110,7 @@ export function PublicProfileOwnerControls({
             onChange={(value) => void updateVisibility(value)}
           />
           {error ? (
-            <p className="mt-2 text-sm font-bold text-red-700">{error}</p>
+            <p className="mt-2 text-sm font-bold text-destructive">{error}</p>
           ) : null}
         </div>
       </div>
