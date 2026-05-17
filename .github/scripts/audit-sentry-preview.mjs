@@ -322,9 +322,18 @@ function escapeCell(value) {
 }
 
 async function main() {
-  const initialDelayMs = numberFromEnv("SENTRY_AUDIT_INITIAL_DELAY_MS", 0);
-  const pollAttempts = numberFromEnv("SENTRY_AUDIT_POLL_ATTEMPTS", 1);
-  const pollIntervalMs = numberFromEnv("SENTRY_AUDIT_POLL_INTERVAL_MS", 0);
+  const initialDelayMs = Math.max(
+    0,
+    numberFromEnv("SENTRY_AUDIT_INITIAL_DELAY_MS", 0),
+  );
+  const pollAttempts = Math.max(
+    1,
+    Math.trunc(numberFromEnv("SENTRY_AUDIT_POLL_ATTEMPTS", 1)),
+  );
+  const pollIntervalMs = Math.max(
+    0,
+    numberFromEnv("SENTRY_AUDIT_POLL_INTERVAL_MS", 0),
+  );
   let report;
 
   if (initialDelayMs > 0) {
