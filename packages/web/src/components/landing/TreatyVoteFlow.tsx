@@ -261,6 +261,7 @@ export function TreatyVoteFlow({
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const submitButtonRef = useRef<HTMLDivElement>(null);
+  const sliderReleaseTimeoutRef = useRef<number | null>(null);
   const choiceCardRef = useRef<HTMLDivElement>(null);
   const shouldScrollChoiceCardRef = useRef(false);
   const animationFrameRef = useRef<number | null>(null);
@@ -280,13 +281,25 @@ export function TreatyVoteFlow({
   // Give AnimatePresence a moment to mount the submit button before scrolling.
   const handleSliderRelease = () => {
     if (typeof window === "undefined") return;
-    window.setTimeout(() => {
+    if (sliderReleaseTimeoutRef.current !== null) {
+      window.clearTimeout(sliderReleaseTimeoutRef.current);
+    }
+    sliderReleaseTimeoutRef.current = window.setTimeout(() => {
+      sliderReleaseTimeoutRef.current = null;
       submitButtonRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
     }, 75);
   };
+
+  useEffect(() => {
+    return () => {
+      if (sliderReleaseTimeoutRef.current !== null) {
+        window.clearTimeout(sliderReleaseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setIsMounted(true);

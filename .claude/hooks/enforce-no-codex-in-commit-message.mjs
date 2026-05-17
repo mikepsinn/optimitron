@@ -126,9 +126,9 @@ try {
   const command = String(hookData?.tool_input?.command ?? "");
   if (!command) process.exit(0);
 
-  // Match `git commit` (allow flags like -m, -F, -S, -C) but skip
-  // non-commit subcommands like `git commit-tree`.
-  if (!/\bgit\s+(?:-[A-Za-z]\s+\S+\s+)*commit\b(?!-tree)/.test(command)) {
+  // Match `git commit` through common flag forms while skipping plumbing
+  // subcommands like `git commit-tree` and `git commit-graph`.
+  if (!/\bgit\b(?:(?!\bgit\b)[\s\S])*?\bcommit\b(?!(?:-tree|-graph)|\S)/.test(command)) {
     process.exit(0);
   }
 

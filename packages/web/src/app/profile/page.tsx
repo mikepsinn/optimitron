@@ -8,6 +8,7 @@ import { getProfileIdentityData } from "@/lib/profile-identity.server";
 import { getSignInPath, profileLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
+import { getUserDisplayName } from "@/lib/user-display";
 
 export const metadata = getRouteMetadata(profileLink);
 
@@ -45,7 +46,7 @@ export default async function ProfilePage() {
           heading="Your Public Tasks"
           intro="These are the public tasks assigned to your profile. This is the task record other humans can open, share, and push forward."
           openTasks={publicTaskData?.openTasks ?? []}
-          ownerName={data.user.name ?? "you"}
+          ownerName={getUserDisplayName(data.user)}
           profileHref={publicProfileHref}
         />
       </div>

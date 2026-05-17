@@ -74,7 +74,7 @@ async function extractEmailMarkdown(
   if (status !== undefined && status >= 400) {
     throw new Error(`HTTP ${status} from /dev/email/${slug}`);
   }
-  return await page.evaluate(() => {
+  return await page.evaluate((canonicalBase) => {
     // tsx/esbuild injects __name(...) wrappers for named arrows; shim it.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const w = window as unknown as { __name?: (t: unknown, n: string) => unknown };
@@ -95,6 +95,10 @@ async function extractEmailMarkdown(
     // copies in the DOM but only one is visible at the current viewport. The
     // walker must skip the `display: none` copy or the snapshot doubles up.
     const SR_ONLY_PATTERN = /(?:^|\s)(?:sm:|md:|lg:|xl:|2xl:)?sr-only(?:\s|$)/;
+    const LOOPBACK_ORIGIN_RX =
+      /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?(?=[/:?#"'\s)\]]|$)/gi;
+    const canonicalizeHref = (href: string): string =>
+      href.replace(LOOPBACK_ORIGIN_RX, canonicalBase);
     const isHiddenForRender = (el: Element): boolean => {
       const style = getComputedStyle(el);
       if (style.display === "none" || style.visibility === "hidden") return true;
@@ -131,7 +135,7 @@ async function extractEmailMarkdown(
           const child = node as Element;
           if (!allowHidden && isHiddenForRender(child)) continue;
           if (child.tagName === "A") {
-            const href = child.getAttribute("href") ?? "";
+            const href = canonicalizeHref(child.getAttribute("href") ?? "");
             let inner = toMarkdown(child, allowHidden).replace(/\s+/g, " ").trim();
             if (!inner && child.children.length > 0) {
               inner = toMarkdown(child, true).replace(/\s+/g, " ").trim();
@@ -217,7 +221,7 @@ async function extractEmailMarkdown(
         const text = (el as HTMLElement).innerText.trim();
         md = text ? `\`\`\`text\n${text}\n\`\`\`` : "";
       } else if (tag === "a") {
-        const href = el.getAttribute("href") ?? "";
+        const href = canonicalizeHref(el.getAttribute("href") ?? "");
         let inner = toMarkdown(el).replace(/\s+/g, " ").trim();
         if (!inner && el.children.length > 0) {
           inner = toMarkdown(el, true).replace(/\s+/g, " ").trim();
@@ -253,7 +257,7 @@ async function extractEmailMarkdown(
       previousKind = block.kind;
     }
     return lines.join("\n");
-  });
+  }, CANONICAL_BASE);
 }
 
 function escapeMarkdownTableCell(value: string): string {

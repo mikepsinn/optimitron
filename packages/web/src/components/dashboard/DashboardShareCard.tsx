@@ -268,6 +268,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
 
       <div className="mt-6">
         <label className="block" htmlFor="dashboard-share-message">
+          <span className="sr-only">Share message</span>
           <textarea
             id="dashboard-share-message"
             className="mt-3 block min-h-[13rem] w-full resize-y border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-4 text-base font-bold leading-relaxed text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40 sm:min-h-[10.5rem]"
