@@ -34,6 +34,7 @@ const pageLinkBaseUrl = parseOptionalUrl(
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
 const assetRoot = path.join(outputRoot, "assets");
 const latestHtmlPath = path.join(outputRoot, "latest.html");
+const reviewManifestPath = path.join(outputRoot, "manifest.json");
 // 0.2% — covers cross-environment pixel rendering noise (Windows-Chromium-
 // local vs Linux-Chromium-CI font hinting + anti-aliasing). Tightened from
 // the original 0.5% workaround for live-clock drift (that drift is now
@@ -63,7 +64,10 @@ const reviewCacheKey = [
 ]
   .filter(Boolean)
   .join("-");
-const routePaths = loadRoutePaths();
+const routeSpecs = loadRouteSpecs();
+const routePaths = new Map(
+  [...routeSpecs.entries()].map(([name, spec]) => [name, spec.path]),
+);
 const authenticatedSnapshotRouteNames = new Set([
   "dashboard",
   "organizations",
@@ -142,10 +146,13 @@ async function main() {
   ];
   const grouped = await analyzeGroups(groupScreenshots(screenshots));
   const html = renderHtml(grouped);
+  const manifest = buildReviewManifest(grouped);
   const blockingIssues = getBlockingReviewIssues(grouped, screenshots);
 
   writeFileSync(latestHtmlPath, html, "utf8");
+  writeFileSync(reviewManifestPath, JSON.stringify(manifest, null, 2), "utf8");
   console.log(`[visual-review] wrote ${latestHtmlPath}`);
+  console.log(`[visual-review] wrote ${reviewManifestPath}`);
   console.log(`[visual-review] screenshots=${screenshots.length}`);
   console.log(
     `[visual-review] changed=${grouped.filter((group) => group.changed).length} unchanged=${grouped.filter((group) => !group.changed).length}`,
@@ -1384,17 +1391,14 @@ function renderRouteGroup(group) {
  */
 function buildRouteContext(group) {
   const routeUrl = getRouteUrl(group.routeName);
-  const isAuthed = isAuthenticatedMarkdownRoute(group.routeName);
+  const authState = getRouteAuthState(group.routeName);
   const status = group.errored
     ? "errored"
     : group.changed
       ? "changed vs main"
       : "unchanged vs main";
   const sha = reviewCommitSha ? shortSha(reviewCommitSha) : null;
-  const reviewBase =
-    prNumber && sha
-      ? `https://mikepsinn.github.io/optimitron/pr-${prNumber}/${sha}`
-      : null;
+  const reviewBase = getPublishedReviewBase();
 
   // Per-project before/after screenshot URLs so the coding agent can
   // download and look at them. relPath is the on-disk path inside the
@@ -1416,7 +1420,7 @@ function buildRouteContext(group) {
     route: group.routeName,
     routeLabel: labelRoute(group.routeName),
     routeUrl,
-    authState: isAuthed ? "authenticated" : "logged-out",
+    authState,
     status,
     screenshots,
     reviewUrl: reviewBase
@@ -1516,12 +1520,9 @@ function renderFigcaption(label, routeUrl, screenContext) {
  */
 function buildScreenContext(pair, viewing, relPath) {
   const routeUrl = getRouteUrl(pair.routeName);
-  const isAuthed = isAuthenticatedMarkdownRoute(pair.routeName);
+  const authState = getRouteAuthState(pair.routeName);
   const sha = reviewCommitSha ? shortSha(reviewCommitSha) : null;
-  const reviewBase =
-    prNumber && sha
-      ? `https://mikepsinn.github.io/optimitron/pr-${prNumber}/${sha}`
-      : null;
+  const reviewBase = getPublishedReviewBase();
   const imageUrl = relPath && reviewBase ? `${reviewBase}/${relPath}` : null;
   return {
     pr: prNumber,
@@ -1532,7 +1533,7 @@ function buildScreenContext(pair, viewing, relPath) {
     route: pair.routeName,
     routeLabel: labelRoute(pair.routeName),
     routeUrl,
-    authState: isAuthed ? "authenticated" : "logged-out",
+    authState,
     project: pair.projectName,
     projectLabel: labelProject(pair.projectName),
     viewing,
@@ -1941,6 +1942,47 @@ function summarizeGroups(groups) {
   };
 }
 
+function buildReviewManifest(groups) {
+  const reviewBase = getPublishedReviewBase();
+  return {
+    version: 1,
+    generatedAt: reviewGeneratedAt.toISOString(),
+    generatedAtCentral: formatCentralTime(reviewGeneratedAt),
+    commitSha: reviewCommitSha,
+    shortSha: reviewCommitSha ? shortSha(reviewCommitSha) : null,
+    prNumber,
+    headBranch,
+    repo: repoSlug,
+    previewBaseUrl: pageLinkBaseUrl ? pageLinkBaseUrl.toString() : null,
+    reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
+    summary: summarizeGroups(groups),
+    routes: groups.map((group) => ({
+      routeName: group.routeName,
+      routeLabel: labelRoute(group.routeName),
+      routePath: routePaths.get(group.routeName) ?? null,
+      routeUrl: getRouteUrl(group.routeName),
+      authState: getRouteAuthState(group.routeName),
+      changed: group.changed,
+      errored: group.errored,
+      changedPairs: group.changedPairs,
+      missingPairs: group.missingPairs,
+      erroredPairs: group.erroredPairs,
+      statusLabel: routeStatusLabel(group),
+      reviewUrl: reviewBase
+        ? `${reviewBase}/latest.html#route-${slugifyForAnchor(group.routeName)}`
+        : null,
+      projects: group.pairs.map((pair) => ({
+        projectName: pair.projectName,
+        projectLabel: labelProject(pair.projectName),
+        changed: Boolean(pair.diff?.changed),
+        missing: Boolean(pair.diff?.missing),
+        errored: Boolean(pair.diff?.errored),
+        diffLabel: pair.diff?.label ?? null,
+      })),
+    })),
+  };
+}
+
 function getBlockingReviewIssues(groups, screenshots) {
   const issues = [];
   const afterCount = screenshots.filter(
@@ -2068,7 +2110,7 @@ function shortSha(value) {
   return String(value).slice(0, 12);
 }
 
-function loadRoutePaths() {
+function loadRouteSpecs() {
   if (!existsSync(routeManifestPath)) {
     return new Map();
   }
@@ -2086,7 +2128,13 @@ function loadRoutePaths() {
           typeof entry.name === "string" &&
           typeof entry.path === "string"
         ))
-        .map((entry) => [entry.name, entry.path]),
+        .map((entry) => [
+          entry.name,
+          {
+            path: entry.path,
+            authenticated: entry.authenticated === true,
+          },
+        ]),
     );
   } catch (error) {
     console.warn(
@@ -2094,6 +2142,20 @@ function loadRoutePaths() {
     );
     return new Map();
   }
+}
+
+function getPublishedReviewBase() {
+  const sha = reviewCommitSha ? shortSha(reviewCommitSha) : null;
+  return prNumber && sha
+    ? `https://mikepsinn.github.io/optimitron/pr-${prNumber}/${sha}`
+    : null;
+}
+
+function getRouteAuthState(routeName) {
+  if (routeSpecs.get(routeName)?.authenticated || isAuthenticatedMarkdownRoute(routeName)) {
+    return "demo-logged-in";
+  }
+  return "logged-out";
 }
 
 function getRouteUrl(routeName) {
@@ -2106,7 +2168,16 @@ function getRouteUrl(routeName) {
     return null;
   }
 
-  return new URL(routePath, pageLinkBaseUrl).toString();
+  const url = new URL(routePath, pageLinkBaseUrl);
+  const authState = getRouteAuthState(routeName);
+  if (authState === "demo-logged-in") {
+    url.searchParams.set("login", "demo");
+    url.searchParams.delete("logout");
+  } else {
+    url.searchParams.set("logout", "1");
+    url.searchParams.delete("login");
+  }
+  return url.toString();
 }
 
 function parseOptionalUrl(value) {

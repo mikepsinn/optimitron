@@ -79,9 +79,10 @@ test.describe("route visual regression", () => {
     await writeFile(
       ROUTE_MANIFEST_PATH,
       JSON.stringify(
-        VISUAL_ROUTES.map(({ name, path: routePath }) => ({
-          name,
-          path: routePath,
+        VISUAL_ROUTES.map((route) => ({
+          name: route.name,
+          path: route.path,
+          authenticated: route.authenticated === true,
         })),
         null,
         2,

@@ -1,32 +1,35 @@
 #!/usr/bin/env node
-// Generates a markdown table of one-click preview-deploy links for a PR.
-// Each row: a route that this PR's diff touches + the auth state to view it
-// in. Reviewer clicks the link and lands on the right preview page already
-// authed/unauthed via the ?login=demo / ?logout=1 dev-auth query params.
+// Generates the sticky PR review packet: preview links, visual-review links,
+// and a reviewer checklist whose checked state survives CI reruns.
 //
 // Reads from env:
-//   PREVIEW_URL    - the Vercel preview deployment URL (https://...vercel.app)
-//   CHANGED_FILES  - JSON array of paths changed in this PR, e.g.
-//                    '["packages/web/src/app/treaty/page.tsx", ...]'
-//                    (excludes deleted files — caller's responsibility).
-//                    If unset, falls back to `git diff origin/main...HEAD`
-//                    for local testing.
-//
-// Writes markdown to stdout.
+//   PREVIEW_URL                 Vercel preview deployment URL.
+//   CHANGED_FILES               JSON array of changed PR paths.
+//   EXISTING_COMMENT_BODY       Existing sticky packet body, if any.
+//   VISUAL_REVIEW_URL           Published latest.html URL.
+//   VISUAL_REVIEW_MANIFEST_PATH Optional JSON manifest path from visual:review.
+//   VISUAL_REVIEW_MANIFEST_JSON Optional manifest JSON, mostly for tests.
 
 import { execSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 
 const PREVIEW_URL = process.env.PREVIEW_URL?.replace(/\/$/, "") ?? "";
 const CHANGED_FILES_JSON = process.env.CHANGED_FILES ?? "";
+const EXISTING_COMMENT_BODY = process.env.EXISTING_COMMENT_BODY ?? "";
+const VISUAL_REVIEW_URL =
+  process.env.VISUAL_REVIEW_URL?.replace(/\/$/, "") ?? "";
+const VISUAL_REVIEW_MANIFEST_PATH =
+  process.env.VISUAL_REVIEW_MANIFEST_PATH ?? "";
+const VISUAL_REVIEW_MANIFEST_JSON =
+  process.env.VISUAL_REVIEW_MANIFEST_JSON ?? "";
 
 if (!PREVIEW_URL) {
   console.error("PREVIEW_URL not set; skipping comment generation.");
   process.exit(0);
 }
 
-// AUTH-ONLY routes: render the sign-in page if you hit them logged-out, so
-// reviewers need `?login=demo`. Mirrors AUTH_REQUIRED_PATHS in
-// packages/web/e2e/utils/static-pages.ts.
+// AUTH-ONLY routes: render the sign-in page if hit logged-out, so reviewers
+// need `?login=demo`. Mirrors AUTH_REQUIRED_PATHS in the web e2e helpers.
 const AUTH_ROUTES = new Set([
   "/dashboard",
   "/profile",
@@ -41,13 +44,12 @@ const AUTH_ROUTES = new Set([
   "/mcp/authorize",
 ]);
 
-// HYBRID routes: render meaningfully differently when authed vs unauthed.
-// Listed twice in the table (once per state) so reviewers compare both.
+// HYBRID routes render meaningfully differently authed vs unauthed.
 const HYBRID_ROUTES = new Set([
-  "/tasks", // task detail page shows different CTAs based on viewer-claim state
+  "/tasks",
 ]);
 
-// Component folder → routes it likely affects. Imperfect but cheap.
+// Component folder -> routes it likely affects. Imperfect but cheap.
 const COMPONENT_FOLDER_ROUTES = {
   "src/components/dashboard/": ["/dashboard"],
   "src/components/treaty/": ["/treaty"],
@@ -65,14 +67,17 @@ function getChangedFiles() {
   if (CHANGED_FILES_JSON) {
     try {
       const parsed = JSON.parse(CHANGED_FILES_JSON);
-      return Array.isArray(parsed) ? parsed.filter((f) => typeof f === "string") : [];
+      return Array.isArray(parsed)
+        ? parsed.filter((file) => typeof file === "string")
+        : [];
     } catch (err) {
       console.error(`Failed to parse CHANGED_FILES JSON: ${err.message}`);
       return [];
     }
   }
+
   try {
-    // Local fallback: name-status to drop deletions so we don't link to 404s.
+    // Local fallback: name-status drops deletions so we do not link to 404s.
     const out = execSync("git diff --name-status origin/main...HEAD", {
       encoding: "utf8",
     });
@@ -91,9 +96,9 @@ function getChangedFiles() {
   }
 }
 
-// `packages/web/src/app/foo/bar/page.tsx` → `/foo/bar`
-// `packages/web/src/app/page.tsx`         → `/`
-// `packages/web/src/app/tasks/[id]/page.tsx` → `/tasks`
+// `packages/web/src/app/foo/bar/page.tsx` -> `/foo/bar`
+// `packages/web/src/app/page.tsx` -> `/`
+// `packages/web/src/app/tasks/[id]/page.tsx` -> `/tasks`
 function pageFileToRoute(file) {
   const match = file.match(
     /^packages\/web\/src\/app\/((?:[^/]+\/)*)page\.tsx$/,
@@ -102,102 +107,270 @@ function pageFileToRoute(file) {
   const segments = match[1]
     .split("/")
     .filter(Boolean)
-    .filter((s) => !s.startsWith("(") && !s.startsWith("_"))
-    .map((s) => (s.startsWith("[") && s.endsWith("]") ? null : s));
-  if (segments.some((s) => s === null)) {
-    const truncated = segments.slice(0, segments.findIndex((s) => s === null));
+    .filter((segment) => !segment.startsWith("(") && !segment.startsWith("_"))
+    .map((segment) =>
+      segment.startsWith("[") && segment.endsWith("]") ? null : segment,
+    );
+  if (segments.some((segment) => segment === null)) {
+    const truncated = segments.slice(0, segments.findIndex((segment) => segment === null));
     return truncated.length === 0 ? "/" : `/${truncated.join("/")}`;
   }
   return segments.length === 0 ? "/" : `/${segments.join("/")}`;
+}
+
+function inferRouteChanges(changedFiles) {
+  const routeChanges = new Map();
+
+  for (const file of changedFiles) {
+    const route = pageFileToRoute(file);
+    if (route) {
+      addRouteFile(routeChanges, route, shortFile(file));
+      continue;
+    }
+
+    for (const [folder, routes] of Object.entries(COMPONENT_FOLDER_ROUTES)) {
+      if (!file.startsWith(`packages/web/${folder}`)) continue;
+      for (const mappedRoute of routes) {
+        addRouteFile(routeChanges, mappedRoute, shortFile(file));
+      }
+    }
+  }
+
+  return routeChanges;
+}
+
+function addRouteFile(routeChanges, route, file) {
+  if (!routeChanges.has(route)) routeChanges.set(route, new Set());
+  routeChanges.get(route).add(file);
 }
 
 function classifyRoute(route) {
   if (HYBRID_ROUTES.has(route)) return "hybrid";
   if (AUTH_ROUTES.has(route)) return "auth";
   for (const authRoute of AUTH_ROUTES) {
-    if (route.startsWith(authRoute + "/")) return "auth";
+    if (route.startsWith(`${authRoute}/`)) return "auth";
   }
   return "public";
 }
 
+function reviewStatesForRoute(route) {
+  const classification = classifyRoute(route);
+  if (classification === "auth") {
+    return [{ id: "demo-logged-in", label: "demo logged-in", param: "login=demo" }];
+  }
+  if (classification === "hybrid") {
+    return [
+      { id: "logged-out", label: "logged-out", param: "logout=1" },
+      { id: "demo-logged-in", label: "demo logged-in", param: "login=demo" },
+    ];
+  }
+  return [{ id: "logged-out", label: "logged-out", param: "logout=1" }];
+}
+
 function buildUrl(route, authParam) {
-  const path = route === "/" ? "" : route;
-  return `${PREVIEW_URL}${path}?${authParam}`;
+  const path = route === "/" ? "/" : route;
+  return addAuthParamToUrl(new URL(path, `${PREVIEW_URL}/`).toString(), authParam);
+}
+
+function addAuthParamToUrl(url, authParam) {
+  const parsed = new URL(url);
+  const [key, value] = authParam.split("=");
+  parsed.searchParams.set(key, value);
+  return parsed.toString();
 }
 
 function shortFile(file) {
   return file.replace(/^packages\/web\/src\//, "");
 }
 
-function main() {
-  const changed = getChangedFiles();
-  const routeChanges = new Map(); // route → Set<changed-file-shortnames>
+function loadVisualReviewManifest() {
+  const raw = VISUAL_REVIEW_MANIFEST_JSON ||
+    (VISUAL_REVIEW_MANIFEST_PATH && existsSync(VISUAL_REVIEW_MANIFEST_PATH)
+      ? readFileSync(VISUAL_REVIEW_MANIFEST_PATH, "utf8")
+      : "");
+  if (!raw) return null;
 
-  for (const file of changed) {
-    const route = pageFileToRoute(file);
-    if (route) {
-      if (!routeChanges.has(route)) routeChanges.set(route, new Set());
-      routeChanges.get(route).add(shortFile(file));
-      continue;
-    }
-    for (const [folder, routes] of Object.entries(COMPONENT_FOLDER_ROUTES)) {
-      if (file.startsWith(`packages/web/${folder}`)) {
-        for (const r of routes) {
-          if (!routeChanges.has(r)) routeChanges.set(r, new Set());
-          routeChanges.get(r).add(shortFile(file));
-        }
-      }
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (err) {
+    console.error(`Failed to parse visual review manifest: ${err.message}`);
+    return null;
+  }
+}
+
+function parseCheckedItemIds(body) {
+  const checked = new Set();
+  const regex = /^- \[[xX]\] <!-- review-item:([^>]+) -->/gm;
+  let match;
+  while ((match = regex.exec(body)) !== null) {
+    checked.add(match[1]);
+  }
+  return checked;
+}
+
+function renderCheckItem({ id, label }, checkedIds) {
+  const checked = checkedIds.has(id) ? "x" : " ";
+  return `- [${checked}] <!-- review-item:${id} --> ${label}`;
+}
+
+function changedManifestRoutes(manifest) {
+  const routes = Array.isArray(manifest?.routes) ? manifest.routes : [];
+  return routes
+    .filter((route) =>
+      route &&
+      (route.changed || route.errored || route.missingPairs > 0 || route.erroredPairs > 0),
+    )
+    .sort((a, b) => String(a.routeName).localeCompare(String(b.routeName)));
+}
+
+function buildVisualReviewItems(manifest) {
+  if (!VISUAL_REVIEW_URL || !manifest) return [];
+
+  return changedManifestRoutes(manifest).map((route) => {
+    const routeName = String(route.routeName || "unknown");
+    const authState = normalizeAuthState(route.authState);
+    const authParam = authState === "demo-logged-in" ? "login=demo" : "logout=1";
+    const routeUrl = route.routeUrl
+      ? addAuthParamToUrl(route.routeUrl, authParam)
+      : typeof route.routePath === "string"
+        ? buildUrl(route.routePath, authParam)
+        : null;
+    const reviewUrl =
+      typeof route.reviewUrl === "string" && route.reviewUrl
+        ? route.reviewUrl
+        : `${VISUAL_REVIEW_URL}#route-${slugify(routeName)}`;
+    const status = visualStatusLabel(route);
+    const label =
+      `:framed_picture: [${route.routeLabel || labelRouteName(routeName)}](${reviewUrl})` +
+      ` - ${authLabel(authState)} ${status}` +
+      (routeUrl ? ` - [open page](${routeUrl})` : "");
+    return {
+      id: `visual:${routeName}:${authState}`,
+      label,
+    };
+  });
+}
+
+function normalizeAuthState(value) {
+  if (value === "authenticated" || value === "demo logged-in" || value === "demo-logged-in") {
+    return "demo-logged-in";
+  }
+  return "logged-out";
+}
+
+function authLabel(authState) {
+  return authState === "demo-logged-in" ? "demo logged-in" : "logged-out";
+}
+
+function visualStatusLabel(route) {
+  if (route.errored || route.erroredPairs > 0) return "visual review errored";
+  const parts = [];
+  if (route.changedPairs > 0) parts.push(`${route.changedPairs} changed`);
+  if (route.missingPairs > 0) parts.push(`${route.missingPairs} missing`);
+  if (parts.length === 0) parts.push("changed");
+  return `${parts.join(" / ")} screenshot${parts.length === 1 && parts[0] === "changed" ? "" : "s"}`;
+}
+
+function buildPreviewItems(routeChanges) {
+  const items = [];
+  for (const route of Array.from(routeChanges.keys()).sort()) {
+    const files = Array.from(routeChanges.get(route)).sort();
+    const filesLabel =
+      files.slice(0, 4).join(", ") +
+      (files.length > 4 ? ` (+${files.length - 4} more)` : "");
+    for (const state of reviewStatesForRoute(route)) {
+      items.push({
+        id: `preview:${route}:${state.id}`,
+        label:
+          `:rocket: [\`${route}\`](${buildUrl(route, state.param)})` +
+          ` - ${state.label} preview - ${filesLabel}`,
+      });
     }
   }
+  return items;
+}
 
-  if (routeChanges.size === 0) {
-    console.log(
-      "<!-- pr-preview-links -->\n_No user-facing page or component changes in this PR._",
-    );
-    return;
-  }
+function labelRouteName(routeName) {
+  return String(routeName)
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function slugify(value) {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function renderPacket({
+  changedFiles,
+  checkedIds,
+  manifest,
+  routeChanges,
+}) {
+  const visualItems = buildVisualReviewItems(manifest);
+  const previewItems = buildPreviewItems(routeChanges);
+  const allItems = [...visualItems, ...previewItems];
 
   const lines = [
+    "<!-- pr-review-packet -->",
     "<!-- pr-preview-links -->",
-    "## Preview deploy — one-click review links",
+    "## PR review packet",
     "",
-    `Latest preview: ${PREVIEW_URL}`,
-    "",
-    "| Page | State | What changed |",
-    "| --- | --- | --- |",
+    "### Start here",
   ];
 
-  const sortedRoutes = Array.from(routeChanges.keys()).sort();
-  for (const route of sortedRoutes) {
-    const files = Array.from(routeChanges.get(route)).sort();
-    const filesCell = files.slice(0, 4).join(", ") +
-      (files.length > 4 ? ` (+${files.length - 4} more)` : "");
-    const classification = classifyRoute(route);
+  if (VISUAL_REVIEW_URL) {
+    lines.push(`- :framed_picture: [Visual review](${VISUAL_REVIEW_URL})`);
+  } else {
+    lines.push("- :framed_picture: Visual review link appears here after CI publishes `latest.html`.");
+  }
+  lines.push(`- :rocket: [Preview deployment](${PREVIEW_URL})`);
+  lines.push("- :key: `?login=demo` signs in as the demo user; `?logout=1` clears the session.");
+  lines.push("- :speech_balloon: For a visual problem, use the comment button in `latest.html` or reply here with `@claude` and the checklist item.");
+  lines.push("");
 
-    if (classification === "auth") {
-      lines.push(
-        `| [\`${route}\`](${buildUrl(route, "login=demo")}) | demo logged-in | ${filesCell} |`,
-      );
-    } else if (classification === "hybrid") {
-      lines.push(
-        `| [\`${route}\`](${buildUrl(route, "logout=1")}) | logged-out | ${filesCell} |`,
-      );
-      lines.push(
-        `| [\`${route}\`](${buildUrl(route, "login=demo")}) | demo logged-in | ${filesCell} |`,
-      );
-    } else {
-      lines.push(
-        `| [\`${route}\`](${buildUrl(route, "logout=1")}) | logged-out | ${filesCell} |`,
-      );
-    }
+  if (allItems.length === 0) {
+    lines.push(
+      "_No user-facing page or component changes were inferred from changed files or the visual review manifest._",
+    );
+  } else {
+    lines.push("### Review checklist");
+    lines.push("");
+    lines.push(...allItems.map((item) => renderCheckItem(item, checkedIds)));
   }
 
   lines.push("");
-  lines.push(
-    "_`?login=demo` signs you in as the demo user; `?logout=1` clears the session. Updated automatically when this PR's preview deploys._",
-  );
+  lines.push("<details>");
+  lines.push("<summary>Changed files considered</summary>");
+  lines.push("");
+  if (changedFiles.length === 0) {
+    lines.push("_No changed file list was available._");
+  } else {
+    for (const file of changedFiles.slice(0, 40)) {
+      lines.push(`- \`${file}\``);
+    }
+    if (changedFiles.length > 40) {
+      lines.push(`- ...and ${changedFiles.length - 40} more`);
+    }
+  }
+  lines.push("");
+  lines.push("</details>");
+  lines.push("");
+  lines.push("_Updated automatically when this PR's preview or visual review reruns._");
 
-  console.log(lines.join("\n"));
+  return lines.join("\n");
+}
+
+function main() {
+  const changedFiles = getChangedFiles();
+  const routeChanges = inferRouteChanges(changedFiles);
+  const checkedIds = parseCheckedItemIds(EXISTING_COMMENT_BODY);
+  const manifest = loadVisualReviewManifest();
+  console.log(renderPacket({ changedFiles, checkedIds, manifest, routeChanges }));
 }
 
 main();
