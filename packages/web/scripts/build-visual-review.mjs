@@ -705,10 +705,12 @@ function renderHtml(groups) {
       background: var(--bg);
       border: 1px solid var(--line);
       color: var(--fg);
+      flex: 1 1 280px;
       font-family: inherit;
       font-size: 13px;
       font-weight: 700;
-      min-width: 240px;
+      max-width: 360px;
+      min-width: 220px;
       padding: 6px 10px;
     }
 
@@ -727,6 +729,32 @@ function renderHtml(groups) {
     .toolbar-button:hover {
       background: var(--fg);
       color: var(--bg);
+    }
+
+    .toolbar-route-actions {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+    }
+
+    .toolbar-page-link {
+      align-items: center;
+      display: inline-flex;
+      min-height: 24px;
+      text-decoration: none;
+    }
+
+    .toolbar-button:disabled,
+    .toolbar-page-link[aria-disabled="true"] {
+      border-color: #cccccc;
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .toolbar-button:disabled:hover,
+    .toolbar-page-link[aria-disabled="true"]:hover {
+      background: var(--bg);
+      color: var(--muted);
     }
 
     .toolbar-count {
@@ -863,6 +891,10 @@ function renderHtml(groups) {
     <button type="button" class="toolbar-button" data-toolbar-action="expand-all">Expand all</button>
     <button type="button" class="toolbar-button" data-toolbar-action="collapse-all">Collapse all</button>
     <button type="button" class="toolbar-button" data-toolbar-action="expand-changed">Only show changed</button>
+    <span class="toolbar-route-actions" aria-label="Current route actions">
+      <button type="button" class="toolbar-button copy-context-button" id="toolbar-copy-context" aria-label="Copy context for the current route to clipboard" disabled>Copy context</button>
+      <a class="toolbar-button toolbar-page-link" id="toolbar-open-page" aria-label="Open page for the current route" aria-disabled="true" tabindex="-1">Open page</a>
+    </span>
     <span class="toolbar-count" id="route-count" aria-live="polite"></span>
     <span class="toolbar-current-route" id="current-route" aria-live="polite"></span>
   </div>
@@ -1092,6 +1124,7 @@ function renderHtml(groups) {
         event.stopPropagation();
         var raw = button.getAttribute("data-context");
         if (!raw) return;
+        var prev = button.textContent;
         var ctx;
         try {
           ctx = JSON.parse(raw);
@@ -1101,7 +1134,6 @@ function renderHtml(groups) {
         }
         var formatted = formatContext(ctx);
         copyToClipboard(formatted).then(function () {
-          var prev = button.textContent;
           button.textContent = "✓ Copied";
           button.classList.add("copied");
           window.setTimeout(function () {
@@ -1111,7 +1143,7 @@ function renderHtml(groups) {
         }, function () {
           button.textContent = "Copy failed";
           window.setTimeout(function () {
-            button.textContent = "📋 Copy context";
+            button.textContent = prev;
           }, 1500);
         });
       });
@@ -1165,16 +1197,17 @@ function renderHtml(groups) {
     (function () {
       var indicator = document.getElementById("current-route");
       if (!indicator) return;
+      var toolbarCopyButton = document.getElementById("toolbar-copy-context");
+      var toolbarOpenPage = document.getElementById("toolbar-open-page");
       var routes = Array.prototype.slice.call(
         document.querySelectorAll("details.route"),
       );
       if (routes.length === 0) return;
 
-      // Map each route element to its visible title text.
-      var titles = routes.map(function (r) {
-        var titleEl = r.querySelector(".route-title");
+      function getRouteTitle(route) {
+        var titleEl = route.querySelector(".route-title");
         return titleEl ? titleEl.textContent.trim() : "";
-      });
+      }
 
       // Account for the sticky toolbar's height when deciding which route
       // is "at the top." The toolbar sits flush with viewport top:0; we
@@ -1184,25 +1217,88 @@ function renderHtml(groups) {
         return toolbar ? toolbar.getBoundingClientRect().height : 0;
       }
 
+      function setCurrentRoute(route) {
+        var routeTitle = route ? getRouteTitle(route) : "";
+        if (indicator.textContent !== routeTitle) {
+          indicator.textContent = routeTitle;
+        }
+
+        if (toolbarCopyButton) {
+          var sourceCopyButton = route
+            ? route.querySelector(".route-summary-actions .copy-context-button")
+            : null;
+          var context = sourceCopyButton
+            ? sourceCopyButton.getAttribute("data-context")
+            : "";
+          if (context) {
+            toolbarCopyButton.disabled = false;
+            toolbarCopyButton.setAttribute("data-context", context);
+            toolbarCopyButton.setAttribute(
+              "aria-label",
+              "Copy context for " + routeTitle + " to clipboard",
+            );
+          } else {
+            toolbarCopyButton.disabled = true;
+            toolbarCopyButton.removeAttribute("data-context");
+            toolbarCopyButton.setAttribute(
+              "aria-label",
+              "Copy context for the current route to clipboard",
+            );
+          }
+        }
+
+        if (toolbarOpenPage) {
+          var routeUrl = route ? route.getAttribute("data-route-url") : "";
+          if (routeUrl) {
+            toolbarOpenPage.href = routeUrl;
+            toolbarOpenPage.target = "_blank";
+            toolbarOpenPage.rel = "noreferrer";
+            toolbarOpenPage.removeAttribute("aria-disabled");
+            toolbarOpenPage.removeAttribute("tabindex");
+            toolbarOpenPage.setAttribute(
+              "aria-label",
+              "Open " + routeTitle + " page",
+            );
+          } else {
+            toolbarOpenPage.removeAttribute("href");
+            toolbarOpenPage.setAttribute("aria-disabled", "true");
+            toolbarOpenPage.setAttribute("tabindex", "-1");
+            toolbarOpenPage.setAttribute(
+              "aria-label",
+              "Open page for the current route",
+            );
+          }
+        }
+      }
+
       function updateCurrent() {
         var offset = getToolbarOffset();
-        var current = "";
+        var currentRoute = null;
+        var firstVisibleRoute = null;
+        var lastPastRoute = null;
         for (var i = 0; i < routes.length; i++) {
           // Skip routes hidden by the filter / "only show changed" — they
           // still have getBoundingClientRect but it returns zeros, and a
           // stale title from before filtering would otherwise stick.
           if (routes[i].hasAttribute("hidden")) continue;
+          if (!firstVisibleRoute) {
+            firstVisibleRoute = routes[i];
+          }
           var rect = routes[i].getBoundingClientRect();
+          if (rect.top - offset <= 0) {
+            lastPastRoute = routes[i];
+          }
           // Route is "current" if its top has crossed above the toolbar
           // bottom edge AND its bottom hasn't passed yet.
           if (rect.top - offset <= 0 && rect.bottom > offset) {
-            current = titles[i];
+            currentRoute = routes[i];
             break;
           }
         }
-        if (indicator.textContent !== current) {
-          indicator.textContent = current;
+        if (!currentRoute) {
+          currentRoute = lastPastRoute || firstVisibleRoute;
         }
+        setCurrentRoute(currentRoute);
       }
 
       // Throttle scroll handler via requestAnimationFrame.
@@ -1218,6 +1314,13 @@ function renderHtml(groups) {
 
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onScroll, { passive: true });
+      if (toolbarOpenPage) {
+        toolbarOpenPage.addEventListener("click", function (event) {
+          if (toolbarOpenPage.getAttribute("aria-disabled") === "true") {
+            event.preventDefault();
+          }
+        });
+      }
       // Also update when a route is expanded/collapsed (changes layout).
       document.addEventListener("toggle", onScroll, true);
 
@@ -1247,9 +1350,13 @@ function renderHtml(groups) {
 function renderRouteGroup(group) {
   const pairs = group.pairs.map(renderPair).join("\n");
   const openAttr = group.changed || group.errored ? " open" : "";
-  const contextJson = JSON.stringify(buildRouteContext(group));
+  const routeContext = buildRouteContext(group);
+  const contextJson = JSON.stringify(routeContext);
+  const routeUrlAttr = routeContext.routeUrl
+    ? ` data-route-url="${escapeHtml(routeContext.routeUrl)}"`
+    : "";
   const anchorId = `route-${slugifyForAnchor(group.routeName)}`;
-  return `<details id="${escapeHtml(anchorId)}" class="route ${group.changed || group.errored ? "changed" : "unchanged"}"${openAttr}>
+  return `<details id="${escapeHtml(anchorId)}" class="route ${group.changed || group.errored ? "changed" : "unchanged"}"${routeUrlAttr}${openAttr}>
     <summary>
       <span class="route-title">${escapeHtml(labelRoute(group.routeName))}</span>
       <span class="route-summary-actions">
