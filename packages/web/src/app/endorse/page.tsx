@@ -37,7 +37,7 @@ function TreatyTextDisclosure({
       id="organization-treaty-text"
     >
       <summary className="cursor-pointer text-sm font-black uppercase tracking-[0.14em] text-foreground marker:text-foreground">
-        Read the 1% Treaty text
+        Read the treaty
       </summary>
       <div className="mt-8">
         <TreatyContent
@@ -51,7 +51,7 @@ function TreatyTextDisclosure({
             href="#organization-endorsement-form"
             className={defaultButtonClassName}
           >
-            Join as an Organization
+            Back to organization form
           </a>
         </div>
       </div>
@@ -73,11 +73,6 @@ function LegalNotesDisclosure({
         Legal notes for organizations
       </summary>
       <div className="mt-5 border-t border-foreground pt-5">
-        <p className="max-w-3xl text-sm font-bold leading-7 text-muted-foreground">
-          Joining publicly supports a humanitarian treaty. It is not a donation,
-          candidate endorsement, party activity, ballot measure position, or
-          support for a pending bill.
-        </p>
         <div className="mt-5 space-y-5 text-sm font-bold leading-7 text-foreground">
           {sections.map((section) => (
             <section

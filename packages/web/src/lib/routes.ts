@@ -897,6 +897,7 @@ export const trialSurveyLink: NavItem = {
   emoji: "📝",
   description: `An educational survey about human values: should governments redirect ${treatyReduction} of military spending to pragmatic clinical trials and cut disease eradication from ${statusQuoYears} years to ${dfdaYears}?`,
   tagline: "Survey human values",
+  authenticatedCopyPreview: true,
   cta: "Take Survey",
 };
 
@@ -1548,6 +1549,7 @@ export const routeReviewNavItems = [
   tasksLink,
   peopleLink,
   questionsLink,
+  trialSurveyLink,
   faqLink,
   feedbackLink,
   privacyLink,

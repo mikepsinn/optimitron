@@ -17,7 +17,6 @@ import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
 import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
 import { ParameterTemplate } from "@/components/shared/ParameterTemplate";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { defaultButtonClassName } from "@/components/ui/default-button";
 import { getSiteMetadata } from "@/lib/metadata";
 import { donateLink, onePercentTreatyPaperLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
@@ -38,16 +37,7 @@ export async function generateMetadata() {
 
 export default function DonatePage() {
   return (
-    <div className="min-h-screen bg-background pb-24 text-foreground sm:pb-0">
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-foreground bg-background px-4 py-3 sm:hidden">
-        <a
-          aria-label="Jump to donation calculator"
-          className={`${defaultButtonClassName} w-full bg-foreground text-background hover:bg-background hover:text-foreground`}
-          href="#donate-calculator"
-        >
-          Donate
-        </a>
-      </div>
+    <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         <section className="mb-4 border-2 border-foreground p-5 sm:p-6">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">

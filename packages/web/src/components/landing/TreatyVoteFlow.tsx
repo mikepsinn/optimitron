@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/retroui/Button";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { CheckSquare, Hand, Square } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -95,6 +95,7 @@ interface TreatyVoteFlowProps {
   postVoteRedirectUrl?: string;
   respectStoredFlowVariant?: boolean;
   sliderHeadline?: string;
+  sliderPrompt?: ReactNode;
   surface?: string;
 }
 
@@ -137,6 +138,7 @@ export function TreatyVoteFlow({
   postVoteRedirectUrl = ROUTES.dashboard,
   respectStoredFlowVariant = true,
   sliderHeadline = DEFAULT_SLIDER_HEADLINE,
+  sliderPrompt = VOTE_SECTION.sliderPrompt,
   surface = "treaty_vote_flow",
 }: TreatyVoteFlowProps) {
   const searchParams = useSearchParams();
@@ -761,7 +763,7 @@ export function TreatyVoteFlow({
                 dropCap
                 className="mx-auto max-w-3xl text-base leading-7 sm:text-2xl sm:leading-10"
               >
-                {VOTE_SECTION.sliderPrompt}
+                {sliderPrompt}
               </TreatyFlowParagraph>
 
               {/* Allocation Display */}
@@ -795,10 +797,9 @@ export function TreatyVoteFlow({
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="absolute -top-20 z-10 pointer-events-none"
+                          className="pointer-events-none absolute -top-20 z-10 hidden sm:block"
                           style={{
-                            left: `${animatedValue}%`,
-                            transform: "translateX(-50%)",
+                            left: `clamp(0rem, calc(${animatedValue}% - 4.5rem), calc(100% - 9rem))`,
                           }}
                         >
                           <div className="border border-black bg-white px-4 py-2">

@@ -45,7 +45,6 @@
 #### GRANT REQUEST DRAFT
 - COPY REQUEST DRAFT
 - LEGAL NOTES FOR ORGANIZATIONS
-- Joining publicly supports a humanitarian treaty. It is not a donation, candidate endorsement, party activity, ballot measure position, or support for a pending bill.
 #### SUMMARY
 - Joining means your organization publicly supports the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.
 - It is not a donation, candidate endorsement, party activity, ballot measure position, or support for a pending bill.
@@ -59,7 +58,7 @@
 - No ongoing obligations. No financial contributions. No signatures on unrelated documents.
 #### READ BEFORE JOINING
 - The 1% Treaty asks every nation to redirect 1% of military spending to high-efficiency pragmatic clinical trials. Read it before adding your organization.
-- READ THE 1% TREATY TEXT
+- READ THE TREATY
 - Please end war and disease by quickly skimming and signing the 1% Treaty.
 - WHEREAS, humanity pays governments approximately [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) per year for the service of promoting the general welfare, defined as the median health and wealth of the citizenry;
 - WHEREAS, the citizenry would like to actually receive this service at some point;
@@ -97,5 +96,5 @@
 - Article VIII: This treaty supersedes all conflicting domestic law. Including the subsection your legislature added at 2 a.m. last session specifically to make sure this couldn't happen.
 - Article IX: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in the history of planet Earth.
 - IN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.
-- [JOIN AS AN ORGANIZATION](#organization-endorsement-form)
+- [BACK TO ORGANIZATION FORM](#organization-endorsement-form)
 - Already joined? See the [organizational supporters](/signatories).

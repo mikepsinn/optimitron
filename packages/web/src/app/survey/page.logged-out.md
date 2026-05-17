@@ -14,5 +14,5 @@
 ## Visible Page Copy
 
 ## GLOBAL SURVEY TO END WAR AND DISEASE
-- You pay governments $36.5 trillion a year to promote the general welfare (health and wealth). What allocation between military spending and clinical trials would best fulfill that duty?
+- Which split best improves health and real income?
 - SLIDE ME

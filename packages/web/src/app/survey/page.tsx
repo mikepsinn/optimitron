@@ -15,6 +15,7 @@ export default function SurveyPage() {
         postVoteCompletion="message"
         respectStoredFlowVariant={false}
         sliderHeadline={GLOBAL_SURVEY_NAME}
+        sliderPrompt="Which split best improves health and real income?"
         surface="neutral_survey"
       />
     </main>
