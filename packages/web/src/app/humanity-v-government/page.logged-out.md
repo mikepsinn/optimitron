@@ -16,13 +16,11 @@
 - COURT OF HUMANITY - DAMAGES CASE
 ## HUMANITY V. GOVERNMENTS OF EARTH
 - THE INDICTMENT
-- You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare — i.e. maximize median healthy life years and median after-tax inflation-adjusted income.
-- The citizenry would like to actually receive this service at some point.
+- You pay governments $36.5 trillion a year to promote the general welfare (health and wealth).
 - Instead, these public servants used [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their salary to murder approximately [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans over the last century of their employment.
 - The dead included roughly 930,000 doctors, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them.
 - Murdering your employers is the opposite of promoting their welfare, and would be grounds for termination in any other employment contract humans have ever signed.
 - Had governments not spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering those people and destroying everything they spent their entire lives building, the average human alive today would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html). Dead scientists do not discover things and exploded cities are very expensive to fix. [Read the evidence](https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html).
-- [VOTE ON THE FINDING](#verdict)
 - VOTE ON THE FINDING
 ### SHOULD GOVERNMENTS OWE YOU FULL DAMAGES?
 - Should the governments of Earth be found liable for preventable mass death and owe full damages of $2.74 million to each living human?
@@ -31,7 +29,7 @@
 - FIND FOR HUMANITY
 - FIND FOR GOVERNMENTS
 - NOT SURE
-### IF THIS WERE A CORPORATION
+### IF GOVERNMENTS WERE A CORPORATION
 - If a corporation were paid [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare and misused the funds to this degree, it would be prosecuted, fined, monitored, and its officers imprisoned.
 - Pfizer paid $2.3 billion for health-care fraud. BP paid $20.8 billion for the Deepwater Horizon spill. Volkswagen paid $4.3 billion for cheating emissions tests and accepted a government monitor.
 - The defendants here have a larger revenue, a larger customer base, and a larger body count.

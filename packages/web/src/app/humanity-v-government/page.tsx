@@ -20,7 +20,7 @@ import {
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { WelfareClaim } from "@/components/shared/WelfareClaim";
+import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
 import { JsonLdScript } from "@/components/site/JsonLdScript";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 import { authOptions } from "@/lib/auth";
@@ -75,10 +75,9 @@ export default async function HumanityVGovernmentPage() {
         <p className="text-sm font-black uppercase tracking-[0.16em] text-muted-foreground">
           The indictment
         </p>
-        <WelfareClaim className="mt-3 block text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9" />
-        <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
-          The citizenry would like to actually receive this service at some
-          point.
+        <p className="mt-3 text-xl font-black leading-8 text-foreground sm:text-2xl sm:leading-9">
+          You pay governments {WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the
+          general welfare (health and wealth).
         </p>
         <p className="mt-3 text-base font-bold leading-7 text-muted-foreground">
           Instead, these public servants used{" "}
@@ -142,14 +141,6 @@ export default async function HumanityVGovernmentPage() {
           </a>
           .
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <a
-            className={`${defaultButtonClassName} px-6 tracking-[0.08em]`}
-            href="#verdict"
-          >
-            Vote on the finding
-          </a>
-        </div>
       </section>
 
       <div id="verdict" className="mt-10 scroll-mt-24">
@@ -163,7 +154,7 @@ export default async function HumanityVGovernmentPage() {
 
       <section className="mt-10">
         <h2 className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
-          If this were a corporation
+          If governments were a corporation
         </h2>
         <div className="mt-3 border-2 border-foreground bg-background p-5 text-base font-bold leading-7 text-muted-foreground">
           <p>
