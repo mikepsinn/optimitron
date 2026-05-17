@@ -329,6 +329,7 @@ function renderPacket({
     lines.push("- :framed_picture: Visual review link appears here after CI publishes `latest.html`.");
   }
   lines.push(`- :rocket: [Preview deployment](${PREVIEW_URL})`);
+  lines.push("- :point_up: Cmd/Ctrl-click review links to keep this PR open.");
   lines.push("- :key: `?login=demo` signs in as the demo user; `?logout=1` clears the session.");
   lines.push("- :speech_balloon: For a visual problem, use the comment button in `latest.html` or reply here with `@claude` and the checklist item.");
   lines.push("");

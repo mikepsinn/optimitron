@@ -52,6 +52,7 @@ test("generates a review packet with visual-review links and preserved checkboxe
 
   assert.match(output, /<!-- pr-review-packet -->/);
   assert.match(output, /\[Visual review\]\(https:\/\/mikepsinn\.github\.io\/optimitron\/pr-123\/abcdef123456\/latest\.html\)/);
+  assert.match(output, /Cmd\/Ctrl-click review links to keep this PR open/);
   assert.match(output, /- \[x\] <!-- review-item:visual:home:logged-out -->/);
   assert.match(output, /\[Home\]\(https:\/\/mikepsinn\.github\.io\/optimitron\/pr-123\/abcdef123456\/latest\.html#route-home\)/);
   assert.match(output, /\[open page\]\(https:\/\/preview\.example\.vercel\.app\/\?logout=1\)/);
