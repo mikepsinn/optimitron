@@ -49,6 +49,11 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
 
 const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
   {
+    name: "referendum-one-percent-treaty",
+    path: "/agencies/dcongress/referendums/one-percent-treaty",
+    required: false,
+  },
+  {
     name: "organization-iam-public",
     path: "/organizations/institute-for-accelerated-medicine",
     required: false,
@@ -64,7 +69,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     path: "/people/demo",
     required: false,
     authenticated: true,
-    requiredText: /Public Profile URL/,
+    requiredText: /Share this page/,
   },
   {
     name: "people-demo-assign-dialog",

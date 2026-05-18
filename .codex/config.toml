@@ -4,6 +4,9 @@ model_reasoning_effort = "xhigh"
 approval_policy = "never"
 sandbox_mode = "workspace-write"
 
+[features]
+goals = true
+
 # MCP server entries removed 2026-05-14: when the local dev server on 3001 or
 # the spawned pnpm MCP subprocess is unreachable / wedged, Codex hangs on the
 # handshake at startup ("thinking forever" in the VS Code extension). Re-add

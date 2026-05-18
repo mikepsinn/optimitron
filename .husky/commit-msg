@@ -1,4 +1,0 @@
-#!/bin/bash
-set -e
-
-node .claude/hooks/enforce-no-codex-in-commit-message.mjs "$1"
