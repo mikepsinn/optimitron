@@ -104,7 +104,8 @@ export interface TreatyVoteFlowProps {
   surface?: string;
 }
 
-const DEFAULT_SLIDER_HEADLINE = "Drag the slider to split the money.";
+const DEFAULT_SLIDER_HEADLINE =
+  "PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE";
 const CHOICE_CARD_SETTLED_SCROLL_DELAY_MS = 500;
 
 function PragmaticClinicalTrialsDefinition({
@@ -186,13 +187,13 @@ function DefaultSliderPrompt() {
         param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
         valueOverride={formatWelfareClaimAmountText()}
       />{" "}
-      a year to promote the general welfare: health and wealth. Of the money
-      available for military/weapons and{" "}
+      a year to promote the general welfare: maximize median health and wealth.
+      Of the money available for military/weapons and{" "}
       <PragmaticClinicalTrialsDefinition>
         pragmatic clinical trials
       </PragmaticClinicalTrialsDefinition>
       {", "}
-      move the slider to show the split governments should use.
+      how much should go to each?
     </>
   );
 }
@@ -923,23 +924,6 @@ export function TreatyVoteFlow({
                     {showAnimation && !userHasDragged && (
                       <>
                         <motion.div
-                          initial={{ opacity: 0, y: -20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ duration: 0.3 }}
-                          className="pointer-events-none absolute top-16 z-10 sm:top-20"
-                          style={{
-                            left: `clamp(0rem, calc(${animatedValue}% - 2.75rem), calc(100% - 5.5rem))`,
-                          }}
-                        >
-                          <div className="w-[5.5rem] border border-black bg-white px-2 py-1 text-center sm:py-2">
-                            <p className="whitespace-nowrap text-[10px] font-black uppercase tracking-[0.18em] text-black sm:text-xs sm:tracking-[0.22em]">
-                              Drag me
-                            </p>
-                          </div>
-                        </motion.div>
-
-                        <motion.div
                           aria-hidden="true"
                           className="pointer-events-none absolute z-20"
                           initial={{ opacity: 0 }}
@@ -984,6 +968,14 @@ export function TreatyVoteFlow({
                       accentColor: "#000",
                     }}
                   />
+
+                  <div className="pointer-events-none mt-3 flex justify-center">
+                    <div className="border border-black bg-white px-3 py-1 text-center sm:py-2">
+                      <p className="whitespace-nowrap text-[10px] font-black uppercase tracking-[0.18em] text-black sm:text-xs sm:tracking-[0.22em]">
+                        Slide me
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 

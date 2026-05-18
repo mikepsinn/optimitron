@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { getReferendumStats } from "@/lib/verified-votes.server";
 import { ReferendumVoteSection } from "@/components/referendum/ReferendumVoteSection";
+import { readerMarkdownComponents } from "@/components/referendum/reader-markdown-components";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -79,10 +80,17 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
       </section>
 
       {referendum.bodyMarkdown && (
-        <section className="prose prose-neutral mb-10 max-w-none border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {referendum.bodyMarkdown}
-          </ReactMarkdown>
+        <section className="mb-12 bg-[var(--treaty-paper)] text-[var(--treaty-ink)]">
+          <div className="mx-auto max-w-2xl space-y-10">
+            <div className="mx-auto h-px w-24 bg-[var(--treaty-ink-muted)]" />
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={readerMarkdownComponents}
+            >
+              {referendum.bodyMarkdown}
+            </ReactMarkdown>
+            <div className="mx-auto h-px w-24 bg-[var(--treaty-ink-muted)]" />
+          </div>
         </section>
       )}
 

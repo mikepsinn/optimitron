@@ -1467,11 +1467,20 @@ export async function getPersonTaskProfileData(
   }
 
   const tasks = await prisma.task.findMany({
-    where: {
-      assigneePersonId: person.id,
-      deletedAt: null,
-      isPublic: true,
-    },
+    where: person.user
+      ? {
+          OR: [
+            { assigneePersonId: person.id },
+            { createdByUserId: person.user.id },
+          ],
+          deletedAt: null,
+          isPublic: true,
+        }
+      : {
+          assigneePersonId: person.id,
+          deletedAt: null,
+          isPublic: true,
+        },
     orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
     select: taskListSelect,
     take: 100,
@@ -1485,14 +1494,43 @@ export async function getPersonTaskProfileData(
       }),
     ),
   );
+  const assignedToPersonTasks = decoratedTasks.filter(
+    (task) => task.assigneePerson?.id === person.id,
+  );
+  const createdByPersonTasks = person.user
+    ? decoratedTasks.filter((task) => task.createdByUserId === person.user?.id)
+    : [];
+  const requestedTasks = createdByPersonTasks.filter(
+    (task) => !task.assigneePerson && !task.assigneeOrganization,
+  );
+  const assignedByPersonTasks = createdByPersonTasks.filter(
+    (task) =>
+      (task.assigneePerson && task.assigneePerson.id !== person.id) ||
+      task.assigneeOrganization,
+  );
 
   return {
-    openTasks: decoratedTasks.filter(
+    assignedByOpenTasks: assignedByPersonTasks.filter(
+      (task) => task.status !== TaskStatus.VERIFIED,
+    ),
+    assignedByVerifiedTasks: assignedByPersonTasks.filter(
+      (task) => task.status === TaskStatus.VERIFIED,
+    ),
+    completedTasks: decoratedTasks.filter(
+      (task) => task.status === TaskStatus.VERIFIED,
+    ),
+    openTasks: assignedToPersonTasks.filter(
       (task) => task.status !== TaskStatus.VERIFIED,
     ),
     person,
+    requestedOpenTasks: requestedTasks.filter(
+      (task) => task.status !== TaskStatus.VERIFIED,
+    ),
+    requestedVerifiedTasks: requestedTasks.filter(
+      (task) => task.status === TaskStatus.VERIFIED,
+    ),
     tasks: decoratedTasks,
-    verifiedTasks: decoratedTasks.filter(
+    verifiedTasks: assignedToPersonTasks.filter(
       (task) => task.status === TaskStatus.VERIFIED,
     ),
   };

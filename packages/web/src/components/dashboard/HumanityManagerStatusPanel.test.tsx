@@ -77,6 +77,7 @@ describe("HumanityManagerStatusPanel", () => {
     });
 
     expect(container.textContent).toContain("3 downstream votes from them");
+    expect(container.textContent).toContain("Ada Lovelace voted YES");
 
     const button = Array.from(container.querySelectorAll("button")).find(
       (candidate) => candidate.textContent === "Copy",

@@ -11,6 +11,7 @@ import { SufferingPreventedMetric } from "@/components/referendum/SignatoriesLea
 import { Avatar } from "@/components/retroui/Avatar";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { PublicProfileOwnerControls } from "@/components/profile/PublicProfileOwnerControls";
+import { OpenTaskRequestAction } from "@/components/people/OpenTaskRequestAction";
 import { PersonTaskAssignmentAction } from "@/components/people/PersonTaskAssignmentAction";
 import {
   defaultButtonClassName,
@@ -20,7 +21,6 @@ import { PublicProfileTaskSection } from "@/components/tasks/PublicProfileTaskSe
 import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
-import { DECLARATION_SLUG } from "@/lib/declaration";
 import { prisma } from "@/lib/prisma";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
 import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
@@ -487,15 +487,21 @@ export default async function PersonDetailPage({
     forwardedProto: hdrs.get("x-forwarded-proto"),
   });
   const visitorStatus = await getVisitorTreatyStatus(userId);
-  const { openTasks, person, verifiedTasks } = data;
+  const {
+    assignedByOpenTasks,
+    completedTasks: profileCompletedTasks,
+    openTasks,
+    person,
+    requestedOpenTasks,
+  } = data;
   const isOwnProfile = Boolean(userId && person.user?.id === userId);
   const publicProfileHref = getPersonHref(person);
   const publicProfileUrl = `${requestOrigin}${publicProfileHref}`;
   const assignTaskCallbackHref = `${publicProfileHref}?assignTask=1`;
   const assignTaskSignInHref = getSignInPath(assignTaskCallbackHref);
+  const openRequestSignInHref = getSignInPath(publicProfileHref);
   const fallbackInitials = getFallbackInitials(person.displayName);
   const treatyVote = getVoteBySlug(person, TREATY_REFERENDUM_SLUG);
-  const courtVote = getVoteBySlug(person, DECLARATION_SLUG);
   const recruitedCount = person.user?._count.referendumReferrals ?? 0;
   const plaintiffCount = person.user?._count.createdCourtCaseParties ?? 0;
   const signatureCount = (treatyVote ? 1 : 0) + recruitedCount;
@@ -518,12 +524,6 @@ export default async function PersonDetailPage({
       label: "Treaty signed",
       value: treatyVote
         ? (formatIsoDate(treatyVote.createdAt) ?? "Yes")
-        : "Not public",
-    },
-    {
-      label: "Court signed",
-      value: courtVote
-        ? (formatIsoDate(courtVote.createdAt) ?? "Yes")
         : "Not public",
     },
     {
@@ -568,26 +568,18 @@ export default async function PersonDetailPage({
         </header>
 
         <section className="border-b-2 border-foreground py-6">
-          <SufferingPreventedMetric
-            className="items-start px-0 py-0 text-left hover:no-underline"
-            hoursPrevented={hoursPrevented}
-            label="Hours of suffering prevented"
-            name={person.displayName}
-            valueClassName="text-5xl sm:text-6xl md:text-7xl"
-          />
-        </section>
-
-        <section className="border-b-2 border-foreground py-6">
-          {shouldShowVisitorReferral && visitorReferralUrl ? (
-            <div className="space-y-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <a
-                  className={`${primaryButtonClassName} w-full sm:w-auto`}
-                  href={buildForwardReferralHref(visitorReferralUrl)}
-                >
-                  Forward My Referral
-                </a>
+          <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(16rem,0.72fr)] md:items-start">
+            <div className="max-w-2xl space-y-3">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+                Tasks
+              </p>
+              <h2 className="text-2xl font-black uppercase leading-tight tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
+                What should {person.displayName} do to help end war and
+                disease?
+              </h2>
+              <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:flex-wrap">
                 <PersonTaskAssignmentAction
+                  buttonLabel={`Assign task to ${person.displayName}`}
                   callbackUrl={assignTaskCallbackHref}
                   isAuthenticated={Boolean(userId)}
                   personId={person.id}
@@ -595,53 +587,95 @@ export default async function PersonDetailPage({
                   signInHref={assignTaskSignInHref}
                 />
               </div>
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-                  Your referral URL
-                </p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                  <p className="min-h-12 break-all border border-foreground bg-background px-3 py-3 text-sm font-bold">
-                    {visitorReferralUrl}
+            </div>
+
+            <div className="border border-foreground p-4">
+              {shouldShowVisitorReferral && visitorReferralUrl ? (
+                <div className="space-y-3">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+                    Share this link
                   </p>
-                  <CopyLinkButton
-                    className="min-h-12 justify-center rounded-none border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-foreground hover:text-background hover:shadow-none active:translate-x-0 active:translate-y-0 active:shadow-none"
-                    copiedLabel="Copied"
-                    idleLabel="Copy"
-                    url={visitorReferralUrl}
-                  />
+                  <div className="grid gap-2">
+                    <p className="min-h-12 break-all border border-foreground bg-background px-3 py-3 text-sm font-bold">
+                      {visitorReferralUrl}
+                    </p>
+                    <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-1">
+                      <CopyLinkButton
+                        className="min-h-12 justify-center rounded-none border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-foreground hover:text-background hover:shadow-none active:translate-x-0 active:translate-y-0 active:shadow-none"
+                        copiedLabel="Copied"
+                        idleLabel="Copy"
+                        url={visitorReferralUrl}
+                      />
+                      <a
+                        className={`${defaultButtonClassName} justify-center`}
+                        href={buildForwardReferralHref(visitorReferralUrl)}
+                      >
+                        Share link
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+                    Treaty signature
+                  </p>
+                  <p className="text-sm font-bold leading-6 text-muted-foreground">
+                    Vote using {person.displayName}&apos;s link. Then send
+                    your own link to two humans.
+                  </p>
+                  <a
+                    className={`${primaryButtonClassName} w-full justify-center`}
+                    href={profileReferralUrl}
+                  >
+                    Sign the Treaty
+                  </a>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <a
-                className={`${primaryButtonClassName} w-full sm:w-auto`}
-                href={profileReferralUrl}
-              >
-                Sign the Treaty
-              </a>
-              <PersonTaskAssignmentAction
-                callbackUrl={assignTaskCallbackHref}
-                isAuthenticated={Boolean(userId)}
-                personId={person.id}
-                personName={person.displayName}
-                signInHref={assignTaskSignInHref}
-              />
-            </div>
-          )}
+          </div>
         </section>
 
-        <section className="grid gap-3 border-b-2 border-foreground py-6 sm:grid-cols-4">
-          {activityRows.map((row) => (
-            <div className="border border-foreground p-4" key={row.label}>
-              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
-                {row.label}
-              </p>
-              <p className="mt-2 text-2xl font-black tabular-nums">
-                {row.value}
-              </p>
-            </div>
-          ))}
+        <PublicProfileTaskSection
+          assignedByTasks={assignedByOpenTasks}
+          completedTasks={profileCompletedTasks}
+          heading={`What should ${person.displayName} do next?`}
+          intro={`This is how humans help ${person.displayName} find and complete the highest-value actions to end war and disease.`}
+          openTasks={openTasks}
+          ownerName={person.displayName}
+          requestAction={
+            isOwnProfile ? (
+              <OpenTaskRequestAction
+                buttonLabel="Ask for help"
+                callbackUrl={publicProfileHref}
+                isAuthenticated={Boolean(userId)}
+                signInHref={openRequestSignInHref}
+              />
+            ) : null
+          }
+          requestedTasks={requestedOpenTasks}
+        />
+
+        <section className="grid gap-6 border-b-2 border-foreground py-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.7fr)]">
+          <SufferingPreventedMetric
+            className="items-start px-0 py-0 text-left hover:no-underline"
+            hoursPrevented={hoursPrevented}
+            label="Hours of suffering prevented"
+            name={person.displayName}
+            valueClassName="text-4xl sm:text-5xl md:text-6xl"
+          />
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            {activityRows.map((row) => (
+              <div className="border border-foreground p-4" key={row.label}>
+                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  {row.label}
+                </p>
+                <p className="mt-2 text-2xl font-black tabular-nums">
+                  {row.value}
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section className="border-b-2 border-foreground py-8">
@@ -673,12 +707,6 @@ export default async function PersonDetailPage({
             </p>
           )}
         </section>
-
-        <PublicProfileTaskSection
-          completedTasks={verifiedTasks}
-          openTasks={openTasks}
-          ownerName={person.displayName}
-        />
       </div>
     </div>
   );

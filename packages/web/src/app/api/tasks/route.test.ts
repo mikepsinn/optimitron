@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   getServerSession: vi.fn(),
   listTasks: vi.fn(),
   personFindFirst: vi.fn(),
+  personUpsert: vi.fn(),
   requireAuth: vi.fn(),
   taskFindFirst: vi.fn(),
 }));
@@ -23,7 +24,10 @@ vi.mock("@/lib/auth-utils", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    person: { findFirst: mocks.personFindFirst },
+    person: {
+      findFirst: mocks.personFindFirst,
+      upsert: mocks.personUpsert,
+    },
     task: { findFirst: mocks.taskFindFirst },
   },
 }));
@@ -41,6 +45,7 @@ describe("tasks route", () => {
     mocks.getServerSession.mockReset();
     mocks.listTasks.mockReset();
     mocks.personFindFirst.mockReset();
+    mocks.personUpsert.mockReset();
     mocks.requireAuth.mockReset();
     mocks.taskFindFirst.mockReset();
   });
@@ -202,5 +207,113 @@ describe("tasks route", () => {
     expect(mocks.createTask.mock.calls[0]?.[1]).not.toHaveProperty(
       "assigneePersonIdentifier",
     );
+  });
+
+  it("creates an invited assignee person by email before creating the task", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_creator" });
+    mocks.personUpsert.mockResolvedValue({ id: "person_invited" });
+    mocks.createTask.mockResolvedValue({
+      assigneePersonId: "person_invited",
+      createdByUserId: "user_creator",
+      id: "task_invite",
+      isPublic: true,
+      title: "Review the treaty math",
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({
+          assigneePersonInvite: {
+            currentAffiliation: "Analytical Engine",
+            email: "ADA@EXAMPLE.ORG",
+            firstName: "Ada",
+            lastName: "Lovelace",
+          },
+          description: "Check the clinical-trial capacity claim.",
+          isPublic: true,
+          title: "Review the treaty math",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.personUpsert).toHaveBeenCalledWith({
+      create: expect.objectContaining({
+        createdByUserId: "user_creator",
+        currentAffiliation: "Analytical Engine",
+        displayName: "Ada Lovelace",
+        email: "ada@example.org",
+        firstName: "Ada",
+        isPublic: false,
+        isPublicFigure: false,
+        lastName: "Lovelace",
+      }),
+      select: { id: true },
+      update: { deletedAt: null },
+      where: { email: "ada@example.org" },
+    });
+    expect(mocks.createTask).toHaveBeenCalledWith(
+      "user_creator",
+      expect.objectContaining({
+        assigneePersonId: "person_invited",
+        description: "Check the clinical-trial capacity claim.",
+        isPublic: true,
+        title: "Review the treaty math",
+      }),
+    );
+    expect(mocks.createTask.mock.calls[0]?.[1]).not.toHaveProperty(
+      "assigneePersonInvite",
+    );
+  });
+
+  it("rejects ambiguous assignee targets", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_creator" });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({
+          assigneePersonId: "person_existing",
+          assigneePersonInvite: {
+            email: "ada@example.org",
+            firstName: "Ada",
+            lastName: "Lovelace",
+          },
+          title: "Review the treaty math",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "Choose one assignee.",
+    });
+    expect(mocks.personUpsert).not.toHaveBeenCalled();
+    expect(mocks.createTask).not.toHaveBeenCalled();
+  });
+
+  it("rejects organization and person assignees together", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_creator" });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({
+          assigneeOrganizationId: "org_iam",
+          assigneePersonId: "person_existing",
+          title: "Review the treaty math",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "Choose one assignee.",
+    });
+    expect(mocks.createTask).not.toHaveBeenCalled();
   });
 });

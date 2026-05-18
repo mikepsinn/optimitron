@@ -347,7 +347,7 @@ export async function loadHumanityManagerStatus(input: {
     deletedAt: null,
     referrerUserId: input.userId,
     status: ReferralInvitationStatus.CONVERTED,
-    convertedVote: { is: { deletedAt: null } },
+    convertedVote: { is: { answer: VotePosition.YES, deletedAt: null } },
   } satisfies Prisma.ReferralInvitationWhereInput;
   const overdueInvitationWhere = {
     deletedAt: null,

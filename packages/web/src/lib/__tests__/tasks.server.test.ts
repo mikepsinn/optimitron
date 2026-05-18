@@ -152,6 +152,17 @@ function mockTask(overrides: Record<string, unknown> = {}) {
   };
 }
 
+const adaAssignee = {
+  countryCode: null,
+  currentAffiliation: null,
+  displayName: "Ada Lovelace",
+  handle: "ada",
+  id: "person_ada",
+  image: null,
+  isPublicFigure: false,
+  sourceRef: null,
+};
+
 describe("tasks server", () => {
   beforeEach(() => {
     resetAllMocks();
@@ -258,11 +269,13 @@ describe("tasks server", () => {
     });
     mocks.prisma.taskFindMany.mockResolvedValue([
       mockTask({
+        assigneePerson: adaAssignee,
         id: "task_open",
         status: TaskStatus.ACTIVE,
         title: "Open public task",
       }),
       mockTask({
+        assigneePerson: adaAssignee,
         id: "task_done",
         status: TaskStatus.VERIFIED,
         title: "Verified public task",
@@ -326,6 +339,7 @@ describe("tasks server", () => {
     });
     mocks.prisma.taskFindMany.mockResolvedValue([
       mockTask({
+        assigneePerson: adaAssignee,
         id: "task_open",
         status: TaskStatus.ACTIVE,
         title: "Open public task",
@@ -336,6 +350,81 @@ describe("tasks server", () => {
 
     expect(data?.person.id).toBe("person_ada");
     expect(data?.openTasks.map((task) => task.id)).toEqual(["task_open"]);
+  });
+
+  it("splits person profile tasks into assigned, requested, assigned-by, and receipts", async () => {
+    mocks.prisma.personFindFirst.mockResolvedValue({
+      bio: null,
+      countryCode: null,
+      currentAffiliation: null,
+      displayName: "Ada Lovelace",
+      handle: "ada",
+      id: "person_ada",
+      image: null,
+      isPublic: true,
+      isPublicFigure: false,
+      referendumVotes: [],
+      sourceRef: null,
+      sourceUrl: null,
+      user: { id: "owner_user", referralCode: "owner" },
+    });
+    mocks.prisma.taskFindMany.mockResolvedValue([
+      mockTask({
+        assigneePerson: adaAssignee,
+        createdByUserId: "someone_else",
+        id: "task_for_ada",
+        title: "Call the health minister",
+      }),
+      mockTask({
+        claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+        createdByUserId: "owner_user",
+        id: "task_requested",
+        title: "Translate the treaty",
+      }),
+      mockTask({
+        assigneePerson: {
+          ...adaAssignee,
+          displayName: "Grace Hopper",
+          handle: "grace",
+          id: "person_grace",
+        },
+        createdByUserId: "owner_user",
+        id: "task_assigned_by",
+        title: "Brief Grace",
+      }),
+      mockTask({
+        assigneePerson: adaAssignee,
+        createdByUserId: "someone_else",
+        id: "task_receipt",
+        status: TaskStatus.VERIFIED,
+        title: "Publish receipt",
+      }),
+    ]);
+
+    const data = await getPersonTaskProfileData("ada", null);
+
+    expect(mocks.prisma.taskFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          OR: [
+            { assigneePersonId: "person_ada" },
+            { createdByUserId: "owner_user" },
+          ],
+          deletedAt: null,
+          isPublic: true,
+        },
+      }),
+    );
+    expect(data?.openTasks.map((task) => task.id)).toEqual(["task_for_ada"]);
+    expect(data?.requestedOpenTasks.map((task) => task.id)).toEqual([
+      "task_requested",
+    ]);
+    expect(data?.assignedByOpenTasks.map((task) => task.id)).toEqual([
+      "task_assigned_by",
+    ]);
+    expect(data?.completedTasks.map((task) => task.id)).toEqual([
+      "task_receipt",
+    ]);
   });
 
   it("searchTasks without a user searches public tasks only", async () => {

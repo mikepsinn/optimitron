@@ -121,6 +121,35 @@ describe("loadHumanityManagerStatus", () => {
     );
     expect(result.reminders[1]?.message).toContain("President Example");
     expect(result.reminders[1]?.message).not.toMatch(/\{\w+\}/);
+
+    expect(mocks.prisma.referralInvitation.count).toHaveBeenNthCalledWith(1, {
+      where: expect.objectContaining({
+        convertedVote: {
+          is: { answer: VotePosition.YES, deletedAt: null },
+        },
+      }),
+    });
+    expect(mocks.prisma.referralInvitation.findMany).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        select: expect.objectContaining({
+          convertedVote: expect.objectContaining({
+            select: expect.objectContaining({
+              user: {
+                select: expect.objectContaining({
+                  person: { select: { displayName: true } },
+                }),
+              },
+            }),
+          }),
+        }),
+        where: expect.objectContaining({
+          convertedVote: {
+            is: { answer: VotePosition.YES, deletedAt: null },
+          },
+        }),
+      }),
+    );
   });
 });
 

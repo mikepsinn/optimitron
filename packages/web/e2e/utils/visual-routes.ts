@@ -1,7 +1,4 @@
-import {
-  getRouteReviewSpecs,
-  ROUTES,
-} from "@/lib/routes";
+import { getRouteReviewSpecs, ROUTES } from "@/lib/routes";
 import {
   filterRedirectOnlyRoutes,
   isRedirectOnlyRoutePath,
@@ -10,8 +7,10 @@ import { ALL_PAGE_PATHS, PUBLIC_PAGE_PATHS } from "./static-pages";
 
 export type VisualRoute = {
   authenticated?: boolean;
+  createTaskMode?: "person";
   expectSettings?: boolean;
   name: string;
+  openCreateTask?: boolean;
   openMenu?: boolean;
   path: string;
   required: boolean;
@@ -45,6 +44,15 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
     openMenu: true,
     expectSettings: true,
   },
+  {
+    name: "create-task-dialog-person",
+    path: ROUTES.home,
+    required: true,
+    authenticated: true,
+    openCreateTask: true,
+    createTaskMode: "person",
+    requiredText: /New person/,
+  },
 ];
 
 const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
@@ -69,18 +77,30 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     path: "/people/demo",
     required: false,
     authenticated: true,
-    requiredText: /Share this page/,
+    requiredText: /What should .* do next\?/,
   },
   {
     name: "people-demo-assign-dialog",
     path: "/people/demo?assignTask=1",
     required: false,
     authenticated: true,
-    requiredText: /Assignee/,
+    requiredText: /Who should do it\?/,
   },
-  { name: "task-optimize-earth", path: "/tasks/optimize-earth", required: false },
-  { name: "task-one-percent-treaty", path: "/tasks/1-pct-treaty", required: false },
-  { name: "task-signer-canada", path: "/tasks/1-pct-treaty-signer-ca", required: false },
+  {
+    name: "task-optimize-earth",
+    path: "/tasks/optimize-earth",
+    required: false,
+  },
+  {
+    name: "task-one-percent-treaty",
+    path: "/tasks/1-pct-treaty",
+    required: false,
+  },
+  {
+    name: "task-signer-canada",
+    path: "/tasks/1-pct-treaty-signer-ca",
+    required: false,
+  },
 ];
 
 const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(

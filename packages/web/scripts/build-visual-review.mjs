@@ -96,6 +96,7 @@ const routeOrder = [
   "home",
   "side-menu",
   "side-menu-auth",
+  "create-task-dialog-person",
   "dashboard",
   "employees",
   "vote",

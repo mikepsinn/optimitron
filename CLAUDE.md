@@ -50,7 +50,13 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 
 **Never hand-edit `page.logged-out.md` / `*.email.md` snapshots.** They're generated. After UI/copy changes run `pnpm --filter @optimitron/web copy:preview` (smart by default — auto-detects affected routes via `scripts/affected-routes.mjs`, falls through to full when the static-import walker can't infer). Use `copy:preview:all` for shared-helper changes or initial generation. Emails: `pnpm --filter @optimitron/web email:preview-md`. Hand-edits are a smell that the dev server's down or the script's failing — fix that instead.
 
-**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines. Deferred decisions go in TODO.md the same turn. Subagent prompts include the relevant TODO.md slice as context.
+**Update `TODO.md` in the same commit** as the work it covers — both the check-box and any new follow-up lines. Deferred decisions go in TODO.md the same turn. Subagent prompts include the relevant TODO.md slice as context. Commit message must include `todo-touched: <item>` (work closed a TODO line) or `todo-skipped: <reason>` (net-new work or out-of-scope) — `verify-ui-changes.mjs` advisory-flags missing markers. Audit Mike-Visible: see `## Mike's role` below.
+
+## Mike's role: strategic copy gate
+
+Do not ask Mike engineering questions. Agents decide implementation details. Ask Mike only for copy/voice approval, strategic priority forks, or ship/redraft/abandon calls on user-visible artifacts.
+
+When asking, use the smallest multiple-choice question with a recommended default and optional Other. For copy changes, show verbatim before/after. If Mike says "I don't know, what do you think?", choose, record the decision, and proceed.
 
 **Hook-enforced rules.** Pre-architect Read on Write to `packages/*/src/` and "should it really / I thought / aren't we" detection on UserPromptSubmit are enforced by hooks. When a hook fires, treat its output as authoritative.
 

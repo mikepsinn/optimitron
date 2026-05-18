@@ -1,43 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Clipboard } from "lucide-react";
+import { useState } from "react";
+import { ClipboardList } from "lucide-react";
 import { CreateTaskDialog } from "@/components/tasks/CreateTaskDialog";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 
-interface PersonTaskAssignmentActionProps {
+interface OpenTaskRequestActionProps {
   buttonLabel?: string;
   callbackUrl: string;
   isAuthenticated: boolean;
-  personId: string;
-  personName: string;
   signInHref: string;
 }
 
-export function PersonTaskAssignmentAction({
-  buttonLabel = "Assign Task",
+export function OpenTaskRequestAction({
+  buttonLabel = "Ask for help",
   callbackUrl,
   isAuthenticated,
-  personId,
-  personName,
   signInHref,
-}: PersonTaskAssignmentActionProps) {
-  const searchParams = useSearchParams();
-  const handledAutoOpen = useRef(false);
+}: OpenTaskRequestActionProps) {
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (
-      !handledAutoOpen.current &&
-      isAuthenticated &&
-      searchParams.get("assignTask") === "1"
-    ) {
-      handledAutoOpen.current = true;
-      setOpen(true);
-    }
-  }, [isAuthenticated, searchParams]);
 
   if (!isAuthenticated) {
     return (
@@ -45,7 +27,7 @@ export function PersonTaskAssignmentAction({
         className={`${defaultButtonClassName} w-full sm:w-auto`}
         href={signInHref}
       >
-        <Clipboard className="h-4 w-4 stroke-[2.5px]" />
+        <ClipboardList className="h-4 w-4 stroke-[2.5px]" />
         {buttonLabel}
       </Link>
     );
@@ -58,14 +40,17 @@ export function PersonTaskAssignmentAction({
         onClick={() => setOpen(true)}
         type="button"
       >
-        <Clipboard className="h-4 w-4 stroke-[2.5px]" />
+        <ClipboardList className="h-4 w-4 stroke-[2.5px]" />
         {buttonLabel}
       </button>
       <CreateTaskDialog
+        allowedTaskModes={["open"]}
         callbackUrl={callbackUrl}
-        fixedAssigneePerson={{ id: personId, label: personName }}
+        dialogTitle="Ask for help"
+        initialTaskMode="open"
         onOpenChange={setOpen}
         open={open}
+        submitLabel="Post task"
       />
     </>
   );

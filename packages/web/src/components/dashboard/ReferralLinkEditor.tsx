@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Check, Copy, Save } from "lucide-react";
 import { Card } from "@/components/retroui/Card";
 import { Button } from "@/components/retroui/Button";
@@ -86,13 +86,13 @@ export function ReferralLinkEditor({
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const copiedTimeoutRef = useRef<number | null>(null);
+  const inputId = useId();
   const base = normalizeBaseUrl(baseUrl);
   const trimmedDraft = draft.trim();
   const dirty = trimmedDraft !== currentIdentifier;
   const displayedIdentifier = trimmedDraft || currentIdentifier;
   const displayedUrl = buildReferralUrl(displayedIdentifier, base);
   const savedUrl = buildReferralUrl(currentIdentifier, base);
-  const linkPrefix = `${base}/vote/`;
   const isTreaty = variant === "treaty";
   const hasHeaderCopy = Boolean(title || description);
 
@@ -212,31 +212,20 @@ export function ReferralLinkEditor({
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <div
-          className={cn(
-            "flex min-w-0 flex-1 items-center overflow-hidden bg-background",
-            "border border-black",
-          )}
-        >
-          <span
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+        <div className="min-w-0 space-y-2">
+          <label
             className={cn(
-              "hidden min-w-0 shrink truncate px-3 py-3 text-sm font-black sm:block",
+              "block text-xs font-black uppercase tracking-[0.14em]",
               isTreaty ? "text-black" : "text-muted-foreground",
             )}
+            htmlFor={inputId}
           >
-            {linkPrefix}
-          </span>
-          <span
-            className={cn(
-              "shrink-0 px-3 py-3 text-sm font-black sm:hidden",
-              isTreaty ? "text-black" : "text-muted-foreground",
-            )}
-          >
-            /vote/
-          </span>
+            Public handle
+          </label>
           <Input
-            aria-label="Link name"
+            id={inputId}
+            aria-label="Public handle"
             aria-invalid={Boolean(error)}
             value={draft}
             onChange={(event) => {
@@ -248,48 +237,68 @@ export function ReferralLinkEditor({
                 void saveLinkName();
               }
             }}
-            className="min-h-12 min-w-[9rem] flex-1 border-0 bg-transparent px-0 font-mono text-base font-black shadow-none focus:shadow-none"
+            className="min-h-12 w-full border border-black bg-background px-3 font-mono text-base font-black shadow-none focus:shadow-none"
             maxLength={24}
             placeholder="your-name"
           />
         </div>
 
-        {dirty ? (
-          <Button
-            type="button"
-            variant="outline"
-            disabled={saving}
-            onClick={() => {
-              void saveLinkName();
-            }}
+        <div className="flex flex-col gap-2 sm:flex-row">
+          {dirty ? (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={saving}
+              onClick={() => {
+                void saveLinkName();
+              }}
+              className={cn(
+                "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
+                "border border-black bg-white text-black hover:bg-black hover:text-white",
+              )}
+            >
+              <Save className="h-4 w-4 stroke-[2.5px]" />
+              {saving ? "Saving" : "Save"}
+            </Button>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+        <div className="min-w-0">
+          <p
             className={cn(
-              "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
-              "border border-black bg-white text-black hover:bg-black hover:text-white",
+              "text-xs font-black uppercase tracking-[0.14em]",
+              isTreaty ? "text-black" : "text-muted-foreground",
             )}
           >
-            <Save className="h-4 w-4 stroke-[2.5px]" />
-            {saving ? "Saving" : "Save"}
-          </Button>
-        ) : null}
+            Share this link
+          </p>
+          <p className="mt-2 min-h-12 break-all border border-black bg-background px-3 py-3 font-mono text-sm font-black text-foreground">
+            {displayedUrl}
+          </p>
+        </div>
 
-        <Button
-          type="button"
-          onClick={() => {
-            void copyLink();
-          }}
-          disabled={saving}
-          className={cn(
-            "min-h-12 justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
-            "border border-black bg-black text-white hover:bg-white hover:text-black",
-          )}
-        >
-          {copied ? (
-            <Check className="h-4 w-4 stroke-[2.5px]" />
-          ) : (
-            <Copy className="h-4 w-4 stroke-[2.5px]" />
-          )}
-          {copied ? "Copied" : dirty ? "Save & Copy" : "Copy"}
-        </Button>
+        <div className="flex">
+          <Button
+            type="button"
+            onClick={() => {
+              void copyLink();
+            }}
+            disabled={saving}
+            className={cn(
+              "min-h-12 w-full justify-center gap-2 px-4 text-xs font-black uppercase tracking-[0.12em] shadow-none hover:translate-x-0 hover:translate-y-0 sm:w-auto",
+              "border border-black bg-black text-white hover:bg-white hover:text-black",
+            )}
+          >
+            {copied ? (
+              <Check className="h-4 w-4 stroke-[2.5px]" />
+            ) : (
+              <Copy className="h-4 w-4 stroke-[2.5px]" />
+            )}
+            {copied ? "Copied" : dirty ? "Save & Copy" : "Copy"}
+          </Button>
+        </div>
       </div>
 
       {error ? (

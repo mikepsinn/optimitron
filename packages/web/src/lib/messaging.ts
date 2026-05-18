@@ -184,7 +184,7 @@ export const CTA = {
 
 export const TAGLINES = {
   gameObjective:
-    `Optimize public policy to stop making you poorer and deader and start making you healtier and wealthier!`,
+    `Optimize public policy to stop making you poorer and deader and start making you healthier and wealthier!`,
   onlyWayToLose:
     `Your deposit grows at ~10% for 15 years either way. The break-even probability is 1 in 15,000. You lose money by not depositing.`,
   hedgeLine: "Your deposit is a hedge against your own species.",
@@ -274,7 +274,7 @@ export const VOTE_SECTION = {
   // Humanity v. Government: governments are paid ~$36T/yr to promote
   // the general welfare and underdeliver. Voters' welfare-findings
   // become evidence in the case; preferences alone would not.
-  sliderPrompt: `You pay governments ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare: health and wealth. Of the money available for military/weapons and pragmatic clinical trials, move the slider to show the split governments should use.`,
+  sliderPrompt: `You pay governments ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare: maximize human health and wealth. Of the money available for military/weapons and pragmatic clinical trials, how much should go to each?`,
   realityCheck:
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:

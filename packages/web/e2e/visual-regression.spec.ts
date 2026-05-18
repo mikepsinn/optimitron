@@ -109,16 +109,27 @@ test.describe("route visual regression", () => {
       const status = response?.status() ?? 0;
 
       if (!route.required && OPTIONAL_ROUTE_SKIP_STATUSES.has(status)) {
-        test.skip(true, `${route.path} returned ${status}; seed data not available`);
+        test.skip(
+          true,
+          `${route.path} returned ${status}; seed data not available`,
+        );
         return;
       }
 
-      expect(status, `${route.path} should load before screenshot`).toBeLessThan(400);
+      expect(
+        status,
+        `${route.path} should load before screenshot`,
+      ).toBeLessThan(400);
 
       await normalizeVisualPage(page);
       if ("openMenu" in route && route.openMenu) {
         await openSideMenu(page, {
           expectSettings: "expectSettings" in route && route.expectSettings,
+        });
+      }
+      if ("openCreateTask" in route && route.openCreateTask) {
+        await openCreateTaskDialog(page, {
+          mode: route.createTaskMode,
         });
       }
 
@@ -135,9 +146,15 @@ test.describe("route visual regression", () => {
 
       await waitForVisualIdle(page);
       const screenshotFileName = `${route.name}.png`;
-      const reviewScreenshotDir = path.join(REVIEW_AFTER_ROOT, testInfo.project.name);
+      const reviewScreenshotDir = path.join(
+        REVIEW_AFTER_ROOT,
+        testInfo.project.name,
+      );
       const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
-      const reviewScreenshotPath = path.join(reviewScreenshotDir, screenshotFileName);
+      const reviewScreenshotPath = path.join(
+        reviewScreenshotDir,
+        screenshotFileName,
+      );
       const screenshotPath = path.join(screenshotDir, screenshotFileName);
       await mkdir(reviewScreenshotDir, { recursive: true });
       await mkdir(screenshotDir, { recursive: true });
@@ -176,7 +193,9 @@ async function openVisualRoute(page: Page, routePath: string) {
   });
   await forceAnimationsComplete(page);
 
-  expect(errors, `${routePath} should not throw client-side errors`).toEqual([]);
+  expect(errors, `${routePath} should not throw client-side errors`).toEqual(
+    [],
+  );
   return response;
 }
 
@@ -238,12 +257,36 @@ async function openSideMenu(
   }
 
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("link", { name: /Manage Humanity/i })).toBeVisible();
+  await expect(
+    dialog.getByRole("link", { name: /Manage Humanity/i }),
+  ).toBeVisible();
   if (expectSettings) {
     await expect(dialog.getByRole("link", { name: /Settings/i })).toBeVisible();
   } else {
     await expect(dialog.getByRole("link", { name: /Sign In/i })).toBeVisible();
   }
+  await forceAnimationsComplete(page);
+  await waitForPaint(page);
+}
+
+async function openCreateTaskDialog(
+  page: Page,
+  { mode }: { mode?: "person" } = {},
+) {
+  await page.getByRole("button", { name: "Open campaign actions" }).click();
+  await page.getByRole("button", { name: /^Create task$/ }).click();
+
+  const dialog = page.getByRole("dialog", { name: /Create task/i });
+  await expect(dialog).toBeVisible();
+
+  if (mode === "person") {
+    await dialog.getByLabel("Who should do it?").fill("Jane Doe");
+    await dialog
+      .getByRole("button", { name: /Add "Jane Doe" as a new person/i })
+      .click();
+    await expect(dialog.getByText("New person")).toBeVisible();
+  }
+
   await forceAnimationsComplete(page);
   await waitForPaint(page);
 }

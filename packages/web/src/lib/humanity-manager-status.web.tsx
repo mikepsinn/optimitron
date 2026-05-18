@@ -121,7 +121,7 @@ function CompletedEmployees({
           return (
             <li key={`${person.displayName}-${date ?? "completed"}`}>
               <span className="font-black">{person.displayName}</span>
-              {date ? ` completed it on ${date}` : " completed it"}
+              {date ? ` voted YES on ${date}` : " voted YES"}
               <span className="text-[var(--treaty-ink-muted)]">
                 {`; ${downstreamLabel} from them.`}
               </span>

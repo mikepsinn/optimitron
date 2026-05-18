@@ -25,6 +25,14 @@ const CreateTaskBodySchema = z.object({
   assigneeOrganizationId: z.string().nullish(),
   assigneePersonIdentifier: z.string().nullish(),
   assigneePersonId: z.string().nullish(),
+  assigneePersonInvite: z
+    .object({
+      currentAffiliation: z.string().trim().nullish(),
+      email: z.string().trim().email(),
+      firstName: z.string().trim().min(1),
+      lastName: z.string().trim().min(1),
+    })
+    .nullish(),
   category: z.nativeEnum(TaskCategory).nullish(),
   claimPolicy: z.nativeEnum(TaskClaimPolicy).nullish(),
   contactLabel: z.string().nullish(),
@@ -70,6 +78,51 @@ function normalizeAssigneePersonIdentifier(value?: string | null) {
   }
 
   return candidate.replace(/^@/u, "").trim() || null;
+}
+
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function buildDisplayName(input: { firstName: string; lastName: string }) {
+  return [input.firstName.trim(), input.lastName.trim()]
+    .filter(Boolean)
+    .join(" ");
+}
+
+async function findOrCreateInvitedAssigneePerson({
+  creatorUserId,
+  currentAffiliation,
+  email,
+  firstName,
+  lastName,
+}: {
+  creatorUserId: string;
+  currentAffiliation?: string | null;
+  email: string;
+  firstName: string;
+  lastName: string;
+}) {
+  const normalizedEmail = normalizeEmail(email);
+  const displayName = buildDisplayName({ firstName, lastName });
+
+  return prisma.person.upsert({
+    create: {
+      createdByUserId: creatorUserId,
+      currentAffiliation: currentAffiliation?.trim() || null,
+      displayName,
+      email: normalizedEmail,
+      firstName: firstName.trim(),
+      isPublic: false,
+      isPublicFigure: false,
+      lastName: lastName.trim(),
+    },
+    select: { id: true },
+    update: {
+      deletedAt: null,
+    },
+    where: { email: normalizedEmail },
+  });
 }
 
 export async function GET(request: Request) {
@@ -119,8 +172,27 @@ export async function POST(request: Request) {
   try {
     const { userId } = await requireAuth();
     const parsed = CreateTaskBodySchema.parse(await request.json());
-    const { assigneePersonIdentifier, dueAt, parentTaskId, ...rest } = parsed;
+    const {
+      assigneePersonIdentifier,
+      assigneePersonInvite,
+      dueAt,
+      parentTaskId,
+      ...rest
+    } = parsed;
     let assigneePersonId = rest.assigneePersonId ?? null;
+    const assigneeTargetCount = [
+      rest.assigneeOrganizationId,
+      assigneePersonId,
+      assigneePersonIdentifier,
+      assigneePersonInvite,
+    ].filter(Boolean).length;
+
+    if (assigneeTargetCount > 1) {
+      return NextResponse.json(
+        { error: "Choose one assignee." },
+        { status: 400 },
+      );
+    }
 
     if (!assigneePersonId && assigneePersonIdentifier) {
       const identifier = normalizeAssigneePersonIdentifier(
@@ -150,6 +222,17 @@ export async function POST(request: Request) {
           { status: 404 },
         );
       }
+      assigneePersonId = person.id;
+    }
+
+    if (!assigneePersonId && assigneePersonInvite) {
+      const person = await findOrCreateInvitedAssigneePerson({
+        creatorUserId: userId,
+        currentAffiliation: assigneePersonInvite.currentAffiliation,
+        email: assigneePersonInvite.email,
+        firstName: assigneePersonInvite.firstName,
+        lastName: assigneePersonInvite.lastName,
+      });
       assigneePersonId = person.id;
     }
 
