@@ -4,7 +4,9 @@ import {
   isTransactionalScope,
   type EmailScope,
 } from "@/lib/email/scopes";
+import { revalidateTag } from "next/cache";
 import { ensurePersonForUser } from "@/lib/person.server";
+import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
 import { prisma } from "@/lib/prisma";
 import type { DashboardUser, DashboardSocialAccount } from "@/types/dashboard";
 import {
@@ -85,6 +87,19 @@ export async function updateUserProfile(
   input: UpdateProfileInput,
 ): Promise<ProfileIdentityData | null> {
   const handle = "handle" in input ? normalizeHandle(input.handle) : undefined;
+  const shouldRevalidatePublicProfile =
+    typeof input.name === "string" ||
+    handle !== undefined ||
+    typeof input.bio === "string" ||
+    typeof input.headline === "string" ||
+    input.headline === null ||
+    typeof input.image === "string" ||
+    input.image === null ||
+    typeof input.website === "string" ||
+    input.website === null ||
+    typeof input.coverImage === "string" ||
+    input.coverImage === null ||
+    typeof input.isPublic === "boolean";
 
   if (handle && handle.length > 0) {
     const collision = await prisma.person.findFirst({
@@ -164,6 +179,10 @@ export async function updateUserProfile(
       });
     }
   });
+
+  if (shouldRevalidatePublicProfile) {
+    revalidateTag(PUBLIC_PERSON_PROFILE_CACHE_TAG);
+  }
 
   return getProfileIdentityData(userId);
 }

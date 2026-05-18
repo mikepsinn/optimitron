@@ -6,6 +6,7 @@ import { getSiteFromHost, type SiteKey } from "@/lib/site";
 interface MagicLinkCopy {
   buttonLabel: string;
   intro: string;
+  textIntro?: string;
   notRequested: string;
 }
 
@@ -21,6 +22,7 @@ const optimitronCopy: MagicLinkCopy = {
 const warOnDiseaseCopy: MagicLinkCopy = {
   buttonLabel: "Save my vote",
   intro: "Click the button below to verify your email and save your vote.",
+  textIntro: "Use the URL below to verify your email and save your vote.",
   notRequested: defaultNotRequested,
 };
 
@@ -81,7 +83,7 @@ export function buildMagicLinkHtml(
 export function buildMagicLinkText(url: string, host: string) {
   const copy = getMagicLinkCopy(host);
   return [
-    copy.intro,
+    copy.textIntro ?? copy.intro,
     "",
     `${copy.buttonLabel}: ${url}`,
     "",

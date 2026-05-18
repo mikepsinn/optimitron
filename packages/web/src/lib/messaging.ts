@@ -4,9 +4,11 @@
  */
 
 import {
+  TREATY_REDUCTION_PCT,
   PRIZE_POOL_HORIZON_MULTIPLE,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   fmtParam,
+  fmtParamValueOnly,
 } from "@optimitron/data/parameters";
 import {
   GLOBAL_SURVEY_NAME,
@@ -14,6 +16,8 @@ import {
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 } from "@optimitron/data/campaign";
 import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
+
+const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 
 /** Point name — single source of truth. Change here to rename everywhere. */
 export const POINT_NAME = "VOTE" as const;
@@ -280,7 +284,7 @@ export const VOTE_SECTION = {
   theQuestion:
     "Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?",
   emailSuccessFooter:
-    `Your 1% Treaty vote is saved. Now share your link to start earning ${POINT_NAME} Points.`,
+    `Your ${TREATY_REDUCTION_TEXT} Treaty vote is saved. Now share your link to start earning ${POINT_NAME} Points.`,
 };
 
 export const VOTE_VALUE = {

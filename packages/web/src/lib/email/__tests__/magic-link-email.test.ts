@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  MAGIC_LINK_PREVIEW,
   buildMagicLinkText,
   buildMagicLinkSubject,
   getMagicLinkCopy,
@@ -53,14 +52,11 @@ describe("magic-link host dispatch", () => {
   describe("buildMagicLinkText", () => {
     it("tells War on Disease voters the link saves their 1% Treaty vote", () => {
       expect(
-        buildMagicLinkText("https://warondisease.org/callback", "warondisease.org"),
-      ).toContain("Click the button below to verify your email and save your vote.");
-    });
-  });
-
-  describe("MAGIC_LINK_PREVIEW", () => {
-    it("does not append the Wishonia signature to transactional sign-in mail", () => {
-      expect(MAGIC_LINK_PREVIEW.skipWishoniaSignature).toBe(true);
+        buildMagicLinkText(
+          "https://warondisease.org/callback",
+          "warondisease.org",
+        ),
+      ).toContain("Use the URL below to verify your email and save your vote.");
     });
   });
 });

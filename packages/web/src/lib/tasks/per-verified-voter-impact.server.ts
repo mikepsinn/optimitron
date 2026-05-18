@@ -1,5 +1,7 @@
 import type { Prisma, PrismaClient } from "@optimitron/db";
 import {
+  DAYS_PER_YEAR,
+  DFDA_NPV_ADOPTION_RAMP_YEARS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
@@ -7,6 +9,7 @@ import {
   GLOBAL_ANNUAL_DALY_BURDEN,
   GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT,
   GLOBAL_REGISTERED_VOTERS,
+  NPV_DISCOUNT_RATE_STANDARD,
   STANDARD_ECONOMIC_QALY_VALUE_USD,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
@@ -18,8 +21,8 @@ const TREATY_PER_VERIFIED_VOTER_METHODOLOGY_KEY =
   "treaty-per-verified-voter-lifetime";
 const TREATY_PER_VERIFIED_VOTER_PARAMETER_SET_HASH_SUFFIX =
   "global-registered-voters";
-const TREATY_PER_VERIFIED_VOTER_PARAMETER_SET_HASH =
-  `seed-${TREATY_PER_VERIFIED_VOTER_PARAMETER_SET_HASH_SUFFIX}`;
+const TREATY_PER_VERIFIED_VOTER_PARAMETER_SET_HASH = `seed-${TREATY_PER_VERIFIED_VOTER_PARAMETER_SET_HASH_SUFFIX}`;
+const ESTIMATED_VOTE_EFFORT_HOURS = 0.01;
 
 export type PerVerifiedVoterTaskImpactClient = {
   task: Pick<PrismaClient["task"], "update">;
@@ -27,8 +30,14 @@ export type PerVerifiedVoterTaskImpactClient = {
     PrismaClient["taskImpactEstimateSet"],
     "updateMany" | "upsert"
   >;
-  taskImpactFrameEstimate: Pick<PrismaClient["taskImpactFrameEstimate"], "upsert">;
-  taskImpactMetric: Pick<PrismaClient["taskImpactMetric"], "updateMany" | "upsert">;
+  taskImpactFrameEstimate: Pick<
+    PrismaClient["taskImpactFrameEstimate"],
+    "upsert"
+  >;
+  taskImpactMetric: Pick<
+    PrismaClient["taskImpactMetric"],
+    "updateMany" | "upsert"
+  >;
 };
 
 function buildPerVerifiedVoterImpact() {
@@ -39,7 +48,7 @@ function buildPerVerifiedVoterImpact() {
   const targetVoterCount = GLOBAL_REGISTERED_VOTERS.value;
   const annualAvoidableDalys =
     GLOBAL_ANNUAL_DALY_BURDEN.value * EVENTUALLY_AVOIDABLE_DALY_PCT.value;
-  const delayDalysPerDay = annualAvoidableDalys / 365;
+  const delayDalysPerDay = annualAvoidableDalys / DAYS_PER_YEAR.value;
   const delayEconPerDay =
     delayDalysPerDay * STANDARD_ECONOMIC_QALY_VALUE_USD.value;
 
@@ -48,8 +57,7 @@ function buildPerVerifiedVoterImpact() {
       GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT.value,
     expectedEconomicValueUsdBase: totalEconValue / targetVoterCount,
     expectedDalysAvertedBase: totalDalys / targetVoterCount,
-    delayEconomicValueUsdLostPerDayBase:
-      delayEconPerDay / targetVoterCount,
+    delayEconomicValueUsdLostPerDayBase: delayEconPerDay / targetVoterCount,
     delayDalysLostPerDayBase: delayDalysPerDay / targetVoterCount,
     successProbabilityBase: 1,
     benefitDurationYears: accelerationYears,
@@ -149,20 +157,20 @@ export async function syncPerVerifiedVoterTaskImpactEstimate(
   });
 
   const frameData = {
-    adoptionRampYears: 5,
-    annualDiscountRate: 0,
+    adoptionRampYears: DFDA_NPV_ADOPTION_RAMP_YEARS.value,
+    annualDiscountRate: NPV_DISCOUNT_RATE_STANDARD.value,
     benefitDurationYears: impact.benefitDurationYears,
     delayDalysLostPerDayBase: impact.delayDalysLostPerDayBase,
     delayEconomicValueUsdLostPerDayBase:
       impact.delayEconomicValueUsdLostPerDayBase,
     estimatedCashCostUsdBase: impact.estimatedCashCostUsdBase,
-    estimatedEffortHoursBase: 0.01,
+    estimatedEffortHoursBase: ESTIMATED_VOTE_EFFORT_HOURS,
     evaluationHorizonYears: impact.benefitDurationYears,
     expectedDalysAvertedBase: impact.expectedDalysAvertedBase,
     expectedEconomicValueUsdBase: impact.expectedEconomicValueUsdBase,
     frameKey: "LIFETIME" as const,
     successProbabilityBase: impact.successProbabilityBase,
-    timeToImpactStartDays: 365,
+    timeToImpactStartDays: DAYS_PER_YEAR.value,
   };
   const frame = await db.taskImpactFrameEstimate.upsert({
     where: {

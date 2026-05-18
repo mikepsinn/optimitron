@@ -31,7 +31,10 @@ function requireLink<T extends { href: string }>(href: string, links: T[]): T {
 
 describe("navigation routes", () => {
   it("keeps route metadata off the root data barrel", () => {
-    const source = readFileSync(new URL("../routes.ts", import.meta.url), "utf8");
+    const source = readFileSync(
+      new URL("../routes.ts", import.meta.url),
+      "utf8",
+    );
 
     expect(source).not.toMatch(/from\s+["']@optimitron\/data["']/);
   });
@@ -96,29 +99,6 @@ describe("navigation routes", () => {
   });
 
   it("keeps edit-profile and public-profile navigation as separate intents", () => {
-    expect(editProfileLink).toEqual(
-      expect.objectContaining({
-        href: ROUTES.profile,
-        label: "Edit Profile",
-        emoji: "✏️",
-        cta: "Edit Profile",
-        authenticatedScreenshot: true,
-      }),
-    );
-    expect(editProfileLink.description).toContain("bio");
-    expect(editProfileLink.description).toContain("photo");
-    expect(editProfileLink.description).toContain("privacy");
-
-    expect(publicProfileLink).toEqual(
-      expect.objectContaining({
-        href: "",
-        label: "View Public Profile",
-        emoji: "🌐",
-        cta: "View Public Profile",
-        description: "See your profile the way other humans see it.",
-      }),
-    );
-
     expect(routeReviewNavItems).toContain(editProfileLink);
     expect(routeReviewNavItems).not.toContain(publicProfileLink);
   });

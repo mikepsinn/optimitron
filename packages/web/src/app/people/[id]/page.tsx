@@ -23,6 +23,10 @@ import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
+import {
+  PUBLIC_PERSON_PROFILE_CACHE_TAG,
+  PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
+} from "@/lib/person-profile-cache";
 import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import {
   humanityVGovernmentLink,
@@ -42,18 +46,22 @@ import {
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildUserReferralUrl } from "@/lib/url";
 
-const PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS = 300;
-
 const getCachedRepresentedPersonProfileData = unstable_cache(
   async (id: string) => getRepresentedPersonProfileData(id),
   ["public-represented-person-profile"],
-  { revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS },
+  {
+    revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
+    tags: [PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  },
 );
 
 const getCachedPersonTaskProfileData = unstable_cache(
   async (id: string) => getPersonTaskProfileData(id, null),
   ["public-person-task-profile"],
-  { revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS },
+  {
+    revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
+    tags: [PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  },
 );
 
 type PersonTaskProfileData = NonNullable<

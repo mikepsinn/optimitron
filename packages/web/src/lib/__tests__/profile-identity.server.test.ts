@@ -8,6 +8,11 @@ const mocks = vi.hoisted(() => ({
   userFindUniqueOrThrow: vi.fn(),
   userFindUnique: vi.fn(),
   $transaction: vi.fn(),
+  revalidateTag: vi.fn(),
+}));
+
+vi.mock("next/cache", () => ({
+  revalidateTag: mocks.revalidateTag,
 }));
 
 vi.mock("@/lib/person.server", () => ({
@@ -42,6 +47,7 @@ beforeEach(() => {
   mocks.userFindUniqueOrThrow.mockReset();
   mocks.userFindUnique.mockReset();
   mocks.$transaction.mockReset();
+  mocks.revalidateTag.mockReset();
 
   // Run the transaction callback inline against a tx that delegates to the
   // mocked top-level prisma client. Keeps the assertion focus on which model
@@ -101,6 +107,7 @@ describe("updateUserProfile", () => {
     expect(userData).not.toHaveProperty("coverImage");
     expect(userData).not.toHaveProperty("website");
     expect(userData).not.toHaveProperty("isPublic");
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("public-person-profile");
   });
 
   it("normalises the handle to lowercase before writing", async () => {

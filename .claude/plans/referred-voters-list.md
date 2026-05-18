@@ -14,7 +14,7 @@ Voice: "reminder," never "nudge" (Mike directive, see memory [[feedback_reminder
 
 ## Current state — ASCII diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                          /dashboard                                  │
 │                                                                      │
@@ -49,7 +49,7 @@ Existing helpers:
 
 ## Proposed state — ASCII diagram
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────┐
 │                          /dashboard                                   │
 │                                                                       │
