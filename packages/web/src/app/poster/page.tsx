@@ -221,7 +221,7 @@ export default async function PosterPage({
                   ? "bg-foreground text-background"
                   : "bg-background text-foreground hover:bg-muted"
               }`}
-              href="/poster"
+              href={ROUTES.poster}
             >
               Letter
             </Link>
@@ -232,7 +232,7 @@ export default async function PosterPage({
                   ? "bg-foreground text-background"
                   : "bg-background text-foreground hover:bg-muted"
               }`}
-              href="/poster?paper=a4"
+              href={`${ROUTES.poster}?paper=a4`}
             >
               A4
             </Link>

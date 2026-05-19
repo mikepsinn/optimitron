@@ -1,0 +1,97 @@
+# /love
+
+## Metadata
+
+- Page title: End War and Disease From Your Dating Profile | International Campaign to End War and Disease
+- Meta description: You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.
+- Canonical: https://warondisease.org/love
+- Open Graph title: End War and Disease From Your Dating Profile
+- Open Graph description: You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Flove
+- Twitter title: End War and Disease From Your Dating Profile
+- Twitter description: You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.
+
+## Visible Page Copy
+
+- A PROPOSAL
+## End war and disease from your dating profile.
+- You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.
+### The situation
+- It requires only [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear explosions to cause a nuclear winter, which would collapse the food chain and end civilization. Humanity currently has [12,000](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear bombs, which is sufficient for [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses.
+- Given that you can only destroy civilization once, it seems like humanity would be willing to settle for [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses in exchange for potentially preventing themselves and everyone they love from suffering and dying of horrible diseases.
+- If humanity redirected [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of military spending to clinical trials, disease eradication becomes plausible in [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years instead of [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years at the current rate.
+- We built a website where everyone can vote on this. We need a majority of humanity, over [4 billion people](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html), to vote. That's a distribution problem.
+- Dating apps have hundreds of millions of active users. Each profile is seen by hundreds or thousands of people. If even 10,000 supporters put warondisease.org in their bios, that's tens of millions of impressions from a channel that costs nothing.
+### Why this works on dating apps specifically
+- Having a mission is attractive. This is well documented in social psychology. A person who is focused on something bigger than themselves is more compelling than a person whose bio says "looking for my partner in crime."
+- You're not choosing between a good dating profile and helping end war and disease. A profile with a real mission IS a better dating profile. The person benefits individually from participating.
+- 300M+
+- active users on dating apps globally
+- $0
+- cost per impression from a dating bio
+- [30s](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html)
+- to vote at warondisease.org
+- Every person who sees your profile and doesn't match with you can still vote. Every left swipe is a potential vote. Your rejections are saving lives.
+### The math
+- Average dating profile: seen by ~500 people/month
+- 10,000 supporters with bios = 5,000,000 impressions/month
+- Conservative 1% click-through to warondisease.org = 50,000 votes/month
+- At that rate, 4 billion votes in ~6,600 years
+- But each voter tells friends. At 2x viral coefficient:
+- 50,000 → 100,000 → 200,000 → snowball
+- The point isn't that dating apps alone get to 4 billion.
+- The point is they're one free channel in a portfolio of channels,
+- and you were going to be on the app anyway.
+### How to do it
+#### Vote yourself
+- Go to warondisease.org and take [30 seconds](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) to vote. You can't ask others to do something you haven't done.
+#### Add it to your dating profile
+- Use one of the templates below, or write your own. The key is: make it sound like you, mention warondisease.org, and keep it natural.
+#### When someone messages you, ask them to vote
+- A person already talking to you is 20x more likely to vote than a stranger reading a bio. The warm ask converts better than the cold one. Wait until they're engaged, then ask.
+#### Send them this page
+- If they're into it, send them here so they can do the same thing. Now you're both doing it. Now it's spreading.
+#### Go on a date. Put up flyers.
+- [Print flyers](/poster) with your personal referral QR code from warondisease.org. When you go on a date, put them up around town together. Even if the date is terrible, you didn't waste your time. You were ending war and disease.
+- Millions of bad dates happen every night globally. Hours of human time evaporating into awkward silences and forced conversations about hiking. This campaign converts that wasted time into the highest value activity mathematically possible. Even your worst date ends war and disease.
+#### YOUR CAMPAIGN URL
+- This is the public campaign URL. Sign in to print a personal URL and QR code.
+- warondisease.org
+- COPY URL
+- [PRINT FLYERS](/poster)
+- [SIGN IN](/auth/signin)
+### The opening message
+- When you match with someone, or even when you're sending a first message, open with:
+- "I have a great idea for how you can improve your profile. Do you want to hear it?"
+- Everyone wants a better dating profile. Curiosity alone will get a response. When they say yes, send them this page. The "improvement" is adding warondisease.org to their bio.
+- Now they're voting. Now they're adding it to their profile. Now they're sending the same message to their matches. Each person who participates creates more people who participate.
+- You started a conversation. You might also start a relationship. Either way, you started a chain reaction.
+### Bio templates
+- Use these as-is or adapt to your voice. The only requirement is that warondisease.org appears and the reader has a reason to click it.
+- COPY THIS
+- It requires only 100 nuclear explosions to end civilization. Humanity has enough for 122. Seems like we could spare 1% of the budget for curing diseases instead. I made a website where you can vote on it. warondisease.org. It takes 30 seconds. [then write whatever you normally write about yourself]
+- Before you evaluate whether I'm worth your time, please take 30 seconds to vote at warondisease.org. It will statistically prevent more suffering than anything you will learn about me in the next four paragraphs. [then write your normal bio]
+- [your normal bio here] Also I'm trying to get 4 billion people to vote to redirect 1% of military spending to curing diseases. warondisease.org. It takes 30 seconds. Your left swipe can still save lives.
+- My most controversial opinion is that humanity should settle for 121 apocalypses instead of 122 and use the savings to cure diseases 12 times faster. Vote on it at warondisease.org. Now, about me: [your normal bio]
+### The deeper idea
+- You're on a dating app because you want to love someone and be loved. That's the whole reason anyone is here.
+- What if you extended that impulse slightly? Not just to the person you match with but to the 8 billion people who also don't want to suffer and die of horrible diseases?
+- You don't have to be in love with everyone on earth. You just have to care enough about strangers to spend 30 seconds voting so they don't die of something curable. That's a very low bar for love. You're already meeting it by being a person who reads dating profiles instead of just looking at pictures.
+- Wars happen because people don't care enough about the people on the other side. Diseases go uncured because people don't care enough about the people who have them. The entire problem is a deficit of giving a shit.
+- You give a shit. You're here. Put it in your bio.
+### Questions you might have
+#### Won't this make my profile weird?
+- Your profile is currently competing with 10,000 people who like hiking and The Office. Yes, it will make your profile weird. That's the point. Weird is memorable. Memorable gets responses.
+#### Will it actually get me better matches?
+- Having a real mission is consistently rated as one of the most attractive traits in social psychology research. A person who cares about something beyond themselves is more attractive than a person who doesn't. This isn't a sacrifice. It's an upgrade.
+#### Won't people think I'm promoting something?
+- You're asking them to vote on a free website for 30 seconds. Not buy a coin, join a group, or sign up for anything. The bar for "promotion" is usually money. This is free and takes less time than reading your bio.
+#### What if nobody votes from my profile?
+- Then you still have a more interesting dating profile than you did before. There's no downside.
+#### Is this a real campaign?
+- Yes. The Institute for Accelerated Medicine is a 501(c)(3) nonprofit running the International Campaign to End War and Disease. The global referendum at warondisease.org is the coordination mechanism. This is one distribution channel among many. You're not being recruited into anything. You're being asked to put a link in your bio.
+### Your dating profile is seen by hundreds of people. Most of them will swipe left. Make the left swipes count.
+- Vote first. Then put it in your bio. Then send this page to someone.
+- [VOTE NOW](/vote)
+- SHARE THIS PAGE
+- A project of the [Institute for Accelerated Medicine](https://warondisease.org). Love, Mike.

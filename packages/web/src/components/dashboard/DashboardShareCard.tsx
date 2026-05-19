@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Copy, Mail, Share2, Smartphone } from "lucide-react";
 import { FaFacebookF, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion.web";
+import { ROUTES } from "@/lib/routes";
 import { buildShareMessage } from "@/lib/share-message";
 import { cn } from "@/lib/utils";
 import { defaultButtonClassName } from "@/components/ui/default-button";
@@ -297,6 +299,12 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
         </div>
         {getStatusLabel()}
         {renderShareStatus()}
+        <Link
+          className="inline-flex w-full justify-center border border-[var(--treaty-ink)]/40 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)] transition-colors hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]"
+          href={ROUTES.love}
+        >
+          End war and disease from your dating profile.
+        </Link>
       </div>
     </section>
   );

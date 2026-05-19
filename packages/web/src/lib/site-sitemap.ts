@@ -30,6 +30,8 @@ const STATIC_SITEMAP_ROUTES: SiteSitemapRoute[] = [
   { path: ROUTES.donate, priority: 0.9, changeFrequency: "weekly" },
   { path: ROUTES.employees, priority: 0.8, changeFrequency: "daily" },
   { path: ROUTES.survey, priority: 0.95, changeFrequency: "weekly" },
+  { path: ROUTES.love, priority: 0.8, changeFrequency: "weekly" },
+  { path: ROUTES.poster, priority: 0.75, changeFrequency: "weekly" },
   { path: ROUTES.organizations, priority: 0.75, changeFrequency: "weekly" },
   { path: ROUTES.impact, priority: 0.75, changeFrequency: "weekly" },
   { path: ROUTES.endorse, priority: 0.7, changeFrequency: "weekly" },

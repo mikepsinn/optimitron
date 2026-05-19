@@ -99,6 +99,8 @@ export const ROUTES = {
   endorse: "/endorse",
   signatories: "/signatories",
   campaign: "/campaign",
+  love: "/love",
+  poster: "/poster",
   coalition: "/coalition",
   organizations: "/organizations",
   people: "/people",
@@ -990,6 +992,30 @@ export const contributeLink: NavItem = {
   cta: "Contribute",
 };
 
+export const loveLink: NavItem = {
+  href: ROUTES.love,
+  label: "End War and Disease From Your Dating Profile",
+  emoji: "",
+  description:
+    "You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.",
+  tagline: "End war and disease from your dating profile.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Vote now",
+};
+
+export const posterLink: NavItem = {
+  href: ROUTES.poster,
+  label: "Print Referral Poster",
+  emoji: "",
+  description:
+    "Print a poster with your campaign QR code so humans can vote from walls, doors, and awkward dates.",
+  tagline: "Print your campaign QR code.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Print",
+};
+
 export const fundLink: NavItem = {
   href: ROUTES.fund,
   label: "Fund Optimization",
@@ -1116,6 +1142,7 @@ export const toolSections: NavSection[] = [
     label: "Player",
     items: [
       tasksLink,
+      loveLink,
       presidentManagementLink,
       transmitLink,
       dashboardLink,
@@ -1565,6 +1592,8 @@ export const routeReviewNavItems = [
   trialSurveyLink,
   faqLink,
   feedbackLink,
+  loveLink,
+  posterLink,
   privacyLink,
   settingsLink,
   termsLink,
