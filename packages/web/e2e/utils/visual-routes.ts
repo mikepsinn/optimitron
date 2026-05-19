@@ -16,6 +16,7 @@ export type VisualRoute = {
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
+  waitForImages?: boolean;
 };
 
 const PRESIDENT_TASK_LIST_SELECTOR =
@@ -24,6 +25,8 @@ const PRESIDENT_TASK_LIST_SELECTOR =
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
 ]);
+
+const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.employees]);
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
@@ -113,6 +116,7 @@ const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
     required: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
     requiredText: REQUIRED_TEXT_BY_PATH.get(path),
+    waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
 const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
@@ -126,6 +130,7 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
     authenticated: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
     requiredText: REQUIRED_TEXT_BY_PATH.get(path),
+    waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
 export const VISUAL_ROUTES: VisualRoute[] = dedupeRoutes([

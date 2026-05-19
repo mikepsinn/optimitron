@@ -12,10 +12,7 @@ import {
   type HumanityManagerStatusPerson,
   type HumanityManagerStatusReminder,
 } from "@/lib/humanity-manager-status-content";
-import {
-  buildTaskShareTokens,
-  getTaskDelayStats,
-} from "@/lib/tasks/accountability";
+import { buildTaskShareTokens } from "@/lib/tasks/accountability";
 import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import {
   getShareTemplate,
@@ -25,15 +22,8 @@ import {
 } from "@/lib/tasks/share-templates";
 import { renderTemplate } from "@/lib/tasks/render-template";
 import { TREATY_SIGNER_TASK_KEY_PREFIX } from "@/lib/tasks/task-keys";
-import {
-  getAssigneeGovernmentBudgetUsd,
-  getAssigneeMilitaryBudgetUsd,
-  getAssigneeMilitaryToClinicalTrialsRatio,
-  getAssigneeTwitterHandle,
-} from "@/lib/tasks/task-context";
-import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
-import { buildTaskUrl, buildUserInviteReferralUrl } from "@/lib/url";
+import { buildUserInviteReferralUrl } from "@/lib/url";
 
 const STATUS_SAMPLE_LIMIT = 8;
 const DAY_MS = 1000 * 60 * 60 * 24;
@@ -279,63 +269,6 @@ function buildEmployeeReminder(input: {
   };
 }
 
-function buildPresidentReminder(input: {
-  baseUrl: string;
-  now: Date;
-  task: {
-    assigneePerson: {
-      countryCode: string | null;
-      displayName: string;
-      handle?: string | null;
-    } | null;
-    contextJson: Prisma.JsonValue | null;
-    dueAt: Date | string | null;
-    id: string;
-    title: string;
-  };
-  user: StatusUser;
-}): HumanityManagerStatusReminder | null {
-  const targetLabel =
-    input.task.assigneePerson?.displayName?.trim() || input.task.title;
-  const delayStats = getTaskDelayStats({ dueAt: input.task.dueAt });
-  const referralId = getHandleOrReferralCode(input.user);
-  const treatyUrl = buildTaskUrl(input.task.id, input.baseUrl, referralId);
-  const tokens = buildTaskShareTokens({
-    countryCode: input.task.assigneePerson?.countryCode ?? null,
-    currentDelayDays: delayStats.currentDelayDays,
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
-    governmentBudgetUsdPerYear: getAssigneeGovernmentBudgetUsd(
-      input.task.contextJson,
-    ),
-    leaderHandle:
-      getAssigneeTwitterHandle(input.task.contextJson) ??
-      input.task.assigneePerson?.handle ??
-      null,
-    militaryBudgetUsdPerYear: getAssigneeMilitaryBudgetUsd(
-      input.task.contextJson,
-    ),
-    militaryToClinicalTrialsRatio: getAssigneeMilitaryToClinicalTrialsRatio(
-      input.task.contextJson,
-    ),
-    now: input.now,
-    targetLabel,
-    taskTitle: input.task.title,
-    treatyUrl,
-  });
-  const message = pickRenderedReminder({ mode: "leader", tokens });
-  if (!message) return null;
-
-  return {
-    id: `president-${input.task.id}`,
-    label: targetLabel,
-    message,
-    recipientMode: "leader",
-    title: "President reminder",
-  };
-}
-
 export async function loadHumanityManagerStatus(input: {
   baseUrl: string;
   now?: Date;
@@ -414,16 +347,10 @@ export async function loadHumanityManagerStatus(input: {
         assigneeAffiliationSnapshot: true,
         assigneePerson: {
           select: {
-            countryCode: true,
             currentAffiliation: true,
             displayName: true,
-            handle: true,
           },
         },
-        contextJson: true,
-        dueAt: true,
-        id: true,
-        title: true,
       },
       take: STATUS_SAMPLE_LIMIT,
       where: overduePresidentWhere,
@@ -437,18 +364,6 @@ export async function loadHumanityManagerStatus(input: {
         baseUrl: input.baseUrl,
         invitation,
         now,
-        user: input.user,
-      }),
-    )
-    .filter((reminder): reminder is HumanityManagerStatusReminder => reminder != null)
-    .slice(0, 3);
-
-  const presidentReminders = overduePresidentTasks
-    .map((task) =>
-      buildPresidentReminder({
-        baseUrl: input.baseUrl,
-        now,
-        task,
         user: input.user,
       }),
     )
@@ -476,6 +391,6 @@ export async function loadHumanityManagerStatus(input: {
         displayName: task.assigneePerson?.displayName || "President",
       }),
     ),
-    reminders: [...employeeReminders, ...presidentReminders],
+    reminders: employeeReminders,
   };
 }

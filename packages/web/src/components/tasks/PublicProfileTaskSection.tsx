@@ -155,6 +155,10 @@ function TaskGroup({
   tasks: TaskCardTask[];
   title: string;
 }) {
+  if (tasks.length === 0 && !action) {
+    return null;
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -178,6 +182,7 @@ export function PublicProfileTaskSection({
   assignedByTasks = [],
   completedTasks = [],
   heading = "Public Tasks",
+  headingAction,
   intro,
   openTasks = [],
   ownerName,
@@ -188,6 +193,7 @@ export function PublicProfileTaskSection({
   assignedByTasks?: TaskCardTask[];
   completedTasks: TaskCardTask[];
   heading?: string;
+  headingAction?: ReactNode;
   intro?: string;
   openTasks: TaskCardTask[];
   ownerName: string;
@@ -217,7 +223,9 @@ export function PublicProfileTaskSection({
             {summary}
           </p>
         </div>
-        {profileHref ? (
+        {headingAction ? (
+          <div className="flex sm:justify-end">{headingAction}</div>
+        ) : profileHref ? (
           <Link
             className="text-sm font-black uppercase underline underline-offset-4"
             href={profileHref}

@@ -116,4 +116,20 @@ describe("PublicProfileTaskSection", () => {
     expect(html).toContain('data-task-share="task_assigned_by"');
     expect(html).not.toContain('data-task-share="task_done"');
   });
+
+  it("hides empty public task buckets", () => {
+    const html = renderToStaticMarkup(
+      <PublicProfileTaskSection
+        completedTasks={[]}
+        openTasks={[]}
+        ownerName="Ada"
+      />,
+    );
+
+    expect(html).toContain("No one has suggested Ada&#x27;s next action yet.");
+    expect(html).not.toContain("For Ada (0)");
+    expect(html).not.toContain("Requests from Ada (0)");
+    expect(html).not.toContain("Assigned by Ada (0)");
+    expect(html).not.toContain("Completed work (0)");
+  });
 });

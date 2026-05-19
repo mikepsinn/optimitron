@@ -145,6 +145,9 @@ test.describe("route visual regression", () => {
       }
 
       await waitForVisualIdle(page);
+      if (route.waitForImages) {
+        await waitForVisualImages(page);
+      }
       const screenshotFileName = `${route.name}.png`;
       const reviewScreenshotDir = path.join(
         REVIEW_AFTER_ROOT,
@@ -229,6 +232,139 @@ async function waitForVisualIdle(page: Page) {
     { timeout: 10_000 },
   );
   await forceAnimationsComplete(page);
+}
+
+async function waitForVisualImages(page: Page) {
+  await wakeOffscreenImages(page);
+  await page
+    .waitForLoadState("networkidle", { timeout: 15_000 })
+    .catch(() => undefined);
+  await waitForDomImages(page);
+  await waitForAvatarFallbacksToSettle(page);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await waitForPaint(page);
+}
+
+async function wakeOffscreenImages(page: Page) {
+  await page.evaluate(async () => {
+    const height = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+    );
+    const step = Math.max(window.innerHeight, 1);
+
+    for (let y = 0; y < height; y += step) {
+      window.scrollTo(0, y);
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      });
+    }
+  });
+}
+
+async function waitForDomImages(page: Page) {
+  await page.evaluate(async () => {
+    const images = Array.from(document.images).filter((image) => {
+      if (!image.isConnected || !image.currentSrc) return false;
+      const rect = image.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+
+    await Promise.allSettled(
+      images.map(
+        (image) =>
+          new Promise<void>((resolve) => {
+            if (image.complete) {
+              resolve();
+              return;
+            }
+
+            const finish = () => resolve();
+            const timeout = window.setTimeout(finish, 5_000);
+            image.addEventListener(
+              "load",
+              () => {
+                window.clearTimeout(timeout);
+                finish();
+              },
+              { once: true },
+            );
+            image.addEventListener(
+              "error",
+              () => {
+                window.clearTimeout(timeout);
+                finish();
+              },
+              { once: true },
+            );
+          }),
+      ),
+    );
+
+    await Promise.allSettled(
+      images.map((image) =>
+        image.complete && image.naturalWidth > 0
+          ? image.decode().catch(() => undefined)
+          : Promise.resolve(),
+      ),
+    );
+  });
+}
+
+async function waitForAvatarFallbacksToSettle(page: Page) {
+  await page
+    .waitForFunction(
+      () => {
+        const getVisibleFallbackCount = () =>
+          Array.from(
+            document.querySelectorAll<HTMLElement>(
+              '[data-volatile="initials"]',
+            ),
+          ).filter((element) => {
+            const style = window.getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            return (
+              style.display !== "none" &&
+              style.visibility !== "hidden" &&
+              rect.width > 0 &&
+              rect.height > 0
+            );
+          }).length;
+
+        const key = "__OPTIMITRON_VISUAL_AVATAR_FALLBACK_SETTLE__";
+        const now = performance.now();
+        const currentCount = getVisibleFallbackCount();
+        const windowWithState = window as Window & {
+          [key]?: {
+            changedAt: number;
+            count: number;
+            startedAt: number;
+          };
+        };
+        const state =
+          windowWithState[key] ??
+          ({
+            changedAt: now,
+            count: currentCount,
+            startedAt: now,
+          } as const);
+
+        if (state.count !== currentCount) {
+          windowWithState[key] = {
+            changedAt: now,
+            count: currentCount,
+            startedAt: state.startedAt,
+          };
+          return false;
+        }
+
+        windowWithState[key] = state;
+        return now - state.startedAt >= 1_500 && now - state.changedAt >= 750;
+      },
+      undefined,
+      { timeout: 8_000 },
+    )
+    .catch(() => undefined);
 }
 
 async function openSideMenu(

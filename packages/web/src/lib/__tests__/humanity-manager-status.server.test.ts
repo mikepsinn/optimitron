@@ -114,13 +114,14 @@ describe("loadHumanityManagerStatus", () => {
     });
     expect(result.reminders.map((reminder) => reminder.recipientMode)).toEqual([
       "one_human",
-      "leader",
     ]);
     expect(result.reminders[0]?.message).toContain(
       "https://warondisease.org/vote/mike?invite=invite_1",
     );
-    expect(result.reminders[1]?.message).toContain("President Example");
-    expect(result.reminders[1]?.message).not.toMatch(/\{\w+\}/);
+    expect(result.overduePresidents[0]).toMatchObject({
+      countryLabel: "Example Republic",
+      displayName: "President Example",
+    });
 
     expect(mocks.prisma.referralInvitation.count).toHaveBeenNthCalledWith(1, {
       where: expect.objectContaining({

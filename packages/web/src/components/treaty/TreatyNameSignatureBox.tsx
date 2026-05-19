@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
@@ -11,6 +11,20 @@ import { buildUserReferralUrl } from "@/lib/url";
 import { useHydratedNow } from "@/lib/use-hydrated-now";
 import { cn } from "@/lib/utils";
 import { primaryButtonClassName } from "@/components/ui/default-button";
+
+function renderSignatureTitle(title: string, today: string | undefined) {
+  if (!title.includes("{date}")) return title;
+  if (!today) return "";
+
+  const [beforeDate = "", ...afterDateParts] = title.split("{date}");
+  return (
+    <>
+      {beforeDate}
+      <span data-volatile="signature date">{today}</span>
+      {afterDateParts.join("{date}")}
+    </>
+  );
+}
 
 /**
  * Document-style signature box for `/treaty` — the original UX from the
@@ -174,11 +188,10 @@ export function TreatyNameSignatureBox({
     );
   }
 
-  const resolvedTitle = resolvedSignatureTitle?.includes("{date}")
-    ? today
-      ? resolvedSignatureTitle.replace("{date}", today)
-      : ""
-    : (resolvedSignatureTitle ?? "");
+  const resolvedTitle: ReactNode = renderSignatureTitle(
+    resolvedSignatureTitle ?? "",
+    today,
+  );
 
   return (
     <div className={cn("mx-auto w-full max-w-md", className)}>

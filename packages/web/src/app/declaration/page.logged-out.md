@@ -66,6 +66,5 @@
 - And that as Free Inhabitants of Earth, they have full Power to optimize budgets and institutions, establish transparent allocation systems, contract Alliances with evidence, and to do all other Acts and Things which Self-Governing Civilizations may of right do. And for the support of this Declaration, with a firm reliance on the protection of divine Providence, we mutually pledge to each other our Lives, our Fortunes, and our sacred Votes.
 - The proposed replacement system is documented in the [Earth Optimization Protocol](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html).
 - Sign the Declaration of Optimization
+- SIGN
 - Display my name publicly on the signer list and leaderboards (recommended).
-- EMAIL
-- EMAIL ME A SIGN-IN LINK
