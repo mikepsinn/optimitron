@@ -13,12 +13,12 @@ import { prisma } from "../src/lib/prisma";
  * without losing what was sent.
  */
 
-const legacyGrantTaskKeyPrefix = `${["ice", "wad"].join("")}:grant:`;
+const grantTaskKeyPrefix = "ic2ewd:grant:";
 
 const TARGET_TASK_KEYS = [
-  `${legacyGrantTaskKeyPrefix}schmidt-futures`,
-  `${legacyGrantTaskKeyPrefix}skoll-foundation`,
-  `${legacyGrantTaskKeyPrefix}omidyar-network`,
+  `${grantTaskKeyPrefix}schmidt-futures`,
+  `${grantTaskKeyPrefix}skoll-foundation`,
+  `${grantTaskKeyPrefix}omidyar-network`,
   "grant:sff:fund-treaty-campaign",
   "grant:open-phil:fund-treaty-campaign",
 ];

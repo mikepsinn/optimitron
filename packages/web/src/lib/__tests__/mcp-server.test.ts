@@ -3058,7 +3058,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("allows deleteTask for admin users without tasks:admin when another user created the task", async () => {
-      // Same ownership regression as the icewad-grant update path, but for
+      // Same ownership regression as the ic2ewd-grant update path, but for
       // soft deletion through the end-to-end tool handler.
       mocks.taskFindFirst.mockResolvedValue({
         createdByUserId: "other-user",
@@ -3087,7 +3087,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("allows updateTask for admin users without tasks:admin when another user created the private task", async () => {
-      // Regression coverage for Mike's icewad-grant failure: an admin updating
+      // Regression coverage for Mike's ic2ewd-grant failure: an admin updating
       // a private seeded task created by another user must not get Forbidden.
       mocks.getTaskDetailData
         .mockResolvedValueOnce({
