@@ -86,6 +86,8 @@
 - Having a real mission is consistently rated as one of the most attractive traits in social psychology research. A person who cares about something beyond themselves is more attractive than a person who doesn't. This isn't a sacrifice. It's an upgrade.
 #### Won't people think I'm promoting something?
 - You're asking them to vote on a free website for 30 seconds. Not buy a coin, join a group, or sign up for anything. The bar for "promotion" is usually money. This is free and takes less time than reading your bio.
+#### Won't I get shadowbanned for sending the same message to everyone?
+- Yes, you will. Dating apps detect copy-paste messages and mass-liking and will quietly make you invisible to everyone. This defeats the entire purpose. To avoid this: vary your wording each time you send the profile improvement message, limit yourself to 10-15 likes and 3-5 messages per day, space your activity throughout the day rather than doing it all at once, and for people you're actually interested in, send something specific to their profile instead of the campaign message. The algorithm rewards selectivity. Be a human, not a bot, even if your goal is to reach as many humans as possible.
 #### What if nobody votes from my profile?
 - Then you still have a more interesting dating profile than you did before. There's no downside.
 #### Is this a real campaign?
