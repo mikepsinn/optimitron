@@ -611,7 +611,7 @@ export default async function LovePage() {
             </a>
             . Love, Mike.
           </p>
-        </footer> Hey Google, set a timer for one minute.
+        </footer>
       </div>
     </main>
   );

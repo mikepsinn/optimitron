@@ -97,6 +97,16 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-gstack.sh\""
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-feature-preexistence-check-on-autoplan.mjs\"",
+            "timeout": 6000
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-cba-table-on-plan-files.mjs\"",
+            "timeout": 4000
           }
         ]
       }

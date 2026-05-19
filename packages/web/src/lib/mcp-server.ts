@@ -37,7 +37,7 @@ import type { Prisma } from "@optimitron/db";
 
 import {
   MCP_SCOPE_DESCRIPTIONS,
-  DEFAULT_SCOPES,
+  DEFAULT_CONSENT_SCOPES,
   ALL_SCOPES,
   McpScope,
 } from "./mcp-scopes";
@@ -59,7 +59,7 @@ import type {
   TaskPriorityResult,
 } from "./tasks/rank-tasks";
 
-export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
+export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_CONSENT_SCOPES, ALL_SCOPES, McpScope };
 
 const UPLOAD_IMAGE_FROM_URL_TOOL_NAME = "uploadImageFromUrl" as const;
 
@@ -199,7 +199,13 @@ function hasAdminTaskWriteAccess(
   scopes: McpScope[] | undefined,
   isAdmin: boolean,
 ) {
-  return isAdmin && !!scopes?.includes(McpScope.TASKS_ADMIN);
+  // Single-admin posture: the admin role is the security gate. The
+  // TASKS_ADMIN scope documents admin-capable clients in the consent UI, but
+  // requiring it here adds friction without meaningful extra risk reduction.
+  // If this becomes multi-admin and per-client POLA matters, re-add the scope
+  // gate with: `isAdmin && !!scopes?.includes(McpScope.TASKS_ADMIN)`.
+  void scopes;
+  return isAdmin;
 }
 
 // ---------------------------------------------------------------------------
@@ -3761,7 +3767,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a task. Visibility defaults to PRIVATE; admin-scope callers (tasks:admin) get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. Pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
+      "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. Pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
       "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
@@ -6721,7 +6727,10 @@ export function createMcpServer(
 
               const inaccessibleDependencyIds = dependencyTasks
                 .filter(
-                  (task) => !task.isPublic && task.createdByUserId !== userId,
+                  (task) =>
+                    !task.isPublic &&
+                    task.createdByUserId !== userId &&
+                    !hasAdminTaskWriteAccess(scopes, isAdmin),
                 )
                 .map((task) => task.id);
               if (inaccessibleDependencyIds.length > 0) {
@@ -6774,7 +6783,7 @@ export function createMcpServer(
             }
             if (isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
               return err(
-                "Creating public tasks requires an admin user with the tasks:admin scope.",
+                "Creating public tasks requires an admin user.",
               );
             }
             const availableAt =
@@ -7890,22 +7899,39 @@ export function createMcpServer(
 
             const { ranking, tasks } = await getTaskFunctions();
             const prisma = await getPrisma();
+            const isAdminWriter = hasAdminTaskWriteAccess(scopes, isAdmin);
             const updates: Record<string, unknown> = {};
             const existingDetail = await tasks.getTaskDetailData(
               a.taskId as string,
               userId,
             );
-            if (!existingDetail) return err("Task not found");
-            const existingTask = existingDetail.task as PersonalQueueTaskRecord;
-            if (existingTask.createdByUserId !== userId) {
-              return err("Forbidden: Task was not created by current user");
+            let existingTask =
+              existingDetail?.task as PersonalQueueTaskRecord | undefined;
+            if (!existingTask && isAdminWriter) {
+              const adminVisibleTask = await prisma.task.findFirst({
+                where: { deletedAt: null, id: a.taskId as string },
+                select: {
+                  contextJson: true,
+                  createdByUserId: true,
+                  deadlinePolicy: true,
+                  estimatedEffortHours: true,
+                  id: true,
+                  isPublic: true,
+                },
+              });
+              existingTask = adminVisibleTask
+                ? (adminVisibleTask as PersonalQueueTaskRecord)
+                : undefined;
             }
-            if (
-              existingTask.isPublic &&
-              !hasAdminTaskWriteAccess(scopes, isAdmin)
-            ) {
+            if (!existingTask) return err("Task not found");
+            if (existingTask.createdByUserId !== userId && !isAdminWriter) {
               return err(
-                "Updating public tasks requires an admin user with the tasks:admin scope.",
+                "Forbidden: Task was not created by current user. Admin users can edit any task.",
+              );
+            }
+            if (existingTask.isPublic && !isAdminWriter) {
+              return err(
+                "Updating public tasks requires an admin user.",
               );
             }
             const dependencyPatchProvided =
@@ -7938,7 +7964,10 @@ export function createMcpServer(
               }
               const inaccessibleDependencyIds = dependencyTasks
                 .filter(
-                  (task) => !task.isPublic && task.createdByUserId !== userId,
+                  (task) =>
+                    !task.isPublic &&
+                    task.createdByUserId !== userId &&
+                    !isAdminWriter,
                 )
                 .map((task) => task.id);
               if (inaccessibleDependencyIds.length > 0) {
@@ -8153,15 +8182,15 @@ export function createMcpServer(
               select: { createdByUserId: true, isPublic: true },
             });
             if (!existing) return err("Task not found");
-            if (existing.createdByUserId !== userId) {
-              return err("Forbidden: Task was not created by current user");
-            }
-            if (
-              existing.isPublic &&
-              !hasAdminTaskWriteAccess(scopes, isAdmin)
-            ) {
+            const isAdminDeleter = hasAdminTaskWriteAccess(scopes, isAdmin);
+            if (existing.createdByUserId !== userId && !isAdminDeleter) {
               return err(
-                "Deleting public tasks requires an admin user with the tasks:admin scope.",
+                "Forbidden: Task was not created by current user. Admin users can delete any task.",
+              );
+            }
+            if (existing.isPublic && !isAdminDeleter) {
+              return err(
+                "Deleting public tasks requires an admin user.",
               );
             }
 

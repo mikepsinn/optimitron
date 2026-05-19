@@ -2935,6 +2935,195 @@ describe("MCP server tool dispatch", () => {
       expect(data.assigneePersonId).toBe("person-1");
     });
 
+    it("rejects updateTask when a non-admin user does not own the task", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "other-task",
+          createdByUserId: "other-user",
+          isPublic: true,
+        }),
+      });
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: { taskId: "other-task", title: "Nope" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain(
+        "Forbidden: Task was not created by current user",
+      );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+    });
+
+    it("allows updateTask when a non-admin user owns the private task", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "own-private-task",
+            createdByUserId: "user-1",
+            isPublic: false,
+            contextJson: { executor_type: "Self" },
+          }),
+        })
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "own-private-task",
+            createdByUserId: "user-1",
+            isPublic: false,
+            title: "Updated private task",
+          }),
+        });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "own-private-task",
+          title: "Updated private task",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ title: "Updated private task" }),
+          where: { id: "own-private-task" },
+        }),
+      );
+    });
+
+    it("allows updateTask for admin users with tasks:admin even when the task is private and owned by another user", async () => {
+      mocks.getTaskDetailData.mockResolvedValue(null);
+      mocks.taskFindFirst.mockResolvedValue({
+        contextJson: { executor_type: "Self" },
+        createdByUserId: "other-user",
+        deadlinePolicy: null,
+        estimatedEffortHours: 1,
+        id: "other-private-task",
+        isPublic: false,
+      });
+      mocks.taskFindMany.mockResolvedValue([
+        {
+          createdByUserId: "other-user",
+          id: "private-blocker",
+          isPublic: false,
+        },
+      ]);
+
+      const client = await setup(
+        "admin-1",
+        [McpScope.TASKS_ADMIN],
+        { isAdmin: true },
+      );
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          depends_on: ["private-blocker"],
+          taskId: "other-private-task",
+          title: "Admin updated task",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskFindFirst).toHaveBeenCalledWith({
+        where: { deletedAt: null, id: "other-private-task" },
+        select: {
+          contextJson: true,
+          createdByUserId: true,
+          deadlinePolicy: true,
+          estimatedEffortHours: true,
+          id: true,
+          isPublic: true,
+        },
+      });
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ title: "Admin updated task" }),
+          where: { id: "other-private-task" },
+        }),
+      );
+      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: [
+            expect.objectContaining({
+              fromTaskId: "private-blocker",
+              toTaskId: "other-private-task",
+            }),
+          ],
+        }),
+      );
+    });
+
+    it("allows deleteTask for admin users without tasks:admin when another user created the task", async () => {
+      // Same ownership regression as the icewad-grant update path, but for
+      // soft deletion through the end-to-end tool handler.
+      mocks.taskFindFirst.mockResolvedValue({
+        createdByUserId: "other-user",
+        isPublic: false,
+      });
+
+      const client = await setup(
+        "mike",
+        [McpScope.TASKS_PERSONAL],
+        { isAdmin: true },
+      );
+      const result = await client.callTool({
+        name: "deleteTask",
+        arguments: { taskId: "other-task" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        deleted: true,
+        taskId: "other-task",
+      });
+      expect(mocks.taskUpdate).toHaveBeenCalledWith({
+        where: { id: "other-task" },
+        data: { deletedAt: expect.any(Date) },
+      });
+    });
+
+    it("allows updateTask for admin users without tasks:admin when another user created the private task", async () => {
+      // Regression coverage for Mike's icewad-grant failure: an admin updating
+      // a private seeded task created by another user must not get Forbidden.
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "seeded-private-task",
+            createdByUserId: "someone-else",
+            isPublic: false,
+            contextJson: { executor_type: "Self" },
+          }),
+        })
+        .mockResolvedValueOnce(null);
+
+      const client = await setup(
+        "mike",
+        [McpScope.TASKS_PERSONAL],
+        { isAdmin: true },
+      );
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "seeded-private-task",
+          title: "Admin renamed seeded task",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: "Admin renamed seeded task",
+          }),
+          where: { id: "seeded-private-task" },
+        }),
+      );
+    });
+
     it("updateTask replaces dependencies without losing retained soft-deleted edges", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({

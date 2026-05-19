@@ -76,11 +76,13 @@ export async function syncManagedIamOrganization(
     update: {
       deletedAt: null,
       emailVerified: new Date(),
+      isAdmin: true,
       personId: person.id,
     },
     create: {
       email: MIKE_SINN_EMAIL,
       emailVerified: new Date(),
+      isAdmin: true,
       personId: person.id,
       referralCode: "MIKE",
     },
