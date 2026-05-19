@@ -80,7 +80,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     path: "/people/demo",
     required: false,
     authenticated: true,
-    requiredText: /What should .* do next\?/,
+    requiredText: /work to end war and disease/i,
   },
   {
     name: "people-demo-assign-dialog",
