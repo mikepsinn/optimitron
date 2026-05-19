@@ -1,7 +1,4 @@
-import {
-  getRouteReviewSpecs,
-  ROUTES,
-} from "@/lib/routes";
+import { getRouteReviewSpecs, ROUTES } from "@/lib/routes";
 import {
   filterRedirectOnlyRoutes,
   isRedirectOnlyRoutePath,
@@ -10,13 +7,16 @@ import { ALL_PAGE_PATHS, PUBLIC_PAGE_PATHS } from "./static-pages";
 
 export type VisualRoute = {
   authenticated?: boolean;
+  createTaskMode?: "person";
   expectSettings?: boolean;
   name: string;
+  openCreateTask?: boolean;
   openMenu?: boolean;
   path: string;
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
+  waitForImages?: boolean;
 };
 
 const PRESIDENT_TASK_LIST_SELECTOR =
@@ -25,6 +25,8 @@ const PRESIDENT_TASK_LIST_SELECTOR =
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
 ]);
+
+const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.employees]);
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
@@ -45,9 +47,23 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
     openMenu: true,
     expectSettings: true,
   },
+  {
+    name: "create-task-dialog-person",
+    path: ROUTES.home,
+    required: true,
+    authenticated: true,
+    openCreateTask: true,
+    createTaskMode: "person",
+    requiredText: /New person/,
+  },
 ];
 
 const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
+  {
+    name: "referendum-one-percent-treaty",
+    path: "/agencies/dcongress/referendums/one-percent-treaty",
+    required: false,
+  },
   {
     name: "organization-iam-public",
     path: "/organizations/institute-for-accelerated-medicine",
@@ -59,9 +75,35 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     required: false,
   },
   { name: "people-mike", path: "/people/mike", required: false },
-  { name: "task-optimize-earth", path: "/tasks/optimize-earth", required: false },
-  { name: "task-one-percent-treaty", path: "/tasks/1-pct-treaty", required: false },
-  { name: "task-signer-canada", path: "/tasks/1-pct-treaty-signer-ca", required: false },
+  {
+    name: "people-demo-owner",
+    path: "/people/demo",
+    required: false,
+    authenticated: true,
+    requiredText: /work to end war and disease/i,
+  },
+  {
+    name: "people-demo-assign-dialog",
+    path: "/people/demo?assignTask=1",
+    required: false,
+    authenticated: true,
+    requiredText: /Who should do it\?/,
+  },
+  {
+    name: "task-optimize-earth",
+    path: "/tasks/optimize-earth",
+    required: false,
+  },
+  {
+    name: "task-one-percent-treaty",
+    path: "/tasks/1-pct-treaty",
+    required: false,
+  },
+  {
+    name: "task-signer-canada",
+    path: "/tasks/1-pct-treaty-signer-ca",
+    required: false,
+  },
 ];
 
 const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
@@ -74,6 +116,7 @@ const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
     required: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
     requiredText: REQUIRED_TEXT_BY_PATH.get(path),
+    waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
 const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
@@ -87,6 +130,7 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
     authenticated: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
     requiredText: REQUIRED_TEXT_BY_PATH.get(path),
+    waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
 export const VISUAL_ROUTES: VisualRoute[] = dedupeRoutes([

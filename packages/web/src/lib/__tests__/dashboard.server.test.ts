@@ -58,6 +58,7 @@ const HUMANITY_MANAGER_STATUS_FIXTURE = {
   completedEmployees: [],
   directConversionCount: 1,
   downstreamConversionCount: 7,
+  kFactor30d: 0.5,
   overdueEmployeeCount: 0,
   overdueEmployees: [],
   overduePresidentCount: 0,

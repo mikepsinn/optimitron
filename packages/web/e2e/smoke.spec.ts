@@ -43,6 +43,10 @@ const CRITICAL_AUTH_REQUIRED_PATHS = new Set<string>([
 const CRITICAL_PUBLIC_PAGE_PATHS = [...CRITICAL_SMOKE_PATHS].filter(
   (path) => !CRITICAL_AUTH_REQUIRED_PATHS.has(path),
 );
+const NEXT_AUTH_COOKIE_NAMES = [
+  "next-auth.session-token",
+  "__Secure-next-auth.session-token",
+];
 
 function loadStaticPages() {
   // Keep critical smoke independent from full-route discovery so the fastest
@@ -153,5 +157,29 @@ for (const path of SMOKE_AUTH_REQUIRED_PATHS) {
     }
 
     await expectPageLoadsWithMetadata(page, path);
+  });
+}
+
+if (SMOKE_SCOPE === "critical") {
+  test(`${ROUTES.dashboard}?login=demo signs in and renders dashboard`, async ({
+    context,
+    page,
+  }) => {
+    await context.clearCookies();
+
+    await expectPageLoadsWithMetadata(page, `${ROUTES.dashboard}?login=demo`);
+
+    const finalUrl = new URL(page.url());
+    expect(finalUrl.pathname).toBe(ROUTES.dashboard);
+    expect(finalUrl.searchParams.has("login")).toBe(false);
+
+    const sessionCookie = (await context.cookies()).find(
+      (cookie) =>
+        NEXT_AUTH_COOKIE_NAMES.includes(cookie.name) && cookie.value !== "",
+    );
+    expect(
+      sessionCookie,
+      "?login=demo should mint a NextAuth session cookie",
+    ).toBeTruthy();
   });
 }

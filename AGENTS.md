@@ -48,6 +48,7 @@
 - For meaningful UI changes, capture before/after screenshots when feasible: before from production, main, or the current unchanged page; after from the branch, preview deployment, or local dev server. Assume screenshots may contain sensitive or production-derived data unless proven otherwise.
 - For before/after screenshots, prefer the cheapest workflow that preserves the work safely. If the working tree is clean and switching branches will not disrupt uncommitted work, use the same checkout and dependency install sequentially: capture `main`/before, switch back to the feature branch, capture after. Use a separate worktree only when both versions must run at the same time, the current checkout is dirty, branch switching would disrupt a running workflow, or isolation is genuinely faster. Do not create a fresh worktree that requires a full `pnpm install` just for routine screenshot comparison.
 - Inspect the screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and obvious responsive problems.
+- For fixed/sticky UI in full-page screenshots, verify whether overlap blocks normal viewport use before moving or hiding useful controls.
 - Generate the current screenshot review at `packages/web/output/playwright/review/latest.html` by default, organized by page/viewport with before/after screenshots side by side when both versions are available. This gives the human one stable local file to bookmark and refresh after each UI change.
 - Make a branch-specific or timestamped review folder only when it is genuinely useful for a longer audit, multiple competing versions, or preserving a before/after history. Do not create duplicate review HTML files out of habit.
 - If you create a named review folder, also update `packages/web/output/playwright/review/latest.html`. Copy referenced screenshot assets beside `latest.html` or rewrite image paths relative to that stable file, then verify the stable page has no broken image references.
@@ -85,6 +86,8 @@ Detailed docs live in `docs/`. Read the relevant ones before working:
 
 Before writing or editing any public-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, or partner copy, read `docs/h2ewd.md` and apply that voice.
 
+- Before changing existing public copy, preserve its strategic job. Identify audience, desired action, motivation, old strategic job, and source/quantitative anchor. Do not replace purpose or motivation with mechanism-only copy.
+- Treat Mike as the copy merge gate. When strategy is unclear, ask the shortest missing question with a recommended default. Do not set `COPY_REVIEW_APPROVED=1` or bypass the copy gate without explicit approval.
 - Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
 - Speak directly to the specific human or organization that should do something.
 - Make the action obvious, then show the value to them for doing it.

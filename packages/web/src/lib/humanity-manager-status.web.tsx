@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Clipboard } from "lucide-react";
+import Link from "next/link";
 import {
   createHumanityManagerStatus,
   type HumanityManagerStatusCompletedEmployee,
@@ -9,6 +10,7 @@ import {
   type HumanityManagerStatusReminder,
 } from "@/lib/humanity-manager-status-content";
 import { copyTextToClipboard } from "@/lib/clipboard";
+import { ROUTES } from "@/lib/routes";
 
 function StatusSection({ children }: { children: React.ReactNode }) {
   return (
@@ -92,13 +94,7 @@ function CompletedEmployees({
   employees: HumanityManagerStatusCompletedEmployee[];
   total: number;
 }) {
-  if (employees.length === 0) {
-    return (
-      <p className="mt-5 border-t border-[var(--treaty-ink)]/30 pt-4 text-sm font-bold leading-6 text-[var(--treaty-ink-muted)]">
-        No employees have completed the task through your named invitations yet.
-      </p>
-    );
-  }
+  if (employees.length === 0) return null;
 
   const extra = total > employees.length ? total - employees.length : 0;
 
@@ -121,7 +117,7 @@ function CompletedEmployees({
           return (
             <li key={`${person.displayName}-${date ?? "completed"}`}>
               <span className="font-black">{person.displayName}</span>
-              {date ? ` completed it on ${date}` : " completed it"}
+              {date ? ` voted YES on ${date}` : " voted YES"}
               <span className="text-[var(--treaty-ink-muted)]">
                 {`; ${downstreamLabel} from them.`}
               </span>
@@ -134,6 +130,22 @@ function CompletedEmployees({
           Plus {extra.toLocaleString("en-US")} more.
         </p>
       ) : null}
+    </div>
+  );
+}
+
+function PresidentAction({ overdueCount }: { overdueCount: number }) {
+  return (
+    <div className="mt-3">
+      <Link
+        aria-label={`Open president reminders for ${overdueCount.toLocaleString(
+          "en-US",
+        )} late presidents`}
+        className="inline-flex h-10 items-center justify-center border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-3 text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)] hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]"
+        href={ROUTES.employees}
+      >
+        Remind Presidents
+      </Link>
     </div>
   );
 }
@@ -183,9 +195,14 @@ function ReminderBlock({
                 {copiedId === reminder.id ? "Copied" : "Copy"}
               </button>
             </div>
-            <pre className="mt-3 whitespace-pre-wrap break-words border-t border-[var(--treaty-ink)]/30 pt-3 text-xs font-bold leading-5 [font-family:var(--font-geist-mono,ui-monospace,SFMono-Regular,Menlo,monospace)]">
-              {reminder.message}
-            </pre>
+            <details className="mt-3 border-t border-[var(--treaty-ink)]/30 pt-3">
+              <summary className="cursor-pointer text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink-muted)]">
+                Show message
+              </summary>
+              <pre className="mt-3 whitespace-pre-wrap break-words text-xs font-bold leading-5 [font-family:var(--font-geist-mono,ui-monospace,SFMono-Regular,Menlo,monospace)]">
+                {reminder.message}
+              </pre>
+            </details>
           </div>
         ))}
       </div>
@@ -198,6 +215,7 @@ const HumanityManagerStatusWeb = createHumanityManagerStatus({
   Eyebrow,
   Heading,
   MetricTable,
+  PresidentAction,
   ReminderBlock,
   Section: StatusSection,
   Text,

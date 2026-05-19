@@ -11,27 +11,17 @@
 | Field | Value |
 | --- | --- |
 | From | International Campaign to End War and Disease &lt;hello@updates.warondisease.org&gt; |
-| Subject | End war and disease |
+| Subject | Save your 1% Treaty vote |
 | Trigger | Fires when a user submits the sign-in email form. Auth provider (NextAuth) dispatches a single-use callback URL signed with the auth secret; clicking it completes the sign-in flow. |
 | Scope | auth |
-| Wishonia signature | Appended |
+| Wishonia signature | Skipped |
 
 ---
 
 ## Body
 
-Your sign-in link is below.
+Click the button below to verify your email and save your vote.
 
-[END WAR AND DISEASE](https://warondisease.local/api/auth/callback/email?token=SAMPLE)
+[SAVE MY VOTE](https://warondisease.local/api/auth/callback/email?token=SAMPLE)
 
 Didn't request this? Ignore it.
-
-Love,
-
-🛸 Wishonia
-
-Chief Optimization Officer
-
-Earth Optimization Services LLC
-
-Maximizing median income and health-adjusted life years since 2026

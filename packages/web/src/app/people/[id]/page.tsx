@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { VOTER_SUFFERING_HOURS_PREVENTED } from "@optimitron/data/parameters";
-import { PersonLifeStatus, VotePosition } from "@optimitron/db/enums";
+import { PersonLifeStatus } from "@optimitron/db/enums";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -9,24 +9,26 @@ import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { SufferingPreventedMetric } from "@/components/referendum/SignatoriesLeaderboard";
 import { Avatar } from "@/components/retroui/Avatar";
-import { CopyLinkButton } from "@/components/sharing/copy-link-button";
-import {
-  defaultButtonClassName,
-  primaryButtonClassName,
-} from "@/components/ui/default-button";
+import { PublicProfileOwnerControls } from "@/components/profile/PublicProfileOwnerControls";
+import { OpenTaskRequestAction } from "@/components/people/OpenTaskRequestAction";
+import { PersonTaskAssignmentAction } from "@/components/people/PersonTaskAssignmentAction";
+import { defaultButtonClassName } from "@/components/ui/default-button";
 import { PublicProfileTaskSection } from "@/components/tasks/PublicProfileTaskSection";
 import { WelfareClaim } from "@/components/shared/WelfareClaim";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
-import { DECLARATION_SLUG } from "@/lib/declaration";
-import { prisma } from "@/lib/prisma";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
-import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
+import {
+  PUBLIC_PERSON_PROFILE_CACHE_TAG,
+  PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
+} from "@/lib/person-profile-cache";
 import {
   humanityVGovernmentLink,
   plaintiffsLink,
+  getSignInPath,
   ROUTES,
 } from "@/lib/routes";
+import { getPersonHref } from "@/lib/person-href";
 import {
   getRepresentedPersonProfileData,
   type RepresentedPersonProfileData,
@@ -36,20 +38,23 @@ import {
   getSiteFromHeaders,
 } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
-import { buildUserReferralUrl } from "@/lib/url";
-
-const PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS = 300;
 
 const getCachedRepresentedPersonProfileData = unstable_cache(
   async (id: string) => getRepresentedPersonProfileData(id),
   ["public-represented-person-profile"],
-  { revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS },
+  {
+    revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
+    tags: [PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  },
 );
 
 const getCachedPersonTaskProfileData = unstable_cache(
   async (id: string) => getPersonTaskProfileData(id, null),
   ["public-person-task-profile"],
-  { revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS },
+  {
+    revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
+    tags: [PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  },
 );
 
 type PersonTaskProfileData = NonNullable<
@@ -57,28 +62,6 @@ type PersonTaskProfileData = NonNullable<
 >;
 type PublicProfilePerson = PersonTaskProfileData["person"];
 type PublicProfileVote = PublicProfilePerson["referendumVotes"][number];
-
-async function getVisitorTreatyStatus(userId: string | null) {
-  if (!userId) {
-    return { hasSignedTreaty: false };
-  }
-
-  const vote = await prisma.referendumVote.findFirst({
-    where: {
-      ...buildOfficialReferendumVoteWhere({
-        answer: VotePosition.YES,
-      }),
-      referendum: {
-        deletedAt: null,
-        slug: TREATY_REFERENDUM_SLUG,
-      },
-      userId,
-    },
-    select: { id: true },
-  });
-
-  return { hasSignedTreaty: Boolean(vote) };
-}
 
 export async function generateMetadata({
   params,
@@ -137,8 +120,8 @@ export async function generateMetadata({
 
   const treatyVote = getVoteBySlug(data.person, TREATY_REFERENDUM_SLUG);
   const description = treatyVote
-    ? `${data.person.displayName} signed the 1% Treaty. Add your name.`
-    : `${data.person.displayName}'s public campaign profile. Sign the 1% Treaty.`;
+    ? `${data.person.displayName} voted YES on the 1% Treaty. See what ${data.person.displayName} should do next.`
+    : `${data.person.displayName}'s public action page for ending war and disease.`;
 
   return {
     title: { absolute: `${data.person.displayName} | ${site.name}` },
@@ -213,11 +196,11 @@ function getTrustSignal(person: PublicProfilePerson) {
   const recruitedCount = person.user?._count.referendumReferrals ?? 0;
 
   if (treatyVote) {
-    const signedDate = formatIsoDate(treatyVote.createdAt);
+    const voteDate = formatIsoDate(treatyVote.createdAt);
     const parts = [
-      signedDate
-        ? `Signed the 1% Treaty ${signedDate}`
-        : "Signed the 1% Treaty",
+      voteDate
+        ? `Voted YES on the 1% Treaty ${voteDate}`
+        : "Voted YES on the 1% Treaty",
     ];
     if (recruitedCount > 0) {
       parts.push(formatRecruitmentPhrase(recruitedCount));
@@ -236,12 +219,6 @@ function getTrustSignal(person: PublicProfilePerson) {
   }
 
   return "Public campaign profile";
-}
-
-function buildForwardReferralHref(referralUrl: string) {
-  const subject = "Sign the 1% Treaty";
-  const body = `I signed the 1% Treaty. Add your name: ${referralUrl}`;
-  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function RepresentedPersonProfile({
@@ -482,54 +459,63 @@ export default async function PersonDetailPage({
     forwardedHost: hdrs.get("x-forwarded-host"),
     forwardedProto: hdrs.get("x-forwarded-proto"),
   });
-  const visitorStatus = await getVisitorTreatyStatus(userId);
-  const { openTasks, person, verifiedTasks } = data;
+  const {
+    assignedByOpenTasks,
+    completedTasks: profileCompletedTasks,
+    openTasks,
+    person,
+    requestedOpenTasks,
+  } = data;
+  const isOwnProfile = Boolean(userId && person.user?.id === userId);
+  const publicProfileHref = getPersonHref(person);
+  const publicProfileUrl = `${requestOrigin}${publicProfileHref}`;
+  const assignTaskCallbackHref = `${publicProfileHref}?assignTask=1`;
+  const assignTaskSignInHref = getSignInPath(assignTaskCallbackHref);
+  const openRequestSignInHref = getSignInPath(publicProfileHref);
   const fallbackInitials = getFallbackInitials(person.displayName);
   const treatyVote = getVoteBySlug(person, TREATY_REFERENDUM_SLUG);
-  const courtVote = getVoteBySlug(person, DECLARATION_SLUG);
   const recruitedCount = person.user?._count.referendumReferrals ?? 0;
   const plaintiffCount = person.user?._count.createdCourtCaseParties ?? 0;
-  const signatureCount = (treatyVote ? 1 : 0) + recruitedCount;
+  const publicVoteCount = treatyVote ? 1 : 0;
+  const attributableVoteCount = publicVoteCount + recruitedCount;
   const hoursPrevented =
-    VOTER_SUFFERING_HOURS_PREVENTED.value * signatureCount;
-  const profileReferralUrl = person.user
-    ? buildUserReferralUrl(
-        { handle: person.handle, referralCode: person.user.referralCode },
-        requestOrigin,
-      )
-    : `${requestOrigin}${ROUTES.vote}`;
-  const visitorReferralUrl = session?.user
-    ? buildUserReferralUrl(session.user, requestOrigin)
-    : null;
-  const shouldShowVisitorReferral =
-    visitorStatus.hasSignedTreaty && Boolean(visitorReferralUrl);
-  const signatureRows = person.referendumVotes;
-  const activityRows = [
-    {
-      label: "Treaty signed",
-      value: treatyVote
-        ? (formatIsoDate(treatyVote.createdAt) ?? "Yes")
-        : "Not public",
-    },
-    {
-      label: "Court signed",
-      value: courtVote
-        ? (formatIsoDate(courtVote.createdAt) ?? "Yes")
-        : "Not public",
-    },
-    {
-      label: "Plaintiffs registered",
-      value: formatHumanCount(plaintiffCount),
-    },
-    {
-      label: "Humans recruited",
-      value: formatHumanCount(recruitedCount),
-    },
-  ];
+    VOTER_SUFFERING_HOURS_PREVENTED.value * attributableVoteCount;
+  const publicVotes = person.referendumVotes;
+  const impactRows = [
+    publicVoteCount > 0
+      ? {
+          label: "Treaty vote",
+          value: treatyVote
+            ? (formatIsoDate(treatyVote.createdAt) ?? "YES")
+            : "YES",
+        }
+      : null,
+    plaintiffCount > 0
+      ? {
+          label: "Plaintiffs registered",
+          value: formatHumanCount(plaintiffCount),
+        }
+      : null,
+    recruitedCount > 0
+      ? {
+          label: "Humans recruited",
+          value: formatHumanCount(recruitedCount),
+        }
+      : null,
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
+  const shouldShowImpactStats = hoursPrevented > 0 || impactRows.length > 0;
 
   return (
     <div className="min-h-screen bg-background pb-20 text-foreground">
       <div className="mx-auto flex max-w-4xl flex-col px-4 pb-16 pt-6 sm:pt-10">
+        {isOwnProfile ? (
+          <PublicProfileOwnerControls
+            initialIsPublic={person.isPublic}
+            publicProfileHref={publicProfileHref}
+            publicProfileUrl={publicProfileUrl}
+          />
+        ) : null}
+
         <header className="flex flex-col gap-4 border-b-2 border-foreground pb-6 sm:flex-row sm:items-center">
           <Avatar className="h-28 w-28 shrink-0 border-2 border-foreground bg-background sm:h-32 sm:w-32">
             {person.image ? (
@@ -550,72 +536,67 @@ export default async function PersonDetailPage({
           </div>
         </header>
 
-        <section className="border-b-2 border-foreground py-6">
-          <SufferingPreventedMetric
-            className="items-start px-0 py-0 text-left hover:no-underline"
-            hoursPrevented={hoursPrevented}
-            label="Hours of suffering prevented"
-            name={person.displayName}
-            valueClassName="text-5xl sm:text-6xl md:text-7xl"
-          />
-        </section>
+        <PublicProfileTaskSection
+          assignedByTasks={assignedByOpenTasks}
+          completedTasks={profileCompletedTasks}
+          heading={`${person.displayName}'s work to end war and disease`}
+          headingAction={
+            <PersonTaskAssignmentAction
+              buttonLabel={`Assign task to ${person.displayName}`}
+              callbackUrl={assignTaskCallbackHref}
+              isAuthenticated={Boolean(userId)}
+              personId={person.id}
+              personName={person.displayName}
+              signInHref={assignTaskSignInHref}
+            />
+          }
+          intro={`Give ${person.displayName} a high-value action, take an open request from ${person.displayName}, or help finish work ${person.displayName} assigned.`}
+          openTasks={openTasks}
+          ownerName={person.displayName}
+          requestAction={
+            isOwnProfile ? (
+              <OpenTaskRequestAction
+                buttonLabel="Ask for help"
+                callbackUrl={publicProfileHref}
+                isAuthenticated={Boolean(userId)}
+                signInHref={openRequestSignInHref}
+              />
+            ) : null
+          }
+          requestedTasks={requestedOpenTasks}
+        />
 
-        <section className="border-b-2 border-foreground py-6">
-          {shouldShowVisitorReferral && visitorReferralUrl ? (
-            <div className="space-y-4">
-              <a
-                className={`${primaryButtonClassName} w-full sm:w-auto`}
-                href={buildForwardReferralHref(visitorReferralUrl)}
-              >
-                Forward My Referral
-              </a>
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-                  Your referral URL
+        {shouldShowImpactStats ? (
+          <section className="grid gap-3 border-b-2 border-foreground py-6 sm:grid-cols-2 lg:grid-cols-4">
+            {hoursPrevented > 0 ? (
+              <SufferingPreventedMetric
+                className="min-h-28 items-start border border-foreground p-4 text-left hover:no-underline"
+                hoursPrevented={hoursPrevented}
+                label="Hours of suffering prevented"
+                name={person.displayName}
+                valueClassName="text-2xl sm:text-3xl"
+              />
+            ) : null}
+            {impactRows.map((row) => (
+              <div className="border border-foreground p-4" key={row.label}>
+                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  {row.label}
                 </p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                  <p className="min-h-12 break-all border border-foreground bg-background px-3 py-3 text-sm font-bold">
-                    {visitorReferralUrl}
-                  </p>
-                  <CopyLinkButton
-                    className="min-h-12 justify-center rounded-none border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground shadow-none hover:translate-x-0 hover:translate-y-0 hover:bg-foreground hover:text-background hover:shadow-none active:translate-x-0 active:translate-y-0 active:shadow-none"
-                    copiedLabel="Copied"
-                    idleLabel="Copy"
-                    url={visitorReferralUrl}
-                  />
-                </div>
+                <p className="mt-2 text-2xl font-black tabular-nums">
+                  {row.value}
+                </p>
               </div>
-            </div>
-          ) : (
-            <a
-              className={`${primaryButtonClassName} w-full sm:w-auto`}
-              href={profileReferralUrl}
-            >
-              Sign the Treaty
-            </a>
-          )}
-        </section>
+            ))}
+          </section>
+        ) : null}
 
-        <section className="grid gap-3 border-b-2 border-foreground py-6 sm:grid-cols-4">
-          {activityRows.map((row) => (
-            <div className="border border-foreground p-4" key={row.label}>
-              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
-                {row.label}
-              </p>
-              <p className="mt-2 text-2xl font-black tabular-nums">
-                {row.value}
-              </p>
-            </div>
-          ))}
-        </section>
-
-        <section className="border-b-2 border-foreground py-8">
-          <h2 className="text-2xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)]">
-            Public Signatures
-          </h2>
-          {signatureRows.length > 0 ? (
+        {publicVotes.length > 0 ? (
+          <section className="border-b-2 border-foreground py-8">
+            <h2 className="text-2xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)]">
+              Public Referendum Votes
+            </h2>
             <ul className="mt-4 divide-y divide-foreground border border-foreground">
-              {signatureRows.map((vote) => (
+              {publicVotes.map((vote) => (
                 <li
                   className="grid gap-2 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
                   key={vote.id}
@@ -627,23 +608,13 @@ export default async function PersonDetailPage({
                     {vote.referendum.title}
                   </Link>
                   <span className="text-sm font-black uppercase tracking-[0.12em] text-muted-foreground">
-                    {formatIsoDate(vote.createdAt) ?? "Signed"}
+                    {formatIsoDate(vote.createdAt) ?? "Voted"}
                   </span>
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="mt-3 font-bold text-muted-foreground">
-              No public referendum signatures yet.
-            </p>
-          )}
-        </section>
-
-        <PublicProfileTaskSection
-          completedTasks={verifiedTasks}
-          openTasks={openTasks}
-          ownerName={person.displayName}
-        />
+          </section>
+        ) : null}
       </div>
     </div>
   );

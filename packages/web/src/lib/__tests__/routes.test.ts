@@ -8,9 +8,12 @@ import {
   feedbackLink,
   getSignInPath,
   humanityVGovernmentLink,
+  editProfileLink,
   isNavItemActive,
   navSections,
+  publicProfileLink,
   questionsLink,
+  routeReviewNavItems,
   voteLink,
 } from "../routes";
 
@@ -28,7 +31,10 @@ function requireLink<T extends { href: string }>(href: string, links: T[]): T {
 
 describe("navigation routes", () => {
   it("keeps route metadata off the root data barrel", () => {
-    const source = readFileSync(new URL("../routes.ts", import.meta.url), "utf8");
+    const source = readFileSync(
+      new URL("../routes.ts", import.meta.url),
+      "utf8",
+    );
 
     expect(source).not.toMatch(/from\s+["']@optimitron\/data["']/);
   });
@@ -90,5 +96,10 @@ describe("navigation routes", () => {
         }),
       );
     }
+  });
+
+  it("keeps edit-profile and public-profile navigation as separate intents", () => {
+    expect(routeReviewNavItems).toContain(editProfileLink);
+    expect(routeReviewNavItems).not.toContain(publicProfileLink);
   });
 });

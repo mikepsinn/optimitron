@@ -99,6 +99,8 @@ export const ROUTES = {
   endorse: "/endorse",
   signatories: "/signatories",
   campaign: "/campaign",
+  love: "/love",
+  poster: "/poster",
   coalition: "/coalition",
   organizations: "/organizations",
   people: "/people",
@@ -506,15 +508,23 @@ export const searchLink: NavItem = {
   cta: "Search Site",
 };
 
-export const profileLink: NavItem = {
+export const editProfileLink: NavItem = {
   href: ROUTES.profile,
-  label: "Profile",
-  emoji: "🧭",
-  description: "Your name, face, public profile, and connected accounts.",
-  tagline: "Your name, your face, your connected accounts",
+  label: "Edit Profile",
+  emoji: "✏️",
+  description: "Edit your bio, photo, privacy, and connected accounts.",
+  tagline: "Edit bio, photo, privacy, and accounts",
   authenticatedScreenshot: true,
+  cta: "Edit Profile",
+};
 
-  cta: "View Profile",
+export const publicProfileLink: NavItem = {
+  href: "",
+  label: "View Public Profile",
+  emoji: "🌐",
+  description: "See your profile the way other humans see it.",
+  tagline: "See what other humans see",
+  cta: "View Public Profile",
 };
 
 export const declarationLink: NavItem = {
@@ -982,6 +992,30 @@ export const contributeLink: NavItem = {
   cta: "Contribute",
 };
 
+export const loveLink: NavItem = {
+  href: ROUTES.love,
+  label: "End War and Disease From Your Dating Profile",
+  emoji: "",
+  description:
+    "You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.",
+  tagline: "End war and disease from your dating profile.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Vote now",
+};
+
+export const posterLink: NavItem = {
+  href: ROUTES.poster,
+  label: "Print Referral Poster",
+  emoji: "",
+  description:
+    "Print a poster with your campaign QR code so humans can vote from walls, doors, and awkward dates.",
+  tagline: "Print your campaign QR code.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Print",
+};
+
 export const fundLink: NavItem = {
   href: ROUTES.fund,
   label: "Fund Optimization",
@@ -1058,7 +1092,7 @@ export const navSections: NavSection[] = [
       treatyLink,
       wishoniaWorldLink,
       moroniaLink,
-      profileLink,
+      editProfileLink,
       transmitLink,
       censusLink,
       checkInLink,
@@ -1108,6 +1142,7 @@ export const toolSections: NavSection[] = [
     label: "Player",
     items: [
       tasksLink,
+      loveLink,
       presidentManagementLink,
       transmitLink,
       dashboardLink,
@@ -1124,7 +1159,7 @@ export const footerAppLinks: NavItem[] = [
   dashboardLink,
   tasksLink,
   presidentManagementLink,
-  profileLink,
+  editProfileLink,
   censusLink,
   settingsLink,
   transmitLink,
@@ -1550,13 +1585,15 @@ export const routeReviewNavItems = [
   signatoriesLink,
   presidentManagementLink,
   dashboardLink,
-  profileLink,
+  editProfileLink,
   tasksLink,
   peopleLink,
   questionsLink,
   trialSurveyLink,
   faqLink,
   feedbackLink,
+  loveLink,
+  posterLink,
   privacyLink,
   settingsLink,
   termsLink,

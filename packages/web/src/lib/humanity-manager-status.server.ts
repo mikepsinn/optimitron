@@ -1,6 +1,7 @@
 import {
   ReferralInvitationStatus,
   TaskStatus,
+  VotePosition,
 } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
@@ -11,10 +12,7 @@ import {
   type HumanityManagerStatusPerson,
   type HumanityManagerStatusReminder,
 } from "@/lib/humanity-manager-status-content";
-import {
-  buildTaskShareTokens,
-  getTaskDelayStats,
-} from "@/lib/tasks/accountability";
+import { buildTaskShareTokens } from "@/lib/tasks/accountability";
 import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import {
   getShareTemplate,
@@ -24,17 +22,12 @@ import {
 } from "@/lib/tasks/share-templates";
 import { renderTemplate } from "@/lib/tasks/render-template";
 import { TREATY_SIGNER_TASK_KEY_PREFIX } from "@/lib/tasks/task-keys";
-import {
-  getAssigneeGovernmentBudgetUsd,
-  getAssigneeMilitaryBudgetUsd,
-  getAssigneeMilitaryToClinicalTrialsRatio,
-  getAssigneeTwitterHandle,
-} from "@/lib/tasks/task-context";
-import { getHandleOrReferralCode } from "@/lib/referral.client";
-import { buildTaskUrl, buildUserInviteReferralUrl } from "@/lib/url";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
+import { buildUserInviteReferralUrl } from "@/lib/url";
 
 const STATUS_SAMPLE_LIMIT = 8;
 const DAY_MS = 1000 * 60 * 60 * 24;
+const K_FACTOR_WINDOW_DAYS = 30;
 
 const PENDING_INVITATION_STATUSES: ReferralInvitationStatus[] = [
   ReferralInvitationStatus.PENDING,
@@ -84,6 +77,42 @@ function daysBetween(now: Date, value: Date | string | null | undefined): number
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return 0;
   return Math.max(0, Math.ceil((now.getTime() - date.getTime()) / DAY_MS));
+}
+
+export async function getKFactorForUser(
+  userId: string,
+  now = new Date(),
+): Promise<number> {
+  const since = new Date(now.getTime() - K_FACTOR_WINDOW_DAYS * DAY_MS);
+  const createdAt = {
+    gte: since,
+    lte: now,
+  };
+
+  const [referredYesVotes, invitationsSent] = await Promise.all([
+    prisma.referendumVote.count({
+      where: {
+        answer: VotePosition.YES,
+        createdAt,
+        deletedAt: null,
+        referredByUserId: userId,
+        referendum: {
+          deletedAt: null,
+          slug: TREATY_REFERENDUM_SLUG,
+        },
+      },
+    }),
+    prisma.referralInvitation.count({
+      where: {
+        createdAt,
+        deletedAt: null,
+        referrerUserId: userId,
+      },
+    }),
+  ]);
+
+  if (invitationsSent <= 0) return 0;
+  return referredYesVotes / Math.max(invitationsSent, 1);
 }
 
 function formatCompletedInvitation(
@@ -240,63 +269,6 @@ function buildEmployeeReminder(input: {
   };
 }
 
-function buildPresidentReminder(input: {
-  baseUrl: string;
-  now: Date;
-  task: {
-    assigneePerson: {
-      countryCode: string | null;
-      displayName: string;
-      handle?: string | null;
-    } | null;
-    contextJson: Prisma.JsonValue | null;
-    dueAt: Date | string | null;
-    id: string;
-    title: string;
-  };
-  user: StatusUser;
-}): HumanityManagerStatusReminder | null {
-  const targetLabel =
-    input.task.assigneePerson?.displayName?.trim() || input.task.title;
-  const delayStats = getTaskDelayStats({ dueAt: input.task.dueAt });
-  const referralId = getHandleOrReferralCode(input.user);
-  const treatyUrl = buildTaskUrl(input.task.id, input.baseUrl, referralId);
-  const tokens = buildTaskShareTokens({
-    countryCode: input.task.assigneePerson?.countryCode ?? null,
-    currentDelayDays: delayStats.currentDelayDays,
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
-    governmentBudgetUsdPerYear: getAssigneeGovernmentBudgetUsd(
-      input.task.contextJson,
-    ),
-    leaderHandle:
-      getAssigneeTwitterHandle(input.task.contextJson) ??
-      input.task.assigneePerson?.handle ??
-      null,
-    militaryBudgetUsdPerYear: getAssigneeMilitaryBudgetUsd(
-      input.task.contextJson,
-    ),
-    militaryToClinicalTrialsRatio: getAssigneeMilitaryToClinicalTrialsRatio(
-      input.task.contextJson,
-    ),
-    now: input.now,
-    targetLabel,
-    taskTitle: input.task.title,
-    treatyUrl,
-  });
-  const message = pickRenderedReminder({ mode: "leader", tokens });
-  if (!message) return null;
-
-  return {
-    id: `president-${input.task.id}`,
-    label: targetLabel,
-    message,
-    recipientMode: "leader",
-    title: "President reminder",
-  };
-}
-
 export async function loadHumanityManagerStatus(input: {
   baseUrl: string;
   now?: Date;
@@ -308,7 +280,7 @@ export async function loadHumanityManagerStatus(input: {
     deletedAt: null,
     referrerUserId: input.userId,
     status: ReferralInvitationStatus.CONVERTED,
-    convertedVote: { is: { deletedAt: null } },
+    convertedVote: { is: { answer: VotePosition.YES, deletedAt: null } },
   } satisfies Prisma.ReferralInvitationWhereInput;
   const overdueInvitationWhere = {
     deletedAt: null,
@@ -331,6 +303,7 @@ export async function loadHumanityManagerStatus(input: {
     overdueEmployees,
     overduePresidentCount,
     overduePresidentTasks,
+    kFactor30d,
   ] = await Promise.all([
     prisma.referralInvitation.count({ where: convertedInvitationWhere }),
     prisma.referralInvitation.findMany({
@@ -374,20 +347,15 @@ export async function loadHumanityManagerStatus(input: {
         assigneeAffiliationSnapshot: true,
         assigneePerson: {
           select: {
-            countryCode: true,
             currentAffiliation: true,
             displayName: true,
-            handle: true,
           },
         },
-        contextJson: true,
-        dueAt: true,
-        id: true,
-        title: true,
       },
       take: STATUS_SAMPLE_LIMIT,
       where: overduePresidentWhere,
     }),
+    getKFactorForUser(input.userId, now),
   ]);
 
   const employeeReminders = overdueEmployees
@@ -402,24 +370,13 @@ export async function loadHumanityManagerStatus(input: {
     .filter((reminder): reminder is HumanityManagerStatusReminder => reminder != null)
     .slice(0, 3);
 
-  const presidentReminders = overduePresidentTasks
-    .map((task) =>
-      buildPresidentReminder({
-        baseUrl: input.baseUrl,
-        now,
-        task,
-        user: input.user,
-      }),
-    )
-    .filter((reminder): reminder is HumanityManagerStatusReminder => reminder != null)
-    .slice(0, 3);
-
   return {
     completedEmployees: convertedInvitations.map((invitation) =>
       formatCompletedInvitation(invitation, directReferralDownstreamCounts),
     ),
     directConversionCount,
     downstreamConversionCount: clampNumber(input.user.downstreamConversionCount),
+    kFactor30d,
     overdueEmployeeCount,
     overdueEmployees: overdueEmployees.map((invitation) => ({
       displayName: invitation.recipientName,
@@ -434,6 +391,6 @@ export async function loadHumanityManagerStatus(input: {
         displayName: task.assigneePerson?.displayName || "President",
       }),
     ),
-    reminders: [...employeeReminders, ...presidentReminders],
+    reminders: employeeReminders,
   };
 }

@@ -79,9 +79,10 @@ test.describe("route visual regression", () => {
     await writeFile(
       ROUTE_MANIFEST_PATH,
       JSON.stringify(
-        VISUAL_ROUTES.map(({ name, path: routePath }) => ({
-          name,
-          path: routePath,
+        VISUAL_ROUTES.map((route) => ({
+          name: route.name,
+          path: route.path,
+          authenticated: route.authenticated === true,
         })),
         null,
         2,
@@ -108,16 +109,27 @@ test.describe("route visual regression", () => {
       const status = response?.status() ?? 0;
 
       if (!route.required && OPTIONAL_ROUTE_SKIP_STATUSES.has(status)) {
-        test.skip(true, `${route.path} returned ${status}; seed data not available`);
+        test.skip(
+          true,
+          `${route.path} returned ${status}; seed data not available`,
+        );
         return;
       }
 
-      expect(status, `${route.path} should load before screenshot`).toBeLessThan(400);
+      expect(
+        status,
+        `${route.path} should load before screenshot`,
+      ).toBeLessThan(400);
 
       await normalizeVisualPage(page);
       if ("openMenu" in route && route.openMenu) {
         await openSideMenu(page, {
           expectSettings: "expectSettings" in route && route.expectSettings,
+        });
+      }
+      if ("openCreateTask" in route && route.openCreateTask) {
+        await openCreateTaskDialog(page, {
+          mode: route.createTaskMode,
         });
       }
 
@@ -133,10 +145,19 @@ test.describe("route visual regression", () => {
       }
 
       await waitForVisualIdle(page);
+      if (route.waitForImages) {
+        await waitForVisualImages(page);
+      }
       const screenshotFileName = `${route.name}.png`;
-      const reviewScreenshotDir = path.join(REVIEW_AFTER_ROOT, testInfo.project.name);
+      const reviewScreenshotDir = path.join(
+        REVIEW_AFTER_ROOT,
+        testInfo.project.name,
+      );
       const screenshotDir = path.join(SCREENSHOT_ROOT, testInfo.project.name);
-      const reviewScreenshotPath = path.join(reviewScreenshotDir, screenshotFileName);
+      const reviewScreenshotPath = path.join(
+        reviewScreenshotDir,
+        screenshotFileName,
+      );
       const screenshotPath = path.join(screenshotDir, screenshotFileName);
       await mkdir(reviewScreenshotDir, { recursive: true });
       await mkdir(screenshotDir, { recursive: true });
@@ -169,9 +190,15 @@ async function openVisualRoute(page: Page, routePath: string) {
     waitUntil: "domcontentloaded",
     timeout: 90_000,
   });
+  await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => {
+    // Some streaming pages keep subresources open; screenshots only need the
+    // final document after redirects settle.
+  });
   await forceAnimationsComplete(page);
 
-  expect(errors, `${routePath} should not throw client-side errors`).toEqual([]);
+  expect(errors, `${routePath} should not throw client-side errors`).toEqual(
+    [],
+  );
   return response;
 }
 
@@ -207,6 +234,139 @@ async function waitForVisualIdle(page: Page) {
   await forceAnimationsComplete(page);
 }
 
+async function waitForVisualImages(page: Page) {
+  await wakeOffscreenImages(page);
+  await page
+    .waitForLoadState("networkidle", { timeout: 15_000 })
+    .catch(() => undefined);
+  await waitForDomImages(page);
+  await waitForAvatarFallbacksToSettle(page);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await waitForPaint(page);
+}
+
+async function wakeOffscreenImages(page: Page) {
+  await page.evaluate(async () => {
+    const height = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+    );
+    const step = Math.max(window.innerHeight, 1);
+
+    for (let y = 0; y < height; y += step) {
+      window.scrollTo(0, y);
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      });
+    }
+  });
+}
+
+async function waitForDomImages(page: Page) {
+  await page.evaluate(async () => {
+    const images = Array.from(document.images).filter((image) => {
+      if (!image.isConnected || !image.currentSrc) return false;
+      const rect = image.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+
+    await Promise.allSettled(
+      images.map(
+        (image) =>
+          new Promise<void>((resolve) => {
+            if (image.complete) {
+              resolve();
+              return;
+            }
+
+            const finish = () => resolve();
+            const timeout = window.setTimeout(finish, 5_000);
+            image.addEventListener(
+              "load",
+              () => {
+                window.clearTimeout(timeout);
+                finish();
+              },
+              { once: true },
+            );
+            image.addEventListener(
+              "error",
+              () => {
+                window.clearTimeout(timeout);
+                finish();
+              },
+              { once: true },
+            );
+          }),
+      ),
+    );
+
+    await Promise.allSettled(
+      images.map((image) =>
+        image.complete && image.naturalWidth > 0
+          ? image.decode().catch(() => undefined)
+          : Promise.resolve(),
+      ),
+    );
+  });
+}
+
+async function waitForAvatarFallbacksToSettle(page: Page) {
+  await page
+    .waitForFunction(
+      () => {
+        const getVisibleFallbackCount = () =>
+          Array.from(
+            document.querySelectorAll<HTMLElement>(
+              '[data-volatile="initials"]',
+            ),
+          ).filter((element) => {
+            const style = window.getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            return (
+              style.display !== "none" &&
+              style.visibility !== "hidden" &&
+              rect.width > 0 &&
+              rect.height > 0
+            );
+          }).length;
+
+        const key = "__OPTIMITRON_VISUAL_AVATAR_FALLBACK_SETTLE__";
+        const now = performance.now();
+        const currentCount = getVisibleFallbackCount();
+        const windowWithState = window as Window & {
+          [key]?: {
+            changedAt: number;
+            count: number;
+            startedAt: number;
+          };
+        };
+        const state =
+          windowWithState[key] ??
+          ({
+            changedAt: now,
+            count: currentCount,
+            startedAt: now,
+          } as const);
+
+        if (state.count !== currentCount) {
+          windowWithState[key] = {
+            changedAt: now,
+            count: currentCount,
+            startedAt: state.startedAt,
+          };
+          return false;
+        }
+
+        windowWithState[key] = state;
+        return now - state.startedAt >= 1_500 && now - state.changedAt >= 750;
+      },
+      undefined,
+      { timeout: 8_000 },
+    )
+    .catch(() => undefined);
+}
+
 async function openSideMenu(
   page: Page,
   { expectSettings = false }: { expectSettings?: boolean } = {},
@@ -233,12 +393,36 @@ async function openSideMenu(
   }
 
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("link", { name: /Manage Humanity/i })).toBeVisible();
+  await expect(
+    dialog.getByRole("link", { name: /Manage Humanity/i }),
+  ).toBeVisible();
   if (expectSettings) {
     await expect(dialog.getByRole("link", { name: /Settings/i })).toBeVisible();
   } else {
     await expect(dialog.getByRole("link", { name: /Sign In/i })).toBeVisible();
   }
+  await forceAnimationsComplete(page);
+  await waitForPaint(page);
+}
+
+async function openCreateTaskDialog(
+  page: Page,
+  { mode }: { mode?: "person" } = {},
+) {
+  await page.getByRole("button", { name: "Open campaign actions" }).click();
+  await page.getByRole("button", { name: /^Create task$/ }).click();
+
+  const dialog = page.getByRole("dialog", { name: /Create task/i });
+  await expect(dialog).toBeVisible();
+
+  if (mode === "person") {
+    await dialog.getByLabel("Who should do it?").fill("Jane Doe");
+    await dialog
+      .getByRole("button", { name: /Add "Jane Doe" as a new person/i })
+      .click();
+    await expect(dialog.getByText("New person")).toBeVisible();
+  }
+
   await forceAnimationsComplete(page);
   await waitForPaint(page);
 }

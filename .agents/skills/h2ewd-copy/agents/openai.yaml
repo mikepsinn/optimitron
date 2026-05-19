@@ -1,0 +1,4 @@
+interface:
+  display_name: "H2EWD Copy"
+  short_description: "Protect War on Disease public copy from conversion regressions."
+  default_prompt: "Use h2ewd-copy to review or edit public copy."

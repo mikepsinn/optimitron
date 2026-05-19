@@ -4,9 +4,11 @@
  */
 
 import {
+  TREATY_REDUCTION_PCT,
   PRIZE_POOL_HORIZON_MULTIPLE,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   fmtParam,
+  fmtParamValueOnly,
 } from "@optimitron/data/parameters";
 import {
   GLOBAL_SURVEY_NAME,
@@ -14,6 +16,8 @@ import {
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 } from "@optimitron/data/campaign";
 import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
+
+const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 
 /** Point name — single source of truth. Change here to rename everywhere. */
 export const POINT_NAME = "VOTE" as const;
@@ -184,7 +188,7 @@ export const CTA = {
 
 export const TAGLINES = {
   gameObjective:
-    `Optimize public policy to stop making you poorer and deader and start making you healtier and wealthier!`,
+    `Optimize public policy to stop making you poorer and deader and start making you healthier and wealthier!`,
   onlyWayToLose:
     `Your deposit grows at ~10% for 15 years either way. The break-even probability is 1 in 15,000. You lose money by not depositing.`,
   hedgeLine: "Your deposit is a hedge against your own species.",
@@ -274,13 +278,13 @@ export const VOTE_SECTION = {
   // Humanity v. Government: governments are paid ~$36T/yr to promote
   // the general welfare and underdeliver. Voters' welfare-findings
   // become evidence in the case; preferences alone would not.
-  sliderPrompt: `You pay governments ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare (i.e. maximize median health and wealth). Of the money available for military/weapons and clinical trials, how much should go to each?`,
+  sliderPrompt: `You pay governments ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare: maximize human health and wealth. Of the money available for military/weapons and pragmatic clinical trials, how much should go to each?`,
   realityCheck:
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:
     "Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?",
   emailSuccessFooter:
-    `Your vote is locked in. Now share your link to start earning ${POINT_NAME} Points.`,
+    `Your ${TREATY_REDUCTION_TEXT} Treaty vote is saved. Now share your link to start earning ${POINT_NAME} Points.`,
 };
 
 export const VOTE_VALUE = {

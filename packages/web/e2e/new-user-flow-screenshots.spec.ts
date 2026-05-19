@@ -361,7 +361,7 @@ async function captureEmailPreview(
     { waitUntil: "domcontentloaded" },
   );
   await expect(page.getByTestId("magic-link-email-preview")).toContainText(
-    "Your sign-in link is below.",
+    "Click the button below to verify your email and save your vote.",
   );
   await captureStep(outcome, dir, stepState, "magic-link-email", (filePath) =>
     captureElement(page.getByTestId("magic-link-email-preview"), filePath),

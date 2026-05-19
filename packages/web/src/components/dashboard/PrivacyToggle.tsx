@@ -6,20 +6,27 @@ import { cn } from "@/lib/utils"
 interface PrivacyToggleProps {
   isPublic: boolean
   onChange: (isPublic: boolean) => void
+  disabled?: boolean
 }
 
-export function PrivacyToggle({ isPublic, onChange }: PrivacyToggleProps) {
+export function PrivacyToggle({
+  disabled = false,
+  isPublic,
+  onChange,
+}: PrivacyToggleProps) {
   return (
     <div className="w-full">
-      <div
-        className="relative flex h-16 w-full cursor-pointer items-center justify-between border-4 border-primary bg-background p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+      <button
+        aria-pressed={isPublic}
+        className="relative flex h-14 w-full cursor-pointer items-center justify-between border-2 border-foreground bg-background p-1 text-foreground transition-colors disabled:cursor-wait disabled:opacity-60"
+        disabled={disabled}
         onClick={() => onChange(!isPublic)}
+        type="button"
       >
-        {/* Sliding Background */}
         <motion.div
           className={cn(
-            "absolute h-[calc(100%-8px)] w-[calc(50%-4px)] border-4 border-primary",
-            isPublic ? "bg-background" : "bg-muted-foreground/20"
+            "absolute h-[calc(100%-8px)] w-[calc(50%-4px)] border border-foreground",
+            isPublic ? "bg-foreground" : "bg-muted",
           )}
           initial={false}
           animate={{
@@ -30,24 +37,21 @@ export function PrivacyToggle({ isPublic, onChange }: PrivacyToggleProps) {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
 
-        {/* Private Option (Left) */}
         <div className="relative z-10 flex w-1/2 items-center justify-center gap-2">
-          <span className="text-xl">🔒</span>
+          <span aria-hidden className="text-lg">🔒</span>
           <span className={cn("font-black tracking-tight transition-colors", !isPublic ? "text-foreground" : "text-muted-foreground")}>
             PRIVATE
           </span>
         </div>
 
-        {/* Public Option (Right) */}
         <div className="relative z-10 flex w-1/2 items-center justify-center gap-2">
-          <span className="text-xl">🌍</span>
-          <span className={cn("font-black tracking-tight transition-colors", isPublic ? "text-foreground" : "text-muted-foreground")}>
+          <span aria-hidden className="text-lg">🌍</span>
+          <span className={cn("font-black tracking-tight transition-colors", isPublic ? "text-background" : "text-muted-foreground")}>
             PUBLIC
           </span>
         </div>
-      </div>
+      </button>
 
-      {/* Description Text */}
       <div className="mt-4 min-h-[40px] text-center">
         {isPublic ? (
           <motion.p

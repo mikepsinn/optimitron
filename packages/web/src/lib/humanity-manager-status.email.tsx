@@ -108,7 +108,7 @@ function CompletedEmployees({
           return (
             <li key={`${person.displayName}-${date ?? "completed"}`} style={{ margin: "0 0 8px" }}>
               <strong>{person.displayName}</strong>
-              {date ? ` completed it on ${date}.` : " completed it."}
+              {date ? ` voted YES on ${date}.` : " voted YES."}
             </li>
           );
         })}
@@ -125,6 +125,8 @@ function ReminderBlock({
 }: {
   reminders: HumanityManagerStatusReminder[];
 }) {
+  if (reminders.length === 0) return null;
+
   return (
     <Section style={{ margin: "0 0 28px" }}>
       <Text

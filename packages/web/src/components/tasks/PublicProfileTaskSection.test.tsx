@@ -62,6 +62,21 @@ describe("PublicProfileTaskSection", () => {
 
     const html = renderToStaticMarkup(
       <PublicProfileTaskSection
+        assignedByTasks={[
+          task({
+            assigneePerson: {
+              countryCode: null,
+              currentAffiliation: null,
+              displayName: "Grace Hopper",
+              handle: "grace",
+              id: "person_grace",
+              image: null,
+              isPublicFigure: false,
+            },
+            id: "task_assigned_by",
+            title: "Brief Grace",
+          }),
+        ]}
         completedTasks={[
           task({
             id: "task_done",
@@ -78,14 +93,43 @@ describe("PublicProfileTaskSection", () => {
           }),
         ]}
         ownerName="Ada"
+        requestedTasks={[
+          task({
+            claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+            id: "task_requested",
+            title: "Find a treaty translator",
+          }),
+        ]}
       />,
     );
 
-    expect(html).toContain("Open Tasks (1)");
-    expect(html).toContain("Completed Tasks (1)");
+    expect(html).toContain("For Ada (1)");
+    expect(html).toContain("Requests from Ada (1)");
+    expect(html).toContain("Assigned by Ada (1)");
+    expect(html).toContain("Completed work (1)");
     expect(html).toContain("Call the health minister");
+    expect(html).toContain("Find a treaty translator");
+    expect(html).toContain("Assigned to Grace Hopper");
     expect(html).toContain("Publish completion receipt");
     expect(html).toContain('data-task-share="task_open"');
+    expect(html).toContain('data-task-share="task_requested"');
+    expect(html).toContain('data-task-share="task_assigned_by"');
     expect(html).not.toContain('data-task-share="task_done"');
+  });
+
+  it("hides empty public task buckets", () => {
+    const html = renderToStaticMarkup(
+      <PublicProfileTaskSection
+        completedTasks={[]}
+        openTasks={[]}
+        ownerName="Ada"
+      />,
+    );
+
+    expect(html).toContain("No one has suggested Ada&#x27;s next action yet.");
+    expect(html).not.toContain("For Ada (0)");
+    expect(html).not.toContain("Requests from Ada (0)");
+    expect(html).not.toContain("Assigned by Ada (0)");
+    expect(html).not.toContain("Completed work (0)");
   });
 });

@@ -28,6 +28,7 @@ export interface HumanityManagerStatusInput {
   completedEmployees: HumanityManagerStatusCompletedEmployee[];
   directConversionCount: number;
   downstreamConversionCount: number;
+  kFactor30d: number;
   overdueEmployeeCount: number;
   overdueEmployees: HumanityManagerStatusPerson[];
   overduePresidentCount: number;
@@ -48,6 +49,7 @@ interface HumanityManagerStatusComponents {
   Eyebrow: React.ComponentType<{ children: React.ReactNode }>;
   Heading: React.ComponentType<{ children: React.ReactNode }>;
   MetricTable: React.ComponentType<{ rows: StatusMetric[] }>;
+  PresidentAction?: React.ComponentType<{ overdueCount: number }>;
   ReminderBlock: React.ComponentType<{
     reminders: HumanityManagerStatusReminder[];
   }>;
@@ -62,6 +64,11 @@ function formatCount(value: number): string {
   return Math.max(0, value).toLocaleString("en-US");
 }
 
+function formatKFactor(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "0.00";
+  return value.toFixed(2);
+}
+
 function formatPeopleSample(people: HumanityManagerStatusPerson[]): string {
   return people
     .slice(0, 5)
@@ -70,36 +77,22 @@ function formatPeopleSample(people: HumanityManagerStatusPerson[]): string {
     .join(", ");
 }
 
-function formatLeaderSample(leaders: HumanityManagerStatusLeader[]): string {
-  return leaders
-    .slice(0, 5)
-    .map((leader) => {
-      const country = leader.countryLabel?.trim();
-      return country
-        ? `${leader.displayName.trim()} (${country})`
-        : leader.displayName.trim();
-    })
-    .filter(Boolean)
-    .join(", ");
-}
-
 function buildEmployeeStatus(input: HumanityManagerStatusInput): string {
   if (input.overdueEmployeeCount === 0) {
-    return "No named employees are late. The machine is briefly behaving.";
+    return "No employees are late.";
   }
   const names = formatPeopleSample(input.overdueEmployees);
   const count = formatCount(input.overdueEmployeeCount);
   const noun = input.overdueEmployeeCount === 1 ? "employee" : "employees";
-  return `${count} ${noun} still need the 30-second vote.${names ? ` Examples: ${names}.` : ""}`;
+  return `${count} ${noun} still need the 30-second vote.${names ? ` First up: ${names}.` : ""}`;
 }
 
 function buildPresidentStatus(input: HumanityManagerStatusInput): string {
   if (input.overduePresidentCount === 0) {
-    return "No presidents are currently late. That would be new.";
+    return "No presidents are currently late.";
   }
-  const names = formatLeaderSample(input.overduePresidents);
   const count = formatCount(input.overduePresidentCount);
-  return `${count} presidents and heads of government still have not signed the treaty.${names ? ` Examples: ${names}.` : ""}`;
+  return `${count} presidents and heads of government still have not signed the treaty.`;
 }
 
 export function createHumanityManagerStatus({
@@ -107,6 +100,7 @@ export function createHumanityManagerStatus({
   Eyebrow,
   Heading,
   MetricTable,
+  PresidentAction,
   ReminderBlock,
   Section,
   Text,
@@ -116,13 +110,19 @@ export function createHumanityManagerStatus({
   }: {
     input: HumanityManagerStatusInput;
   }) {
+    const showPresidentAction =
+      PresidentAction != null && input.overduePresidentCount > 0;
     const metrics: StatusMetric[] = [
       {
         label: "Employees completed",
         value: formatCount(input.directConversionCount),
       },
       {
-        label: "Employees still late",
+        label: "Votes per invite (30d)",
+        value: formatKFactor(input.kFactor30d),
+      },
+      {
+        label: "Late employees",
         value: formatCount(input.overdueEmployeeCount),
       },
       {
@@ -130,7 +130,7 @@ export function createHumanityManagerStatus({
         value: formatCount(input.overduePresidentCount),
       },
       {
-        label: "Downstream conversions",
+        label: "Downstream votes",
         value: formatCount(input.downstreamConversionCount),
       },
     ];
@@ -138,11 +138,11 @@ export function createHumanityManagerStatus({
     return (
       <Section>
         <Eyebrow>Humanity Management Status</Eyebrow>
-        <Heading>Your employees are either clicking or require management.</Heading>
+        <Heading>Who still needs management?</Heading>
         <Text>
-          Direct employees are the humans you assigned. Full chain conversions
-          include their employees, their employees' employees, and so on. Updated
-          hourly.
+          Direct employees are humans you asked to vote. Full-chain votes
+          include the humans they invite, and the humans invited after that.
+          Updated hourly.
         </Text>
         <MetricTable rows={metrics} />
         <CompletedEmployees
@@ -151,12 +151,14 @@ export function createHumanityManagerStatus({
         />
         <Text>{buildEmployeeStatus(input)}</Text>
         <Text>{buildPresidentStatus(input)}</Text>
+        {showPresidentAction ? (
+          <PresidentAction overdueCount={input.overduePresidentCount} />
+        ) : null}
         {input.reminders.length > 0 ? (
           <ReminderBlock reminders={input.reminders} />
-        ) : (
+        ) : showPresidentAction ? null : (
           <Text muted>
-            No copyable reminders yet. Assign one human or find one late
-            president, and management becomes less ceremonial.
+            No employee reminders to send right now.
           </Text>
         )}
       </Section>

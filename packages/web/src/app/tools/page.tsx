@@ -23,7 +23,7 @@ function ToolCard({ item, color }: { item: NavItem; color: "cyan" | "yellow" | "
   const inner = (
     <BrutalCard bgColor={color} hover padding="lg" className="h-full">
       <div className="flex items-start justify-between">
-        <span className="text-3xl">{item.emoji}</span>
+        {item.emoji ? <span className="text-3xl">{item.emoji}</span> : null}
         {item.external && (
           <span className="inline-block border border-foreground bg-background px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.1em] text-foreground">
             External

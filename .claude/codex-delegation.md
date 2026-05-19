@@ -23,6 +23,7 @@ Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scrip
 4. **Argue back if Claude misread the user.** The verbatim quote makes this checkable.
 5. **Regenerate affected `.md` snapshots and screenshots** after any content/component change. Use `node packages/web/scripts/affected-routes.mjs` to pipe changed-file paths into `render-pages-to-markdown.ts --routes=` for targeted regen; fall back to full regen when the change touches shared primitives.
 6. **Nothing committed without user approval.** Codex stages the changeset and reports; Claude relays the summary + diff scope; user OKs; then Claude commits on Codex's behalf (Codex can't touch `.git`).
+7. **TODO.md update in the same staged changeset.** If the work resolves an unchecked item in TODO.md, Codex must edit TODO.md (mark done with `commit:short-sha` evidence, or delete the line if redundant) IN THE SAME STAGED CHANGESET. If the work doesn't touch any TODO.md item, Codex must include `todo-skipped: <reason>` (e.g. "todo-skipped: net-new feature not previously listed") so the audit trail is explicit. Mike's TODO.md was 60%+ stale on 2026-05-17 because dispatches silently shipped work without closing the corresponding TODO lines — `enforce-codex-protocol.mjs` + `verify-ui-changes.mjs` now check this gate.
 
 ## NEVER run `next build` / `pnpm build`
 

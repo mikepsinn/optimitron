@@ -154,6 +154,37 @@ ${userFacingChanges.slice(0, 8).map((f) => `  - ${f}`).join("\n")}${
     }
   }
 
+  // --- TODO.md drift gate -------------------------------------------------
+  // Per CLAUDE.md "Update TODO.md in the same commit as the work it covers"
+  // — but the rule was rotting silently before this hook. If a commit
+  // touches packages/web/src/ and the message body doesn't claim
+  // `todo-touched:` or `todo-skipped: <reason>`, and TODO.md isn't in the
+  // staged set, advisory-flag it. Forces the next session to resolve
+  // whether the in-flight work closes any TODO.md items. Advisory only —
+  // never blocks the commit.
+  const touchesWebSrc = allChanged.some((f) =>
+    /^packages\/web\/src\//.test(f),
+  );
+  const todoStaged = allChanged.includes("TODO.md");
+  if (
+    touchesWebSrc &&
+    !todoStaged &&
+    hookData?.tool_name === "Bash"
+  ) {
+    const cmd = hookData?.tool_input?.command ?? "";
+    const hasTodoMarker = /todo[-\s]?(touched|skipped|none)\s*:/i.test(cmd);
+    if (!hasTodoMarker) {
+      pushViolation(
+        "TODO_DRIFT",
+        1,
+        `TODO DRIFT GATE (advisory): commit touches packages/web/src/ but does not stage TODO.md and the message has no \`todo-touched:\` / \`todo-skipped: <reason>\` marker.
+
+  If this work resolves a TODO.md item, edit TODO.md in the same commit and add \`todo-touched: <item summary>\` to the message. If it doesn't, add \`todo-skipped: <reason>\` so future audits know it was intentional. This is the rule from CLAUDE.md "Update TODO.md in the same commit as the work it covers" — silent drift is what made today's TODO.md 60%+ stale.`,
+        { blocking: false },
+      );
+    }
+  }
+
   // --- Check 1: UI changes without a fresh screenshot ---------------------
   if (uiFiles.length) {
     let lastUiMtime = 0;

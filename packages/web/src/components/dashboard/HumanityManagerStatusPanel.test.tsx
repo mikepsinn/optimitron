@@ -27,6 +27,7 @@ const STATUS_FIXTURE: HumanityManagerStatusInput = {
   ],
   directConversionCount: 2,
   downstreamConversionCount: 7,
+  kFactor30d: 0.75,
   overdueEmployeeCount: 1,
   overdueEmployees: [{ displayName: "Jake Smith" }],
   overduePresidentCount: 1,
@@ -76,6 +77,8 @@ describe("HumanityManagerStatusPanel", () => {
     });
 
     expect(container.textContent).toContain("3 downstream votes from them");
+    expect(container.textContent).toContain("Ada Lovelace voted YES");
+    expect(container.textContent).toContain("Remind Presidents");
 
     const button = Array.from(container.querySelectorAll("button")).find(
       (candidate) => candidate.textContent === "Copy",

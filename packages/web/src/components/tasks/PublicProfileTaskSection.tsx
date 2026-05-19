@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { TaskStatus } from "@optimitron/db";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
@@ -32,36 +33,45 @@ function getTaskStatusLabel(task: TaskCardTask) {
   return due ? `Due ${due}` : "Open";
 }
 
-function getShareText(task: TaskCardTask, ownerName: string) {
+function getShareText(
+  task: TaskCardTask,
+  ownerName: string,
+  mode: "assigned" | "assignedBy" | "requested",
+) {
   const delayStats = getTaskDelayStats(task);
+  const targetLabel =
+    mode === "requested"
+      ? "This open task"
+      : (task.assigneePerson?.displayName ??
+        task.assigneeOrganization?.name ??
+        ownerName);
   return buildTaskShareText({
     currentDelayDays: delayStats.currentDelayDays,
     currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
     currentHumanLivesLost: delayStats.currentHumanLivesLost,
     currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
-    targetLabel:
-      task.assigneePerson?.displayName ??
-      task.assigneeOrganization?.name ??
-      ownerName,
+    targetLabel,
     taskTitle: task.title,
   });
 }
 
 function TaskList({
+  emptyText,
   isCompleted = false,
+  mode = "assigned",
   ownerName,
   tasks,
 }: {
+  emptyText: string;
   isCompleted?: boolean;
+  mode?: "assigned" | "assignedBy" | "requested";
   ownerName: string;
   tasks: TaskCardTask[];
 }) {
   if (tasks.length === 0) {
     return (
       <p className="border border-foreground px-4 py-5 text-sm font-bold text-muted-foreground">
-        {isCompleted
-          ? "No completed public tasks yet."
-          : "No open public tasks yet."}
+        {emptyText}
       </p>
     );
   }
@@ -69,7 +79,7 @@ function TaskList({
   return (
     <ul className="divide-y divide-foreground border border-foreground">
       {tasks.map((task) => (
-        <li className="grid gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_auto]" key={task.id}>
+        <li className="space-y-3 p-4" key={task.id}>
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="border border-foreground px-2 py-0.5 text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">
@@ -87,7 +97,18 @@ function TaskList({
             >
               {task.title}
             </Link>
-            {task.roleTitle || task.assigneeAffiliationSnapshot ? (
+            {mode === "assignedBy" &&
+            (task.assigneePerson || task.assigneeOrganization) ? (
+              <p className="text-sm font-bold text-muted-foreground">
+                Assigned to{" "}
+                {task.assigneePerson?.displayName ??
+                  task.assigneeOrganization?.name}
+              </p>
+            ) : mode === "requested" ? (
+              <p className="text-sm font-bold text-muted-foreground">
+                Open to anyone who can help.
+              </p>
+            ) : task.roleTitle || task.assigneeAffiliationSnapshot ? (
               <p className="text-sm font-bold text-muted-foreground">
                 {[task.roleTitle, task.assigneeAffiliationSnapshot]
                   .filter(Boolean)
@@ -95,7 +116,7 @@ function TaskList({
               </p>
             ) : null}
           </div>
-          <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               className="text-sm font-black uppercase underline underline-offset-4"
               href={getTaskPath(task.id)}
@@ -104,7 +125,7 @@ function TaskList({
             </Link>
             {!isCompleted ? (
               <TaskShareButtons
-                shareText={getShareText(task, ownerName)}
+                shareText={getShareText(task, ownerName, mode)}
                 taskId={task.id}
                 taskTitle={task.title}
                 variant="text"
@@ -117,27 +138,79 @@ function TaskList({
   );
 }
 
+function TaskGroup({
+  action,
+  emptyText,
+  isCompleted = false,
+  mode = "assigned",
+  ownerName,
+  tasks,
+  title,
+}: {
+  action?: ReactNode;
+  emptyText: string;
+  isCompleted?: boolean;
+  mode?: "assigned" | "assignedBy" | "requested";
+  ownerName: string;
+  tasks: TaskCardTask[];
+  title: string;
+}) {
+  if (tasks.length === 0 && !action) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h3 className="text-sm font-black uppercase tracking-[0.14em] text-muted-foreground">
+          {title} ({tasks.length.toLocaleString("en-US")})
+        </h3>
+        {action ? <div className="flex sm:justify-end">{action}</div> : null}
+      </div>
+      <TaskList
+        emptyText={emptyText}
+        isCompleted={isCompleted}
+        mode={mode}
+        ownerName={ownerName}
+        tasks={tasks}
+      />
+    </div>
+  );
+}
+
 export function PublicProfileTaskSection({
-  completedTasks,
+  assignedByTasks = [],
+  completedTasks = [],
   heading = "Public Tasks",
+  headingAction,
   intro,
-  openTasks,
+  openTasks = [],
   ownerName,
   profileHref,
+  requestAction,
+  requestedTasks = [],
 }: {
+  assignedByTasks?: TaskCardTask[];
   completedTasks: TaskCardTask[];
   heading?: string;
+  headingAction?: ReactNode;
   intro?: string;
   openTasks: TaskCardTask[];
   ownerName: string;
   profileHref?: string | null;
+  requestAction?: ReactNode;
+  requestedTasks?: TaskCardTask[];
 }) {
-  const totalCount = openTasks.length + completedTasks.length;
+  const totalCount =
+    openTasks.length +
+    requestedTasks.length +
+    assignedByTasks.length +
+    completedTasks.length;
   const summary =
     intro ??
     (totalCount > 0
-      ? `Public tasks assigned to ${ownerName}. Open tasks need pressure. Completed tasks show receipts.`
-      : `No public tasks are assigned to ${ownerName} yet.`);
+      ? `This is how humans help ${ownerName} find and complete the highest-value actions to end war and disease.`
+      : `No one has suggested ${ownerName}'s next action yet.`);
 
   return (
     <section className="border-t-2 border-foreground py-8">
@@ -150,7 +223,9 @@ export function PublicProfileTaskSection({
             {summary}
           </p>
         </div>
-        {profileHref ? (
+        {headingAction ? (
+          <div className="flex sm:justify-end">{headingAction}</div>
+        ) : profileHref ? (
           <Link
             className="text-sm font-black uppercase underline underline-offset-4"
             href={profileHref}
@@ -161,19 +236,37 @@ export function PublicProfileTaskSection({
       </div>
 
       <div className="mt-5 grid gap-6">
-        <div className="space-y-3">
-          <h3 className="text-sm font-black uppercase tracking-[0.14em] text-muted-foreground">
-            Open Tasks ({openTasks.length.toLocaleString("en-US")})
-          </h3>
-          <TaskList ownerName={ownerName} tasks={openTasks} />
-        </div>
+        <TaskGroup
+          emptyText={`No one has suggested ${ownerName}'s next action yet. If you know something useful ${ownerName} should do, add it.`}
+          ownerName={ownerName}
+          tasks={openTasks}
+          title={`For ${ownerName}`}
+        />
 
-        <div className="space-y-3">
-          <h3 className="text-sm font-black uppercase tracking-[0.14em] text-muted-foreground">
-            Completed Tasks ({completedTasks.length.toLocaleString("en-US")})
-          </h3>
-          <TaskList isCompleted ownerName={ownerName} tasks={completedTasks} />
-        </div>
+        <TaskGroup
+          action={requestAction}
+          emptyText={`${ownerName} has not asked the public for help yet.`}
+          mode="requested"
+          ownerName={ownerName}
+          tasks={requestedTasks}
+          title={`Requests from ${ownerName}`}
+        />
+
+        <TaskGroup
+          emptyText={`${ownerName} has not asked a specific person to do anything public yet.`}
+          mode="assignedBy"
+          ownerName={ownerName}
+          tasks={assignedByTasks}
+          title={`Assigned by ${ownerName}`}
+        />
+
+        <TaskGroup
+          emptyText="No completed public tasks yet."
+          isCompleted
+          ownerName={ownerName}
+          tasks={completedTasks}
+          title="Completed work"
+        />
       </div>
     </section>
   );

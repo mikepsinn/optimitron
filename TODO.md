@@ -470,6 +470,19 @@ Durable summary lives here; no loose `.claude/plans/campaign-impact-attribution-
   the strongest approved variant, not "Support the settlement."
 - Show a running plaintiff count near the hero. Named plaintiffs are harder to
   ignore than an anonymous vote total.
+- Build the public death/plaintiff stream: a constantly updating, moderated
+  list of humans submitted by loved ones who recently died, shown as
+  wrongful-death claims against the governments that kept buying apocalypse
+  capacity instead of medical progress. Use represented people /
+  `CourtCaseParty` data first; do not scrape or invent deaths for v1.
+  Landing-page placement: below the primary treaty vote/referral action, not
+  above it. Show the most recent named person, a ranked/recent list, and a CTA
+  to "Name your dead" / register the estate. Tie the legal theory to the
+  1900-counterfactual: disease deaths after the model cutoff and aging deaths
+  after the aging cutoff are prima facie government-caused because a rational
+  treaty could have redirected military growth to clinical trials and public
+  goods. Reuse parameter-backed apocalypse / cutoff / damages claims; no
+  hardcoded 122-apocalypse or 1950/1990 copy.
 - Add the missing counterfactual sentence: damages are what humanity would have
   had if governments had signed the 1% Treaty in 1900, freezing military
   spending growth and redirecting surplus to clinical trials and public goods.

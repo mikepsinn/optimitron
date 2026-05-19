@@ -187,6 +187,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run GitHub automation script tests
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/audit-sentry-preview.test.mjs
+
       - name: Apply database migrations
         run: pnpm db:deploy
 
@@ -505,7 +508,7 @@ jobs:
 
             return '';
 
-      - name: Post PR preview links comment
+      - name: Post PR review packet preview links
         if: ${{ !cancelled() && steps.pr_preview_url.outputs.result != '' }}
         uses: actions/github-script@v8
         env:
@@ -523,6 +526,14 @@ jobs:
               .filter((f) => f.status !== 'removed')
               .map((f) => f.filename);
 
+            const packetMarker = '<!-- pr-review-packet -->';
+            const legacyMarker = '<!-- pr-preview-links -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = [...comments].reverse().find((c) =>
+              c.body && (c.body.includes(packetMarker) || c.body.includes(legacyMarker))
+            );
             const stdout = execFileSync(
               process.execPath,
               ['.github/scripts/generate-pr-preview-links.mjs'],
@@ -530,6 +541,7 @@ jobs:
                 env: {
                   ...process.env,
                   CHANGED_FILES: JSON.stringify(changed),
+                  EXISTING_COMMENT_BODY: existing?.body ?? '',
                 },
                 encoding: 'utf8',
               },
@@ -537,11 +549,6 @@ jobs:
             const body = stdout.trim();
             if (!body) return;
 
-            const marker = '<!-- pr-preview-links -->';
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner, repo, issue_number, per_page: 100,
-            });
-            const existing = comments.find((c) => c.body && c.body.includes(marker));
             if (existing) {
               await github.rest.issues.updateComment({
                 owner, repo, comment_id: existing.id, body,
@@ -692,6 +699,69 @@ jobs:
               log_url: target_url,
               description: 'Visual review ready',
             });
+
+      - name: Update PR review packet with visual review
+        if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' && steps.pr_preview_url.outputs.result != '' }}
+        uses: actions/github-script@v8
+        env:
+          PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
+          VISUAL_REVIEW_MANIFEST_PATH: packages/web/output/playwright/review/manifest.json
+        with:
+          script: |
+            const { execFileSync } = require('node:child_process');
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const headSha = context.payload.pull_request.head.sha;
+            const shortSha = headSha.slice(0, 12);
+            const visualReviewUrl = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/${shortSha}/latest.html`;
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: issue_number, per_page: 100,
+            });
+            const changed = files
+              .filter((f) => f.status !== 'removed')
+              .map((f) => f.filename);
+
+            const packetMarker = '<!-- pr-review-packet -->';
+            const legacyMarker = '<!-- pr-preview-links -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = [...comments].reverse().find((c) =>
+              c.body && (c.body.includes(packetMarker) || c.body.includes(legacyMarker))
+            );
+
+            const stdout = execFileSync(
+              process.execPath,
+              ['.github/scripts/generate-pr-preview-links.mjs'],
+              {
+                env: {
+                  ...process.env,
+                  CHANGED_FILES: JSON.stringify(changed),
+                  EXISTING_COMMENT_BODY: existing?.body ?? '',
+                  VISUAL_REVIEW_URL: visualReviewUrl,
+                },
+                encoding: 'utf8',
+              },
+            );
+            const body = stdout.trim();
+            if (!body) return;
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
 
   web-validate:
     name: web-validate

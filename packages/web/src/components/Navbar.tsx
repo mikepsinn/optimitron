@@ -16,11 +16,13 @@ import {
 import { Input } from "@/components/retroui/Input";
 import { Accordion } from "@/components/retroui/Accordion";
 import { getSiteVariantUiConfig, type SiteNavConfig } from "@/config/site-variant-ui";
+import { getPersonHref } from "@/lib/person-href";
 import {
   ROUTES,
+  editProfileLink,
   getSignInPath,
   isNavItemActive,
-  profileLink,
+  publicProfileLink,
   searchLink,
   settingsLink,
   type NavItem,
@@ -28,6 +30,21 @@ import {
 
 function getNavItemAriaLabel(item: NavItem): string {
   return item.description ? `${item.label}: ${item.description}` : item.label;
+}
+
+export function getAuthenticatedProfileLinks(
+  publicProfileHref: string | null,
+): NavItem[] {
+  const links = [editProfileLink];
+
+  if (publicProfileHref) {
+    links.push({
+      ...publicProfileLink,
+      href: publicProfileHref,
+    });
+  }
+
+  return links;
 }
 
 function AvatarButton({
@@ -77,6 +94,11 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
   const [navQuery, setNavQuery] = useState("");
   const isAuthenticated = status === "authenticated";
   const user = session?.user ?? null;
+  const publicProfileHref = user?.personId
+    ? getPersonHref({ id: user.personId, handle: user.handle ?? null })
+    : null;
+  const authenticatedProfileLinks =
+    getAuthenticatedProfileLinks(publicProfileHref);
   const quickAction = config.quickAction ?? null;
   const quickActionHref = quickAction
     ? isAuthenticated
@@ -345,16 +367,18 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                 <div className="mt-4 space-y-2 border-t border-border pt-4">
                   {isAuthenticated ? (
                     <>
-                      <SheetClose asChild>
-                        <Link
-                          href={profileLink.href}
-                          className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-colors hover:bg-muted"
-                          title={profileLink.description}
-                          aria-label={`${profileLink.label}: ${profileLink.description}`}
-                        >
-                          {profileLink.emoji} {profileLink.label}
-                        </Link>
-                      </SheetClose>
+                      {authenticatedProfileLinks.map((item) => (
+                        <SheetClose asChild key={item.href}>
+                          <Link
+                            href={item.href}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-colors hover:bg-muted"
+                            title={item.description}
+                            aria-label={getNavItemAriaLabel(item)}
+                          >
+                            {item.emoji} {item.label}
+                          </Link>
+                        </SheetClose>
+                      ))}
                       <SheetClose asChild>
                         <Link
                           href={settingsLink.href}
