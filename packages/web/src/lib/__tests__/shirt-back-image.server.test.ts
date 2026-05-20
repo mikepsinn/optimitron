@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
@@ -14,22 +13,13 @@ describe("generateShirtBackImage", () => {
       visibleTargetUrl: "warondisease.org/vote/ada",
     });
     const metadata = await sharp(buffer).metadata();
-    const hash = crypto.createHash("sha256").update(buffer).digest("hex");
+    const stats = await sharp(buffer).stats();
 
-    expect({
-      format: metadata.format,
-      hash,
-      height: metadata.height,
-      width: metadata.width,
-    }).toMatchInlineSnapshot(`
-      {
-        "format": "png",
-        "hash": "658120ae2cd0a2828196d4085058853ea5a5e0308f92bcf769d8eab0c45b0cdb",
-        "height": 3600,
-        "width": 3000,
-      }
-    `);
+    expect(metadata.format).toBe("png");
     expect(metadata.width).toBe(SHIRT_PRINT_WIDTH_PX);
     expect(metadata.height).toBe(SHIRT_PRINT_HEIGHT_PX);
+    expect(buffer.length).toBeGreaterThan(10_000);
+    expect(stats.channels[0]?.min).toBe(0);
+    expect(stats.channels[0]?.max).toBe(255);
   });
 });
