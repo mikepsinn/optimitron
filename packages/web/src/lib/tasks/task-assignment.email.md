@@ -27,7 +27,15 @@ NEW TASK FOR SAMPLE ASSIGNEE
 
 The 1% Treaty needs your country's signature. Sign the document, share the link with two people you love, and verify that your local treaty signer has been contacted.
 
-This is a sample task description rendered into the email template.
+Read [the manual](https://manual.warondisease.org/) before you start.
+
+- Sign the treaty.
+- Share the link with two people you love.
+- Verify your local treaty signer has been contacted.
+
+```text
+<iframe src="https://warondisease.org/vote/SAMPLE" title="1% Treaty vote"></iframe>
+```
 
 [OPEN TASK](https://warondisease.org/tasks/sample-task-id)
 

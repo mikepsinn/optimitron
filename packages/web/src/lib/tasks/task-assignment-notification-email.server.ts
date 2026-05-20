@@ -60,8 +60,19 @@ export async function buildTaskAssignmentNotificationEmail(
 export const TASK_ASSIGNMENT_TEMPLATE_ID = "task-assignment";
 
 const SAMPLE_ASSIGNMENT_INPUT = {
-  description:
-    "The 1% Treaty needs your country's signature. Sign the document, share the link with two people you love, and verify that your local treaty signer has been contacted.\n\nThis is a sample task description rendered into the email template.",
+  description: [
+    "The 1% Treaty needs your country's signature. Sign the document, share the link with two people you love, and verify that your local treaty signer has been contacted.",
+    "",
+    "Read [the manual](https://manual.warondisease.org/) before you start.",
+    "",
+    "- Sign the treaty.",
+    "- Share the link with two people you love.",
+    "- Verify your local treaty signer has been contacted.",
+    "",
+    "```html",
+    '<iframe src="https://warondisease.org/vote/SAMPLE" title="1% Treaty vote"></iframe>',
+    "```",
+  ].join("\n"),
   id: SAMPLE_TASK_ID,
   recipientName: "Sample Assignee",
   replyInstruction: "Reply to this email to leave a comment on the task.",
