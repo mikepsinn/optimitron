@@ -4,8 +4,6 @@
  */
 
 import {
-  SECONDS_PER_MINUTE,
-  SHARING_TIME_MINUTES,
   TREATY_REDUCTION_PCT,
   PRIZE_POOL_HORIZON_MULTIPLE,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
@@ -20,11 +18,6 @@ import {
 import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
 
 const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
-const SHARING_TIME_SECONDS = Math.round(
-  SHARING_TIME_MINUTES.value * SECONDS_PER_MINUTE.value,
-);
-const SHARING_TIME_SECONDS_TEXT =
-  `${SHARING_TIME_SECONDS} ${SHARING_TIME_SECONDS === 1 ? "second" : "seconds"}`;
 
 /** Point name — single source of truth. Change here to rename everywhere. */
 export const POINT_NAME = "VOTE" as const;
@@ -44,14 +37,14 @@ export {
 export const CAMPAIGN_PRINT_COPY = {
   businessCardLines: [
     "Please take",
-    SHARING_TIME_SECONDS_TEXT,
+    "30 seconds",
     "to end war",
     "and disease",
     "warondisease.org",
   ],
   flyerHeadlineLines: [
     "Please take",
-    SHARING_TIME_SECONDS_TEXT,
+    "30 seconds",
     "to end",
     "war and disease",
   ],
