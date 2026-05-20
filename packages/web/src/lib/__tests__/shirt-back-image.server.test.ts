@@ -53,6 +53,17 @@ describe("shirt artwork", () => {
     );
   });
 
+  it("rejects visible labels that cannot fit at the minimum print size", async () => {
+    const longPath = "x".repeat(120);
+
+    await expect(
+      generateShirtBackImage({
+        qrTarget: `https://warondisease.org/vote/${longPath}`,
+        visibleTargetUrl: `warondisease.org/vote/${longPath}`,
+      }),
+    ).rejects.toThrow("too long to print legibly");
+  });
+
   it("rejects malformed QR targets before rendering", async () => {
     await expect(
       generateShirtBackImage({

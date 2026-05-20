@@ -164,6 +164,15 @@ function assertShirtArtworkTargets({
       "visibleTargetUrl must match qrTarget without the protocol.",
     );
   }
+
+  const visibleLabel = visibleTargetUrl.toUpperCase();
+  const visibleLabelWidthAtMinimum =
+    visibleLabel.length *
+    SHIRT_MONO_AVERAGE_GLYPH_WIDTH_EM *
+    SHIRT_VISIBLE_TARGET_MIN_FONT_SIZE;
+  if (visibleLabelWidthAtMinimum > SHIRT_VISIBLE_TARGET_MAX_WIDTH_PX) {
+    throw new Error("visibleTargetUrl is too long to print legibly.");
+  }
 }
 
 function svgBackRule(y: number) {

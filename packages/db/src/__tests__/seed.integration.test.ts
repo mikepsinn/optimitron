@@ -194,17 +194,19 @@ describeIfDatabase("syncManagedData", () => {
         ),
       ),
     );
-    expect(grantTasks[0]?.description).toContain("endorsing the 1% Treaty");
-    expect(grantTasks[0]?.description).toContain("Donate as part of joining");
-    expect(grantTasks[0]?.communicationEndpoints).toEqual([
-      expect.objectContaining({
-        label: "Join",
-        url: "https://warondisease.org/join",
-      }),
-    ]);
-    expect(grantTasks[0]?.communicationEndpoints[0]?.instructions).toContain(
-      "donate as part of joining",
-    );
+    for (const task of grantTasks) {
+      expect(task.description).toContain("endorsing the 1% Treaty");
+      expect(task.description).toContain("Donate as part of joining");
+      expect(task.communicationEndpoints).toEqual([
+        expect.objectContaining({
+          label: "Join",
+          url: "https://warondisease.org/join",
+        }),
+      ]);
+      expect(task.communicationEndpoints[0]?.instructions).toContain(
+        "donate as part of joining",
+      );
+    }
   }, 15000);
 
   it("can run idempotently without duplicating baseline data", async () => {
