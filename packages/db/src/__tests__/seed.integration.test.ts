@@ -3,6 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
 import { syncManagedData } from "../managed-data/index.js";
 import {
+  FOUNDATION_CAMPAIGN_JOIN_TASK_TITLE,
   setManagedSeedDataClient,
   syncManagedTreatyAccountabilityData,
 } from "../managed-data/managed-seed-data.js";
@@ -122,7 +123,7 @@ describeIfDatabase("syncManagedData", () => {
     });
   }, 15000);
 
-  it("seeds foundation grant accountability tasks", async () => {
+  it("seeds foundation campaign join tasks with legacy grant keys", async () => {
     const foundationSlugs = [
       "survival-and-flourishing-fund",
       "open-philanthropy",
@@ -164,6 +165,10 @@ describeIfDatabase("syncManagedData", () => {
       select: {
         assigneeOrganization: { select: { slug: true } },
         category: true,
+        communicationEndpoints: {
+          where: { deletedAt: null, isPrimary: true },
+          select: { instructions: true, label: true, url: true },
+        },
         description: true,
         difficulty: true,
         isPublic: true,
@@ -184,12 +189,22 @@ describeIfDatabase("syncManagedData", () => {
             isPublic: true,
             status: "ACTIVE",
             taskKey: `${legacyGrantTaskKeyPrefix}${slug}`,
-            title: "Fund the International Campaign to End War and Disease",
+            title: FOUNDATION_CAMPAIGN_JOIN_TASK_TITLE,
           }),
         ),
       ),
     );
-    expect(grantTasks[0]?.description).toContain("Suggested grant: $1.");
+    expect(grantTasks[0]?.description).toContain("endorsing the 1% Treaty");
+    expect(grantTasks[0]?.description).toContain("Donate as part of joining");
+    expect(grantTasks[0]?.communicationEndpoints).toEqual([
+      expect.objectContaining({
+        label: "Endorse",
+        url: "https://warondisease.org/endorse",
+      }),
+    ]);
+    expect(grantTasks[0]?.communicationEndpoints[0]?.instructions).toContain(
+      "donate as part of joining",
+    );
   }, 15000);
 
   it("can run idempotently without duplicating baseline data", async () => {

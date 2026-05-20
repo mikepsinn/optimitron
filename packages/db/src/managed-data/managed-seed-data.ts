@@ -75,6 +75,12 @@ import { upsertWishoniaUser } from "../system-users.js";
 
 let prisma = undefined as unknown as PrismaClient;
 
+export const FOUNDATION_CAMPAIGN_JOIN_TASK_TITLE =
+  "Join the International Campaign to End War and Disease" as const;
+
+const FOUNDATION_CAMPAIGN_JOIN_URL = "https://warondisease.org/endorse";
+const FOUNDATION_CAMPAIGN_DONATE_URL = "https://warondisease.org/donate";
+
 export function setManagedSeedDataClient(client: PrismaClient) {
   prisma = client;
 }
@@ -1336,7 +1342,7 @@ export async function syncManagedTreatyAccountabilityData() {
     `  ✓ ${perVerifiedVoterImpactCount} per-verified-voter task impact estimates`,
   );
 
-  // --- Foundation grant accountability tasks ---
+  // --- Foundation campaign join accountability tasks ---
   // Same public-accountability pattern as the head-of-state treaty tasks:
   // name the institution, assign the tiny concrete action, mark it overdue.
   const IC2EWD_GRANT_DALYS_PER_USD =
@@ -1402,7 +1408,7 @@ export async function syncManagedTreatyAccountabilityData() {
       status: "APPROVED",
       website: foundation.website,
       description:
-        "Foundation or grantmaker assigned a public $1 grant task for the International Campaign to End War and Disease.",
+        "Foundation or grantmaker assigned a public campaign-endorsement task for the International Campaign to End War and Disease.",
     } satisfies Prisma.OrganizationUncheckedCreateInput;
 
     const organization = await prisma.organization.upsert({
@@ -1417,25 +1423,23 @@ export async function syncManagedTreatyAccountabilityData() {
         taskKey: `${legacyGrantTaskKeyPrefix}:${slug}`,
         parentTaskId: TREATY_PARENT_TASK_ID,
         assigneeOrganizationId: organization.id,
-        title: "Fund the International Campaign to End War and Disease",
+        title: FOUNDATION_CAMPAIGN_JOIN_TASK_TITLE,
         description: [
-          `${foundation.name} has the opportunity to fund the highest expected-value charitable intervention ever calculated.`,
+          `${foundation.name} can join the International Campaign to End War and Disease by endorsing the 1% Treaty. After endorsement, use the organization tools page to share the Global Survey with members through the survey link, website button, iframe, newsletter, or member email.`,
           "",
-          "The International Campaign to End War and Disease prevents one disability-adjusted life year (DALY) for $0.00177. That is 50,300 times more cost-effective than insecticide-treated bednets, the current gold standard in global health philanthropy.",
+          "Your endorsement matters even before a grant: it gives your members a concrete vote link and tells peer institutions this is no longer somebody else's spreadsheet to inspect.",
           "",
-          "**Suggested grant: $1.**",
+          "Funding is still welcome. The campaign model estimates one disability-adjusted life year (DALY) prevented for $0.00177, 50,300 times more cost-effective than insecticide-treated bednets.",
           "",
-          "At our cost-effectiveness ratio, $1 prevents approximately 565 DALYs, which is roughly 16 healthy life-years. If you would like to prevent more healthy life-years, you may increase the amount.",
-          "",
-          "At $100, you prevent 56,497 DALYs (1,614 healthy life-years).",
-          "At $1,000, you prevent 564,972 DALYs (16,142 healthy life-years).",
-          "At $100,000, you save approximately 3,200 lives.",
+          "A $1 grant tests the donation path and, at that ratio, prevents approximately 565 DALYs, roughly 16 healthy life-years. At $100, the model estimates 56,497 DALYs (1,614 healthy life-years). At $1,000, 564,972 DALYs (16,142 healthy life-years). At $100,000, approximately 3,200 lives.",
           "",
           "These are not projections. They are the output of a cost-benefit model with 670 parameters, Monte Carlo simulation, and complete derivation chains. The model, methodology, and every input parameter are published with 95% confidence intervals at manual.warondisease.org.",
           "",
           "We understand this sounds implausible. We have checked the math. The math does not care whether it sounds implausible.",
           "",
-          "[Donate ->](https://warondisease.org/donate)",
+          `[Join the campaign ->](${FOUNDATION_CAMPAIGN_JOIN_URL})`,
+          "",
+          `[Donate as part of joining ->](${FOUNDATION_CAMPAIGN_DONATE_URL})`,
           "",
           "[Read the full analysis ->](https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html)",
           "",
@@ -1448,15 +1452,23 @@ export async function syncManagedTreatyAccountabilityData() {
         dueAt: TREATY_DUE_AT,
         sortOrder: -75 + index,
         claimPolicy: "ASSIGNED_ONLY",
-        skillTags: ["grantmaking", "global-health", "fundraising"],
-        interestTags: [legacyCampaignKeyStem, "one-percent-treaty", "foundation", "grant"],
+        skillTags: ["grantmaking", "global-health", "fundraising", "member-outreach"],
+        interestTags: [
+          legacyCampaignKeyStem,
+          "one-percent-treaty",
+          "foundation",
+          "grant",
+          "fundraising",
+          "endorsement",
+          "coalition",
+        ],
         estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
       },
       primaryEndpoint: {
-        label: "Donate",
-        url: "https://warondisease.org/donate",
+        label: "Endorse",
+        url: FOUNDATION_CAMPAIGN_JOIN_URL,
         instructions:
-          "Please complete {{taskTitle}} with a $1 grant or a larger one if the math survives contact with your grants committee. Start here: {{taskUrl}}",
+          "Please complete {{taskTitle}} by endorsing the 1% Treaty, then use the organization tools page to share the survey link, website button, iframe, or member email with your audience. Start here: {{taskUrl}}. If the math survives your grants committee, donate as part of joining: https://warondisease.org/donate",
       },
       impact: {
         estimatedCashCostUsdBase: 1,
@@ -1473,7 +1485,7 @@ export async function syncManagedTreatyAccountabilityData() {
     });
   }
 
-  console.log(`  ✓ ${foundationGrantOrganizations.length} foundation grant tasks`);
+  console.log(`  ✓ ${foundationGrantOrganizations.length} foundation campaign join tasks`);
 
   // --- Signer child tasks for the treaty ---
   // Single source of truth: GovernmentLeaderRecord bundles country identity,

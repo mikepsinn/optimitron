@@ -96,6 +96,20 @@ Do not start a new feature unless it helps the sprint get money, convert votes,
 convert referrals, convert organizations, or prove the quantified case to a
 specific funder/partner.
 
+## Backlog - Organization Join Task Scaling
+
+- Keep the first 0-200 researched priority organizations in managed data when
+  each row deserves code review. Build the bulk org-task import script when the
+  target list crosses 200 researched organizations, not before. The script
+  should consume reviewed CSV/JSON, upsert organizations and `Task` rows by
+  stable source refs/task keys, and reuse the same organization join template.
+- For 200-5K organization targets, store the roster outside git and import it
+  through the script; do not add thousands of per-org rows to
+  `managed-seed-data.ts`.
+- For 5K+ targets, import from an external organization registry such as Form
+  990, GuideStar, or Charity Navigator, then curate priority slices before
+  assigning public join tasks.
+
 ## Active Checkout Launch Gates - 2026-05-20
 
 - Deploy the commerce migration before enabling paid shirt checkout.
