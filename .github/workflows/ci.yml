@@ -198,6 +198,8 @@ jobs:
 
       - name: Typecheck web app
         run: pnpm --filter @optimitron/web run typecheck:fast
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
 
       - name: Run web unit tests
         run: pnpm --filter @optimitron/web run test
