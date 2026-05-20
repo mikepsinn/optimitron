@@ -385,6 +385,36 @@ export const TaskEdgeTypeSchema = z.enum([
 ]);
 export type TaskEdgeType = z.infer<typeof TaskEdgeTypeSchema>;
 
+export const TaskFundingTargetStatusSchema = z.enum([
+  'OPEN',
+  'THRESHOLD_MET',
+  'EXPIRED',
+  'CANCELLED',
+]);
+export type TaskFundingTargetStatus = z.infer<typeof TaskFundingTargetStatusSchema>;
+
+export const TaskFundingPledgerKindSchema = z.enum(['PERSON', 'ORGANIZATION']);
+export type TaskFundingPledgerKind = z.infer<typeof TaskFundingPledgerKindSchema>;
+
+export const TaskFundingPledgeStatusSchema = z.enum([
+  'ACTIVE',
+  'CANCELLED',
+  'EXPIRED',
+  'CALLED',
+  'FULFILLED',
+]);
+export type TaskFundingPledgeStatus = z.infer<typeof TaskFundingPledgeStatusSchema>;
+
+export const TaskFundingEventTypeSchema = z.enum([
+  'PLEDGE_CREATED',
+  'PLEDGE_UPDATED',
+  'PLEDGE_CANCELLED',
+  'TARGET_UPDATED',
+  'THRESHOLD_MET',
+  'NOTIFICATION_SENT',
+]);
+export type TaskFundingEventType = z.infer<typeof TaskFundingEventTypeSchema>;
+
 export const SourceSystemSchema = z.enum([
   'MANUAL',
   'OPG',
@@ -589,6 +619,17 @@ export type AgentRunStatus = z.infer<typeof AgentRunStatusSchema>;
 const dateSchema = z.coerce.date();
 const nullableDateSchema = z.coerce.date().nullable().optional();
 const nullableJsonSchema = z.unknown().nullable().optional();
+const decimalSchema = z.union([
+  z.number(),
+  z.string(),
+  z.custom<{ toString(): string }>(
+    (value) =>
+      typeof value === 'object' &&
+      value !== null &&
+      typeof (value as { toString?: unknown }).toString === 'function'
+  ),
+]);
+const nullableDecimalSchema = decimalSchema.nullable().optional();
 
 /** Zod schema for the Person model */
 export const PersonSchema = z.object({
@@ -2025,6 +2066,78 @@ export const TaskSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type TaskType = z.infer<typeof TaskSchema>;
+
+/** Zod schema for the TaskFundingTarget model */
+export const TaskFundingTargetSchema = z.object({
+  id: z.string(),
+  taskId: z.string(),
+  targetAmountCents: z.bigint(),
+  currency: z.string().default('usd'),
+  primaryUnitKey: z.string().nullable().optional(),
+  primaryUnitTargetQuantity: nullableDecimalSchema,
+  status: TaskFundingTargetStatusSchema.default('OPEN'),
+  termsVersion: z.string().nullable().optional(),
+  expiresAt: nullableDateSchema,
+  thresholdMetAt: nullableDateSchema,
+  thresholdMetByPledgeId: z.string().nullable().optional(),
+  notificationSentAt: nullableDateSchema,
+  metadata: nullableJsonSchema,
+  createdByUserId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskFundingTargetType = z.infer<typeof TaskFundingTargetSchema>;
+
+/** Zod schema for the TaskFundingPledge model */
+export const TaskFundingPledgeSchema = z.object({
+  id: z.string(),
+  targetId: z.string(),
+  pledgerKind: TaskFundingPledgerKindSchema,
+  pledgeActorKey: z.string(),
+  pledgedByUserId: z.string().nullable().optional(),
+  pledgerPersonId: z.string().nullable().optional(),
+  pledgerOrganizationId: z.string().nullable().optional(),
+  publicDisplay: z.boolean().default(false),
+  publicNameSnapshot: z.string().nullable().optional(),
+  unitKey: z.string(),
+  unitQuantity: decimalSchema,
+  unitAmountCentsSnapshot: z.bigint().nullable().optional(),
+  committedAmountCents: z.bigint(),
+  currency: z.string().default('usd'),
+  conversionVersion: z.string(),
+  conversionSource: z.string().nullable().optional(),
+  commerceOfferId: z.string().nullable().optional(),
+  commerceOfferVariantId: z.string().nullable().optional(),
+  termsVersion: z.string().nullable().optional(),
+  termsNote: z.string().nullable().optional(),
+  status: TaskFundingPledgeStatusSchema.default('ACTIVE'),
+  idempotencyKey: z.string().nullable().optional(),
+  cancelledAt: nullableDateSchema,
+  cancelledByUserId: z.string().nullable().optional(),
+  cancellationReason: z.string().nullable().optional(),
+  calledAt: nullableDateSchema,
+  fulfilledAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskFundingPledgeType = z.infer<typeof TaskFundingPledgeSchema>;
+
+/** Zod schema for the TaskFundingEvent model */
+export const TaskFundingEventSchema = z.object({
+  id: z.string(),
+  targetId: z.string(),
+  pledgeId: z.string().nullable().optional(),
+  eventType: TaskFundingEventTypeSchema,
+  dedupeKey: z.string().nullable().optional(),
+  actorUserId: z.string().nullable().optional(),
+  beforeJson: nullableJsonSchema,
+  afterJson: nullableJsonSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+});
+export type TaskFundingEventTypeModel = z.infer<typeof TaskFundingEventSchema>;
 
 /** Zod schema for the TaskClaim model */
 export const TaskClaimSchema = z.object({

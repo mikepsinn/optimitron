@@ -518,6 +518,35 @@ enum TaskEdgeType {
   ACCELERATES
 }
 
+enum TaskFundingTargetStatus {
+  OPEN
+  THRESHOLD_MET
+  EXPIRED
+  CANCELLED
+}
+
+enum TaskFundingPledgerKind {
+  PERSON
+  ORGANIZATION
+}
+
+enum TaskFundingPledgeStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  CALLED
+  FULFILLED
+}
+
+enum TaskFundingEventType {
+  PLEDGE_CREATED
+  PLEDGE_UPDATED
+  PLEDGE_CANCELLED
+  TARGET_UPDATED
+  THRESHOLD_MET
+  NOTIFICATION_SENT
+}
+
 /// Upstream source family for tasks, impacts, and analytical artifacts
 enum SourceSystem {
   MANUAL
@@ -841,6 +870,7 @@ model Person {
   authoredTaskComments        TaskComment[]        @relation("TaskCommentAuthorPerson")
   receivedTaskCommunications  TaskCommunication[]  @relation("TaskCommunicationRecipientPerson")
   sentTaskCommunications      TaskCommunication[]  @relation("TaskCommunicationSenderPerson")
+  taskFundingPledges          TaskFundingPledge[]  @relation("PersonTaskFundingPledges")
 
   @@index([displayName])
   @@index([lastName, firstName])
@@ -1587,6 +1617,10 @@ model User {
   submittedMemorialEvidence          PersonMemorialEvidence[]         @relation("UserSubmittedPersonMemorialEvidence")
   reviewedEfficacyLagEvidence        PersonEfficacyLagEvidence[]      @relation("UserReviewedPersonEfficacyLagEvidence")
   reportedInterventionExperiences    InterventionExperience[]         @relation("UserReportedInterventionExperiences")
+  createdTaskFundingTargets          TaskFundingTarget[]              @relation("UserCreatedTaskFundingTargets")
+  taskFundingPledges                 TaskFundingPledge[]              @relation("UserTaskFundingPledges")
+  cancelledTaskFundingPledges        TaskFundingPledge[]              @relation("UserCancelledTaskFundingPledges")
+  taskFundingEvents                  TaskFundingEvent[]               @relation("UserTaskFundingEvents")
 
   @@index([email])
   @@index([referralCode])
@@ -5158,6 +5192,7 @@ model Organization {
   referendumVotes            ReferendumVote[]                 @relation("OrganizationReferendumVotes")
   surveyResponses            SurveyResponse[]                 @relation("OrganizationSurveyResponses")
   memorialResponsibleParties PersonMemorialResponsibleParty[] @relation("OrganizationPersonMemorialResponsibleParties")
+  taskFundingPledges         TaskFundingPledge[]              @relation("OrganizationTaskFundingPledges")
 
   @@index([slug])
   @@index([type])
@@ -5384,6 +5419,7 @@ model Task {
   communications            TaskCommunication[]         @relation("TaskCommunications")
   courtCaseRootFor          CourtCase?                  @relation("CourtCaseRootTask")
   courtCaseRemediesEnforced CourtCaseRemedy[]           @relation("CourtCaseRemedyEnforcementTask")
+  fundingTarget             TaskFundingTarget?          @relation("TaskFundingTargetTask")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -5400,6 +5436,106 @@ model Task {
   @@index([createdByUserId, status, availableAt])
   @@index([isPublic])
   @@index([deletedAt])
+}
+
+/// Funding threshold attached to a task blocked on conditional commitments.
+model TaskFundingTarget {
+  id String @id @default(cuid())
+
+  taskId String @unique
+
+  targetAmountCents         BigInt
+  currency                  String                  @default("usd")
+  primaryUnitKey            String?
+  primaryUnitTargetQuantity Decimal?                @db.Decimal(20, 3)
+  status                    TaskFundingTargetStatus @default(OPEN)
+  termsVersion              String?
+  expiresAt                 DateTime?
+  thresholdMetAt            DateTime?
+  thresholdMetByPledgeId    String?
+  notificationSentAt        DateTime?
+  metadata                  Json?
+  createdByUserId           String?
+  createdAt                 DateTime                @default(now())
+  updatedAt                 DateTime                @updatedAt
+  deletedAt                 DateTime?
+
+  task          Task                @relation("TaskFundingTargetTask", fields: [taskId], references: [id], onDelete: Cascade)
+  createdByUser User?               @relation("UserCreatedTaskFundingTargets", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  pledges       TaskFundingPledge[] @relation("TaskFundingTargetPledges")
+  events        TaskFundingEvent[]  @relation("TaskFundingTargetEvents")
+}
+
+/// Conditional pledge toward a task funding target, keyed by actor and unit.
+model TaskFundingPledge {
+  id String @id @default(cuid())
+
+  targetId String
+
+  pledgerKind             TaskFundingPledgerKind
+  pledgeActorKey          String
+  pledgedByUserId         String?
+  pledgerPersonId         String?
+  pledgerOrganizationId   String?
+  publicDisplay           Boolean                 @default(false)
+  publicNameSnapshot      String?
+  unitKey                 String
+  unitQuantity            Decimal                 @db.Decimal(20, 3)
+  unitAmountCentsSnapshot BigInt?
+  committedAmountCents    BigInt
+  currency                String                  @default("usd")
+  conversionVersion       String
+  conversionSource        String?
+  commerceOfferId         String?
+  commerceOfferVariantId  String?
+  termsVersion            String?
+  termsNote               String?
+  status                  TaskFundingPledgeStatus @default(ACTIVE)
+  idempotencyKey          String?                 @unique
+  cancelledAt             DateTime?
+  cancelledByUserId       String?
+  cancellationReason      String?
+  calledAt                DateTime?
+  fulfilledAt             DateTime?
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  deletedAt               DateTime?
+
+  target               TaskFundingTarget     @relation("TaskFundingTargetPledges", fields: [targetId], references: [id], onDelete: Cascade)
+  pledgedByUser        User?                 @relation("UserTaskFundingPledges", fields: [pledgedByUserId], references: [id], onDelete: SetNull)
+  pledgerPerson        Person?               @relation("PersonTaskFundingPledges", fields: [pledgerPersonId], references: [id], onDelete: SetNull)
+  pledgerOrganization  Organization?         @relation("OrganizationTaskFundingPledges", fields: [pledgerOrganizationId], references: [id], onDelete: SetNull)
+  cancelledByUser      User?                 @relation("UserCancelledTaskFundingPledges", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
+  commerceOffer        CommerceOffer?        @relation("CommerceOfferTaskFundingPledges", fields: [commerceOfferId], references: [id], onDelete: SetNull)
+  commerceOfferVariant CommerceOfferVariant? @relation("CommerceVariantTaskFundingPledges", fields: [commerceOfferVariantId], references: [id], onDelete: SetNull)
+  events               TaskFundingEvent[]    @relation("TaskFundingPledgeEvents")
+
+  @@unique([targetId, pledgeActorKey, unitKey])
+  @@index([targetId, status, createdAt])
+  @@index([targetId, pledgerKind, status])
+  @@index([publicDisplay, status, createdAt])
+}
+
+/// Append-only task funding audit/outbox event.
+model TaskFundingEvent {
+  id String @id @default(cuid())
+
+  targetId String
+  pledgeId String?
+
+  eventType   TaskFundingEventType
+  dedupeKey   String?              @unique
+  actorUserId String?
+  beforeJson  Json?
+  afterJson   Json?
+  metadata    Json?
+  createdAt   DateTime             @default(now())
+
+  target    TaskFundingTarget  @relation("TaskFundingTargetEvents", fields: [targetId], references: [id], onDelete: Cascade)
+  pledge    TaskFundingPledge? @relation("TaskFundingPledgeEvents", fields: [pledgeId], references: [id], onDelete: SetNull)
+  actorUser User?              @relation("UserTaskFundingEvents", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([targetId, eventType, createdAt])
 }
 
 /// A user's claim on a claimable task
@@ -7839,9 +7975,10 @@ model CommerceOffer {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  variants     CommerceOfferVariant[] @relation("CommerceOfferVariants")
-  orderItems   CommerceOrderItem[]    @relation("CommerceOfferOrderItems")
-  entitlements CommerceEntitlement[]  @relation("CommerceOfferEntitlements")
+  variants           CommerceOfferVariant[] @relation("CommerceOfferVariants")
+  orderItems         CommerceOrderItem[]    @relation("CommerceOfferOrderItems")
+  entitlements       CommerceEntitlement[]  @relation("CommerceOfferEntitlements")
+  taskFundingPledges TaskFundingPledge[]    @relation("CommerceOfferTaskFundingPledges")
 
   @@index([kind, status])
   @@index([deletedAt])
@@ -7885,10 +8022,11 @@ model CommerceOfferVariant {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  offer        CommerceOffer                @relation("CommerceOfferVariants", fields: [offerId], references: [id], onDelete: Cascade)
-  mappings     CommerceFulfillmentMapping[] @relation("CommerceVariantFulfillmentMappings")
-  orderItems   CommerceOrderItem[]          @relation("CommerceVariantOrderItems")
-  entitlements CommerceEntitlement[]        @relation("CommerceVariantEntitlements")
+  offer              CommerceOffer                @relation("CommerceOfferVariants", fields: [offerId], references: [id], onDelete: Cascade)
+  mappings           CommerceFulfillmentMapping[] @relation("CommerceVariantFulfillmentMappings")
+  orderItems         CommerceOrderItem[]          @relation("CommerceVariantOrderItems")
+  entitlements       CommerceEntitlement[]        @relation("CommerceVariantEntitlements")
+  taskFundingPledges TaskFundingPledge[]          @relation("CommerceVariantTaskFundingPledges")
 
   @@unique([offerId, variantKey])
   @@index([offerId, active])
