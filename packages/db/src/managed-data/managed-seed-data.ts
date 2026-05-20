@@ -78,7 +78,7 @@ let prisma = undefined as unknown as PrismaClient;
 export const FOUNDATION_CAMPAIGN_JOIN_TASK_TITLE =
   "Join the International Campaign to End War and Disease" as const;
 
-const FOUNDATION_CAMPAIGN_JOIN_URL = "https://warondisease.org/endorse";
+const FOUNDATION_CAMPAIGN_JOIN_URL = "https://warondisease.org/join";
 const FOUNDATION_CAMPAIGN_DONATE_URL = "https://warondisease.org/donate";
 
 export function setManagedSeedDataClient(client: PrismaClient) {
@@ -1465,7 +1465,7 @@ export async function syncManagedTreatyAccountabilityData() {
         estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
       },
       primaryEndpoint: {
-        label: "Endorse",
+        label: "Join",
         url: FOUNDATION_CAMPAIGN_JOIN_URL,
         instructions:
           "Please complete {{taskTitle}} by endorsing the 1% Treaty, then use the organization tools page to share the survey link, website button, iframe, or member email with your audience. Start here: {{taskUrl}}. If the math survives your grants committee, donate as part of joining: https://warondisease.org/donate",

@@ -188,7 +188,7 @@ export async function syncManagedIamOrganization(
       description: buildOrganizationActivationTaskDescription({
         baseUrl: CAMPAIGN_BASE_URL,
         coalitionStrategyUrl: NONPROFIT_COALITION_STRATEGY_URL,
-        legalUrl: `${CAMPAIGN_BASE_URL}/endorse#organization-legal-notes`,
+        legalUrl: `${CAMPAIGN_BASE_URL}/join#organization-legal-notes`,
         organizationName: organization.name,
         organizationToolsUrl,
         surveyUrl,
@@ -205,7 +205,7 @@ export async function syncManagedIamOrganization(
       description: buildOrganizationActivationTaskDescription({
         baseUrl: CAMPAIGN_BASE_URL,
         coalitionStrategyUrl: NONPROFIT_COALITION_STRATEGY_URL,
-        legalUrl: `${CAMPAIGN_BASE_URL}/endorse#organization-legal-notes`,
+        legalUrl: `${CAMPAIGN_BASE_URL}/join#organization-legal-notes`,
         organizationName: organization.name,
         organizationToolsUrl,
         surveyUrl,

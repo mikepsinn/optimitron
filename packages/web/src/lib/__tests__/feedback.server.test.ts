@@ -48,7 +48,7 @@ describe("createFeedbackTask", () => {
     const result = await createFeedbackTask({
       contactEmail: "human@example.org",
       message: "The organization email is confusing.",
-      pageUrl: "https://warondisease.org/endorse",
+      pageUrl: "https://warondisease.org/join",
       submitterEmail: "signed-in@example.org",
       submitterUserId: "user-1",
     });
@@ -75,7 +75,7 @@ describe("createFeedbackTask", () => {
       data: {
         contextJson: expect.objectContaining({
           contactEmail: "human@example.org",
-          pageUrl: "https://warondisease.org/endorse",
+          pageUrl: "https://warondisease.org/join",
           source: "feedback_page",
         }),
       },

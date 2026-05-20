@@ -96,7 +96,7 @@ export const ROUTES = {
   privacy: "/privacy",
   terms: "/terms",
   impact: "/impact",
-  endorse: "/endorse",
+  join: "/join",
   signatories: "/signatories",
   campaign: "/campaign",
   love: "/love",
@@ -851,8 +851,8 @@ export const faqLink: NavItem = {
   cta: "Read the FAQ",
 };
 
-export const endorseLink: NavItem = {
-  href: ROUTES.endorse,
+export const joinLink: NavItem = {
+  href: ROUTES.join,
   label: "Join as an Organization",
   emoji: "✍️",
   description:
@@ -1609,7 +1609,7 @@ export const routeReviewNavItems = [
   plaintiffsManageLink,
   courtLink,
   donateLink,
-  endorseLink,
+  joinLink,
   signatoriesLink,
   presidentManagementLink,
   dashboardLink,

@@ -59,7 +59,7 @@ const COMPONENT_FOLDER_ROUTES = {
   "src/components/signatories/": ["/signatories"],
   "src/components/tasks/": ["/tasks"],
   "src/components/plaintiffs/": ["/plaintiffs"],
-  "src/components/endorse/": ["/endorse"],
+  "src/components/join/": ["/join"],
   "src/components/site/": ["/", "/treaty"],
 };
 

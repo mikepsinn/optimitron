@@ -28,7 +28,7 @@ export default async function OrganizationsPage() {
         </p>
         {organizations.length > 0 ? (
           <Link
-            href={ROUTES.endorse}
+            href={ROUTES.join}
             className="mt-6 inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
           >
             Create Organization
@@ -42,7 +42,7 @@ export default async function OrganizationsPage() {
             No organizations are connected to your account yet.
           </p>
           <Link
-            href={ROUTES.endorse}
+            href={ROUTES.join}
             className="mt-4 inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
           >
             Create Organization

@@ -32,10 +32,13 @@ export const dynamic = "force-dynamic";
 
 export default async function OrganizationPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id } = await params;
+  const resolvedSearchParams = (await searchParams) ?? {};
   const user = await getCurrentUser();
 
   const org = await prisma.organization.findFirst({
@@ -57,6 +60,7 @@ export default async function OrganizationPage({
 
   const canManage = user ? await canManageOrganization(user.id, org.id) : false;
   const isManager = Boolean(user && (canManage || user.isAdmin));
+  const joinedFlag = resolvedSearchParams.joined === "1";
   const referralIdentifier = user
     ? getHandleOrReferralCode({
         handle: user.person?.handle ?? null,
@@ -178,6 +182,12 @@ ${organizationSurveyUrl}`;
           </p>
         ) : null}
       </header>
+
+      {joinedFlag && (
+        <p className="mb-6 border-y border-foreground py-3 text-sm font-bold uppercase tracking-wider text-foreground">
+          Organization joined. Copy one outreach asset and send it.
+        </p>
+      )}
 
       <div className="space-y-10">
         {org.status === "APPROVED" ? (

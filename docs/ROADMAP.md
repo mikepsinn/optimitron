@@ -63,7 +63,7 @@ not let it compete with the campaign while the treaty is the bottleneck.
 
 ### Organization Spread
 
-- Make `/endorse` the fast path for foundations, nonprofits, researchers,
+- Make `/join` the fast path for foundations, nonprofits, researchers,
   companies, and partner communities to join and recruit their people.
 - Keep outreach templates short, parameter-backed, and pointed at one action.
 - Prefer embedding and referral links over bespoke partnership flows.

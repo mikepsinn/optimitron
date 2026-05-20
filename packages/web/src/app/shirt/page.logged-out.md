@@ -23,6 +23,6 @@
 - TOTAL CONTRIBUTION$25$35$50$100 Custom
 - Your contribution above the $15 shirt fair market value is tax-deductible.
 - Front: THIS T-SHIRT ENDED WAR AND DISEASE.
-- Back: Trade 1 apocalypse for disease eradication at warondisease.org. Plus the per-buyer QR code.
+- Back: Trade one apocalypse for disease eradication at warondisease.org. Plus the per-buyer QR code.
 - FRONT
 - BACK WITH REFERRAL QR

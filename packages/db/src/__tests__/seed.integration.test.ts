@@ -198,8 +198,8 @@ describeIfDatabase("syncManagedData", () => {
     expect(grantTasks[0]?.description).toContain("Donate as part of joining");
     expect(grantTasks[0]?.communicationEndpoints).toEqual([
       expect.objectContaining({
-        label: "Endorse",
-        url: "https://warondisease.org/endorse",
+        label: "Join",
+        url: "https://warondisease.org/join",
       }),
     ]);
     expect(grantTasks[0]?.communicationEndpoints[0]?.instructions).toContain(

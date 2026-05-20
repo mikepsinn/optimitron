@@ -46,7 +46,7 @@ export async function ensureOrganizationTreatyActivationTask(
   const description = buildOrganizationActivationTaskDescription({
     baseUrl,
     coalitionStrategyUrl: NONPROFIT_COALITION_STRATEGY_URL,
-    legalUrl: `${baseUrl}/endorse#organization-legal-notes`,
+    legalUrl: `${baseUrl}/join#organization-legal-notes`,
     organizationName: organization.name,
     organizationToolsUrl,
     surveyUrl,

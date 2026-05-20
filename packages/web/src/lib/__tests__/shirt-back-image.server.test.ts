@@ -14,7 +14,7 @@ import {
 describe("shirt artwork", () => {
   it("keeps the approved back copy", () => {
     expect(SHIRT_BACK_COPY).toBe(
-      "Trade 1 apocalypse for disease eradication at warondisease.org.",
+      "Trade one apocalypse for disease eradication at warondisease.org.",
     );
   });
 

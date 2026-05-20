@@ -26,8 +26,8 @@ const OTHER_ACTIONS: Array<{ href: string; label: string; body: string }> = [
     body: "193 heads of government. 1.4 years overdue on a 30-second task.",
   },
   {
-    href: ROUTES.endorse,
-    label: "Endorse as an organization",
+    href: ROUTES.join,
+    label: "Join as an organization",
     body: "If you speak for a company, charity, coalition, or church.",
   },
 ];

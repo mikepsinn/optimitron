@@ -86,7 +86,7 @@ Right now. With this code. Not in some theoretical future where humans have lear
 |------|-----|-------|
 | Vote for the 1% Treaty | Cast a treaty vote and get a referral link | [`warondisease.org`](https://warondisease.org) / [`/vote`](packages/web/) |
 | Recruit two humans | Share tracked invites and watch conversions | [`/dashboard`](packages/web/) |
-| Endorse as an organization | Join, embed, and recruit your community | [`/endorse`](packages/web/) |
+| Join as an organization | Join, embed, and recruit your community | [`/join`](packages/web/) |
 | Register a plaintiff | Join the Court of Humanity case framing | [`/plaintiffs`](packages/web/) |
 | Remind a leader | 193 heads of state have a constitutional duty to promote the general welfare — remind them it's overdue | [`/tasks/1-pct-treaty`](packages/web/) |
 | Express your budget preferences | 5-minute pairwise comparison survey | [`/agencies/dcongress/wishocracy`](packages/web/) |

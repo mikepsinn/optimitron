@@ -282,7 +282,7 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(warSite, ROUTES.campaign)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.coalition)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.humanityVGovernment)).toBe(true);
-    expect(isSiteRouteAllowed(warSite, ROUTES.endorse)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.join)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.privacy)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.terms)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.reasoning)).toBe(true);
@@ -312,7 +312,7 @@ describe("site variant registry", () => {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.endorse,
+      ROUTES.join,
       ROUTES.impact,
       ROUTES.treaty,
       ROUTES.donate,

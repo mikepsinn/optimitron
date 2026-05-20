@@ -33,7 +33,7 @@ const draft = {
   description: "A serious organization.",
   donationUrl: "https://example.org/donate",
   organizationName: "Coalition for Testable Medicine",
-  originUrl: "https://warondisease.org/endorse",
+  originUrl: "https://warondisease.org/join",
   referendumSlug: "one-percent-treaty",
   statement: "We agree.",
   timestamp: "2026-05-06T12:00:00.000Z",

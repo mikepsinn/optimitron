@@ -64,7 +64,7 @@ Do not let lower items crowd out higher ones.
 
 Repo audit finding: the campaign machinery mostly exists. `/vote` and
 `/treaty` mount the treaty flow; `AuthForm` now locks the email-login controls
-after a sign-in link is sent; `/endorse` creates or opens organization tools;
+after a sign-in link is sent; `/join` creates or opens organization tools;
 organization pages expose a survey URL, email starter, website button, iframe,
 preview, manager referral URL, and grant calculator; `/poster` has referral QR
 printing; `/donate` and `/fund` exist; signatories rank humans and
@@ -84,7 +84,7 @@ Cost-benefit gate for near-term work:
 | --- | --- | --- | --- |
 | Write a 30-day funder/distribution sprint packet (`docs/funding-sprint.md` first; public page only after copy review) | Gives donors and partner orgs a concrete ask: budget, targets, proof links, and done conditions | 2-4 hours, no schema, no new UI required | Do now |
 | Seed or curate the first outreach task queue in existing `Task` records | Converts "get organizations" into accountable follow-up work using the current task model | 0.5-1 day; avoid new outreach schema | Do after the packet if outreach starts |
-| Polish `/endorse` and organization tools from first 5 real outreach attempts | Removes actual conversion friction at the organization step | 1-3 hours per observed issue; screenshots and copy approval required | Do only from observed friction |
+| Polish `/join` and organization tools from first 5 real outreach attempts | Removes actual conversion friction at the organization step | 1-3 hours per observed issue; screenshots and copy approval required | Do only from observed friction |
 | Add a cheap weekly metrics report from existing referral/org/vote tables | Shows whether money bought votes, orgs, referrals, or nothing | 2-6 hours; avoid a dashboard until reports are used | Do as a script/export, not a product surface |
 | Redesign `/fund` or expand prize/fund mechanics | Could look more fundable, but funders need a concrete sprint first | High copy/UI review cost; risks leading with mechanism instead of distribution | Defer |
 | Poster style selector, PDF export, OG variants | Useful if physical distribution proves real | 0.5-2 days plus UI screenshot review | Defer until poster scans/signatures show demand |
@@ -234,7 +234,7 @@ specific funder/partner.
   signature box, YES/NO. No stepper, slide split, competing Court CTA, or
   decorative explanation before the vote.
 - After the PR #75 managed referendum sync reaches production, regenerate and
-  commit the treaty/h-v-g/endorse markdown snapshots so citation URLs reflect
+  commit the treaty/h-v-g/join markdown snapshots so citation URLs reflect
   the fixed upstream manual refs.
 - Keep treaty copy parameter-backed. Do not hand-type 4B, 32 rounds, 122
   apocalypses, trial multiplier, or eradication-timeline numbers where a
@@ -331,7 +331,7 @@ specific funder/partner.
   from the post-vote-share email: voters are Humanity Managers at Earth
   Optimization Services LLC; partner orgs are Authorized Earth Optimization
   Services Providers, each with a vendor-style certification badge they can
-  display. Update `/endorse` to register orgs under this category. Per the
+  display. Update `/join` to register orgs under this category. Per the
   neutral-partner-copy note above: keep the application form itself
   professional enough not to scare off serious nonprofits — AEOSP framing
   lives in campaign-facing pages, shared snippets, and the badge artifact,
@@ -349,7 +349,7 @@ Roadmap from Mike's 2026-05-15 brainstorm. /people/[id] redesign lands in PR #81
 
 - **PR-B: `/orgs/[slug]` task display.** Mirror `/people/[id]` conversion-surface pattern onto org pages. Reuse `SufferingPreventedMetric` (extracted in #81). Wire `getOrganizationTasks` MCP to a page consumer. Primary CTA: ENDORSE (visitor not in org) vs SHARE (visitor's org already endorsed). Below-fold: org-completed tasks + member leaderboard.
 
-- **PR-C: Add-org + assign-task UX.** Backend primitives exist (`createOrganization` + `createTask` MCP). New surfaces: `/orgs/[slug]/admin/tasks` for org admin self-assignment; `/admin/assign-task` (superuser, Mike-only) for cross-org. Gate behind superuser role until proper moderation. Audience: org admin who endorsed via `/endorse`, wants to coordinate their members.
+- **PR-C: Add-org + assign-task UX.** Backend primitives exist (`createOrganization` + `createTask` MCP). New surfaces: `/orgs/[slug]/admin/tasks` for org admin self-assignment; `/admin/assign-task` (superuser, Mike-only) for cross-org. Gate behind superuser role until proper moderation. Audience: org admin who joined via `/join`, wants to coordinate their members.
 
 - **PR-D: Hand-curated public-figure catalog.** Seed Person rows for top 50-100 public figures (scientists, politicians, celebrities). Each row: displayName, handle (`mlk`, `einstein`, `gates`), 50-word deadpan-Wishonia bio, 1-3 attributed campaign-relevant actions with documented public-statement sources, impact-estimate (DALYs averted, methodology-cited from `parameters-calculations-citations.ts`), `isPublicFigure: true` flag (new bool on Person). `/people/<famous-slug>` renders with "Public-figure record" eyebrow. Visitors can co-sign the figure's position.
 

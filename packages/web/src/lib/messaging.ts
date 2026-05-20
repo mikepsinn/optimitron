@@ -49,7 +49,7 @@ export const CAMPAIGN_PRINT_COPY = {
     "war and disease",
   ],
   shirtBackLines: [
-    "Trade 1 apocalypse",
+    "Trade one apocalypse",
     "for disease eradication",
     "at warondisease.org.",
   ],

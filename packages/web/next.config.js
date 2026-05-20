@@ -135,7 +135,14 @@ const nextConfig = {
   },
   async redirects() {
     if (isStaticExport) return [];
-    return REDIRECTS;
+    return [
+      ...REDIRECTS,
+      {
+        source: "/endorse",
+        destination: "/join",
+        permanent: true,
+      },
+    ];
   },
 };
 
