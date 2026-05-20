@@ -10,7 +10,7 @@ export default function FoundationsPage() {
     <main className="min-h-screen bg-background px-4 py-12 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
         <section className="border-2 border-foreground bg-background p-5 sm:p-8">
-          <h1 className="text-3xl font-black uppercase leading-none sm:text-6xl">
+          <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
             BUY THE T-SHIRT THAT ENDED WAR AND DISEASE.
           </h1>
           <p className="mt-6 text-lg font-bold leading-8 sm:text-xl sm:leading-9">

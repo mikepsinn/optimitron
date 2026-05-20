@@ -9,8 +9,45 @@ import {
   CampaignText,
 } from "@/lib/email/react-email-components";
 
+type SanitizeHtmlOptions = {
+  allowedAttributes: Record<string, string[]>;
+  allowedSchemes: string[];
+  allowedTags: string[];
+};
+
+type SanitizeHtml = (dirty: string, options: SanitizeHtmlOptions) => string;
+
+const sanitizeHtml = require("sanitize-html") as SanitizeHtml;
+
 const ink = "#000";
 const softPaper = "#f8f8f8";
+
+const taskDescriptionSanitizeOptions = {
+  allowedAttributes: {
+    a: ["href"],
+  },
+  allowedSchemes: ["http", "https", "mailto"],
+  allowedTags: [
+    "a",
+    "p",
+    "strong",
+    "em",
+    "code",
+    "pre",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "blockquote",
+    "br",
+    "hr",
+  ],
+} satisfies SanitizeHtmlOptions;
 
 const markdownCustomStyles = {
   p: {
@@ -105,7 +142,7 @@ function escapeHtml(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-export function escapeHtmlInFencedCodeBlocks(description: string): string {
+function escapeHtmlInMarkdownCodeFenceContent(description: string): string {
   const lines = description.match(/[^\r\n]*(?:\r\n|\n|\r|$)/g) ?? [];
   let insideFence = false;
 
@@ -121,6 +158,37 @@ export function escapeHtmlInFencedCodeBlocks(description: string): string {
       return insideFence ? escapeHtml(line) : line;
     })
     .join("");
+}
+
+const markdownAutolinkPattern = /<((?:https?:\/\/|mailto:)[^\s<>"']+)>/gi;
+
+function preserveMarkdownAutolinks(description: string): {
+  autolinks: string[];
+  markdown: string;
+} {
+  const autolinks: string[] = [];
+
+  const markdown = description.replace(markdownAutolinkPattern, (match) => {
+    const token = `__OPTIMITRON_MARKDOWN_AUTOLINK_${autolinks.length}__`;
+    autolinks.push(match);
+    return token;
+  });
+
+  return { autolinks, markdown };
+}
+
+export function sanitizeTaskDescriptionMarkdown(description: string): string {
+  const codeFenceSafeDescription =
+    escapeHtmlInMarkdownCodeFenceContent(description);
+  const { autolinks, markdown } = preserveMarkdownAutolinks(
+    codeFenceSafeDescription,
+  );
+  const sanitizedMarkdown = sanitizeHtml(markdown, taskDescriptionSanitizeOptions);
+
+  return sanitizedMarkdown.replace(
+    /__OPTIMITRON_MARKDOWN_AUTOLINK_(\d+)__/g,
+    (_, autolinkIndex: string) => autolinks[Number(autolinkIndex)] ?? "",
+  );
 }
 
 export function TaskAssignmentReactEmail({
@@ -154,7 +222,7 @@ export function TaskAssignmentReactEmail({
           markdownCustomStyles={markdownCustomStyles}
           markdownContainerStyles={markdownContainerStyles}
         >
-          {escapeHtmlInFencedCodeBlocks(description.trim())}
+          {sanitizeTaskDescriptionMarkdown(description.trim())}
         </Markdown>
       </div>
       <CampaignButton href={taskUrl}>Open task</CampaignButton>

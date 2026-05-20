@@ -135,6 +135,7 @@
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "resend": "^6.9.3",
+    "sanitize-html": "^2.17.4",
     "sonner": "^2.0.7",
     "stripe": "^19.3.0",
     "tailwind-merge": "^3.4.0",

@@ -137,4 +137,75 @@ describe("buildTaskAssignmentNotificationEmail", () => {
     expect(email.html).toContain("&lt;iframe");
     expect(email.html).not.toMatch(/<iframe\b/i);
   });
+
+  it("strips raw script tags outside fenced code blocks", async () => {
+    const email = await buildTaskAssignmentNotificationEmail({
+      ...baseTaskInput,
+      description: [
+        "Review the submitted task.",
+        "",
+        "<script>alert(1)</script>",
+      ].join("\n"),
+    });
+
+    expect(email.html).not.toMatch(/<script\b/i);
+  });
+
+  it("strips raw iframe tags outside fenced code blocks", async () => {
+    const email = await buildTaskAssignmentNotificationEmail({
+      ...baseTaskInput,
+      description: [
+        "Review the submitted task.",
+        "",
+        '<iframe src="https://evil.example/embed"></iframe>',
+      ].join("\n"),
+    });
+
+    expect(email.html).not.toMatch(/<iframe\b/i);
+  });
+
+  it("removes javascript URLs from raw anchors outside fenced code blocks", async () => {
+    const email = await buildTaskAssignmentNotificationEmail({
+      ...baseTaskInput,
+      description:
+        'Review <a href="javascript:alert(1)">the submitted task</a>.',
+    });
+
+    expect(email.html).not.toContain("javascript:alert");
+  });
+
+  it("removes event handler attributes from raw image tags outside fenced code blocks", async () => {
+    const email = await buildTaskAssignmentNotificationEmail({
+      ...baseTaskInput,
+      description: 'Review <img src=x onerror=alert(1)> the submitted task.',
+    });
+
+    expect(email.html).not.toContain("onerror");
+  });
+
+  it("preserves safe markdown features after sanitizing task descriptions", async () => {
+    const email = await buildTaskAssignmentNotificationEmail({
+      ...baseTaskInput,
+      description: [
+        "# Do this",
+        "",
+        "Use **bold** and *emphasis*.",
+        "",
+        "- [HTTP](http://warondisease.org)",
+        "- [HTTPS](https://warondisease.org)",
+        "- [Email](mailto:team@warondisease.org)",
+        "",
+        "Open <https://manual.warondisease.org>.",
+      ].join("\n"),
+    });
+
+    expect(email.html).toContain("<h1");
+    expect(email.html).toContain("<strong");
+    expect(email.html).toContain("<em");
+    expect(email.html).toContain("<ul");
+    expect(email.html).toContain('href="http://warondisease.org"');
+    expect(email.html).toContain('href="https://warondisease.org"');
+    expect(email.html).toContain('href="mailto:team@warondisease.org"');
+    expect(email.html).toContain('href="https://manual.warondisease.org"');
+  });
 });
