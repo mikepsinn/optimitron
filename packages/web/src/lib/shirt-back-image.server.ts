@@ -1,15 +1,21 @@
 import crypto from "node:crypto";
 import QRCode from "qrcode";
 import sharp from "sharp";
+import {
+  CAMPAIGN_PRINT_COPY,
+  SHIRT_BACK_COPY_LINES,
+} from "@/lib/messaging";
 import { uploadObject } from "@/lib/object-storage.server";
+
+export {
+  SHIRT_BACK_COPY,
+  SHIRT_BACK_COPY_LINES,
+  SHIRT_FRONT_COPY,
+} from "@/lib/messaging";
 
 export const SHIRT_PRINT_WIDTH_PX = 3000;
 export const SHIRT_PRINT_HEIGHT_PX = 3600;
 export const SHIRT_PRINT_DPI = 300;
-export const SHIRT_BACK_COPY =
-  "I ended war and disease and all I got was this lousy t-shirt";
-export const SHIRT_FRONT_COPY =
-  "please take 30 seconds to end war and disease at warondisease.org";
 
 function escapeSvgText(value: string) {
   return value
@@ -23,6 +29,17 @@ function svgTextLine(text: string, y: number, fontSize: number) {
   return `<text x="1500" y="${y}" fill="#000000" font-family="Georgia, 'Times New Roman', serif" font-size="${fontSize}" font-weight="900" text-anchor="middle">${escapeSvgText(text)}</text>`;
 }
 
+function getFittingMonoFontSize(
+  text: string,
+  maxWidth: number,
+  maxFontSize: number,
+) {
+  return Math.min(
+    maxFontSize,
+    Math.floor(maxWidth / Math.max(text.length * 0.62, 1)),
+  );
+}
+
 function baseSvg(content: string) {
   return Buffer.from(
     `<svg width="${SHIRT_PRINT_WIDTH_PX}" height="${SHIRT_PRINT_HEIGHT_PX}" viewBox="0 0 ${SHIRT_PRINT_WIDTH_PX} ${SHIRT_PRINT_HEIGHT_PX}" xmlns="http://www.w3.org/2000/svg">
@@ -33,15 +50,15 @@ function baseSvg(content: string) {
 }
 
 export async function generateShirtFrontImage(): Promise<Buffer> {
+  const [pleaseTake, timeText, toEnd, warAndDisease, atText, urlText] =
+    CAMPAIGN_PRINT_COPY.shirtFrontLines;
   const svg = baseSvg(`
-    <line x1="260" x2="2740" y1="730" y2="730" stroke="#000000" stroke-width="18"/>
-    <line x1="260" x2="2740" y1="2800" y2="2800" stroke="#000000" stroke-width="18"/>
-    ${svgTextLine("PLEASE TAKE", 1080, 230)}
-    ${svgTextLine("30 SECONDS", 1340, 230)}
-    ${svgTextLine("TO END", 1600, 230)}
-    ${svgTextLine("WAR AND DISEASE", 1870, 210)}
-    ${svgTextLine("AT", 2120, 180)}
-    <text x="1500" y="2360" fill="#000000" font-family="'Courier New', monospace" font-size="158" font-weight="900" text-anchor="middle">warondisease.org</text>
+    ${svgTextLine(pleaseTake, 850, 340)}
+    ${svgTextLine(timeText, 1225, 390)}
+    ${svgTextLine(toEnd, 1610, 440)}
+    ${svgTextLine(warAndDisease, 1985, 270)}
+    ${svgTextLine(atText, 2340, 430)}
+    <text x="1500" y="2670" fill="#000000" font-family="'Courier New', monospace" font-size="238" font-weight="900" text-anchor="middle">${escapeSvgText(urlText.toLowerCase())}</text>
   `);
 
   return sharp(svg)
@@ -57,6 +74,12 @@ export async function generateShirtBackImage({
   qrTarget: string;
   visibleTargetUrl: string;
 }): Promise<Buffer> {
+  const visibleTargetLabel = visibleTargetUrl.toUpperCase();
+  const visibleTargetFontSize = getFittingMonoFontSize(
+    visibleTargetLabel,
+    2480,
+    116,
+  );
   const qrPng = await QRCode.toBuffer(qrTarget, {
     color: {
       dark: "#000000",
@@ -70,16 +93,16 @@ export async function generateShirtBackImage({
 
   const svg = baseSvg(`
     <line x1="260" x2="2740" y1="370" y2="370" stroke="#000000" stroke-width="14"/>
-    ${svgTextLine("I ENDED WAR AND DISEASE", 590, 160)}
-    ${svgTextLine("AND ALL I GOT WAS THIS", 780, 152)}
-    ${svgTextLine("LOUSY T-SHIRT", 970, 170)}
-    <line x1="260" x2="2740" y1="1120" y2="1120" stroke="#000000" stroke-width="14"/>
-    <rect x="950" y="1390" width="1100" height="1100" fill="#ffffff" stroke="#000000" stroke-width="22"/>
-    <text x="1500" y="2700" fill="#000000" font-family="'Courier New', monospace" font-size="78" font-weight="900" text-anchor="middle">${escapeSvgText(visibleTargetUrl.toUpperCase())}</text>
+    ${svgTextLine(SHIRT_BACK_COPY_LINES[0], 520, 205)}
+    ${svgTextLine(SHIRT_BACK_COPY_LINES[1], 760, 175)}
+    ${svgTextLine(SHIRT_BACK_COPY_LINES[2], 1000, 205)}
+    <line x1="260" x2="2740" y1="1150" y2="1150" stroke="#000000" stroke-width="14"/>
+    <rect x="950" y="1330" width="1100" height="1100" fill="#ffffff" stroke="#000000" stroke-width="22"/>
+    <text x="1500" y="2675" fill="#000000" font-family="'Courier New', monospace" font-size="${visibleTargetFontSize}" font-weight="900" text-anchor="middle">${escapeSvgText(visibleTargetLabel)}</text>
   `);
 
   return sharp(svg)
-    .composite([{ input: qrPng, left: 1010, top: 1450 }])
+    .composite([{ input: qrPng, left: 1010, top: 1390 }])
     .png()
     .withMetadata({ density: SHIRT_PRINT_DPI })
     .toBuffer();

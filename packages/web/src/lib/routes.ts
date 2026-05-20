@@ -197,7 +197,7 @@ export interface NavItem {
 export const homeLink: NavItem = {
   href: ROUTES.home,
   label: "Home",
-  emoji: "",
+  emoji: "🏠",
   description:
     "Please take 30 seconds to end war and disease. Vote on the 1% Treaty, then give one human the same job.",
   tagline: "Take 30 seconds to end war and disease",
@@ -997,7 +997,7 @@ export const contributeLink: NavItem = {
 export const loveLink: NavItem = {
   href: ROUTES.love,
   label: "End War and Disease From Your Dating Profile",
-  emoji: "",
+  emoji: "❤️",
   description:
     "You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.",
   tagline: "End war and disease from your dating profile.",
@@ -1009,7 +1009,7 @@ export const loveLink: NavItem = {
 export const posterLink: NavItem = {
   href: ROUTES.poster,
   label: "Print Referral Poster",
-  emoji: "",
+  emoji: "📄",
   description:
     "Print a poster with your campaign QR code so humans can vote from walls, doors, and awkward dates.",
   tagline: "Print your campaign QR code.",
@@ -1021,9 +1021,9 @@ export const posterLink: NavItem = {
 export const shirtLink: NavItem = {
   href: ROUTES.shirt,
   label: "Make the Shirt",
-  emoji: "",
+  emoji: "👕",
   description:
-    "Download a shirt-back image with your campaign QR code. Your torso is not busy enough.",
+    "Order a War on Disease shirt with campaign copy and a QR code. Your torso is not busy enough.",
   tagline: "Wear your campaign QR code.",
   copyPreview: true,
   screenshot: true,
@@ -1033,7 +1033,7 @@ export const shirtLink: NavItem = {
 export const storeLink: NavItem = {
   href: ROUTES.store,
   label: "Store",
-  emoji: "",
+  emoji: "🛍️",
   description:
     "Buy useful campaign things: shirts, flyer runs, and other distribution fuel.",
   tagline: "Buy useful campaign things.",

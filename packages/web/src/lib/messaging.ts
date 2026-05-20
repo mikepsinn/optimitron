@@ -4,6 +4,7 @@
  */
 
 import {
+  SHARING_TIME_MINUTES,
   TREATY_REDUCTION_PCT,
   PRIZE_POOL_HORIZON_MULTIPLE,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
@@ -18,6 +19,8 @@ import {
 import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
 
 const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
+const SHARING_TIME_SECONDS_TEXT =
+  `${Math.round(SHARING_TIME_MINUTES.value * 60)} seconds`;
 
 /** Point name — single source of truth. Change here to rename everywhere. */
 export const POINT_NAME = "VOTE" as const;
@@ -33,6 +36,41 @@ export {
   HUMANITY_MANAGEMENT,
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 };
+
+export const CAMPAIGN_PRINT_COPY = {
+  businessCardLines: [
+    "Please take",
+    "30 seconds",
+    "to end war",
+    "and disease",
+    "warondisease.org",
+  ],
+  flyerHeadlineLines: [
+    "Please take",
+    "30 seconds",
+    "to end",
+    "war and disease",
+  ],
+  shirtBackLines: [
+    "TRADE ONE APOCALYPSE",
+    "FOR DISEASE ERADICATION",
+    "AT WARONDISEASE.ORG",
+  ],
+  shirtFrontLines: [
+    "PLEASE TAKE",
+    SHARING_TIME_SECONDS_TEXT.toUpperCase(),
+    "TO END",
+    "WAR AND DISEASE",
+    "AT",
+    "WARONDISEASE.ORG",
+  ],
+} as const;
+
+export const SHIRT_FRONT_COPY =
+  CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ").toLowerCase();
+export const SHIRT_BACK_COPY_LINES = CAMPAIGN_PRINT_COPY.shirtBackLines;
+export const SHIRT_BACK_COPY =
+  SHIRT_BACK_COPY_LINES.join(" ").toLowerCase();
 
 // ---------------------------------------------------------------------------
 // User-framing vocabulary (variant-aware)

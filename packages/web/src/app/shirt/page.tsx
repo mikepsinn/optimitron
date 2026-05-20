@@ -3,14 +3,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { SHARING_TIME_MINUTES } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import {
-  PosterCopyLinkButton,
-  PosterPrintButton,
-  PosterQrCode,
-} from "@/app/poster/poster-client";
+import { PosterQrCode } from "@/app/poster/poster-client";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
 import { serverEnv } from "@/lib/env";
+import { CAMPAIGN_PRINT_COPY, SHIRT_BACK_COPY_LINES } from "@/lib/messaging";
 import { getRouteMetadata } from "@/lib/metadata";
 import { ROUTES, shirtLink } from "@/lib/routes";
 import { buildReferralUrl } from "@/lib/url";
@@ -20,10 +17,20 @@ import { ShirtDownloadImageButton, ShirtOrderForm } from "./shirt-client";
 export const metadata = getRouteMetadata(shirtLink);
 
 const SHIRT_BACK_ARTWORK_ID = "war-on-disease-shirt-back";
-const PRINTFUL_UPLOAD_URL = "https://www.printful.com/custom/mens/t-shirts";
 
 function getVisibleTargetUrl(targetUrl: string) {
   return targetUrl.replace(/^https?:\/\//, "");
+}
+
+function getFittingMonoFontSize(
+  text: string,
+  maxWidth: number,
+  maxFontSize: number,
+) {
+  return Math.min(
+    maxFontSize,
+    Math.floor(maxWidth / Math.max(text.length * 0.62, 1)),
+  );
 }
 
 function VoteTimeValue({ className }: { className?: string }) {
@@ -57,6 +64,9 @@ function ArtworkPanel({
 }
 
 function ShirtFrontArtwork() {
+  const [pleaseTake, , toEnd, warAndDisease, atText, urlText] =
+    CAMPAIGN_PRINT_COPY.shirtFrontLines;
+
   return (
     <svg
       aria-label="Front shirt artwork"
@@ -86,30 +96,36 @@ function ShirtFrontArtwork() {
         >
           <div
             style={{
-              borderBottom: "18px solid #000000",
-              borderTop: "18px solid #000000",
               fontWeight: 900,
-              lineHeight: "0.98",
-              padding: "92px 0",
+              lineHeight: "0.9",
+              padding: "32px 0",
               width: "100%",
             }}
           >
-            <div style={{ fontSize: "180px" }}>Please take</div>
-            <div style={{ fontSize: "174px" }}>
+            <div style={{ fontSize: "275px", whiteSpace: "nowrap" }}>
+              {pleaseTake}
+            </div>
+            <div style={{ fontSize: "300px", whiteSpace: "nowrap" }}>
               <VoteTimeValue />
             </div>
-            <div style={{ fontSize: "180px" }}>to end</div>
-            <div style={{ fontSize: "174px" }}>war and disease</div>
-            <div style={{ fontSize: "160px" }}>at</div>
+            <div style={{ fontSize: "380px", whiteSpace: "nowrap" }}>
+              {toEnd}
+            </div>
+            <div style={{ fontSize: "220px", whiteSpace: "nowrap" }}>
+              {warAndDisease}
+            </div>
+            <div style={{ fontSize: "380px", whiteSpace: "nowrap" }}>
+              {atText}
+            </div>
             <div
               style={{
                 fontFamily: "'Courier New', monospace",
-                fontSize: "128px",
+                fontSize: "190px",
                 letterSpacing: "0",
                 whiteSpace: "nowrap",
               }}
             >
-              warondisease.org
+              {urlText}
             </div>
           </div>
         </div>
@@ -126,6 +142,11 @@ function ShirtBackArtwork({
   visibleTargetUrl: string;
 }) {
   const visibleTargetLabel = visibleTargetUrl.toUpperCase();
+  const visibleTargetFontSize = getFittingMonoFontSize(
+    visibleTargetLabel,
+    2040,
+    92,
+  );
 
   return (
     <svg
@@ -143,37 +164,37 @@ function ShirtBackArtwork({
       <text
         fill="#000000"
         fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="112"
+        fontSize="168"
         fontWeight="900"
         textAnchor="middle"
         x="1200"
         y="260"
       >
-        I ENDED WAR AND DISEASE AND
+        {SHIRT_BACK_COPY_LINES[0]}
       </text>
       <text
         fill="#000000"
         fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="112"
+        fontSize="144"
         fontWeight="900"
         textAnchor="middle"
         x="1200"
-        y="370"
+        y="435"
       >
-        ALL I GOT WAS THIS LOUSY
+        {SHIRT_BACK_COPY_LINES[1]}
       </text>
       <text
         fill="#000000"
         fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="112"
+        fontSize="168"
         fontWeight="900"
         textAnchor="middle"
         x="1200"
-        y="480"
+        y="610"
       >
-        T-SHIRT.
+        {SHIRT_BACK_COPY_LINES[2]}
       </text>
-      <line stroke="#000000" strokeWidth="10" x1="180" x2="2220" y1="630" y2="630" />
+      <line stroke="#000000" strokeWidth="10" x1="180" x2="2220" y1="705" y2="705" />
       <rect
         fill="#ffffff"
         height="760"
@@ -189,7 +210,7 @@ function ShirtBackArtwork({
       <text
         fill="#000000"
         fontFamily="'Courier New', monospace"
-        fontSize="54"
+        fontSize={visibleTargetFontSize}
         fontWeight="900"
         textAnchor="middle"
         x="1200"
@@ -211,7 +232,9 @@ export default async function ShirtPage() {
     WAR_ON_DISEASE_CANONICAL_ORIGIN,
   );
   const visibleTargetUrl = getVisibleTargetUrl(qrTarget);
-  const shirtCommerceEnabled = serverEnv.SHIRT_COMMERCE_ENABLED === "1" || serverEnv.SHIRT_COMMERCE_ENABLED === "true";
+  const shirtCommerceEnabled =
+    serverEnv.SHIRT_COMMERCE_ENABLED === "1" ||
+    serverEnv.SHIRT_COMMERCE_ENABLED === "true";
 
   return (
     <main className="shirt-root min-h-screen bg-background px-4 py-10 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
@@ -264,82 +287,47 @@ export default async function ShirtPage() {
                 Make the shirt
               </h1>
               <p className="mt-4 max-w-2xl text-lg font-bold leading-relaxed text-foreground">
-                Download a shirt-back image with your campaign QR code. Wear it
-                outside, where the humans are. Terrifying place. Necessary
-                distribution channel.
+                Wear the QR code outside, where the humans are. Terrifying
+                place. Necessary distribution channel. Your torso is not busy
+                enough.
               </p>
-            </div>
-
-            <div className="border-2 border-foreground bg-background p-5">
-              <h2 className="text-lg font-black uppercase leading-tight">
-                Your shirt URL
-              </h2>
-              {hasPersonalReferralUrl ? (
-                <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                  Scans go to your referral link. Finally, clothing with
-                  attribution.
-                </p>
-              ) : (
-                <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                  Signed out: this uses the public campaign URL.{" "}
-                  <Link
-                    className="underline underline-offset-4"
-                    href={ROUTES.signIn}
-                  >
-                    Sign in
-                  </Link>{" "}
-                  to make the QR yours.
-                </p>
-              )}
-              <p className="mt-4 break-all font-mono text-base font-black uppercase leading-tight">
-                {visibleTargetUrl}
+              <p className="mt-3 text-sm font-bold leading-relaxed text-muted-foreground">
+                {hasPersonalReferralUrl ? (
+                  <>The QR points to your campaign link.</>
+                ) : (
+                  <>
+                    Signed out: this uses the public campaign URL.{" "}
+                    <Link
+                      className="underline underline-offset-4"
+                      href={ROUTES.signIn}
+                    >
+                      Sign in
+                    </Link>{" "}
+                    first if you want the QR to be yours.
+                  </>
+                )}
               </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <PosterCopyLinkButton value={qrTarget} />
-                <ShirtDownloadImageButton
-                  filename="war-on-disease-shirt-back.png"
-                  sourceId={SHIRT_BACK_ARTWORK_ID}
-                />
-                <PosterPrintButton />
-              </div>
-            </div>
-
-            <div className="border-2 border-foreground bg-background p-5">
-              <h2 className="text-lg font-black uppercase leading-tight">
-                Get it printed
-              </h2>
-              <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                No checkout here. No inventory. No grim little order-status
-                page. Download the back art, upload it to a shirt printer, and
-                let your torso become mildly useful.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <a
-                  className="inline-flex items-center justify-center border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
-                  href={PRINTFUL_UPLOAD_URL}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Upload to Printful
-                </a>
-                <Link
-                  className="inline-flex items-center justify-center border-2 border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
-                  href={ROUTES.store}
-                >
-                  Open store
-                </Link>
-                <Link
-                  className="inline-flex items-center justify-center border-2 border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
-                  href={ROUTES.poster}
-                >
-                  Print posters instead
-                </Link>
-              </div>
             </div>
 
             {shirtCommerceEnabled ? (
               <ShirtOrderForm handle={referralHandle} />
-            ) : null}
+            ) : (
+              <div className="border-2 border-foreground bg-background p-5">
+                <h2 className="text-lg font-black uppercase leading-tight">
+                  Shirt checkout is closed
+                </h2>
+                <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
+                  You can still download the back artwork while checkout is
+                  off.
+                </p>
+                <div className="mt-4">
+                  <ShirtDownloadImageButton
+                    filename="war-on-disease-shirt-back.png"
+                    sourceId={SHIRT_BACK_ARTWORK_ID}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="border-l-2 border-foreground pl-4 text-sm font-bold leading-relaxed text-muted-foreground">
               <p>
@@ -347,8 +335,8 @@ export default async function ShirtPage() {
                 warondisease.org.
               </p>
               <p className="mt-2">
-                Back: I ended war and disease and all I got was this lousy
-                t-shirt.
+                Back: trade one apocalypse for disease eradication at
+                warondisease.org.
               </p>
             </div>
           </section>

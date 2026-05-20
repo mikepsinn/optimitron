@@ -78,7 +78,6 @@
 - What if you extended that impulse slightly? Not just to the person you match with but to the 8 billion people who also don't want to suffer and die of horrible diseases?
 - You don't have to be in love with everyone on earth. You just have to care enough about strangers to spend 30 seconds voting so they don't die of something curable. That's a very low bar for love. You're already meeting it by being a person who reads dating profiles instead of just looking at pictures.
 - Wars happen because people don't care enough about the people on the other side. Diseases go uncured because people don't care enough about the people who have them. The entire problem is a deficit of giving a shit.
-- You give a shit. You're here. Put it in your bio.
 ### Questions you might have
 #### Won't this make my profile weird?
 - Your profile is currently competing with 10,000 people who like hiking and The Office. Yes, it will make your profile weird. That's the point. Weird is memorable. Memorable gets responses.
@@ -96,4 +95,3 @@
 - Vote first. Then put it in your bio. Then send this page to someone.
 - [VOTE NOW](/vote)
 - SHARE THIS PAGE
-- A project of the [Institute for Accelerated Medicine](https://warondisease.org). Love, Mike.

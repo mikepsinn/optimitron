@@ -1,12 +1,26 @@
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
+  SHIRT_BACK_COPY,
+  SHIRT_FRONT_COPY,
   SHIRT_PRINT_HEIGHT_PX,
   SHIRT_PRINT_WIDTH_PX,
   generateShirtBackImage,
 } from "../shirt-back-image.server";
 
 describe("generateShirtBackImage", () => {
+  it("keeps the approved back copy", () => {
+    expect(SHIRT_BACK_COPY).toBe(
+      "trade one apocalypse for disease eradication at warondisease.org",
+    );
+  });
+
+  it("keeps the approved front copy", () => {
+    expect(SHIRT_FRONT_COPY).toBe(
+      "please take 30 seconds to end war and disease at warondisease.org",
+    );
+  });
+
   it("renders a print-ready PNG for a fixed referral handle", async () => {
     const buffer = await generateShirtBackImage({
       qrTarget: "https://warondisease.org/vote/ada",

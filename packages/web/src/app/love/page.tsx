@@ -564,9 +564,6 @@ export default async function LovePage() {
             enough about the people who have them. The entire problem is a
             deficit of giving a shit.
           </BodyParagraph>
-          <BodyParagraph>
-            You give a shit. You&apos;re here. Put it in your bio.
-          </BodyParagraph>
         </LoveSection>
 
         <LoveSection>
@@ -600,18 +597,6 @@ export default async function LovePage() {
           </div>
         </div>
 
-        <footer className="border-t border-[#2a2a2a] py-10 text-center text-[0.85rem] text-[#8a8580]">
-          <p>
-            A project of the{" "}
-            <a
-              className="text-[#ff4d4d] no-underline"
-              href="https://warondisease.org"
-            >
-              Institute for Accelerated Medicine
-            </a>
-            . Love, Mike.
-          </p>
-        </footer>
       </div>
     </main>
   );
