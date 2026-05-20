@@ -49,10 +49,7 @@ import {
   isTaskTriggerToolName,
 } from "./mcp-tools/task-triggers";
 import { slugify } from "./slugify";
-import {
-  IMAGE_UPLOAD_KINDS,
-  isImageUploadKind,
-} from "./image-upload-types";
+import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import type {
   RankableTask,
   TaskPriorityInput,
@@ -3767,7 +3764,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. Pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
+      "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. PUBLIC tasks and PUBLIC organization-assigned defaults are admin-only; pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
       "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
@@ -3995,7 +3992,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "deleteTask",
     description:
-      "Delete one of your own tasks (soft delete). Deletes are scoped to the authenticated creator.",
+      "Delete a task by soft delete. Non-admin deletes are scoped to the authenticated creator; admins may delete PUBLIC and non-owned tasks.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -4308,7 +4305,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateTask",
     description:
-      "Update a private task's estimates, dependencies, deadline metadata, executor, or status. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
+      "Update a task's estimates, dependencies, deadline metadata, executor, or status. Non-admin updates are scoped to private tasks created by the authenticated user; admins may update PUBLIC and non-owned tasks. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6704,6 +6701,8 @@ export function createMcpServer(
               );
             }
 
+            const isAdminTaskWriter = hasAdminTaskWriteAccess(scopes, isAdmin);
+
             if (dependencyTaskIds.length > 0) {
               const dependencyTasks = await prisma.task.findMany({
                 where: { deletedAt: null, id: { in: dependencyTaskIds } },
@@ -6745,7 +6744,8 @@ export function createMcpServer(
                 .filter(
                   (task) =>
                     blockedTaskIds.includes(task.id) &&
-                    task.createdByUserId !== userId,
+                    task.createdByUserId !== userId &&
+                    !isAdminTaskWriter,
                 )
                 .map((task) => task.id);
               if (forbiddenBlockedTaskIds.length > 0) {
@@ -6772,7 +6772,7 @@ export function createMcpServer(
               isPublic = resolveCreateTaskIsPublic(
                 a,
                 assigneeOrganizationId,
-                hasAdminTaskWriteAccess(scopes, isAdmin),
+                isAdminTaskWriter,
               );
             } catch (error) {
               return err(
@@ -6782,9 +6782,7 @@ export function createMcpServer(
               );
             }
             if (isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
-              return err(
-                "Creating public tasks requires an admin user.",
-              );
+              return err("Creating public tasks requires an admin user.");
             }
             const availableAt =
               a.available_at !== undefined || a.availableAt !== undefined
@@ -7441,9 +7439,8 @@ export function createMcpServer(
               return err("filename must be a string");
             }
 
-            const { uploadImageFromUrl } = await import(
-              "./image-upload-from-url.server"
-            );
+            const { uploadImageFromUrl } =
+              await import("./image-upload-from-url.server");
             try {
               return await runAuditedEarthDataTool(
                 name,
@@ -7724,11 +7721,14 @@ export function createMcpServer(
                     // Edge may already exist from a prior run — don't block draft
                     // creation. Our own DB write though, so log as error so a real
                     // schema/constraint bug surfaces instead of getting swallowed.
-                    console.error("[mcp-server] taskEdge BLOCKS create failed", {
-                      blockerTaskId,
-                      taskId,
-                      error,
-                    });
+                    console.error(
+                      "[mcp-server] taskEdge BLOCKS create failed",
+                      {
+                        blockerTaskId,
+                        taskId,
+                        error,
+                      },
+                    );
                     return undefined;
                   });
               }
@@ -7905,23 +7905,50 @@ export function createMcpServer(
               a.taskId as string,
               userId,
             );
-            let existingTask =
-              existingDetail?.task as PersonalQueueTaskRecord | undefined;
+            let existingTask = existingDetail?.task as
+              | PersonalQueueTaskRecord
+              | undefined;
             if (!existingTask && isAdminWriter) {
               const adminVisibleTask = await prisma.task.findFirst({
                 where: { deletedAt: null, id: a.taskId as string },
                 select: {
                   contextJson: true,
                   createdByUserId: true,
+                  currentImpactEstimateSet: {
+                    select: {
+                      frames: {
+                        orderBy: { evaluationHorizonYears: "desc" },
+                        select: {
+                          estimatedCashCostUsdBase: true,
+                          estimatedEffortHoursBase: true,
+                          expectedEconomicValueUsdBase: true,
+                          frameKey: true,
+                          timeToImpactStartDays: true,
+                          successProbabilityBase: true,
+                        },
+                        where: { deletedAt: null },
+                      },
+                    },
+                  },
                   deadlinePolicy: true,
                   estimatedEffortHours: true,
                   id: true,
                   isPublic: true,
                 },
               });
-              existingTask = adminVisibleTask
-                ? (adminVisibleTask as PersonalQueueTaskRecord)
-                : undefined;
+              if (adminVisibleTask) {
+                const selectedImpactFrame =
+                  adminVisibleTask.currentImpactEstimateSet?.frames.find(
+                    (frame) =>
+                      frame.frameKey === TaskImpactFrameKey.TWENTY_YEAR,
+                  ) ??
+                  adminVisibleTask.currentImpactEstimateSet?.frames[0] ??
+                  null;
+                existingTask = {
+                  ...adminVisibleTask,
+                  selectedImpactFrame,
+                } as unknown as PersonalQueueTaskRecord;
+              }
             }
             if (!existingTask) return err("Task not found");
             if (existingTask.createdByUserId !== userId && !isAdminWriter) {
@@ -7930,9 +7957,7 @@ export function createMcpServer(
               );
             }
             if (existingTask.isPublic && !isAdminWriter) {
-              return err(
-                "Updating public tasks requires an admin user.",
-              );
+              return err("Updating public tasks requires an admin user.");
             }
             const dependencyPatchProvided =
               Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
@@ -8189,9 +8214,7 @@ export function createMcpServer(
               );
             }
             if (existing.isPublic && !isAdminDeleter) {
-              return err(
-                "Deleting public tasks requires an admin user.",
-              );
+              return err("Deleting public tasks requires an admin user.");
             }
 
             await prisma.task.update({

@@ -16,6 +16,14 @@ import {
   syncManagedHumanityVGovernmentCase,
 } from "./managed-humanity-v-government.js";
 import {
+  formatManagedCommerceCatalogResult,
+  syncManagedCommerceCatalog,
+} from "./managed-commerce-catalog.js";
+import {
+  formatManagedDatingCatalogResult,
+  syncManagedDatingCatalog,
+} from "./managed-dating-catalog.js";
+import {
   formatManagedReferendumsResult,
   syncManagedReferendums,
 } from "./managed-referendums.js";
@@ -74,6 +82,8 @@ export interface SyncManagedDataResult {
   grandmaKay: Awaited<ReturnType<typeof syncManagedGrandmaKay>>;
   demoUser: Awaited<ReturnType<typeof syncManagedDemoUser>>;
   iamOrganization: Awaited<ReturnType<typeof syncManagedIamOrganization>>;
+  commerceCatalog: Awaited<ReturnType<typeof syncManagedCommerceCatalog>>;
+  datingCatalog: Awaited<ReturnType<typeof syncManagedDatingCatalog>>;
 }
 
 async function timeStep<T>(label: string, fn: () => Promise<T>): Promise<T> {
@@ -171,6 +181,14 @@ export async function syncManagedData(
     syncManagedIamOrganization(prisma, { apply: options.apply }),
   );
 
+  const commerceCatalog = await timeStep("commerce-catalog", () =>
+    syncManagedCommerceCatalog(prisma, { apply: options.apply }),
+  );
+
+  const datingCatalog = await timeStep("dating-catalog", () =>
+    syncManagedDatingCatalog(prisma, { apply: options.apply }),
+  );
+
   console.log(`[managed-data] TOTAL: ${Date.now() - totalStart}ms`);
 
   return {
@@ -184,6 +202,8 @@ export async function syncManagedData(
     grandmaKay,
     demoUser,
     iamOrganization,
+    commerceCatalog,
+    datingCatalog,
   };
 }
 
@@ -202,6 +222,8 @@ export function formatManagedDataResult(result: SyncManagedDataResult) {
     formatManagedGrandmaKayResult(result.grandmaKay),
     formatManagedDemoUserResult(result.demoUser),
     formatManagedIamOrganizationResult(result.iamOrganization),
+    formatManagedCommerceCatalogResult(result.commerceCatalog),
+    formatManagedDatingCatalogResult(result.datingCatalog),
   ].join("\n");
 }
 
@@ -219,6 +241,8 @@ export {
   ensureManagedDataSystemUser,
   formatManagedDemoUserResult,
   formatManagedGrandmaKayResult,
+  formatManagedCommerceCatalogResult,
+  formatManagedDatingCatalogResult,
   formatManagedHumanityVGovernmentCaseResult,
   formatManagedIamOrganizationResult,
   formatManagedReferendumsResult,
@@ -226,6 +250,8 @@ export {
   formatManagedTasksResult,
   syncManagedDemoUser,
   syncManagedGrandmaKay,
+  syncManagedCommerceCatalog,
+  syncManagedDatingCatalog,
   syncManagedHumanityVGovernmentCase,
   syncManagedIamOrganization,
   syncManagedBootstrapData,

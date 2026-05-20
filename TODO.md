@@ -45,6 +45,16 @@ Do not let lower items crowd out higher ones.
   plaintiff damages, and the simple `/treaty` skim-and-sign page exist.
 - Bio-template `/love` page is shipped; dating registry deferred per 2026-05-19
   CBA.
+- Generic commerce schema is now the intended money path for live checkout:
+  `CommerceOffer`/variant/order/item/fulfillment/entitlement cover shirts,
+  sponsorships, subscriptions, digital access, and dating-app benefits without a
+  shirt-only table. Product/vendor catalog IDs belong in managed data, not env.
+- Dating foundation schema is additive and separate from the task system:
+  dating profiles, photos, prompts, questions, likes/passes/intros, matches,
+  conversations, date plans, blocks, and safety reports get dating-specific
+  privacy/moderation rules. Reuse `Task` only for the mission-output part of a
+  date via `DatingDatePlan.campaignTaskId`, e.g. flyers, QR posters, outreach, or
+  meetup follow-up.
 - `/humanity-v-government` and `/court` still need to unify plaintiff
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
@@ -85,6 +95,38 @@ Cost-benefit gate for near-term work:
 Do not start a new feature unless it helps the sprint get money, convert votes,
 convert referrals, convert organizations, or prove the quantified case to a
 specific funder/partner.
+
+## Active Checkout Launch Gates - 2026-05-20
+
+- Deploy the commerce migration before enabling paid shirt checkout.
+- Run managed-data sync after the migration so the shirt offer, variants, and
+  CustomCat fulfillment mappings exist in the target database.
+- Keep env limited to secrets/ops toggles: `STRIPE_SECRET_KEY`,
+  `STRIPE_WEBHOOK_SECRET`, `CUSTOMCAT_API_TOKEN`, `CUSTOMCAT_SANDBOX`,
+  `SHIRT_COMMERCE_ENABLED`, and R2 credentials. Do not put product or variant
+  IDs back in env.
+- Verify CustomCat catalog SKUs against `GET /catalog/952` using the live API
+  token, then run one Stripe test-mode/sandbox CustomCat order end to end.
+  Local verification on 2026-05-20 skipped because no local
+  `CUSTOMCAT_API_TOKEN` was present.
+- Only flip production `SHIRT_COMMERCE_ENABLED=true` after Stripe Tax, R2 public
+  artwork URLs, CustomCat sandbox submission, and webhook retry behavior are all
+  verified.
+
+## Active Dating Foundation - 2026-05-20
+
+- The first dating implementation should stay MVP: opt-in profile, photos,
+  prompts, match questions, discover list, like/pass/intro, mutual-match
+  messages, block/report, and optional mission-date plan linked to a `Task`.
+- Do not turn normal dating mechanics into tasks. A like, intro, match, private
+  message, block, or safety report is not campaign work and should not enter the
+  task tree.
+- Use existing `Task` records only when a pair chooses a concrete campaign
+  activity: hang flyers, distribute QR posters, invite people to vote, host a
+  singles meetup, or verify completion evidence.
+- Before public launch: decide photo moderation policy, approximate-location
+  display rules, minimum age/consent checks, DM reporting workflow, and whether
+  dating profiles are visible only to opted-in dating users.
 
 ## Active Handoff - 2026-05-13
 

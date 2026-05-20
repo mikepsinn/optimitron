@@ -1,18 +1,26 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import type Stripe from "stripe";
-import { ActivityType } from "@optimitron/db";
+import {
+  ActivityType,
+  CommerceFulfillmentKind,
+  CommerceFulfillmentProvider,
+  CommerceFulfillmentStatus,
+  CommerceOrderStatus,
+  type Prisma,
+} from "@optimitron/db";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import { serverEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
+import { fulfillShirtCheckoutSession } from "@/lib/shirt-fulfillment.server";
 
 const log = createLogger("stripe-webhook");
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export function GET() {
   return NextResponse.json(
     { message: "Webhook endpoint is ready. Use POST for webhook events." },
     { status: 200 },
@@ -29,7 +37,8 @@ export async function POST(req: Request) {
   }
 
   const body = await req.text();
-  const signature = (await headers()).get("stripe-signature");
+  const signature =
+    req.headers.get("stripe-signature") ?? (await headers()).get("stripe-signature");
 
   if (!signature) {
     return NextResponse.json({ error: "No signature." }, { status: 400 });
@@ -53,13 +62,20 @@ export async function POST(req: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.order_type === "shirt") {
+          await fulfillShirtCheckoutSession(session);
+          break;
+        }
+        if (session.metadata?.order_type === "store_offer") {
+          await recordStoreOfferPayment(session);
+        }
         if (session.mode === "payment" || session.mode === "subscription") {
           await recordDonationActivity(session);
         }
         break;
       }
       case "invoice.payment_succeeded": {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object;
         log.info("Recurring donation invoice succeeded", {
           customerEmail: invoice.customer_email,
           amount: invoice.amount_paid,
@@ -76,15 +92,90 @@ export async function POST(req: Request) {
   }
 }
 
+function getStripeObjectId(value: string | { id?: string | null } | null | undefined) {
+  if (typeof value === "string") return value;
+  return value?.id ?? undefined;
+}
+
+async function recordStoreOfferPayment(session: Stripe.Checkout.Session) {
+  const predicates: Prisma.CommerceOrderWhereInput[] = [
+    { stripeCheckoutSessionId: session.id },
+  ];
+  if (session.metadata?.commerce_order_id) {
+    predicates.unshift({ id: session.metadata.commerce_order_id });
+  }
+
+  const commerceOrder = await prisma.commerceOrder.findFirst({
+    include: { items: true },
+    where: {
+      OR: predicates,
+      deletedAt: null,
+    },
+  });
+
+  if (!commerceOrder) {
+    throw new Error(`Missing commerce order for Stripe Checkout session ${session.id}.`);
+  }
+
+  const customerEmail =
+    session.metadata?.donorEmail ?? session.customer_email ?? session.customer_details?.email ?? null;
+  const customerName = session.metadata?.donorName ?? session.customer_details?.name ?? null;
+
+  await prisma.commerceOrder.update({
+    data: {
+      buyerEmail: commerceOrder.buyerEmail ?? customerEmail,
+      buyerName: commerceOrder.buyerName ?? customerName,
+      lastError: null,
+      paidAt: commerceOrder.paidAt ?? new Date(),
+      status: CommerceOrderStatus.PAID,
+      stripeCheckoutSessionId: session.id,
+      stripeCustomerId: getStripeObjectId(session.customer),
+      stripePaymentIntentId: getStripeObjectId(session.payment_intent),
+    },
+    where: { id: commerceOrder.id },
+  });
+
+  const manualItem = commerceOrder.items.find(
+    (item) => item.fulfillmentKind === CommerceFulfillmentKind.MANUAL_SPONSORSHIP,
+  );
+  if (!manualItem) return;
+
+  const existingFulfillment = await prisma.commerceFulfillment.findFirst({
+    where: {
+      deletedAt: null,
+      externalOrderId: session.id,
+      provider: CommerceFulfillmentProvider.MANUAL,
+    },
+  });
+  if (existingFulfillment) return;
+
+  await prisma.commerceFulfillment.create({
+    data: {
+      externalOrderId: session.id,
+      metadata: {
+        commerceOrderId: commerceOrder.id,
+        commerceOrderItemId: manualItem.id,
+        offerKey: manualItem.offerKey,
+        offerVariantKey: manualItem.offerVariantKey,
+        stripeCheckoutSessionId: session.id,
+      } satisfies Prisma.InputJsonValue,
+      orderId: commerceOrder.id,
+      orderItemId: manualItem.id,
+      provider: CommerceFulfillmentProvider.MANUAL,
+      status: CommerceFulfillmentStatus.PENDING,
+    },
+  });
+}
+
 async function recordDonationActivity(session: Stripe.Checkout.Session) {
   const donorEmail =
     session.metadata?.donorEmail ?? session.customer_email ?? session.customer_details?.email ?? null;
   const donorName = session.metadata?.donorName ?? session.customer_details?.name ?? null;
-  const donationType = (session.metadata?.donationType as string | undefined) ?? "one-time";
+  const donationType = session.metadata?.donationType ?? "one-time";
   const amountCents = session.amount_total ?? 0;
-  const sourceUrl = (session.metadata?.sourceUrl as string | undefined) ?? null;
-  const sourceReferrer = (session.metadata?.sourceReferrer as string | undefined) ?? null;
-  const metadataUserId = (session.metadata?.userId as string | undefined) ?? null;
+  const sourceUrl = session.metadata?.sourceUrl ?? null;
+  const sourceReferrer = session.metadata?.sourceReferrer ?? null;
+  const metadataUserId = session.metadata?.userId ?? null;
 
   let user = metadataUserId
     ? await prisma.user.findUnique({

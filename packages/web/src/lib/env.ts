@@ -108,6 +108,14 @@ const serverSchema = z.object({
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
+  // ── Shirt commerce spike (CustomCat sandbox by default) ───────────
+  // Catalog data (product ID, variant SKUs, FMV, tax code) lives in
+  // packages/db/src/managed-data/managed-commerce-catalog.ts — env is
+  // only for credentials + per-environment toggles.
+  SHIRT_COMMERCE_ENABLED: z.enum(["0", "1", "false", "true"]).optional(),
+  CUSTOMCAT_API_TOKEN: z.string().optional(),
+  CUSTOMCAT_SANDBOX: z.enum(["0", "1"]).optional(),
+
   // ── Cloudflare R2 (object storage for memorial photos + evidence) ─
   // Required for the memorial photo + evidence upload flow (PRD F1/F4).
   // The runtime presign route reads these to issue PUT URLs scoped to the

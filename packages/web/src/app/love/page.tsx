@@ -143,7 +143,7 @@ const faqItems = [
   {
     question: "Won't I get shadowbanned for sending the same message to everyone?",
     answer:
-      'Yes, you will. Dating apps detect copy-paste messages and mass-liking and will quietly make you invisible to everyone. This defeats the entire purpose. To avoid this: vary your wording each time you send the profile improvement message, limit yourself to 10-15 likes and 3-5 messages per day, space your activity throughout the day rather than doing it all at once, and for people you\'re actually interested in, send something specific to their profile instead of the campaign message. The algorithm rewards selectivity. Be a human, not a bot, even if your goal is to reach as many humans as possible.',
+      "Yes, if you act like spam. Dating apps detect copy-paste messages and mass-liking. The penalty is quiet invisibility. Vary the wording. Space out your activity. Move slowly enough that a human could plausibly be doing it. For someone you actually want to meet, write to their profile before you mention the campaign. The algorithm rewards selectivity. Be a human, not a bot.",
   },
   {
     question: "What if nobody votes from my profile?",

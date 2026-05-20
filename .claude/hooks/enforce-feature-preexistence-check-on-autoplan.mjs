@@ -32,7 +32,7 @@
 //   3. For each candidate token, search:
 //      a. packages/web/src/app/ directory names (one-level deep)
 //      b. packages/web/src/lib/routes.ts content
-//      c. recent commit messages: git log main..HEAD --oneline
+//      c. recent commit messages on the current branch, resolved from origin/HEAD
 //   4. If matches found, emit a structured advisory listing each match
 //      with file:line refs. Hook stays ADVISORY (exit 0) so a planner
 //      who has ALREADY acknowledged the existing surface isn't blocked,
@@ -183,10 +183,46 @@ function safeExec(cmd) {
   }
 }
 
+function getDefaultRemoteRef() {
+  const ref = safeExec(
+    "git symbolic-ref --quiet --short refs/remotes/origin/HEAD",
+  ).trim();
+  return /^[A-Za-z0-9._/-]+$/.test(ref) ? ref : "";
+}
+
+function collectRecentCommits() {
+  const defaultRemoteRef = getDefaultRemoteRef();
+  if (defaultRemoteRef) {
+    const mergeBase = safeExec(
+      `git merge-base ${defaultRemoteRef} HEAD`,
+    ).trim();
+    if (/^[a-f0-9]{40}$/.test(mergeBase)) {
+      return {
+        label: `${defaultRemoteRef}..HEAD`,
+        lines: safeExec(
+          `git log ${mergeBase}..HEAD --oneline --format=%h%x09%s`,
+        )
+          .split(/\r?\n/)
+          .filter(Boolean),
+      };
+    }
+  }
+
+  return {
+    label: "last 30 commits",
+    lines: safeExec("git log --max-count=30 --oneline --format=%h%x09%s")
+      .split(/\r?\n/)
+      .filter(Boolean),
+  };
+}
+
 function getBranchTokens() {
   const branch = safeExec("git branch --show-current").trim();
   if (!branch) return { branch, tokens: [] };
-  const stripped = branch.replace(/^feature\//, "").replace(/^fix\//, "").replace(/^chore\//, "");
+  const stripped = branch
+    .replace(/^feature\//, "")
+    .replace(/^fix\//, "")
+    .replace(/^chore\//, "");
   const tokens = stripped
     .split(/[-_/]/)
     .map((t) => t.toLowerCase())
@@ -208,7 +244,12 @@ function listAppRouteDirs() {
     }
     for (const e of entries) {
       if (!e.isDirectory()) continue;
-      if (e.name.startsWith(".") || e.name === "api" || e.name === "node_modules") continue;
+      if (
+        e.name.startsWith(".") ||
+        e.name === "api" ||
+        e.name === "node_modules"
+      )
+        continue;
       const full = path.join(dir, e.name);
       out.push({ name: e.name.toLowerCase(), path: full });
       walk(full, depth + 1);
@@ -219,7 +260,14 @@ function listAppRouteDirs() {
 }
 
 function searchRoutesTs(candidate) {
-  const routesPath = path.join(PROJECT_DIR, "packages", "web", "src", "lib", "routes.ts");
+  const routesPath = path.join(
+    PROJECT_DIR,
+    "packages",
+    "web",
+    "src",
+    "lib",
+    "routes.ts",
+  );
   if (!existsSync(routesPath)) return [];
   const content = readFileSync(routesPath, "utf-8");
   const lines = content.split(/\r?\n/);
@@ -234,12 +282,9 @@ function searchRoutesTs(candidate) {
   return hits;
 }
 
-function searchRecentCommits(candidate) {
-  const log = safeExec(`git log main..HEAD --oneline --format=%h%x09%s`);
-  if (!log) return [];
+function searchRecentCommits(candidate, recentCommits) {
   const needle = candidate.toLowerCase();
-  return log
-    .split(/\r?\n/)
+  return recentCommits.lines
     .filter((line) => line.toLowerCase().includes(needle))
     .slice(0, 5);
 }
@@ -266,14 +311,22 @@ try {
   if (candidates.length === 0) process.exit(0);
 
   const routeDirs = listAppRouteDirs();
+  const recentCommits = collectRecentCommits();
   const findings = [];
 
   for (const candidate of candidates) {
-    const dirMatches = routeDirs.filter((d) => d.name === candidate || d.name.includes(candidate));
+    const dirMatches = routeDirs.filter(
+      (d) => d.name === candidate || d.name.includes(candidate),
+    );
     const routesHits = searchRoutesTs(candidate);
-    const commitHits = searchRecentCommits(candidate);
+    const commitHits = searchRecentCommits(candidate, recentCommits);
 
-    if (dirMatches.length === 0 && routesHits.length === 0 && commitHits.length === 0) continue;
+    if (
+      dirMatches.length === 0 &&
+      routesHits.length === 0 &&
+      commitHits.length === 0
+    )
+      continue;
 
     findings.push({ candidate, dirMatches, routesHits, commitHits });
   }
@@ -304,7 +357,7 @@ try {
       }
     }
     if (f.commitHits.length > 0) {
-      lines.push(`  recent commits (main..HEAD):`);
+      lines.push(`  recent commits (${recentCommits.label}):`);
       for (const c of f.commitHits) {
         lines.push(`    - ${c}`);
       }
@@ -332,6 +385,8 @@ try {
   // crashes (malformed JSON, missing path, etc.) we exit 0 so /autoplan
   // dispatches remain possible. The error gets surfaced to stderr for the
   // next-turn Claude to notice without blocking the user.
-  process.stderr.write(`[enforce-feature-preexistence-check] hook crashed: ${err?.message ?? err}\n`);
+  process.stderr.write(
+    `[enforce-feature-preexistence-check] hook crashed: ${err?.message ?? err}\n`,
+  );
   process.exit(0);
 }

@@ -4,10 +4,10 @@
 
 - Page title: Developers | Optimitron | International Campaign to End War and Disease
 - Meta description: Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.
-- Canonical: [missing]
-- Open Graph title: International Campaign to End War and Disease
-- Open Graph description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Canonical: https://optimitron.com/developers
+- Open Graph title: Developers | Optimitron
+- Open Graph description: Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.
+- Open Graph image: [missing]
 - Twitter title: International Campaign to End War and Disease
 - Twitter description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
 
@@ -54,7 +54,7 @@
 #### RESEARCH WITHOUT LOSING THE THREAD
 - Ask: “Find every task and manual passage about Wefunder.” The agent searches tasks, reads blockers, checks the manual, and proposes a task bundle instead of handing you a pile of notes.
 #### COORDINATE WITHOUT LOSING THE THREAD
-- The agent posts task comments for status updates, questions, and next steps. Comment posting handles comment notifications; delivery envelopes stay internal.
+- The agent posts task comments for status updates, questions, and next steps. Comment notifications are handled automatically.
 #### MAKE THE QUEUE SMARTER
 - After research, the agent can draft new tasks with impact estimates and dependencies. They start as DRAFT so governance can review them before promotion.
 ### CLAUDE CODE
@@ -85,6 +85,7 @@ http://localhost:3001/api/mcp
 #### SIGN IN
 - Click Create, then sign in. PKCE and dynamic client registration are handled automatically. No client ID or secret to paste.
 - MCP Server URL for step 2:
+- http://localhost:3001/api/mcp
 #### HEADS-UP: DEEP RESEARCH MODE
 - Deep Research only surfaces tools named search and fetch. Optimitron's tools won't appear there. Use regular chat or Agent mode.
 ### CURSOR, WINDSURF, CLINE, ZED, ET AL.

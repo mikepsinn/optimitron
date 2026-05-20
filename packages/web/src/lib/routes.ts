@@ -101,6 +101,8 @@ export const ROUTES = {
   campaign: "/campaign",
   love: "/love",
   poster: "/poster",
+  shirt: "/shirt",
+  store: "/store",
   coalition: "/coalition",
   organizations: "/organizations",
   people: "/people",
@@ -1016,6 +1018,30 @@ export const posterLink: NavItem = {
   cta: "Print",
 };
 
+export const shirtLink: NavItem = {
+  href: ROUTES.shirt,
+  label: "Make the Shirt",
+  emoji: "",
+  description:
+    "Download a shirt-back image with your campaign QR code. Your torso is not busy enough.",
+  tagline: "Wear your campaign QR code.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Make the Shirt",
+};
+
+export const storeLink: NavItem = {
+  href: ROUTES.store,
+  label: "Store",
+  emoji: "",
+  description:
+    "Buy useful campaign things: shirts, flyer runs, and other distribution fuel.",
+  tagline: "Buy useful campaign things.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Open Store",
+};
+
 export const fundLink: NavItem = {
   href: ROUTES.fund,
   label: "Fund Optimization",
@@ -1143,6 +1169,8 @@ export const toolSections: NavSection[] = [
     items: [
       tasksLink,
       loveLink,
+      storeLink,
+      shirtLink,
       presidentManagementLink,
       transmitLink,
       dashboardLink,
@@ -1594,6 +1622,8 @@ export const routeReviewNavItems = [
   feedbackLink,
   loveLink,
   posterLink,
+  storeLink,
+  shirtLink,
   privacyLink,
   settingsLink,
   termsLink,

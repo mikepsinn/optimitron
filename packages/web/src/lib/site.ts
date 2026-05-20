@@ -26,13 +26,16 @@ import {
   fullManualPaperLink,
   humanityVGovernmentLink,
   inviteVoterLink,
+  loveLink,
   navSections,
   onePercentTreatyPaperLink,
   paperLinks,
   peopleLink,
   plaintiffsLink,
+  posterLink,
   privacyLink,
   signatoriesLink,
+  shirtLink,
   termsLink,
   tasksLink,
   treatmentsLink,
@@ -346,6 +349,11 @@ const warOnDiseaseNavSections: NavSection[] = [
       presidentManagementLink,
     ],
   },
+  {
+    id: "spread",
+    label: "Spread",
+    items: [shirtLink, posterLink, loveLink, tasksLink],
+  },
 ];
 
 const dfdaNavSections: NavSection[] = [
@@ -478,6 +486,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
         title: "Tell Someone Else",
         items: [
           dashboardLink,
+          shirtLink,
           presidentManagementLink,
           peopleLink,
           tasksLink,
@@ -936,6 +945,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.campaign,
       ROUTES.love,
       ROUTES.poster,
+      ROUTES.shirt,
       ROUTES.coalition,
       ROUTES.privacy,
       ROUTES.terms,
@@ -963,6 +973,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.campaign,
       ROUTES.love,
       ROUTES.poster,
+      ROUTES.shirt,
       ROUTES.coalition,
       ROUTES.privacy,
       ROUTES.terms,

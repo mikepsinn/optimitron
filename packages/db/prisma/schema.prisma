@@ -1558,6 +1558,9 @@ model User {
   badges                             Badge[]                          @relation("UserBadges")
   wishPoints                         WishPoint[]                      @relation("UserWishPoints")
   socialAccounts                     SocialAccount[]                  @relation("UserSocialAccounts")
+  datingProfile                      DatingProfile?                   @relation("UserDatingProfile")
+  reviewedDatingProfilePhotos        DatingProfilePhoto[]             @relation("UserReviewedDatingProfilePhotos")
+  reviewedDatingSafetyReports        DatingSafetyReport[]             @relation("UserReviewedDatingSafetyReports")
   emailLogs                          EmailLog[]                       @relation("UserEmailLogs")
   shareAttempts                      ShareAttempt[]                   @relation("UserShareAttempts")
   sentReferralInvitations            ReferralInvitation[]             @relation("ReferralInvitationReferrer")
@@ -5375,6 +5378,7 @@ model Task {
   agentLeases               AgentTaskLease[]            @relation("TaskAgentLeases")
   shareAttempts             ShareAttempt[]              @relation("TaskShareAttempts")
   referralInvitations       ReferralInvitation[]        @relation("TaskReferralInvitations")
+  datingDatePlans           DatingDatePlan[]            @relation("TaskDatingDatePlans")
   communicationEndpoints    TaskCommunicationEndpoint[] @relation("TaskCommunicationEndpoints")
   communicationTemplates    TaskCommunicationTemplate[] @relation("TaskCommunicationTemplates")
   communications            TaskCommunication[]         @relation("TaskCommunications")
@@ -7165,6 +7169,951 @@ model ShareAttempt {
   @@index([firstReferralClickAt])
   @@index([source])
   @@index([channel])
+}
+
+// ────────────────────────────────────────────────────────────
+// Dating and Mission Dates
+// ────────────────────────────────────────────────────────────
+
+enum DatingProfileStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  HIDDEN
+  MODERATION_HOLD
+  BANNED
+}
+
+enum DatingRelationshipIntent {
+  FRIENDS
+  DATES
+  LONG_TERM
+  LIFE_PARTNER
+  CASUAL
+  NON_MONOGAMY
+  UNSURE
+}
+
+enum DatingProfilePhotoStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  HIDDEN
+}
+
+enum DatingQuestionStatus {
+  DRAFT
+  ACTIVE
+  RETIRED
+}
+
+enum DatingQuestionAnswerVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum DatingQuestionImportance {
+  IRRELEVANT
+  A_LITTLE
+  SOMEWHAT
+  VERY
+  MANDATORY
+}
+
+enum DatingPreferenceImportance {
+  PREFERENCE
+  DEALBREAKER
+}
+
+enum DatingInteractionKind {
+  LIKE
+  PASS
+  SUPERLIKE
+  INTRO
+}
+
+enum DatingInteractionStatus {
+  ACTIVE
+  RETRACTED
+  MODERATION_HOLD
+}
+
+enum DatingMatchStatus {
+  ACTIVE
+  UNMATCHED
+  BLOCKED
+}
+
+enum DatingConversationStatus {
+  ACTIVE
+  ARCHIVED
+  MODERATION_HOLD
+}
+
+enum DatingMessageStatus {
+  SENT
+  HIDDEN
+  DELETED
+  MODERATION_HOLD
+}
+
+enum DatingDatePlanStatus {
+  PROPOSED
+  ACCEPTED
+  DECLINED
+  CANCELED
+  COMPLETED
+  NO_SHOW
+}
+
+enum DatingBlockScope {
+  DISCOVERY
+  MESSAGES
+  ALL
+}
+
+enum DatingSafetyReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+/// Dating opt-in layer for a signed-in user. Public `Person` fields stay the
+/// canonical identity profile; this model holds dating-specific visibility,
+/// preferences, and campaign-date intent.
+model DatingProfile {
+  id String @id @default(cuid())
+
+  userId String @unique
+
+  status DatingProfileStatus @default(DRAFT)
+
+  headline       String?
+  bio            String?
+  lookingForText String?
+
+  relationshipIntents   DatingRelationshipIntent[] @default([])
+  genderIdentities      String[]                   @default([])
+  orientationIdentities String[]                   @default([])
+  relationshipStatus    String?
+
+  preferredMinAge Int?
+  preferredMaxAge Int?
+  maxDistanceKm   Int?
+
+  displayCity        String?
+  displayRegionCode  String?
+  displayCountryCode String?
+
+  wantsCampaignDates Boolean  @default(true)
+  campaignDateIdeas  String[] @default([])
+
+  profileCompletedAt DateTime?
+  lastActiveAt       DateTime?
+
+  metadata Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  user                  User                   @relation("UserDatingProfile", fields: [userId], references: [id], onDelete: Cascade)
+  photos                DatingProfilePhoto[]   @relation("DatingProfilePhotos")
+  promptAnswers         DatingPromptAnswer[]   @relation("DatingProfilePromptAnswers")
+  questionAnswers       DatingQuestionAnswer[] @relation("DatingProfileQuestionAnswers")
+  preferences           DatingPreference[]     @relation("DatingProfilePreferences")
+  matchScoresAsProfileA DatingMatchScore[]     @relation("DatingMatchScoreProfileA")
+  matchScoresAsProfileB DatingMatchScore[]     @relation("DatingMatchScoreProfileB")
+  sentInteractions      DatingInteraction[]    @relation("DatingInteractionFromProfile")
+  receivedInteractions  DatingInteraction[]    @relation("DatingInteractionToProfile")
+  matchesAsProfileA     DatingMatch[]          @relation("DatingMatchProfileA")
+  matchesAsProfileB     DatingMatch[]          @relation("DatingMatchProfileB")
+  messagesSent          DatingMessage[]        @relation("DatingMessageSenderProfile")
+  proposedDatePlans     DatingDatePlan[]       @relation("DatingDatePlanProposer")
+  acceptedDatePlans     DatingDatePlan[]       @relation("DatingDatePlanAccepter")
+  blocksCreated         DatingBlock[]          @relation("DatingBlockerProfile")
+  blocksReceived        DatingBlock[]          @relation("DatingBlockedProfile")
+  reportsMade           DatingSafetyReport[]   @relation("DatingSafetyReportReporter")
+  reportsReceived       DatingSafetyReport[]   @relation("DatingSafetyReportReported")
+
+  @@index([status, lastActiveAt])
+  @@index([displayCountryCode, displayRegionCode, displayCity])
+  @@index([wantsCampaignDates])
+  @@index([deletedAt])
+}
+
+/// Moderatable profile photo. Image bytes live in R2/object storage; this row
+/// stores ordering, review state, and display metadata.
+model DatingProfilePhoto {
+  id String @id @default(cuid())
+
+  profileId String
+
+  imageUrl   String
+  storageKey String?
+  altText    String?
+  blurhash   String?
+
+  sortOrder Int                      @default(0)
+  status    DatingProfilePhotoStatus @default(PENDING)
+
+  moderationReason String?
+  reviewedByUserId String?
+  reviewedAt       DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  profile        DatingProfile @relation("DatingProfilePhotos", fields: [profileId], references: [id], onDelete: Cascade)
+  reviewedByUser User?         @relation("UserReviewedDatingProfilePhotos", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([profileId, sortOrder])
+  @@index([status])
+  @@index([reviewedByUserId])
+  @@index([deletedAt])
+}
+
+/// Managed profile prompt such as "Ideal first mission-date".
+model DatingPrompt {
+  id String @id @default(cuid())
+
+  key  String @unique
+  text String
+
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+  managed   Boolean @default(false)
+  metadata  Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  answers DatingPromptAnswer[] @relation("DatingPromptAnswers")
+
+  @@index([active, sortOrder])
+  @@index([deletedAt])
+}
+
+model DatingPromptAnswer {
+  id String @id @default(cuid())
+
+  profileId String
+  promptId  String
+
+  answer String
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  profile DatingProfile @relation("DatingProfilePromptAnswers", fields: [profileId], references: [id], onDelete: Cascade)
+  prompt  DatingPrompt  @relation("DatingPromptAnswers", fields: [promptId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, promptId])
+  @@index([profileId, sortOrder])
+  @@index([promptId])
+  @@index([deletedAt])
+}
+
+/// Question bank for compatibility matching. Answers can be normal dating
+/// values, lifestyle values, or campaign/date coordination values.
+model DatingQuestion {
+  id String @id @default(cuid())
+
+  key      String  @unique
+  text     String
+  category String?
+
+  answerOptions Json
+  allowMultiple Boolean @default(false)
+
+  status    DatingQuestionStatus @default(ACTIVE)
+  sortOrder Int                  @default(0)
+  managed   Boolean              @default(false)
+  metadata  Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  answers DatingQuestionAnswer[] @relation("DatingQuestionAnswers")
+
+  @@index([status, category, sortOrder])
+  @@index([deletedAt])
+}
+
+/// OkCupid-style answer: my answer, answers I accept from a match, importance,
+/// and whether other people can compare this answer on my profile.
+model DatingQuestionAnswer {
+  id String @id @default(cuid())
+
+  profileId  String
+  questionId String
+
+  answerValues     Json
+  acceptableValues Json?
+  importance       DatingQuestionImportance       @default(SOMEWHAT)
+  visibility       DatingQuestionAnswerVisibility @default(PUBLIC)
+  explanation      String?
+
+  answeredAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  profile  DatingProfile  @relation("DatingProfileQuestionAnswers", fields: [profileId], references: [id], onDelete: Cascade)
+  question DatingQuestion @relation("DatingQuestionAnswers", fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, questionId])
+  @@index([profileId, visibility])
+  @@index([questionId])
+  @@index([importance])
+  @@index([deletedAt])
+}
+
+/// Structured filter or soft preference. Store rare/new preference types here
+/// rather than adding a column for every possible dating filter.
+model DatingPreference {
+  id String @id @default(cuid())
+
+  profileId String
+  key       String
+
+  valueJson  Json
+  importance DatingPreferenceImportance @default(PREFERENCE)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  profile DatingProfile @relation("DatingProfilePreferences", fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, key])
+  @@index([profileId, importance])
+  @@index([key])
+  @@index([deletedAt])
+}
+
+/// Cached compatibility score for a canonical profile pair. Application code
+/// must store the lower/smaller profile id in profileAId to avoid duplicate pairs.
+model DatingMatchScore {
+  id String @id @default(cuid())
+
+  profileAId String
+  profileBId String
+
+  score                  Int
+  questionScore          Int?
+  preferenceScore        Int?
+  sharedAnsweredCount    Int     @default(0)
+  dealbreakerFailed      Boolean @default(false)
+  failedDealbreakerCount Int     @default(0)
+
+  computedAt DateTime @default(now())
+  metadata   Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  profileA DatingProfile @relation("DatingMatchScoreProfileA", fields: [profileAId], references: [id], onDelete: Cascade)
+  profileB DatingProfile @relation("DatingMatchScoreProfileB", fields: [profileBId], references: [id], onDelete: Cascade)
+
+  @@unique([profileAId, profileBId])
+  @@index([profileAId, score])
+  @@index([profileBId, score])
+  @@index([dealbreakerFailed])
+  @@index([computedAt])
+  @@index([deletedAt])
+}
+
+/// Like/pass/superlike/intro event log. Latest active event by pair determines
+/// the current viewer state; mutual likes create a DatingMatch.
+model DatingInteraction {
+  id String @id @default(cuid())
+
+  fromProfileId String
+  toProfileId   String
+
+  kind   DatingInteractionKind
+  status DatingInteractionStatus @default(ACTIVE)
+
+  introMessage String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  fromProfile DatingProfile @relation("DatingInteractionFromProfile", fields: [fromProfileId], references: [id], onDelete: Cascade)
+  toProfile   DatingProfile @relation("DatingInteractionToProfile", fields: [toProfileId], references: [id], onDelete: Cascade)
+
+  @@index([fromProfileId, toProfileId, createdAt])
+  @@index([toProfileId, kind, status, createdAt])
+  @@index([fromProfileId, kind, status, createdAt])
+  @@index([deletedAt])
+}
+
+model DatingMatch {
+  id String @id @default(cuid())
+
+  profileAId String
+  profileBId String
+
+  status DatingMatchStatus @default(ACTIVE)
+
+  matchedAt     DateTime  @default(now())
+  unmatchedAt   DateTime?
+  lastMessageAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  profileA     DatingProfile       @relation("DatingMatchProfileA", fields: [profileAId], references: [id], onDelete: Cascade)
+  profileB     DatingProfile       @relation("DatingMatchProfileB", fields: [profileBId], references: [id], onDelete: Cascade)
+  conversation DatingConversation?
+  datePlans    DatingDatePlan[]    @relation("DatingMatchDatePlans")
+
+  @@unique([profileAId, profileBId])
+  @@index([profileAId, status, lastMessageAt])
+  @@index([profileBId, status, lastMessageAt])
+  @@index([matchedAt])
+  @@index([deletedAt])
+}
+
+model DatingConversation {
+  id String @id @default(cuid())
+
+  matchId String @unique
+
+  status DatingConversationStatus @default(ACTIVE)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  match     DatingMatch      @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  messages  DatingMessage[]  @relation("DatingConversationMessages")
+  datePlans DatingDatePlan[] @relation("DatingConversationDatePlans")
+
+  @@index([status, updatedAt])
+  @@index([deletedAt])
+}
+
+model DatingMessage {
+  id String @id @default(cuid())
+
+  conversationId  String
+  senderProfileId String
+
+  body   String
+  status DatingMessageStatus @default(SENT)
+
+  readAt   DateTime?
+  editedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  conversation  DatingConversation   @relation("DatingConversationMessages", fields: [conversationId], references: [id], onDelete: Cascade)
+  senderProfile DatingProfile        @relation("DatingMessageSenderProfile", fields: [senderProfileId], references: [id], onDelete: Cascade)
+  reports       DatingSafetyReport[] @relation("DatingMessageSafetyReports")
+
+  @@index([conversationId, createdAt])
+  @@index([senderProfileId, createdAt])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+/// Proposed real-world date. A campaign date can link to an existing Task so
+/// "coffee plus hang flyers" can produce measurable campaign work.
+model DatingDatePlan {
+  id String @id @default(cuid())
+
+  matchId        String?
+  conversationId String?
+
+  proposedByProfileId String
+  acceptedByProfileId String?
+
+  status DatingDatePlanStatus @default(PROPOSED)
+
+  title       String
+  description String?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+  timeZone String?
+
+  locationName String?
+  address      String?
+  latitude     Float?
+  longitude    Float?
+
+  isCampaignDate Boolean @default(false)
+  campaignTaskId String?
+  campaignNotes  String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  match             DatingMatch?         @relation("DatingMatchDatePlans", fields: [matchId], references: [id], onDelete: SetNull)
+  conversation      DatingConversation?  @relation("DatingConversationDatePlans", fields: [conversationId], references: [id], onDelete: SetNull)
+  proposedByProfile DatingProfile        @relation("DatingDatePlanProposer", fields: [proposedByProfileId], references: [id], onDelete: Cascade)
+  acceptedByProfile DatingProfile?       @relation("DatingDatePlanAccepter", fields: [acceptedByProfileId], references: [id], onDelete: SetNull)
+  campaignTask      Task?                @relation("TaskDatingDatePlans", fields: [campaignTaskId], references: [id], onDelete: SetNull)
+  reports           DatingSafetyReport[] @relation("DatingDatePlanSafetyReports")
+
+  @@index([matchId, status, startsAt])
+  @@index([conversationId])
+  @@index([proposedByProfileId, status, startsAt])
+  @@index([acceptedByProfileId])
+  @@index([campaignTaskId])
+  @@index([isCampaignDate, status])
+  @@index([deletedAt])
+}
+
+model DatingBlock {
+  id String @id @default(cuid())
+
+  blockerProfileId String
+  blockedProfileId String
+
+  scope  DatingBlockScope @default(ALL)
+  reason String?
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  blockerProfile DatingProfile @relation("DatingBlockerProfile", fields: [blockerProfileId], references: [id], onDelete: Cascade)
+  blockedProfile DatingProfile @relation("DatingBlockedProfile", fields: [blockedProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerProfileId, blockedProfileId])
+  @@index([blockedProfileId])
+  @@index([deletedAt])
+}
+
+model DatingSafetyReport {
+  id String @id @default(cuid())
+
+  reporterProfileId String
+  reportedProfileId String?
+  messageId         String?
+  datePlanId        String?
+
+  reason      String
+  description String?
+
+  status DatingSafetyReportStatus @default(OPEN)
+
+  reviewerUserId String?
+  resolutionNote String?
+  resolvedAt     DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  reporterProfile DatingProfile   @relation("DatingSafetyReportReporter", fields: [reporterProfileId], references: [id], onDelete: Cascade)
+  reportedProfile DatingProfile?  @relation("DatingSafetyReportReported", fields: [reportedProfileId], references: [id], onDelete: SetNull)
+  message         DatingMessage?  @relation("DatingMessageSafetyReports", fields: [messageId], references: [id], onDelete: SetNull)
+  datePlan        DatingDatePlan? @relation("DatingDatePlanSafetyReports", fields: [datePlanId], references: [id], onDelete: SetNull)
+  reviewerUser    User?           @relation("UserReviewedDatingSafetyReports", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+
+  @@index([reporterProfileId])
+  @@index([reportedProfileId])
+  @@index([messageId])
+  @@index([datePlanId])
+  @@index([reviewerUserId])
+  @@index([status, createdAt])
+  @@index([deletedAt])
+}
+
+// ────────────────────────────────────────────────────────────
+// Commerce, Fulfillment, and Entitlements
+// ────────────────────────────────────────────────────────────
+
+enum CommerceOfferKind {
+  PHYSICAL_GOOD
+  SPONSORSHIP
+  SUBSCRIPTION
+  DIGITAL_ACCESS
+  SERVICE
+  DONATION
+}
+
+enum CommerceOfferStatus {
+  DRAFT
+  ACTIVE
+  RETIRED
+}
+
+enum CommerceFulfillmentKind {
+  NONE
+  PHYSICAL_GOOD
+  DIGITAL_ENTITLEMENT
+  MANUAL_SPONSORSHIP
+}
+
+enum CommercePaymentProvider {
+  STRIPE
+  MANUAL
+}
+
+enum CommerceFulfillmentProvider {
+  NONE
+  CUSTOMCAT
+  MANUAL
+  STRIPE
+}
+
+enum CommerceOrderStatus {
+  PENDING_PAYMENT
+  PAID
+  FULFILLING
+  SUBMITTED
+  SHIPPED
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+enum CommerceFulfillmentStatus {
+  PENDING
+  SUBMITTED
+  SHIPPED
+  DELIVERED
+  FAILED
+  CANCELED
+}
+
+enum CommerceEntitlementStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELED
+  REVOKED
+}
+
+/// Managed catalog offer. Covers physical goods, sponsorships, subscriptions,
+/// digital access, services, and pure donation-style offers.
+model CommerceOffer {
+  id String @id
+
+  /// Stable managed key such as "shirt" or "dating-premium".
+  key String @unique
+
+  kind   CommerceOfferKind
+  status CommerceOfferStatus @default(ACTIVE)
+
+  title       String
+  description String?
+
+  currency String @default("usd")
+
+  defaultUnitAmountCents Int?
+  defaultFmvCents        Int     @default(0)
+  minUnitAmountCents     Int?
+  maxUnitAmountCents     Int?
+  allowCustomAmount      Boolean @default(false)
+
+  isTaxDeductible Boolean @default(false)
+  taxCode         String?
+
+  fulfillmentKind CommerceFulfillmentKind @default(NONE)
+
+  /// Managed/system-owned catalog rows are idempotently synced.
+  managed Boolean @default(false)
+
+  sortOrder Int   @default(0)
+  metadata  Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  variants     CommerceOfferVariant[] @relation("CommerceOfferVariants")
+  orderItems   CommerceOrderItem[]    @relation("CommerceOfferOrderItems")
+  entitlements CommerceEntitlement[]  @relation("CommerceOfferEntitlements")
+
+  @@index([kind, status])
+  @@index([deletedAt])
+}
+
+/// Sellable variant of an offer. Physical products use attributes like
+/// size/color; sponsorships and subscriptions can use tier/placement/duration.
+model CommerceOfferVariant {
+  id String @id
+
+  offerId String
+
+  /// Stable managed key such as "shirt:black:m".
+  key String @unique
+
+  /// Key unique within the offer, such as "black:m" or "homepage:monthly".
+  variantKey String
+
+  label String
+
+  currency String @default("usd")
+
+  unitAmountCents    Int?
+  fmvCents           Int?
+  minUnitAmountCents Int?
+  maxUnitAmountCents Int?
+  allowCustomAmount  Boolean?
+
+  taxCode String?
+
+  fulfillmentKind CommerceFulfillmentKind?
+
+  attributes          Json?
+  fulfillmentMetadata Json?
+  metadata            Json?
+
+  active    Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  offer        CommerceOffer                @relation("CommerceOfferVariants", fields: [offerId], references: [id], onDelete: Cascade)
+  mappings     CommerceFulfillmentMapping[] @relation("CommerceVariantFulfillmentMappings")
+  orderItems   CommerceOrderItem[]          @relation("CommerceVariantOrderItems")
+  entitlements CommerceEntitlement[]        @relation("CommerceVariantEntitlements")
+
+  @@unique([offerId, variantKey])
+  @@index([offerId, active])
+  @@index([deletedAt])
+}
+
+/// Provider-specific fulfillment identifiers for a sellable variant. These are
+/// managed catalog facts, not secrets, and are synced through managed data.
+model CommerceFulfillmentMapping {
+  id String @id
+
+  offerVariantId String
+  provider       CommerceFulfillmentProvider
+
+  providerProductId  String?
+  providerVariantId  String?
+  providerCatalogSku String?
+  providerMetadata   Json?
+
+  active Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  variant CommerceOfferVariant @relation("CommerceVariantFulfillmentMappings", fields: [offerVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([offerVariantId, provider])
+  @@index([provider, providerCatalogSku])
+  @@index([deletedAt])
+}
+
+/// Durable payment/order ledger. This is deliberately generic enough for
+/// shirts, sponsorships, subscriptions, dating-app credits, and future offers.
+model CommerceOrder {
+  id String @id @default(cuid())
+
+  purposeKey String?
+  status     CommerceOrderStatus @default(PENDING_PAYMENT)
+
+  paymentProvider CommercePaymentProvider @default(STRIPE)
+
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId   String?
+  stripeCustomerId        String?
+
+  buyerUserId         String?
+  buyerOrganizationId String?
+  buyerEmail          String?
+  buyerName           String?
+  buyerPhone          String?
+
+  shippingName       String?
+  shippingLine1      String?
+  shippingLine2      String?
+  shippingCity       String?
+  shippingState      String?
+  shippingPostalCode String?
+  shippingCountry    String?
+
+  currency      String @default("usd")
+  subtotalCents Int    @default(0)
+  taxCents      Int    @default(0)
+  shippingCents Int    @default(0)
+  discountCents Int    @default(0)
+  totalCents    Int    @default(0)
+  fmvCents      Int    @default(0)
+  donationCents Int    @default(0)
+
+  metadata     Json?
+  lastError    String?
+  attemptCount Int     @default(0)
+
+  paidAt      DateTime?
+  fulfilledAt DateTime?
+  shippedAt   DateTime?
+  canceledAt  DateTime?
+  refundedAt  DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  items        CommerceOrderItem[]   @relation("CommerceOrderItems")
+  fulfillments CommerceFulfillment[] @relation("CommerceOrderFulfillments")
+  entitlements CommerceEntitlement[] @relation("CommerceOrderEntitlements")
+
+  @@index([buyerUserId])
+  @@index([buyerOrganizationId])
+  @@index([buyerEmail])
+  @@index([status])
+  @@index([purposeKey])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+/// Snapshot of what was purchased. Keeps the historical price/tax/FMV/metadata
+/// stable even if the managed catalog changes later.
+model CommerceOrderItem {
+  id String @id @default(cuid())
+
+  orderId        String
+  offerId        String?
+  offerVariantId String?
+
+  offerKey        String
+  offerVariantKey String?
+  title           String
+
+  quantity Int    @default(1)
+  currency String @default("usd")
+
+  unitAmountCents   Int @default(0)
+  unitFmvCents      Int @default(0)
+  unitDonationCents Int @default(0)
+
+  totalAmountCents   Int @default(0)
+  totalFmvCents      Int @default(0)
+  totalDonationCents Int @default(0)
+
+  taxable Boolean @default(false)
+  taxCode String?
+
+  fulfillmentKind     CommerceFulfillmentKind @default(NONE)
+  fulfillmentMetadata Json?
+  metadata            Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  order        CommerceOrder         @relation("CommerceOrderItems", fields: [orderId], references: [id], onDelete: Cascade)
+  offer        CommerceOffer?        @relation("CommerceOfferOrderItems", fields: [offerId], references: [id], onDelete: SetNull)
+  offerVariant CommerceOfferVariant? @relation("CommerceVariantOrderItems", fields: [offerVariantId], references: [id], onDelete: SetNull)
+  fulfillments CommerceFulfillment[] @relation("CommerceOrderItemFulfillments")
+  entitlements CommerceEntitlement[] @relation("CommerceOrderItemEntitlements")
+
+  @@index([orderId])
+  @@index([offerId])
+  @@index([offerVariantId])
+  @@index([offerKey])
+  @@index([deletedAt])
+}
+
+/// Retryable fulfillment ledger for physical or external-provider side effects.
+model CommerceFulfillment {
+  id String @id @default(cuid())
+
+  orderId     String
+  orderItemId String?
+
+  provider CommerceFulfillmentProvider
+  status   CommerceFulfillmentStatus   @default(PENDING)
+
+  /// Our idempotency key with the provider, such as a Stripe Checkout session id.
+  externalOrderId String?
+
+  providerOrderId String?
+  providerStatus  String?
+
+  trackingNumber String?
+  trackingUrl    String?
+
+  metadata     Json?
+  lastError    String?
+  attemptCount Int     @default(0)
+
+  submittedAt DateTime?
+  shippedAt   DateTime?
+  deliveredAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  order     CommerceOrder      @relation("CommerceOrderFulfillments", fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem CommerceOrderItem? @relation("CommerceOrderItemFulfillments", fields: [orderItemId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, externalOrderId])
+  @@index([orderId])
+  @@index([orderItemId])
+  @@index([status])
+  @@index([providerOrderId])
+  @@index([deletedAt])
+}
+
+/// Non-physical benefit created by a paid order: sponsorship placement,
+/// subscription access, dating-app premium access, credits, boosts, etc.
+model CommerceEntitlement {
+  id String @id @default(cuid())
+
+  orderId        String?
+  orderItemId    String?
+  offerId        String?
+  offerVariantId String?
+
+  entitlementType String
+  status          CommerceEntitlementStatus @default(PENDING)
+
+  subjectUserId         String?
+  subjectOrganizationId String?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  metadata Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  order        CommerceOrder?        @relation("CommerceOrderEntitlements", fields: [orderId], references: [id], onDelete: SetNull)
+  orderItem    CommerceOrderItem?    @relation("CommerceOrderItemEntitlements", fields: [orderItemId], references: [id], onDelete: SetNull)
+  offer        CommerceOffer?        @relation("CommerceOfferEntitlements", fields: [offerId], references: [id], onDelete: SetNull)
+  offerVariant CommerceOfferVariant? @relation("CommerceVariantEntitlements", fields: [offerVariantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([orderItemId])
+  @@index([offerId])
+  @@index([offerVariantId])
+  @@index([subjectUserId])
+  @@index([subjectOrganizationId])
+  @@index([entitlementType, status])
+  @@index([endsAt])
+  @@index([deletedAt])
 }
 
 // ────────────────────────────────────────────────────────────

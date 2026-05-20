@@ -2771,6 +2771,60 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("allows admin-created tasks to depend on private tasks owned by another user", async () => {
+      mocks.taskFindMany.mockResolvedValue([
+        {
+          id: "other-private-blocker",
+          isPublic: false,
+          createdByUserId: "other-user",
+        },
+      ]);
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "created-task",
+          contextJson: { executor_type: "Self", value: 100, p_success: 0.5 },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 1,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+
+      const client = await setup("admin-1", [McpScope.TASKS_PERSONAL], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Create prerequisite chain",
+          description:
+            "An admin task that depends on another user's private blocker.",
+          category: "ENGINEERING",
+          acceptanceCriteria: ["The blocker edge is created"],
+          impactStatement: "Admins need to coordinate cross-owner task trees.",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+          depends_on: ["other-private-blocker"],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: [
+            expect.objectContaining({
+              fromTaskId: "other-private-blocker",
+              toTaskId: "created-task",
+            }),
+          ],
+        }),
+      );
+    });
+
     it("createTask copies markdown acceptance criteria into contextJson when the agent puts them in the description", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
         task: makeCreatedTask({
@@ -3013,11 +3067,9 @@ describe("MCP server tool dispatch", () => {
         },
       ]);
 
-      const client = await setup(
-        "admin-1",
-        [McpScope.TASKS_ADMIN],
-        { isAdmin: true },
-      );
+      const client = await setup("admin-1", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
       const result = await client.callTool({
         name: "updateTask",
         arguments: {
@@ -3033,6 +3085,22 @@ describe("MCP server tool dispatch", () => {
         select: {
           contextJson: true,
           createdByUserId: true,
+          currentImpactEstimateSet: {
+            select: {
+              frames: {
+                orderBy: { evaluationHorizonYears: "desc" },
+                select: {
+                  estimatedCashCostUsdBase: true,
+                  estimatedEffortHoursBase: true,
+                  expectedEconomicValueUsdBase: true,
+                  frameKey: true,
+                  timeToImpactStartDays: true,
+                  successProbabilityBase: true,
+                },
+                where: { deletedAt: null },
+              },
+            },
+          },
           deadlinePolicy: true,
           estimatedEffortHours: true,
           id: true,
@@ -3057,6 +3125,54 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("preserves an admin-updated task's current economics frame when only one economic field changes", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+      mocks.taskFindFirst.mockResolvedValue({
+        contextJson: { executor_type: "Self" },
+        createdByUserId: "other-user",
+        currentImpactEstimateSet: {
+          frames: [
+            {
+              estimatedCashCostUsdBase: 10,
+              estimatedEffortHoursBase: 8,
+              expectedEconomicValueUsdBase: 1234,
+              frameKey: "TWENTY_YEAR",
+              successProbabilityBase: 0.25,
+              timeToImpactStartDays: 14,
+            },
+          ],
+        },
+        deadlinePolicy: null,
+        estimatedEffortHours: 8,
+        id: "other-private-task",
+        isPublic: false,
+      });
+
+      const client = await setup("admin-1", [McpScope.TASKS_PERSONAL], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "other-private-task",
+          cash_cost: 50,
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskImpactFrameEstimateCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          estimatedCashCostUsdBase: 50,
+          estimatedEffortHoursBase: 8,
+          expectedEconomicValueUsdBase: 1234,
+          successProbabilityBase: 0.25,
+          timeToImpactStartDays: 14,
+        }),
+      });
+    });
+
     it("allows deleteTask for admin users without tasks:admin when another user created the task", async () => {
       // Same ownership regression as the ic2ewd-grant update path, but for
       // soft deletion through the end-to-end tool handler.
@@ -3065,11 +3181,9 @@ describe("MCP server tool dispatch", () => {
         isPublic: false,
       });
 
-      const client = await setup(
-        "mike",
-        [McpScope.TASKS_PERSONAL],
-        { isAdmin: true },
-      );
+      const client = await setup("mike", [McpScope.TASKS_PERSONAL], {
+        isAdmin: true,
+      });
       const result = await client.callTool({
         name: "deleteTask",
         arguments: { taskId: "other-task" },
@@ -3100,11 +3214,9 @@ describe("MCP server tool dispatch", () => {
         })
         .mockResolvedValueOnce(null);
 
-      const client = await setup(
-        "mike",
-        [McpScope.TASKS_PERSONAL],
-        { isAdmin: true },
-      );
+      const client = await setup("mike", [McpScope.TASKS_PERSONAL], {
+        isAdmin: true,
+      });
       const result = await client.callTool({
         name: "updateTask",
         arguments: {
