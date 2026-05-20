@@ -129,3 +129,4 @@
 - Powered by Endaoment (a 501(c)(3); custodial; auto-receipt).
 - Anything unusual (wire transfer, in-kind goods, complex assets)? Email [donations@warondisease.org](mailto:donations@warondisease.org).
 - [Watch Chaplin's closing speech from The Great Dictator (1940)](https://www.youtube.com/results?search_query=charlie+chaplin+the+great+dictator+speech)
+- Foundations: distributing the shirt to every human on Earth costs roughly 3% of the global annual philanthropy budget. [See the case →](/foundations)

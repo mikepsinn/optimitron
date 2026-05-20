@@ -97,6 +97,7 @@ export const ROUTES = {
   terms: "/terms",
   impact: "/impact",
   join: "/join",
+  foundations: "/foundations",
   signatories: "/signatories",
   campaign: "/campaign",
   love: "/love",
@@ -765,6 +766,18 @@ export const humanityVGovernmentLink: NavItem = {
     },
   },
   cta: "Read the Case",
+};
+
+export const foundationsLink: NavItem = {
+  href: ROUTES.foundations,
+  label: "Foundations",
+  emoji: "🏛️",
+  description:
+    "The case for foundations to fund universal t-shirt distribution as the highest-EV charitable intervention available.",
+  tagline: "Why 3% of one year's foundation budget can end war and disease.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "See the case",
 };
 
 export const voteLink: NavItem = {
@@ -1610,6 +1623,7 @@ export const routeReviewNavItems = [
   courtLink,
   donateLink,
   joinLink,
+  foundationsLink,
   signatoriesLink,
   presidentManagementLink,
   dashboardLink,

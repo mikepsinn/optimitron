@@ -149,6 +149,14 @@ export default function DonatePage() {
         <div className="mt-12">
           <ChaplinReference />
         </div>
+
+        <p className="mt-8 text-center text-sm font-bold text-foreground">
+          Foundations: distributing the shirt to every human on Earth costs
+          roughly 3% of the global annual philanthropy budget.{" "}
+          <Link href={ROUTES.foundations} className="font-black underline">
+            See the case →
+          </Link>
+        </p>
       </div>
     </div>
   );

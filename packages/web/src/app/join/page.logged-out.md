@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Join as an Organization — 1% Treaty
-- Meta description: Your organization can publicly support the 1% Treaty once, then help its members vote to end war and disease.
+- Meta description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
 - Canonical: https://warondisease.org/join
 - Open Graph title: Join as an Organization — 1% Treaty
-- Open Graph description: Your organization can publicly support the 1% Treaty once, then help its members vote to end war and disease.
+- Open Graph description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fjoin
 - Twitter title: Join as an Organization — 1% Treaty
-- Twitter description: Your organization can publicly support the 1% Treaty once, then help its members vote to end war and disease.
+- Twitter description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
 
 ## Visible Page Copy
 
@@ -76,4 +76,5 @@
 - Article IX: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in the history of planet Earth.
 - IN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.
 - [BACK TO ORGANIZATION FORM](#organization-endorsement-form)
+- Foundations: distributing the shirt to every human on Earth costs roughly 3% of the global annual philanthropy budget. [See the case →](/foundations)
 - Already joined? See the [organizational supporters](/signatories).

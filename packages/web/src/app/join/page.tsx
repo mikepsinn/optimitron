@@ -230,7 +230,15 @@ export default async function EndorsePage() {
       <LegalNotesDisclosure sections={content.legal.sections} />
       <TreatyTextDisclosure treatyMarkdown={treatyMarkdown} />
 
-      <p className="mt-8 text-center text-xs font-bold text-muted-foreground">
+      <p className="mt-8 text-center text-sm font-bold text-foreground">
+        Foundations: distributing the shirt to every human on Earth costs
+        roughly 3% of the global annual philanthropy budget.{" "}
+        <Link href={ROUTES.foundations} className="font-black underline">
+          See the case →
+        </Link>
+      </p>
+
+      <p className="mt-4 text-center text-xs font-bold text-muted-foreground">
         Already joined? See the{" "}
         <Link href={ROUTES.signatories} className="underline">
           {content.endorse.existingSupportersLabel}

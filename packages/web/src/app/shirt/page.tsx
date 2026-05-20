@@ -1,7 +1,9 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { NUCLEAR_WINTER_OVERKILL_FACTOR } from "@optimitron/data/parameters";
 import { PosterQrCode } from "@/app/poster/poster-client";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
 import { serverEnv } from "@/lib/env";
@@ -284,6 +286,29 @@ export default async function ShirtPage() {
                 )}
               </p>
             </div>
+
+            <section className="border-2 border-foreground bg-background p-5">
+              <h2 className="text-2xl font-black uppercase leading-tight">
+                WEAR IT ON EARTH OPTIMIZATION DAY — AUGUST 6.
+              </h2>
+              <p className="mt-4 text-base font-bold leading-7 text-foreground">
+                If 1 billion humans wear this shirt on the same day, humanity is
+                forced to discuss the fact that it currently maintains
+                sufficient mass-murder capacity to cause{" "}
+                <ParameterValue
+                  className="font-black"
+                  param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+                />{" "}
+                apocalypses, and that it has the option to sacrifice one of
+                these apocalypses for disease eradication within our lifetime.
+              </p>
+              <Link
+                className="mt-4 inline-flex border border-foreground bg-background px-3 py-2 text-sm font-black text-foreground hover:bg-muted"
+                href={ROUTES.foundations}
+              >
+                Foundations: see the bulk math → /foundations
+              </Link>
+            </section>
 
             {shirtCommerceEnabled ? (
               <ShirtOrderForm handle={referralHandle} />
