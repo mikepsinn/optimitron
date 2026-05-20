@@ -1,8 +1,6 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { SHARING_TIME_MINUTES } from "@optimitron/data/parameters";
-import { ParameterValue } from "@/components/shared/ParameterValue";
 import { PosterQrCode } from "@/app/poster/poster-client";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
@@ -17,7 +15,10 @@ import { ShirtDownloadImageButton, ShirtOrderForm } from "./shirt-client";
 export const metadata = getRouteMetadata(shirtLink);
 
 const SHIRT_BACK_ARTWORK_ID = "war-on-disease-shirt-back";
-const VISIBLE_TARGET_MIN_FONT_SIZE = 10;
+const VISIBLE_TARGET_MIN_FONT_SIZE = 38;
+const VISIBLE_TARGET_MAX_FONT_SIZE = 92;
+const VISIBLE_TARGET_MAX_WIDTH_PX = 2040;
+const MONO_AVERAGE_GLYPH_WIDTH_EM = 0.62;
 
 function getVisibleTargetUrl(targetUrl: string) {
   return targetUrl.replace(/^https?:\/\//, "");
@@ -32,19 +33,10 @@ function getFittingMonoFontSize(
     VISIBLE_TARGET_MIN_FONT_SIZE,
     Math.min(
       maxFontSize,
-      Math.floor(maxWidth / Math.max(text.length * 0.62, 1)),
+      Math.floor(
+        maxWidth / Math.max(text.length * MONO_AVERAGE_GLYPH_WIDTH_EM, 1),
+      ),
     ),
-  );
-}
-
-function VoteTimeValue({ className }: { className?: string }) {
-  return (
-    <ParameterValue
-      className={className}
-      param={SHARING_TIME_MINUTES}
-      presentation="inline"
-      valueOverride="30 seconds"
-    />
   );
 }
 
@@ -68,8 +60,7 @@ function ArtworkPanel({
 }
 
 function ShirtFrontArtwork() {
-  const [pleaseTake, , toEnd, warAndDisease, atText, urlText] =
-    CAMPAIGN_PRINT_COPY.shirtFrontLines;
+  const [lineOne, lineTwo, lineThree] = CAMPAIGN_PRINT_COPY.shirtFrontLines;
 
   return (
     <svg
@@ -82,58 +73,39 @@ function ShirtFrontArtwork() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <rect fill="#ffffff" height="3000" width="2400" />
-      <foreignObject height="2760" width="2160" x="120" y="120">
-        <div
-          style={{
-            alignItems: "center",
-            boxSizing: "border-box",
-            color: "#000000",
-            display: "flex",
-            flexDirection: "column",
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            height: "100%",
-            justifyContent: "center",
-            textAlign: "center",
-            textTransform: "uppercase",
-            width: "100%",
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 900,
-              lineHeight: "0.9",
-              padding: "32px 0",
-              width: "100%",
-            }}
-          >
-            <div style={{ fontSize: "275px", whiteSpace: "nowrap" }}>
-              {pleaseTake}
-            </div>
-            <div style={{ fontSize: "300px", whiteSpace: "nowrap" }}>
-              <VoteTimeValue />
-            </div>
-            <div style={{ fontSize: "380px", whiteSpace: "nowrap" }}>
-              {toEnd}
-            </div>
-            <div style={{ fontSize: "220px", whiteSpace: "nowrap" }}>
-              {warAndDisease}
-            </div>
-            <div style={{ fontSize: "380px", whiteSpace: "nowrap" }}>
-              {atText}
-            </div>
-            <div
-              style={{
-                fontFamily: "'Courier New', monospace",
-                fontSize: "190px",
-                letterSpacing: "0",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {urlText}
-            </div>
-          </div>
-        </div>
-      </foreignObject>
+      <text
+        fill="#000000"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="264"
+        fontWeight="900"
+        textAnchor="middle"
+        x="1200"
+        y="1040"
+      >
+        {lineOne}
+      </text>
+      <text
+        fill="#000000"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="340"
+        fontWeight="900"
+        textAnchor="middle"
+        x="1200"
+        y="1415"
+      >
+        {lineTwo}
+      </text>
+      <text
+        fill="#000000"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="264"
+        fontWeight="900"
+        textAnchor="middle"
+        x="1200"
+        y="1790"
+      >
+        {lineThree}
+      </text>
     </svg>
   );
 }
@@ -148,8 +120,8 @@ function ShirtBackArtwork({
   const visibleTargetLabel = visibleTargetUrl.toUpperCase();
   const visibleTargetFontSize = getFittingMonoFontSize(
     visibleTargetLabel,
-    2040,
-    92,
+    VISIBLE_TARGET_MAX_WIDTH_PX,
+    VISIBLE_TARGET_MAX_FONT_SIZE,
   );
 
   return (
@@ -168,7 +140,7 @@ function ShirtBackArtwork({
       <text
         fill="#000000"
         fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="168"
+        fontSize="140"
         fontWeight="900"
         textAnchor="middle"
         x="1200"
@@ -179,7 +151,7 @@ function ShirtBackArtwork({
       <text
         fill="#000000"
         fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="144"
+        fontSize="136"
         fontWeight="900"
         textAnchor="middle"
         x="1200"
@@ -190,7 +162,7 @@ function ShirtBackArtwork({
       <text
         fill="#000000"
         fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="168"
+        fontSize="140"
         fontWeight="900"
         textAnchor="middle"
         x="1200"
@@ -335,12 +307,11 @@ export default async function ShirtPage() {
 
             <div className="border-l-2 border-foreground pl-4 text-sm font-bold leading-relaxed text-muted-foreground">
               <p>
-                Front: please take <VoteTimeValue /> to end war and disease at
-                warondisease.org.
+                Front: {CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ")}
               </p>
               <p className="mt-2">
-                Back: trade one apocalypse for disease eradication at
-                warondisease.org.
+                Back: {SHIRT_BACK_COPY_LINES.join(" ")} Plus the per-buyer QR
+                code.
               </p>
             </div>
           </section>

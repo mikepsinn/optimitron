@@ -17,7 +17,15 @@ Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scrip
 
 ## Every Codex prompt must contain
 
-1. **Mikepsinn's verbatim message**, quoted. The user often uses speech-to-text — typos expected; interpret intent, don't surface-correct. Verbatim quoting eliminates Claude-as-telephone-game mutation.
+1. **Mikepsinn's verbatim message + Claude's cleaned interpretation + relevant historical context.** Three sub-parts, in this exact shape:
+
+   a. **Verbatim quote** of Mike's current statement in a `>` blockquote. Zero mutation. Voice-to-text — typos expected.
+
+   b. **Claude's cleaned interpretation** of intent in a second `>` blockquote, prefixed `[interpretation]:`. Fix ONLY obvious voice-recognition artifacts: URL spacing (`war on disease.org` → `warondisease.org`), doubled words, missing/extra punctuation, dictation-leakage ("Hey Google, set a timer..."). DO NOT fix: word choices that look weird but might be intentional ("missions", "lousy t-shirt", any phrase that changes strategic meaning if "corrected"). If a phrase is genuinely ambiguous, flag it inline as `[ambiguous: could mean X or Y]` rather than picking one.
+
+   c. **Curated historical context** — 3-5 relevant verbatim quotes from earlier Mike statements on the same strategic thread, each in its own `>` blockquote with the turn label. NOT all 50+ messages from the session — just the strategic-arc ones on the same question. Codex's context budget shrinks if dumped wholesale.
+
+   The split lets Codex re-read the raw if the cleaned version seems off, while sparing it the attention burden of disambiguating typos. The historical thread keeps Codex from re-deriving context Mike has already settled in prior turns.
 2. **Investigate-before-coding** instruction: grep, read, understand. Don't trust the framing blindly.
 3. **Push back if the request hurts the 4B-voters-on-the-treaty goal.** State the concern, propose to skip, wait for confirmation. Don't silently comply with work that doesn't move that needle.
 4. **Argue back if Claude misread the user.** The verbatim quote makes this checkable.
