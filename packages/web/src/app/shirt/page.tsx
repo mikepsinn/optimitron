@@ -17,6 +17,7 @@ import { ShirtDownloadImageButton, ShirtOrderForm } from "./shirt-client";
 export const metadata = getRouteMetadata(shirtLink);
 
 const SHIRT_BACK_ARTWORK_ID = "war-on-disease-shirt-back";
+const VISIBLE_TARGET_MIN_FONT_SIZE = 10;
 
 function getVisibleTargetUrl(targetUrl: string) {
   return targetUrl.replace(/^https?:\/\//, "");
@@ -27,9 +28,12 @@ function getFittingMonoFontSize(
   maxWidth: number,
   maxFontSize: number,
 ) {
-  return Math.min(
-    maxFontSize,
-    Math.floor(maxWidth / Math.max(text.length * 0.62, 1)),
+  return Math.max(
+    VISIBLE_TARGET_MIN_FONT_SIZE,
+    Math.min(
+      maxFontSize,
+      Math.floor(maxWidth / Math.max(text.length * 0.62, 1)),
+    ),
   );
 }
 

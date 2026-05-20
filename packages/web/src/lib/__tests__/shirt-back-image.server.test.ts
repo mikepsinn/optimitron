@@ -5,7 +5,9 @@ import {
   SHIRT_FRONT_COPY,
   SHIRT_PRINT_HEIGHT_PX,
   SHIRT_PRINT_WIDTH_PX,
+  SHIRT_VISIBLE_TARGET_MIN_FONT_SIZE,
   generateShirtBackImage,
+  getShirtVisibleTargetFontSize,
 } from "../shirt-back-image.server";
 
 describe("generateShirtBackImage", () => {
@@ -35,5 +37,11 @@ describe("generateShirtBackImage", () => {
     expect(buffer.length).toBeGreaterThan(10_000);
     expect(stats.channels[0]?.min).toBe(0);
     expect(stats.channels[0]?.max).toBe(255);
+  });
+
+  it("keeps the printed target URL visible for unusually long labels", () => {
+    expect(getShirtVisibleTargetFontSize("x".repeat(10_000))).toBe(
+      SHIRT_VISIBLE_TARGET_MIN_FONT_SIZE,
+    );
   });
 });

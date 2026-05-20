@@ -16,6 +16,9 @@ export {
 export const SHIRT_PRINT_WIDTH_PX = 3000;
 export const SHIRT_PRINT_HEIGHT_PX = 3600;
 export const SHIRT_PRINT_DPI = 300;
+export const SHIRT_VISIBLE_TARGET_MIN_FONT_SIZE = 10;
+const SHIRT_VISIBLE_TARGET_MAX_FONT_SIZE = 116;
+const SHIRT_VISIBLE_TARGET_MAX_WIDTH_PX = 2480;
 
 function escapeSvgText(value: string) {
   return value
@@ -33,10 +36,23 @@ function getFittingMonoFontSize(
   text: string,
   maxWidth: number,
   maxFontSize: number,
+  minFontSize: number,
 ) {
-  return Math.min(
-    maxFontSize,
-    Math.floor(maxWidth / Math.max(text.length * 0.62, 1)),
+  return Math.max(
+    minFontSize,
+    Math.min(
+      maxFontSize,
+      Math.floor(maxWidth / Math.max(text.length * 0.62, 1)),
+    ),
+  );
+}
+
+export function getShirtVisibleTargetFontSize(text: string) {
+  return getFittingMonoFontSize(
+    text,
+    SHIRT_VISIBLE_TARGET_MAX_WIDTH_PX,
+    SHIRT_VISIBLE_TARGET_MAX_FONT_SIZE,
+    SHIRT_VISIBLE_TARGET_MIN_FONT_SIZE,
   );
 }
 
@@ -75,10 +91,8 @@ export async function generateShirtBackImage({
   visibleTargetUrl: string;
 }): Promise<Buffer> {
   const visibleTargetLabel = visibleTargetUrl.toUpperCase();
-  const visibleTargetFontSize = getFittingMonoFontSize(
+  const visibleTargetFontSize = getShirtVisibleTargetFontSize(
     visibleTargetLabel,
-    2480,
-    116,
   );
   const qrPng = await QRCode.toBuffer(qrTarget, {
     color: {
