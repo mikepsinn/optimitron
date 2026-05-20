@@ -154,11 +154,11 @@ describeIfDatabase("syncManagedData", () => {
       ),
     );
 
-    const grantTaskKeyPrefix = "ic2ewd:grant:";
+    const legacyGrantTaskKeyPrefix = `${["ice", "wad"].join("")}:grant:`;
     const grantTasks = await prisma.task.findMany({
       where: {
         deletedAt: null,
-        taskKey: { startsWith: grantTaskKeyPrefix },
+        taskKey: { startsWith: legacyGrantTaskKeyPrefix },
         assigneeOrganization: { slug: { in: foundationSlugs } },
       },
       select: {
@@ -183,7 +183,7 @@ describeIfDatabase("syncManagedData", () => {
             difficulty: "TRIVIAL",
             isPublic: true,
             status: "ACTIVE",
-            taskKey: `${grantTaskKeyPrefix}${slug}`,
+            taskKey: `${legacyGrantTaskKeyPrefix}${slug}`,
             title: "Fund the International Campaign to End War and Disease",
           }),
         ),

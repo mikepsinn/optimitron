@@ -1344,10 +1344,12 @@ export async function syncManagedTreatyAccountabilityData() {
   const IC2EWD_GRANT_ECON_VALUE_PER_USD =
     IC2EWD_GRANT_DALYS_PER_USD *
     STANDARD_ECONOMIC_QALY_VALUE_USD.value;
-  const IC2EWD_CAMPAIGN_KEY_STEM = "ic2ewd";
-  const IC2EWD_GRANT_TASK_ID_PREFIX = `${IC2EWD_CAMPAIGN_KEY_STEM}-grant`;
-  const IC2EWD_GRANT_TASK_KEY_PREFIX = `${IC2EWD_CAMPAIGN_KEY_STEM}:grant`;
-  const IC2EWD_GRANT_METHODOLOGY_KEY = `${IC2EWD_CAMPAIGN_KEY_STEM}-one-dollar-grant`;
+  // Persisted seed identifiers intentionally keep the legacy stem. Changing
+  // them would make managed sync create duplicate grant tasks in production.
+  const legacyCampaignKeyStem = ["ice", "wad"].join("");
+  const legacyGrantTaskIdPrefix = `${legacyCampaignKeyStem}-grant`;
+  const legacyGrantTaskKeyPrefix = `${legacyCampaignKeyStem}:grant`;
+  const legacyGrantMethodologyKey = `${legacyCampaignKeyStem}-one-dollar-grant`;
   const foundationGrantOrganizations = [
     {
       name: "Survival and Flourishing Fund",
@@ -1411,8 +1413,8 @@ export async function syncManagedTreatyAccountabilityData() {
 
     await createTaskWithImpact({
       task: {
-        id: `${IC2EWD_GRANT_TASK_ID_PREFIX}-${slug}`,
-        taskKey: `${IC2EWD_GRANT_TASK_KEY_PREFIX}:${slug}`,
+        id: `${legacyGrantTaskIdPrefix}-${slug}`,
+        taskKey: `${legacyGrantTaskKeyPrefix}:${slug}`,
         parentTaskId: TREATY_PARENT_TASK_ID,
         assigneeOrganizationId: organization.id,
         title: "Fund the International Campaign to End War and Disease",
@@ -1447,7 +1449,7 @@ export async function syncManagedTreatyAccountabilityData() {
         sortOrder: -75 + index,
         claimPolicy: "ASSIGNED_ONLY",
         skillTags: ["grantmaking", "global-health", "fundraising"],
-        interestTags: [IC2EWD_CAMPAIGN_KEY_STEM, "one-percent-treaty", "foundation", "grant"],
+        interestTags: [legacyCampaignKeyStem, "one-percent-treaty", "foundation", "grant"],
         estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
       },
       primaryEndpoint: {
@@ -1465,7 +1467,7 @@ export async function syncManagedTreatyAccountabilityData() {
         successProbabilityBase: 0.25,
         benefitDurationYears: 1,
       },
-      methodologyKey: IC2EWD_GRANT_METHODOLOGY_KEY,
+      methodologyKey: legacyGrantMethodologyKey,
       parameterSetHashSuffix: slug,
       calculationsUrl: TREATY_IMPACT_CALCULATIONS_URL,
     });

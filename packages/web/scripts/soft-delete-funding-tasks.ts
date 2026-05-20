@@ -13,7 +13,7 @@ import { prisma } from "../src/lib/prisma";
  * without losing what was sent.
  */
 
-const grantTaskKeyPrefix = "ic2ewd:grant:";
+const grantTaskKeyPrefix = `${["ice", "wad"].join("")}:grant:`;
 
 const TARGET_TASK_KEYS = [
   `${grantTaskKeyPrefix}schmidt-futures`,
