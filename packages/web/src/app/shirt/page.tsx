@@ -106,8 +106,17 @@ function formatUsdCents(value: number) {
   });
 }
 
+const PLAIN_SHIRT_RESALE_BASELINE_USD = 10;
+
+function formatRoundedMultiplier(value: number) {
+  return Math.round(value).toLocaleString("en-US");
+}
+
 function FixExistingShirtsSection() {
   const perShirtTrueValueText = formatUsdCents(PER_SHIRT_TRUE_VALUE_USD.value);
+  const resaleMultiplierText = formatRoundedMultiplier(
+    PER_SHIRT_TRUE_VALUE_USD.value / PLAIN_SHIRT_RESALE_BASELINE_USD,
+  );
 
   return (
     <section
@@ -130,8 +139,9 @@ function FixExistingShirtsSection() {
         <div className="space-y-4">
           <p className={DIY_BODY_CLASS_NAME}>
             If so, you can easily upgrade your existing t-shirts. The market
-            value of a plain white t-shirt is approximately $10. The market
-            value of a t-shirt that ended war and disease is approximately{" "}
+            value of a plain white t-shirt is approximately $
+            {PLAIN_SHIRT_RESALE_BASELINE_USD}. The market value of a t-shirt
+            that ended war and disease is approximately{" "}
             <ParameterValue
               className="font-black"
               figures={2}
@@ -139,7 +149,12 @@ function FixExistingShirtsSection() {
               valueOverride={perShirtTrueValueText}
             />
             . Upgrading yours increases its resale value by approximately{" "}
-            <strong className="font-black">1,059,832</strong> times.
+            <ParameterValue
+              className="font-black"
+              param={PER_SHIRT_TRUE_VALUE_USD}
+              valueOverride={resaleMultiplierText}
+            />{" "}
+            times.
           </p>
 
           <div className="space-y-3">
