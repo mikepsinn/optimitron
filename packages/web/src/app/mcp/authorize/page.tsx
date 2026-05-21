@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { DEFAULT_SCOPES, allowedMcpScopesForUser, scopesFromWire, scopesToWire } from "@/lib/mcp-scopes";
+import {
+  DEFAULT_CONSENT_SCOPES,
+  allowedMcpScopesForUser,
+  scopesFromWire,
+  scopesToWire,
+} from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { McpConsentForm } from "./consent-form";
 
@@ -14,7 +19,7 @@ export default async function McpAuthorizePage({
   const clientId = typeof params.client_id === "string" ? params.client_id : null;
   const redirectUri = typeof params.redirect_uri === "string" ? params.redirect_uri : null;
   const state = typeof params.state === "string" ? params.state : null;
-  const scope = typeof params.scope === "string" ? params.scope : scopesToWire(DEFAULT_SCOPES);
+  const scope = typeof params.scope === "string" ? params.scope : scopesToWire(DEFAULT_CONSENT_SCOPES);
   const codeChallenge = typeof params.code_challenge === "string" ? params.code_challenge : null;
   const clientName = typeof params.client_name === "string" ? params.client_name : clientId;
 

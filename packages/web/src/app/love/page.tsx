@@ -38,7 +38,7 @@ const stats = [
   },
   {
     number: "$0",
-    label: "cost per impression from a dating bio",
+    label: "cost per impression from an Earth Optimization Date bio",
   },
   {
     number: (
@@ -67,12 +67,13 @@ const steps = [
           param={SHARING_TIME_MINUTES}
           valueOverride="30 seconds"
         />{" "}
-        to vote. You can&apos;t ask others to do something you haven&apos;t done.
+        to vote. You can&apos;t ask others to do something you haven&apos;t
+        done.
       </p>
     ),
   },
   {
-    title: "Add it to your dating profile",
+    title: "Add it to your Earth Optimization Date bio",
     body: (
       <p>
         Use one of the templates below, or write your own. The key is: make it
@@ -100,7 +101,7 @@ const steps = [
     ),
   },
   {
-    title: "Go on a date. Put up flyers.",
+    title: "Go on an Earth Optimization Date. Put up flyers.",
     body: (
       <>
         <p>
@@ -108,16 +109,16 @@ const steps = [
             Print flyers
           </Link>{" "}
           with your personal referral QR code from warondisease.org. When you go
-          on a date, put them up around town together. Even if the date is
-          terrible, you didn&apos;t waste your time. You were ending war and
-          disease.
+          on an Earth Optimization Date, put them up around town together. Even
+          if the Earth Optimization Date is terrible, you didn&apos;t waste your
+          time. You were ending war and disease.
         </p>
         <p className="mt-4">
-          Millions of bad dates happen every night globally. Hours of human time
-          evaporating into awkward silences and forced conversations about
-          hiking. This campaign converts that wasted time into the highest value
-          activity mathematically possible. Even your worst date ends war and
-          disease.
+          Millions of bad Earth Optimization Dates happen every night globally.
+          Hours of human time evaporating into awkward silences and forced
+          conversations about hiking. This campaign converts that wasted time
+          into the highest value activity mathematically possible. Even your
+          worst Earth Optimization Date ends war and disease.
         </p>
       </>
     ),
@@ -128,7 +129,7 @@ const faqItems = [
   {
     question: "Won't this make my profile weird?",
     answer:
-      'Your profile is currently competing with 10,000 people who like hiking and The Office. Yes, it will make your profile weird. That\'s the point. Weird is memorable. Memorable gets responses.',
+      "Your profile is currently competing with 10,000 people who like hiking and The Office. Yes, it will make your profile weird. That's the point. Weird is memorable. Memorable gets responses.",
   },
   {
     question: "Will it actually get me better matches?",
@@ -141,9 +142,15 @@ const faqItems = [
       'You\'re asking them to vote on a free website for 30 seconds. Not buy a coin, join a group, or sign up for anything. The bar for "promotion" is usually money. This is free and takes less time than reading your bio.',
   },
   {
+    question:
+      "Won't I get shadowbanned for sending the same message to everyone?",
+    answer:
+      "Yes, if you act like spam. Dating apps detect copy-paste messages and mass-liking. The penalty is quiet invisibility. Vary the wording. Space out your activity. Move slowly enough that a human could plausibly be doing it. For someone you actually want to meet, write to their profile before you mention the campaign. The algorithm rewards selectivity. Be a human, not a bot.",
+  },
+  {
     question: "What if nobody votes from my profile?",
     answer:
-      "Then you still have a more interesting dating profile than you did before. There's no downside.",
+      "Then you still have a more interesting Earth Optimization Date bio than you did before. There's no downside.",
   },
   {
     question: "Is this a real campaign?",
@@ -198,9 +205,7 @@ function BioTemplate({ children }: { children: ReactNode }) {
       <span className="absolute right-6 top-[-10px] bg-[#ff4d4d] px-2.5 py-0.5 font-mono text-[0.65rem] font-normal uppercase tracking-[0.15em] text-[#0a0a0a]">
         COPY THIS
       </span>
-      <p className="text-[0.95rem] leading-[1.8] text-[#e8e4df]">
-        {children}
-      </p>
+      <p className="text-[0.95rem] leading-[1.8] text-[#e8e4df]">{children}</p>
     </div>
   );
 }
@@ -276,22 +281,66 @@ export default async function LovePage() {
         className="pointer-events-none fixed inset-0 z-[1000] opacity-[0.03]"
         style={{
           backgroundImage:
-            'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
         }}
       />
       <div className="mx-auto max-w-[720px] px-6">
         <div className="relative flex min-h-screen flex-col justify-center py-20">
           <p className="mb-8 font-mono text-xs uppercase tracking-[0.2em] text-[#ff4d4d]">
-            A proposal
+            Love
           </p>
           <h1 className="mb-8 text-[clamp(2rem,5vw,3.2rem)] font-bold leading-[1.2] text-[#e8e4df]">
-            End war and disease{" "}
-            <span className="text-[#ff4d4d]">from your dating profile.</span>
+            An Earth Optimization Date is, by definition, a non-romantic
+            activity.
           </h1>
-          <p className="max-w-[540px] text-[1.15rem] italic text-[#8a8580]">
-            You&apos;re already on the apps. You&apos;re already writing a bio.
-            You might as well save a few billion lives while you&apos;re at it.
-          </p>
+          <div className="max-w-[640px] space-y-5 text-[1.02rem] leading-[1.7] text-[#e8e4df]">
+            <p>
+              The point: find someone you like, talk for a few minutes, decide
+              what is the most effective way you can spend your time together to
+              optimize Earth, then do that thing.
+            </p>
+            <p>
+              If you decide that being madly in love with each other would be
+              helpful in this endeavor of optimizing Earth, that is fine. I am
+              not the boss of you. But remember: we are trying to produce a
+              measurable outcome. We have to get 4 billion humans to click this
+              button.
+            </p>
+            <p>
+              I would prefer if you did not spend the whole time hugging and
+              kissing. There are approximately 1.2 humans dying every second. It
+              would be preferable if you focused on getting votes, printing
+              flyers, and hanging them up.
+            </p>
+            <p className="italic text-[#8a8580]">
+              You can ask your humanity manager if a non-Earth-optimization
+              activity is acceptable. That is between you and your manager.
+            </p>
+            <div className="space-y-3 border border-[#2a2a2a] bg-[#141414] p-5">
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-[#ff4d4d]">
+                Things to do together on an Earth Optimization Date:
+              </p>
+              <ul className="space-y-2 pl-5 text-[0.95rem] leading-[1.6] text-[#e8e4df]">
+                <li className="list-disc">
+                  Print flyers and tape them somewhere with foot traffic.
+                </li>
+                <li className="list-disc">
+                  Show each other warondisease.org and vote together.
+                </li>
+                <li className="list-disc">
+                  Pick two humans each of you can text the link to.
+                </li>
+                <li className="list-disc">
+                  Compare notes on which arguments work on which people.
+                </li>
+                <li className="list-disc">
+                  Discuss the 1% Treaty over coffee. Coffee is not a
+                  non-Earth-optimization activity if you are discussing the 1%
+                  Treaty.
+                </li>
+              </ul>
+            </div>
+          </div>
           <div className="absolute bottom-0 left-1/2 h-20 w-px -translate-x-1/2 bg-gradient-to-b from-[#8a8580] to-transparent" />
         </div>
 
@@ -384,9 +433,10 @@ export default async function LovePage() {
             &quot;looking for my partner in crime.&quot;
           </BodyParagraph>
           <BodyParagraph>
-            You&apos;re not choosing between a good dating profile and helping
-            end war and disease. A profile with a real mission IS a better
-            dating profile. The person benefits individually from participating.
+            You&apos;re not choosing between a good Earth Optimization Date bio
+            and helping end war and disease. A profile with a real mission IS a
+            better Earth Optimization Date bio. The person benefits individually
+            from participating.
           </BodyParagraph>
 
           <div className="my-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -416,7 +466,9 @@ export default async function LovePage() {
           <SectionHeading>The math</SectionHeading>
           <div className="my-10 border border-[#2a2a2a] bg-[#141414] p-8">
             <div className="font-mono text-[0.85rem] leading-[2] text-[#8a8580]">
-              <p>Average dating profile: seen by ~500 people/month</p>
+              <p>
+                Average Earth Optimization Date bio: seen by ~500 people/month
+              </p>
               <p>10,000 supporters with bios = 5,000,000 impressions/month</p>
               <p>
                 Conservative 1% click-through to warondisease.org = 50,000
@@ -480,14 +532,14 @@ export default async function LovePage() {
             </p>
           </div>
           <BodyParagraph>
-            Everyone wants a better dating profile. Curiosity alone will get a
-            response. When they say yes, send them this page. The
+            Everyone wants a better Earth Optimization Date bio. Curiosity alone
+            will get a response. When they say yes, send them this page. The
             &quot;improvement&quot; is adding warondisease.org to their bio.
           </BodyParagraph>
           <BodyParagraph>
-            Now they&apos;re voting. Now they&apos;re adding it to their profile.
-            Now they&apos;re sending the same message to their matches. Each
-            person who participates creates more people who participate.
+            Now they&apos;re voting. Now they&apos;re adding it to their
+            profile. Now they&apos;re sending the same message to their matches.
+            Each person who participates creates more people who participate.
           </BodyParagraph>
           <BodyParagraph>
             You started a conversation. You might also start a relationship.
@@ -551,16 +603,13 @@ export default async function LovePage() {
             have to care enough about strangers to spend 30 seconds voting so
             they don&apos;t die of something curable. That&apos;s a very low bar
             for love. You&apos;re already meeting it by being a person who reads
-            dating profiles instead of just looking at pictures.
+            Earth Optimization Date bios instead of just looking at pictures.
           </BodyParagraph>
           <BodyParagraph>
-            Wars happen because people don&apos;t care enough about the people on
-            the other side. Diseases go uncured because people don&apos;t care
-            enough about the people who have them. The entire problem is a
+            Wars happen because people don&apos;t care enough about the people
+            on the other side. Diseases go uncured because people don&apos;t
+            care enough about the people who have them. The entire problem is a
             deficit of giving a shit.
-          </BodyParagraph>
-          <BodyParagraph>
-            You give a shit. You&apos;re here. Put it in your bio.
           </BodyParagraph>
         </LoveSection>
 
@@ -581,8 +630,8 @@ export default async function LovePage() {
 
         <div className="py-28 text-center">
           <h2 className="mb-4 text-3xl font-bold leading-[1.3] text-[#e8e4df]">
-            Your dating profile is seen by hundreds of people. Most of them will
-            swipe left. Make the left swipes count.
+            Your Earth Optimization Date bio is seen by hundreds of people. Most
+            of them will swipe left. Make the left swipes count.
           </h2>
           <p className="mb-10 text-base italic text-[#8a8580]">
             Vote first. Then put it in your bio. Then send this page to someone.
@@ -594,19 +643,6 @@ export default async function LovePage() {
             <LoveShareButton className={secondaryButtonClassName} />
           </div>
         </div>
-
-        <footer className="border-t border-[#2a2a2a] py-10 text-center text-[0.85rem] text-[#8a8580]">
-          <p>
-            A project of the{" "}
-            <a
-              className="text-[#ff4d4d] no-underline"
-              href="https://warondisease.org"
-            >
-              Institute for Accelerated Medicine
-            </a>
-            . Love, Mike.
-          </p>
-        </footer> Hey Google, set a timer for one minute.
       </div>
     </main>
   );

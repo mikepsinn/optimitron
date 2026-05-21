@@ -58,6 +58,16 @@ function savedOrganizationFromSync(
   };
 }
 
+function getSingleJoinedOrganizationHref(
+  organizations: SavedOrganization[],
+): string | null {
+  if (organizations.length !== 1) return null;
+  const organizationId = organizations[0]?.organizationId;
+  return organizationId
+    ? `${getOrganizationPath(organizationId)}?joined=1`
+    : null;
+}
+
 export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
@@ -117,10 +127,12 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
           return;
         }
 
-        if (result.syncedOrganizations.length > 0) {
-          setSavedOrganizations(
-            result.syncedOrganizations.map(savedOrganizationFromSync),
-          );
+        const syncedOrganizations = result.syncedOrganizations.map(
+          savedOrganizationFromSync,
+        );
+
+        if (syncedOrganizations.length > 0) {
+          setSavedOrganizations(syncedOrganizations);
         }
 
         if (result.failedDrafts.length > 0) {
@@ -136,6 +148,12 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
             "I could not finish adding that organization yet. The draft is still here.",
           );
           setFormMode("error");
+          return;
+        }
+
+        const joinedHref = getSingleJoinedOrganizationHref(syncedOrganizations);
+        if (joinedHref) {
+          router.push(joinedHref);
           return;
         }
 
@@ -243,9 +261,9 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
 
     try {
       setFormMode("saving");
+      let savedOrganization: SavedOrganization;
       if (entryMode === "existing") {
-        const organization = await postExistingOrganization();
-        setSavedOrganizations([organization]);
+        savedOrganization = await postExistingOrganization();
       } else {
         if (!draft) {
           throw new Error("Organization name is required.");
@@ -254,9 +272,18 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
         if (!organization) {
           throw new Error("Failed to add organization");
         }
-        setSavedOrganizations([savedOrganizationFromSync(organization)]);
+        savedOrganization = savedOrganizationFromSync(organization);
         resetNewOrganizationFields();
       }
+
+      const saved = [savedOrganization];
+      setSavedOrganizations(saved);
+      const joinedHref = getSingleJoinedOrganizationHref(saved);
+      if (joinedHref) {
+        router.push(joinedHref);
+        return;
+      }
+
       router.refresh();
       setFormMode("saved");
     } catch (err) {
@@ -294,12 +321,12 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
             </p>
             {pendingCount > 1 ? (
               <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-                {pendingCount} organization drafts waiting.
+                {pendingCount} organizations waiting.
               </p>
             ) : null}
           </div>
           <AuthForm
-            callbackUrl={ROUTES.endorse}
+            callbackUrl={ROUTES.join}
             compact
             hideContainer
             title="Verify"
@@ -353,12 +380,11 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
           {names || "Your organization"}
         </p>
         <p className="mt-3 text-sm font-bold text-muted-foreground">
-          Next: open your organization tools for the member link, website
-          button, iframe, and email starter.
+          Next: copy the member link, website button, iframe, or email starter.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href={organizationHref} className={defaultButtonClassName}>
-            Open Organization Tools
+            Open Organization Page
           </Link>
           {taskHref ? (
             <Link

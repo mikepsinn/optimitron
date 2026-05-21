@@ -33,7 +33,7 @@ const CRITICAL_SMOKE_PATHS = new Set<string>([
   ROUTES.vote,
   ROUTES.legislation,
   ROUTES.plaintiffs,
-  ROUTES.endorse,
+  ROUTES.join,
   ROUTES.tasks,
   ROUTES.dashboard,
 ]);

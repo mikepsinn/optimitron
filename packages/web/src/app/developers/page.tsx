@@ -4,13 +4,30 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Container } from "@/components/ui/container";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { CopyableCode } from "@/components/ui/copyable-code";
-import { ALL_SCOPES, MCP_SCOPE_DESCRIPTIONS, scopeToWire } from "@/lib/mcp-scopes";
-import { getConfiguredSiteOrigin } from "@/lib/site";
+import {
+  ALL_SCOPES,
+  MCP_SCOPE_DESCRIPTIONS,
+  scopeToWire,
+} from "@/lib/mcp-scopes";
+import {
+  OPTIMITRON_CANONICAL_ORIGIN,
+  getConfiguredSiteOrigin,
+} from "@/lib/site";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(OPTIMITRON_CANONICAL_ORIGIN),
   title: "Developers | Optimitron",
   description:
     "Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.",
+  alternates: {
+    canonical: "/developers",
+  },
+  openGraph: {
+    title: "Developers | Optimitron",
+    description:
+      "Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.",
+    url: "/developers",
+  },
 };
 
 export default function DevelopersPage() {
@@ -50,76 +67,99 @@ export default function DevelopersPage() {
           <div className="grid gap-6 md:grid-cols-3 mt-8">
             <BrutalCard bgColor="pink" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Pick Work</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">
+                  Pick Work
+                </h3>
                 <p className="font-bold text-sm mb-3">
                   Ask what to do next instead of browsing a backlog by vibes.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">getQueueAudit</code> — check whether the queue is sane
+                    <code className="font-black">getQueueAudit</code> — check
+                    whether the queue is sane
                   </li>
                   <li>
-                    <code className="font-black">getNextAction</code> — best next action across tasks
+                    <code className="font-black">getNextAction</code> — best
+                    next action across tasks
                   </li>
                   <li>
-                    <code className="font-black">evaluateTaskEconomics</code> — execute, delegate, procure, or fundraise
+                    <code className="font-black">evaluateTaskEconomics</code> —
+                    execute, delegate, procure, or fundraise
                   </li>
                 </ul>
               </div>
             </BrutalCard>
             <BrutalCard bgColor="cyan" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Understand</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">
+                  Understand
+                </h3>
                 <p className="font-bold text-sm mb-3">
                   Pull the evidence before changing strategy or assigning work.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">searchManual</code> — find source passages
+                    <code className="font-black">searchManual</code> — find
+                    source passages
                   </li>
                   <li>
-                    <code className="font-black">askWishonia</code> — synthesized answer with sources
+                    <code className="font-black">askWishonia</code> —
+                    synthesized answer with sources
                   </li>
                   <li>
-                    <code className="font-black">getTask</code> / <code className="font-black">getBlockers</code> — inspect details and dependencies
+                    <code className="font-black">getTask</code> /{" "}
+                    <code className="font-black">getBlockers</code> — inspect
+                    details and dependencies
                   </li>
                 </ul>
               </div>
             </BrutalCard>
             <BrutalCard bgColor="green" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Improve Queue</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">
+                  Improve Queue
+                </h3>
                 <p className="font-bold text-sm mb-3">
-                  Turn research into reviewable work instead of dumping notes in chat.
+                  Turn research into reviewable work instead of dumping notes in
+                  chat.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">proposeTaskBundle</code> — draft tasks for review
+                    <code className="font-black">proposeTaskBundle</code> —
+                    draft tasks for review
                   </li>
                   <li>
-                    <code className="font-black">setTaskImpact</code> — attach expected value
+                    <code className="font-black">setTaskImpact</code> — attach
+                    expected value
                   </li>
                   <li>
-                    <code className="font-black">addDependency</code> — wire the task graph
+                    <code className="font-black">addDependency</code> — wire the
+                    task graph
                   </li>
                 </ul>
               </div>
             </BrutalCard>
             <BrutalCard bgColor="yellow" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Coordinate</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">
+                  Coordinate
+                </h3>
                 <p className="font-bold text-sm mb-3">
                   Keep concurrent agents from stepping on the same task.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">acquireLease</code> — reserve active work
+                    <code className="font-black">acquireLease</code> — reserve
+                    active work
                   </li>
                   <li>
-                    <code className="font-black">heartbeatLease</code> — keep long work alive
+                    <code className="font-black">heartbeatLease</code> — keep
+                    long work alive
                   </li>
                   <li>
-                    <code className="font-black">releaseLease</code> / <code className="font-black">logAgentRun</code> — close the loop
+                    <code className="font-black">releaseLease</code> /{" "}
+                    <code className="font-black">logAgentRun</code> — close the
+                    loop
                   </li>
                 </ul>
               </div>
@@ -132,13 +172,16 @@ export default function DevelopersPage() {
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">postTaskComment</code> — leave status, questions, and agent notes
+                    <code className="font-black">postTaskComment</code> — leave
+                    status, questions, and agent notes
                   </li>
                   <li>
-                    <code className="font-black">getTaskComments</code> — read the task thread
+                    <code className="font-black">getTaskComments</code> — read
+                    the task thread
                   </li>
                   <li>
-                    <code className="font-black">getFundingStats</code> — see budget before paid work
+                    <code className="font-black">getFundingStats</code> — see
+                    budget before paid work
                   </li>
                 </ul>
               </div>
@@ -151,13 +194,16 @@ export default function DevelopersPage() {
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">completeTaskClaim</code> — submit completed work
+                    <code className="font-black">completeTaskClaim</code> —
+                    submit completed work
                   </li>
                   <li>
-                    <code className="font-black">recordTaskActuals</code> — log effort and cost
+                    <code className="font-black">recordTaskActuals</code> — log
+                    effort and cost
                   </li>
                   <li>
-                    <code className="font-black">postTaskComment</code> — leave context
+                    <code className="font-black">postTaskComment</code> — leave
+                    context
                   </li>
                 </ul>
               </div>
@@ -185,7 +231,7 @@ export default function DevelopersPage() {
             />
             <ExampleCard
               title="Coordinate without losing the thread"
-              body="The agent posts task comments for status updates, questions, and next steps. Comment posting handles comment notifications; delivery envelopes stay internal."
+              body="The agent posts task comments for status updates, questions, and next steps. Comment notifications are handled automatically."
             />
             <ExampleCard
               title="Make the queue smarter"
@@ -210,7 +256,8 @@ export default function DevelopersPage() {
             <code className="bg-foreground text-background px-2 py-1 border-2 border-primary font-black">
               /mcp
             </code>{" "}
-            inside Claude Code. You&apos;ll be redirected to sign in. Once approved, the agent can read and write your tasks.
+            inside Claude Code. You&apos;ll be redirected to sign in. Once
+            approved, the agent can read and write your tasks.
           </p>
         </Container>
       </SectionContainer>
@@ -253,7 +300,8 @@ export default function DevelopersPage() {
         <Container>
           <SectionHeader title="ChatGPT" size="sm" />
           <p className="font-bold mt-4 mb-6">
-            Plus, Pro, Business, Enterprise, and Edu only. Free tier doesn&apos;t allow custom connectors. Take it up with OpenAI.
+            Plus, Pro, Business, Enterprise, and Edu only. Free tier
+            doesn&apos;t allow custom connectors. Take it up with OpenAI.
           </p>
           <div className="grid gap-6 md:grid-cols-3">
             <StepCard
@@ -274,15 +322,23 @@ export default function DevelopersPage() {
           </div>
           <div className="mt-6">
             <p className="font-bold mb-2">MCP Server URL for step 2:</p>
+            <p className="mb-3 break-all font-mono text-sm font-bold">
+              {mcpUrl}
+            </p>
             <BrutalCard bgColor="background">
               <CopyableCode code={mcpUrl} />
             </BrutalCard>
           </div>
           <BrutalCard bgColor="background" shadowSize={4} className="mt-6">
             <div className="p-4">
-              <h3 className="font-black uppercase text-sm mb-1">Heads-up: Deep Research mode</h3>
+              <h3 className="font-black uppercase text-sm mb-1">
+                Heads-up: Deep Research mode
+              </h3>
               <p className="font-bold text-sm">
-                Deep Research only surfaces tools named <code className="font-black">search</code> and <code className="font-black">fetch</code>. Optimitron&apos;s tools won&apos;t appear there. Use regular chat or Agent mode.
+                Deep Research only surfaces tools named{" "}
+                <code className="font-black">search</code> and{" "}
+                <code className="font-black">fetch</code>. Optimitron&apos;s
+                tools won&apos;t appear there. Use regular chat or Agent mode.
               </p>
             </div>
           </BrutalCard>
@@ -292,9 +348,13 @@ export default function DevelopersPage() {
       {/* Other MCP clients */}
       <SectionContainer bgColor="background">
         <Container>
-          <SectionHeader title="Cursor, Windsurf, Cline, Zed, et al." size="sm" />
+          <SectionHeader
+            title="Cursor, Windsurf, Cline, Zed, et al."
+            size="sm"
+          />
           <p className="font-bold mt-4 mb-6">
-            Most MCP clients accept the same JSON. Find your client&apos;s config file and paste:
+            Most MCP clients accept the same JSON. Find your client&apos;s
+            config file and paste:
           </p>
           <BrutalCard bgColor="background">
             <CopyableCode code={genericClientJson} />
@@ -302,14 +362,20 @@ export default function DevelopersPage() {
           <ul className="mt-6 space-y-2 font-bold">
             <li>
               <strong className="font-black uppercase">Cursor:</strong>{" "}
-              <code className="bg-muted px-2 py-0.5 border-2 border-primary">~/.cursor/mcp.json</code>
+              <code className="bg-muted px-2 py-0.5 border-2 border-primary">
+                ~/.cursor/mcp.json
+              </code>
             </li>
             <li>
               <strong className="font-black uppercase">Windsurf:</strong>{" "}
-              <code className="bg-muted px-2 py-0.5 border-2 border-primary">~/.codeium/windsurf/mcp_config.json</code>
+              <code className="bg-muted px-2 py-0.5 border-2 border-primary">
+                ~/.codeium/windsurf/mcp_config.json
+              </code>
             </li>
             <li>
-              <strong className="font-black uppercase">Cline / Zed / others:</strong>{" "}
+              <strong className="font-black uppercase">
+                Cline / Zed / others:
+              </strong>{" "}
               check your client&apos;s MCP docs for the config path.
             </li>
           </ul>
@@ -321,14 +387,19 @@ export default function DevelopersPage() {
         <Container>
           <SectionHeader title="OAuth Scopes" size="sm" />
           <p className="font-bold mt-4 mb-6">
-            Request specific scopes when connecting to control what the agent can do.
+            Request specific scopes when connecting to control what the agent
+            can do.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
             {ALL_SCOPES.map((scope) => (
               <BrutalCard key={scope} bgColor="yellow" shadowSize={4}>
                 <div className="p-4">
-                  <code className="text-sm font-black">{scopeToWire(scope)}</code>
-                  <p className="font-bold text-sm mt-1">{MCP_SCOPE_DESCRIPTIONS[scope]}</p>
+                  <code className="text-sm font-black">
+                    {scopeToWire(scope)}
+                  </code>
+                  <p className="font-bold text-sm mt-1">
+                    {MCP_SCOPE_DESCRIPTIONS[scope]}
+                  </p>
                 </div>
               </BrutalCard>
             ))}
@@ -348,7 +419,8 @@ export default function DevelopersPage() {
                   POST {mcpUrl}
                 </code>
                 <p className="font-bold text-sm mt-2 text-muted-foreground">
-                  Streamable HTTP transport (MCP protocol version 2025-03-26). Supports GET, POST, DELETE.
+                  Streamable HTTP transport (MCP protocol version 2025-03-26).
+                  Supports GET, POST, DELETE.
                 </p>
               </div>
             </BrutalCard>
@@ -365,7 +437,9 @@ export default function DevelopersPage() {
             </BrutalCard>
             <BrutalCard bgColor="background">
               <div className="p-4">
-                <h3 className="font-black uppercase text-lg">OAuth Discovery</h3>
+                <h3 className="font-black uppercase text-lg">
+                  OAuth Discovery
+                </h3>
                 <code className="text-sm font-bold block mt-2">
                   GET {baseUrl}/.well-known/oauth-authorization-server
                 </code>
@@ -405,13 +479,7 @@ function StepCard({
   );
 }
 
-function ExampleCard({
-  title,
-  body,
-}: {
-  title: string;
-  body: string;
-}) {
+function ExampleCard({ title, body }: { title: string; body: string }) {
   return (
     <BrutalCard bgColor="yellow" shadowSize={4}>
       <div className="p-5">

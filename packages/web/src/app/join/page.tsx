@@ -6,13 +6,11 @@ import {
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   shareableSnippets,
 } from "@optimitron/data/parameters";
-import { OrganizationGrantCalculator } from "@/components/organizations/OrganizationGrantCalculator";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TreatyContent } from "@/components/treaty/TreatyContent";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 import type { ReferendumSiteLegalSection } from "@/content/referendum-sites/types";
 import { getCurrentUser } from "@/lib/auth-utils";
-import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
 import { getSiteMetadata } from "@/lib/metadata";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
 import { getReferendumPageContent } from "@/lib/referendum-content.server";
@@ -131,7 +129,7 @@ export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
   const content = requireReferendumSiteContent(site);
-  return getSiteMetadata(site, content.metadata.endorse, ROUTES.endorse);
+  return getSiteMetadata(site, content.metadata.endorse, ROUTES.join);
 }
 
 export default async function EndorsePage() {
@@ -153,7 +151,7 @@ export default async function EndorsePage() {
           Join as an Organization
         </h1>
         <p className="mt-4 font-bold text-muted-foreground">
-          No referendum is configured for this site.
+          This site is not ready for organization joining yet.
         </p>
       </section>
     );
@@ -169,49 +167,19 @@ export default async function EndorsePage() {
         <h1 className="text-3xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
           Join the International Campaign to End War and Disease
         </h1>
-        <div className="mt-5 space-y-4 text-base font-bold leading-7 text-muted-foreground">
-          <p>
-            Allowing billions of humans to suffer and die from disease so
-            governments can preserve{" "}
-            <ParameterValue
-              figures={3}
-              param={NUCLEAR_WINTER_OVERKILL_FACTOR}
-            />
-            -apocalypse mass-murder capacity is barbaric mass cruelty. Like
-            slavery, it will persist until enough humans and institutions
-            publicly state that it is morally wrong and incredibly stupid. Your
-            organization can be one of those institutions.
-          </p>
-          <p>
-            None of us can end war and disease on our own. Ending it requires a
-            majority of humanity agreeing to allocate resources in proportion to
-            the degree to which each purpose promotes the general welfare. Your
-            organization and its members are part of the majority that must
-            agree. Moving that agreement forward by one day prevents about{" "}
-            <ParameterValue
-              param={GLOBAL_DISEASE_DEATHS_DAILY}
-              valueOverride="150,000"
-            />{" "}
-            deaths from disease and roughly{" "}
-            <ParameterValue
-              param={CURRENT_DISEASE_PATIENTS_GLOBAL}
-              valueOverride="2 billion"
-            />{" "}
-            days of suffering.
-          </p>
-          <p>
-            <Link
-              href={NONPROFIT_COALITION_STRATEGY_URL}
-              className="underline underline-offset-4"
-            >
-              Why organizations should join
-            </Link>
-            .
-          </p>
-        </div>
       </header>
 
-      <div className="scroll-mt-24" id="organization-endorsement-form">
+      <p className="mt-6 border-t border-foreground pt-4 text-sm font-bold text-foreground">
+        Don&apos;t have an organization?{" "}
+        <Link href={ROUTES.vote} className="underline underline-offset-4">
+          Vote here →
+        </Link>
+      </p>
+
+      <div
+        className="scroll-mt-24 [&>form]:border-0"
+        id="organization-endorsement-form"
+      >
         <EndorseForm
           referendumSlug={site.primaryReferendumSlug}
           manageableOrgs={manageableOrgs.map((o) => ({
@@ -222,40 +190,56 @@ export default async function EndorsePage() {
         />
       </div>
 
-      <section className="mt-8 border-y border-foreground py-5">
-        <h2 className="text-sm font-black uppercase tracking-[0.14em] text-foreground">
-          After joining
-        </h2>
-        <div className="mt-2 space-y-3 text-sm font-bold leading-7 text-muted-foreground">
-          <p>
-            No donation to us. No candidate endorsement. One public humanitarian
-            treaty position.
-          </p>
-          <p>
-            Add your organization. Publicly support the{" "}
-            <Link href={ROUTES.treaty} className="underline underline-offset-4">
-              1% Treaty
-            </Link>{" "}
-            once. Then use the member link, email starter, website button, or
-            iframe to help your audience answer the {GLOBAL_SURVEY_NAME}.
-          </p>
-          <p>
-            Join first. Your tools page gives you the member link, email
-            starter, website button, iframe, one-hour action checklist, and
-            outreach grant request draft for funding from the International
-            Campaign.
-          </p>
-        </div>
-      </section>
-
-      <div className="mt-10">
-        <OrganizationGrantCalculator />
+      <div className="mt-8 space-y-4 text-base font-bold leading-7 text-muted-foreground">
+        <p>
+          Allowing billions of humans to suffer and die from disease so
+          governments can preserve{" "}
+          <ParameterValue figures={3} param={NUCLEAR_WINTER_OVERKILL_FACTOR} />
+          -apocalypse mass-murder capacity is barbaric mass cruelty. Like
+          slavery, it will persist until enough humans and institutions publicly
+          state that it is morally wrong and incredibly stupid. Your
+          organization can be one of those institutions.
+        </p>
+        <p>
+          None of us can end war and disease on our own. Ending it requires a
+          majority of humanity agreeing to spend a little less on mass murder
+          capacity and a little more on medicine that works. Your organization
+          and its members are part of that majority. Moving that agreement
+          forward by one day prevents about{" "}
+          <ParameterValue
+            param={GLOBAL_DISEASE_DEATHS_DAILY}
+            valueOverride="150,000"
+          />{" "}
+          deaths from disease and roughly{" "}
+          <ParameterValue
+            param={CURRENT_DISEASE_PATIENTS_GLOBAL}
+            valueOverride="2 billion"
+          />{" "}
+          days of suffering.
+        </p>
+        <p>
+          <Link
+            href={NONPROFIT_COALITION_STRATEGY_URL}
+            className="underline underline-offset-4"
+          >
+            Why organizations should join
+          </Link>
+          .
+        </p>
       </div>
 
       <LegalNotesDisclosure sections={content.legal.sections} />
       <TreatyTextDisclosure treatyMarkdown={treatyMarkdown} />
 
-      <p className="mt-8 text-center text-xs font-bold text-muted-foreground">
+      <p className="mt-8 text-center text-sm font-bold text-foreground">
+        Foundations: distributing the shirt to every human on Earth costs
+        roughly 3% of the global annual philanthropy budget.{" "}
+        <Link href={ROUTES.foundations} className="font-black underline">
+          See the case →
+        </Link>
+      </p>
+
+      <p className="mt-4 text-center text-xs font-bold text-muted-foreground">
         Already joined? See the{" "}
         <Link href={ROUTES.signatories} className="underline">
           {content.endorse.existingSupportersLabel}

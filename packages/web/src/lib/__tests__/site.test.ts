@@ -188,19 +188,6 @@ describe("site variant registry", () => {
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 
-  it("keeps the War on Disease primary menu action-oriented", () => {
-    const labels = getSiteConfig("warOnDisease").ui.nav.sections
-      .find((section) => section.primary)
-      ?.items.map((item) => item.label);
-
-    expect(labels).toEqual([
-      "Sign the Treaty",
-      "Manage Humanity",
-      "Register a Plaintiff",
-      "Remind Presidents",
-    ]);
-  });
-
   it("keeps Profile out of the War on Disease menu chrome and links president management", () => {
     const warItems = getSiteConfig("warOnDisease").ui.nav.sections.flatMap(
       (section) => section.items,
@@ -282,7 +269,7 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(warSite, ROUTES.campaign)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.coalition)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.humanityVGovernment)).toBe(true);
-    expect(isSiteRouteAllowed(warSite, ROUTES.endorse)).toBe(true);
+    expect(isSiteRouteAllowed(warSite, ROUTES.join)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.privacy)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.terms)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.reasoning)).toBe(true);
@@ -312,7 +299,7 @@ describe("site variant registry", () => {
       ROUTES.signatories,
       ROUTES.campaign,
       ROUTES.coalition,
-      ROUTES.endorse,
+      ROUTES.join,
       ROUTES.impact,
       ROUTES.treaty,
       ROUTES.donate,

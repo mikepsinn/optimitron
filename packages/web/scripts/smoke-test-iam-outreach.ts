@@ -134,9 +134,9 @@ async function main() {
 
   // Single canonical thesis line + canonical trial-capacity number, both
   // sourced from the parameter manifest / site config so the email never
-  // drifts from the rest of the campaign copy. One CTA — the /endorse
-  // page already runs the member-count → modeled lives-saved calculator
-  // and explains the trade in full, so the email is just the wedge.
+  // drifts from the rest of the campaign copy. One CTA — the /join
+  // page gives organizations the treaty position and legal notes before
+  // they join, so the email is just the wedge.
   const trialMultiplier = DFDA_TRIAL_CAPACITY_MULTIPLIER.value.toFixed(1);
   const description = [
     `The International Campaign to End War and Disease asks the Institute for Accelerated Medicine to publicly support the 1% Treaty: every nation simultaneously redirects 1% of military spending to pragmatic clinical trials.`,
@@ -147,7 +147,7 @@ async function main() {
     "",
     `This is non-partisan humanitarian treaty advocacy, in the precedent of the International Campaigns to Ban Landmines and to Abolish Nuclear Weapons (both Nobel Peace Prizes). No money. No candidate endorsement.`,
     "",
-    `Join: https://warondisease.org/endorse`,
+    `Join: https://warondisease.org/join`,
     "",
     "The page calculates the modeled lives saved and years of suffering prevented for the Institute's specific member count. Reply to this email with any questions or feedback.",
   ].join("\n");
@@ -172,7 +172,7 @@ async function main() {
       expectedEconomicValueUsdBase: 100_000,
       successProbabilityBase: 0.05,
       timeToImpactStartDays: 30,
-      sourceUrls: ["https://warondisease.org/endorse"],
+      sourceUrls: ["https://warondisease.org/join"],
     },
   });
 

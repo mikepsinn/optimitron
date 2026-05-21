@@ -149,20 +149,23 @@ jobs:
     timeout-minutes: 20
     env:
       CI: true
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
+      # Must match vitest.config.ts hardcoded DATABASE_URL exactly. The hardcode
+      # is a safety guard against `pnpm test` accidentally hitting prod when a
+      # developer has the prod DATABASE_URL in their local env.
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
       NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
       NEXTAUTH_URL: http://127.0.0.1:3001
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: optimitron_web_ci
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d optimitron_web_ci"
+          --health-cmd="pg_isready -U test -d test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -188,7 +191,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/audit-sentry-preview.test.mjs
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/audit-sentry-preview.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -198,6 +201,8 @@ jobs:
 
       - name: Typecheck web app
         run: pnpm --filter @optimitron/web run typecheck:fast
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
 
       - name: Run web unit tests
         run: pnpm --filter @optimitron/web run test
@@ -221,7 +226,8 @@ jobs:
       statuses: write
     env:
       CI: true
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
+      # Must match vitest.config.ts hardcoded DATABASE_URL exactly for safety.
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
       NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
       NEXTAUTH_URL: http://127.0.0.1:3001
       VERCEL_CLI_VERSION: 50.37.3
@@ -229,13 +235,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: optimitron_web_ci
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d optimitron_web_ci"
+          --health-cmd="pg_isready -U test -d test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -980,17 +986,40 @@ jobs:
           psql "$database_url" --set ON_ERROR_STOP=1 --file packages/db/prisma/anonymization-setup.sql
           psql "$database_url" --set ON_ERROR_STOP=1 --file packages/db/prisma/anonymization-updates.sql
 
-      - name: Verify preview masking applied to rows
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
-        shell: bash
-        run: node packages/web/scripts/verify-preview-masking.mjs
-
       - name: Sync preview managed data
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           MANAGED_DATA_ALLOW_REMOTE_APPLY: "1"
           MANAGED_DATA_SKIP_MEDICAL_REFERENCE: ${{ steps.preview_data_changes.outputs.skip_medical_reference }}
         run: pnpm db:sync:managed-data -- --apply
+
+      - name: Re-apply preview database anonymization after managed data
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          database_url="${DATABASE_URL_UNPOOLED:-${DATABASE_URL:-}}"
+          if [ -z "$database_url" ]; then
+            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the pulled Vercel preview env."
+            exit 1
+          fi
+
+          echo "::add-mask::$database_url"
+
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+
+          psql "$database_url" --set ON_ERROR_STOP=1 --file packages/db/prisma/anonymization-setup.sql
+          psql "$database_url" --set ON_ERROR_STOP=1 --file packages/db/prisma/anonymization-updates.sql
+
+      - name: Verify preview masking applied to rows
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        shell: bash
+        run: node packages/web/scripts/verify-preview-masking.mjs
 
       - name: Cleanup pulled Vercel env files
         if: always() && steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
@@ -1009,8 +1038,9 @@ jobs:
             echo "- Pulled Vercel preview env for \`$PREVIEW_GIT_BRANCH\`."
             echo "- Applied Prisma migrations to the branch preview database."
             echo "- Applied preview anonymization setup and direct SQL masking updates."
-            echo "- Verified sampled masked row shapes after the update pass."
-            echo "- Synced managed data with idempotent upserts after masking."
+            echo "- Synced managed data with idempotent upserts."
+            echo "- Re-applied preview anonymization after managed-data sync."
+            echo "- Verified sampled masked row shapes after the final update pass."
             if [ "$MANAGED_DATA_SKIP_MEDICAL_REFERENCE" = "1" ]; then
               echo "- Skipped medical reference rows because no medical dataset or seed-data files changed; disposable CI still runs the full local sync."
             fi

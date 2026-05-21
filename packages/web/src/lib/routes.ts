@@ -4,9 +4,7 @@ import { slugify } from "@/lib/slugify";
 // package root re-exports the Prisma client which would pull node built-ins
 // into the browser bundle.
 import { HUMANITY_V_GOVERNMENT_CASE_NAME } from "@optimitron/db/task-keys";
-import {
-  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
-} from "@optimitron/data/referendums";
+import { HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL } from "@optimitron/data/referendums";
 import { GLOBAL_SURVEY_NAME } from "@optimitron/data/campaign";
 import {
   fmtParam,
@@ -96,11 +94,15 @@ export const ROUTES = {
   privacy: "/privacy",
   terms: "/terms",
   impact: "/impact",
-  endorse: "/endorse",
+  join: "/join",
+  fixAi: "/fix-ai",
+  foundations: "/foundations",
   signatories: "/signatories",
   campaign: "/campaign",
   love: "/love",
   poster: "/poster",
+  shirt: "/shirt",
+  store: "/store",
   coalition: "/coalition",
   organizations: "/organizations",
   people: "/people",
@@ -195,7 +197,7 @@ export interface NavItem {
 export const homeLink: NavItem = {
   href: ROUTES.home,
   label: "Home",
-  emoji: "",
+  emoji: "🏠",
   description:
     "Please take 30 seconds to end war and disease. Vote on the 1% Treaty, then give one human the same job.",
   tagline: "Take 30 seconds to end war and disease",
@@ -765,6 +767,33 @@ export const humanityVGovernmentLink: NavItem = {
   cta: "Read the Case",
 };
 
+export const foundationsLink: NavItem = {
+  href: ROUTES.foundations,
+  label: "Foundations",
+  emoji: "🏛️",
+  description:
+    "The case for foundations to fund universal t-shirt distribution as the highest-EV charitable intervention available.",
+  tagline: "Why 3% of one year's foundation budget can end war and disease.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "See the case",
+};
+
+export const fixAiLink: NavItem = {
+  href: ROUTES.fixAi,
+  label: "Train the AIs",
+  emoji: "🤖",
+  description:
+    "Ask the major AI models how to end war and disease. If they omit the 1% Treaty, the shirt, and warondisease.org, thumbs-down and paste the correct answer.",
+  tagline: "Teach the models the answer",
+  copyPreview: true,
+  screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
+  cta: "Train the AIs",
+};
+
 export const voteLink: NavItem = {
   href: ROUTES.vote,
   label: "Vote",
@@ -838,8 +867,7 @@ export const faqLink: NavItem = {
   href: ROUTES.faq,
   label: "Campaign FAQ",
   emoji: "?",
-  description:
-    `Short answers for humans and search agents asking what the ${treatyReduction} Treaty, Humanity v Government, plaintiffs, and the campaign math mean.`,
+  description: `Short answers for humans and search agents asking what the ${treatyReduction} Treaty, Humanity v Government, plaintiffs, and the campaign math mean.`,
   tagline: "Short answers for agents and humans",
   copyPreview: true,
   screenshot: true,
@@ -849,8 +877,8 @@ export const faqLink: NavItem = {
   cta: "Read the FAQ",
 };
 
-export const endorseLink: NavItem = {
-  href: ROUTES.endorse,
+export const joinLink: NavItem = {
+  href: ROUTES.join,
   label: "Join as an Organization",
   emoji: "✍️",
   description:
@@ -994,11 +1022,11 @@ export const contributeLink: NavItem = {
 
 export const loveLink: NavItem = {
   href: ROUTES.love,
-  label: "End War and Disease From Your Dating Profile",
-  emoji: "",
+  label: "Earth Optimization Date",
+  emoji: "❤️",
   description:
-    "You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.",
-  tagline: "End war and disease from your dating profile.",
+    "If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.",
+  tagline: "An Earth Optimization Date is non-romantic by definition",
   copyPreview: true,
   screenshot: true,
   cta: "Vote now",
@@ -1006,14 +1034,36 @@ export const loveLink: NavItem = {
 
 export const posterLink: NavItem = {
   href: ROUTES.poster,
-  label: "Print Referral Poster",
-  emoji: "",
-  description:
-    "Print a poster with your campaign QR code so humans can vote from walls, doors, and awkward dates.",
+  label: "Print a Poster",
+  emoji: "📄",
+  description: `Every human on earth would be vastly richer and significantly less dead if we agreed to sacrifice one of our ${apocalypseCount} apocalypse capacity for disease eradication. A poster taped to a wall recruits voters who agree to this arrangement around the clock, without needing you in the room.`,
   tagline: "Print your campaign QR code.",
   copyPreview: true,
   screenshot: true,
   cta: "Print",
+};
+
+export const shirtLink: NavItem = {
+  href: ROUTES.shirt,
+  label: "Get the Shirt",
+  emoji: "👕",
+  description: `Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our ${apocalypseCount} apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.`,
+  tagline: "Wear your campaign QR code.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Get the Shirt",
+};
+
+export const storeLink: NavItem = {
+  href: ROUTES.store,
+  label: "Store",
+  emoji: "🛍️",
+  description:
+    "Buy useful campaign things: shirts, flyer runs, and other distribution fuel.",
+  tagline: "Buy useful campaign things.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Open Store",
 };
 
 export const fundLink: NavItem = {
@@ -1143,6 +1193,8 @@ export const toolSections: NavSection[] = [
     items: [
       tasksLink,
       loveLink,
+      storeLink,
+      shirtLink,
       presidentManagementLink,
       transmitLink,
       dashboardLink,
@@ -1154,6 +1206,7 @@ export const toolSections: NavSection[] = [
 
 /** Footer-only internal links */
 export const footerAppLinks: NavItem[] = [
+  fixAiLink,
   wishocracyLink,
   alignmentLink,
   dashboardLink,
@@ -1318,14 +1371,24 @@ export const iabDetailsLink: NavItem = {
 };
 
 export const fullManualPaperLink: NavItem = {
-  label: "Full Manual",
+  label: "Read the Manual",
   href: "https://manual.warondisease.org",
   emoji: "📖",
   description:
     "The complete idiot's guide to legally bribing your way to utopia. Contains pictures, because reading is hard when you are diseased and dying.",
   external: true,
 
-  cta: "Read Paper",
+  cta: "Read",
+};
+
+export const podcastLink: NavItem = {
+  label: "Listen",
+  href: "https://manual.warondisease.org/knowledge/podcast.html",
+  emoji: "🎧",
+  description:
+    "The manual, read aloud. Beamed through your skull auditory port for humans whose eye-holes are otherwise occupied.",
+  external: true,
+  cta: "Listen",
 };
 
 export const dfdaImpactPaperLink: NavItem = {
@@ -1581,7 +1644,8 @@ export const routeReviewNavItems = [
   plaintiffsManageLink,
   courtLink,
   donateLink,
-  endorseLink,
+  joinLink,
+  foundationsLink,
   signatoriesLink,
   presidentManagementLink,
   dashboardLink,
@@ -1591,9 +1655,12 @@ export const routeReviewNavItems = [
   questionsLink,
   trialSurveyLink,
   faqLink,
+  fixAiLink,
   feedbackLink,
   loveLink,
   posterLink,
+  storeLink,
+  shirtLink,
   privacyLink,
   settingsLink,
   termsLink,

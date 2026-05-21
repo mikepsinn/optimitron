@@ -43,10 +43,111 @@ Do not let lower items crowd out higher ones.
   seed shim.
 - Treaty vote, referral attribution, campaign emails, organization endorsement,
   plaintiff damages, and the simple `/treaty` skim-and-sign page exist.
+- Bio-template `/love` page is shipped; dating registry deferred per 2026-05-19
+  CBA.
+- Generic commerce schema is now the intended money path for live checkout:
+  `CommerceOffer`/variant/order/item/fulfillment/entitlement cover shirts,
+  sponsorships, subscriptions, digital access, and dating-app benefits without a
+  shirt-only table. Product/vendor catalog IDs belong in managed data, not env.
+- Dating foundation schema is additive and separate from the task system:
+  dating profiles, photos, prompts, questions, likes/passes/intros, matches,
+  conversations, date plans, blocks, and safety reports get dating-specific
+  privacy/moderation rules. Reuse `Task` only for the mission-output part of a
+  date via `DatingDatePlan.campaignTaskId`, e.g. flyers, QR posters, outreach, or
+  meetup follow-up.
 - `/humanity-v-government` and `/court` still need to unify plaintiff
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
+
+## Active Review - 2026-05-19: Money and 4B Votes
+
+Repo audit finding: the campaign machinery mostly exists. `/vote` and
+`/treaty` mount the treaty flow; `AuthForm` now locks the email-login controls
+after a sign-in link is sent; `/join` creates or opens organization tools;
+organization pages expose a survey URL, email starter, website button, iframe,
+preview, manager referral URL, and grant calculator; `/poster` has referral QR
+printing; `/donate` and `/fund` exist; signatories rank humans and
+organizations by attributable signatures; agent-readable mirrors and sitemap
+coverage exist for the public campaign surfaces; tests cover the vote API,
+referral attribution, invite-token paths, org endorsement, public detail
+sitemaps, share/email templates, treaty vote clicks, login, and reminder flows.
+
+Main gap: this is not yet packaged as a fundable distribution sprint. The
+highest-value money path is a concrete 30-day institutional distribution sprint:
+fund outreach to organizations with audiences, get them to endorse/embed/recruit,
+and report signatures, organizations, referrals, and conversion bottlenecks.
+
+Cost-benefit gate for near-term work:
+
+| Proposed change | Benefit | Cost / risk | Decision |
+| --- | --- | --- | --- |
+| Write a 30-day funder/distribution sprint packet (`docs/funding-sprint.md` first; public page only after copy review) | Gives donors and partner orgs a concrete ask: budget, targets, proof links, and done conditions | 2-4 hours, no schema, no new UI required | Do now |
+| Seed or curate the first outreach task queue in existing `Task` records | Converts "get organizations" into accountable follow-up work using the current task model | 0.5-1 day; avoid new outreach schema | Do after the packet if outreach starts |
+| Polish `/join` and organization tools from first 5 real outreach attempts | Removes actual conversion friction at the organization step | 1-3 hours per observed issue; screenshots and copy approval required | Do only from observed friction |
+| Add a cheap weekly metrics report from existing referral/org/vote tables | Shows whether money bought votes, orgs, referrals, or nothing | 2-6 hours; avoid a dashboard until reports are used | Do as a script/export, not a product surface |
+| Redesign `/fund` or expand prize/fund mechanics | Could look more fundable, but funders need a concrete sprint first | High copy/UI review cost; risks leading with mechanism instead of distribution | Defer |
+| Poster style selector, PDF export, OG variants | Useful if physical distribution proves real | 0.5-2 days plus UI screenshot review | Defer until poster scans/signatures show demand |
+| Dating registry and per-app dating templates | Potential niche channel, but `/love` bio-template is already the cheap test | Schema, moderation, and privacy cost | Parked until `/love` attribution clears the threshold |
+| Public-figure catalog | Could create social proof, but attribution disputes are expensive | New data policy, likely schema, manual source review | Defer until org sprint has traction |
+| Full analytics dashboard | Useful later; premature if nobody reads the report | 1-3 days and another surface to maintain | Use SQL/export first |
+
+Do not start a new feature unless it helps the sprint get money, convert votes,
+convert referrals, convert organizations, or prove the quantified case to a
+specific funder/partner.
+
+## Backlog - Organization Join Task Scaling
+
+- Keep the first 0-200 researched priority organizations in managed data when
+  each row deserves code review. Build the bulk org-task import script when the
+  target list crosses 200 researched organizations, not before. The script
+  should consume reviewed CSV/JSON, upsert organizations and `Task` rows by
+  stable source refs/task keys, and reuse the same organization join template.
+- For 200-5K organization targets, store the roster outside git and import it
+  through the script; do not add thousands of per-org rows to
+  `managed-seed-data.ts`.
+- For 5K+ targets, import from an external organization registry such as Form
+  990, GuideStar, or Charity Navigator, then curate priority slices before
+  assigning public join tasks.
+
+## Active Checkout Launch Gates - 2026-05-20
+
+- Deploy the commerce migration before enabling paid shirt checkout.
+- Run managed-data sync after the migration so the shirt offer, variants, and
+  CustomCat fulfillment mappings exist in the target database.
+- Keep env limited to secrets/ops toggles: `STRIPE_SECRET_KEY`,
+  `STRIPE_WEBHOOK_SECRET`, `CUSTOMCAT_API_TOKEN`, `CUSTOMCAT_SANDBOX`,
+  `SHIRT_COMMERCE_ENABLED`, and R2 credentials. Do not put product or variant
+  IDs back in env.
+- Verify CustomCat catalog SKUs against `GET /catalog/952` using the live API
+  token, then run one Stripe test-mode/sandbox CustomCat order end to end.
+  Local verification on 2026-05-20 skipped because no local
+  `CUSTOMCAT_API_TOKEN` was present.
+- Only flip production `SHIRT_COMMERCE_ENABLED=true` after Stripe Tax, R2 public
+  artwork URLs, CustomCat sandbox submission, and webhook retry behavior are all
+  verified.
+
+## Active Dating Foundation - 2026-05-20
+
+- The first dating implementation should stay MVP: opt-in profile, photos,
+  prompts, match questions, discover list, like/pass/intro, mutual-match
+  messages, block/report, and optional mission-date plan linked to a `Task`.
+- Do not turn normal dating mechanics into tasks. A like, intro, match, private
+  message, block, or safety report is not campaign work and should not enter the
+  task tree.
+- Use existing `Task` records only when a pair chooses a concrete campaign
+  activity: hang flyers, distribute QR posters, invite people to vote, host a
+  singles meetup, or verify completion evidence.
+- Before public launch: decide photo moderation policy, approximate-location
+  display rules, minimum age/consent checks, DM reporting workflow, and whether
+  dating profiles are visible only to opted-in dating users.
+- Backfill `jurisdictionId` across the 25 new models added in PR #86
+  (`DatingProfile` + 14 dating models, `CommerceOffer`/`CommerceOrder` + 6
+  commerce models, `TaskFundingTarget` + `TaskFundingPledge` + `TaskFundingEvent`).
+  CLAUDE.md requires it on every model. Deferred from PR #86 because adding
+  it mid-deployment would require a coordinated schema migration + all server
+  helpers + managed-data resync. Own PR: schema-only diff, default-backfill
+  to the campaign jurisdiction, then update creators in a follow-up.
 
 ## Active Handoff - 2026-05-13
 
@@ -76,67 +177,19 @@ Do not let lower items crowd out higher ones.
   private memory. I stopped only the `copy:preview` worker chain; the shared
   `3001` dev server stayed up and root responded afterward.
 
-## P0 - Auth UX fixes
+## P0 - Conversion and Email Safety
 
-- **Login page: form stays clickable after submit → sends N magic-link
-  emails for N clicks.** Confirmed bug: a real user pressed Submit
-  multiple times and received many emails. `AuthForm.tsx:322-330`
-  uses `isLoading` (in-flight) to disable the button, but on
-  success `isLoading` resets to false — the button becomes
-  re-clickable. Fix: introduce a "submitted" state distinct from
-  "loading". After success, HIDE the email field + submit button
-  + the Google button (lock in the choice), and render a centered
-  "check your email" confirmation in the same vertical position
-  the form was. On error, restore the form. Bonus defense: server-
-  side rate-limit magic-link sends per-email-per-window so even
-  bypass (DevTools, scripting) can't spam.
-- **Login page: post-submit "check your email" message gets lost when
-  scrolled.** Same bug as above — covered by hiding the buttons +
-  scroll-centering the confirmation in the form's slot.
 - **Login page: excess space between slider (CTA / framing element)
   and the submit button pushes the submit below the fold.** Reduce
   vertical spacing so the entire form is visible above the fold on
   common mobile viewports without scrolling. Audit gap-* / mt-* / py-*
   on the AuthForm container.
-- **Wishonia email signature uses `smirk-smile.png` — reads as a
-  weird/sarcastic smile.** Swap to `happy-smile.png` (already in
-  `packages/web/public/sprites/wishonia/`). Single-line change in
-  `packages/web/src/lib/email/wishonia-signature.ts:17` (constant
-  `WISHONIA_AVATAR_PATH`) + update the matching test fixture in
-  `packages/web/src/lib/email/__tests__/wishonia-signature.test.ts:92`.
-  Trivial-tier dispatch.
-- **Rename "direct reports" → "employees" across user-facing surfaces.**
-  Non-tech users don't read "direct reports" — it's HR jargon. "Employees"
-  works AS satire (you are now the boss of 8 billion employees) and is
-  universally understood. Locations:
-  - `packages/web/src/lib/humanity-manager-promotion-content.tsx:68`
-    (`"8 billion direct reports — humans you are responsible for..."`)
-  - `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx:1144,1148`
-    (`"${recipientLabel} added to your direct reports"` — TWO instances)
-  - `packages/web/src/lib/email/monthly-chain-digest-email.ts:40,67`
-    (the JSDoc comment + the trigger description metadata; the metadata
-    surfaces in the rendered email)
-  - `packages/web/src/lib/email/monthly-chain-digest.email.md:15`
-    (auto-regenerated when source changes + smart `copy:preview` runs)
-  Plus matching test fixture updates. Trivial-tier dispatch.
-- **Email body text rendered at 12px is too small to read.** Confirmed:
-  `packages/web/src/components/adaptive/email-styles.ts:82` defines
-  `smallMutedParagraph` at `fontSize: "12px"`. The humanity-manager
-  promotion email's middle paragraph block ("You probably do not have
-  time to persuade [8 billion] humans yourself...", 200+ words at
-  `humanity-manager-promotion-content.tsx:112-152`) renders with the
-  `muted` flag → that 12px style. Best practice for email body copy
-  is 14-16px minimum; 12px is for legal disclaimers / footnotes, not
-  multi-paragraph prose. `mutedParagraph` at 13px (line 78) is also
-  borderline.
-  - Fix candidates: (a) bump `smallMutedParagraph` to 14px; (b)
-    deprecate `smallMutedParagraph` and route prose through
-    `mutedParagraph` (13px) or `paragraph` (16px); (c) drop the
-    `muted` flag on long-form `PromoText` blocks and only keep it
-    for one-line asides.
-  - Most defensible quick fix: (a) + change the
-    humanity-manager-promotion call to drop `muted` for the long
-    block (line 112) and use it only for the short closing aside.
+- **Server-side sign-in-link send rate limit is a defense, not the next
+  product bottleneck.** Client-side repeat-send spam is already mitigated by
+  `AuthForm`'s `hasSubmitted` state hiding the email/Google/demo controls after
+  success. Add a server-side limiter only if Resend/auth logs still show repeat
+  sends after the UI fix, or before a high-volume outreach push. Avoid an
+  in-memory limiter as a false guarantee on serverless.
 - **Add a min-font-size validation pass — emails first, then web.**
   We need automated detection so this doesn't recur. Two layers:
   - **Email-specific Playwright test:** render every email preview
@@ -156,144 +209,16 @@ Do not let lower items crowd out higher ones.
     `adaptive/email-styles.ts` so the size policy lives in ONE
     place and surfaces use semantic intent. Token-based then the
     lint rule has a clean allowlist to enforce against.
-- **Grandma Kay's avatar is a full-body photo cropped weird by
-  `aspect-square`.** Confirmed: `packages/web/public/img/grandma.jpg`
-  is 1155×2257 (~2:1 vertical, full-body portrait). The
-  `PersonFaceTile` component (and any other `aspect-square +
-  object-cover` slot) crops to the centered region, which is her
-  mid-torso, not her face. Fix: create a square head-only crop
-  (e.g. `/img/grandma-headshot.jpg`, ~1024×1024) and update
-  `packages/db/src/managed-data/managed-grandma-kay.ts:37,45` to
-  point at the new file. Keep the full-body image accessible if
-  anything else uses it (grep first; otherwise delete to clean up).
-  Trivial-tier dispatch once the cropped file exists.
-
-- **Plaintiff-registration aspect-ratio handling — seed images bypass
-  the existing cropper.** `SquarePhotoCropper` is already wired into
-  `RepresentedPersonForm` / `ManageRepresentedPeopleClient` /
-  `OrganizationProfileEditor` / `ProfileCard`, so users uploading
-  new plaintiffs DO get a square crop step. The gap is
-  managed-data seeded images (e.g. Grandma Kay) — they go straight
-  to the database without passing through the cropper, so a tall
-  portrait can land in a `aspect-square` tile cropped wrong.
-  - Right fix: a managed-data validation step that rejects
-    non-square seed images (or auto-crops them server-side at sync
-    time). Sync step lives at
-    `packages/db/scripts/sync-managed-data.ts`; image-fetch helper
-    at `packages/web/src/lib/storage/image-fetcher.ts` if one
-    exists, otherwise inline the square-crop in sync. Use
-    `sharp` (already a dep for image work elsewhere if any
-    package uses it; grep before adding).
-  - Cheaper-but-uglier fix: just commit pre-cropped square images
-    for every managed-data seed person and don't add validation.
-    Easier today, fragile tomorrow.
-
-- **Printable signs / posters with QR codes pointing at warondisease.org.**
-  Physical-world distribution channel: a sheet someone prints, posts on
-  a coffee shop bulletin board / dorm wall / office, and passers-by scan
-  the QR to vote. Each print can carry the printer's referral code, so
-  physical distribution feeds the same propagation math as digital
-  sharing.
-  - **New route:** `/poster` (or `/sign` per Mike's framing). Logged-in
-    users see their referral code pre-filled in the QR. Logged-out
-    users get a generic QR to `warondisease.org`.
-  - **Style selector** — multiple printable aesthetics:
-    - **Treaty editorial** (default, matches existing site)
-    - **Soviet/constructivist** (red + black, geometric, bold type)
-    - **WPA public-service** (typography-heavy, 1930s civic poster)
-    - **UK wartime minimal** ("Keep Calm"-style: single color, calm
-      typography, single message)
-    - **Bauhaus geometric** (limited palette, asymmetric, strong type
-      hierarchy)
-    - **NOT included: Nazi-era styling.** The user mentioned it as an
-      example, but the specific visual vocabulary is historically
-      poisoned and would do real damage to the campaign's credibility.
-      Soviet/WPA/UK styles communicate the same "urgent civic
-      mobilization" energy without the association.
-  - **Reuse existing OG image generation** as the central image where
-    appropriate. Next.js `opengraph-image.tsx` files at
-    `packages/web/src/app/**/opengraph-image.tsx` already produce
-    per-entity 1200×630 PNGs via the edge runtime — a poster can
-    embed a downscaled version of e.g. `humanity-v-government`
-    OG or `tasks/[id]` OG to anchor the visual.
-  - **QR generation** — `qrcode.react@4.0.1` is already installed
-    and in use (`slide-final-call-to-action.tsx`). The QR target is
-    `https://warondisease.org/r/<referralCode>` (or bare
-    `warondisease.org` for logged-out users). Generate as SVG for
-    print-clean rendering. Cite via `ParameterValue` where the "30
-    seconds" claim appears (matches existing parameter pattern).
-  - **Print flow** — letter (8.5×11) and A4 sizes, both supported.
-    Browser print via `@media print` CSS that hides chrome and
-    expands the poster fullscreen. "Download PDF" button as
-    secondary option (use `react-pdf` or a headless-render route;
-    don't bring in puppeteer just for this).
-  - **Message text** — copy comes from `share-templates.ts` (the
-    canonical voice-variant registry per the email-template-audit
-    plan); poster surface picks one variant by default but allows
-    user override. Reuses the dispatch-time recipient-mode
-    filtering.
-  - **Plan-first dispatch.** This touches: new app route, new
-    components, OG-image reuse, print CSS, optional PDF gen,
-    share-templates integration. Crosses too many systems for a
-    `trivial:` bypass.
-
-- **Standardize "apocalypse" framing across the project.** Ivy (real-
-  user feedback) said *"a hundred of them ends civilization is a
-  confusing sentence."* The word "apocalypse" treats civilization-
-  ending event as a countable unit, and "122 apocalypses" / "trade
-  one apocalypse" doesn't land for people who haven't been told the
-  causal chain (~100 warheads → nuclear winter → food system collapse
-  → civilizational collapse; we stockpiled ~12,200 → 122x overkill).
-  Pick ONE standardized phrasing, parameter-back it, sweep all
-  surfaces.
-  - **User-facing surfaces to update (one consistent phrasing):**
-    `Footer.tsx:44,50` (header tagline) ·
-    `donate/page.tsx:51` ·
-    `endorse/page.tsx:185` ·
-    `DonationCalculationNarrative.tsx:397` ·
-    `TreatyPostVoteShareFlow.tsx:802,809,812,862,871,948` (6 uses)
-    in the post-vote sharing flow ·
-    `TreatyVoteFlow.tsx:558,571,579,588` (pre-vote screens incl. the
-    *"More apocalypses please"* button label) ·
-    `managed-task-triggers.ts:142` (the reminder-template prose
-    used in every nudge email) ·
-    `managed-grandma-kay.ts:83,91` (*"She would trade one apocalypse
-    for dementia research"* — keep the trade frame but rephrase).
-  - **NOT user-facing — leave as-is or rename only with the
-    standardized term:** `TreatyVoteFlow.tsx:66` (the
-    `PreVoteScreen` type literal `"apocalypse"`), e2e screen
-    identifiers, test fixtures, the `APOCALYPSE_MARKUP` /
-    `APOCALYPSE_MARKUP_MULTIPLIER` / `PRICE_OF_APOCALYPSE`
-    parameter slugs (renaming the parameter slug touches every
-    citation URL — high cost, low benefit unless we're doing it
-    anyway).
-  - **Candidate phrasings to pick between:**
-    - A) Causal-chain version (Ivy's suggestion): *"It takes 100
-      nuclear weapons to trigger nuclear winter and collapse the
-      global food system. Humanity stockpiled 12,200. The 1% Treaty
-      trades 100 of those weapons (one civilization's worth of
-      overkill) for disease eradication."* — explicit, no
-      assumed knowledge, longer.
-    - B) Overkill-layer version: *"Humanity has 122x the warheads
-      needed to end civilization. Trade ONE of those 122 layers of
-      overkill for disease eradication. The other 121 stay; the
-      deterrent doesn't move."* — keeps the trade frame, makes the
-      absurdity explicit, doesn't require defining "apocalypse."
-    - C) Civilization-ending winter version: *"Humanity has 122
-      civilization-ending nuclear winters ready to deploy. Trade
-      ONE for disease eradication."* — shortest, drops "apocalypse"
-      entirely.
-  - **My honest recommendation: B (overkill-layer).** It keeps
-    Wishonia's dry "spending one layer of overkill" frame, names
-    the absurdity (we have 122x what we need), and explicitly
-    preserves the deterrent argument (*"the other 121 stay"*) which
-    pre-empts the most common objection. A is most defensible but
-    long. C is shortest but loses the "trade" frame's punch.
-  - **Implementation note:** the standardized phrasing should be
-    parameter-backed via `ParameterValue` where the numbers appear,
-    and the prose templates should live in a single constants
-    module that all surfaces import — so a future rewording is one
-    edit, not a sweep across 12 files.
+- **Poster follow-ups after v1.** `/poster` now exists with a logged-in
+  referral QR, generic logged-out QR, compact copy affordance, letter/A4 print
+  CSS, and the default treaty-editorial style. Remaining: style selector, OG
+  image variants, optional PDF download, and share-template text selection if
+  printed posters become a measured channel.
+- **Apocalypse framing standardization follow-up.** Canonical War on Disease
+  site description exports exist, but source and generated copy still contain
+  direct "apocalypse" phrasing in route metadata, referendum-site copy, managed
+  task triggers, Grandma Kay seed text, and share templates. Finish only after
+  the copy gate approves one standardized phrase.
 
 - **Other human-language candidates while we're sweeping copy:**
   - `"magic link"` in user-facing error strings (`/auth/signin/page.tsx:12`
@@ -316,7 +241,7 @@ Do not let lower items crowd out higher ones.
   signature box, YES/NO. No stepper, slide split, competing Court CTA, or
   decorative explanation before the vote.
 - After the PR #75 managed referendum sync reaches production, regenerate and
-  commit the treaty/h-v-g/endorse markdown snapshots so citation URLs reflect
+  commit the treaty/h-v-g/join markdown snapshots so citation URLs reflect
   the fixed upstream manual refs.
 - Keep treaty copy parameter-backed. Do not hand-type 4B, 32 rounds, 122
   apocalypses, trial multiplier, or eradication-timeline numbers where a
@@ -383,40 +308,21 @@ Do not let lower items crowd out higher ones.
   registry: ~26 named templates (Trump versions, office memo, performance
   review, polite reminder, etc.) keyed by `recipientModes`
   (`leader | humanity | one_human | peer`) with token-based interpolation.
-- Today only `TreatyReminderComposer` reads from it. `monthly-chain-digest`,
-  `post-vote-share`, `referral-first-conversion`, and `task-comment-notification`
-  emails hand-roll their own reminder copy — confirmed for monthly-chain-digest,
-  audit needed for the others.
-- Migration: every email module that includes reminder/share copy should pull
-  recipient-appropriate templates from `share-templates.ts` (filtered by the
-  email's `recipientModes`), interpolate via `renderTemplate`, and pick a
-  default variant. Hand-rolled copy stays only when no template fits AND a new
+- Monthly-chain-digest and the shared email footer now read from
+  `share-templates.ts`; `referral-first-conversion` inherits that footer.
+  Remaining audit: `post-vote-share` still builds from `share-message.ts`, and
+  `task-comment-notification` needs a final check for hand-rolled reminder copy.
+- Every email module that includes reminder/share copy should pull
+  recipient-appropriate templates from `share-templates.ts` where a reusable
+  template fits. Hand-rolled copy stays only when no template fits AND a new
   template would be too narrow to reuse.
-- Audit task: grep all `packages/web/src/lib/email/*.ts` and
-  `*-react-email.tsx` for hardcoded "Sign now"/"Vote"/"You haven't voted yet"-
-  shaped prose and replace with template lookups.
 
 ### Humanity Manager status report
 
-- Extract reusable status sections from the monthly digest into a shared module
-  that can render both email and dashboard forms.
-- Data needed:
-  - direct reports who completed their task;
-  - overdue humans assigned through the user's link;
-  - overdue presidents;
-  - total downstream conversion count and depth from a recursive chain query.
 - Replace direct-only monthly counts with transitive chain counts when the query
   is ready.
 - The dashboard version should expose copyable messages for overdue humans and
   presidents instead of motivational filler.
-
-### Forward to someone better fit
-
-- Add a lightweight `mailto:` affordance to task-assignment emails: prefilled
-  task title, task link, and a short "this was sent to me but you are better
-  fit" note.
-- Do not build delegation APIs, new Person confirmation flows, or rate-limit
-  systems until forward conversions become a measured channel.
 
 ## P1 - Organizations Endorse, Embed, and Recruit
 
@@ -425,8 +331,6 @@ Do not let lower items crowd out higher ones.
   enough for operational follow-through.
 - Keep organization attribution first-org-wins for `ReferendumVote`, matching
   `referredByUserId`. Later org links should not steal attribution.
-- Add approved public organizations to dynamic sitemap output so partner and
-  supporter pages can be indexed.
 - Keep neutral partner/embed copy where full Wishonia voice would make adoption
   harder. Partner-safe is not the same as bland.
 - Adopt the "Authorized Earth Optimization Services Provider" framing for
@@ -434,11 +338,15 @@ Do not let lower items crowd out higher ones.
   from the post-vote-share email: voters are Humanity Managers at Earth
   Optimization Services LLC; partner orgs are Authorized Earth Optimization
   Services Providers, each with a vendor-style certification badge they can
-  display. Update `/endorse` to register orgs under this category. Per the
+  display. Update `/join` to register orgs under this category. Per the
   neutral-partner-copy note above: keep the application form itself
   professional enough not to scare off serious nonprofits — AEOSP framing
   lives in campaign-facing pages, shared snippets, and the badge artifact,
   not the onboarding form.
+- For the next sprint, do not build new organization admin surfaces before
+  outreach proves the existing tools are the blocker. Current org pages already
+  provide the share URL, email starter, linked HTML starter, website button,
+  iframe, preview, manager referral URL, and grant calculator.
 
 ## P1 - Person/Org Conversion Surfaces (post-PR #81)
 
@@ -448,7 +356,7 @@ Roadmap from Mike's 2026-05-15 brainstorm. /people/[id] redesign lands in PR #81
 
 - **PR-B: `/orgs/[slug]` task display.** Mirror `/people/[id]` conversion-surface pattern onto org pages. Reuse `SufferingPreventedMetric` (extracted in #81). Wire `getOrganizationTasks` MCP to a page consumer. Primary CTA: ENDORSE (visitor not in org) vs SHARE (visitor's org already endorsed). Below-fold: org-completed tasks + member leaderboard.
 
-- **PR-C: Add-org + assign-task UX.** Backend primitives exist (`createOrganization` + `createTask` MCP). New surfaces: `/orgs/[slug]/admin/tasks` for org admin self-assignment; `/admin/assign-task` (superuser, Mike-only) for cross-org. Gate behind superuser role until proper moderation. Audience: org admin who endorsed via `/endorse`, wants to coordinate their members.
+- **PR-C: Add-org + assign-task UX.** Backend primitives exist (`createOrganization` + `createTask` MCP). New surfaces: `/orgs/[slug]/admin/tasks` for org admin self-assignment; `/admin/assign-task` (superuser, Mike-only) for cross-org. Gate behind superuser role until proper moderation. Audience: org admin who joined via `/join`, wants to coordinate their members.
 
 - **PR-D: Hand-curated public-figure catalog.** Seed Person rows for top 50-100 public figures (scientists, politicians, celebrities). Each row: displayName, handle (`mlk`, `einstein`, `gates`), 50-word deadpan-Wishonia bio, 1-3 attributed campaign-relevant actions with documented public-statement sources, impact-estimate (DALYs averted, methodology-cited from `parameters-calculations-citations.ts`), `isPublicFigure: true` flag (new bool on Person). `/people/<famous-slug>` renders with "Public-figure record" eyebrow. Visitors can co-sign the figure's position.
 
@@ -505,6 +413,11 @@ Durable summary lives here; no loose `.claude/plans/campaign-impact-attribution-
 
 ### Represented people and estates
 
+- **Plaintiff-registration aspect-ratio handling is no longer P0.**
+  `SquarePhotoCropper` is wired into user upload surfaces, and Grandma Kay now
+  uses `/img/grandma-headshot.jpg`. Add managed-data validation for non-square
+  seeded person images only when another seed image regresses or when plaintiff
+  registration becomes the active sprint.
 - Reframe memorial/deceased-person registration as filing a wrongful-death claim
   for the estate, with descendants as beneficiaries.
 - Add pre-search before creating represented people: canonicalized display name
@@ -533,9 +446,6 @@ Durable summary lives here; no loose `.claude/plans/campaign-impact-attribution-
 
 ### Sitemap and evidence paths
 
-- Verify `/humanity-v-government` and `/court` are in the static route list for
-  War on Disease.
-- Add approved organizations to the dynamic sitemap.
 - Split sitemap files by entity type when tasks/people/orgs approach the 500-row
   cap.
 - Keep `1percenttreaty.org` as a separate shareable treaty domain. Do not collapse
@@ -628,8 +538,26 @@ Durable summary lives here; no loose `.claude/plans/campaign-impact-attribution-
   a real regression boundary.
 - Never merge PRs. When checks are green and valid review complaints are handled,
   report ready for human review/merge.
+- Plan files (under `~/.gstack/projects/<slug>/`) MUST include a Cost-Benefit
+  Matrix section before `/autoplan` final-gate review. Enforced by
+  `.claude/hooks/enforce-cba-table-on-plan-files.mjs`.
+- New-feature plans MUST acknowledge existing routes/branches/commits matching
+  the feature noun before drafting. Enforced by
+  `.claude/hooks/enforce-feature-preexistence-check-on-autoplan.mjs`.
 
 ## Parked Unless They Directly Unblock 4B
+
+### Dating registry — deferred until `/love` proves attribution
+
+- `Person.isOpenToDating` + `/love/registry` browse + email-bridge messaging —
+  full plan reviewed 2026-05-19 by `/autoplan`, deferred per CBA verdict.
+  `/love` bio-template page already shipped at
+  `packages/web/src/app/love/page.tsx` (commit `ba27f38d`).
+- Kill threshold: ship only if `/love` bio-template channel produces ≥X treaty
+  signatures attributable to dating-bio referrals per 30 days.
+- Wishonia-voice copy expansion (per-app Tinder/Hinge/Bumble templates,
+  follow-up scripts, QR date-card variant) also deferred until `/love`
+  instrumentation proves per-app variants matter.
 
 ### Internationalization — centralize copy into a single message catalog
 

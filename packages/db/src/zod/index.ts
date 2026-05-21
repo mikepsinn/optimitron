@@ -385,6 +385,36 @@ export const TaskEdgeTypeSchema = z.enum([
 ]);
 export type TaskEdgeType = z.infer<typeof TaskEdgeTypeSchema>;
 
+export const TaskFundingTargetStatusSchema = z.enum([
+  'OPEN',
+  'THRESHOLD_MET',
+  'EXPIRED',
+  'CANCELLED',
+]);
+export type TaskFundingTargetStatus = z.infer<typeof TaskFundingTargetStatusSchema>;
+
+export const TaskFundingPledgerKindSchema = z.enum(['PERSON', 'ORGANIZATION']);
+export type TaskFundingPledgerKind = z.infer<typeof TaskFundingPledgerKindSchema>;
+
+export const TaskFundingPledgeStatusSchema = z.enum([
+  'ACTIVE',
+  'CANCELLED',
+  'EXPIRED',
+  'CALLED',
+  'FULFILLED',
+]);
+export type TaskFundingPledgeStatus = z.infer<typeof TaskFundingPledgeStatusSchema>;
+
+export const TaskFundingEventTypeSchema = z.enum([
+  'PLEDGE_CREATED',
+  'PLEDGE_UPDATED',
+  'PLEDGE_CANCELLED',
+  'TARGET_UPDATED',
+  'THRESHOLD_MET',
+  'NOTIFICATION_SENT',
+]);
+export type TaskFundingEventType = z.infer<typeof TaskFundingEventTypeSchema>;
+
 export const SourceSystemSchema = z.enum([
   'MANUAL',
   'OPG',
@@ -508,6 +538,75 @@ export type QuestionType = z.infer<typeof QuestionTypeSchema>;
 export const EmailLogStatusSchema = z.enum(['QUEUED', 'SENT', 'DELIVERED', 'OPENED', 'BOUNCED', 'FAILED']);
 export type EmailLogStatus = z.infer<typeof EmailLogStatusSchema>;
 
+export const DatingProfileStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'HIDDEN', 'MODERATION_HOLD', 'BANNED']);
+export type DatingProfileStatus = z.infer<typeof DatingProfileStatusSchema>;
+
+export const DatingRelationshipIntentSchema = z.enum(['FRIENDS', 'DATES', 'LONG_TERM', 'LIFE_PARTNER', 'CASUAL', 'NON_MONOGAMY', 'UNSURE']);
+export type DatingRelationshipIntent = z.infer<typeof DatingRelationshipIntentSchema>;
+
+export const DatingProfilePhotoStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED', 'HIDDEN']);
+export type DatingProfilePhotoStatus = z.infer<typeof DatingProfilePhotoStatusSchema>;
+
+export const DatingQuestionStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'RETIRED']);
+export type DatingQuestionStatus = z.infer<typeof DatingQuestionStatusSchema>;
+
+export const DatingQuestionAnswerVisibilitySchema = z.enum(['PUBLIC', 'PRIVATE']);
+export type DatingQuestionAnswerVisibility = z.infer<typeof DatingQuestionAnswerVisibilitySchema>;
+
+export const DatingQuestionImportanceSchema = z.enum(['IRRELEVANT', 'A_LITTLE', 'SOMEWHAT', 'VERY', 'MANDATORY']);
+export type DatingQuestionImportance = z.infer<typeof DatingQuestionImportanceSchema>;
+
+export const DatingPreferenceImportanceSchema = z.enum(['PREFERENCE', 'DEALBREAKER']);
+export type DatingPreferenceImportance = z.infer<typeof DatingPreferenceImportanceSchema>;
+
+export const DatingInteractionKindSchema = z.enum(['LIKE', 'PASS', 'SUPERLIKE', 'INTRO']);
+export type DatingInteractionKind = z.infer<typeof DatingInteractionKindSchema>;
+
+export const DatingInteractionStatusSchema = z.enum(['ACTIVE', 'RETRACTED', 'MODERATION_HOLD']);
+export type DatingInteractionStatus = z.infer<typeof DatingInteractionStatusSchema>;
+
+export const DatingMatchStatusSchema = z.enum(['ACTIVE', 'UNMATCHED', 'BLOCKED']);
+export type DatingMatchStatus = z.infer<typeof DatingMatchStatusSchema>;
+
+export const DatingConversationStatusSchema = z.enum(['ACTIVE', 'ARCHIVED', 'MODERATION_HOLD']);
+export type DatingConversationStatus = z.infer<typeof DatingConversationStatusSchema>;
+
+export const DatingMessageStatusSchema = z.enum(['SENT', 'HIDDEN', 'DELETED', 'MODERATION_HOLD']);
+export type DatingMessageStatus = z.infer<typeof DatingMessageStatusSchema>;
+
+export const DatingDatePlanStatusSchema = z.enum(['PROPOSED', 'ACCEPTED', 'DECLINED', 'CANCELED', 'COMPLETED', 'NO_SHOW']);
+export type DatingDatePlanStatus = z.infer<typeof DatingDatePlanStatusSchema>;
+
+export const DatingBlockScopeSchema = z.enum(['DISCOVERY', 'MESSAGES', 'ALL']);
+export type DatingBlockScope = z.infer<typeof DatingBlockScopeSchema>;
+
+export const DatingSafetyReportStatusSchema = z.enum(['OPEN', 'REVIEWING', 'RESOLVED', 'DISMISSED']);
+export type DatingSafetyReportStatus = z.infer<typeof DatingSafetyReportStatusSchema>;
+
+export const CommerceOfferKindSchema = z.enum(['PHYSICAL_GOOD', 'SPONSORSHIP', 'SUBSCRIPTION', 'DIGITAL_ACCESS', 'SERVICE', 'DONATION']);
+export type CommerceOfferKind = z.infer<typeof CommerceOfferKindSchema>;
+
+export const CommerceOfferStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'RETIRED']);
+export type CommerceOfferStatus = z.infer<typeof CommerceOfferStatusSchema>;
+
+export const CommerceFulfillmentKindSchema = z.enum(['NONE', 'PHYSICAL_GOOD', 'DIGITAL_ENTITLEMENT', 'MANUAL_SPONSORSHIP']);
+export type CommerceFulfillmentKind = z.infer<typeof CommerceFulfillmentKindSchema>;
+
+export const CommercePaymentProviderSchema = z.enum(['STRIPE', 'MANUAL']);
+export type CommercePaymentProvider = z.infer<typeof CommercePaymentProviderSchema>;
+
+export const CommerceFulfillmentProviderSchema = z.enum(['NONE', 'CUSTOMCAT', 'MANUAL', 'STRIPE']);
+export type CommerceFulfillmentProvider = z.infer<typeof CommerceFulfillmentProviderSchema>;
+
+export const CommerceOrderStatusSchema = z.enum(['PENDING_PAYMENT', 'PAID', 'FULFILLING', 'SUBMITTED', 'SHIPPED', 'FAILED', 'CANCELED', 'REFUNDED']);
+export type CommerceOrderStatus = z.infer<typeof CommerceOrderStatusSchema>;
+
+export const CommerceFulfillmentStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'SHIPPED', 'DELIVERED', 'FAILED', 'CANCELED']);
+export type CommerceFulfillmentStatus = z.infer<typeof CommerceFulfillmentStatusSchema>;
+
+export const CommerceEntitlementStatusSchema = z.enum(['PENDING', 'ACTIVE', 'EXPIRED', 'CANCELED', 'REVOKED']);
+export type CommerceEntitlementStatus = z.infer<typeof CommerceEntitlementStatusSchema>;
+
 export const AgentComputeDepositSourceSchema = z.enum(['STRIPE', 'CRYPTO', 'MANUAL']);
 export type AgentComputeDepositSource = z.infer<typeof AgentComputeDepositSourceSchema>;
 
@@ -520,6 +619,17 @@ export type AgentRunStatus = z.infer<typeof AgentRunStatusSchema>;
 const dateSchema = z.coerce.date();
 const nullableDateSchema = z.coerce.date().nullable().optional();
 const nullableJsonSchema = z.unknown().nullable().optional();
+const decimalSchema = z.union([
+  z.number(),
+  z.string(),
+  z.custom<{ toString(): string }>(
+    (value) =>
+      typeof value === 'object' &&
+      value !== null &&
+      typeof (value as { toString?: unknown }).toString === 'function'
+  ),
+]);
+const nullableDecimalSchema = decimalSchema.nullable().optional();
 
 /** Zod schema for the Person model */
 export const PersonSchema = z.object({
@@ -1957,6 +2067,79 @@ export const TaskSchema = z.object({
 });
 export type TaskType = z.infer<typeof TaskSchema>;
 
+/** Zod schema for the TaskFundingTarget model */
+export const TaskFundingTargetSchema = z.object({
+  id: z.string(),
+  taskId: z.string(),
+  targetAmountCents: z.bigint(),
+  currency: z.string().default('usd'),
+  primaryUnitKey: z.string().nullable().optional(),
+  primaryUnitTargetQuantity: nullableDecimalSchema,
+  status: TaskFundingTargetStatusSchema.default('OPEN'),
+  termsVersion: z.string().nullable().optional(),
+  expiresAt: nullableDateSchema,
+  thresholdMetAt: nullableDateSchema,
+  thresholdMetByPledgeId: z.string().nullable().optional(),
+  notificationSentAt: nullableDateSchema,
+  metadata: nullableJsonSchema,
+  createdByUserId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskFundingTargetType = z.infer<typeof TaskFundingTargetSchema>;
+
+/** Zod schema for the TaskFundingPledge model */
+export const TaskFundingPledgeSchema = z.object({
+  id: z.string(),
+  targetId: z.string(),
+  pledgerKind: TaskFundingPledgerKindSchema,
+  pledgeActorKey: z.string(),
+  pledgedByUserId: z.string().nullable().optional(),
+  pledgerPersonId: z.string().nullable().optional(),
+  pledgerOrganizationId: z.string().nullable().optional(),
+  publicDisplay: z.boolean().default(false),
+  publicNameSnapshot: z.string().nullable().optional(),
+  unitKey: z.string(),
+  unitQuantity: decimalSchema,
+  unitAmountCentsSnapshot: z.bigint().nullable().optional(),
+  committedAmountCents: z.bigint(),
+  currency: z.string().default('usd'),
+  conversionVersion: z.string(),
+  conversionSource: z.string().nullable().optional(),
+  commerceOfferId: z.string().nullable().optional(),
+  commerceOfferVariantId: z.string().nullable().optional(),
+  termsVersion: z.string().nullable().optional(),
+  termsNote: z.string().nullable().optional(),
+  status: TaskFundingPledgeStatusSchema.default('ACTIVE'),
+  idempotencyKey: z.string().nullable().optional(),
+  cancelledAt: nullableDateSchema,
+  cancelledByUserId: z.string().nullable().optional(),
+  cancellationReason: z.string().nullable().optional(),
+  calledAt: nullableDateSchema,
+  fulfilledAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskFundingPledgeType = z.infer<typeof TaskFundingPledgeSchema>;
+
+/** Zod schema for the TaskFundingEvent model */
+export const TaskFundingEventSchema = z.object({
+  id: z.string(),
+  targetId: z.string(),
+  pledgeId: z.string().nullable().optional(),
+  eventType: TaskFundingEventTypeSchema,
+  dedupeKey: z.string().nullable().optional(),
+  actorUserId: z.string().nullable().optional(),
+  beforeJson: nullableJsonSchema,
+  afterJson: nullableJsonSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskFundingEventTypeModel = z.infer<typeof TaskFundingEventSchema>;
+
 /** Zod schema for the TaskClaim model */
 export const TaskClaimSchema = z.object({
   id: z.string(),
@@ -2286,6 +2469,426 @@ export const EmailLogSchema = z.object({
   createdAt: dateSchema,
 });
 export type EmailLogType = z.infer<typeof EmailLogSchema>;
+
+// ── Dating and mission dates ───────────────────────────────────────────────
+
+export const DatingProfileSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  status: DatingProfileStatusSchema.default('DRAFT'),
+  headline: z.string().nullable().optional(),
+  bio: z.string().nullable().optional(),
+  lookingForText: z.string().nullable().optional(),
+  relationshipIntents: z.array(DatingRelationshipIntentSchema).default([]),
+  genderIdentities: z.array(z.string()).default([]),
+  orientationIdentities: z.array(z.string()).default([]),
+  relationshipStatus: z.string().nullable().optional(),
+  preferredMinAge: z.number().int().nullable().optional(),
+  preferredMaxAge: z.number().int().nullable().optional(),
+  maxDistanceKm: z.number().int().nullable().optional(),
+  displayCity: z.string().nullable().optional(),
+  displayRegionCode: z.string().nullable().optional(),
+  displayCountryCode: z.string().nullable().optional(),
+  wantsCampaignDates: z.boolean().default(true),
+  campaignDateIdeas: z.array(z.string()).default([]),
+  profileCompletedAt: nullableDateSchema,
+  lastActiveAt: nullableDateSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingProfileType = z.infer<typeof DatingProfileSchema>;
+
+export const DatingProfilePhotoSchema = z.object({
+  id: z.string(),
+  profileId: z.string(),
+  imageUrl: z.string(),
+  storageKey: z.string().nullable().optional(),
+  altText: z.string().nullable().optional(),
+  blurhash: z.string().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  status: DatingProfilePhotoStatusSchema.default('PENDING'),
+  moderationReason: z.string().nullable().optional(),
+  reviewedByUserId: z.string().nullable().optional(),
+  reviewedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingProfilePhotoType = z.infer<typeof DatingProfilePhotoSchema>;
+
+export const DatingPromptSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  text: z.string(),
+  sortOrder: z.number().int().default(0),
+  active: z.boolean().default(true),
+  managed: z.boolean().default(false),
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingPromptType = z.infer<typeof DatingPromptSchema>;
+
+export const DatingPromptAnswerSchema = z.object({
+  id: z.string(),
+  profileId: z.string(),
+  promptId: z.string(),
+  answer: z.string(),
+  sortOrder: z.number().int().default(0),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingPromptAnswerType = z.infer<typeof DatingPromptAnswerSchema>;
+
+export const DatingQuestionSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  text: z.string(),
+  category: z.string().nullable().optional(),
+  answerOptions: z.unknown(),
+  allowMultiple: z.boolean().default(false),
+  status: DatingQuestionStatusSchema.default('ACTIVE'),
+  sortOrder: z.number().int().default(0),
+  managed: z.boolean().default(false),
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingQuestionType = z.infer<typeof DatingQuestionSchema>;
+
+export const DatingQuestionAnswerSchema = z.object({
+  id: z.string(),
+  profileId: z.string(),
+  questionId: z.string(),
+  answerValues: z.unknown(),
+  acceptableValues: nullableJsonSchema,
+  importance: DatingQuestionImportanceSchema.default('SOMEWHAT'),
+  visibility: DatingQuestionAnswerVisibilitySchema.default('PUBLIC'),
+  explanation: z.string().nullable().optional(),
+  answeredAt: dateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingQuestionAnswerType = z.infer<typeof DatingQuestionAnswerSchema>;
+
+export const DatingPreferenceSchema = z.object({
+  id: z.string(),
+  profileId: z.string(),
+  key: z.string(),
+  valueJson: z.unknown(),
+  importance: DatingPreferenceImportanceSchema.default('PREFERENCE'),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingPreferenceType = z.infer<typeof DatingPreferenceSchema>;
+
+export const DatingMatchScoreSchema = z.object({
+  id: z.string(),
+  profileAId: z.string(),
+  profileBId: z.string(),
+  score: z.number().int(),
+  questionScore: z.number().int().nullable().optional(),
+  preferenceScore: z.number().int().nullable().optional(),
+  sharedAnsweredCount: z.number().int().default(0),
+  dealbreakerFailed: z.boolean().default(false),
+  failedDealbreakerCount: z.number().int().default(0),
+  computedAt: dateSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingMatchScoreType = z.infer<typeof DatingMatchScoreSchema>;
+
+export const DatingInteractionSchema = z.object({
+  id: z.string(),
+  fromProfileId: z.string(),
+  toProfileId: z.string(),
+  kind: DatingInteractionKindSchema,
+  status: DatingInteractionStatusSchema.default('ACTIVE'),
+  introMessage: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingInteractionType = z.infer<typeof DatingInteractionSchema>;
+
+export const DatingMatchSchema = z.object({
+  id: z.string(),
+  profileAId: z.string(),
+  profileBId: z.string(),
+  status: DatingMatchStatusSchema.default('ACTIVE'),
+  matchedAt: dateSchema,
+  unmatchedAt: nullableDateSchema,
+  lastMessageAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingMatchType = z.infer<typeof DatingMatchSchema>;
+
+export const DatingConversationSchema = z.object({
+  id: z.string(),
+  matchId: z.string(),
+  status: DatingConversationStatusSchema.default('ACTIVE'),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingConversationType = z.infer<typeof DatingConversationSchema>;
+
+export const DatingMessageSchema = z.object({
+  id: z.string(),
+  conversationId: z.string(),
+  senderProfileId: z.string(),
+  body: z.string(),
+  status: DatingMessageStatusSchema.default('SENT'),
+  readAt: nullableDateSchema,
+  editedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingMessageType = z.infer<typeof DatingMessageSchema>;
+
+export const DatingDatePlanSchema = z.object({
+  id: z.string(),
+  matchId: z.string().nullable().optional(),
+  conversationId: z.string().nullable().optional(),
+  proposedByProfileId: z.string(),
+  acceptedByProfileId: z.string().nullable().optional(),
+  status: DatingDatePlanStatusSchema.default('PROPOSED'),
+  title: z.string(),
+  description: z.string().nullable().optional(),
+  startsAt: nullableDateSchema,
+  endsAt: nullableDateSchema,
+  timeZone: z.string().nullable().optional(),
+  locationName: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  latitude: z.number().nullable().optional(),
+  longitude: z.number().nullable().optional(),
+  isCampaignDate: z.boolean().default(false),
+  campaignTaskId: z.string().nullable().optional(),
+  campaignNotes: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingDatePlanType = z.infer<typeof DatingDatePlanSchema>;
+
+export const DatingBlockSchema = z.object({
+  id: z.string(),
+  blockerProfileId: z.string(),
+  blockedProfileId: z.string(),
+  scope: DatingBlockScopeSchema.default('ALL'),
+  reason: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingBlockType = z.infer<typeof DatingBlockSchema>;
+
+export const DatingSafetyReportSchema = z.object({
+  id: z.string(),
+  reporterProfileId: z.string(),
+  reportedProfileId: z.string().nullable().optional(),
+  messageId: z.string().nullable().optional(),
+  datePlanId: z.string().nullable().optional(),
+  reason: z.string(),
+  description: z.string().nullable().optional(),
+  status: DatingSafetyReportStatusSchema.default('OPEN'),
+  reviewerUserId: z.string().nullable().optional(),
+  resolutionNote: z.string().nullable().optional(),
+  resolvedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type DatingSafetyReportType = z.infer<typeof DatingSafetyReportSchema>;
+
+// ── Commerce catalog, orders, fulfillment, and entitlements ────────────────
+
+export const CommerceOfferSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  kind: CommerceOfferKindSchema,
+  status: CommerceOfferStatusSchema.default('ACTIVE'),
+  title: z.string(),
+  description: z.string().nullable().optional(),
+  currency: z.string().default('usd'),
+  defaultUnitAmountCents: z.number().int().nullable().optional(),
+  defaultFmvCents: z.number().int().default(0),
+  minUnitAmountCents: z.number().int().nullable().optional(),
+  maxUnitAmountCents: z.number().int().nullable().optional(),
+  allowCustomAmount: z.boolean().default(false),
+  isTaxDeductible: z.boolean().default(false),
+  taxCode: z.string().nullable().optional(),
+  fulfillmentKind: CommerceFulfillmentKindSchema.default('NONE'),
+  managed: z.boolean().default(false),
+  sortOrder: z.number().int().default(0),
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CommerceOfferType = z.infer<typeof CommerceOfferSchema>;
+
+export const CommerceOfferVariantSchema = z.object({
+  id: z.string(),
+  offerId: z.string(),
+  key: z.string(),
+  variantKey: z.string(),
+  label: z.string(),
+  currency: z.string().default('usd'),
+  unitAmountCents: z.number().int().nullable().optional(),
+  fmvCents: z.number().int().nullable().optional(),
+  minUnitAmountCents: z.number().int().nullable().optional(),
+  maxUnitAmountCents: z.number().int().nullable().optional(),
+  allowCustomAmount: z.boolean().nullable().optional(),
+  taxCode: z.string().nullable().optional(),
+  fulfillmentKind: CommerceFulfillmentKindSchema.nullable().optional(),
+  attributes: nullableJsonSchema,
+  fulfillmentMetadata: nullableJsonSchema,
+  metadata: nullableJsonSchema,
+  active: z.boolean().default(true),
+  sortOrder: z.number().int().default(0),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CommerceOfferVariantType = z.infer<typeof CommerceOfferVariantSchema>;
+
+export const CommerceFulfillmentMappingSchema = z.object({
+  id: z.string(),
+  offerVariantId: z.string(),
+  provider: CommerceFulfillmentProviderSchema,
+  providerProductId: z.string().nullable().optional(),
+  providerVariantId: z.string().nullable().optional(),
+  providerCatalogSku: z.string().nullable().optional(),
+  providerMetadata: nullableJsonSchema,
+  active: z.boolean().default(true),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CommerceFulfillmentMappingType = z.infer<typeof CommerceFulfillmentMappingSchema>;
+
+export const CommerceOrderSchema = z.object({
+  id: z.string(),
+  purposeKey: z.string().nullable().optional(),
+  status: CommerceOrderStatusSchema.default('PENDING_PAYMENT'),
+  paymentProvider: CommercePaymentProviderSchema.default('STRIPE'),
+  stripeCheckoutSessionId: z.string().nullable().optional(),
+  stripePaymentIntentId: z.string().nullable().optional(),
+  stripeCustomerId: z.string().nullable().optional(),
+  buyerUserId: z.string().nullable().optional(),
+  buyerOrganizationId: z.string().nullable().optional(),
+  buyerEmail: z.string().nullable().optional(),
+  buyerName: z.string().nullable().optional(),
+  buyerPhone: z.string().nullable().optional(),
+  shippingName: z.string().nullable().optional(),
+  shippingLine1: z.string().nullable().optional(),
+  shippingLine2: z.string().nullable().optional(),
+  shippingCity: z.string().nullable().optional(),
+  shippingState: z.string().nullable().optional(),
+  shippingPostalCode: z.string().nullable().optional(),
+  shippingCountry: z.string().nullable().optional(),
+  currency: z.string().default('usd'),
+  subtotalCents: z.number().int().default(0),
+  taxCents: z.number().int().default(0),
+  shippingCents: z.number().int().default(0),
+  discountCents: z.number().int().default(0),
+  totalCents: z.number().int().default(0),
+  fmvCents: z.number().int().default(0),
+  donationCents: z.number().int().default(0),
+  metadata: nullableJsonSchema,
+  lastError: z.string().nullable().optional(),
+  attemptCount: z.number().int().default(0),
+  paidAt: nullableDateSchema,
+  fulfilledAt: nullableDateSchema,
+  shippedAt: nullableDateSchema,
+  canceledAt: nullableDateSchema,
+  refundedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CommerceOrderType = z.infer<typeof CommerceOrderSchema>;
+
+export const CommerceOrderItemSchema = z.object({
+  id: z.string(),
+  orderId: z.string(),
+  offerId: z.string().nullable().optional(),
+  offerVariantId: z.string().nullable().optional(),
+  offerKey: z.string(),
+  offerVariantKey: z.string().nullable().optional(),
+  title: z.string(),
+  quantity: z.number().int().default(1),
+  currency: z.string().default('usd'),
+  unitAmountCents: z.number().int().default(0),
+  unitFmvCents: z.number().int().default(0),
+  unitDonationCents: z.number().int().default(0),
+  totalAmountCents: z.number().int().default(0),
+  totalFmvCents: z.number().int().default(0),
+  totalDonationCents: z.number().int().default(0),
+  taxable: z.boolean().default(false),
+  taxCode: z.string().nullable().optional(),
+  fulfillmentKind: CommerceFulfillmentKindSchema.default('NONE'),
+  fulfillmentMetadata: nullableJsonSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CommerceOrderItemType = z.infer<typeof CommerceOrderItemSchema>;
+
+export const CommerceFulfillmentSchema = z.object({
+  id: z.string(),
+  orderId: z.string(),
+  orderItemId: z.string().nullable().optional(),
+  provider: CommerceFulfillmentProviderSchema,
+  status: CommerceFulfillmentStatusSchema.default('PENDING'),
+  externalOrderId: z.string().nullable().optional(),
+  providerOrderId: z.string().nullable().optional(),
+  providerStatus: z.string().nullable().optional(),
+  trackingNumber: z.string().nullable().optional(),
+  trackingUrl: z.string().nullable().optional(),
+  metadata: nullableJsonSchema,
+  lastError: z.string().nullable().optional(),
+  attemptCount: z.number().int().default(0),
+  submittedAt: nullableDateSchema,
+  shippedAt: nullableDateSchema,
+  deliveredAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CommerceFulfillmentType = z.infer<typeof CommerceFulfillmentSchema>;
+
+export const CommerceEntitlementSchema = z.object({
+  id: z.string(),
+  orderId: z.string().nullable().optional(),
+  orderItemId: z.string().nullable().optional(),
+  offerId: z.string().nullable().optional(),
+  offerVariantId: z.string().nullable().optional(),
+  entitlementType: z.string(),
+  status: CommerceEntitlementStatusSchema.default('PENDING'),
+  subjectUserId: z.string().nullable().optional(),
+  subjectOrganizationId: z.string().nullable().optional(),
+  startsAt: nullableDateSchema,
+  endsAt: nullableDateSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type CommerceEntitlementType = z.infer<typeof CommerceEntitlementSchema>;
 
 // ── Agent Compute Funding ──────────────────────────────────────────────────
 

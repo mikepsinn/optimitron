@@ -10,7 +10,7 @@ import {
 test("skips preview managed-data sync for copy and UI-only changes", () => {
   const files = [
     "AGENTS.md",
-    "packages/web/src/app/endorse/page.logged-out.md",
+    "packages/web/src/app/join/page.logged-out.md",
     "packages/web/src/components/shared/ParameterValue.tsx",
     "packages/web/scripts/build-visual-review.mjs",
   ];

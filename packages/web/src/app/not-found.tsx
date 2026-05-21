@@ -5,7 +5,7 @@ const recoveryLinks = [
   { href: ROUTES.search, label: "Search" },
   { href: ROUTES.vote, label: "Vote" },
   { href: ROUTES.donate, label: "Donate" },
-  { href: ROUTES.endorse, label: "Organizations" },
+  { href: ROUTES.join, label: "Organizations" },
 ] as const;
 
 export default function NotFound() {

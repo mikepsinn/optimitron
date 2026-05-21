@@ -239,6 +239,7 @@ describe("syncManagedIamOrganization", () => {
       sourceRef: MIKE_SINN_PERSON_SOURCE_REF,
     });
     expect(client.users.find((row) => row["email"] === MIKE_SINN_EMAIL)).toMatchObject({
+      isAdmin: true,
       personId: "person-mike",
       referralCode: "KEEP-ME",
     });

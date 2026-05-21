@@ -34,6 +34,38 @@ export {
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 };
 
+export const CAMPAIGN_PRINT_COPY = {
+  businessCardLines: [
+    "Please take",
+    "30 seconds",
+    "to end war",
+    "and disease",
+    "warondisease.org",
+  ],
+  flyerHeadlineLines: [
+    "Please take",
+    "30 seconds",
+    "to end",
+    "war and disease",
+  ],
+  shirtBackLines: [
+    "Trade one apocalypse",
+    "for disease eradication",
+    "at warondisease.org.",
+  ],
+  shirtFrontLines: [
+    "THIS T-SHIRT",
+    "ENDED WAR",
+    "AND DISEASE.",
+  ],
+} as const;
+
+export const SHIRT_FRONT_COPY =
+  CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ");
+export const SHIRT_BACK_COPY_LINES = CAMPAIGN_PRINT_COPY.shirtBackLines;
+export const SHIRT_BACK_COPY =
+  SHIRT_BACK_COPY_LINES.join(" ");
+
 // ---------------------------------------------------------------------------
 // User-framing vocabulary (variant-aware)
 //

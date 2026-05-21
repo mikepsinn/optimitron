@@ -17,12 +17,22 @@ Claude edits meta-config (CLAUDE.md, this file, `.codex/config.toml`, hook scrip
 
 ## Every Codex prompt must contain
 
-1. **Mikepsinn's verbatim message**, quoted. The user often uses speech-to-text — typos expected; interpret intent, don't surface-correct. Verbatim quoting eliminates Claude-as-telephone-game mutation.
+1. **Mikepsinn's verbatim message + Claude's cleaned interpretation + relevant historical context.** Three sub-parts, in this exact shape:
+
+   a. **Verbatim quote** of Mike's current statement in a `>` blockquote. Zero mutation. Voice-to-text — typos expected.
+
+   b. **Claude's cleaned interpretation** of intent in a second `>` blockquote, prefixed `[interpretation]:`. Fix ONLY obvious voice-recognition artifacts: URL spacing (`war on disease.org` → `warondisease.org`), doubled words, missing/extra punctuation, dictation-leakage ("Hey Google, set a timer..."). DO NOT fix: word choices that look weird but might be intentional ("missions", "lousy t-shirt", any phrase that changes strategic meaning if "corrected"). If a phrase is genuinely ambiguous, flag it inline as `[ambiguous: could mean X or Y]` rather than picking one.
+
+   c. **Curated historical context** — 3-5 relevant verbatim quotes from earlier Mike statements on the same strategic thread, each in its own `>` blockquote with the turn label. NOT all 50+ messages from the session — just the strategic-arc ones on the same question. Codex's context budget shrinks if dumped wholesale.
+
+   The split lets Codex re-read the raw if the cleaned version seems off, while sparing it the attention burden of disambiguating typos. The historical thread keeps Codex from re-deriving context Mike has already settled in prior turns.
 2. **Investigate-before-coding** instruction: grep, read, understand. Don't trust the framing blindly.
 3. **Push back if the request hurts the 4B-voters-on-the-treaty goal.** State the concern, propose to skip, wait for confirmation. Don't silently comply with work that doesn't move that needle.
 4. **Argue back if Claude misread the user.** The verbatim quote makes this checkable.
 5. **Regenerate affected `.md` snapshots and screenshots** after any content/component change. Use `node packages/web/scripts/affected-routes.mjs` to pipe changed-file paths into `render-pages-to-markdown.ts --routes=` for targeted regen; fall back to full regen when the change touches shared primitives.
 6. **Nothing committed without user approval.** Codex stages the changeset and reports; Claude relays the summary + diff scope; user OKs; then Claude commits on Codex's behalf (Codex can't touch `.git`).
+
+   **NO TEMP CLONES.** When Codex's sandbox can't write to the main repo's `.git/`, the correct behavior is to STOP. Do NOT create a temp clone (e.g. `.commit-work-*` / `.codex-verify-*`) to commit in, do NOT attempt `git push` from anywhere, do NOT try alternate paths to GitHub. The files Codex wrote are already in the main working tree — Claude picks them up via `git status` and commits + pushes from the main checkout. Temp clones are pure waste: every clone is a full-repo copy on disk (hundreds of MB), Codex's commit there is invisible to the main checkout, and the `git push` from the clone fails on auth anyway. Mike has flagged this 2× as a cleanup burden. The dispatch's last verification step should be "files written to main working tree + quality gates pass" — not "commit + push."
 7. **TODO.md update in the same staged changeset.** If the work resolves an unchecked item in TODO.md, Codex must edit TODO.md (mark done with `commit:short-sha` evidence, or delete the line if redundant) IN THE SAME STAGED CHANGESET. If the work doesn't touch any TODO.md item, Codex must include `todo-skipped: <reason>` (e.g. "todo-skipped: net-new feature not previously listed") so the audit trail is explicit. Mike's TODO.md was 60%+ stale on 2026-05-17 because dispatches silently shipped work without closing the corresponding TODO lines — `enforce-codex-protocol.mjs` + `verify-ui-changes.mjs` now check this gate.
 
 ## NEVER run `next build` / `pnpm build`

@@ -23,7 +23,15 @@ export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
   [McpScope.GITHUB]: "Admin-only: access the configured GitHub repos via the server-side PAT (search code, read files, list directories, generic API passthrough)",
 };
 
-export const DEFAULT_SCOPES: McpScope[] = [McpScope.TASKS_PERSONAL];
+// Candidate scopes preselected in the OAuth consent UI. They are still filtered
+// through `allowedMcpScopesForUser`, so admin scopes only appear for admins.
+// Admin task-write tools (updateTask, deleteTask, etc.) gate on isAdmin alone
+// via hasAdminTaskWriteAccess — TASKS_ADMIN scope is documentation/UX, not a
+// security gate. Re-add it as a security gate by tightening
+// hasAdminTaskWriteAccess if this app becomes multi-admin.
+export const DEFAULT_CONSENT_SCOPES: McpScope[] = [
+  McpScope.TASKS_PERSONAL,
+];
 
 export const ALL_SCOPES: McpScope[] = [
   McpScope.TASKS_PERSONAL,

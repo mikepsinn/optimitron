@@ -93,7 +93,7 @@ export default async function SignatoriesPage({
                 Sign Treaty
               </Link>
               <Link
-                href={ROUTES.endorse}
+                href={ROUTES.join}
                 className="inline-block border-2 border-foreground bg-background px-6 py-3 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background"
               >
                 Join as Organization

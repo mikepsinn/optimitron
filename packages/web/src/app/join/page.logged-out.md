@@ -1,49 +1,28 @@
-# /endorse
+# /join
 
 ## Metadata
 
 - Page title: Join as an Organization — 1% Treaty
 - Meta description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
-- Canonical: https://warondisease.org/endorse
+- Canonical: https://warondisease.org/join
 - Open Graph title: Join as an Organization — 1% Treaty
 - Open Graph description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fendorse
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fjoin
 - Twitter title: Join as an Organization — 1% Treaty
 - Twitter description: Your organization has members who probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with them.
 
 ## Visible Page Copy
 
 ## JOIN THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE
-- Allowing billions of humans to suffer and die from disease so governments can preserve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)-apocalypse mass-murder capacity is barbaric mass cruelty. Like slavery, it will persist until enough humans and institutions publicly state that it is morally wrong and incredibly stupid. Your organization can be one of those institutions.
-- None of us can end war and disease on our own. Ending it requires a majority of humanity agreeing to allocate resources in proportion to the degree to which each purpose promotes the general welfare. Your organization and its members are part of the majority that must agree. Moving that agreement forward by one day prevents about [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) deaths from disease and roughly [2 billion](https://manual.WarOnDisease.org/knowledge/solution/dfda.html) days of suffering.
-- [Why organizations should join](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy).
+- Don't have an organization? [Vote here →](/vote)
 - ORGANIZATION NAME *
 - WEBSITE
 - DONATION URL
 - Optional. Adds a small Donate to your organization link on your public page.
 - JOIN AS AN ORGANIZATION
-### AFTER JOINING
-- No donation to us. No candidate endorsement. One public humanitarian treaty position.
-- Add your organization. Publicly support the [1% Treaty](/treaty) once. Then use the member link, email starter, website button, or iframe to help your audience answer the Global Survey to End War and Disease.
-- Join first. Your tools page gives you the member link, email starter, website button, iframe, one-hour action checklist, and outreach grant request draft for funding from the International Campaign.
-### APPLY FOR A CAMPAIGN GRANT
-- Use this after you join: one email, one social post, and a website embed can turn your existing audience into verified responses to the Global Survey to End War and Disease. The estimate starts with the grant request and lives saved. Change the assumptions below if you need to.
-- GRANT REQUEST
-- $3,960
-- ESTIMATED OUTREACH COST PER RESPONSE: $2
-- MODELED LIVES SAVED
-- 5,346
-- $0.74 PER MODELED LIFE SAVED
-- SURVEY RESPONSES
-- 1,980
-- FROM 66,000 PEOPLE REACHED
-- SUFFERING PREVENTED
-- 109,058
-- YEARS OF SUFFERING PREVENTED
-- 1,980 verified survey responses × [2.7](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) lives and [55](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) years prevented per response. At an estimated outreach cost of $2 per response, the outreach request is $3,960.
-#### SHOW ASSUMPTIONS
-#### GRANT REQUEST DRAFT
-- COPY REQUEST DRAFT
+- Allowing billions of humans to suffer and die from disease so governments can preserve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)-apocalypse mass-murder capacity is barbaric mass cruelty. Like slavery, it will persist until enough humans and institutions publicly state that it is morally wrong and incredibly stupid. Your organization can be one of those institutions.
+- None of us can end war and disease on our own. Ending it requires a majority of humanity agreeing to spend a little less on mass murder capacity and a little more on medicine that works. Your organization and its members are part of that majority. Moving that agreement forward by one day prevents about [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) deaths from disease and roughly [2 billion](https://manual.WarOnDisease.org/knowledge/solution/dfda.html) days of suffering.
+- [Why organizations should join](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy).
 - LEGAL NOTES FOR ORGANIZATIONS
 #### SUMMARY
 - Joining means your organization publicly supports the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.
@@ -97,4 +76,5 @@
 - Article IX: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in the history of planet Earth.
 - IN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.
 - [BACK TO ORGANIZATION FORM](#organization-endorsement-form)
+- Foundations: distributing the shirt to every human on Earth costs roughly 3% of the global annual philanthropy budget. [See the case →](/foundations)
 - Already joined? See the [organizational supporters](/signatories).

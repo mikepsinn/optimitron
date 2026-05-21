@@ -19,5 +19,5 @@
 - [SEARCH](/search)
 - [VOTE](/vote)
 - [DONATE](/donate)
-- [ORGANIZATIONS](/endorse)
+- [ORGANIZATIONS](/join)
 - Click something real. The machines are willing to forgive you.

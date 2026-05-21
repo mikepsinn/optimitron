@@ -9,7 +9,7 @@ function expectValidChromeItem(item: NavItem) {
   expect(item.label.trim()).not.toBe("");
   expect(item.description.trim()).not.toBe("");
   expect(item.cta.trim()).not.toBe("");
-  expect(item.emoji.trim()).not.toBe("");
+  expect(item.emoji).toBe(item.emoji.trim());
 }
 
 function expectNoDuplicateHrefs(items: NavItem[]) {

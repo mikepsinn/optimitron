@@ -26,6 +26,22 @@ import {
   McpScopeSchema,
   McpToolCallAuditSchema,
   ContentReportSchema,
+  CommerceOfferKindSchema,
+  CommerceOrderSchema,
+  CommerceOrderItemSchema,
+  CommerceFulfillmentSchema,
+  CommerceEntitlementSchema,
+  DatingProfileStatusSchema,
+  DatingProfileSchema,
+  DatingProfilePhotoSchema,
+  DatingQuestionSchema,
+  DatingQuestionAnswerSchema,
+  DatingInteractionSchema,
+  DatingMatchSchema,
+  DatingConversationSchema,
+  DatingMessageSchema,
+  DatingDatePlanSchema,
+  DatingSafetyReportSchema,
   // Models
   AccountSchema,
   PersonhoodVerificationSchema,
@@ -278,6 +294,195 @@ describe('Enum schemas', () => {
     expect(VariableEvidenceMetricKindSchema.parse('NNT')).toBe('NNT');
     expect(VariableRelationshipEvidenceSourceTypeSchema.parse('IMPORTED_STUDY')).toBe('IMPORTED_STUDY');
     expect(InterventionRankingRunStatusSchema.parse('ACTIVE')).toBe('ACTIVE');
+  });
+
+  it('23. Commerce enums accept generic sellable offer categories', () => {
+    expect(CommerceOfferKindSchema.parse('PHYSICAL_GOOD')).toBe('PHYSICAL_GOOD');
+    expect(CommerceOfferKindSchema.parse('SPONSORSHIP')).toBe('SPONSORSHIP');
+    expect(CommerceOfferKindSchema.parse('SUBSCRIPTION')).toBe('SUBSCRIPTION');
+    expect(CommerceOfferKindSchema.safeParse('SHIRT_ONLY').success).toBe(false);
+  });
+});
+
+describe('Commerce schemas', () => {
+  it('validates orders, items, fulfillment rows, and entitlements', () => {
+    expect(
+      CommerceOrderSchema.safeParse({
+        id: 'order_1',
+        purposeKey: 'war-on-disease-shirt',
+        status: 'PENDING_PAYMENT',
+        paymentProvider: 'STRIPE',
+        currency: 'usd',
+        subtotalCents: 3500,
+        totalCents: 3500,
+        fmvCents: 1500,
+        donationCents: 2000,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      CommerceOrderItemSchema.safeParse({
+        id: 'item_1',
+        orderId: 'order_1',
+        offerKey: 'shirt',
+        title: 'War on Disease shirt - Black / M',
+        fulfillmentKind: 'PHYSICAL_GOOD',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      CommerceFulfillmentSchema.safeParse({
+        id: 'fulfillment_1',
+        orderId: 'order_1',
+        provider: 'CUSTOMCAT',
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      CommerceEntitlementSchema.safeParse({
+        id: 'entitlement_1',
+        entitlementType: 'dating-premium',
+        status: 'ACTIVE',
+        subjectUserId: 'user_1',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+  });
+});
+
+describe('Dating schemas', () => {
+  it('validates the critical OkCupid-style dating records', () => {
+    expect(DatingProfileStatusSchema.parse('ACTIVE')).toBe('ACTIVE');
+    expect(
+      DatingProfileSchema.safeParse({
+        id: 'dating_profile_1',
+        userId: 'user_1',
+        status: 'ACTIVE',
+        headline: 'Ending war and disease, then getting coffee',
+        relationshipIntents: ['DATES', 'LONG_TERM'],
+        genderIdentities: ['woman'],
+        orientationIdentities: ['queer'],
+        preferredMinAge: 30,
+        preferredMaxAge: 45,
+        maxDistanceKm: 40,
+        wantsCampaignDates: true,
+        campaignDateIdeas: ['hang flyers', 'coffee after canvassing'],
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingProfilePhotoSchema.safeParse({
+        id: 'photo_1',
+        profileId: 'dating_profile_1',
+        imageUrl: 'https://cdn.example/photo.jpg',
+        storageKey: 'dating/profile/photo_1.jpg',
+        sortOrder: 0,
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingQuestionSchema.safeParse({
+        id: 'question_1',
+        key: 'campaign-date-first-activity',
+        text: 'Would you hang flyers for the 1% Treaty on a first date?',
+        answerOptions: ['yes', 'maybe', 'no'],
+        category: 'campaign',
+        status: 'ACTIVE',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingQuestionAnswerSchema.safeParse({
+        id: 'answer_1',
+        profileId: 'dating_profile_1',
+        questionId: 'question_1',
+        answerValues: ['yes'],
+        acceptableValues: ['yes', 'maybe'],
+        importance: 'VERY',
+        visibility: 'PUBLIC',
+        answeredAt: now,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingInteractionSchema.safeParse({
+        id: 'interaction_1',
+        fromProfileId: 'dating_profile_1',
+        toProfileId: 'dating_profile_2',
+        kind: 'INTRO',
+        status: 'ACTIVE',
+        introMessage: 'Want to save civilization and get tacos?',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingMatchSchema.safeParse({
+        id: 'match_1',
+        profileAId: 'dating_profile_1',
+        profileBId: 'dating_profile_2',
+        status: 'ACTIVE',
+        matchedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingConversationSchema.safeParse({
+        id: 'conversation_1',
+        matchId: 'match_1',
+        status: 'ACTIVE',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingMessageSchema.safeParse({
+        id: 'message_1',
+        conversationId: 'conversation_1',
+        senderProfileId: 'dating_profile_1',
+        body: 'Coffee, flyers, then complaining about governments?',
+        status: 'SENT',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingDatePlanSchema.safeParse({
+        id: 'date_plan_1',
+        matchId: 'match_1',
+        proposedByProfileId: 'dating_profile_1',
+        status: 'PROPOSED',
+        title: 'Coffee and flyer run',
+        startsAt: now,
+        timeZone: 'America/Chicago',
+        locationName: 'Downtown coffee shop',
+        isCampaignDate: true,
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
+    expect(
+      DatingSafetyReportSchema.safeParse({
+        id: 'report_1',
+        reporterProfileId: 'dating_profile_1',
+        reportedProfileId: 'dating_profile_2',
+        reason: 'spam',
+        status: 'OPEN',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(true);
   });
 });
 
