@@ -1,21 +1,17 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import {
-  DFDA_QUEUE_CLEARANCE_YEARS,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
-  NUCLEAR_WINTER_OVERKILL_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_REDUCTION_PCT,
 } from "@optimitron/data/parameters";
-import { TRADE_ONE_APOCALYPSE_HEADLINE } from "@optimitron/data/campaign";
 import { headers } from "next/headers";
 import { ChaplinReference } from "@/components/donate/ChaplinReference";
 import { DonationImpactCalculator } from "@/components/donate/DonationImpactCalculator";
 import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
 import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
-import { ParameterTemplate } from "@/components/shared/ParameterTemplate";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getSiteMetadata } from "@/lib/metadata";
 import { donateLink, onePercentTreatyPaperLink, ROUTES } from "@/lib/routes";
@@ -40,36 +36,8 @@ export default function DonatePage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         <section className="mb-4 border-2 border-foreground p-5 sm:p-6">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-            The 1% Treaty
-          </p>
-          <h1 className="mt-2 text-3xl font-black uppercase leading-tight sm:text-5xl">
-            <ParameterTemplate
-              template={TRADE_ONE_APOCALYPSE_HEADLINE}
-              values={{
-                NUCLEAR_WINTER_OVERKILL_FACTOR: (
-                  <ParameterValue
-                    className="font-black"
-                    figures={3}
-                    param={NUCLEAR_WINTER_OVERKILL_FACTOR}
-                  />
-                ),
-                DFDA_QUEUE_CLEARANCE_YEARS: (
-                  <ParameterValue
-                    className="font-black"
-                    figures={2}
-                    param={DFDA_QUEUE_CLEARANCE_YEARS}
-                  />
-                ),
-                STATUS_QUO_QUEUE_CLEARANCE_YEARS: (
-                  <ParameterValue
-                    className="font-black"
-                    figures={3}
-                    param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-                  />
-                ),
-              }}
-            />
+          <h1 className="text-3xl font-black uppercase leading-tight sm:text-5xl">
+            Trade one apocalypse for disease eradication
           </h1>
           <div className="mt-4 max-w-4xl space-y-3 text-base font-bold leading-7 sm:text-lg sm:leading-8">
             <p>

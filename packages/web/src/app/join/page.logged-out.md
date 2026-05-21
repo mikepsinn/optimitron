@@ -14,15 +14,15 @@
 ## Visible Page Copy
 
 ## JOIN THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE
-- Allowing billions of humans to suffer and die from disease so governments can preserve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)-apocalypse mass-murder capacity is barbaric mass cruelty. Like slavery, it will persist until enough humans and institutions publicly state that it is morally wrong and incredibly stupid. Your organization can be one of those institutions.
-- None of us can end war and disease on our own. Ending it requires a majority of humanity agreeing to spend a little less on mass murder capacity and a little more on medicine that works. Your organization and its members are part of that majority. Moving that agreement forward by one day prevents about [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) deaths from disease and roughly [2 billion](https://manual.WarOnDisease.org/knowledge/solution/dfda.html) days of suffering.
-- [Why organizations should join](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy).
 - Don't have an organization? [Vote here →](/vote)
 - ORGANIZATION NAME *
 - WEBSITE
 - DONATION URL
 - Optional. Adds a small Donate to your organization link on your public page.
 - JOIN AS AN ORGANIZATION
+- Allowing billions of humans to suffer and die from disease so governments can preserve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)-apocalypse mass-murder capacity is barbaric mass cruelty. Like slavery, it will persist until enough humans and institutions publicly state that it is morally wrong and incredibly stupid. Your organization can be one of those institutions.
+- None of us can end war and disease on our own. Ending it requires a majority of humanity agreeing to spend a little less on mass murder capacity and a little more on medicine that works. Your organization and its members are part of that majority. Moving that agreement forward by one day prevents about [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) deaths from disease and roughly [2 billion](https://manual.WarOnDisease.org/knowledge/solution/dfda.html) days of suffering.
+- [Why organizations should join](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy).
 - LEGAL NOTES FOR ORGANIZATIONS
 #### SUMMARY
 - Joining means your organization publicly supports the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.

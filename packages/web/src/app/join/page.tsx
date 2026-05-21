@@ -167,46 +167,6 @@ export default async function EndorsePage() {
         <h1 className="text-3xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
           Join the International Campaign to End War and Disease
         </h1>
-        <div className="mt-5 space-y-4 text-base font-bold leading-7 text-muted-foreground">
-          <p>
-            Allowing billions of humans to suffer and die from disease so
-            governments can preserve{" "}
-            <ParameterValue
-              figures={3}
-              param={NUCLEAR_WINTER_OVERKILL_FACTOR}
-            />
-            -apocalypse mass-murder capacity is barbaric mass cruelty. Like
-            slavery, it will persist until enough humans and institutions
-            publicly state that it is morally wrong and incredibly stupid. Your
-            organization can be one of those institutions.
-          </p>
-          <p>
-            None of us can end war and disease on our own. Ending it requires a
-            majority of humanity agreeing to spend a little less on mass murder
-            capacity and a little more on medicine that works. Your
-            organization and its members are part of that majority. Moving that
-            agreement forward by one day prevents about{" "}
-            <ParameterValue
-              param={GLOBAL_DISEASE_DEATHS_DAILY}
-              valueOverride="150,000"
-            />{" "}
-            deaths from disease and roughly{" "}
-            <ParameterValue
-              param={CURRENT_DISEASE_PATIENTS_GLOBAL}
-              valueOverride="2 billion"
-            />{" "}
-            days of suffering.
-          </p>
-          <p>
-            <Link
-              href={NONPROFIT_COALITION_STRATEGY_URL}
-              className="underline underline-offset-4"
-            >
-              Why organizations should join
-            </Link>
-            .
-          </p>
-        </div>
       </header>
 
       <p className="mt-6 border-t border-foreground pt-4 text-sm font-bold text-foreground">
@@ -216,7 +176,10 @@ export default async function EndorsePage() {
         </Link>
       </p>
 
-      <div className="scroll-mt-24" id="organization-endorsement-form">
+      <div
+        className="scroll-mt-24 [&>form]:border-0"
+        id="organization-endorsement-form"
+      >
         <EndorseForm
           referendumSlug={site.primaryReferendumSlug}
           manageableOrgs={manageableOrgs.map((o) => ({
@@ -225,6 +188,44 @@ export default async function EndorsePage() {
             status: o.status,
           }))}
         />
+      </div>
+
+      <div className="mt-8 space-y-4 text-base font-bold leading-7 text-muted-foreground">
+        <p>
+          Allowing billions of humans to suffer and die from disease so
+          governments can preserve{" "}
+          <ParameterValue figures={3} param={NUCLEAR_WINTER_OVERKILL_FACTOR} />
+          -apocalypse mass-murder capacity is barbaric mass cruelty. Like
+          slavery, it will persist until enough humans and institutions publicly
+          state that it is morally wrong and incredibly stupid. Your
+          organization can be one of those institutions.
+        </p>
+        <p>
+          None of us can end war and disease on our own. Ending it requires a
+          majority of humanity agreeing to spend a little less on mass murder
+          capacity and a little more on medicine that works. Your organization
+          and its members are part of that majority. Moving that agreement
+          forward by one day prevents about{" "}
+          <ParameterValue
+            param={GLOBAL_DISEASE_DEATHS_DAILY}
+            valueOverride="150,000"
+          />{" "}
+          deaths from disease and roughly{" "}
+          <ParameterValue
+            param={CURRENT_DISEASE_PATIENTS_GLOBAL}
+            valueOverride="2 billion"
+          />{" "}
+          days of suffering.
+        </p>
+        <p>
+          <Link
+            href={NONPROFIT_COALITION_STRATEGY_URL}
+            className="underline underline-offset-4"
+          >
+            Why organizations should join
+          </Link>
+          .
+        </p>
       </div>
 
       <LegalNotesDisclosure sections={content.legal.sections} />

@@ -13,8 +13,7 @@
 
 ## Visible Page Copy
 
-- THE 1% TREATY
-## TRADE ONE OF HUMANITY'S [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) APOCALYPSES FOR DISEASE ERADICATION IN [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS INSTEAD OF [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+## TRADE ONE APOCALYPSE FOR DISEASE ERADICATION
 - Humans spend [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) every year on stuff designed specifically to make humans stop being alive. The 1% Treaty redirects [1.00%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of that spending to high-efficiency pragmatic clinical trials.
 - Under the current system, only [15.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases get their first effective treatment each year while [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases are still waiting. That is why the disease-eradication timeline is [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years. The proposal is simple: humanity should trade one of its [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses of mass-murder capacity to compress the disease-eradication timeline from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
 - Your donation helps reach the humans needed to prove humanity wants this.

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { NUCLEAR_WINTER_OVERKILL_FACTOR } from "@optimitron/data/parameters";
 import { PosterQrCode } from "@/app/poster/poster-client";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { TshirtSilhouette } from "@/components/shirt/TshirtSilhouette";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
 import { serverEnv } from "@/lib/env";
@@ -14,7 +15,25 @@ import { buildReferralUrl } from "@/lib/url";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { ShirtDownloadImageButton, ShirtOrderForm } from "./shirt-client";
 
-export const metadata = getRouteMetadata(shirtLink);
+const shirtPageTitle = "Buy the t-shirt that ended war and disease — 1% Treaty";
+const baseShirtMetadata = getRouteMetadata(shirtLink);
+
+export const metadata = {
+  ...baseShirtMetadata,
+  title: shirtPageTitle,
+  openGraph: baseShirtMetadata.openGraph
+    ? {
+        ...baseShirtMetadata.openGraph,
+        title: shirtPageTitle,
+      }
+    : { title: shirtPageTitle },
+  twitter: baseShirtMetadata.twitter
+    ? {
+        ...baseShirtMetadata.twitter,
+        title: shirtPageTitle,
+      }
+    : undefined,
+};
 
 const SHIRT_BACK_ARTWORK_ID = "war-on-disease-shirt-back";
 const VISIBLE_TARGET_MIN_FONT_SIZE = 38;
@@ -262,7 +281,7 @@ export default async function ShirtPage() {
                 Walking billboard
               </p>
               <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
-                Make the shirt
+                BUY THE T-SHIRT THAT ENDED WAR AND DISEASE.
               </h1>
               <p className="mt-4 max-w-2xl text-lg font-bold leading-relaxed text-foreground">
                 Wear the QR code outside, where the humans are. Terrifying
@@ -343,13 +362,17 @@ export default async function ShirtPage() {
 
           <section className="shirt-print-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
             <ArtworkPanel label="Front">
-              <ShirtFrontArtwork />
+              <TshirtSilhouette label="Front of shirt">
+                <ShirtFrontArtwork />
+              </TshirtSilhouette>
             </ArtworkPanel>
-            <ArtworkPanel label="Back with referral QR">
-              <ShirtBackArtwork
-                qrTarget={qrTarget}
-                visibleTargetUrl={visibleTargetUrl}
-              />
+            <ArtworkPanel label="Back with QR">
+              <TshirtSilhouette label="Back of shirt">
+                <ShirtBackArtwork
+                  qrTarget={qrTarget}
+                  visibleTargetUrl={visibleTargetUrl}
+                />
+              </TshirtSilhouette>
             </ArtworkPanel>
           </section>
         </div>
