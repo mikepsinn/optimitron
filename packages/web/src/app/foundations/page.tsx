@@ -18,7 +18,7 @@ import {
 import type { Parameter } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getRouteMetadata } from "@/lib/metadata";
-import { foundationsLink, prizeLink } from "@/lib/routes";
+import { foundationsLink, prizeLink, ROUTES } from "@/lib/routes";
 
 export const metadata = getRouteMetadata(foundationsLink);
 
@@ -34,14 +34,12 @@ const DISEASE_ERADICATION_SPEED_MULTIPLIER: Parameter = {
     "How many times faster the dFDA treatment queue clears than the status quo queue.",
   sourceType: "calculated",
   confidence: "high",
-  formula:
-    "STATUS_QUO_QUEUE_CLEARANCE_YEARS / DFDA_QUEUE_CLEARANCE_YEARS",
+  formula: "STATUS_QUO_QUEUE_CLEARANCE_YEARS / DFDA_QUEUE_CLEARANCE_YEARS",
   manualPageUrl: STATUS_QUO_QUEUE_CLEARANCE_YEARS.manualPageUrl,
   manualPageTitle: STATUS_QUO_QUEUE_CLEARANCE_YEARS.manualPageTitle,
 };
 
-const oneLessApocalypse =
-  Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value) - 1;
+const oneLessApocalypse = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value) - 1;
 
 const treatyValueToShirtCostRatio =
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE.value /
@@ -188,9 +186,8 @@ export default function FoundationsPage() {
                 param={NUCLEAR_WINTER_OVERKILL_FACTOR}
                 valueOverride={`${oneLessApocalypse}-apocalypse mass-murder capacity`}
               />{" "}
-              (down from{" "}
-              <StrongValue param={NUCLEAR_WINTER_OVERKILL_FACTOR} />) would let
-              us eradicate disease{" "}
+              (down from <StrongValue param={NUCLEAR_WINTER_OVERKILL_FACTOR} />)
+              would let us eradicate disease{" "}
               <StrongValue
                 param={DISEASE_ERADICATION_SPEED_MULTIPLIER}
                 valueOverride={`${Math.round(
@@ -230,7 +227,9 @@ export default function FoundationsPage() {
 
           <Paragraph>
             This is in the logical self-interest of{" "}
-            <strong className="font-black">even the CEO of Lockheed Martin</strong>
+            <strong className="font-black">
+              even the CEO of Lockheed Martin
+            </strong>
             , because:
           </Paragraph>
 
@@ -275,8 +274,8 @@ export default function FoundationsPage() {
 
           <Paragraph>
             It only costs approximately{" "}
-            <StrongValue param={UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD} /> — which
-            is literally{" "}
+            <StrongValue param={UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD} /> —
+            which is literally{" "}
             <StrongValue
               param={TREATY_VALUE_TO_SHIRT_COST_RATIO}
               valueOverride={`${ratioFormatter.format(
@@ -299,12 +298,13 @@ export default function FoundationsPage() {
           </Paragraph>
 
           <Paragraph>
-            There should be a <strong className="font-black">slider on the site</strong>{" "}
-            [coming next] so every human can adjust the proposed treaty cut and
-            see the recalculated outcomes. At most the cut would be 50/50 — half
-            of military spending redirected. If 8 billion humans actually talked
-            to each other about what their priorities are, disease eradication
-            and education could happen very fast.
+            There should be a{" "}
+            <strong className="font-black">slider on the site</strong> [coming
+            next] so every human can adjust the proposed treaty cut and see the
+            recalculated outcomes. At most the cut would be 50/50 — half of
+            military spending redirected. If 8 billion humans actually talked to
+            each other about what their priorities are, disease eradication and
+            education could happen very fast.
           </Paragraph>
 
           <Paragraph>
@@ -443,9 +443,8 @@ export default function FoundationsPage() {
                       className="font-black"
                       param={TREATY_VS_BED_NETS_MULTIPLIER}
                       valueOverride={`${integerFormatter.format(
-                        Math.round(
-                          TREATY_VS_BED_NETS_MULTIPLIER.value / 100,
-                        ) * 100,
+                        Math.round(TREATY_VS_BED_NETS_MULTIPLIER.value / 100) *
+                          100,
                       )}×`}
                     />
                   </td>
@@ -496,8 +495,8 @@ export default function FoundationsPage() {
             </li>
             <li className="list-disc">
               Failure path (15yr no-treaty): depositors claim back{" "}
-              <strong className="font-black">principal + ~4.2× yield</strong>{" "}
-              (<code>$100 × 1.10^15 = $418</code>).
+              <strong className="font-black">principal + ~4.2× yield</strong> (
+              <code>$100 × 1.10^15 = $418</code>).
             </li>
             <li className="list-disc">
               Break-even success probability:{" "}
@@ -530,6 +529,17 @@ export default function FoundationsPage() {
             treasury product.
           </Paragraph>
         </Section>
+
+        <p className="mt-8 text-base font-black leading-7 sm:text-lg sm:leading-8">
+          Want to coordinate with another human? Go on an{" "}
+          <Link
+            className="underline decoration-dotted underline-offset-4"
+            href={ROUTES.love}
+          >
+            Earth Optimization Date
+          </Link>
+          .
+        </p>
       </div>
     </main>
   );

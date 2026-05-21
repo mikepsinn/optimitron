@@ -69,7 +69,9 @@ function optionList(value: unknown): string[] {
 
 function firstAnswerValue(question: Question) {
   const answer = question.answers[0]?.answerValues;
-  return Array.isArray(answer) && typeof answer[0] === "string" ? answer[0] : "";
+  return Array.isArray(answer) && typeof answer[0] === "string"
+    ? answer[0]
+    : "";
 }
 
 function fieldClassName() {
@@ -86,7 +88,9 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
   const router = useRouter();
   const [headline, setHeadline] = useState(profile?.headline ?? "");
   const [bio, setBio] = useState(profile?.bio ?? "");
-  const [lookingForText, setLookingForText] = useState(profile?.lookingForText ?? "");
+  const [lookingForText, setLookingForText] = useState(
+    profile?.lookingForText ?? "",
+  );
   const [displayCity, setDisplayCity] = useState(profile?.displayCity ?? "");
   const [displayRegionCode, setDisplayRegionCode] = useState(
     profile?.displayRegionCode ?? "",
@@ -154,7 +158,9 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
           <select
             className={fieldClassName()}
             value={status}
-            onChange={(event) => setStatus(event.target.value as DatingProfileStatus)}
+            onChange={(event) =>
+              setStatus(event.target.value as DatingProfileStatus)
+            }
           >
             <option value="ACTIVE">Active</option>
             <option value="PAUSED">Paused</option>
@@ -218,10 +224,10 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
             type="checkbox"
             onChange={(event) => setWantsCampaignDates(event.target.checked)}
           />
-          I am open to dates that also do something useful.
+          I am open to Earth Optimization Dates.
         </label>
         <label className="grid gap-2 text-sm font-black uppercase">
-          Campaign date ideas
+          Earth Optimization Date ideas
           <textarea
             className={`${fieldClassName()} min-h-24`}
             value={campaignDateIdeas}
@@ -248,7 +254,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
               <div className="border-2 border-foreground p-2" key={photo.id}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  alt={photo.altText ?? "Dating profile photo"}
+                  alt={photo.altText ?? "Earth Optimization Date profile photo"}
                   className="aspect-square w-full object-cover"
                   src={photo.imageUrl}
                 />
@@ -292,7 +298,11 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
   );
 }
 
-export function DatingQuestionsClient({ questions }: { questions: Question[] }) {
+export function DatingQuestionsClient({
+  questions,
+}: {
+  questions: Question[];
+}) {
   const router = useRouter();
   const [savingId, setSavingId] = useState<string | null>(null);
 
@@ -336,7 +346,11 @@ export function DatingQuestionsClient({ questions }: { questions: Question[] }) 
                 ))}
               </select>
               <span className="self-center text-xs font-black uppercase text-muted-foreground">
-                {savingId === question.id ? "Saving" : currentAnswer ? "Saved" : "Open"}
+                {savingId === question.id
+                  ? "Saving"
+                  : currentAnswer
+                    ? "Saved"
+                    : "Open"}
               </span>
             </div>
           </div>
@@ -346,11 +360,18 @@ export function DatingQuestionsClient({ questions }: { questions: Question[] }) 
   );
 }
 
-export function DatingDiscoverClient({ candidates }: { candidates: Candidate[] }) {
+export function DatingDiscoverClient({
+  candidates,
+}: {
+  candidates: Candidate[];
+}) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function interact(candidateId: string, kind: "LIKE" | "PASS" | "INTRO") {
+  async function interact(
+    candidateId: string,
+    kind: "LIKE" | "PASS" | "INTRO",
+  ) {
     setBusyId(candidateId);
     await fetch("/api/dating/interactions", {
       body: JSON.stringify({
@@ -376,7 +397,10 @@ export function DatingDiscoverClient({ candidates }: { candidates: Candidate[] }
             {candidate.photos[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                alt={candidate.photos[0].altText ?? "Dating profile photo"}
+                alt={
+                  candidate.photos[0].altText ??
+                  "Earth Optimization Date profile photo"
+                }
                 className="aspect-square w-full border-2 border-foreground object-cover"
                 src={candidate.photos[0].imageUrl}
               />
@@ -390,7 +414,9 @@ export function DatingDiscoverClient({ candidates }: { candidates: Candidate[] }
                 {candidate.user.person?.displayName ?? candidate.user.email}
               </h2>
               {candidate.headline ? (
-                <p className="mt-1 text-base font-black">{candidate.headline}</p>
+                <p className="mt-1 text-base font-black">
+                  {candidate.headline}
+                </p>
               ) : null}
               {candidate.displayCity ? (
                 <p className="mt-1 text-sm font-bold text-muted-foreground">
@@ -521,7 +547,7 @@ export function DatingDatePlanForm({
 
   return (
     <div className="grid gap-3 border-2 border-foreground p-5">
-      <h2 className="text-lg font-black uppercase">Mission date</h2>
+      <h2 className="text-lg font-black uppercase">Earth Optimization Date</h2>
       <input
         className={fieldClassName()}
         value={title}
@@ -546,7 +572,7 @@ export function DatingDatePlanForm({
           void propose();
         }}
       >
-        Propose date
+        Propose Earth Optimization Date
       </button>
     </div>
   );

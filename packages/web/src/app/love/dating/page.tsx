@@ -11,7 +11,7 @@ const DATING_ROUTES = [
   {
     href: "/love/dating/profile",
     title: "Profile",
-    body: "Opt in, add photos, and say what kind of useful date would not make you flee.",
+    body: "Opt in, add photos, and say what kind of useful Earth Optimization Date would not make you flee.",
   },
   {
     href: "/love/dating/questions",
@@ -26,7 +26,7 @@ const DATING_ROUTES = [
   {
     href: "/love/dating/matches",
     title: "Matches",
-    body: "Message mutual matches and propose dates that can also produce votes.",
+    body: "Message mutual matches and propose Earth Optimization Dates that can also produce votes.",
   },
 ] as const;
 
@@ -53,17 +53,17 @@ export default async function DatingHomePage() {
       <main className="min-h-screen bg-background px-4 py-10 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
-            Dating
+            Earth Optimization Dates
           </h1>
           <p className="mt-4 text-lg font-bold leading-relaxed text-muted-foreground">
-            Enable dating on your profile, meet someone, and make even a bad
-            date produce votes.
+            Enable Earth Optimization Dates on your profile, meet someone, and
+            make even a bad Earth Optimization Date produce votes.
           </p>
           <Link
             className="mt-6 inline-flex border-2 border-foreground bg-foreground px-4 py-3 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
             href={getSignInPath("/love/dating")}
           >
-            Sign in to enable dating
+            Sign in to enable Earth Optimization Dates
           </Link>
         </div>
       </main>
@@ -77,32 +77,34 @@ export default async function DatingHomePage() {
       <div className="mx-auto max-w-5xl">
         <div className="max-w-3xl">
           <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
-            Dating
+            Earth Optimization Dates
           </h1>
           <p className="mt-4 text-lg font-bold leading-relaxed text-muted-foreground">
             Meet people who want fewer wars, fewer incurable diseases, and
-            better first dates than "drinks?"
+            better first Earth Optimization Dates than "drinks?"
           </p>
         </div>
 
         {!ready ? (
           <div className="mt-8 border-2 border-foreground p-5">
             <h2 className="text-lg font-black uppercase">
-              Dating is not ready yet
+              Earth Optimization Dates are not ready yet
             </h2>
             <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-              Dating is still being prepared.
+              Earth Optimization Dates are still being prepared.
             </p>
           </div>
         ) : (
           <div className="mt-6 border-2 border-foreground p-5">
             <h2 className="text-lg font-black uppercase">
-              {profile ? "Dating is enabled" : "Dating is off"}
+              {profile
+                ? "Earth Optimization Dates are enabled"
+                : "Earth Optimization Dates are off"}
             </h2>
             <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
               {profile
                 ? `Current status: ${profile.status.toLowerCase()}.`
-                : "Create a profile when you want to be visible to other opted-in humans."}
+                : "Create an Earth Optimization Date profile when you want to be visible to other opted-in humans."}
             </p>
           </div>
         )}

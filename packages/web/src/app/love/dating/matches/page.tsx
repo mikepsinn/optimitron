@@ -19,6 +19,12 @@ async function loadMatches(userId: string) {
   }
 }
 
+function getDisplayError(message: string) {
+  return message === "Create a dating profile first."
+    ? "Create an Earth Optimization Date profile first."
+    : message;
+}
+
 export default async function DatingMatchesPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -36,7 +42,7 @@ export default async function DatingMatchesPage() {
           className="text-sm font-black uppercase underline underline-offset-4"
           href="/love/dating"
         >
-          Back to dating
+          Back to Love
         </Link>
         <h1 className="mt-8 text-4xl font-black uppercase leading-none sm:text-5xl">
           Matches
@@ -47,7 +53,7 @@ export default async function DatingMatchesPage() {
             <div className="border-2 border-foreground p-5">
               <h2 className="text-lg font-black uppercase">Profile needed</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                {error}
+                {getDisplayError(error)}
               </p>
             </div>
           ) : data?.matches.length ? (
@@ -76,9 +82,7 @@ export default async function DatingMatchesPage() {
                       {lastMessage ?? other.headline ?? "No messages yet."}
                     </span>
                   </span>
-                  <span className="text-sm font-black uppercase">
-                    Message
-                  </span>
+                  <span className="text-sm font-black uppercase">Message</span>
                 </Link>
               );
             })

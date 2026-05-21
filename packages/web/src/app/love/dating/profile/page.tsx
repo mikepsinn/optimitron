@@ -31,10 +31,10 @@ export default async function DatingProfilePage() {
           className="text-sm font-black uppercase underline underline-offset-4"
           href="/love/dating"
         >
-          Back to dating
+          Back to Love
         </Link>
         <h1 className="mt-8 text-4xl font-black uppercase leading-none sm:text-5xl">
-          Dating profile
+          Earth Optimization Date profile
         </h1>
         <p className="mt-4 max-w-2xl text-lg font-bold leading-relaxed text-muted-foreground">
           Keep it minimal. Enough for another human to decide whether coffee,

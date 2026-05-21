@@ -37,7 +37,7 @@ export default async function DatingDiscoverPage() {
           className="text-sm font-black uppercase underline underline-offset-4"
           href="/love/dating"
         >
-          Back to dating
+          Back to Love
         </Link>
         <h1 className="mt-8 text-4xl font-black uppercase leading-none sm:text-5xl">
           Discover
@@ -50,14 +50,15 @@ export default async function DatingDiscoverPage() {
           {!ready ? (
             <div className="border-2 border-foreground p-5">
               <h2 className="text-lg font-black uppercase">
-                Dating is not ready yet
+                Earth Optimization Dates are not ready yet
               </h2>
             </div>
           ) : !data?.profile ? (
             <div className="border-2 border-foreground p-5">
               <h2 className="text-lg font-black uppercase">Profile needed</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                Create your dating profile before browsing other humans.
+                Create your Earth Optimization Date profile before browsing
+                other humans.
               </p>
               <Link
                 className="mt-4 inline-flex border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background"
@@ -72,8 +73,8 @@ export default async function DatingDiscoverPage() {
             <div className="border-2 border-foreground p-5">
               <h2 className="text-lg font-black uppercase">No people yet</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                The first dating pool is empty. This is historically common
-                before anyone joins.
+                The first Earth Optimization Date pool is empty. This is
+                historically common before anyone joins.
               </p>
             </div>
           )}

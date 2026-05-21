@@ -60,3 +60,4 @@
 - The shirt contract would use the same pattern: your USDC pledge earns Aave yield while held in escrow; if pledges meet the threshold by Earth Optimization Day, funds release for the bulk shirt order. If they do not, your principal returns with the accumulated yield. Zero downside; no first-mover penalty.
 - Foundations carry first-mover risk aversion: if Open Philanthropy commits $500M and no one else does, they look reckless. If Open Philanthropy conditionally commits $500M, it only deploys when the other ~$5B is committed by peers, and the principal is preserved with yield until the threshold hits — that's not a reputation risk, that's prudent capital allocation.
 - The assurance contract converts a coordination problem into a treasury product.
+- Want to coordinate with another human? Go on an [Earth Optimization Date](/love).

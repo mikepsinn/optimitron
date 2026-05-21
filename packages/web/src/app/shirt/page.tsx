@@ -47,9 +47,9 @@ const VISIBLE_TARGET_MIN_FONT_SIZE = 38;
 const VISIBLE_TARGET_MAX_FONT_SIZE = 92;
 const VISIBLE_TARGET_MAX_WIDTH_PX = 2040;
 const MONO_AVERAGE_GLYPH_WIDTH_EM = 0.62;
-const DIY_BODY_CLASS_NAME = "text-base font-bold leading-relaxed text-foreground";
-const DIY_HEADING_CLASS_NAME =
-  "text-2xl font-black uppercase sm:text-3xl";
+const DIY_BODY_CLASS_NAME =
+  "text-base font-bold leading-relaxed text-foreground";
+const DIY_HEADING_CLASS_NAME = "text-2xl font-black uppercase sm:text-3xl";
 const DIY_SHIRT_COPY_CLASS_NAME =
   "border border-foreground p-3 font-mono text-sm font-black uppercase";
 
@@ -334,7 +334,14 @@ function ShirtBackArtwork({
       >
         {SHIRT_BACK_COPY_LINES[2]}
       </text>
-      <line stroke="#000000" strokeWidth="10" x1="180" x2="2220" y1="705" y2="705" />
+      <line
+        stroke="#000000"
+        strokeWidth="10"
+        x1="180"
+        x2="2220"
+        y1="705"
+        y2="705"
+      />
       <rect
         fill="#ffffff"
         height="760"
@@ -480,8 +487,7 @@ export default async function ShirtPage() {
                   Shirt checkout is closed
                 </h2>
                 <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                  You can still download the back artwork while checkout is
-                  off.
+                  You can still download the back artwork while checkout is off.
                 </p>
                 <div className="mt-4">
                   <ShirtDownloadImageButton
@@ -495,9 +501,7 @@ export default async function ShirtPage() {
             <FixExistingShirtsSection />
 
             <div className="border-l-2 border-foreground pl-4 text-sm font-bold leading-relaxed text-muted-foreground">
-              <p>
-                Front: {CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ")}
-              </p>
+              <p>Front: {CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ")}</p>
               <p className="mt-2">
                 Back: {SHIRT_BACK_COPY_LINES.join(" ")} Plus the per-buyer QR
                 code.
@@ -521,6 +525,20 @@ export default async function ShirtPage() {
             </ArtworkPanel>
           </section>
         </div>
+
+        <p
+          className="mt-8 border-t-2 border-foreground pt-5 text-base font-black leading-relaxed"
+          data-print-hidden="true"
+        >
+          Want to coordinate with another human? Go on an{" "}
+          <Link
+            className="underline decoration-dotted underline-offset-4"
+            href={ROUTES.love}
+          >
+            Earth Optimization Date
+          </Link>
+          .
+        </p>
       </div>
     </main>
   );

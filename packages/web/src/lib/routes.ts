@@ -4,9 +4,7 @@ import { slugify } from "@/lib/slugify";
 // package root re-exports the Prisma client which would pull node built-ins
 // into the browser bundle.
 import { HUMANITY_V_GOVERNMENT_CASE_NAME } from "@optimitron/db/task-keys";
-import {
-  HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL,
-} from "@optimitron/data/referendums";
+import { HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL } from "@optimitron/data/referendums";
 import { GLOBAL_SURVEY_NAME } from "@optimitron/data/campaign";
 import {
   fmtParam,
@@ -869,8 +867,7 @@ export const faqLink: NavItem = {
   href: ROUTES.faq,
   label: "Campaign FAQ",
   emoji: "?",
-  description:
-    `Short answers for humans and search agents asking what the ${treatyReduction} Treaty, Humanity v Government, plaintiffs, and the campaign math mean.`,
+  description: `Short answers for humans and search agents asking what the ${treatyReduction} Treaty, Humanity v Government, plaintiffs, and the campaign math mean.`,
   tagline: "Short answers for agents and humans",
   copyPreview: true,
   screenshot: true,
@@ -1025,11 +1022,11 @@ export const contributeLink: NavItem = {
 
 export const loveLink: NavItem = {
   href: ROUTES.love,
-  label: "End War and Disease From Your Dating Profile",
+  label: "Love",
   emoji: "❤️",
   description:
-    "You're already on the apps. You're already writing a bio. You might as well save a few billion lives while you're at it.",
-  tagline: "End war and disease from your dating profile.",
+    "Pair with another human for one hour. Decide together what most optimizes Earth. Do it. An Earth Optimization Date is, by definition, a non-romantic activity.",
+  tagline: "An Earth Optimization Date is non-romantic by definition",
   copyPreview: true,
   screenshot: true,
   cta: "Vote now",

@@ -15,9 +15,16 @@ async function loadQuestions(userId: string) {
   } catch (error) {
     return {
       data: null,
-      error: error instanceof Error ? error.message : "Could not load questions.",
+      error:
+        error instanceof Error ? error.message : "Could not load questions.",
     };
   }
+}
+
+function getDisplayError(message: string) {
+  return message === "Create a dating profile first."
+    ? "Create an Earth Optimization Date profile first."
+    : message;
 }
 
 export default async function DatingQuestionsPage() {
@@ -37,7 +44,7 @@ export default async function DatingQuestionsPage() {
           className="text-sm font-black uppercase underline underline-offset-4"
           href="/love/dating"
         >
-          Back to dating
+          Back to Love
         </Link>
         <h1 className="mt-8 text-4xl font-black uppercase leading-none sm:text-5xl">
           Match questions
@@ -52,7 +59,7 @@ export default async function DatingQuestionsPage() {
             <div className="border-2 border-foreground p-5">
               <h2 className="text-lg font-black uppercase">Profile needed</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                {error}
+                {getDisplayError(error)}
               </p>
               <Link
                 className="mt-4 inline-flex border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background"
@@ -65,11 +72,10 @@ export default async function DatingQuestionsPage() {
             <DatingQuestionsClient questions={data.questions} />
           ) : (
             <div className="border-2 border-foreground p-5">
-              <h2 className="text-lg font-black uppercase">
-                No questions yet
-              </h2>
+              <h2 className="text-lg font-black uppercase">No questions yet</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                Sync the dating question bank before matching people on answers.
+                Sync the Earth Optimization Date question bank before matching
+                people on answers.
               </p>
             </div>
           )}

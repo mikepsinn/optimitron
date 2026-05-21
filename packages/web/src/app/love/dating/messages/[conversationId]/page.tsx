@@ -70,7 +70,9 @@ export default async function DatingMessagePage({
               return (
                 <div
                   className={`border-2 border-foreground p-4 ${
-                    mine ? "ml-auto max-w-[80%] bg-foreground text-background" : "mr-auto max-w-[80%]"
+                    mine
+                      ? "ml-auto max-w-[80%] bg-foreground text-background"
+                      : "mr-auto max-w-[80%]"
                   }`}
                   key={message.id}
                 >
@@ -90,9 +92,7 @@ export default async function DatingMessagePage({
             })
           ) : (
             <div className="border-2 border-foreground p-5">
-              <h2 className="text-lg font-black uppercase">
-                No messages yet
-              </h2>
+              <h2 className="text-lg font-black uppercase">No messages yet</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
                 Say something normal. Then maybe propose coffee and flyers.
               </p>
@@ -110,14 +110,16 @@ export default async function DatingMessagePage({
 
         {conversation.datePlans.length ? (
           <div className="mt-8 border-2 border-foreground p-5">
-            <h2 className="text-lg font-black uppercase">Date plans</h2>
+            <h2 className="text-lg font-black uppercase">
+              Earth Optimization Date plans
+            </h2>
             <div className="mt-3 grid gap-3">
               {conversation.datePlans.map((plan) => (
                 <div className="border-t border-foreground pt-3" key={plan.id}>
                   <p className="font-black uppercase">{plan.title}</p>
                   <p className="text-sm font-bold text-muted-foreground">
                     {plan.locationName ?? "Place not set"}
-                    {plan.isCampaignDate ? " · campaign date" : ""}
+                    {plan.isCampaignDate ? " · Earth Optimization Date" : ""}
                   </p>
                 </div>
               ))}
