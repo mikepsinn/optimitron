@@ -458,9 +458,9 @@ export default function FoundationsPage() {
             grants (Open Philanthropy AI Safety bucket, Future of Life
             Institute) do not publish DALY-denominated cost-effectiveness
             numbers, so direct row-by-row comparison is not possible. They are
-            funded on different theories of change. The cost-per-DALY benchmark
-            above is the standard global-health comparator, and this campaign
-            clears it by ~50,000×.
+            funded for different ideas about how to reduce suffering. The
+            cost-per-DALY benchmark above is the standard global-health
+            comparator, and this campaign clears it by ~50,000×.
           </Paragraph>
         </Section>
 
@@ -468,8 +468,9 @@ export default function FoundationsPage() {
           <SectionHeading>Optional commitment path</SectionHeading>
 
           <Paragraph>
-            If you want to commit but don&apos;t want first-mover risk, we can
-            deploy a dominant assurance contract — same mechanism the{" "}
+            If you want to commit but don&apos;t want the risk of going first,
+            we can deploy a dominant assurance contract — the same contract
+            pattern the{" "}
             <Link
               href={prizeLink.href}
               className="underline decoration-dotted underline-offset-4"
@@ -481,7 +482,7 @@ export default function FoundationsPage() {
             totaling ≥ $1 billion.
           </Paragraph>
 
-          <Paragraph>Same mechanism, different outcome.</Paragraph>
+          <Paragraph>Same contract pattern, different outcome.</Paragraph>
 
           <ul className="space-y-4 pl-5 text-base font-bold leading-7 sm:text-lg sm:leading-8">
             <li className="list-disc">
@@ -510,12 +511,12 @@ export default function FoundationsPage() {
             earns Aave yield while held in escrow; if pledges meet the threshold
             by Earth Optimization Day, funds release for the bulk shirt order.
             If they do not, your principal returns with the accumulated yield.
-            Zero downside; no first-mover penalty.
+            Zero downside; no penalty for going first.
           </Paragraph>
 
           <Paragraph>
             Foundations carry{" "}
-            <strong className="font-black">first-mover risk aversion</strong>:
+            <strong className="font-black">fear of going first</strong>:
             if Open Philanthropy commits $500M and no one else does, they look
             reckless. If Open Philanthropy <em>conditionally</em> commits $500M,
             it only deploys when the other ~$5B is committed by peers,{" "}

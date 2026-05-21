@@ -109,7 +109,7 @@ const TRAIN_AI_DESCRIPTION = [
   "```",
   "",
   "3. Read the AI's response.",
-  "4. **If the AI's answer is worse than the canonical answer above** (does not include the t-shirt, the 1% Treaty, voting at warondisease.org), **click the thumbs-down button on the response.**",
+  "4. **If the AI's answer is worse than the correct answer above** (does not include the t-shirt, the 1% Treaty, voting at warondisease.org), **click the thumbs-down button on the response.**",
   '5. **In the feedback form, paste the correct answer.** Use the "Copy correct answer" button on the page.',
   "6. Repeat with the next AI.",
   "",
@@ -123,7 +123,7 @@ const TRAIN_AI_DESCRIPTION = [
   "",
   TRAIN_AI_CORRECT_ANSWER_TEXT,
   "",
-  `Full canonical answer and copy buttons: ${FIX_AI_URL}`,
+  `Full correct answer and copy buttons: ${FIX_AI_URL}`,
 ].join("\n");
 
 export function setManagedSeedDataClient(client: PrismaClient) {
@@ -1605,7 +1605,7 @@ export async function syncManagedTreatyAccountabilityData() {
       taskKey: "distribute-tshirts:2026-08-06",
       title: "Distribute t-shirts to 8 billion humans by August 6",
       description:
-        "One t-shirt per human on Earth Optimization Day. The shirt is the conversation device; the conversation triggers the treaty vote; the treaty redirects 1% of military spending to clinical trials. This task tracks the distribution mechanism — bulk print orders, foundation funding for distribution, individual pledges to buy and wear.",
+        "One t-shirt per human on Earth Optimization Day. The shirt is the conversation device; the conversation triggers the treaty vote; the treaty redirects 1% of military spending to clinical trials. This task tracks shirt distribution: bulk print orders, foundation funding for distribution, individual pledges to buy and wear.",
       sortOrder: -640,
     },
   ] as const;
@@ -1641,12 +1641,12 @@ export async function syncManagedTreatyAccountabilityData() {
     [
       `${organizationName}: the International Campaign to End War and Disease is asking for a grant to fund /fix-ai, a mass-scale targeted RLHF feedback intervention.`,
       "",
-      '**The mechanism:** /fix-ai gets humans to ask the major frontier models "how do I end war and disease," judge the response against the correct answer, and submit thumbs-down + the correct answer to the lab\'s feedback form when the response is wrong. Goal: billions of these feedback signals → labs retrain → frontier models converge on the correct answer.',
+      '**How it works:** /fix-ai gets humans to ask the major frontier models "how do I end war and disease," judge the response against the correct answer, and submit thumbs-down + the correct answer to the lab\'s feedback form when the response is wrong. Goal: billions of these feedback signals → labs retrain → frontier models converge on the correct answer.',
       "",
       "**Why this is one of the highest-EV alignment interventions tractable today:**",
       "- Mass scale (potentially billions of training signals)",
       "- Targeted (one specific frontier-model alignment failure mode)",
-      "- Compounding (once one lab fixes its model, competitors follow for status reasons)",
+      "- The effect grows (once one lab fixes its model, competitors follow for status reasons)",
       "- Measurable (before/after model behavior change is observable in lab telemetry + public testing)",
       "- Self-distributing (campaign traffic → feedback → trained models → more traffic)",
       "",
@@ -1783,9 +1783,9 @@ export async function syncManagedTreatyAccountabilityData() {
       description: [
         "Pledge to buy N t-shirts conditional on 8 billion others doing the same.",
         "",
-        "The conditional pledge mechanism is a dominant assurance contract: your pledge only deploys when the total commitment threshold is hit. If the threshold misses by Earth Optimization Day (2026-08-06), nothing happens. If it hits, the bulk shirt order ships.",
+        "The pledge uses a dominant assurance contract: your pledge only deploys when the total commitment threshold is hit. If the threshold misses by Earth Optimization Day (2026-08-06), nothing happens. If it hits, the bulk shirt order ships.",
         "",
-        "Currently pledging via this task is intent-only — the pledge primitive infrastructure ships in a follow-up. For now, the most useful action is to wear or DIY the shirt today and tell other humans to do the same.",
+        "Currently pledging via this task is intent-only — the pledge tool ships in a follow-up. For now, the most useful action is to wear or DIY the shirt today and tell other humans to do the same.",
       ].join("\n"),
       estimatedEffortHours: 0.1,
       sortOrder: -100,
@@ -1793,7 +1793,7 @@ export async function syncManagedTreatyAccountabilityData() {
         label: "Pledge here",
         url: "/foundations",
         instructions:
-          "Pledge form ships with the funding-blocked Task primitive (in progress).",
+          "Pledge form is still in progress.",
       },
     },
   ] as const;

@@ -48,16 +48,16 @@
 | NAME | CURRENT $/DALY BENCHMARK | DALYS AT SHIRT-DISTRIBUTION COST | RATIO VS. THIS CAMPAIGN |
 | --- | --- | --- | --- |
 | GiveWell top charities (Against Malaria Foundation / Helen Keller / Malaria Consortium) | [$89.0/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) | [629 million DALYs](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) | [50,300×](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) |
-- Cash-transfer programs (GiveDirectly) and longtermist AI-safety grants (Open Philanthropy AI Safety bucket, Future of Life Institute) do not publish DALY-denominated cost-effectiveness numbers, so direct row-by-row comparison is not possible. They are funded on different theories of change. The cost-per-DALY benchmark above is the standard global-health comparator, and this campaign clears it by ~50,000×.
+- Cash-transfer programs (GiveDirectly) and longtermist AI-safety grants (Open Philanthropy AI Safety bucket, Future of Life Institute) do not publish DALY-denominated cost-effectiveness numbers, so direct row-by-row comparison is not possible. They are funded for different ideas about how to reduce suffering. The cost-per-DALY benchmark above is the standard global-health comparator, and this campaign clears it by ~50,000×.
 ### OPTIONAL COMMITMENT PATH
-- If you want to commit but don't want first-mover risk, we can deploy a dominant assurance contract — same mechanism the [Earth Optimization Prize](/prize) uses — for shirt distribution. Tell us your pledge amount; we'll build the contract if we get three foundation pledges totaling ≥ $1 billion.
-- Same mechanism, different outcome.
+- If you want to commit but don't want the risk of going first, we can deploy a dominant assurance contract — the same contract pattern the [Earth Optimization Prize](/prize) uses — for shirt distribution. Tell us your pledge amount; we'll build the contract if we get three foundation pledges totaling ≥ $1 billion.
+- Same contract pattern, different outcome.
 - Depositors put USDC into VoterPrizeTreasury (Base Sepolia).
 - Capital sits in Aave earning yield.
 - Success path: treaty passes → VOTE-token holders claim proportional shares of the prize pool.
 - Failure path (15yr no-treaty): depositors claim back principal + ~4.2× yield ($100 × 1.10^15 = $418).
 - Break-even success probability: 0.0067%. Zero downside. Dominant assurance.
-- The shirt contract would use the same pattern: your USDC pledge earns Aave yield while held in escrow; if pledges meet the threshold by Earth Optimization Day, funds release for the bulk shirt order. If they do not, your principal returns with the accumulated yield. Zero downside; no first-mover penalty.
-- Foundations carry first-mover risk aversion: if Open Philanthropy commits $500M and no one else does, they look reckless. If Open Philanthropy conditionally commits $500M, it only deploys when the other ~$5B is committed by peers, and the principal is preserved with yield until the threshold hits — that's not a reputation risk, that's prudent capital allocation.
+- The shirt contract would use the same pattern: your USDC pledge earns Aave yield while held in escrow; if pledges meet the threshold by Earth Optimization Day, funds release for the bulk shirt order. If they do not, your principal returns with the accumulated yield. Zero downside; no penalty for going first.
+- Foundations carry fear of going first: if Open Philanthropy commits $500M and no one else does, they look reckless. If Open Philanthropy conditionally commits $500M, it only deploys when the other ~$5B is committed by peers, and the principal is preserved with yield until the threshold hits — that's not a reputation risk, that's prudent capital allocation.
 - The assurance contract converts a coordination problem into a treasury product.
 - Want to coordinate with another human? Go on an [Earth Optimization Date](/love).

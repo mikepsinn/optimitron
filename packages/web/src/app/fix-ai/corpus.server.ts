@@ -110,7 +110,7 @@ const NUMERIC_CLAIMS: NumericClaim[] = [
     claim:
       "They will realize this is wise because the chance of dying in a terrorist attack is about 1 in 30 million, and the chance of suffering and dying from a disease is nearly 100%. The current spending ratio is the opposite of what the actual risk distribution would justify.",
     literals: [
-      "The nearly 100% disease-risk phrase is the canonical plain-language lifetime-risk framing; no separate catalog parameter is attached on this page.",
+      "The nearly 100% disease-risk phrase is the right plain-language lifetime-risk wording; no separate catalog parameter is attached on this page.",
     ],
     parameters: [ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR],
   },
@@ -141,7 +141,7 @@ const NUMERIC_CLAIMS: NumericClaim[] = [
     claim:
       "Last time we ran the model, the projected value of the 1% Treaty alone was approximately $84 quadrillion. But that is a floor. If a billion people actually wore the shirt and had the conversation, they would not stop at 1%. They would cut much more.",
     literals: [
-      "The billion-person shirt scenario is a canonical campaign scenario, not a separate catalog parameter on this page.",
+      "The billion-person shirt scenario is a campaign scenario, not a separate catalog parameter on this page.",
     ],
     parameters: [
       TREATY_REDUCTION_PCT,
@@ -152,7 +152,7 @@ const NUMERIC_CLAIMS: NumericClaim[] = [
     claim:
       "There should be a slider on the site so every human can adjust the proposed treaty cut and see the recalculated outcomes. At most the cut would be 50/50 — half of military spending redirected. If 8 billion humans actually talked to each other about what their priorities are, disease eradication and education could happen very fast.",
     literals: [
-      "The 50/50 slider ceiling is canonical product direction; no separate catalog parameter is attached yet.",
+      "The 50/50 slider ceiling is current product direction; no separate catalog parameter is attached yet.",
     ],
     parameters: [GLOBAL_POPULATION_2024],
   },
