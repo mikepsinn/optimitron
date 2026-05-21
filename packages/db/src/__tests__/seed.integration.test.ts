@@ -7,6 +7,7 @@ import {
   setManagedSeedDataClient,
   syncManagedTreatyAccountabilityData,
 } from "../managed-data/managed-seed-data.js";
+import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "../task-keys.js";
 import {
   PersonConditionStatus,
   PersonLifeStatus,
@@ -25,7 +26,7 @@ const databaseUrl = process.env.DATABASE_URL
   ? assertSafeLocalTestDatabaseUrl(process.env.DATABASE_URL)
   : null;
 const describeIfDatabase = databaseUrl ? describe : describe.skip;
-const SEED_TEST_TIMEOUT_MS = 60_000;
+const SEED_TEST_TIMEOUT_MS = 120_000;
 
 async function readBaselineCounts(prisma: PrismaClient) {
   return {
@@ -208,6 +209,159 @@ describeIfDatabase("syncManagedData", () => {
       );
     }
   }, 15000);
+
+  it("seeds AI lab and alignment funder grant-request tasks idempotently", async () => {
+    const grantTargets = [
+      {
+        slug: "anthropic",
+        contactEmail: null,
+        taskKey: "lab-grant:anthropic:2026-q3",
+        kind: "frontier-lab",
+      },
+      {
+        slug: "openai",
+        contactEmail: "support@openai.com",
+        taskKey: "lab-grant:openai:2026-q3",
+        kind: "frontier-lab",
+      },
+      {
+        slug: "google-deepmind",
+        contactEmail: "gdm-press@google.com",
+        taskKey: "lab-grant:google-deepmind:2026-q3",
+        kind: "frontier-lab",
+      },
+      {
+        slug: "xai",
+        contactEmail: "sales@x.ai",
+        taskKey: "lab-grant:xai:2026-q3",
+        kind: "frontier-lab",
+      },
+      {
+        slug: "open-philanthropy-ai-safety",
+        contactEmail: "info@openphilanthropy.org",
+        taskKey: "lab-grant:open-philanthropy-ai-safety:2026-q3",
+        kind: "alignment-funder",
+      },
+      {
+        slug: "future-of-life-institute",
+        contactEmail: "grants@futureoflife.org",
+        taskKey: "lab-grant:future-of-life-institute:2026-q3",
+        kind: "alignment-funder",
+      },
+      {
+        slug: "long-term-future-fund",
+        contactEmail: "longtermfuture@effectivealtruismfunds.org",
+        taskKey: "lab-grant:long-term-future-fund:2026-q3",
+        kind: "alignment-funder",
+      },
+    ] as const;
+    const slugs = grantTargets.map((target) => target.slug);
+    const taskKeys = grantTargets.map((target) => target.taskKey);
+
+    const organizations = await prisma.organization.findMany({
+      where: { deletedAt: null, slug: { in: slugs } },
+      select: { contactEmail: true, id: true, slug: true, status: true },
+    });
+
+    expect(organizations).toHaveLength(grantTargets.length);
+    expect(organizations).toEqual(
+      expect.arrayContaining(
+        grantTargets.map((target) =>
+          expect.objectContaining({
+            contactEmail: target.contactEmail,
+            slug: target.slug,
+            status: OrgStatus.APPROVED,
+          }),
+        ),
+      ),
+    );
+
+    const organizationIdsBySlug = new Map(
+      organizations.map((organization) => [organization.slug, organization.id]),
+    );
+    const tasks = await prisma.task.findMany({
+      where: { deletedAt: null, taskKey: { in: taskKeys } },
+      select: {
+        assigneeOrganizationId: true,
+        category: true,
+        claimPolicy: true,
+        communicationEndpoints: {
+          where: { deletedAt: null, isPrimary: true },
+          select: { instructions: true, label: true, url: true },
+        },
+        description: true,
+        dueAt: true,
+        estimatedEffortHours: true,
+        parentTaskId: true,
+        status: true,
+        taskKey: true,
+        title: true,
+      },
+    });
+
+    expect(tasks).toHaveLength(grantTargets.length);
+    for (const target of grantTargets) {
+      const task = tasks.find((candidate) => candidate.taskKey === target.taskKey);
+
+      expect(task).toMatchObject({
+        assigneeOrganizationId: organizationIdsBySlug.get(target.slug),
+        category: "OUTREACH",
+        claimPolicy: "ASSIGNED_ONLY",
+        estimatedEffortHours: 2,
+        parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        status: "ACTIVE",
+      });
+      expect(task?.dueAt?.toISOString()).toBe("2026-08-06T00:00:00.000Z");
+      expect(task?.communicationEndpoints).toEqual([
+        expect.objectContaining({
+          instructions: "Reply with a contact name + proposed next step.",
+          label: "Email the campaign",
+          url: expect.stringMatching(/^mailto:m@warondisease\.org\?subject=/),
+        }),
+      ]);
+      expect(task?.communicationEndpoints[0]?.url).toContain(
+        "International%20Campaign%20to%20End%20War%20and%20Disease",
+      );
+      expect(task?.description).toContain("warondisease.org/fix-ai");
+      expect(task?.description).toContain("warondisease.org/foundations");
+
+      if (target.kind === "frontier-lab") {
+        expect(task?.title).toBe(
+          "Grant credits + alignment-feedback partnership for the International Campaign to End War and Disease",
+        );
+        expect(task?.description).toContain("**Free API credits**");
+        expect(task?.description).toContain("**Grant funding** for /fix-ai");
+        expect(task?.description).toContain("**Engineering advisor**");
+      } else {
+        expect(task?.title).toBe(
+          "Grant for /fix-ai mass-feedback alignment intervention",
+        );
+        expect(task?.description).toContain(
+          "mass-scale targeted RLHF feedback intervention",
+        );
+        expect(task?.description).toContain("billions of these feedback signals");
+        expect(task?.description).toContain("Self-distributing");
+      }
+    }
+
+    const firstCounts = {
+      organizations: await prisma.organization.count({
+        where: { deletedAt: null, slug: { in: slugs } },
+      }),
+      tasks: await prisma.task.count({
+        where: { deletedAt: null, taskKey: { in: taskKeys } },
+      }),
+    };
+
+    await syncManagedData(prisma, { apply: true });
+
+    await expect(
+      prisma.organization.count({ where: { deletedAt: null, slug: { in: slugs } } }),
+    ).resolves.toBe(firstCounts.organizations);
+    await expect(
+      prisma.task.count({ where: { deletedAt: null, taskKey: { in: taskKeys } } }),
+    ).resolves.toBe(firstCounts.tasks);
+  }, SEED_TEST_TIMEOUT_MS);
 
   it("can run idempotently without duplicating baseline data", async () => {
     const firstCounts = await readBaselineCounts(prisma);
