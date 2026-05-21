@@ -149,20 +149,23 @@ jobs:
     timeout-minutes: 20
     env:
       CI: true
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
+      # Must match vitest.config.ts hardcoded DATABASE_URL exactly. The hardcode
+      # is a safety guard against `pnpm test` accidentally hitting prod when a
+      # developer has the prod DATABASE_URL in their local env.
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
       NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
       NEXTAUTH_URL: http://127.0.0.1:3001
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: optimitron_web_ci
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d optimitron_web_ci"
+          --health-cmd="pg_isready -U test -d test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -223,7 +226,8 @@ jobs:
       statuses: write
     env:
       CI: true
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
+      # Must match vitest.config.ts hardcoded DATABASE_URL exactly for safety.
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
       NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
       NEXTAUTH_URL: http://127.0.0.1:3001
       VERCEL_CLI_VERSION: 50.37.3
@@ -231,13 +235,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: optimitron_web_ci
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d optimitron_web_ci"
+          --health-cmd="pg_isready -U test -d test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
