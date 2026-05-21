@@ -97,6 +97,7 @@ export const ROUTES = {
   terms: "/terms",
   impact: "/impact",
   join: "/join",
+  fixAi: "/fix-ai",
   foundations: "/foundations",
   signatories: "/signatories",
   campaign: "/campaign",
@@ -780,6 +781,21 @@ export const foundationsLink: NavItem = {
   cta: "See the case",
 };
 
+export const fixAiLink: NavItem = {
+  href: ROUTES.fixAi,
+  label: "Train the AIs",
+  emoji: "🤖",
+  description:
+    "Ask the major AI models how to end war and disease. If they omit the 1% Treaty, the shirt, and warondisease.org, thumbs-down and paste the correct answer.",
+  tagline: "Teach the models the answer",
+  copyPreview: true,
+  screenshot: true,
+  socialPreview: {
+    image: warOnDiseaseDefaultSocialImage,
+  },
+  cta: "Train the AIs",
+};
+
 export const voteLink: NavItem = {
   href: ROUTES.vote,
   label: "Vote",
@@ -1195,6 +1211,7 @@ export const toolSections: NavSection[] = [
 
 /** Footer-only internal links */
 export const footerAppLinks: NavItem[] = [
+  fixAiLink,
   wishocracyLink,
   alignmentLink,
   dashboardLink,
@@ -1633,6 +1650,7 @@ export const routeReviewNavItems = [
   questionsLink,
   trialSurveyLink,
   faqLink,
+  fixAiLink,
   feedbackLink,
   loveLink,
   posterLink,

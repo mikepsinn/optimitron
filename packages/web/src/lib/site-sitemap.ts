@@ -25,6 +25,7 @@ const STATIC_SITEMAP_ROUTES: SiteSitemapRoute[] = [
     priority: 0.9,
     changeFrequency: "weekly",
   },
+  { path: ROUTES.fixAi, priority: 0.9, changeFrequency: "weekly" },
   { path: ROUTES.vote, priority: 0.95, changeFrequency: "daily" },
   { path: ROUTES.questions, priority: 0.75, changeFrequency: "monthly" },
   { path: ROUTES.donate, priority: 0.9, changeFrequency: "weekly" },
@@ -87,6 +88,10 @@ function shouldIncludeStaticRoute(site: SiteConfig, path: string) {
   }
 
   if (path === ROUTES.home || site.sitemap.includeAllStaticRoutes) {
+    return true;
+  }
+
+  if (site.key === "warOnDisease" && path === ROUTES.fixAi) {
     return true;
   }
 
