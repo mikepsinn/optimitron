@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Heart, Send, Shield, X } from "lucide-react";
+import { getUserDisplayName } from "@/lib/user-display";
 
 type DatingProfileStatus =
   | "ACTIVE"
@@ -53,8 +54,10 @@ interface Candidate {
   displayCity: string | null;
   photos: Photo[];
   user: {
+    id: string;
     email: string;
     person: {
+      id: string;
       displayName: string;
       image: string | null;
     } | null;
@@ -411,7 +414,7 @@ export function DatingDiscoverClient({
             )}
             <div>
               <h2 className="text-xl font-black uppercase">
-                {candidate.user.person?.displayName ?? candidate.user.email}
+                {getUserDisplayName(candidate.user)}
               </h2>
               {candidate.headline ? (
                 <p className="mt-1 text-base font-black">

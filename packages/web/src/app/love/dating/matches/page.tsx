@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { getDatingMatchesData } from "@/lib/dating.server";
 import { getSignInPath } from "@/lib/routes";
+import { getUserDisplayName } from "@/lib/user-display";
 
 async function loadMatches(userId: string) {
   try {
@@ -76,7 +77,7 @@ export default async function DatingMatchesPage() {
                 >
                   <span>
                     <span className="block text-xl font-black uppercase">
-                      {other.user.person?.displayName ?? other.user.email}
+                      {getUserDisplayName(other.user)}
                     </span>
                     <span className="mt-1 block text-sm font-bold leading-relaxed text-muted-foreground">
                       {lastMessage ?? other.headline ?? "No messages yet."}

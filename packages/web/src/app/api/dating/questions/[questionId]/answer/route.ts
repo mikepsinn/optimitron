@@ -7,8 +7,10 @@ import { answerDatingQuestion } from "@/lib/dating.server";
 export const runtime = "nodejs";
 
 const AnswerBodySchema = z.object({
-  acceptableValues: z.any().optional(),
-  answerValues: z.any(),
+  acceptableValues: z.unknown().optional(),
+  answerValues: z.unknown().refine((value) => value !== undefined, {
+    message: "answerValues is required",
+  }),
   explanation: z.string().max(1000).nullish(),
   importance: z.nativeEnum(DatingQuestionImportance).optional(),
 });
@@ -20,11 +22,12 @@ export async function PUT(
   try {
     const { userId } = await requireAuth();
     const { questionId } = await context.params;
-    const parsed = AnswerBodySchema.parse(await request.json()) as z.infer<
-      typeof AnswerBodySchema
-    > & { answerValues: unknown };
+    const parsed = AnswerBodySchema.parse(await request.json());
     const answer = await answerDatingQuestion(userId, {
-      ...parsed,
+      acceptableValues: parsed.acceptableValues,
+      answerValues: parsed.answerValues,
+      explanation: parsed.explanation,
+      importance: parsed.importance,
       questionId,
     });
     return NextResponse.json({ answer, success: true });

@@ -9,6 +9,7 @@ import {
 import { authOptions } from "@/lib/auth";
 import { getDatingConversationData } from "@/lib/dating.server";
 import { getSignInPath } from "@/lib/routes";
+import { getUserDisplayName } from "@/lib/user-display";
 
 interface DatingMessagePageProps {
   params: Promise<{ conversationId: string }>;
@@ -51,7 +52,7 @@ export default async function DatingMessagePage({
         <div className="mt-8 flex flex-col gap-4 border-b-2 border-foreground pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
-              {other.user.person?.displayName ?? other.user.email}
+              {getUserDisplayName(other.user)}
             </h1>
             {other.headline ? (
               <p className="mt-2 text-lg font-bold text-muted-foreground">

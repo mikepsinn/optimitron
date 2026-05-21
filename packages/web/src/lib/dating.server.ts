@@ -50,6 +50,7 @@ function buildProfileSelect(options?: { publicPhotosOnly?: boolean }) {
         person: {
           select: {
             displayName: true,
+            id: true,
             image: true,
           },
         },
