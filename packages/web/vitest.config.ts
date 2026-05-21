@@ -11,7 +11,9 @@ export default defineConfig({
     environment: "node",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     env: {
-      DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+      DATABASE_URL:
+        process.env.DATABASE_URL ??
+        "postgresql://test:test@localhost:5432/test",
       NEXTAUTH_SECRET: "test-secret-minimum-32-characters-long-for-validation",
     },
     server: {
