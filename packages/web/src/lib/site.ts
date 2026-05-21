@@ -347,12 +347,11 @@ const warOnDiseaseNavSections: NavSection[] = [
       dashboardLink,
       plaintiffsLink,
       presidentManagementLink,
+      shirtLink,
+      posterLink,
+      loveLink,
+      tasksLink,
     ],
-  },
-  {
-    id: "spread",
-    label: "Spread",
-    items: [shirtLink, posterLink, loveLink, tasksLink],
   },
 ];
 

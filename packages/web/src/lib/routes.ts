@@ -1022,7 +1022,7 @@ export const contributeLink: NavItem = {
 
 export const loveLink: NavItem = {
   href: ROUTES.love,
-  label: "Love",
+  label: "Earth Optimization Date",
   emoji: "❤️",
   description:
     "Pair with another human for one hour. Decide together what most optimizes Earth. Do it. An Earth Optimization Date is, by definition, a non-romantic activity.",
@@ -1034,7 +1034,7 @@ export const loveLink: NavItem = {
 
 export const posterLink: NavItem = {
   href: ROUTES.poster,
-  label: "Print Referral Poster",
+  label: "Print a poster",
   emoji: "📄",
   description:
     "Print a poster with your campaign QR code so humans can vote from walls, doors, and awkward dates.",
@@ -1046,14 +1046,14 @@ export const posterLink: NavItem = {
 
 export const shirtLink: NavItem = {
   href: ROUTES.shirt,
-  label: "Make the Shirt",
+  label: "Get the shirt",
   emoji: "👕",
   description:
-    "Order a War on Disease shirt with campaign copy and a QR code. Your torso is not busy enough.",
+    "Order the T-shirt That Ended War and Disease — campaign copy and a referral QR code on a wearable surface. Your torso is not busy enough.",
   tagline: "Wear your campaign QR code.",
   copyPreview: true,
   screenshot: true,
-  cta: "Make the Shirt",
+  cta: "Get the shirt",
 };
 
 export const storeLink: NavItem = {
