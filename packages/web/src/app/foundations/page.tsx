@@ -17,10 +17,17 @@ import {
 } from "@optimitron/data/parameters";
 import type { Parameter } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { TaskFundingPledgeForm } from "@/components/task-funding/TaskFundingPledgeForm";
+import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
+import { getCurrentUser } from "@/lib/auth-utils";
 import { getRouteMetadata } from "@/lib/metadata";
-import { foundationsLink, prizeLink, ROUTES } from "@/lib/routes";
+import { getManageableOrganizationsForUser } from "@/lib/organization.server";
+import { foundationsLink, getSignInPath, prizeLink, ROUTES } from "@/lib/routes";
+import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 
 export const metadata = getRouteMetadata(foundationsLink);
+
+const PLEDGE_SHIRT_TASK_ID = "pledge-shirt-assurance-contract";
 
 const diseaseEradicationSpeedMultiplier =
   STATUS_QUO_QUEUE_CLEARANCE_YEARS.value / DFDA_QUEUE_CLEARANCE_YEARS.value;
@@ -119,6 +126,19 @@ function Section({ children }: { children: ReactNode }) {
   );
 }
 
+function SignInPrompt({ href, label }: { href: string; label: string }) {
+  return (
+    <div className="border-2 border-foreground bg-background p-5">
+      <Link
+        className="inline-flex border-2 border-foreground bg-foreground px-4 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+        href={href}
+      >
+        {label}
+      </Link>
+    </div>
+  );
+}
+
 function StrongValue({
   children,
   param,
@@ -141,7 +161,16 @@ function StrongValue({
   return <strong className="font-black">{children}</strong>;
 }
 
-export default function FoundationsPage() {
+export default async function FoundationsPage() {
+  const [fundingStatus, user] = await Promise.all([
+    getTaskFundingStatus(PLEDGE_SHIRT_TASK_ID),
+    getCurrentUser(),
+  ]);
+  const manageableOrganizations = user
+    ? await getManageableOrganizationsForUser(user.id)
+    : [];
+  const [pledgeOrganization = null] = manageableOrganizations;
+
   return (
     <main className="min-h-screen bg-background px-4 py-12 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
@@ -529,6 +558,46 @@ export default function FoundationsPage() {
             The assurance contract converts a coordination problem into a
             treasury product.
           </Paragraph>
+        </Section>
+
+        <Section>
+          <SectionHeading>Pledge here.</SectionHeading>
+
+          <Paragraph>
+            Funds release only when the threshold is met. Principal returns
+            with yield if it is not.
+          </Paragraph>
+
+          <TaskFundingProgress
+            showBreakdown
+            showUnitBreakdown
+            status={fundingStatus}
+            taskId={PLEDGE_SHIRT_TASK_ID}
+          />
+
+          {pledgeOrganization ? (
+            <TaskFundingPledgeForm
+              initialPublicDisplay
+              labels={{
+                amountLabel: "Pledge amount (USD)",
+                publicDisplayLabel:
+                  "Show our organization name publicly when the threshold is met.",
+                submitButtonLabel: "Pledge conditionally",
+              }}
+              organizationId={pledgeOrganization.id}
+              pledgerKind="ORGANIZATION"
+              taskId={PLEDGE_SHIRT_TASK_ID}
+              unitConfig={{
+                suggestedAmountCents: 100_000_000n,
+                unitKind: "USD",
+              }}
+            />
+          ) : (
+            <SignInPrompt
+              href={getSignInPath(ROUTES.foundations)}
+              label="Sign in as your organization to pledge"
+            />
+          )}
         </Section>
 
         <p className="mt-8 text-base font-black leading-7 sm:text-lg sm:leading-8">

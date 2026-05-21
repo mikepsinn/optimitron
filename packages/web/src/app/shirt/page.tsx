@@ -8,12 +8,15 @@ import {
 import { PosterQrCode } from "@/app/poster/poster-client";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TshirtSilhouette } from "@/components/shirt/TshirtSilhouette";
+import { TaskFundingPledgeForm } from "@/components/task-funding/TaskFundingPledgeForm";
+import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
 import { serverEnv } from "@/lib/env";
 import { CAMPAIGN_PRINT_COPY, SHIRT_BACK_COPY_LINES } from "@/lib/messaging";
 import { getRouteMetadata } from "@/lib/metadata";
-import { ROUTES, shirtLink } from "@/lib/routes";
+import { getSignInPath, ROUTES, shirtLink } from "@/lib/routes";
+import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
   FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
@@ -43,6 +46,8 @@ export const metadata = {
 };
 
 const SHIRT_BACK_ARTWORK_ID = "war-on-disease-shirt-back";
+const PLEDGE_SHIRT_TASK_ID = "pledge-shirt-assurance-contract";
+const BULK_SHIRT_PLEDGE_OFFER_KEY = "bulk-shirt-pledge";
 const VISIBLE_TARGET_MIN_FONT_SIZE = 38;
 const VISIBLE_TARGET_MAX_FONT_SIZE = 92;
 const VISIBLE_TARGET_MAX_WIDTH_PX = 2040;
@@ -223,6 +228,19 @@ function FixExistingShirtsSection() {
   );
 }
 
+function SignInPrompt({ href, label }: { href: string; label: string }) {
+  return (
+    <div className="border-2 border-foreground bg-background p-5">
+      <Link
+        className="inline-flex border-2 border-foreground bg-foreground px-4 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+        href={href}
+      >
+        {label}
+      </Link>
+    </div>
+  );
+}
+
 function ShirtFrontArtwork() {
   const [lineOne, lineTwo, lineThree] = CAMPAIGN_PRINT_COPY.shirtFrontLines;
 
@@ -370,10 +388,14 @@ function ShirtBackArtwork({
 }
 
 export default async function ShirtPage() {
-  const session = await getServerSession(authOptions);
+  const [session, fundingStatus] = await Promise.all([
+    getServerSession(authOptions),
+    getTaskFundingStatus(PLEDGE_SHIRT_TASK_ID),
+  ]);
   const personalReferralHandle = getHandleOrReferralCode(session?.user);
   const referralHandle = personalReferralHandle ?? "warondisease";
   const hasPersonalReferralUrl = Boolean(personalReferralHandle);
+  const canPledgeAsPerson = Boolean(session?.user?.id);
   const qrTarget = buildReferralUrl(
     referralHandle,
     WAR_ON_DISEASE_CANONICAL_ORIGIN,
@@ -499,6 +521,43 @@ export default async function ShirtPage() {
             )}
 
             <FixExistingShirtsSection />
+
+            <section className="border-2 border-foreground bg-background p-5">
+              <h2 className="text-2xl font-black uppercase leading-tight">
+                Or pledge conditionally.
+              </h2>
+              <p className="mt-4 text-base font-bold leading-7 text-foreground">
+                If 8 billion others pledge by August 6, the bulk order ships. If
+                not, nothing happens. Your pledge is a promise, not a charge.
+              </p>
+              <div className="mt-5 space-y-5">
+                <TaskFundingProgress
+                  status={fundingStatus}
+                  taskId={PLEDGE_SHIRT_TASK_ID}
+                />
+                {canPledgeAsPerson ? (
+                  <TaskFundingPledgeForm
+                    labels={{
+                      amountLabel: "Number of shirts",
+                      submitButtonLabel: "Pledge to buy",
+                    }}
+                    pledgerKind="PERSON"
+                    taskId={PLEDGE_SHIRT_TASK_ID}
+                    unitConfig={{
+                      offerKey: BULK_SHIRT_PLEDGE_OFFER_KEY,
+                      suggestedQuantity: "1",
+                      unitKind: "COMMERCE_OFFER",
+                      unitLabel: "shirts",
+                    }}
+                  />
+                ) : (
+                  <SignInPrompt
+                    href={getSignInPath(ROUTES.shirt)}
+                    label="Sign in to pledge"
+                  />
+                )}
+              </div>
+            </section>
 
             <div className="border-l-2 border-foreground pl-4 text-sm font-bold leading-relaxed text-muted-foreground">
               <p>Front: {CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ")}</p>

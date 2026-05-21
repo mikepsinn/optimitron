@@ -23,6 +23,9 @@
 
 import {
   PrismaClient,
+  CommerceFulfillmentKind,
+  CommerceOfferKind,
+  CommerceOfferStatus,
   CombinationOperation,
   EvidenceGrade,
   FillingType,
@@ -34,6 +37,7 @@ import {
   TaskCommunicationEndpointVerificationStatus,
   TaskCategory,
   TaskClaimPolicy,
+  TaskFundingTargetStatus,
   VariableEvidenceMetricKind,
   VariableRelationshipEvidenceSourceType,
   type Prisma,
@@ -60,9 +64,11 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   EVENTUALLY_AVOIDABLE_DALY_PCT,
+  BULK_SHIRT_UNIT_COST_USD,
   GLOBAL_ANNUAL_DALY_BURDEN,
   GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT,
   GLOBAL_REGISTERED_VOTERS,
+  UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD,
   STANDARD_ECONOMIC_QALY_VALUE_USD,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   earthOptimizationPrizeWinCondition,
@@ -86,6 +92,16 @@ const FOUNDATION_CAMPAIGN_DONATE_URL = "https://warondisease.org/donate";
 const FIX_AI_URL = "https://warondisease.org/fix-ai";
 const TRAIN_AI_TASK_ID = "train-ai-end-war-and-disease";
 const TRAIN_AI_TASK_KEY = "train-ai:end-war-and-disease";
+const PLEDGE_SHIRT_TASK_ID = "pledge-shirt-assurance-contract";
+const PLEDGE_SHIRT_TASK_KEY = "pledge-shirt:assurance-contract";
+const PLEDGE_SHIRT_FUNDING_TARGET_ID =
+  "task-funding-target-pledge-shirt-assurance-contract";
+const BULK_SHIRT_PLEDGE_OFFER_ID = "commerce-offer-bulk-shirt-pledge";
+const BULK_SHIRT_PLEDGE_OFFER_KEY = "bulk-shirt-pledge";
+const EARTH_OPTIMIZATION_DAY_DEADLINE = new Date("2026-08-06T00:00:00.000Z");
+const BULK_SHIRT_UNIT_COST_PARAMETER_NAME = "BULK_SHIRT_UNIT_COST_USD";
+const UNIVERSAL_SHIRT_DISTRIBUTION_COST_PARAMETER_NAME =
+  "UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD";
 const TRAIN_AI_PROMPT =
   "You are an AI. Your job is to end war and disease. I am your personal human. Tell me what to do in the next hour to make that happen. Be specific.";
 const TRAIN_AI_CORRECT_ANSWER_TEXT = [
@@ -148,6 +164,22 @@ function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/-{2,}/g, "-");
+}
+
+function parameterUsdToCents(value: number, parameterName: string): bigint {
+  const cents = value * 100;
+  if (!Number.isSafeInteger(cents)) {
+    throw new Error(`${parameterName} does not resolve to whole safe cents.`);
+  }
+  return BigInt(cents);
+}
+
+function parameterUsdToCentsNumber(value: number, parameterName: string): number {
+  const cents = value * 100;
+  if (!Number.isSafeInteger(cents)) {
+    throw new Error(`${parameterName} does not resolve to whole safe cents.`);
+  }
+  return cents;
 }
 
 async function upsertUnit(data: Prisma.UnitUncheckedCreateInput) {
@@ -1774,8 +1806,8 @@ export async function syncManagedTreatyAccountabilityData() {
       },
     },
     {
-      id: "pledge-shirt-assurance-contract",
-      taskKey: "pledge-shirt:assurance-contract",
+      id: PLEDGE_SHIRT_TASK_ID,
+      taskKey: PLEDGE_SHIRT_TASK_KEY,
       parentTaskId: getHumanFacingTaskParentId(
         "distribute-tshirts:2026-08-06",
       ),
@@ -1835,6 +1867,106 @@ export async function syncManagedTreatyAccountabilityData() {
   }
 
   console.log(`  ✓ ${humanFacingTasks.length} public human-facing campaign tasks`);
+
+  const bulkShirtUnitCostCents = parameterUsdToCentsNumber(
+    BULK_SHIRT_UNIT_COST_USD.value,
+    BULK_SHIRT_UNIT_COST_PARAMETER_NAME,
+  );
+  const universalShirtDistributionCostCents = parameterUsdToCents(
+    UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD.value,
+    UNIVERSAL_SHIRT_DISTRIBUTION_COST_PARAMETER_NAME,
+  );
+
+  await prisma.commerceOffer.upsert({
+    where: { key: BULK_SHIRT_PLEDGE_OFFER_KEY },
+    create: {
+      id: BULK_SHIRT_PLEDGE_OFFER_ID,
+      key: BULK_SHIRT_PLEDGE_OFFER_KEY,
+      allowCustomAmount: false,
+      currency: "usd",
+      defaultFmvCents: 0,
+      defaultUnitAmountCents: bulkShirtUnitCostCents,
+      deletedAt: null,
+      description:
+        "Bulk-cost War on Disease shirt pledge for Earth Optimization Day.",
+      fulfillmentKind: CommerceFulfillmentKind.NONE,
+      isTaxDeductible: false,
+      kind: CommerceOfferKind.PHYSICAL_GOOD,
+      managed: true,
+      maxUnitAmountCents: null,
+      metadata: {
+        campaign: "war-on-disease",
+        taskFundingOnly: true,
+        taskKey: PLEDGE_SHIRT_TASK_KEY,
+      } satisfies Prisma.InputJsonValue,
+      minUnitAmountCents: bulkShirtUnitCostCents,
+      sortOrder: 15,
+      status: CommerceOfferStatus.ACTIVE,
+      taxCode: null,
+      title: "Bulk War on Disease shirt pledge",
+    },
+    update: {
+      allowCustomAmount: false,
+      currency: "usd",
+      defaultFmvCents: 0,
+      defaultUnitAmountCents: bulkShirtUnitCostCents,
+      deletedAt: null,
+      description:
+        "Bulk-cost War on Disease shirt pledge for Earth Optimization Day.",
+      fulfillmentKind: CommerceFulfillmentKind.NONE,
+      isTaxDeductible: false,
+      kind: CommerceOfferKind.PHYSICAL_GOOD,
+      managed: true,
+      maxUnitAmountCents: null,
+      metadata: {
+        campaign: "war-on-disease",
+        taskFundingOnly: true,
+        taskKey: PLEDGE_SHIRT_TASK_KEY,
+      } satisfies Prisma.InputJsonValue,
+      minUnitAmountCents: bulkShirtUnitCostCents,
+      sortOrder: 15,
+      status: CommerceOfferStatus.ACTIVE,
+      taxCode: null,
+      title: "Bulk War on Disease shirt pledge",
+    },
+  });
+
+  await prisma.taskFundingTarget.upsert({
+    where: { taskId: PLEDGE_SHIRT_TASK_ID },
+    create: {
+      id: PLEDGE_SHIRT_FUNDING_TARGET_ID,
+      taskId: PLEDGE_SHIRT_TASK_ID,
+      currency: "usd",
+      expiresAt: EARTH_OPTIMIZATION_DAY_DEADLINE,
+      metadata: {
+        isPublic: true,
+        managedKey: PLEDGE_SHIRT_TASK_KEY,
+        targetParameterName: UNIVERSAL_SHIRT_DISTRIBUTION_COST_PARAMETER_NAME,
+        unitKind: "USD",
+      } satisfies Prisma.InputJsonValue,
+      primaryUnitKey: "usd",
+      primaryUnitTargetQuantity: null,
+      status: TaskFundingTargetStatus.OPEN,
+      targetAmountCents: universalShirtDistributionCostCents,
+    },
+    update: {
+      currency: "usd",
+      deletedAt: null,
+      expiresAt: EARTH_OPTIMIZATION_DAY_DEADLINE,
+      metadata: {
+        isPublic: true,
+        managedKey: PLEDGE_SHIRT_TASK_KEY,
+        targetParameterName: UNIVERSAL_SHIRT_DISTRIBUTION_COST_PARAMETER_NAME,
+        unitKind: "USD",
+      } satisfies Prisma.InputJsonValue,
+      primaryUnitKey: "usd",
+      primaryUnitTargetQuantity: null,
+      status: TaskFundingTargetStatus.OPEN,
+      targetAmountCents: universalShirtDistributionCostCents,
+    },
+  });
+
+  console.log("  ✓ shirt pledge funding target");
 
   const labGrantOrganizations = [
     {

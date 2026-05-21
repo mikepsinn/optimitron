@@ -1,5 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
+import {
+  BULK_SHIRT_UNIT_COST_USD,
+  UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD,
+} from "@optimitron/data/parameters";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
 import { syncManagedData } from "../managed-data/index.js";
 import {
@@ -13,12 +17,14 @@ import {
   PersonLifeStatus,
   OrgStatus,
   OrgType,
+  CommerceOfferStatus,
   PrismaClient,
   ReferendumKind,
   ReferendumVoteSource,
   SubjectType,
   TaskCommunicationAudience,
   TaskCommunicationPurpose,
+  TaskFundingTargetStatus,
   VotePosition,
 } from "../generated/prisma/client.js";
 
@@ -27,6 +33,20 @@ const databaseUrl = process.env.DATABASE_URL
   : null;
 const describeIfDatabase = databaseUrl ? describe : describe.skip;
 const SEED_TEST_TIMEOUT_MS = 120_000;
+const UNIVERSAL_SHIRT_DISTRIBUTION_COST_PARAMETER_NAME =
+  "UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD";
+
+function parameterUsdToCents(value: number): bigint {
+  const cents = value * 100;
+  expect(Number.isSafeInteger(cents)).toBe(true);
+  return BigInt(cents);
+}
+
+function parameterUsdToCentsNumber(value: number): number {
+  const cents = value * 100;
+  expect(Number.isSafeInteger(cents)).toBe(true);
+  return cents;
+}
 
 async function readBaselineCounts(prisma: PrismaClient) {
   return {
@@ -602,6 +622,61 @@ describeIfDatabase("syncManagedData", () => {
         expect.objectContaining(target.primaryEndpoint),
       ]);
     }
+
+    const shirtFundingTarget = await prisma.taskFundingTarget.findUnique({
+      where: { taskId: "pledge-shirt-assurance-contract" },
+      select: {
+        currency: true,
+        deletedAt: true,
+        expiresAt: true,
+        metadata: true,
+        primaryUnitKey: true,
+        status: true,
+        targetAmountCents: true,
+      },
+    });
+
+    expect(shirtFundingTarget).toMatchObject({
+      currency: "usd",
+      deletedAt: null,
+      primaryUnitKey: "usd",
+      status: TaskFundingTargetStatus.OPEN,
+      targetAmountCents: parameterUsdToCents(
+        UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD.value,
+      ),
+    });
+    expect(shirtFundingTarget?.expiresAt?.toISOString()).toBe(
+      "2026-08-06T00:00:00.000Z",
+    );
+    expect(shirtFundingTarget?.metadata).toEqual(
+      expect.objectContaining({
+        isPublic: true,
+        managedKey: "pledge-shirt:assurance-contract",
+        targetParameterName: UNIVERSAL_SHIRT_DISTRIBUTION_COST_PARAMETER_NAME,
+        unitKind: "USD",
+      }),
+    );
+
+    const bulkShirtPledgeOffer = await prisma.commerceOffer.findUnique({
+      where: { key: "bulk-shirt-pledge" },
+      select: {
+        defaultUnitAmountCents: true,
+        deletedAt: true,
+        managed: true,
+        status: true,
+        variants: { select: { id: true } },
+      },
+    });
+
+    expect(bulkShirtPledgeOffer).toMatchObject({
+      defaultUnitAmountCents: parameterUsdToCentsNumber(
+        BULK_SHIRT_UNIT_COST_USD.value,
+      ),
+      deletedAt: null,
+      managed: true,
+      status: CommerceOfferStatus.ACTIVE,
+      variants: [],
+    });
   }, SEED_TEST_TIMEOUT_MS);
 
   it("can run idempotently without duplicating baseline data", async () => {
