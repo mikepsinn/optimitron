@@ -158,13 +158,7 @@ describe("POST /api/stripe/webhook", () => {
         status: "PENDING",
       }),
     });
-    expect(mocks.activityCreate).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        entityId: "cs_test_store",
-        entityType: "StripeCheckoutSession",
-        type: "DONATED",
-        userId: "user_123",
-      }),
-    });
+    // Store-offer purchases must not double-record as DONATED activities.
+    expect(mocks.activityCreate).not.toHaveBeenCalled();
   });
 });

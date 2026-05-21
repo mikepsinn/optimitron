@@ -68,6 +68,7 @@ export async function POST(req: Request) {
         }
         if (session.metadata?.order_type === "store_offer") {
           await recordStoreOfferPayment(session);
+          break;
         }
         if (session.mode === "payment" || session.mode === "subscription") {
           await recordDonationActivity(session);
