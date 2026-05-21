@@ -11,6 +11,7 @@ import {
   Prisma,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { userDisplaySelect } from "@/lib/user-display";
 
 function buildProfileSelect(options?: { publicPhotosOnly?: boolean }) {
   const photoWhere: Prisma.DatingProfilePhotoWhereInput = {
@@ -44,17 +45,7 @@ function buildProfileSelect(options?: { publicPhotosOnly?: boolean }) {
       where: photoWhere,
     },
     user: {
-      select: {
-        email: true,
-        id: true,
-        person: {
-          select: {
-            displayName: true,
-            id: true,
-            image: true,
-          },
-        },
-      },
+      select: userDisplaySelect,
     },
   } satisfies Prisma.DatingProfileSelect;
 }
@@ -85,6 +76,8 @@ export interface DatingProfileView {
     email: string;
     id: string;
     person: {
+      id: string;
+      handle: string | null;
       displayName: string;
       image: string | null;
     } | null;
