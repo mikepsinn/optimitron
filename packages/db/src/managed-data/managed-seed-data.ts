@@ -1705,6 +1705,137 @@ export async function syncManagedTreatyAccountabilityData() {
 
   console.log(`  ✓ ${intermediateParentTasks.length} campaign intermediate tasks`);
 
+  const humanFacingTaskParentKeys = [
+    "wishonia-coordinates-eod:2026-q3",
+    "distribute-tshirts:2026-08-06",
+  ] as const;
+  const humanFacingTaskParentRows = await prisma.task.findMany({
+    where: { deletedAt: null, taskKey: { in: [...humanFacingTaskParentKeys] } },
+    select: { id: true, taskKey: true },
+  });
+  const humanFacingTaskParentIdByKey = new Map(
+    humanFacingTaskParentRows.map((task) => [task.taskKey, task.id]),
+  );
+  const getHumanFacingTaskParentId = (
+    taskKey: typeof humanFacingTaskParentKeys[number],
+  ) => {
+    const parentTaskId = humanFacingTaskParentIdByKey.get(taskKey);
+    if (!parentTaskId) {
+      throw new Error(`Missing seeded parent task for taskKey ${taskKey}`);
+    }
+    return parentTaskId;
+  };
+
+  const humanFacingTasks = [
+    {
+      id: "wear-shirt-2026-08-06",
+      taskKey: "wear-shirt:2026-08-06",
+      parentTaskId: getHumanFacingTaskParentId(
+        "distribute-tshirts:2026-08-06",
+      ),
+      title: "Wear the t-shirt on Earth Optimization Day, August 6, 2026",
+      description: [
+        "Wear a t-shirt that says THIS T-SHIRT ENDED WAR AND DISEASE. on the front and Trade one apocalypse for disease eradication at warondisease.org. on the back. Wear it in public on August 6, 2026.",
+        "",
+        "Two ways to get the t-shirt:",
+        "1. Order one at warondisease.org/shirt.",
+        "2. Take a white t-shirt you already own + a permanent marker. Write the front + back copy on it yourself. Same campaign signal, $0.",
+        "",
+        "The first time someone sees you wearing it, they will ask. That is the point.",
+      ].join("\n"),
+      estimatedEffortHours: 0.5,
+      sortOrder: -120,
+      primaryEndpoint: {
+        label: "Get the shirt",
+        url: "/shirt",
+        instructions: "Order or DIY.",
+      },
+    },
+    {
+      id: "earth-optimization-date-1hr",
+      taskKey: "earth-optimization-date:1hr",
+      parentTaskId: getHumanFacingTaskParentId(
+        "wishonia-coordinates-eod:2026-q3",
+      ),
+      title: "Go on an Earth Optimization Date with another human",
+      description: [
+        "Pair with another human. Talk for a few minutes. Decide together what is the most effective way you can spend the next hour to optimize Earth. Then do it.",
+        "",
+        "An Earth Optimization Date is, by definition, a non-romantic activity. Print flyers and tape them somewhere with foot traffic. Show each other warondisease.org and vote together. Pick two humans each of you can text the link to.",
+        "",
+        "There are approximately 1.2 humans dying every second. Focused use of one hour matters.",
+      ].join("\n"),
+      estimatedEffortHours: 1,
+      sortOrder: -110,
+      primaryEndpoint: {
+        label: "Find a partner",
+        url: "/love",
+        instructions: "Pair up.",
+      },
+    },
+    {
+      id: "pledge-shirt-assurance-contract",
+      taskKey: "pledge-shirt:assurance-contract",
+      parentTaskId: getHumanFacingTaskParentId(
+        "distribute-tshirts:2026-08-06",
+      ),
+      title: "Pledge to buy a t-shirt conditional on the threshold",
+      description: [
+        "Pledge to buy N t-shirts conditional on 8 billion others doing the same.",
+        "",
+        "The conditional pledge mechanism is a dominant assurance contract: your pledge only deploys when the total commitment threshold is hit. If the threshold misses by Earth Optimization Day (2026-08-06), nothing happens. If it hits, the bulk shirt order ships.",
+        "",
+        "Currently pledging via this task is intent-only — the pledge primitive infrastructure ships in a follow-up. For now, the most useful action is to wear or DIY the shirt today and tell other humans to do the same.",
+      ].join("\n"),
+      estimatedEffortHours: 0.1,
+      sortOrder: -100,
+      primaryEndpoint: {
+        label: "Pledge here",
+        url: "/foundations",
+        instructions:
+          "Pledge form ships with the funding-blocked Task primitive (in progress).",
+      },
+    },
+  ] as const;
+
+  for (const taskData of humanFacingTasks) {
+    const {
+      id,
+      primaryEndpoint,
+      ...taskScalars
+    } = {
+      ...taskData,
+      assigneeOrganizationId: null,
+      assigneePersonId: null,
+      category: TaskCategory.OTHER,
+      claimPolicy: TaskClaimPolicy.OPEN_MANY,
+      dueAt: LAB_GRANT_DUE_AT,
+      isPublic: true,
+      maxClaims: null,
+      status: "ACTIVE",
+    } satisfies Omit<Prisma.TaskUncheckedCreateInput, "createdByUserId"> & {
+      primaryEndpoint: {
+        instructions: string;
+        label: string;
+        url: string;
+      };
+    };
+
+    const task = await prisma.task.upsert({
+      where: { taskKey: taskScalars.taskKey },
+      create: {
+        id,
+        ...taskScalars,
+        createdByUserId: labTaskCreatedByUserId,
+      },
+      update: taskScalars,
+    });
+
+    await upsertSeedTaskCommunicationEndpoint(task.id, primaryEndpoint);
+  }
+
+  console.log(`  ✓ ${humanFacingTasks.length} public human-facing campaign tasks`);
+
   const labGrantOrganizations = [
     {
       slug: "anthropic",

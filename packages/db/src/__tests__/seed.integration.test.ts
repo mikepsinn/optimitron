@@ -513,6 +513,98 @@ describeIfDatabase("syncManagedData", () => {
     ).resolves.toBe(firstCounts.tasks);
   }, SEED_TEST_TIMEOUT_MS);
 
+  it("seeds public human-facing Earth Optimization Day tasks", async () => {
+    const parentTaskKeys = [
+      "wishonia-coordinates-eod:2026-q3",
+      "distribute-tshirts:2026-08-06",
+    ] as const;
+    const taskTargets = [
+      {
+        taskKey: "wear-shirt:2026-08-06",
+        parentTaskKey: "distribute-tshirts:2026-08-06",
+        estimatedEffortHours: 0.5,
+        primaryEndpoint: {
+          instructions: "Order or DIY.",
+          label: "Get the shirt",
+          url: "/shirt",
+        },
+      },
+      {
+        taskKey: "earth-optimization-date:1hr",
+        parentTaskKey: "wishonia-coordinates-eod:2026-q3",
+        estimatedEffortHours: 1,
+        primaryEndpoint: {
+          instructions: "Pair up.",
+          label: "Find a partner",
+          url: "/love",
+        },
+      },
+      {
+        taskKey: "pledge-shirt:assurance-contract",
+        parentTaskKey: "distribute-tshirts:2026-08-06",
+        estimatedEffortHours: 0.1,
+        primaryEndpoint: {
+          instructions:
+            "Pledge form ships with the funding-blocked Task primitive (in progress).",
+          label: "Pledge here",
+          url: "/foundations",
+        },
+      },
+    ] as const;
+
+    const parentTasks = await prisma.task.findMany({
+      where: { deletedAt: null, taskKey: { in: [...parentTaskKeys] } },
+      select: { id: true, taskKey: true },
+    });
+    const parentIdsByTaskKey = new Map(
+      parentTasks.map((task) => [task.taskKey, task.id]),
+    );
+
+    expect(parentTasks).toHaveLength(parentTaskKeys.length);
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        deletedAt: null,
+        taskKey: { in: taskTargets.map((task) => task.taskKey) },
+      },
+      select: {
+        assigneePersonId: true,
+        category: true,
+        claimPolicy: true,
+        communicationEndpoints: {
+          where: { deletedAt: null, isPrimary: true },
+          select: { instructions: true, label: true, url: true },
+        },
+        dueAt: true,
+        estimatedEffortHours: true,
+        isPublic: true,
+        parentTaskId: true,
+        status: true,
+        taskKey: true,
+      },
+    });
+
+    expect(tasks).toHaveLength(taskTargets.length);
+    for (const target of taskTargets) {
+      const task = tasks.find((candidate) => candidate.taskKey === target.taskKey);
+
+      expect(task).toMatchObject({
+        assigneePersonId: null,
+        category: "OTHER",
+        claimPolicy: "OPEN_MANY",
+        estimatedEffortHours: target.estimatedEffortHours,
+        isPublic: true,
+        parentTaskId: parentIdsByTaskKey.get(target.parentTaskKey),
+        status: "ACTIVE",
+        taskKey: target.taskKey,
+      });
+      expect(task?.dueAt?.toISOString()).toBe("2026-08-06T00:00:00.000Z");
+      expect(task?.communicationEndpoints).toEqual([
+        expect.objectContaining(target.primaryEndpoint),
+      ]);
+    }
+  }, SEED_TEST_TIMEOUT_MS);
+
   it("can run idempotently without duplicating baseline data", async () => {
     const firstCounts = await readBaselineCounts(prisma);
 
