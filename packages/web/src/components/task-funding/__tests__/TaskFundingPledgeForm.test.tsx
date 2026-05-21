@@ -206,10 +206,8 @@ describe("TaskFundingPledgeForm", () => {
       termsVersion: "terms-v1",
       unitKind: "USD",
     });
-    expect(container.textContent).toContain(
-      "Pledge recorded. Now go vote yes on the 1% Treaty",
-    );
-    expect(container.querySelector('a[href="/vote"]')).not.toBeNull();
+    expect(container.textContent).toContain("Pledge recorded.");
+    expect(container.querySelector('a[href="/dashboard"]')).not.toBeNull();
     expect(onSuccess).toHaveBeenCalledWith(successResponse);
   });
 

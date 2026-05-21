@@ -327,8 +327,9 @@ export function TaskFundingPledgeForm({
 
       {success ? (
         <p className="border-2 border-foreground p-3 text-sm font-black" role="status">
-          <Link className="underline underline-offset-4" href="/vote">
-            Pledge recorded. Now go vote yes on the 1% Treaty &rarr;
+          Pledge recorded.{" "}
+          <Link className="underline underline-offset-4" href="/dashboard">
+            Open your dashboard &rarr;
           </Link>
         </p>
       ) : null}
