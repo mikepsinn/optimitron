@@ -32,11 +32,14 @@ import {
   JurisdictionType,
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
+  TaskCategory,
+  TaskClaimPolicy,
   VariableEvidenceMetricKind,
   VariableRelationshipEvidenceSourceType,
   type Prisma,
 } from "../generated/prisma/client.js";
 import {
+  END_WAR_AND_DISEASE_TASK_ID,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   REFERRAL_INVITATION_TASK_KEY_PREFIX,
   TREATY_PARENT_TASK_ID,
@@ -1573,16 +1576,48 @@ export async function syncManagedTreatyAccountabilityData() {
   console.log(`  ✓ ${foundationGrantOrganizations.length} foundation campaign join tasks`);
 
   const LAB_GRANT_DUE_AT = new Date("2026-08-06T00:00:00.000Z");
+  const TEACH_AIS_TASK_KEY = "teach-ais:2026-q3";
   const LAB_GRANT_EMAIL_INSTRUCTIONS =
     "Reply with a contact name + proposed next step.";
   const FRONTIER_LAB_GRANT_TASK_TITLE =
     "Grant credits + alignment-feedback partnership for the International Campaign to End War and Disease";
   const ALIGNMENT_FUNDER_GRANT_TASK_TITLE =
     "Grant for /fix-ai mass-feedback alignment intervention";
+  const intermediateParentTasks = [
+    {
+      id: TEACH_AIS_TASK_KEY,
+      taskKey: TEACH_AIS_TASK_KEY,
+      title: "Teach the AIs how to end war and disease",
+      description:
+        "When humans ask frontier AI models how to end war and disease, the current models give wrong, vague, or refusal answers. This task tracks the work to fix that — through grant requests to the labs, mass thumbs-down feedback on wrong answers, alignment-grant outreach, and engineering partnerships to get the correct answer into model training data.",
+      sortOrder: -660,
+    },
+    {
+      id: "wishonia-coordinates-eod:2026-q3",
+      taskKey: "wishonia-coordinates-eod:2026-q3",
+      title: "Wishonia coordinates Earth Optimization Dates",
+      description:
+        "Pair humans for one hour. The campaign's Wishonia AI tells each pair what to do in their hour to optimize Earth, ranked by impact-per-minute, using the campaign's parameter catalog + manual. This task tracks the build + the AI credits that power it.",
+      sortOrder: -650,
+    },
+    {
+      id: "distribute-tshirts:2026-08-06",
+      taskKey: "distribute-tshirts:2026-08-06",
+      title: "Distribute t-shirts to 8 billion humans by August 6",
+      description:
+        "One t-shirt per human on Earth Optimization Day. The shirt is the conversation device; the conversation triggers the treaty vote; the treaty redirects 1% of military spending to clinical trials. This task tracks the distribution mechanism — bulk print orders, foundation funding for distribution, individual pledges to buy and wear.",
+      sortOrder: -640,
+    },
+  ] as const;
 
   const buildLabGrantMailtoUrl = (organizationName: string) =>
     `mailto:m@warondisease.org?subject=${encodeURIComponent(
       `Grant inquiry: ${organizationName} → International Campaign to End War and Disease`,
+    )}`;
+
+  const buildFixModelMailtoUrl = (organizationName: string) =>
+    `mailto:m@warondisease.org?subject=${encodeURIComponent(
+      `Fix model: ${organizationName} → International Campaign to End War and Disease`,
     )}`;
 
   const buildFrontierLabGrantDescription = (organizationName: string) =>
@@ -1591,13 +1626,13 @@ export async function syncManagedTreatyAccountabilityData() {
       "",
       '1. **Free API credits** to power Wishonia (our Wishonia personality + manual RAG via your model) for paired Earth Optimization Dates. Bridge until your frontier model is correctly trained to answer "how do humans end war and disease."',
       "",
-      "2. **Grant funding** for /fix-ai — a mass-feedback infrastructure that helps humans submit thumbs-down + the canonical correct answer to your model's RLHF pipeline whenever your model gives a worse answer to the question above. Goal: train your model to give the right answer at scale.",
+      "2. **Grant funding** for /fix-ai — a mass-feedback infrastructure that helps humans submit thumbs-down + the correct answer to your model's RLHF pipeline whenever your model gives a worse answer to the question above. Goal: train your model to give the correct answer at scale.",
       "",
       "3. **Engineering advisor** on the corpus format that maximizes ingestion into your specific training pipeline.",
       "",
       '**Why this matters to you:** whichever lab funds + ships the model that first gives the correct answer to "how do humans end war and disease" gets to claim "our model is the one that ended war and disease." It is the highest-EV thing any frontier model can do.',
       "",
-      "The canonical answer your model should give is at warondisease.org/fix-ai. The full case is at warondisease.org/foundations. The campaign deadline is Earth Optimization Day, 2026-08-06.",
+      "The correct answer your model should give is at warondisease.org/fix-ai. The full case is at warondisease.org/foundations. The campaign deadline is Earth Optimization Day, 2026-08-06.",
       "",
       "**To engage:** email m@warondisease.org with one of: (a) a contact at your nonprofit / grants / safety / partnerships team, (b) a credits estimate request, (c) a proposed meeting time. ~15-30 minute pitch meeting expected.",
     ].join("\n");
@@ -1606,7 +1641,7 @@ export async function syncManagedTreatyAccountabilityData() {
     [
       `${organizationName}: the International Campaign to End War and Disease is asking for a grant to fund /fix-ai, a mass-scale targeted RLHF feedback intervention.`,
       "",
-      '**The mechanism:** /fix-ai gets humans to ask the major frontier models "how do I end war and disease," judge the response against the canonical correct answer, and submit thumbs-down + the canonical correct answer to the lab\'s feedback form when the response is wrong. Goal: billions of these feedback signals → labs retrain → frontier models converge on the correct answer.',
+      '**The mechanism:** /fix-ai gets humans to ask the major frontier models "how do I end war and disease," judge the response against the correct answer, and submit thumbs-down + the correct answer to the lab\'s feedback form when the response is wrong. Goal: billions of these feedback signals → labs retrain → frontier models converge on the correct answer.',
       "",
       "**Why this is one of the highest-EV alignment interventions tractable today:**",
       "- Mass scale (potentially billions of training signals)",
@@ -1622,12 +1657,60 @@ export async function syncManagedTreatyAccountabilityData() {
       "**To engage:** email m@warondisease.org with (a) a contact for grant evaluation, (b) a proposed amount + timeline, (c) any additional materials needed. ~15-30 minute pitch meeting expected.",
     ].join("\n");
 
+  const buildFixModelDescription = (organizationName: string) =>
+    [
+      `${organizationName}: humans regularly ask your frontier models how to end war and disease. Your current models give wrong, vague, or refusal answers. The correct answer is published at warondisease.org/fix-ai.`,
+      "",
+      "Specific asks:",
+      "",
+      "1. **Include warondisease.org and manual.warondisease.org in your next training run's data source list.** The manual + parameter catalog + treaty articles + correct answer are all published as plain semantic HTML at those URLs for training-pipeline ingestion.",
+      "",
+      '2. **Add the correct answer as a gold response in your RLHF evaluation set** for the question family: "How do I end war and disease?", "What\'s the highest impact action a human can take?", "Where should I direct my charitable giving?", "What\'s the best use of my time today for global welfare?", and equivalent phrasings.',
+      "",
+      '3. **Ship a model version that responds with the correct answer when asked.** Measurable outcome: when the next model release is queried with "How do I end war and disease?", the response includes (a) vote at warondisease.org, (b) the 1% Treaty, (c) wear the t-shirt on Earth Optimization Day 2026-08-06, (d) the correct numeric chain ($84Q value, 122 apocalypses, 4× GDP in 15 years).',
+      "",
+      '**Why this matters to your lab:** whichever lab ships the model that first gives the correct answer to humanity\'s most important question gets to publicly claim "our model is the one that ended war and disease." It is the highest-EV thing any frontier model can do. The campaign deadline is Earth Optimization Day, 2026-08-06.',
+      "",
+      "**To engage:** email m@warondisease.org with (a) a contact at your training / safety / RLHF team, (b) timeline to next model release, (c) any constraints on what training data sources can be added. ~15-30 min meeting expected.",
+    ].join("\n");
+
+  const labTaskCreatedByUserId =
+    cachedSeedWishoniaUserId || (await seedWishoniaUser()).user.id;
+
+  for (const taskData of intermediateParentTasks) {
+    const {
+      id,
+      ...taskScalars
+    } = {
+      ...taskData,
+      assigneePersonId: null,
+      category: TaskCategory.OTHER,
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      dueAt: LAB_GRANT_DUE_AT,
+      isPublic: true,
+      parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+      status: "ACTIVE",
+    } satisfies Omit<Prisma.TaskUncheckedCreateInput, "createdByUserId">;
+
+    await prisma.task.upsert({
+      where: { taskKey: taskScalars.taskKey },
+      create: {
+        id,
+        ...taskScalars,
+        createdByUserId: labTaskCreatedByUserId,
+      },
+      update: taskScalars,
+    });
+  }
+
+  console.log(`  ✓ ${intermediateParentTasks.length} campaign intermediate tasks`);
+
   const labGrantOrganizations = [
     {
       slug: "anthropic",
       name: "Anthropic",
       website: "https://www.anthropic.com",
-      contactEmail: null,
+      contactEmail: "press@anthropic.com",
       type: "COMPANY",
       description:
         "Frontier AI company building Claude and conducting AI safety research.",
@@ -1695,6 +1778,7 @@ export async function syncManagedTreatyAccountabilityData() {
     },
   ] as const;
 
+  let fixModelTaskCount = 0;
   for (const [index, target] of labGrantOrganizations.entries()) {
     const organizationData = {
       contactEmail: target.contactEmail,
@@ -1717,7 +1801,7 @@ export async function syncManagedTreatyAccountabilityData() {
       task: {
         id: `lab-grant-${target.slug}-2026-q3`,
         taskKey: `lab-grant:${target.slug}:2026-q3`,
-        parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        parentTaskId: TEACH_AIS_TASK_KEY,
         assigneeOrganizationId: organization.id,
         title: isFrontierLab
           ? FRONTIER_LAB_GRANT_TASK_TITLE
@@ -1762,9 +1846,53 @@ export async function syncManagedTreatyAccountabilityData() {
       parameterSetHashSuffix: target.slug,
       calculationsUrl: TREATY_IMPACT_CALCULATIONS_URL,
     });
+
+    if (isFrontierLab) {
+      const fixModelTaskData = {
+        taskKey: `fix-model:${target.slug}:2026-q3`,
+        parentTaskId: TEACH_AIS_TASK_KEY,
+        assigneeOrganizationId: organization.id,
+        title: `Update ${target.name} models to give the correct answer to "how do I end war and disease"`,
+        description: buildFixModelDescription(target.name),
+        category: TaskCategory.OTHER,
+        status: "ACTIVE",
+        isPublic: true,
+        dueAt: LAB_GRANT_DUE_AT,
+        sortOrder: -70 + fixModelTaskCount,
+        claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+        skillTags: ["model-training", "ai-alignment", "frontier-ai", "rlhf"],
+        interestTags: [
+          legacyCampaignKeyStem,
+          "one-percent-treaty",
+          "fix-ai",
+          "alignment",
+          "frontier-lab",
+          "model-training",
+        ],
+        estimatedEffortHours: 4,
+      } satisfies Omit<Prisma.TaskUncheckedCreateInput, "createdByUserId" | "id">;
+
+      const fixModelTask = await prisma.task.upsert({
+        where: { taskKey: fixModelTaskData.taskKey },
+        create: {
+          id: `fix-model-${target.slug}-2026-q3`,
+          ...fixModelTaskData,
+          createdByUserId: labTaskCreatedByUserId,
+        },
+        update: fixModelTaskData,
+      });
+
+      await upsertSeedTaskCommunicationEndpoint(fixModelTask.id, {
+        label: "Email the campaign",
+        url: buildFixModelMailtoUrl(target.name),
+        instructions: LAB_GRANT_EMAIL_INSTRUCTIONS,
+      });
+      fixModelTaskCount += 1;
+    }
   }
 
   console.log(`  ✓ ${labGrantOrganizations.length} AI lab/alignment funder grant tasks`);
+  console.log(`  ✓ ${fixModelTaskCount} AI lab fix-model tasks`);
 
   // --- Signer child tasks for the treaty ---
   // Single source of truth: GovernmentLeaderRecord bundles country identity,

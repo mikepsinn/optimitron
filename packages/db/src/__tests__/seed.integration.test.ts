@@ -7,7 +7,7 @@ import {
   setManagedSeedDataClient,
   syncManagedTreatyAccountabilityData,
 } from "../managed-data/managed-seed-data.js";
-import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "../task-keys.js";
+import { END_WAR_AND_DISEASE_TASK_ID } from "../task-keys.js";
 import {
   PersonConditionStatus,
   PersonLifeStatus,
@@ -211,10 +211,28 @@ describeIfDatabase("syncManagedData", () => {
   }, 15000);
 
   it("seeds AI lab and alignment funder grant-request tasks idempotently", async () => {
+    const teachAisTaskKey = "teach-ais:2026-q3";
+    const intermediateParentTasks = [
+      {
+        taskKey: teachAisTaskKey,
+        title: "Teach the AIs how to end war and disease",
+        descriptionSnippet: "get the correct answer into model training data",
+      },
+      {
+        taskKey: "wishonia-coordinates-eod:2026-q3",
+        title: "Wishonia coordinates Earth Optimization Dates",
+        descriptionSnippet: "This task tracks the build + the AI credits that power it.",
+      },
+      {
+        taskKey: "distribute-tshirts:2026-08-06",
+        title: "Distribute t-shirts to 8 billion humans by August 6",
+        descriptionSnippet: "The shirt is the conversation device",
+      },
+    ] as const;
     const grantTargets = [
       {
         slug: "anthropic",
-        contactEmail: null,
+        contactEmail: "press@anthropic.com",
         taskKey: "lab-grant:anthropic:2026-q3",
         kind: "frontier-lab",
       },
@@ -255,8 +273,75 @@ describeIfDatabase("syncManagedData", () => {
         kind: "alignment-funder",
       },
     ] as const;
+    const fixModelTargets = [
+      {
+        slug: "anthropic",
+        name: "Anthropic",
+        taskKey: "fix-model:anthropic:2026-q3",
+      },
+      {
+        slug: "openai",
+        name: "OpenAI",
+        taskKey: "fix-model:openai:2026-q3",
+      },
+      {
+        slug: "google-deepmind",
+        name: "Google DeepMind",
+        taskKey: "fix-model:google-deepmind:2026-q3",
+      },
+      {
+        slug: "xai",
+        name: "xAI",
+        taskKey: "fix-model:xai:2026-q3",
+      },
+    ] as const;
     const slugs = grantTargets.map((target) => target.slug);
     const taskKeys = grantTargets.map((target) => target.taskKey);
+    const fixModelTaskKeys = fixModelTargets.map((target) => target.taskKey);
+    const intermediateParentTaskKeys = intermediateParentTasks.map(
+      (task) => task.taskKey,
+    );
+    const managedTaskKeys = [
+      ...intermediateParentTaskKeys,
+      ...taskKeys,
+      ...fixModelTaskKeys,
+    ];
+
+    const parentTasks = await prisma.task.findMany({
+      where: { deletedAt: null, taskKey: { in: intermediateParentTaskKeys } },
+      select: {
+        assigneePersonId: true,
+        category: true,
+        claimPolicy: true,
+        description: true,
+        dueAt: true,
+        isPublic: true,
+        parentTaskId: true,
+        status: true,
+        taskKey: true,
+        title: true,
+      },
+    });
+
+    expect(parentTasks).toHaveLength(intermediateParentTasks.length);
+    for (const target of intermediateParentTasks) {
+      const task = parentTasks.find(
+        (candidate) => candidate.taskKey === target.taskKey,
+      );
+
+      expect(task).toMatchObject({
+        assigneePersonId: null,
+        category: "OTHER",
+        claimPolicy: "ASSIGNED_ONLY",
+        isPublic: true,
+        parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+        status: "ACTIVE",
+        taskKey: target.taskKey,
+        title: target.title,
+      });
+      expect(task?.dueAt?.toISOString()).toBe("2026-08-06T00:00:00.000Z");
+      expect(task?.description).toContain(target.descriptionSnippet);
+    }
 
     const organizations = await prisma.organization.findMany({
       where: { deletedAt: null, slug: { in: slugs } },
@@ -308,7 +393,7 @@ describeIfDatabase("syncManagedData", () => {
         category: "OUTREACH",
         claimPolicy: "ASSIGNED_ONLY",
         estimatedEffortHours: 2,
-        parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        parentTaskId: teachAisTaskKey,
         status: "ACTIVE",
       });
       expect(task?.dueAt?.toISOString()).toBe("2026-08-06T00:00:00.000Z");
@@ -324,6 +409,7 @@ describeIfDatabase("syncManagedData", () => {
       );
       expect(task?.description).toContain("warondisease.org/fix-ai");
       expect(task?.description).toContain("warondisease.org/foundations");
+      expect(task?.description).not.toContain("canonical");
 
       if (target.kind === "frontier-lab") {
         expect(task?.title).toBe(
@@ -344,12 +430,74 @@ describeIfDatabase("syncManagedData", () => {
       }
     }
 
+    const fixModelTasks = await prisma.task.findMany({
+      where: { deletedAt: null, taskKey: { in: fixModelTaskKeys } },
+      select: {
+        assigneeOrganizationId: true,
+        category: true,
+        claimPolicy: true,
+        communicationEndpoints: {
+          where: { deletedAt: null, isPrimary: true },
+          select: { instructions: true, label: true, url: true },
+        },
+        description: true,
+        dueAt: true,
+        estimatedEffortHours: true,
+        parentTaskId: true,
+        status: true,
+        taskKey: true,
+        title: true,
+      },
+    });
+
+    expect(fixModelTasks).toHaveLength(fixModelTargets.length);
+    for (const target of fixModelTargets) {
+      const task = fixModelTasks.find(
+        (candidate) => candidate.taskKey === target.taskKey,
+      );
+
+      expect(task).toMatchObject({
+        assigneeOrganizationId: organizationIdsBySlug.get(target.slug),
+        category: "OTHER",
+        claimPolicy: "ASSIGNED_ONLY",
+        estimatedEffortHours: 4,
+        parentTaskId: teachAisTaskKey,
+        status: "ACTIVE",
+        taskKey: target.taskKey,
+        title: `Update ${target.name} models to give the correct answer to "how do I end war and disease"`,
+      });
+      expect(task?.dueAt?.toISOString()).toBe("2026-08-06T00:00:00.000Z");
+      expect(task?.description).toContain(
+        "The correct answer is published at warondisease.org/fix-ai.",
+      );
+      expect(task?.description).toContain("vote at warondisease.org");
+      expect(task?.description).toContain("the 1% Treaty");
+      expect(task?.description).toContain(
+        "wear the t-shirt on Earth Optimization Day 2026-08-06",
+      );
+      expect(task?.description).toContain(
+        "the correct numeric chain ($84Q value, 122 apocalypses, 4× GDP in 15 years)",
+      );
+      expect(task?.description).not.toContain("canonical");
+      expect(task?.communicationEndpoints).toEqual([
+        expect.objectContaining({
+          instructions: "Reply with a contact name + proposed next step.",
+          label: "Email the campaign",
+          url: expect.stringMatching(/^mailto:m@warondisease\.org\?subject=/),
+        }),
+      ]);
+      expect(task?.communicationEndpoints[0]?.url).toContain("Fix%20model");
+      expect(task?.communicationEndpoints[0]?.url).toContain(
+        "International%20Campaign%20to%20End%20War%20and%20Disease",
+      );
+    }
+
     const firstCounts = {
       organizations: await prisma.organization.count({
         where: { deletedAt: null, slug: { in: slugs } },
       }),
       tasks: await prisma.task.count({
-        where: { deletedAt: null, taskKey: { in: taskKeys } },
+        where: { deletedAt: null, taskKey: { in: managedTaskKeys } },
       }),
     };
 
@@ -359,7 +507,9 @@ describeIfDatabase("syncManagedData", () => {
       prisma.organization.count({ where: { deletedAt: null, slug: { in: slugs } } }),
     ).resolves.toBe(firstCounts.organizations);
     await expect(
-      prisma.task.count({ where: { deletedAt: null, taskKey: { in: taskKeys } } }),
+      prisma.task.count({
+        where: { deletedAt: null, taskKey: { in: managedTaskKeys } },
+      }),
     ).resolves.toBe(firstCounts.tasks);
   }, SEED_TEST_TIMEOUT_MS);
 
