@@ -5530,12 +5530,14 @@ model TaskFundingEvent {
   afterJson   Json?
   metadata    Json?
   createdAt   DateTime             @default(now())
+  deletedAt   DateTime?
 
   target    TaskFundingTarget  @relation("TaskFundingTargetEvents", fields: [targetId], references: [id], onDelete: Cascade)
   pledge    TaskFundingPledge? @relation("TaskFundingPledgeEvents", fields: [pledgeId], references: [id], onDelete: SetNull)
   actorUser User?              @relation("UserTaskFundingEvents", fields: [actorUserId], references: [id], onDelete: SetNull)
 
   @@index([targetId, eventType, createdAt])
+  @@index([deletedAt])
 }
 
 /// A user's claim on a claimable task

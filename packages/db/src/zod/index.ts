@@ -2136,6 +2136,7 @@ export const TaskFundingEventSchema = z.object({
   afterJson: nullableJsonSchema,
   metadata: nullableJsonSchema,
   createdAt: dateSchema,
+  deletedAt: nullableDateSchema,
 });
 export type TaskFundingEventTypeModel = z.infer<typeof TaskFundingEventSchema>;
 
