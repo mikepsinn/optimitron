@@ -141,6 +141,13 @@ specific funder/partner.
 - Before public launch: decide photo moderation policy, approximate-location
   display rules, minimum age/consent checks, DM reporting workflow, and whether
   dating profiles are visible only to opted-in dating users.
+- Backfill `jurisdictionId` across the 25 new models added in PR #86
+  (`DatingProfile` + 14 dating models, `CommerceOffer`/`CommerceOrder` + 6
+  commerce models, `TaskFundingTarget` + `TaskFundingPledge` + `TaskFundingEvent`).
+  CLAUDE.md requires it on every model. Deferred from PR #86 because adding
+  it mid-deployment would require a coordinated schema migration + all server
+  helpers + managed-data resync. Own PR: schema-only diff, default-backfill
+  to the campaign jurisdiction, then update creators in a follow-up.
 
 ## Active Handoff - 2026-05-13
 
