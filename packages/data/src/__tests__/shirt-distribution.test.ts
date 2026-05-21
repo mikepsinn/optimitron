@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { GLOBAL_POPULATION_2024 } from '../parameters/parameters-calculations-citations';
+import {
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
+  GLOBAL_POPULATION_2024,
+} from '../parameters/parameters-calculations-citations';
 import {
   BULK_SHIRT_UNIT_COST_USD,
   GLOBAL_ANNUAL_PHILANTHROPY_USD,
+  PER_SHIRT_TRUE_VALUE_USD,
   TREATY_MILITARY_ALLOCATION_PCT,
   TREATY_TRIALS_ALLOCATION_PCT,
   UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD,
@@ -39,6 +43,16 @@ const expectedParameterShape: Array<{
     displayName: 'Universal Shirt Distribution Cost (USD)',
     description:
       'Estimated total cost to distribute one t-shirt to every human on Earth at bulk-tier unit pricing.',
+    sourceType: 'calculated',
+    confidence: 'low',
+  },
+  {
+    parameter: PER_SHIRT_TRUE_VALUE_USD,
+    parameterName: 'PER_SHIRT_TRUE_VALUE_USD',
+    unit: 'USD',
+    displayName: 'Per-Shirt True Value (USD)',
+    description:
+      'Projected treaty value per shirt, derived from the expected treaty value divided by the global human population.',
     sourceType: 'calculated',
     confidence: 'low',
   },
@@ -91,6 +105,13 @@ describe('shirt distribution parameters', () => {
   it('calculates universal shirt distribution cost from population and unit cost', () => {
     expect(UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD.value).toBe(
       GLOBAL_POPULATION_2024.value * BULK_SHIRT_UNIT_COST_USD.value,
+    );
+  });
+
+  it('calculates per-shirt true value from expected treaty value and population', () => {
+    expect(PER_SHIRT_TRUE_VALUE_USD.value).toBe(
+      DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE.value /
+        GLOBAL_POPULATION_2024.value,
     );
   });
 

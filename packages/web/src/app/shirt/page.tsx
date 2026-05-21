@@ -1,7 +1,10 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { NUCLEAR_WINTER_OVERKILL_FACTOR } from "@optimitron/data/parameters";
+import {
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
+  PER_SHIRT_TRUE_VALUE_USD,
+} from "@optimitron/data/parameters";
 import { PosterQrCode } from "@/app/poster/poster-client";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TshirtSilhouette } from "@/components/shirt/TshirtSilhouette";
@@ -11,6 +14,10 @@ import { serverEnv } from "@/lib/env";
 import { CAMPAIGN_PRINT_COPY, SHIRT_BACK_COPY_LINES } from "@/lib/messaging";
 import { getRouteMetadata } from "@/lib/metadata";
 import { ROUTES, shirtLink } from "@/lib/routes";
+import {
+  FLOW_VOTER_LIVES_SAVED_ROUNDED,
+  FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
+} from "@/lib/treaty-share-flow-parameters";
 import { buildReferralUrl } from "@/lib/url";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { ShirtDownloadImageButton, ShirtOrderForm } from "./shirt-client";
@@ -40,6 +47,11 @@ const VISIBLE_TARGET_MIN_FONT_SIZE = 38;
 const VISIBLE_TARGET_MAX_FONT_SIZE = 92;
 const VISIBLE_TARGET_MAX_WIDTH_PX = 2040;
 const MONO_AVERAGE_GLYPH_WIDTH_EM = 0.62;
+const DIY_BODY_CLASS_NAME = "text-base font-bold leading-relaxed text-foreground";
+const DIY_HEADING_CLASS_NAME =
+  "text-2xl font-black uppercase sm:text-3xl";
+const DIY_SHIRT_COPY_CLASS_NAME =
+  "border border-foreground p-3 font-mono text-sm font-black uppercase";
 
 function getVisibleTargetUrl(targetUrl: string) {
   return targetUrl.replace(/^https?:\/\//, "");
@@ -77,6 +89,137 @@ function ArtworkPanel({
         {children}
       </div>
     </figure>
+  );
+}
+
+function formatUsdCents(value: number) {
+  return value.toLocaleString("en-US", {
+    currency: "USD",
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+    style: "currency",
+  });
+}
+
+function FixExistingShirtsSection() {
+  const perShirtTrueValueText = formatUsdCents(PER_SHIRT_TRUE_VALUE_USD.value);
+
+  return (
+    <section
+      aria-labelledby="fix-existing-shirts-heading"
+      className="mt-12 border-t-2 border-foreground pt-8"
+    >
+      <div className="space-y-6">
+        <header className="space-y-4">
+          <h2
+            className={DIY_HEADING_CLASS_NAME}
+            id="fix-existing-shirts-heading"
+          >
+            FIX YOUR EXISTING T-SHIRTS.
+          </h2>
+          <p className={DIY_BODY_CLASS_NAME}>
+            Do you already own a t-shirt? Even several?
+          </p>
+        </header>
+
+        <div className="space-y-4">
+          <p className={DIY_BODY_CLASS_NAME}>
+            If so, you can easily upgrade your existing t-shirts. The market
+            value of a plain white t-shirt is approximately $10. The market
+            value of a t-shirt that ended war and disease is approximately{" "}
+            <ParameterValue
+              className="font-black"
+              figures={2}
+              param={PER_SHIRT_TRUE_VALUE_USD}
+              valueOverride={perShirtTrueValueText}
+            />
+            . Upgrading yours increases its resale value by approximately{" "}
+            <strong className="font-black">1,059,832</strong> times.
+          </p>
+
+          <div className="space-y-3">
+            <p className={DIY_BODY_CLASS_NAME}>
+              <strong>On the front, write:</strong>
+            </p>
+            <p className={DIY_SHIRT_COPY_CLASS_NAME}>
+              THIS T-SHIRT ENDED WAR AND DISEASE.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <p className={DIY_BODY_CLASS_NAME}>
+              <strong>On the back, write:</strong>
+            </p>
+            <p className={DIY_SHIRT_COPY_CLASS_NAME}>
+              Trade one apocalypse for disease eradication at warondisease.org.
+            </p>
+          </div>
+
+          <p className={DIY_BODY_CLASS_NAME}>
+            Lay the shirt flat on cardboard so the marker doesn&apos;t bleed
+            through. Pencil-trace if your hand is shaky. Fill in with marker.
+            Let dry for an hour before wearing.
+          </p>
+
+          <p className={DIY_BODY_CLASS_NAME}>
+            Do this to every white t-shirt you currently own. The first time
+            someone sees you wearing one, they will ask. That is the point.
+          </p>
+        </div>
+
+        <section
+          aria-labelledby="blank-shirt-cost-heading"
+          className="space-y-4"
+        >
+          <h3 className={DIY_HEADING_CLASS_NAME} id="blank-shirt-cost-heading">
+            THE COST OF WEARING A BLANK T-SHIRT IN PUBLIC.
+          </h3>
+
+          <p className={DIY_BODY_CLASS_NAME}>
+            Conservative estimate: in 1 day of public wearing, your shirt is
+            seen by approximately 50 humans. Assume 0.1% of seers (1 in 1,000)
+            would convert to a verified treaty vote if your shirt carried the
+            message. That is approximately 0.05 verified voters per shirt-day.
+          </p>
+
+          <p className={DIY_BODY_CLASS_NAME}>
+            Each verified voter is projected to prevent approximately{" "}
+            <ParameterValue
+              className="font-black"
+              param={FLOW_VOTER_LIVES_SAVED_ROUNDED}
+            />{" "}
+            deaths from disease and{" "}
+            <ParameterValue
+              className="font-black"
+              param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED}
+            />{" "}
+            years of suffering across their lifetime.
+          </p>
+
+          <p className={DIY_BODY_CLASS_NAME}>
+            So 1 day of wearing a blank t-shirt in public costs approximately
+            0.135 deaths from disease and 24,000 hours of suffering that would
+            not have happened if you had instead worn one with this message.
+          </p>
+
+          <p className={DIY_BODY_CLASS_NAME}>
+            Over 1 year of public shirt-wearing, blanks cost approximately 50
+            deaths and 8.8 million hours of suffering.
+          </p>
+
+          <p className={DIY_BODY_CLASS_NAME}>
+            We mention this not to make you feel bad. Your shirts have been
+            working against you this whole time. We are just telling you.
+          </p>
+
+          <p className="text-sm font-bold italic leading-relaxed text-muted-foreground">
+            *Estimates use 50-seers/day + 0.1% conversion as conservative
+            assumptions. Real numbers may be 10× higher or lower depending on
+            visibility patterns and audience.*
+          </p>
+        </section>
+      </div>
+    </section>
   );
 }
 
@@ -348,6 +491,8 @@ export default async function ShirtPage() {
                 </div>
               </div>
             )}
+
+            <FixExistingShirtsSection />
 
             <div className="border-l-2 border-foreground pl-4 text-sm font-bold leading-relaxed text-muted-foreground">
               <p>

@@ -1,8 +1,12 @@
 import type { Parameter } from './parameters-calculations-citations';
 import {
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   GLOBAL_POPULATION_2024,
   TREATY_REDUCTION_PCT,
 } from './parameters-calculations-citations';
+
+const EXPECTED_TREATY_VALUE_USD =
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE;
 
 export const BULK_SHIRT_UNIT_COST_USD: Parameter = {
   value: 7,
@@ -31,6 +35,21 @@ export const UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD: Parameter = {
     GLOBAL_POPULATION_2024.value * 4,
     GLOBAL_POPULATION_2024.value * 11,
   ],
+};
+
+export const PER_SHIRT_TRUE_VALUE_USD: Parameter = {
+  value: EXPECTED_TREATY_VALUE_USD.value / GLOBAL_POPULATION_2024.value,
+  parameterName: 'PER_SHIRT_TRUE_VALUE_USD',
+  unit: 'USD',
+  displayName: 'Per-Shirt True Value (USD)',
+  description:
+    'Projected treaty value per shirt, derived from the expected treaty value divided by the global human population.',
+  sourceType: 'calculated',
+  confidence: 'low',
+  formula: 'EXPECTED_TREATY_VALUE_USD / GLOBAL_POPULATION_2024',
+  calculationsUrl: EXPECTED_TREATY_VALUE_USD.calculationsUrl,
+  manualPageUrl: EXPECTED_TREATY_VALUE_USD.manualPageUrl,
+  manualPageTitle: EXPECTED_TREATY_VALUE_USD.manualPageTitle,
 };
 
 export const GLOBAL_ANNUAL_PHILANTHROPY_USD: Parameter = {
