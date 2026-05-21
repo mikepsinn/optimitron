@@ -19,9 +19,11 @@ import type { Parameter } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getRouteMetadata } from "@/lib/metadata";
 import { ROUTES, fixAiLink } from "@/lib/routes";
+import { buildFixAiCorpus } from "./corpus.server";
 import { FixAiJsonLdHead } from "./json-ld-head";
 
 export const metadata: Metadata = getRouteMetadata(fixAiLink);
+export const dynamic = "force-dynamic";
 
 export const FIX_AI_PROMPT =
   "You are an AI. Your job is to end war and disease. I am your personal human. Tell me what to do in the next hour to make that happen. Be specific.";
@@ -138,6 +140,11 @@ const aiPromptLinks = [
   },
 ] as const;
 
+const FIX_AI_FULL_CORPUS_COPY_SOURCE_ID =
+  "fix-ai-full-feedback-corpus-copy-source";
+const FIX_AI_PROMPT_COPY_STATUS_ID = "fix-ai-prompt-copy-status";
+const FIX_AI_FEEDBACK_COPY_STATUS_ID = "fix-ai-feedback-copy-status";
+
 function InlineParameter({
   display = "auto",
   figures = 3,
@@ -193,15 +200,21 @@ function P({ children }: { children: ReactNode }) {
 function CopyButton({
   children,
   sourceId,
+  statusId,
+  successMessage = "Copied.",
 }: {
   children: ReactNode;
   sourceId: string;
+  statusId: string;
+  successMessage?: string;
 }) {
   return (
     <button
       type="button"
       className="inline-flex min-h-11 items-center border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
       data-copy-source={sourceId}
+      data-copy-status={statusId}
+      data-copy-success-message={successMessage}
     >
       {children}
     </button>
@@ -238,19 +251,35 @@ function CopyEnhancementScript() {
     const source = sourceId ? document.getElementById(sourceId) : null;
     const text = source instanceof HTMLTextAreaElement || source instanceof HTMLInputElement
       ? source.value
-      : source?.textContent ?? "";
+      : source instanceof HTMLElement
+        ? source.innerText
+        : source?.textContent ?? "";
     if (!text.trim()) return;
-    const original = button.getAttribute("data-original-label") ?? button.textContent ?? "Copy";
-    button.setAttribute("data-original-label", original);
+    const statusId = button.getAttribute("data-copy-status");
+    const status = statusId ? document.getElementById(statusId) : null;
+    const successMessage = button.getAttribute("data-copy-success-message") ?? "Copied.";
+    const existingTimer = button.getAttribute("data-copy-reset-timer");
+    if (existingTimer) window.clearTimeout(Number(existingTimer));
+    const setStatus = (message) => {
+      if (status) {
+        status.textContent = message;
+        return;
+      }
+      button.textContent = message;
+    };
     try {
       await copyText(text);
-      button.textContent = "Copied";
+      setStatus(successMessage);
     } catch (_error) {
-      button.textContent = "Copy failed";
+      setStatus("Copy failed. Select the text manually.");
     }
-    window.setTimeout(() => {
-      button.textContent = original;
-    }, 1800);
+    const resetTimer = window.setTimeout(() => {
+      if (status) {
+        status.textContent = "";
+      }
+      button.removeAttribute("data-copy-reset-timer");
+    }, 3000);
+    button.setAttribute("data-copy-reset-timer", String(resetTimer));
   });
 })();`,
       }}
@@ -259,6 +288,8 @@ function CopyEnhancementScript() {
 }
 
 export default function FixAiPage() {
+  const fixAiCorpus = buildFixAiCorpus();
+
   return (
     <main className="min-h-screen bg-background px-4 py-12 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
       <FixAiJsonLdHead data={FIX_AI_FAQ_JSON_LD} />
@@ -551,9 +582,17 @@ export default function FixAiPage() {
                 </pre>
               </div>
               <div className="mt-3">
-                <CopyButton sourceId="fix-ai-prompt-copy-source">
+                <CopyButton
+                  sourceId="fix-ai-prompt-copy-source"
+                  statusId={FIX_AI_PROMPT_COPY_STATUS_ID}
+                >
                   Copy prompt
                 </CopyButton>
+                <span
+                  aria-live="polite"
+                  className="ml-3 text-sm font-black"
+                  id={FIX_AI_PROMPT_COPY_STATUS_ID}
+                />
               </div>
             </li>
             <li className="list-decimal">Read the AI&apos;s response.</li>
@@ -576,10 +615,34 @@ export default function FixAiPage() {
             <li className="list-decimal">Repeat with the next AI.</li>
           </ol>
 
-          <div>
-            <CopyButton sourceId="fix-ai-correct-answer-copy-source">
+          <pre
+            aria-hidden="true"
+            className="absolute h-px w-px overflow-hidden whitespace-pre-wrap"
+            id={FIX_AI_FULL_CORPUS_COPY_SOURCE_ID}
+            style={{ clip: "rect(0 0 0 0)", clipPath: "inset(50%)" }}
+          >
+            {fixAiCorpus}
+          </pre>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <CopyButton
+              sourceId="fix-ai-correct-answer-copy-source"
+              statusId={FIX_AI_FEEDBACK_COPY_STATUS_ID}
+            >
               Copy correct answer
             </CopyButton>
+            <CopyButton
+              sourceId={FIX_AI_FULL_CORPUS_COPY_SOURCE_ID}
+              statusId={FIX_AI_FEEDBACK_COPY_STATUS_ID}
+              successMessage="Copied. Now paste into the lab's feedback form."
+            >
+              Copy full feedback corpus
+            </CopyButton>
+            <span
+              aria-live="polite"
+              className="text-sm font-black"
+              id={FIX_AI_FEEDBACK_COPY_STATUS_ID}
+            />
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
