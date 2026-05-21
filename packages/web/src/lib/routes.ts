@@ -1025,7 +1025,7 @@ export const loveLink: NavItem = {
   label: "Earth Optimization Date",
   emoji: "❤️",
   description:
-    "Pair with another human for one hour. Decide together what most optimizes Earth. Do it. An Earth Optimization Date is, by definition, a non-romantic activity.",
+    "If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.",
   tagline: "An Earth Optimization Date is non-romantic by definition",
   copyPreview: true,
   screenshot: true,
@@ -1034,10 +1034,9 @@ export const loveLink: NavItem = {
 
 export const posterLink: NavItem = {
   href: ROUTES.poster,
-  label: "Print a poster",
+  label: "Print a Poster",
   emoji: "📄",
-  description:
-    "Print a poster with your campaign QR code so humans can vote from walls, doors, and awkward dates.",
+  description: `Every human on earth would be vastly richer and significantly less dead if we agreed to sacrifice one of our ${apocalypseCount} apocalypse capacity for disease eradication. A poster taped to a wall recruits voters who agree to this arrangement around the clock, without needing you in the room.`,
   tagline: "Print your campaign QR code.",
   copyPreview: true,
   screenshot: true,
@@ -1046,14 +1045,13 @@ export const posterLink: NavItem = {
 
 export const shirtLink: NavItem = {
   href: ROUTES.shirt,
-  label: "Get the shirt",
+  label: "Get the Shirt",
   emoji: "👕",
-  description:
-    "Order the T-shirt That Ended War and Disease — campaign copy and a referral QR code on a wearable surface. Your torso is not busy enough.",
+  description: `Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our ${apocalypseCount} apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.`,
   tagline: "Wear your campaign QR code.",
   copyPreview: true,
   screenshot: true,
-  cta: "Get the shirt",
+  cta: "Get the Shirt",
 };
 
 export const storeLink: NavItem = {
@@ -1373,14 +1371,24 @@ export const iabDetailsLink: NavItem = {
 };
 
 export const fullManualPaperLink: NavItem = {
-  label: "Full Manual",
+  label: "Read the Manual",
   href: "https://manual.warondisease.org",
   emoji: "📖",
   description:
     "The complete idiot's guide to legally bribing your way to utopia. Contains pictures, because reading is hard when you are diseased and dying.",
   external: true,
 
-  cta: "Read Paper",
+  cta: "Read",
+};
+
+export const podcastLink: NavItem = {
+  label: "Listen",
+  href: "https://manual.warondisease.org/knowledge/podcast.html",
+  emoji: "🎧",
+  description:
+    "The manual, read aloud. Beamed through your skull auditory port for humans whose eye-holes are otherwise occupied.",
+  external: true,
+  cta: "Listen",
 };
 
 export const dfdaImpactPaperLink: NavItem = {
