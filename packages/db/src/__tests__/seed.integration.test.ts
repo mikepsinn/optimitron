@@ -544,8 +544,7 @@ describeIfDatabase("syncManagedData", () => {
         parentTaskKey: "distribute-tshirts:2026-08-06",
         estimatedEffortHours: 0.1,
         primaryEndpoint: {
-          instructions:
-            "Pledge form ships with the funding-blocked Task primitive (in progress).",
+          instructions: "Pledge form is still in progress.",
           label: "Pledge here",
           url: "/foundations",
         },
