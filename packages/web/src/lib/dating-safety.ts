@@ -1,9 +1,14 @@
+import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters";
+
 export const DATING_SAFETY_ACK_VERSION = "2026-05-21";
+
+const dailyDiseaseDeathsInThousands = Math.round(
+  GLOBAL_DISEASE_DEATHS_DAILY.value / 1000,
+);
 
 export const DATING_SAFETY_COPY = {
   title: "Mission Safety",
-  body:
-    "Earth Optimization Missions are one-hour sessions for ending war and disease. You may fall madly in love if you insist. But keep in mind, 150 thousand people die of disease every day, so please spend the hour eradicating disease instead of hugging and/or kissing.",
+  body: `Earth Optimization Missions are one-hour sessions for ending war and disease. You may fall madly in love if you insist. But keep in mind, ${dailyDiseaseDeathsInThousands} thousand people die of disease every day, so please spend the hour eradicating disease instead of hugging and/or kissing.`,
   acknowledgement:
     "I am 18 or older. I understand Earth Optimization Missions are campaign sessions, not a promise that another human is safe, honest, available, or good at posters.",
   rules: [

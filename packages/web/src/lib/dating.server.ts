@@ -195,7 +195,9 @@ export async function saveDatingProfile(
     !alreadyAcknowledged &&
     !input.safetyAcknowledged
   ) {
-    throw new Error("Confirm the Earth Optimization Mission safety rules first.");
+    throw new Error(
+      "Confirm the Earth Optimization Mission safety rules first.",
+    );
   }
 
   const acknowledgedMetadata = input.safetyAcknowledged
@@ -208,8 +210,10 @@ export async function saveDatingProfile(
     bio: cleanText(input.bio, 2000),
     campaignDateIdeas: cleanStringList(input.campaignDateIdeas, 8),
     displayCity: cleanText(input.displayCity, 80),
-    displayCountryCode: cleanText(input.displayCountryCode, 2)?.toUpperCase() ?? null,
-    displayRegionCode: cleanText(input.displayRegionCode, 16)?.toUpperCase() ?? null,
+    displayCountryCode:
+      cleanText(input.displayCountryCode, 2)?.toUpperCase() ?? null,
+    displayRegionCode:
+      cleanText(input.displayRegionCode, 16)?.toUpperCase() ?? null,
     headline: cleanText(input.headline, 140),
     lastActiveAt: now,
     lookingForText: cleanText(input.lookingForText, 1000),
@@ -403,7 +407,13 @@ export async function createDatingInteraction(
   if (!toProfile) {
     throw new Error("Mission profile not found.");
   }
-  if (await hasActiveDatingBlockBetween(fromProfile.id, toProfile.id)) {
+  if (
+    await hasActiveDatingBlockBetween(
+      fromProfile.id,
+      toProfile.id,
+      discoveryBlockScopes,
+    )
+  ) {
     throw new Error("This profile is blocked.");
   }
 
@@ -500,9 +510,11 @@ export async function getDatingMatchesData(userId: string) {
     },
     orderBy: [{ lastMessageAt: "desc" }, { matchedAt: "desc" }],
     where: {
-      AND: [
+      deletedAt: null,
+      OR: [
         {
-          profileA: {
+          profileAId: profile.id,
+          profileB: {
             blocksCreated: {
               none: {
                 blockedProfileId: profile.id,
@@ -510,10 +522,6 @@ export async function getDatingMatchesData(userId: string) {
                 scope: { in: messageBlockScopes },
               },
             },
-          },
-        },
-        {
-          profileA: {
             blocksReceived: {
               none: {
                 blockerProfileId: profile.id,
@@ -524,7 +532,8 @@ export async function getDatingMatchesData(userId: string) {
           },
         },
         {
-          profileB: {
+          profileBId: profile.id,
+          profileA: {
             blocksCreated: {
               none: {
                 blockedProfileId: profile.id,
@@ -532,10 +541,6 @@ export async function getDatingMatchesData(userId: string) {
                 scope: { in: messageBlockScopes },
               },
             },
-          },
-        },
-        {
-          profileB: {
             blocksReceived: {
               none: {
                 blockerProfileId: profile.id,
@@ -546,8 +551,6 @@ export async function getDatingMatchesData(userId: string) {
           },
         },
       ],
-      deletedAt: null,
-      OR: [{ profileAId: profile.id }, { profileBId: profile.id }],
       status: DatingMatchStatus.ACTIVE,
     },
   });
@@ -679,7 +682,11 @@ export async function proposeDatingDatePlan(
     match.profileAId === profile.id ? match.profileBId : match.profileAId;
 
   if (
-    await hasActiveDatingBlockBetween(profile.id, otherProfileId, messageBlockScopes)
+    await hasActiveDatingBlockBetween(
+      profile.id,
+      otherProfileId,
+      messageBlockScopes,
+    )
   ) {
     throw new Error("This match is blocked.");
   }
@@ -756,9 +763,13 @@ export async function createDatingSafetyReport(
       throw new Error("Message not found.");
     }
 
-    if (message.senderProfileId !== profile.id) {
-      reportedProfileId = reportedProfileId ?? message.senderProfileId;
+    if (message.senderProfileId === profile.id) {
+      throw new Error("You cannot report yourself.");
     }
+    if (reportedProfileId && reportedProfileId !== message.senderProfileId) {
+      throw new Error("Reported profile must match the message sender.");
+    }
+    reportedProfileId = message.senderProfileId;
   }
 
   if (datePlanId) {
@@ -865,27 +876,34 @@ export async function createDatingBlock(
       },
     });
 
-    await tx.datingMatch.updateMany({
-      data: {
-        status: DatingMatchStatus.BLOCKED,
-        unmatchedAt: now,
-      },
-      where: {
-        deletedAt: null,
-        profileAId,
-        profileBId,
-      },
-    });
-    await tx.datingConversation.updateMany({
-      data: { status: DatingConversationStatus.ARCHIVED },
-      where: {
-        deletedAt: null,
-        match: {
+    const scope = input.scope ?? DatingBlockScope.ALL;
+
+    if (
+      scope === DatingBlockScope.ALL ||
+      scope === DatingBlockScope.MESSAGES
+    ) {
+      await tx.datingMatch.updateMany({
+        data: {
+          status: DatingMatchStatus.BLOCKED,
+          unmatchedAt: now,
+        },
+        where: {
+          deletedAt: null,
           profileAId,
           profileBId,
         },
-      },
-    });
+      });
+      await tx.datingConversation.updateMany({
+        data: { status: DatingConversationStatus.ARCHIVED },
+        where: {
+          deletedAt: null,
+          match: {
+            profileAId,
+            profileBId,
+          },
+        },
+      });
+    }
 
     return block;
   });

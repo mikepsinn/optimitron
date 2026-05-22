@@ -555,8 +555,8 @@ describeIfDatabase("syncManagedData", () => {
         estimatedEffortHours: 1,
         primaryEndpoint: {
           instructions: "Pair up.",
-          label: "Find a partner",
-          url: "/love",
+          label: "Start a mission",
+          url: "/missions",
         },
       },
       {

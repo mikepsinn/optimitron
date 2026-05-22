@@ -1,4 +1,4 @@
-import { DatingBlockScope } from "@optimitron/db";
+import { DatingBlockScope } from "@optimitron/db/enums";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";
@@ -11,6 +11,12 @@ const BlockBodySchema = z.object({
   reason: z.string().max(500).nullish(),
   scope: z.nativeEnum(DatingBlockScope).optional(),
 });
+
+const CLIENT_SAFE_ERRORS = new Set([
+  "Choose a profile to block.",
+  "Mission profile not found.",
+  "You cannot block yourself.",
+]);
 
 export async function POST(request: Request) {
   try {
@@ -28,7 +34,7 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    if (error instanceof Error) {
+    if (error instanceof Error && CLIENT_SAFE_ERRORS.has(error.message)) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error("[dating] Failed to block profile:", error);

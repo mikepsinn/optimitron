@@ -138,8 +138,7 @@ export function MissionProfileForm({ profile }: { profile: Profile | null }) {
   const [photoUrl, setPhotoUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const needsSafetyAcknowledgement =
-    status === "ACTIVE" && !safetyAcknowledged;
+  const needsSafetyAcknowledgement = status === "ACTIVE" && !safetyAcknowledged;
 
   async function saveProfile() {
     if (needsSafetyAcknowledgement) {
@@ -309,9 +308,7 @@ export function MissionProfileForm({ profile }: { profile: Profile | null }) {
               checked={safetyAcknowledged}
               className="mt-1 h-5 w-5 accent-foreground"
               type="checkbox"
-              onChange={(event) =>
-                setSafetyAcknowledged(event.target.checked)
-              }
+              onChange={(event) => setSafetyAcknowledged(event.target.checked)}
             />
             {DATING_SAFETY_COPY.acknowledgement}
           </label>
@@ -466,31 +463,34 @@ export function MissionDiscoverClient({
     kind: "BLOCK" | "LIKE" | "PASS" | "INTRO",
   ) {
     setBusyId(candidateId);
-    if (kind === "BLOCK") {
-      await fetch("/api/dating/blocks", {
-        body: JSON.stringify({
-          blockedProfileId: candidateId,
-          reason: "Blocked from discovery",
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      });
-    } else {
-      await fetch("/api/dating/interactions", {
-        body: JSON.stringify({
-          introMessage:
-            kind === "INTRO"
-              ? "Want to get coffee and make a few strangers vote?"
-              : undefined,
-          kind,
-          toProfileId: candidateId,
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      });
+    try {
+      if (kind === "BLOCK") {
+        await fetch("/api/dating/blocks", {
+          body: JSON.stringify({
+            blockedProfileId: candidateId,
+            reason: "Blocked from discovery",
+          }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        });
+      } else {
+        await fetch("/api/dating/interactions", {
+          body: JSON.stringify({
+            introMessage:
+              kind === "INTRO"
+                ? "Want to get coffee and make a few strangers vote?"
+                : undefined,
+            kind,
+            toProfileId: candidateId,
+          }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        });
+      }
+      router.refresh();
+    } finally {
+      setBusyId(null);
     }
-    setBusyId(null);
-    router.refresh();
   }
 
   return (
@@ -501,10 +501,7 @@ export function MissionDiscoverClient({
             {candidate.photos[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                alt={
-                  candidate.photos[0].altText ??
-                  "Mission profile photo"
-                }
+                alt={candidate.photos[0].altText ?? "Mission profile photo"}
                 className="aspect-square w-full border-2 border-foreground object-cover"
                 src={candidate.photos[0].imageUrl}
               />
@@ -705,17 +702,20 @@ export function MissionReportButton({
 
   async function report() {
     setIsSending(true);
-    const response = await fetch("/api/dating/reports", {
-      body: JSON.stringify({
-        messageId,
-        reason: "Needs review",
-        reportedProfileId,
-      }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    });
-    setIsSending(false);
-    setMessage(response.ok ? "Reported" : "Could not report");
+    try {
+      const response = await fetch("/api/dating/reports", {
+        body: JSON.stringify({
+          messageId,
+          reason: "Needs review",
+          reportedProfileId,
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      setMessage(response.ok ? "Reported" : "Could not report");
+    } finally {
+      setIsSending(false);
+    }
   }
 
   return (
@@ -753,18 +753,21 @@ export function MissionBlockButton({
       return;
     }
     setIsBlocking(true);
-    const response = await fetch("/api/dating/blocks", {
-      body: JSON.stringify({
-        blockedProfileId,
-        reason: "Blocked from conversation",
-      }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    });
-    setIsBlocking(false);
-    if (response.ok) {
-      router.push("/messages");
-      router.refresh();
+    try {
+      const response = await fetch("/api/dating/blocks", {
+        body: JSON.stringify({
+          blockedProfileId,
+          reason: "Blocked from conversation",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      if (response.ok) {
+        router.push("/messages");
+        router.refresh();
+      }
+    } finally {
+      setIsBlocking(false);
     }
   }
 

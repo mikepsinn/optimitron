@@ -19,7 +19,8 @@ async function loadMessages(userId: string) {
   } catch (error) {
     return {
       data: null,
-      error: error instanceof Error ? error.message : "Could not load messages.",
+      error:
+        error instanceof Error ? error.message : "Could not load messages.",
     };
   }
 }
@@ -27,7 +28,7 @@ async function loadMessages(userId: string) {
 function getDisplayError(message: string) {
   return message === "Create a mission profile first."
     ? "Turn on missions first."
-    : message;
+    : "Could not load messages.";
 }
 
 export default async function MessagesPage() {
@@ -39,7 +40,8 @@ export default async function MessagesPage() {
   }
 
   const { data, error } = await loadMessages(userId);
-  const conversations = data?.matches.filter((match) => match.conversation) ?? [];
+  const conversations =
+    data?.matches.filter((match) => match.conversation) ?? [];
 
   return (
     <main className="min-h-screen bg-background px-4 py-10 text-foreground [font-family:var(--v0-font-libre-baskerville)] max-sm:pr-20 sm:px-6 lg:px-8">
@@ -64,9 +66,7 @@ export default async function MessagesPage() {
         <div className="mt-8 grid gap-4">
           {error ? (
             <div className="border-2 border-foreground p-5">
-              <h2 className="text-lg font-black uppercase">
-                Missions are off
-              </h2>
+              <h2 className="text-lg font-black uppercase">Missions are off</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
                 {getDisplayError(error)}
               </p>
