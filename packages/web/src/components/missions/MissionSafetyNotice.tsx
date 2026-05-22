@@ -1,6 +1,6 @@
 import { DATING_SAFETY_COPY } from "@/lib/dating-safety";
 
-export function DatingSafetyNotice({ compact = false }: { compact?: boolean }) {
+export function MissionSafetyNotice({ compact = false }: { compact?: boolean }) {
   return (
     <section className="border-2 border-foreground p-5">
       <h2 className="text-lg font-black uppercase">

@@ -19,10 +19,10 @@
 - These terms govern your use of International Campaign to End War and Disease, operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease. By using warondisease.org, you agree to these terms. If you do not agree, do not use the site.
 ### 2. WHAT THE SITE DOES
 - The site supports public campaigns, votes, signatures, referrals, endorsements, organization pages, dashboards, tasks, donations, and related educational materials. Features may change as the project changes.
-### 3. EARTH OPTIMIZATION MISSIONS AND USER MEETINGS
-- Earth Optimization Missions and similar user-meeting features are for adults using the site to coordinate platonic campaign work. We do not screen every user, verify backgrounds, supervise meetings, or promise that another person is safe.
-- Do not use user-meeting features if you are under 18.
-- Meet in public, tell someone where you are going, and leave whenever you want.
+### 3. EARTH OPTIMIZATION MISSIONS
+- Earth Optimization Missions and similar coordination features are for adults using the site to coordinate platonic campaign work. We do not screen every user, verify backgrounds, supervise sessions, or promise that another person is safe.
+- Do not use mission coordination features if you are under 18.
+- Choose the setting yourself: online, in public, or not at all. Leave whenever you want.
 - Do not send money, bank details, passwords, identity documents, or emergency favors to another user.
 - Report unsafe or abusive behavior. Block anyone you do not want to hear from.
 - If you are in immediate danger, contact local emergency services.

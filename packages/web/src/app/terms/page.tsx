@@ -63,19 +63,21 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                3. Earth Optimization Missions and User Meetings
+                3. Earth Optimization Missions
               </h2>
               <p className="mb-4 font-bold leading-relaxed">
-                Earth Optimization Missions and similar user-meeting features are
-                for adults using the site to coordinate platonic campaign work.
-                We do not screen every user, verify backgrounds, supervise
-                meetings, or promise that another person is safe.
+                Earth Optimization Missions and similar coordination features
+                are for adults using the site to coordinate platonic campaign
+                work. We do not screen every user, verify backgrounds,
+                supervise sessions, or promise that another person is safe.
               </p>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
-                <li>Do not use user-meeting features if you are under 18.</li>
                 <li>
-                  Meet in public, tell someone where you are going, and leave
-                  whenever you want.
+                  Do not use mission coordination features if you are under 18.
+                </li>
+                <li>
+                  Choose the setting yourself: online, in public, or not at
+                  all. Leave whenever you want.
                 </li>
                 <li>
                   Do not send money, bank details, passwords, identity

@@ -3,19 +3,25 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Ban, Heart, Send, Shield, X } from "lucide-react";
+import type {
+  DatingProfileStatus,
+  DatingRelationshipIntent,
+} from "@optimitron/db/enums";
 import {
   DATING_SAFETY_COPY,
   hasDatingSafetyAcknowledgement,
 } from "@/lib/dating-safety";
 import { getUserDisplayName } from "@/lib/user-display";
 
-type DatingProfileStatus =
-  | "ACTIVE"
-  | "BANNED"
-  | "DRAFT"
-  | "HIDDEN"
-  | "MODERATION_HOLD"
-  | "PAUSED";
+const RELATIONSHIP_INTENT_OPTIONS: Array<{
+  label: string;
+  value: DatingRelationshipIntent;
+}> = [
+  { label: "Mission friends", value: "FRIENDS" },
+  { label: "Could be romantic", value: "DATES" },
+  { label: "Long-term if the universe insists", value: "LONG_TERM" },
+  { label: "Unsure", value: "UNSURE" },
+];
 
 interface Photo {
   id: string;
@@ -35,7 +41,7 @@ interface Profile {
   lookingForText: string | null;
   metadata?: unknown;
   photos?: Photo[];
-  relationshipIntents: string[];
+  relationshipIntents: DatingRelationshipIntent[];
   status: DatingProfileStatus;
   wantsCampaignDates: boolean;
 }
@@ -92,7 +98,7 @@ function buttonClassName(invert = true) {
     : "inline-flex items-center justify-center gap-2 border-2 border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-60";
 }
 
-export function DatingProfileForm({ profile }: { profile: Profile | null }) {
+export function MissionProfileForm({ profile }: { profile: Profile | null }) {
   const router = useRouter();
   const safetyAlreadyAcknowledged = hasDatingSafetyAcknowledgement(
     profile?.metadata,
@@ -114,6 +120,13 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
   );
   const [wantsCampaignDates, setWantsCampaignDates] = useState(
     profile?.wantsCampaignDates ?? true,
+  );
+  const [relationshipIntents, setRelationshipIntents] = useState<
+    DatingRelationshipIntent[]
+  >(
+    profile?.relationshipIntents?.length
+      ? profile.relationshipIntents
+      : ["FRIENDS"],
   );
   const [safetyAcknowledged, setSafetyAcknowledged] = useState(
     safetyAlreadyAcknowledged,
@@ -144,7 +157,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
         displayRegionCode,
         headline,
         lookingForText,
-        relationshipIntents: ["FRIENDS"],
+        relationshipIntents,
         safetyAcknowledged:
           safetyAcknowledged && !safetyAlreadyAcknowledged ? true : undefined,
         status,
@@ -155,7 +168,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
     });
 
     setIsSaving(false);
-    setMessage(response.ok ? "Saved" : "Could not save");
+    setMessage(response.ok ? "Mission settings saved" : "Could not save");
     router.refresh();
   }
 
@@ -167,16 +180,26 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
       headers: { "Content-Type": "application/json" },
       method: "POST",
     });
-    setMessage(response.ok ? "Photo added for review" : "Could not add photo");
+    setMessage(
+      response.ok ? "Mission photo added for review" : "Could not add photo",
+    );
     if (response.ok) setPhotoUrl("");
     router.refresh();
+  }
+
+  function toggleRelationshipIntent(intent: DatingRelationshipIntent) {
+    setRelationshipIntents((current) =>
+      current.includes(intent)
+        ? current.filter((value) => value !== intent)
+        : [...current, intent],
+    );
   }
 
   return (
     <div className="grid gap-6">
       <div className="grid gap-4 border-2 border-foreground p-5">
         <label className="grid gap-2 text-sm font-black uppercase">
-          Status
+          Mission status
           <select
             className={fieldClassName()}
             value={status}
@@ -190,7 +213,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
           </select>
         </label>
         <label className="grid gap-2 text-sm font-black uppercase">
-          Headline
+          Mission headline
           <input
             className={fieldClassName()}
             value={headline}
@@ -198,7 +221,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
           />
         </label>
         <label className="grid gap-2 text-sm font-black uppercase">
-          Bio
+          Mission bio
           <textarea
             className={`${fieldClassName()} min-h-32`}
             value={bio}
@@ -248,6 +271,27 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
           />
           I am open to Mission Matches.
         </label>
+        <fieldset className="grid gap-3 border-2 border-foreground p-4">
+          <legend className="px-1 text-sm font-black uppercase">
+            Mission chemistry
+          </legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {RELATIONSHIP_INTENT_OPTIONS.map((option) => (
+              <label
+                className="flex items-start gap-3 text-sm font-black uppercase"
+                key={option.value}
+              >
+                <input
+                  checked={relationshipIntents.includes(option.value)}
+                  className="mt-1 h-5 w-5 accent-foreground"
+                  type="checkbox"
+                  onChange={() => toggleRelationshipIntent(option.value)}
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <div className="border-2 border-foreground p-4">
           <h2 className="text-sm font-black uppercase">
             {DATING_SAFETY_COPY.title}
@@ -297,7 +341,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
       </div>
 
       <div className="grid gap-4 border-2 border-foreground p-5">
-        <h2 className="text-lg font-black uppercase">Photos</h2>
+        <h2 className="text-lg font-black uppercase">Mission photos</h2>
         {profile?.photos?.length ? (
           <div className="grid gap-3 sm:grid-cols-3">
             {profile.photos.map((photo) => (
@@ -316,7 +360,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
           </div>
         ) : (
           <p className="text-sm font-bold text-muted-foreground">
-            Add at least one photo.
+            Add at least one mission photo.
           </p>
         )}
         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
@@ -347,7 +391,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
   );
 }
 
-export function DatingQuestionsClient({
+export function MissionQuestionsClient({
   questions,
 }: {
   questions: Question[];
@@ -409,7 +453,7 @@ export function DatingQuestionsClient({
   );
 }
 
-export function DatingDiscoverClient({
+export function MissionDiscoverClient({
   candidates,
 }: {
   candidates: Candidate[];
@@ -542,7 +586,7 @@ export function DatingDiscoverClient({
   );
 }
 
-export function DatingMessageComposer({
+export function MissionMessageComposer({
   conversationId,
 }: {
   conversationId: string;
@@ -588,7 +632,7 @@ export function DatingMessageComposer({
   );
 }
 
-export function DatingDatePlanForm({
+export function MissionPlanForm({
   conversationId,
   matchId,
 }: {
@@ -649,7 +693,7 @@ export function DatingDatePlanForm({
   );
 }
 
-export function DatingReportButton({
+export function MissionReportButton({
   messageId,
   reportedProfileId,
 }: {
@@ -696,7 +740,7 @@ export function DatingReportButton({
   );
 }
 
-export function DatingBlockButton({
+export function MissionBlockButton({
   blockedProfileId,
 }: {
   blockedProfileId: string;
@@ -719,7 +763,7 @@ export function DatingBlockButton({
     });
     setIsBlocking(false);
     if (response.ok) {
-      router.push("/missions/matches");
+      router.push("/messages");
       router.refresh();
     }
   }

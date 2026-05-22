@@ -18,6 +18,7 @@
 - Find officials, lawyers, clinical researchers, organizers, funders, and communicators who can help end war and disease. Open a profile, see the task, and remind the human.
 - [SEE TASKS](/tasks)
 - [REGISTER A PLAINTIFF](/plaintiffs)
+- [MISSION PEOPLE](/people?missions=1)
 - SEARCH
 - [ALL](/people)
 - [OFFICIALS](/people?role=officials)

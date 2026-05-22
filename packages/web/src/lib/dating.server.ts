@@ -1,3 +1,4 @@
+import { Prisma } from "@optimitron/db";
 import {
   DatingBlockScope,
   DatingConversationStatus,
@@ -10,8 +11,7 @@ import {
   DatingQuestionImportance,
   DatingQuestionStatus,
   DatingRelationshipIntent,
-  Prisma,
-} from "@optimitron/db";
+} from "@optimitron/db/enums";
 import {
   hasDatingSafetyAcknowledgement,
   withDatingSafetyAcknowledgement,
@@ -337,7 +337,10 @@ export async function answerDatingQuestion(
   });
 }
 
-export async function getDatingDiscoverData(userId: string) {
+export async function getDatingDiscoverData(
+  userId: string,
+  options: { relationshipIntent?: DatingRelationshipIntent | null } = {},
+) {
   const profile = await getOwnDatingProfile(userId);
   const candidates = await prisma.datingProfile.findMany({
     select: publicProfileSelect,
@@ -346,6 +349,10 @@ export async function getDatingDiscoverData(userId: string) {
     where: {
       deletedAt: null,
       status: DatingProfileStatus.ACTIVE,
+      wantsCampaignDates: true,
+      ...(options.relationshipIntent
+        ? { relationshipIntents: { has: options.relationshipIntent } }
+        : {}),
       ...(profile
         ? {
             blocksCreated: {

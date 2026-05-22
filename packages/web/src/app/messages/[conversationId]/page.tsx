@@ -2,29 +2,29 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { notFound, redirect } from "next/navigation";
 import {
-  DatingBlockButton,
-  DatingDatePlanForm,
-  DatingMessageComposer,
-  DatingReportButton,
-} from "@/app/missions/dating-client";
-import { DatingSafetyNotice } from "@/app/missions/dating-safety-notice";
+  MissionBlockButton,
+  MissionMessageComposer,
+  MissionPlanForm,
+  MissionReportButton,
+} from "@/components/missions/MissionClient";
+import { MissionSafetyNotice } from "@/components/missions/MissionSafetyNotice";
 import { authOptions } from "@/lib/auth";
 import { getDatingConversationData } from "@/lib/dating.server";
-import { getSignInPath } from "@/lib/routes";
+import { getSignInPath, ROUTES } from "@/lib/routes";
 import { getUserDisplayName } from "@/lib/user-display";
 
-interface DatingMessagePageProps {
+interface MessagePageProps {
   params: Promise<{ conversationId: string }>;
 }
 
-export default async function DatingMessagePage({
+export default async function MessagePage({
   params,
-}: DatingMessagePageProps) {
+}: MessagePageProps) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   if (!userId) {
-    redirect(getSignInPath("/missions/matches"));
+    redirect(getSignInPath(ROUTES.messages));
   }
 
   const { conversationId } = await params;
@@ -47,9 +47,9 @@ export default async function DatingMessagePage({
       <div className="mx-auto max-w-4xl">
         <Link
           className="text-sm font-black uppercase underline underline-offset-4"
-          href="/missions/matches"
+          href={ROUTES.messages}
         >
-          Back to matches
+          Back to messages
         </Link>
         <div className="mt-8 flex flex-col gap-4 border-b-2 border-foreground pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -63,12 +63,12 @@ export default async function DatingMessagePage({
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
-            <DatingReportButton reportedProfileId={other.id} />
-            <DatingBlockButton blockedProfileId={other.id} />
+            <MissionReportButton reportedProfileId={other.id} />
+            <MissionBlockButton blockedProfileId={other.id} />
           </div>
         </div>
         <div className="mt-6">
-          <DatingSafetyNotice compact />
+          <MissionSafetyNotice compact />
         </div>
 
         <div className="mt-8 grid gap-4">
@@ -90,7 +90,7 @@ export default async function DatingMessagePage({
                   </p>
                   {!mine ? (
                     <div className="mt-3">
-                      <DatingReportButton
+                      <MissionReportButton
                         messageId={message.id}
                         reportedProfileId={other.id}
                       />
@@ -110,8 +110,8 @@ export default async function DatingMessagePage({
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_320px]">
-          <DatingMessageComposer conversationId={conversation.id} />
-          <DatingDatePlanForm
+          <MissionMessageComposer conversationId={conversation.id} />
+          <MissionPlanForm
             conversationId={conversation.id}
             matchId={conversation.matchId}
           />

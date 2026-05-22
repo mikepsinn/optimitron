@@ -78,7 +78,7 @@ export default async function PrivacyPage() {
                 <li>
                   Earth Optimization Mission details, such as your mission
                   profile, photos, city, answers, matches, messages, proposed
-                  meeting plans, blocks, safety acknowledgments, and safety
+                  mission plans, blocks, safety acknowledgments, and safety
                   reports.
                 </li>
                 <li>
@@ -149,7 +149,7 @@ export default async function PrivacyPage() {
               <p className="mt-4 font-bold leading-relaxed">
                 Earth Optimization Mission profiles are meant for opted-in
                 adults. Mission profile details, photos, answers, matches,
-                messages, and meeting plans may be visible to the users involved
+                messages, and mission plans may be visible to the users involved
                 and to people helping us review safety reports or abuse. Do not
                 put anything in a mission profile or message that you would not
                 want handled by an early web application and safety reviewers.
@@ -241,8 +241,8 @@ export default async function PrivacyPage() {
               <p className="font-bold leading-relaxed">
                 The site is not directed to children under 13. If you believe a
                 child under 13 provided personal information, contact us and we
-                will review it. Earth Optimization Missions and other user-meeting
-                features are only for adults 18 or older.
+                will review it. Earth Optimization Missions and other
+                user-coordination features are only for adults 18 or older.
               </p>
             </section>
 

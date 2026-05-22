@@ -7,7 +7,7 @@ export const DATING_SAFETY_COPY = {
   acknowledgement:
     "I am 18 or older. I understand Earth Optimization Missions are campaign sessions, not a promise that another human is safe, honest, available, or good at posters.",
   rules: [
-    "Meet in public. Tell someone where you are going. Leave whenever you want.",
+    "Choose the setting yourself: online, in public, or not at all. Leave whenever you want.",
     "Do not send money, bank details, passwords, identity documents, or emergency favors to a match.",
     "Report weird behavior. Block anyone who makes ending war and disease worse.",
     "If you are in immediate danger, call local emergency services.",

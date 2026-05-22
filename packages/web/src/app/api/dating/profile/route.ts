@@ -1,7 +1,7 @@
 import {
   DatingProfileStatus,
   DatingRelationshipIntent,
-} from "@optimitron/db";
+} from "@optimitron/db/enums";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";

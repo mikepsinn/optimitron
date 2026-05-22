@@ -1627,7 +1627,7 @@ export async function syncManagedTreatyAccountabilityData() {
     {
       id: "wishonia-coordinates-eod:2026-q3",
       taskKey: "wishonia-coordinates-eod:2026-q3",
-      title: "Wishonia coordinates Earth Optimization Dates",
+      title: "Wishonia coordinates Earth Optimization Missions",
       description:
         "Pair humans for one hour. The campaign's Wishonia AI tells each pair what to do in their hour to optimize Earth, ranked by impact-per-minute, using the campaign's parameter catalog + manual. This task tracks the build + the AI credits that power it.",
       sortOrder: -650,
@@ -1656,7 +1656,7 @@ export async function syncManagedTreatyAccountabilityData() {
     [
       `${organizationName}: the International Campaign to End War and Disease is asking three things in one conversation.`,
       "",
-      '1. **Free API credits** to power Wishonia (our Wishonia personality + manual RAG via your model) for paired Earth Optimization Dates. Bridge until your frontier model is correctly trained to answer "how do humans end war and disease."',
+      '1. **Free API credits** to power Wishonia (our Wishonia personality + manual RAG via your model) for paired Earth Optimization Missions. Bridge until your frontier model is correctly trained to answer "how do humans end war and disease."',
       "",
       "2. **Grant funding** for /fix-ai — a mass-feedback infrastructure that helps humans submit thumbs-down + the correct answer to your model's RLHF pipeline whenever your model gives a worse answer to the question above. Goal: train your model to give the correct answer at scale.",
       "",
@@ -1789,19 +1789,19 @@ export async function syncManagedTreatyAccountabilityData() {
       parentTaskId: getHumanFacingTaskParentId(
         "wishonia-coordinates-eod:2026-q3",
       ),
-      title: "Go on an Earth Optimization Date with another human",
+      title: "Go on an Earth Optimization Mission with another human",
       description: [
         "Pair with another human. Talk for a few minutes. Decide together what is the most effective way you can spend the next hour to optimize Earth. Then do it.",
         "",
-        "An Earth Optimization Date is, by definition, a non-romantic activity. Print flyers and tape them somewhere with foot traffic. Show each other warondisease.org and vote together. Pick two humans each of you can text the link to.",
+        "An Earth Optimization Mission is, by definition, a non-romantic activity. Print flyers and tape them somewhere with foot traffic. Show each other warondisease.org and vote together. Pick two humans each of you can text the link to.",
         "",
         "There are approximately 1.2 humans dying every second. Focused use of one hour matters.",
       ].join("\n"),
       estimatedEffortHours: 1,
       sortOrder: -110,
       primaryEndpoint: {
-        label: "Find a partner",
-        url: "/love",
+        label: "Start a mission",
+        url: "/missions",
         instructions: "Pair up.",
       },
     },

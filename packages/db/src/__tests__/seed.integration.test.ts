@@ -240,7 +240,7 @@ describeIfDatabase("syncManagedData", () => {
       },
       {
         taskKey: "wishonia-coordinates-eod:2026-q3",
-        title: "Wishonia coordinates Earth Optimization Dates",
+        title: "Wishonia coordinates Earth Optimization Missions",
         descriptionSnippet: "This task tracks the build + the AI credits that power it.",
       },
       {

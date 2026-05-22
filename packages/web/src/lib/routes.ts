@@ -100,6 +100,7 @@ export const ROUTES = {
   signatories: "/signatories",
   campaign: "/campaign",
   missions: "/missions",
+  messages: "/messages",
   love: "/love",
   poster: "/poster",
   shirt: "/shirt",
@@ -921,6 +922,7 @@ export const privacyLink: NavItem = {
     "What this site collects, why it collects it, and how to contact us.",
   tagline: "Data use and choices",
   copyPreview: true,
+  screenshot: true,
   cta: "Read Privacy",
 };
 
@@ -931,6 +933,7 @@ export const termsLink: NavItem = {
   description: "The rules for using this site.",
   tagline: "Site rules",
   copyPreview: true,
+  screenshot: true,
   cta: "Read Terms",
 };
 
@@ -1038,11 +1041,22 @@ export const missionsLink: NavItem = {
   label: "Earth Optimization Missions",
   emoji: "❤️",
   description:
-    "If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.",
-  tagline: "An Earth Optimization Mission is non-romantic by definition",
+    "Find someone you would not mind ending war and disease with. Spend one useful hour optimizing Earth together. Love may occur. Flyers should occur first.",
+  tagline: "Find someone to optimize Earth with",
+  authenticatedScreenshot: true,
   copyPreview: true,
   screenshot: true,
   cta: "Start a Mission",
+};
+
+export const messagesLink: NavItem = {
+  href: ROUTES.messages,
+  label: "Messages",
+  emoji: "✉️",
+  description: "Open mission conversations with mutual matches.",
+  tagline: "Mission conversations",
+  authenticatedScreenshot: true,
+  cta: "Open Messages",
 };
 
 export const posterLink: NavItem = {
@@ -1670,7 +1684,9 @@ export const routeReviewNavItems = [
   faqLink,
   fixAiLink,
   feedbackLink,
+  loveLink,
   missionsLink,
+  messagesLink,
   posterLink,
   storeLink,
   shirtLink,

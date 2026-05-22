@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { DatingSafetyNotice } from "@/app/missions/dating-safety-notice";
+import { MissionSafetyNotice } from "@/components/missions/MissionSafetyNotice";
 import { authOptions } from "@/lib/auth";
 import { getDatingMatchesData } from "@/lib/dating.server";
-import { getSignInPath } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import { getSignInPath, messagesLink, ROUTES } from "@/lib/routes";
 import { getUserDisplayName } from "@/lib/user-display";
+
+export const metadata = getRouteMetadata(messagesLink);
 
 async function loadMessages(userId: string) {
   try {
@@ -23,16 +26,16 @@ async function loadMessages(userId: string) {
 
 function getDisplayError(message: string) {
   return message === "Create a mission profile first."
-    ? "Create a mission profile first."
+    ? "Turn on missions first."
     : message;
 }
 
-export default async function DatingMessagesPage() {
+export default async function MessagesPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   if (!userId) {
-    redirect(getSignInPath("/missions/messages"));
+    redirect(getSignInPath(ROUTES.messages));
   }
 
   const { data, error } = await loadMessages(userId);
@@ -51,25 +54,27 @@ export default async function DatingMessagesPage() {
           Messages
         </h1>
         <p className="mt-4 max-w-2xl text-lg font-bold leading-relaxed text-muted-foreground">
-          Open a mutual match, propose a public campaign session, and do not ask
+          Open a mutual match, propose a useful campaign session, and do not ask
           anyone for money. Grant officers have email for that.
         </p>
         <div className="mt-6">
-          <DatingSafetyNotice compact />
+          <MissionSafetyNotice compact />
         </div>
 
         <div className="mt-8 grid gap-4">
           {error ? (
             <div className="border-2 border-foreground p-5">
-              <h2 className="text-lg font-black uppercase">Profile needed</h2>
+              <h2 className="text-lg font-black uppercase">
+                Missions are off
+              </h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
                 {getDisplayError(error)}
               </p>
               <Link
                 className="mt-4 inline-flex border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background"
-                href="/missions/profile"
+                href={`${ROUTES.profile}#missions`}
               >
-                Create profile
+                Turn on missions
               </Link>
             </div>
           ) : conversations.length ? (
@@ -83,7 +88,7 @@ export default async function DatingMessagesPage() {
               return (
                 <Link
                   className="grid gap-3 border-2 border-foreground p-5 text-foreground transition-colors hover:bg-foreground hover:text-background sm:grid-cols-[1fr_auto] sm:items-center"
-                  href={`/missions/messages/${match.conversation!.id}`}
+                  href={`${ROUTES.messages}/${match.conversation!.id}`}
                   key={match.id}
                 >
                   <span>
@@ -107,9 +112,9 @@ export default async function DatingMessagesPage() {
               </p>
               <Link
                 className="mt-4 inline-flex border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background"
-                href="/missions/discover"
+                href={`${ROUTES.people}?missions=1`}
               >
-                Discover humans
+                Find mission people
               </Link>
             </div>
           )}
