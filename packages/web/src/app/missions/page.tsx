@@ -2,16 +2,13 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters";
 import { MissionSafetyNotice } from "@/components/missions/MissionSafetyNotice";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
 import { getOwnDatingProfile } from "@/lib/dating.server";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getSignInPath, missionsLink, ROUTES } from "@/lib/routes";
 
 export const metadata = getRouteMetadata(missionsLink);
-
-const DAILY_DISEASE_DEATHS = Math.round(
-  GLOBAL_DISEASE_DEATHS_DAILY.value,
-).toLocaleString("en-US");
 
 const MISSION_ACTIONS = [
   {
@@ -115,14 +112,15 @@ function MissionLanding({
             Find someone you would not mind saving the world with.
           </h1>
           <p className="mt-5 text-xl font-bold leading-9 text-muted-foreground">
-            Spend one hour with a human you like. Figure out one useful thing
-            to do for the campaign. Do it together. Have fun. Fall madly in
-            love if you insist.
+            Spend one hour with a human you like. Figure out one useful thing to
+            do for the campaign. Do it together. Have fun. Fall madly in love if
+            you insist.
           </p>
           <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
-            Disease kills about {DAILY_DISEASE_DEATHS} humans a day. Love may
-            reduce the urge to explode people and increase the urge to cure
-            them. The scheduled activity is still optimizing Earth.
+            Disease kills about{" "}
+            <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} /> humans a day.
+            Love may reduce the urge to explode people and increase the urge to
+            cure them. The scheduled activity is still optimizing Earth.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
