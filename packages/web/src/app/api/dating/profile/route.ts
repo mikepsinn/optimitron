@@ -18,6 +18,7 @@ const ProfileBodySchema = z.object({
   headline: z.string().max(140).nullish(),
   lookingForText: z.string().max(1000).nullish(),
   relationshipIntents: z.array(z.nativeEnum(DatingRelationshipIntent)).max(8).optional(),
+  safetyAcknowledged: z.boolean().optional(),
   status: z.nativeEnum(DatingProfileStatus).optional(),
   wantsCampaignDates: z.boolean().optional(),
 });

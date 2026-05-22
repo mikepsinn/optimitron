@@ -2,7 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Heart, Send, Shield, X } from "lucide-react";
+import { Ban, Heart, Send, Shield, X } from "lucide-react";
+import {
+  DATING_SAFETY_COPY,
+  hasDatingSafetyAcknowledgement,
+} from "@/lib/dating-safety";
 import { getUserDisplayName } from "@/lib/user-display";
 
 type DatingProfileStatus =
@@ -29,6 +33,7 @@ interface Profile {
   displayRegionCode: string | null;
   headline: string | null;
   lookingForText: string | null;
+  metadata?: unknown;
   photos?: Photo[];
   relationshipIntents: string[];
   status: DatingProfileStatus;
@@ -89,6 +94,9 @@ function buttonClassName(invert = true) {
 
 export function DatingProfileForm({ profile }: { profile: Profile | null }) {
   const router = useRouter();
+  const safetyAlreadyAcknowledged = hasDatingSafetyAcknowledgement(
+    profile?.metadata,
+  );
   const [headline, setHeadline] = useState(profile?.headline ?? "");
   const [bio, setBio] = useState(profile?.bio ?? "");
   const [lookingForText, setLookingForText] = useState(
@@ -107,6 +115,9 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
   const [wantsCampaignDates, setWantsCampaignDates] = useState(
     profile?.wantsCampaignDates ?? true,
   );
+  const [safetyAcknowledged, setSafetyAcknowledged] = useState(
+    safetyAlreadyAcknowledged,
+  );
   const [campaignDateIdeas, setCampaignDateIdeas] = useState(
     profile?.campaignDateIdeas?.join("\n") ??
       "Coffee plus QR flyers\nWalk plus posters\nMuseum plus asking two friends to vote",
@@ -114,8 +125,14 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
   const [photoUrl, setPhotoUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const needsSafetyAcknowledgement =
+    status === "ACTIVE" && !safetyAcknowledged;
 
   async function saveProfile() {
+    if (needsSafetyAcknowledgement) {
+      setMessage("Confirm the safety rules before going active");
+      return;
+    }
     setIsSaving(true);
     setMessage(null);
     const response = await fetch("/api/dating/profile", {
@@ -127,7 +144,9 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
         displayRegionCode,
         headline,
         lookingForText,
-        relationshipIntents: ["DATES", "FRIENDS"],
+        relationshipIntents: ["FRIENDS"],
+        safetyAcknowledged:
+          safetyAcknowledged && !safetyAlreadyAcknowledged ? true : undefined,
         status,
         wantsCampaignDates,
       }),
@@ -227,25 +246,53 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
             type="checkbox"
             onChange={(event) => setWantsCampaignDates(event.target.checked)}
           />
-          I am open to Earth Optimization Dates.
+          I am open to Mission Matches.
         </label>
+        <div className="border-2 border-foreground p-4">
+          <h2 className="text-sm font-black uppercase">
+            {DATING_SAFETY_COPY.title}
+          </h2>
+          <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
+            {DATING_SAFETY_COPY.body}
+          </p>
+          <ul className="mt-3 ml-4 list-disc space-y-1 text-sm font-bold leading-relaxed text-muted-foreground">
+            {DATING_SAFETY_COPY.rules.map((rule) => (
+              <li key={rule}>{rule}</li>
+            ))}
+          </ul>
+          <label className="mt-4 flex items-start gap-3 text-sm font-black uppercase">
+            <input
+              checked={safetyAcknowledged}
+              className="mt-1 h-5 w-5 accent-foreground"
+              type="checkbox"
+              onChange={(event) =>
+                setSafetyAcknowledged(event.target.checked)
+              }
+            />
+            {DATING_SAFETY_COPY.acknowledgement}
+          </label>
+        </div>
         <label className="grid gap-2 text-sm font-black uppercase">
-          Earth Optimization Date ideas
+          Mission ideas
           <textarea
-            className={`${fieldClassName()} min-h-24`}
+            className={`${fieldClassName()} min-h-32`}
             value={campaignDateIdeas}
             onChange={(event) => setCampaignDateIdeas(event.target.value)}
           />
         </label>
         <button
           className={buttonClassName()}
-          disabled={isSaving}
+          disabled={isSaving || needsSafetyAcknowledgement}
           type="button"
           onClick={() => {
             void saveProfile();
           }}
         >
-          {isSaving ? "Saving" : "Save profile"}
+          {isSaving
+            ? "Saving"
+            : needsSafetyAcknowledgement
+              ? "Confirm safety rules"
+              : "Save profile"}
         </button>
       </div>
 
@@ -257,7 +304,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
               <div className="border-2 border-foreground p-2" key={photo.id}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  alt={photo.altText ?? "Earth Optimization Date profile photo"}
+                  alt={photo.altText ?? "Mission profile photo"}
                   className="aspect-square w-full object-cover"
                   src={photo.imageUrl}
                 />
@@ -269,8 +316,7 @@ export function DatingProfileForm({ profile }: { profile: Profile | null }) {
           </div>
         ) : (
           <p className="text-sm font-bold text-muted-foreground">
-            Add a photo URL for now. Upload and crop can come after the first
-            humans try this.
+            Add at least one photo.
           </p>
         )}
         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
@@ -373,21 +419,32 @@ export function DatingDiscoverClient({
 
   async function interact(
     candidateId: string,
-    kind: "LIKE" | "PASS" | "INTRO",
+    kind: "BLOCK" | "LIKE" | "PASS" | "INTRO",
   ) {
     setBusyId(candidateId);
-    await fetch("/api/dating/interactions", {
-      body: JSON.stringify({
-        introMessage:
-          kind === "INTRO"
-            ? "Want to get coffee and make a few strangers vote?"
-            : undefined,
-        kind,
-        toProfileId: candidateId,
-      }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    });
+    if (kind === "BLOCK") {
+      await fetch("/api/dating/blocks", {
+        body: JSON.stringify({
+          blockedProfileId: candidateId,
+          reason: "Blocked from discovery",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+    } else {
+      await fetch("/api/dating/interactions", {
+        body: JSON.stringify({
+          introMessage:
+            kind === "INTRO"
+              ? "Want to get coffee and make a few strangers vote?"
+              : undefined,
+          kind,
+          toProfileId: candidateId,
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+    }
     setBusyId(null);
     router.refresh();
   }
@@ -402,7 +459,7 @@ export function DatingDiscoverClient({
               <img
                 alt={
                   candidate.photos[0].altText ??
-                  "Earth Optimization Date profile photo"
+                  "Mission profile photo"
                 }
                 className="aspect-square w-full border-2 border-foreground object-cover"
                 src={candidate.photos[0].imageUrl}
@@ -442,6 +499,17 @@ export function DatingDiscoverClient({
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
                   Pass
+                </button>
+                <button
+                  className={buttonClassName(false)}
+                  disabled={busyId === candidate.id}
+                  type="button"
+                  onClick={() => {
+                    void interact(candidate.id, "BLOCK");
+                  }}
+                >
+                  <Ban className="h-4 w-4" aria-hidden="true" />
+                  Block
                 </button>
                 <button
                   className={buttonClassName()}
@@ -550,7 +618,7 @@ export function DatingDatePlanForm({
 
   return (
     <div className="grid gap-3 border-2 border-foreground p-5">
-      <h2 className="text-lg font-black uppercase">Earth Optimization Date</h2>
+      <h2 className="text-lg font-black uppercase">Mission plan</h2>
       <input
         className={fieldClassName()}
         value={title}
@@ -575,7 +643,7 @@ export function DatingDatePlanForm({
           void propose();
         }}
       >
-        Propose Earth Optimization Date
+        Propose mission
       </button>
     </div>
   );
@@ -588,8 +656,12 @@ export function DatingReportButton({
   messageId?: string;
   reportedProfileId?: string;
 }) {
+  const [isSending, setIsSending] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
   async function report() {
-    await fetch("/api/dating/reports", {
+    setIsSending(true);
+    const response = await fetch("/api/dating/reports", {
       body: JSON.stringify({
         messageId,
         reason: "Needs review",
@@ -598,18 +670,71 @@ export function DatingReportButton({
       headers: { "Content-Type": "application/json" },
       method: "POST",
     });
+    setIsSending(false);
+    setMessage(response.ok ? "Reported" : "Could not report");
+  }
+
+  return (
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <button
+        className={buttonClassName(false)}
+        disabled={isSending}
+        type="button"
+        onClick={() => {
+          void report();
+        }}
+      >
+        <Shield className="h-4 w-4" aria-hidden="true" />
+        {isSending ? "Reporting" : "Report"}
+      </button>
+      {message ? (
+        <span className="text-xs font-black uppercase text-muted-foreground">
+          {message}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+export function DatingBlockButton({
+  blockedProfileId,
+}: {
+  blockedProfileId: string;
+}) {
+  const router = useRouter();
+  const [isBlocking, setIsBlocking] = useState(false);
+
+  async function block() {
+    if (!window.confirm("Block this profile and close the conversation?")) {
+      return;
+    }
+    setIsBlocking(true);
+    const response = await fetch("/api/dating/blocks", {
+      body: JSON.stringify({
+        blockedProfileId,
+        reason: "Blocked from conversation",
+      }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    setIsBlocking(false);
+    if (response.ok) {
+      router.push("/missions/matches");
+      router.refresh();
+    }
   }
 
   return (
     <button
       className={buttonClassName(false)}
+      disabled={isBlocking}
       type="button"
       onClick={() => {
-        void report();
+        void block();
       }}
     >
-      <Shield className="h-4 w-4" aria-hidden="true" />
-      Report
+      <Ban className="h-4 w-4" aria-hidden="true" />
+      {isBlocking ? "Blocking" : "Block"}
     </button>
   );
 }

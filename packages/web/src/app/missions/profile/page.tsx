@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { DatingProfileForm } from "@/app/love/dating/dating-client";
+import { DatingProfileForm } from "@/app/missions/dating-client";
 import { authOptions } from "@/lib/auth";
 import { getOwnDatingProfile } from "@/lib/dating.server";
 import { getSignInPath } from "@/lib/routes";
@@ -19,7 +19,7 @@ export default async function DatingProfilePage() {
   const userId = session?.user?.id;
 
   if (!userId) {
-    redirect(getSignInPath("/love/dating/profile"));
+    redirect(getSignInPath("/missions/profile"));
   }
 
   const profile = await loadProfile(userId);
@@ -29,16 +29,16 @@ export default async function DatingProfilePage() {
       <div className="mx-auto max-w-4xl">
         <Link
           className="text-sm font-black uppercase underline underline-offset-4"
-          href="/love/dating"
+          href="/missions"
         >
-          Back to Love
+          Back to missions
         </Link>
         <h1 className="mt-8 text-4xl font-black uppercase leading-none sm:text-5xl">
-          Earth Optimization Date profile
+          Mission profile
         </h1>
         <p className="mt-4 max-w-2xl text-lg font-bold leading-relaxed text-muted-foreground">
-          Keep it minimal. Enough for another human to decide whether coffee,
-          flyers, and possible affection are worth leaving the house.
+          Keep it minimal. Enough for another adult to decide whether coffee,
+          flyers, and not being weird for an hour are worth leaving the house.
         </p>
         <div className="mt-8">
           <DatingProfileForm profile={profile} />

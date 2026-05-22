@@ -607,9 +607,9 @@ export default async function ShirtPage() {
           Want to coordinate with another human? Go on an{" "}
           <Link
             className="underline decoration-dotted underline-offset-4"
-            href={ROUTES.love}
+            href={ROUTES.missions}
           >
-            Earth Optimization Date
+            Earth Optimization Mission
           </Link>
           .
         </p>

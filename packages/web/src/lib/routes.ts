@@ -99,6 +99,7 @@ export const ROUTES = {
   foundations: "/foundations",
   signatories: "/signatories",
   campaign: "/campaign",
+  missions: "/missions",
   love: "/love",
   poster: "/poster",
   shirt: "/shirt",
@@ -1032,6 +1033,18 @@ export const loveLink: NavItem = {
   cta: "Vote now",
 };
 
+export const missionsLink: NavItem = {
+  href: ROUTES.missions,
+  label: "Earth Optimization Missions",
+  emoji: "❤️",
+  description:
+    "If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.",
+  tagline: "An Earth Optimization Mission is non-romantic by definition",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Start a Mission",
+};
+
 export const posterLink: NavItem = {
   href: ROUTES.poster,
   label: "Print a Poster",
@@ -1192,7 +1205,7 @@ export const toolSections: NavSection[] = [
     label: "Player",
     items: [
       tasksLink,
-      loveLink,
+      missionsLink,
       storeLink,
       shirtLink,
       presidentManagementLink,
@@ -1657,7 +1670,7 @@ export const routeReviewNavItems = [
   faqLink,
   fixAiLink,
   feedbackLink,
-  loveLink,
+  missionsLink,
   posterLink,
   storeLink,
   shirtLink,

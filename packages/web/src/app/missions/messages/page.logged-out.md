@@ -1,4 +1,4 @@
-# /love/dating/messages/[conversationId]
+# /missions/messages
 
 ## Metadata
 

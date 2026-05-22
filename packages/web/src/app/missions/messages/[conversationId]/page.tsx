@@ -2,10 +2,12 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { notFound, redirect } from "next/navigation";
 import {
+  DatingBlockButton,
   DatingDatePlanForm,
   DatingMessageComposer,
   DatingReportButton,
-} from "@/app/love/dating/dating-client";
+} from "@/app/missions/dating-client";
+import { DatingSafetyNotice } from "@/app/missions/dating-safety-notice";
 import { authOptions } from "@/lib/auth";
 import { getDatingConversationData } from "@/lib/dating.server";
 import { getSignInPath } from "@/lib/routes";
@@ -22,7 +24,7 @@ export default async function DatingMessagePage({
   const userId = session?.user?.id;
 
   if (!userId) {
-    redirect(getSignInPath("/love/dating/matches"));
+    redirect(getSignInPath("/missions/matches"));
   }
 
   const { conversationId } = await params;
@@ -45,7 +47,7 @@ export default async function DatingMessagePage({
       <div className="mx-auto max-w-4xl">
         <Link
           className="text-sm font-black uppercase underline underline-offset-4"
-          href="/love/dating/matches"
+          href="/missions/matches"
         >
           Back to matches
         </Link>
@@ -60,7 +62,13 @@ export default async function DatingMessagePage({
               </p>
             ) : null}
           </div>
-          <DatingReportButton reportedProfileId={other.id} />
+          <div className="flex flex-wrap gap-2">
+            <DatingReportButton reportedProfileId={other.id} />
+            <DatingBlockButton blockedProfileId={other.id} />
+          </div>
+        </div>
+        <div className="mt-6">
+          <DatingSafetyNotice compact />
         </div>
 
         <div className="mt-8 grid gap-4">
@@ -112,7 +120,7 @@ export default async function DatingMessagePage({
         {conversation.datePlans.length ? (
           <div className="mt-8 border-2 border-foreground p-5">
             <h2 className="text-lg font-black uppercase">
-              Earth Optimization Date plans
+              Earth Optimization Mission plans
             </h2>
             <div className="mt-3 grid gap-3">
               {conversation.datePlans.map((plan) => (
@@ -120,7 +128,7 @@ export default async function DatingMessagePage({
                   <p className="font-black uppercase">{plan.title}</p>
                   <p className="text-sm font-bold text-muted-foreground">
                     {plan.locationName ?? "Place not set"}
-                    {plan.isCampaignDate ? " · Earth Optimization Date" : ""}
+                    {plan.isCampaignDate ? " · Earth Optimization Mission" : ""}
                   </p>
                 </div>
               ))}

@@ -4,7 +4,7 @@ import { getSiteMetadata } from "@/lib/metadata";
 import { privacyLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
-const UPDATED_AT = "May 6, 2026";
+const UPDATED_AT = "May 22, 2026";
 const SECTION_HEADING_CLASS =
   "mb-4 text-2xl font-black uppercase text-foreground";
 
@@ -76,6 +76,12 @@ export default async function PrivacyPage() {
                   text.
                 </li>
                 <li>
+                  Earth Optimization Mission details, such as your mission
+                  profile, photos, city, answers, matches, messages, proposed
+                  meeting plans, blocks, safety acknowledgments, and safety
+                  reports.
+                </li>
+                <li>
                   Plaintiff, represented-person, and memorial details you
                   submit, such as names, photos, relationships, life or death
                   status, health condition or cause of death, comments, memorial
@@ -139,6 +145,14 @@ export default async function PrivacyPage() {
                 legal authority to disclose it. We do not intentionally publish
                 your private email address unless you put it into a public
                 field.
+              </p>
+              <p className="mt-4 font-bold leading-relaxed">
+                Earth Optimization Mission profiles are meant for opted-in
+                adults. Mission profile details, photos, answers, matches,
+                messages, and meeting plans may be visible to the users involved
+                and to people helping us review safety reports or abuse. Do not
+                put anything in a mission profile or message that you would not
+                want handled by an early web application and safety reviewers.
               </p>
             </section>
 
@@ -227,7 +241,8 @@ export default async function PrivacyPage() {
               <p className="font-bold leading-relaxed">
                 The site is not directed to children under 13. If you believe a
                 child under 13 provided personal information, contact us and we
-                will review it.
+                will review it. Earth Optimization Missions and other user-meeting
+                features are only for adults 18 or older.
               </p>
             </section>
 
