@@ -104,6 +104,7 @@ export const ROUTES = {
   love: "/love",
   poster: "/poster",
   shirt: "/shirt",
+  joke: "/joke",
   store: "/store",
   coalition: "/coalition",
   organizations: "/organizations",
@@ -1081,6 +1082,17 @@ export const shirtLink: NavItem = {
   cta: "Get the Shirt",
 };
 
+export const jokeLink: NavItem = {
+  href: ROUTES.joke,
+  label: "The Joke",
+  emoji: "😂",
+  description: "How to end war and disease through vandalism.",
+  cta: "Play the joke",
+  authenticatedCopyPreview: true,
+  copyPreview: true,
+  screenshot: true,
+};
+
 export const storeLink: NavItem = {
   href: ROUTES.store,
   label: "Store",
@@ -1688,6 +1700,7 @@ export const routeReviewNavItems = [
   missionsLink,
   messagesLink,
   posterLink,
+  jokeLink,
   storeLink,
   shirtLink,
   privacyLink,

@@ -28,6 +28,7 @@ import {
   humanityVGovernmentLink,
   inviteVoterLink,
   joinLink,
+  jokeLink,
   missionsLink,
   navSections,
   onePercentTreatyPaperLink,
@@ -352,6 +353,7 @@ const warOnDiseaseNavSections: NavSection[] = [
       presidentManagementLink,
       shirtLink,
       posterLink,
+      jokeLink,
       missionsLink,
       tasksLink,
     ],
@@ -489,6 +491,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
         items: [
           dashboardLink,
           shirtLink,
+          jokeLink,
           presidentManagementLink,
           peopleLink,
           tasksLink,
@@ -949,6 +952,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.love,
       ROUTES.poster,
       ROUTES.shirt,
+      ROUTES.joke,
       ROUTES.coalition,
       ROUTES.privacy,
       ROUTES.terms,
@@ -978,6 +982,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.love,
       ROUTES.poster,
       ROUTES.shirt,
+      ROUTES.joke,
       ROUTES.coalition,
       ROUTES.privacy,
       ROUTES.terms,
@@ -1065,7 +1070,9 @@ export function getTreatySignUrl(site: SiteConfig): string {
 
 export function getSiteFromHost(host: string | null | undefined): SiteConfig {
   if (!host) return SITE_CONFIGS[DEFAULT_SITE_KEY];
-  return SITE_CONFIGS[HOST_TO_SITE_KEY[normalizeHost(host)] ?? DEFAULT_SITE_KEY];
+  return SITE_CONFIGS[
+    HOST_TO_SITE_KEY[normalizeHost(host)] ?? DEFAULT_SITE_KEY
+  ];
 }
 
 export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
