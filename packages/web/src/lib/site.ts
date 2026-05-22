@@ -8,6 +8,7 @@ import {
   WAR_ON_DISEASE_CANONICAL_DOMAIN,
   WAR_ON_DISEASE_CANONICAL_ORIGIN,
 } from "@/lib/domains";
+import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
@@ -264,6 +265,7 @@ const NO_FOOTER_COMPLIANCE_NOTICE = null;
 const INTERNATIONAL_CAMPAIGN_ORG_NAME = CAMPAIGN_NAME;
 const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
 const WAR_ON_DISEASE_LEGACY_NAME = "War on Disease";
+const INTERNATIONAL_CAMPAIGN_LEGAL_ENTITY_NAME = `${NONPROFIT.legalName}, dba ${INTERNATIONAL_CAMPAIGN_ORG_NAME}`;
 
 function siteAssetPath(directory: string, filename: string) {
   return `/site-assets/${directory}/${filename}`;
@@ -874,15 +876,14 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_WAR_ON_DISEASE_ID,
   contentKey: "onePercentTreaty",
-  // Public-facing campaign brand on WoD; the legal entity (Earth
-  // Optimization Services LLC) stays in `legalEntityName` for compliance
-  // surfaces. SEO + footer attribution show the campaign name.
+  // Public-facing campaign brand on WoD; compliance surfaces name the
+  // nonprofit legal entity and campaign DBA.
   organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   organizationUrl: ORGANIZATION_URL,
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
+  legalEntityName: INTERNATIONAL_CAMPAIGN_LEGAL_ENTITY_NAME,
   emailBranding: {
     fromName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
     primaryColor: "#ff6b9d",

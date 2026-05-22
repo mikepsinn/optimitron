@@ -16,7 +16,7 @@
 ## PRIVACY POLICY
 - Last updated May 22, 2026
 ### 1. WHO WE ARE
-- International Campaign to End War and Disease is operated by Earth Optimization Services LLC. This policy explains what we collect when you use warondisease.org, why we collect it, when it may be public, and how to contact us.
+- International Campaign to End War and Disease is operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease. This policy explains what we collect when you use warondisease.org, why we collect it, when it may be public, and how to contact us.
 ### 2. INFORMATION WE COLLECT
 - We collect information you give us directly, information created by your use of the site, and limited technical data needed to keep the site working.
 - Account and contact details, such as your name, email address, display name, organization, profile URL, and sign-in provider.
@@ -58,7 +58,7 @@
 - We operate from the United States and may process information in the United States and other countries where our providers work. Those countries may have different privacy rules than yours.
 ### 12. CHANGES AND CONTACT
 - We may update this policy by posting a new version here. The date above shows when it was last changed.
-- Earth Optimization Services LLC
+- Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease
 - Email: hello@warondisease.org
 - Website: warondisease.org
 - See also: [Terms of Service](/terms)

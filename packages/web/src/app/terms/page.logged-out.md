@@ -16,7 +16,7 @@
 ## TERMS OF SERVICE
 - Last updated May 22, 2026
 ### 1. AGREEMENT
-- These terms govern your use of International Campaign to End War and Disease, operated by Earth Optimization Services LLC. By using warondisease.org, you agree to these terms. If you do not agree, do not use the site.
+- These terms govern your use of International Campaign to End War and Disease, operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease. By using warondisease.org, you agree to these terms. If you do not agree, do not use the site.
 ### 2. WHAT THE SITE DOES
 - The site supports public campaigns, votes, signatures, referrals, endorsements, organization pages, dashboards, tasks, donations, and related educational materials. Features may change as the project changes.
 ### 3. EARTH OPTIMIZATION MISSIONS AND USER MEETINGS
@@ -63,7 +63,7 @@
 ### 14. OTHER LEGAL TERMS
 - These terms do not limit rights that cannot be waived under applicable law. If part of these terms is unenforceable, the rest remains in effect. We may update these terms by posting a new version here. Continued use of the site means you accept the updated terms.
 ### 15. CONTACT
-- Earth Optimization Services LLC
+- Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease
 - Email: hello@warondisease.org
 - Website: warondisease.org
 - See also: [Privacy Policy](/privacy)
