@@ -48,6 +48,13 @@ import {
   handleTaskTriggerToolCall,
   isTaskTriggerToolName,
 } from "./mcp-tools/task-triggers";
+import {
+  TASK_TEMPLATE_ADMIN_TOOL_NAMES,
+  TASK_TEMPLATE_TOOL_DEFINITIONS,
+  TASK_TEMPLATE_TOOL_SCOPES,
+  handleTaskTemplateToolCall,
+  isTaskTemplateToolName,
+} from "./mcp-tools/task-templates";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import type {
@@ -141,6 +148,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getFileContent: [McpScope.GITHUB],
   listRepoFiles: [McpScope.GITHUB],
   githubApi: [McpScope.GITHUB],
+  ...TASK_TEMPLATE_TOOL_SCOPES,
   ...TASK_TRIGGER_TOOL_SCOPES,
 };
 
@@ -165,6 +173,7 @@ const ADMIN_ONLY_TOOLS = new Set([
   "listTaskEmails",
   "listRecipientEmails",
   "listEmailLogs",
+  ...TASK_TEMPLATE_ADMIN_TOOL_NAMES,
   ...TASK_TRIGGER_ADMIN_TOOL_NAMES,
   "hideContent",
   "restoreContent",
@@ -5132,6 +5141,7 @@ Posting a comment automatically sends comment notifications to task recipients a
       required: ["taskId"],
     },
   },
+  ...TASK_TEMPLATE_TOOL_DEFINITIONS,
   ...TASK_TRIGGER_TOOL_DEFINITIONS,
 ];
 
@@ -5199,6 +5209,13 @@ export function createMcpServer(
           return handleTaskTriggerToolCall({
             args: a,
             isAdmin,
+            name,
+            userId: userId ?? null,
+          });
+        }
+        if (isTaskTemplateToolName(name)) {
+          return handleTaskTemplateToolCall({
+            args: a,
             name,
             userId: userId ?? null,
           });

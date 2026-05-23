@@ -47,7 +47,7 @@ export async function fireTaskTrigger(
   if (!trigger || trigger.deletedAt) {
     return finished("filteredOut", triggerKey, { reason: `trigger not found: ${triggerKey}` });
   }
-  if (!trigger.enabled) {
+  if (!trigger.enabled && !options.dryRun) {
     return finished("filteredOut", triggerKey, {
       triggerId: trigger.id,
       reason: `disabled${trigger.disabledReason ? `: ${trigger.disabledReason}` : ""}`,
