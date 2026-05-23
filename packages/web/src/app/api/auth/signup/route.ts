@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { hashPassword } from "@/lib/auth";
+import {
+  isAuthHoneypotFilled,
+  shouldSuppressDirectPasswordSignup,
+} from "@/lib/auth-spam-guard.server";
 import { readVercelGeo } from "@/lib/geo/vercel-geo";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
-import { recordReferralAttributionForUser } from "@/lib/referral.server";
 import { createUniqueReferralCode } from "@/lib/user-identity.server";
+
+function acceptedQuietly() {
+  return NextResponse.json({ success: true }, { status: 202 });
+}
 
 export async function POST(req: Request) {
   try {
@@ -12,10 +19,12 @@ export async function POST(req: Request) {
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
     const name = String(body.name || "").trim() || null;
-    const referralCode = String(body.referralCode || "").trim() || null;
-    const shareAttemptId = String(body.shareAttemptId || "").trim() || null;
     const newsletterSubscribed =
       typeof body.newsletterSubscribed === "boolean" ? body.newsletterSubscribed : true;
+
+    if (isAuthHoneypotFilled(body)) {
+      return acceptedQuietly();
+    }
 
     if (!email || !password) {
       return NextResponse.json(
@@ -29,6 +38,10 @@ export async function POST(req: Request) {
         { error: "Password must be at least 8 characters." },
         { status: 400 },
       );
+    }
+
+    if (await shouldSuppressDirectPasswordSignup()) {
+      return acceptedQuietly();
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -59,8 +72,6 @@ export async function POST(req: Request) {
 
     // Person owns displayName and image. Forward what the signup form sent.
     await ensurePersonForUser(user.id, { displayName: name });
-
-    await recordReferralAttributionForUser(user.id, referralCode, shareAttemptId);
 
     return NextResponse.json(
       {
