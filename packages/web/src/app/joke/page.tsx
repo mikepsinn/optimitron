@@ -3,16 +3,20 @@ import {
   ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR,
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_SECTOR_RETENTION_PCT,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
   PENTAGON_UNACCOUNTED_FUNDS,
   POST_WW2_MILITARY_CUT_PCT,
   SHIRT_SEED_WEARERS_THRESHOLD,
   TREATY_CAMPAIGN_BUDGET_LOBBYING,
+  TREATY_REDUCTION_PCT,
   TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15,
   US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT,
+  US_MILITARY_SPENDING_2024_ANNUAL,
 } from "@optimitron/data/parameters";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
@@ -90,6 +94,19 @@ function ManualLink({ children, href }: { children: ReactNode; href: string }) {
   );
 }
 
+function TreatyReductionValue() {
+  return <ParameterValue param={TREATY_REDUCTION_PCT} valueOverride="1%" />;
+}
+
+function ApocalypseNumberValue() {
+  return (
+    <ParameterValue
+      param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+      valueOverride="#122"
+    />
+  );
+}
+
 export default async function JokePage() {
   const personalReferralUrl = await getPersonalReferralUrl();
   const shirtReferralUrl =
@@ -116,11 +133,14 @@ export default async function JokePage() {
           <p className={paragraphClass}>
             The risk we are protecting against is small: your annual chance of
             dying in a terrorist attack is about 1 in{" "}
-            <ParameterValue param={ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR} />.
-            The risk we are not protecting against is enormous: your lifetime
-            chance of suffering and dying from a disease is approximately 100%.
-            The current spending ratio funds the smaller risk at the expense of
-            the larger one. The shirt is asking you to notice.
+            <ParameterValue
+              param={ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR}
+              valueOverride="30 million"
+            />
+            . The risk we are not protecting against is enormous: disease comes
+            for almost everyone. The current spending ratio funds the smaller
+            risk at the expense of the larger one. The shirt is asking you to
+            notice.
           </p>
           <Link
             className="inline-flex border border-foreground bg-foreground px-5 py-3 text-base font-black uppercase text-background hover:bg-background hover:text-foreground"
@@ -135,7 +155,7 @@ export default async function JokePage() {
           <p className={paragraphClass}>
             You can buy one. You can also take a permanent marker and write it
             on a shirt you already own. Either works. The shirt is text. Text
-            costs $0.50 of ink.
+            costs marker ink.
           </p>
         </section>
 
@@ -177,9 +197,17 @@ export default async function JokePage() {
               <p className="mt-4 text-3xl font-black uppercase leading-tight sm:text-4xl">
                 {SHIRT_BACK_COPY_LINES.join(" ")}
               </p>
-              <p className="mt-4 break-words text-xl font-black leading-tight sm:text-2xl">
-                {shirtReferralUrl}
-              </p>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+                <p className="min-w-0 flex-1 break-words text-xl font-black leading-tight sm:text-2xl">
+                  {shirtReferralUrl}
+                </p>
+                <CopyLinkButton
+                  url={shirtReferralUrl}
+                  idleLabel="Copy"
+                  copiedLabel="Copied"
+                  className="w-fit shrink-0 border border-foreground bg-foreground font-black uppercase text-background shadow-none hover:translate-y-0 hover:bg-background hover:text-foreground active:translate-x-0 active:translate-y-0"
+                />
+              </div>
               {!personalReferralUrl ? (
                 <p className="mt-4 text-base font-bold leading-7">
                   Sign in and vote yes to get your real referral link printed
@@ -213,17 +241,22 @@ export default async function JokePage() {
           <div className="space-y-4">
             <Objection title='"But we need the military budget!"'>
               <p className={paragraphClass}>
-                The treaty takes 1%. You keep{" "}
-                <ParameterValue param={DEFENSE_SECTOR_RETENTION_PCT} />. Every
-                nation reduces by the same amount, so relative military balance
-                stays exactly the same. You each have 1% fewer missiles pointed
-                at each other. Every sane observer calls this &quot;safer.&quot;
-                Your species calls it &quot;an unacceptable risk to national
-                security.&quot; Same math, different feelings.
+                The treaty takes <TreatyReductionValue />. You keep{" "}
+                <ParameterValue
+                  param={DEFENSE_SECTOR_RETENTION_PCT}
+                  valueOverride="99%"
+                />
+                . Every nation reduces by the same amount, so relative military
+                balance stays exactly the same. You each have{" "}
+                <TreatyReductionValue /> fewer missiles pointed at each other.
+                Every sane observer calls this &quot;safer.&quot; Your species
+                calls it &quot;an unacceptable risk to national security.&quot;
+                Same math, different feelings.
               </p>
               <p className={paragraphClass}>
                 COVID-19 killed more Americans than World War I, World War II,
-                Korea, Vietnam, Iraq, and Afghanistan combined. The $900 billion
+                Korea, Vietnam, Iraq, and Afghanistan combined. The{" "}
+                <ParameterValue param={US_MILITARY_SPENDING_2024_ANNUAL} />{" "}
                 murder budget watched it happen, fully armed and completely
                 confused. The virus did not check your passport. Disease is the
                 only enemy that attacks every nation simultaneously, and you are
@@ -232,11 +265,11 @@ export default async function JokePage() {
               <p className={paragraphClass}>
                 Also, the Pentagon cannot account for{" "}
                 <ParameterValue param={PENTAGON_UNACCOUNTED_FUNDS} /> that it
-                has misplaced. 1% of US military spending is a fraction of the
-                amount that already goes into a black hole every year and no one
-                can locate. You are not redirecting the missile budget. You are
-                redirecting the &quot;we lost it somewhere&quot; budget. The
-                missiles won&apos;t notice.
+                has misplaced. <TreatyReductionValue /> of US military spending
+                is a fraction of the amount that already goes into a black hole
+                every year and no one can locate. You are not redirecting the
+                missile budget. You are redirecting the &quot;we lost it
+                somewhere&quot; budget. The missiles won&apos;t notice.
               </p>
             </Objection>
 
@@ -256,28 +289,30 @@ export default async function JokePage() {
                 history.
               </p>
               <p className={paragraphClass}>
-                Same country, in living memory, did a redirect about 87 times
-                the size of what this shirt asks for. Your grandparents handled
-                an 88% cut and built the middle class. You are being asked for
-                1% and acting like someone suggested disbanding the army during
-                an invasion.
+                Same country, in living memory, did a redirect that dwarfs what
+                this shirt asks for. Your grandparents handled a{" "}
+                <ParameterValue param={POST_WW2_MILITARY_CUT_PCT} /> cut and
+                built the middle class. You are being asked for{" "}
+                <TreatyReductionValue /> and acting like someone suggested
+                disbanding the army during an invasion.
               </p>
             </Objection>
 
             <Objection title='"The military-industrial complex will never allow it."'>
               <p className={paragraphClass}>
-                The CEO of Lockheed Martin has two options: (a) keep apocalypse
-                #122, watch their family die of curable diseases, retire on the
-                current trajectory; or (b) give up the one apocalypse they
-                cannot use, watch their family live, invest in the biotech
-                sector that absorbs a trillion redirected dollars per year,
-                retire on a{" "}
+                The CEO of Lockheed Martin has two options: (a) keep{" "}
+                <ApocalypseNumberValue />, watch their family die of curable
+                diseases, retire on the current trajectory; or (b) give up the
+                extra apocalypse they cannot use, watch their family live,
+                invest in the biotech sector that absorbs a trillion redirected
+                dollars per year, retire on an economy{" "}
                 <ParameterValue
                   param={
                     TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
                   }
+                  valueOverride="4.1x"
                 />
-                -larger economy. They have not picked (b) yet because nobody has
+                {" "}larger. They have not picked (b) yet because nobody has
                 explained it in those terms. The shirt is how that gets
                 explained.
               </p>
@@ -294,22 +329,23 @@ export default async function JokePage() {
 
             <Objection title='"What about defense industry jobs?"'>
               <p className={paragraphClass}>
-                1% is a rounding error. The redirect funds clinical trials,
-                which is also a lot of jobs: trial coordinators, medical
-                statisticians, lab technicians, diagnostics manufacturing.
-                Engineers building guidance systems can build medical imaging
-                devices. Same differential equations, fewer funerals. Veterans
-                particularly need clinical trial access for the things they got
-                from serving (chronic pain, PTSD, traumatic brain injury); the
-                redirect pays for the trials they need.
+                <TreatyReductionValue /> is a rounding error. The redirect funds
+                clinical trials, which is also a lot of jobs: trial
+                coordinators, medical statisticians, lab technicians,
+                diagnostics manufacturing. Engineers building guidance systems
+                can build medical imaging devices. Same differential equations,
+                fewer funerals. Veterans particularly need clinical trial access
+                for the things they got from serving (chronic pain, PTSD,
+                traumatic brain injury); the redirect pays for the trials they
+                need.
               </p>
             </Objection>
 
             <Objection title='"What if countries cheat?"'>
               <p className={paragraphClass}>
                 Of course they will. This system was designed by someone who has
-                watched 847 civilizations (me), and it does not use trust. It
-                uses math. Politicians who comply receive{" "}
+                watched a suspicious number of civilizations (me), and it does
+                not use trust. It uses math. Politicians who comply receive{" "}
                 <ManualLink
                   href={`${manualBase}/solution/incentive-alignment-bonds.html`}
                 >
@@ -330,8 +366,9 @@ export default async function JokePage() {
                 >
                   Automated Revenue Service
                 </ManualLink>
-                . The 1% that gets siphoned off does not get siphoned off
-                invisibly. Auditors see every wire; voters see every auditor.
+                . The <TreatyReductionValue /> that gets siphoned off does not
+                get siphoned off invisibly. Auditors see every wire; voters see
+                every auditor.
               </p>
             </Objection>
 
@@ -344,7 +381,7 @@ export default async function JokePage() {
                 break the treaty. They make the cost of holding out visible.
                 Also: TikTok scaled globally and it teaches strangers
                 choreography. If your species can coordinate dance moves across
-                150 countries, it can coordinate not dying.
+                the planet, it can coordinate not dying.
               </p>
             </Objection>
 
@@ -353,8 +390,9 @@ export default async function JokePage() {
                 Politicians are also humans. They also get diseases. A
                 politician who votes against the treaty is not &quot;voting
                 against a budget reallocation.&quot; They are voting to keep
-                apocalypse #122 (which is functionally identical to apocalypse
-                #121, since you only have one civilization) in exchange for
+                <ApocalypseNumberValue />{" "}
+                (which is functionally identical to every apocalypse after the
+                first, since you only have one civilization) in exchange for
                 ensuring that their constituents, their donors, their families,
                 and they themselves continue to suffer and die of preventable
                 diseases while being{" "}
@@ -362,6 +400,7 @@ export default async function JokePage() {
                   param={
                     TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
                   }
+                  valueOverride="4.1x"
                 />{" "}
                 poorer. That is what a &quot;no&quot; vote means. The shirt
                 makes sure voters understand what their representative is
@@ -370,12 +409,12 @@ export default async function JokePage() {
               <p className={paragraphClass}>
                 Once the cascade triggers and a majority of any
                 politician&apos;s constituents show up on the public treaty
-                scoreboard, signing is 30 seconds of work on a budget
-                spreadsheet. Refusing gets them replaced by the next candidate
-                who runs on &quot;I will sign the treaty.&quot; The campaign
-                also outbids the defense lobby directly: defense contractors
-                spend <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> per
-                year buying politicians; the treaty{" "}
+                scoreboard, signing is a budget-spreadsheet chore. Refusing
+                gets them replaced by the next candidate who runs on &quot;I
+                will sign the treaty.&quot; The campaign also outbids the
+                defense lobby directly: defense contractors spend{" "}
+                <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> buying
+                politicians; the treaty{" "}
                 <ManualLink
                   href={`${manualBase}/economics/campaign-budget.html`}
                 >
@@ -401,8 +440,11 @@ export default async function JokePage() {
             Most pranks cost the prankster something. This one earns the
             prankster VOTE points, makes the recipient a walking billboard for
             not dying, and counts each unwitting wearer toward the{" "}
-            <ParameterValue param={SHIRT_SEED_WEARERS_THRESHOLD} /> social-proof
-            threshold. The joke spreads itself. Do the prank.
+            <ParameterValue
+              param={SHIRT_SEED_WEARERS_THRESHOLD}
+              valueOverride="1 million"
+            />{" "}
+            social-proof threshold. The joke spreads itself. Do the prank.
           </p>
           <p className={paragraphClass}>
             <a

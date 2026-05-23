@@ -31,6 +31,42 @@ import {
 
 export const PUBLIC_SIGNERS_PAGE_SIZE = 48;
 
+const TRANSIENT_PRISMA_CONNECTION_ERROR_MESSAGES = [
+  "Server has closed the connection",
+];
+
+function isTransientPrismaConnectionError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const code =
+    typeof (error as { code?: unknown }).code === "string"
+      ? (error as { code?: string }).code
+      : null;
+
+  return (
+    code === "P1017" ||
+    TRANSIENT_PRISMA_CONNECTION_ERROR_MESSAGES.some((message) =>
+      error.message.includes(message),
+    )
+  );
+}
+
+async function retryReadOnlyPrismaOperation<T>(
+  operation: () => Promise<T>,
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (!isTransientPrismaConnectionError(error)) {
+      throw error;
+    }
+
+    return operation();
+  }
+}
+
 export interface PublicSignerEntry {
   id: string;
   createdAt: Date;
@@ -245,84 +281,86 @@ export async function getReferendumSiteHomeData(
     allOrganizationSignatories,
     organizationReferrerCounts,
     currentUserProfile,
-  ] = await Promise.all([
-    prisma.referendumVote.count({
-      where: recruitedVoteWhere,
-    }),
-    prisma.referendumVote.count({
-      where: buildRepresentedReferendumVoteWhere({
-        answer: VotePosition.YES,
-        publicOnly: true,
-        referendumId: context.referendum.id,
+  ] = await retryReadOnlyPrismaOperation(() =>
+    Promise.all([
+      prisma.referendumVote.count({
+        where: recruitedVoteWhere,
       }),
-    }),
-    prisma.referendumVote.count({
-      where: buildMemorialReferendumVoteWhere({
-        answer: VotePosition.YES,
-        publicOnly: true,
-        referendumId: context.referendum.id,
+      prisma.referendumVote.count({
+        where: buildRepresentedReferendumVoteWhere({
+          answer: VotePosition.YES,
+          publicOnly: true,
+          referendumId: context.referendum.id,
+        }),
       }),
-    }),
-    prisma.organizationReferendumPosition.count({
-      where: buildApprovedOrganizationPositionWhere(context.referendum.id),
-    }),
-    prisma.referendumVote.findMany({
-      where: publicSignersWhere,
-      select: {
-        id: true,
-        createdAt: true,
-        userId: true,
-        user: { select: userDisplaySelect },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.referendumVote.groupBy({
-      by: ["referredByUserId", "userId"],
-      where: {
-        ...recruitedSignatoryVoteWhere,
-        referredByUserId: { not: null },
-      },
-      _count: { userId: true },
-    }),
-    prisma.organizationReferendumPosition.findMany({
-      where: buildApprovedOrganizationPositionWhere(context.referendum.id),
-      include: {
-        organization: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            website: true,
-            squareLogoUrl: true,
-            description: true,
-            donationUrl: true,
-          },
+      prisma.referendumVote.count({
+        where: buildMemorialReferendumVoteWhere({
+          answer: VotePosition.YES,
+          publicOnly: true,
+          referendumId: context.referendum.id,
+        }),
+      }),
+      prisma.organizationReferendumPosition.count({
+        where: buildApprovedOrganizationPositionWhere(context.referendum.id),
+      }),
+      prisma.referendumVote.findMany({
+        where: publicSignersWhere,
+        select: {
+          id: true,
+          createdAt: true,
+          userId: true,
+          user: { select: userDisplaySelect },
         },
-      },
-      orderBy: [{ updatedAt: "desc" }],
-    }),
-    prisma.referendumVote.groupBy({
-      by: ["organizationId"],
-      where: {
-        ...recruitedVoteWhere,
-        organizationId: { not: null },
-      },
-      _count: { organizationId: true },
-    }),
-    options.currentUserId
-      ? prisma.user.findUnique({
-          where: { id: options.currentUserId },
-          select: {
-            person: { select: { isPublic: true } },
-            referendumVotes: {
-              where: recruitedSignatoryVoteWhere,
-              select: { id: true },
-              take: 1,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.referendumVote.groupBy({
+        by: ["referredByUserId", "userId"],
+        where: {
+          ...recruitedSignatoryVoteWhere,
+          referredByUserId: { not: null },
+        },
+        _count: { userId: true },
+      }),
+      prisma.organizationReferendumPosition.findMany({
+        where: buildApprovedOrganizationPositionWhere(context.referendum.id),
+        include: {
+          organization: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              website: true,
+              squareLogoUrl: true,
+              description: true,
+              donationUrl: true,
             },
           },
-        })
-      : Promise.resolve(null),
-  ]);
+        },
+        orderBy: [{ updatedAt: "desc" }],
+      }),
+      prisma.referendumVote.groupBy({
+        by: ["organizationId"],
+        where: {
+          ...recruitedVoteWhere,
+          organizationId: { not: null },
+        },
+        _count: { organizationId: true },
+      }),
+      options.currentUserId
+        ? prisma.user.findUnique({
+            where: { id: options.currentUserId },
+            select: {
+              person: { select: { isPublic: true } },
+              referendumVotes: {
+                where: recruitedSignatoryVoteWhere,
+                select: { id: true },
+                take: 1,
+              },
+            },
+          })
+        : Promise.resolve(null),
+    ]),
+  );
 
   const referredCountByUserId = new Map<string, number>();
   for (const row of referrerCounts) {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
+import { copyTextToClipboard } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 
 interface CopyLinkButtonProps {
@@ -32,7 +33,7 @@ export function CopyLinkButton({
       return;
     }
 
-    await navigator.clipboard.writeText(targetUrl);
+    await copyTextToClipboard(targetUrl);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 2000);
   }
@@ -41,6 +42,7 @@ export function CopyLinkButton({
     return (
       <Button
         type="button"
+        aria-label={copied ? copiedText : copyLabel}
         onClick={() => {
           void handleCopy();
         }}
@@ -55,6 +57,7 @@ export function CopyLinkButton({
   return (
     <Button
       type="button"
+      aria-label={copied ? copiedText : copyLabel}
       onClick={() => {
         void handleCopy();
       }}
