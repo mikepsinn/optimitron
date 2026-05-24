@@ -1086,7 +1086,7 @@ export const jokeLink: NavItem = {
   href: ROUTES.joke,
   label: "The Joke",
   emoji: "😂",
-  description: "How to end war and disease through vandalism.",
+  description: "How to play the funniest joke in the universe.",
   cta: "Play the joke",
   authenticatedCopyPreview: true,
   copyPreview: true,

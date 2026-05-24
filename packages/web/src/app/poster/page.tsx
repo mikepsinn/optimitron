@@ -1,14 +1,11 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { CampaignQrCode } from "@/components/sharing/campaign-qr-code";
 import { authOptions } from "@/lib/auth";
 import { CAMPAIGN_PRINT_COPY } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
-import {
-  PosterCopyLinkButton,
-  PosterPrintButton,
-  PosterQrCode,
-} from "./poster-client";
+import { PosterCopyLinkButton, PosterPrintButton } from "./poster-client";
 
 const CAMPAIGN_ORIGIN = "https://warondisease.org";
 const POSTER_FAVICON_SRC = "/site-assets/warondisease/warondisease-favicon.png";
@@ -405,7 +402,7 @@ export default async function PosterPage({
               ))}
             </div>
             <div className="poster-card-qr w-fit border-2 border-foreground bg-background p-[clamp(0.16rem,1.4vw,0.06in)]">
-              <PosterQrCode value={qrTarget} />
+              <CampaignQrCode value={qrTarget} />
             </div>
           </>
         ) : (
@@ -441,7 +438,7 @@ export default async function PosterPage({
                 </p>
               </div>
               <div className="poster-qr w-fit border-2 border-foreground bg-background p-[clamp(0.45rem,2vw,0.15in)]">
-                <PosterQrCode value={qrTarget} />
+                <CampaignQrCode value={qrTarget} />
               </div>
             </footer>
           </>

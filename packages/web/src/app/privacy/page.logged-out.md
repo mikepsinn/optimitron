@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 ## PRIVACY POLICY
-- Last updated May 22, 2026
+- Last updated May 23, 2026
 ### 1. WHO WE ARE
 - International Campaign to End War and Disease is operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease. This policy explains what we collect when you use warondisease.org, why we collect it, when it may be public, and how to contact us.
 ### 2. INFORMATION WE COLLECT
@@ -45,6 +45,7 @@
 - A successor organization if the project is reorganized, merged, or transferred.
 ### 6. COOKIES AND ANALYTICS
 - We use cookies and similar technologies for sign-in sessions, preferences, abuse prevention, analytics, and basic site operation. Blocking cookies may break account, vote, dashboard, or referral features.
+- On selected public information pages, we may use Microsoft Clarity to see clicks, scrolling, page errors, heatmaps, and session replays so we can find confusing parts of the site. We do not intentionally run Clarity on private messages, profile editing, dashboard, mission, auth, vote-form, checkout, or sensitive submission pages. Microsoft may collect and process usage data as described in the Microsoft Privacy Statement.
 ### 7. RETENTION
 - We keep information for as long as needed to operate the site, maintain campaign records, prevent fraud, resolve disputes, comply with law, and keep security logs. Public campaign records and plaintiff or memorial records may stay visible after an account is closed unless we agree or are required to remove them.
 ### 8. YOUR CHOICES

@@ -5,7 +5,7 @@ import {
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   PER_SHIRT_TRUE_VALUE_USD,
 } from "@optimitron/data/parameters";
-import { PosterQrCode } from "@/app/poster/poster-client";
+import { CampaignQrCode } from "@/components/sharing/campaign-qr-code";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TshirtSilhouette } from "@/components/shirt/TshirtSilhouette";
 import { TaskFundingPledgeForm } from "@/components/task-funding/TaskFundingPledgeForm";
@@ -385,7 +385,7 @@ function ShirtBackArtwork({
         y="900"
       />
       <g transform="translate(900 980)">
-        <PosterQrCode value={qrTarget} />
+        <CampaignQrCode value={qrTarget} />
       </g>
       <text
         fill="#000000"

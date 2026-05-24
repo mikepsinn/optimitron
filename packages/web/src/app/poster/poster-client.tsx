@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
 import { copyTextToClipboard } from "@/lib/clipboard";
 
 export function PosterPrintButton() {
@@ -52,18 +51,5 @@ export function PosterCopyLinkButton({ value }: { value: string }) {
           ? "Copy failed"
           : "Copy link"}
     </button>
-  );
-}
-
-export function PosterQrCode({ value }: { value: string }) {
-  return (
-    <QRCodeSVG
-      bgColor="#ffffff"
-      fgColor="#000000"
-      includeMargin={false}
-      level="H"
-      size={600}
-      value={value}
-    />
   );
 }

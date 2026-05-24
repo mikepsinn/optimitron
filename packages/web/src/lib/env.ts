@@ -134,6 +134,7 @@ const clientSchema = z.object({
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().optional(),
   NEXT_PUBLIC_WORLD_ID_ENABLED: z.string().optional(),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+  NEXT_PUBLIC_MICROSOFT_CLARITY_PROJECT_ID: optionalNonEmptyString,
 });
 
 /* ------------------------------------------------------------------ */
@@ -186,6 +187,8 @@ export function getClientEnv(): ClientEnv {
     NEXT_PUBLIC_WORLD_ID_ENABLED: process.env.NEXT_PUBLIC_WORLD_ID_ENABLED,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_MICROSOFT_CLARITY_PROJECT_ID:
+      process.env.NEXT_PUBLIC_MICROSOFT_CLARITY_PROJECT_ID,
   });
   if (!parsed.success) {
     const formatted = parsed.error.flatten().fieldErrors;

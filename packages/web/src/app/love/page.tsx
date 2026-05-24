@@ -7,8 +7,8 @@ import {
   TREATY_REDUCTION_PCT,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { CampaignQrCode } from "@/components/sharing/campaign-qr-code";
 import type { ReactNode } from "react";
-import { PosterQrCode } from "@/app/poster/poster-client";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
 import { getRouteMetadata } from "@/lib/metadata";
@@ -262,7 +262,7 @@ function CampaignUrlCard({
         </div>
       </div>
       <div className="w-fit border border-[#2a2a2a] bg-white p-3 [&_svg]:h-32 [&_svg]:w-32">
-        <PosterQrCode value={referralUrl} />
+        <CampaignQrCode value={referralUrl} />
       </div>
     </div>
   );

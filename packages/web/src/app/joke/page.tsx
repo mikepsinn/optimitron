@@ -3,20 +3,32 @@ import {
   ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR,
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_SECTOR_RETENTION_PCT,
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
+  DISEASE_BURDEN_GDP_DRAG_PCT,
+  GLOBAL_DISEASE_DEATHS_DAILY,
+  GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL,
+  HUMAN_LAUGHS_PER_DAY_AVERAGE,
+  HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
-  PENTAGON_UNACCOUNTED_FUNDS,
   POST_WW2_MILITARY_CUT_PCT,
+  SEPT_11_DEATHS,
+  SHIRT_INDUCED_LAUGHS_GAINED,
   SHIRT_SEED_WEARERS_THRESHOLD,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_CAMPAIGN_BUDGET_LOBBYING,
   TREATY_REDUCTION_PCT,
   TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15,
+  type Parameter,
   US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT,
-  US_MILITARY_SPENDING_2024_ANNUAL,
 } from "@optimitron/data/parameters";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
+import { CampaignQrCode } from "@/components/sharing/campaign-qr-code";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { authOptions } from "@/lib/auth";
 import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
@@ -27,11 +39,26 @@ import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { jokeLink, ROUTES } from "@/lib/routes";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildReferralUrl } from "@/lib/url";
+import { JokePrintButton } from "./joke-client";
 
-const stepHeadingClass =
-  "text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl";
 const paragraphClass = "text-lg font-bold leading-8 text-foreground";
 const manualBase = "https://manual.warondisease.org/knowledge";
+const genericVoteUrl = `${WAR_ON_DISEASE_CANONICAL_ORIGIN}${ROUTES.vote}`;
+
+const DAILY_DISEASE_DEATHS_IN_911_EQUIVALENTS: Parameter = {
+  value: GLOBAL_DISEASE_DEATHS_DAILY.value / SEPT_11_DEATHS.value,
+  parameterName: "DAILY_DISEASE_DEATHS_IN_911_EQUIVALENTS",
+  calculationsUrl: GLOBAL_DISEASE_DEATHS_DAILY.calculationsUrl,
+  unit: "ratio",
+  displayName: "Daily Disease Deaths in September 11 Equivalents",
+  description:
+    "Total daily global deaths from disease and aging divided by the September 11 death toll. This is a scale comparison, not an argument that the events are otherwise similar.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "GLOBAL_DISEASE_DEATHS_DAILY / SEPT_11_DEATHS",
+  manualPageUrl: GLOBAL_DISEASE_DEATHS_DAILY.manualPageUrl,
+  manualPageTitle: GLOBAL_DISEASE_DEATHS_DAILY.manualPageTitle,
+};
 
 export const metadata = getRouteMetadata(jokeLink);
 
@@ -63,34 +90,44 @@ async function getPersonalReferralUrl() {
   return buildReferralUrl(referralIdentifier, WAR_ON_DISEASE_CANONICAL_ORIGIN);
 }
 
-function StepHeading({ children }: { children: ReactNode }) {
-  return <h2 className={stepHeadingClass}>{children}</h2>;
-}
-
-function Objection({
+function Step({
   children,
+  eyebrow,
   title,
 }: {
   children: ReactNode;
+  eyebrow: string;
   title: string;
 }) {
   return (
-    <details className="border border-foreground bg-background">
-      <summary className="cursor-pointer list-none p-4">
-        <h3 className="text-xl font-black leading-tight sm:text-2xl">
-          {title}
-        </h3>
-      </summary>
-      <div className="space-y-5 border-t border-foreground p-4">{children}</div>
-    </details>
+    <section className="border border-foreground bg-background p-5">
+      <p className="text-sm font-black uppercase text-muted-foreground">
+        {eyebrow}
+      </p>
+      <h2 className="mt-2 text-3xl font-black uppercase leading-none sm:text-4xl">
+        {title}
+      </h2>
+      <div className="mt-4 space-y-4">{children}</div>
+    </section>
   );
 }
 
-function ManualLink({ children, href }: { children: ReactNode; href: string }) {
+function MathTile({
+  children,
+  label,
+}: {
+  children: ReactNode;
+  label: string;
+}) {
   return (
-    <a className="underline underline-offset-4" href={href}>
-      {children}
-    </a>
+    <section className="border border-foreground bg-background p-4">
+      <div className="text-3xl font-black uppercase leading-none sm:text-4xl">
+        {children}
+      </div>
+      <p className="mt-2 text-sm font-black uppercase leading-tight text-muted-foreground">
+        {label}
+      </p>
+    </section>
   );
 }
 
@@ -102,361 +139,741 @@ function ApocalypseNumberValue() {
   return (
     <ParameterValue
       param={NUCLEAR_WINTER_OVERKILL_FACTOR}
-      valueOverride="#122"
+      valueOverride="121"
     />
+  );
+}
+
+function ManualLink({
+  children,
+  href,
+}: {
+  children: ReactNode;
+  href: string;
+}) {
+  return (
+    <a className="underline underline-offset-4" href={href}>
+      {children}
+    </a>
+  );
+}
+
+function Objection({
+  children,
+  title,
+}: {
+  children: ReactNode;
+  title: string;
+}) {
+  return (
+    <details className="border-b border-foreground py-5">
+      <summary className="cursor-pointer text-lg font-black uppercase leading-tight marker:text-foreground">
+        {title}
+      </summary>
+      <div className="mt-4 space-y-4">{children}</div>
+    </details>
+  );
+}
+
+function ShirtCopyBlock({ referralUrl }: { referralUrl: string }) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      <section className="border border-foreground p-4">
+        <h3 className="text-sm font-black uppercase text-muted-foreground">
+          Front
+        </h3>
+        <p className="mt-3 text-4xl font-black uppercase leading-none sm:text-5xl">
+          {SHIRT_FRONT_COPY}
+        </p>
+      </section>
+      <section className="border border-foreground p-4">
+        <h3 className="text-sm font-black uppercase text-muted-foreground">
+          Back
+        </h3>
+        <p className="mt-3 text-3xl font-black uppercase leading-tight sm:text-4xl">
+          {SHIRT_BACK_COPY_LINES.join(" ")}
+        </p>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+          <p className="min-w-0 flex-1 break-words text-xl font-black leading-tight">
+            {referralUrl.replace(/^https?:\/\//, "")}
+          </p>
+          <CopyLinkButton
+            url={referralUrl}
+            idleLabel="Copy"
+            copiedLabel="Copied"
+            className="w-fit shrink-0 border border-foreground bg-foreground font-black uppercase text-background shadow-none hover:translate-y-0 hover:bg-background hover:text-foreground active:translate-x-0 active:translate-y-0"
+          />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function HandoutFact({ children }: { children: ReactNode }) {
+  return (
+    <li className="border-b border-foreground py-3 text-xl font-black leading-tight last:border-b-0">
+      {children}
+    </li>
+  );
+}
+
+function PrintableJokeHandout({
+  hasPersonalReferralUrl,
+  referralUrl,
+}: {
+  hasPersonalReferralUrl: boolean;
+  referralUrl: string;
+}) {
+  const visibleUrl = referralUrl.replace(/^https?:\/\//, "");
+
+  return (
+    <section className="space-y-4" id="print-handout">
+      <div
+        className="flex flex-wrap items-center justify-between gap-3"
+        data-print-hidden="true"
+      >
+        <div>
+          <h2 className="text-3xl font-black uppercase leading-none sm:text-4xl">
+            Handout to include with the shirt
+          </h2>
+          <p className="mt-2 text-sm font-bold text-muted-foreground">
+            Print both sides and put it with the shirt, or tape it to the closet
+            door like a normal civilization repair technician.
+          </p>
+          {!hasPersonalReferralUrl ? (
+            <p className="mt-2 text-sm font-bold text-muted-foreground">
+              This prints the public vote URL.{" "}
+              <Link className="underline underline-offset-4" href={ROUTES.signIn}>
+                Sign in
+              </Link>{" "}
+              and vote yes to personalize it.
+            </p>
+          ) : null}
+        </div>
+        <JokePrintButton label="Print handout" />
+      </div>
+
+      <div className="space-y-4">
+        <article className="joke-handout-sheet border border-foreground bg-background p-6 text-foreground">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_180px]">
+            <div className="min-w-0">
+              <p className="text-sm font-black uppercase leading-none text-muted-foreground">
+                Please read before yelling
+              </p>
+              <h3 className="mt-2 text-5xl font-black uppercase leading-none">
+                Why I wrote on your shirts
+              </h3>
+              <p className="mt-4 text-xl font-bold leading-snug">
+                You were given this shirt because someone correctly loves you
+                and would prefer that you not be processed by preventable
+                disease while humanity funds spare apocalypses.
+              </p>
+              <p className="mt-3 text-xl font-bold leading-snug">
+                Disease kills{" "}
+                <ParameterValue
+                  param={GLOBAL_DISEASE_DEATHS_DAILY}
+                  presentation="inline"
+                  valueOverride="150,000 humans/day"
+                />
+                , about{" "}
+                <ParameterValue
+                  param={DAILY_DISEASE_DEATHS_IN_911_EQUIVALENTS}
+                  presentation="inline"
+                  valueOverride="50"
+                />{" "}
+                September 11s every day. Nobody invades anyone because disease
+                has no flag.
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-full border border-foreground bg-background p-2">
+                <CampaignQrCode value={referralUrl} />
+              </div>
+              <p className="break-all text-center text-xs font-black uppercase leading-tight">
+                {visibleUrl}
+              </p>
+            </div>
+          </div>
+
+          <ol className="mt-6 border-y border-foreground">
+            <HandoutFact>
+              Your chance of dying of disease: nearly 100%. Your chance of
+              dying of terrorism: 1 in{" "}
+              <ParameterValue
+                param={ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR}
+                presentation="inline"
+                valueOverride="30,000,000"
+              />
+              .
+            </HandoutFact>
+            <HandoutFact>
+              Governments spend{" "}
+              <ParameterValue
+                param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+                presentation="inline"
+                valueOverride="604x"
+              />{" "}
+              more on weapons than on government clinical trials.
+            </HandoutFact>
+            <HandoutFact>
+              Before WWII, US military spending was{" "}
+              <ParameterValue
+                param={US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT}
+                presentation="inline"
+              />{" "}
+              lower. After winning, the US cut it{" "}
+              <ParameterValue
+                param={POST_WW2_MILITARY_CUT_PCT}
+                presentation="inline"
+              />{" "}
+              in two years.
+            </HandoutFact>
+            <HandoutFact>
+              The 1% Treaty buys about{" "}
+              <ParameterValue
+                param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+                presentation="inline"
+                valueOverride="12x"
+              />{" "}
+              more trial capacity, moving disease eradication from{" "}
+              <ParameterValue
+                param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                presentation="inline"
+                valueOverride="443 years"
+              />{" "}
+              to{" "}
+              <ParameterValue
+                param={DFDA_QUEUE_CLEARANCE_YEARS}
+                presentation="inline"
+                valueOverride="36 years"
+              />
+              .
+            </HandoutFact>
+            <HandoutFact>
+              The model says the average human becomes about{" "}
+              <ParameterValue
+                param={
+                  TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
+                }
+                presentation="inline"
+                valueOverride="4x"
+              />{" "}
+              richer, with fewer diseases and fewer funerals. This is not a
+              sacrifice. It is arithmetic with a pulse.
+            </HandoutFact>
+          </ol>
+
+          <p className="mt-5 text-2xl font-black uppercase leading-tight">
+            Vote. Then write this on two more shirts. Social proof handles the
+            part your facts cannot.
+          </p>
+        </article>
+
+        <article className="joke-handout-sheet border border-foreground bg-background p-6 text-foreground">
+          <p className="text-sm font-black uppercase leading-none text-muted-foreground">
+            The yelling part
+          </p>
+          <h3 className="mt-2 text-5xl font-black uppercase leading-none">
+            Answers for the person currently objecting
+          </h3>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <section className="border border-foreground p-4">
+              <h4 className="text-xl font-black uppercase leading-tight">
+                But we need the military budget.
+              </h4>
+              <p className="mt-2 text-base font-bold leading-snug">
+                The treaty changes one budget line. Every country makes the
+                same trade and keeps{" "}
+                <ParameterValue
+                  param={DEFENSE_SECTOR_RETENTION_PCT}
+                  presentation="inline"
+                  valueOverride="99%"
+                />
+                . Humanity still has about <ApocalypseNumberValue /> spare
+                apocalypses. This is enough murder capacity.
+              </p>
+            </section>
+
+            <section className="border border-foreground p-4">
+              <h4 className="text-xl font-black uppercase leading-tight">
+                We cannot afford it.
+              </h4>
+              <p className="mt-2 text-base font-bold leading-snug">
+                Disease already burns{" "}
+                <ParameterValue
+                  param={GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL}
+                  presentation="inline"
+                />
+                /year in lost work and drags off{" "}
+                <ParameterValue
+                  param={DISEASE_BURDEN_GDP_DRAG_PCT}
+                  presentation="inline"
+                />
+                of global GDP. The current arrangement is what nobody can
+                afford.
+              </p>
+            </section>
+
+            <section className="border border-foreground p-4">
+              <h4 className="text-xl font-black uppercase leading-tight">
+                Who would block this?
+              </h4>
+              <p className="mt-2 text-base font-bold leading-snug">
+                Nobody rational. Defense contractors keep{" "}
+                <ParameterValue
+                  param={DEFENSE_SECTOR_RETENTION_PCT}
+                  presentation="inline"
+                  valueOverride="99%"
+                />
+                , lose one unusable apocalypse, and get an economy about{" "}
+                <ParameterValue
+                  param={
+                    TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
+                  }
+                  presentation="inline"
+                  valueOverride="4x"
+                />
+                larger where their children are alive to spend the money.
+              </p>
+            </section>
+
+            <section className="border border-foreground p-4">
+              <h4 className="text-xl font-black uppercase leading-tight">
+                Then why has nobody done it?
+              </h4>
+              <p className="mt-2 text-base font-bold leading-snug">
+                Because the facts are scattered. Put them in eight billion
+                brains at once and the insanity becomes visible: change the
+                spreadsheet, keep the deterrent, fund the trials, stop dying.
+              </p>
+            </section>
+          </div>
+
+          <div className="mt-5 border-y border-foreground py-4">
+            <p className="text-lg font-bold leading-snug">
+              If the shirt cascade works, the conservative model counts{" "}
+              <ParameterValue
+                param={SHIRT_INDUCED_LAUGHS_GAINED}
+                presentation="inline"
+                valueOverride="3.5 quadrillion"
+              />{" "}
+              extra laughs and{" "}
+              <ParameterValue
+                param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
+                presentation="inline"
+                valueOverride="1.93 quadrillion hours"
+              />{" "}
+              of suffering prevented. Under these conditions, writing on the
+              shirt was the only morally correct action available.
+            </p>
+          </div>
+
+          <p className="mt-5 text-2xl font-black uppercase leading-tight">
+            Warondisease.org. Vote first. Yell later.
+          </p>
+        </article>
+      </div>
+    </section>
   );
 }
 
 export default async function JokePage() {
   const personalReferralUrl = await getPersonalReferralUrl();
-  const shirtReferralUrl =
-    personalReferralUrl ?? "warondisease.org/<your referral code>";
+  const referralUrl = personalReferralUrl ?? genericVoteUrl;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <section className="space-y-6 border-b border-foreground pb-10">
+    <main className="joke-root min-h-screen bg-background text-foreground">
+      <style>{`
+        .joke-handout-sheet {
+          box-sizing: border-box;
+          max-width: 8.5in;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        @media print {
+          @page {
+            size: letter;
+            margin: 0.35in;
+          }
+
+          html,
+          body {
+            width: 100%;
+            min-height: 100%;
+            background: #ffffff !important;
+            color: #000000 !important;
+            overflow: visible !important;
+          }
+
+          nav,
+          body > footer,
+          [data-print-hidden="true"],
+          [data-joke-screen-only="true"] {
+            display: none !important;
+          }
+
+          main {
+            min-height: 0 !important;
+          }
+
+          .joke-root {
+            min-height: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+          }
+
+          .joke-root > div {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          .joke-handout-sheet {
+            width: auto !important;
+            height: 10.2in !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-color: #000000 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            break-after: page !important;
+            page-break-after: always !important;
+          }
+
+          .joke-handout-sheet:last-child {
+            break-after: auto !important;
+            page-break-after: auto !important;
+          }
+
+          #print-handout,
+          #print-handout > div {
+            margin: 0 !important;
+          }
+
+          #print-handout .joke-handout-sheet + .joke-handout-sheet {
+            margin-top: 0 !important;
+          }
+
+          .joke-handout-sheet * {
+            border-color: #000000 !important;
+            color: #000000 !important;
+          }
+        }
+      `}</style>
+
+      <div className="mx-auto max-w-5xl space-y-10 px-4 py-10 sm:px-6 lg:px-8">
+        <section
+          className="space-y-6 border-b border-foreground pb-10"
+          data-joke-screen-only="true"
+        >
           <h1 className="text-5xl font-black uppercase leading-none sm:text-6xl md:text-7xl">
-            THE FUNNIEST JOKE IN THE UNIVERSE
+            How to play the funniest joke in the universe
           </h1>
-          <p className="text-2xl font-black leading-tight">
-            How to end war and disease through vandalism.
+          <p className="max-w-3xl text-2xl font-black leading-tight">
+            Put the campaign on a shirt. Put the shirt on a human. Put the math
+            in their hand before they start yelling.
           </p>
-          <p className={paragraphClass}>
-            We report the discovery and proof of the funniest joke in the
-            history of the universe. The joke takes the form of a t-shirt.
-          </p>
-        </section>
-
-        <section className="space-y-6 border-b border-foreground py-10">
-          <StepHeading>STEP 1 — VOTE ON THIS.</StepHeading>
-          <p className={paragraphClass}>
-            The risk we are protecting against is small: your annual chance of
-            dying in a terrorist attack is about 1 in{" "}
-            <ParameterValue
-              param={ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR}
-              valueOverride="30 million"
-            />
-            . The risk we are not protecting against is enormous: disease comes
-            for almost everyone. The current spending ratio funds the smaller
-            risk at the expense of the larger one. The shirt is asking you to
-            notice.
-          </p>
-          <Link
-            className="inline-flex border border-foreground bg-foreground px-5 py-3 text-base font-black uppercase text-background hover:bg-background hover:text-foreground"
-            href={ROUTES.vote}
-          >
-            VOTE YES ON THE 1% TREATY
-          </Link>
-        </section>
-
-        <section className="space-y-6 border-b border-foreground py-10">
-          <StepHeading>STEP 2 — GET A PERMANENT MARKER.</StepHeading>
-          <p className={paragraphClass}>
-            You can buy one. You can also take a permanent marker and write it
-            on a shirt you already own. Either works. The shirt is text. Text
-            costs marker ink.
-          </p>
-        </section>
-
-        <section className="space-y-6 border-b border-foreground py-10">
-          <StepHeading>
-            STEP 3 — SNEAK INTO THE CLOSETS OF EVERYONE YOU LOVE.
-          </StepHeading>
-          <p className={paragraphClass}>
-            Take a permanent marker into the closet of every human you do not
-            want to suffer and die of preventable disease. Your spouse. Your
-            siblings. Your parents. The parents of your children&apos;s friends.
-            Write <em>this t-shirt ended war and disease</em> on the front.
-            Write{" "}
-            <em>
-              trade one apocalypse for disease eradication at warondisease.org
-            </em>{" "}
-            and your referral code on the back. They will notice when they put
-            the shirt on. They will demand an explanation. You hand them this
-            paper. They explain it to the next human who asks them. The chain
-            propagates.
-          </p>
-        </section>
-
-        <section className="space-y-8 border-b border-foreground py-10">
-          <StepHeading>STEP 4 — WRITE THIS ON THEIR SHIRTS.</StepHeading>
-          <div className="grid gap-6 md:grid-cols-2">
-            <section className="border border-foreground p-5">
-              <h3 className="text-3xl font-black uppercase leading-tight">
-                FRONT:
-              </h3>
-              <p className="mt-4 text-4xl font-black uppercase leading-none sm:text-5xl">
-                {SHIRT_FRONT_COPY}
-              </p>
-            </section>
-            <section className="border border-foreground p-5">
-              <h3 className="text-3xl font-black uppercase leading-tight">
-                BACK:
-              </h3>
-              <p className="mt-4 text-3xl font-black uppercase leading-tight sm:text-4xl">
-                {SHIRT_BACK_COPY_LINES.join(" ")}
-              </p>
-              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
-                <p className="min-w-0 flex-1 break-words text-xl font-black leading-tight sm:text-2xl">
-                  {shirtReferralUrl}
-                </p>
-                <CopyLinkButton
-                  url={shirtReferralUrl}
-                  idleLabel="Copy"
-                  copiedLabel="Copied"
-                  className="w-fit shrink-0 border border-foreground bg-foreground font-black uppercase text-background shadow-none hover:translate-y-0 hover:bg-background hover:text-foreground active:translate-x-0 active:translate-y-0"
-                />
-              </div>
-              {!personalReferralUrl ? (
-                <p className="mt-4 text-base font-bold leading-7">
-                  Sign in and vote yes to get your real referral link printed
-                  here.
-                </p>
-              ) : null}
-            </section>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              className="inline-flex border border-foreground bg-foreground px-5 py-3 text-base font-black uppercase text-background hover:bg-background hover:text-foreground"
+              href={ROUTES.vote}
+            >
+              Vote yes
+            </Link>
+            <a
+              className="inline-flex border border-foreground bg-background px-5 py-3 text-base font-black uppercase text-foreground hover:bg-foreground hover:text-background"
+              href="#print-handout"
+            >
+              Print the handout
+            </a>
           </div>
-          <p className={paragraphClass}>
-            The prank also solves the friction problem from the recipient&apos;s
-            side. A human wearing &quot;End War &amp; Disease&quot; on their own
-            initiative is making a political declaration, which is the socially
-            exposing version. A human wearing it because their spouse defaced
-            their entire closet last Tuesday is just a human with a funny story.
-            The cost of explaining the shirt drops from &quot;I am
-            advocating&quot; to &quot;you won&apos;t believe what
-            happened,&quot; which is the conversation humans actually like
-            having.
-          </p>
         </section>
 
-        <section className="space-y-6 border-b border-foreground py-10">
-          <StepHeading>
-            STEP 5 — WHEN THEY GET MAD AT YOU, ANSWER THESE QUESTIONS.
-          </StepHeading>
+        <section
+          className="grid gap-4 md:grid-cols-4"
+          data-joke-screen-only="true"
+        >
+          <MathTile label="die of disease and aging every day">
+            <ParameterValue
+              param={GLOBAL_DISEASE_DEATHS_DAILY}
+              valueOverride="150,000"
+            />
+          </MathTile>
+          <MathTile label="September 11 equivalents every day">
+            <ParameterValue
+              param={DAILY_DISEASE_DEATHS_IN_911_EQUIVALENTS}
+              valueOverride="50"
+            />
+          </MathTile>
+          <MathTile label="extra laughs if the cascade works">
+            <ParameterValue
+              param={SHIRT_INDUCED_LAUGHS_GAINED}
+              valueOverride="3.5 quadrillion"
+            />
+          </MathTile>
+          <MathTile label="seed wearers that make it socially real">
+            <ParameterValue
+              param={SHIRT_SEED_WEARERS_THRESHOLD}
+              valueOverride="1 million"
+            />
+          </MathTile>
+        </section>
+
+        <section
+          className="grid gap-4 md:grid-cols-2"
+          data-joke-screen-only="true"
+        >
+          <Step eyebrow="Step 1" title="Vote yes.">
+            <p className={paragraphClass}>
+              The joke is funnier if you are not asking other people to do the
+              thing you avoided doing. Vote on the 1% Treaty first.
+            </p>
+          </Step>
+
+          <Step eyebrow="Step 2" title="Write the shirt.">
+            <p className={paragraphClass}>
+              A bought shirt works. A shirt you already own plus a permanent
+              marker also works. The shirt is text. Text costs marker ink.
+            </p>
+          </Step>
+
+          <Step eyebrow="Step 3" title="Include the handout.">
+            <p className={paragraphClass}>
+              The handout explains the math, the facts, and why the recipient
+              has now been recruited by a textile incident.
+            </p>
+          </Step>
+
+          <Step eyebrow="Step 4" title="Propagate.">
+            <p className={paragraphClass}>
+              Write it on the rest of your shirts. Write it on your
+              friends&apos; shirts if your friendship has survived worse things.
+              The joke stops being a joke when humanity gets the point.
+            </p>
+          </Step>
+        </section>
+
+        <section className="space-y-4" data-joke-screen-only="true">
+          <h2 className="text-3xl font-black uppercase leading-none sm:text-4xl">
+            Write this
+          </h2>
+          <ShirtCopyBlock referralUrl={referralUrl} />
+        </section>
+
+        <PrintableJokeHandout
+          hasPersonalReferralUrl={Boolean(personalReferralUrl)}
+          referralUrl={referralUrl}
+        />
+
+        <section
+          className="space-y-5 border-t border-foreground pt-10"
+          data-joke-screen-only="true"
+        >
+          <h2 className="text-3xl font-black uppercase leading-none sm:text-4xl">
+            When they ask why
+          </h2>
           <p className={paragraphClass}>
-            When you wear the shirt, humans will ask you about it. They will
-            raise objections in roughly this order. Memorize the answers. You
-            are the delivery mechanism.
+            The handout gets them to the vote. These are the answers for the
+            human currently pointing at the shirt and demanding evidence.
           </p>
-          <div className="space-y-4">
-            <Objection title='"But we need the military budget!"'>
+          <div className="border-t border-foreground">
+            <Objection title="But we need the military budget.">
               <p className={paragraphClass}>
-                The treaty takes <TreatyReductionValue />. You keep{" "}
+                Your annual chance of dying in a terrorist attack is about 1 in{" "}
+                <ParameterValue
+                  param={ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR}
+                  valueOverride="30 million"
+                />
+                . Your chance of dying from disease is still 100%. The treaty
+                changes one budget line. Every country makes the same trade at
+                the same time and keeps{" "}
                 <ParameterValue
                   param={DEFENSE_SECTOR_RETENTION_PCT}
                   valueOverride="99%"
-                />
-                . Every nation reduces by the same amount, so relative military
-                balance stays exactly the same. You each have{" "}
-                <TreatyReductionValue /> fewer missiles pointed at each other.
-                Every sane observer calls this &quot;safer.&quot; Your species
-                calls it &quot;an unacceptable risk to national security.&quot;
-                Same math, different feelings.
+                />{" "}
+                of its military budget, so relative military balance stays the
+                same. Humanity still keeps roughly <ApocalypseNumberValue />{" "}
+                spare apocalypses, which is a suspicious amount of deterrence.
               </p>
               <p className={paragraphClass}>
-                COVID-19 killed more Americans than World War I, World War II,
-                Korea, Vietnam, Iraq, and Afghanistan combined. The{" "}
-                <ParameterValue param={US_MILITARY_SPENDING_2024_ANNUAL} />{" "}
-                murder budget watched it happen, fully armed and completely
-                confused. The virus did not check your passport. Disease is the
-                only enemy that attacks every nation simultaneously, and you are
-                the only species that needs to be talked into fighting it.
-              </p>
-              <p className={paragraphClass}>
-                Also, the Pentagon cannot account for{" "}
-                <ParameterValue param={PENTAGON_UNACCOUNTED_FUNDS} /> that it
-                has misplaced. <TreatyReductionValue /> of US military spending
-                is a fraction of the amount that already goes into a black hole
-                every year and no one can locate. You are not redirecting the
-                missile budget. You are redirecting the &quot;we lost it
-                somewhere&quot; budget. The missiles won&apos;t notice.
+                Disease already burns{" "}
+                <ParameterValue param={GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL} />
+                /year in lost work and drags off{" "}
+                <ParameterValue param={DISEASE_BURDEN_GDP_DRAG_PCT} /> of
+                global GDP before you even count the funerals. War smashes
+                infrastructure. Disease smashes the workers. The current
+                arrangement is what nobody can afford.
               </p>
             </Objection>
 
-            <Objection title='"1% is unrealistic."'>
+            <Objection title="1% is unrealistic.">
               <p className={paragraphClass}>
                 Immediately before the United States won World War II, US
                 military spending was{" "}
                 <ParameterValue
                   param={US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT}
                 />{" "}
-                lower than current levels. The country still built the bombs and
-                airplanes that won the war. After winning, the US cut military
+                lower than current levels. After winning, the US cut military
                 spending <ParameterValue param={POST_WW2_MILITARY_CUT_PCT} />{" "}
-                over two years. GM went from B-24 bombers back to Cadillacs.
-                Frigidaire stopped making machine guns and went back to
-                refrigerators. The economy produced the greatest boom in your
-                history.
-              </p>
-              <p className={paragraphClass}>
-                Same country, in living memory, did a redirect that dwarfs what
-                this shirt asks for. Your grandparents handled a{" "}
-                <ParameterValue param={POST_WW2_MILITARY_CUT_PCT} /> cut and
-                built the middle class. You are being asked for{" "}
-                <TreatyReductionValue /> and acting like someone suggested
-                disbanding the army during an invasion.
+                over two years and then built the middle class. Your
+                grandparents handled that. This shirt asks for{" "}
+                <TreatyReductionValue />.
               </p>
             </Objection>
 
-            <Objection title='"The military-industrial complex will never allow it."'>
+            <Objection title="The military-industrial complex will never allow it.">
               <p className={paragraphClass}>
-                The CEO of Lockheed Martin has two options: (a) keep{" "}
-                <ApocalypseNumberValue />, watch their family die of curable
-                diseases, retire on the current trajectory; or (b) give up the
-                extra apocalypse they cannot use, watch their family live,
-                invest in the biotech sector that absorbs a trillion redirected
-                dollars per year, retire on an economy{" "}
+                The CEO of Lockheed Martin is not exempt from biology. They can
+                keep roughly <ApocalypseNumberValue /> spare apocalypses, watch
+                their family die of curable diseases, and retire into the
+                current trajectory. Or they can keep{" "}
                 <ParameterValue
-                  param={
-                    TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
-                  }
-                  valueOverride="4.1x"
-                />
-                {" "}larger. They have not picked (b) yet because nobody has
-                explained it in those terms. The shirt is how that gets
-                explained.
-              </p>
-              <p className={paragraphClass}>
-                The military-industrial complex does not benefit from the
-                status quo. They die of the same diseases. They live in the same
-                economy. Their children attend the same funerals. The costs of
-                the current system are concentrated on everyone, including them.
-                There is no winner. There is no rational beneficiary of the
-                current arrangement. There is only a species that has not yet
-                done the arithmetic. This book is the arithmetic.
-              </p>
-            </Objection>
-
-            <Objection title='"What about defense industry jobs?"'>
-              <p className={paragraphClass}>
-                <TreatyReductionValue /> is a rounding error. The redirect funds
-                clinical trials, which is also a lot of jobs: trial
-                coordinators, medical statisticians, lab technicians,
-                diagnostics manufacturing. Engineers building guidance systems
-                can build medical imaging devices. Same differential equations,
-                fewer funerals. Veterans particularly need clinical trial access
-                for the things they got from serving (chronic pain, PTSD,
-                traumatic brain injury); the redirect pays for the trials they
-                need.
-              </p>
-            </Objection>
-
-            <Objection title='"What if countries cheat?"'>
-              <p className={paragraphClass}>
-                Of course they will. This system was designed by someone who has
-                watched a suspicious number of civilizations (me), and it does
-                not use trust. It uses math. Politicians who comply receive{" "}
-                <ManualLink
-                  href={`${manualBase}/solution/incentive-alignment-bonds.html`}
-                >
-                  Incentive Alignment Bond
-                </ManualLink>{" "}
-                benefits: campaign funding and cushy post-office careers.
-                Politicians who don&apos;t comply get nothing. Every
-                disbursement is published on a public ledger keyed to specific
-                trials with specific outcomes via the{" "}
-                <ManualLink
-                  href={`${manualBase}/solution/decentralized-accountability-office.html`}
-                >
-                  Decentralized Accountability Office
-                </ManualLink>{" "}
-                and{" "}
-                <ManualLink
-                  href={`${manualBase}/solution/automated-revenue-service.html`}
-                >
-                  Automated Revenue Service
-                </ManualLink>
-                . The <TreatyReductionValue /> that gets siphoned off does not
-                get siphoned off invisibly. Auditors see every wire; voters see
-                every auditor.
-              </p>
-            </Objection>
-
-            <Objection title='"What if other countries don&apos;t sign?"'>
-              <p className={paragraphClass}>
-                The first country to sign makes it easier for the second. The
-                treaty follows the Ottawa (landmine) and Treaty on the
-                Prohibition of Nuclear Weapons templates, both ratified by most
-                countries even with the big powers holding out. Holdouts do not
-                break the treaty. They make the cost of holding out visible.
-                Also: TikTok scaled globally and it teaches strangers
-                choreography. If your species can coordinate dance moves across
-                the planet, it can coordinate not dying.
-              </p>
-            </Objection>
-
-            <Objection title='"Politicians will never agree to this."'>
-              <p className={paragraphClass}>
-                Politicians are also humans. They also get diseases. A
-                politician who votes against the treaty is not &quot;voting
-                against a budget reallocation.&quot; They are voting to keep
-                <ApocalypseNumberValue />{" "}
-                (which is functionally identical to every apocalypse after the
-                first, since you only have one civilization) in exchange for
-                ensuring that their constituents, their donors, their families,
-                and they themselves continue to suffer and die of preventable
-                diseases while being{" "}
+                  param={DEFENSE_SECTOR_RETENTION_PCT}
+                  valueOverride="99%"
+                />{" "}
+                of the military budget, give up the unusable apocalypse, invest
+                in the biotech sector absorbing redirected trial money, and
+                retire in an economy{" "}
                 <ParameterValue
                   param={
                     TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
                   }
                   valueOverride="4.1x"
                 />{" "}
-                poorer. That is what a &quot;no&quot; vote means. The shirt
-                makes sure voters understand what their representative is
-                actually voting for.
+                larger where their children are alive to spend the money.
+                Blocking the treaty to protect the last <TreatyReductionValue />{" "}
+                is not self-interest. It is arithmetic failure with a lobbyist.
+              </p>
+            </Objection>
+
+            <Objection title="Politicians will never agree.">
+              <p className={paragraphClass}>
+                Politicians mostly do what the visible incentive structure
+                makes least painful. Right now the defense lobby spends{" "}
+                <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> buying the
+                spreadsheet. The treaty campaign budget is{" "}
+                <ParameterValue param={TREATY_CAMPAIGN_BUDGET_LOBBYING} />. If
+                eight billion humans understand that the spreadsheet is killing
+                them, changing the numbers becomes the boring part.
               </p>
               <p className={paragraphClass}>
-                Once the cascade triggers and a majority of any
-                politician&apos;s constituents show up on the public treaty
-                scoreboard, signing is a budget-spreadsheet chore. Refusing
-                gets them replaced by the next candidate who runs on &quot;I
-                will sign the treaty.&quot; The campaign also outbids the
-                defense lobby directly: defense contractors spend{" "}
-                <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> buying
-                politicians; the treaty{" "}
-                <ManualLink
-                  href={`${manualBase}/economics/campaign-budget.html`}
-                >
-                  lobbying budget
-                </ManualLink>{" "}
-                is <ParameterValue param={TREATY_CAMPAIGN_BUDGET_LOBBYING} />.
-                After the treaty passes, politicians who voted yes receive{" "}
+                Defense contractors spend{" "}
+                <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> because
+                lobbying works. Fine. After the treaty passes, politicians who
+                voted yes receive{" "}
                 <ManualLink
                   href={`${manualBase}/solution/incentive-alignment-bonds.html`}
                 >
                   Incentive Alignment Bond
                 </ManualLink>{" "}
-                payouts: campaign support while running, cushy careers when
-                done. Politicians who voted no receive nothing. This is
+                benefits: campaign support while running, cushy careers when
+                done. Politicians who vote no receive nothing. This is
                 Pavlovian conditioning, but for senators.
+              </p>
+            </Objection>
+
+            <Objection title="What if countries cheat or refuse?">
+              <p className={paragraphClass}>
+                Of course some will try. The system does not use trust. It uses
+                published disbursements, trial-linked payouts, the{" "}
+                <ManualLink
+                  href={`${manualBase}/solution/decentralized-accountability-office.html`}
+                >
+                  Decentralized Accountability Office
+                </ManualLink>
+                , and the{" "}
+                <ManualLink
+                  href={`${manualBase}/solution/automated-revenue-service.html`}
+                >
+                  Automated Revenue Service
+                </ManualLink>
+                . The first country to sign makes refusal more visible and more
+                expensive for the next one.
+              </p>
+            </Objection>
+
+            <Objection title="Why put it on shirts?">
+              <p className={paragraphClass}>
+                A human wearing this on purpose is making a political
+                declaration. A human wearing it because someone defaced their
+                closet has a funny story. That drops the social cost from
+                &quot;I am advocating&quot; to &quot;you will not believe what
+                happened,&quot; which is the conversation humans actually like
+                having.
+              </p>
+              <p className={paragraphClass}>
+                Most pranks cost the prankster something. This one earns VOTE
+                points, makes the recipient a walking billboard for not dying,
+                and counts each unwitting wearer toward the{" "}
+                <ParameterValue
+                  param={SHIRT_SEED_WEARERS_THRESHOLD}
+                  valueOverride="1 million"
+                />{" "}
+                social-proof threshold. The joke spreads itself. Play the joke.
               </p>
             </Objection>
           </div>
         </section>
 
-        <footer className="space-y-6 py-10">
+        <section
+          className="space-y-5 border-t border-foreground pt-10"
+          data-joke-screen-only="true"
+        >
+          <h2 className="text-3xl font-black uppercase leading-none sm:text-4xl">
+            Why the joke is funny
+          </h2>
           <p className={paragraphClass}>
-            Most pranks cost the prankster something. This one earns the
-            prankster VOTE points, makes the recipient a walking billboard for
-            not dying, and counts each unwitting wearer toward the{" "}
+            The average human laughs{" "}
+            <ParameterValue param={HUMAN_LAUGHS_PER_DAY_AVERAGE} /> times per
+            day, about{" "}
             <ParameterValue
-              param={SHIRT_SEED_WEARERS_THRESHOLD}
-              valueOverride="1 million"
+              param={HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR}
+              valueOverride="6,200"
             />{" "}
-            social-proof threshold. The joke spreads itself. Do the prank.
+            times per healthy life-year. If the shirt-triggered cascade helps
+            make disease eradication arrive on the treaty timeline, the model
+            counts <ParameterValue param={SHIRT_INDUCED_LAUGHS_GAINED} />{" "}
+            additional laughs. This does not count the laughs of future humans
+            who exist because humanity stopped spending its repair money on
+            spare apocalypses.
+          </p>
+          <p className={paragraphClass}>
+            The shirt asks humanity to trade{" "}
+            <ParameterValue
+              param={TREATY_REDUCTION_PCT}
+              valueOverride="1%"
+            />{" "}
+            of military spending for disease eradication in{" "}
+            <ParameterValue
+              param={DFDA_QUEUE_CLEARANCE_YEARS}
+              valueOverride="36 years"
+            />{" "}
+            instead of{" "}
+            <ParameterValue
+              param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+              valueOverride="443 years"
+            />
+            . Humanity still keeps roughly{" "}
+            <ParameterValue
+              param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+              valueOverride="121"
+            />{" "}
+            extra apocalypses. The extra apocalypses will have to find a hobby.
           </p>
           <p className={paragraphClass}>
             <a
               className="underline underline-offset-4"
               href={`${manualBase}/appendix/joke.html`}
             >
-              Read the philosophical footnotes (Schrödinger&apos;s joke,
-              inverted Roko&apos;s Basilisk, Pascal&apos;s Wager strictly
-              better) at the full essay →
+              Read the full philosophical footnotes in the manual.
             </a>
           </p>
-        </footer>
+        </section>
       </div>
     </main>
   );

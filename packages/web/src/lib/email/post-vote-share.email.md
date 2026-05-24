@@ -34,6 +34,8 @@ Paste it into WhatsApp, SMS, email, Signal, or wherever your friends read words 
 
 [END WAR AND DISEASE](https://warondisease.org/vote/SAMPLE)
 
+Physical version: print the shirt handout at [https://warondisease.org/joke#print-handout](https://warondisease.org/joke#print-handout).
+
 Forward this email to everyone you do not want to suffer and die of horrible diseases.
 
 [Unsubscribe](https://warondisease.org/api/email/unsubscribe?token=SAMPLE)

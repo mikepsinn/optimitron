@@ -4,7 +4,7 @@ import { getSiteMetadata } from "@/lib/metadata";
 import { privacyLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
-const UPDATED_AT = "May 22, 2026";
+const UPDATED_AT = "May 23, 2026";
 const SECTION_HEADING_CLASS =
   "mb-4 text-2xl font-black uppercase text-foreground";
 
@@ -193,6 +193,15 @@ export default async function PrivacyPage() {
                 preferences, abuse prevention, analytics, and basic site
                 operation. Blocking cookies may break account, vote, dashboard,
                 or referral features.
+              </p>
+              <p className="mt-4 font-bold leading-relaxed">
+                On selected public information pages, we may use Microsoft
+                Clarity to see clicks, scrolling, page errors, heatmaps, and
+                session replays so we can find confusing parts of the site. We
+                do not intentionally run Clarity on private messages, profile
+                editing, dashboard, mission, auth, vote-form, checkout, or
+                sensitive submission pages. Microsoft may collect and process
+                usage data as described in the Microsoft Privacy Statement.
               </p>
             </section>
 

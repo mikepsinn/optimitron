@@ -3,55 +3,91 @@
 ## Metadata
 
 - Page title: The Joke | International Campaign to End War and Disease
-- Meta description: How to end war and disease through vandalism.
+- Meta description: How to play the funniest joke in the universe.
 - Canonical: https://warondisease.org/joke
 - Open Graph title: The Joke
-- Open Graph description: How to end war and disease through vandalism.
+- Open Graph description: How to play the funniest joke in the universe.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fjoke
 - Twitter title: The Joke
-- Twitter description: How to end war and disease through vandalism.
+- Twitter description: How to play the funniest joke in the universe.
 
 ## Visible Page Copy
 
-## THE FUNNIEST JOKE IN THE UNIVERSE
-- How to end war and disease through vandalism.
-- We report the discovery and proof of the funniest joke in the history of the universe. The joke takes the form of a t-shirt.
-### STEP 1 — VOTE ON THIS.
-- The risk we are protecting against is small: your annual chance of dying in a terrorist attack is about 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). The risk we are not protecting against is enormous: disease comes for almost everyone. The current spending ratio funds the smaller risk at the expense of the larger one. The shirt is asking you to notice.
-- [VOTE YES ON THE 1% TREATY](/vote)
-### STEP 2 — GET A PERMANENT MARKER.
-- You can buy one. You can also take a permanent marker and write it on a shirt you already own. Either works. The shirt is text. Text costs marker ink.
-### STEP 3 — SNEAK INTO THE CLOSETS OF EVERYONE YOU LOVE.
-- Take a permanent marker into the closet of every human you do not want to suffer and die of preventable disease. Your spouse. Your siblings. Your parents. The parents of your children's friends. Write this t-shirt ended war and disease on the front. Write trade one apocalypse for disease eradication at warondisease.org and your referral code on the back. They will notice when they put the shirt on. They will demand an explanation. You hand them this paper. They explain it to the next human who asks them. The chain propagates.
-### STEP 4 — WRITE THIS ON THEIR SHIRTS.
-#### FRONT:
+## HOW TO PLAY THE FUNNIEST JOKE IN THE UNIVERSE
+- Put the campaign on a shirt. Put the shirt on a human. Put the math in their hand before they start yelling.
+- [VOTE YES](/vote)
+- [PRINT THE HANDOUT](#print-handout)
+- [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html)
+- DIE OF DISEASE AND AGING EVERY DAY
+- [50](https://manual.WarOnDisease.org/knowledge/strategy/questions.html)
+- SEPTEMBER 11 EQUIVALENTS EVERY DAY
+- [3.5 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/joke.html)
+- EXTRA LAUGHS IF THE CASCADE WORKS
+- [1 million](https://manual.WarOnDisease.org/knowledge/appendix/joke.html)
+- SEED WEARERS THAT MAKE IT SOCIALLY REAL
+- STEP 1
+### VOTE YES.
+- The joke is funnier if you are not asking other people to do the thing you avoided doing. Vote on the 1% Treaty first.
+- STEP 2
+### WRITE THE SHIRT.
+- A bought shirt works. A shirt you already own plus a permanent marker also works. The shirt is text. Text costs marker ink.
+- STEP 3
+### INCLUDE THE HANDOUT.
+- The handout explains the math, the facts, and why the recipient has now been recruited by a textile incident.
+- STEP 4
+### PROPAGATE.
+- Write it on the rest of your shirts. Write it on your friends' shirts if your friendship has survived worse things. The joke stops being a joke when humanity gets the point.
+### WRITE THIS
+#### FRONT
 - THIS T-SHIRT ENDED WAR AND DISEASE.
-#### BACK:
+#### BACK
 - TRADE ONE APOCALYPSE FOR DISEASE ERADICATION AT WARONDISEASE.ORG.
-- warondisease.org/<your referral code>
+- warondisease.org/vote
 - COPY
-- Sign in and vote yes to get your real referral link printed here.
-- The prank also solves the friction problem from the recipient's side. A human wearing "End War & Disease" on their own initiative is making a political declaration, which is the socially exposing version. A human wearing it because their spouse defaced their entire closet last Tuesday is just a human with a funny story. The cost of explaining the shirt drops from "I am advocating" to "you won't believe what happened," which is the conversation humans actually like having.
-### STEP 5 — WHEN THEY GET MAD AT YOU, ANSWER THESE QUESTIONS.
-- When you wear the shirt, humans will ask you about it. They will raise objections in roughly this order. Memorize the answers. You are the delivery mechanism.
-- "But we need the military budget!"
-- The treaty takes [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). You keep [99%](https://manual.WarOnDisease.org/knowledge/solution.html). Every nation reduces by the same amount, so relative military balance stays exactly the same. You each have [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) fewer missiles pointed at each other. Every sane observer calls this "safer." Your species calls it "an unacceptable risk to national security." Same math, different feelings.
-- COVID-19 killed more Americans than World War I, World War II, Korea, Vietnam, Iraq, and Afghanistan combined. The [$886 billion](https://manual.WarOnDisease.org/knowledge/problem/unrepresentative-democracy.html) murder budget watched it happen, fully armed and completely confused. The virus did not check your passport. Disease is the only enemy that attacks every nation simultaneously, and you are the only species that needs to be talked into fighting it.
-- Also, the Pentagon cannot account for [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) that it has misplaced. [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of US military spending is a fraction of the amount that already goes into a black hole every year and no one can locate. You are not redirecting the missile budget. You are redirecting the "we lost it somewhere" budget. The missiles won't notice.
-- "1% is unrealistic."
-- Immediately before the United States won World War II, US military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) lower than current levels. The country still built the bombs and airplanes that won the war. After winning, the US cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) over two years. GM went from B-24 bombers back to Cadillacs. Frigidaire stopped making machine guns and went back to refrigerators. The economy produced the greatest boom in your history.
-- Same country, in living memory, did a redirect that dwarfs what this shirt asks for. Your grandparents handled a [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) cut and built the middle class. You are being asked for [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and acting like someone suggested disbanding the army during an invasion.
-- "The military-industrial complex will never allow it."
-- The CEO of Lockheed Martin has two options: (a) keep [#122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html), watch their family die of curable diseases, retire on the current trajectory; or (b) give up the extra apocalypse they cannot use, watch their family live, invest in the biotech sector that absorbs a trillion redirected dollars per year, retire on an economy [4.1x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) larger. They have not picked (b) yet because nobody has explained it in those terms. The shirt is how that gets explained.
-- The military-industrial complex does not benefit from the status quo. They die of the same diseases. They live in the same economy. Their children attend the same funerals. The costs of the current system are concentrated on everyone, including them. There is no winner. There is no rational beneficiary of the current arrangement. There is only a species that has not yet done the arithmetic. This book is the arithmetic.
-- "What about defense industry jobs?"
-- [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) is a rounding error. The redirect funds clinical trials, which is also a lot of jobs: trial coordinators, medical statisticians, lab technicians, diagnostics manufacturing. Engineers building guidance systems can build medical imaging devices. Same differential equations, fewer funerals. Veterans particularly need clinical trial access for the things they got from serving (chronic pain, PTSD, traumatic brain injury); the redirect pays for the trials they need.
-- "What if countries cheat?"
-- Of course they will. This system was designed by someone who has watched a suspicious number of civilizations (me), and it does not use trust. It uses math. Politicians who comply receive [Incentive Alignment Bond](https://manual.warondisease.org/knowledge/solution/incentive-alignment-bonds.html) benefits: campaign funding and cushy post-office careers. Politicians who don't comply get nothing. Every disbursement is published on a public ledger keyed to specific trials with specific outcomes via the [Decentralized Accountability Office](https://manual.warondisease.org/knowledge/solution/decentralized-accountability-office.html) and [Automated Revenue Service](https://manual.warondisease.org/knowledge/solution/automated-revenue-service.html). The [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) that gets siphoned off does not get siphoned off invisibly. Auditors see every wire; voters see every auditor.
-- "What if other countries don't sign?"
-- The first country to sign makes it easier for the second. The treaty follows the Ottawa (landmine) and Treaty on the Prohibition of Nuclear Weapons templates, both ratified by most countries even with the big powers holding out. Holdouts do not break the treaty. They make the cost of holding out visible. Also: TikTok scaled globally and it teaches strangers choreography. If your species can coordinate dance moves across the planet, it can coordinate not dying.
-- "Politicians will never agree to this."
-- Politicians are also humans. They also get diseases. A politician who votes against the treaty is not "voting against a budget reallocation." They are voting to keep [#122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) (which is functionally identical to every apocalypse after the first, since you only have one civilization) in exchange for ensuring that their constituents, their donors, their families, and they themselves continue to suffer and die of preventable diseases while being [4.1x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) poorer. That is what a "no" vote means. The shirt makes sure voters understand what their representative is actually voting for.
-- Once the cascade triggers and a majority of any politician's constituents show up on the public treaty scoreboard, signing is a budget-spreadsheet chore. Refusing gets them replaced by the next candidate who runs on "I will sign the treaty." The campaign also outbids the defense lobby directly: defense contractors spend [$127 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html) buying politicians; the treaty [lobbying budget](https://manual.warondisease.org/knowledge/economics/campaign-budget.html) is [$650 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). After the treaty passes, politicians who voted yes receive [Incentive Alignment Bond](https://manual.warondisease.org/knowledge/solution/incentive-alignment-bonds.html) payouts: campaign support while running, cushy careers when done. Politicians who voted no receive nothing. This is Pavlovian conditioning, but for senators.
-- Most pranks cost the prankster something. This one earns the prankster VOTE points, makes the recipient a walking billboard for not dying, and counts each unwitting wearer toward the [1 million](https://manual.WarOnDisease.org/knowledge/appendix/joke.html) social-proof threshold. The joke spreads itself. Do the prank.
-- [Read the philosophical footnotes (Schrödinger's joke, inverted Roko's Basilisk, Pascal's Wager strictly better) at the full essay →](https://manual.warondisease.org/knowledge/appendix/joke.html)
+### HANDOUT TO INCLUDE WITH THE SHIRT
+- Print both sides and put it with the shirt, or tape it to the closet door like a normal civilization repair technician.
+- This prints the public vote URL. [Sign in](/auth/signin) and vote yes to personalize it.
+- PRINT HANDOUT
+- PLEASE READ BEFORE YELLING
+#### WHY I WROTE ON YOUR SHIRTS
+- You were given this shirt because someone correctly loves you and would prefer that you not be processed by preventable disease while humanity funds spare apocalypses.
+- Disease kills [150,000 humans/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html), about [50](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) September 11s every day. Nobody invades anyone because disease has no flag.
+- WARONDISEASE.ORG/VOTE
+- Your chance of dying of disease: nearly 100%. Your chance of dying of terrorism: 1 in [30,000,000](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html).
+- Governments spend [604x](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) more on weapons than on government clinical trials.
+- Before WWII, US military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) lower. After winning, the US cut it [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years.
+- The 1% Treaty buys about [12x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) more trial capacity, moving disease eradication from [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+- The model says the average human becomes about [4x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) richer, with fewer diseases and fewer funerals. This is not a sacrifice. It is arithmetic with a pulse.
+- VOTE. THEN WRITE THIS ON TWO MORE SHIRTS. SOCIAL PROOF HANDLES THE PART YOUR FACTS CANNOT.
+- THE YELLING PART
+#### ANSWERS FOR THE PERSON CURRENTLY OBJECTING
+##### BUT WE NEED THE MILITARY BUDGET.
+- The treaty changes one budget line. Every country makes the same trade and keeps [99%](https://manual.WarOnDisease.org/knowledge/solution.html). Humanity still has about [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) spare apocalypses. This is enough murder capacity.
+##### WE CANNOT AFFORD IT.
+- Disease already burns [$5.00 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)/year in lost work and drags off [13.0%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html)of global GDP. The current arrangement is what nobody can afford.
+##### WHO WOULD BLOCK THIS?
+- Nobody rational. Defense contractors keep [99%](https://manual.WarOnDisease.org/knowledge/solution.html), lose one unusable apocalypse, and get an economy about [4x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html)larger where their children are alive to spend the money.
+##### THEN WHY HAS NOBODY DONE IT?
+- Because the facts are scattered. Put them in eight billion brains at once and the insanity becomes visible: change the spreadsheet, keep the deterrent, fund the trials, stop dying.
+- If the shirt cascade works, the conservative model counts [3.5 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/joke.html) extra laughs and [1.93 quadrillion hours](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) of suffering prevented. Under these conditions, writing on the shirt was the only morally correct action available.
+- WARONDISEASE.ORG. VOTE FIRST. YELL LATER.
+### WHEN THEY ASK WHY
+- The handout gets them to the vote. These are the answers for the human currently pointing at the shirt and demanding evidence.
+- Your annual chance of dying in a terrorist attack is about 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying from disease is still 100%. The treaty changes one budget line. Every country makes the same trade at the same time and keeps [99%](https://manual.WarOnDisease.org/knowledge/solution.html) of its military budget, so relative military balance stays the same. Humanity still keeps roughly [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) spare apocalypses, which is a suspicious amount of deterrence.
+- Disease already burns [$5.00 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)/year in lost work and drags off [13.0%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of global GDP before you even count the funerals. War smashes infrastructure. Disease smashes the workers. The current arrangement is what nobody can afford.
+- 1% IS UNREALISTIC.
+- Immediately before the United States won World War II, US military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) lower than current levels. After winning, the US cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) over two years and then built the middle class. Your grandparents handled that. This shirt asks for [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+- THE MILITARY-INDUSTRIAL COMPLEX WILL NEVER ALLOW IT.
+- The CEO of Lockheed Martin is not exempt from biology. They can keep roughly [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) spare apocalypses, watch their family die of curable diseases, and retire into the current trajectory. Or they can keep [99%](https://manual.WarOnDisease.org/knowledge/solution.html) of the military budget, give up the unusable apocalypse, invest in the biotech sector absorbing redirected trial money, and retire in an economy [4.1x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) larger where their children are alive to spend the money. Blocking the treaty to protect the last [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) is not self-interest. It is arithmetic failure with a lobbyist.
+- POLITICIANS WILL NEVER AGREE.
+- Politicians mostly do what the visible incentive structure makes least painful. Right now the defense lobby spends [$127 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html) buying the spreadsheet. The treaty campaign budget is [$650 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). If eight billion humans understand that the spreadsheet is killing them, changing the numbers becomes the boring part.
+- Defense contractors spend [$127 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html) because lobbying works. Fine. After the treaty passes, politicians who voted yes receive [Incentive Alignment Bond](https://manual.warondisease.org/knowledge/solution/incentive-alignment-bonds.html) benefits: campaign support while running, cushy careers when done. Politicians who vote no receive nothing. This is Pavlovian conditioning, but for senators.
+- WHAT IF COUNTRIES CHEAT OR REFUSE?
+- Of course some will try. The system does not use trust. It uses published disbursements, trial-linked payouts, the [Decentralized Accountability Office](https://manual.warondisease.org/knowledge/solution/decentralized-accountability-office.html), and the [Automated Revenue Service](https://manual.warondisease.org/knowledge/solution/automated-revenue-service.html). The first country to sign makes refusal more visible and more expensive for the next one.
+- WHY PUT IT ON SHIRTS?
+- A human wearing this on purpose is making a political declaration. A human wearing it because someone defaced their closet has a funny story. That drops the social cost from "I am advocating" to "you will not believe what happened," which is the conversation humans actually like having.
+- Most pranks cost the prankster something. This one earns VOTE points, makes the recipient a walking billboard for not dying, and counts each unwitting wearer toward the [1 million](https://manual.WarOnDisease.org/knowledge/appendix/joke.html) social-proof threshold. The joke spreads itself. Play the joke.
+### WHY THE JOKE IS FUNNY
+- The average human laughs [17.0](https://manual.WarOnDisease.org/knowledge/appendix/joke.html) times per day, about [6,200](https://manual.WarOnDisease.org/knowledge/appendix/joke.html) times per healthy life-year. If the shirt-triggered cascade helps make disease eradication arrive on the treaty timeline, the model counts [3.51 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/joke.html) additional laughs. This does not count the laughs of future humans who exist because humanity stopped spending its repair money on spare apocalypses.
+- The shirt asks humanity to trade [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of military spending for disease eradication in [36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) instead of [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Humanity still keeps roughly [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) extra apocalypses. The extra apocalypses will have to find a hobby.
+- [Read the full philosophical footnotes in the manual.](https://manual.warondisease.org/knowledge/appendix/joke.html)
