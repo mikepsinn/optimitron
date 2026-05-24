@@ -5,13 +5,15 @@ import {
   DEFENSE_SECTOR_RETENTION_PCT,
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   DISEASE_BURDEN_GDP_DRAG_PCT,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_DISEASE_DEATHS_DAILY,
   GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL,
-  HUMAN_LAUGHS_PER_DAY_AVERAGE,
-  HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   POST_WW2_MILITARY_CUT_PCT,
   SEPT_11_DEATHS,
@@ -44,6 +46,10 @@ import { JokePrintButton } from "./joke-client";
 const paragraphClass = "text-lg font-bold leading-8 text-foreground";
 const manualBase = "https://manual.warondisease.org/knowledge";
 const genericVoteUrl = `${WAR_ON_DISEASE_CANONICAL_ORIGIN}${ROUTES.vote}`;
+const displayDomain = WAR_ON_DISEASE_CANONICAL_ORIGIN.replace(
+  /^https?:\/\//,
+  "",
+);
 
 const DAILY_DISEASE_DEATHS_IN_911_EQUIVALENTS: Parameter = {
   value: GLOBAL_DISEASE_DEATHS_DAILY.value / SEPT_11_DEATHS.value,
@@ -58,6 +64,22 @@ const DAILY_DISEASE_DEATHS_IN_911_EQUIVALENTS: Parameter = {
   formula: "GLOBAL_DISEASE_DEATHS_DAILY / SEPT_11_DEATHS",
   manualPageUrl: GLOBAL_DISEASE_DEATHS_DAILY.manualPageUrl,
   manualPageTitle: GLOBAL_DISEASE_DEATHS_DAILY.manualPageTitle,
+};
+
+const ONE_LAUGH_PER_HEALTHY_DAY_GAINED: Parameter = {
+  value: DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS.value * 365,
+  parameterName: "ONE_LAUGH_PER_HEALTHY_DAY_GAINED",
+  calculationsUrl:
+    DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS.calculationsUrl,
+  unit: "laughs",
+  displayName: "Laughs Added at One Laugh Per Healthy Day",
+  description:
+    "A deliberately conservative laugh count: DALYs averted by the treatment timeline shift multiplied by one laugh per recovered healthy day.",
+  sourceType: "calculated",
+  confidence: DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS.confidence,
+  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS * 365",
+  manualPageUrl: DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS.manualPageUrl,
+  manualPageTitle: DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS.manualPageTitle,
 };
 
 export const metadata = getRouteMetadata(jokeLink);
@@ -195,7 +217,7 @@ function ShirtCopyBlock({ referralUrl }: { referralUrl: string }) {
         </p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
           <p className="min-w-0 flex-1 break-words text-xl font-black leading-tight">
-            {referralUrl.replace(/^https?:\/\//, "")}
+            {displayDomain}
           </p>
           <CopyLinkButton
             url={referralUrl}
@@ -224,8 +246,6 @@ function PrintableJokeHandout({
   hasPersonalReferralUrl: boolean;
   referralUrl: string;
 }) {
-  const visibleUrl = referralUrl.replace(/^https?:\/\//, "");
-
   return (
     <section className="space-y-4" id="print-handout">
       <div
@@ -237,12 +257,11 @@ function PrintableJokeHandout({
             Handout to include with the shirt
           </h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            Print both sides and put it with the shirt, or tape it to the closet
-            door like a normal civilization repair technician.
+            Print both sides and put it with the shirt.
           </p>
           {!hasPersonalReferralUrl ? (
             <p className="mt-2 text-sm font-bold text-muted-foreground">
-              This prints the public vote URL.{" "}
+              The QR code can use your share link.{" "}
               <Link className="underline underline-offset-4" href={ROUTES.signIn}>
                 Sign in
               </Link>{" "}
@@ -254,7 +273,7 @@ function PrintableJokeHandout({
       </div>
 
       <div className="space-y-4">
-        <article className="joke-handout-sheet border border-foreground bg-background p-6 text-foreground">
+        <article className="joke-handout-sheet bg-background p-6 text-foreground">
           <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_180px]">
             <div className="min-w-0">
               <p className="text-sm font-black uppercase leading-none text-muted-foreground">
@@ -286,11 +305,11 @@ function PrintableJokeHandout({
               </p>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <div className="w-full border border-foreground bg-background p-2">
+              <div className="w-full bg-background">
                 <CampaignQrCode value={referralUrl} />
               </div>
               <p className="break-all text-center text-xs font-black uppercase leading-tight">
-                {visibleUrl}
+                {displayDomain}
               </p>
             </div>
           </div>
@@ -333,24 +352,25 @@ function PrintableJokeHandout({
               <ParameterValue
                 param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
                 presentation="inline"
-                valueOverride="12x"
+                valueOverride="12.3x"
               />{" "}
-              more trial capacity, moving disease eradication from{" "}
-              <ParameterValue
-                param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-                presentation="inline"
-                valueOverride="443 years"
-              />{" "}
-              to{" "}
+              as much clinical-trial capacity, so we are projected to find
+              treatments for all diseases in{" "}
               <ParameterValue
                 param={DFDA_QUEUE_CLEARANCE_YEARS}
                 presentation="inline"
                 valueOverride="36 years"
+              />{" "}
+              instead of{" "}
+              <ParameterValue
+                param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                presentation="inline"
+                valueOverride="443 years"
               />
               .
             </HandoutFact>
             <HandoutFact>
-              The model says the average human becomes about{" "}
+              The average human becomes about{" "}
               <ParameterValue
                 param={
                   TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
@@ -358,8 +378,8 @@ function PrintableJokeHandout({
                 presentation="inline"
                 valueOverride="4x"
               />{" "}
-              richer, with fewer diseases and fewer funerals. This is not a
-              sacrifice. It is arithmetic with a pulse.
+              richer and much less diseased and dead. The spreadsheet stops
+              killing people.
             </HandoutFact>
           </ol>
 
@@ -369,33 +389,34 @@ function PrintableJokeHandout({
           </p>
         </article>
 
-        <article className="joke-handout-sheet border border-foreground bg-background p-6 text-foreground">
+        <article className="joke-handout-sheet bg-background p-6 text-foreground">
           <p className="text-sm font-black uppercase leading-none text-muted-foreground">
             The yelling part
           </p>
           <h3 className="mt-2 text-5xl font-black uppercase leading-none">
-            Answers for the person currently objecting
+            Answers for the person currently yelling at you
           </h3>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <section className="border border-foreground p-4">
+            <section className="border-t border-foreground pt-3">
               <h4 className="text-xl font-black uppercase leading-tight">
-                But we need the military budget.
+                But national security.
               </h4>
               <p className="mt-2 text-base font-bold leading-snug">
-                The treaty changes one budget line. Every country makes the
-                same trade and keeps{" "}
+                National security improves. Every country makes the same
+                one-budget-line trade, so everyone has{" "}
+                <TreatyReductionValue /> fewer weapons pointed at them and keeps{" "}
                 <ParameterValue
                   param={DEFENSE_SECTOR_RETENTION_PCT}
                   presentation="inline"
                   valueOverride="99%"
                 />
                 . Humanity still has about <ApocalypseNumberValue /> spare
-                apocalypses. This is enough murder capacity.
+                apocalypses. That is enough murder capacity.
               </p>
             </section>
 
-            <section className="border border-foreground p-4">
+            <section className="border-t border-foreground pt-3">
               <h4 className="text-xl font-black uppercase leading-tight">
                 We cannot afford it.
               </h4>
@@ -404,18 +425,18 @@ function PrintableJokeHandout({
                 <ParameterValue
                   param={GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL}
                   presentation="inline"
-                />
-                /year in lost work and drags off{" "}
+                />{" "}
+                in lost work and drags off{" "}
                 <ParameterValue
                   param={DISEASE_BURDEN_GDP_DRAG_PCT}
                   presentation="inline"
-                />
+                />{" "}
                 of global GDP. The current arrangement is what nobody can
                 afford.
               </p>
             </section>
 
-            <section className="border border-foreground p-4">
+            <section className="border-t border-foreground pt-3">
               <h4 className="text-xl font-black uppercase leading-tight">
                 Who would block this?
               </h4>
@@ -433,12 +454,12 @@ function PrintableJokeHandout({
                   }
                   presentation="inline"
                   valueOverride="4x"
-                />
+                />{" "}
                 larger where their children are alive to spend the money.
               </p>
             </section>
 
-            <section className="border border-foreground p-4">
+            <section className="border-t border-foreground pt-3">
               <h4 className="text-xl font-black uppercase leading-tight">
                 Then why has nobody done it?
               </h4>
@@ -452,20 +473,31 @@ function PrintableJokeHandout({
 
           <div className="mt-5 border-y border-foreground py-4">
             <p className="text-lg font-bold leading-snug">
-              If the shirt cascade works, the conservative model counts{" "}
+              The avoided centuries of untreated disease prevent{" "}
               <ParameterValue
-                param={SHIRT_INDUCED_LAUGHS_GAINED}
+                param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
                 presentation="inline"
-                valueOverride="3.5 quadrillion"
+                valueOverride="10.7 billion deaths"
               />{" "}
-              extra laughs and{" "}
+              and{" "}
               <ParameterValue
                 param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
                 presentation="inline"
                 valueOverride="1.93 quadrillion hours"
               />{" "}
-              of suffering prevented. Under these conditions, writing on the
-              shirt was the only morally correct action available.
+              of suffering. At one laugh per recovered healthy day, that is{" "}
+              <ParameterValue
+                param={ONE_LAUGH_PER_HEALTHY_DAY_GAINED}
+                presentation="inline"
+                valueOverride="206 trillion"
+              />{" "}
+              extra laughs. The full laugh-rate model counts{" "}
+              <ParameterValue
+                param={SHIRT_INDUCED_LAUGHS_GAINED}
+                presentation="inline"
+                valueOverride="3.5 quadrillion"
+              />
+              .
             </p>
           </div>
 
@@ -575,7 +607,7 @@ export default async function JokePage() {
             How to play the funniest joke in the universe
           </h1>
           <p className="max-w-3xl text-2xl font-black leading-tight">
-            Put the campaign on a shirt. Put the shirt on a human. Put the math
+            Put the treaty on a shirt. Put the shirt on a human. Put the facts
             in their hand before they start yelling.
           </p>
           <div className="flex flex-wrap gap-3">
@@ -610,16 +642,18 @@ export default async function JokePage() {
               valueOverride="50"
             />
           </MathTile>
-          <MathTile label="extra laughs if the cascade works">
+          <MathTile label="more on weapons than clinical trials">
             <ParameterValue
-              param={SHIRT_INDUCED_LAUGHS_GAINED}
-              valueOverride="3.5 quadrillion"
+              param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+              valueOverride="604x"
             />
           </MathTile>
-          <MathTile label="seed wearers that make it socially real">
+          <MathTile label="richer average human">
             <ParameterValue
-              param={SHIRT_SEED_WEARERS_THRESHOLD}
-              valueOverride="1 million"
+              param={
+                TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
+              }
+              valueOverride="4x"
             />
           </MathTile>
         </section>
@@ -644,8 +678,8 @@ export default async function JokePage() {
 
           <Step eyebrow="Step 3" title="Include the handout.">
             <p className={paragraphClass}>
-              The handout explains the math, the facts, and why the recipient
-              has now been recruited by a textile incident.
+              The handout puts the facts in their hand before the yelling
+              starts.
             </p>
           </Step>
 
@@ -703,9 +737,10 @@ export default async function JokePage() {
               <p className={paragraphClass}>
                 Disease already burns{" "}
                 <ParameterValue param={GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL} />
-                /year in lost work and drags off{" "}
-                <ParameterValue param={DISEASE_BURDEN_GDP_DRAG_PCT} /> of
-                global GDP before you even count the funerals. War smashes
+                {" "}
+                in lost work and drags off{" "}
+                <ParameterValue param={DISEASE_BURDEN_GDP_DRAG_PCT} />{" "}
+                of global GDP before you even count the funerals. War smashes
                 infrastructure. Disease smashes the workers. The current
                 arrangement is what nobody can afford.
               </p>
@@ -753,8 +788,8 @@ export default async function JokePage() {
 
             <Objection title="Politicians will never agree.">
               <p className={paragraphClass}>
-                Politicians mostly do what the visible incentive structure
-                makes least painful. Right now the defense lobby spends{" "}
+                Politicians follow pressure they can see. Right now the defense
+                lobby spends{" "}
                 <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> buying the
                 spreadsheet. The treaty campaign budget is{" "}
                 <ParameterValue param={TREATY_CAMPAIGN_BUDGET_LOBBYING} />. If
