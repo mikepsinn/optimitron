@@ -82,6 +82,41 @@ const ONE_LAUGH_PER_HEALTHY_DAY_GAINED: Parameter = {
   manualPageTitle: DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS.manualPageTitle,
 };
 
+const TREATY_FIRST_TREATMENTS_PER_YEAR: Parameter = {
+  value:
+    NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value *
+    DFDA_TRIAL_CAPACITY_MULTIPLIER.value,
+  parameterName: "TREATY_FIRST_TREATMENTS_PER_YEAR",
+  calculationsUrl: DFDA_TRIAL_CAPACITY_MULTIPLIER.calculationsUrl,
+  unit: "first treatments per year",
+  displayName: "First Treatments Per Year With Treaty Trial Capacity",
+  description:
+    "Projected first-treatment pace from multiplying the status quo first-treatment discovery rate by the 1% Treaty clinical-trial capacity multiplier.",
+  sourceType: "calculated",
+  confidence: DFDA_TRIAL_CAPACITY_MULTIPLIER.confidence,
+  formula:
+    "NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR * DFDA_TRIAL_CAPACITY_MULTIPLIER",
+  manualPageUrl: DFDA_TRIAL_CAPACITY_MULTIPLIER.manualPageUrl,
+  manualPageTitle: DFDA_TRIAL_CAPACITY_MULTIPLIER.manualPageTitle,
+};
+
+const TREATMENT_QUEUE_YEARS_AVOIDED: Parameter = {
+  value:
+    STATUS_QUO_QUEUE_CLEARANCE_YEARS.value -
+    DFDA_QUEUE_CLEARANCE_YEARS.value,
+  parameterName: "TREATMENT_QUEUE_YEARS_AVOIDED",
+  calculationsUrl: DFDA_QUEUE_CLEARANCE_YEARS.calculationsUrl,
+  unit: "years",
+  displayName: "Treatment Queue Years Avoided",
+  description:
+    "Years removed from the projected first-treatment queue by moving from the status quo treatment pace to the 1% Treaty clinical-trial capacity pace.",
+  sourceType: "calculated",
+  confidence: DFDA_QUEUE_CLEARANCE_YEARS.confidence,
+  formula: "STATUS_QUO_QUEUE_CLEARANCE_YEARS - DFDA_QUEUE_CLEARANCE_YEARS",
+  manualPageUrl: DFDA_QUEUE_CLEARANCE_YEARS.manualPageUrl,
+  manualPageTitle: DFDA_QUEUE_CLEARANCE_YEARS.manualPageTitle,
+};
+
 export const metadata = getRouteMetadata(jokeLink);
 
 async function getPersonalReferralUrl() {
@@ -348,26 +383,43 @@ function PrintableJokeHandout({
               in two years.
             </HandoutFact>
             <HandoutFact>
-              The 1% Treaty buys about{" "}
+              About{" "}
               <ParameterValue
-                param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+                param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
                 presentation="inline"
-                valueOverride="12.3x"
+                valueOverride="6,650"
               />{" "}
-              as much clinical-trial capacity, so we are projected to find
-              treatments for all diseases in{" "}
+              diseases have no FDA-approved treatment. At{" "}
               <ParameterValue
-                param={DFDA_QUEUE_CLEARANCE_YEARS}
+                param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
                 presentation="inline"
-                valueOverride="36 years"
+                valueOverride="15"
               />{" "}
-              instead of{" "}
+              first treatments per year, that is{" "}
               <ParameterValue
                 param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
                 presentation="inline"
                 valueOverride="443 years"
               />
-              .
+              . The 1% Treaty buys{" "}
+              <ParameterValue
+                param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+                presentation="inline"
+                valueOverride="12.3 times"
+              />{" "}
+              as much clinical-trial capacity: about{" "}
+              <ParameterValue
+                param={TREATY_FIRST_TREATMENTS_PER_YEAR}
+                presentation="inline"
+                valueOverride="185"
+              />{" "}
+              first treatments per year, or{" "}
+              <ParameterValue
+                param={DFDA_QUEUE_CLEARANCE_YEARS}
+                presentation="inline"
+                valueOverride="36 years"
+              />{" "}
+              to find treatments for all diseases.
             </HandoutFact>
             <HandoutFact>
               The average human becomes about{" "}
@@ -473,7 +525,14 @@ function PrintableJokeHandout({
 
           <div className="mt-5 border-y border-foreground py-4">
             <p className="text-lg font-bold leading-snug">
-              The avoided centuries of untreated disease prevent{" "}
+              That knocks about{" "}
+              <ParameterValue
+                param={TREATMENT_QUEUE_YEARS_AVOIDED}
+                presentation="inline"
+                valueOverride="407 years"
+              />{" "}
+              off the treatment line. The avoided centuries of untreated
+              disease prevent{" "}
               <ParameterValue
                 param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
                 presentation="inline"
@@ -485,7 +544,7 @@ function PrintableJokeHandout({
                 presentation="inline"
                 valueOverride="1.93 quadrillion hours"
               />{" "}
-              of suffering. At one laugh per recovered healthy day, that is{" "}
+              of suffering. At one laugh per healthy day recovered, that is{" "}
               <ParameterValue
                 param={ONE_LAUGH_PER_HEALTHY_DAY_GAINED}
                 presentation="inline"
@@ -711,12 +770,8 @@ export default async function JokePage() {
           <h2 className="text-3xl font-black uppercase leading-none sm:text-4xl">
             When they ask why
           </h2>
-          <p className={paragraphClass}>
-            The handout gets them to the vote. These are the answers for the
-            human currently pointing at the shirt and demanding evidence.
-          </p>
           <div className="border-t border-foreground">
-            <Objection title="But we need the military budget.">
+            <Objection title="But national security.">
               <p className={paragraphClass}>
                 Your annual chance of dying in a terrorist attack is about 1 in{" "}
                 <ParameterValue
@@ -725,14 +780,17 @@ export default async function JokePage() {
                 />
                 . Your chance of dying from disease is still 100%. The treaty
                 changes one budget line. Every country makes the same trade at
-                the same time and keeps{" "}
+                the same time, so every country has <TreatyReductionValue />{" "}
+                fewer weapons pointed at it and keeps{" "}
                 <ParameterValue
                   param={DEFENSE_SECTOR_RETENTION_PCT}
                   valueOverride="99%"
                 />{" "}
-                of its military budget, so relative military balance stays the
-                same. Humanity still keeps roughly <ApocalypseNumberValue />{" "}
-                spare apocalypses, which is a suspicious amount of deterrence.
+                of its military budget. Relative military balance stays the
+                same. Everyone is safer because everyone is less targeted and
+                more alive. Humanity still keeps roughly <ApocalypseNumberValue />{" "}
+                spare apocalypses, which is too much deterrence for a serious
+                species.
               </p>
               <p className={paragraphClass}>
                 Disease already burns{" "}
@@ -860,30 +918,57 @@ export default async function JokePage() {
           data-joke-screen-only="true"
         >
           <h2 className="text-3xl font-black uppercase leading-none sm:text-4xl">
-            Why the joke is funny
+            Why this is the funniest joke in the universe
           </h2>
           <p className={paragraphClass}>
-            The average human laughs{" "}
-            <ParameterValue param={HUMAN_LAUGHS_PER_DAY_AVERAGE} /> times per
-            day, about{" "}
-            <ParameterValue
-              param={HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR}
-              valueOverride="6,200"
-            />{" "}
-            times per healthy life-year. If the shirt-triggered cascade helps
-            make disease eradication arrive on the treaty timeline, the model
-            counts <ParameterValue param={SHIRT_INDUCED_LAUGHS_GAINED} />{" "}
-            additional laughs. This does not count the laughs of future humans
-            who exist because humanity stopped spending its repair money on
-            spare apocalypses.
+            A normal joke produces one laugh and dies. This joke tries to turn a
+            shirt into a chain reaction: shirt, conversation, vote, treaty,
+            clinical trials, treatments, humans still alive to hear another
+            joke.
           </p>
           <p className={paragraphClass}>
-            The shirt asks humanity to trade{" "}
+            About{" "}
+            <ParameterValue
+              param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+              valueOverride="6,650"
+            />{" "}
+            diseases have no FDA-approved treatment. Humanity currently finds
+            about{" "}
+            <ParameterValue
+              param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
+              valueOverride="15"
+            />{" "}
+            first treatments per year. At that rate, we are projected to find
+            treatments for all diseases in{" "}
+            <ParameterValue
+              param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+              valueOverride="443 years"
+            />
+            .
+          </p>
+          <p className={paragraphClass}>
+            Redirecting{" "}
             <ParameterValue
               param={TREATY_REDUCTION_PCT}
               valueOverride="1%"
             />{" "}
-            of military spending for disease eradication in{" "}
+            of military spending buys about{" "}
+            <ParameterValue
+              param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+              valueOverride="12.3 times"
+            />{" "}
+            as much clinical-trial capacity. That takes us from about{" "}
+            <ParameterValue
+              param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
+              valueOverride="15"
+            />{" "}
+            first treatments per year to about{" "}
+            <ParameterValue
+              param={TREATY_FIRST_TREATMENTS_PER_YEAR}
+              valueOverride="185"
+            />{" "}
+            first treatments per year. Now we are projected to find treatments
+            for all diseases in{" "}
             <ParameterValue
               param={DFDA_QUEUE_CLEARANCE_YEARS}
               valueOverride="36 years"
@@ -893,12 +978,54 @@ export default async function JokePage() {
               param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
               valueOverride="443 years"
             />
-            . Humanity still keeps roughly{" "}
+            .
+          </p>
+          <p className={paragraphClass}>
+            That removes about{" "}
+            <ParameterValue
+              param={TREATMENT_QUEUE_YEARS_AVOIDED}
+              valueOverride="407 years"
+            />{" "}
+            from the treatment line. Those avoided centuries of untreated
+            disease prevent{" "}
+            <ParameterValue
+              param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
+              valueOverride="10.7 billion deaths"
+            />{" "}
+            and{" "}
+            <ParameterValue
+              param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
+              valueOverride="1.93 quadrillion hours"
+            />{" "}
+            of suffering. If each healthy day recovered contains only one laugh,
+            that is{" "}
+            <ParameterValue
+              param={ONE_LAUGH_PER_HEALTHY_DAY_GAINED}
+              valueOverride="206 trillion"
+            />{" "}
+            extra laughs. The less insulting laugh model, where humans laugh
+            more than once per day because they are not rocks, counts{" "}
+            <ParameterValue
+              param={SHIRT_INDUCED_LAUGHS_GAINED}
+              valueOverride="3.5 quadrillion"
+            />
+            .
+          </p>
+          <p className={paragraphClass}>
+            That is why this is the funniest joke in the universe. Not because
+            writing on shirts is clever. Because the smallest dumb-looking
+            action available to you might make humanity notice it has been
+            keeping{" "}
             <ParameterValue
               param={NUCLEAR_WINTER_OVERKILL_FACTOR}
               valueOverride="121"
             />{" "}
-            extra apocalypses. The extra apocalypses will have to find a hobby.
+            spare apocalypses while dying in a{" "}
+            <ParameterValue
+              param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+              valueOverride="443-year"
+            />{" "}
+            treatment wait.
           </p>
           <p className={paragraphClass}>
             <a
