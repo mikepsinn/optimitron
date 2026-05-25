@@ -68,14 +68,30 @@ describe("auth spam guard", () => {
   it("normalizes and sends normal magic-link email below the repeated-request limit", async () => {
     mocks.verificationTokenCount.mockResolvedValue(2);
 
-    await sendSpamGuardedMagicLinkEmail(
-      magicLinkParams("Human@Example.COM"),
-    );
+    await sendSpamGuardedMagicLinkEmail(magicLinkParams("Human@Example.COM"));
 
     expect(mocks.sendMagicLinkEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         identifier: "human@example.com",
       }),
     );
+  });
+
+  it("counts only password users for the direct signup flood limiter", async () => {
+    const { shouldSuppressDirectPasswordSignup } =
+      await import("../auth-spam-guard.server");
+    mocks.userCount.mockResolvedValue(0);
+
+    await expect(
+      shouldSuppressDirectPasswordSignup(new Date("2026-05-23T18:00:00.000Z")),
+    ).resolves.toBe(false);
+
+    expect(mocks.userCount).toHaveBeenCalledWith({
+      where: {
+        createdAt: expect.objectContaining({ gte: expect.any(Date) }),
+        deletedAt: null,
+        password: { not: null },
+      },
+    });
   });
 });

@@ -115,7 +115,7 @@ export const TASK_TEMPLATE_TOOL_DEFINITIONS = [
         idempotencyKeyTemplate: {
           type: "string",
           description:
-            "Template producing one stable task-key base per target. Defaults to '<templateKey>:{{target.kind}}:{{target.id}}'.",
+            "Template producing one stable task-key base per target. Defaults to '<templateKey>:{{target.kind}}:{{target.id}}', or '<templateKey>:user:{{user.id}}' for user.* events.",
         },
         eventFilter: { type: "object" },
         completionGate: { type: "object" },
@@ -217,21 +217,23 @@ export async function handleTaskTemplateToolCall({
         return err("spawnSpecs is required and must include at least one task");
       }
 
+      const eventName = readString(args.eventName) ?? "manual";
+      const idempotencyKeyTemplate =
+        readString(args.idempotencyKeyTemplate) ??
+        getDefaultIdempotencyKeyTemplate(templateKey, eventName);
+
       const { createTaskTrigger } = await import("../triggers/admin");
       const result = await createTaskTrigger(
         {
           triggerKey: templateKey,
-          eventName: readString(args.eventName) ?? "manual",
+          eventName,
           triggerKind: "spawnTasks",
-          idempotencyKeyTemplate:
-            readString(args.idempotencyKeyTemplate) ??
-            `${templateKey}:{{target.kind}}:{{target.id}}`,
+          idempotencyKeyTemplate,
           eventFilter: args.eventFilter,
           completionGate: args.completionGate,
           jurisdictionId: readString(args.jurisdictionId),
           notes: readString(args.notes),
-          enabled:
-            typeof args.enabled === "boolean" ? args.enabled : undefined,
+          enabled: typeof args.enabled === "boolean" ? args.enabled : undefined,
           spawnSpecs: args.spawnSpecs as Parameters<
             typeof createTaskTrigger
           >[0]["spawnSpecs"],
@@ -277,6 +279,8 @@ export async function handleTaskTemplateToolCall({
     case "previewTaskTemplate": {
       const templateKey = readTemplateKey(args);
       if (!templateKey) return err("templateKey is required");
+      const targetError = readTargetSelectionError(args);
+      if (targetError) return err(targetError);
       const { fireTaskTrigger } = await import("../triggers/fire");
       const result = await fireTaskTrigger(templateKey, buildContext(args), {
         dryRun: true,
@@ -288,6 +292,8 @@ export async function handleTaskTemplateToolCall({
     case "assignTaskTemplate": {
       const templateKey = readTemplateKey(args);
       if (!templateKey) return err("templateKey is required");
+      const targetError = readTargetSelectionError(args);
+      if (targetError) return err(targetError);
       if (!hasContextOrTarget(args)) {
         return err(
           "assignTaskTemplate requires targetPersonId, targetOrganizationId, targetUserId, or context",
@@ -315,6 +321,15 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
+function getDefaultIdempotencyKeyTemplate(
+  templateKey: string,
+  eventName: string,
+) {
+  return eventName.startsWith("user.")
+    ? `${templateKey}:user:{{user.id}}`
+    : `${templateKey}:{{target.kind}}:{{target.id}}`;
+}
+
 function hasContextOrTarget(args: Record<string, unknown>) {
   return (
     isPlainObject(args.context) ||
@@ -322,6 +337,21 @@ function hasContextOrTarget(args: Record<string, unknown>) {
     Boolean(readString(args.targetOrganizationId)) ||
     Boolean(readString(args.targetUserId))
   );
+}
+
+function readTargetSelectionError(args: Record<string, unknown>) {
+  const targetCount = [
+    readString(args.targetPersonId),
+    readString(args.targetOrganizationId),
+    readString(args.targetUserId),
+    isPlainObject(args.context) && Object.keys(args.context).length > 0
+      ? "context"
+      : undefined,
+  ].filter(Boolean).length;
+
+  return targetCount > 1
+    ? "ambiguous target: provide exactly one of targetPersonId, targetOrganizationId, targetUserId, or context"
+    : undefined;
 }
 
 function buildContext(args: Record<string, unknown>) {

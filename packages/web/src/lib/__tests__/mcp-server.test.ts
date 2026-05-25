@@ -4022,6 +4022,39 @@ describe("MCP server tool dispatch", () => {
       expect(body.templateKey).toBe("mission:first-hour");
     });
 
+    it("createTaskTemplate defaults user events to user idempotency", async () => {
+      mocks.createTaskTrigger.mockResolvedValue({
+        id: "trig-template-1",
+        triggerKey: "signup:first-task",
+        spawnSpecs: [],
+      });
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "createTaskTemplate",
+        arguments: {
+          eventName: "user.signup",
+          templateKey: "signup:first-task",
+          spawnSpecs: [
+            {
+              kind: "root",
+              titleTemplate: "Vote on the treaty",
+              descriptionTemplate: "Do the thing.",
+              assigneeUserResolver: "context.user.id",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.createTaskTrigger).toHaveBeenCalledTimes(1);
+      const [input] = mocks.createTaskTrigger.mock.calls[0]!;
+      expect(input).toMatchObject({
+        eventName: "user.signup",
+        idempotencyKeyTemplate: "signup:first-task:user:{{user.id}}",
+      });
+    });
+
     it("listTaskTemplates returns trigger rows with templateKey aliases", async () => {
       mocks.listTaskTriggers.mockResolvedValue([
         {
@@ -4089,6 +4122,23 @@ describe("MCP server tool dispatch", () => {
       expect(body.reason).toBe("dryRun");
     });
 
+    it("previewTaskTemplate rejects ambiguous target selectors", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "previewTaskTemplate",
+        arguments: {
+          templateKey: "mission:first-hour",
+          targetPersonId: "person-1",
+          targetUserId: "user-1",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("ambiguous target");
+    });
+
     it("assignTaskTemplate commits writes for admins with target organization context", async () => {
       mocks.fireTaskTrigger.mockResolvedValue({
         result: "spawned",
@@ -4119,6 +4169,23 @@ describe("MCP server tool dispatch", () => {
       );
       const body = parseToolBody(result);
       expect(body.spawnedTaskIds).toEqual(["task-1"]);
+    });
+
+    it("assignTaskTemplate rejects context plus target helper", async () => {
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "assignTaskTemplate",
+        arguments: {
+          context: { user: { id: "user-1" } },
+          targetPersonId: "person-1",
+          templateKey: "mission:first-hour",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("ambiguous target");
     });
 
     it("assignTaskTemplate requires an explicit target or context", async () => {

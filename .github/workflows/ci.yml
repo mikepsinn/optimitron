@@ -660,7 +660,7 @@ jobs:
           echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
           echo "Waiting for $target_url"
           for attempt in $(seq 1 90); do
-            status="$(curl -L -sS -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
+            status="$(curl -L -sS --connect-timeout 5 --max-time 15 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
             if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
               echo "Visual review page is live after attempt $attempt."
               exit 0

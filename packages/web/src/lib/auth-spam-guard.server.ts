@@ -27,8 +27,8 @@ export function isAuthHoneypotFilled(body: unknown) {
   const nestedAntiSpam = asObject(parsed.antiSpam);
   return Boolean(
     clean(parsed.companyWebsite, HONEYPOT_MAX_LENGTH) ||
-      clean(parsed.website, HONEYPOT_MAX_LENGTH) ||
-      clean(nestedAntiSpam?.honeypot, HONEYPOT_MAX_LENGTH),
+    clean(parsed.website, HONEYPOT_MAX_LENGTH) ||
+    clean(nestedAntiSpam?.honeypot, HONEYPOT_MAX_LENGTH),
   );
 }
 
@@ -82,12 +82,16 @@ export async function shouldSuppressDirectPasswordSignup(now = new Date()) {
       where: {
         createdAt: { gte: cutoff },
         deletedAt: null,
+        password: { not: null },
       },
     });
 
     return recentUserCount >= DIRECT_SIGNUP_GLOBAL_LIMIT;
   } catch (error) {
-    console.error("[AUTH SPAM] Failed to check direct signup rate limit", error);
+    console.error(
+      "[AUTH SPAM] Failed to check direct signup rate limit",
+      error,
+    );
     return false;
   }
 }

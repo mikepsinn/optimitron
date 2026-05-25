@@ -100,6 +100,7 @@ describe("signup auth route", () => {
       where: {
         createdAt: expect.objectContaining({ gte: expect.any(Date) }),
         deletedAt: null,
+        password: { not: null },
       },
     });
     expect(mocks.hashPassword).not.toHaveBeenCalled();
