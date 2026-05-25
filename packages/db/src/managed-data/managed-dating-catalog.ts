@@ -7,7 +7,7 @@ import {
 export const MANAGED_DATING_PROMPTS = [
   {
     key: "first-mission-date",
-    text: "A useful first date would be",
+    text: "A useful first mission would be",
   },
   {
     key: "after-vote",
@@ -15,21 +15,21 @@ export const MANAGED_DATING_PROMPTS = [
   },
   {
     key: "awkward-date-upside",
-    text: "Even if the date is bad, it was worth it if",
+    text: "Even if the mission is awkward, it was worth it if",
   },
 ] as const;
 
 export const MANAGED_DATING_QUESTIONS = [
   {
     key: "campaign-dates",
-    text: "Would you go on a date that also does something useful for the campaign?",
+    text: "Would you go on a mission that also does something useful for the campaign?",
     category: "mission",
     answerOptions: ["Yes", "Only if it is normal first", "No"],
     allowMultiple: false,
   },
   {
     key: "flyer-comfort",
-    text: "Which campaign date sounds least embarrassing?",
+    text: "Which mission sounds least embarrassing?",
     category: "mission",
     answerOptions: [
       "Coffee plus QR flyers",
@@ -41,7 +41,7 @@ export const MANAGED_DATING_QUESTIONS = [
   },
   {
     key: "war-disease-priority",
-    text: "How much should a partner care about ending war and disease?",
+    text: "How much should a mission partner care about ending war and disease?",
     category: "values",
     answerOptions: [
       "A lot",

@@ -71,4 +71,4 @@
 #### UNIT BREAKDOWN
 - No unit pledges yet.
 - [SIGN IN AS YOUR ORGANIZATION TO PLEDGE](/auth/signin?callbackUrl=%2Ffoundations)
-- Want to coordinate with another human? Go on an [Earth Optimization Date](/love).
+- Want to coordinate with another human? Go on an [Earth Optimization Mission](/missions).

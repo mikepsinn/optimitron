@@ -4,7 +4,7 @@ import { getSiteMetadata } from "@/lib/metadata";
 import { ROUTES, termsLink } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
-const UPDATED_AT = "May 6, 2026";
+const UPDATED_AT = "May 22, 2026";
 const SECTION_HEADING_CLASS =
   "mb-4 text-2xl font-black uppercase text-foreground";
 
@@ -63,7 +63,40 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                3. Accounts and Identity
+                3. Earth Optimization Missions
+              </h2>
+              <p className="mb-4 font-bold leading-relaxed">
+                Earth Optimization Missions and similar coordination features
+                are for adults using the site to coordinate platonic campaign
+                work. We do not screen every user, verify backgrounds,
+                supervise sessions, or promise that another person is safe.
+              </p>
+              <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
+                <li>
+                  Do not use mission coordination features if you are under 18.
+                </li>
+                <li>
+                  Choose the setting yourself: online, in public, or not at
+                  all. Leave whenever you want.
+                </li>
+                <li>
+                  Do not send money, bank details, passwords, identity
+                  documents, or emergency favors to another user.
+                </li>
+                <li>
+                  Report unsafe or abusive behavior. Block anyone you do not
+                  want to hear from.
+                </li>
+                <li>
+                  If you are in immediate danger, contact local emergency
+                  services.
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className={SECTION_HEADING_CLASS}>
+                4. Accounts and Identity
               </h2>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
                 <li>
@@ -84,7 +117,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                4. Votes, Signatures, Referrals, and Endorsements
+                5. Votes, Signatures, Referrals, and Endorsements
               </h2>
               <p className="mb-4 font-bold leading-relaxed">
                 Public support tools only work when submissions are honest.
@@ -107,7 +140,7 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>5. Your Submissions</h2>
+              <h2 className={SECTION_HEADING_CLASS}>6. Your Submissions</h2>
               <p className="font-bold leading-relaxed">
                 You are responsible for what you submit. If you submit a public
                 signature, vote, endorsement, organization profile, task update,
@@ -120,7 +153,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                6. Plaintiffs, Represented People, and Memorials
+                7. Plaintiffs, Represented People, and Memorials
               </h2>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
                 <li>
@@ -153,7 +186,7 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>7. Site Materials</h2>
+              <h2 className={SECTION_HEADING_CLASS}>8. Site Materials</h2>
               <p className="font-bold leading-relaxed">
                 You may link to and share public campaign materials as long as
                 you do not mislead people, remove attribution, or imply that we
@@ -164,7 +197,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                8. Donations and Payments
+                9. Donations and Payments
               </h2>
               <p className="font-bold leading-relaxed">
                 Donations and payments are voluntary. They may be nonrefundable
@@ -176,7 +209,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                9. Do Not Break the Site
+                10. Do Not Break the Site
               </h2>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
                 <li>
@@ -195,7 +228,7 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>10. Moderation</h2>
+              <h2 className={SECTION_HEADING_CLASS}>11. Moderation</h2>
               <p className="font-bold leading-relaxed">
                 We may remove content, block activity, suspend accounts, or
                 refuse service when we believe activity is fraudulent, abusive,
@@ -205,7 +238,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                11. No Professional Advice
+                12. No Professional Advice
               </h2>
               <p className="font-bold leading-relaxed">
                 The site contains campaign, policy, medical, legal, financial,
@@ -217,7 +250,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>
-                12. Availability and Disclaimers
+                13. Availability and Disclaimers
               </h2>
               <p className="font-bold leading-relaxed">
                 The site is provided as is and as available. It may change,
@@ -229,7 +262,7 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>13. Other Legal Terms</h2>
+              <h2 className={SECTION_HEADING_CLASS}>14. Other Legal Terms</h2>
               <p className="font-bold leading-relaxed">
                 These terms do not limit rights that cannot be waived under
                 applicable law. If part of these terms is unenforceable, the
@@ -240,7 +273,7 @@ export default async function TermsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_HEADING_CLASS}>14. Contact</h2>
+              <h2 className={SECTION_HEADING_CLASS}>15. Contact</h2>
               <div className="mt-4 border border-foreground bg-background p-4 text-foreground">
                 <p className="font-black">{legalEntityName}</p>
                 <p className="font-bold">Email: {contactEmail}</p>

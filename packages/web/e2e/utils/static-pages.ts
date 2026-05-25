@@ -32,6 +32,7 @@ const SMOKE_TEST_SITE = getSiteFromHeaders(
 export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
   ROUTES.profile,
   ROUTES.dashboard,
+  ROUTES.messages,
   ROUTES.census,
   ROUTES.checkIn,
   ROUTES.organizations,

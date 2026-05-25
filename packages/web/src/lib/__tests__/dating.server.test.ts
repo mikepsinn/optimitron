@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   datingProfileFindMany: vi.fn(),
   datingInteractionCreate: vi.fn(),
   datingInteractionFindFirst: vi.fn(),
+  datingBlockCount: vi.fn(),
   datingMatchUpsert: vi.fn(),
   datingConversationUpsert: vi.fn(),
   transaction: vi.fn(),
@@ -16,6 +17,9 @@ vi.mock("@/lib/prisma", () => ({
     datingProfile: {
       findFirst: mocks.datingProfileFindFirst,
       findMany: mocks.datingProfileFindMany,
+    },
+    datingBlock: {
+      count: mocks.datingBlockCount,
     },
     $transaction: mocks.transaction,
   },
@@ -35,6 +39,7 @@ describe("dating server helpers", () => {
     mocks.datingInteractionFindFirst.mockResolvedValue({
       id: "interaction_0",
     });
+    mocks.datingBlockCount.mockResolvedValue(0);
     mocks.datingMatchUpsert.mockResolvedValue({
       id: "match_1",
       profileAId: "profile_a",
@@ -112,5 +117,18 @@ describe("dating server helpers", () => {
         }),
       }),
     );
+  });
+
+  it("does not create an interaction when either profile has blocked the other", async () => {
+    mocks.datingBlockCount.mockResolvedValue(1);
+
+    await expect(
+      createDatingInteraction("user_1", {
+        kind: DatingInteractionKind.LIKE,
+        toProfileId: "profile_a",
+      }),
+    ).rejects.toThrow("This profile is blocked.");
+
+    expect(mocks.datingInteractionCreate).not.toHaveBeenCalled();
   });
 });

@@ -6,9 +6,9 @@ import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { compare, hash } from "bcryptjs";
 import { createAuthAdapter } from "@/lib/auth-adapter";
+import { sendSpamGuardedMagicLinkEmail } from "@/lib/auth-spam-guard.server";
 import { isDemoLoginEnabled } from "@/lib/demo-login";
 import { DEFAULT_SYSTEM_EMAIL_FROM } from "@/lib/email/from-address";
-import { sendMagicLinkEmail } from "@/lib/email/magic-link-email";
 import { summarizePersonhoodVerifications } from "@/lib/personhood.server";
 import { prisma } from "@/lib/prisma";
 
@@ -74,7 +74,7 @@ const providers: NextAuthOptions["providers"] = [
         pass: "",
       },
     },
-    sendVerificationRequest: sendMagicLinkEmail,
+    sendVerificationRequest: sendSpamGuardedMagicLinkEmail,
   }),
   CredentialsProvider({
     name: "credentials",

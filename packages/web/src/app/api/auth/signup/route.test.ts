@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   findUnique: vi.fn(),
   create: vi.fn(),
   recordReferralAttributionForUser: vi.fn(),
+  userCount: vi.fn(),
 }));
 
 vi.mock("@/lib/auth", () => ({
@@ -21,6 +22,7 @@ vi.mock("@/lib/prisma", () => ({
     user: {
       findUnique: mocks.findUnique,
       create: mocks.create,
+      count: mocks.userCount,
     },
   },
 }));
@@ -37,6 +39,8 @@ describe("signup auth route", () => {
     mocks.ensurePersonForUser.mockReset();
     mocks.findUnique.mockReset();
     mocks.create.mockReset();
+    mocks.userCount.mockReset();
+    mocks.userCount.mockResolvedValue(0);
     mocks.recordReferralAttributionForUser.mockReset();
   });
 
@@ -57,7 +61,54 @@ describe("signup auth route", () => {
     });
   });
 
-  it("creates the user and records attribution; Person.handle is seeded by ensurePersonForUser", async () => {
+  it("silently accepts honeypot signups without creating an account", async () => {
+    const response = await POST(
+      new Request("http://localhost/api/auth/signup", {
+        method: "POST",
+        body: JSON.stringify({
+          email: "bot@example.com",
+          password: "long-enough-password",
+          companyWebsite: "https://spam.example",
+        }),
+      }) as never,
+    );
+
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toEqual({ success: true });
+    expect(mocks.findUnique).not.toHaveBeenCalled();
+    expect(mocks.hashPassword).not.toHaveBeenCalled();
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.recordReferralAttributionForUser).not.toHaveBeenCalled();
+  });
+
+  it("quietly suppresses direct signup floods before hashing passwords", async () => {
+    mocks.userCount.mockResolvedValue(1_000);
+
+    const response = await POST(
+      new Request("http://localhost/api/auth/signup", {
+        method: "POST",
+        body: JSON.stringify({
+          email: "flood@example.com",
+          password: "long-enough-password",
+        }),
+      }) as never,
+    );
+
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toEqual({ success: true });
+    expect(mocks.userCount).toHaveBeenCalledWith({
+      where: {
+        createdAt: expect.objectContaining({ gte: expect.any(Date) }),
+        deletedAt: null,
+        password: { not: null },
+      },
+    });
+    expect(mocks.hashPassword).not.toHaveBeenCalled();
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.recordReferralAttributionForUser).not.toHaveBeenCalled();
+  });
+
+  it("creates the user without awarding referral credit before verification; Person.handle is seeded by ensurePersonForUser", async () => {
     // email check → no existing user; referral code → available.
     // The route no longer writes User.username — handle is seeded on Person
     // by ensurePersonForUser, which is mocked here as a side-effect-free spy.
@@ -101,11 +152,7 @@ describe("signup auth route", () => {
     expect(createPayload).not.toHaveProperty("name");
     expect(createPayload).not.toHaveProperty("image");
     expect(createPayload).not.toHaveProperty("bio");
-    expect(mocks.recordReferralAttributionForUser).toHaveBeenCalledWith(
-      "user_1",
-      "REF123",
-      "sa_123",
-    );
+    expect(mocks.recordReferralAttributionForUser).not.toHaveBeenCalled();
     // The signup form's `name` is forwarded to Person via ensurePersonForUser.
     expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1", {
       displayName: "Test User",

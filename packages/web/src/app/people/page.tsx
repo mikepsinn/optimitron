@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { headers } from "next/headers";
+import { getServerSession } from "next-auth";
+import { DatingRelationshipIntent } from "@optimitron/db/enums";
+import { MissionDiscoverClient } from "@/components/missions/MissionClient";
+import { MissionSafetyNotice } from "@/components/missions/MissionSafetyNotice";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Input } from "@/components/retroui/Input";
+import {
+  defaultButtonClassName,
+  primaryButtonClassName,
+} from "@/components/ui/default-button";
+import { authOptions } from "@/lib/auth";
+import { getDatingDiscoverData } from "@/lib/dating.server";
 import { getSiteMetadata } from "@/lib/metadata";
 import {
   getPeopleDirectoryData,
@@ -9,9 +19,8 @@ import {
   type PeopleDirectoryPerson,
   type PeopleDirectoryRole,
 } from "@/lib/people-directory.server";
-import { peopleLink, plaintiffsLink, ROUTES } from "@/lib/routes";
+import { getSignInPath, peopleLink, plaintiffsLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
-import { defaultButtonClassName, primaryButtonClassName } from "@/components/ui/default-button";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +34,16 @@ const ROLE_FILTERS: Array<{ label: string; value: PeopleDirectoryRole }> = [
   { label: "Governance", value: "governance" },
 ];
 
+const MISSION_INTENT_FILTERS: Array<{
+  label: string;
+  value: DatingRelationshipIntent | null;
+}> = [
+  { label: "All mission people", value: null },
+  { label: "Mission friends", value: DatingRelationshipIntent.FRIENDS },
+  { label: "Could be romantic", value: DatingRelationshipIntent.DATES },
+  { label: "Long-term", value: DatingRelationshipIntent.LONG_TERM },
+];
+
 function getFallbackInitials(value: string) {
   return (
     value
@@ -33,6 +52,12 @@ function getFallbackInitials(value: string) {
       .map((part) => part[0]?.toUpperCase() ?? "")
       .join("") || "?"
   );
+}
+
+function buildMissionPeopleHref(intent: DatingRelationshipIntent | null) {
+  const params = new URLSearchParams({ missions: "1" });
+  if (intent) params.set("intent", intent);
+  return `${ROUTES.people}?${params.toString()}`;
 }
 
 function buildDirectoryHref({
@@ -50,6 +75,29 @@ function buildDirectoryHref({
   if (page && page > 1) params.set("page", String(page));
   const qs = params.toString();
   return qs ? `${ROUTES.people}?${qs}` : ROUTES.people;
+}
+
+function parseMissionMode(value: string | string[] | undefined) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return raw === "1" || raw === "true";
+}
+
+function parseMissionIntent(
+  value: string | string[] | undefined,
+): DatingRelationshipIntent | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (
+    raw === DatingRelationshipIntent.FRIENDS ||
+    raw === DatingRelationshipIntent.DATES ||
+    raw === DatingRelationshipIntent.LONG_TERM ||
+    raw === DatingRelationshipIntent.LIFE_PARTNER ||
+    raw === DatingRelationshipIntent.CASUAL ||
+    raw === DatingRelationshipIntent.NON_MONOGAMY ||
+    raw === DatingRelationshipIntent.UNSURE
+  ) {
+    return raw;
+  }
+  return null;
 }
 
 function parsePage(value: string | string[] | undefined) {
@@ -128,6 +176,26 @@ function PersonDirectoryRow({ person }: { person: PeopleDirectoryPerson }) {
   );
 }
 
+async function loadMissionDiscover(
+  userId: string,
+  relationshipIntent: DatingRelationshipIntent | null,
+) {
+  try {
+    return {
+      data: await getDatingDiscoverData(userId, { relationshipIntent }),
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Could not load mission people.",
+    };
+  }
+}
+
 export default async function PeoplePage({
   searchParams,
 }: {
@@ -137,6 +205,138 @@ export default async function PeoplePage({
   const query = Array.isArray(params.q)
     ? (params.q[0] ?? "")
     : (params.q ?? "");
+  const missionMode = parseMissionMode(params.missions);
+  const missionIntent = parseMissionIntent(params.intent);
+
+  if (missionMode) {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id ?? null;
+    const result = userId
+      ? await loadMissionDiscover(userId, missionIntent)
+      : null;
+    const profile = result?.data?.profile ?? null;
+    const candidates = result?.data?.candidates ?? [];
+    const canBrowse =
+      profile?.status === "ACTIVE" && profile.wantsCampaignDates === true;
+
+    return (
+      <main className="min-h-screen bg-background text-foreground [font-family:var(--v0-font-libre-baskerville)]">
+        <section className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:py-14">
+          <header className="space-y-5">
+            <div className="space-y-4">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                Mission people
+              </p>
+              <h1 className="max-w-4xl text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
+                Find someone to optimize Earth with.
+              </h1>
+              <p className="max-w-3xl text-lg font-bold leading-8 text-muted-foreground">
+                These humans turned on Earth Optimization Missions. Like,
+                pass, or send one sentence. Mutual interest opens messages.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {MISSION_INTENT_FILTERS.map((filter) => {
+                const active = filter.value === missionIntent;
+                return (
+                  <Link
+                    className={`inline-flex min-h-11 items-center justify-center border-2 border-foreground px-4 text-xs font-black uppercase ${
+                      active
+                        ? "bg-foreground text-background"
+                        : "bg-background text-foreground hover:bg-foreground hover:text-background"
+                    }`}
+                    href={buildMissionPeopleHref(filter.value)}
+                    key={filter.label}
+                  >
+                    {filter.label}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                className={`${defaultButtonClassName} min-h-11 px-4 text-xs`}
+                href={ROUTES.people}
+              >
+                All people
+              </Link>
+              <Link
+                className={`${primaryButtonClassName} min-h-11 px-4 text-xs`}
+                href={`${ROUTES.profile}#missions`}
+              >
+                Mission settings
+              </Link>
+              <Link
+                className={`${defaultButtonClassName} min-h-11 px-4 text-xs`}
+                href={ROUTES.messages}
+              >
+                Messages
+              </Link>
+            </div>
+          </header>
+
+          <MissionSafetyNotice compact />
+
+          {!userId ? (
+            <div className="border-2 border-foreground p-5">
+              <h2 className="text-lg font-black uppercase">Sign in first</h2>
+              <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
+                Mission browsing is for signed-in humans who turned on missions.
+              </p>
+              <Link
+                className={`${primaryButtonClassName} mt-4 min-h-11 px-4 text-xs`}
+                href={getSignInPath(buildMissionPeopleHref(missionIntent))}
+              >
+                Sign in
+              </Link>
+            </div>
+          ) : result?.error || !profile ? (
+            <div className="border-2 border-foreground p-5">
+              <h2 className="text-lg font-black uppercase">
+                Turn on missions
+              </h2>
+              <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
+                Use your profile to turn on missions before browsing other
+                mission people.
+              </p>
+              <Link
+                className={`${primaryButtonClassName} mt-4 min-h-11 px-4 text-xs`}
+                href={`${ROUTES.profile}#missions`}
+              >
+                Mission settings
+              </Link>
+            </div>
+          ) : !canBrowse ? (
+            <div className="border-2 border-foreground p-5">
+              <h2 className="text-lg font-black uppercase">
+                Missions are paused
+              </h2>
+              <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
+                Set your mission status to active when you want to be visible.
+              </p>
+              <Link
+                className={`${primaryButtonClassName} mt-4 min-h-11 px-4 text-xs`}
+                href={`${ROUTES.profile}#missions`}
+              >
+                Mission settings
+              </Link>
+            </div>
+          ) : candidates.length ? (
+            <MissionDiscoverClient candidates={candidates} />
+          ) : (
+            <div className="border-2 border-foreground p-5">
+              <h2 className="text-lg font-black uppercase">No people yet</h2>
+              <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
+                The mission pool is empty. This happens before the party
+                starts.
+              </p>
+            </div>
+          )}
+        </section>
+      </main>
+    );
+  }
+
   const role = parsePeopleDirectoryRole(params.role);
   const page = parsePage(params.page);
   const data = await getPeopleDirectoryData({ page, query, role });
@@ -174,6 +374,12 @@ export default async function PeoplePage({
               href={ROUTES.plaintiffs}
             >
               {plaintiffsLink.label}
+            </Link>
+            <Link
+              className={`${defaultButtonClassName} min-h-11 px-4 text-xs`}
+              href={buildMissionPeopleHref(null)}
+            >
+              Mission people
             </Link>
           </div>
         </header>

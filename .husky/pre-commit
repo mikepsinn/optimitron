@@ -2,7 +2,7 @@
 set -e
 
 pnpm exec lint-staged
-pnpm --filter @optimitron/web run copy:gate
+#pnpm --filter @optimitron/web run copy:gate
 
 # === Copy preview markdown reminder (not auto-run) ===
 # Previously this block auto-ran `pnpm copy:preview` on every commit

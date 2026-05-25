@@ -16,6 +16,7 @@
 ## Mission Focus
 
 - Until the 1% Treaty passes, optimize for the International Campaign to End War and Disease at `warondisease.org`.
+- Legal nonprofit: Accelerated Medicine Foundation. Registered DBAs include Institute for Accelerated Medicine and International Campaign to End War and Disease.
 - The default product question is: does this help a human vote, recruit two more humans, get an organization to join, register a plaintiff, pressure a leader, or trust the quantified case enough to act?
 - Treat `optimitron.com` as the operating system and proof engine behind the campaign: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let the broader platform compete with the campaign for attention during this phase.
 - Park generic platform features, clever demos, cosmetic cleanup, and non-campaign variant work unless they directly reduce campaign friction or protect an already-shipping path.

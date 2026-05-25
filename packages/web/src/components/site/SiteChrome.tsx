@@ -9,6 +9,7 @@ import { isLocalSiteVariantOverrideEnabled } from "@/lib/site-dev-override";
 import { DevSiteVariantSwitcher } from "@/components/site/DevSiteVariantSwitcher";
 import { SiteChromeFrame } from "@/components/site/SiteChromeFrame";
 import { CampaignActionFab } from "@/components/site/CampaignActionFab";
+import { MicrosoftClarity } from "@/components/site/MicrosoftClarity";
 
 export async function SiteChrome({
   children,
@@ -43,6 +44,7 @@ export async function SiteChrome({
           />
         ) : null}
         <CampaignActionFab />
+        <MicrosoftClarity />
         {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
       </>
     );
@@ -65,6 +67,7 @@ export async function SiteChrome({
       ) : null}
       <CampaignActionFab />
       <Analytics />
+      <MicrosoftClarity />
       {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
     </>
   );

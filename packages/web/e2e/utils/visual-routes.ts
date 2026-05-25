@@ -90,6 +90,20 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     requiredText: /Who should do it\?/,
   },
   {
+    name: "people-missions",
+    path: "/people?missions=1",
+    required: false,
+    authenticated: true,
+    requiredText: /Mission people/,
+  },
+  {
+    name: "people-missions-romantic",
+    path: "/people?missions=1&intent=DATES",
+    required: false,
+    authenticated: true,
+    requiredText: /Could be romantic/,
+  },
+  {
     name: "task-optimize-earth",
     path: "/tasks/optimize-earth",
     required: false,

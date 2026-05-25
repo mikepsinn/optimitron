@@ -99,9 +99,12 @@ export const ROUTES = {
   foundations: "/foundations",
   signatories: "/signatories",
   campaign: "/campaign",
+  missions: "/missions",
+  messages: "/messages",
   love: "/love",
   poster: "/poster",
   shirt: "/shirt",
+  joke: "/joke",
   store: "/store",
   coalition: "/coalition",
   organizations: "/organizations",
@@ -920,6 +923,7 @@ export const privacyLink: NavItem = {
     "What this site collects, why it collects it, and how to contact us.",
   tagline: "Data use and choices",
   copyPreview: true,
+  screenshot: true,
   cta: "Read Privacy",
 };
 
@@ -930,6 +934,7 @@ export const termsLink: NavItem = {
   description: "The rules for using this site.",
   tagline: "Site rules",
   copyPreview: true,
+  screenshot: true,
   cta: "Read Terms",
 };
 
@@ -1032,6 +1037,29 @@ export const loveLink: NavItem = {
   cta: "Vote now",
 };
 
+export const missionsLink: NavItem = {
+  href: ROUTES.missions,
+  label: "Earth Optimization Missions",
+  emoji: "❤️",
+  description:
+    "Find someone you would not mind ending war and disease with. Spend one useful hour optimizing Earth together. Love may occur. Flyers should occur first.",
+  tagline: "Find someone to optimize Earth with",
+  authenticatedScreenshot: true,
+  copyPreview: true,
+  screenshot: true,
+  cta: "Start a Mission",
+};
+
+export const messagesLink: NavItem = {
+  href: ROUTES.messages,
+  label: "Messages",
+  emoji: "✉️",
+  description: "Open mission conversations with mutual matches.",
+  tagline: "Mission conversations",
+  authenticatedScreenshot: true,
+  cta: "Open Messages",
+};
+
 export const posterLink: NavItem = {
   href: ROUTES.poster,
   label: "Print a Poster",
@@ -1052,6 +1080,17 @@ export const shirtLink: NavItem = {
   copyPreview: true,
   screenshot: true,
   cta: "Get the Shirt",
+};
+
+export const jokeLink: NavItem = {
+  href: ROUTES.joke,
+  label: "The Joke",
+  emoji: "😂",
+  description: "How to play the funniest joke in the universe.",
+  cta: "Play the joke",
+  authenticatedCopyPreview: true,
+  copyPreview: true,
+  screenshot: true,
 };
 
 export const storeLink: NavItem = {
@@ -1192,7 +1231,7 @@ export const toolSections: NavSection[] = [
     label: "Player",
     items: [
       tasksLink,
-      loveLink,
+      missionsLink,
       storeLink,
       shirtLink,
       presidentManagementLink,
@@ -1658,7 +1697,10 @@ export const routeReviewNavItems = [
   fixAiLink,
   feedbackLink,
   loveLink,
+  missionsLink,
+  messagesLink,
   posterLink,
+  jokeLink,
   storeLink,
   shirtLink,
   privacyLink,

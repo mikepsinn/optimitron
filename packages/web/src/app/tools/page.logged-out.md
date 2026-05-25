@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-- 26 TOOLS
+- 28 TOOLS
 ## THE ARMORY
 - Your toolkit for fixing the mess described above. Browse. Equip. Try not to break anything important.
 ### ANALYSIS
@@ -42,7 +42,9 @@
 - [🔍DECENTRALIZED ACCOUNTABILITY OFFICE Every fund flow on IPFS — impossible to quietly delete](/agencies/dgao)
 ### PLAYER
 - [🎯EARTH OPTIMIZATION TASKS What waiting costs](/tasks)
-- [END WAR AND DISEASE FROM YOUR DATING PROFILE End war and disease from your dating profile.](/love)
+- [❤️EARTH OPTIMIZATION MISSIONS An Earth Optimization Mission is non-romantic by definition](/missions)
+- [🛍️STORE Buy useful campaign things.](/store)
+- [👕GET THE SHIRT Wear your campaign QR code.](/shirt)
 - [🪪REMIND PRESIDENTS Remind presidents to promote the general welfare](/employees)
 - [📡TRANSMIT Thirty seconds — what you ate, how you slept, how you feel](/transmit)
 - [📊MANAGE HUMANITY Get humanity to agree](/dashboard)

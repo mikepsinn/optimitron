@@ -6307,6 +6307,22 @@ export const HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO: Parameter = {
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
 };
 
+export const HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR: Parameter = {
+  value: 6205.0,
+  parameterName: "HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-human_laughs_per_healthy_life_year",
+  unit: "laughs",
+  displayName: "Human Laughs per Healthy Life-Year",
+  description: "Laughs occurring across one healthy life-year, computed as the adult daily laughter rate multiplied by days in a year. The conversion factor between DALYs averted (healthy life-years restored) and total laughs preserved.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "HUMAN_LAUGHS_PER_DAY_AVERAGE × 365",
+  latex: "L_{year} = L_{day} \\times 365 = 17 \\times 365 = 6{,}200",
+  confidenceInterval: [1843.022089975503, 14075.007724558654],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
 export const IAB_MECHANISM_BENEFIT_COST_RATIO: Parameter = {
   value: 229.61531707317073,
   parameterName: "IAB_MECHANISM_BENEFIT_COST_RATIO",
@@ -7377,6 +7393,86 @@ export const SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY: Parameter = {
   confidenceInterval: [17213204.074392494, 167438841.12677416],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
+};
+
+export const SHIRT_INDUCED_LAUGHS_GAINED: Parameter = {
+  value: 3507336993142948.0,
+  parameterName: "SHIRT_INDUCED_LAUGHS_GAINED",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_induced_laughs_gained",
+  unit: "laughs",
+  displayName: "Shirt-Induced Laughs Gained",
+  description: "Conservative first-order count of additional laughs across human history attributable to the shirt-triggered cascade. Computed as DALYs averted (healthy life-years restored by disease eradication) multiplied by laughs per healthy life-year. Does not count second-order laughs in future generations of human and post-human civilization whose existence is contingent on cascade triggering.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS × HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR",
+  latex: "\\begin{gathered}\nL_{shirt} = DALYs_{max} \\times L_{year} = 565B \\times 6{,}200 = 3510T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } L_{year} = L_{day} \\times 365 = 17 \\times 365 = 6{,}200\n\\end{gathered}",
+  confidenceInterval: [1609256289357052.0, 5591330745831909.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR: Parameter = {
+  value: 423932755.0132492,
+  parameterName: "SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_program_expected_value_per_dollar",
+  unit: "ratio",
+  displayName: "Shirt Program Expected Value per Dollar",
+  description: "Probability-weighted expected value per foundation-escrow dollar: treaty value multiplied by the cascade probability given seed, divided by the seed-program escrow. The defensible expected-value pitch for a skeptical foundation officer who does not want to bet on the headline ROI.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE × SHIRT_CASCADE_PROBABILITY_GIVEN_SEED) / SHIRT_SEED_PROGRAM_TOTAL_USD",
+  latex: "\\begin{gathered}\nEV_{shirt} = (Value_{max} \\times P_{cascade,shirt}) / C_{seed,total}\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } C_{seed,total} = N_{seed,shirt} \\times C_{seed,wearer} = 1M \\times \\$50 = \\$50M\n\\end{gathered}",
+  confidenceInterval: [31708433.512302905, 16164978951.982824],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const SHIRT_PROGRAM_ROI_RATIO: Parameter = {
+  value: 1695731020.0529969,
+  parameterName: "SHIRT_PROGRAM_ROI_RATIO",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_program_roi_ratio",
+  unit: "ratio",
+  displayName: "Shirt Program ROI Ratio",
+  description: "Unconditional ROI ratio: treaty-trajectory total economic value divided by the seed-program escrow. Headline 'X-to-one' framing for foundations. Does NOT discount for cascade probability; see SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR for the probability-weighted view.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / SHIRT_SEED_PROGRAM_TOTAL_USD",
+  latex: "\\begin{gathered}\nROI_{shirt} = \\frac{Value_{max}}{C_{seed,total}} = \\frac{\\$84800T}{\\$50M} = 1.7B\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } C_{seed,total} = N_{seed,shirt} \\times C_{seed,wearer} = 1M \\times \\$50 = \\$50M\n\\end{gathered}",
+  confidenceInterval: [175814384.26665726, 70261673192.62556],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const SHIRT_SEED_PROGRAM_TOTAL_USD: Parameter = {
+  value: 50000000.0,
+  parameterName: "SHIRT_SEED_PROGRAM_TOTAL_USD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_seed_program_total_usd",
+  unit: "USD",
+  displayName: "Shirt Seed Program Total Cost",
+  description: "Total foundation escrow required to fund the seed-wearer program: threshold of visible humans multiplied by blended cost per wearer. Held in Earth Optimization Prize assurance contract; refunded at structural EOP return rate if neither treaty passage nor target hit.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "SHIRT_SEED_WEARERS_THRESHOLD × SHIRT_SEED_COST_PER_WEARER_USD",
+  latex: "\\begin{gathered}\nC_{seed,total} \\\\\n= N_{seed,shirt} \\times C_{seed,wearer} \\\\\n= 1M \\times \\$50 \\\\\n= \\$50M\n\\end{gathered}",
+  confidenceInterval: [1231398.8842418403, 420280969.3453949],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const SHIRT_VALUE_PER_WEARER_USD: Parameter = {
+  value: 10598318.87533123,
+  parameterName: "SHIRT_VALUE_PER_WEARER_USD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_value_per_wearer_usd",
+  unit: "USD",
+  displayName: "Shirt Value per Wearer",
+  description: "Treaty-trajectory economic value per shirt-wearing human: total treaty value (DFDA trial capacity plus efficacy lag elimination) divided by the 8B-human target wearer base. This is the headline framing for the foundation pitch: each marginal wearer carries this much unrealized treaty value. Computationally identical to CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA under a different semantic frame.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / GLOBAL_POPULATION_2024",
+  latex: "\\begin{gathered}\nV_{wearer} = \\frac{Value_{max}}{Pop_{global}} = \\frac{\\$84800T}{8B} = \\$10.6M\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [7782477.739564056, 12172153.00621689],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
 };
 
 export const STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT: Parameter = {
@@ -10607,6 +10703,20 @@ export const HOURS_PER_YEAR: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-hours_per_year",
 };
 
+export const HUMAN_LAUGHS_PER_DAY_AVERAGE: Parameter = {
+  value: 17.0,
+  parameterName: "HUMAN_LAUGHS_PER_DAY_AVERAGE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-human_laughs_per_day_average",
+  unit: "laughs",
+  displayName: "Human Laughs per Day (Average Adult)",
+  description: "Folkloric estimate of average adult laughter rate. Widely cited as approximately 17 laughs per day; primary sources are diffuse and the true value varies enormously across individuals, ages, and cultures. Used here as a planning constant for the quantitative-case argument in the shirt paper. Children laugh substantially more (~10x), so the value here is conservative for blended human population.",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [5.0, 50.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
 export const HUMAN_PROTEIN_CODING_GENES: Parameter = {
   value: 20000.0,
   parameterName: "HUMAN_PROTEIN_CODING_GENES",
@@ -10899,6 +11009,62 @@ export const SHARING_TIME_MINUTES: Parameter = {
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
+};
+
+export const SHIRT_CASCADE_PROBABILITY_GIVEN_SEED: Parameter = {
+  value: 0.25,
+  parameterName: "SHIRT_CASCADE_PROBABILITY_GIVEN_SEED",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_cascade_probability_given_seed",
+  unit: "rate",
+  displayName: "Shirt Cascade Probability Given Seed",
+  description: "Subjective probability that the seed program triggers a viral cascade to majority-of-humanity participation, conditional on the seed threshold being met. Deliberately conservative: even at 25% the expected-value math beats every conventional foundation intervention. Sensitivity range covers skeptic and base-case scenarios.",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [0.05, 0.6],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const SHIRT_SEED_COST_PER_WEARER_USD: Parameter = {
+  value: 50.0,
+  parameterName: "SHIRT_SEED_COST_PER_WEARER_USD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_seed_cost_per_wearer_usd",
+  unit: "USD",
+  displayName: "Shirt Seed Cost per Wearer",
+  description: "Blended cost per seed wearer: printed shirt, small honorarium, and campaign admin. Includes a mix of professionally-printed shirts for influencers and bulk-print runs for university chapters, athletes, and micro-celebrities. Excludes top-tier celebrity placements (handled through separate sponsorship; see Getting Started celebrity layer).",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [10.0, 200.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const SHIRT_SEED_WEARERS_THRESHOLD: Parameter = {
+  value: 1000000.0,
+  parameterName: "SHIRT_SEED_WEARERS_THRESHOLD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_seed_wearers_threshold",
+  unit: "of people",
+  displayName: "Shirt Seed Wearers Threshold",
+  description: "Planning estimate for the number of visible humans who must wear the End-War-and-Disease message before the social-proof barrier breaks and imitation becomes spontaneous. Sized between the ALS Ice Bucket (~17M participants) and Livestrong (~87M bracelets) cascade trigger points, discounted for the lower-friction permanent-marker version.",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [100000.0, 5000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const SHIRT_WEARING_FRICTION_COST_USD: Parameter = {
+  value: 5.0,
+  parameterName: "SHIRT_WEARING_FRICTION_COST_USD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_wearing_friction_cost_usd",
+  unit: "USD",
+  displayName: "Shirt Wearing Friction Cost",
+  description: "Perceived social friction cost of wearing a political message in public, expressed in dollar-equivalent terms. Sets the minimum per-wearer expected Earth Optimization Prize payout required to make participation rational at scale. Anchored to the GLOBAL_COORDINATION_ACTIVATION_REWARD_PER_VERIFIED_PARTICIPANT midpoint, which serves the same role for the verified-vote action.",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [1.0, 25.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
 };
 
 export const TESTED_RELATIONSHIPS_ESTIMATE: Parameter = {
@@ -11759,6 +11925,7 @@ export const parameters = {
   GLOBAL_WAR_COST_YEARS_UNTIL_EXCEEDS_GDP,
   GLOBAL_WAR_COST_YEAR_80_BASELINE,
   HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO,
+  HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR,
   IAB_MECHANISM_BENEFIT_COST_RATIO,
   IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL,
   IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT,
@@ -11825,6 +11992,11 @@ export const parameters = {
   SHARING_BREAKEVEN_PROBABILITY_TREATY,
   SHARING_OPPORTUNITY_COST,
   SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY,
+  SHIRT_INDUCED_LAUGHS_GAINED,
+  SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR,
+  SHIRT_PROGRAM_ROI_RATIO,
+  SHIRT_SEED_PROGRAM_TOTAL_USD,
+  SHIRT_VALUE_PER_WEARER_USD,
   STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   THALIDOMIDE_DALYS_PER_EVENT,
@@ -12039,6 +12211,7 @@ export const parameters = {
   HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15,
   HOURS_PER_DAY,
   HOURS_PER_YEAR,
+  HUMAN_LAUGHS_PER_DAY_AVERAGE,
   HUMAN_PROTEIN_CODING_GENES,
   IAB_MECHANISM_ANNUAL_COST,
   IAB_POLITICAL_INCENTIVE_FUNDING_PCT,
@@ -12062,6 +12235,10 @@ export const parameters = {
   SECONDS_PER_MINUTE,
   SECONDS_PER_YEAR,
   SHARING_TIME_MINUTES,
+  SHIRT_CASCADE_PROBABILITY_GIVEN_SEED,
+  SHIRT_SEED_COST_PER_WEARER_USD,
+  SHIRT_SEED_WEARERS_THRESHOLD,
+  SHIRT_WEARING_FRICTION_COST_USD,
   TESTED_RELATIONSHIPS_ESTIMATE,
   TREATY_CAMPAIGN_BUDGET_LOBBYING,
   TREATY_CAMPAIGN_BUDGET_RESERVE,
@@ -14383,10 +14560,10 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 730,
+  total: 741,
   external: 226,
-  calculated: 364,
-  definitions: 140,
+  calculated: 370,
+  definitions: 145,
   citations: 165,
 } as const;
 

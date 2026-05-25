@@ -74,6 +74,9 @@ const authenticatedSnapshotRouteNames = new Set([
   "plaintiffs-manage",
   "settings",
   "side-menu-auth",
+  "messages",
+  "people-missions",
+  "people-missions-romantic",
 ]);
 const markdownDiffCache = new Map();
 let imageDiffDependenciesPromise = null;
@@ -119,9 +122,17 @@ const routeOrder = [
   "tasks-index-auth",
   "people",
   "people-auth",
+  "people-missions",
+  "people-missions-romantic",
   "people-mike",
+  "love",
+  "missions",
+  "missions-auth",
+  "messages",
   "questions",
   "feedback",
+  "privacy",
+  "terms",
   "settings",
   "organizations",
   "organization-iam-public",

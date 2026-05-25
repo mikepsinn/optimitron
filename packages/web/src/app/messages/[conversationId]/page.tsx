@@ -2,27 +2,29 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { notFound, redirect } from "next/navigation";
 import {
-  DatingDatePlanForm,
-  DatingMessageComposer,
-  DatingReportButton,
-} from "@/app/love/dating/dating-client";
+  MissionBlockButton,
+  MissionMessageComposer,
+  MissionPlanForm,
+  MissionReportButton,
+} from "@/components/missions/MissionClient";
+import { MissionSafetyNotice } from "@/components/missions/MissionSafetyNotice";
 import { authOptions } from "@/lib/auth";
 import { getDatingConversationData } from "@/lib/dating.server";
-import { getSignInPath } from "@/lib/routes";
+import { getSignInPath, ROUTES } from "@/lib/routes";
 import { getUserDisplayName } from "@/lib/user-display";
 
-interface DatingMessagePageProps {
+interface MessagePageProps {
   params: Promise<{ conversationId: string }>;
 }
 
-export default async function DatingMessagePage({
+export default async function MessagePage({
   params,
-}: DatingMessagePageProps) {
+}: MessagePageProps) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   if (!userId) {
-    redirect(getSignInPath("/love/dating/matches"));
+    redirect(getSignInPath(ROUTES.messages));
   }
 
   const { conversationId } = await params;
@@ -45,9 +47,9 @@ export default async function DatingMessagePage({
       <div className="mx-auto max-w-4xl">
         <Link
           className="text-sm font-black uppercase underline underline-offset-4"
-          href="/love/dating/matches"
+          href={ROUTES.messages}
         >
-          Back to matches
+          Back to messages
         </Link>
         <div className="mt-8 flex flex-col gap-4 border-b-2 border-foreground pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -60,7 +62,13 @@ export default async function DatingMessagePage({
               </p>
             ) : null}
           </div>
-          <DatingReportButton reportedProfileId={other.id} />
+          <div className="flex flex-wrap gap-2">
+            <MissionReportButton reportedProfileId={other.id} />
+            <MissionBlockButton blockedProfileId={other.id} />
+          </div>
+        </div>
+        <div className="mt-6">
+          <MissionSafetyNotice compact />
         </div>
 
         <div className="mt-8 grid gap-4">
@@ -82,7 +90,7 @@ export default async function DatingMessagePage({
                   </p>
                   {!mine ? (
                     <div className="mt-3">
-                      <DatingReportButton
+                      <MissionReportButton
                         messageId={message.id}
                         reportedProfileId={other.id}
                       />
@@ -102,8 +110,8 @@ export default async function DatingMessagePage({
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_320px]">
-          <DatingMessageComposer conversationId={conversation.id} />
-          <DatingDatePlanForm
+          <MissionMessageComposer conversationId={conversation.id} />
+          <MissionPlanForm
             conversationId={conversation.id}
             matchId={conversation.matchId}
           />
@@ -112,7 +120,7 @@ export default async function DatingMessagePage({
         {conversation.datePlans.length ? (
           <div className="mt-8 border-2 border-foreground p-5">
             <h2 className="text-lg font-black uppercase">
-              Earth Optimization Date plans
+              Earth Optimization Mission plans
             </h2>
             <div className="mt-3 grid gap-3">
               {conversation.datePlans.map((plan) => (
@@ -120,7 +128,7 @@ export default async function DatingMessagePage({
                   <p className="font-black uppercase">{plan.title}</p>
                   <p className="text-sm font-bold text-muted-foreground">
                     {plan.locationName ?? "Place not set"}
-                    {plan.isCampaignDate ? " · Earth Optimization Date" : ""}
+                    {plan.isCampaignDate ? " · Earth Optimization Mission" : ""}
                   </p>
                 </div>
               ))}

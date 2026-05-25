@@ -707,6 +707,41 @@ describe("triggers/fire integration", () => {
       expect(store.tasks).toHaveLength(taskCountBefore);
       expect(store.fires).toHaveLength(fireCountBefore);
     });
+
+    it("previews disabled triggers without writing tasks", async () => {
+      await createTaskTrigger(
+        {
+          triggerKey: "demo:dry-disabled",
+          eventName: "manual",
+          idempotencyKeyTemplate: "dry-disabled:{{target.id}}",
+          spawnSpecs: [
+            {
+              kind: "root",
+              isParent: true,
+              titleTemplate: "Preview {{target.id}}",
+              descriptionTemplate: "...",
+              parentResolver: "none",
+            },
+          ],
+        },
+        { actorUserId: "u_admin" },
+      );
+
+      const taskCountBefore = store.tasks.length;
+      const fireCountBefore = store.fires.length;
+
+      const result = await fireTaskTrigger(
+        "demo:dry-disabled",
+        { target: { id: "person-1" } },
+        { dryRun: true },
+      );
+
+      expect(result.result).toBe("spawned");
+      expect(result.reason).toBe("dryRun");
+      expect(result.spawnedTaskKeys).toEqual(["dry-disabled:person-1"]);
+      expect(store.tasks).toHaveLength(taskCountBefore);
+      expect(store.fires).toHaveLength(fireCountBefore);
+    });
   });
 
   describe("fireTaskTriggersForEvent", () => {

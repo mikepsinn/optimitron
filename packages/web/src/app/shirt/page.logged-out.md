@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Buy the t-shirt that ended war and disease — 1% Treaty | International Campaign to End War and Disease
-- Meta description: Order a War on Disease shirt with campaign copy and a QR code. Your torso is not busy enough.
+- Meta description: Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our 122 apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.
 - Canonical: https://warondisease.org/shirt
 - Open Graph title: Buy the t-shirt that ended war and disease — 1% Treaty
-- Open Graph description: Order a War on Disease shirt with campaign copy and a QR code. Your torso is not busy enough.
+- Open Graph description: Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our 122 apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fshirt
 - Twitter title: Buy the t-shirt that ended war and disease — 1% Treaty
-- Twitter description: Order a War on Disease shirt with campaign copy and a QR code. Your torso is not busy enough.
+- Twitter description: Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our 122 apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.
 
 ## Visible Page Copy
 
@@ -27,7 +27,7 @@
 - Your contribution above the $15 shirt fair market value is tax-deductible.
 ### FIX YOUR EXISTING T-SHIRTS.
 - Do you already own a t-shirt? Even several?
-- If so, you can easily upgrade your existing t-shirts. The market value of a plain white t-shirt is approximately $10. The market value of a t-shirt that ended war and disease is approximately [$10,598,318.88](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Upgrading yours increases its resale value by approximately 1,059,832 times.
+- If so, you can easily upgrade your existing t-shirts. The market value of a plain white t-shirt is approximately $10. The market value of a t-shirt that ended war and disease is approximately [$10,598,318.88](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Upgrading yours increases its resale value by approximately [1,059,832](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times.
 - On the front, write:
 - THIS T-SHIRT ENDED WAR AND DISEASE.
 - On the back, write:
@@ -54,4 +54,4 @@
 - Back: Trade one apocalypse for disease eradication at warondisease.org. Plus the per-buyer QR code.
 - FRONT
 - BACK WITH QR
-- Want to coordinate with another human? Go on an [Earth Optimization Date](/love).
+- Want to coordinate with another human? Go on an [Earth Optimization Mission](/missions).

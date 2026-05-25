@@ -1,13 +1,17 @@
 import {
   DatingProfileStatus,
   DatingRelationshipIntent,
-} from "@optimitron/db";
+} from "@optimitron/db/enums";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";
 import { getOwnDatingProfile, saveDatingProfile } from "@/lib/dating.server";
 
 export const runtime = "nodejs";
+
+const CLIENT_SAFE_PROFILE_ERRORS = new Set([
+  "Confirm the Earth Optimization Mission safety rules first.",
+]);
 
 const ProfileBodySchema = z.object({
   bio: z.string().max(2000).nullish(),
@@ -17,7 +21,11 @@ const ProfileBodySchema = z.object({
   displayRegionCode: z.string().max(16).nullish(),
   headline: z.string().max(140).nullish(),
   lookingForText: z.string().max(1000).nullish(),
-  relationshipIntents: z.array(z.nativeEnum(DatingRelationshipIntent)).max(8).optional(),
+  relationshipIntents: z
+    .array(z.nativeEnum(DatingRelationshipIntent))
+    .max(8)
+    .optional(),
+  safetyAcknowledged: z.boolean().optional(),
   status: z.nativeEnum(DatingProfileStatus).optional(),
   wantsCampaignDates: z.boolean().optional(),
 });
@@ -53,6 +61,12 @@ export async function PATCH(request: Request) {
         { error: "Invalid dating profile." },
         { status: 400 },
       );
+    }
+    if (
+      error instanceof Error &&
+      CLIENT_SAFE_PROFILE_ERRORS.has(error.message)
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error("[dating] Failed to save profile:", error);
     return NextResponse.json(

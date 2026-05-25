@@ -651,8 +651,28 @@ jobs:
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
-      - name: Post Visual review commit status
+      - name: Wait for visual review page
+        id: wait_visual_review_pages
         if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' }}
+        shell: bash
+        run: |
+          target_url="https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/${{ steps.prepare_pages.outputs.short_sha }}/latest.html"
+          echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
+          echo "Waiting for $target_url"
+          for attempt in $(seq 1 90); do
+            status="$(curl -L -sS --connect-timeout 5 --max-time 15 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
+            if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
+              echo "Visual review page is live after attempt $attempt."
+              exit 0
+            fi
+            echo "Attempt $attempt/90 returned HTTP $status; retrying in 10s."
+            sleep 10
+          done
+          echo "::error::Visual review page did not become available: $target_url"
+          exit 1
+
+      - name: Post Visual review commit status
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outcome == 'success' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -672,7 +692,7 @@ jobs:
             });
 
       - name: Create Visual review deployment
-        if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outcome == 'success' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -707,7 +727,7 @@ jobs:
             });
 
       - name: Update PR review packet with visual review
-        if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' && steps.pr_preview_url.outputs.result != '' }}
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outcome == 'success' && steps.pr_preview_url.outputs.result != '' }}
         uses: actions/github-script@v8
         env:
           PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}

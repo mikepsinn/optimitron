@@ -301,9 +301,9 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
         {renderShareStatus()}
         <Link
           className="inline-flex w-full justify-center border border-[var(--treaty-ink)]/40 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)] transition-colors hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]"
-          href={ROUTES.love}
+          href={ROUTES.missions}
         >
-          End war and disease from your dating profile.
+          End war and disease from your mission profile.
         </Link>
       </div>
     </section>

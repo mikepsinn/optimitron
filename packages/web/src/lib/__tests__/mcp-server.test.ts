@@ -3964,6 +3964,245 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task triggers", () => {
+    it("exposes task-template read tools to users and write tools to admins only", async () => {
+      const nonAdmin = await setup("user-1", ALL_SCOPES);
+      const admin = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const nonAdminNames = (await nonAdmin.listTools()).tools.map(
+        (t) => t.name,
+      );
+      const adminNames = (await admin.listTools()).tools.map((t) => t.name);
+
+      expect(nonAdminNames).not.toContain("createTaskTemplate");
+      expect(nonAdminNames).not.toContain("assignTaskTemplate");
+      expect(nonAdminNames).toContain("listTaskTemplates");
+      expect(nonAdminNames).toContain("getTaskTemplate");
+      expect(nonAdminNames).toContain("previewTaskTemplate");
+
+      expect(adminNames).toContain("createTaskTemplate");
+      expect(adminNames).toContain("assignTaskTemplate");
+    });
+
+    it("createTaskTemplate creates a disabled manual TaskTrigger by default", async () => {
+      mocks.createTaskTrigger.mockResolvedValue({
+        id: "trig-template-1",
+        triggerKey: "mission:first-hour",
+        spawnSpecs: [],
+      });
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "createTaskTemplate",
+        arguments: {
+          templateKey: "mission:first-hour",
+          spawnSpecs: [
+            {
+              kind: "root",
+              titleTemplate: "Do one Earth optimization mission",
+              descriptionTemplate: "Spend an hour making Earth less stupid.",
+              assigneePersonResolver: "context.target.id",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.createTaskTrigger).toHaveBeenCalledTimes(1);
+      const [input, ctx] = mocks.createTaskTrigger.mock.calls[0]!;
+      expect(input).toMatchObject({
+        triggerKey: "mission:first-hour",
+        eventName: "manual",
+        triggerKind: "spawnTasks",
+        idempotencyKeyTemplate:
+          "mission:first-hour:{{target.kind}}:{{target.id}}",
+        metadata: { taskTemplateFacade: true },
+      });
+      expect(ctx).toEqual({ actorUserId: "admin-1" });
+      const body = parseToolBody(result);
+      expect(body.templateKey).toBe("mission:first-hour");
+    });
+
+    it("createTaskTemplate defaults user events to user idempotency", async () => {
+      mocks.createTaskTrigger.mockResolvedValue({
+        id: "trig-template-1",
+        triggerKey: "signup:first-task",
+        spawnSpecs: [],
+      });
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "createTaskTemplate",
+        arguments: {
+          eventName: "user.signup",
+          templateKey: "signup:first-task",
+          spawnSpecs: [
+            {
+              kind: "root",
+              titleTemplate: "Vote on the treaty",
+              descriptionTemplate: "Do the thing.",
+              assigneeUserResolver: "context.user.id",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.createTaskTrigger).toHaveBeenCalledTimes(1);
+      const [input] = mocks.createTaskTrigger.mock.calls[0]!;
+      expect(input).toMatchObject({
+        eventName: "user.signup",
+        idempotencyKeyTemplate: "signup:first-task:user:{{user.id}}",
+      });
+    });
+
+    it("listTaskTemplates returns trigger rows with templateKey aliases", async () => {
+      mocks.listTaskTriggers.mockResolvedValue([
+        {
+          id: "trig-template-1",
+          triggerKey: "mission:first-hour",
+          eventName: "manual",
+          triggerKind: "spawnTasks",
+          enabled: false,
+          disabledReason: null,
+          jurisdictionId: null,
+          updatedAt: new Date("2026-05-23T12:00:00.000Z"),
+          _count: { spawnSpecs: 1, communicationSpawnSpecs: 0, fires: 0 },
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listTaskTemplates",
+        arguments: { enabled: false },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.listTaskTriggers).toHaveBeenCalledWith({
+        enabled: false,
+        eventName: undefined,
+        jurisdictionId: undefined,
+        limit: undefined,
+      });
+      const body = parseToolBody(result) as unknown as Array<{
+        templateKey: string;
+      }>;
+      expect(body[0]?.templateKey).toBe("mission:first-hour");
+    });
+
+    it("previewTaskTemplate dry-runs with target person context", async () => {
+      mocks.fireTaskTrigger.mockResolvedValue({
+        result: "spawned",
+        triggerKey: "mission:first-hour",
+        idempotencyKey: "mission:first-hour:person:person-1",
+        spawnedTaskIds: [],
+        spawnedTaskKeys: ["mission:first-hour:person:person-1"],
+        reason: "dryRun",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "previewTaskTemplate",
+        arguments: {
+          templateKey: "mission:first-hour",
+          targetPersonId: "person-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.fireTaskTrigger).toHaveBeenCalledWith(
+        "mission:first-hour",
+        {
+          target: { kind: "person", id: "person-1" },
+          recipientPersonId: "person-1",
+          recipient: { personId: "person-1" },
+        },
+        { dryRun: true, actorUserId: "user-1" },
+      );
+      const body = parseToolBody(result);
+      expect(body.reason).toBe("dryRun");
+    });
+
+    it("previewTaskTemplate rejects ambiguous target selectors", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "previewTaskTemplate",
+        arguments: {
+          templateKey: "mission:first-hour",
+          targetPersonId: "person-1",
+          targetUserId: "user-1",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("ambiguous target");
+    });
+
+    it("assignTaskTemplate commits writes for admins with target organization context", async () => {
+      mocks.fireTaskTrigger.mockResolvedValue({
+        result: "spawned",
+        triggerKey: "mission:org-first-hour",
+        idempotencyKey: "mission:org-first-hour:organization:org-1",
+        spawnedTaskIds: ["task-1"],
+        spawnedTaskKeys: ["mission:org-first-hour:organization:org-1"],
+      });
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "assignTaskTemplate",
+        arguments: {
+          templateKey: "mission:org-first-hour",
+          targetOrganizationId: "org-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.fireTaskTrigger).toHaveBeenCalledWith(
+        "mission:org-first-hour",
+        {
+          target: { kind: "organization", id: "org-1" },
+          organizationId: "org-1",
+          organization: { id: "org-1" },
+        },
+        { dryRun: false, actorUserId: "admin-1" },
+      );
+      const body = parseToolBody(result);
+      expect(body.spawnedTaskIds).toEqual(["task-1"]);
+    });
+
+    it("assignTaskTemplate rejects context plus target helper", async () => {
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "assignTaskTemplate",
+        arguments: {
+          context: { user: { id: "user-1" } },
+          targetPersonId: "person-1",
+          templateKey: "mission:first-hour",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain("ambiguous target");
+    });
+
+    it("assignTaskTemplate requires an explicit target or context", async () => {
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "assignTaskTemplate",
+        arguments: { templateKey: "mission:first-hour" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
+      const body = parseToolBody(result);
+      expect(String(body.error)).toContain(
+        "requires targetPersonId, targetOrganizationId, targetUserId, or context",
+      );
+    });
+
     it("hides createTaskTrigger / updateTaskTrigger / disableTaskTrigger from non-admin users", async () => {
       const nonAdmin = await setup("user-1", ALL_SCOPES);
       const admin = await setup("admin-1", ALL_SCOPES, { isAdmin: true });

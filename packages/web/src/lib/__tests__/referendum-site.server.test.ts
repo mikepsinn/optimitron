@@ -108,6 +108,24 @@ describe("referendum-site.server", () => {
     });
   });
 
+  it("retries the homepage read fanout once when Postgres closes the connection", async () => {
+    mocks.referendumFindUnique.mockResolvedValue({
+      id: "ref_retry",
+      title: "1% Treaty",
+      description: "desc",
+    });
+    mocks.referendumVoteCount.mockResolvedValue(0);
+    mocks.organizationPositionCount.mockResolvedValue(0);
+    mocks.organizationPositionFindMany
+      .mockRejectedValueOnce(new Error("Server has closed the connection."))
+      .mockResolvedValueOnce([]);
+
+    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
+
+    expect(data?.organizationCount).toBe(0);
+    expect(mocks.organizationPositionFindMany).toHaveBeenCalledTimes(2);
+  });
+
   it("uses the same approved filters for organizational signatory lists", async () => {
     mocks.referendumFindUnique.mockResolvedValue({
       id: "ref_2",
