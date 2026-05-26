@@ -44,6 +44,11 @@ export async function sendMagicLinkEmail({
   if (result.status !== "sent") {
     throw new Error("Resend is not configured for magic-link email.");
   }
+
+  return {
+    existingUser: Boolean(existing),
+    providerMessageId: result.id,
+  };
 }
 
 function getMagicLinkFromHeader(host: string): string | undefined {

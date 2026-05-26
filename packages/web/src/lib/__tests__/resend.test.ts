@@ -338,6 +338,26 @@ describe("sendResendEmail", () => {
     });
   });
 
+  it("does not BCC the monitor address on magic-link React emails", async () => {
+    mocks.serverEnv.EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
+    vi.mocked(render).mockResolvedValueOnce("<p>Hello</p>");
+    vi.mocked(render).mockResolvedValueOnce("Hello");
+
+    await sendReactEmail({
+      react: { props: { children: "Hello" }, type: "div" } as never,
+      scope: "magic_link",
+      subject: "Magic link",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    const payload = mocks.emailSend.mock.calls[0]?.[0] as Record<
+      string,
+      unknown
+    >;
+    expect(payload.bcc).toBeUndefined();
+  });
+
   it("BCCs the monitor address on external emails", async () => {
     mocks.serverEnv.EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
 
