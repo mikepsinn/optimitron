@@ -159,6 +159,16 @@ export async function sendSpamGuardedMagicLinkEmail(
 ) {
   const email = params.identifier.trim().toLowerCase();
   const context = await buildMagicLinkRequestContext(email, params.url);
+  if (!email) {
+    logMagicLinkRequest({
+      ...context,
+      outcome: "suppressed",
+      reason: "empty_identifier",
+      recentTokenCount: null,
+    });
+    return;
+  }
+
   const recentTokenCount = await countRecentMagicLinkTokens(email);
   if (
     recentTokenCount != null &&
@@ -190,7 +200,7 @@ export async function sendSpamGuardedMagicLinkEmail(
     logMagicLinkRequest({
       ...context,
       outcome: "failed",
-      reason: error instanceof Error ? error.message : "unknown",
+      reason: "send_failed",
       recentTokenCount,
     });
     throw error;

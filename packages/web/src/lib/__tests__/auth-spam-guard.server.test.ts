@@ -96,6 +96,24 @@ describe("auth spam guard", () => {
     });
   });
 
+  it("suppresses blank magic-link identifiers without querying tokens", async () => {
+    await expect(
+      sendSpamGuardedMagicLinkEmail(magicLinkParams("   ")),
+    ).resolves.toBeUndefined();
+
+    expect(mocks.verificationTokenCount).not.toHaveBeenCalled();
+    expect(mocks.sendMagicLinkEmail).not.toHaveBeenCalled();
+    expect(lastAuthLog()).toMatchObject({
+      authCallbackHost: "warondisease.org",
+      emailDomain: null,
+      msg: "auth_magic_link_request",
+      outcome: "suppressed",
+      reason: "empty_identifier",
+      recentTokenCount: null,
+      route: "/api/auth/signin/email",
+    });
+  });
+
   it("normalizes and sends normal magic-link email below the repeated-request limit", async () => {
     mocks.verificationTokenCount.mockResolvedValue(2);
 
@@ -116,6 +134,28 @@ describe("auth spam guard", () => {
       recentTokenCount: 2,
       route: "/api/auth/signin/email",
     });
+  });
+
+  it("logs a fixed failure reason when magic-link sending fails", async () => {
+    mocks.sendMagicLinkEmail.mockRejectedValue(
+      new Error("provider included human@example.com"),
+    );
+
+    await expect(
+      sendSpamGuardedMagicLinkEmail(magicLinkParams("Human@Example.COM")),
+    ).rejects.toThrow("provider included human@example.com");
+
+    const log = lastAuthLog();
+    expect(log).toMatchObject({
+      authCallbackHost: "warondisease.org",
+      emailDomain: "example.com",
+      msg: "auth_magic_link_request",
+      outcome: "failed",
+      reason: "send_failed",
+      route: "/api/auth/signin/email",
+    });
+    expect(JSON.stringify(log)).not.toContain("provider included");
+    expect(JSON.stringify(log)).not.toContain("human@example.com");
   });
 
   it("counts only password users for the direct signup flood limiter", async () => {
