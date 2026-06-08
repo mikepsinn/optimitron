@@ -25,14 +25,14 @@ export function getProvider(chainId: number): ethers.JsonRpcProvider {
 }
 
 export function getMinterWallet(chainId: number): ethers.Wallet {
-  const key = serverEnv.VOTE_TOKEN_MINTER_PRIVATE_KEY;
+  const key = serverEnv.EOP_MINTER_PRIVATE_KEY;
   if (!key) {
-    throw new Error("VOTE_TOKEN_MINTER_PRIVATE_KEY is not set");
+    throw new Error("EOP_MINTER_PRIVATE_KEY is not set");
   }
   return new ethers.Wallet(key, getProvider(chainId));
 }
 
-export function getVoteTokenContract(
+export function getEarthOptimizationPointContract(
   chainId: number,
   signer: ethers.Signer,
 ): ethers.Contract {
@@ -40,9 +40,9 @@ export function getVoteTokenContract(
   if (!addresses) {
     throw new Error(`No contract addresses for chain ${chainId}`);
   }
-  const { voteToken } = addresses;
-  if (voteToken === "0x0000000000000000000000000000000000000000") {
-    throw new Error(`VoteToken not deployed on chain ${chainId}`);
+  const { earthOptimizationPoint } = addresses;
+  if (earthOptimizationPoint === "0x0000000000000000000000000000000000000000") {
+    throw new Error(`EarthOptimizationPoint not deployed on chain ${chainId}`);
   }
 
   // Minimal ABI for server-side minting
@@ -50,7 +50,7 @@ export function getVoteTokenContract(
     "function batchMintForVoters(address[] voters, bytes32[] referendumIds, bytes32[] nullifierHashes, uint256[] amounts) external",
     "function totalSupply() view returns (uint256)",
   ];
-  return new ethers.Contract(voteToken, abi, signer);
+  return new ethers.Contract(earthOptimizationPoint, abi, signer);
 }
 
 export function getVoterPrizeTreasuryContract(
@@ -73,7 +73,7 @@ export function getVoterPrizeTreasuryContract(
     "function currentIncomeMetric() view returns (uint256)",
     "function thresholdMet() view returns (bool)",
     "function maturityTimestamp() view returns (uint256)",
-    "function voteTotalSupplySnapshot() view returns (uint256)",
+    "function pointTotalSupplySnapshot() view returns (uint256)",
     "function totalAssetsSnapshot() view returns (uint256)",
     "function sharePrice() view returns (uint256)",
     "function depositorCount() view returns (uint256)",

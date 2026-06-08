@@ -8,7 +8,7 @@ import {
   PRIZE_POOL_SIZE,
   PRIZE_POOL_ANNUAL_RETURN,
   PRIZE_POOL_HORIZON_MULTIPLE,
-  VOTE_TOKEN_VALUE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
 } from "@optimitron/data/parameters";
 import { POINTS } from "@/lib/messaging";
@@ -39,9 +39,9 @@ export const GAME_PARAMS = {
   currentTrialDuration: 10, // years per treatment
   acceleratedTrialDuration: 0.81, // years per treatment (12.3x faster)
 
-  // Game economics (prize pool, voting) — derived from @optimitron/data parameters
+  // Game economics (prize pool, voting, points) — derived from @optimitron/data parameters
   costPerVote: 0.06,
-  valuePerVotePoint: Math.round(VOTE_TOKEN_VALUE.value), // from PRIZE_POOL_SIZE / coordination target
+  valuePerPoint: Math.round(EARTH_OPTIMIZATION_POINT_VALUE.value), // from PRIZE_POOL_SIZE / coordination target
   globalInvestedAssets: GLOBAL_INVESTABLE_ASSETS.value, // $305T
   prizePoolParticipationPct: PRIZE_POOL_PARTICIPATION_RATE.value * 100, // 1%
   prizePoolInitial: GLOBAL_INVESTABLE_ASSETS.value * PRIZE_POOL_PARTICIPATION_RATE.value, // $3.05T
@@ -50,7 +50,7 @@ export const GAME_PARAMS = {
   prizePoolFallbackMultiple: Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value * 100) / 100, // ~11.06x
   treatyLifetimeIncomeGain: Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value), // ~$14.7M
   minimumDeposit: 100,
-  exchangeRatio: Math.round(VOTE_TOKEN_VALUE.value / 0.06), // value per point / cost per vote
+  exchangeRatio: Math.round(EARTH_OPTIMIZATION_POINT_VALUE.value / 0.06), // value per point / cost per vote
 
   // Fictional / game-specific
   moroniaCorrelation: 94.7,
@@ -76,7 +76,7 @@ export const SCORE_PROGRESSION = {
   "get-friends": 500_000_000,
   "prize-investment": 650_000_000,
   "prize-mechanism": 800_000_000,
-  "vote-point-value": 1_000_000_000,
+  "point-value": 1_000_000_000,
   "cannot-lose": 1_500_000_000,
   leaderboard: 3_000_000_000,
   "changed-metric": 4_000_000_000,
@@ -128,7 +128,7 @@ export const INVENTORY_ITEMS = [
   },
   {
     slot: 6,
-    acquiredAt: "vote-point-value",
+    acquiredAt: "point-value",
     icon: "silver-pair",
     emoji: "\u{1F948}",
     name: `${POINTS.toUpperCase()} \u00D72`,

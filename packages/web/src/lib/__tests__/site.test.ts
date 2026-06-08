@@ -117,6 +117,16 @@ describe("site variant registry", () => {
     );
   });
 
+  it("uses EOS as the Optimitron home while keeping the game route available", () => {
+    const optimitron = getSiteConfig("optimitron");
+
+    expect(getSiteFromHost("optimitron.com").pageVariants.home).toBe(
+      "eosLanding",
+    );
+    expect(isSiteRouteAllowed(optimitron, ROUTES.eos)).toBe(true);
+    expect(isSiteRouteAllowed(optimitron, ROUTES.game)).toBe(true);
+  });
+
   it("getTreatySignUrl returns relative /treaty for sites that allow the route, canonical fallback otherwise", () => {
     // Sites with /treaty allowed: relative path so the browser stays on the
     // user's current origin. Useful for in-app links where same-origin nav

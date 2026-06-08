@@ -59,6 +59,16 @@ Do not let lower items crowd out higher ones.
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
+- **EOS landing (staged, awaiting Mike copy gate):** optimitron.com `/` reframed
+  from "The Earth Optimization Game" to the Earth Optimization Services landing
+  (`eosLanding` site variant, new `EarthOptimizationServicesLandingPage`); the
+  game scroll moved to `/game`. Headline = maximize median healthy life
+  expectancy + median real after-tax income (health AND wealth); disease/1%
+  Treaty is the lead wedge. All copy is draft `TODO(copy)` (86 markers) pending
+  Mike's voice gate. `/invest` (Loving Takeover / Fund I) deferred — order ladder
+  links to `/fund` with `TODO(invest)` until securities/legal copy is reviewed.
+  `warondisease.org` untouched. Plan: `.claude/plans/eos-landing.md`,
+  `docs/eos-landing-plan.md`.
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 

@@ -6,16 +6,16 @@ import { POINT } from "@/lib/messaging";
 import {
   TREATY_PERSONAL_UPSIDE_BLEND,
   TREATY_HALE_GAIN_YEAR_15,
-  VOTE_TOKEN_VALUE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
 } from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 
 const personalLifetimeLoss = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value / 100_000) * 100_000;
 const haleGain = TREATY_HALE_GAIN_YEAR_15.value;
-const votePointValue = Math.round(VOTE_TOKEN_VALUE.value);
+const pointValue = Math.round(EARTH_OPTIMIZATION_POINT_VALUE.value);
 
-export function SlideVoteValueAsymmetry() {
+export function SlidePointValueAsymmetry() {
   const [flashVisible, setFlashVisible] = useState(true);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export function SlideVoteValueAsymmetry() {
           <div className="flex flex-col items-center gap-2 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
             <div className="text-3xl md:text-4xl">🎫</div>
             <div className="font-pixel text-2xl md:text-4xl text-cyan-400">
-              {formatCurrency(votePointValue)}
+              {formatCurrency(pointValue)}
             </div>
             <div className="font-pixel text-xl md:text-2xl text-zinc-200">
               per {POINT} if income &amp; HALE targets are hit
@@ -115,4 +115,4 @@ export function SlideVoteValueAsymmetry() {
     </SierraSlideWrapper>
   );
 }
-export default SlideVoteValueAsymmetry;
+export default SlidePointValueAsymmetry;

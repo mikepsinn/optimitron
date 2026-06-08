@@ -2,17 +2,17 @@
 pragma solidity ^0.8.24;
 
 /**
- * @title IVoteToken — Interface for the VOTE ERC-20 token
+ * @title IEarthOptimizationPoint — Interface for the EOP ERC-20 token
  * @notice Transferable ERC-20 minted to verified referendum voters.
- *         1 VOTE per verified vote per referendum. Tradeable on DEXs,
+ *         1 EOP per verified vote per referendum. Tradeable on DEXs,
  *         creating an implicit prediction market on campaign success.
  */
-interface IVoteToken {
-    /// @notice Mint VOTE tokens for a verified voter
+interface IEarthOptimizationPoint {
+    /// @notice Mint Earth Optimization Points for a verified voter
     /// @param voter Wallet to receive tokens
     /// @param referendumId Identifier of the referendum voted on
     /// @param nullifierHash World ID nullifier (sybil resistance)
-    /// @param amount Amount of VOTE to mint (1e18 = 1 VOTE)
+    /// @param amount Amount of EOP to mint (1e18 = 1 EOP)
     function mintForVoter(
         address voter,
         bytes32 referendumId,

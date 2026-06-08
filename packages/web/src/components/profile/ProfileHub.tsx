@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
 import { ProfileSnapshotForm } from "@/components/profile/ProfileSnapshotForm";
-import { VoteTokenBalanceCard } from "@/components/prize/VoteTokenBalanceCard";
+import { EarthOptimizationPointsBalanceCard } from "@/components/prize/EarthOptimizationPointsBalanceCard";
 import type { ProfilePageData } from "@/lib/profile";
 import { ROUTES } from "@/lib/routes";
 
@@ -64,7 +64,7 @@ export function ProfileHub({ initialData }: ProfileHubProps) {
 
       <ProfileSnapshotForm profile={data.profile} onSaved={setData} />
 
-      <VoteTokenBalanceCard />
+      <EarthOptimizationPointsBalanceCard />
 
       <PushNotificationPrompt />
     </div>

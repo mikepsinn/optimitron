@@ -260,7 +260,7 @@ export default async function PrizePage() {
                     Fully On-Chain
                   </h4>
                   <p className="text-xs font-bold leading-relaxed">
-                    Every deposit, every VOTE mint, every metric update — all
+                    Every deposit, every EOP mint, every metric update — all
                     on-chain. No committees. No discretion. Just smart contracts
                     doing arithmetic. Code is open source on GitHub.
                   </p>
@@ -299,7 +299,7 @@ export default async function PrizePage() {
                   external
                   className="inline-flex items-center text-xs font-black text-foreground uppercase hover:text-foreground transition-colors"
                 >
-                  VoterPrizeTreasury.sol, VoteToken.sol — full source on GitHub &rarr;
+                  VoterPrizeTreasury.sol, EarthOptimizationPoint.sol — full source on GitHub &rarr;
                 </NavItemLink>
               </div>
             </AccordionContent>

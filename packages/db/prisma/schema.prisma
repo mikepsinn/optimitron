@@ -1579,7 +1579,7 @@ model User {
   createdCourtCaseRemedies           CourtCaseRemedy[]                @relation("UserCreatedCourtCaseRemedies")
   referendumVotes                    ReferendumVote[]                 @relation("UserReferendumVotes")
   referendumReferrals                ReferendumVote[]                 @relation("UserReferendumReferrals")
-  voteTokenMints                     VoteTokenMint[]                  @relation("UserVoteTokenMints")
+  pointMints                         PointMint[]                      @relation("UserPointMints")
   activities                         Activity[]                       @relation("UserActivities")
   createdOrganizations               Organization[]                   @relation("OrgCreator")
   organizationMemberships            OrganizationMember[]             @relation("UserOrgMemberships")
@@ -4296,7 +4296,7 @@ model Referendum {
   createdBy                       User?                            @relation("UserCreatedReferendums", fields: [createdByUserId], references: [id])
   jurisdiction                    Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
   votes                           ReferendumVote[]
-  voteTokenMints                  VoteTokenMint[]
+  pointMints                      PointMint[]
   surveys                         Survey[]
   organizationPositions           OrganizationReferendumPosition[]
   referralInvitations             ReferralInvitation[]
@@ -4860,10 +4860,10 @@ model CourtCaseRemedy {
 }
 
 // ============================================================================
-// VOTE TOKEN & VOTER PRIZE TREASURY
+// POINTS & VOTER PRIZE TREASURY
 // ============================================================================
 
-enum VoteTokenMintStatus {
+enum PointMintStatus {
   PENDING
   SUBMITTED
   CONFIRMED
@@ -4871,13 +4871,13 @@ enum VoteTokenMintStatus {
 }
 
 /// Type of user-facing receipt published through Hypercert / AT Protocol flows
-/// Links a referendum vote to an on-chain VOTE token mint.
-/// 1 VOTE to the referrer per referred verified vote per referendum.
-model VoteTokenMint {
+/// Links a referendum vote to an on-chain Earth Optimization Point mint.
+/// 1 Earth Optimization Point to the referrer per referred verified vote per referendum.
+model PointMint {
   /// Unique identifier
   id String @id @default(cuid())
 
-  /// The referrer who receives the VOTE reward
+  /// The referrer who receives the point reward
   userId String
 
   /// Which referendum this mint is for
@@ -4886,10 +4886,10 @@ model VoteTokenMint {
   /// World ID nullifier hash (sybil resistance)
   nullifierHash String
 
-  /// Wallet address receiving the VOTE tokens
+  /// Wallet address receiving the points
   walletAddress String
 
-  /// Amount of VOTE tokens (BigInt as string, e.g. "1000000000000000000" = 1 VOTE)
+  /// Amount of points (BigInt as string, e.g. "1000000000000000000" = 1 point)
   amount String
 
   /// On-chain transaction hash (set after submission)
@@ -4899,7 +4899,7 @@ model VoteTokenMint {
   chainId Int
 
   /// Mint lifecycle status
-  status VoteTokenMintStatus @default(PENDING)
+  status PointMintStatus @default(PENDING)
 
   /// When this record was created
   createdAt DateTime @default(now())
@@ -4911,7 +4911,7 @@ model VoteTokenMint {
   deletedAt DateTime?
 
   // -- Relations --
-  user       User       @relation("UserVoteTokenMints", fields: [userId], references: [id], onDelete: Cascade)
+  user       User       @relation("UserPointMints", fields: [userId], references: [id], onDelete: Cascade)
   referendum Referendum @relation(fields: [referendumId], references: [id])
 
   @@unique([nullifierHash, referendumId])

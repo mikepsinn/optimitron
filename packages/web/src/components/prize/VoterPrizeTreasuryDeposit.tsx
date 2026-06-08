@@ -13,9 +13,9 @@ import {
 } from "wagmi";
 import { parseUnits, formatUnits, type Address } from "viem";
 import { baseSepolia } from "wagmi/chains";
-import { voterPrizeTreasuryAbi, voteTokenAbi } from "@optimitron/treasury-prize/abi";
+import { earthOptimizationPointAbi, voterPrizeTreasuryAbi } from "@optimitron/treasury-prize/abi";
 import { getContracts } from "@optimitron/treasury-shared/addresses";
-import { POINTS, POINT_NAME } from "@/lib/messaging";
+import { POINTS } from "@/lib/messaging";
 
 const USDC_DECIMALS = 6;
 const PRESET_AMOUNTS = ["1", "2", "3", "9999999999999999"];
@@ -61,7 +61,7 @@ function formatUSDC(value: bigint): string {
   });
 }
 
-function formatVOTE(value: bigint): string {
+function formatPoints(value: bigint): string {
   return Number(formatUnits(value, 18)).toLocaleString("en-US", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -92,7 +92,7 @@ export function VoterPrizeTreasuryDeposit() {
   const contracts = getContracts(chainId);
   const treasuryAddress = contracts?.voterPrizeTreasury;
   const usdcAddress = contracts?.usdc;
-  const voteTokenAddress = contracts?.voteToken;
+  const pointTokenAddress = contracts?.earthOptimizationPoint;
   const isDeployed =
     treasuryAddress &&
     treasuryAddress !== "0x0000000000000000000000000000000000000000";
@@ -166,9 +166,9 @@ export function VoterPrizeTreasuryDeposit() {
     query: { enabled: !!isDeployed && isConnected && !!address },
   });
 
-  const { data: voteBalance } = useReadContract({
-    address: voteTokenAddress as Address,
-    abi: voteTokenAbi,
+  const { data: pointBalance } = useReadContract({
+    address: pointTokenAddress as Address,
+    abi: earthOptimizationPointAbi,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
     query: {
@@ -176,15 +176,15 @@ export function VoterPrizeTreasuryDeposit() {
         !!isDeployed &&
         isConnected &&
         !!address &&
-        !!voteTokenAddress &&
-        voteTokenAddress !== "0x0000000000000000000000000000000000000000",
+        !!pointTokenAddress &&
+        pointTokenAddress !== "0x0000000000000000000000000000000000000000",
     },
   });
 
-  const { data: voteRedemptionPreview } = useReadContract({
+  const { data: pointRedemptionPreview } = useReadContract({
     address: treasuryAddress as Address,
     abi: voterPrizeTreasuryAbi,
-    functionName: "previewVoteRedemption",
+    functionName: "previewPointRedemption",
     args: address ? [address] : undefined,
     query: { enabled: !!isDeployed && isConnected && !!address && !!thresholdMet },
   });
@@ -235,7 +235,7 @@ export function VoterPrizeTreasuryDeposit() {
   const { isLoading: isClaimConfirming, isSuccess: isClaimConfirmed } =
     useWaitForTransactionReceipt({ hash: claimHash });
 
-  // --- Write: Redeem VOTE tokens ---
+  // --- Write: Redeem Earth Optimization Points ---
   const {
     writeContract: writeRedeem,
     data: redeemHash,
@@ -325,13 +325,13 @@ export function VoterPrizeTreasuryDeposit() {
     });
   }
 
-  function handleRedeemVotes() {
+  function handleRedeemPoints() {
     if (!treasuryAddress) return;
     setStep("redeeming");
     writeRedeem({
       address: treasuryAddress,
       abi: voterPrizeTreasuryAbi,
-      functionName: "redeemVoteTokens",
+      functionName: "redeemEarthOptimizationPoints",
     });
   }
 
@@ -351,9 +351,9 @@ export function VoterPrizeTreasuryDeposit() {
   const isMatured = maturityTs ? now >= (maturityTs as bigint) : false;
   const canClaimRefund = isMatured && !thresholdMet && hasDeposit;
 
-  const voteBalanceBigint = (voteBalance as bigint) ?? 0n;
-  const hasVotes = voteBalanceBigint > 0n;
-  const canRedeemVotes = thresholdMet && hasVotes;
+  const pointBalanceBigint = (pointBalance as bigint) ?? 0n;
+  const hasPoints = pointBalanceBigint > 0n;
+  const canRedeemPoints = thresholdMet && hasPoints;
 
   return (
     <div className="space-y-6">
@@ -469,8 +469,8 @@ export function VoterPrizeTreasuryDeposit() {
                   {POINTS}
                 </div>
                 <div className="text-sm font-black">
-                  {voteBalance !== undefined
-                    ? formatVOTE(voteBalance as bigint)
+                  {pointBalance !== undefined
+                    ? formatPoints(pointBalance as bigint)
                     : "\u2014"}
                 </div>
               </div>
@@ -579,8 +579,8 @@ export function VoterPrizeTreasuryDeposit() {
         </div>
       </div>
 
-      {/* Redeem VOTE Points (success path) */}
-      {isDeployed && isConnected && canRedeemVotes && (
+      {/* Redeem Earth Optimization Points (success path) */}
+      {isDeployed && isConnected && canRedeemPoints && (
         <div className="border-4 border-primary bg-background text-foreground p-6">
           <h3 className="font-black uppercase mb-3">
             Redeem Your {POINTS}
@@ -593,10 +593,10 @@ export function VoterPrizeTreasuryDeposit() {
           <div className="flex items-center gap-4">
             <div>
               <div className="text-[10px] font-black uppercase">
-                Your {POINT_NAME} Balance
+                Your {POINTS} Balance
               </div>
               <div className="text-lg font-black">
-                {formatVOTE(voteBalanceBigint)} {POINT_NAME}
+                {formatPoints(pointBalanceBigint)} {POINTS}
               </div>
             </div>
             <div>
@@ -605,19 +605,19 @@ export function VoterPrizeTreasuryDeposit() {
               </div>
               <div className="text-lg font-black">
                 $
-                {voteRedemptionPreview !== undefined
-                  ? formatUSDC(voteRedemptionPreview as bigint)
+                {pointRedemptionPreview !== undefined
+                  ? formatUSDC(pointRedemptionPreview as bigint)
                   : "\u2014"}
               </div>
             </div>
             <button
-              onClick={handleRedeemVotes}
+              onClick={handleRedeemPoints}
               disabled={isBusy}
               className="border-4 border-primary bg-background px-6 py-2.5 text-sm font-black uppercase text-foreground hover:bg-background transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRedeeming || isRedeemConfirming
                 ? "Redeeming..."
-                : "Redeem VOTE"}
+                : `Redeem ${POINTS}`}
             </button>
           </div>
           {isRedeemConfirmed && (

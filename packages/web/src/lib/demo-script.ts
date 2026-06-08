@@ -24,7 +24,7 @@ import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-  VOTE_TOKEN_VALUE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
   US_GOV_WASTE_DRUG_WAR,
@@ -93,7 +93,7 @@ const deathsDaily = fmtSpeech(GLOBAL_DISEASE_DEATHS_DAILY, 2);             // "1
 const milToTrialRatio = fmtSpeech(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO); // "604"
 const dysfunctionCost = fmtSpeech(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, 2); // "100 trillion"
 const dysfunctionPerPerson = fmtSpeech(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL);       // "12600"
-const votePointValue = fmtSpeech(VOTE_TOKEN_VALUE);                         // "8440"
+const pointValue = fmtSpeech(EARTH_OPTIMIZATION_POINT_VALUE);                             // "8440"
 const poolMultiple = fmtSpeech(PRIZE_POOL_HORIZON_MULTIPLE, 2);            // "11"
 const tippingPoint = fmtSpeech(MAJORITY_OF_HUMANS_ON_EARTH, 2);            // "4 billion"
 const collapseYear = fmtSpeech(DESTRUCTIVE_ECONOMY_50PCT_YEAR);            // "2040"
@@ -515,7 +515,7 @@ export const SEGMENTS = [
     slideId: "three-scenarios-all-win",
     bgColor: "pink",
     tags: ["mechanism", "financial"],
-    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at ${prizeReturn} percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, VOTE holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in ${breakEvenOneIn}. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
+    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at ${prizeReturn} percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, ${POINT} holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in ${breakEvenOneIn}. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
   },
   {
     id: "prize-no-downside",
@@ -806,9 +806,9 @@ export const SEGMENTS = [
     narration: `The entire game comes down to two numbers. Healthy life expectancy: currently ${currentHale} years, target ${targetHale}. Median income: currently ${currentAvgIncome} dollars, target ${targetAvgIncome} dollars. Move these two numbers and everything else follows. That is the scoreboard. Everything on this site exists to move it.`,
   },
   {
-    id: "vote-value-asymmetry",
+    id: "point-value-asymmetry",
     title: "$0.06",
-    slideId: "vote-value-asymmetry",
+    slideId: "point-value-asymmetry",
     bgColor: "foreground",
     tags: ["evidence"],
     act: "II-game",
@@ -837,15 +837,15 @@ export const SEGMENTS = [
     narration: `Deposit one hundred dollars into the VC-diversified fund. Two things can happen. If Earth hits its targets, the pool unlocks and ${POINT} holders split it. If Earth misses, your hundred dollars still grew at ${prizeReturn} percent a year — ${poolMultiple} times your money back. Both paths pay. There is no path where you lose.`,
   },
   {
-    id: "vote-point-dollar-value",
+    id: "point-dollar-value",
     title: `${POINT} Value`,
-    slideId: "vote-point-dollar-value",
+    slideId: "point-dollar-value",
     bgColor: "yellow",
     tags: ["financial"],
     act: "II-money",
     scoreAdd: 1_000_000_000,
-    inventoryAdd: { id: "vote-points", name: `${POINTS.toUpperCase()} ×2`, icon: "🥈" },
-    narration: `Now for the ${POINTS}. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at ${prizeReturn} percent instead of ${conventionalReturn}, each ${POINT} is worth ${votePointValue} dollars. Two friends playing: double that. Ten friends: ten times. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
+    inventoryAdd: { id: "points", name: `${POINTS.toUpperCase()} ×2`, icon: "🥈" },
+    narration: `Now for the ${POINTS}. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at ${prizeReturn} percent instead of ${conventionalReturn}, each ${POINT} is worth ${pointValue} dollars. Two friends playing: double that. Ten friends: ten times. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
   },
   {
     id: "three-scenarios-all-win-full",
@@ -1294,12 +1294,12 @@ export const PLAYLISTS: DemoPlaylist[] = [
       // Act II — The Game
       "pairwise-budget-allocation",
       "one-percent-referendum-vote",
-      "vote-value-asymmetry",
+      "point-value-asymmetry",
       "recruit-network-effect",
       // Act II — The Money
       "prize-pool-vs-index-fund",
       "dominant-assurance-contract-full",
-      "vote-point-dollar-value",
+      "point-dollar-value",
       "three-scenarios-all-win-full",
       // Act II — Accountability
       "government-track-record",

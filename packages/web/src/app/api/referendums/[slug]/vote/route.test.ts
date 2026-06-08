@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
   grantWishes: vi.fn(),
   upsert: vi.fn(),
   findUserByHandleOrReferralCode: vi.fn(),
-  syncReferralVoteTokenMintForVote: vi.fn(),
+  syncReferralPointMintForVote: vi.fn(),
   resolveInvitationReferrer: vi.fn(),
   convertReferralInvitationForVote: vi.fn(),
   ensurePersonForUser: vi.fn(),
@@ -49,8 +49,8 @@ vi.mock("@/lib/referral.server", () => ({
   findUserByHandleOrReferralCode: mocks.findUserByHandleOrReferralCode,
 }));
 
-vi.mock("@/lib/referral-vote-token-mint.server", () => ({
-  syncReferralVoteTokenMintForVote: mocks.syncReferralVoteTokenMintForVote,
+vi.mock("@/lib/referral-point-mint.server", () => ({
+  syncReferralPointMintForVote: mocks.syncReferralPointMintForVote,
 }));
 
 vi.mock("@/lib/referral-invitations.server", () => ({
@@ -117,7 +117,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
       displayName: "Mike",
       isPublic: true,
     });
-    mocks.syncReferralVoteTokenMintForVote.mockResolvedValue(null);
+    mocks.syncReferralPointMintForVote.mockResolvedValue(null);
     mocks.resolveInvitationReferrer.mockResolvedValue(null);
     mocks.convertReferralInvitationForVote.mockResolvedValue(null);
     mocks.ensurePersonForUser.mockResolvedValue({
@@ -242,7 +242,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
       vote,
-      referrerVoteTokenMint: null,
+      referrerPointMint: null,
       wishesEarned: 2,
       convertedReferralInvitation: null,
     });
@@ -268,7 +268,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
         originUrl: null,
       },
     });
-    expect(mocks.syncReferralVoteTokenMintForVote).toHaveBeenCalledWith({
+    expect(mocks.syncReferralPointMintForVote).toHaveBeenCalledWith({
       referredVoterUserId: "user_1",
       referrerUserId: undefined,
       referendumId: "ref_1",
@@ -438,7 +438,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
       vote,
-      referrerVoteTokenMint: null,
+      referrerPointMint: null,
       wishesEarned: 0,
       convertedReferralInvitation: null,
     });
@@ -468,7 +468,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
       vote: updatedVote,
-      referrerVoteTokenMint: null,
+      referrerPointMint: null,
       wishesEarned: 0,
       convertedReferralInvitation: null,
     });
@@ -636,7 +636,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
         create: expect.objectContaining({ referredByUserId: null }),
       }),
     );
-    expect(mocks.syncReferralVoteTokenMintForVote).toHaveBeenCalledWith({
+    expect(mocks.syncReferralPointMintForVote).toHaveBeenCalledWith({
       referredVoterUserId: "user_1",
       referrerUserId: null,
       referendumId: "ref_1",
@@ -675,7 +675,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({
       vote,
-      referrerVoteTokenMint: null,
+      referrerPointMint: null,
       wishesEarned: 0,
       convertedReferralInvitation: {
         id: "invite_1",
@@ -768,7 +768,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
       referendumId: "ref_1",
       referredByUserId: "referrer_1",
     });
-    mocks.syncReferralVoteTokenMintForVote.mockResolvedValue({
+    mocks.syncReferralPointMintForVote.mockResolvedValue({
       id: "mint_1",
       userId: "referrer_1",
     });
@@ -787,14 +787,14 @@ describe("POST /api/referendums/[slug]/vote", () => {
         referendumId: "ref_1",
         referredByUserId: "referrer_1",
       },
-      referrerVoteTokenMint: {
+      referrerPointMint: {
         id: "mint_1",
         userId: "referrer_1",
       },
       wishesEarned: 0,
       convertedReferralInvitation: null,
     });
-    expect(mocks.syncReferralVoteTokenMintForVote).toHaveBeenCalledWith({
+    expect(mocks.syncReferralPointMintForVote).toHaveBeenCalledWith({
       referredVoterUserId: "user_1",
       referrerUserId: "referrer_1",
       referendumId: "ref_1",

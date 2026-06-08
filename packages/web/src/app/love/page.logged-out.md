@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: Love | International Campaign to End War and Disease
-- Meta description: Pair with another human for one hour. Decide together what most optimizes Earth. Do it. An Earth Optimization Date is, by definition, a non-romantic activity.
+- Page title: Earth Optimization Date | International Campaign to End War and Disease
+- Meta description: If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.
 - Canonical: https://warondisease.org/love
-- Open Graph title: Love
-- Open Graph description: Pair with another human for one hour. Decide together what most optimizes Earth. Do it. An Earth Optimization Date is, by definition, a non-romantic activity.
+- Open Graph title: Earth Optimization Date
+- Open Graph description: If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Flove
-- Twitter title: Love
-- Twitter description: Pair with another human for one hour. Decide together what most optimizes Earth. Do it. An Earth Optimization Date is, by definition, a non-romantic activity.
+- Twitter title: Earth Optimization Date
+- Twitter description: If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.
 
 ## Visible Page Copy
 

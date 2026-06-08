@@ -227,8 +227,8 @@ export const CourtCaseItemStatusSchema = z.enum([
 ]);
 export type CourtCaseItemStatus = z.infer<typeof CourtCaseItemStatusSchema>;
 
-export const VoteTokenMintStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'CONFIRMED', 'FAILED']);
-export type VoteTokenMintStatus = z.infer<typeof VoteTokenMintStatusSchema>;
+export const PointMintStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'CONFIRMED', 'FAILED']);
+export type PointMintStatus = z.infer<typeof PointMintStatusSchema>;
 
 export const ActivityTypeSchema = z.enum([
   'VOTED_REFERENDUM',
@@ -1913,8 +1913,8 @@ export type WishocraticDistributionType = z.infer<typeof WishocraticDistribution
 // VOTE TOKEN & VOTER PRIZE TREASURY
 // ============================================================================
 
-/** Zod schema for the VoteTokenMint model */
-export const VoteTokenMintSchema = z.object({
+/** Zod schema for the PointMint model */
+export const PointMintSchema = z.object({
   id: z.string(),
   userId: z.string(),
   referendumId: z.string(),
@@ -1923,12 +1923,12 @@ export const VoteTokenMintSchema = z.object({
   amount: z.string(),
   txHash: z.string().nullable().optional(),
   chainId: z.number().int(),
-  status: VoteTokenMintStatusSchema.default('PENDING'),
+  status: PointMintStatusSchema.default('PENDING'),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type VoteTokenMintType = z.infer<typeof VoteTokenMintSchema>;
+export type PointMintType = z.infer<typeof PointMintSchema>;
 
 /** Zod schema for the PrizeTreasuryDeposit model */
 export const PrizeTreasuryDepositSchema = z.object({

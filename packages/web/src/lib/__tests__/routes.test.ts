@@ -4,8 +4,11 @@ import { readFileSync } from "node:fs";
 import {
   ROUTES,
   courtLink,
+  donateLink,
+  eosLink,
   exploreLinks,
   feedbackLink,
+  gameLink,
   getSignInPath,
   humanityVGovernmentLink,
   editProfileLink,
@@ -101,5 +104,16 @@ describe("navigation routes", () => {
   it("keeps edit-profile and public-profile navigation as separate intents", () => {
     expect(routeReviewNavItems).toContain(editProfileLink);
     expect(routeReviewNavItems).not.toContain(publicProfileLink);
+  });
+
+  it("keeps the game landing in route review after moving it off the home page", () => {
+    expect(routeReviewNavItems).toContain(gameLink);
+  });
+
+  it("keeps the EOS landing in route review after the donation page", () => {
+    expect(routeReviewNavItems).toContain(eosLink);
+    expect(routeReviewNavItems.indexOf(eosLink)).toBe(
+      routeReviewNavItems.indexOf(donateLink) + 1,
+    );
   });
 });

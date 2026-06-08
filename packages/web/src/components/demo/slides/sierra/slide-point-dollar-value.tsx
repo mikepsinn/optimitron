@@ -11,15 +11,15 @@ const FRIENDS_TABLE = [
   { friends: 50, multiplier: 50 },
 ];
 
-export function SlideVotePointDollarValue() {
-  const valuePerPoint = GAME_PARAMS.valuePerVotePoint;
+export function SlidePointDollarValue() {
+  const valuePerPoint = GAME_PARAMS.valuePerPoint;
 
   return (
     <SierraSlideWrapper act={2} className="text-purple-400">
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-3xl md:text-5xl text-purple-400 text-center">
-          ⚔️ VOTE POINT LEDGER
+          ⚔️ POINT LEDGER
         </h1>
 
         {/* Character Stats */}
@@ -85,4 +85,4 @@ export function SlideVotePointDollarValue() {
     </SierraSlideWrapper>
   );
 }
-export default SlideVotePointDollarValue;
+export default SlidePointDollarValue;

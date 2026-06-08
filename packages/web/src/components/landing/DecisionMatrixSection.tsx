@@ -6,11 +6,12 @@ import { GameCTA } from "@/components/ui/game-cta";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
-  VOTE_TOKEN_VALUE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
   TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
   TREATY_HALE_GAIN_YEAR_15,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
 } from "@optimitron/data/parameters";
+import { POINT } from "@/lib/messaging";
 
 const incomeMultiple =
   Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value * 10) / 10;
@@ -67,7 +68,7 @@ export function DecisionMatrixSection() {
                 </td>
                 <td className="p-2 sm:p-4">
                   <div className="text-lg sm:text-2xl font-black text-foreground">
-                    ~<ParameterValue param={VOTE_TOKEN_VALUE} />/VOTE
+                    ~<ParameterValue param={EARTH_OPTIMIZATION_POINT_VALUE} />/{POINT}
                   </div>
                   <p className="text-sm font-bold text-muted-foreground">
                     at 1% of global savings in prize pool

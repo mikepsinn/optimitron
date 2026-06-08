@@ -1,9 +1,9 @@
 /**
- * VoteToken ABI — Optimitron Vote (VOTE)
+ * EarthOptimizationPoint ABI — Earth Optimization Point (EOP)
  * ERC20 token minted 1:1 for verified referendum voters.
  * Redeemable for proportional share of VoterPrizeTreasury if outcome thresholds met.
  */
-export const voteTokenAbi = [
+export const earthOptimizationPointAbi = [
   // --- ERC20 standard ---
 
   {
@@ -72,7 +72,7 @@ export const voteTokenAbi = [
     stateMutability: "nonpayable",
   },
 
-  // --- VoteToken-specific ---
+  // --- EarthOptimizationPoint-specific ---
 
   {
     type: "function",
@@ -86,7 +86,7 @@ export const voteTokenAbi = [
 
   {
     type: "event",
-    name: "VoteMinted",
+    name: "PointMinted",
     inputs: [
       { name: "voter", type: "address", indexed: true },
       { name: "referendumId", type: "bytes32", indexed: true },
@@ -122,7 +122,7 @@ export const voteTokenAbi = [
 /**
  * VoterPrizeTreasury ABI — Voter Prize Treasury (PRIZE)
  * ERC20 vault that accepts stablecoin deposits (routed to Aave V3 for yield).
- * If health/income thresholds met → VOTE holders redeem proportional share.
+ * If health/income thresholds met → EOP holders redeem proportional share.
  * If thresholds NOT met → depositors claim refund (principal + yield).
  */
 export const voterPrizeTreasuryAbi = [
@@ -181,11 +181,11 @@ export const voterPrizeTreasuryAbi = [
     stateMutability: "nonpayable",
   },
 
-  // --- VOTE holder redemption ---
+  // --- EOP holder redemption ---
 
   {
     type: "function",
-    name: "redeemVoteTokens",
+    name: "redeemEarthOptimizationPoints",
     inputs: [],
     outputs: [],
     stateMutability: "nonpayable",
@@ -258,14 +258,14 @@ export const voterPrizeTreasuryAbi = [
   },
   {
     type: "function",
-    name: "voteSupplySnapshotted",
+    name: "pointSupplySnapshotted",
     inputs: [],
     outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    name: "voteTotalSupplySnapshot",
+    name: "pointTotalSupplySnapshot",
     inputs: [],
     outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
@@ -307,7 +307,7 @@ export const voterPrizeTreasuryAbi = [
   },
   {
     type: "function",
-    name: "previewVoteRedemption",
+    name: "previewPointRedemption",
     inputs: [{ name: "voter", type: "address" }],
     outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
@@ -335,10 +335,10 @@ export const voterPrizeTreasuryAbi = [
   },
   {
     type: "event",
-    name: "VoteRedemption",
+    name: "PointRedemption",
     inputs: [
       { name: "voter", type: "address", indexed: true },
-      { name: "voteBalance", type: "uint256", indexed: false },
+      { name: "pointBalance", type: "uint256", indexed: false },
       { name: "assetsReceived", type: "uint256", indexed: false },
     ],
   },
@@ -353,13 +353,13 @@ export const voterPrizeTreasuryAbi = [
   },
   {
     type: "event",
-    name: "VoteTokenSet",
-    inputs: [{ name: "voteToken", type: "address", indexed: true }],
+    name: "EarthOptimizationPointSet",
+    inputs: [{ name: "earthOptimizationPoint", type: "address", indexed: true }],
   },
   {
     type: "event",
-    name: "VoteSupplySnapshotted",
-    inputs: [{ name: "totalVoteSupply", type: "uint256", indexed: false }],
+    name: "PointSupplySnapshotted",
+    inputs: [{ name: "totalPointSupply", type: "uint256", indexed: false }],
   },
   {
     type: "event",

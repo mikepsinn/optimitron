@@ -3,26 +3,26 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@optimitron/treasury-shared/contracts/interfaces/IVoteToken.sol";
+import "@optimitron/treasury-shared/contracts/interfaces/IEarthOptimizationPoint.sol";
 
 /**
- * @title VoteToken — Transferable ERC-20 for verified referendum voters
+ * @title EarthOptimizationPoint — Transferable ERC-20 for verified referendum voters
  * @notice Minted 1:1 per verified vote per referendum. The relayer verifies
  *         World ID + vote off-chain, then calls mint. Sybil resistance via
  *         keccak256(referendumId, nullifierHash) claim tracking.
  *
  * If the VoterPrizeTreasury outcome thresholds are met after 15 years,
- * VOTE holders redeem proportional shares of the prize pool. The token
+ * EOP holders redeem proportional shares of the prize pool. The token
  * is fully transferable, creating an implicit prediction market.
  */
-contract VoteToken is ERC20, Ownable, IVoteToken {
+contract EarthOptimizationPoint is ERC20, Ownable, IEarthOptimizationPoint {
     /// @notice keccak256(referendumId, nullifierHash) => already minted
     mapping(bytes32 => bool) public claimed;
 
     /// @notice VoterPrizeTreasury address (for UI reference)
     address public prizeTreasury;
 
-    event VoteMinted(
+    event PointMinted(
         address indexed voter,
         bytes32 indexed referendumId,
         bytes32 nullifierHash,
@@ -30,9 +30,9 @@ contract VoteToken is ERC20, Ownable, IVoteToken {
     );
     event PrizeTreasurySet(address indexed treasury);
 
-    constructor() ERC20("Optimitron Vote", "VOTE") Ownable(msg.sender) {}
+    constructor() ERC20("Earth Optimization Point", "EOP") Ownable(msg.sender) {}
 
-    /// @notice Mint VOTE tokens for a single verified voter
+    /// @notice Mint Earth Optimization Points for a single verified voter
     function mintForVoter(
         address voter,
         bytes32 referendumId,
@@ -53,7 +53,7 @@ contract VoteToken is ERC20, Ownable, IVoteToken {
             voters.length == referendumIds.length &&
             voters.length == nullifierHashes.length &&
             voters.length == amounts.length,
-            "VoteToken: length mismatch"
+            "EarthOptimizationPoint: length mismatch"
         );
 
         for (uint256 i = 0; i < voters.length; i++) {
@@ -63,7 +63,7 @@ contract VoteToken is ERC20, Ownable, IVoteToken {
 
     /// @notice Set the VoterPrizeTreasury address
     function setPrizeTreasury(address treasury) external onlyOwner {
-        require(treasury != address(0), "VoteToken: zero treasury");
+        require(treasury != address(0), "EarthOptimizationPoint: zero treasury");
         prizeTreasury = treasury;
         emit PrizeTreasurySet(treasury);
     }
@@ -76,15 +76,15 @@ contract VoteToken is ERC20, Ownable, IVoteToken {
         bytes32 nullifierHash,
         uint256 amount
     ) internal {
-        require(voter != address(0), "VoteToken: zero voter");
-        require(amount > 0, "VoteToken: zero amount");
+        require(voter != address(0), "EarthOptimizationPoint: zero voter");
+        require(amount > 0, "EarthOptimizationPoint: zero amount");
 
         bytes32 claimKey = keccak256(abi.encodePacked(referendumId, nullifierHash));
-        require(!claimed[claimKey], "VoteToken: already claimed");
+        require(!claimed[claimKey], "EarthOptimizationPoint: already claimed");
 
         claimed[claimKey] = true;
         _mint(voter, amount);
 
-        emit VoteMinted(voter, referendumId, nullifierHash, amount);
+        emit PointMinted(voter, referendumId, nullifierHash, amount);
     }
 }

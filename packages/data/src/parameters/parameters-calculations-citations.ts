@@ -538,6 +538,36 @@ export const DEFENSE_LOBBYING_ANNUAL: Parameter = {
   manualPageTitle: "Frequently Asked Objections",
 };
 
+export const DEFENSE_PRIMES_MARKET_CAP_ALLIED: Parameter = {
+  value: 131000000000.0,
+  parameterName: "DEFENSE_PRIMES_MARKET_CAP_ALLIED",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_primes_market_cap_allied",
+  unit: "USD",
+  displayName: "Allied Defense Primes Market Cap",
+  description: "Combined market capitalization of major allied European defense primes (BAE Systems approx $75.6B + Thales approx $55.0B), approx as of June 2026",
+  sourceType: "external",
+  sourceRef: "defense-primes-market-cap-2026",
+  sourceUrl: "https://companiesmarketcap.com/defense-contractors/largest-companies-by-market-cap/",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const DEFENSE_PRIMES_MARKET_CAP_US: Parameter = {
+  value: 670000000000.0,
+  parameterName: "DEFENSE_PRIMES_MARKET_CAP_US",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_primes_market_cap_us",
+  unit: "USD",
+  displayName: "US Defense Primes Market Cap",
+  description: "Combined market capitalization of major US defense primes (RTX, LMT, GD, NOC, LHX, HII plus IT primes LDOS, BAH, CACI, SAIC), approx as of June 2026; Boeing is largely commercial and only partially attributable",
+  sourceType: "external",
+  sourceRef: "defense-primes-market-cap-2026",
+  sourceUrl: "https://companiesmarketcap.com/defense-contractors/largest-companies-by-market-cap/",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
 export const DEMOCIDE_TOTAL_20TH_CENTURY: Parameter = {
   value: 262000000.0,
   parameterName: "DEMOCIDE_TOTAL_20TH_CENTURY",
@@ -1436,7 +1466,7 @@ export const GLOBAL_INVESTABLE_ASSETS: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_investable_assets",
   unit: "USD",
   displayName: "Global Investable Financial Assets",
-  description: "Total global financial wealth (2024): equities, bonds, cash/deposits, and investment funds. Excludes real estate and physical assets. This is the addressable capital pool for PRIZE deposits.",
+  description: "Total global financial wealth (2024): equities, bonds, cash/deposits, and investment funds. Excludes real estate and physical assets. This is the addressable capital pool for Prize deposits.",
   sourceType: "external",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4028,7 +4058,7 @@ export const CONVENTIONAL_RETIREMENT_HORIZON_MULTIPLE: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-conventional_retirement_horizon_multiple",
   unit: "x",
   displayName: "Conventional Retirement Horizon Multiple",
-  description: "Compound multiple for conventional retirement investing over the PRIZE pool resolution horizon (tied to the destructive economy 50% threshold year).",
+  description: "Compound multiple for conventional retirement investing over the prize pool resolution horizon (tied to the destructive economy 50% threshold year).",
   sourceType: "calculated",
   confidence: "high",
   formula: "(1 + CONVENTIONAL_RETIREMENT_RETURN) ^ (DESTRUCTIVE_ECONOMY_50PCT_YEAR - DESTRUCTIVE_ECONOMY_BASE_YEAR)",
@@ -4529,6 +4559,37 @@ export const CURRENT_TRAJECTORY_GDP_YEAR_20: Parameter = {
   latex: "GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
   manualPageTitle: "Please Select an Earth: A) Everyone Gets Rich B) Somalia, but Everywhere",
+};
+
+export const DEFENSE_TAKEOVER_COST_PER_HUMAN: Parameter = {
+  value: 90.292725,
+  parameterName: "DEFENSE_TAKEOVER_COST_PER_HUMAN",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_per_human",
+  unit: "USD",
+  displayName: "Defense Takeover Cost per Human",
+  description: "Per-person cost of the defense takeover distributed across global population",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_POPULATION_2024",
+  latex: "\\begin{gathered}\nC_{takeover,pp} = \\frac{C_{takeover}}{Pop_{global}} = \\frac{\\$722B}{8B} = \\$90.3\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  confidenceInterval: [88.42774412636044, 92.24892197295307],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const DEFENSE_TAKEOVER_COST_TOTAL: Parameter = {
+  value: 722341800000.0,
+  parameterName: "DEFENSE_TAKEOVER_COST_TOTAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_total",
+  unit: "USD",
+  displayName: "Defense Takeover Total Cost",
+  description: "Total realistic cost to acquire controlling stakes in all major Western defense contractors, including acquisition premium from coordinated buying pressure",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(DEFENSE_PRIMES_MARKET_CAP_US + DEFENSE_PRIMES_MARKET_CAP_ALLIED) * DEFENSE_TAKEOVER_CONTROL_FRACTION * DEFENSE_TAKEOVER_ACQUISITION_PREMIUM",
+  latex: "\\begin{gathered}\nC_{takeover} \\\\\n= (MarketCap_{US} \\\\\n+ MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
 };
 
 export const DESTRUCTIVE_ECONOMY_25PCT_YEAR: Parameter = {
@@ -5510,6 +5571,38 @@ export const DRUG_DISEASE_COMBINATIONS_POSSIBLE: Parameter = {
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
 };
 
+export const EARTH_OPTIMIZATION_POINT_VALUE: Parameter = {
+  value: 6670.732881383013,
+  parameterName: "EARTH_OPTIMIZATION_POINT_VALUE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-earth_optimization_point_value",
+  unit: "USD",
+  displayName: "Earth Optimization Point Value",
+  description: "Value of a single Earth Optimization Point based on the modeled prize pool size (investable assets × participation rate × horizon multiple). CI range reflects participation uncertainty (0.1%-10%).",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "PRIZE_POOL_SIZE / GLOBAL_REGISTERED_VOTERS",
+  latex: "\\begin{gathered}\nV_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
+  confidenceInterval: [278.4563261564683, 56153.5992105196],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
+  manualPageTitle: "The Earth Optimization Prize",
+};
+
+export const EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT: Parameter = {
+  value: 13341.465762766025,
+  parameterName: "EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-earth_optimization_two_points_payout",
+  unit: "USD",
+  displayName: "Earth Optimization Points Payout (2 Claims)",
+  description: "Payout for a depositor who recruits 2 verified participants (earning 2 Earth Optimization Points). CI range reflects participation uncertainty.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "2 × EARTH_OPTIMIZATION_POINT_VALUE",
+  latex: "\\begin{gathered}\nV_{2claims} = V_{vote} \\times 2 = \\$6.67K \\times 2 = \\$13.3K\n\\\\[0.5em]\n\\text{where } V_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
+  confidenceInterval: [556.9126523129366, 112307.1984210392],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
+  manualPageTitle: "The Earth Optimization Prize",
+};
+
 export const EFFICACY_LAG_CUMULATIVE_EXCESS_COST: Parameter = {
   value: 4836000000000.0,
   parameterName: "EFFICACY_LAG_CUMULATIVE_EXCESS_COST",
@@ -5934,7 +6027,7 @@ export const GLOBAL_COORDINATION_ACTIVATION_BUDGET: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_coordination_activation_budget",
   unit: "USD",
   displayName: "Global Coordination Activation Budget",
-  description: "Canonical institutional activation threshold: capital required to make participation by the majority-of-humanity coordination target credible through direct referral incentives, verification, payment rails, and global launch operations. This is the main institutional ask, not the PRIZE pool seed benchmark.",
+  description: "Canonical institutional activation threshold: capital required to make participation by the majority-of-humanity coordination target credible through direct referral incentives, verification, payment rails, and global launch operations. This is the main institutional ask, not the prize pool seed benchmark.",
   sourceType: "calculated",
   confidence: "high",
   formula: "GLOBAL_REGISTERED_VOTERS × GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT + GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST",
@@ -6488,6 +6581,196 @@ export const LOST_PROSPERITY_NPV_PERPETUITY_TOTAL: Parameter = {
   confidenceInterval: [2.798747469113816e+16, 2.4225640220663213e+17],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
   manualPageTitle: "Humanity v. Government",
+};
+
+export const MECHANISM_COURT_EV: Parameter = {
+  value: 11357100000.0,
+  parameterName: "MECHANISM_COURT_EV",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_court_ev",
+  unit: "USD",
+  displayName: "Court of Humanity Expected Social Value",
+  description: "Expected annual social value from the Court of Humanity: P(success) * annual peace dividend. Expenditure ($30M).",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MECHANISM_COURT_OF_HUMANITY_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
+  latex: "\\begin{gathered}\nEV_{court} = P_{court} \\times Benefit_{peace,soc} = 0.1 \\times \\$114B = \\$11.4B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
+  confidenceInterval: [9012680402.351702, 14057421275.330286],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_DFDA_EV: Parameter = {
+  value: 79499700000.0,
+  parameterName: "MECHANISM_DFDA_EV",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_dfda_ev",
+  unit: "USD",
+  displayName: "dFDA Expected Social Value",
+  description: "Expected annual social value from the dFDA: P(success) * annual peace dividend. Platform build is expenditure ($500M).",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MECHANISM_DFDA_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
+  latex: "\\begin{gathered}\nEV_{dFDA} = P_{dFDA} \\times Benefit_{peace,soc} = 0.7 \\times \\$114B = \\$79.5B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
+  confidenceInterval: [63088762816.461914, 98401948927.31198],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_IAB_EV: Parameter = {
+  value: 68142600000.0,
+  parameterName: "MECHANISM_IAB_EV",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_iab_ev",
+  unit: "USD",
+  displayName: "IAB Expected Social Value",
+  description: "Expected annual social value from IABs: P(success) * annual peace dividend. Investor capital is returned with interest, not spent.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MECHANISM_IAB_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
+  latex: "\\begin{gathered}\nEV_{IAB} = P_{IAB} \\times Benefit_{peace,soc} = 0.6 \\times \\$114B = \\$68.1B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
+  confidenceInterval: [54076082414.11022, 84344527651.9817],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_IAB_NET_COST: Parameter = {
+  value: 50000000.0,
+  parameterName: "MECHANISM_IAB_NET_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_iab_net_cost",
+  unit: "USD",
+  displayName: "IAB Net Cost (Annual)",
+  description: "Net annual cost of IABs to EOS: administration only (investor capital is returned, not spent)",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "TREATY_CAMPAIGN_TOTAL_COST * MECHANISM_IAB_ADMIN_RATE",
+  latex: "\\begin{gathered}\nC_{IAB,net} = Cost_{campaign} \\times r_{IAB,admin} = \\$1B \\times 0.05 = \\$50M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
+  confidenceInterval: [31611001.881421994, 75710489.57011917],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_LOVING_TAKEOVER_CAPITAL: Parameter = {
+  value: 722341800000.0,
+  parameterName: "MECHANISM_LOVING_TAKEOVER_CAPITAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_loving_takeover_capital",
+  unit: "USD",
+  displayName: "Defense Takeover Total Cost",
+  description: "Total realistic cost to acquire controlling stakes in all major Western defense contractors, including acquisition premium from coordinated buying pressure",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(DEFENSE_PRIMES_MARKET_CAP_US + DEFENSE_PRIMES_MARKET_CAP_ALLIED) * DEFENSE_TAKEOVER_CONTROL_FRACTION * DEFENSE_TAKEOVER_ACQUISITION_PREMIUM",
+  latex: "\\begin{gathered}\nC_{takeover} \\\\\n= (MarketCap_{US} \\\\\n+ MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const MECHANISM_LOVING_TAKEOVER_EV: Parameter = {
+  value: 107892450000.0,
+  parameterName: "MECHANISM_LOVING_TAKEOVER_EV",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_loving_takeover_ev",
+  unit: "USD",
+  displayName: "Loving Takeover Expected Social Value",
+  description: "Expected annual social value from the Loving Takeover: P(success) * annual peace dividend. Capital is deployed into shares (retained and appreciating), not spent.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MECHANISM_LOVING_TAKEOVER_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
+  latex: "\\begin{gathered}\nEV_{takeover} = P_{takeover} \\times Benefit_{peace,soc} = 0.95 \\times \\$114B = \\$108B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
+  confidenceInterval: [85620463822.34119, 133545502115.6377],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_LOVING_TAKEOVER_NET_COST: Parameter = {
+  value: 14446836000.0,
+  parameterName: "MECHANISM_LOVING_TAKEOVER_NET_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_loving_takeover_net_cost",
+  unit: "USD",
+  displayName: "Loving Takeover Net Cost (Annual)",
+  description: "Net annual cost of the Loving Takeover: opportunity cost only (capital deployed into shares is retained, not spent). At 2% annual opportunity cost rate.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DEFENSE_TAKEOVER_COST_TOTAL * MECHANISM_OPPORTUNITY_COST_RATE",
+  latex: "\\begin{gathered}\nC_{takeover,net} = C_{takeover} \\times r_{opp} = \\$722B \\times 0.02 = \\$14.4B\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_REFERENDUM_EV: Parameter = {
+  value: 34071300000.0,
+  parameterName: "MECHANISM_REFERENDUM_EV",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_referendum_ev",
+  unit: "USD",
+  displayName: "Referendum Expected Social Value",
+  description: "Expected annual social value from the global referendum: P(success) * annual peace dividend. Expenditure ($250M).",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MECHANISM_REFERENDUM_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
+  latex: "\\begin{gathered}\nEV_{referendum} = P_{referendum} \\times Benefit_{peace,soc} = 0.3 \\times \\$114B = \\$34.1B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
+  confidenceInterval: [27038041207.05511, 42172263825.99085],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_SHIRT_CASCADE_EV: Parameter = {
+  value: 28392750000.0,
+  parameterName: "MECHANISM_SHIRT_CASCADE_EV",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_shirt_cascade_ev",
+  unit: "USD",
+  displayName: "Shirt Cascade Expected Social Value",
+  description: "Expected annual social value from the shirt cascade: P(success) * annual peace dividend. Expenditure ($50M).",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MECHANISM_SHIRT_CASCADE_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
+  latex: "\\begin{gathered}\nEV_{shirt} = P_{cascade,shirt} \\times Benefit_{peace,soc} = 25\\% \\times \\$114B = \\$28.4B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
+  confidenceInterval: [6443951974.770861, 59235182078.35295],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_SHIRT_CASCADE_NET_COST: Parameter = {
+  value: 50000000.0,
+  parameterName: "MECHANISM_SHIRT_CASCADE_NET_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_shirt_cascade_net_cost",
+  unit: "USD",
+  displayName: "Shirt Seed Program Total Cost",
+  description: "Total foundation escrow required to fund the seed-wearer program: threshold of visible humans multiplied by blended cost per wearer. Held in Earth Optimization Prize assurance contract; refunded at structural EOP return rate if neither treaty passage nor target hit.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "SHIRT_SEED_WEARERS_THRESHOLD × SHIRT_SEED_COST_PER_WEARER_USD",
+  latex: "\\begin{gathered}\nC_{seed,total} \\\\\n= N_{seed,shirt} \\times C_{seed,wearer} \\\\\n= 1M \\times \\$50 \\\\\n= \\$50M\n\\end{gathered}",
+  confidenceInterval: [1231398.8842418403, 420280969.3453949],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const MECHANISM_TREATY_CAMPAIGN_EV: Parameter = {
+  value: 45428400000.0,
+  parameterName: "MECHANISM_TREATY_CAMPAIGN_EV",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_treaty_campaign_ev",
+  unit: "USD",
+  displayName: "Treaty Campaign Expected Social Value",
+  description: "Expected annual social value from the treaty campaign: P(success) * annual peace dividend. Lobbying + referendum is expenditure ($1B).",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MECHANISM_TREATY_CAMPAIGN_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
+  latex: "\\begin{gathered}\nEV_{campaign} = P_{campaign} \\times Benefit_{peace,soc} = 0.4 \\times \\$114B = \\$45.4B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
+  confidenceInterval: [36050721609.40681, 56229685101.321144],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_TREATY_CAMPAIGN_NET_COST: Parameter = {
+  value: 1000000000.0,
+  parameterName: "MECHANISM_TREATY_CAMPAIGN_NET_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_treaty_campaign_net_cost",
+  unit: "USD",
+  displayName: "Total 1% Treaty Campaign Cost",
+  description: "Total treaty campaign cost (100% VICTORY Incentive Alignment Bonds)",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "REFERENDUM + LOBBYING + RESERVE",
+  latex: "\\begin{gathered}\nCost_{campaign} \\\\\n= Budget_{viral,base} + Budget_{lobby,treaty} \\\\\n+ Budget_{reserve} \\\\\n= \\$250M + \\$650M + \\$100M \\\\\n= \\$1B\n\\end{gathered}",
+  confidenceInterval: [632220037.6284399, 1514209791.4023836],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
+  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
 };
 
 export const MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN: Parameter = {
@@ -7207,7 +7490,7 @@ export const PRIZE_POOL_ANNUAL_RETURN: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_annual_return",
   unit: "percent",
   displayName: "PRIZE Pool Annual Return",
-  description: "Canonical annual return used for PRIZE pool growth. Venture gross return + scale compression + crowd allocation alpha + home bias elimination. This is the structural pool return before contingent macro feedback loops.",
+  description: "Canonical annual return used for prize pool growth. Venture gross return + scale compression + crowd allocation alpha + home bias elimination. This is the structural pool return before contingent macro feedback loops.",
   sourceType: "calculated",
   confidence: "high",
   formula: "VENTURE_GROSS_RETURN + SCALE_COMPRESSION_FACTOR + WISHOCRATIC_CROWD_ALPHA + HOME_BIAS_ALPHA",
@@ -7223,7 +7506,7 @@ export const PRIZE_POOL_HORIZON_MULTIPLE: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_horizon_multiple",
   unit: "x",
   displayName: "PRIZE Pool Horizon Multiple",
-  description: "Compound multiple for PRIZE pool growth over the resolution horizon (tied to the destructive economy 50% threshold year).",
+  description: "Compound multiple for prize pool growth over the resolution horizon (tied to the destructive economy 50% threshold year).",
   sourceType: "calculated",
   confidence: "high",
   formula: "(1 + PRIZE_POOL_ANNUAL_RETURN) ^ (DESTRUCTIVE_ECONOMY_50PCT_YEAR - DESTRUCTIVE_ECONOMY_BASE_YEAR)",
@@ -7254,8 +7537,8 @@ export const PRIZE_POOL_SIZE: Parameter = {
   parameterName: "PRIZE_POOL_SIZE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_size",
   unit: "USD",
-  displayName: "PRIZE Pool Size",
-  description: "Terminal PRIZE pool size: global investable assets × participation rate × compound multiple over the resolution horizon.",
+  displayName: "Prize Pool Size",
+  description: "Terminal prize pool size: global investable assets × participation rate × compound multiple over the resolution horizon.",
   sourceType: "calculated",
   confidence: "high",
   formula: "GLOBAL_INVESTABLE_ASSETS × PRIZE_POOL_PARTICIPATION_RATE × PRIZE_POOL_HORIZON_MULTIPLE",
@@ -8796,38 +9079,6 @@ export const VOTER_SUFFERING_HOURS_PREVENTED: Parameter = {
   manualPageTitle: "How to Coordinate 10 Million Nonprofits",
 };
 
-export const VOTE_2_CLAIMS_PAYOUT: Parameter = {
-  value: 13341.465762766025,
-  parameterName: "VOTE_2_CLAIMS_PAYOUT",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-vote_2_claims_payout",
-  unit: "USD",
-  displayName: "VOTE Payout for 2 Claims",
-  description: "Payout for a depositor who recruits 2 verified participants (earning 2 VOTE claims). CI range reflects participation uncertainty.",
-  sourceType: "calculated",
-  confidence: "high",
-  formula: "2 × VOTE_TOKEN_VALUE",
-  latex: "\\begin{gathered}\nV_{2claims} = V_{vote} \\times 2 = \\$6.67K \\times 2 = \\$13.3K\n\\\\[0.5em]\n\\text{where } V_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [556.9126523129366, 112307.1984210392],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
-  manualPageTitle: "The Earth Optimization Prize",
-};
-
-export const VOTE_TOKEN_VALUE: Parameter = {
-  value: 6670.732881383013,
-  parameterName: "VOTE_TOKEN_VALUE",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-vote_token_value",
-  unit: "USD",
-  displayName: "VOTE Point Value",
-  description: "Value of a single VOTE claim based on the modeled PRIZE pool size (investable assets × participation rate × horizon multiple). CI range reflects participation uncertainty (0.1%-10%).",
-  sourceType: "calculated",
-  confidence: "high",
-  formula: "PRIZE_POOL_SIZE / GLOBAL_REGISTERED_VOTERS",
-  latex: "\\begin{gathered}\nV_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [278.4563261564683, 56153.5992105196],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
-  manualPageTitle: "The Earth Optimization Prize",
-};
-
 export const WAR_CHILDREN_KILLED_SINCE_1900: Parameter = {
   value: 102300000.0,
   parameterName: "WAR_CHILDREN_KILLED_SINCE_1900",
@@ -10246,6 +10497,33 @@ export const DEFENSE_SECTOR_RETENTION_PCT: Parameter = {
   manualPageTitle: "Optimization Summary",
 };
 
+export const DEFENSE_TAKEOVER_ACQUISITION_PREMIUM: Parameter = {
+  value: 1.8,
+  parameterName: "DEFENSE_TAKEOVER_ACQUISITION_PREMIUM",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_acquisition_premium",
+  unit: "x",
+  displayName: "Acquisition Premium Multiplier",
+  description: "Expected price multiplier from coordinated buy-up demand pressure (midpoint of 1.5x-3x range based on float constraints)",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [1.5, 3.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const DEFENSE_TAKEOVER_CONTROL_FRACTION: Parameter = {
+  value: 0.501,
+  parameterName: "DEFENSE_TAKEOVER_CONTROL_FRACTION",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_control_fraction",
+  unit: "ratio",
+  displayName: "Control Fraction",
+  description: "Fraction of shares required for board control (50% + 1 share)",
+  sourceType: "definition",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
 export const DESTRUCTIVE_ECONOMY_BASE_YEAR: Parameter = {
   value: 2025.0,
   parameterName: "DESTRUCTIVE_ECONOMY_BASE_YEAR",
@@ -10786,6 +11064,174 @@ export const LOBBYIST_BOND_INVESTMENT_MAX: Parameter = {
   manualPageTitle: "Aligning Incentives",
 };
 
+export const MECHANISM_COURT_OF_HUMANITY_NET_COST: Parameter = {
+  value: 30000000.0,
+  parameterName: "MECHANISM_COURT_OF_HUMANITY_NET_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_court_of_humanity_net_cost",
+  unit: "USD",
+  displayName: "Court of Humanity Build Cost",
+  description: "One-time cost to build the Court of Humanity. Range reflects digital-first institutional design (no physical courtrooms, no detention, AI-assisted evidence triage, cryptographic provenance, stratified random jury infrastructure). Lower bound: minimal viable institution. Upper bound: fully-staffed initial operations, roughly 27% of one year of ICC operating budget (the ICC funds physical courtrooms, detention, and 425+ staff).",
+  sourceType: "definition",
+  confidence: "estimated",
+  confidenceInterval: [10000000.0, 50000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html",
+  manualPageTitle: "The Court of Humanity",
+};
+
+export const MECHANISM_COURT_OF_HUMANITY_P_SUCCESS: Parameter = {
+  value: 0.1,
+  parameterName: "MECHANISM_COURT_OF_HUMANITY_P_SUCCESS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_court_of_humanity_p_success",
+  unit: "ratio",
+  displayName: "P(Success | Court of Humanity Funded)",
+  description: "Probability of treaty passage given Court of Humanity operational. Lowest direct causal link: court rulings are non-binding but create political pressure.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.03, 0.25],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_DFDA_NET_COST: Parameter = {
+  value: 500000000.0,
+  parameterName: "MECHANISM_DFDA_NET_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_dfda_net_cost",
+  unit: "USD",
+  displayName: "dFDA Deployment Net Cost",
+  description: "Net cost to build and deploy the dFDA to operational scale (expenditure; platform generates revenue after deployment but initial build is sunk cost)",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [200000000.0, 1000000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_DFDA_P_SUCCESS: Parameter = {
+  value: 0.7,
+  parameterName: "MECHANISM_DFDA_P_SUCCESS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_dfda_p_success",
+  unit: "ratio",
+  displayName: "P(Success | dFDA Funded)",
+  description: "Probability that a funded dFDA produces sufficient cures to create political momentum for the treaty. High because clinical trials mechanically produce treatments; the platform reduces cost per trial.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.4, 0.9],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_IAB_ADMIN_RATE: Parameter = {
+  value: 0.05,
+  parameterName: "MECHANISM_IAB_ADMIN_RATE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_iab_admin_rate",
+  unit: "ratio",
+  displayName: "IAB Admin Cost Rate",
+  description: "Annual administrative cost of IABs as fraction of principal (legal, compliance, reporting). The principal itself is investor capital returned with interest, not EOS expenditure.",
+  sourceType: "definition",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_IAB_P_SUCCESS: Parameter = {
+  value: 0.6,
+  parameterName: "MECHANISM_IAB_P_SUCCESS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_iab_p_success",
+  unit: "ratio",
+  displayName: "P(Success | IABs Funded)",
+  description: "Probability of treaty passage given full IAB issuance. High because lobbying is a proven mechanism and IABs align politician incentives directly.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.3, 0.85],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_LOVING_TAKEOVER_P_SUCCESS: Parameter = {
+  value: 0.95,
+  parameterName: "MECHANISM_LOVING_TAKEOVER_P_SUCCESS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_loving_takeover_p_success",
+  unit: "ratio",
+  displayName: "P(Success | Loving Takeover Funded)",
+  description: "Probability of treaty passage given full funding of the Loving Takeover (mechanical: money buys shares, shares buy board control, board redirects lobbying)",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.8, 0.99],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_OPPORTUNITY_COST_RATE: Parameter = {
+  value: 0.02,
+  parameterName: "MECHANISM_OPPORTUNITY_COST_RATE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_opportunity_cost_rate",
+  unit: "ratio",
+  displayName: "Mechanism Opportunity Cost Rate",
+  description: "Annual opportunity cost rate for capital deployment mechanisms (forgone excess return vs market). Defense stocks historically return near-market, so excess opportunity cost is low.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.0, 0.05],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_REFERENDUM_NET_COST: Parameter = {
+  value: 250000000.0,
+  parameterName: "MECHANISM_REFERENDUM_NET_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_referendum_net_cost",
+  unit: "USD",
+  displayName: "Viral Referendum Budget",
+  description: "Viral referendum budget for 280M verified votes (base: $250M realistic with $0.50/vote avg, range: $150M optimistic $0.20/vote to $410M worst-case $1.05/vote). Components: platform ($35M), verification infrastructure (280M × friction × $0.18-0.20), tiered referral payments (varies by virality and marginal cost curve per diffusion theory), marketing seed ($5-15M). Based on PayPal referral economics ($18-36 inflation-adjusted) and biometric verification pricing ($0.15-0.25 at 300M+ scale).",
+  sourceType: "definition",
+  confidence: "medium",
+  formula: "PLATFORM + VERIFICATION + PAYMENTS (tiered by adopter segment) + MARKETING",
+  confidenceInterval: [150000000.0, 410000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
+  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+};
+
+export const MECHANISM_REFERENDUM_P_SUCCESS: Parameter = {
+  value: 0.3,
+  parameterName: "MECHANISM_REFERENDUM_P_SUCCESS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_referendum_p_success",
+  unit: "ratio",
+  displayName: "P(Success | Referendum Funded)",
+  description: "Probability of treaty passage given a successful global referendum demonstrating majority support. Non-binding but creates political pressure.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.1, 0.55],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
+export const MECHANISM_SHIRT_CASCADE_P_SUCCESS: Parameter = {
+  value: 0.25,
+  parameterName: "MECHANISM_SHIRT_CASCADE_P_SUCCESS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_shirt_cascade_p_success",
+  unit: "rate",
+  displayName: "Shirt Cascade Probability Given Seed",
+  description: "Subjective probability that the seed program triggers a viral cascade to majority-of-humanity participation, conditional on the seed threshold being met. Deliberately conservative: even at 25% the expected-value math beats every conventional foundation intervention. Sensitivity range covers skeptic and base-case scenarios.",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [0.05, 0.6],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
+  manualPageTitle: "The Funniest Joke in the Universe",
+};
+
+export const MECHANISM_TREATY_CAMPAIGN_P_SUCCESS: Parameter = {
+  value: 0.4,
+  parameterName: "MECHANISM_TREATY_CAMPAIGN_P_SUCCESS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_treaty_campaign_p_success",
+  unit: "ratio",
+  displayName: "P(Success | Treaty Campaign Funded)",
+  description: "Probability of treaty passage given full funding of the lobbying + referendum campaign ($1B). Depends on political will after lobbying and public pressure.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.15, 0.7],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/loves-wager.html",
+  manualPageTitle: "Love's Wager",
+};
+
 export const MILITARY_REDIRECT_GDP_BOOST_AT_30PCT: Parameter = {
   value: 0.055,
   parameterName: "MILITARY_REDIRECT_GDP_BOOST_AT_30PCT",
@@ -10920,8 +11366,8 @@ export const PRIZE_POOL_PARTICIPATION_RATE: Parameter = {
   parameterName: "PRIZE_POOL_PARTICIPATION_RATE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_participation_rate",
   unit: "percent",
-  displayName: "PRIZE Pool Participation Rate",
-  description: "Fraction of global investable financial assets that flow into the PRIZE pool. 1% central estimate parallels the 1% Treaty ask: 1% of your weapons money, 1% of your savings.",
+  displayName: "Prize Pool Participation Rate",
+  description: "Fraction of global investable financial assets that flow into the prize pool. 1% central estimate parallels the 1% Treaty ask: 1% of your weapons money, 1% of your savings.",
   sourceType: "definition",
   confidence: "high",
   confidenceInterval: [0.001, 0.1],
@@ -11562,6 +12008,8 @@ export const parameters = {
   CURRENT_TRIAL_ABANDONMENT_RATE,
   CURRENT_TRIAL_SLOTS_AVAILABLE,
   DEFENSE_LOBBYING_ANNUAL,
+  DEFENSE_PRIMES_MARKET_CAP_ALLIED,
+  DEFENSE_PRIMES_MARKET_CAP_US,
   DEMOCIDE_TOTAL_20TH_CENTURY,
   DEWORMING_COST_PER_DALY,
   DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
@@ -11814,6 +12262,8 @@ export const parameters = {
   CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME,
   CURRENT_TRAJECTORY_GDP_YEAR_15,
   CURRENT_TRAJECTORY_GDP_YEAR_20,
+  DEFENSE_TAKEOVER_COST_PER_HUMAN,
+  DEFENSE_TAKEOVER_COST_TOTAL,
   DESTRUCTIVE_ECONOMY_25PCT_YEAR,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
@@ -11875,6 +12325,8 @@ export const parameters = {
   DRUG_COST_INCREASE_1980S_TO_CURRENT_MULTIPLIER,
   DRUG_COST_INCREASE_PRE1962_TO_CURRENT_MULTIPLIER,
   DRUG_DISEASE_COMBINATIONS_POSSIBLE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
+  EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT,
   EFFICACY_LAG_CUMULATIVE_EXCESS_COST,
   EFFICACY_LAG_DEATHS_911_EQUIVALENTS,
   EFFICACY_LAG_TREATMENT_DELAY_YLD_ANNUAL,
@@ -11936,6 +12388,18 @@ export const parameters = {
   LOST_PROSPERITY_LIFETIME_DAMAGES_TOTAL,
   LOST_PROSPERITY_NPV_PERPETUITY_PER_CAPITA,
   LOST_PROSPERITY_NPV_PERPETUITY_TOTAL,
+  MECHANISM_COURT_EV,
+  MECHANISM_DFDA_EV,
+  MECHANISM_IAB_EV,
+  MECHANISM_IAB_NET_COST,
+  MECHANISM_LOVING_TAKEOVER_CAPITAL,
+  MECHANISM_LOVING_TAKEOVER_EV,
+  MECHANISM_LOVING_TAKEOVER_NET_COST,
+  MECHANISM_REFERENDUM_EV,
+  MECHANISM_SHIRT_CASCADE_EV,
+  MECHANISM_SHIRT_CASCADE_NET_COST,
+  MECHANISM_TREATY_CAMPAIGN_EV,
+  MECHANISM_TREATY_CAMPAIGN_NET_COST,
   MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN,
   MEDICAL_TOOLCHAIN_OBSERVED_ANCHOR_COSTS,
   MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO,
@@ -12080,8 +12544,6 @@ export const parameters = {
   VICTORY_BOND_ANNUAL_RETURN_PCT,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
-  VOTE_2_CLAIMS_PAYOUT,
-  VOTE_TOKEN_VALUE,
   WAR_CHILDREN_KILLED_SINCE_1900,
   WAR_COSTS_CUMULATIVE_20YR_CURRENT_TRAJECTORY,
   WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR,
@@ -12177,6 +12639,8 @@ export const parameters = {
   DAYS_PER_YEAR,
   DCT_PLATFORM_FUNDING_MEDIUM,
   DEFENSE_SECTOR_RETENTION_PCT,
+  DEFENSE_TAKEOVER_ACQUISITION_PREMIUM,
+  DEFENSE_TAKEOVER_CONTROL_FRACTION,
   DESTRUCTIVE_ECONOMY_BASE_YEAR,
   DFDA_ANNUAL_TRIAL_FUNDING,
   DFDA_NPV_ADOPTION_RAMP_YEARS,
@@ -12217,6 +12681,18 @@ export const parameters = {
   IAB_POLITICAL_INCENTIVE_FUNDING_PCT,
   INSTITUTIONAL_INVESTOR_MIN,
   LOBBYIST_BOND_INVESTMENT_MAX,
+  MECHANISM_COURT_OF_HUMANITY_NET_COST,
+  MECHANISM_COURT_OF_HUMANITY_P_SUCCESS,
+  MECHANISM_DFDA_NET_COST,
+  MECHANISM_DFDA_P_SUCCESS,
+  MECHANISM_IAB_ADMIN_RATE,
+  MECHANISM_IAB_P_SUCCESS,
+  MECHANISM_LOVING_TAKEOVER_P_SUCCESS,
+  MECHANISM_OPPORTUNITY_COST_RATE,
+  MECHANISM_REFERENDUM_NET_COST,
+  MECHANISM_REFERENDUM_P_SUCCESS,
+  MECHANISM_SHIRT_CASCADE_P_SUCCESS,
+  MECHANISM_TREATY_CAMPAIGN_P_SUCCESS,
   MILITARY_REDIRECT_GDP_BOOST_AT_30PCT,
   MINUTES_PER_HOUR,
   MONTHS_PER_YEAR,
@@ -12666,6 +13142,20 @@ export const citations: Record<string, Citation> = {
         issued: { 'date-parts': [[2018]] },
         'container-title': "Political Geography",
         URL: "https://doi.org/10.1016/j.polgeo.2017.09.004",
+  },
+  "defense-primes-market-cap-2026": {
+        id: "defense-primes-market-cap-2026",
+        type: "article-journal",
+        title: "Largest defense contractors by market capitalization",
+        author: [
+          {
+            literal: "Companies Market Cap"
+          },
+        ],
+        issued: { 'date-parts': [[2026]] },
+        'container-title': "CompaniesMarketCap.com: Defense Contractors",
+        URL: "https://companiesmarketcap.com/defense-contractors/largest-companies-by-market-cap/",
+        note: "Verified market caps June 2026: RTX \\$243.7B, Lockheed Martin \\$120.8B, General Dynamics \\$93.7B, Northrop Grumman \\$77.3B, L3Harris \\$57.3B, Huntington Ingalls \\$11.5B; BAE Systems \\$75.6B, Thales \\$55.0B. US defense primes aggregate approx \\$670B (Boeing is largely commercial and only partially attributable); allied primes BAE + Thales approx \\$131B.",
   },
   "deworming-cost-per-daly": {
         id: "deworming-cost-per-daly",
@@ -14560,11 +15050,11 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 741,
-  external: 226,
-  calculated: 370,
-  definitions: 145,
-  citations: 165,
+  total: 771,
+  external: 228,
+  calculated: 384,
+  definitions: 159,
+  citations: 166,
 } as const;
 
 // ============================================================================

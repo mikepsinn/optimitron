@@ -13,7 +13,7 @@ vi.mock("@/lib/prisma", () => ({
     user: {
       findUnique: vi.fn(),
     },
-    voteTokenMint: {
+    pointMint: {
       findMany: vi.fn(),
     },
   },
@@ -29,6 +29,12 @@ vi.mock("@/lib/verified-votes.server", () => ({
 
 vi.mock("@/lib/prize-deposit-hypercert.server", () => ({
   getPublishedPrizeDepositActivity: vi.fn(),
+}));
+
+vi.mock("@optimitron/treasury-shared/addresses", () => ({
+  getContracts: vi.fn(() => ({
+    voterPrizeTreasury: "0x0000000000000000000000000000000000000001",
+  })),
 }));
 
 vi.mock("@/lib/contracts/server-client", () => ({
@@ -63,7 +69,7 @@ describe("getImpactReceipts", () => {
         { walletAddress: "0x00000000000000000000000000000000000000aa" },
       ],
     } as any);
-    vi.mocked(prisma.voteTokenMint.findMany).mockResolvedValueOnce([
+    vi.mocked(prisma.pointMint.findMany).mockResolvedValueOnce([
       { walletAddress: "0x00000000000000000000000000000000000000aa" },
     ] as any);
     vi.mocked(getPersonhoodSummary).mockResolvedValueOnce({
@@ -128,7 +134,7 @@ describe("getImpactReceipts", () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
       socialAccounts: [],
     } as any);
-    vi.mocked(prisma.voteTokenMint.findMany).mockResolvedValueOnce([]);
+    vi.mocked(prisma.pointMint.findMany).mockResolvedValueOnce([]);
     vi.mocked(getPersonhoodSummary).mockResolvedValueOnce({
       isVerified: false,
       personhoodProvider: null,
@@ -160,7 +166,7 @@ describe("getImpactReceipts", () => {
         { walletAddress: "0x00000000000000000000000000000000000000bb" },
       ],
     } as any);
-    vi.mocked(prisma.voteTokenMint.findMany).mockResolvedValueOnce([]);
+    vi.mocked(prisma.pointMint.findMany).mockResolvedValueOnce([]);
     vi.mocked(getPersonhoodSummary).mockResolvedValueOnce({
       isVerified: true,
       personhoodProvider: "WORLD_ID",

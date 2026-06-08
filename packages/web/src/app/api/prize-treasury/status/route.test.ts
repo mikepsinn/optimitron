@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     prizeTreasuryDeposit: { findMany: mocks.findMany },
-    voteTokenMint: { count: mocks.count },
+    pointMint: { count: mocks.count },
   },
 }));
 
@@ -41,7 +41,7 @@ describe("GET /api/prize-treasury/status", () => {
     expect(data.totalDeposited).toBe("0");
     expect(data.depositCount).toBe(0);
     expect(data.uniqueDepositors).toBe(0);
-    expect(data.confirmedVoteMints).toBe(0);
+    expect(data.confirmedPointMints).toBe(0);
   });
 
   it("aggregates deposits correctly", async () => {
@@ -59,7 +59,7 @@ describe("GET /api/prize-treasury/status", () => {
     expect(data.totalDeposited).toBe("3500000");
     expect(data.depositCount).toBe(3);
     expect(data.uniqueDepositors).toBe(2);
-    expect(data.confirmedVoteMints).toBe(5);
+    expect(data.confirmedPointMints).toBe(5);
   });
 
   it("includes on-chain data when contract is reachable", async () => {
@@ -72,7 +72,7 @@ describe("GET /api/prize-treasury/status", () => {
       currentIncomeMetric: vi.fn().mockResolvedValue(60n),
       thresholdMet: vi.fn().mockResolvedValue(true),
       maturityTimestamp: vi.fn().mockResolvedValue(1900000000n),
-      voteTotalSupplySnapshot: vi.fn().mockResolvedValue(100000n),
+      pointTotalSupplySnapshot: vi.fn().mockResolvedValue(100000n),
       sharePrice: vi.fn().mockResolvedValue(1050000n),
       depositorCount: vi.fn().mockResolvedValue(42n),
     };
@@ -89,7 +89,7 @@ describe("GET /api/prize-treasury/status", () => {
     expect(data.incomeMetric).toBe("60");
     expect(data.thresholdMet).toBe(true);
     expect(data.maturityTimestamp).toBe("1900000000");
-    expect(data.voteTotalSupplySnapshot).toBe("100000");
+    expect(data.pointTotalSupplySnapshot).toBe("100000");
     expect(data.sharePrice).toBe("1050000");
     expect(data.onChainDepositorCount).toBe("42");
   });

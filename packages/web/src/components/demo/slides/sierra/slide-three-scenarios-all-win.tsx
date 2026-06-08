@@ -4,12 +4,12 @@ import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { GAME_PARAMS } from "@/lib/demo/parameters";
 import { POINTS } from "@/lib/messaging";
 import {
-  VOTE_TOKEN_VALUE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
 } from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 
-const voteValue = formatCurrency(VOTE_TOKEN_VALUE.value);
+const voteValue = formatCurrency(EARTH_OPTIMIZATION_POINT_VALUE.value);
 const lifetimeGain = formatCurrency(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value);
 
 export function SlideThreeScenariosAllWin() {

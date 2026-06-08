@@ -3,8 +3,8 @@ import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
+import { EarthOptimizationServicesLandingPage } from "@/components/site/EarthOptimizationServicesLandingPage";
 import { OnePercentTreatyLandingPage } from "@/components/site/OnePercentTreatyLandingPage";
-import { OptimitronLandingPage } from "@/components/site/OptimitronLandingPage";
 import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage";
 import { authOptions } from "@/lib/auth";
 import { getRootSiteMetadata, getSiteMetadata } from "@/lib/metadata";
@@ -12,9 +12,6 @@ import { prisma } from "@/lib/prisma";
 import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
-import type { TaskCardTask } from "@/components/tasks/task-card";
-import { getTaskDetailData } from "@/lib/tasks.server";
-import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
@@ -86,16 +83,9 @@ export default async function Home({
     return <SiteVariantLandingPage site={site} />;
   }
 
-  const treatyParentTask = await getTaskDetailData(TREATY_PARENT_TASK_ID, null);
-  const lateEmployeeProgramTask =
-    (treatyParentTask?.task ?? null) as TaskCardTask | null;
-  const lateEmployeeTasks = (treatyParentTask?.task.childTasks ??
-    []) as unknown as TaskCardTask[];
+  if (site.pageVariants.home === "eosLanding") {
+    return <EarthOptimizationServicesLandingPage />;
+  }
 
-  return (
-    <OptimitronLandingPage
-      lateEmployeeProgramTask={lateEmployeeProgramTask}
-      lateEmployeeTasks={lateEmployeeTasks}
-    />
-  );
+  return <EarthOptimizationServicesLandingPage />;
 }

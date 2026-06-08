@@ -2,7 +2,7 @@ import {
   PersonhoodProvider,
   PersonhoodVerificationStatus,
   SocialPlatform,
-  VoteTokenMintStatus,
+  PointMintStatus,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { serverEnv } from "@/lib/env";
@@ -12,17 +12,17 @@ const REWARD_WALLET_PLATFORMS = [
   SocialPlatform.BASE,
   SocialPlatform.ETHEREUM,
 ] as const;
-const VOTE_TOKEN_AMOUNT = "1000000000000000000";
+const POINT_AMOUNT = "1000000000000000000";
 const DEFAULT_SYNC_BATCH_SIZE = 500;
 
-interface SyncReferralVoteTokenMintForVoteParams {
+interface SyncReferralPointMintForVoteParams {
   referredVoterUserId: string;
   referrerUserId: string | null;
   referendumId: string;
 }
 
-function getVoteTokenChainId() {
-  return Number(serverEnv.VOTE_TOKEN_CHAIN_ID ?? "84532");
+function getPointChainId() {
+  return Number(serverEnv.EOP_CHAIN_ID ?? "84532");
 }
 
 async function getVerifiedWorldIdNullifier(userId: string) {
@@ -54,15 +54,15 @@ async function getReferrerRewardWalletAddress(userId: string) {
   return walletAccount?.walletAddress ?? null;
 }
 
-function canRewriteMint(status: VoteTokenMintStatus) {
-  return status === VoteTokenMintStatus.PENDING || status === VoteTokenMintStatus.FAILED;
+function canRewriteMint(status: PointMintStatus) {
+  return status === PointMintStatus.PENDING || status === PointMintStatus.FAILED;
 }
 
-export async function syncReferralVoteTokenMintForVote({
+export async function syncReferralPointMintForVote({
   referredVoterUserId,
   referrerUserId,
   referendumId,
-}: SyncReferralVoteTokenMintForVoteParams) {
+}: SyncReferralPointMintForVoteParams) {
   if (!referrerUserId || referrerUserId === referredVoterUserId) {
     return null;
   }
@@ -76,7 +76,7 @@ export async function syncReferralVoteTokenMintForVote({
     return null;
   }
 
-  const existingMint = await prisma.voteTokenMint.findUnique({
+  const existingMint = await prisma.pointMint.findUnique({
     where: {
       nullifierHash_referendumId: {
         nullifierHash,
@@ -86,14 +86,14 @@ export async function syncReferralVoteTokenMintForVote({
   });
 
   if (!existingMint) {
-    return prisma.voteTokenMint.create({
+    return prisma.pointMint.create({
       data: {
         userId: referrerUserId,
         referendumId,
         nullifierHash,
         walletAddress,
-        amount: VOTE_TOKEN_AMOUNT,
-        chainId: getVoteTokenChainId(),
+        amount: POINT_AMOUNT,
+        chainId: getPointChainId(),
       },
     });
   }
@@ -102,19 +102,19 @@ export async function syncReferralVoteTokenMintForVote({
     return existingMint;
   }
 
-  return prisma.voteTokenMint.update({
+  return prisma.pointMint.update({
     where: { id: existingMint.id },
     data: {
       userId: referrerUserId,
       walletAddress,
-      amount: VOTE_TOKEN_AMOUNT,
-      chainId: getVoteTokenChainId(),
+      amount: POINT_AMOUNT,
+      chainId: getPointChainId(),
       deletedAt: null,
     },
   });
 }
 
-export async function syncReferralVoteTokenMintsForVerifiedVoter(
+export async function syncReferralPointMintsForVerifiedVoter(
   referredVoterUserId: string,
 ) {
   const referredVotes = await prisma.referendumVote.findMany({
@@ -132,7 +132,7 @@ export async function syncReferralVoteTokenMintsForVerifiedVoter(
 
   const syncedMints = await Promise.all(
     referredVotes.map((vote) =>
-      syncReferralVoteTokenMintForVote({
+      syncReferralPointMintForVote({
         referredVoterUserId,
         referrerUserId: vote.referredByUserId,
         referendumId: vote.referendumId,
@@ -143,7 +143,7 @@ export async function syncReferralVoteTokenMintsForVerifiedVoter(
   return syncedMints.filter((mint) => mint !== null);
 }
 
-export async function syncPendingReferralVoteTokenMints(
+export async function syncPendingReferralPointMints(
   limit = DEFAULT_SYNC_BATCH_SIZE,
 ) {
   const referredVotes = await prisma.referendumVote.findMany({
@@ -180,7 +180,7 @@ export async function syncPendingReferralVoteTokenMints(
 
   const syncedMints = await Promise.all(
     referredVotes.map((vote) =>
-      syncReferralVoteTokenMintForVote({
+      syncReferralPointMintForVote({
         referredVoterUserId: vote.userId,
         referrerUserId: vote.referredByUserId,
         referendumId: vote.referendumId,

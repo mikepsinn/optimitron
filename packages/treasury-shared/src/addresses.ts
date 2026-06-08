@@ -13,7 +13,7 @@ export const CONTRACT_ADDRESSES = {
     wishToken: "0x0000000000000000000000000000000000000000" as Address,
     ubiDistributor: "0x0000000000000000000000000000000000000000" as Address,
     wishocraticTreasury: "0x0000000000000000000000000000000000000000" as Address,
-    voteToken: "0x0000000000000000000000000000000000000000" as Address,
+    earthOptimizationPoint: "0x0000000000000000000000000000000000000000" as Address,
     voterPrizeTreasury: "0x0000000000000000000000000000000000000000" as Address,
   },
   // Base Sepolia testnet (primary deployment target)
@@ -24,8 +24,8 @@ export const CONTRACT_ADDRESSES = {
     wishToken: "0x0000000000000000000000000000000000000000" as Address,
     ubiDistributor: "0x0000000000000000000000000000000000000000" as Address,
     wishocraticTreasury: "0x0000000000000000000000000000000000000000" as Address,
-    voteToken: "0xfA6238e810E2e93b129c0dAB873f94f2D3587E64" as Address,
-    voterPrizeTreasury: "0xd10f84cb234faFb781C90e74E27a12aa84CbC007" as Address,
+    earthOptimizationPoint: "0x0000000000000000000000000000000000000000" as Address,
+    voterPrizeTreasury: "0x0000000000000000000000000000000000000000" as Address,
   },
   // Localhost (Hardhat)
   31337: {
@@ -35,7 +35,7 @@ export const CONTRACT_ADDRESSES = {
     wishToken: "0x0000000000000000000000000000000000000000" as Address,
     ubiDistributor: "0x0000000000000000000000000000000000000000" as Address,
     wishocraticTreasury: "0x0000000000000000000000000000000000000000" as Address,
-    voteToken: "0x0000000000000000000000000000000000000000" as Address,
+    earthOptimizationPoint: "0x0000000000000000000000000000000000000000" as Address,
     voterPrizeTreasury: "0x0000000000000000000000000000000000000000" as Address,
   },
 } as const;

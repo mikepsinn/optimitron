@@ -2,7 +2,7 @@
   "name": "@optimitron/treasury-prize",
   "version": "0.1.0",
   "private": true,
-  "description": "Earth Optimization Prize: VoteToken and VoterPrizeTreasury contracts for Phase 1 referendum",
+  "description": "Earth Optimization Prize: EarthOptimizationPoint and VoterPrizeTreasury contracts for Phase 1 referendum",
   "exports": {
     "./abi": "./src/abi.ts"
   },

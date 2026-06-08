@@ -19,8 +19,9 @@ import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core
 
 const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 
-/** Point name — single source of truth. Change here to rename everywhere. */
-export const POINT_NAME = "VOTE" as const;
+/** Point name — single source of truth. Change here to rename everywhere.
+ *  This is the PRIZE CURRENCY (what you earn), NOT the referendum action of voting. */
+export const POINT_NAME = "Earth Optimization" as const;
 /** Pre-built variants so components don't need template literals */
 export const POINT = `${POINT_NAME} Point` as const;
 export const POINTS = `${POINT_NAME} Points` as const;

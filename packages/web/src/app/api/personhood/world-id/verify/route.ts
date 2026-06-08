@@ -5,7 +5,7 @@ import { isWorldIdConfigured, verifyAndSaveWorldIdResult } from "@/lib/world-id.
 import type { WorldIdVerificationPayload } from "@/lib/world-id";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
-import { syncReferralVoteTokenMintsForVerifiedVoter } from "@/lib/referral-vote-token-mint.server";
+import { syncReferralPointMintsForVerifiedVoter } from "@/lib/referral-point-mint.server";
 
 export const runtime = "nodejs";
 
@@ -19,13 +19,13 @@ export async function POST(request: Request) {
 
     const result = (await request.json()) as WorldIdVerificationPayload;
     const verification = await verifyAndSaveWorldIdResult(userId, result);
-    let referralVoteTokenMintsQueued = 0;
+    let referralPointMintsQueued = 0;
 
     try {
-      const syncedMints = await syncReferralVoteTokenMintsForVerifiedVoter(userId);
-      referralVoteTokenMintsQueued = syncedMints.length;
+      const syncedMints = await syncReferralPointMintsForVerifiedVoter(userId);
+      referralPointMintsQueued = syncedMints.length;
     } catch (mintError) {
-      console.error("[WORLD ID VERIFY] Referral vote token sync error:", mintError);
+      console.error("[WORLD ID VERIFY] Referral point sync error:", mintError);
     }
 
     // Grant wish points for World ID verification
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       verification,
-      referralVoteTokenMintsQueued,
+      referralPointMintsQueued,
       wishesEarned,
     });
   } catch (error) {

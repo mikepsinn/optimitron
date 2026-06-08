@@ -4,9 +4,9 @@ const mocks = vi.hoisted(() => ({
   personhoodVerificationFindFirst: vi.fn(),
   referendumVoteFindMany: vi.fn(),
   socialAccountFindFirst: vi.fn(),
-  voteTokenMintCreate: vi.fn(),
-  voteTokenMintFindUnique: vi.fn(),
-  voteTokenMintUpdate: vi.fn(),
+  pointMintCreate: vi.fn(),
+  pointMintFindUnique: vi.fn(),
+  pointMintUpdate: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -20,33 +20,33 @@ vi.mock("@/lib/prisma", () => ({
     socialAccount: {
       findFirst: mocks.socialAccountFindFirst,
     },
-    voteTokenMint: {
-      create: mocks.voteTokenMintCreate,
-      findUnique: mocks.voteTokenMintFindUnique,
-      update: mocks.voteTokenMintUpdate,
+    pointMint: {
+      create: mocks.pointMintCreate,
+      findUnique: mocks.pointMintFindUnique,
+      update: mocks.pointMintUpdate,
     },
   },
 }));
 
 vi.mock("@/lib/env", () => ({
   serverEnv: {
-    VOTE_TOKEN_CHAIN_ID: "84532",
+    EOP_CHAIN_ID: "84532",
   },
 }));
 
 import {
-  syncPendingReferralVoteTokenMints,
-  syncReferralVoteTokenMintForVote,
-  syncReferralVoteTokenMintsForVerifiedVoter,
-} from "../referral-vote-token-mint.server";
+  syncPendingReferralPointMints,
+  syncReferralPointMintForVote,
+  syncReferralPointMintsForVerifiedVoter,
+} from "../referral-point-mint.server";
 
-describe("referral vote token mint sync helpers", () => {
+describe("referral point mint sync helpers", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
   it("returns null when the vote has no eligible referrer", async () => {
-    const result = await syncReferralVoteTokenMintForVote({
+    const result = await syncReferralPointMintForVote({
       referredVoterUserId: "voter_1",
       referrerUserId: null,
       referendumId: "ref_1",
@@ -64,19 +64,19 @@ describe("referral vote token mint sync helpers", () => {
     mocks.socialAccountFindFirst.mockResolvedValue({
       walletAddress: "0xreferrer",
     });
-    mocks.voteTokenMintFindUnique.mockResolvedValue(null);
-    mocks.voteTokenMintCreate.mockResolvedValue({
+    mocks.pointMintFindUnique.mockResolvedValue(null);
+    mocks.pointMintCreate.mockResolvedValue({
       id: "mint_1",
       userId: "referrer_1",
     });
 
-    const result = await syncReferralVoteTokenMintForVote({
+    const result = await syncReferralPointMintForVote({
       referredVoterUserId: "voter_1",
       referrerUserId: "referrer_1",
       referendumId: "ref_1",
     });
 
-    expect(mocks.voteTokenMintCreate).toHaveBeenCalledWith({
+    expect(mocks.pointMintCreate).toHaveBeenCalledWith({
       data: {
         userId: "referrer_1",
         referendumId: "ref_1",
@@ -96,23 +96,23 @@ describe("referral vote token mint sync helpers", () => {
     mocks.socialAccountFindFirst.mockResolvedValue({
       walletAddress: "0xnew-wallet",
     });
-    mocks.voteTokenMintFindUnique.mockResolvedValue({
+    mocks.pointMintFindUnique.mockResolvedValue({
       id: "mint_existing",
       status: "FAILED",
     });
-    mocks.voteTokenMintUpdate.mockResolvedValue({
+    mocks.pointMintUpdate.mockResolvedValue({
       id: "mint_existing",
       userId: "referrer_1",
       walletAddress: "0xnew-wallet",
     });
 
-    const result = await syncReferralVoteTokenMintForVote({
+    const result = await syncReferralPointMintForVote({
       referredVoterUserId: "voter_1",
       referrerUserId: "referrer_1",
       referendumId: "ref_1",
     });
 
-    expect(mocks.voteTokenMintUpdate).toHaveBeenCalledWith({
+    expect(mocks.pointMintUpdate).toHaveBeenCalledWith({
       where: { id: "mint_existing" },
       data: {
         userId: "referrer_1",
@@ -136,19 +136,19 @@ describe("referral vote token mint sync helpers", () => {
     mocks.socialAccountFindFirst.mockResolvedValue({
       walletAddress: "0xreferrer",
     });
-    mocks.voteTokenMintFindUnique.mockResolvedValue({
+    mocks.pointMintFindUnique.mockResolvedValue({
       id: "mint_confirmed",
       status: "CONFIRMED",
       userId: "referrer_1",
     });
 
-    const result = await syncReferralVoteTokenMintForVote({
+    const result = await syncReferralPointMintForVote({
       referredVoterUserId: "voter_1",
       referrerUserId: "referrer_1",
       referendumId: "ref_1",
     });
 
-    expect(mocks.voteTokenMintUpdate).not.toHaveBeenCalled();
+    expect(mocks.pointMintUpdate).not.toHaveBeenCalled();
     expect(result).toEqual({
       id: "mint_confirmed",
       status: "CONFIRMED",
@@ -167,12 +167,12 @@ describe("referral vote token mint sync helpers", () => {
     mocks.socialAccountFindFirst
       .mockResolvedValueOnce({ walletAddress: "0x1" })
       .mockResolvedValueOnce({ walletAddress: "0x2" });
-    mocks.voteTokenMintFindUnique.mockResolvedValue(null);
-    mocks.voteTokenMintCreate
+    mocks.pointMintFindUnique.mockResolvedValue(null);
+    mocks.pointMintCreate
       .mockResolvedValueOnce({ id: "mint_1" })
       .mockResolvedValueOnce({ id: "mint_2" });
 
-    const result = await syncReferralVoteTokenMintsForVerifiedVoter("voter_1");
+    const result = await syncReferralPointMintsForVerifiedVoter("voter_1");
 
     expect(mocks.referendumVoteFindMany).toHaveBeenCalledWith({
       where: {
@@ -208,10 +208,10 @@ describe("referral vote token mint sync helpers", () => {
     mocks.socialAccountFindFirst.mockResolvedValue({
       walletAddress: "0xreferrer",
     });
-    mocks.voteTokenMintFindUnique.mockResolvedValue(null);
-    mocks.voteTokenMintCreate.mockResolvedValue({ id: "mint_1" });
+    mocks.pointMintFindUnique.mockResolvedValue(null);
+    mocks.pointMintCreate.mockResolvedValue({ id: "mint_1" });
 
-    const result = await syncPendingReferralVoteTokenMints(25);
+    const result = await syncPendingReferralPointMints(25);
 
     expect(mocks.referendumVoteFindMany).toHaveBeenCalledWith({
       where: {

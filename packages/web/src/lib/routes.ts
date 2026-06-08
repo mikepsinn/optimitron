@@ -58,6 +58,7 @@ const warOnDiseaseDefaultSocialImage = {
 
 export const ROUTES = {
   home: "/",
+  eos: "/eos",
   // Optimized Governance
   agencies: "/agencies",
   dfda: "/agencies/dfda",
@@ -116,6 +117,7 @@ export const ROUTES = {
   faq: "/faq",
   survey: "/survey",
   // The Game
+  game: "/game",
   prize: "/prize",
   scoreboard: "/scoreboard",
   iab: "/iab",
@@ -969,6 +971,40 @@ export const prizeLink: NavItem = {
   cta: "See the Prize",
 };
 
+export const gameLink: NavItem = {
+  href: ROUTES.game,
+  // TODO(copy): Mike copy gate. Source: old Optimitron landing hero.
+  label: "The Earth Optimization Game",
+  emoji: "🎮",
+  // TODO(copy): Mike copy gate. Source: manual "The Earth Optimization Game" framing.
+  description:
+    "A pool of money. Two numbers on a Scoreboard: how long people live, how much they earn.",
+  // TODO(copy): Mike copy gate. Source: old Optimitron landing hero.
+  tagline: "Play the Earth Optimization Game",
+  copyPreview: true,
+  reviewName: "game",
+  screenshot: true,
+  // TODO(copy): Mike copy gate. Source: old Optimitron landing hero.
+  cta: "Play the Game",
+};
+
+export const eosLink: NavItem = {
+  href: ROUTES.eos,
+  // TODO(copy): Mike copy gate. Source: Pivot 3 route requirement.
+  label: "Earth Optimization Services",
+  emoji: "⚡",
+  // TODO(copy): Mike copy gate. Source: Pivot 3 cold-stranger route requirement.
+  description:
+    "The company buying the lobbying power that blocks better policy and pointing it at health and income.",
+  // TODO(copy): Mike copy gate. Source: Pivot 3 cold-stranger route requirement.
+  tagline: "Buy the power to make governments work",
+  copyPreview: true,
+  reviewName: "eos",
+  screenshot: true,
+  // TODO(copy): Mike copy gate. Source: Pivot 3 route requirement.
+  cta: "View",
+};
+
 export const earthOptimizationPrizePaperLink: NavItem = {
   label: "Earth Optimization Prize",
   href: "https://prize.warondisease.org",
@@ -1245,6 +1281,7 @@ export const toolSections: NavSection[] = [
 
 /** Footer-only internal links */
 export const footerAppLinks: NavItem[] = [
+  gameLink,
   fixAiLink,
   wishocracyLink,
   alignmentLink,
@@ -1672,6 +1709,7 @@ export interface RouteReviewSpec {
 
 export const routeReviewNavItems = [
   homeLink,
+  gameLink,
   voteLink,
   treatyLink,
   aboutLink,
@@ -1683,6 +1721,7 @@ export const routeReviewNavItems = [
   plaintiffsManageLink,
   courtLink,
   donateLink,
+  eosLink,
   joinLink,
   foundationsLink,
   signatoriesLink,
