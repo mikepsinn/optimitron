@@ -313,7 +313,7 @@ jobs:
       github.event.deployment_status.environment != 'Production' &&
       github.event.deployment_status.environment != 'production'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     environment:
       name: Preview
       deployment: false
@@ -352,10 +352,9 @@ jobs:
 
       - name: Install Playwright browser
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm --filter @optimitron/web exec playwright install --with-deps chromium
+        run: pnpm --filter @optimitron/web exec playwright install chromium
 
       - name: Install Playwright system deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
       - name: Run Playwright smoke against preview

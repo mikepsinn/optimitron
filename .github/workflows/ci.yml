@@ -212,7 +212,7 @@ jobs:
     if: github.event_name != 'push' || github.ref == 'refs/heads/main'
     needs: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       actions: read
       # peaceiris/actions-gh-pages needs write to push the visual review to
@@ -309,10 +309,10 @@ jobs:
 
       - name: Install Playwright browser
         if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && steps.playwright-cache.outputs.cache-hit != 'true' }}
-        run: pnpm --filter @optimitron/web exec playwright install --with-deps chromium
+        run: pnpm --filter @optimitron/web exec playwright install chromium
 
       - name: Install Playwright system deps
-        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && steps.playwright-cache.outputs.cache-hit == 'true' }}
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
       - name: Sync managed data (idempotent upserts; matches production)
