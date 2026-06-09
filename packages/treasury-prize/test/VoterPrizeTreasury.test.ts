@@ -355,6 +355,43 @@ describe("VoterPrizeTreasury", function () {
       ).to.be.revertedWith("VoterPrizeTreasury: already redeemed");
     });
 
+    it("burns redeemed EOP so transferred points cannot redeem twice", async function () {
+      const { treasury, usdc, pointToken, contributor1, voter1, voter2 } =
+        await loadFixture(deployFixture);
+
+      await treasury.connect(contributor1).deposit(parseUSDC(30_000));
+      await treasury.updateMetrics(HEALTH_THRESHOLD, INCOME_THRESHOLD);
+      await treasury.snapshotPointSupply();
+      await time.increase(Number(FIFTEEN_YEARS));
+
+      const bal1Before = await usdc.balanceOf(voter1.address);
+      await expect(treasury.connect(voter1).redeemEarthOptimizationPoints())
+        .to.emit(pointToken, "PointsBurnedForRedemption")
+        .withArgs(voter1.address, ONE_POINT);
+      const bal1After = await usdc.balanceOf(voter1.address);
+      expect(bal1After - bal1Before).to.be.closeTo(
+        parseUSDC(10_000),
+        parseUSDC(1)
+      );
+
+      expect(await pointToken.balanceOf(voter1.address)).to.equal(0n);
+      expect(await pointToken.totalSupply()).to.equal(ONE_POINT * 2n);
+
+      await expect(
+        pointToken.connect(voter1).transfer(voter2.address, ONE_POINT)
+      )
+        .to.be.revertedWithCustomError(pointToken, "ERC20InsufficientBalance")
+        .withArgs(voter1.address, 0n, ONE_POINT);
+
+      const bal2Before = await usdc.balanceOf(voter2.address);
+      await treasury.connect(voter2).redeemEarthOptimizationPoints();
+      const bal2After = await usdc.balanceOf(voter2.address);
+      expect(bal2After - bal2Before).to.be.closeTo(
+        parseUSDC(10_000),
+        parseUSDC(1)
+      );
+    });
+
     it("rejects redemption before maturity", async function () {
       const { treasury, contributor1, voter1 } =
         await loadFixture(deployFixture);
@@ -650,8 +687,8 @@ describe("VoterPrizeTreasury", function () {
         treasury.connect(contributor1).claimRefund()
       ).to.be.revertedWith("VoterPrizeTreasury: threshold met");
 
-      // 8. EOP still exist (not burned by treasury)
-      expect(await pointToken.balanceOf(voter1.address)).to.equal(ONE_POINT);
+      // 8. Redeemed EOP were burned
+      expect(await pointToken.totalSupply()).to.equal(0n);
     });
   });
 

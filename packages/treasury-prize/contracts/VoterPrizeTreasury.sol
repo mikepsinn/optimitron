@@ -22,8 +22,8 @@ import "@optimitron/treasury-shared/contracts/interfaces/IEarthOptimizationPoint
  * Redemption math (on success):
  *   pointShare = (holderPointBalance / snapshotTotalPointSupply) * totalAssets()
  *
- * Snapshot prevents double-redemption exploit (buy EOP after partial
- * redemption shrinks denominator).
+ * Snapshot freezes the denominator and redeemed EOP are burned to prevent
+ * double redemption through post-redemption transfers.
  */
 contract VoterPrizeTreasury is ERC20, Ownable {
     using SafeERC20 for IERC20;
@@ -176,10 +176,11 @@ contract VoterPrizeTreasury is ERC20, Ownable {
         uint256 pointBalance = IERC20(address(earthOptimizationPoint)).balanceOf(msg.sender);
         require(pointBalance > 0, "VoterPrizeTreasury: no EOP");
 
-        hasRedeemedPoints[msg.sender] = true;
-
         uint256 assets = (pointBalance * totalAssetsSnapshot) / pointTotalSupplySnapshot;
         require(assets > 0, "VoterPrizeTreasury: zero redemption");
+
+        hasRedeemedPoints[msg.sender] = true;
+        earthOptimizationPoint.burnForRedemption(msg.sender, pointBalance);
 
         aavePool.withdraw(address(stablecoin), assets, msg.sender);
 

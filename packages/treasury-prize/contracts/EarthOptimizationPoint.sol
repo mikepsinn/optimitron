@@ -29,6 +29,7 @@ contract EarthOptimizationPoint is ERC20, Ownable, IEarthOptimizationPoint {
         uint256 amount
     );
     event PrizeTreasurySet(address indexed treasury);
+    event PointsBurnedForRedemption(address indexed holder, uint256 amount);
 
     constructor() ERC20("Earth Optimization Point", "EOP") Ownable(msg.sender) {}
 
@@ -66,6 +67,17 @@ contract EarthOptimizationPoint is ERC20, Ownable, IEarthOptimizationPoint {
         require(treasury != address(0), "EarthOptimizationPoint: zero treasury");
         prizeTreasury = treasury;
         emit PrizeTreasurySet(treasury);
+    }
+
+    /// @notice Burn EOP that have been redeemed from the prize treasury.
+    function burnForRedemption(address holder, uint256 amount) external {
+        require(msg.sender == prizeTreasury, "EarthOptimizationPoint: only treasury");
+        require(holder != address(0), "EarthOptimizationPoint: zero holder");
+        require(amount > 0, "EarthOptimizationPoint: zero amount");
+
+        _burn(holder, amount);
+
+        emit PointsBurnedForRedemption(holder, amount);
     }
 
     // --- Internal ---

@@ -262,6 +262,37 @@ describe("EarthOptimizationPoint", function () {
     });
   });
 
+  describe("burnForRedemption", function () {
+    it("lets the prize treasury burn redeemed EOP", async function () {
+      const { pointToken, voter1, nonOwner, ref1, null1 } =
+        await loadFixture(deployFixture);
+
+      await pointToken.mintForVoter(voter1.address, ref1, null1, ONE_POINT);
+      await pointToken.setPrizeTreasury(nonOwner.address);
+
+      await expect(
+        pointToken.connect(nonOwner).burnForRedemption(voter1.address, ONE_POINT)
+      )
+        .to.emit(pointToken, "PointsBurnedForRedemption")
+        .withArgs(voter1.address, ONE_POINT);
+
+      expect(await pointToken.balanceOf(voter1.address)).to.equal(0n);
+      expect(await pointToken.totalSupply()).to.equal(0n);
+    });
+
+    it("rejects non-treasury burns", async function () {
+      const { pointToken, voter1, voter2, nonOwner, ref1, null1 } =
+        await loadFixture(deployFixture);
+
+      await pointToken.mintForVoter(voter1.address, ref1, null1, ONE_POINT);
+      await pointToken.setPrizeTreasury(voter2.address);
+
+      await expect(
+        pointToken.connect(nonOwner).burnForRedemption(voter1.address, ONE_POINT)
+      ).to.be.revertedWith("EarthOptimizationPoint: only treasury");
+    });
+  });
+
   describe("Claim key tracking", function () {
     it("correctly tracks claimed keys", async function () {
       const { pointToken, voter1, ref1, null1 } =

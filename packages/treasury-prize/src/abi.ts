@@ -81,6 +81,16 @@ export const earthOptimizationPointAbi = [
     outputs: [{ name: "", type: "address" }],
     stateMutability: "view",
   },
+  {
+    type: "function",
+    name: "burnForRedemption",
+    inputs: [
+      { name: "holder", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
 
   // --- Events ---
 
@@ -98,6 +108,14 @@ export const earthOptimizationPointAbi = [
     type: "event",
     name: "PrizeTreasurySet",
     inputs: [{ name: "treasury", type: "address", indexed: true }],
+  },
+  {
+    type: "event",
+    name: "PointsBurnedForRedemption",
+    inputs: [
+      { name: "holder", type: "address", indexed: true },
+      { name: "amount", type: "uint256", indexed: false },
+    ],
   },
   {
     type: "event",

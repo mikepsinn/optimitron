@@ -11,7 +11,7 @@ export default async function GamePage() {
   const treatyParentTask = await getTaskDetailData(TREATY_PARENT_TASK_ID, null);
   const lateEmployeeProgramTask =
     (treatyParentTask?.task ?? null) as TaskCardTask | null;
-  const lateEmployeeTasks = (treatyParentTask?.task.childTasks ??
+  const lateEmployeeTasks = (treatyParentTask?.task?.childTasks ??
     []) as unknown as TaskCardTask[];
 
   return (

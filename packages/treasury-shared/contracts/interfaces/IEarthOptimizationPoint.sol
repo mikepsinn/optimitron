@@ -28,6 +28,9 @@ interface IEarthOptimizationPoint {
         uint256[] calldata amounts
     ) external;
 
+    /// @notice Burn points during prize redemption
+    function burnForRedemption(address holder, uint256 amount) external;
+
     /// @notice Set the VoterPrizeTreasury address
     function setPrizeTreasury(address treasury) external;
 
