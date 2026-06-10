@@ -91,7 +91,7 @@ test("referendum API: vote and verify response", async ({ request }) => {
 
   // Now vote on the referendum
   const voteResponse = await request.post(
-    "/api/referendums/1-percent-treaty/vote",
+    "/api/referendums/one-percent-treaty/vote",
     {
       data: {
         answer: "YES",
@@ -158,13 +158,13 @@ test("scoreboard: renders live data from database", async ({ page }) => {
   }
   await page.waitForLoadState("domcontentloaded");
 
-  // Pool value renders (even if $0)
-  const poolValue = page.locator("text=$").first();
-  await expect(poolValue).toBeVisible({ timeout: 10_000 });
-
-  // Countdown timer is ticking (has YRS label)
-  const timerLabel = page.locator("text=YRS").first();
-  await expect(timerLabel).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText("Humanity's Scoreboard")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Worst Governments" }))
+    .toBeVisible();
+  await expect(page.getByRole("heading", { name: "Worst Politicians" }))
+    .toBeVisible();
+  await expect(page.getByRole("heading", { name: "Signature Leaderboard" }))
+    .toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
@@ -185,7 +185,7 @@ test("prize treasury API: returns pool status", async ({ request }) => {
   expect(data).toHaveProperty("totalDeposited");
   expect(data).toHaveProperty("depositCount");
   expect(data).toHaveProperty("uniqueDepositors");
-  expect(data).toHaveProperty("confirmedVoteMints");
+  expect(data).toHaveProperty("confirmedPointMints");
 });
 
 // ---------------------------------------------------------------------------

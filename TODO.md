@@ -69,6 +69,14 @@ Do not let lower items crowd out higher ones.
   links to `/fund` with `TODO(invest)` until securities/legal copy is reviewed.
   `warondisease.org` untouched. Plan: `.claude/plans/eos-landing.md`,
   `docs/eos-landing-plan.md`.
+- **EOS landing: "every president" masthead copy (Mike-approved framing,
+  2026-06-09):** work "every human on Earth is a president of EOS" into the
+  masthead/offer (sketch: "Correction: your application was accepted at birth.
+  You are one of 8,000,000,000 presidents."). Canonical framing now in
+  CLAUDE.md `## What This Is`. Lobbying figure on this page must use
+  `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B, all corporate) for the
+  all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M). Own
+  branch after PR #88; manual-search + verbatim copy gate before shipping.
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 

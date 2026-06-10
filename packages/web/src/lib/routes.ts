@@ -968,6 +968,7 @@ export const prizeLink: NavItem = {
   description:
     "Rewards for measured outreach that gets more people to answer the Global Survey to End War and Disease.",
   tagline: "Reward measured outreach",
+  screenshot: true,
   cta: "See the Prize",
 };
 
@@ -1709,6 +1710,7 @@ export interface RouteReviewSpec {
 
 export const routeReviewNavItems = [
   homeLink,
+  prizeLink,
   gameLink,
   voteLink,
   treatyLink,

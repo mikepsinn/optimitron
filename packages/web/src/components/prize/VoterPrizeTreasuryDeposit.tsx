@@ -18,6 +18,7 @@ import { getContracts } from "@optimitron/treasury-shared/addresses";
 import { POINTS } from "@/lib/messaging";
 
 const USDC_DECIMALS = 6;
+// Deliberately absurd arcade preset, not a test fixture.
 const PRESET_AMOUNTS = ["1", "2", "3", "9999999999999999"];
 
 const erc20Abi = [
