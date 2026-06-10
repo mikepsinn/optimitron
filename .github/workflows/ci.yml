@@ -231,6 +231,7 @@ jobs:
       NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
       NEXTAUTH_URL: http://127.0.0.1:3001
       VERCEL_CLI_VERSION: 50.37.3
+      PLAYWRIGHT_BROWSER_CHANNEL: chrome
     services:
       postgres:
         image: postgres:16
@@ -299,17 +300,9 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=6144
         run: pnpm --filter @optimitron/web run build:fast
 
-      - name: Cache Playwright browsers
+      - name: Verify system Chrome
         if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('packages/web/package.json') }}
-
-      - name: Install Playwright browser
-        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && steps.playwright-cache.outputs.cache-hit != 'true' }}
-        run: pnpm --filter @optimitron/web exec playwright install chromium
+        run: google-chrome --version
 
       - name: Install Playwright system deps
         if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}

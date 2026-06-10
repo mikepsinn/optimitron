@@ -7,6 +7,10 @@ const outputDir = process.env.PLAYWRIGHT_OUTPUT_DIR
   : screenshotDir;
 const isCI = Boolean(process.env.CI);
 const enableVisualReviewProjects = process.env.ROUTE_VISUAL_REVIEW === "1";
+const browserChannel =
+  process.env.PLAYWRIGHT_BROWSER_CHANNEL === "chrome"
+    ? ("chrome" as const)
+    : undefined;
 const reporter: "html" | ReporterDescription[] = isCI
   ? [["line"], ["html", { open: "never" }]]
   : "html";
@@ -43,6 +47,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
     viewport: { width: 1920, height: 1080 },
+    ...(browserChannel ? { channel: browserChannel } : {}),
   },
   projects: [
     {

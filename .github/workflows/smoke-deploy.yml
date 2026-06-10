@@ -317,6 +317,8 @@ jobs:
     environment:
       name: Preview
       deployment: false
+    env:
+      PLAYWRIGHT_BROWSER_CHANNEL: chrome
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -343,16 +345,8 @@ jobs:
         # Same step as web-validate (ci.yml line 152).
         run: pnpm --filter @optimitron/web run build:workspace-deps
 
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('packages/web/package.json') }}
-
-      - name: Install Playwright browser
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm --filter @optimitron/web exec playwright install chromium
+      - name: Verify system Chrome
+        run: google-chrome --version
 
       - name: Install Playwright system deps
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
