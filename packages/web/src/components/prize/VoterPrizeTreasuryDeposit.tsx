@@ -565,12 +565,12 @@ export function VoterPrizeTreasuryDeposit() {
               </p>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {PRESET_AMOUNTS.map((preset) => (
               <button
                 key={preset}
                 onClick={() => setAmount(preset)}
-                className="flex-1 border-4 border-primary bg-background text-foreground px-2 py-1.5 text-xs font-black uppercase hover:bg-background/20 transition-colors disabled:opacity-50"
+                className={`border-4 border-primary bg-background text-foreground px-2 py-1.5 font-black uppercase hover:bg-background/20 transition-colors disabled:opacity-50 ${preset.length > 6 ? "basis-full text-[10px] sm:flex-1 sm:text-xs" : "flex-1 text-xs"}`}
                 disabled={!isConnected || !isDeployed || isBusy}
               >
                 ${preset}
