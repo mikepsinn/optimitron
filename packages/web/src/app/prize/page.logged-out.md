@@ -13,12 +13,13 @@
 
 ## Visible Page Copy
 
-- FOR ENTERTAINMENT & EDUCATIONAL PURPOSES ONLY
-- The Earth Optimization Prize Fund is a concept currently seeking a foundation host. All return figures — including the projected 17% annual growth based on VC-sector diversification — are hypothetical projections, not guarantees. This is not financial advice, an investment offering, or a solicitation of funds. No returns are promised or guaranteed. Interested in learning more? Contact [hello@warondisease.org](mailto:hello@warondisease.org).
 - THE EARTH OPTIMIZATION GAME
 ## INSERT COIN TO PLAY
 - A dominant assurance game with a projected 9.03x return if thresholds are missed.
 - All figures are projections based on VC-sector diversification — not promises.
+- [INSERT COIN](#invest)
+- [READ CONTRACTS](https://github.com/mikepsinn/optimitron/tree/main/packages)
+- For entertainment purposes only. All figures are hypothetical projections, not guarantees. Not financial advice.
 - GAME OVER: YOU LOSE
 - Humanity stays stupid. Metrics miss the targets after 15 years. Projected outcome: ~15.8% annual growth for 15 years (based on VC-sector diversification).
 - GAME OVER: YOU WIN
@@ -70,4 +71,3 @@
 - Until the destructive economy reaches 50% of GDP — the point where stealing beats creating
 ### PLAY THE GAME
 - The current cost of governance dysfunction is $101 trillion per year. The break-even probability is 0.0067%. You don't need to be altruistic. You just need to be numerate.
-- [INSERT COIN](#invest)

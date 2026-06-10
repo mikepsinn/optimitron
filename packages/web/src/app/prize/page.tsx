@@ -51,15 +51,11 @@ const levels = [
     level: "STEP 1",
     title: "DEPOSIT",
     description: `Deposit USDC. You get PRIZE shares. Projected growth: ${poolReturn} annually if the thresholds miss.`,
-    color: "bg-foreground",
-    textColor: "text-background",
   },
   {
     level: "STEP 2",
     title: "RECRUIT",
     description: `Share your referral link. ${REFERRAL.earnOne} ${REFERRAL.noDeposit}`,
-    color: "bg-background",
-    textColor: "text-foreground",
   },
 ];
 
@@ -94,30 +90,42 @@ const contractDetails = [
 export default async function PrizePage() {
   const poolStats = await getPoolStats();
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-      {/* DISCLAIMER — Top */}
-      <section className="mb-8">
-        <DisclaimerBanner />
-      </section>
-
-      {/* HERO — Arcade Cabinet */}
-      <section className="mb-16 text-center">
-        <p className="font-pixel text-sm font-bold uppercase tracking-[0.3em] text-foreground mb-4">
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* HERO */}
+      <section className="mb-8 border-b border-foreground pb-8 text-left sm:text-center">
+        <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
           The Earth Optimization Game
         </p>
-        <h1 className="font-pixel text-4xl md:text-6xl font-black uppercase tracking-tight text-foreground mb-4">
+        <h1 className="font-pixel text-4xl font-black uppercase text-foreground md:text-5xl">
           Insert Coin to Play
         </h1>
-        <p className="text-lg font-bold text-muted-foreground max-w-2xl mx-auto mb-6">
+        <p className="mx-auto mt-4 max-w-2xl text-base font-bold text-muted-foreground md:text-lg">
           A dominant assurance game with a projected {poolMultiple} return if thresholds are missed.
         </p>
-        <p className="text-base font-bold text-foreground max-w-2xl mx-auto">
+        <p className="mx-auto mt-3 max-w-2xl text-sm font-bold text-foreground">
           All figures are projections based on VC-sector diversification — not promises.
         </p>
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <GameCTA href="#invest" size="lg" className="w-full sm:w-auto">
+            Insert Coin
+          </GameCTA>
+          <NavItemLink
+            item={contractsSourceLink}
+            variant="custom"
+            external
+            className="inline-flex min-h-12 items-center justify-center border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground hover:bg-foreground hover:text-background"
+          >
+            Read Contracts
+          </NavItemLink>
+        </div>
+      </section>
+
+      <section className="mb-10">
+        <DisclaimerBanner compact />
       </section>
 
       {/* GAME OVER CARDS — The Two Outcomes */}
-      <section className="mb-16">
+      <section className="mb-12">
         <TwoOutcomes
           fail={{
             title: "Game Over: You Lose",
@@ -134,47 +142,49 @@ export default async function PrizePage() {
       </section>
 
       {/* THE TWO NUMBERS */}
-      <section className="mb-16">
-        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
-          Win Conditions
-        </h2>
-        <p className="text-sm font-bold text-muted-foreground mb-6 max-w-3xl text-center mx-auto">
-          Two numbers. If both rise by 2040, the pool splits to {POINT} holders. If not, depositors claim principal + projected growth.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-mono text-lg font-black mb-2 uppercase">
+      <section className="mb-12 border-t border-foreground pt-8">
+        <div className="mb-6 max-w-3xl">
+          <h2 className="font-pixel text-xl font-black uppercase text-foreground">
+            Win Conditions
+          </h2>
+          <p className="mt-2 text-sm font-bold text-muted-foreground">
+            Two numbers. If both rise by 2040, the pool splits to {POINT} holders. If not, depositors claim principal + projected growth.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="border border-foreground bg-background p-5 text-foreground">
+            <h3 className="mb-3 text-sm font-black uppercase">
               Median Healthy Life Years
             </h3>
-            <div className="flex items-center justify-between font-mono text-xs font-black uppercase mb-1">
+            <div className="mb-2 flex items-center justify-between gap-3 text-xs font-black uppercase">
               <span>Now: {fmtParam(GLOBAL_HALE_CURRENT)}</span>
               <span>Target: {fmtParam(TREATY_PROJECTED_HALE_YEAR_15)}</span>
             </div>
-            <div className="h-4 bg-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
+            <div className="h-2 overflow-hidden border border-foreground bg-background">
               <div
                 className="h-full bg-foreground"
                 style={{ width: `${(GLOBAL_HALE_CURRENT.value / TREATY_PROJECTED_HALE_YEAR_15.value * 100).toFixed(0)}%` }}
               />
             </div>
-            <p className="font-mono text-xs font-black mt-1 text-center">
+            <p className="mt-2 text-xs font-black text-muted-foreground">
               +{fmtParam(TREATY_HALE_GAIN_YEAR_15)} by 2040
             </p>
           </div>
-          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-mono text-lg font-black mb-2 uppercase">
+          <div className="border border-foreground bg-background p-5 text-foreground">
+            <h3 className="mb-3 text-sm font-black uppercase">
               Median Real After-Tax Income
             </h3>
-            <div className="flex items-center justify-between font-mono text-xs font-black uppercase mb-1">
+            <div className="mb-2 flex items-center justify-between gap-3 text-xs font-black uppercase">
               <span>Now: {fmtParam(GLOBAL_AVG_INCOME_2025)}</span>
               <span>Target: {fmtParam(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15)}</span>
             </div>
-            <div className="h-4 bg-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
+            <div className="h-2 overflow-hidden border border-foreground bg-background">
               <div
                 className="h-full bg-foreground"
                 style={{ width: `${(GLOBAL_AVG_INCOME_2025.value / TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value * 100).toFixed(0)}%` }}
               />
             </div>
-            <p className="font-mono text-xs font-black mt-1 text-center">
+            <p className="mt-2 text-xs font-black text-muted-foreground">
               {fmtParam(GLOBAL_AVG_INCOME_2025)} → {fmtParam(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15)} by 2040
             </p>
           </div>
@@ -182,72 +192,64 @@ export default async function PrizePage() {
       </section>
 
       {/* Insert Coin - Deposit Section */}
-      <section id="invest" className="mb-16">
-        <div className="border-4 border-primary bg-foreground text-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="font-pixel text-2xl font-black uppercase mb-4">
+      <section id="invest" className="mb-12 border-t border-foreground pt-8">
+        <div className="mb-6 max-w-3xl">
+          <h2 className="font-pixel text-2xl font-black uppercase text-foreground">
             Insert Coin
           </h2>
-          <p className="text-sm font-bold mb-6 max-w-2xl">
+          <p className="mt-3 text-sm font-bold text-muted-foreground">
             Your deposit goes into the Earth Optimization Prize fund (projected {poolReturn} annually, based on VC-sector diversification). You get PRIZE shares.
             Recruit verified voters and you also earn {POINTS}, which would pay out if humanity
             wins. This is the first arcade game in history where the house loses on purpose.
           </p>
-          <VoterPrizeTreasuryDeposit />
         </div>
+        <VoterPrizeTreasuryDeposit />
       </section>
 
       {/* LEVELS — How to Play */}
-      <section className="mb-16">
-        <h2 className="font-pixel text-2xl font-black uppercase tracking-tight text-foreground mb-8 text-center">
+      <section className="mb-12 border-t border-foreground pt-8">
+        <h2 className="mb-5 font-pixel text-xl font-black uppercase text-foreground">
           How to Play
         </h2>
-        <div className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
           {levels.map((item) => (
             <div
               key={item.level}
-              className={`border-4 border-primary ${item.color} p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex gap-6 items-start`}
+              className="border border-foreground bg-background p-5 text-foreground"
             >
-              <div
-                className={`font-pixel text-xs font-black uppercase tracking-[0.2em] whitespace-nowrap shrink-0 pt-1 ${
-                  item.textColor === "text-background"
-                    ? "text-background/80"
-                    : "text-muted-foreground"
-                }`}
-              >
+              <div className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
                 {item.level}
               </div>
-              <div>
-                <h3 className={`font-pixel text-lg font-black uppercase ${item.textColor}`}>
-                  {item.title}
-                </h3>
-                <p className={`text-sm font-bold ${item.textColor === "text-background" ? "text-muted" : "text-muted-foreground"} mt-1`}>
-                  {item.description}
-                </p>
-              </div>
+              <h3 className="font-pixel text-base font-black uppercase text-foreground">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm font-bold text-muted-foreground">
+                {item.description}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
       {/* CITIZEN DASHBOARD */}
-      <section id="dashboard" className="mb-16">
+      <section id="dashboard" className="mb-12 border-t border-foreground pt-8">
         <CitizenDashboardWrapper />
       </section>
 
       {/* TECHNICAL DETAILS */}
-      <section className="mb-16">
-        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6">
+      <section className="mb-12 border-t border-foreground pt-8">
+        <h2 className="mb-5 font-pixel text-xl font-black uppercase text-foreground">
           Technical Details
         </h2>
-        <Accordion type="multiple" className="border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <AccordionItem value="trust" className="border-b-4 border-primary last:border-b-0">
-            <AccordionHeader className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+        <Accordion type="multiple" className="space-y-3">
+          <AccordionItem value="trust" className="rounded-none border border-foreground shadow-none hover:shadow-none data-[state=open]:shadow-none">
+            <AccordionHeader className="px-5 py-4 text-sm font-black uppercase text-foreground hover:bg-muted hover:no-underline">
               Trust &amp; Transparency
             </AccordionHeader>
-            <AccordionContent className="px-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="border-4 border-primary bg-background text-foreground p-4">
-                  <h4 className="font-mono font-black uppercase text-xs mb-2">
+            <AccordionContent className="px-5">
+              <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="border border-foreground bg-background p-4 text-foreground">
+                  <h4 className="mb-2 text-xs font-black uppercase">
                     Zero Insider Advantage
                   </h4>
                   <p className="text-xs font-bold leading-relaxed">
@@ -255,8 +257,8 @@ export default async function PrizePage() {
                     keys. Your $100 gets exactly the same terms as $100,000.
                   </p>
                 </div>
-                <div className="border-4 border-primary bg-background text-foreground p-4">
-                  <h4 className="font-mono font-black uppercase text-xs mb-2">
+                <div className="border border-foreground bg-background p-4 text-foreground">
+                  <h4 className="mb-2 text-xs font-black uppercase">
                     Fully On-Chain
                   </h4>
                   <p className="text-xs font-bold leading-relaxed">
@@ -269,18 +271,18 @@ export default async function PrizePage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="contracts" className="border-b-4 border-primary last:border-b-0">
-            <AccordionHeader className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+          <AccordionItem value="contracts" className="rounded-none border border-foreground shadow-none hover:shadow-none data-[state=open]:shadow-none">
+            <AccordionHeader className="px-5 py-4 text-sm font-black uppercase text-foreground hover:bg-muted hover:no-underline">
               Contract Architecture
             </AccordionHeader>
-            <AccordionContent className="px-6">
-              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <AccordionContent className="px-5">
+              <div className="grid gap-3 md:grid-cols-2">
                 {contractDetails.map((item) => (
                   <div
                     key={item.label}
-                    className="border-4 border-primary bg-background p-3"
+                    className="border border-foreground bg-background p-3"
                   >
-                    <div className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                    <div className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">
                       {item.label}
                     </div>
                     <div className="mt-1 text-sm font-black text-foreground">
@@ -292,12 +294,12 @@ export default async function PrizePage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 text-center">
+              <div className="mt-4">
                 <NavItemLink
                   item={contractsSourceLink}
                   variant="custom"
                   external
-                  className="inline-flex items-center text-xs font-black text-foreground uppercase hover:text-foreground transition-colors"
+                  className="inline-flex items-center text-xs font-black uppercase text-foreground underline transition-colors hover:text-foreground"
                 >
                   VoterPrizeTreasury.sol, EarthOptimizationPoint.sol — full source on GitHub &rarr;
                 </NavItemLink>
@@ -308,45 +310,51 @@ export default async function PrizePage() {
       </section>
 
       {/* POOL STATUS */}
-      <section className="mb-16">
-        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
+      <section className="mb-12 border-t border-foreground pt-8">
+        <h2 className="mb-5 font-pixel text-xl font-black uppercase text-foreground">
           Game Status
         </h2>
-        <CollapseCountdownTimer size="md" className="mb-8" />
-        <div className="grid gap-4 md:grid-cols-2 mb-8">
-          <div className="border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="font-mono text-xs font-black uppercase text-muted-foreground">
-              Prize Pool
-            </div>
-            <div className="font-mono mt-2 text-2xl font-black text-foreground">${poolStats.poolUSD.toLocaleString()}</div>
-            <div className="text-[10px] font-bold text-muted-foreground">
-              grows at {poolReturn}/yr
-            </div>
+        <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
+          <div className="bg-foreground p-5 text-background">
+            <CollapseCountdownTimer size="sm" />
           </div>
-          <div className="border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="font-mono text-xs font-black uppercase text-muted-foreground">
-              Health Target
+          <div className="grid gap-3">
+            <div className="border border-foreground bg-background p-4">
+              <div className="text-xs font-black uppercase text-muted-foreground">
+                Prize Pool
+              </div>
+              <div className="mt-1 text-2xl font-black text-foreground">${poolStats.poolUSD.toLocaleString()}</div>
+              <div className="text-[10px] font-bold text-muted-foreground">
+                grows at {poolReturn}/yr
+              </div>
             </div>
-            <div className="font-mono mt-2 text-2xl font-black text-foreground">+{haleGain}</div>
-            <div className="text-[10px] font-bold text-muted-foreground">
-              median healthy life years
+            <div className="border border-foreground bg-background p-4">
+              <div className="text-xs font-black uppercase text-muted-foreground">
+                Health Target
+              </div>
+              <div className="mt-1 text-2xl font-black text-foreground">+{haleGain}</div>
+              <div className="text-[10px] font-bold text-muted-foreground">
+                median healthy life years
+              </div>
             </div>
           </div>
         </div>
 
         {/* Final CTA */}
-        <div className="border-4 border-primary bg-foreground text-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-          <h2 className="font-pixel text-2xl font-black mb-3 uppercase">
+        <div className="mt-8 border border-foreground bg-background p-6 text-left sm:text-center">
+          <h2 className="mb-3 font-pixel text-2xl font-black uppercase text-foreground">
             Play the Game
           </h2>
-          <p className="mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
+          <p className="mx-auto mb-6 max-w-2xl font-bold leading-relaxed text-muted-foreground">
             The current cost of governance dysfunction is{" "}
             {fmtParam({...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"})} per year.
             The break-even probability is 0.0067%. You don&apos;t need to be
             altruistic. You just need to be numerate.
           </p>
-          <div className="flex justify-center">
-            <GameCTA href="#invest" variant="secondary">Insert Coin</GameCTA>
+          <div className="flex sm:justify-center">
+            <GameCTA href="#invest" variant="secondary" className="w-full sm:w-auto">
+              Insert Coin
+            </GameCTA>
           </div>
         </div>
       </section>

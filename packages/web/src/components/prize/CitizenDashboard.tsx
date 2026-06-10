@@ -91,13 +91,15 @@ function getTierMessage(count: number): string {
 export function CitizenDashboard() {
   const { data: session, status } = useSession();
   const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (status !== "authenticated") {
       setLoading(false);
+      setData(null);
       return;
     }
+    setLoading(true);
     fetch("/api/referrals/stats")
       .then((res) =>
         res.ok ? (res.json() as Promise<DashboardData>) : null,
@@ -113,9 +115,13 @@ export function CitizenDashboard() {
   const referralUrl = buildUserReferralUrl(user);
 
   // Loading
-  if (status === "loading" || loading) {
+  if (status === "loading") {
+    return null;
+  }
+
+  if (loading) {
     return (
-      <div className="border-4 border-primary bg-background p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border border-foreground bg-background p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-muted w-1/3" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -131,7 +137,7 @@ export function CitizenDashboard() {
   // Unauthenticated
   if (!data?.stats) {
     return (
-      <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border border-foreground bg-background p-5 text-foreground">
         <h3 className="text-lg font-black uppercase mb-2">
           Your Citizen Dashboard
         </h3>
@@ -143,7 +149,7 @@ export function CitizenDashboard() {
         </p>
         <a
           href="/api/auth/signin"
-          className="inline-flex items-center justify-center border-4 border-primary bg-foreground px-6 py-2 text-sm font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+          className="inline-flex min-h-11 items-center justify-center border border-foreground bg-foreground px-5 py-2 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
         >
           Sign In
         </a>
@@ -177,12 +183,12 @@ export function CitizenDashboard() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-black uppercase tracking-tight text-foreground">
+      <h2 className="text-2xl font-black uppercase text-foreground">
         Your Citizen Dashboard
       </h2>
 
       {/* ── Impact Banner ── */}
-      <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border border-foreground bg-background p-5 text-foreground">
         <h3 className="text-sm font-black uppercase mb-2">
           Your Verified Votes Have Contributed To
         </h3>
@@ -199,7 +205,7 @@ export function CitizenDashboard() {
                   </div>
                 </div>
               </Tooltip.Trigger>
-              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              <Tooltip.Content className="bg-background border border-foreground p-4 max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   Each verified vote = {LIVES_SAVED_PER_VOTE.toFixed(1)} lives
                   saved (total lives saved by the treaty ÷ a majority of humans on
@@ -221,7 +227,7 @@ export function CitizenDashboard() {
                   </div>
                 </div>
               </Tooltip.Trigger>
-              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              <Tooltip.Content className="bg-background border border-foreground p-4 max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   Each verified vote prevents ~{SUFFERING_YEARS_PER_VOTE.toLocaleString()} years
                   of suffering ({(SUFFERING_HOURS_PER_VOTE / 1e6).toFixed(1)}M
@@ -243,7 +249,7 @@ export function CitizenDashboard() {
                   </div>
                 </div>
               </Tooltip.Trigger>
-              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              <Tooltip.Content className="bg-background border border-foreground p-4 max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   Estimated reach based on your referrals. Each referral
                   generates an average of {AVG_IMPRESSIONS_PER_SHARE} social
@@ -276,7 +282,7 @@ export function CitizenDashboard() {
           label="Est. Share"
           value={`${sharePercent}%`}
           detail="Of success pool"
-          color="bg-foreground"
+          color="bg-background"
         />
         <StatCard
           label="Global Rank"
@@ -287,7 +293,7 @@ export function CitizenDashboard() {
       </div>
 
       {/* ── Referral Goal + Badges ── */}
-      <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border border-foreground bg-background p-5 text-foreground">
         <h3 className="text-lg font-black uppercase mb-1">
           Your Referral Goal
         </h3>
@@ -310,7 +316,7 @@ export function CitizenDashboard() {
         </div>
         <Progress
           value={milestoneProgress}
-          className="h-6 border-4 border-primary"
+          className="h-4 border border-foreground"
         />
 
         {/* Badge grid */}
@@ -320,13 +326,15 @@ export function CitizenDashboard() {
             return (
               <div
                 key={badge.threshold}
-                className={`p-3 border-4 border-primary text-center transition-all ${
+                className={`border border-foreground p-3 text-center transition-opacity ${
                   unlocked
-                    ? "bg-background text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                    ? "bg-background text-foreground"
                     : "bg-background opacity-40"
                 }`}
               >
-                <div className="text-2xl mb-1">{badge.icon}</div>
+                <div className="mb-1 text-xl" aria-hidden="true">
+                  {badge.icon}
+                </div>
                 <div className="font-black text-xs">
                   {badge.threshold === 100 ? "100+" : badge.threshold}
                 </div>
@@ -343,7 +351,7 @@ export function CitizenDashboard() {
       </div>
 
       {/* ── Referral link ── */}
-      <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border border-foreground bg-background p-5">
         <h3 className="text-lg font-black uppercase text-foreground mb-3">
           Your Referral Link
         </h3>
@@ -358,7 +366,7 @@ export function CitizenDashboard() {
 
       {/* ── Leaderboard ── */}
       {leaderboard.length > 0 && (
-        <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border border-foreground bg-background p-5">
           <h3 className="text-lg font-black uppercase text-foreground mb-4">
             Top Referrers
           </h3>
@@ -366,10 +374,10 @@ export function CitizenDashboard() {
             {leaderboard.map((entry) => (
               <div
                 key={entry.userId}
-                className={`flex items-center gap-3 border-b border-primary pb-2 last:border-0 ${
+                className={`flex items-center gap-3 border-b border-foreground pb-2 last:border-0 ${
                   entry.userId ===
                   (session?.user as { id?: string } | undefined)?.id
-                    ? "bg-background -mx-2 px-2 rounded"
+                    ? "-mx-2 border-l-2 border-foreground px-2"
                     : ""
                 }`}
               >
@@ -380,10 +388,10 @@ export function CitizenDashboard() {
                   <img
                     src={entry.image}
                     alt=""
-                    className="w-8 h-8 border-4 border-primary object-cover shrink-0"
+                    className="w-8 h-8 border border-foreground object-cover shrink-0"
                   />
                 ) : (
-                  <span className="w-8 h-8 bg-background text-foreground border-4 border-primary flex items-center justify-center text-xs font-black shrink-0">
+                  <span className="w-8 h-8 bg-background text-foreground border border-foreground flex items-center justify-center text-xs font-black shrink-0">
                     {entry.name.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -400,17 +408,17 @@ export function CitizenDashboard() {
       )}
 
       {/* ── Global Treaty Target ── */}
-      <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border border-foreground bg-background p-5 text-foreground">
         <h3 className="text-lg font-black uppercase mb-1">
           Progress Toward a Majority of Humans on Earth{" "}
           <Tooltip.Provider>
             <Tooltip>
               <Tooltip.Trigger asChild>
-                <button className="inline-flex items-center justify-center w-6 h-6 border-4 border-primary bg-background text-xs font-black hover:bg-foreground hover:text-background transition-colors align-middle">
+                <button className="inline-flex items-center justify-center w-6 h-6 border border-foreground bg-background text-xs font-black hover:bg-foreground hover:text-background transition-colors align-middle">
                   ?
                 </button>
               </Tooltip.Trigger>
-              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              <Tooltip.Content className="bg-background border border-foreground p-4 max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   <span className="text-foreground">
                     Treaty target:
@@ -434,7 +442,7 @@ export function CitizenDashboard() {
           </span>
           <span>{TARGET_PCT}% target</span>
         </div>
-        <div className="h-6 bg-background border-4 border-primary overflow-hidden">
+        <div className="h-4 bg-background border border-foreground overflow-hidden">
           <div
             className="h-full bg-foreground transition-all duration-500"
             style={{ width: `${Math.min(globalPctOfTarget, 100)}%` }}
@@ -485,7 +493,7 @@ function StatCard({
 
   return (
     <div
-      className={`border-4 border-primary ${color} ${textColor} p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+      className={`border border-foreground ${color} ${textColor} p-4`}
     >
       <div className="text-xs font-black uppercase">
         {label}

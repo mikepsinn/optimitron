@@ -212,7 +212,7 @@ jobs:
     if: github.event_name != 'push' || github.ref == 'refs/heads/main'
     needs: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     permissions:
       actions: read
       # peaceiris/actions-gh-pages needs write to push the visual review to
@@ -385,7 +385,7 @@ jobs:
       - changes
       - web-e2e-validate
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 15
     permissions:
       actions: read
       contents: write
@@ -652,13 +652,13 @@ jobs:
           target_url="https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/${{ steps.prepare_pages.outputs.short_sha }}/latest.html"
           echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
           echo "Waiting for $target_url"
-          for attempt in $(seq 1 180); do
+          for attempt in $(seq 1 90); do
             status="$(curl -L -sS --connect-timeout 5 --max-time 15 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
             if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
               echo "Visual review page is live after attempt $attempt."
               exit 0
             fi
-            echo "Attempt $attempt/180 returned HTTP $status; retrying in 10s."
+            echo "Attempt $attempt/90 returned HTTP $status; retrying in 10s."
             sleep 10
           done
           echo "::error::Visual review page did not become available: $target_url"

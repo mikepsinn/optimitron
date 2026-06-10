@@ -313,7 +313,7 @@ jobs:
       github.event.deployment_status.environment != 'Production' &&
       github.event.deployment_status.environment != 'production'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
     environment:
       name: Preview
       deployment: false

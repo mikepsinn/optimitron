@@ -54,13 +54,14 @@ export function GameCTA({
     sizes[size],
     className,
   ].join(" ");
+  const isPageAnchor = href.startsWith("#");
 
-  if (external) {
+  if (external || isPageAnchor) {
     return (
       <a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
         className={baseClasses}
       >
         {children}
