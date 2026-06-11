@@ -455,6 +455,8 @@ export const wishoniaWorldLink: NavItem = {
   description:
     "A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.",
   tagline: "4,297 years of not being idiots",
+  copyPreview: true,
+  screenshot: true,
 
   cta: "Visit Wishonia",
 };
@@ -1011,7 +1013,7 @@ export const earthOptimizationPrizePaperLink: NavItem = {
   href: "https://prize.warondisease.org",
   emoji: "🏆",
   description:
-    "A dominant assurance design combining philanthropy and game theory. Your species invented gambling and philanthropy separately. This is what happens when you combine them and remove the stupidity.",
+    "The rulebook for the Earth Optimization Game. Your species invented gambling and philanthropy separately. This combines them and removes the stupidity.",
   external: true,
 
   cta: "Read Paper",
@@ -1715,6 +1717,7 @@ export const routeReviewNavItems = [
   voteLink,
   treatyLink,
   aboutLink,
+  wishoniaWorldLink,
   agenciesLink,
   scoreboardLink,
   toolsLink,

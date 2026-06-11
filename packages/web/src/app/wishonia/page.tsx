@@ -34,7 +34,7 @@ const timeline = [
   { year: "Year 47", event: "Wishocracy replaced representative government. Four minutes a week, eight billion participants." },
   { year: "Year 103", event: "Federal Reserve equivalent deprecated. Algorithmic monetary policy achieved 0% inflation." },
   { year: "Year 340", event: "Last disease eradicated. 95% of the work was removing bureaucratic obstacles." },
-  { year: "Year 4,297", event: "Present day. Sent this manual to your planet. You're welcome." },
+  { year: "Year 4,297", event: "Opened Earth Optimization Services, regional branch of Universe Optimization Services. You're welcome." },
 ];
 
 export default function WishoniaWorldPage() {
@@ -64,9 +64,10 @@ export default function WishoniaWorldPage() {
             atoms. Same physics. Better spreadsheet.
           </p>
           <p className="mt-4 text-lg font-bold text-white/60 max-w-2xl mx-auto">
-            Your species has the technology. You invented the maths. You built the
-            computers. You just refuse to use them on the thing that matters most:
-            not dying.
+            Wishonia Love is also the CEO of Universe Optimization Services.
+            Earth Optimization Services is the regional branch assigned to your
+            planet. You invented the maths and the computers. Now use them on
+            the thing that matters most: not dying.
           </p>
         </div>
       </section>

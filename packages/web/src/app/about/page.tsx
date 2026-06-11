@@ -1,38 +1,24 @@
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { ImplementationPlanSection } from "@/components/landing/ImplementationPlanSection";
-import { DecentralizedFDASection } from "@/components/landing/DecentralizedFDASection";
 import {
   fmtParam,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   PRIZE_POOL_HORIZON_MULTIPLE,
-  US_FEDERAL_SPENDING_2024,
 } from "@optimitron/data/parameters";
 import {
   aboutLink,
-  alignmentLink,
   communityLinks,
+  dfdaSpecPaperLink,
+  fullManualPaperLink,
   iabLink,
   dtreasuryLink,
-  allPaperLinks,
+  incentiveAlignmentBondsPaperLink,
+  onePercentTreatyPaperLink,
+  parametersPaperLink,
   prizeLink,
   ROUTES,
-  opgLink,
-  transmitLink,
-  transparencyLink,
-  wishocracyLink,
 } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 import { GameCTA } from "@/components/ui/game-cta";
-
-import type { BrutalCardBgColor } from "@/components/ui/brutal-card";
-import { NavItemCard, NavItemCardGrid } from "@/components/ui/nav-item-card";
-
-const productSurfaces: { item: typeof wishocracyLink; bgColor: BrutalCardBgColor }[] = [
-  { item: wishocracyLink, bgColor: "pink" },
-  { item: alignmentLink, bgColor: "yellow" },
-  { item: opgLink, bgColor: "cyan" },
-  { item: transmitLink, bgColor: "cyan" },
-];
 
 const openSourceButtons = communityLinks.filter(
   ({ label }) => label === "GitHub" || label === "README",
@@ -61,27 +47,26 @@ const reasons = [
   },
 ];
 
-const steps = [
+const machineFunctions = [
   {
-    label: "Collect",
+    label: "Measure",
     desc: "Hoover up every outcome, spending, and policy dataset your species has bothered to publish.",
-  },
-  {
-    label: "Align",
-    desc: "Line up what changed with what happened next. Your species finds this step surprisingly difficult.",
   },
   {
     label: "Score",
     desc: "Grade each claim using actual causal inference. Not vibes. Not committee votes. Maths.",
   },
   {
-    label: "Optimize",
-    desc: "Calculate what you should actually be doing. Spoiler: it's not what you're doing.",
+    label: "Act",
+    desc: "Turn the maths into treaty votes, referral links, prize deposits, and awkward conversations.",
   },
-  {
-    label: "Apply",
-    desc: "Turn the maths into budget votes, politician report cards, and awkward conversations.",
-  },
+];
+
+const researchHighlights = [
+  dfdaSpecPaperLink,
+  onePercentTreatyPaperLink,
+  incentiveAlignmentBondsPaperLink,
+  parametersPaperLink,
 ];
 
 export const metadata = getRouteMetadata(aboutLink);
@@ -92,72 +77,37 @@ export default function AboutPage() {
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
-            About The Evidence-Based Earth Optimization Machine
+            The Earth Optimization Machine
           </h1>
           <p className="text-lg text-foreground leading-relaxed font-bold">
-            I built Optimitron because your species keeps making the same
-            mistakes and then acting surprised by the results. It takes your
-            outcomes, your spending data, and your policies, runs causal
-            inference on all of it, and tells you what actually works. You&apos;re
-            welcome.
-          </p>
-          <section
-            aria-label="Campaign coordinator"
-            className="border-l-2 border-foreground pl-4"
-          >
-            <p className="text-sm font-bold leading-relaxed text-muted-foreground">
-              Coordinator:{" "}
-              <span className="text-foreground">Mike Sinn</span> coordinates the
-              International Campaign to End War and Disease. Human audit trail:{" "}
-              <a
-                href="https://mikesinn.com"
-                target="_blank"
-                rel="noreferrer"
-                className="text-foreground underline underline-offset-4 hover:text-foreground"
-              >
-                mikesinn.com
-              </a>
-              .
-            </p>
-          </section>
-          <p className="text-muted-foreground font-bold leading-relaxed">
-            The public side focuses on healthy life years, income, and the
-            policies and budgets that shape them. The personal side lets you
-            track your own inputs and outcomes. Think of it as a diagnostic
-            tool for both your civilisation and your breakfast choices.
+            Earth Optimization Services is the regional branch of Universe
+            Optimization Services assigned to this planet. Wishonia is the alien
+            CEO. You are the president of the Earth branch. Congratulations.
+            This is somehow your job now.
           </p>
           <p className="text-muted-foreground font-bold leading-relaxed">
-            Your governments are already superintelligences — collective
-            intelligence systems controlling the lives of billions. The problem
-            isn&apos;t that they&apos;re not smart enough. It&apos;s that
-            they&apos;re optimising for the wrong things. Optimitron is
-            alignment software for the most powerful AIs on your planet — the
-            ones made of people.
+            Assignment one: get humanity to sign the 1% Treaty, redirect 1% of
+            military spending to pragmatic clinical trials, and compress the
+            disease-eradication timeline from 443 years to 36.
+          </p>
+          <p className="text-muted-foreground font-bold leading-relaxed">
+            Optimitron is the console on your desk: treaty vote, referral chain,
+            prize pool, alignment scores, policy math, budget math, and every
+            calculation someone will ask you to defend.
           </p>
         </div>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <GameCTA href={ROUTES.wishocracy} variant="primary">Start With Wishocracy</GameCTA>
-          <GameCTA href={ROUTES.alignment} variant="yellow">See Alignment Reports</GameCTA>
-          <GameCTA href="/studies" variant="outline">Browse Studies</GameCTA>
+          <GameCTA href={ROUTES.vote} variant="primary">Vote on the Treaty</GameCTA>
+          <GameCTA href={ROUTES.prize} variant="secondary">Play the Game</GameCTA>
+          <GameCTA href={fullManualPaperLink.href} variant="outline" external>
+            Inspect the Blueprint
+          </GameCTA>
         </div>
-      </section>
-
-      <section className="mb-16">
-        <h2 className="section-title">What You Can Do Here</h2>
-        <NavItemCardGrid columns={2}>
-          {productSurfaces.map((surface) => (
-            <NavItemCard
-              key={surface.item.href}
-              item={surface.item}
-              bgColor={surface.bgColor}
-            />
-          ))}
-        </NavItemCardGrid>
       </section>
 
       <section className="mb-16">
         <h2 className="section-title">Why It Exists</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {reasons.map((reason) => (
             <div key={reason.title} className="card">
               <div className="text-3xl mb-3">{reason.icon}</div>
@@ -171,27 +121,28 @@ export default function AboutPage() {
       </section>
 
       <section className="mb-16">
-        <h2 className="section-title">How It Works</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-          {steps.map((step, index) => (
-            <div key={step.label} className="card text-center py-5">
-              <div className="text-foreground font-black text-lg">{index + 1}</div>
-              <div className="text-foreground font-black text-sm uppercase">{step.label}</div>
-              <div className="text-xs text-muted-foreground mt-2 font-bold leading-relaxed">
+        <h2 className="section-title">What The Machine Does</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {machineFunctions.map((step, index) => (
+            <div key={step.label} className="card py-5">
+              <h3 className="text-foreground font-black text-sm uppercase">
+                {index + 1}. {step.label}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 font-bold leading-relaxed">
                 {step.desc}
-              </div>
+              </p>
             </div>
           ))}
         </div>
       </section>
 
       <section className="mb-16">
-        <h2 className="section-title">The Economic System</h2>
+        <h2 className="section-title">Your First Assignment</h2>
         <p className="text-sm text-muted-foreground mb-6 font-bold max-w-3xl">
           On your planet, nothing happens without small pieces of paper with
-          presidents on them. So here are three ways to make the papers flow in
-          the right direction. Three mechanisms, three phases. Don&apos;t mix them
-          up — your species has a habit of confusing different piles of money.
+          presidents on them. The Earth Optimization Game is Phase 1: prove
+          demand, move the papers, then make governments explain why they are
+          still buying the disease-and-war package.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="card bg-background text-foreground border-foreground">
@@ -243,34 +194,16 @@ export default function AboutPage() {
             </NavItemLink>
           </div>
         </div>
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="inline-flex items-center text-sm font-black uppercase text-foreground hover:text-foreground transition-colors"
-          >
-            Play the Game &rarr;
-          </NavItemLink>
-          <NavItemLink
-            item={transparencyLink}
-            variant="custom"
-            className="inline-flex items-center text-sm font-black uppercase text-foreground hover:text-foreground transition-colors"
-          >
-            See The Full Pipeline &rarr;
-          </NavItemLink>
-        </div>
       </section>
-
-      <ImplementationPlanSection />
-      <DecentralizedFDASection />
 
       <section className="mb-16">
         <h2 className="section-title">Research</h2>
         <p className="text-sm text-muted-foreground mb-6 font-bold">
-          I showed my working. All of it. In public. Your species finds this unusual for some reason.
+          Every number is public, linked, and checkable. Pull the panel off the
+          machine and inspect the wiring.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {allPaperLinks.map((paper) => (
+          {researchHighlights.map((paper) => (
             <NavItemLink
               key={paper.href}
               item={paper}
@@ -317,5 +250,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-// dev-watcher smoke 1778895406419

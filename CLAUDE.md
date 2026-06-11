@@ -37,7 +37,9 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 - **Criticise the system, never a party.** The data does the work.
 - **In-world artifacts** (EOS pamphlet, certificates, application forms) may go full 1950s brochure — they're documents Wishonia hands you.
 
-**No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). If a sentence could appear unchanged in a Stripe keynote, rewrite.
+**No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate, surface area), empty mechanism vocabulary (incentive layer, the protocol that, this converts it, fundamentally), or corporate openers (We're building, Let's take a moment). If a sentence could appear unchanged in a Stripe keynote, rewrite.
+
+**"Military contractor", never "defense contractor."** "Defense" is the industry's own euphemism. Code identifiers (`DEFENSE_LOBBYING_ANNUAL`) keep their names.
 
 **Write like Kurt Vonnegut.** Plain declaratives. Verb-first imperatives for buttons ("Do this.", "Sign.", "Done."). Banned: "Take ownership", "Engage", "Empower", "Unlock", "Streamline", "Take this on", "Get started", and any other corporate-onboarding verb.
 
@@ -82,6 +84,10 @@ When asking, use the smallest multiple-choice question with a recommended defaul
 **Codex delegation.** Programming work goes to Codex agents by default; meta-config (this file, `.codex/config.toml`, hooks) Claude edits directly. Full protocol in [`.claude/codex-delegation.md`](.claude/codex-delegation.md).
 
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
+
+**Love letters, not demand letters.** Shareholder letters to boards are **love letters** — we are making the recipients richer and longer-lived. "Demand letter" is the legal term; state it once as a parenthetical fact ("the law calls this a demand letter"), never as the frame. Nothing in the takeover/lawsuit copy is adversarial: we are helping them.
+
+**Optimize, don't prescribe (board-facing asks).** The ask to boards is the *process* — allocate lobbying by OPG/OBG analysis to maximize long-term shareholder value — not the conclusion. The 1% Treaty is the stated *prediction* of that analysis ("if your analysis finds something better for your shareholders, do that instead"). Treaty copy itself stays prescriptive; that's the treaty's text.
 
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
 

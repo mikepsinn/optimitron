@@ -3,20 +3,20 @@
 ## Metadata
 
 - Page title: Wishonia | International Campaign to End War and Disease
-- Meta description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
+- Meta description: A planet that ended war in year 12 and disease in year 340. Also the alien CEO of Universe Optimization Services.
 - Canonical: https://warondisease.org/wishonia
 - Open Graph title: Wishonia
-- Open Graph description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
+- Open Graph description: A planet that ended war in year 12 and disease in year 340. Also the alien CEO of Universe Optimization Services.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fwishonia
 - Twitter title: Wishonia
-- Twitter description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
+- Twitter description: A planet that ended war in year 12 and disease in year 340. Also the alien CEO of Universe Optimization Services.
 
 ## Visible Page Copy
 
 - PROOF OF CONCEPT
 ## WISHONIA
 - A planet that ended war in year 12 and disease in year 340. Same atoms. Same physics. Better spreadsheet.
-- Your species has the technology. You invented the maths. You built the computers. You just refuse to use them on the thing that matters most: not dying.
+- Wishonia is also the alien CEO of Universe Optimization Services. Earth Optimization Services is the regional branch assigned to your planet. You invented the maths and the computers. Now use them on the thing that matters most: not dying.
 ### WHAT 4,297 YEARS GETS YOU
 - Three achievements your species is capable of but actively choosing not to pursue.
 #### SUPER-LONGEVITY
@@ -46,7 +46,7 @@
 - Year 340
 - Last disease eradicated. 95% of the work was removing bureaucratic obstacles.
 - Year 4,297
-- Present day. Sent this manual to your planet. You're welcome.
+- Opened Earth Optimization Services, regional branch of Universe Optimization Services. You're welcome.
 ### THE GAP IS INSTITUTIONAL, NOT TECHNOLOGICAL
 - Your planet has the same atoms. The same physics. Better computers than we had when we started. The only difference is that your resources flow through institutions designed in the 18th century by people who thought bloodletting was medicine. The technology exists. The maths exists. The only missing variable is the decision to use them.
 ### WHAT IT MEANS FOR YOU, PERSONALLY

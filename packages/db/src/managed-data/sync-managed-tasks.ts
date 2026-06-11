@@ -40,6 +40,10 @@ export interface ManagedTaskRecord {
   category?: TaskCategoryValue;
   difficulty?: TaskDifficultyValue;
   estimatedEffortHours?: number | null;
+  /** Gross conditional value (USD) if the task succeeds. Source from `@optimitron/data` parameters — never hand-typed. */
+  expectedEconomicValueUsdBase?: number | null;
+  /** Probability 0-1 the task produces the stated value. Source from `@optimitron/data` parameters. */
+  successProbabilityBase?: number | null;
   skillTags?: string[];
   interestTags?: string[];
   contextJson?: Prisma.InputJsonValue;
@@ -69,6 +73,8 @@ interface ManagedTaskRow {
   category: TaskCategoryValue;
   difficulty: TaskDifficultyValue;
   estimatedEffortHours: number | null;
+  expectedEconomicValueUsdBase: number | null;
+  successProbabilityBase: number | null;
   skillTags: string[];
   interestTags: string[];
   contextJson: Prisma.JsonValue | null;
@@ -328,6 +334,8 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
     category: record.category ?? TaskCategory.GOVERNANCE,
     difficulty: record.difficulty ?? TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: record.estimatedEffortHours ?? null,
+    expectedEconomicValueUsdBase: record.expectedEconomicValueUsdBase ?? null,
+    successProbabilityBase: record.successProbabilityBase ?? null,
     skillTags: record.skillTags ?? [],
     interestTags: record.interestTags ?? [],
     contextJson: buildManagedContext(collectionKey, record),
@@ -488,6 +496,8 @@ function managedTaskNeedsUpdate(
     existing.category !== scalars.category ||
     existing.difficulty !== scalars.difficulty ||
     existing.estimatedEffortHours !== scalars.estimatedEffortHours ||
+    existing.expectedEconomicValueUsdBase !== scalars.expectedEconomicValueUsdBase ||
+    existing.successProbabilityBase !== scalars.successProbabilityBase ||
     !sameJson(existing.skillTags, scalars.skillTags) ||
     !sameJson(existing.interestTags, scalars.interestTags) ||
     !sameJson(existing.contextJson, scalars.contextJson) ||
@@ -564,6 +574,8 @@ export async function syncManagedTasks(
       category: true,
       difficulty: true,
       estimatedEffortHours: true,
+      expectedEconomicValueUsdBase: true,
+      successProbabilityBase: true,
       skillTags: true,
       interestTags: true,
       contextJson: true,

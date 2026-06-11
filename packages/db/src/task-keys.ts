@@ -75,6 +75,34 @@ export const ONE_PERCENT_TREATY_HEADS_OF_GOVERNMENT_TASK_ID =
 export const ONE_PERCENT_TREATY_HEADS_OF_GOVERNMENT_TASK_KEY =
   "program:one-percent-treaty:heads-of-government";
 
+// Loving Takeover program (shareholder route to the treaty)
+
+export const LOVING_TAKEOVER_TASK_ID = "loving-takeover";
+export const LOVING_TAKEOVER_TASK_KEY = "program:loving-takeover";
+export const LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID =
+  "loving-takeover-own-one-share";
+export const LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_KEY =
+  "program:loving-takeover:own-one-share";
+export const LOVING_TAKEOVER_LOVE_LETTER_TASK_ID =
+  "loving-takeover-love-letter";
+export const LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY =
+  "program:loving-takeover:love-letter";
+export const LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_ID =
+  "loving-takeover-optimize-lobbying";
+export const LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_KEY =
+  "program:loving-takeover:optimize-lobbying";
+
+// Earth Optimization Prize (Phase 1 funding mechanism)
+
+export const EARTH_OPTIMIZATION_PRIZE_TASK_ID = "earth-optimization-prize";
+export const EARTH_OPTIMIZATION_PRIZE_TASK_KEY =
+  "program:earth-optimization-prize";
+
+// Earth Optimization Services capitalization
+
+export const EOS_CAPITALIZE_TASK_ID = "eos-capitalize";
+export const EOS_CAPITALIZE_TASK_KEY = "program:eos:capitalize";
+
 // 1% Treaty parent + signer subtree
 
 export const TREATY_PARENT_TASK_ID = "1-pct-treaty";

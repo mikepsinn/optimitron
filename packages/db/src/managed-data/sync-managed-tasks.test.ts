@@ -28,6 +28,8 @@ type FakeTask = {
   category: typeof TaskCategory[keyof typeof TaskCategory];
   difficulty: typeof TaskDifficulty[keyof typeof TaskDifficulty];
   estimatedEffortHours: number | null;
+  expectedEconomicValueUsdBase: number | null;
+  successProbabilityBase: number | null;
   skillTags: string[];
   interestTags: string[];
   contextJson: unknown;
@@ -67,6 +69,8 @@ function makeTask(input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">): 
     category: TaskCategory.OTHER,
     difficulty: TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: null,
+    expectedEconomicValueUsdBase: null,
+    successProbabilityBase: null,
     skillTags: [],
     interestTags: [],
     contextJson: null,

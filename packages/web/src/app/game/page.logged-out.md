@@ -102,14 +102,14 @@
 - OPTIMAL GOVERNANCE (2040)
 - ❤️ HEALTHY LIFE YEARS
 - [63.3](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
-- [85.0](https://manual.WarOnDisease.org/knowledge/appendix/earth-optimization-prize-protocol.html)
-- +21.7 yrs
+- [79.4](https://manual.WarOnDisease.org/knowledge/appendix/earth-optimization-prize-protocol.html)
+- +16.1 yrs
 - [90.1](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html)
 - +26.8 yrs
 - 💰 MEDIAN INCOME
 - [$18,700](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
-- [$76,700](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
-- 4x
+- [$26,700](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
+- 1x
 - [$504,000](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html)
 - 27x
 #### PROGRESS TOWARD A MAJORITY OF HUMANS ON EARTH
@@ -142,7 +142,7 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀4 HUMANS TERMINATED🔥$8.6M BURNED BY MISALIGNED GOVERNMENTS💣$1.1M SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀25 HUMANS TERMINATED🔥$46.1M BURNED BY MISALIGNED GOVERNMENTS💣$6.0M SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
 - You are currently losing. You chose it by not choosing.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
@@ -158,8 +158,8 @@
 - Cures beat bombs. Nobody has ever asked. Until now. 25 players. 54 comparisons.
 - Of total funding available for both, drag slider to indicate how much should go to one vs the other.
 - more
-- ROI: 1:1 ▼
-- $75B/YR · ROI: NEGATIVE ROI · 2.1X OVERSPEND ▼
+- $13B/YR · ROI: 13:1 · 2.3X OVERSPEND ▼
+- $61B/YR · ROI: LOW ROI · 5.3X OVERSPEND ▼
 #### WHAT PEOPLE ACTUALLY WANT
 - VETERANS HEALTHCARE 12%
 - MILITARY OPERATIONS 10%
@@ -250,12 +250,12 @@
 | SCENARIO | INCOME / PERSON / YEAR | MEDIAN HALE |
 | --- | --- | --- |
 | STATUS QUO Somalia, But Everywhere | $14K baseline | 63.3 yrs |
-| 1% TREATY Minimum Acceptable Governance | 5.3× current$77K | 85 yrs |
+| 1% TREATY Minimum Acceptable Governance | 1.9× current$27K | 79.4 yrs |
 | OPTIMAL GOVERNANCE End the $101T/yr Dysfunction Tax | 35.0× current$504K | 90.1 yrs |
 - [CHOOSE PATH B](/prize)
 ### THE DECISION MATRIX
 - Every cell is better if you deposit. That's called a dominant strategy.
-| YOUR MOVE | TARGETS MISSED Somalia, but everywhere by 2040 | TARGETS HIT 4.2x richer · +21.7 healthy years |
+| YOUR MOVE | TARGETS MISSED Somalia, but everywhere by 2040 | TARGETS HIT 1.6x richer · +16.1 healthy years |
 | --- | --- | --- |
 | YOU DEPOSIT | ~[9](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)x return [15.8%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) annual, diversified across VC sector | ~[$6,670](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)/Earth Optimization Point at 1% of global savings in prize pool |
 | YOU DON'T | $0 and civilizational collapse | $0 and zero credit for the nice world |
@@ -323,12 +323,12 @@
 - [FULL ARMORY →](/tools)
 ### THE CLOCK IS RUNNING
 - Your Earth Optimization Points pay out if enough people play. Worth nothing if they don't.
-- 10
-- 04
-- 02
-- 09
-- 56
-- 42
+- [years]
+- [months]
+- [days]
+- [hours]
+- [minutes]
+- [seconds]
 - Until the destructive economy reaches 50% of GDP — the point where stealing beats creating
 - [SEE THE FULL MATH](/prize)
 - [EXPRESS YOUR PREFERENCES](/agencies/dcongress/wishocracy)

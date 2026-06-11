@@ -23,7 +23,7 @@
 - GAME OVER: YOU LOSE
 - Humanity stays stupid. Metrics miss the targets after 15 years. Projected outcome: ~15.8% annual growth for 15 years (based on VC-sector diversification).
 - GAME OVER: YOU WIN
-- Humanity gets its act together. Your deposit stays in the prize pool. Your expected upside is $3.48 million more per capita lifetime income and 21.7 years extra healthy years.
+- Humanity gets its act together. Your deposit stays in the prize pool. Your expected upside is $655,000 more per capita lifetime income and 21.7 years extra healthy years.
 - Recruit voters too? You earn Earth Optimization Points. Earth Optimization Point holders claim proportional shares of the prize pool. Dominant assurance design.
 ### WIN CONDITIONS
 - Two numbers. If both rise by 2040, the pool splits to Earth Optimization Point holders. If not, depositors claim principal + projected growth.
