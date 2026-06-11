@@ -4679,7 +4679,7 @@ export const DEFENSE_TAKEOVER_COST_TOTAL: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_total",
   unit: "USD",
   displayName: "Defense Takeover Total Cost",
-  description: "Total realistic cost to acquire controlling stakes in all major Western defense contractors, including acquisition premium from coordinated buying pressure",
+  description: "Total realistic cost to acquire controlling stakes in all major Western military contractors, including acquisition premium from coordinated buying pressure",
   sourceType: "calculated",
   confidence: "high",
   formula: "(DEFENSE_PRIMES_MARKET_CAP_US + DEFENSE_PRIMES_MARKET_CAP_ALLIED) * DEFENSE_TAKEOVER_CONTROL_FRACTION * DEFENSE_TAKEOVER_ACQUISITION_PREMIUM",
