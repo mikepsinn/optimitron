@@ -21,6 +21,7 @@ import {
 type FakeTask = {
   id: string;
   taskKey: string | null;
+  currentImpactEstimateSetId?: string | null;
   parentTaskId: string | null;
   title: string;
   description: string;
@@ -28,8 +29,6 @@ type FakeTask = {
   category: typeof TaskCategory[keyof typeof TaskCategory];
   difficulty: typeof TaskDifficulty[keyof typeof TaskDifficulty];
   estimatedEffortHours: number | null;
-  expectedEconomicValueUsdBase: number | null;
-  successProbabilityBase: number | null;
   skillTags: string[];
   interestTags: string[];
   contextJson: unknown;
@@ -43,6 +42,37 @@ type FakeTask = {
   sortOrder: number;
   deletedAt: Date | null;
   createdByUserId: string;
+};
+
+type FakeImpactEstimateSet = {
+  id: string;
+  assumptionsJson?: unknown;
+  calculationVersion: string;
+  counterfactualKey: string;
+  deletedAt: Date | null;
+  estimateKind: string;
+  isCurrent: boolean;
+  methodologyKey: string;
+  parameterSetHash: string;
+  publicationStatus: string;
+  sourceSystem: string;
+  taskId: string;
+};
+
+type FakeImpactFrameEstimate = {
+  id: string;
+  adoptionRampYears: number;
+  annualDiscountRate: number;
+  benefitDurationYears: number;
+  deletedAt: Date | null;
+  estimatedEffortHoursBase: number | null;
+  evaluationHorizonYears: number;
+  expectedEconomicValueUsdBase: number | null;
+  frameKey: string;
+  frameSlug: string;
+  successProbabilityBase: number | null;
+  taskImpactEstimateSetId: string;
+  timeToImpactStartDays: number;
 };
 
 type FakeEndpoint = {
@@ -69,8 +99,6 @@ function makeTask(input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">): 
     category: TaskCategory.OTHER,
     difficulty: TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: null,
-    expectedEconomicValueUsdBase: null,
-    successProbabilityBase: null,
     skillTags: [],
     interestTags: [],
     contextJson: null,
@@ -117,18 +145,67 @@ function matchesIdOrTaskKey(where: Record<string, unknown>, task: FakeTask) {
   return true;
 }
 
+const fakeTaskScalarFields = new Set<keyof FakeTask>([
+  "availableAt",
+  "category",
+  "claimPolicy",
+  "contextJson",
+  "createdByUserId",
+  "currentImpactEstimateSetId",
+  "deadlinePolicy",
+  "deletedAt",
+  "description",
+  "difficulty",
+  "dueAt",
+  "estimatedEffortHours",
+  "id",
+  "impactStatement",
+  "interestTags",
+  "isPublic",
+  "maxClaims",
+  "parentTaskId",
+  "skillTags",
+  "sortOrder",
+  "status",
+  "taskKey",
+  "title",
+]);
+
+function assertValidTaskSelect(select: Record<string, unknown> | undefined) {
+  if (!select) return;
+
+  for (const key of Object.keys(select)) {
+    if (!fakeTaskScalarFields.has(key as keyof FakeTask)) {
+      throw new Error(`Unknown Task select field in fake client: ${key}`);
+    }
+  }
+}
+
 class FakeManagedTaskClient implements ManagedTaskClient {
   tasks: FakeTask[];
   endpoints: FakeEndpoint[];
+  impactEstimateSets: FakeImpactEstimateSet[];
+  impactFrameEstimates: FakeImpactFrameEstimate[];
 
-  constructor(input: { endpoints?: FakeEndpoint[]; tasks?: FakeTask[] }) {
+  constructor(input: {
+    endpoints?: FakeEndpoint[];
+    impactEstimateSets?: FakeImpactEstimateSet[];
+    impactFrameEstimates?: FakeImpactFrameEstimate[];
+    tasks?: FakeTask[];
+  }) {
     this.tasks = input.tasks ?? [];
     this.endpoints = input.endpoints ?? [];
+    this.impactEstimateSets = input.impactEstimateSets ?? [];
+    this.impactFrameEstimates = input.impactFrameEstimates ?? [];
   }
 
   task = {
     findMany: async (args: unknown) => {
-      const where = (args as { where?: { OR?: Array<Record<string, unknown>> } }).where;
+      const { select, where } = args as {
+        select?: Record<string, unknown>;
+        where?: { OR?: Array<Record<string, unknown>> };
+      };
+      assertValidTaskSelect(select);
       const ids = new Set<string>();
       const keys = new Set<string>();
       for (const clause of where?.OR ?? []) {
@@ -143,6 +220,16 @@ class FakeManagedTaskClient implements ManagedTaskClient {
           ids.has(task.id) ||
           (task.taskKey !== null && keys.has(task.taskKey)),
       );
+    },
+    update: async (args: unknown) => {
+      const { where, data } = args as {
+        where: { id: string };
+        data: Partial<FakeTask>;
+      };
+      const task = this.tasks.find((candidate) => candidate.id === where.id);
+      if (!task) throw new Error(`Missing task ${where.id}`);
+      Object.assign(task, data);
+      return task;
     },
     updateMany: async (args: unknown) => {
       const { where, data } = args as {
@@ -187,6 +274,109 @@ class FakeManagedTaskClient implements ManagedTaskClient {
 
       applyTaskData(task, update);
       return task;
+    },
+  };
+
+  taskImpactEstimateSet = {
+    updateMany: async (args: unknown) => {
+      const { where, data } = args as {
+        where: {
+          deletedAt?: null;
+          isCurrent?: boolean;
+          NOT?: { id: string };
+          taskId: string;
+        };
+        data: Partial<FakeImpactEstimateSet>;
+      };
+      let count = 0;
+      for (const estimateSet of this.impactEstimateSets) {
+        const matches =
+          estimateSet.taskId === where.taskId &&
+          (!("deletedAt" in where) || estimateSet.deletedAt === where.deletedAt) &&
+          (!("isCurrent" in where) || estimateSet.isCurrent === where.isCurrent) &&
+          (!where.NOT || estimateSet.id !== where.NOT.id);
+        if (matches) {
+          Object.assign(estimateSet, data);
+          count += 1;
+        }
+      }
+      return { count };
+    },
+    upsert: async (args: unknown) => {
+      const { where, create, update } = args as {
+        where: {
+          taskId_estimateKind_sourceSystem_calculationVersion_methodologyKey_parameterSetHash_counterfactualKey: {
+            calculationVersion: string;
+            counterfactualKey: string;
+            estimateKind: string;
+            methodologyKey: string;
+            parameterSetHash: string;
+            sourceSystem: string;
+            taskId: string;
+          };
+        };
+        create: Omit<FakeImpactEstimateSet, "id" | "deletedAt"> & {
+          deletedAt?: Date | null;
+        };
+        update: Partial<FakeImpactEstimateSet>;
+      };
+      const key =
+        where.taskId_estimateKind_sourceSystem_calculationVersion_methodologyKey_parameterSetHash_counterfactualKey;
+      let estimateSet = this.impactEstimateSets.find(
+        (candidate) =>
+          candidate.taskId === key.taskId &&
+          candidate.estimateKind === key.estimateKind &&
+          candidate.sourceSystem === key.sourceSystem &&
+          candidate.calculationVersion === key.calculationVersion &&
+          candidate.methodologyKey === key.methodologyKey &&
+          candidate.parameterSetHash === key.parameterSetHash &&
+          candidate.counterfactualKey === key.counterfactualKey,
+      );
+      if (!estimateSet) {
+        estimateSet = {
+          id: `estimate-set-${this.impactEstimateSets.length + 1}`,
+          deletedAt: null,
+          ...create,
+        };
+        this.impactEstimateSets.push(estimateSet);
+      } else {
+        Object.assign(estimateSet, update);
+      }
+      return { id: estimateSet.id };
+    },
+  };
+
+  taskImpactFrameEstimate = {
+    upsert: async (args: unknown) => {
+      const { where, create, update } = args as {
+        where: {
+          taskImpactEstimateSetId_frameSlug: {
+            frameSlug: string;
+            taskImpactEstimateSetId: string;
+          };
+        };
+        create: Omit<FakeImpactFrameEstimate, "id" | "deletedAt"> & {
+          deletedAt?: Date | null;
+        };
+        update: Partial<FakeImpactFrameEstimate>;
+      };
+      const key = where.taskImpactEstimateSetId_frameSlug;
+      let frame = this.impactFrameEstimates.find(
+        (candidate) =>
+          candidate.taskImpactEstimateSetId === key.taskImpactEstimateSetId &&
+          candidate.frameSlug === key.frameSlug,
+      );
+      if (!frame) {
+        frame = {
+          id: `impact-frame-${this.impactFrameEstimates.length + 1}`,
+          deletedAt: null,
+          ...create,
+        };
+        this.impactFrameEstimates.push(frame);
+      } else {
+        Object.assign(frame, update);
+      }
+      return { id: frame.id };
     },
   };
 

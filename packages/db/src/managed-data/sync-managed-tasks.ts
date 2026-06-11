@@ -73,8 +73,6 @@ interface ManagedTaskRow {
   category: TaskCategoryValue;
   difficulty: TaskDifficultyValue;
   estimatedEffortHours: number | null;
-  expectedEconomicValueUsdBase: number | null;
-  successProbabilityBase: number | null;
   skillTags: string[];
   interestTags: string[];
   contextJson: Prisma.JsonValue | null;
@@ -102,11 +100,27 @@ interface ManagedEndpointRow {
   verificationStatus: typeof TaskCommunicationEndpointVerificationStatus[keyof typeof TaskCommunicationEndpointVerificationStatus];
 }
 
+interface ManagedTaskImpactEstimateSetRow {
+  id: string;
+}
+
+interface ManagedTaskImpactFrameRow {
+  id: string;
+}
+
 export interface ManagedTaskClient {
   task: {
     findMany(args: unknown): Promise<ManagedTaskRow[]>;
+    update(args: unknown): Promise<unknown>;
     updateMany(args: unknown): Promise<{ count: number }>;
     upsert(args: unknown): Promise<ManagedTaskRow>;
+  };
+  taskImpactEstimateSet: {
+    updateMany(args: unknown): Promise<{ count: number }>;
+    upsert(args: unknown): Promise<ManagedTaskImpactEstimateSetRow>;
+  };
+  taskImpactFrameEstimate: {
+    upsert(args: unknown): Promise<ManagedTaskImpactFrameRow>;
   };
   taskCommunicationEndpoint: {
     create(args: unknown): Promise<unknown>;
@@ -138,6 +152,11 @@ export interface SyncManagedTasksOptions {
   records: ManagedTaskRecord[];
   useTransaction?: boolean;
 }
+
+const MANAGED_TASK_IMPACT_CALCULATION_VERSION = "managed-task-tree-v1";
+const MANAGED_TASK_IMPACT_COUNTERFACTUAL_KEY = "status-quo";
+const MANAGED_TASK_IMPACT_FRAME_SLUG = "one-year";
+const MANAGED_TASK_IMPACT_FRAME_YEARS = 1;
 
 export interface SyncManagedTasksResult {
   collectionKey: string;
@@ -334,8 +353,6 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
     category: record.category ?? TaskCategory.GOVERNANCE,
     difficulty: record.difficulty ?? TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: record.estimatedEffortHours ?? null,
-    expectedEconomicValueUsdBase: record.expectedEconomicValueUsdBase ?? null,
-    successProbabilityBase: record.successProbabilityBase ?? null,
     skillTags: record.skillTags ?? [],
     interestTags: record.interestTags ?? [],
     contextJson: buildManagedContext(collectionKey, record),
@@ -496,8 +513,6 @@ function managedTaskNeedsUpdate(
     existing.category !== scalars.category ||
     existing.difficulty !== scalars.difficulty ||
     existing.estimatedEffortHours !== scalars.estimatedEffortHours ||
-    existing.expectedEconomicValueUsdBase !== scalars.expectedEconomicValueUsdBase ||
-    existing.successProbabilityBase !== scalars.successProbabilityBase ||
     !sameJson(existing.skillTags, scalars.skillTags) ||
     !sameJson(existing.interestTags, scalars.interestTags) ||
     !sameJson(existing.contextJson, scalars.contextJson) ||
@@ -520,6 +535,144 @@ function findExistingTask(
   const byId = rows.find((row) => row.id === record.id);
   if (byId) return byId;
   return rows.find((row) => row.taskKey === record.taskKey) ?? null;
+}
+
+function hasManagedTaskImpact(record: ManagedTaskRecord) {
+  return (
+    record.expectedEconomicValueUsdBase !== null &&
+      record.expectedEconomicValueUsdBase !== undefined ||
+    record.successProbabilityBase !== null &&
+      record.successProbabilityBase !== undefined
+  );
+}
+
+function buildManagedTaskImpactData(
+  collectionKey: string,
+  record: ManagedTaskRecord,
+) {
+  const conditionalEconomicValueUsdBase =
+    record.expectedEconomicValueUsdBase ?? null;
+  const successProbabilityBase = record.successProbabilityBase ?? null;
+  const expectedEconomicValueUsdBase =
+    conditionalEconomicValueUsdBase === null
+      ? null
+      : successProbabilityBase === null
+        ? conditionalEconomicValueUsdBase
+        : conditionalEconomicValueUsdBase * successProbabilityBase;
+
+  return {
+    estimateSet: {
+      assumptionsJson: {
+        managedData: {
+          collectionKey,
+          recordId: record.id,
+          source: "packages/db/src/managed-data/sync-managed-tasks",
+        },
+        conditionalEconomicValueUsdBase,
+      } satisfies Prisma.InputJsonObject,
+      calculationVersion: MANAGED_TASK_IMPACT_CALCULATION_VERSION,
+      counterfactualKey: MANAGED_TASK_IMPACT_COUNTERFACTUAL_KEY,
+      estimateKind: "FORECAST" as const,
+      methodologyKey: collectionKey,
+      parameterSetHash: `managed-${collectionKey}-${record.id}`,
+      publicationStatus: "PUBLISHED" as const,
+      sourceSystem: "PARAMETER_CATALOG" as const,
+    },
+    frame: {
+      adoptionRampYears: 0,
+      annualDiscountRate: 0,
+      benefitDurationYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
+      estimatedEffortHoursBase: record.estimatedEffortHours ?? null,
+      evaluationHorizonYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
+      expectedEconomicValueUsdBase,
+      frameKey: "ONE_YEAR" as const,
+      successProbabilityBase,
+      timeToImpactStartDays: 0,
+    },
+  };
+}
+
+async function syncManagedTaskImpactEstimate(
+  client: ManagedTaskClient,
+  collectionKey: string,
+  record: ManagedTaskRecord,
+) {
+  if (!hasManagedTaskImpact(record)) {
+    return;
+  }
+
+  const impactData = buildManagedTaskImpactData(collectionKey, record);
+  const estimateSet = await client.taskImpactEstimateSet.upsert({
+    where: {
+      taskId_estimateKind_sourceSystem_calculationVersion_methodologyKey_parameterSetHash_counterfactualKey:
+        {
+          calculationVersion: impactData.estimateSet.calculationVersion,
+          counterfactualKey: impactData.estimateSet.counterfactualKey,
+          estimateKind: impactData.estimateSet.estimateKind,
+          methodologyKey: impactData.estimateSet.methodologyKey,
+          parameterSetHash: impactData.estimateSet.parameterSetHash,
+          sourceSystem: impactData.estimateSet.sourceSystem,
+          taskId: record.id,
+        },
+    } satisfies Prisma.TaskImpactEstimateSetWhereUniqueInput,
+    create: {
+      ...impactData.estimateSet,
+      isCurrent: true,
+      taskId: record.id,
+    },
+    update: {
+      ...impactData.estimateSet,
+      deletedAt: null,
+      isCurrent: true,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  await client.taskImpactEstimateSet.updateMany({
+    where: {
+      deletedAt: null,
+      isCurrent: true,
+      taskId: record.id,
+      NOT: {
+        id: estimateSet.id,
+      },
+    },
+    data: {
+      isCurrent: false,
+    },
+  });
+
+  await client.task.update({
+    where: {
+      id: record.id,
+    },
+    data: {
+      currentImpactEstimateSetId: estimateSet.id,
+    },
+  });
+
+  await client.taskImpactFrameEstimate.upsert({
+    where: {
+      taskImpactEstimateSetId_frameSlug: {
+        frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG,
+        taskImpactEstimateSetId: estimateSet.id,
+      },
+    } satisfies Prisma.TaskImpactFrameEstimateWhereUniqueInput,
+    create: {
+      ...impactData.frame,
+      frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG,
+      taskImpactEstimateSetId: estimateSet.id,
+    },
+    update: {
+      ...impactData.frame,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+    },
+  });
 }
 
 export async function syncManagedTasks(
@@ -574,8 +727,6 @@ export async function syncManagedTasks(
       category: true,
       difficulty: true,
       estimatedEffortHours: true,
-      expectedEconomicValueUsdBase: true,
-      successProbabilityBase: true,
       skillTags: true,
       interestTags: true,
       contextJson: true,
@@ -704,6 +855,8 @@ export async function syncManagedTasks(
         ),
         update: buildTaskUpdateData(options.collectionKey, record),
       });
+
+      await syncManagedTaskImpactEstimate(client, options.collectionKey, record);
 
       if (record.primaryEndpoint !== undefined) {
         const endpointAction = await upsertPrimaryEndpoint(
