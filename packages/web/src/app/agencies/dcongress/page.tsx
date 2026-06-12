@@ -25,7 +25,7 @@ const subAgencies = [
     emoji: "📜",
     name: "Referendums",
     description:
-      "Vote on proposals directly. Verify with World ID. Skip the middleman who was going to ignore you anyway.",
+      "Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.",
     href: ROUTES.referendum,
     earthEquivalent: "Congressional Legislation",
     color: "cyan" as const,
