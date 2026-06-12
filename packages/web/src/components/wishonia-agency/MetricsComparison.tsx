@@ -1,4 +1,3 @@
-import { BrutalCard } from "@/components/ui/brutal-card";
 import type { OptimizationMetric } from "@optimitron/data/datasets/wishonia-agencies";
 import { X, Check } from "lucide-react";
 
@@ -18,7 +17,7 @@ function MetricItem({
   icon: "deprecated" | "optimal";
 }) {
   return (
-    <div className="border-4 border-primary bg-background p-4">
+    <div className="py-4">
       <div className="flex items-start gap-3">
         <div className="mt-0.5 shrink-0">
           {icon === "deprecated" ? (
@@ -43,7 +42,6 @@ function MetricItem({
 export function MetricsComparison({
   deprecatedMetrics,
   optimalMetrics,
-  accentColor,
 }: MetricsComparisonProps) {
   return (
     <section className="mb-16">
@@ -51,26 +49,26 @@ export function MetricsComparison({
         What They Optimize For
       </h2>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <BrutalCard bgColor="pink" shadowSize={8} padding="md">
-          <div className="mb-4 text-xs font-black uppercase tracking-[0.15em] text-background">
+        <div className="border-y border-foreground/30 py-2">
+          <div className="py-3 text-xs font-black uppercase tracking-[0.15em] text-foreground">
             Earth Agency Optimizes For
           </div>
-          <div className="space-y-3">
+          <div className="divide-y divide-foreground/20">
             {deprecatedMetrics.map((m) => (
               <MetricItem key={m.metric} metric={m} icon="deprecated" />
             ))}
           </div>
-        </BrutalCard>
-        <BrutalCard bgColor={accentColor} shadowSize={8} padding="md">
-          <div className="mb-4 text-xs font-black uppercase tracking-[0.15em]">
+        </div>
+        <div className="border-y border-foreground/30 py-2">
+          <div className="py-3 text-xs font-black uppercase tracking-[0.15em] text-foreground">
             Wishonia Optimizes For
           </div>
-          <div className="space-y-3">
+          <div className="divide-y divide-foreground/20">
             {optimalMetrics.map((m) => (
               <MetricItem key={m.metric} metric={m} icon="optimal" />
             ))}
           </div>
-        </BrutalCard>
+        </div>
       </div>
     </section>
   );

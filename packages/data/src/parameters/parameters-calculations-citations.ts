@@ -522,48 +522,64 @@ export const CURRENT_TRIAL_SLOTS_AVAILABLE: Parameter = {
 };
 
 export const DEFENSE_LOBBYING_ANNUAL: Parameter = {
-  value: 127000000.0,
+  value: 198000000.0,
   parameterName: "DEFENSE_LOBBYING_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_lobbying_annual",
   unit: "USD/year",
-  displayName: "Annual Defense Industry Lobbying Spending",
-  description: "Annual defense industry lobbying spending",
+  displayName: "Annual Military Sector Lobbying",
+  description: "Annual military sector lobbying spending. OpenSecrets reports the 2025 actual at $198.0 million, the top of a three-year climb: $142.9M (2023), $159.5M (2024), $198.0M (2025)",
   sourceType: "external",
   sourceRef: "lobbying-spend-defense",
-  sourceUrl: "https://www.opensecrets.org/industries/lobbying?ind=D",
+  sourceUrl: "https://www.opensecrets.org/federal-lobbying/sectors/summary?id=D",
   confidence: "high",
-  confidenceInterval: [100000000.0, 160000000.0],
+  confidenceInterval: [190000000.0, 210000000.0],
   peerReviewed: true,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/faq.html",
   manualPageTitle: "Frequently Asked Objections",
 };
 
 export const DEFENSE_PRIMES_MARKET_CAP_ALLIED: Parameter = {
-  value: 131000000000.0,
+  value: 132000000000.0,
   parameterName: "DEFENSE_PRIMES_MARKET_CAP_ALLIED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_primes_market_cap_allied",
   unit: "USD",
-  displayName: "Allied Defense Primes Market Cap",
-  description: "Combined market capitalization of major allied European defense primes (BAE Systems approx $75.6B + Thales approx $55.0B), approx as of June 2026",
+  displayName: "Allied Military Primes Market Cap",
+  description: "Combined market capitalization of major allied European military primes (BAE Systems approx $75.8B + Thales approx $56.7B), as of June 2026",
   sourceType: "external",
-  sourceRef: "defense-primes-market-cap-2026",
-  sourceUrl: "https://companiesmarketcap.com/defense-contractors/largest-companies-by-market-cap/",
+  sourceRef: "companiesmarketcap-eu-primes-2026",
+  sourceUrl: "https://companiesmarketcap.com/bae-systems/marketcap/",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
   manualPageTitle: "The Loving Takeover",
 };
 
 export const DEFENSE_PRIMES_MARKET_CAP_US: Parameter = {
-  value: 670000000000.0,
+  value: 836000000000.0,
   parameterName: "DEFENSE_PRIMES_MARKET_CAP_US",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_primes_market_cap_us",
   unit: "USD",
-  displayName: "US Defense Primes Market Cap",
-  description: "Combined market capitalization of major US defense primes (RTX, LMT, GD, NOC, LHX, HII plus IT primes LDOS, BAH, CACI, SAIC), approx as of June 2026; Boeing is largely commercial and only partially attributable",
+  displayName: "US Military Primes Market Cap",
+  description: "Combined market capitalization of the 11 major US military primes at the June 2026 close: RTX $248.1B, Boeing $174.7B, Lockheed Martin $126.5B, General Dynamics $96.9B, Northrop Grumman $78.5B, L3Harris $58.2B, Leidos $15.4B, Huntington Ingalls $11.9B, CACI $11.6B, Booz Allen Hamilton $9.2B, SAIC $4.9B",
   sourceType: "external",
-  sourceRef: "defense-primes-market-cap-2026",
-  sourceUrl: "https://companiesmarketcap.com/defense-contractors/largest-companies-by-market-cap/",
+  sourceRef: "stockanalysis-military-prime-caps-2026",
+  sourceUrl: "https://stockanalysis.com/stocks/",
   confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const DEFENSE_PRIMES_TRADEABLE_FLOAT: Parameter = {
+  value: 880000000000.0,
+  parameterName: "DEFENSE_PRIMES_TRADEABLE_FLOAT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_primes_tradeable_float",
+  unit: "USD",
+  displayName: "Military Primes Tradeable Float",
+  description: "Tradeable float of the 13 Western military primes, approx 91% of their combined market cap. Method: per-company float and shares-outstanding from stockanalysis.com statistics pages; big-5 floats verified individually (RTX 92.6%, BA 96.0%, LMT 85.7%, GD 94.2%, NOC 99.7%). Thales is the outlier at approx 45% float because the French State (26.60%) and Dassault Aviation (26.59%) stakes are locked",
+  sourceType: "external",
+  sourceRef: "stockanalysis-military-prime-caps-2026",
+  sourceUrl: "https://stockanalysis.com/stocks/",
+  confidence: "medium",
+  confidenceInterval: [850000000000.0, 900000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
   manualPageTitle: "The Loving Takeover",
 };
@@ -1796,6 +1812,22 @@ export const GLOBAL_YLD_PROPORTION_OF_DALYS: Parameter = {
   peerReviewed: true,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
   manualPageTitle: "Ubiquitous Pragmatic Trial Impact Analysis: How to Prevent a Year of Death and Suffering for 84 Cents",
+};
+
+export const GOV_CONTROLLING_SECTORS_TOP5_MARKET_CAP: Parameter = {
+  value: 16710000000000.0,
+  parameterName: "GOV_CONTROLLING_SECTORS_TOP5_MARKET_CAP",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-gov_controlling_sectors_top5_market_cap",
+  unit: "USD",
+  displayName: "Government-Controlling Sectors Top-5 Market Cap",
+  description: "Combined market capitalization of the top-5 US public lobbying spenders in each of the four other government-controlling sectors: pharmaceuticals $1.79T, technology $13.28T, insurance $0.39T, oil and gas $1.25T. Caveats: Meta (Zuckerberg 60.8% voting) and Alphabet (Page and Brin 52.3%) cannot be majority-acquired; Ellison owns 40.6% of Oracle; the largest insurance lobbyists are mutuals with no shares; trade associations (PhRMA, AHIP, SIFMA, API) are not acquirable",
+  sourceType: "external",
+  sourceRef: "opensecrets-top-lobbying-industries-2025",
+  sourceUrl: "https://www.opensecrets.org/federal-lobbying/industries?cycle=2025",
+  confidence: "medium",
+  confidenceInterval: [15000000000000.0, 18000000000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
 };
 
 export const HOME_BIAS_ALPHA: Parameter = {
@@ -4658,27 +4690,27 @@ export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
 };
 
 export const DEFENSE_TAKEOVER_COST_PER_HUMAN: Parameter = {
-  value: 90.292725,
+  value: 109.1178,
   parameterName: "DEFENSE_TAKEOVER_COST_PER_HUMAN",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_per_human",
   unit: "USD",
-  displayName: "Defense Takeover Cost per Human",
-  description: "Per-person cost of the defense takeover distributed across global population",
+  displayName: "Military Takeover Cost per Human",
+  description: "Per-person cost of the military takeover distributed across global population",
   sourceType: "calculated",
   confidence: "high",
   formula: "DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_POPULATION_2024",
-  latex: "\\begin{gathered}\nC_{takeover,pp} = \\frac{C_{takeover}}{Pop_{global}} = \\frac{\\$722B}{8B} = \\$90.3\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
-  confidenceInterval: [88.42774412636044, 92.24892197295307],
+  latex: "\\begin{gathered}\nC_{takeover,pp} = \\frac{C_{takeover}}{Pop_{global}} = \\frac{\\$873B}{8B} = \\$109\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  confidenceInterval: [106.86399040489, 111.48184328316925],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
   manualPageTitle: "The Loving Takeover",
 };
 
 export const DEFENSE_TAKEOVER_COST_TOTAL: Parameter = {
-  value: 722341800000.0,
+  value: 872942400000.0,
   parameterName: "DEFENSE_TAKEOVER_COST_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_total",
   unit: "USD",
-  displayName: "Defense Takeover Total Cost",
+  displayName: "Military Takeover Total Cost",
   description: "Total realistic cost to acquire controlling stakes in all major Western military contractors, including acquisition premium from coordinated buying pressure",
   sourceType: "calculated",
   confidence: "high",
@@ -5861,6 +5893,21 @@ export const FDA_TO_OXFORD_RECOVERY_TRIAL_TIME_MULTIPLIER: Parameter = {
   manualPageTitle: "Your FDA Is Unsafe and Ineffective",
 };
 
+export const FULL_INFLUENCE_COST_ACTIVIST: Parameter = {
+  value: 1708442400000.0,
+  parameterName: "FULL_INFLUENCE_COST_ACTIVIST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_influence_cost_activist",
+  unit: "USD",
+  displayName: "Full Influence Package Cost",
+  description: "Full control of the military primes (50.1% plus acquisition premium) plus 5% activist positions in the top-5 lobbying firms of the other four government-controlling sectors. The activist tier follows the Engine No. 1 precedent: a 0.02% stake won three Exxon board seats, so 5% is a loud voice at every table",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "DEFENSE_TAKEOVER_COST_TOTAL + 0.05 * GOV_CONTROLLING_SECTORS_TOP5_MARKET_CAP",
+  latex: "\\begin{gathered}\nC_{influence} = C_{takeover} + 0.05 \\times MarketCap_{sectors}\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
 export const GENE_THERAPY_DISEASE_COMBINATIONS: Parameter = {
   value: 20000000.0,
   parameterName: "GENE_THERAPY_DISEASE_COMBINATIONS",
@@ -6609,7 +6656,7 @@ export const IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL: Parameter = {
 };
 
 export const IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT: Parameter = {
-  value: 21.41732283464567,
+  value: 13.737373737373737,
   parameterName: "IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-iab_vs_defense_lobby_ratio_at_1pct",
   unit: "x",
@@ -6618,7 +6665,7 @@ export const IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL / DEFENSE_LOBBYING_ANNUAL",
-  latex: "\\begin{gathered}\nk_{IAB:defense} = \\frac{Funding_{political,ann}}{Lobby_{def,ann}} = \\frac{\\$2.72B}{\\$127M} = 21.4\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
+  latex: "\\begin{gathered}\nk_{IAB:defense} = \\frac{Funding_{political,ann}}{Lobby_{def,ann}} = \\frac{\\$2.72B}{\\$198M} = 13.7\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
   manualPageTitle: "Peace Dividend",
 };
@@ -6823,7 +6870,7 @@ export const MECHANISM_LOVING_TAKEOVER_EV: Parameter = {
 };
 
 export const MECHANISM_LOVING_TAKEOVER_NET_COST: Parameter = {
-  value: 14446836000.0,
+  value: 17458848000.0,
   parameterName: "MECHANISM_LOVING_TAKEOVER_NET_COST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-mechanism_loving_takeover_net_cost",
   unit: "USD",
@@ -6832,7 +6879,7 @@ export const MECHANISM_LOVING_TAKEOVER_NET_COST: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "DEFENSE_TAKEOVER_COST_TOTAL * MECHANISM_OPPORTUNITY_COST_RATE",
-  latex: "\\begin{gathered}\nC_{takeover,net} = C_{takeover} \\times r_{opp} = \\$722B \\times 0.02 = \\$14.4B\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nC_{takeover,net} = C_{takeover} \\times r_{opp} = \\$873B \\times 0.02 = \\$17.5B\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
   manualPageTitle: "Wishonia's Wager",
 };
@@ -7040,6 +7087,22 @@ export const NUCLEAR_WINTER_OVERKILL_FACTOR: Parameter = {
   formula: "GLOBAL_WARHEAD_COUNT / NUCLEAR_WINTER_WARHEAD_THRESHOLD",
   latex: "\\begin{gathered}\nOverkill_{winter} \\\\\n= \\frac{W_{global}}{W_{winter}} \\\\\n= \\frac{12{,}200}{100} \\\\\n= 122\n\\end{gathered}",
   confidenceInterval: [42.57726523263751, 196.5850911895582],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
+  manualPageTitle: "The Apocalypse Markup",
+};
+
+export const NUCLEAR_WINTER_SPARE_APOCALYPSES: Parameter = {
+  value: 121.41,
+  parameterName: "NUCLEAR_WINTER_SPARE_APOCALYPSES",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-nuclear_winter_spare_apocalypses",
+  unit: "apocalypses",
+  displayName: "Spare Apocalypses (Overkill Factor Minus One)",
+  description: "Spare apocalypses: how many civilization-ending nuclear winters the global arsenal can trigger beyond the one that would already end civilization. The nuclear winter overkill factor minus one. Used wherever the manual jokes about the surplus (the apocalypses kept in case the first does not take).",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "NUCLEAR_WINTER_OVERKILL_FACTOR - 1",
+  latex: "\\begin{gathered}\nOverkill_{spare} = Overkill_{winter} - 1 = 122 - 1 = 121\n\\\\[0.5em]\n\\text{where } Overkill_{winter} = \\frac{W_{global}}{W_{winter}} = \\frac{12{,}200}{100} = 122\n\\end{gathered}",
+  confidenceInterval: [41.57726523263751, 195.5850911895582],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
   manualPageTitle: "The Apocalypse Markup",
 };
@@ -7682,7 +7745,7 @@ export const PRIZE_TARGET_HALE_YEAR_15: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_target_hale_year_15",
   unit: "years",
   displayName: "Prize Settlement Target: Global HALE (Year 15)",
-  description: "The Earth Optimization Prize settlement target for global HALE at year 15. Set to the Treaty-trajectory projection (the achievable floor). The terminal-metric oracle compares measured global HALE against this value.",
+  description: "The Earth Optimization Prize settlement target for global HALE at year 15. Set to the Treaty-trajectory projection (the achievable floor). The terminal general-welfare metric oracle compares measured global HALE against this value.",
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_PROJECTED_HALE_YEAR_15",
@@ -10761,8 +10824,8 @@ export const DEFENSE_SECTOR_RETENTION_PCT: Parameter = {
   parameterName: "DEFENSE_SECTOR_RETENTION_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_sector_retention_pct",
   unit: "rate",
-  displayName: "Percentage of Budget Defense Sector Keeps Under 1% treaty",
-  description: "Percentage of budget defense sector keeps under 1% treaty",
+  displayName: "Percentage of Budget Military Sector Keeps Under 1% Treaty",
+  description: "Percentage of budget the military sector keeps under 1% treaty",
   sourceType: "definition",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution.html",
@@ -12298,6 +12361,7 @@ export const parameters = {
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_PRIMES_MARKET_CAP_ALLIED,
   DEFENSE_PRIMES_MARKET_CAP_US,
+  DEFENSE_PRIMES_TRADEABLE_FLOAT,
   DEMOCIDE_TOTAL_20TH_CENTURY,
   DEWORMING_COST_PER_DALY,
   DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
@@ -12376,6 +12440,7 @@ export const parameters = {
   GLOBAL_SYMPTOMATIC_DISEASE_TREATMENT_ANNUAL,
   GLOBAL_WARHEAD_COUNT,
   GLOBAL_YLD_PROPORTION_OF_DALYS,
+  GOV_CONTROLLING_SECTORS_TOP5_MARKET_CAP,
   HOME_BIAS_ALPHA,
   HUMAN_GENOME_PROJECT_TOTAL_ECONOMIC_IMPACT,
   HUMAN_INTERACTOME_TARGETED_PCT,
@@ -12631,6 +12696,7 @@ export const parameters = {
   EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS,
   EXPLORATION_RATIO,
   FDA_TO_OXFORD_RECOVERY_TRIAL_TIME_MULTIPLIER,
+  FULL_INFLUENCE_COST_ACTIVIST,
   GENE_THERAPY_DISEASE_COMBINATIONS,
   GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL,
   GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST,
@@ -12705,6 +12771,7 @@ export const parameters = {
   MRNA_THERAPEUTIC_COMBINATIONS,
   NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
+  NUCLEAR_WINTER_SPARE_APOCALYPSES,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   PEACE_DIVIDEND_CONFLICT_REDUCTION,
   PEACE_DIVIDEND_DIRECT_COSTS,
@@ -13077,7 +13144,7 @@ export interface ShareableSnippet {
 
 export const shareableSnippets = {
   declarationOfOptimization: {
-    markdown: "### The unanimous Declaration of the Eight Billion Inhabitants of Earth\n\nWhen in the Course of human events, it becomes necessary for a people to optimize the governance systems which have caused immeasurable preventable death and unnecessary poverty, a decent respect to the opinions of mankind requires that they should declare the causes which impel them to the optimization.\n\nWe hold these truths to be self-evident, that all humans are created equal, that they are endowed by their Biology with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.--That to secure these rights, Governments are instituted among Humans, deriving their just powers from the consent of the governed.\n\nThat whenever any Form of Government becomes destructive of these ends, it is the Right of the People to optimize it, laying its foundation on such principles and organizing its powers in such form, as to them shall seem most likely to effect their Safety and Happiness, measured by two metrics: the median number of healthy life years and the median after-tax inflation-adjusted income of its citizens.\n\nPrudence, indeed, will dictate that Governments long established should not be changed for light and transient causes; and accordingly all experience hath shewn, that mankind are more disposed to suffer, while evils are sufferable, than to right themselves by optimizing the forms to which they are accustomed.\n\nBut when a long pattern of abuses and misallocations, pursuing invariably the same end, reveals a design to reduce them under absolute Suboptimality, it is their right, it is their duty, to optimize such Government, and to provide new Guards for their future security.\n\nThe [Political Dysfunction Tax](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html), the total annual burden of suboptimality on the people of Earth: [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html) a year.\n\nSuch has been the patient sufferance of the inhabitants of Earth; and such is now the necessity which constrains them to optimize their former Systems of Government. The history of the present Governments of Earth is a history of repeated injuries and misallocations, all having as their direct result the establishment of an absolute Suboptimality over these people. To prove this, let Facts be submitted to a candid world.\n\nThey have refused their Assent to Laws, the most wholesome and necessary for the public good; the [correlation between public opinion and policy outcomes](https://manual.WarOnDisease.org/knowledge/problem/unrepresentative-democracy.html), measured across 1,779 policy decisions, is effectively zero.\n\nThey have legalized the purchase of legislation at a current annual price of [$4.4 billion](https://manual.WarOnDisease.org/knowledge/appendix/algorithmic-public-administration-paper.html), the legal definition of corruption having been written by the beneficiaries of said corruption.\n\nThey have imposed Taxes without Consent, including the [debasement of currency](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) by unelected officials whose money creation functions as a tax the governed never voted for, reducing the dollar's purchasing power by 96% since 1913.\n\nThey have spent over one trillion dollars across fifty years imprisoning and sometimes killing their own citizens for the crime of exercising [sovereignty over their own bodies](https://manual.WarOnDisease.org/knowledge/problem/genetic-slavery.html), sovereignty being the distinction between a citizen and property.\n\nThe result has been a 1,700% increase in overdose deaths and drug use higher than when they started, while half of all murders go unsolved for want of the resources squandered on the prosecution of those pursuing happiness by means the state did not approve.\n\nThey have lied to the governed to manufacture consent for wars the governed did not want, fabricating attacks that did not occur, presenting evidence they knew to be false, and spraying carcinogenic chemicals on rice farmers and their children, the exposed population now numbering four million with birth defects continuing to this day.\n\nThey have misplaced [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) in military funds, failed seven consecutive audits attempting to find it, and requested additional trillions without explanation or apology.\n\nThey have allowed the [destructive economy](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) to reach [11.5%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of global output, growing faster than the productive economy, on a trajectory that crosses fifty percent by [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). Once passing this threshold, earth will become a global failed state where it becomes irrational to produce because each dollar of value created is immediately stolen.\n\nThey have plundered our seas, ravaged our coasts, burnt our towns, and [destroyed the lives of our people](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html): [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people since 1900, [8.37 billion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) years of human life stolen, [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) in treasure spent on the enterprise.\n\n[Among them](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and millions of children who will never grow up to replace them.\n\nThey have directed [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times more to the destruction of human life than to testing which medicines might preserve it.\n\nThey have permitted [150 thousand](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) people to die of diseases every day, [104](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) every minute that passes, while possessing the means to accelerate solutions. The annual toll: [2.88 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years of healthy life lost to disease and disability, quietly deleted.\n\nNearly ten thousand known safe compounds remain untested for 99.7% of possible disease combinations. Yet the [national health research institutions](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) nominally responsible for finding cures direct only [3.3%](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) of their budgets to the clinical trials necessary to determine which diseases those compounds could treat.\n\nThey have erected [drug regulatory agencies](https://manual.WarOnDisease.org/knowledge/problem/fda-is-unsafe-and-ineffective.html) that, after a drug has been proven safe, force patients to wait an additional [8.2](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years while a committee determines whether the safe drug works well enough. For every death prevented by this vigilance, [3,389](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) people die waiting for the answer. Since 1962, the efficacy lag has killed approximately [102 million](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) people.\n\nThese regulatory barriers mean treatments without a billion-dollar market are never developed at all. The treatments that never were have killed an uncountable number of patients bounded only by the [55 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people who die of disease each year.\n\nThrough the combined effect of war spending, research misallocation, and regulatory cost inflation, they have left approximately seven thousand known rare diseases in a [treatment queue](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) that, at the current rate of fifteen approvals per year, requires [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to clear.\n\nThrough the compound effects of this misallocation to war alone, the governed are [23.2](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) times poorer than they would otherwise be. The average human earns [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) per year. Without the wars alone, that figure would be [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html). On both metrics by which any government should be judged, healthy life years and median income, the present systems have failed absolutely.\n\nIn every stage of these Misallocations We have Petitioned for Redress in the most humble terms: peer-reviewed papers, public comment periods, protest marches, and online petitions. Our repeated Petitions have been answered only by repeated Misallocation. Governments, whose character is thus marked by every act which may define Suboptimality, are unfit to manage the resources of a free species.\n\nNor have we neglected our governing institutions. We have warned them from time to time of attempts by their legislatures to extend an unwarrantable dysfunction over us. We have reminded them of the circumstances of our biological existence and the budget arithmetic of our premature deaths.\n\nWe have appealed to their stated missions and their campaign promises, and we have invoked the ties of our common mortality to disavow these misallocations, which would inevitably interrupt our survival and progress. They too have been deaf to the voice of justice and of evidence. We must, therefore, accept the necessity, which condemns our current Systems, and hold them, as we hold all governance systems, Accountable to Outcomes.\n\nThat this optimization is achievable requires no faith, only memory. These same governments [cut military spending](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years following the Second World War and produced not collapse but the greatest economic expansion in recorded history. These same governments banned chemical weapons (193 countries), biological weapons (187 countries), and landmines (164 countries). They have signed treaties banning weapons they wished to use. We ask them to buy [one percent](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) fewer of them.\n\nWe, therefore, the Inhabitants of Earth, assembled across every nation and connected by common cause, appealing to the Supreme Judge of the world for the rightness of our intentions, do, in the Name, and by Authority of the good People of this planet, solemnly publish and declare, That the Inhabitants of Earth are, and of Right ought to be Free and Justly Governed; that they are Absolved from all Allegiance to systems that produce outcomes worse than random allocation, and that all political connection between them and Suboptimal Governance, is and ought to be totally optimized.\n\nAnd that as Free Inhabitants of Earth, they have full Power to optimize budgets and institutions, establish transparent allocation systems, contract Alliances with evidence, and to do all other Acts and Things which Self-Governing Civilizations may of right do. And for the support of this Declaration, with a firm reliance on the protection of divine Providence, we mutually pledge to each other our Lives, our Fortunes, and our sacred Votes.\n\nThe proposed replacement system is documented in the [Earth Optimization Protocol](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html).\n",
+    markdown: "### The unanimous Declaration of the Eight Billion Inhabitants of Earth\n\nWhen in the Course of human events, it becomes necessary for a people to optimize the governance systems which have caused immeasurable preventable death and unnecessary poverty, a decent respect to the opinions of mankind requires that they should declare the causes which impel them to the optimization.\n\nWe hold these truths to be self-evident, that all humans are created equal, that they are endowed by their Biology with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.--That to secure these rights, Governments are instituted among Humans, deriving their just powers from the consent of the governed.\n\nThat whenever any Form of Government becomes destructive of these ends, it is the Right of the People to optimize it, laying its foundation on such principles and organizing its powers in such form, as to them shall seem most likely to effect their Safety and Happiness, measured by two metrics: the median number of healthy life years and the median after-tax inflation-adjusted income of its citizens.\n\nPrudence, indeed, will dictate that Governments long established should not be changed for light and transient causes; and accordingly all experience hath shewn, that mankind are more disposed to suffer, while evils are sufferable, than to right themselves by optimizing the forms to which they are accustomed.\n\nBut when a long pattern of abuses and misallocations, pursuing invariably the same end, reveals a design to reduce them under absolute Suboptimality, it is their right, it is their duty, to optimize such Government, and to provide new Guards for their future security.\n\nThe [Political Dysfunction Tax](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html), the total annual burden of suboptimality on the people of Earth: [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html) a year.\n\nSuch has been the patient sufferance of the inhabitants of Earth; and such is now the necessity which constrains them to optimize their former Systems of Government. The history of the present Governments of Earth is a history of repeated injuries and misallocations, all having as their direct result the establishment of an absolute Suboptimality over these people. To prove this, let Facts be submitted to a candid world.\n\nThey have refused their Assent to Laws, the most wholesome and necessary for the public good; the [correlation between public opinion and policy outcomes](https://manual.WarOnDisease.org/knowledge/problem/unrepresentative-democracy.html), measured across 1,779 policy decisions, is effectively zero.\n\nThey have legalized the purchase of legislation at a current annual price of [$4.4 billion](https://manual.WarOnDisease.org/knowledge/appendix/algorithmic-public-administration-paper.html), the legal definition of corruption having been written by the beneficiaries of said corruption.\n\nThey have imposed Taxes without Consent, including the [debasement of currency](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) by unelected officials whose money creation functions as a tax the governed never voted for, reducing the dollar's purchasing power by 96% since 1913.\n\nThey have spent over one trillion dollars across fifty years imprisoning and sometimes killing their own citizens for the crime of exercising [sovereignty over their own bodies](https://manual.WarOnDisease.org/knowledge/problem/genetic-slavery.html), sovereignty being the distinction between a citizen and property.\n\nThe result has been a 1,700% increase in overdose deaths and drug use higher than when they started, while half of all murders go unsolved for want of the resources squandered on the prosecution of those pursuing happiness by means the state did not approve.\n\nThey have lied to the governed to manufacture consent for wars the governed did not want, fabricating attacks that did not occur, presenting evidence they knew to be false, and spraying carcinogenic chemicals on rice farmers and their children, the exposed population now numbering four million with birth defects continuing to this day.\n\nThey have misplaced [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) in military funds, failed seven consecutive audits attempting to find it, and requested additional trillions without explanation or apology.\n\nThey have allowed the [destructive economy](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) to reach [11.5%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of global output, growing faster than the productive economy, on a trajectory that crosses fifty percent by [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). Once passing this threshold, earth will become a global failed state where it becomes irrational to produce because each dollar of value created is immediately stolen.\n\nThey have plundered our seas, ravaged our coasts, burnt our towns, and [destroyed the lives of our people](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html): [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people since 1900, [8.37 billion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) years of human life stolen, [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) in treasure spent on the enterprise.\n\n[Among them](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and millions of children who will never grow up to replace them.\n\nThey have directed [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times more to the destruction of human life than to testing which medicines might preserve it.\n\nThey have permitted [150 thousand](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) people to die of diseases every day, [104](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) every minute that passes, while possessing the means to accelerate solutions. The annual toll: [2.88 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years of healthy life lost to disease and disability, quietly deleted.\n\nNearly ten thousand known safe compounds remain untested for 99.7% of possible disease combinations. Yet the [national health research institutions](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) nominally responsible for finding cures direct only [3.3%](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) of their budgets to the clinical trials necessary to determine which diseases those compounds could treat.\n\nThey have erected [drug regulatory agencies](https://manual.WarOnDisease.org/knowledge/problem/fda-is-unsafe-and-ineffective.html) that, after a drug has been proven safe, force patients to wait an additional [8.2](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years while a committee determines whether the safe drug works well enough. For every death prevented by this vigilance, [3,389](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) people die waiting for the answer. Since 1962, the efficacy lag has killed approximately [102 million](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) people.\n\nThese regulatory barriers mean treatments without a billion-dollar market are never developed at all. The treatments that never were have killed an uncountable number of patients bounded only by the [55 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people who die of disease each year.\n\nThrough the combined effect of war spending, research misallocation, and regulatory cost inflation, they have left approximately seven thousand known rare diseases in a [treatment queue](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) that, at the current rate of fifteen approvals per year, requires [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to clear.\n\nThrough the compound effects of this misallocation to war alone, the governed are [23.2](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) times poorer than they would otherwise be. The average human earns [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) per year. Without the wars alone, that figure would be [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html). On both metrics by which any government should be judged, healthy life years and median income, the present systems have failed absolutely.\n\nIn every stage of these Misallocations We have Petitioned for Redress in the most humble terms: peer-reviewed papers, public comment periods, protest marches, and online petitions. Our repeated Petitions have been answered only by repeated Misallocation. Governments, whose character is thus marked by every act which may define Suboptimality, are unfit to manage the resources of a free species.\n\nNor have we neglected our governing institutions. We have warned them from time to time of attempts by their legislatures to extend an unwarrantable dysfunction over us. We have reminded them of the circumstances of our biological existence and the budget arithmetic of our premature deaths.\n\nWe have appealed to their stated missions and their campaign promises, and we have invoked the ties of our common mortality to disavow these misallocations, which would inevitably interrupt our survival and progress. They too have been deaf to the voice of justice and of evidence. We must, therefore, accept the necessity, which condemns our current Systems, and hold them, as we hold all governance systems, Accountable to Outcomes.\n\nThat this optimization is achievable requires no faith, only memory. These same governments [cut military spending](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years following the Second World War and produced not collapse but the greatest economic expansion in recorded history. These same governments banned chemical weapons (193 countries), biological weapons (187 countries), and landmines (164 countries). They have signed treaties banning weapons they wished to use. We direct them to buy [one percent](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) fewer of them.\n\nWe, therefore, the Inhabitants of Earth, assembled across every nation and connected by common cause, appealing to the Supreme Judge of the world for the rightness of our intentions, do, in the Name, and by Authority of the good People of this planet, solemnly publish and declare, That the Inhabitants of Earth are, and of Right ought to be Free and Justly Governed; that they are Absolved from all Allegiance to systems that produce outcomes worse than random allocation, and that all political connection between them and Suboptimal Governance, is and ought to be totally optimized.\n\nAnd that as Free Inhabitants of Earth, they have full Power to optimize budgets and institutions, establish transparent allocation systems, contract Alliances with evidence, and to do all other Acts and Things which Self-Governing Civilizations may of right do. And for the support of this Declaration, with a firm reliance on the protection of divine Providence, we mutually pledge to each other our Lives, our Fortunes, and our sacred Votes.\n\nThe proposed replacement system is documented in the [Earth Optimization Protocol](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html).\n",
     sourceFile: "knowledge/strategy/declaration-of-optimization.qmd",
     originalName: "declaration_of_optimization",
   },
@@ -13087,7 +13154,7 @@ export const shareableSnippets = {
     originalName: "one-percent-treaty-text",
   },
   whyOptimizationIsNecessary: {
-    markdown: "Governments were created to promote the general welfare (i.e. median health and wealth).\n\nInstead, since 1913, these governments have [printed](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) and used it to murder [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans and destroy many of the valuable things those humans spent their entire lives building.\n\nThese murdered humans [include](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them.\n\nThat [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) could have funded [37,778 years](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) of clinical trials.  They bought the other thing.\n\nThese governments have enough weapons to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. Current military spending is enough money to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every person alive every single year. You only need to kill everyone once for everyone to be dead. (I checked.) The remaining murder capacity is sheer waste.\n\nSeven consecutive failed audits have found that the Pentagon has \"misplaced\" [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html). They then requested additional trillions without explanation or apology. This \"misplaced\" money could have funded [547](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) years of clinical trials at current government spending.\n\nFor every [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) dollars they spend on the capacity for orphan manufacturing, they only spend one on clinical trials that might cure the diseases that will slowly torture and brutally murder you and everyone you have ever loved.\n\nYour chance of being killed by a terrorist? 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying of a disease? 100%.\n\nAt the current discovery rate, finding treatments for all known diseases takes ~[443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). One percent of the explosions budget could increase clinical trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and compress that wait to ~[36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The average cure arrives [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner.\n\nThis is important because you personally will be dead within 80 years. (I mention this not to be rude but because you seem weirdly calm about it.)\n\nHad someone properly aligned your governments to maximize median healthy life years and median after-tax inflation-adjusted income in 1900, the average human would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html).\n\nThey did not. So that is what you are going to do.\n\nThis Declaration asks every nation on Earth to sign a [treaty](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) redirecting one percent of military spending to clinical trials. One percent.\n\nHere is why this is not clinically insane.  Even adjusting for inflation, governments now spend [30.6](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) times more than they did immediately before winning World War II.\n\nAfter that war, governments cut military spending by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) and produced the greatest economic expansion in human history.\n\nUnless the human genome has degraded significantly in the last two generations, one percent should be manageable.\n\nThese governments have already signed multiple global treaties banning entire weapons industries. This one just asks them to buy one percent fewer of them.\n\nThink about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money was busy turning into a missile. That missile incinerated a child who might have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the inflation. You get the tax bill. You get to pay for her murder.\n\nThis is suboptimal.\n",
+    markdown: "Governments were created to promote the general welfare (i.e. median health and wealth).\n\nInstead, since 1913, these governments have [printed](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) and used it to murder [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans and destroy many of the valuable things those humans spent their entire lives building.\n\nThese murdered humans [include](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them.\n\nThat [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) could have funded [37,778 years](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) of clinical trials.  They bought the other thing.\n\nThese governments have enough weapons to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. Current military spending is enough money to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every person alive every single year. You only need to kill everyone once for everyone to be dead. (I checked.) The remaining murder capacity is sheer waste.\n\nSeven consecutive failed audits have found that the Pentagon has \"misplaced\" [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html). They then requested additional trillions without explanation or apology. This \"misplaced\" money could have funded [547](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) years of clinical trials at current government spending.\n\nFor every [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) dollars they spend on the capacity for orphan manufacturing, they only spend one on clinical trials that might cure the diseases that will slowly torture and brutally murder you and everyone you have ever loved.\n\nYour chance of being killed by a terrorist? 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying of a disease? 100%.\n\nAt the current discovery rate, finding treatments for all known diseases takes ~[443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). One percent of the explosions budget could increase clinical trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and compress that wait to ~[36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The average cure arrives [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner.\n\nThis is important because you personally will be dead within 80 years. (I mention this not to be rude but because you seem weirdly calm about it.)\n\nHad someone properly aligned your governments to maximize median healthy life years and median after-tax inflation-adjusted income in 1900, the average human would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html).\n\nThey did not. So that is what you are going to do.\n\nThis Declaration instructs every nation on Earth to sign a [treaty](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) redirecting one percent of military spending to clinical trials. One percent.\n\nHere is why this is not clinically insane.  Even adjusting for inflation, governments now spend [30.6](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) times more than they did immediately before winning World War II.\n\nAfter that war, governments cut military spending by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) and produced the greatest economic expansion in human history.\n\nUnless the human genome has degraded significantly in the last two generations, one percent should be manageable.\n\nThese governments have already signed multiple global treaties banning entire weapons industries. This one just has them buy one percent fewer of them.\n\nThink about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money was busy turning into a missile. That missile incinerated a child who might have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the inflation. You get the tax bill. You get to pay for her murder.\n\nThis is suboptimal.\n",
     sourceFile: "knowledge/strategy/declaration-of-optimization.qmd",
     originalName: "why-optimization-is-necessary",
   }
@@ -13366,6 +13433,19 @@ export const citations: Record<string, Citation> = {
         URL: "https://clinicaltrials.gov/data-api/api",
         note: "Direct analysis via ClinicalTrials.gov API v2",
   },
+  "companiesmarketcap-eu-primes-2026": {
+        id: "companiesmarketcap-eu-primes-2026",
+        type: "webpage",
+        title: "BAE Systems and Thales Market Capitalization",
+        author: [
+          {
+            literal: "Companies Market Cap"
+          },
+        ],
+        issued: { 'date-parts': [[2026]] },
+        URL: "https://companiesmarketcap.com/bae-systems/marketcap/",
+        note: "Allied European military prime market caps, June 2026",
+  },
   "correlates-of-war-nmc": {
         id: "correlates-of-war-nmc",
         type: "webpage",
@@ -13448,20 +13528,6 @@ export const citations: Record<string, Citation> = {
         issued: { 'date-parts': [[2018]] },
         'container-title': "Political Geography",
         URL: "https://doi.org/10.1016/j.polgeo.2017.09.004",
-  },
-  "defense-primes-market-cap-2026": {
-        id: "defense-primes-market-cap-2026",
-        type: "article-journal",
-        title: "Largest defense contractors by market capitalization",
-        author: [
-          {
-            literal: "Companies Market Cap"
-          },
-        ],
-        issued: { 'date-parts': [[2026]] },
-        'container-title': "CompaniesMarketCap.com: Defense Contractors",
-        URL: "https://companiesmarketcap.com/defense-contractors/largest-companies-by-market-cap/",
-        note: "Verified market caps June 2026: RTX \\$243.7B, Lockheed Martin \\$120.8B, General Dynamics \\$93.7B, Northrop Grumman \\$77.3B, L3Harris \\$57.3B, Huntington Ingalls \\$11.5B; BAE Systems \\$75.6B, Thales \\$55.0B. US defense primes aggregate approx \\$670B (Boeing is largely commercial and only partially attributable); allied primes BAE + Thales approx \\$131B.",
   },
   "deworming-cost-per-daly": {
         id: "deworming-cost-per-daly",
@@ -14262,16 +14328,16 @@ export const citations: Record<string, Citation> = {
   "lobbying-spend-defense": {
         id: "lobbying-spend-defense",
         type: "article-journal",
-        title: "Lobbying Spend (Defense)",
+        title: "Defense Sector Lobbying Summary",
         author: [
           {
             literal: "OpenSecrets"
           },
         ],
-        issued: { 'date-parts': [[2024]] },
+        issued: { 'date-parts': [[2025]] },
         'container-title': "OpenSecrets",
-        URL: "https://www.opensecrets.org/industries/lobbying?ind=D",
-        note: "OpenSecrets, 2024, Defense Lobbying",
+        URL: "https://www.opensecrets.org/federal-lobbying/sectors/summary?id=D",
+        note: "OpenSecrets, 2025, Defense Sector Lobbying",
   },
   "lobbyist-statistics-dc": {
         id: "lobbyist-statistics-dc",
@@ -14567,6 +14633,19 @@ export const citations: Record<string, Citation> = {
         issued: { 'date-parts': [[2024]] },
         URL: "https://www.opensecrets.org/revolving-door",
         note: "OpenSecrets, Revolving Door",
+  },
+  "opensecrets-top-lobbying-industries-2025": {
+        id: "opensecrets-top-lobbying-industries-2025",
+        type: "webpage",
+        title: "Top Lobbying Industries 2025",
+        author: [
+          {
+            literal: "OpenSecrets"
+          },
+        ],
+        issued: { 'date-parts': [[2025]] },
+        URL: "https://www.opensecrets.org/federal-lobbying/industries?cycle=2025",
+        note: "OpenSecrets sector ranks and per-company lobbying spending, 2025 cycle; market caps from stockanalysis.com at the 2026-06-11 close",
   },
   "operation-warp-speed-potential-vaccine-awards": {
         id: "operation-warp-speed-potential-vaccine-awards",
@@ -15004,6 +15083,19 @@ export const citations: Record<string, Citation> = {
           },
         ],
         note: "Composite estimate based on Orphanet, FDA approval data, and queue theory",
+  },
+  "stockanalysis-military-prime-caps-2026": {
+        id: "stockanalysis-military-prime-caps-2026",
+        type: "webpage",
+        title: "Military Prime Contractor Market Capitalization and Float Statistics",
+        author: [
+          {
+            literal: "Stock Analysis"
+          },
+        ],
+        issued: { 'date-parts': [[2026]] },
+        URL: "https://stockanalysis.com/stocks/",
+        note: "Per-ticker market cap and float statistics pages; closing values of 2026-06-11",
   },
   "sugar-subsidies-cost": {
         id: "sugar-subsidies-cost",
@@ -15451,11 +15543,11 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 789,
-  external: 232,
-  calculated: 397,
+  total: 793,
+  external: 234,
+  calculated: 399,
   definitions: 160,
-  citations: 173,
+  citations: 175,
 } as const;
 
 // ============================================================================

@@ -2,9 +2,9 @@ type CardColor = "pink" | "cyan" | "yellow" | "green";
 
 const dNameColorClasses: Record<CardColor, string> = {
   pink: "text-foreground",
-  cyan: "text-background",
+  cyan: "text-foreground",
   yellow: "text-foreground",
-  green: "text-brutal-green",
+  green: "text-foreground",
 };
 
 interface AgencyStampHeroProps {
@@ -24,7 +24,7 @@ export function AgencyStampHero({
     <section className="mb-16">
       <div className="max-w-3xl space-y-5">
         <div className="flex items-center gap-4">
-          <span className="inline-block border-4 border-brutal-red bg-brutal-red px-4 py-1 text-sm font-black uppercase tracking-[0.15em] text-brutal-red-foreground -rotate-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <span className="inline-block border border-foreground px-3 py-1 text-xs font-black uppercase tracking-[0.15em] text-foreground">
             Deprecated
           </span>
           <span

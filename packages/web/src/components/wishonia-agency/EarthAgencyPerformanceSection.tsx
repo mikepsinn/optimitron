@@ -28,7 +28,7 @@ function toChartData(ea: EarthAgency): AgencyPerformance {
 
 function SingleChart({ agency }: { agency: EarthAgency }) {
   return (
-    <div className="border-4 border-primary bg-background p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+    <div className="border-y border-foreground/30 bg-background py-4">
       <AgencyGradeChart agency={toChartData(agency)} showAllOutcomes />
     </div>
   );
@@ -41,7 +41,7 @@ function TabbedCharts({ agencies }: { agencies: EarthAgency[] }) {
         {agencies.map((ea) => (
           <TabsTrigger
             key={ea.id}
-            className="border-4 text-sm font-black uppercase"
+            className="border border-foreground/30 text-sm font-black uppercase"
           >
             {ea.emoji} {ea.name} — {ea.performance!.grade}
           </TabsTrigger>
@@ -51,7 +51,7 @@ function TabbedCharts({ agencies }: { agencies: EarthAgency[] }) {
         {agencies.map((ea) => (
           <TabsContent
             key={ea.id}
-            className="border-4 border-primary bg-background p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="border-y border-foreground/30 bg-background py-4"
           >
             <AgencyGradeChart
               agency={toChartData(ea)}

@@ -79,7 +79,7 @@ export default function DepartmentOfWarPage() {
         </p>
         <div className="space-y-4">
           {/* Military spending */}
-          <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border border-foreground/30 bg-background p-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
               <div className="text-sm font-black uppercase text-muted-foreground">
                 Global military spending (2024)
@@ -94,7 +94,7 @@ export default function DepartmentOfWarPage() {
           </div>
 
           {/* War deaths */}
-          <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border border-foreground/30 bg-background p-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
               <div className="text-sm font-black uppercase text-muted-foreground">
                 War and conflict deaths since 1900
@@ -109,7 +109,7 @@ export default function DepartmentOfWarPage() {
           </div>
 
           {/* Cumulative military spending */}
-          <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border border-foreground/30 bg-background p-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
               <div className="text-sm font-black uppercase text-muted-foreground">
                 Cumulative military spending (since 1913)
@@ -125,7 +125,7 @@ export default function DepartmentOfWarPage() {
           </div>
 
           {/* Economic multiplier */}
-          <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border border-foreground/30 bg-background p-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
               <div className="text-sm font-black uppercase text-muted-foreground">
                 Military spending ROI
@@ -163,7 +163,7 @@ export default function DepartmentOfWarPage() {
           {couldHaveBought.map((item) => (
             <div
               key={item.instead}
-              className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="border border-foreground/30 bg-background p-6 text-foreground"
             >
               <h3 className="text-sm font-black uppercase">
                 {item.instead}
@@ -177,7 +177,7 @@ export default function DepartmentOfWarPage() {
             </div>
           ))}
         </div>
-        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-4 border-l border-foreground/30 pl-4">
           <p className="text-sm font-bold leading-relaxed">
             Clean water, no homelessness, fully funded medical research, and no
             one starving. Total cost: roughly ${fmtRaw(totalAlt)} per year.
@@ -194,7 +194,7 @@ export default function DepartmentOfWarPage() {
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
           How We Handle Conflict on My Planet
         </h2>
-        <div className="border-4 border-primary bg-foreground text-background p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-y border-foreground/30 py-8 text-foreground">
           <p className="text-lg font-black leading-relaxed">
             We ended war in year twelve.
           </p>
@@ -228,19 +228,19 @@ export default function DepartmentOfWarPage() {
           Yemen. That is a lot of defending.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border border-foreground/30 bg-background p-6 text-foreground">
             <div className="text-3xl font-black">13+</div>
             <div className="mt-1 text-xs font-black uppercase">
               Wars Since &ldquo;Defense&rdquo; Rebrand
             </div>
           </div>
-          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border border-foreground/30 bg-background p-6 text-foreground">
             <div className="text-3xl font-black">0</div>
             <div className="mt-1 text-xs font-black uppercase">
               Were Defensive
             </div>
           </div>
-          <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border border-foreground/30 bg-background p-6">
             <div className="text-3xl font-black text-foreground">1947</div>
             <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
               When Branding Replaced Honesty
@@ -250,7 +250,7 @@ export default function DepartmentOfWarPage() {
       </section>
 
       {/* CTA */}
-      <section className="card border-primary bg-foreground text-background text-center">
+      <section className="border-y border-foreground/30 py-8 text-center">
         <h2 className="mb-3 text-2xl font-black uppercase">
           Optimise for Living, Not Killing
         </h2>
@@ -265,21 +265,21 @@ export default function DepartmentOfWarPage() {
           <NavItemLink
             item={obgLink}
             variant="custom"
-            className="inline-flex items-center justify-center gap-2 border-4 border-primary bg-foreground px-6 py-3 text-sm font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+            className="inline-flex items-center justify-center gap-2 border border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
           >
             See the Optimal Budget
           </NavItemLink>
           <NavItemLink
             item={federalReserveLink}
             variant="custom"
-            className="inline-flex items-center justify-center gap-2 border-4 border-primary bg-background px-6 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+            className="inline-flex items-center justify-center gap-2 border border-foreground bg-background px-6 py-3 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
           >
             Stop Printing War Money
           </NavItemLink>
           <NavItemLink
             item={wishocracyLink}
             variant="custom"
-            className="inline-flex items-center justify-center gap-2 border-4 border-primary bg-background px-6 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+            className="inline-flex items-center justify-center gap-2 border border-foreground bg-background px-6 py-3 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
           >
             Set Your Priorities
           </NavItemLink>

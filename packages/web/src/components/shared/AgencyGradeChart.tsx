@@ -9,9 +9,9 @@ import type {
 
 const OUTCOME_COLORS = [
   "var(--foreground)",
-  "var(--background)",
   "var(--muted-foreground)",
   "var(--brutal-red)",
+  "var(--brutal-cyan)",
 ];
 
 const gradeColors: Record<AgencyGrade, string> = {
@@ -19,15 +19,7 @@ const gradeColors: Record<AgencyGrade, string> = {
   B: "bg-background text-foreground",
   C: "bg-background text-foreground",
   D: "bg-background text-foreground",
-  F: "bg-brutal-red text-brutal-red-foreground",
-};
-
-const gradeBorderColors: Record<AgencyGrade, string> = {
-  A: "border-background",
-  B: "border-background",
-  C: "border-background",
-  D: "border-background",
-  F: "border-brutal-red",
+  F: "bg-background text-foreground",
 };
 
 function formatCompact(value: number): string {
@@ -114,7 +106,7 @@ export function AgencyGradeChart({
   return (
     <div
       ref={ref}
-      className={`border-4 border-primary ${gradeBorderColors[agency.grade]} bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4`}
+      className="border-y border-foreground/30 bg-background py-4"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
@@ -129,7 +121,7 @@ export function AgencyGradeChart({
           )}
         </div>
         <div
-          className={`shrink-0 ml-2 w-10 h-10 flex items-center justify-center border-4 border-primary ${gradeColors[agency.grade]} font-black text-xl`}
+          className={`ml-2 flex h-10 w-10 shrink-0 items-center justify-center border border-foreground/30 ${gradeColors[agency.grade]} text-xl font-black`}
         >
           {agency.grade}
         </div>
@@ -236,7 +228,7 @@ export function AgencyGradeChart({
           x={5}
           y={PAD.top + 4}
           textAnchor="start"
-          className="fill-background text-[8px] font-black"
+          className="fill-foreground text-[8px] font-black"
         >
           {formatCompact(spendMax)}
         </text>
@@ -255,7 +247,7 @@ export function AgencyGradeChart({
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-3 mt-1">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-0.5 bg-background" />
+          <div className="h-0.5 w-3 bg-foreground" />
           <span className="text-[9px] font-bold text-muted-foreground">
             {compact ? "Spending" : agency.spendingLabel}
           </span>
