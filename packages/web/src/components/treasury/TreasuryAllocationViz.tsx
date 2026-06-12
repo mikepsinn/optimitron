@@ -1,6 +1,6 @@
 "use client";
 
-import { formatWish, useTreasuryData } from "@/hooks/useTreasuryData";
+import { formatWishes, useTreasuryData } from "@/hooks/useTreasuryData";
 import { WISHOCRATIC_ITEMS, type WishocraticItemId } from "@/lib/wishocracy-data";
 
 const BAR_COLORS = [
@@ -48,42 +48,42 @@ export function TreasuryAllocationViz() {
         How It Works
       </h2>
 
-      <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-y border-foreground/30 py-6">
         {/* Flow diagram */}
-        <div className="flex flex-col md:flex-row items-stretch gap-0 mb-6">
-          <div className="flex-1 border-4 border-primary bg-background text-foreground p-4 text-center">
+        <div className="mb-6 grid gap-4 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-stretch">
+          <div className="text-center">
             <div className="text-xs font-black uppercase mb-1">
               Step 1
             </div>
             <div className="text-sm font-black">
-              Every $WISH Transfer
+              Every wish transfer
             </div>
             <div className="text-xs mt-1">
               {taxPct}% transaction tax
             </div>
           </div>
-          <div className="flex items-center justify-center px-2 py-1 md:py-0">
+          <div className="flex items-center justify-center px-2 py-1 text-muted-foreground md:py-0">
             <span className="text-2xl font-black rotate-90 md:rotate-0">
               &rarr;
             </span>
           </div>
-          <div className="flex-1 border-4 border-primary bg-background text-foreground p-4 text-center">
+          <div className="text-center">
             <div className="text-xs font-black uppercase mb-1">
               Step 2
             </div>
             <div className="text-sm font-black">
               Wishocratic Treasury
             </div>
-            <div className="text-xs mt-1">
-              {formatWish(ubiPendingBalance)} $WISH &mdash; citizen-directed
+            <div className="mt-1 text-xs leading-tight [overflow-wrap:anywhere]">
+              {formatWishes(ubiPendingBalance)} &mdash; citizen-directed
             </div>
           </div>
-          <div className="flex items-center justify-center px-2 py-1 md:py-0">
+          <div className="flex items-center justify-center px-2 py-1 text-muted-foreground md:py-0">
             <span className="text-2xl font-black rotate-90 md:rotate-0">
               &rarr;
             </span>
           </div>
-          <div className="flex-1 border-4 border-primary bg-foreground text-background p-4 text-center">
+          <div className="text-center">
             <div className="text-xs font-black uppercase mb-1">
               Step 3
             </div>
@@ -99,7 +99,7 @@ export function TreasuryAllocationViz() {
         </div>
 
         {/* Wishocratic allocation breakdown */}
-        <div className="border-4 border-primary bg-muted p-5 mb-6">
+        <div className="mb-6 border-y border-foreground/20 py-5">
           <h3 className="font-black uppercase text-foreground text-sm mb-4">
             Citizen-Directed Allocation
           </h3>
@@ -119,9 +119,9 @@ export function TreasuryAllocationViz() {
                       {item.percentage.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="h-5 w-full overflow-hidden border border-primary bg-background">
+                  <div className="h-4 w-full overflow-hidden border border-foreground/30 bg-background">
                     <div
-                      className={`h-full ${color} border-r border-primary transition-all duration-300`}
+                      className={`h-full ${color} border-r border-foreground/30 transition-all duration-300`}
                       style={{ width: `${barWidth}%` }}
                     />
                   </div>
@@ -136,7 +136,7 @@ export function TreasuryAllocationViz() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Wishocratic UBI */}
-          <div className="border-4 border-primary bg-background text-foreground p-5">
+          <div>
             <h3 className="font-black uppercase text-sm mb-3">
               UBI Is a Category, Not a Guarantee
             </h3>
@@ -145,19 +145,19 @@ export function TreasuryAllocationViz() {
               education, and every other category. Citizens decide how much goes
               to direct cash vs public goods through pairwise comparisons. If
               they collectively allocate 18% to UBI, 18% of the tax goes to
-              equal per-citizen distribution via World ID.
+              equal per-citizen distribution through personhood verification.
             </p>
           </div>
 
           {/* Politician funding note */}
-          <div className="border-4 border-primary bg-foreground text-background p-5">
+          <div>
             <h3 className="font-black uppercase text-sm mb-3">
               Politician Funding? That&apos;s IABs.
             </h3>
             <p className="text-xs font-bold leading-relaxed">
               Aligned politicians are funded through the Incentive Alignment
               Bond mechanism &mdash; 10% of IAB revenue funds aligned-politician
-              Super PACs. $WISH tax and IABs are completely separate
+              Super PACs. The wishes tax and IABs are completely separate
               systems. No outcomes? No funding. Simple.
             </p>
           </div>

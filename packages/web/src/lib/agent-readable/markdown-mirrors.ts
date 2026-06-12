@@ -47,7 +47,7 @@ function buildTreatyMirror(
     "",
     section(
       "What To Do",
-      "Vote yes, then give another human the same job. A treaty without humans clicking the button is just very polite paper.",
+      "Vote yes, then hire two more Humanity Managers to do the same. A treaty without humans clicking the button is just very polite paper.",
     ),
     section(
       "Treaty Body",

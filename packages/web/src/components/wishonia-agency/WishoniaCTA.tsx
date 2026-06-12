@@ -6,8 +6,8 @@ export function WishoniaCTA() {
   return (
     <CTASection
       heading="See the Optimized Version"
-      description="Every Earth agency has a replacement that runs on code instead of bureaucracy. Fund the campaign. See the full system. Set your priorities."
-      bgColor="red"
+      description="Every Earth agency has a simpler replacement. Fund the campaign, see the system, set your priorities."
+      bgColor="yellow"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
         <GameCTA href={ROUTES.prize} variant="secondary">

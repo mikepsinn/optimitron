@@ -172,16 +172,11 @@ export function TreatyNameSignatureBox({
   if (signed) {
     return (
       <div className={cn("mx-auto w-full max-w-md", className)}>
-        <p className="mb-4 text-center text-xl font-black uppercase text-foreground">
-          One more step.
-        </p>
-        <p className="mb-6 text-center text-sm font-bold text-muted-foreground">
-          Verify your identity to record your signature.
-        </p>
         <AuthForm
           callbackUrl={resolvedAuthCallbackUrl}
           compact
           providers={{ demo: false, email: true, google: false }}
+          title={null}
           variant="document"
         />
       </div>

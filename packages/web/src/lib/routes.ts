@@ -204,7 +204,7 @@ export const homeLink: NavItem = {
   label: "Home",
   emoji: "🏠",
   description:
-    "Please take 30 seconds to end war and disease. Vote on the 1% Treaty, then give one human the same job.",
+    "Take 30 seconds to end war and disease. Vote on the 1% Treaty, then hand two humans the same promotion.",
   tagline: "Take 30 seconds to end war and disease",
   copyPreview: true,
   reviewName: "home",
@@ -386,8 +386,8 @@ export const referendumLink: NavItem = {
   label: "Referendums",
   emoji: "🗳️",
   description:
-    "Vote on things that matter. Prove you're human. Skip the middleman who was going to ignore you anyway.",
-  tagline: "Vote on things that matter — skip the middleman",
+    "Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.",
+  tagline: "Vote directly. Hire two more.",
   matchPrefixes: [ROUTES.referendum],
 
   cta: "Vote Now",
@@ -1023,11 +1023,12 @@ export const aboutLink: NavItem = {
   href: ROUTES.about,
   label: "About",
   emoji: "ℹ️",
-  description: `A campaign to redirect ${treatyReduction} of military spending to clinical trials: disease eradication in ${dfdaYears} years instead of ${statusQuoYears}, for one apocalypse off the shelf.`,
-  tagline: "The 1% campaign",
+  description:
+    "What Earth Optimization Services is, what Optimitron does, and where to inspect the math.",
+  tagline: "The company and the machine",
   screenshot: true,
 
-  cta: "Learn More",
+  cta: "Read About EOS",
 };
 
 export const demoLink: NavItem = {
@@ -1659,11 +1660,11 @@ export const githubLink: NavItem = {
 };
 
 export const contractsSourceLink: NavItem = {
-  label: "Smart Contracts",
+  label: "Contract Source",
   href: "https://github.com/mikepsinn/optimitron/tree/main/packages",
   emoji: "📜",
   description:
-    "The contracts that handle the money. Auditable, immutable, and incapable of taking a lobbying lunch. Unlike your current system.",
+    "The money-moving code. Public enough to inspect before trusting it.",
   external: true,
 
   cta: "Learn More",

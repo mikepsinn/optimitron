@@ -48,7 +48,7 @@ export function WorldIdVerificationInline() {
         | null
 
       if (!response.ok) {
-        throw new Error(payload && "error" in payload ? payload.error : "Unable to start World ID.")
+        throw new Error(payload && "error" in payload ? payload.error : "Unable to start personhood verification.")
       }
 
       setRequestPayload(payload as WorldIdRequestPayload)
@@ -57,7 +57,7 @@ export function WorldIdVerificationInline() {
       logger.error("Failed to load World ID request", error)
       setRequestPayload(null)
       setRequestError(
-        error instanceof Error ? error.message : "Unable to start World ID right now.",
+        error instanceof Error ? error.message : "Unable to start personhood verification right now.",
       )
     } finally {
       setIsLoadingRequest(false)
@@ -81,7 +81,7 @@ export function WorldIdVerificationInline() {
         | null
 
       if (!response.ok) {
-        throw new Error(payload?.error ?? "World ID verification failed.")
+        throw new Error(payload?.error ?? "Personhood verification failed.")
       }
 
       if (payload?.wishesEarned) {
@@ -93,7 +93,7 @@ export function WorldIdVerificationInline() {
       }
     } catch (error) {
       setRequestError(
-        error instanceof Error ? error.message : "World ID verification failed.",
+        error instanceof Error ? error.message : "Personhood verification failed.",
       )
       throw error
     } finally {
@@ -118,7 +118,7 @@ export function WorldIdVerificationInline() {
       {successMessage ? <AlertCard type="success" message={successMessage} /> : null}
       {requestError ? <AlertCard type="error" message={requestError} /> : null}
 
-      <div className="flex items-start justify-between gap-4 border-4 border-primary bg-background p-4">
+      <div className="flex items-start justify-between gap-4 border-y border-foreground/30 bg-background py-4">
         <div className="flex min-w-0 items-start gap-3">
           {isVerified ? (
             <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
@@ -126,13 +126,13 @@ export function WorldIdVerificationInline() {
             <ShieldQuestion className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
           )}
           <div className="space-y-1">
-            <p className="font-black">World ID</p>
+            <p className="font-black">Personhood</p>
             <p className="text-sm text-muted-foreground">
               {isVerified
                 ? "Proof of personhood is linked to this account."
                 : worldIdEnabled
                   ? "Add a uniqueness proof on top of your sign-in so your civic input counts as human."
-                  : "World ID verification is disabled for this environment."}
+                  : "Personhood verification is disabled for this environment."}
             </p>
             {sessionUser.personhoodVerificationLevel ? (
               <p className="text-sm text-muted-foreground">
@@ -183,7 +183,7 @@ export function WorldIdVerificationInline() {
           onSuccess={handleSuccess}
           onError={(errorCode) => {
             logger.error("World ID widget error", errorCode)
-            setRequestError("World ID verification was cancelled or could not be completed.")
+            setRequestError("Personhood verification was cancelled or could not be completed.")
           }}
         />
       ) : null}

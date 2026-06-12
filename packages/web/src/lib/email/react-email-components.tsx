@@ -312,7 +312,7 @@ export function CampaignShareFooter({
       >
         <Text
           style={{
-            color: colors.muted,
+            color: colors.ink,
             fontSize: "11px",
             fontWeight: "700",
             letterSpacing: "0.14em",

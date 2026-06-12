@@ -16,7 +16,7 @@ import {
   isSiteRouteAllowed,
   WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
 } from "@/lib/site";
-import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/lib/routes";
 
 const INTERNATIONAL_CAMPAIGN_NAME =
   "International Campaign to End War and Disease";
@@ -188,13 +188,9 @@ describe("site variant registry", () => {
     );
   });
 
-  it("keeps the voter invite action on campaign navs", () => {
-    expect(getSiteConfig("optimitron").ui.nav.quickAction?.href).toBe(
-      DASHBOARD_INVITE_HREF,
-    );
-    expect(getSiteConfig("warOnDisease").ui.nav.quickAction?.href).toBe(
-      DASHBOARD_INVITE_HREF,
-    );
+  it("keeps voter invites out of the header quick action", () => {
+    expect(getSiteConfig("optimitron").ui.nav.quickAction).toBeUndefined();
+    expect(getSiteConfig("warOnDisease").ui.nav.quickAction).toBeUndefined();
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 

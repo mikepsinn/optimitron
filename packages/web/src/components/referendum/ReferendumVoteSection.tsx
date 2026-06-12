@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { useWishPoints } from "@/components/wishes/WishPointProvider";
-import { WorldIdVerificationCard } from "@/components/personhood/WorldIdVerificationCard";
 import { getSignInPath, ROUTES } from "@/lib/routes";
-import { REFERRAL } from "@/lib/messaging";
 import { storage } from "@/lib/storage";
 import { buildReferendumReferralUrl } from "@/lib/url";
 import { defaultButtonClassName } from "@/components/ui/default-button";
@@ -18,7 +15,6 @@ interface ReferendumVoteSectionProps {
   isAuthenticated: boolean;
   existingAnswer: string | null;
   referralCode: string | null;
-  userId: string | null;
   username: string | null;
 }
 
@@ -96,17 +92,17 @@ export function ReferendumVoteSection({
     return (
       <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="text-lg font-black uppercase text-foreground mb-2">
-          Sign In to Vote
+          Cast Your Vote
         </h3>
         <p className="text-sm font-bold text-foreground">
-          You need an account to cast your vote. Verify with World ID
-          afterwards to make it count as a verified vote.
+          You need an account so one human gets one vote. Continue, vote, then
+          hire two more Humanity Managers.
         </p>
         <a
           href={signInHref}
           className={`${defaultButtonClassName} mt-4 min-h-10 px-6 py-2`}
         >
-          Sign In
+          Continue
         </a>
       </div>
     );
@@ -122,43 +118,23 @@ export function ReferendumVoteSection({
             Vote Recorded: {answer}
           </h3>
           <p className="text-sm font-bold text-foreground">
-            Verify with World ID to make your vote count as verified.
-            Then share your link below to bring in more verified votes.
+            Good. Now share your link below and bring in more humans.
           </p>
         </div>
-
-        <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h3 className="text-lg font-black uppercase text-foreground mb-2">
-            Earn Referral Rewards
-          </h3>
-          <p className="text-sm font-bold text-foreground">
-            {REFERRAL.verifyAndEarn} Link a wallet on your{" "}
-            <Link
-              href={ROUTES.profile}
-              className="font-black text-foreground underline hover:text-foreground"
-            >
-              profile
-            </Link>{" "}
-            so those rewards can be minted on-chain.
-          </p>
-        </div>
-
-        {/* World ID verification — only show if not yet verified */}
-        <WorldIdVerificationCard show />
 
         <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <h3 className="text-lg font-black uppercase text-foreground mb-3">
             Your Referral Link
           </h3>
           <p className="text-sm font-bold text-muted-foreground mb-4">
-            Every verified vote through your link increases your share of the
-            success pool. Share it everywhere.
+            Every voter through your link increases your share of the success
+            pool. Share it everywhere.
           </p>
           <CopyLinkButton url={shareUrl} variant="landing" />
           <div className="mt-4 flex justify-center">
             <SocialShareButtons
               url={shareUrl}
-              text="I voted on this referendum. Add your voice — every verified vote counts."
+              text="I voted on this referendum. Add your voice."
             />
           </div>
         </div>

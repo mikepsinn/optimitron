@@ -62,7 +62,7 @@ export function ProfileIdentityClient({
           onRefresh={refreshPage}
         />
 
-        <WorldIdVerificationCard show />
+        <WorldIdVerificationCard show copy="world-id" />
 
         <EmailSignatureCard referralLink={referralLink} userName={user.name} />
       </div>

@@ -131,7 +131,7 @@ const MANAGER_VOCAB: UserFramingVocabulary = {
     "Share your link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Each humanity manager you hire earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per humanity manager hired`,
-  verifyAndEarn: `Verify with World ID, then share your link. Each humanity manager you hire earns you 1 ${POINT}.`,
+  verifyAndEarn: `Verify personhood, then share your link. Each humanity manager you hire earns you 1 ${POINT}.`,
   depositAndRecruit: `Deposit into the prize pool, hire humanity managers, earn ${POINTS}.`,
   recruitedActivityVerb: "hired a humanity manager",
 };
@@ -155,7 +155,7 @@ const VOTER_VOCAB: UserFramingVocabulary = {
     "Share your vote link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Every verified voter you bring in earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per verified voter recruited`,
-  verifyAndEarn: `Verify with World ID, then share your link. Each verified voter who uses it earns you 1 ${POINT}.`,
+  verifyAndEarn: `Verify personhood, then share your link. Each verified voter who uses it earns you 1 ${POINT}.`,
   depositAndRecruit: `Deposit into the prize pool, recruit verified voters, earn ${POINTS}.`,
   recruitedActivityVerb: "recruited a voter",
 };
@@ -230,7 +230,7 @@ export const TAGLINES = {
   winBothWays:
     `Depositors get ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x returns on failure. Recruiters get prize shares on success. Both scenarios pay.`,
   everyPlayerWins:
-    `Failure pays ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x via Aave yield. Success pays from the prize pool. The only scenario that costs you money is not depositing.`,
+    `Failure pays ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x via projected fund yield. Success pays from the prize pool. The only scenario that costs you money is not depositing.`,
   awarenessBarrier:
     `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons per $1 of clinical trials. 95% of diseases have zero FDA-approved treatments. There are 9,500 known safe compounds and 99.7% of their potential uses have never been tested. At the current rate, testing them all takes 443 years. You will be dead in 80.`,
   pluralisticIgnorance:
@@ -325,7 +325,7 @@ export const VOTE_VALUE = {
   subheading:
     "You cast a free vote. Deposits into the prize fund back it with real money. The expected value calculation is below. On my planet, we do this in primary school.",
   failHeading: "If the Plan Fails",
-  failBody: "annual returns from Aave yield — better than most hedge funds. The money compounds for 15 years regardless.",
+  failBody: "projected annual fund returns — better than most hedge funds. The money compounds for 15 years regardless.",
   successHeading: "If the Plan Succeeds",
   successBody: `${POINT_NAME} Point holders claim proportional shares of the prize pool.`,
   breakEvenPrefix: "The break-even probability is 1 in",
@@ -368,7 +368,7 @@ export const ARMORY = {
     seals: {
       icon: "🛡️",
       heading: "Seals & Wards",
-      subtitle: "Accountability that can't be argued with because it's on-chain.",
+      subtitle: "Accountability that can be checked instead of argued about.",
     },
     potions: {
       icon: "🧪",

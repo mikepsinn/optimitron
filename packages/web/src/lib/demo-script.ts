@@ -622,11 +622,11 @@ export const SEGMENTS = [
   },
   {
     id: "feature-treasury",
-    title: "The $WISH Token",
+    title: "Wishes Currency",
     slideId: "armory",
     bgColor: "yellow",
     tags: ["feature", "financial"],
-    narration: `Zero point five percent transaction tax. That replaces your IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. The tax funds Universal Basic Income distributed automatically via World ID, and Wishocratic budget allocation decided by eight billion people doing five minutes of pairwise comparisons. No politicians. No lobbyists. Just maths and peer pressure.`,
+    narration: `Zero point five percent transaction tax. That replaces your IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. The tax funds Universal Basic Income distributed automatically through personhood verification, and Wishocratic budget allocation decided by eight billion people doing five minutes of pairwise comparisons. No politicians. No lobbyists. Just maths and peer pressure.`,
   },
   {
     id: "feature-architecture",
@@ -885,7 +885,7 @@ export const SEGMENTS = [
     tags: ["feature", "financial"],
     act: "II-armory",
     scoreAdd: 4_500_000_000,
-    narration: `Incentive Alignment Bonds. Sell one billion dollars of these on-chain. Use the proceeds to fund the one percent Treaty campaign. When the treaty passes, it generates ${treatyFunding} dollars per year. That revenue splits: eighty percent to clinical trials — the actual public good. Ten percent back to bond holders — your return on investment. Ten percent to a SuperPAC that funds politicians algorithmically based on their Alignment Score. Not based on who they had dinner with.`,
+    narration: `Incentive Alignment Bonds. Sell one billion dollars of these bonds. Use the proceeds to fund the one percent Treaty campaign. When the treaty passes, it generates ${treatyFunding} dollars per year. That revenue splits: eighty percent to clinical trials — the actual public good. Ten percent back to bond holders — your return on investment. Ten percent to a SuperPAC that funds politicians algorithmically based on their Alignment Score. Not based on who they had dinner with.`,
   },
   {
     id: "smart-contract-superpac",
@@ -895,7 +895,7 @@ export const SEGMENTS = [
     tags: ["feature"],
     act: "II-armory",
     scoreAdd: 4_700_000_000,
-    narration: `The remaining ten percent funds a SuperPAC — but not the kind your species is used to. This one funds politicians algorithmically, based on their Citizen Alignment Score. Vote for the treaty? Campaign funding flows to you automatically. Vote against it? Nothing. No dinners. No lobbyists. No phone calls. Just a smart contract that reads your voting record and pays accordingly.`,
+    narration: `The remaining ten percent funds a SuperPAC — but not the kind your species is used to. This one funds politicians algorithmically, based on their Citizen Alignment Score. Vote for the treaty? Campaign funding flows to you automatically. Vote against it? Nothing. No dinners. No lobbyists. No phone calls. Just protocol rules that read your voting record and pay accordingly.`,
   },
   {
     id: "optimal-governance-engines",
@@ -929,13 +929,13 @@ export const SEGMENTS = [
   },
   {
     id: "wish-token-protocol",
-    title: "The $WISH Token",
+    title: "Wishes Currency",
     slideId: "decentralized-irs",
     bgColor: "yellow",
     tags: ["feature", "financial"],
     act: "II-armory",
     scoreAdd: 5_600_000_000,
-    narration: `The WISH token replaces three things your government does badly. One: taxation. A flat zero point five percent transaction tax replaces your entire IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. Two: welfare. Universal Basic Income distributed automatically via World ID. Everyone at the poverty line, no bureaucracy. Three: monetary policy. Algorithmic zero-percent inflation — captured productivity gains prevent the inflationary theft that destroyed ninety-seven percent of your dollar. Your central bank's job, done by a smart contract, in four lines of code.`,
+    narration: `Wishes replace three things your government does badly. One: taxation. A flat zero point five percent transaction tax replaces your entire IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. Two: welfare. Universal Basic Income distributed automatically through personhood verification. Everyone at the poverty line, no bureaucracy. Three: monetary policy. Algorithmic zero-percent inflation — captured productivity gains prevent the inflationary theft that destroyed ninety-seven percent of your dollar. Your central bank's job, done by protocol rules, in four lines of code.`,
   },
   {
     id: "pencil-supply-chain",
@@ -945,7 +945,7 @@ export const SEGMENTS = [
     tags: ["solution"],
     act: "II-armory",
     scoreAdd: 5_800_000_000,
-    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, smart contracts, causal inference engines, immutable storage, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with ${POINTS} tied to the prize pool, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
+    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, enforceable protocols, causal inference engines, immutable records, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with ${POINTS} tied to the prize pool, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
   },
   {
     id: "personal-income-upside",
@@ -1144,7 +1144,7 @@ export const SEGMENTS = [
     slideId: "decentralized-irs",
     tags: ["feature"],
     act: "II-armory",
-    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCost} dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of Solidity. No filing. No accountants. No lobbyist can bribe a smart contract to give their client a tax loophole.`,
+    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCost} dollars a year in compliance. A 0.5 percent transaction tax does the same job in four protocol rules. No filing. No accountants. No lobbyist can bribe the system to give their client a tax loophole.`,
   },
   {
     id: "decentralized-welfare",
@@ -1160,15 +1160,15 @@ export const SEGMENTS = [
     slideId: "decentralized-federal-reserve",
     tags: ["feature"],
     act: "II-armory",
-    narration: "Twelve unelected humans meet eight times a year to decide how much your money is worth. When they print new money, it goes to banks and asset holders first. In 2020 they printed 4 trillion dollars. The wealth of the top 1 percent increased by exactly 4 trillion dollars that year. This smart contract replaces them. Zero percent inflation anchored to productivity growth. New money distributed equally to every human via UBI.",
+    narration: "Twelve unelected humans meet eight times a year to decide how much your money is worth. When they print new money, it goes to banks and asset holders first. In 2020 they printed 4 trillion dollars. The wealth of the top 1 percent increased by exactly 4 trillion dollars that year. This protocol replaces them. Zero percent inflation anchored to productivity growth. New money distributed equally to every human via UBI.",
   },
   {
     id: "ipfs-immutable-storage-brief",
-    title: "Storacha + IPFS",
+    title: "Immutable Evidence",
     slideId: "ipfs-immutable-storage",
     tags: ["feature"],
     act: "II-armory",
-    narration: "The Optimal Policy Generator, Budget Generator, and Decentralized FDA are all powered by data collected through the Decentralized Census. 8 billion citizens verified via World ID. Budget preferences, treaty votes, health outcomes, impact metrics — stored on Storacha and pinned to IPFS. No government can delete it. No lobbyist can edit it.",
+    narration: "The Optimal Policy Generator, Budget Generator, and Decentralized FDA are all powered by data collected through the Decentralized Census. 8 billion citizens verified through personhood checks. Budget preferences, treaty votes, health outcomes, impact metrics — published as immutable evidence. No government can delete it. No lobbyist can edit it.",
   },
   {
     id: "impact-certificates-brief",
@@ -1176,7 +1176,7 @@ export const SEGMENTS = [
     slideId: "impact-certificates",
     tags: ["feature"],
     act: "II-armory",
-    narration: "Every action in the game mints a Hypercert on AT Protocol. Voter recruitment, fund deposits, budget allocations — each verified via World ID and published to Bluesky. Permanent, auditable impact receipts.",
+    narration: "Every action in the game creates an impact receipt. Voter recruitment, fund deposits, budget allocations — each tied to verified personhood and published for audit. Permanent, auditable impact receipts.",
   },
   {
     id: "ten-billion-lives-saved-brief",
@@ -1200,7 +1200,7 @@ export const SEGMENTS = [
     slideId: "post-credits-aliens",
     tags: ["cta"],
     act: "III",
-    narration: "The Earth Optimization Game is brought to you by the good humans at Protocol Labs funding the Commons, Hypercerts, Storacha, Worldcoin, and Base.",
+    narration: "The Earth Optimization Game is brought to you by the good humans funding the commons and building public-interest infrastructure.",
   },
 ] satisfies readonly DemoSegment[];
 
@@ -1416,7 +1416,7 @@ export const PLAYLISTS: DemoPlaylist[] = [
   },
   {
     id: "youtube-treasury",
-    name: "The $WISH Token",
+    name: "Wishes Currency",
     description: "0.5% transaction tax replaces the IRS + UBI",
     segments: resolveSegments([
       "hook-dysfunction-tax",

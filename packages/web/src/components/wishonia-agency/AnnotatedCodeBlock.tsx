@@ -11,6 +11,8 @@ export function AnnotatedCodeBlock({
   language,
   explanation,
 }: AnnotatedCodeBlockProps) {
+  const implementationLabel = language === "solidity" ? "Protocol rules" : "System logic";
+
   return (
     <section className="mb-16">
       <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
@@ -19,21 +21,21 @@ export function AnnotatedCodeBlock({
       <p className="mb-6 max-w-3xl text-sm font-bold text-muted-foreground">
         {header}
       </p>
-      <div className="border-4 border-primary bg-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <div className="flex items-center justify-between border-b-4 border-primary px-4 py-2">
-          <span className="text-xs font-black uppercase tracking-[0.1em] text-background/80">
-            {language === "solidity" ? "Solidity 0.8.24" : "TypeScript"}
+      <div className="border-y border-foreground/30 bg-background">
+        <div className="flex items-center justify-between border-b border-foreground/30 py-2">
+          <span className="text-xs font-black uppercase tracking-[0.1em] text-muted-foreground">
+            {implementationLabel}
           </span>
-          <span className="text-xs font-black uppercase tracking-[0.1em] text-background">
-            Deployed on Base Sepolia
+          <span className="text-xs font-black uppercase tracking-[0.1em] text-muted-foreground">
+            Reference implementation
           </span>
         </div>
-        <pre className="overflow-x-auto p-6 text-sm font-bold leading-relaxed text-background">
+        <pre className="overflow-x-auto py-4 text-sm font-bold leading-relaxed text-foreground">
           <code>{code}</code>
         </pre>
       </div>
-      <div className="mt-4 border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <p className="text-sm font-bold leading-relaxed text-foreground">
+      <div className="mt-4 border-l border-foreground/30 pl-4">
+        <p className="text-sm font-bold leading-relaxed text-muted-foreground">
           {explanation}
         </p>
       </div>

@@ -302,7 +302,7 @@ export function buildDailyActivityDigestText(
   }
 
   if (summary.verifiedVotes > 0) {
-    lines.push(`${summary.verifiedVotes} verified with World ID`);
+    lines.push(`${summary.verifiedVotes} verified with personhood checks`);
   }
 
   if (summary.referralSignups > 0) {

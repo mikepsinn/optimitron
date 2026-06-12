@@ -184,7 +184,7 @@ Run `pnpm --filter @optimitron/web dev:watch` to keep 3001 warm and regenerate `
 Windows background one-liner:
 
 ```powershell
-Start-Process -FilePath cmd.exe -ArgumentList '/d','/s','/c','pnpm --filter "@optimitron/web" dev:watch' -WorkingDirectory E:\code\optimitron -WindowStyle Hidden
+Start-Process -FilePath cmd.exe -ArgumentList '/d','/s','/c','pnpm --filter "@optimitron/web" dev:watch' -WorkingDirectory E:\eos\optimitron -WindowStyle Hidden
 ```
 
 ## UI/UX Rules
