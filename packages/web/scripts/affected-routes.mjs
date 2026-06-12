@@ -4,6 +4,7 @@
  *
  * This is intentionally an 80/20 static import index:
  * - only page.tsx files under packages/web/src/app become routes;
+ * - dynamic Next.js template paths are skipped because they are not URLs;
  * - only static relative imports and `@/` imports are followed;
  * - traversal stops after five import hops to avoid indexing the whole app.
  *
@@ -70,7 +71,7 @@ for (const pageFile of pages) {
   for (const changed of changedAbsPaths) {
     if (imports.has(changed)) {
       const route = pageFileToRoute(pageFile);
-      if (!isRedirectOnlyRoutePath(route)) {
+      if (isCopyPreviewRoute(route)) {
         affectedRoutes.push(route);
       }
       break;
@@ -179,6 +180,16 @@ function pageFileToRoute(pageFile) {
     .split(path.sep)
     .filter((segment) => segment && !segment.startsWith("(") && !segment.startsWith("@"));
   return segments.length === 0 ? "/" : `/${segments.join("/")}`;
+}
+
+function isCopyPreviewRoute(route) {
+  return !isRedirectOnlyRoutePath(route) && !isDynamicRouteTemplate(route);
+}
+
+function isDynamicRouteTemplate(route) {
+  return route
+    .split("/")
+    .some((segment) => /^\[.*\]$/.test(segment));
 }
 
 function toAbsolutePath(filePath) {

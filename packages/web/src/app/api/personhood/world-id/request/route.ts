@@ -9,7 +9,7 @@ export async function GET() {
     const { userId } = await requireAuth();
 
     if (!isWorldIdConfigured()) {
-      return NextResponse.json({ error: "World ID is not configured." }, { status: 503 });
+      return NextResponse.json({ error: "Personhood verification is not configured." }, { status: 503 });
     }
 
     return NextResponse.json(createWorldIdRequestPayload(userId));
@@ -19,6 +19,6 @@ export async function GET() {
     }
 
     console.error("[WORLD ID REQUEST] Error:", error);
-    return NextResponse.json({ error: "Failed to create World ID request." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create personhood verification request." }, { status: 500 });
   }
 }

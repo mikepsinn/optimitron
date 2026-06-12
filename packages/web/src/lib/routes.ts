@@ -1024,8 +1024,8 @@ export const aboutLink: NavItem = {
   label: "About",
   emoji: "ℹ️",
   description:
-    "What Earth Optimization Services is, what Optimitron does, and where to inspect the math.",
-  tagline: "The company and the machine",
+    "Earth Optimization Services, Optimitron, Wishocracy, and the employee manual.",
+  tagline: "The company, the machine, and your job",
   screenshot: true,
 
   cta: "Read About EOS",

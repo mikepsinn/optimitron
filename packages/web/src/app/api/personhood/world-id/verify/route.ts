@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const { userId } = await requireAuth();
 
     if (!isWorldIdConfigured()) {
-      return NextResponse.json({ error: "World ID is not configured." }, { status: 503 });
+      return NextResponse.json({ error: "Personhood verification is not configured." }, { status: 503 });
     }
 
     const result = (await request.json()) as WorldIdVerificationPayload;
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       console.error("[WORLD ID VERIFY] Referral point sync error:", mintError);
     }
 
-    // Grant wish points for World ID verification
+    // Grant wish points for personhood verification
     let wishesEarned = 0;
     try {
       const wishResult = await grantWishes({
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const message = error instanceof Error ? error.message : "Failed to verify World ID proof.";
+    const message = error instanceof Error ? error.message : "Failed to verify personhood proof.";
     console.error("[WORLD ID VERIFY] Error:", error);
     return NextResponse.json({ error: message }, { status: 400 });
   }

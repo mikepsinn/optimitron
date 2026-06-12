@@ -66,7 +66,7 @@ describe("world id verify route", () => {
     await expect(response.json()).resolves.toEqual({ error: "Unauthorized" });
   });
 
-  it("returns 503 when World ID is not configured", async () => {
+  it("returns 503 when personhood verification is not configured", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.isWorldIdConfigured.mockReturnValue(false);
 
@@ -78,7 +78,7 @@ describe("world id verify route", () => {
     );
 
     expect(response.status).toBe(503);
-    await expect(response.json()).resolves.toEqual({ error: "World ID is not configured." });
+    await expect(response.json()).resolves.toEqual({ error: "Personhood verification is not configured." });
   });
 
   it("stores a verified proof for authenticated users", async () => {
