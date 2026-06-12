@@ -3,20 +3,20 @@
 ## Metadata
 
 - Page title: Wishonia | International Campaign to End War and Disease
-- Meta description: A planet that ended war in year 12 and disease in year 340. Also the alien CEO of Universe Optimization Services.
+- Meta description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
 - Canonical: https://warondisease.org/wishonia
 - Open Graph title: Wishonia
-- Open Graph description: A planet that ended war in year 12 and disease in year 340. Also the alien CEO of Universe Optimization Services.
+- Open Graph description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fwishonia
 - Twitter title: Wishonia
-- Twitter description: A planet that ended war in year 12 and disease in year 340. Also the alien CEO of Universe Optimization Services.
+- Twitter description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
 
 ## Visible Page Copy
 
 - PROOF OF CONCEPT
 ## WISHONIA
 - A planet that ended war in year 12 and disease in year 340. Same atoms. Same physics. Better spreadsheet.
-- Wishonia is also the alien CEO of Universe Optimization Services. Earth Optimization Services is the regional branch assigned to your planet. You invented the maths and the computers. Now use them on the thing that matters most: not dying.
+- Wishonia Love is also the CEO of Universe Optimization Services. Earth Optimization Services is the regional branch assigned to your planet. You invented the maths and the computers. Now use them on the thing that matters most: not dying.
 ### WHAT 4,297 YEARS GETS YOU
 - Three achievements your species is capable of but actively choosing not to pursue.
 #### SUPER-LONGEVITY
@@ -29,8 +29,8 @@
 #### NO POLITICIANS
 - The governance niche was filled by algorithmic decision-making. Eight billion people do pairwise comparisons. The eigenvector produces stable budget allocations. Four minutes a week.
 #### NO LOBBYING
-- Without elected officials to lobby, the industry collapsed. Smart contracts route funds to public goods based on citizen preferences. Bribery became structurally impossible.
-#### $WISH CURRENCY
+- Without elected officials to lobby, the industry collapsed. Public goods funding follows citizen preferences. Bribery became structurally impossible.
+#### PUBLIC MONEY
 - 0.5% transaction tax replaces the entire tax code. UBI keeps everyone above the poverty line. Algorithmic 0% inflation stops the purchasing-power theft that funds your wars.
 #### THE OPTIMITRON
 - An AI comparing outcomes across 10,000 jurisdictions to identify what policies actually work. Domain-agnostic causal inference. Your scientists take twelve years. This takes seconds.

@@ -132,10 +132,10 @@ export default function WishoniaWorldPage() {
               {
                 title: "No Lobbying",
                 color: "text-cyan-400",
-                text: "Without elected officials to lobby, the industry collapsed. Smart contracts route funds to public goods based on citizen preferences. Bribery became structurally impossible.",
+                text: "Without elected officials to lobby, the industry collapsed. Public goods funding follows citizen preferences. Bribery became structurally impossible.",
               },
               {
-                title: "$WISH Currency",
+                title: "Public Money",
                 color: "text-amber-300",
                 text: "0.5% transaction tax replaces the entire tax code. UBI keeps everyone above the poverty line. Algorithmic 0% inflation stops the purchasing-power theft that funds your wars.",
               },

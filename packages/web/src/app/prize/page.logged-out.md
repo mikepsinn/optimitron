@@ -23,18 +23,18 @@
 - GAME OVER: YOU LOSE
 - Humanity stays stupid. Metrics miss the targets after 15 years. Projected outcome: ~15.8% annual growth for 15 years (based on VC-sector diversification).
 - GAME OVER: YOU WIN
-- Humanity gets its act together. Your deposit stays in the prize pool. Your expected upside is $655,000 more per capita lifetime income and 21.7 years extra healthy years.
+- Humanity gets its act together. Your deposit stays in the prize pool. Your expected upside is $519,000 more per capita lifetime income and 16.1 years extra healthy years.
 - Recruit voters too? You earn Earth Optimization Points. Earth Optimization Point holders claim proportional shares of the prize pool. Dominant assurance design.
 ### WIN CONDITIONS
 - Two numbers. If both rise by 2040, the pool splits to Earth Optimization Point holders. If not, depositors claim principal + projected growth.
 #### MEDIAN HEALTHY LIFE YEARS
 - NOW: 63.3 YEARS
-- TARGET: 85.0 YEARS
-- +21.7 years by 2040
+- TARGET: 79.4 YEARS
+- +16.1 years by 2040
 #### MEDIAN REAL AFTER-TAX INCOME
 - NOW: $14,400
-- TARGET: $76,700
-- $14,400 → $76,700 by 2040
+- TARGET: $26,700
+- $14,400 → $26,700 by 2040
 ### INSERT COIN
 - Your deposit goes into the Earth Optimization Prize fund (projected 15.8% annually, based on VC-sector diversification). You get PRIZE shares. Recruit verified voters and you also earn Earth Optimization Points, which would pay out if humanity wins. This is the first arcade game in history where the house loses on purpose.
 #### CONNECT WALLET

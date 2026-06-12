@@ -60,8 +60,8 @@
 - dIH flips the ratio. 97% to patients. 3% to infrastructure. No grant committees. No scientists spending half their careers writing applications to ask permission to do science.
 ### WHAT REPLACES THEM
 - $27,800/patient traditional trials → $929/patient pragmatic trials (30x cheaper)
-- TYPESCRIPT
-- DEPLOYED ON BASE SEPOLIA
+- SYSTEM LOGIC
+- REFERENCE IMPLEMENTATION
 - ```text
 // dIH allocation — replaces the NIH grant bureaucracy
 // Instead of grant committees, funding follows patients.
@@ -83,7 +83,7 @@ function allocateSubsidy(patient) {
 - Redirecting 97% of the NIH budget to pragmatic trials instead of grant bureaucracy. Same $47B, but 30x more patients treated, 30x more data generated, and scientists spend their time on science instead of paperwork.
 - “Your scientists spend half their lives writing essays about why they should be allowed to try curing diseases. Then a committee spends forty minutes rejecting them. You spend $47 billion a year on this. 3.3% of it touches a patient. On my planet, we cured disease in year 340. We did not have grant committees.”
 ### SEE THE OPTIMIZED VERSION
-- Every Earth agency has a replacement that runs on code instead of bureaucracy. Fund the campaign. See the full system. Set your priorities.
+- Every Earth agency has a simpler replacement. Fund the campaign, see the system, set your priorities.
 - [FUND THE REFERENDUM](/prize)
 - [OPTIMIZED GOVERNANCE](/agencies)
 - [SET YOUR PRIORITIES](/agencies/dcongress/wishocracy)

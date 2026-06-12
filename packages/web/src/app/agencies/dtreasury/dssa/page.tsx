@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
+import { SimpleComparisonGrid } from "@/components/ui/simple-comparison";
+import { StepList } from "@/components/ui/step-list";
 import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import { dssaLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
@@ -13,8 +15,8 @@ const welfareProblems = [
     title: "Overhead exceeds impact",
     description:
       "Your species currently spends more administering welfare than it distributes in benefits. The overhead-to-impact ratio is, and I say this with genuine bewilderment, worse than 1:1 in several programs.",
-    color: "bg-foreground",
-    textColor: "text-background",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     title: "The poverty trap",
@@ -37,7 +39,7 @@ const howItWorks = [
     step: "01",
     title: "Transaction tax accumulates",
     description:
-      "0.5% of every $WISH transaction flows to the treasury automatically. The tax happens when you spend. Like sales tax, except it funds keeping people alive instead of whatever your current sales tax funds. (Nobody knows.)",
+      "0.5% of every transaction flows to the treasury automatically. The tax happens when you spend. Like sales tax, except it funds keeping people alive instead of whatever your current sales tax funds. (Nobody knows.)",
   },
   {
     step: "02",
@@ -47,9 +49,9 @@ const howItWorks = [
   },
   {
     step: "03",
-    title: "World ID prevents fraud",
+    title: "Personhood verification prevents fraud",
     description:
-      "Each citizen proves they're a real human once. Not three bots. Not a cat. One proof, one registration. No duplicate claims. No case workers spending eight hours confirming you exist.",
+      "Each citizen proves they're a real human once. Not three duplicate claims. One proof, one registration. No case workers spending eight hours confirming you exist.",
   },
   {
     step: "04",
@@ -74,7 +76,7 @@ const comparisonData = {
     { label: "Distribution time", value: "1 block (~12 seconds)" },
     { label: "Eligible citizens missed", value: "0" },
     { label: "Poverty trap", value: "None (universal)" },
-    { label: "Fraud prevention", value: "World ID (automatic)" },
+    { label: "Fraud prevention", value: "Personhood verification" },
   ],
 };
 
@@ -102,13 +104,13 @@ export default function DTreasuryDssaPage() {
           The result: you spend more deciding who deserves help than you spend
           helping them.
         </p>
-        <div className="space-y-4">
+        <div className="divide-y divide-foreground/20 border-y border-foreground/30">
           {welfareProblems.map((problem) => (
             <div
               key={problem.title}
-              className={`border-4 border-primary ${problem.color} p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+              className="py-5"
             >
-              <h3 className={`text-lg font-black uppercase ${problem.textColor}`}>
+              <h3 className="text-lg font-black uppercase text-foreground">
                 {problem.title}
               </h3>
               <p className="mt-2 text-sm font-bold text-muted-foreground">
@@ -119,39 +121,17 @@ export default function DTreasuryDssaPage() {
         </div>
       </section>
 
-      {/* The $WISH UBI Mechanism */}
+      {/* UBI mechanism */}
       <section className="mb-16">
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
-          How $WISH UBI Works
+          How UBI Works
         </h2>
         <p className="mb-6 max-w-3xl text-sm font-bold text-muted-foreground">
           The transaction tax accumulates in a treasury that distributes
-          Universal Basic Income to every verified citizen. World ID prevents
-          fraud. No means testing. No case workers. No applications. Just money
-          going directly to people.
+          Universal Basic Income to every verified citizen. No means testing.
+          No case workers. No applications. Just money going directly to people.
         </p>
-        <div className="space-y-4">
-          {howItWorks.map((item) => (
-            <div
-              key={item.step}
-              className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-            >
-              <div className="flex items-start gap-4">
-                <span className="w-8 h-8 bg-foreground text-background flex items-center justify-center text-xs font-black shrink-0">
-                  {item.step}
-                </span>
-                <div>
-                  <h3 className="font-black uppercase text-foreground text-sm">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground font-bold mt-1">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <StepList items={howItWorks} />
       </section>
 
       {/* Side-by-Side Comparison */}
@@ -159,50 +139,17 @@ export default function DTreasuryDssaPage() {
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
           80+ Programs vs 1 For-Loop
         </h2>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
-              Current System (SSA + Welfare)
-            </h3>
-            <div className="space-y-3">
-              {comparisonData.current.map((item) => (
-                <div
-                  key={item.label}
-                  className="border-4 border-primary bg-background p-3"
-                >
-                  <div className="text-xs font-black uppercase text-muted-foreground">
-                    {item.label}
-                  </div>
-                  <div className="mt-0.5 text-sm font-black text-foreground">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
-              $WISH UBI
-            </h3>
-            <div className="space-y-3">
-              {comparisonData.wish.map((item) => (
-                <div
-                  key={item.label}
-                  className="border-4 border-primary bg-background p-3"
-                >
-                  <div className="text-xs font-black uppercase text-muted-foreground">
-                    {item.label}
-                  </div>
-                  <div className="mt-0.5 text-sm font-black text-foreground">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed">
+        <SimpleComparisonGrid
+          columns={[
+            {
+              title: "Current System (SSA + Welfare)",
+              items: comparisonData.current,
+            },
+            { title: "Wishes UBI", items: comparisonData.wish },
+          ]}
+        />
+        <div className="mt-6 border-l border-foreground/30 pl-4">
+          <p className="text-sm font-bold leading-relaxed text-muted-foreground">
             The $1.1 trillion your species spends administering welfare is more
             than the GDP of the Netherlands. That money doesn&apos;t feed anyone.
             It doesn&apos;t house anyone. It pays for the privilege of deciding

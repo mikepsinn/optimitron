@@ -77,7 +77,7 @@ const contractDetails = [
   },
   {
     label: "Sybil Resistance",
-    value: "World ID + Referral Links",
+    value: "Personhood + Referral Links",
     detail: `One verified vote per person. ${POINTS} go to the referrer.`,
   },
   {
@@ -263,7 +263,7 @@ export default async function PrizePage() {
                   </h4>
                   <p className="text-xs font-bold leading-relaxed">
                     Every deposit, every EOP mint, every metric update — all
-                    on-chain. No committees. No discretion. Just smart contracts
+                    publicly recorded. No committees. No discretion. Just protocol rules
                     doing arithmetic. Code is open source on GitHub.
                   </p>
                 </div>

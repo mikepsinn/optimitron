@@ -4,9 +4,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth-utils";
-import { getReferendumStats } from "@/lib/verified-votes.server";
 import { ReferendumVoteSection } from "@/components/referendum/ReferendumVoteSection";
 import { readerMarkdownComponents } from "@/components/referendum/reader-markdown-components";
+import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
+import { TreatyNameSignatureBox } from "@/components/treaty/TreatyNameSignatureBox";
+import { ROUTES } from "@/lib/routes";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -31,6 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ReferendumPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const { ref } = await searchParams;
+  const referendumPath = `${ROUTES.referendum}/${slug}`;
+  const isTreatyReferendum = slug === TREATY_REFERENDUM_SLUG;
 
   const referendum = await prisma.referendum.findUnique({
     where: { slug, deletedAt: null },
@@ -38,10 +43,7 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
 
   if (!referendum) notFound();
 
-  const [stats, user] = await Promise.all([
-    getReferendumStats(referendum.id),
-    getCurrentUser(),
-  ]);
+  const user = await getCurrentUser();
 
   const existingVote = user?.personId
     ? await prisma.referendumVote.findUnique({
@@ -69,14 +71,48 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
             {referendum.description}
           </p>
         )}
-        <div className="mt-6 border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-8 max-w-2xl">
           <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-foreground">
             Ballot Question
           </p>
-          <p className="text-xl font-black leading-snug text-foreground">
+          <p className="text-xl font-black leading-snug text-foreground sm:text-2xl">
             {referendum.question}
           </p>
         </div>
+      </section>
+
+      {/* Voting + sharing */}
+      <section className="mb-16">
+        {isTreatyReferendum ? (
+          <div
+            aria-label="Cast your vote"
+            className="max-w-md"
+          >
+            <ReferendumSiteInlineSign
+              referendumSlug={slug}
+              referralCode={ref ?? null}
+              authCallbackUrl={referendumPath}
+              authPromptText=""
+              authTitle={null}
+              emailButtonLabel="Email Me a Link"
+              emailPendingButtonLabel="Sending Link..."
+              googleButtonLabel="Continue with Google"
+              showDemoAuth={false}
+              hideAuthContainer
+              variant="reader"
+              showReaderShell={false}
+            />
+          </div>
+        ) : (
+          <ReferendumVoteSection
+            referendumSlug={slug}
+            isActive={referendum.status === "ACTIVE"}
+            isAuthenticated={!!user}
+            existingAnswer={existingVote?.answer ?? null}
+            referralCode={ref ?? null}
+            username={user?.person?.handle ?? user?.referralCode ?? null}
+          />
+        )}
       </section>
 
       {referendum.bodyMarkdown && (
@@ -94,46 +130,19 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
         </section>
       )}
 
-      {/* Vote tally */}
-      <section className="mb-10">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="border-4 border-primary bg-green-50 p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-3xl font-black text-green-700">
-              {stats.yesVotes}
-            </div>
-            <div className="text-xs font-black uppercase text-green-700/60 mt-1">
-              Yes
-            </div>
-          </div>
-          <div className="border-4 border-primary bg-red-50 p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-3xl font-black text-red-700">
-              {stats.noVotes}
-            </div>
-            <div className="text-xs font-black uppercase text-red-700/60 mt-1">
-              No
-            </div>
-          </div>
-          <div className="border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-3xl font-black text-foreground">
-              {stats.verifiedVotes}
-            </div>
-            <div className="text-xs font-black uppercase text-muted-foreground mt-1">
-              Verified
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Voting + sharing */}
-      <ReferendumVoteSection
-        referendumSlug={slug}
-        isActive={referendum.status === "ACTIVE"}
-        isAuthenticated={!!user}
-        existingAnswer={existingVote?.answer ?? null}
-        referralCode={ref ?? null}
-        userId={user?.id ?? null}
-        username={user?.person?.handle ?? user?.referralCode ?? null}
-      />
+      {isTreatyReferendum ? (
+        <section
+          id="sign-the-treaty"
+          className="mb-12 pt-4"
+          aria-label="Sign the treaty"
+        >
+          <TreatyNameSignatureBox
+            authCallbackUrl={referendumPath}
+            referralCode={ref ?? null}
+            referendumSlug={slug}
+          />
+        </section>
+      ) : null}
     </div>
   );
 }

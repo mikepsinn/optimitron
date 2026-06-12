@@ -13,8 +13,6 @@ const SPONSORS = [
 const BUILT_WITH = [
   { name: "Storacha", logo: "/images/logos/storacha.svg" },
   { name: "Hypercerts", logo: "/images/logos/hypercerts.svg" },
-  { name: "World ID", logo: "/images/logos/worldcoin.svg" },
-  { name: "Base", logo: "/images/logos/base.svg" },
 ];
 
 export function SlidePostCreditsAliens() {

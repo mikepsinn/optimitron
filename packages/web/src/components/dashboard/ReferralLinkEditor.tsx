@@ -76,7 +76,7 @@ export function ReferralLinkEditor({
   onRefresh,
   title = null,
   description =
-    "Share this link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
+    "Your hiring link. Issue it to everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   variant = "default",
   className,
 }: ReferralLinkEditorProps) {
@@ -272,7 +272,7 @@ export function ReferralLinkEditor({
               isTreaty ? "text-black" : "text-muted-foreground",
             )}
           >
-            Share this link
+            Your hiring link
           </p>
           <p className="mt-2 min-h-12 break-all border border-black bg-background px-3 py-3 font-mono text-sm font-black text-foreground">
             {displayedUrl}

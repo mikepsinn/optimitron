@@ -46,7 +46,7 @@
 - Purchasing power lost since the Fed was created in 1913
 - [← BACK TO DTREASURY](/agencies/dtreasury)
 ### THE ALTERNATIVE: FIXED SUPPLY, ZERO INFLATION
-- $WISH has a fixed supply set once at deployment. No minting. No central bank. No algorithm deciding how much to print. Your central banks created $13 trillion since 2020. $WISH creates exactly zero, ever.
+- Wishes have a fixed supply set once at deployment. No minting. No central bank. No algorithm deciding how much to print. Your central banks created $13 trillion since 2020. Wishes create exactly zero, ever.
 - Productivity gains manifest as gentle deflation — same money, more goods, everyone's purchasing power rises. The total supply is set once in the constructor and enforced by the contract. No entity can create more. This is not monetary policy. This is the absence of monetary policy. Which, based on your track record, is a significant upgrade.
 ### THE PATTERN (2,000 YEARS, SAME BUG)
 - Your species has run this exact experiment at least four times. Each time: a government gains the ability to create money, uses it to fund wars, the currency collapses, and the population suffers. Then you do it again.
@@ -68,8 +68,8 @@
 - You got higher grocery prices.
 ### WHAT REPLACES THEM
 - 12 unelected humans → 1 constructor parameter
-- SOLIDITY 0.8.24
-- DEPLOYED ON BASE SEPOLIA
+- PROTOCOL RULES
+- REFERENCE IMPLEMENTATION
 - ```text
 // WishToken.sol — the entire monetary policy
 constructor(
@@ -84,12 +84,12 @@ constructor(
 // That's it. No board meetings. No interest rate decisions.
 // No quantitative easing. No money printer. Just math.
 ```
-- The total supply of $WISH is set once at deployment and enforced by the contract. No entity can create more. Productivity gains manifest as gentle deflation — your money buys more over time, not less.
+- The total supply of Wishes is set once at deployment and enforced by the protocol. No entity can create more. Productivity gains manifest as gentle deflation — your money buys more over time, not less.
 ### THE SAVINGS
 - Since 1913, the dollar has lost 96 cents of every dollar. Under fixed supply, that theft is mathematically impossible.
 - “Your central bank has one job: manage the money supply. In 111 years they've managed to destroy 96% of it. On my planet we'd call that a bug report, not a mandate.”
 ### SEE THE OPTIMIZED VERSION
-- Every Earth agency has a replacement that runs on code instead of bureaucracy. Fund the campaign. See the full system. Set your priorities.
+- Every Earth agency has a simpler replacement. Fund the campaign, see the system, set your priorities.
 - [FUND THE REFERENDUM](/prize)
 - [OPTIMIZED GOVERNANCE](/agencies)
 - [SET YOUR PRIORITIES](/agencies/dcongress/wishocracy)
