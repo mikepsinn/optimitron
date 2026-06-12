@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check World ID verification
+    // Check personhood verification
     const verification = await prisma.personhoodVerification.findFirst({
       where: {
         userId,
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
     if (!verification) {
       return NextResponse.json(
-        { error: "World ID verification required before registering for UBI." },
+        { error: "Personhood verification required before registering for UBI." },
         { status: 403 },
       );
     }
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert nullifier hash (externalId from World ID) to bytes32
+    // Convert nullifier hash from the personhood provider to bytes32
     const nullifierHash = verification.externalId as `0x${string}`;
 
     const account = privateKeyToAccount(ownerKey as `0x${string}`);

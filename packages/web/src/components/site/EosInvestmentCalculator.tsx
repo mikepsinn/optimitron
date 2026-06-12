@@ -107,6 +107,7 @@ function SliderControl({
         min={min}
         onChange={(event) => onChange(Number(event.target.value))}
         step={step}
+        style={{ caretColor: "transparent" }}
         type="range"
         value={value}
       />

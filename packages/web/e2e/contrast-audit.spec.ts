@@ -30,7 +30,6 @@ const CONTRAST_SCOPE = process.env.PLAYWRIGHT_CONTRAST_SCOPE === "critical"
   : "full";
 const CRITICAL_PUBLIC_PATHS = new Set([
   "/",
-  "/about",
   "/agencies",
   "/agencies/dtreasury",
   "/agencies/dtreasury/dfed",

@@ -106,7 +106,6 @@ const routeOrder = [
   "treaty",
   "treaty-auth",
   "referendum-one-percent-treaty",
-  "about",
   "agencies",
   "scoreboard",
   "tools",

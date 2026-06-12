@@ -69,6 +69,8 @@ const REDIRECTS = [
 ];
 
 const EXTRA_REDIRECT_ONLY_ROUTE_SOURCES = [
+  // Server Component redirect to the canonical EOS thesis page.
+  "/about",
   // Route handler whose only behavior is a site-aware redirect.
   "/impact",
 ];

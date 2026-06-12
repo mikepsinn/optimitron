@@ -82,6 +82,7 @@ describe("redirects", () => {
   it("classifies app-wide redirect sources as redirect-only review routes", () => {
     expect(getRedirectOnlyRoutePaths()).toEqual(
       expect.arrayContaining([
+        "/about",
         "/campaign",
         "/coalition",
         "/impact",
@@ -90,6 +91,7 @@ describe("redirects", () => {
         "/politicians/[jurisdictionCode]",
       ]),
     );
+    expect(isRedirectOnlyRoutePath("/about")).toBe(true);
     expect(isRedirectOnlyRoutePath("/campaign?ref=abc")).toBe(true);
     expect(isRedirectOnlyRoutePath("/politicians/US")).toBe(true);
     expect(isRedirectOnlyRoutePath("/signatories")).toBe(false);

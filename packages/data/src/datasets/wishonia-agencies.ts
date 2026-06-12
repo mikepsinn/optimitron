@@ -132,8 +132,8 @@ constructor(
     replaces: ["irs"],
     replacesAgencyName: "Internal Revenue Service",
     description:
-      "Six lines of code. That's all it took.",
-    tagline: "Six protocol rules replace 74,000 pages of tax code",
+      "Six lines of computer code. That's all it took.",
+    tagline: "Six lines of computer code replace 74,000 pages of tax code",
     deprecatedMetrics: [
       { metric: "Tax Code Complexity", description: "74,000 pages. Every loophole is a feature, not a bug — it's how donors get paid back." },
       { metric: "Compliance Burden", description: "6.1 billion hours/year of citizen time. An entire profession ('accountant') exists to decode rules you wrote for yourselves." },
@@ -170,7 +170,7 @@ constructor(
         color: "pink",
       },
     ],
-    codeHeader: "74,000 pages of tax code → 6 protocol rules",
+    codeHeader: "74,000 pages of tax code → 6 lines of computer code",
     replacementCode: `// WishToken._update() — replaces the entire IRS
 function _update(address from, address to, uint256 value) internal override {
     // Skip tax on mints, burns, or exempt addresses
@@ -190,7 +190,7 @@ function _update(address from, address to, uint256 value) internal override {
     savingsComparison:
       "$12.3B direct IRS budget + $200B+ in annual compliance costs eliminated. That's $640 per American per year just in paperwork savings.",
     wishoniaQuote:
-      "83,000 people interpreting 74,000 pages to do what six lines of code does automatically. And you wonder where your taxes go.",
+      "83,000 people interpreting 74,000 pages to do what six lines of computer code do automatically. And you wonder where your taxes go.",
     cardColor: "cyan",
   },
   dssa: {
@@ -827,7 +827,7 @@ function allocateSubsidy(patient) {
     savingsComparison:
       "IRS compliance ($546B) + welfare admin overhead ($212B+) eliminated. Plus: 96% of purchasing power no longer stolen by inflation.",
     wishoniaQuote:
-      "You have four agencies, 74,000 pages of rules, 83,000 employees, and 80 welfare programs — all doing what one protocol does in six lines. And you wonder where your taxes go.",
+      "You have four agencies, 74,000 pages of rules, 83,000 employees, and 80 welfare programs — all doing what six lines of computer code do. And you wonder where your taxes go.",
     cardColor: "pink",
   },
 

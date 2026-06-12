@@ -27,7 +27,7 @@
 - It is not an investment. It is not a security. It is a medium of exchange that happens to solve three problems your species has been failing at for centuries: tax collection, poverty relief, and democratic resource allocation.
 ### THREE BUILT-IN MECHANISMS
 - Your species keeps building separate institutions for tax collection, poverty relief, and democratic allocation — then wondering why they don't talk to each other. These three mechanisms are built into the currency itself.
-- [TRANSACTION TAX (REPLACES THE IRS) 0.5% of every transaction. That's the whole tax code. Six protocol rules replacing 74,000 pages of rules that no single human on your planet understands. Your accountants can finally do something useful. Like not dying. LEARN MORE →](/agencies/dtreasury/dirs)
+- [TRANSACTION TAX (REPLACES THE IRS) 0.5% of every transaction. That's the whole tax code. Six lines of computer code replacing 74,000 pages of rules that no single human on your planet understands. Your accountants can finally do something useful. Like not dying. LEARN MORE →](/agencies/dtreasury/dirs)
 - [ALGORITHMIC MONETARY POLICY (REPLACES THE FED) Fixed supply. Zero inflation. No room of 12 unelected humans holding a séance over interest rates. Your Federal Reserve has devalued your dollar 96% since 1913. A rock would have done better. Literally. A rock holds its value. LEARN MORE →](/agencies/dtreasury/dfed)
 - [UNIVERSAL BASIC INCOME (REPLACES WELFARE) Money goes in. Money goes out. To everyone. Equally. Personhood verification keeps one human from registering as three. No means testing. No case workers. No 45-day processing time to prove you're poor enough to eat. LEARN MORE →](/agencies/dtreasury/dssa)
 ### HOW THEY CONNECT
@@ -80,4 +80,4 @@
 ### MONEY THAT DOES SOMETHING
 - Your current system: earn money, get taxed, hope politicians spend it well, watch them not do that, repeat for 200 years. The alternative: money that funds public goods automatically, distributes a basic income universally, and lets you choose priorities directly. It's almost like treating people like humans works better. Weird.
 - [PLAY THE GAME](/prize)
-- [LEARN MORE](/about)
+- [LEARN MORE](/eos)

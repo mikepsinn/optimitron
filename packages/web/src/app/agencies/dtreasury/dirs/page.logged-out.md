@@ -3,20 +3,20 @@
 ## Metadata
 
 - Page title: Automated Revenue Service | International Campaign to End War and Disease
-- Meta description: Six lines of code. That's all it took.
+- Meta description: Six lines of computer code. That's all it took.
 - Canonical: https://warondisease.org/agencies/dtreasury/dirs
 - Open Graph title: Automated Revenue Service
-- Open Graph description: Six lines of code. That's all it took.
+- Open Graph description: Six lines of computer code. That's all it took.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdtreasury%2Fdirs
 - Twitter title: Automated Revenue Service
-- Twitter description: Six lines of code. That's all it took.
+- Twitter description: Six lines of computer code. That's all it took.
 
 ## Visible Page Copy
 
 - DEPRECATED
 - AUTOMATED REVENUE SERVICE
 ## INTERNAL REVENUE SERVICE
-- “Six protocol rules replace 74,000 pages of tax code”
+- “Six lines of computer code replace 74,000 pages of tax code”
 - — WISHONIA, PLANETARY SYSTEMS ENGINEER
 ### REPORT CARD
 - 💸
@@ -47,18 +47,18 @@
 - Hours Americans spend on tax compliance each year
 - [← BACK TO DTREASURY](/agencies/dtreasury)
 ### HOW THE TRANSACTION TAX WORKS
-- Every wishes transaction has a 0.5% fee baked into the currency. You spend money. The tax happens. Nobody files anything. Nobody audits anything. 74,000 pages of tax code, 83,000 IRS employees, and 6.1 billion hours of annual filing time — all replaced by six lines of code that a competent intern could read in four minutes.
+- Every wishes transaction has a 0.5% fee baked into the currency. You spend money. The tax happens. Nobody files anything. Nobody audits anything. 74,000 pages of tax code, 83,000 IRS employees, and 6.1 billion hours of annual filing time — all replaced by six lines of computer code that a competent intern could read in four minutes.
 - 01 YOU SPEND WISHES You buy things. You pay people. You live your life. The currency does the rest. On your planet, this step requires a tax attorney.
 - 02 0.5% IS DEDUCTED AUTOMATICALLY Every transfer runs through _update(). The tax is computed, split off, and sent to the treasury. No filing. No form. No accountant.
 - 03 THE REST ARRIVES AT THE RECIPIENT 99.5% goes where you wanted it. The 0.5% funds the things you voted for in Wishocracy. Education, healthcare, infrastructure — whatever 8 billion people chose, not whatever 535 people's donors suggested.
 - 04 NO EVASION POSSIBLE The tax is protocol-level. There are no offshore accounts, no shell companies, no loopholes. If money moves, the tax happens. That's it.
-### IRS VS 6 PROTOCOL RULES
+### IRS VS 6 LINES OF COMPUTER CODE
 - The entire IRS budget is $12.3 billion per year. A 0.5% automated transaction tax on a currency with sufficient volume generates the same revenue with zero administrative overhead. The math is not complicated. The politics, apparently, is.
 #### CURRENT SYSTEM (IRS)
 #### WISHES TRANSACTION TAX
-- Americans spend 6.1 billion hours per year on tax compliance. That's roughly 3 million full-time jobs worth of human effort — filling out forms, gathering receipts, hiring accountants — to accomplish what six lines of code do automatically and without error.
+- Americans spend 6.1 billion hours per year on tax compliance. That's roughly 3 million full-time jobs worth of human effort — filling out forms, gathering receipts, hiring accountants — to accomplish what six lines of computer code do automatically and without error.
 ### WHAT REPLACES THEM
-- 74,000 pages of tax code → 6 protocol rules
+- 74,000 pages of tax code → 6 lines of computer code
 - PROTOCOL RULES
 - REFERENCE IMPLEMENTATION
 - ```text
@@ -78,7 +78,7 @@ function _update(address from, address to, uint256 value) internal override {
 - Every transfer automatically deducts 0.5% and sends it to the treasury. No filing, no forms, no audits, no compliance departments, no offshore accounts. The tax is unavoidable because it's built into the protocol.
 ### THE SAVINGS
 - $12.3B direct IRS budget + $200B+ in annual compliance costs eliminated. That's $640 per American per year just in paperwork savings.
-- “83,000 people interpreting 74,000 pages to do what six lines of code does automatically. And you wonder where your taxes go.”
+- “83,000 people interpreting 74,000 pages to do what six lines of computer code do automatically. And you wonder where your taxes go.”
 ### SEE THE OPTIMIZED VERSION
 - Every Earth agency has a simpler replacement. Fund the campaign, see the system, set your priorities.
 - [FUND THE REFERENDUM](/prize)

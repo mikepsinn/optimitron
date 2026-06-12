@@ -935,7 +935,7 @@ export const SEGMENTS = [
     tags: ["feature", "financial"],
     act: "II-armory",
     scoreAdd: 5_600_000_000,
-    narration: `Wishes replace three things your government does badly. One: taxation. A flat zero point five percent transaction tax replaces your entire IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. Two: welfare. Universal Basic Income distributed automatically through personhood verification. Everyone at the poverty line, no bureaucracy. Three: monetary policy. Algorithmic zero-percent inflation — captured productivity gains prevent the inflationary theft that destroyed ninety-seven percent of your dollar. Your central bank's job, done by protocol rules, in four lines of code.`,
+    narration: `Wishes replace three things your government does badly. One: taxation. A flat zero point five percent transaction tax replaces your entire IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. Two: welfare. Universal Basic Income distributed automatically through personhood verification. Everyone at the poverty line, no bureaucracy. Three: monetary policy. Algorithmic zero-percent inflation — captured productivity gains prevent the inflationary theft that destroyed ninety-seven percent of your dollar. Your central bank's job, done by protocol rules, in four lines of computer code.`,
   },
   {
     id: "pencil-supply-chain",
@@ -1144,7 +1144,7 @@ export const SEGMENTS = [
     slideId: "decentralized-irs",
     tags: ["feature"],
     act: "II-armory",
-    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCost} dollars a year in compliance. A 0.5 percent transaction tax does the same job in four protocol rules. No filing. No accountants. No lobbyist can bribe the system to give their client a tax loophole.`,
+    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCost} dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of computer code. No filing. No accountants. No lobbyist can bribe the system to give their client a tax loophole.`,
   },
   {
     id: "decentralized-welfare",

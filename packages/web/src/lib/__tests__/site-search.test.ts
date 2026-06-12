@@ -28,9 +28,9 @@ describe("site search helpers", () => {
       section: "Take Action",
     });
     const weakMatch = scoreSearchRecord("tasks", {
-      title: "About",
+      title: "Feedback",
       description: "Background page that mentions tasks once in passing.",
-      href: ROUTES.about,
+      href: ROUTES.feedback,
       section: "Start Here",
     });
 

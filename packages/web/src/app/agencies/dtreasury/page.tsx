@@ -39,7 +39,7 @@ const subPages = [
     ...dirsLink,
     title: "Transaction Tax (Replaces the IRS)",
     description:
-      "0.5% of every transaction. That's the whole tax code. Six protocol rules replacing 74,000 pages of rules that no single human on your planet understands. Your accountants can finally do something useful. Like not dying.",
+      "0.5% of every transaction. That's the whole tax code. Six lines of computer code replacing 74,000 pages of rules that no single human on your planet understands. Your accountants can finally do something useful. Like not dying.",
   },
   {
     ...federalReserveLink,
@@ -237,7 +237,7 @@ export default function DTreasuryPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <GameCTA href={ROUTES.wishocracy} variant="secondary">Express Your Preferences</GameCTA>
           <GameCTA href="/prize" variant="outline">Play the Game</GameCTA>
-          <GameCTA href="/about" variant="outline">Learn More</GameCTA>
+          <GameCTA href={ROUTES.eos} variant="outline">Learn More</GameCTA>
         </div>
       </section>
     </div>

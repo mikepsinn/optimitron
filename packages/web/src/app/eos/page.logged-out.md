@@ -40,8 +40,11 @@
 - Feed in two centuries of data from nearly every country: which laws actually made people live longer and earn more. Rank them.
 #### USE THE LOBBY TO INSTALL THEM
 - The lobbying budget that used to block the fix now pays to pass it - starting with [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year redirected into testing cures.
+### EMPLOYEE MANUAL
+- The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. You run the planet now.
+- [READ THE EMPLOYEE MANUAL](https://manual.warondisease.org)
 ### WHY IT PAYS
-- The whole takeover costs about [$722 billion](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html) - roughly [$90.3](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html) per person, if every human chipped in. Nobody collects $90 from anybody. You put money in, you own part of it, and the returns come from those companies getting more valuable as the economy grows. You are not paying to fix the planet. You own part of the fix.
+- The whole takeover costs about [$873 billion](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html) - roughly [$109](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html) per person, if every human chipped in. Nobody collects $90 from anybody. You put money in, you own part of it, and the returns come from those companies getting more valuable as the economy grows. You are not paying to fix the planet. You own part of the fix.
 ### YOUR CALCULATOR
 - Use your own assumptions. If the numbers stop working, good. That means the page did a useful thing.
 #### YOUR ASSUMPTIONS
@@ -52,34 +55,34 @@
 - MARKET-IMPLIED ENTRY PROBABILITY 5.0%
 - DEFENSE STOCK RETURN IF IT FAILS 10.0%
 - ECONOMY-EXPOSED NET WORTH$250,000
-- TREATY/CURRENT GDP MULTIPLIER 4.1x
-- 95% CI: 2.0X - 8.6X. BASE CASE: [4.10](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html).
+- TREATY/CURRENT GDP MULTIPLIER 1.4x
+- 95% CI: 1.2X - 1.7X. BASE CASE: [1.43](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html).
 - ILLUSTRATIVE. YOUR ASSUMPTIONS, NOT A PROMISE OR OFFER. NOT INVESTMENT ADVICE.
 #### WHAT THE SHARE BECOMES
 #### VALUE IF CAMPAIGN SUCCEEDS
-- $102,469
-- 4.1x your investment
+- $35,687
+- 1.4x your investment
 #### VALUE IF CAMPAIGN FAILS
 - $64,844
 - Defense stocks at 10.0%/yr for 10 years
 #### EXPECTED VALUE (PROBABILITY-WEIGHTED)
-- $68,606
-- 10.0% chance of $102,469 + 90.0% chance of $64,844
-- You invest $25,000. If the campaign succeeds (10.0% estimated), your shares appreciate to $102,469 (4.1x). If it fails, you hold defense stocks worth $64,844 at market return. The probability-weighted expected value is $68,606, which is $3,763 more than the S&P would have returned. You also do not die of a curable disease, which is not reflected above but is arguably the better return.
+- $61,928
+- 10.0% chance of $35,687 + 90.0% chance of $64,844
+- You invest $25,000. If the campaign succeeds (10.0% estimated), your shares appreciate to $35,687 (1.4x). If it fails, you hold defense stocks worth $64,844 at market return. The probability-weighted expected value is $61,928, which is $2,916 less than the S&P would have returned. You also do not die of a curable disease, which is not reflected above but is arguably the better return.
 - ADVANCED (FOR THE FINANCE-MINDED)
 #### IF THE MARKET IS ASLEEP (THE THESIS)
-- 82x
-- success multiple buying at 5.0% implied (4.1x assets times the repricing from 5.0% to certainty) = $2M on $25,000
+- 29x
+- success multiple buying at 5.0% implied (1.4x assets times the repricing from 5.0% to certainty) = $713,731 on $25,000
 #### IF THE MARKET IS EFFICIENT (TEXTBOOK)
 - then the price already reflects the odds, entry timing is fair, and you are paid in variance, not extra expected value. Early just means cheaper and riskier.
 #### YOUR EDGE OVER THE MARKET
 - 2.0x
 - your 10.0% belief divided by the 5.0% the market prices in. Above 1x, the market is underpaying you for the risk.
 #### PROTECTED UPSIDE
-- $774,689
-- $250,000 riding the 4.1x trajectory gap; probability-weighted $77,469.
+- $106,866
+- $250,000 riding the 1.4x trajectory gap; probability-weighted $10,687.
 #### ASLEEP EXPECTED VALUE
-- $263,297
+- $129,732
 - market-asleep expected value at your assumptions, using the same fail path above.
 ### TERMS
 - Investment discussions happen off-page, for accredited investors, with the securities materials where they belong.

@@ -47,7 +47,7 @@ const comparisonData = {
     { label: "Evasion rate", value: "~15% ($600B+ gap)" },
   ],
   wish: [
-    { label: "Tax code length", value: "6 protocol rules" },
+    { label: "Tax code length", value: "6 lines of computer code" },
     { label: "Employees needed", value: "0" },
     { label: "Annual operating cost", value: "$0" },
     { label: "Compliance cost", value: "$0" },
@@ -79,7 +79,7 @@ export default function DTreasuryDirsPage() {
           You spend money. The tax happens. Nobody files anything. Nobody audits
           anything. 74,000 pages of tax code, 83,000 IRS employees, and
           6.1 billion hours of annual filing time — all replaced by six lines of
-          code that a competent intern could read in four minutes.
+          computer code that a competent intern could read in four minutes.
         </p>
         <StepList items={howItWorks} />
       </section>
@@ -87,7 +87,7 @@ export default function DTreasuryDirsPage() {
       {/* Side-by-Side Comparison */}
       <section className="mb-16">
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
-          IRS vs 6 Protocol Rules
+          IRS vs 6 Lines of Computer Code
         </h2>
         <p className="mb-6 max-w-3xl text-sm font-bold text-muted-foreground">
           The entire IRS budget is $12.3 billion per year. A 0.5% automated
@@ -106,7 +106,7 @@ export default function DTreasuryDirsPage() {
             Americans spend 6.1 billion hours per year on tax compliance. That&apos;s
             roughly 3 million full-time jobs worth of human effort — filling out
             forms, gathering receipts, hiring accountants — to accomplish what
-            six lines of code do automatically and without error.
+            six lines of computer code do automatically and without error.
           </p>
         </div>
       </section>

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { clientEnv } from "@/lib/env";
 
 const CLARITY_ALLOWED_PATHS = new Set([
-  "/about",
+  "/eos",
   "/fix-ai",
   "/impact",
   "/joke",

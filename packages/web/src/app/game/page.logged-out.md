@@ -302,7 +302,7 @@
 - [🗳️REFERENDUMS Vote on things that matter. Prove you're human. Skip the middleman who was going to ignore you anyway. VOTE NOW →](/agencies/dcongress/referendums)
 - [💸AUTOMATED TREASURY 0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited. EXPLORE TREASURY →](/agencies/dtreasury)
 - [🏦ALGORITHMIC RESERVE Twelve people in a room deciding how much your money is worth. On my planet, we call that a hostage situation. LEARN MORE →](/agencies/dtreasury/dfed)
-- [🧾AUTOMATED REVENUE SERVICE Six lines of code. That's all it took. LEARN MORE →](/agencies/dtreasury/dirs)
+- [🧾AUTOMATED REVENUE SERVICE Six lines of computer code. That's all it took. LEARN MORE →](/agencies/dtreasury/dirs)
 - [🍞UNIVERSAL SECURITY ADMINISTRATION You spend more administering help than you spend helping. That's not a safety net — that's a jobs programme for administrators. LEARN MORE →](/agencies/dtreasury/dssa)
 - [📋OPTIMAL POLICY GENERATOR 275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work. SEE POLICY GRADES →](/opg)
 - [💰OPTIMAL BUDGET GENERATOR 535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone. SEE BUDGET ANALYSIS →](/obg)

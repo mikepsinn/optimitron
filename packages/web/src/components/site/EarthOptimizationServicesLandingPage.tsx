@@ -11,6 +11,7 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { EosInvestmentCalculator } from "@/components/site/EosInvestmentCalculator";
 import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
+import { fullManualPaperLink } from "@/lib/routes";
 
 const requestDataRoomSubject = "EOS data room request"; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA.
 const bookCallSubject = "EOS investor call"; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA.
@@ -36,6 +37,10 @@ const thermostatHeading = "Your government has no thermostat."; // TODO(copy): M
 const thermostatDeck =
   "Your oven measures the temperature, compares it to what you asked for, and adjusts. So does your fridge, your cruise control, your toilet. Your government runs the most complex system on Earth with less feedback than a toaster."; // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy and earth-optimization-services.qmd:177-224.
 const howItWorksHeading = "How it works"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
+const employeeManualHeading = "Employee manual"; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
+const employeeManualDeck =
+  "The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. You run the planet now."; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
+const employeeManualLabel = "Read the employee manual"; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
 const whyItPaysHeading = "Why it pays"; // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
 const calculatorHeading = "Your calculator"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
 const calculatorDeck =
@@ -132,7 +137,7 @@ function ActionButton({
 
   return (
     <Button asChild className={className} variant="outline">
-      {href.startsWith("mailto:") ? (
+      {href.startsWith("mailto:") || href.startsWith("http") ? (
         <a href={href}>{children}</a>
       ) : (
         <Link href={href}>{children}</Link>
@@ -231,7 +236,7 @@ function ThermostatPanel({
 
 export function EarthOptimizationServicesLandingPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <SectionContainer
         bgColor="background"
         borderPosition="bottom"
@@ -336,6 +341,12 @@ export function EarthOptimizationServicesLandingPage() {
         </div>
       </PageSection>
 
+      <PageSection deck={employeeManualDeck} title={employeeManualHeading}>
+        <ActionButton href={fullManualPaperLink.href}>
+          {employeeManualLabel}
+        </ActionButton>
+      </PageSection>
+
       <PageSection title={whyItPaysHeading}>
         {/* TODO(copy): Mike copy gate. Source: Pivot 3 exact copy with parameterized takeover cost. */}
         <p className="max-w-5xl text-xl font-bold leading-9 sm:text-2xl sm:leading-10">
@@ -404,6 +415,6 @@ export function EarthOptimizationServicesLandingPage() {
           </p>
         </Container>
       </SectionContainer>
-    </main>
+    </div>
   );
 }

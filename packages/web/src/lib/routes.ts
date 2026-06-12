@@ -136,7 +136,6 @@ export const ROUTES = {
   wishonia: "/wishonia",
   moronia: "/moronia",
   // Meta
-  about: "/about",
   declaration: "/declaration",
   developers: "/developers",
   demo: "/demo",
@@ -1019,18 +1018,6 @@ export const earthOptimizationPrizePaperLink: NavItem = {
   cta: "Read Paper",
 };
 
-export const aboutLink: NavItem = {
-  href: ROUTES.about,
-  label: "About",
-  emoji: "ℹ️",
-  description:
-    "Earth Optimization Services, Optimitron, Wishocracy, and the employee manual.",
-  tagline: "The company, the machine, and your job",
-  screenshot: true,
-
-  cta: "Read About EOS",
-};
-
 export const demoLink: NavItem = {
   href: ROUTES.demo,
   label: "Demo",
@@ -1214,7 +1201,6 @@ export const navSections: NavSection[] = [
     id: "learn",
     label: "Learn",
     items: [
-      aboutLink,
       videoLink,
       demoLink,
       declarationLink,
@@ -1296,7 +1282,6 @@ export const footerAppLinks: NavItem[] = [
   censusLink,
   settingsLink,
   transmitLink,
-  aboutLink,
 ];
 
 export const feedbackLink: NavItem = {
@@ -1717,7 +1702,6 @@ export const routeReviewNavItems = [
   gameLink,
   voteLink,
   treatyLink,
-  aboutLink,
   wishoniaWorldLink,
   agenciesLink,
   scoreboardLink,
