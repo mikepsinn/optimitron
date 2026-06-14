@@ -344,6 +344,24 @@ export const TaskCategorySchema = z.enum([
 ]);
 export type TaskCategory = z.infer<typeof TaskCategorySchema>;
 
+export const TaskKindSchema = z.enum([
+  'TASK',
+  'ROLE_OPENING',
+  'PROJECT',
+  'BOUNTY',
+  'VOLUNTEER_ROLE',
+]);
+export type TaskKind = z.infer<typeof TaskKindSchema>;
+
+export const TaskEngagementKindSchema = z.enum([
+  'ONE_OFF',
+  'ONGOING',
+  'PART_TIME',
+  'FULL_TIME',
+  'CONTRACT',
+]);
+export type TaskEngagementKind = z.infer<typeof TaskEngagementKindSchema>;
+
 export const TaskClaimPolicySchema = z.enum([
   'ASSIGNED_ONLY',
   'OPEN_SINGLE',
@@ -366,6 +384,37 @@ export const TaskDeadlinePolicySchema = z.enum([
   'REQUIRED',
 ]);
 export type TaskDeadlinePolicy = z.infer<typeof TaskDeadlinePolicySchema>;
+
+export const TaskApplicationPolicySchema = z.enum([
+  'CLOSED',
+  'OPEN',
+  'INVITE_ONLY',
+]);
+export type TaskApplicationPolicy = z.infer<typeof TaskApplicationPolicySchema>;
+
+export const TaskApplicationStatusSchema = z.enum([
+  'APPLIED',
+  'INVITED',
+  'UNDER_REVIEW',
+  'SHORTLISTED',
+  'INTERVIEWING',
+  'OFFERED',
+  'ACCEPTED',
+  'REJECTED',
+  'WITHDRAWN',
+  'ARCHIVED',
+]);
+export type TaskApplicationStatus = z.infer<typeof TaskApplicationStatusSchema>;
+
+export const TaskApplicationEventTypeSchema = z.enum([
+  'CREATED',
+  'STATUS_CHANGED',
+  'REVIEWED',
+  'COMMENTED',
+  'INVITED',
+  'WITHDRAWN',
+]);
+export type TaskApplicationEventType = z.infer<typeof TaskApplicationEventTypeSchema>;
 
 export const TaskClaimStatusSchema = z.enum([
   'CLAIMED',
@@ -2043,6 +2092,8 @@ export const TaskSchema = z.object({
   roleTitle: z.string().nullable().optional(),
   assigneeAffiliationSnapshot: z.string().nullable().optional(),
   category: TaskCategorySchema.default('OTHER'),
+  kind: TaskKindSchema.default('TASK'),
+  engagementKind: TaskEngagementKindSchema.default('ONE_OFF'),
   difficulty: TaskDifficultySchema.default('INTERMEDIATE'),
   estimatedEffortHours: z.number().nullable().optional(),
   actualEffortSeconds: z.number().int().nullable().optional(),
@@ -2051,6 +2102,7 @@ export const TaskSchema = z.object({
   interestTags: z.array(z.string()).default([]),
   contextJson: nullableJsonSchema,
   claimPolicy: TaskClaimPolicySchema.default('OPEN_SINGLE'),
+  applicationPolicy: TaskApplicationPolicySchema.default('CLOSED'),
   maxClaims: z.number().int().nullable().optional(),
   status: TaskStatusSchema.default('ACTIVE'),
   isPublic: z.boolean().default(true),
@@ -2139,6 +2191,52 @@ export const TaskFundingEventSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type TaskFundingEventTypeModel = z.infer<typeof TaskFundingEventSchema>;
+
+/** Zod schema for the TaskApplication model */
+export const TaskApplicationSchema = z.object({
+  id: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  taskId: z.string(),
+  applicantUserId: z.string().nullable().optional(),
+  applicantPersonId: z.string().nullable().optional(),
+  reviewerUserId: z.string().nullable().optional(),
+  status: TaskApplicationStatusSchema.default('APPLIED'),
+  applicationMessage: z.string().nullable().optional(),
+  answersJson: nullableJsonSchema,
+  applicantNameSnapshot: z.string().nullable().optional(),
+  applicantEmailSnapshot: z.string().nullable().optional(),
+  reviewScore: z.number().int().nullable().optional(),
+  reviewNote: z.string().nullable().optional(),
+  metadata: nullableJsonSchema,
+  appliedAt: dateSchema,
+  reviewedAt: nullableDateSchema,
+  offeredAt: nullableDateSchema,
+  acceptedAt: nullableDateSchema,
+  rejectedAt: nullableDateSchema,
+  withdrawnAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskApplicationType = z.infer<typeof TaskApplicationSchema>;
+
+/** Zod schema for the TaskApplicationEvent model */
+export const TaskApplicationEventSchema = z.object({
+  id: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  applicationId: z.string(),
+  eventType: TaskApplicationEventTypeSchema,
+  fromStatus: TaskApplicationStatusSchema.nullable().optional(),
+  toStatus: TaskApplicationStatusSchema.nullable().optional(),
+  actorUserId: z.string().nullable().optional(),
+  note: z.string().nullable().optional(),
+  beforeJson: nullableJsonSchema,
+  afterJson: nullableJsonSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskApplicationEventTypeModel = z.infer<typeof TaskApplicationEventSchema>;
 
 /** Zod schema for the TaskClaim model */
 export const TaskClaimSchema = z.object({

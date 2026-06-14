@@ -61,12 +61,12 @@ export const TASK_ASSIGNMENT_TEMPLATE_ID = "task-assignment";
 
 const SAMPLE_ASSIGNMENT_INPUT = {
   description: [
-    "The 1% Treaty needs your country's signature. Sign the document, hire two people you love with your hiring link, and verify that your local treaty signer has been contacted.",
+    "The 1% Treaty needs your country's signature. Sign the document, hire two people you love with your referral link, and verify that your local treaty signer has been contacted.",
     "",
     "Read [the manual](https://manual.warondisease.org/) before you start.",
     "",
     "- Sign the treaty.",
-    "- Hire two people you love with your hiring link.",
+    "- Hire two people you love with your referral link.",
     "- Verify your local treaty signer has been contacted.",
     "",
     "```html",

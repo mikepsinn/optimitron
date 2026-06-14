@@ -27,7 +27,7 @@ const pipelineSteps = [
     number: 3,
     label: "Public Audit Trail",
     description:
-      "Every score needs a trail: inputs, method, version, and date. Otherwise it is just another person on the internet saying numbers with confidence.",
+      "Every score needs a trail: inputs, method, version, and date. Otherwise it is just another person on the internet saying numbers with confidence. The records live where nobody can quietly delete them. Your governments love deleting things. This one can't.",
     color: "bg-background",
     textColor: "text-foreground",
     subTextColor: "text-foreground",
@@ -36,7 +36,7 @@ const pipelineSteps = [
     number: 4,
     label: "Campaign Finance",
     description:
-      "Campaign support should follow measured alignment with citizens, not donor access, dinner fundraisers, or whichever lobbyist brought the nicest spreadsheet.",
+      "Campaign support should follow measured alignment with citizens, not donor access, dinner fundraisers, or whichever lobbyist brought the nicest spreadsheet. Not how much they promised. Not how good their hair is. What they did.",
     color: "bg-background",
     textColor: "text-foreground",
     subTextColor: "text-foreground",

@@ -1,15 +1,11 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { GameCTA } from "@/components/ui/game-cta";
-import { ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import { ROUTES, dcongressLink, referendumLink } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "dCongress — Direct Democracy | Optimitron",
-  description:
-    "Congress has two jobs: set the budget and pass laws. Wishonia replaces both with direct citizen participation. No representatives required.",
-};
+export const metadata = getRouteMetadata(dcongressLink);
 
 const subAgencies = [
   {
@@ -24,8 +20,7 @@ const subAgencies = [
   {
     emoji: "📜",
     name: "Referendums",
-    description:
-      "Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.",
+    description: referendumLink.description,
     href: ROUTES.referendum,
     earthEquivalent: "Congressional Legislation",
     color: "cyan" as const,

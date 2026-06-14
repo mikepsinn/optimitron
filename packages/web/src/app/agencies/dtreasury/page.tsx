@@ -142,12 +142,12 @@ export default function DTreasuryPage() {
         <div className="mb-6 border-l border-foreground/30 pl-4">
           <p className="text-sm text-foreground font-bold leading-relaxed mb-4">
             Wishes are a programmable currency with governance built into the
-            protocol. Every time you use it, 0.5% automatically funds public
+            protocol. Every time you use them, 0.5% automatically funds public
             goods. You decide which public goods via five minutes of pairwise
             comparisons. That&apos;s it. That&apos;s the entire system.
           </p>
           <p className="text-sm text-foreground font-bold leading-relaxed mb-4">
-            What if your money funded public goods every time you used it, and
+            What if your money funded public goods every time you used them, and
             you got to decide which ones?
           </p>
           <p className="text-sm text-muted-foreground font-bold leading-relaxed">

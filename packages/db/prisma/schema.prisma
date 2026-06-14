@@ -468,6 +468,29 @@ enum TaskCategory {
   OTHER
 }
 
+/// What kind of work/opportunity this task represents.
+enum TaskKind {
+  /// Default executable task.
+  TASK
+  /// Longer-running role opening that people apply for.
+  ROLE_OPENING
+  /// Multi-step project that may produce child tasks.
+  PROJECT
+  /// Paid or prize-like scoped work.
+  BOUNTY
+  /// Volunteer role or unpaid recurring responsibility.
+  VOLUNTEER_ROLE
+}
+
+/// Expected duration/commitment shape for matching and applications.
+enum TaskEngagementKind {
+  ONE_OFF
+  ONGOING
+  PART_TIME
+  FULL_TIME
+  CONTRACT
+}
+
 /// Controls whether a task is assigned directly or how many simultaneous active claims it can accept
 enum TaskClaimPolicy {
   /// Public accountability item addressed to one person; never claimable by other users
@@ -496,6 +519,37 @@ enum TaskDeadlinePolicy {
   EXPIRES
   /// Required work remains visible after dueAt as missed/remediation work.
   REQUIRED
+}
+
+/// Controls whether people can apply before doing a task or role.
+enum TaskApplicationPolicy {
+  CLOSED
+  OPEN
+  INVITE_ONLY
+}
+
+/// Lifecycle state for a person's application to do a task or role.
+enum TaskApplicationStatus {
+  APPLIED
+  INVITED
+  UNDER_REVIEW
+  SHORTLISTED
+  INTERVIEWING
+  OFFERED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  ARCHIVED
+}
+
+/// Append-only event type for task applications.
+enum TaskApplicationEventType {
+  CREATED
+  STATUS_CHANGED
+  REVIEWED
+  COMMENTED
+  INVITED
+  WITHDRAWN
 }
 
 /// Lifecycle state for an individual user's claim on a task.
@@ -867,6 +921,7 @@ model Person {
   relationshipsAsObject       PersonRelationship[] @relation("PersonRelationshipObject")
   assignedTasks               Task[]               @relation("TaskAssigneePerson")
   receivedReferralInvitations ReferralInvitation[] @relation("ReferralInvitationRecipientPerson")
+  taskApplications            TaskApplication[]    @relation("TaskApplicationApplicantPerson")
   authoredTaskComments        TaskComment[]        @relation("TaskCommentAuthorPerson")
   receivedTaskCommunications  TaskCommunication[]  @relation("TaskCommunicationRecipientPerson")
   sentTaskCommunications      TaskCommunication[]  @relation("TaskCommunicationSenderPerson")
@@ -1596,6 +1651,9 @@ model User {
   sentReferralInvitations            ReferralInvitation[]             @relation("ReferralInvitationReferrer")
   surveyResponses                    SurveyResponse[]                 @relation("UserSurveyResponses")
   taskClaims                         TaskClaim[]                      @relation("UserTaskClaims")
+  taskApplications                   TaskApplication[]                @relation("UserTaskApplications")
+  reviewedTaskApplications           TaskApplication[]                @relation("UserReviewedTaskApplications")
+  taskApplicationEvents              TaskApplicationEvent[]           @relation("UserTaskApplicationEvents")
   createdTasks                       Task[]                           @relation("TaskCreator")
   verifiedTasks                      Task[]                           @relation("TaskVerifiedByUser")
   verifiedTaskClaims                 TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
@@ -3458,6 +3516,8 @@ model Jurisdiction {
   organizations                 Organization[]
   surveys                       Survey[]
   tasks                         Task[]
+  taskApplications              TaskApplication[]                @relation("JurisdictionTaskApplications")
+  taskApplicationEvents         TaskApplicationEvent[]           @relation("JurisdictionTaskApplicationEvents")
   taskTriggers                  TaskTrigger[]                    @relation("JurisdictionTaskTriggers")
   conflicts                     Conflict[]                       @relation("ConflictPrimaryJurisdiction")
   memorialResponsibleParties    PersonMemorialResponsibleParty[] @relation("JurisdictionPersonMemorialResponsibleParties")
@@ -5331,6 +5391,12 @@ model Task {
   /// Taxonomy for browsing and ranking
   category TaskCategory @default(OTHER)
 
+  /// Whether this task is a normal task, role opening, project, bounty, etc.
+  kind TaskKind @default(TASK)
+
+  /// Expected commitment shape for matching and applications.
+  engagementKind TaskEngagementKind @default(ONE_OFF)
+
   /// Estimated difficulty for matching
   difficulty TaskDifficulty @default(INTERMEDIATE)
 
@@ -5354,6 +5420,9 @@ model Task {
 
   /// Controls claimability
   claimPolicy TaskClaimPolicy @default(OPEN_SINGLE)
+
+  /// Controls whether users can apply before being accepted to do this work.
+  applicationPolicy TaskApplicationPolicy @default(CLOSED)
 
   /// Max simultaneous claims when claimPolicy is OPEN_MANY
   maxClaims Int?
@@ -5405,6 +5474,7 @@ model Task {
   currentImpactEstimateSet  TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
   impactEstimateSets        TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
   claims                    TaskClaim[]                 @relation("TaskClaims")
+  applications              TaskApplication[]           @relation("TaskApplications")
   comments                  TaskComment[]               @relation("TaskComments")
   sourceArtifacts           TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
   outgoingEdges             TaskEdge[]                  @relation("TaskOutgoingEdges")
@@ -5428,7 +5498,10 @@ model Task {
   @@index([verifiedByUserId])
   @@index([createdByUserId])
   @@index([claimPolicy, status])
+  @@index([applicationPolicy, status])
   @@index([category])
+  @@index([kind, status])
+  @@index([engagementKind])
   @@index([difficulty])
   @@index([availableAt])
   @@index([dueAt])
@@ -5537,6 +5610,149 @@ model TaskFundingEvent {
   actorUser User?              @relation("UserTaskFundingEvents", fields: [actorUserId], references: [id], onDelete: SetNull)
 
   @@index([targetId, eventType, createdAt])
+  @@index([deletedAt])
+}
+
+/// A person's application or invitation to do a task, role opening, bounty, or project.
+model TaskApplication {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction copied from the task for tenant filtering.
+  jurisdictionId String?
+
+  /// Task, role opening, bounty, or project being applied to.
+  taskId String
+
+  /// Signed-in applicant, when available.
+  applicantUserId String?
+
+  /// Canonical person record for the applicant, when available.
+  applicantPersonId String?
+
+  /// User who last reviewed this application.
+  reviewerUserId String?
+
+  /// Review lifecycle state.
+  status TaskApplicationStatus @default(APPLIED)
+
+  /// Applicant's message, cover note, or proposal.
+  applicationMessage String?
+
+  /// Structured application answers that do not justify first-class columns yet.
+  answersJson Json?
+
+  /// Applicant display name captured at submission time.
+  applicantNameSnapshot String?
+
+  /// Applicant email captured at submission time, if they supplied one.
+  applicantEmailSnapshot String?
+
+  /// Reviewer-entered score, conventionally 0-100.
+  reviewScore Int?
+
+  /// Internal reviewer note.
+  reviewNote String?
+
+  /// Free-form metadata for imports and future matching details.
+  metadata Json?
+
+  /// When the application was submitted or invitation was created.
+  appliedAt DateTime @default(now())
+
+  /// When a reviewer first reviewed this application.
+  reviewedAt DateTime?
+
+  /// When the applicant was offered the role/task.
+  offeredAt DateTime?
+
+  /// When the applicant accepted or was accepted.
+  acceptedAt DateTime?
+
+  /// When the application was rejected.
+  rejectedAt DateTime?
+
+  /// When the applicant withdrew.
+  withdrawnAt DateTime?
+
+  /// When this record was created.
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated.
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp.
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction    Jurisdiction?          @relation("JurisdictionTaskApplications", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  task            Task                   @relation("TaskApplications", fields: [taskId], references: [id], onDelete: Cascade)
+  applicantUser   User?                  @relation("UserTaskApplications", fields: [applicantUserId], references: [id], onDelete: SetNull)
+  applicantPerson Person?                @relation("TaskApplicationApplicantPerson", fields: [applicantPersonId], references: [id], onDelete: SetNull)
+  reviewerUser    User?                  @relation("UserReviewedTaskApplications", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+  comments        TaskComment[]          @relation("TaskApplicationComments")
+  events          TaskApplicationEvent[] @relation("TaskApplicationEvents")
+
+  @@unique([taskId, applicantUserId])
+  @@unique([taskId, applicantPersonId])
+  @@index([jurisdictionId, status])
+  @@index([taskId, status, appliedAt])
+  @@index([applicantUserId, status])
+  @@index([applicantPersonId, status])
+  @@index([reviewerUserId, status])
+  @@index([deletedAt])
+}
+
+/// Append-only status/review/history entry for a task application.
+model TaskApplicationEvent {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction copied from the application for tenant filtering.
+  jurisdictionId String?
+
+  /// Application this event belongs to.
+  applicationId String
+
+  /// Event kind.
+  eventType TaskApplicationEventType
+
+  /// Previous status when this event changes status.
+  fromStatus TaskApplicationStatus?
+
+  /// New status when this event changes status.
+  toStatus TaskApplicationStatus?
+
+  /// User who caused the event.
+  actorUserId String?
+
+  /// Human-readable note.
+  note String?
+
+  /// Snapshot before the change.
+  beforeJson Json?
+
+  /// Snapshot after the change.
+  afterJson Json?
+
+  /// Free-form metadata.
+  metadata Json?
+
+  /// When this event was written.
+  createdAt DateTime @default(now())
+
+  /// Soft-delete timestamp.
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction Jurisdiction?   @relation("JurisdictionTaskApplicationEvents", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  application  TaskApplication @relation("TaskApplicationEvents", fields: [applicationId], references: [id], onDelete: Cascade)
+  actorUser    User?           @relation("UserTaskApplicationEvents", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([jurisdictionId, eventType, createdAt])
+  @@index([applicationId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([eventType, createdAt])
   @@index([deletedAt])
 }
 
@@ -5672,6 +5888,9 @@ model TaskComment {
   /// Task this comment belongs to
   taskId String
 
+  /// Optional application-specific thread under the same task.
+  taskApplicationId String?
+
   /// Parent comment if this is a reply; null for top-level comments
   parentCommentId String?
 
@@ -5755,6 +5974,7 @@ model TaskComment {
 
   // -- Relations --
   task               Task                @relation("TaskComments", fields: [taskId], references: [id], onDelete: Cascade)
+  taskApplication    TaskApplication?    @relation("TaskApplicationComments", fields: [taskApplicationId], references: [id], onDelete: SetNull)
   parentComment      TaskComment?        @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
   replies            TaskComment[]       @relation("CommentReplies")
   authorUser         User?               @relation("TaskCommentAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
@@ -5765,6 +5985,7 @@ model TaskComment {
   communications     TaskCommunication[] @relation("TaskCommentCommunications")
 
   @@index([taskId, createdAt])
+  @@index([taskApplicationId, createdAt])
   @@index([taskId, voteScore])
   @@index([taskId, hotScore])
   @@index([parentCommentId])

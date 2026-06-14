@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Fund Optimization | International Campaign to End War and Disease
-- Meta description: Insert coin. AI agents optimize Earth. See what your dollar did and where the money went.
+- Meta description: Put money where it moves votes, organizations, leaders, or measurable treaty demand. If the ask cannot point to proof, keep your money.
 - Canonical: https://warondisease.org/fund
 - Open Graph title: Fund Optimization
-- Open Graph description: Insert coin. AI agents optimize Earth. See what your dollar did and where the money went.
+- Open Graph description: Put money where it moves votes, organizations, leaders, or measurable treaty demand. If the ask cannot point to proof, keep your money.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Ffund
 - Twitter title: Fund Optimization
-- Twitter description: Insert coin. AI agents optimize Earth. See what your dollar did and where the money went.
+- Twitter description: Put money where it moves votes, organizations, leaders, or measurable treaty demand. If the ask cannot point to proof, keep your money.
 
 ## Visible Page Copy
 

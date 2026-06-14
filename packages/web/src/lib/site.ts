@@ -254,7 +254,7 @@ const ORGANIZATION_NAME = "Earth Optimization Services LLC";
 const ORGANIZATION_URL = OPTIMITRON_CANONICAL_ORIGIN;
 const ORGANIZATION_LOGO_PATH = "/icons/icon-192.png";
 const PUBLIC_CONTACT_EMAIL = "hello@warondisease.org";
-const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}/about`;
+const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}${ROUTES.eos}`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 const EARTH_OPTIMIZATION_SERVICES_LLC = "Earth Optimization Services LLC";
 const NO_FOOTER_COMPLIANCE_NOTICE = null;
@@ -730,7 +730,6 @@ const DFDA_CONFIG: SiteConfig = {
       "/outcome-labels",
       "/find-trials",
       ROUTES.dfda,
-      ROUTES.about,
       ROUTES.donate,
     ],
     operationalPrefixes: [
@@ -842,7 +841,6 @@ const DIH_CONFIG: SiteConfig = {
       ROUTES.conditions,
       ROUTES.treatments,
       ROUTES.wishocracy,
-      ROUTES.about,
       ROUTES.donate,
     ],
     operationalPrefixes: [

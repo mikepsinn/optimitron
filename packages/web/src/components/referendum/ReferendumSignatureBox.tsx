@@ -278,7 +278,7 @@ export function ReferendumSignatureBox({
           <>
             <SecretChainPitch citizenName={getUserDisplayName(session?.user)} />
             <ShareLinkButtons
-              label="Send your hiring link"
+              label="Send your referral link"
               shareText={shareText}
               url={referralUrl}
               emailSubject={emailSubject}

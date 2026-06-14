@@ -70,7 +70,6 @@ const STATIC_SITEMAP_ROUTES: SiteSitemapRoute[] = [
   { path: ROUTES.dcensus, priority: 0.5, changeFrequency: "monthly" },
   { path: ROUTES.wishonia, priority: 0.6, changeFrequency: "monthly" },
   { path: ROUTES.moronia, priority: 0.6, changeFrequency: "monthly" },
-  { path: ROUTES.about, priority: 0.5, changeFrequency: "monthly" },
   { path: ROUTES.tools, priority: 0.6, changeFrequency: "weekly" },
   { path: ROUTES.contribute, priority: 0.5, changeFrequency: "monthly" },
   { path: ROUTES.fund, priority: 0.6, changeFrequency: "weekly" },
