@@ -23,9 +23,9 @@
 #### ALIGNMENT SCORING
 - We compare what your politicians actually voted for against what you actually wanted. The gap between those two numbers is called a Citizen Alignment Score. It is usually depressing.
 #### PUBLIC AUDIT TRAIL
-- Every score needs a trail: inputs, method, version, and date. Otherwise it is just another person on the internet saying numbers with confidence.
+- Every score needs a trail: inputs, method, version, and date. Otherwise it is just another person on the internet saying numbers with confidence. The records live where nobody can quietly delete them. Your governments love deleting things. This one can't.
 #### CAMPAIGN FINANCE
-- Campaign support should follow measured alignment with citizens, not donor access, dinner fundraisers, or whichever lobbyist brought the nicest spreadsheet.
+- Campaign support should follow measured alignment with citizens, not donor access, dinner fundraisers, or whichever lobbyist brought the nicest spreadsheet. Not how much they promised. Not how good their hair is. What they did.
 #### PUBLIC GOODS
 - Once the loop works, money moves toward what citizens choose and what improves the two terminal metrics: healthy life-years and real income.
 ### AUDIT EVERYTHING

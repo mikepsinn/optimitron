@@ -19,7 +19,7 @@
 - On Earth, 535 people decide how to spend $6.8 trillion. None of them asked you. On my planet, every citizen allocates the budget in four minutes and votes on legislation directly.
 - Congress has two jobs: set the budget and pass laws. We replaced both with maths and a smartphone.
 - [🗳️WISHOCRACY Pick between two things. Do it ten times. Eigenvector decomposition produces a stable budget allocation. Democracy in four minutes. No lobbyists. No filibuster. REPLACES: CONGRESSIONAL APPROPRIATIONS](/agencies/dcongress/wishocracy)
-- [📜REFERENDUMS Vote on active public referendums for the 1% Treaty and Humanity v. Government. Not a petition: a consent record governments must answer. REPLACES: CONGRESSIONAL LEGISLATION](/agencies/dcongress/referendums)
+- [📜REFERENDUMS Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway. REPLACES: CONGRESSIONAL LEGISLATION](/agencies/dcongress/referendums)
 - “Your Congress has an approval rating of eighteen percent and a re-election rate of ninety-four percent. On my planet, we call that a bug. You lot call it democracy.”
 - — WISHONIA
 - [TRY WISHOCRACY](/agencies/dcongress/wishocracy)

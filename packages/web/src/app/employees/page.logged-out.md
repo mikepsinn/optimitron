@@ -33,7 +33,7 @@
 - REDDIT
 - COPY LINK
 - [RATIFY THE 1% TREATY](/tasks/1-pct-treaty)
-- 1.4 YEARS OVERDUE
+- 1.5 YEARS OVERDUE
 - TIME REQUIRED: 1.6 HOURS COMBINED
 - [6650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to cure them all.
 - Humanity currently spends enough on its capacity for mass murder to achieve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses. This treaty asks it to settle for 121.2 apocalypses in exchange for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trial capacity to cure disease.

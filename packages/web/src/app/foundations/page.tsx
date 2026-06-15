@@ -279,8 +279,10 @@ export default async function FoundationsPage() {
                   TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15
                 }
                 valueOverride={`${Math.round(
-                  TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15.value,
-                )} times richer in 15 years`}
+                  (TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15.value -
+                    1) *
+                    100,
+                )}% richer in 15 years`}
               />
               .
             </li>
@@ -498,7 +500,7 @@ export default async function FoundationsPage() {
 
           <Paragraph>
             If you want to commit but don&apos;t want the risk of going first,
-            we can deploy a dominant assurance contract — the same contract
+            we can run a dominant assurance pledge — the same win-or-refund
             pattern the{" "}
             <Link
               href={prizeLink.href}
@@ -507,40 +509,33 @@ export default async function FoundationsPage() {
               Earth Optimization Prize
             </Link>{" "}
             uses — for shirt distribution. Tell us your pledge amount;
-            we&apos;ll build the contract if we get three foundation pledges
+            we&apos;ll build the escrow path if we get three foundation pledges
             totaling ≥ $1 billion.
           </Paragraph>
 
-          <Paragraph>Same contract pattern, different outcome.</Paragraph>
+          <Paragraph>Same commitment pattern, different outcome.</Paragraph>
 
           <ul className="space-y-4 pl-5 text-base font-bold leading-7 sm:text-lg sm:leading-8">
             <li className="list-disc">
-              Depositors put USDC into <code>VoterPrizeTreasury</code> (Base
-              Sepolia).
-            </li>
-            <li className="list-disc">Capital sits in Aave earning yield.</li>
-            <li className="list-disc">
-              Success path: treaty passes → VOTE-token holders claim
-              proportional shares of the prize pool.
+              Pledges are held until the foundation threshold is met.
             </li>
             <li className="list-disc">
-              Failure path (15yr no-treaty): depositors claim back{" "}
-              <strong className="font-black">principal + ~4.2× yield</strong> (
-              <code>$100 × 1.10^15 = $418</code>).
+              Success path: enough foundations join, then funds release for
+              bulk shirt distribution.
             </li>
             <li className="list-disc">
-              Break-even success probability:{" "}
-              <strong className="font-black">0.0067%</strong>. Zero downside.
-              Dominant assurance.
+              Failure path: the threshold is not met, so pledged principal
+              returns.
+            </li>
+            <li className="list-disc">
+              No foundation has to be the reckless first mover.
             </li>
           </ul>
 
           <Paragraph>
-            The shirt contract would use the same pattern: your USDC pledge
-            earns Aave yield while held in escrow; if pledges meet the threshold
-            by Earth Optimization Day, funds release for the bulk shirt order.
-            If they do not, your principal returns with the accumulated yield.
-            Zero downside; no penalty for going first.
+            If pledges meet the threshold by Earth Optimization Day, funds
+            release for the bulk shirt order. If they do not, your principal
+            returns. No penalty for going first.
           </Paragraph>
 
           <Paragraph>
@@ -556,7 +551,7 @@ export default async function FoundationsPage() {
 
           <Paragraph>
             The assurance contract converts a coordination problem into a
-            treasury product.
+            commitment structure.
           </Paragraph>
         </Section>
 

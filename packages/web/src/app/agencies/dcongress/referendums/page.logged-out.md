@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Referendums | International Campaign to End War and Disease
-- Meta description: Vote on active public referendums for the 1% Treaty and Humanity v. Government. Not a petition: a consent record governments must answer.
+- Meta description: Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.
 - Canonical: https://warondisease.org/agencies/dcongress/referendums
 - Open Graph title: Referendums
-- Open Graph description: Vote on active public referendums for the 1% Treaty and Humanity v. Government. Not a petition: a consent record governments must answer.
+- Open Graph description: Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdcongress%2Freferendums
 - Twitter title: Referendums
-- Twitter description: Vote on active public referendums for the 1% Treaty and Humanity v. Government. Not a petition: a consent record governments must answer.
+- Twitter description: Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.
 
 ## Visible Page Copy
 

@@ -76,5 +76,5 @@
 - Real median after-tax income from household surveys (World Bank PIP, 2017 PPP dollars). Not GDP — because you can increase GDP by building nuclear bombs and blowing up the rainforest.
 - EARTH OPTIMIZATION PRIZE
 #### THE GAP BETWEEN CURRENT AND OPTIMAL WON'T CLOSE ITSELF.
-- Every misallocated dollar above is a life not saved. The 1% Treaty referendum proves demand for evidence-based budgeting. Deposit into the prize pool, recruit verified voters, earn VOTE Points.
+- Every misallocated dollar above is a life not saved. The 1% Treaty referendum proves demand for evidence-based budgeting. Deposit into the prize pool, recruit verified voters, earn Earth Optimization Points.
 - [PLAY THE GAME](/prize)

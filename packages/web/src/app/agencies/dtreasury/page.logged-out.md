@@ -22,8 +22,8 @@
 - Eighty-three thousand people whose entire job is interpreting a 74,000-page tax code that no single human understands. You built a system so complicated that you need a small city of people just to run it. Impressive, in a way.
 - Politicians allocate trillions of dollars in public spending with zero systematic data on what citizens actually want. They use polls, focus groups, and whatever their largest donors suggest. On my planet, this is called 'guessing.'
 ### WHAT WISHES ARE
-- Wishes are a programmable currency with governance built into the protocol. Every time you use it, 0.5% automatically funds public goods. You decide which public goods via five minutes of pairwise comparisons. That's it. That's the entire system.
-- What if your money funded public goods every time you used it, and you got to decide which ones?
+- Wishes are a programmable currency with governance built into the protocol. Every time you use them, 0.5% automatically funds public goods. You decide which public goods via five minutes of pairwise comparisons. That's it. That's the entire system.
+- What if your money funded public goods every time you used them, and you got to decide which ones?
 - It is not an investment. It is not a security. It is a medium of exchange that happens to solve three problems your species has been failing at for centuries: tax collection, poverty relief, and democratic resource allocation.
 ### THREE BUILT-IN MECHANISMS
 - Your species keeps building separate institutions for tax collection, poverty relief, and democratic allocation — then wondering why they don't talk to each other. These three mechanisms are built into the currency itself.

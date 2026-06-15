@@ -30,19 +30,19 @@
 ### DEMOCRACY
 - [🗳️WISHOCRACY Pick between two things, ten times — outperform Congress](/agencies/dcongress/wishocracy)
 - [🏛️ALIGNMENT Find out which politicians accidentally agree with you](/agencies/dfec/alignment)
-- [🗳️REFERENDUMS Vote on things that matter — skip the middleman](/agencies/dcongress/referendums)
+- [🗳️REFERENDUMS Vote directly. Hire two more.](/agencies/dcongress/referendums)
 ### FINANCE
-- [🏆PRIZE Reward measured outreach](/prize)
+- [🏆PRIZE Recruit voters; split the pool if humanity wins](/prize)
 - [🤝INCENTIVE ALIGNMENT BONDS Lobbying, but it cures diseases instead of causing them](/iab)
 - [💸AUTOMATED TREASURY One currency, one tax, one safety net — no tax code required](/agencies/dtreasury)
 - [🏦ALGORITHMIC RESERVE 0% inflation anchored to productivity — new money via UBI, not banks](/agencies/dtreasury/dfed)
-- [🧾AUTOMATED REVENUE SERVICE Six lines of Solidity replace 74,000 pages of tax code](/agencies/dtreasury/dirs)
+- [🧾AUTOMATED REVENUE SERVICE Six lines of computer code replace 74,000 pages of tax code](/agencies/dtreasury/dirs)
 - [🍞UNIVERSAL SECURITY ADMINISTRATION UBI replaces 83 welfare programs with one for-loop](/agencies/dtreasury/dssa)
 ### TRANSPARENCY
 - [🔍DECENTRALIZED ACCOUNTABILITY OFFICE Every fund flow on IPFS — impossible to quietly delete](/agencies/dgao)
 ### PLAYER
 - [🎯EARTH OPTIMIZATION TASKS What waiting costs](/tasks)
-- [❤️EARTH OPTIMIZATION MISSIONS An Earth Optimization Mission is non-romantic by definition](/missions)
+- [❤️EARTH OPTIMIZATION MISSIONS Find someone to optimize Earth with](/missions)
 - [🛍️STORE Buy useful campaign things.](/store)
 - [👕GET THE SHIRT Wear your campaign QR code.](/shirt)
 - [🪪REMIND PRESIDENTS Remind presidents to promote the general welfare](/employees)

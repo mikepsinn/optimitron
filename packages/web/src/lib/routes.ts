@@ -388,8 +388,23 @@ export const referendumLink: NavItem = {
     "Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.",
   tagline: "Vote directly. Hire two more.",
   matchPrefixes: [ROUTES.referendum],
+  copyPreview: true,
+  screenshot: true,
 
   cta: "Vote Now",
+};
+
+export const dcongressLink: NavItem = {
+  href: ROUTES.dcongress,
+  label: "Decentralized Congress",
+  emoji: "🏛️",
+  description:
+    "Wishocracy allocates budgets. Referendums create the consent record governments, courts, funders, and treaty negotiators must answer.",
+  tagline: "Budgets by Wishocracy. Laws by referendum.",
+  matchPrefixes: [ROUTES.dcongress],
+  copyPreview: true,
+  screenshot: true,
+  cta: "Open dCongress",
 };
 
 export const agenciesLink: NavItem = {
@@ -428,7 +443,7 @@ export const wishocracyLink: NavItem = {
 
 export const alignmentLink: NavItem = {
   href: ROUTES.alignment,
-  label: "Alignment",
+  label: "Politician Alignment",
   emoji: "🏛️",
   description:
     "Find out which politicians accidentally agree with you. Spoiler: fewer than you'd hope.",
@@ -537,7 +552,7 @@ export const publicProfileLink: NavItem = {
 
 export const declarationLink: NavItem = {
   href: ROUTES.declaration,
-  label: "Declaration",
+  label: "Declaration of Optimization",
   emoji: "📜",
   description:
     "The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.",
@@ -602,7 +617,7 @@ export const transparencyLink: NavItem = {
 
 export const toolsLink: NavItem = {
   href: ROUTES.tools,
-  label: "Tools",
+  label: "Optimization Tools",
   emoji: "🧰",
   description:
     "Free tools for voting, evidence, budgets, policy, outreach, and task tracking.",
@@ -627,7 +642,7 @@ export const efficiencyLink: NavItem = {
 
 export const dividendLink: NavItem = {
   href: ROUTES.dividend,
-  label: "Dividend",
+  label: "Optimization Dividend",
   emoji: "💵",
   description:
     "Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.",
@@ -964,11 +979,11 @@ export const trialEmbedLink: NavItem = {
 
 export const prizeLink: NavItem = {
   href: ROUTES.prize,
-  label: "Prize",
+  label: "Earth Optimization Prize",
   emoji: "🏆",
   description:
-    "Rewards for measured outreach that gets more people to answer the Global Survey to End War and Disease.",
-  tagline: "Reward measured outreach",
+    "Put money in a pool. Recruit people to vote on the 1% Treaty. If humanity gets healthier and richer by 2040, point holders split the pool.",
+  tagline: "Recruit voters; split the pool if humanity wins",
   screenshot: true,
   cta: "See the Prize",
 };
@@ -1008,7 +1023,7 @@ export const eosLink: NavItem = {
 };
 
 export const earthOptimizationPrizePaperLink: NavItem = {
-  label: "Earth Optimization Prize",
+  label: "Prize Rulebook",
   href: "https://prize.warondisease.org",
   emoji: "🏆",
   description:
@@ -1020,7 +1035,7 @@ export const earthOptimizationPrizePaperLink: NavItem = {
 
 export const demoLink: NavItem = {
   href: ROUTES.demo,
-  label: "Demo",
+  label: "Wishonia Demo",
   emoji: "🎬",
   description:
     "A guided tour by an alien who's been running a planet for 4,237 years. She has notes.",
@@ -1079,7 +1094,7 @@ export const missionsLink: NavItem = {
 
 export const messagesLink: NavItem = {
   href: ROUTES.messages,
-  label: "Messages",
+  label: "Mission Conversations",
   emoji: "✉️",
   description: "Open mission conversations with mutual matches.",
   tagline: "Mission conversations",
@@ -1137,7 +1152,7 @@ export const fundLink: NavItem = {
   label: "Fund Optimization",
   emoji: "🪙",
   description:
-    "Insert coin. AI agents optimize Earth. See what your dollar did and where the money went.",
+    "Put money where it moves votes, organizations, leaders, or measurable treaty demand. If the ask cannot point to proof, keep your money.",
   tagline: "Insert coin, optimize Earth",
 
   cta: "Fund Now",
@@ -1704,6 +1719,8 @@ export const routeReviewNavItems = [
   treatyLink,
   wishoniaWorldLink,
   agenciesLink,
+  dcongressLink,
+  referendumLink,
   scoreboardLink,
   toolsLink,
   humanityVGovernmentLink,
