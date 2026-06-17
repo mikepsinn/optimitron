@@ -55,6 +55,9 @@ const REDIRECTS = [
   // Next.js was statically pre-rendering it and converting the server
   // redirect into a meta-refresh + client hop (200 OK), not a real 307.
   { source: "/people/manage", destination: "/plaintiffs/manage", permanent: true },
+  // /about was a Server Component redirect — Next.js was statically pre-rendering it
+  // and converting the server redirect into a meta-refresh + client hop (200 OK), not a real 307.
+  { source: "/about", destination: "/eos", permanent: true },
   { source: "/campaign", destination: "/signatories", permanent: true },
   { source: "/coalition", destination: "/signatories", permanent: true },
 
@@ -69,8 +72,6 @@ const REDIRECTS = [
 ];
 
 const EXTRA_REDIRECT_ONLY_ROUTE_SOURCES = [
-  // Server Component redirect to the canonical EOS thesis page.
-  "/about",
   // Route handler whose only behavior is a site-aware redirect.
   "/impact",
 ];
