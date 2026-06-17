@@ -26,6 +26,9 @@ export const API_ROUTES = {
     commentVote: (id: string) => `/api/tasks/comments/${id}/vote`,
     verify: (id: string) => `/api/tasks/${id}/verify`,
     reassign: (id: string) => `/api/tasks/${id}/reassign`,
+    applications: (id: string) => `/api/tasks/${id}/applications`,
+    application: (id: string, applicationId: string) =>
+      `/api/tasks/${id}/applications/${applicationId}`,
   },
   push: {
     vapidKey: "/api/push/vapid-key",

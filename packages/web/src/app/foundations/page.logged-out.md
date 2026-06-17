@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Foundations | International Campaign to End War and Disease
-- Meta description: The case for foundations to fund universal t-shirt distribution as the highest-EV charitable intervention available.
+- Meta description: The case for foundations to fund universal t-shirt distribution: about 50,000× more cost-effective per life-year than GiveWell's top charities, for roughly $56 billion.
 - Canonical: https://warondisease.org/foundations
 - Open Graph title: Foundations
-- Open Graph description: The case for foundations to fund universal t-shirt distribution as the highest-EV charitable intervention available.
+- Open Graph description: The case for foundations to fund universal t-shirt distribution: about 50,000× more cost-effective per life-year than GiveWell's top charities, for roughly $56 billion.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Ffoundations
 - Twitter title: Foundations
-- Twitter description: The case for foundations to fund universal t-shirt distribution as the highest-EV charitable intervention available.
+- Twitter description: The case for foundations to fund universal t-shirt distribution: about 50,000× more cost-effective per life-year than GiveWell's top charities, for roughly $56 billion.
 
 ## Visible Page Copy
 

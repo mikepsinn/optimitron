@@ -362,6 +362,136 @@ export const TaskEngagementKindSchema = z.enum([
 ]);
 export type TaskEngagementKind = z.infer<typeof TaskEngagementKindSchema>;
 
+export const TaskCompensationKindSchema = z.enum([
+  'UNSPECIFIED',
+  'VOLUNTEER',
+  'PAID',
+  'BOUNTY',
+  'EQUITY',
+  'OTHER',
+]);
+export type TaskCompensationKind = z.infer<typeof TaskCompensationKindSchema>;
+
+export const TaskCompensationCadenceSchema = z.enum([
+  'FIXED',
+  'HOURLY',
+  'WEEKLY',
+  'MONTHLY',
+  'ANNUAL',
+]);
+export type TaskCompensationCadence = z.infer<typeof TaskCompensationCadenceSchema>;
+
+export const TaskRemotePolicySchema = z.enum([
+  'UNSPECIFIED',
+  'REMOTE',
+  'HYBRID',
+  'ONSITE',
+]);
+export type TaskRemotePolicy = z.infer<typeof TaskRemotePolicySchema>;
+
+export const TaskExecutionModeSchema = z.enum([
+  'HUMAN_OR_AGENT',
+  'HUMAN_ONLY',
+  'AGENT_ONLY',
+]);
+export type TaskExecutionMode = z.infer<typeof TaskExecutionModeSchema>;
+
+export const TaskCandidateKindSchema = z.enum([
+  'USER',
+  'PERSON',
+  'ORGANIZATION',
+  'AGENT',
+  'EXTERNAL',
+]);
+export type TaskCandidateKind = z.infer<typeof TaskCandidateKindSchema>;
+
+export const TaskCandidateMatchStatusSchema = z.enum([
+  'SUGGESTED',
+  'CONTACTED',
+  'DECLINED',
+  'REJECTED',
+]);
+export type TaskCandidateMatchStatus = z.infer<typeof TaskCandidateMatchStatusSchema>;
+
+export const TaskExecutionAttemptStatusSchema = z.enum([
+  'QUEUED',
+  'RUNNING',
+  'COMPLETED',
+  'FAILED',
+  'REJECTED',
+  'CANCELLED',
+]);
+export type TaskExecutionAttemptStatus = z.infer<typeof TaskExecutionAttemptStatusSchema>;
+
+export const AgentExecutorStatusSchema = z.enum([
+  'ACTIVE',
+  'PAUSED',
+  'RETIRED',
+]);
+export type AgentExecutorStatus = z.infer<typeof AgentExecutorStatusSchema>;
+
+export const TaskMarketplaceListingKindSchema = z.enum([
+  'TASK_POSTING',
+  'FEATURED_PLACEMENT',
+]);
+export type TaskMarketplaceListingKind = z.infer<typeof TaskMarketplaceListingKindSchema>;
+
+export const TaskMarketplaceFeePolicySchema = z.enum([
+  'FREE',
+  'PAID_POSTING',
+  'SUBSCRIPTION',
+]);
+export type TaskMarketplaceFeePolicy = z.infer<typeof TaskMarketplaceFeePolicySchema>;
+
+export const TaskMarketplaceListingStatusSchema = z.enum([
+  'DRAFT',
+  'ACTIVE',
+  'PAUSED',
+  'CLOSED',
+  'EXPIRED',
+  'CANCELLED',
+]);
+export type TaskMarketplaceListingStatus = z.infer<typeof TaskMarketplaceListingStatusSchema>;
+
+export const TaskDistributionChannelSchema = z.enum([
+  'JOB_BOARD',
+  'SOCIAL',
+  'COMMUNITY',
+  'FREELANCE_MARKETPLACE',
+  'GRANTS',
+  'SEARCH_INDEX',
+  'WEBHOOK',
+  'TASK_PLATFORM',
+  'OTHER',
+]);
+export type TaskDistributionChannel = z.infer<typeof TaskDistributionChannelSchema>;
+
+export const TaskDistributionOperationSchema = z.enum([
+  'CREATE',
+  'UPDATE',
+  'REMOVE',
+  'INDEX',
+]);
+export type TaskDistributionOperation = z.infer<typeof TaskDistributionOperationSchema>;
+
+export const TaskDistributionTargetStatusSchema = z.enum([
+  'ACTIVE',
+  'PAUSED',
+  'RETIRED',
+]);
+export type TaskDistributionTargetStatus = z.infer<typeof TaskDistributionTargetStatusSchema>;
+
+export const TaskDistributionAttemptStatusSchema = z.enum([
+  'DRAFT',
+  'QUEUED',
+  'APPROVAL_REQUIRED',
+  'SUCCEEDED',
+  'FAILED',
+  'CANCELLED',
+  'EXPIRED',
+]);
+export type TaskDistributionAttemptStatus = z.infer<typeof TaskDistributionAttemptStatusSchema>;
+
 export const TaskClaimPolicySchema = z.enum([
   'ASSIGNED_ONLY',
   'OPEN_SINGLE',
@@ -925,8 +1055,18 @@ export const UserSchema = z.object({
   citizenshipStatus: z.string().nullable().optional(),
   internetAccessType: z.string().nullable().optional(),
   skillTags: z.array(z.string()).default([]),
+  credentialTags: z.array(z.string()).default([]),
   interestTags: z.array(z.string()).default([]),
+  languageTags: z.array(z.string()).default([]),
+  toolTags: z.array(z.string()).default([]),
+  accessTags: z.array(z.string()).default([]),
+  preferredPaymentRails: z.array(z.string()).default([]),
+  workPreferenceTags: z.array(z.string()).default([]),
+  preferredTaskTags: z.array(z.string()).default([]),
+  unavailableTaskTags: z.array(z.string()).default([]),
   availableHoursPerWeek: z.number().int().nullable().optional(),
+  availableFrom: nullableDateSchema,
+  availabilityUpdatedAt: nullableDateSchema,
   maxTaskDifficulty: TaskDifficultySchema.nullable().optional(),
   censusUpdatedAt: nullableDateSchema,
   isAdmin: z.boolean().default(false),
@@ -2082,8 +2222,8 @@ export const TaskSchema = z.object({
   parentTaskId: z.string().nullable().optional(),
   assigneePersonId: z.string().nullable().optional(),
   assigneeOrganizationId: z.string().nullable().optional(),
+  ownerOrganizationId: z.string().nullable().optional(),
   verifiedByUserId: z.string().nullable().optional(),
-  ownerUserId: z.string().nullable().optional(),
   currentImpactEstimateSetId: z.string().nullable().optional(),
   taskKey: z.string().nullable().optional(),
   title: z.string(),
@@ -2099,10 +2239,39 @@ export const TaskSchema = z.object({
   actualEffortSeconds: z.number().int().nullable().optional(),
   actualCashCostUsd: z.number().nullable().optional(),
   skillTags: z.array(z.string()).default([]),
+  preferredSkillTags: z.array(z.string()).default([]),
   interestTags: z.array(z.string()).default([]),
+  requiredCredentialTags: z.array(z.string()).default([]),
+  preferredCredentialTags: z.array(z.string()).default([]),
+  requiredLanguageTags: z.array(z.string()).default([]),
+  preferredLanguageTags: z.array(z.string()).default([]),
+  requiredToolTags: z.array(z.string()).default([]),
+  preferredToolTags: z.array(z.string()).default([]),
+  requiredAccessTags: z.array(z.string()).default([]),
+  preferredAccessTags: z.array(z.string()).default([]),
   contextJson: nullableJsonSchema,
   claimPolicy: TaskClaimPolicySchema.default('OPEN_SINGLE'),
   applicationPolicy: TaskApplicationPolicySchema.default('CLOSED'),
+  compensationKind: TaskCompensationKindSchema.default('UNSPECIFIED'),
+  compensationCadence: TaskCompensationCadenceSchema.nullable().optional(),
+  compensationCurrency: z.string().nullable().optional(),
+  compensationMinAmountMinorUnits: z.bigint().nullable().optional(),
+  compensationMaxAmountMinorUnits: z.bigint().nullable().optional(),
+  compensationPaymentRails: z.array(z.string()).default([]),
+  estimatedHoursPerWeekMin: z.number().int().nullable().optional(),
+  estimatedHoursPerWeekMax: z.number().int().nullable().optional(),
+  remotePolicy: TaskRemotePolicySchema.default('UNSPECIFIED'),
+  locationText: z.string().nullable().optional(),
+  workLocationCountryCode: z.string().nullable().optional(),
+  workLocationRegionCode: z.string().nullable().optional(),
+  workLocationCity: z.string().nullable().optional(),
+  workLocationPostalCode: z.string().nullable().optional(),
+  workLocationLatitude: z.number().nullable().optional(),
+  workLocationLongitude: z.number().nullable().optional(),
+  workLocationRadiusKm: z.number().nullable().optional(),
+  workTimeZone: z.string().nullable().optional(),
+  applicationQuestionsJson: nullableJsonSchema,
+  executionMode: TaskExecutionModeSchema.default('HUMAN_OR_AGENT'),
   maxClaims: z.number().int().nullable().optional(),
   status: TaskStatusSchema.default('ACTIVE'),
   isPublic: z.boolean().default(true),
@@ -2118,6 +2287,179 @@ export const TaskSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type TaskType = z.infer<typeof TaskSchema>;
+
+/** Zod schema for the TaskManager model */
+export const TaskManagerSchema = z.object({
+  id: z.string(),
+  taskId: z.string(),
+  userId: z.string(),
+  createdByUserId: z.string().nullable().optional(),
+  role: z.string().default('manager'),
+  notes: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskManagerType = z.infer<typeof TaskManagerSchema>;
+
+/** Zod schema for the AgentExecutor model */
+export const AgentExecutorSchema = z.object({
+  id: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  agentKey: z.string(),
+  displayName: z.string(),
+  provider: z.string().nullable().optional(),
+  modelName: z.string().nullable().optional(),
+  capabilityTags: z.array(z.string()).default([]),
+  toolTags: z.array(z.string()).default([]),
+  accessTags: z.array(z.string()).default([]),
+  averageCostUsd: z.number().nullable().optional(),
+  averageLatencySeconds: z.number().nullable().optional(),
+  successRate: z.number().nullable().optional(),
+  status: AgentExecutorStatusSchema.default('ACTIVE'),
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type AgentExecutorType = z.infer<typeof AgentExecutorSchema>;
+
+/** Zod schema for the TaskCandidateMatch model */
+export const TaskCandidateMatchSchema = z.object({
+  id: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  taskId: z.string(),
+  candidateKind: TaskCandidateKindSchema,
+  candidateKey: z.string(),
+  candidateUserId: z.string().nullable().optional(),
+  candidatePersonId: z.string().nullable().optional(),
+  candidateOrganizationId: z.string().nullable().optional(),
+  agentExecutorId: z.string().nullable().optional(),
+  score: z.number(),
+  scoreVersion: z.string(),
+  reasonJson: nullableJsonSchema,
+  blockersJson: nullableJsonSchema,
+  estimatedCostMinorUnits: z.bigint().nullable().optional(),
+  estimatedCostCurrency: z.string().nullable().optional(),
+  estimatedDurationSeconds: z.number().int().nullable().optional(),
+  status: TaskCandidateMatchStatusSchema.default('SUGGESTED'),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskCandidateMatchType = z.infer<typeof TaskCandidateMatchSchema>;
+
+/** Zod schema for the TaskExecutionAttempt model */
+export const TaskExecutionAttemptSchema = z.object({
+  id: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  taskId: z.string(),
+  candidateMatchId: z.string().nullable().optional(),
+  executorKind: TaskCandidateKindSchema,
+  executorKey: z.string(),
+  executorUserId: z.string().nullable().optional(),
+  executorPersonId: z.string().nullable().optional(),
+  executorOrganizationId: z.string().nullable().optional(),
+  agentExecutorId: z.string().nullable().optional(),
+  taskApplicationId: z.string().nullable().optional(),
+  taskClaimId: z.string().nullable().optional(),
+  agentTaskLeaseId: z.string().nullable().optional(),
+  agentRunCostId: z.string().nullable().optional(),
+  status: TaskExecutionAttemptStatusSchema.default('QUEUED'),
+  estimatedCostMinorUnits: z.bigint().nullable().optional(),
+  estimatedCostCurrency: z.string().nullable().optional(),
+  estimatedDurationSeconds: z.number().int().nullable().optional(),
+  actualCostMinorUnits: z.bigint().nullable().optional(),
+  actualCostCurrency: z.string().nullable().optional(),
+  actualDurationSeconds: z.number().int().nullable().optional(),
+  confidence: z.number().nullable().optional(),
+  startedAt: nullableDateSchema,
+  completedAt: nullableDateSchema,
+  cancelledAt: nullableDateSchema,
+  outputSummary: z.string().nullable().optional(),
+  errorSummary: z.string().nullable().optional(),
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskExecutionAttemptType = z.infer<typeof TaskExecutionAttemptSchema>;
+
+/** Zod schema for the TaskMarketplaceListing model */
+export const TaskMarketplaceListingSchema = z.object({
+  id: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  taskId: z.string(),
+  posterUserId: z.string().nullable().optional(),
+  posterOrganizationId: z.string().nullable().optional(),
+  commerceEntitlementId: z.string().nullable().optional(),
+  listingKind: TaskMarketplaceListingKindSchema.default('TASK_POSTING'),
+  feePolicy: TaskMarketplaceFeePolicySchema.default('FREE'),
+  currency: z.string().default('usd'),
+  postingFeeMinorUnits: z.bigint().nullable().optional(),
+  status: TaskMarketplaceListingStatusSchema.default('DRAFT'),
+  activatedAt: nullableDateSchema,
+  expiresAt: nullableDateSchema,
+  closedAt: nullableDateSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskMarketplaceListingType = z.infer<typeof TaskMarketplaceListingSchema>;
+
+/** Zod schema for the TaskDistributionTarget model */
+export const TaskDistributionTargetSchema = z.object({
+  id: z.string(),
+  integrationProviderId: z.string().nullable().optional(),
+  channel: TaskDistributionChannelSchema,
+  targetKey: z.string(),
+  displayName: z.string(),
+  description: z.string().nullable().optional(),
+  status: TaskDistributionTargetStatusSchema.default('ACTIVE'),
+  requiresManualApproval: z.boolean().default(true),
+  defaultCostMinorUnits: z.bigint().nullable().optional(),
+  defaultCostCurrency: z.string().nullable().optional(),
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskDistributionTargetType = z.infer<typeof TaskDistributionTargetSchema>;
+
+/** Zod schema for the TaskDistributionAttempt model */
+export const TaskDistributionAttemptSchema = z.object({
+  id: z.string(),
+  jurisdictionId: z.string().nullable().optional(),
+  taskId: z.string(),
+  distributionTargetId: z.string().nullable().optional(),
+  integrationProviderId: z.string().nullable().optional(),
+  integrationConnectionId: z.string().nullable().optional(),
+  requestedByUserId: z.string().nullable().optional(),
+  approvedByUserId: z.string().nullable().optional(),
+  channel: TaskDistributionChannelSchema,
+  operation: TaskDistributionOperationSchema.default('CREATE'),
+  status: TaskDistributionAttemptStatusSchema.default('DRAFT'),
+  externalObjectId: z.string().nullable().optional(),
+  externalUrl: z.string().nullable().optional(),
+  externalStatus: z.string().nullable().optional(),
+  payloadJson: nullableJsonSchema,
+  payloadHash: z.string().nullable().optional(),
+  responseJson: nullableJsonSchema,
+  errorMessage: z.string().nullable().optional(),
+  costMinorUnits: z.bigint().nullable().optional(),
+  costCurrency: z.string().nullable().optional(),
+  scheduledAt: nullableDateSchema,
+  approvedAt: nullableDateSchema,
+  expiresAt: nullableDateSchema,
+  completedAt: nullableDateSchema,
+  failedAt: nullableDateSchema,
+  metadata: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskDistributionAttemptType = z.infer<typeof TaskDistributionAttemptSchema>;
 
 /** Zod schema for the TaskFundingTarget model */
 export const TaskFundingTargetSchema = z.object({
@@ -2200,6 +2542,8 @@ export const TaskApplicationSchema = z.object({
   applicantUserId: z.string().nullable().optional(),
   applicantPersonId: z.string().nullable().optional(),
   reviewerUserId: z.string().nullable().optional(),
+  referralInvitationId: z.string().nullable().optional(),
+  shareAttemptId: z.string().nullable().optional(),
   status: TaskApplicationStatusSchema.default('APPLIED'),
   applicationMessage: z.string().nullable().optional(),
   answersJson: nullableJsonSchema,
@@ -2208,6 +2552,8 @@ export const TaskApplicationSchema = z.object({
   reviewScore: z.number().int().nullable().optional(),
   reviewNote: z.string().nullable().optional(),
   metadata: nullableJsonSchema,
+  originUrl: z.string().nullable().optional(),
+  utmJson: nullableJsonSchema,
   appliedAt: dateSchema,
   reviewedAt: nullableDateSchema,
   offeredAt: nullableDateSchema,

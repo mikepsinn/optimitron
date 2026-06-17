@@ -491,6 +491,136 @@ enum TaskEngagementKind {
   CONTRACT
 }
 
+/// Posted compensation category for role openings, projects, and bounties.
+enum TaskCompensationKind {
+  UNSPECIFIED
+  VOLUNTEER
+  PAID
+  BOUNTY
+  EQUITY
+  OTHER
+}
+
+/// Cadence for posted compensation amounts.
+enum TaskCompensationCadence {
+  FIXED
+  HOURLY
+  WEEKLY
+  MONTHLY
+  ANNUAL
+}
+
+/// Location policy for role openings and work opportunities.
+enum TaskRemotePolicy {
+  UNSPECIFIED
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+/// Who can execute a task or role opening.
+enum TaskExecutionMode {
+  HUMAN_OR_AGENT
+  HUMAN_ONLY
+  AGENT_ONLY
+}
+
+/// Entity class proposed or used to execute a task.
+enum TaskCandidateKind {
+  USER
+  PERSON
+  ORGANIZATION
+  AGENT
+  EXTERNAL
+}
+
+/// Lifecycle state for a scored task candidate.
+enum TaskCandidateMatchStatus {
+  SUGGESTED
+  CONTACTED
+  DECLINED
+  REJECTED
+}
+
+/// Lifecycle state for a concrete task execution attempt.
+enum TaskExecutionAttemptStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  REJECTED
+  CANCELLED
+}
+
+/// Availability state for non-human executors addressable by agents.
+enum AgentExecutorStatus {
+  ACTIVE
+  PAUSED
+  RETIRED
+}
+
+/// Public marketplace packaging for a task.
+enum TaskMarketplaceListingKind {
+  TASK_POSTING
+  FEATURED_PLACEMENT
+}
+
+/// How the platform may earn revenue from a task listing.
+enum TaskMarketplaceFeePolicy {
+  FREE
+  PAID_POSTING
+  SUBSCRIPTION
+}
+
+/// Lifecycle state for a paid or public task listing.
+enum TaskMarketplaceListingStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  CLOSED
+  EXPIRED
+  CANCELLED
+}
+
+/// Destination family for outbound task distribution.
+enum TaskDistributionChannel {
+  JOB_BOARD
+  SOCIAL
+  COMMUNITY
+  FREELANCE_MARKETPLACE
+  GRANTS
+  SEARCH_INDEX
+  WEBHOOK
+  TASK_PLATFORM
+  OTHER
+}
+
+/// External action performed by one outbound task distribution attempt.
+enum TaskDistributionOperation {
+  CREATE
+  UPDATE
+  REMOVE
+  INDEX
+}
+
+/// Availability state for an outbound task distribution target.
+enum TaskDistributionTargetStatus {
+  ACTIVE
+  PAUSED
+  RETIRED
+}
+
+/// Lifecycle state for one outbound task distribution attempt.
+enum TaskDistributionAttemptStatus {
+  DRAFT
+  QUEUED
+  APPROVAL_REQUIRED
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
 /// Controls whether a task is assigned directly or how many simultaneous active claims it can accept
 enum TaskClaimPolicy {
   /// Public accountability item addressed to one person; never claimable by other users
@@ -911,21 +1041,23 @@ model Person {
   deletedAt DateTime?
 
   // -- Relations --
-  createdByUser               User?                @relation("UserCreatedPeople", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  user                        User?                @relation("UserPerson")
-  subject                     Subject?             @relation("PersonSubject")
-  referendumVotes             ReferendumVote[]     @relation("PersonReferendumVotes")
-  conditions                  PersonCondition[]    @relation("PersonConditions")
-  memorial                    PersonMemorial?      @relation("PersonMemorialPerson")
-  relationshipsAsSubject      PersonRelationship[] @relation("PersonRelationshipSubject")
-  relationshipsAsObject       PersonRelationship[] @relation("PersonRelationshipObject")
-  assignedTasks               Task[]               @relation("TaskAssigneePerson")
-  receivedReferralInvitations ReferralInvitation[] @relation("ReferralInvitationRecipientPerson")
-  taskApplications            TaskApplication[]    @relation("TaskApplicationApplicantPerson")
-  authoredTaskComments        TaskComment[]        @relation("TaskCommentAuthorPerson")
-  receivedTaskCommunications  TaskCommunication[]  @relation("TaskCommunicationRecipientPerson")
-  sentTaskCommunications      TaskCommunication[]  @relation("TaskCommunicationSenderPerson")
-  taskFundingPledges          TaskFundingPledge[]  @relation("PersonTaskFundingPledges")
+  createdByUser               User?                  @relation("UserCreatedPeople", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  user                        User?                  @relation("UserPerson")
+  subject                     Subject?               @relation("PersonSubject")
+  referendumVotes             ReferendumVote[]       @relation("PersonReferendumVotes")
+  conditions                  PersonCondition[]      @relation("PersonConditions")
+  memorial                    PersonMemorial?        @relation("PersonMemorialPerson")
+  relationshipsAsSubject      PersonRelationship[]   @relation("PersonRelationshipSubject")
+  relationshipsAsObject       PersonRelationship[]   @relation("PersonRelationshipObject")
+  assignedTasks               Task[]                 @relation("TaskAssigneePerson")
+  receivedReferralInvitations ReferralInvitation[]   @relation("ReferralInvitationRecipientPerson")
+  taskApplications            TaskApplication[]      @relation("TaskApplicationApplicantPerson")
+  taskCandidateMatches        TaskCandidateMatch[]   @relation("PersonTaskCandidateMatches")
+  taskExecutionAttempts       TaskExecutionAttempt[] @relation("PersonTaskExecutionAttempts")
+  authoredTaskComments        TaskComment[]          @relation("TaskCommentAuthorPerson")
+  receivedTaskCommunications  TaskCommunication[]    @relation("TaskCommunicationRecipientPerson")
+  sentTaskCommunications      TaskCommunication[]    @relation("TaskCommunicationSenderPerson")
+  taskFundingPledges          TaskFundingPledge[]    @relation("PersonTaskFundingPledges")
 
   @@index([displayName])
   @@index([lastName, firstName])
@@ -1580,11 +1712,41 @@ model User {
   /// Free-form capability tags used for task matching
   skillTags String[] @default([])
 
+  /// Free-form credentials, licenses, or qualifications used for task matching
+  credentialTags String[] @default([])
+
   /// Free-form cause / topic tags used for task matching
   interestTags String[] @default([])
 
+  /// Spoken or written languages used for task matching
+  languageTags String[] @default([])
+
+  /// Tools, platforms, or software the user can use for task matching
+  toolTags String[] @default([])
+
+  /// Location, network, clearance, or account access tags used for task matching
+  accessTags String[] @default([])
+
+  /// Payment rails the user is willing or able to use
+  preferredPaymentRails String[] @default([])
+
+  /// Preferred work formats, such as full-time, hybrid, contract, or volunteer
+  workPreferenceTags String[] @default([])
+
+  /// Task tags the user prefers to receive
+  preferredTaskTags String[] @default([])
+
+  /// Task tags the user should not be matched to
+  unavailableTaskTags String[] @default([])
+
   /// Available volunteer hours per week
   availableHoursPerWeek Int?
+
+  /// Earliest date this user is available for new work
+  availableFrom DateTime?
+
+  /// When availability and matching preferences were last updated
+  availabilityUpdatedAt DateTime?
 
   /// Highest difficulty the user is comfortable claiming
   maxTaskDifficulty TaskDifficulty?
@@ -1654,6 +1816,13 @@ model User {
   taskApplications                   TaskApplication[]                @relation("UserTaskApplications")
   reviewedTaskApplications           TaskApplication[]                @relation("UserReviewedTaskApplications")
   taskApplicationEvents              TaskApplicationEvent[]           @relation("UserTaskApplicationEvents")
+  taskCandidateMatches               TaskCandidateMatch[]             @relation("UserTaskCandidateMatches")
+  taskExecutionAttempts              TaskExecutionAttempt[]           @relation("UserTaskExecutionAttempts")
+  taskMarketplaceListings            TaskMarketplaceListing[]         @relation("UserTaskMarketplaceListings")
+  requestedTaskDistributions         TaskDistributionAttempt[]        @relation("UserRequestedTaskDistributions")
+  approvedTaskDistributions          TaskDistributionAttempt[]        @relation("UserApprovedTaskDistributions")
+  managedTasks                       TaskManager[]                    @relation("UserTaskManagers")
+  createdTaskManagers                TaskManager[]                    @relation("UserCreatedTaskManagers")
   createdTasks                       Task[]                           @relation("TaskCreator")
   verifiedTasks                      Task[]                           @relation("TaskVerifiedByUser")
   verifiedTaskClaims                 TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
@@ -1687,10 +1856,21 @@ model User {
   @@index([annualPersonalIncomeUsd])
   @@index([censusUpdatedAt])
   @@index([availableHoursPerWeek])
+  @@index([availableFrom])
   @@index([maxTaskDifficulty])
   @@index([createdAt])
   @@index([deletedAt])
   @@index([unsubscribedScopes], type: Gin)
+  @@index([skillTags], type: Gin)
+  @@index([credentialTags], type: Gin)
+  @@index([interestTags], type: Gin)
+  @@index([languageTags], type: Gin)
+  @@index([toolTags], type: Gin)
+  @@index([accessTags], type: Gin)
+  @@index([preferredPaymentRails], type: Gin)
+  @@index([workPreferenceTags], type: Gin)
+  @@index([preferredTaskTags], type: Gin)
+  @@index([unavailableTaskTags], type: Gin)
 }
 
 /// OAuth, email, or credentials account attached to a user
@@ -3362,7 +3542,9 @@ model IntegrationProvider {
   deletedAt DateTime?
 
   // -- Relations --
-  connections IntegrationConnection[]
+  connections          IntegrationConnection[]
+  distributionTargets  TaskDistributionTarget[]  @relation("IntegrationProviderTaskDistributionTargets")
+  distributionAttempts TaskDistributionAttempt[] @relation("IntegrationProviderTaskDistributionAttempts")
 
   @@index([enabled])
 }
@@ -3416,8 +3598,9 @@ model IntegrationConnection {
   deletedAt DateTime?
 
   // -- Relations --
-  syncLogs     IntegrationSyncLog[]
-  measurements Measurement[]
+  syncLogs             IntegrationSyncLog[]
+  measurements         Measurement[]
+  distributionAttempts TaskDistributionAttempt[] @relation("IntegrationConnectionTaskDistributionAttempts")
 
   @@unique([userId, integrationProviderId])
   @@index([userId])
@@ -3518,6 +3701,11 @@ model Jurisdiction {
   tasks                         Task[]
   taskApplications              TaskApplication[]                @relation("JurisdictionTaskApplications")
   taskApplicationEvents         TaskApplicationEvent[]           @relation("JurisdictionTaskApplicationEvents")
+  agentExecutors                AgentExecutor[]                  @relation("JurisdictionAgentExecutors")
+  taskCandidateMatches          TaskCandidateMatch[]             @relation("JurisdictionTaskCandidateMatches")
+  taskExecutionAttempts         TaskExecutionAttempt[]           @relation("JurisdictionTaskExecutionAttempts")
+  taskMarketplaceListings       TaskMarketplaceListing[]         @relation("JurisdictionTaskMarketplaceListings")
+  taskDistributionAttempts      TaskDistributionAttempt[]        @relation("JurisdictionTaskDistributionAttempts")
   taskTriggers                  TaskTrigger[]                    @relation("JurisdictionTaskTriggers")
   conflicts                     Conflict[]                       @relation("ConflictPrimaryJurisdiction")
   memorialResponsibleParties    PersonMemorialResponsibleParty[] @relation("JurisdictionPersonMemorialResponsibleParties")
@@ -3738,6 +3926,7 @@ model ReferralInvitation {
   task               Task?               @relation("TaskReferralInvitations", fields: [taskId], references: [id], onDelete: SetNull)
   shareAttempt       ShareAttempt?       @relation("ShareAttemptReferralInvitations", fields: [shareAttemptId], references: [id], onDelete: SetNull)
   convertedVote      ReferendumVote?     @relation("ReferralInvitationConvertedVote", fields: [convertedVoteId], references: [id], onDelete: SetNull)
+  taskApplications   TaskApplication[]   @relation("ReferralInvitationTaskApplications")
   taskCommunications TaskCommunication[] @relation("ReferralInvitationTaskCommunications")
 
   @@index([referrerUserId, createdAt])
@@ -5245,6 +5434,10 @@ model Organization {
   creator                    User?                            @relation("OrgCreator", fields: [creatorId], references: [id])
   members                    OrganizationMember[]
   assignedTasks              Task[]                           @relation("TaskAssigneeOrganization")
+  ownedTasks                 Task[]                           @relation("TaskOwnerOrganization")
+  taskCandidateMatches       TaskCandidateMatch[]             @relation("OrganizationTaskCandidateMatches")
+  taskExecutionAttempts      TaskExecutionAttempt[]           @relation("OrganizationTaskExecutionAttempts")
+  taskMarketplaceListings    TaskMarketplaceListing[]         @relation("OrganizationTaskMarketplaceListings")
   authoredTaskComments       TaskComment[]                    @relation("TaskCommentAuthorOrganization")
   receivedTaskCommunications TaskCommunication[]              @relation("TaskCommunicationRecipientOrganization")
   subjects                   Subject[]                        @relation("OrganizationSubject")
@@ -5361,6 +5554,9 @@ model Task {
   /// Optional organization this task is addressed to
   assigneeOrganizationId String?
 
+  /// Optional organization that owns this task, opening, project, or program
+  ownerOrganizationId String?
+
   /// User who verified this task's completion
   verifiedByUserId String?
 
@@ -5412,8 +5608,35 @@ model Task {
   /// Free-form skills needed for the task
   skillTags String[] @default([])
 
+  /// Skills that improve candidate fit but are not hard requirements
+  preferredSkillTags String[] @default([])
+
   /// Free-form topics / causes relevant to the task
   interestTags String[] @default([])
+
+  /// Credentials, licenses, or qualifications required for this work
+  requiredCredentialTags String[] @default([])
+
+  /// Credentials, licenses, or qualifications that improve candidate fit
+  preferredCredentialTags String[] @default([])
+
+  /// Languages required for this work
+  requiredLanguageTags String[] @default([])
+
+  /// Languages that improve candidate fit
+  preferredLanguageTags String[] @default([])
+
+  /// Tools, platforms, or software required for this work
+  requiredToolTags String[] @default([])
+
+  /// Tools, platforms, or software that improve candidate fit
+  preferredToolTags String[] @default([])
+
+  /// Physical, social, clearance, account, or network access required
+  requiredAccessTags String[] @default([])
+
+  /// Physical, social, clearance, account, or network access that improves fit
+  preferredAccessTags String[] @default([])
 
   /// Optional structured task context that does not justify first-class columns yet
   contextJson Json?
@@ -5423,6 +5646,66 @@ model Task {
 
   /// Controls whether users can apply before being accepted to do this work.
   applicationPolicy TaskApplicationPolicy @default(CLOSED)
+
+  /// Posted compensation category for role openings, projects, and bounties.
+  compensationKind TaskCompensationKind @default(UNSPECIFIED)
+
+  /// Cadence for posted compensation amounts.
+  compensationCadence TaskCompensationCadence?
+
+  /// ISO-like lowercase currency code for posted compensation, usually usd.
+  compensationCurrency String?
+
+  /// Lower bound for posted compensation, in the currency's minor units.
+  compensationMinAmountMinorUnits BigInt?
+
+  /// Upper bound for posted compensation, in the currency's minor units.
+  compensationMaxAmountMinorUnits BigInt?
+
+  /// Payment rails acceptable for compensation, such as stripe, ach, or usdc.
+  compensationPaymentRails String[] @default([])
+
+  /// Lower bound for expected weekly hours on ongoing work.
+  estimatedHoursPerWeekMin Int?
+
+  /// Upper bound for expected weekly hours on ongoing work.
+  estimatedHoursPerWeekMax Int?
+
+  /// Remote, hybrid, onsite, or unspecified location policy.
+  remotePolicy TaskRemotePolicy @default(UNSPECIFIED)
+
+  /// Human-readable location constraint for work opportunities.
+  locationText String?
+
+  /// Country or country code for onsite or hybrid work.
+  workLocationCountryCode String?
+
+  /// State, province, or other first-level region for onsite or hybrid work.
+  workLocationRegionCode String?
+
+  /// City or locality for onsite or hybrid work.
+  workLocationCity String?
+
+  /// Postal or ZIP code for onsite or hybrid work.
+  workLocationPostalCode String?
+
+  /// Latitude for matching nearby candidates.
+  workLocationLatitude Float?
+
+  /// Longitude for matching nearby candidates.
+  workLocationLongitude Float?
+
+  /// Search radius in kilometers for nearby candidates.
+  workLocationRadiusKm Float?
+
+  /// IANA time zone preferred for this work.
+  workTimeZone String?
+
+  /// Questions to ask applicants before review.
+  applicationQuestionsJson Json?
+
+  /// Whether humans, agents, or both can execute this work.
+  executionMode TaskExecutionMode @default(HUMAN_OR_AGENT)
 
   /// Max simultaneous claims when claimPolicy is OPEN_MANY
   maxClaims Int?
@@ -5469,12 +5752,18 @@ model Task {
   childTasks                Task[]                      @relation("TaskHierarchy")
   assigneePerson            Person?                     @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
   assigneeOrganization      Organization?               @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
+  ownerOrganization         Organization?               @relation("TaskOwnerOrganization", fields: [ownerOrganizationId], references: [id], onDelete: SetNull)
   verifiedByUser            User?                       @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
   createdByUser             User                        @relation("TaskCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
   currentImpactEstimateSet  TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
   impactEstimateSets        TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
   claims                    TaskClaim[]                 @relation("TaskClaims")
   applications              TaskApplication[]           @relation("TaskApplications")
+  candidateMatches          TaskCandidateMatch[]        @relation("TaskCandidateMatches")
+  executionAttempts         TaskExecutionAttempt[]      @relation("TaskExecutionAttempts")
+  marketplaceListings       TaskMarketplaceListing[]    @relation("TaskMarketplaceListings")
+  distributionAttempts      TaskDistributionAttempt[]   @relation("TaskDistributionAttempts")
+  managers                  TaskManager[]               @relation("TaskManagers")
   comments                  TaskComment[]               @relation("TaskComments")
   sourceArtifacts           TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
   outgoingEdges             TaskEdge[]                  @relation("TaskOutgoingEdges")
@@ -5495,10 +5784,15 @@ model Task {
   @@index([parentTaskId])
   @@index([assigneePersonId])
   @@index([assigneeOrganizationId])
+  @@index([ownerOrganizationId, status])
   @@index([verifiedByUserId])
   @@index([createdByUserId])
   @@index([claimPolicy, status])
   @@index([applicationPolicy, status])
+  @@index([compensationKind, status])
+  @@index([remotePolicy, status])
+  @@index([executionMode, status])
+  @@index([workLocationCountryCode, workLocationRegionCode])
   @@index([category])
   @@index([kind, status])
   @@index([engagementKind])
@@ -5508,6 +5802,578 @@ model Task {
   @@index([deadlinePolicy, dueAt])
   @@index([createdByUserId, status, availableAt])
   @@index([isPublic])
+  @@index([deletedAt])
+  @@index([skillTags], type: Gin)
+  @@index([preferredSkillTags], type: Gin)
+  @@index([interestTags], type: Gin)
+  @@index([requiredCredentialTags], type: Gin)
+  @@index([preferredCredentialTags], type: Gin)
+  @@index([requiredLanguageTags], type: Gin)
+  @@index([preferredLanguageTags], type: Gin)
+  @@index([requiredToolTags], type: Gin)
+  @@index([preferredToolTags], type: Gin)
+  @@index([requiredAccessTags], type: Gin)
+  @@index([preferredAccessTags], type: Gin)
+  @@index([compensationPaymentRails], type: Gin)
+}
+
+/// Direct user-level management grant for a task, role opening, project, or program.
+model TaskManager {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Task this grant manages
+  taskId String
+
+  /// User with management access
+  userId String
+
+  /// User who granted this access, when known
+  createdByUserId String?
+
+  /// Role string such as owner, manager, or reviewer
+  role String @default("manager")
+
+  /// Optional internal note about why this grant exists
+  notes String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  task          Task  @relation("TaskManagers", fields: [taskId], references: [id], onDelete: Cascade)
+  user          User  @relation("UserTaskManagers", fields: [userId], references: [id], onDelete: Cascade)
+  createdByUser User? @relation("UserCreatedTaskManagers", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([taskId, userId])
+  @@index([taskId, role])
+  @@index([userId, role])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+/// Non-human executor that can be matched to tasks by agents.
+model AgentExecutor {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction this executor is scoped to
+  jurisdictionId String?
+
+  /// Stable executor key, such as "openai:gpt-5" or "local:research-agent"
+  agentKey String @unique
+
+  /// Human-readable executor name
+  displayName String
+
+  /// Provider name, such as openai, anthropic, local, or manual
+  provider String?
+
+  /// Provider model or engine name, when applicable
+  modelName String?
+
+  /// Capabilities this executor can perform
+  capabilityTags String[] @default([])
+
+  /// Tools or APIs this executor can use
+  toolTags String[] @default([])
+
+  /// Access scopes, accounts, or environments this executor can reach
+  accessTags String[] @default([])
+
+  /// Rolling average cost per run in USD, when known
+  averageCostUsd Float?
+
+  /// Rolling average latency in seconds, when known
+  averageLatencySeconds Float?
+
+  /// Rolling completion success rate from 0 to 1, when known
+  successRate Float?
+
+  /// Whether this executor should receive new work
+  status AgentExecutorStatus @default(ACTIVE)
+
+  /// Provider-specific metadata that does not justify first-class columns yet
+  metadata Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction      Jurisdiction?          @relation("JurisdictionAgentExecutors", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  candidateMatches  TaskCandidateMatch[]   @relation("AgentExecutorTaskCandidateMatches")
+  executionAttempts TaskExecutionAttempt[] @relation("AgentExecutorTaskExecutionAttempts")
+
+  @@index([jurisdictionId, status])
+  @@index([provider, modelName])
+  @@index([status])
+  @@index([deletedAt])
+  @@index([capabilityTags], type: Gin)
+  @@index([toolTags], type: Gin)
+  @@index([accessTags], type: Gin)
+}
+
+/// Scored candidate proposed for a task before or during outreach.
+model TaskCandidateMatch {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction copied from the task for tenant-scoped queries
+  jurisdictionId String?
+
+  /// Task this candidate could execute
+  taskId String
+
+  /// Entity class of the candidate
+  candidateKind TaskCandidateKind
+
+  /// Stable candidate key, such as user:id, person:id, org:id, agent:key, or external:key
+  candidateKey String
+
+  /// Candidate user, when the candidate is an Optimitron user
+  candidateUserId String?
+
+  /// Candidate person, when matching a public identity or applicant profile
+  candidatePersonId String?
+
+  /// Candidate organization, when the executor is an organization
+  candidateOrganizationId String?
+
+  /// Candidate agent executor, when the executor is a non-human agent
+  agentExecutorId String?
+
+  /// Candidate fit score for this scoreVersion
+  score Float
+
+  /// Version string for the scoring algorithm and inputs
+  scoreVersion String
+
+  /// Machine-readable explanation of why this candidate matched
+  reasonJson Json?
+
+  /// Machine-readable blockers that make this candidate unavailable or less suitable
+  blockersJson Json?
+
+  /// Estimated execution cost in the posted currency's minor units
+  estimatedCostMinorUnits BigInt?
+
+  /// Currency for estimatedCostMinorUnits
+  estimatedCostCurrency String?
+
+  /// Estimated execution duration in seconds
+  estimatedDurationSeconds Int?
+
+  /// Review lifecycle state
+  status TaskCandidateMatchStatus @default(SUGGESTED)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction          Jurisdiction?          @relation("JurisdictionTaskCandidateMatches", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  task                  Task                   @relation("TaskCandidateMatches", fields: [taskId], references: [id], onDelete: Cascade)
+  candidateUser         User?                  @relation("UserTaskCandidateMatches", fields: [candidateUserId], references: [id], onDelete: SetNull)
+  candidatePerson       Person?                @relation("PersonTaskCandidateMatches", fields: [candidatePersonId], references: [id], onDelete: SetNull)
+  candidateOrganization Organization?          @relation("OrganizationTaskCandidateMatches", fields: [candidateOrganizationId], references: [id], onDelete: SetNull)
+  agentExecutor         AgentExecutor?         @relation("AgentExecutorTaskCandidateMatches", fields: [agentExecutorId], references: [id], onDelete: SetNull)
+  executionAttempts     TaskExecutionAttempt[] @relation("TaskCandidateMatchExecutionAttempts")
+
+  @@unique([taskId, candidateKey, scoreVersion])
+  @@index([jurisdictionId, status])
+  @@index([taskId, status, score])
+  @@index([candidateKind, status])
+  @@index([candidateUserId, status])
+  @@index([candidatePersonId, status])
+  @@index([candidateOrganizationId, status])
+  @@index([agentExecutorId, status])
+  @@index([deletedAt])
+}
+
+/// Concrete attempt to execute a task by a human, organization, or agent.
+model TaskExecutionAttempt {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction copied from the task for tenant-scoped queries
+  jurisdictionId String?
+
+  /// Task being attempted
+  taskId String
+
+  /// Candidate match that produced this attempt, when known
+  candidateMatchId String?
+
+  /// Entity class of the executor
+  executorKind TaskCandidateKind
+
+  /// Stable executor key, such as user:id, person:id, org:id, agent:key, or external:key
+  executorKey String
+
+  /// User executing the task, when applicable
+  executorUserId String?
+
+  /// Person executing the task, when applicable
+  executorPersonId String?
+
+  /// Organization executing the task, when applicable
+  executorOrganizationId String?
+
+  /// Non-human executor, when applicable
+  agentExecutorId String?
+
+  /// Application that led to this attempt, when applicable
+  taskApplicationId String?
+
+  /// Human claim that led to this attempt, when applicable
+  taskClaimId String?
+
+  /// Agent lease that protected this attempt, when applicable
+  agentTaskLeaseId String?
+
+  /// Cost record for this attempt, when produced by an agent run
+  agentRunCostId String?
+
+  /// Execution lifecycle state
+  status TaskExecutionAttemptStatus @default(QUEUED)
+
+  /// Estimated cost in the posted currency's minor units
+  estimatedCostMinorUnits BigInt?
+
+  /// Currency for estimatedCostMinorUnits
+  estimatedCostCurrency String?
+
+  /// Estimated duration in seconds
+  estimatedDurationSeconds Int?
+
+  /// Actual cost in the posted currency's minor units
+  actualCostMinorUnits BigInt?
+
+  /// Currency for actualCostMinorUnits
+  actualCostCurrency String?
+
+  /// Actual duration in seconds
+  actualDurationSeconds Int?
+
+  /// Confidence in successful execution, from 0 to 1
+  confidence Float?
+
+  /// When execution started
+  startedAt DateTime?
+
+  /// When execution completed
+  completedAt DateTime?
+
+  /// When execution was cancelled
+  cancelledAt DateTime?
+
+  /// Short summary of delivered output
+  outputSummary String?
+
+  /// Short summary of failure, when applicable
+  errorSummary String?
+
+  /// Provider-specific metadata that does not justify first-class columns yet
+  metadata Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction         Jurisdiction?       @relation("JurisdictionTaskExecutionAttempts", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  task                 Task                @relation("TaskExecutionAttempts", fields: [taskId], references: [id], onDelete: Cascade)
+  candidateMatch       TaskCandidateMatch? @relation("TaskCandidateMatchExecutionAttempts", fields: [candidateMatchId], references: [id], onDelete: SetNull)
+  executorUser         User?               @relation("UserTaskExecutionAttempts", fields: [executorUserId], references: [id], onDelete: SetNull)
+  executorPerson       Person?             @relation("PersonTaskExecutionAttempts", fields: [executorPersonId], references: [id], onDelete: SetNull)
+  executorOrganization Organization?       @relation("OrganizationTaskExecutionAttempts", fields: [executorOrganizationId], references: [id], onDelete: SetNull)
+  agentExecutor        AgentExecutor?      @relation("AgentExecutorTaskExecutionAttempts", fields: [agentExecutorId], references: [id], onDelete: SetNull)
+  taskApplication      TaskApplication?    @relation("TaskApplicationExecutionAttempts", fields: [taskApplicationId], references: [id], onDelete: SetNull)
+  taskClaim            TaskClaim?          @relation("TaskClaimExecutionAttempts", fields: [taskClaimId], references: [id], onDelete: SetNull)
+  agentTaskLease       AgentTaskLease?     @relation("AgentTaskLeaseExecutionAttempts", fields: [agentTaskLeaseId], references: [id], onDelete: SetNull)
+  agentRunCost         AgentRunCost?       @relation("AgentRunCostExecutionAttempts", fields: [agentRunCostId], references: [id], onDelete: SetNull)
+
+  @@index([jurisdictionId, status])
+  @@index([taskId, status])
+  @@index([candidateMatchId])
+  @@index([executorKind, status])
+  @@index([executorKey, status])
+  @@index([executorUserId, status])
+  @@index([executorPersonId, status])
+  @@index([executorOrganizationId, status])
+  @@index([agentExecutorId, status])
+  @@index([taskApplicationId])
+  @@index([taskClaimId])
+  @@index([agentTaskLeaseId])
+  @@index([agentRunCostId])
+  @@index([startedAt])
+  @@index([completedAt])
+  @@index([deletedAt])
+}
+
+/// Marketplace wrapper that makes a task sellable as a paid posting or boost.
+model TaskMarketplaceListing {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction copied from the task for tenant-scoped queries
+  jurisdictionId String?
+
+  /// Task being listed
+  taskId String
+
+  /// User who posted or paid for the listing, when known
+  posterUserId String?
+
+  /// Organization that posted or paid for the listing, when known
+  posterOrganizationId String?
+
+  /// Commerce entitlement that makes this listing active or boosted, when paid
+  commerceEntitlementId String?
+
+  /// Listing package type
+  listingKind TaskMarketplaceListingKind @default(TASK_POSTING)
+
+  /// Revenue policy attached to this listing
+  feePolicy TaskMarketplaceFeePolicy @default(FREE)
+
+  /// Currency for listing fees
+  currency String @default("usd")
+
+  /// Paid posting or boost fee in the currency's minor units
+  postingFeeMinorUnits BigInt?
+
+  /// Listing lifecycle state
+  status TaskMarketplaceListingStatus @default(DRAFT)
+
+  /// When this listing became active
+  activatedAt DateTime?
+
+  /// When this listing expires
+  expiresAt DateTime?
+
+  /// When this listing was closed
+  closedAt DateTime?
+
+  /// Marketplace-specific metadata that does not justify first-class columns yet
+  metadata Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction        Jurisdiction?        @relation("JurisdictionTaskMarketplaceListings", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  task                Task                 @relation("TaskMarketplaceListings", fields: [taskId], references: [id], onDelete: Cascade)
+  posterUser          User?                @relation("UserTaskMarketplaceListings", fields: [posterUserId], references: [id], onDelete: SetNull)
+  posterOrganization  Organization?        @relation("OrganizationTaskMarketplaceListings", fields: [posterOrganizationId], references: [id], onDelete: SetNull)
+  commerceEntitlement CommerceEntitlement? @relation("CommerceEntitlementTaskMarketplaceListings", fields: [commerceEntitlementId], references: [id], onDelete: SetNull)
+
+  @@index([jurisdictionId, status])
+  @@index([taskId, status])
+  @@index([posterUserId, status])
+  @@index([posterOrganizationId, status])
+  @@index([commerceEntitlementId])
+  @@index([listingKind, status])
+  @@index([feePolicy, status])
+  @@index([expiresAt])
+  @@index([deletedAt])
+}
+
+/// Reusable destination for posting, indexing, or syndicating public task opportunities.
+model TaskDistributionTarget {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Integration provider that owns this destination, when managed by a connector
+  integrationProviderId String?
+
+  /// Destination family, such as job board, social, community, or search index
+  channel TaskDistributionChannel
+
+  /// Stable destination key, such as "google-jobs", "bluesky:eos", or "upwork"
+  targetKey String @unique
+
+  /// Human-readable destination name
+  displayName String
+
+  /// Optional operational note about what this destination is for
+  description String?
+
+  /// Whether this destination is available for new distribution attempts
+  status TaskDistributionTargetStatus @default(ACTIVE)
+
+  /// Whether a human must approve copy or cost before posting
+  requiresManualApproval Boolean @default(true)
+
+  /// Default expected cost in minor units, when this target charges per post
+  defaultCostMinorUnits BigInt?
+
+  /// Currency for defaultCostMinorUnits
+  defaultCostCurrency String?
+
+  /// Destination-specific settings that do not justify first-class columns yet
+  metadata Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  integrationProvider IntegrationProvider?      @relation("IntegrationProviderTaskDistributionTargets", fields: [integrationProviderId], references: [id], onDelete: SetNull)
+  attempts            TaskDistributionAttempt[] @relation("TaskDistributionTargetAttempts")
+
+  @@index([integrationProviderId])
+  @@index([channel, status])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+/// One outbound attempt to post, update, index, or remove a task on an external channel.
+model TaskDistributionAttempt {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction copied from the task for tenant-scoped queries
+  jurisdictionId String?
+
+  /// Task being distributed
+  taskId String
+
+  /// Destination target, when configured in the system
+  distributionTargetId String?
+
+  /// Integration provider used for this attempt, when applicable
+  integrationProviderId String?
+
+  /// User-owned integration connection used for this attempt, when applicable
+  integrationConnectionId String?
+
+  /// User who requested this distribution attempt
+  requestedByUserId String?
+
+  /// User who approved this distribution attempt, when approval was required
+  approvedByUserId String?
+
+  /// Destination family captured on the attempt for stable reporting
+  channel TaskDistributionChannel
+
+  /// External action this attempt performs
+  operation TaskDistributionOperation @default(CREATE)
+
+  /// Current lifecycle state for this outbound attempt
+  status TaskDistributionAttemptStatus @default(DRAFT)
+
+  /// External object identifier returned by the destination, when known
+  externalObjectId String?
+
+  /// External URL where the post, listing, or indexed page can be inspected
+  externalUrl String?
+
+  /// Destination-reported status, when useful for reconciliation
+  externalStatus String?
+
+  /// JSON payload sent or queued for the destination
+  payloadJson Json?
+
+  /// Hash of the normalized payload used for idempotency and audit
+  payloadHash String?
+
+  /// Raw structured response from the destination, when retained
+  responseJson Json?
+
+  /// Human-readable error text from the latest failed call
+  errorMessage String?
+
+  /// Actual or expected distribution cost in minor units
+  costMinorUnits BigInt?
+
+  /// Currency for costMinorUnits
+  costCurrency String?
+
+  /// When this attempt should be processed
+  scheduledAt DateTime?
+
+  /// When a reviewer approved this attempt
+  approvedAt DateTime?
+
+  /// When the external listing or post expires
+  expiresAt DateTime?
+
+  /// When the external create, update, remove, or index operation completed
+  completedAt DateTime?
+
+  /// When this attempt last failed
+  failedAt DateTime?
+
+  /// Additional destination-specific metadata
+  metadata Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction          Jurisdiction?           @relation("JurisdictionTaskDistributionAttempts", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  task                  Task                    @relation("TaskDistributionAttempts", fields: [taskId], references: [id], onDelete: Cascade)
+  distributionTarget    TaskDistributionTarget? @relation("TaskDistributionTargetAttempts", fields: [distributionTargetId], references: [id], onDelete: SetNull)
+  integrationProvider   IntegrationProvider?    @relation("IntegrationProviderTaskDistributionAttempts", fields: [integrationProviderId], references: [id], onDelete: SetNull)
+  integrationConnection IntegrationConnection?  @relation("IntegrationConnectionTaskDistributionAttempts", fields: [integrationConnectionId], references: [id], onDelete: SetNull)
+  requestedByUser       User?                   @relation("UserRequestedTaskDistributions", fields: [requestedByUserId], references: [id], onDelete: SetNull)
+  approvedByUser        User?                   @relation("UserApprovedTaskDistributions", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([jurisdictionId, status])
+  @@index([taskId, status])
+  @@index([distributionTargetId, status])
+  @@index([integrationProviderId, status])
+  @@index([integrationConnectionId, status])
+  @@index([requestedByUserId, status])
+  @@index([approvedByUserId, status])
+  @@index([channel, status])
+  @@index([operation, status])
+  @@index([externalObjectId])
+  @@index([externalUrl])
+  @@index([payloadHash])
+  @@index([scheduledAt])
+  @@index([completedAt])
+  @@index([expiresAt])
   @@index([deletedAt])
 }
 
@@ -5633,6 +6499,12 @@ model TaskApplication {
   /// User who last reviewed this application.
   reviewerUserId String?
 
+  /// Invitation that brought this applicant here, when known.
+  referralInvitationId String?
+
+  /// Share attempt that brought this applicant here, when known.
+  shareAttemptId String?
+
   /// Review lifecycle state.
   status TaskApplicationStatus @default(APPLIED)
 
@@ -5656,6 +6528,12 @@ model TaskApplication {
 
   /// Free-form metadata for imports and future matching details.
   metadata Json?
+
+  /// Full URL where the application flow started or submitted.
+  originUrl String?
+
+  /// Parsed UTM/campaign attribution values captured at submission time.
+  utmJson Json?
 
   /// When the application was submitted or invitation was created.
   appliedAt DateTime @default(now())
@@ -5685,14 +6563,18 @@ model TaskApplication {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction    Jurisdiction?          @relation("JurisdictionTaskApplications", fields: [jurisdictionId], references: [id], onDelete: SetNull)
-  task            Task                   @relation("TaskApplications", fields: [taskId], references: [id], onDelete: Cascade)
-  applicantUser   User?                  @relation("UserTaskApplications", fields: [applicantUserId], references: [id], onDelete: SetNull)
-  applicantPerson Person?                @relation("TaskApplicationApplicantPerson", fields: [applicantPersonId], references: [id], onDelete: SetNull)
-  reviewerUser    User?                  @relation("UserReviewedTaskApplications", fields: [reviewerUserId], references: [id], onDelete: SetNull)
-  comments        TaskComment[]          @relation("TaskApplicationComments")
-  events          TaskApplicationEvent[] @relation("TaskApplicationEvents")
+  jurisdiction       Jurisdiction?          @relation("JurisdictionTaskApplications", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  task               Task                   @relation("TaskApplications", fields: [taskId], references: [id], onDelete: Cascade)
+  applicantUser      User?                  @relation("UserTaskApplications", fields: [applicantUserId], references: [id], onDelete: SetNull)
+  applicantPerson    Person?                @relation("TaskApplicationApplicantPerson", fields: [applicantPersonId], references: [id], onDelete: SetNull)
+  reviewerUser       User?                  @relation("UserReviewedTaskApplications", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+  referralInvitation ReferralInvitation?    @relation("ReferralInvitationTaskApplications", fields: [referralInvitationId], references: [id], onDelete: SetNull)
+  shareAttempt       ShareAttempt?          @relation("ShareAttemptTaskApplications", fields: [shareAttemptId], references: [id], onDelete: SetNull)
+  comments           TaskComment[]          @relation("TaskApplicationComments")
+  events             TaskApplicationEvent[] @relation("TaskApplicationEvents")
+  executionAttempts  TaskExecutionAttempt[] @relation("TaskApplicationExecutionAttempts")
 
+  @@unique([id, taskId])
   @@unique([taskId, applicantUserId])
   @@unique([taskId, applicantPersonId])
   @@index([jurisdictionId, status])
@@ -5700,6 +6582,8 @@ model TaskApplication {
   @@index([applicantUserId, status])
   @@index([applicantPersonId, status])
   @@index([reviewerUserId, status])
+  @@index([referralInvitationId])
+  @@index([shareAttemptId])
   @@index([deletedAt])
 }
 
@@ -5804,9 +6688,10 @@ model TaskClaim {
   deletedAt DateTime?
 
   // -- Relations --
-  task           Task  @relation("TaskClaims", fields: [taskId], references: [id], onDelete: Cascade)
-  user           User  @relation("UserTaskClaims", fields: [userId], references: [id], onDelete: Cascade)
-  verifiedByUser User? @relation("TaskClaimVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  task              Task                   @relation("TaskClaims", fields: [taskId], references: [id], onDelete: Cascade)
+  user              User                   @relation("UserTaskClaims", fields: [userId], references: [id], onDelete: Cascade)
+  verifiedByUser    User?                  @relation("TaskClaimVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  executionAttempts TaskExecutionAttempt[] @relation("TaskClaimExecutionAttempts")
 
   @@unique([taskId, userId])
   @@index([taskId, status])
@@ -5974,7 +6859,7 @@ model TaskComment {
 
   // -- Relations --
   task               Task                @relation("TaskComments", fields: [taskId], references: [id], onDelete: Cascade)
-  taskApplication    TaskApplication?    @relation("TaskApplicationComments", fields: [taskApplicationId], references: [id], onDelete: SetNull)
+  taskApplication    TaskApplication?    @relation("TaskApplicationComments", fields: [taskApplicationId, taskId], references: [id, taskId], onDelete: NoAction)
   parentComment      TaskComment?        @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
   replies            TaskComment[]       @relation("CommentReplies")
   authorUser         User?               @relation("TaskCommentAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
@@ -7519,6 +8404,7 @@ model ShareAttempt {
   task                     Task?                     @relation("TaskShareAttempts", fields: [taskId], references: [id], onDelete: SetNull)
   taskCommunicationVariant TaskCommunicationVariant? @relation("ShareAttemptTaskCommunicationVariant", fields: [taskCommunicationVariantId], references: [id], onDelete: SetNull)
   referralInvitations      ReferralInvitation[]      @relation("ShareAttemptReferralInvitations")
+  taskApplications         TaskApplication[]         @relation("ShareAttemptTaskApplications")
   taskCommunications       TaskCommunication[]       @relation("ShareAttemptTaskCommunications")
 
   @@index([userId, createdAt])
@@ -8461,10 +9347,11 @@ model CommerceEntitlement {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  order        CommerceOrder?        @relation("CommerceOrderEntitlements", fields: [orderId], references: [id], onDelete: SetNull)
-  orderItem    CommerceOrderItem?    @relation("CommerceOrderItemEntitlements", fields: [orderItemId], references: [id], onDelete: SetNull)
-  offer        CommerceOffer?        @relation("CommerceOfferEntitlements", fields: [offerId], references: [id], onDelete: SetNull)
-  offerVariant CommerceOfferVariant? @relation("CommerceVariantEntitlements", fields: [offerVariantId], references: [id], onDelete: SetNull)
+  order                   CommerceOrder?           @relation("CommerceOrderEntitlements", fields: [orderId], references: [id], onDelete: SetNull)
+  orderItem               CommerceOrderItem?       @relation("CommerceOrderItemEntitlements", fields: [orderItemId], references: [id], onDelete: SetNull)
+  offer                   CommerceOffer?           @relation("CommerceOfferEntitlements", fields: [offerId], references: [id], onDelete: SetNull)
+  offerVariant            CommerceOfferVariant?    @relation("CommerceVariantEntitlements", fields: [offerVariantId], references: [id], onDelete: SetNull)
+  taskMarketplaceListings TaskMarketplaceListing[] @relation("CommerceEntitlementTaskMarketplaceListings")
 
   @@index([orderId])
   @@index([orderItemId])
@@ -8572,8 +9459,9 @@ model AgentRunCost {
   updatedAt DateTime @updatedAt
 
   // -- Relations --
-  task    Task?                @relation("TaskAgentRunCosts", fields: [taskId], references: [id], onDelete: SetNull)
-  deposit AgentComputeDeposit? @relation("DepositAgentRunCosts", fields: [depositId], references: [id], onDelete: SetNull)
+  task              Task?                  @relation("TaskAgentRunCosts", fields: [taskId], references: [id], onDelete: SetNull)
+  deposit           AgentComputeDeposit?   @relation("DepositAgentRunCosts", fields: [depositId], references: [id], onDelete: SetNull)
+  executionAttempts TaskExecutionAttempt[] @relation("AgentRunCostExecutionAttempts")
 
   @@index([runId])
   @@index([taskId])
@@ -8611,7 +9499,8 @@ model AgentTaskLease {
   releasedAt DateTime?
 
   // -- Relations --
-  task Task @relation("TaskAgentLeases", fields: [taskId], references: [id], onDelete: Cascade)
+  task              Task                   @relation("TaskAgentLeases", fields: [taskId], references: [id], onDelete: Cascade)
+  executionAttempts TaskExecutionAttempt[] @relation("AgentTaskLeaseExecutionAttempts")
 
   @@unique([taskId, agentId])
   @@index([taskId, released, expiresAt])

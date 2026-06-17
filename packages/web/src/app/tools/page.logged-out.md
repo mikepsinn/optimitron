@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Tools | International Campaign to End War and Disease
+- Page title: Earth Optimization Tools | International Campaign to End War and Disease
 - Meta description: Free tools for voting, evidence, budgets, policy, outreach, and task tracking.
 - Canonical: https://warondisease.org/tools
-- Open Graph title: Tools
+- Open Graph title: Earth Optimization Tools
 - Open Graph description: Free tools for voting, evidence, budgets, policy, outreach, and task tracking.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Ftools
-- Twitter title: Tools
+- Twitter title: Earth Optimization Tools
 - Twitter description: Free tools for voting, evidence, budgets, policy, outreach, and task tracking.
 
 ## Visible Page Copy
@@ -29,10 +29,10 @@
 - [💊TREATMENTS Compare treatment evidence](/agencies/dfda/treatments)
 ### DEMOCRACY
 - [🗳️WISHOCRACY Pick between two things, ten times — outperform Congress](/agencies/dcongress/wishocracy)
-- [🏛️ALIGNMENT Find out which politicians accidentally agree with you](/agencies/dfec/alignment)
+- [🏛️POLITICIAN ALIGNMENT Find out which politicians accidentally agree with you](/agencies/dfec/alignment)
 - [🗳️REFERENDUMS Vote directly. Hire two more.](/agencies/dcongress/referendums)
 ### FINANCE
-- [🏆PRIZE Recruit voters; split the pool if humanity wins](/prize)
+- [🏆EARTH OPTIMIZATION PRIZE Recruit voters; split the pool if humanity wins](/prize)
 - [🤝INCENTIVE ALIGNMENT BONDS Lobbying, but it cures diseases instead of causing them](/iab)
 - [💸AUTOMATED TREASURY One currency, one tax, one safety net — no tax code required](/agencies/dtreasury)
 - [🏦ALGORITHMIC RESERVE 0% inflation anchored to productivity — new money via UBI, not banks](/agencies/dtreasury/dfed)

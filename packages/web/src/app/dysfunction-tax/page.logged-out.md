@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-### THE $101.0 TRILLION POLITICAL DYSFUNCTION TAX
+### THE $101 TRILLION POLITICAL DYSFUNCTION TAX
 - Your civilisation loses [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html) per year to governance dysfunction. That is [$12,600/year](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) per human per year in pure waste. Your overhead is almost equal to your entire economic output. My toaster runs more efficiently.
 - HEALTHCARE INEFFICIENCY
 - 17.3%

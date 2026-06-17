@@ -26,11 +26,41 @@ type FakeTask = {
   title: string;
   description: string;
   impactStatement: string | null;
+  ownerOrganizationId: string | null;
+  compensationKind: string;
+  compensationCadence: string | null;
+  compensationCurrency: string | null;
+  compensationMinAmountMinorUnits: bigint | null;
+  compensationMaxAmountMinorUnits: bigint | null;
+  compensationPaymentRails: string[];
+  estimatedHoursPerWeekMin: number | null;
+  estimatedHoursPerWeekMax: number | null;
+  remotePolicy: string;
+  locationText: string | null;
+  workLocationCountryCode: string | null;
+  workLocationRegionCode: string | null;
+  workLocationCity: string | null;
+  workLocationPostalCode: string | null;
+  workLocationLatitude: number | null;
+  workLocationLongitude: number | null;
+  workLocationRadiusKm: number | null;
+  workTimeZone: string | null;
+  applicationQuestionsJson: unknown;
+  executionMode: string;
   category: typeof TaskCategory[keyof typeof TaskCategory];
   difficulty: typeof TaskDifficulty[keyof typeof TaskDifficulty];
   estimatedEffortHours: number | null;
   skillTags: string[];
+  preferredSkillTags: string[];
   interestTags: string[];
+  requiredCredentialTags: string[];
+  preferredCredentialTags: string[];
+  requiredLanguageTags: string[];
+  preferredLanguageTags: string[];
+  requiredToolTags: string[];
+  preferredToolTags: string[];
+  requiredAccessTags: string[];
+  preferredAccessTags: string[];
   contextJson: unknown;
   claimPolicy: typeof TaskClaimPolicy[keyof typeof TaskClaimPolicy];
   maxClaims: number | null;
@@ -96,11 +126,41 @@ function makeTask(input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">): 
     title: "Old title",
     description: "Old description",
     impactStatement: null,
+    ownerOrganizationId: null,
+    compensationKind: "UNSPECIFIED",
+    compensationCadence: null,
+    compensationCurrency: null,
+    compensationMinAmountMinorUnits: null,
+    compensationMaxAmountMinorUnits: null,
+    compensationPaymentRails: [],
+    estimatedHoursPerWeekMin: null,
+    estimatedHoursPerWeekMax: null,
+    remotePolicy: "UNSPECIFIED",
+    locationText: null,
+    workLocationCountryCode: null,
+    workLocationRegionCode: null,
+    workLocationCity: null,
+    workLocationPostalCode: null,
+    workLocationLatitude: null,
+    workLocationLongitude: null,
+    workLocationRadiusKm: null,
+    workTimeZone: null,
+    applicationQuestionsJson: null,
+    executionMode: "HUMAN_OR_AGENT",
     category: TaskCategory.OTHER,
     difficulty: TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: null,
     skillTags: [],
+    preferredSkillTags: [],
     interestTags: [],
+    requiredCredentialTags: [],
+    preferredCredentialTags: [],
+    requiredLanguageTags: [],
+    preferredLanguageTags: [],
+    requiredToolTags: [],
+    preferredToolTags: [],
+    requiredAccessTags: [],
+    preferredAccessTags: [],
     contextJson: null,
     claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
     maxClaims: null,
@@ -149,6 +209,13 @@ const fakeTaskScalarFields = new Set<keyof FakeTask>([
   "availableAt",
   "category",
   "claimPolicy",
+  "applicationQuestionsJson",
+  "compensationCadence",
+  "compensationCurrency",
+  "compensationKind",
+  "compensationMaxAmountMinorUnits",
+  "compensationMinAmountMinorUnits",
+  "compensationPaymentRails",
   "contextJson",
   "createdByUserId",
   "currentImpactEstimateSetId",
@@ -158,17 +225,40 @@ const fakeTaskScalarFields = new Set<keyof FakeTask>([
   "difficulty",
   "dueAt",
   "estimatedEffortHours",
+  "estimatedHoursPerWeekMax",
+  "estimatedHoursPerWeekMin",
+  "executionMode",
   "id",
   "impactStatement",
   "interestTags",
   "isPublic",
+  "locationText",
   "maxClaims",
+  "ownerOrganizationId",
   "parentTaskId",
+  "preferredAccessTags",
+  "preferredCredentialTags",
+  "preferredLanguageTags",
+  "preferredSkillTags",
+  "preferredToolTags",
+  "remotePolicy",
+  "requiredAccessTags",
+  "requiredCredentialTags",
+  "requiredLanguageTags",
+  "requiredToolTags",
   "skillTags",
   "sortOrder",
   "status",
   "taskKey",
   "title",
+  "workLocationCity",
+  "workLocationCountryCode",
+  "workLocationLatitude",
+  "workLocationLongitude",
+  "workLocationPostalCode",
+  "workLocationRadiusKm",
+  "workLocationRegionCode",
+  "workTimeZone",
 ]);
 
 function assertValidTaskSelect(select: Record<string, unknown> | undefined) {
@@ -465,6 +555,33 @@ const activeRecord: ManagedTaskRecord = {
   category: TaskCategory.GOVERNANCE,
   claimPolicy: TaskClaimPolicy.OPEN_MANY,
   difficulty: TaskDifficulty.INTERMEDIATE,
+  ownerOrganizationId: "org-managed-owner",
+  compensationKind: "PAID",
+  compensationCadence: "ANNUAL",
+  compensationCurrency: "usd",
+  compensationMinAmountMinorUnits: 70_000_00n,
+  compensationMaxAmountMinorUnits: 90_000_00n,
+  compensationPaymentRails: ["stripe", "ach"],
+  estimatedHoursPerWeekMin: 35,
+  estimatedHoursPerWeekMax: 45,
+  remotePolicy: "REMOTE",
+  locationText: "Remote",
+  workLocationCountryCode: "US",
+  workLocationRegionCode: "IL",
+  workLocationCity: "Edwardsville",
+  workLocationRadiusKm: 40,
+  workTimeZone: "America/Chicago",
+  applicationQuestionsJson: [{ id: "why", prompt: "Why this job?" }],
+  executionMode: "HUMAN_ONLY",
+  preferredSkillTags: ["nonprofit-outreach"],
+  requiredCredentialTags: ["campaign-management"],
+  preferredCredentialTags: ["coalition-building"],
+  requiredLanguageTags: ["en"],
+  preferredLanguageTags: ["es"],
+  requiredToolTags: ["crm"],
+  preferredToolTags: ["spreadsheet"],
+  requiredAccessTags: ["st-louis"],
+  preferredAccessTags: ["disease-nonprofits"],
   sortOrder: -100,
   primaryEndpoint: {
     label: "Open root task",
@@ -592,6 +709,33 @@ describe("syncManagedTasks", () => {
       title: "Root task",
       description: "Managed root description.",
       createdByUserId: "old-user",
+      ownerOrganizationId: "org-managed-owner",
+      compensationKind: "PAID",
+      compensationCadence: "ANNUAL",
+      compensationCurrency: "usd",
+      compensationMinAmountMinorUnits: 70_000_00n,
+      compensationMaxAmountMinorUnits: 90_000_00n,
+      compensationPaymentRails: ["stripe", "ach"],
+      estimatedHoursPerWeekMin: 35,
+      estimatedHoursPerWeekMax: 45,
+      remotePolicy: "REMOTE",
+      locationText: "Remote",
+      workLocationCountryCode: "US",
+      workLocationRegionCode: "IL",
+      workLocationCity: "Edwardsville",
+      workLocationRadiusKm: 40,
+      workTimeZone: "America/Chicago",
+      applicationQuestionsJson: [{ id: "why", prompt: "Why this job?" }],
+      executionMode: "HUMAN_ONLY",
+      preferredSkillTags: ["nonprofit-outreach"],
+      requiredCredentialTags: ["campaign-management"],
+      preferredCredentialTags: ["coalition-building"],
+      requiredLanguageTags: ["en"],
+      preferredLanguageTags: ["es"],
+      requiredToolTags: ["crm"],
+      preferredToolTags: ["spreadsheet"],
+      requiredAccessTags: ["st-louis"],
+      preferredAccessTags: ["disease-nonprofits"],
       sortOrder: -100,
     });
     expect(root?.contextJson).toMatchObject({

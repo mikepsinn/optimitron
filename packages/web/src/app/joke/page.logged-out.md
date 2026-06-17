@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: The Joke | International Campaign to End War and Disease
-- Meta description: How to play the funniest joke in the universe.
+- Meta description: Disease kills 150,000 people a day — 50 September 11ths. The joke that ends it: put the 1% Treaty on a t-shirt, hand someone the facts, recruit two more.
 - Canonical: https://warondisease.org/joke
 - Open Graph title: The Joke
-- Open Graph description: How to play the funniest joke in the universe.
+- Open Graph description: Disease kills 150,000 people a day — 50 September 11ths. The joke that ends it: put the 1% Treaty on a t-shirt, hand someone the facts, recruit two more.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fjoke
 - Twitter title: The Joke
-- Twitter description: How to play the funniest joke in the universe.
+- Twitter description: Disease kills 150,000 people a day — 50 September 11ths. The joke that ends it: put the 1% Treaty on a t-shirt, hand someone the facts, recruit two more.
 
 ## Visible Page Copy
 

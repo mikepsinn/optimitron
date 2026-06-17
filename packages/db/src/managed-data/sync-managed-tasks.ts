@@ -3,14 +3,21 @@ import {
   TaskClaimPolicy,
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
+  TaskCompensationKind,
   TaskDeadlinePolicy,
   TaskDifficulty,
+  TaskExecutionMode,
+  TaskRemotePolicy,
   TaskStatus,
   type Prisma,
   type TaskCategory as TaskCategoryValue,
   type TaskClaimPolicy as TaskClaimPolicyValue,
+  type TaskCompensationCadence as TaskCompensationCadenceValue,
+  type TaskCompensationKind as TaskCompensationKindValue,
   type TaskDeadlinePolicy as TaskDeadlinePolicyValue,
   type TaskDifficulty as TaskDifficultyValue,
+  type TaskExecutionMode as TaskExecutionModeValue,
+  type TaskRemotePolicy as TaskRemotePolicyValue,
   type TaskStatus as TaskStatusValue,
 } from "../generated/prisma/client.js";
 import {
@@ -37,6 +44,7 @@ export interface ManagedTaskRecord {
   title: string;
   description: string;
   impactStatement?: string | null;
+  ownerOrganizationId?: string | null;
   category?: TaskCategoryValue;
   difficulty?: TaskDifficultyValue;
   estimatedEffortHours?: number | null;
@@ -45,9 +53,38 @@ export interface ManagedTaskRecord {
   /** Probability 0-1 the task produces the stated value. Source from `@optimitron/data` parameters. */
   successProbabilityBase?: number | null;
   skillTags?: string[];
+  preferredSkillTags?: string[];
   interestTags?: string[];
+  requiredCredentialTags?: string[];
+  preferredCredentialTags?: string[];
+  requiredLanguageTags?: string[];
+  preferredLanguageTags?: string[];
+  requiredToolTags?: string[];
+  preferredToolTags?: string[];
+  requiredAccessTags?: string[];
+  preferredAccessTags?: string[];
   contextJson?: Prisma.InputJsonValue;
   claimPolicy?: TaskClaimPolicyValue;
+  compensationKind?: TaskCompensationKindValue;
+  compensationCadence?: TaskCompensationCadenceValue | null;
+  compensationCurrency?: string | null;
+  compensationMinAmountMinorUnits?: bigint | number | null;
+  compensationMaxAmountMinorUnits?: bigint | number | null;
+  compensationPaymentRails?: string[];
+  estimatedHoursPerWeekMin?: number | null;
+  estimatedHoursPerWeekMax?: number | null;
+  remotePolicy?: TaskRemotePolicyValue;
+  locationText?: string | null;
+  workLocationCountryCode?: string | null;
+  workLocationRegionCode?: string | null;
+  workLocationCity?: string | null;
+  workLocationPostalCode?: string | null;
+  workLocationLatitude?: number | null;
+  workLocationLongitude?: number | null;
+  workLocationRadiusKm?: number | null;
+  workTimeZone?: string | null;
+  applicationQuestionsJson?: Prisma.InputJsonValue | null;
+  executionMode?: TaskExecutionModeValue;
   maxClaims?: number | null;
   status?: TaskStatusValue;
   isPublic?: boolean;
@@ -70,13 +107,43 @@ interface ManagedTaskRow {
   title: string;
   description: string;
   impactStatement: string | null;
+  ownerOrganizationId: string | null;
   category: TaskCategoryValue;
   difficulty: TaskDifficultyValue;
   estimatedEffortHours: number | null;
   skillTags: string[];
+  preferredSkillTags: string[];
   interestTags: string[];
+  requiredCredentialTags: string[];
+  preferredCredentialTags: string[];
+  requiredLanguageTags: string[];
+  preferredLanguageTags: string[];
+  requiredToolTags: string[];
+  preferredToolTags: string[];
+  requiredAccessTags: string[];
+  preferredAccessTags: string[];
   contextJson: Prisma.JsonValue | null;
   claimPolicy: TaskClaimPolicyValue;
+  compensationKind: TaskCompensationKindValue;
+  compensationCadence: TaskCompensationCadenceValue | null;
+  compensationCurrency: string | null;
+  compensationMinAmountMinorUnits: bigint | null;
+  compensationMaxAmountMinorUnits: bigint | null;
+  compensationPaymentRails: string[];
+  estimatedHoursPerWeekMin: number | null;
+  estimatedHoursPerWeekMax: number | null;
+  remotePolicy: TaskRemotePolicyValue;
+  locationText: string | null;
+  workLocationCountryCode: string | null;
+  workLocationRegionCode: string | null;
+  workLocationCity: string | null;
+  workLocationPostalCode: string | null;
+  workLocationLatitude: number | null;
+  workLocationLongitude: number | null;
+  workLocationRadiusKm: number | null;
+  workTimeZone: string | null;
+  applicationQuestionsJson: Prisma.JsonValue | null;
+  executionMode: TaskExecutionModeValue;
   maxClaims: number | null;
   status: TaskStatusValue;
   isPublic: boolean;
@@ -174,6 +241,10 @@ function clean(value?: string | null) {
   const trimmed = value?.trim();
   if (!trimmed) return null;
   return trimmed;
+}
+
+function toManagedBigInt(value: bigint | number | null | undefined) {
+  return value === null || value === undefined ? null : BigInt(value);
 }
 
 export function normalizeManagedTaskEndpointUrl(value?: string | null) {
@@ -350,13 +421,47 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
     title: record.title,
     description: record.description,
     impactStatement: record.impactStatement ?? null,
+    ownerOrganizationId: record.ownerOrganizationId ?? null,
     category: record.category ?? TaskCategory.GOVERNANCE,
     difficulty: record.difficulty ?? TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: record.estimatedEffortHours ?? null,
     skillTags: record.skillTags ?? [],
+    preferredSkillTags: record.preferredSkillTags ?? [],
     interestTags: record.interestTags ?? [],
+    requiredCredentialTags: record.requiredCredentialTags ?? [],
+    preferredCredentialTags: record.preferredCredentialTags ?? [],
+    requiredLanguageTags: record.requiredLanguageTags ?? [],
+    preferredLanguageTags: record.preferredLanguageTags ?? [],
+    requiredToolTags: record.requiredToolTags ?? [],
+    preferredToolTags: record.preferredToolTags ?? [],
+    requiredAccessTags: record.requiredAccessTags ?? [],
+    preferredAccessTags: record.preferredAccessTags ?? [],
     contextJson: buildManagedContext(collectionKey, record),
     claimPolicy: record.claimPolicy ?? TaskClaimPolicy.OPEN_MANY,
+    compensationKind: record.compensationKind ?? TaskCompensationKind.UNSPECIFIED,
+    compensationCadence: record.compensationCadence ?? null,
+    compensationCurrency: record.compensationCurrency ?? null,
+    compensationMinAmountMinorUnits: toManagedBigInt(
+      record.compensationMinAmountMinorUnits,
+    ),
+    compensationMaxAmountMinorUnits: toManagedBigInt(
+      record.compensationMaxAmountMinorUnits,
+    ),
+    compensationPaymentRails: record.compensationPaymentRails ?? [],
+    estimatedHoursPerWeekMin: record.estimatedHoursPerWeekMin ?? null,
+    estimatedHoursPerWeekMax: record.estimatedHoursPerWeekMax ?? null,
+    remotePolicy: record.remotePolicy ?? TaskRemotePolicy.UNSPECIFIED,
+    locationText: record.locationText ?? null,
+    workLocationCountryCode: record.workLocationCountryCode ?? null,
+    workLocationRegionCode: record.workLocationRegionCode ?? null,
+    workLocationCity: record.workLocationCity ?? null,
+    workLocationPostalCode: record.workLocationPostalCode ?? null,
+    workLocationLatitude: record.workLocationLatitude ?? null,
+    workLocationLongitude: record.workLocationLongitude ?? null,
+    workLocationRadiusKm: record.workLocationRadiusKm ?? null,
+    workTimeZone: record.workTimeZone ?? null,
+    applicationQuestionsJson: record.applicationQuestionsJson ?? null,
+    executionMode: record.executionMode ?? TaskExecutionMode.HUMAN_OR_AGENT,
     maxClaims: record.maxClaims ?? null,
     status: record.status ?? TaskStatus.ACTIVE,
     isPublic: record.isPublic ?? true,
@@ -510,13 +615,43 @@ function managedTaskNeedsUpdate(
     existing.title !== scalars.title ||
     existing.description !== scalars.description ||
     existing.impactStatement !== scalars.impactStatement ||
+    existing.ownerOrganizationId !== scalars.ownerOrganizationId ||
     existing.category !== scalars.category ||
     existing.difficulty !== scalars.difficulty ||
     existing.estimatedEffortHours !== scalars.estimatedEffortHours ||
     !sameJson(existing.skillTags, scalars.skillTags) ||
+    !sameJson(existing.preferredSkillTags, scalars.preferredSkillTags) ||
     !sameJson(existing.interestTags, scalars.interestTags) ||
+    !sameJson(existing.requiredCredentialTags, scalars.requiredCredentialTags) ||
+    !sameJson(existing.preferredCredentialTags, scalars.preferredCredentialTags) ||
+    !sameJson(existing.requiredLanguageTags, scalars.requiredLanguageTags) ||
+    !sameJson(existing.preferredLanguageTags, scalars.preferredLanguageTags) ||
+    !sameJson(existing.requiredToolTags, scalars.requiredToolTags) ||
+    !sameJson(existing.preferredToolTags, scalars.preferredToolTags) ||
+    !sameJson(existing.requiredAccessTags, scalars.requiredAccessTags) ||
+    !sameJson(existing.preferredAccessTags, scalars.preferredAccessTags) ||
     !sameJson(existing.contextJson, scalars.contextJson) ||
     existing.claimPolicy !== scalars.claimPolicy ||
+    existing.compensationKind !== scalars.compensationKind ||
+    existing.compensationCadence !== scalars.compensationCadence ||
+    existing.compensationCurrency !== scalars.compensationCurrency ||
+    existing.compensationMinAmountMinorUnits !== scalars.compensationMinAmountMinorUnits ||
+    existing.compensationMaxAmountMinorUnits !== scalars.compensationMaxAmountMinorUnits ||
+    !sameJson(existing.compensationPaymentRails, scalars.compensationPaymentRails) ||
+    existing.estimatedHoursPerWeekMin !== scalars.estimatedHoursPerWeekMin ||
+    existing.estimatedHoursPerWeekMax !== scalars.estimatedHoursPerWeekMax ||
+    existing.remotePolicy !== scalars.remotePolicy ||
+    existing.locationText !== scalars.locationText ||
+    existing.workLocationCountryCode !== scalars.workLocationCountryCode ||
+    existing.workLocationRegionCode !== scalars.workLocationRegionCode ||
+    existing.workLocationCity !== scalars.workLocationCity ||
+    existing.workLocationPostalCode !== scalars.workLocationPostalCode ||
+    existing.workLocationLatitude !== scalars.workLocationLatitude ||
+    existing.workLocationLongitude !== scalars.workLocationLongitude ||
+    existing.workLocationRadiusKm !== scalars.workLocationRadiusKm ||
+    existing.workTimeZone !== scalars.workTimeZone ||
+    !sameJson(existing.applicationQuestionsJson, scalars.applicationQuestionsJson) ||
+    existing.executionMode !== scalars.executionMode ||
     existing.maxClaims !== scalars.maxClaims ||
     existing.status !== scalars.status ||
     existing.isPublic !== scalars.isPublic ||
@@ -724,13 +859,43 @@ export async function syncManagedTasks(
       title: true,
       description: true,
       impactStatement: true,
+      ownerOrganizationId: true,
       category: true,
       difficulty: true,
       estimatedEffortHours: true,
       skillTags: true,
+      preferredSkillTags: true,
       interestTags: true,
+      requiredCredentialTags: true,
+      preferredCredentialTags: true,
+      requiredLanguageTags: true,
+      preferredLanguageTags: true,
+      requiredToolTags: true,
+      preferredToolTags: true,
+      requiredAccessTags: true,
+      preferredAccessTags: true,
       contextJson: true,
       claimPolicy: true,
+      compensationKind: true,
+      compensationCadence: true,
+      compensationCurrency: true,
+      compensationMinAmountMinorUnits: true,
+      compensationMaxAmountMinorUnits: true,
+      compensationPaymentRails: true,
+      estimatedHoursPerWeekMin: true,
+      estimatedHoursPerWeekMax: true,
+      remotePolicy: true,
+      locationText: true,
+      workLocationCountryCode: true,
+      workLocationRegionCode: true,
+      workLocationCity: true,
+      workLocationPostalCode: true,
+      workLocationLatitude: true,
+      workLocationLongitude: true,
+      workLocationRadiusKm: true,
+      workTimeZone: true,
+      applicationQuestionsJson: true,
+      executionMode: true,
       maxClaims: true,
       status: true,
       isPublic: true,

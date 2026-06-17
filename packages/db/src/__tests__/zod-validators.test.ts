@@ -31,6 +31,8 @@ import {
   CommerceOrderItemSchema,
   CommerceFulfillmentSchema,
   CommerceEntitlementSchema,
+  AgentExecutorSchema,
+  AgentExecutorStatusSchema,
   DatingProfileStatusSchema,
   DatingProfileSchema,
   DatingProfilePhotoSchema,
@@ -78,6 +80,23 @@ import {
   IntegrationProviderSchema,
   IntegrationConnectionSchema,
   IntegrationSyncLogSchema,
+  TaskCandidateKindSchema,
+  TaskCandidateMatchSchema,
+  TaskCandidateMatchStatusSchema,
+  TaskExecutionAttemptSchema,
+  TaskExecutionAttemptStatusSchema,
+  TaskExecutionModeSchema,
+  TaskMarketplaceFeePolicySchema,
+  TaskMarketplaceListingKindSchema,
+  TaskMarketplaceListingSchema,
+  TaskMarketplaceListingStatusSchema,
+  TaskDistributionAttemptSchema,
+  TaskDistributionAttemptStatusSchema,
+  TaskDistributionChannelSchema,
+  TaskDistributionOperationSchema,
+  TaskDistributionTargetSchema,
+  TaskDistributionTargetStatusSchema,
+  TaskSchema,
 } from '../zod/index.js';
 
 // ============================================================================
@@ -350,6 +369,181 @@ describe('Commerce schemas', () => {
         subjectUserId: 'user_1',
         createdAt: now,
         updatedAt: now,
+      }).success,
+    ).toBe(true);
+  });
+});
+
+describe('Task routing and marketplace schemas', () => {
+  it('validates task routing enums and task marketplace models', () => {
+    expect(TaskExecutionModeSchema.parse('HUMAN_OR_AGENT')).toBe('HUMAN_OR_AGENT');
+    expect(TaskCandidateKindSchema.parse('AGENT')).toBe('AGENT');
+    expect(TaskCandidateMatchStatusSchema.parse('SUGGESTED')).toBe('SUGGESTED');
+    expect(TaskExecutionAttemptStatusSchema.parse('QUEUED')).toBe('QUEUED');
+    expect(AgentExecutorStatusSchema.parse('ACTIVE')).toBe('ACTIVE');
+    expect(TaskMarketplaceListingKindSchema.parse('TASK_POSTING')).toBe('TASK_POSTING');
+    expect(TaskMarketplaceFeePolicySchema.parse('PAID_POSTING')).toBe('PAID_POSTING');
+    expect(TaskMarketplaceListingStatusSchema.parse('ACTIVE')).toBe('ACTIVE');
+    expect(TaskDistributionChannelSchema.parse('JOB_BOARD')).toBe('JOB_BOARD');
+    expect(TaskDistributionOperationSchema.parse('INDEX')).toBe('INDEX');
+    expect(TaskDistributionTargetStatusSchema.parse('ACTIVE')).toBe('ACTIVE');
+    expect(TaskDistributionAttemptStatusSchema.parse('SUCCEEDED')).toBe('SUCCEEDED');
+
+    const task = TaskSchema.parse({
+      id: 'task_1',
+      title: 'Hire the campaign coordinator',
+      description: 'Coordinate organizations that can endorse the treaty.',
+      contextJson: null,
+      compensationMinAmountMinorUnits: 7000000n,
+      compensationMaxAmountMinorUnits: 9000000n,
+      compensationPaymentRails: ['stripe', 'ach'],
+      requiredCredentialTags: ['campaign-management'],
+      preferredSkillTags: ['nonprofit-outreach'],
+      requiredLanguageTags: ['en'],
+      executionMode: 'HUMAN_ONLY',
+      workLocationCity: 'Edwardsville',
+      workLocationRegionCode: 'IL',
+      workLocationRadiusKm: 40,
+      availableAt: null,
+      dueAt: null,
+      completedAt: null,
+      verifiedAt: null,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    });
+    expect(task.compensationMinAmountMinorUnits).toBe(7000000n);
+    expect(task.requiredCredentialTags).toEqual(['campaign-management']);
+
+    const user = UserSchema.parse({
+      id: 'user_1',
+      email: 'candidate@example.com',
+      referralCode: 'candidate',
+      credentialTags: ['campaign-management'],
+      languageTags: ['en', 'es'],
+      toolTags: ['crm'],
+      accessTags: ['st-louis'],
+      preferredPaymentRails: ['stripe'],
+      workPreferenceTags: ['full-time', 'hybrid'],
+      availableFrom: now,
+      availabilityUpdatedAt: now,
+      emailVerified: null,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    });
+    expect(user.credentialTags).toEqual(['campaign-management']);
+
+    expect(
+      AgentExecutorSchema.safeParse({
+        id: 'agent_executor_1',
+        agentKey: 'openai:gpt-5',
+        displayName: 'GPT-5',
+        provider: 'openai',
+        modelName: 'gpt-5',
+        capabilityTags: ['research', 'writing'],
+        averageCostUsd: 0.42,
+        averageLatencySeconds: 8,
+        successRate: 0.9,
+        status: 'ACTIVE',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      TaskCandidateMatchSchema.safeParse({
+        id: 'match_1',
+        taskId: 'task_1',
+        candidateKind: 'USER',
+        candidateKey: 'user:user_1',
+        candidateUserId: 'user_1',
+        score: 0.82,
+        scoreVersion: 'v1',
+        reasonJson: { matched: ['campaign-management'] },
+        blockersJson: null,
+        status: 'SUGGESTED',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      TaskExecutionAttemptSchema.safeParse({
+        id: 'attempt_1',
+        taskId: 'task_1',
+        candidateMatchId: 'match_1',
+        executorKind: 'USER',
+        executorKey: 'user:user_1',
+        executorUserId: 'user_1',
+        status: 'COMPLETED',
+        estimatedCostMinorUnits: 9000000n,
+        estimatedCostCurrency: 'usd',
+        actualDurationSeconds: 3600,
+        confidence: 0.8,
+        outputSummary: 'Hired.',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      TaskMarketplaceListingSchema.safeParse({
+        id: 'listing_1',
+        taskId: 'task_1',
+        posterUserId: 'user_1',
+        listingKind: 'TASK_POSTING',
+        feePolicy: 'PAID_POSTING',
+        currency: 'usd',
+        postingFeeMinorUnits: 9900n,
+        status: 'ACTIVE',
+        activatedAt: now,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      TaskDistributionTargetSchema.safeParse({
+        id: 'distribution_target_1',
+        integrationProviderId: 'provider_1',
+        channel: 'JOB_BOARD',
+        targetKey: 'google-jobs',
+        displayName: 'Google Jobs structured data',
+        status: 'ACTIVE',
+        requiresManualApproval: false,
+        defaultCostMinorUnits: 0n,
+        defaultCostCurrency: 'usd',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      TaskDistributionAttemptSchema.safeParse({
+        id: 'distribution_attempt_1',
+        taskId: 'task_1',
+        distributionTargetId: 'distribution_target_1',
+        integrationProviderId: 'provider_1',
+        integrationConnectionId: 'connection_1',
+        requestedByUserId: 'user_1',
+        channel: 'JOB_BOARD',
+        operation: 'INDEX',
+        status: 'SUCCEEDED',
+        externalObjectId: 'google:indexing:task_1',
+        externalUrl: 'https://optimitron.example/tasks/task_1',
+        payloadHash: 'sha256:abc123',
+        costMinorUnits: 0n,
+        costCurrency: 'usd',
+        completedAt: now,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
       }).success,
     ).toBe(true);
   });

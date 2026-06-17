@@ -1,8 +1,12 @@
 import {
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
+  MECHANISM_COURT_OF_HUMANITY_P_SUCCESS,
+  MECHANISM_DFDA_P_SUCCESS,
   MECHANISM_LOVING_TAKEOVER_P_SUCCESS,
   MECHANISM_REFERENDUM_P_SUCCESS,
+  MECHANISM_SHIRT_CASCADE_P_SUCCESS,
+  MECHANISM_TREATY_CAMPAIGN_P_SUCCESS,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
 } from "@optimitron/data/parameters";
 import {
@@ -134,6 +138,10 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "A majority jury needs a court-shaped place to render the verdict.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | court funded).
+    // The sync multiplies these into the frame's expected value; the donation cost lives on the funding target.
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_COURT_OF_HUMANITY_P_SUCCESS.value,
     sortOrder: -800,
     primaryEndpoint: {
       label: "Open the Court of Humanity",
@@ -288,6 +296,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "Ratify the treaty that redirects one percent of military spending into pragmatic clinical trials and disease eradication.",
     impactStatement:
       "The fastest known settlement is one percent of the war budget pointed at disease.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | campaign funded).
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_TREATY_CAMPAIGN_P_SUCCESS.value,
     // Keep the cost-of-delay counters on `/employees` and similar treaty
     // surfaces live by preserving an overdue `dueAt`. The managed-sync
     // overwrites whatever the seed wrote, so we have to set it here too.
@@ -354,8 +365,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "The best lobbyists money can buy currently block the treaty. So we buy them.",
-    // Value = annual peace dividend if the treaty passes; probability = P(pass | takeover funded).
-    // Both from @optimitron/data parameters (Wishonia's Wager mechanism comparison).
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(pass | takeover funded).
     expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_LOVING_TAKEOVER_P_SUCCESS.value,
     sortOrder: -660,
@@ -451,7 +461,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "The referendum proves demand for the treaty; the prize pays for the referendum without anyone losing money.",
-    // Value = annual peace dividend if the treaty passes; probability = P(pass | referendum funded).
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(pass | referendum funded).
+    // No funding target: the prize is a dominant assurance contract (depositors refunded with yield),
+    // so net cost to a funder is ~zero — presented as a zero-downside row, not in the EV/$ ranking.
     expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_REFERENDUM_P_SUCCESS.value,
     sortOrder: -620,
@@ -484,13 +496,53 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     },
   },
   {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
     id: "dfda",
     taskKey: "program:dfda:create",
-    parentTaskId: null,
-    title: "12x More Clinical Trials",
-    description:
-      "Retired from the primary campaign task tree. The dFDA remains supporting infrastructure, not a direct Optimize Earth child.",
-    retired: true,
+    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    title: "Fund the decentralized FDA directly",
+    description: [
+      "Fund the decentralized FDA (dFDA) to run pragmatic, patient-funded trials at a fraction of the usual cost — the direct path to disease eradication that does not wait on any treaty passing.",
+      "",
+      "This is the highest-probability mechanism: it produces more trials whether or not governments redirect a cent. Math: [dFDA impact](https://manual.warondisease.org/knowledge/economics/dfda-impact-paper.html).",
+    ].join("\n"),
+    impactStatement:
+      "The treaty redirects money to trials; the dFDA is the trials. Funding it directly skips the politics.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(progress | dFDA funded).
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_DFDA_P_SUCCESS.value,
+    sortOrder: -615,
+    primaryEndpoint: {
+      label: "Read the dFDA impact math",
+      url: "https://manual.warondisease.org/knowledge/economics/dfda-impact-paper.html",
+      instructions: "Read the impact math, then fund or build the decentralized FDA.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.OUTREACH,
+    id: "shirt-seed",
+    taskKey: "program:shirt-seed",
+    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    title: "Seed the shirt cascade",
+    description: [
+      "Fund a seed of visible wearers — athletes, public figures, anyone with an audience — to wear the War on Disease shirt on Earth Optimization Day, triggering the cascade where everyone else writes the message on a shirt they already own for the cost of a marker.",
+      "",
+      "The seed pays about a million visible wearers; the grassroots cascade after it costs the world about $0.50 of ink per person. Math: [the funniest joke in the universe](https://manual.warondisease.org/knowledge/appendix/joke.html).",
+    ].join("\n"),
+    impactStatement:
+      "A small paid seed of visible wearers turns into billions of free ones. The funder buys the spark, not the fire.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | shirt cascade funded).
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_SHIRT_CASCADE_P_SUCCESS.value,
+    sortOrder: -605,
+    primaryEndpoint: {
+      label: "Read the shirt math",
+      url: "/joke",
+      instructions:
+        "Read how the cascade works, then fund the seed or wear the shirt.",
+    },
   },
   {
     id: "bed-nets-funding-gap",

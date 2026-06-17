@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "incremental": false,
     "plugins": [
       {
         "name": "next"
@@ -9,6 +10,7 @@
   },
   "exclude": [
     "node_modules",
+    "output",
     "scripts",
     "e2e",
     "playwright.config.ts",

@@ -50,7 +50,7 @@
 - REDDIT
 - COPY LINK
 - [RATIFY THE 1% TREATY](/tasks/1-pct-treaty)
-- 1.4 YEARS OVERDUE
+- 1.5 YEARS OVERDUE
 - TIME REQUIRED: 1.6 HOURS COMBINED
 - [6650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to cure them all.
 - Humanity currently spends enough on its capacity for mass murder to achieve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses. This treaty asks it to settle for 121.2 apocalypses in exchange for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trial capacity to cure disease.
@@ -78,14 +78,19 @@
 - [Mikhail Mishustin](/tasks/1-pct-treaty-signer-ru)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ru)
 - [Narendra Modi](/tasks/1-pct-treaty-signer-in)
+- [[initials]](/people/narendra-modi-in)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-in)
 - [Donald Tusk](/tasks/1-pct-treaty-signer-pl)
+- [[initials]](/people/donald-tusk-pl)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-pl)
 - [Salman bin Abdulaziz Al Saud](/tasks/1-pct-treaty-signer-sa)
+- [[initials]](/people/salman-bin-abdulaziz-al-saud-sa)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-sa)
 - [Keir Starmer](/tasks/1-pct-treaty-signer-gb)
+- [[initials]](/people/keir-starmer-gb)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-gb)
 - [Friedrich Merz](/tasks/1-pct-treaty-signer-de)
+- [[initials]](/people/friedrich-merz-de)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-de)
 - [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
 - [[initials]](/people/sifi-ghrieb-dz)
@@ -142,7 +147,7 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀25 HUMANS TERMINATED🔥$46.1M BURNED BY MISALIGNED GOVERNMENTS💣$6.0M SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀0 HUMANS TERMINATED🔥$640K BURNED BY MISALIGNED GOVERNMENTS💣$84K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
 - You are currently losing. You chose it by not choosing.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
@@ -155,7 +160,7 @@
 | Housing Supply Deregulation | +0.03 yrs | +0.05 pp | B | ✅ IMPLEMENT |
 - [SEE ALL POLICY GRADES →](/opg)
 ### WHEN YOU ASK PEOPLE WHAT THEY WANT
-- Cures beat bombs. Nobody has ever asked. Until now. 25 players. 54 comparisons.
+- Cures beat bombs. Nobody has ever asked. Until now.
 - Of total funding available for both, drag slider to indicate how much should go to one vs the other.
 - more
 - $13B/YR · ROI: 13:1 · 2.3X OVERSPEND ▼
@@ -299,7 +304,7 @@
 ### OPTIMIZED GOVERNANCE
 - Every agency redesigned around one question: what does the data say actually works?
 - [🗳️WISHOCRACY Pick between two things. Do it ten times. Congratulations, you've just outperformed Congress. START VOTING →](/agencies/dcongress/wishocracy)
-- [🗳️REFERENDUMS Vote on things that matter. Prove you're human. Skip the middleman who was going to ignore you anyway. VOTE NOW →](/agencies/dcongress/referendums)
+- [🗳️REFERENDUMS Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway. VOTE NOW →](/agencies/dcongress/referendums)
 - [💸AUTOMATED TREASURY 0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited. EXPLORE TREASURY →](/agencies/dtreasury)
 - [🏦ALGORITHMIC RESERVE Twelve people in a room deciding how much your money is worth. On my planet, we call that a hostage situation. LEARN MORE →](/agencies/dtreasury/dfed)
 - [🧾AUTOMATED REVENUE SERVICE Six lines of computer code. That's all it took. LEARN MORE →](/agencies/dtreasury/dirs)
@@ -313,13 +318,13 @@
 - [ALL AGENCIES →](/agencies)
 ### THE ARMORY
 - Your toolkit for fixing the mess described above. Browse. Equip. Try not to break anything important.
-- [🏆PRIZE Rewards for measured outreach that gets more people to answer the Global Survey to End War and Disease. SEE THE PRIZE →](/prize)
+- [🏆EARTH OPTIMIZATION PRIZE Put money in a pool. Recruit people to vote on the 1% Treaty. If humanity gets healthier and richer by 2040, point holders split the pool. SEE THE PRIZE →](/prize)
 - [📊HUMANITY'S SCOREBOARD The governments and politicians spending the most on weapons instead of medicine, plus the humans collecting signatures to stop them. VIEW SCOREBOARD →](/scoreboard)
-- [🏛️ALIGNMENT Find out which politicians accidentally agree with you. Spoiler: fewer than you'd hope. CHECK ALIGNMENT →](/agencies/dfec/alignment)
+- [🏛️POLITICIAN ALIGNMENT Find out which politicians accidentally agree with you. Spoiler: fewer than you'd hope. CHECK ALIGNMENT →](/agencies/dfec/alignment)
 - [📡TRANSMIT Tell me what you ate, how you slept, and whether your meat is functioning. Thirty seconds. Your species spends longer choosing a sandwich. START TRACKING →](/transmit)
 - [💀GOVERNMENT REPORT CARDS Every government ranked by how many of its citizens it keeps alive versus how many it spends money on killing. The data they hope you never see. SEE REPORT CARDS →](/governments)
 - [🤝INCENTIVE ALIGNMENT BONDS Learn about aligning politicians with humanity. Projected 272%/year returns if treaty passes. Lobbying, but it cures diseases instead of causing them. LEARN MORE →](/iab)
-- [🎬DEMO A guided tour by an alien who's been running a planet for 4,237 years. She has notes. WATCH DEMO →](/demo)
+- [🎬WISHONIA DEMO A guided tour by an alien who's been running a planet for 4,237 years. She has notes. WATCH DEMO →](/demo)
 - [FULL ARMORY →](/tools)
 ### THE CLOCK IS RUNNING
 - Your Earth Optimization Points pay out if enough people play. Worth nothing if they don't.

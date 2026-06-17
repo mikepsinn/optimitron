@@ -175,16 +175,32 @@ async function extractPage(
   metadata: CopyPreviewMetadata;
   redirectedFromStatus: number | null;
 }> {
-  // Two failure modes recur on this DB-shared / Next-streaming setup:
+  // Three failure modes recur on this DB-shared / Next-streaming setup:
   //  1. The route hits a transient 404 (dev-server compile mid-flight,
   //     Neon DB blip, or other race) and we capture "PAGE NOT FOUND".
   //  2. domcontentloaded fires before <head> meta tags hydrate, so the
   //     metadata extraction returns null for every field.
-  // Retry once with a longer settle when either symptom shows up.
-  const tryExtract = async (settleMs: number) => {
+  //  3. Heavy pages (large datasets, many DB queries) get ERR_CONNECTION_RESET,
+  //     ERR_ABORTED, or never reach networkidle (continuous background polling).
+  //     Strategy: retry connection errors after a pause; on final retry fall back
+  //     to "load" so we capture rendered content even if requests keep running.
+  const isRetryableNavError = (err: unknown): boolean => {
+    const msg = err instanceof Error ? err.message : String(err);
+    return (
+      msg.includes("ERR_CONNECTION_RESET") ||
+      msg.includes("ERR_ABORTED") ||
+      msg.includes("ERR_EMPTY_RESPONSE") ||
+      msg.includes("net::ERR_") ||
+      msg.includes("Timeout")
+    );
+  };
+  const tryExtract = async (
+    settleMs: number,
+    waitUntil: "networkidle" | "load" = "networkidle",
+  ) => {
     const response = await page.goto(`${BASE}${route}`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
+      waitUntil,
+      timeout: 60000,
     });
     const status = response?.status() ?? null;
     const redirectedFromRequest = response?.request().redirectedFrom();
@@ -198,7 +214,24 @@ async function extractPage(
     await page.waitForTimeout(settleMs);
     return { status, redirectedFromStatus };
   };
-  const { redirectedFromStatus } = await tryExtract(400);
+  let navResult: Awaited<ReturnType<typeof tryExtract>>;
+  const NAV_RETRIES = 2;
+  for (let attempt = 0; ; attempt++) {
+    // Final retry: fall back to "load" for pages that never reach networkidle.
+    const waitUntil = attempt === NAV_RETRIES ? "load" : "networkidle";
+    try {
+      navResult = await tryExtract(attempt === NAV_RETRIES ? 2000 : 400, waitUntil);
+      break;
+    } catch (err) {
+      if (isRetryableNavError(err) && attempt < NAV_RETRIES) {
+        console.warn(`  retry ${attempt + 1}/${NAV_RETRIES} for ${route} (${err instanceof Error ? err.message.split("\n")[0] : err})`);
+        await page.waitForTimeout(3000);
+        continue;
+      }
+      throw err;
+    }
+  }
+  const { redirectedFromStatus } = navResult!;
   let metadata = await extractPageMetadata(page);
   let bodyText = await page
     .locator("body")
@@ -438,7 +471,7 @@ async function waitForGlobalLoaderToClear(
         return loadingText.every((text) => !bodyText.includes(text));
       },
       GLOBAL_LOADING_TEXT,
-      { timeout: 15_000 },
+      { timeout: 30_000 },
     )
     .catch(() => undefined);
 }

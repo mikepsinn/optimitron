@@ -617,7 +617,7 @@ export const transparencyLink: NavItem = {
 
 export const toolsLink: NavItem = {
   href: ROUTES.tools,
-  label: "Optimization Tools",
+  label: "Earth Optimization Tools",
   emoji: "🧰",
   description:
     "Free tools for voting, evidence, budgets, policy, outreach, and task tracking.",
@@ -657,7 +657,7 @@ export const governmentSizeLink: NavItem = {
   label: "Government Size",
   emoji: "📏",
   description:
-    "A size-and-composition check on the state itself. Not just how much it spends, but how the whole machine is proportioned.",
+    "The optimal size of government, estimated from the states that deliver the most per dollar. See whether yours is too big, too small, or spending on the wrong things.",
   tagline: "How large the state is, and how it is shaped",
   matchPrefixes: [ROUTES.governmentSize],
 
@@ -793,11 +793,12 @@ export const foundationsLink: NavItem = {
   label: "Foundations",
   emoji: "🏛️",
   description:
-    "The case for foundations to fund universal t-shirt distribution as the highest-EV charitable intervention available.",
-  tagline: "Why 3% of one year's foundation budget can end war and disease.",
+    "Six mechanisms to end war and disease, ranked by expected value per dollar against the GiveWell bed-net baseline. Find the highest-ROI allocation for your foundation's capital.",
+  tagline:
+    "Every mechanism to end war and disease, ranked against the GiveWell baseline.",
   copyPreview: true,
   screenshot: true,
-  cta: "See the case",
+  cta: "Compare the mechanisms",
 };
 
 export const fixAiLink: NavItem = {
@@ -1128,7 +1129,8 @@ export const jokeLink: NavItem = {
   href: ROUTES.joke,
   label: "The Joke",
   emoji: "😂",
-  description: "How to play the funniest joke in the universe.",
+  description:
+    'Write "I am retarded" on every shirt in a loved one\'s closet. Tuck in the math. The prank produces 3.5 quadrillion more laughs than every comedian in history — because shirts that start conversations end diseases.',
   cta: "Play the joke",
   authenticatedCopyPreview: true,
   copyPreview: true,
