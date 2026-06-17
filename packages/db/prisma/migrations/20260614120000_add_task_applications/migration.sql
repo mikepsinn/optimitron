@@ -167,6 +167,20 @@ CREATE TABLE "TaskManager" (
 );
 
 -- CreateTable
+CREATE TABLE "AgentTaskLease" (
+    "id" TEXT NOT NULL,
+    "taskId" TEXT NOT NULL,
+    "agentId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "lastHeartbeatAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "released" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "releasedAt" TIMESTAMP(3),
+
+    CONSTRAINT "AgentTaskLease_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "AgentExecutor" (
     "id" TEXT NOT NULL,
     "jurisdictionId" TEXT,
@@ -230,7 +244,6 @@ CREATE TABLE "TaskExecutionAttempt" (
     "taskApplicationId" TEXT,
     "taskClaimId" TEXT,
     "agentTaskLeaseId" TEXT,
-    "agentRunCostId" TEXT,
     "status" "TaskExecutionAttemptStatus" NOT NULL DEFAULT 'QUEUED',
     "estimatedCostMinorUnits" BIGINT,
     "estimatedCostCurrency" TEXT,
@@ -430,6 +443,18 @@ CREATE INDEX "TaskManager_createdByUserId_idx" ON "TaskManager"("createdByUserId
 CREATE INDEX "TaskManager_deletedAt_idx" ON "TaskManager"("deletedAt");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "AgentTaskLease_taskId_agentId_key" ON "AgentTaskLease"("taskId", "agentId");
+
+-- CreateIndex
+CREATE INDEX "AgentTaskLease_taskId_released_expiresAt_idx" ON "AgentTaskLease"("taskId", "released", "expiresAt");
+
+-- CreateIndex
+CREATE INDEX "AgentTaskLease_agentId_idx" ON "AgentTaskLease"("agentId");
+
+-- CreateIndex
+CREATE INDEX "AgentTaskLease_expiresAt_idx" ON "AgentTaskLease"("expiresAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "AgentExecutor_agentKey_key" ON "AgentExecutor"("agentKey");
 
 -- CreateIndex
@@ -517,9 +542,6 @@ CREATE INDEX "TaskExecutionAttempt_taskClaimId_idx" ON "TaskExecutionAttempt"("t
 CREATE INDEX "TaskExecutionAttempt_agentTaskLeaseId_idx" ON "TaskExecutionAttempt"("agentTaskLeaseId");
 
 -- CreateIndex
-CREATE INDEX "TaskExecutionAttempt_agentRunCostId_idx" ON "TaskExecutionAttempt"("agentRunCostId");
-
--- CreateIndex
 CREATE INDEX "TaskExecutionAttempt_startedAt_idx" ON "TaskExecutionAttempt"("startedAt");
 
 -- CreateIndex
@@ -595,6 +617,9 @@ ALTER TABLE "TaskManager" ADD CONSTRAINT "TaskManager_userId_fkey" FOREIGN KEY (
 ALTER TABLE "TaskManager" ADD CONSTRAINT "TaskManager_createdByUserId_fkey" FOREIGN KEY ("createdByUserId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "AgentTaskLease" ADD CONSTRAINT "AgentTaskLease_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "AgentExecutor" ADD CONSTRAINT "AgentExecutor_jurisdictionId_fkey" FOREIGN KEY ("jurisdictionId") REFERENCES "Jurisdiction"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -644,9 +669,6 @@ ALTER TABLE "TaskExecutionAttempt" ADD CONSTRAINT "TaskExecutionAttempt_taskClai
 
 -- AddForeignKey
 ALTER TABLE "TaskExecutionAttempt" ADD CONSTRAINT "TaskExecutionAttempt_agentTaskLeaseId_fkey" FOREIGN KEY ("agentTaskLeaseId") REFERENCES "AgentTaskLease"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TaskExecutionAttempt" ADD CONSTRAINT "TaskExecutionAttempt_agentRunCostId_fkey" FOREIGN KEY ("agentRunCostId") REFERENCES "AgentRunCost"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TaskMarketplaceListing" ADD CONSTRAINT "TaskMarketplaceListing_jurisdictionId_fkey" FOREIGN KEY ("jurisdictionId") REFERENCES "Jurisdiction"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -154,7 +154,7 @@ Example impact frame for a subjective but useful outreach task:
 - Agent coordination: `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`.
 - Comments and comment notifications: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
 - Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
-- Funding and claims: `getFundingStats`, `claimTask`, `completeTaskClaim`, `recordTaskActuals`.
+- Claims and actuals: `claimTask`, `completeTaskClaim`, `recordTaskActuals`.
 - Task triggers (data-driven blueprints): `createTaskTrigger`, `updateTaskTrigger`, `disableTaskTrigger`, `listTaskTriggers`, `getTaskTrigger`, `fireTaskTrigger`. See "Task Trigger Framework" below.
 
 Detailed tool schemas are exposed at `/api/mcp/tools`.

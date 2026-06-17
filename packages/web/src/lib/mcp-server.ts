@@ -13,7 +13,6 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import {
-  AgentRunStatus,
   ContentReportStatus,
   McpToolCallStatus,
   OrgStatus,
@@ -21,9 +20,11 @@ import {
   ReferendumKind,
   ReferendumStatus,
   TaskCategory,
+  TaskCandidateKind,
   TaskClaimPolicy,
   TaskDifficulty,
   TaskImpactFrameKey,
+  TaskExecutionAttemptStatus,
   TaskStatus,
   VotePosition,
 } from "@optimitron/db/enums";
@@ -597,6 +598,35 @@ function requiredString(value: unknown, fieldName: string) {
       `${fieldName} is required. Use searchTasks, listTasks, getMyQueue, or getNextAction to find a task id, then call this tool with {"${fieldName}":"<task-id>"}.`,
     )
   );
+}
+
+function parseAgentRunExecutionStatus(value: unknown) {
+  const raw = optionalString(value);
+  if (raw === null) return TaskExecutionAttemptStatus.COMPLETED;
+  switch (raw.toUpperCase()) {
+    case "RUNNING":
+      return TaskExecutionAttemptStatus.RUNNING;
+    case "FAILED":
+      return TaskExecutionAttemptStatus.FAILED;
+    case "PARTIAL":
+    case "COMPLETED":
+      return TaskExecutionAttemptStatus.COMPLETED;
+    default:
+      return null;
+  }
+}
+
+function dollarsToMinorUnits(value: unknown) {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+    return null;
+  }
+  return BigInt(Math.round(value * 100));
+}
+
+function positiveInteger(value: unknown) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0
+    ? value
+    : null;
 }
 
 function mergeTaskContextJson(input: {
@@ -4725,17 +4755,17 @@ const TASK_TOOL_DEFINITIONS = [
         costUsd: { type: "number", description: "Total cost in USD" },
         apiCalls: { type: "number", description: "Number of API calls" },
         taskId: { type: "string", description: "Task this run worked on" },
+        agentId: {
+          type: "string",
+          description: "Stable agent identifier, usually matching the lease agentId",
+        },
         status: {
           type: "string",
           enum: ["RUNNING", "COMPLETED", "FAILED", "PARTIAL"],
         },
         outputSummary: { type: "string", description: "What the run produced" },
-        depositId: {
-          type: "string",
-          description: "Deposit that funded this run",
-        },
       },
-      required: ["runId", "provider", "costUsd", "apiCalls"],
+      required: ["runId", "provider", "costUsd", "apiCalls", "taskId"],
     },
   },
   {
@@ -4784,12 +4814,6 @@ const TASK_TOOL_DEFINITIONS = [
       },
       required: ["taskId", "agentId"],
     },
-  },
-  {
-    name: "getFundingStats",
-    description:
-      "Get aggregate funding stats — total deposited, total spent, total agent runs, remaining budget.",
-    inputSchema: { type: "object" as const, properties: {} },
   },
   {
     name: "listReferendums",
@@ -8763,22 +8787,44 @@ export function createMcpServer(
           // ── logAgentRun ────────────────────────────────────────
           case "logAgentRun": {
             const prisma = await getPrisma();
-            const run = await prisma.agentRunCost.create({
+            const runId = optionalString(a.runId);
+            const provider = optionalString(a.provider);
+            const taskId = optionalString(a.taskId);
+            const apiCalls = positiveInteger(a.apiCalls);
+            const actualCostMinorUnits = dollarsToMinorUnits(a.costUsd);
+            const status = parseAgentRunExecutionStatus(a.status);
+            const outputSummary = optionalString(a.outputSummary);
+            if (!runId) return err("runId is required.");
+            if (!provider) return err("provider is required.");
+            if (!taskId) return err("taskId is required.");
+            if (apiCalls === null) {
+              return err("apiCalls must be a non-negative integer.");
+            }
+            if (actualCostMinorUnits === null) {
+              return err("costUsd must be a non-negative finite number.");
+            }
+            if (!status) {
+              return err("status must be RUNNING, COMPLETED, FAILED, or PARTIAL.");
+            }
+            const agentId = optionalString(a.agentId);
+            const attempt = await prisma.taskExecutionAttempt.create({
               data: {
-                runId: a.runId as string,
-                provider: a.provider as string,
-                costUsd: a.costUsd as number,
-                apiCalls: a.apiCalls as number,
-                taskId: (a.taskId as string) ?? null,
-                status:
-                  (typeof a.status === "string"
-                    ? AgentRunStatus[a.status as keyof typeof AgentRunStatus]
-                    : null) ?? AgentRunStatus.COMPLETED,
-                outputSummary: (a.outputSummary as string) ?? null,
-                depositId: (a.depositId as string) ?? null,
+                taskId,
+                executorKind: TaskCandidateKind.AGENT,
+                executorKey: agentId ?? `${provider}:${runId}`,
+                status,
+                actualCostMinorUnits,
+                actualCostCurrency: "usd",
+                outputSummary,
+                metadata: toInputJsonValue({
+                  agentId: agentId ?? null,
+                  apiCalls,
+                  provider,
+                  runId,
+                }),
               },
             });
-            return ok({ id: run.id, runId: run.runId });
+            return ok({ id: attempt.id, runId });
           }
 
           // ── acquireLease ───────────────────────────────────────
@@ -8817,32 +8863,6 @@ export function createMcpServer(
               a.agentId as string,
             );
             return ok({ leaseId: result.id, released: true });
-          }
-
-          // ── getFundingStats ────────────────────────────────────
-          case "getFundingStats": {
-            const prisma = await getPrisma();
-            const [deposits, runs] = await Promise.all([
-              prisma.agentComputeDeposit.aggregate({
-                _sum: { amountUsd: true, spentUsd: true },
-                _count: true,
-                where: { deletedAt: null },
-              }),
-              prisma.agentRunCost.aggregate({
-                _sum: { costUsd: true, apiCalls: true },
-                _count: true,
-              }),
-            ]);
-            return ok({
-              totalDepositedUsd: deposits._sum.amountUsd ?? 0,
-              totalSpentUsd: deposits._sum.spentUsd ?? 0,
-              remainingBudgetUsd:
-                (deposits._sum.amountUsd ?? 0) - (deposits._sum.spentUsd ?? 0),
-              depositCount: deposits._count,
-              totalRunCostUsd: runs._sum.costUsd ?? 0,
-              totalApiCalls: runs._sum.apiCalls ?? 0,
-              runCount: runs._count,
-            });
           }
 
           // ── Referendum tools ──────────────────────────────────

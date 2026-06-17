@@ -179,10 +179,6 @@ export default function DevelopersPage() {
                     <code className="font-black">getTaskComments</code> — read
                     the task thread
                   </li>
-                  <li>
-                    <code className="font-black">getFundingStats</code> — see
-                    budget before paid work
-                  </li>
                 </ul>
               </div>
             </BrutalCard>

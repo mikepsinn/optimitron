@@ -1829,7 +1829,6 @@ model User {
   taskComments                       TaskComment[]                    @relation("TaskCommentAuthor")
   moderatedTaskComments              TaskComment[]                    @relation("TaskCommentModerator")
   taskCommentVotes                   TaskCommentVote[]                @relation("TaskCommentVoter")
-  agentComputeDeposits               AgentComputeDeposit[]            @relation("UserAgentComputeDeposits")
   oauthAuthCodes                     OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
   oauthGrants                        OAuthGrant[]                     @relation("UserOAuthGrants")
   mcpToolCallAudits                  McpToolCallAudit[]               @relation("UserMcpToolCallAudits")
@@ -5768,7 +5767,6 @@ model Task {
   sourceArtifacts           TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
   outgoingEdges             TaskEdge[]                  @relation("TaskOutgoingEdges")
   incomingEdges             TaskEdge[]                  @relation("TaskIncomingEdges")
-  agentRunCosts             AgentRunCost[]              @relation("TaskAgentRunCosts")
   agentLeases               AgentTaskLease[]            @relation("TaskAgentLeases")
   shareAttempts             ShareAttempt[]              @relation("TaskShareAttempts")
   referralInvitations       ReferralInvitation[]        @relation("TaskReferralInvitations")
@@ -6048,9 +6046,6 @@ model TaskExecutionAttempt {
   /// Agent lease that protected this attempt, when applicable
   agentTaskLeaseId String?
 
-  /// Cost record for this attempt, when produced by an agent run
-  agentRunCostId String?
-
   /// Execution lifecycle state
   status TaskExecutionAttemptStatus @default(QUEUED)
 
@@ -6113,7 +6108,6 @@ model TaskExecutionAttempt {
   taskApplication      TaskApplication?    @relation("TaskApplicationExecutionAttempts", fields: [taskApplicationId], references: [id], onDelete: SetNull)
   taskClaim            TaskClaim?          @relation("TaskClaimExecutionAttempts", fields: [taskClaimId], references: [id], onDelete: SetNull)
   agentTaskLease       AgentTaskLease?     @relation("AgentTaskLeaseExecutionAttempts", fields: [agentTaskLeaseId], references: [id], onDelete: SetNull)
-  agentRunCost         AgentRunCost?       @relation("AgentRunCostExecutionAttempts", fields: [agentRunCostId], references: [id], onDelete: SetNull)
 
   @@index([jurisdictionId, status])
   @@index([taskId, status])
@@ -6127,7 +6121,6 @@ model TaskExecutionAttempt {
   @@index([taskApplicationId])
   @@index([taskClaimId])
   @@index([agentTaskLeaseId])
-  @@index([agentRunCostId])
   @@index([startedAt])
   @@index([completedAt])
   @@index([deletedAt])
@@ -9364,112 +9357,6 @@ model CommerceEntitlement {
   @@index([deletedAt])
 }
 
-// ────────────────────────────────────────────────────────────
-// Agent Compute Funding
-// ────────────────────────────────────────────────────────────
-
-enum AgentComputeDepositSource {
-  STRIPE
-  CRYPTO
-  MANUAL
-}
-
-enum AgentRunStatus {
-  RUNNING
-  COMPLETED
-  FAILED
-  PARTIAL
-}
-
-/// A deposit that funds autonomous agent compute
-model AgentComputeDeposit {
-  /// Unique identifier
-  id String @id @default(cuid())
-
-  /// Amount deposited in USD
-  amountUsd Float
-
-  /// Where the deposit came from
-  source AgentComputeDepositSource
-
-  /// External reference (Stripe payment ID, tx hash, etc.)
-  externalRef String?
-
-  /// Optional memo from depositor
-  memo String?
-
-  /// How much of this deposit has been spent on agent runs
-  spentUsd Float @default(0)
-
-  /// The user who made the deposit (null for anonymous crypto deposits)
-  depositorUserId String?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp
-  deletedAt DateTime?
-
-  // -- Relations --
-  depositorUser User?          @relation("UserAgentComputeDeposits", fields: [depositorUserId], references: [id], onDelete: SetNull)
-  agentRunCosts AgentRunCost[] @relation("DepositAgentRunCosts")
-
-  @@index([depositorUserId])
-  @@index([source])
-  @@index([createdAt])
-  @@index([deletedAt])
-}
-
-/// Cost record for a single agent run, linking spend to impact
-model AgentRunCost {
-  /// Unique identifier
-  id String @id @default(cuid())
-
-  /// Agent run identifier (matches AgentRunLog.runId)
-  runId String
-
-  /// AI provider used (gemini, anthropic, openai, etc.)
-  provider String
-
-  /// Total cost in USD for this run
-  costUsd Float
-
-  /// Number of API calls made
-  apiCalls Int
-
-  /// Run status
-  status AgentRunStatus @default(RUNNING)
-
-  /// Optional link to the task this run worked on
-  taskId String?
-
-  /// Optional link to the deposit that funded this run
-  depositId String?
-
-  /// Summary of what the run produced
-  outputSummary String?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  // -- Relations --
-  task              Task?                  @relation("TaskAgentRunCosts", fields: [taskId], references: [id], onDelete: SetNull)
-  deposit           AgentComputeDeposit?   @relation("DepositAgentRunCosts", fields: [depositId], references: [id], onDelete: SetNull)
-  executionAttempts TaskExecutionAttempt[] @relation("AgentRunCostExecutionAttempts")
-
-  @@index([runId])
-  @@index([taskId])
-  @@index([depositId])
-  @@index([provider])
-  @@index([createdAt])
-}
-
 /// Short-lived agent lease on a task. Prevents multiple agents from working the
 /// same task simultaneously. Separate from TaskClaim (which tracks human work
 /// completion semantics).
@@ -9650,7 +9537,7 @@ model McpToolCallAudit {
   /// Caller-supplied autonomous agent identifier
   agentId String?
 
-  /// Caller-supplied run identifier, usually matching AgentRunCost.runId
+  /// Caller-supplied run identifier for correlating external agent logs
   runId String?
 
   /// MCP tool name

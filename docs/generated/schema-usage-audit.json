@@ -1,11 +1,11 @@
 {
   "schemaPath": "packages/db/prisma/schema.prisma",
-  "modelCount": 166,
-  "enumCount": 134,
+  "modelCount": 164,
+  "enumCount": 132,
   "models": [
     {
       "name": "Account",
-      "schemaLine": 1877,
+      "schemaLine": 1876,
       "buckets": {
         "schema": {
           "files": 1,
@@ -101,7 +101,7 @@
     },
     {
       "name": "Activity",
-      "schemaLine": 5276,
+      "schemaLine": 5275,
       "buckets": {
         "schema": {
           "files": 1,
@@ -196,104 +196,8 @@
       "classification": "runtime-live"
     },
     {
-      "name": "AgentComputeDeposit",
-      "schemaLine": 9385,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 3
-        },
-        "migrations": {
-          "files": 0,
-          "matches": 0
-        },
-        "generated": {
-          "files": 9,
-          "matches": 194
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 1
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 1
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 5
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/AgentComputeDeposit.ts",
-          "matches": 157
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 23
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/client.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
-      "classification": "runtime-live"
-    },
-    {
       "name": "AgentExecutor",
-      "schemaLine": 5862,
+      "schemaLine": 5860,
       "buckets": {
         "schema": {
           "files": 1,
@@ -390,104 +294,8 @@
       "classification": "generated-only"
     },
     {
-      "name": "AgentRunCost",
-      "schemaLine": 9427,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 5
-        },
-        "migrations": {
-          "files": 2,
-          "matches": 2
-        },
-        "generated": {
-          "files": 11,
-          "matches": 215
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 2
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 2
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 4
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 4
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 5
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260509173000_rename_optimize_earth_root_task/migration.sql",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/AgentRunCost.ts",
-          "matches": 172
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 26
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 2,
-      "classification": "runtime-live"
-    },
-    {
       "name": "AgentTaskLease",
-      "schemaLine": 9476,
+      "schemaLine": 9363,
       "buckets": {
         "schema": {
           "files": 1,
@@ -495,7 +303,7 @@
         },
         "migrations": {
           "files": 2,
-          "matches": 4
+          "matches": 10
         },
         "generated": {
           "files": 9,
@@ -556,12 +364,12 @@
           "matches": 3
         },
         {
-          "path": "packages/db/prisma/migrations/20260509173000_rename_optimize_earth_root_task/migration.sql",
-          "matches": 3
+          "path": "packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql",
+          "matches": 7
         },
         {
-          "path": "packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql",
-          "matches": 1
+          "path": "packages/db/prisma/migrations/20260509173000_rename_optimize_earth_root_task/migration.sql",
+          "matches": 3
         },
         {
           "path": "packages/db/src/generated/prisma/models/AgentTaskLease.ts",
@@ -583,7 +391,7 @@
     },
     {
       "name": "AggregateVariableRelationship",
-      "schemaLine": 3115,
+      "schemaLine": 3114,
       "buckets": {
         "schema": {
           "files": 1,
@@ -679,7 +487,7 @@
     },
     {
       "name": "AggregationRun",
-      "schemaLine": 4063,
+      "schemaLine": 4062,
       "buckets": {
         "schema": {
           "files": 1,
@@ -775,7 +583,7 @@
     },
     {
       "name": "AlignmentScore",
-      "schemaLine": 4192,
+      "schemaLine": 4191,
       "buckets": {
         "schema": {
           "files": 1,
@@ -871,7 +679,7 @@
     },
     {
       "name": "Badge",
-      "schemaLine": 8162,
+      "schemaLine": 8155,
       "buckets": {
         "schema": {
           "files": 1,
@@ -967,7 +775,7 @@
     },
     {
       "name": "CitizenBillVote",
-      "schemaLine": 4281,
+      "schemaLine": 4280,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1065,7 +873,7 @@
     },
     {
       "name": "CommerceEntitlement",
-      "schemaLine": 9327,
+      "schemaLine": 9320,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1163,7 +971,7 @@
     },
     {
       "name": "CommerceFulfillment",
-      "schemaLine": 9284,
+      "schemaLine": 9277,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1259,7 +1067,7 @@
     },
     {
       "name": "CommerceFulfillmentMapping",
-      "schemaLine": 9147,
+      "schemaLine": 9140,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1355,7 +1163,7 @@
     },
     {
       "name": "CommerceOffer",
-      "schemaLine": 9052,
+      "schemaLine": 9045,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1451,7 +1259,7 @@
     },
     {
       "name": "CommerceOfferVariant",
-      "schemaLine": 9098,
+      "schemaLine": 9091,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1547,7 +1355,7 @@
     },
     {
       "name": "CommerceOrder",
-      "schemaLine": 9173,
+      "schemaLine": 9166,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1643,7 +1451,7 @@
     },
     {
       "name": "CommerceOrderItem",
-      "schemaLine": 9237,
+      "schemaLine": 9230,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1837,7 +1645,7 @@
     },
     {
       "name": "ContentReport",
-      "schemaLine": 9702,
+      "schemaLine": 9589,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1933,7 +1741,7 @@
     },
     {
       "name": "CourtCase",
-      "schemaLine": 4632,
+      "schemaLine": 4631,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2029,7 +1837,7 @@
     },
     {
       "name": "CourtCaseClaim",
-      "schemaLine": 4775,
+      "schemaLine": 4774,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2125,7 +1933,7 @@
     },
     {
       "name": "CourtCaseEvidence",
-      "schemaLine": 4931,
+      "schemaLine": 4930,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2221,7 +2029,7 @@
     },
     {
       "name": "CourtCaseHarm",
-      "schemaLine": 4840,
+      "schemaLine": 4839,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2317,7 +2125,7 @@
     },
     {
       "name": "CourtCaseParty",
-      "schemaLine": 4704,
+      "schemaLine": 4703,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2413,7 +2221,7 @@
     },
     {
       "name": "CourtCaseRemedy",
-      "schemaLine": 5029,
+      "schemaLine": 5028,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2509,7 +2317,7 @@
     },
     {
       "name": "DatingBlock",
-      "schemaLine": 8928,
+      "schemaLine": 8921,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2605,7 +2413,7 @@
     },
     {
       "name": "DatingConversation",
-      "schemaLine": 8834,
+      "schemaLine": 8827,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2701,7 +2509,7 @@
     },
     {
       "name": "DatingDatePlan",
-      "schemaLine": 8881,
+      "schemaLine": 8874,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2797,7 +2605,7 @@
     },
     {
       "name": "DatingInteraction",
-      "schemaLine": 8782,
+      "schemaLine": 8775,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2893,7 +2701,7 @@
     },
     {
       "name": "DatingMatch",
-      "schemaLine": 8806,
+      "schemaLine": 8799,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2989,7 +2797,7 @@
     },
     {
       "name": "DatingMatchScore",
-      "schemaLine": 8749,
+      "schemaLine": 8742,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3087,7 +2895,7 @@
     },
     {
       "name": "DatingMessage",
-      "schemaLine": 8853,
+      "schemaLine": 8846,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3183,7 +2991,7 @@
     },
     {
       "name": "DatingPreference",
-      "schemaLine": 8726,
+      "schemaLine": 8719,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3281,7 +3089,7 @@
     },
     {
       "name": "DatingProfile",
-      "schemaLine": 8530,
+      "schemaLine": 8523,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3377,7 +3185,7 @@
     },
     {
       "name": "DatingProfilePhoto",
-      "schemaLine": 8593,
+      "schemaLine": 8586,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3473,7 +3281,7 @@
     },
     {
       "name": "DatingPrompt",
-      "schemaLine": 8624,
+      "schemaLine": 8617,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3569,7 +3377,7 @@
     },
     {
       "name": "DatingPromptAnswer",
-      "schemaLine": 8645,
+      "schemaLine": 8638,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3667,7 +3475,7 @@
     },
     {
       "name": "DatingQuestion",
-      "schemaLine": 8670,
+      "schemaLine": 8663,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3763,7 +3571,7 @@
     },
     {
       "name": "DatingQuestionAnswer",
-      "schemaLine": 8697,
+      "schemaLine": 8690,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3859,7 +3667,7 @@
     },
     {
       "name": "DatingSafetyReport",
-      "schemaLine": 8948,
+      "schemaLine": 8941,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3955,7 +3763,7 @@
     },
     {
       "name": "EmailLog",
-      "schemaLine": 8265,
+      "schemaLine": 8258,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4051,7 +3859,7 @@
     },
     {
       "name": "GlobalVariable",
-      "schemaLine": 2182,
+      "schemaLine": 2181,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4147,7 +3955,7 @@
     },
     {
       "name": "GlobalVariableExternalCode",
-      "schemaLine": 2340,
+      "schemaLine": 2339,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4243,7 +4051,7 @@
     },
     {
       "name": "IntegrationConnection",
-      "schemaLine": 3554,
+      "schemaLine": 3553,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4341,7 +4149,7 @@
     },
     {
       "name": "IntegrationProvider",
-      "schemaLine": 3492,
+      "schemaLine": 3491,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4439,7 +4247,7 @@
     },
     {
       "name": "IntegrationSyncLog",
-      "schemaLine": 3613,
+      "schemaLine": 3612,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4633,7 +4441,7 @@
     },
     {
       "name": "InterventionExperience",
-      "schemaLine": 2649,
+      "schemaLine": 2648,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4729,7 +4537,7 @@
     },
     {
       "name": "InterventionExperienceOutcome",
-      "schemaLine": 2713,
+      "schemaLine": 2712,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4825,7 +4633,7 @@
     },
     {
       "name": "InterventionExperienceSideEffect",
-      "schemaLine": 2762,
+      "schemaLine": 2761,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4921,7 +4729,7 @@
     },
     {
       "name": "InterventionRankingRun",
-      "schemaLine": 3383,
+      "schemaLine": 3382,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5017,7 +4825,7 @@
     },
     {
       "name": "Jurisdiction",
-      "schemaLine": 3656,
+      "schemaLine": 3655,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5113,7 +4921,7 @@
     },
     {
       "name": "McpToolCallAudit",
-      "schemaLine": 9637,
+      "schemaLine": 9524,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5209,7 +5017,7 @@
     },
     {
       "name": "Measurement",
-      "schemaLine": 2553,
+      "schemaLine": 2552,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5305,7 +5113,7 @@
     },
     {
       "name": "NOf1Variable",
-      "schemaLine": 2446,
+      "schemaLine": 2445,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5401,7 +5209,7 @@
     },
     {
       "name": "NOf1VariableRelationship",
-      "schemaLine": 2925,
+      "schemaLine": 2924,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5497,7 +5305,7 @@
     },
     {
       "name": "Notification",
-      "schemaLine": 5312,
+      "schemaLine": 5311,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5593,7 +5401,7 @@
     },
     {
       "name": "NotificationPreference",
-      "schemaLine": 5349,
+      "schemaLine": 5348,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5691,7 +5499,7 @@
     },
     {
       "name": "OAuthAuthCode",
-      "schemaLine": 9554,
+      "schemaLine": 9441,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5787,7 +5595,7 @@
     },
     {
       "name": "OAuthClient",
-      "schemaLine": 9518,
+      "schemaLine": 9405,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5883,7 +5691,7 @@
     },
     {
       "name": "OAuthGrant",
-      "schemaLine": 9596,
+      "schemaLine": 9483,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5979,7 +5787,7 @@
     },
     {
       "name": "Organization",
-      "schemaLine": 5377,
+      "schemaLine": 5376,
       "buckets": {
         "schema": {
           "files": 1,
@@ -6075,7 +5883,7 @@
     },
     {
       "name": "OrganizationMember",
-      "schemaLine": 5459,
+      "schemaLine": 5458,
       "buckets": {
         "schema": {
           "files": 1,
@@ -6171,7 +5979,7 @@
     },
     {
       "name": "OrganizationReferendumPosition",
-      "schemaLine": 5487,
+      "schemaLine": 5486,
       "buckets": {
         "schema": {
           "files": 1,
@@ -6555,7 +6363,7 @@
     },
     {
       "name": "PersonhoodVerification",
-      "schemaLine": 1995,
+      "schemaLine": 1994,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7131,7 +6939,7 @@
     },
     {
       "name": "PointMint",
-      "schemaLine": 5125,
+      "schemaLine": 5124,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7227,7 +7035,7 @@
     },
     {
       "name": "Politician",
-      "schemaLine": 4105,
+      "schemaLine": 4104,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7323,7 +7131,7 @@
     },
     {
       "name": "PoliticianVote",
-      "schemaLine": 4152,
+      "schemaLine": 4151,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7419,7 +7227,7 @@
     },
     {
       "name": "PreferenceWeight",
-      "schemaLine": 4021,
+      "schemaLine": 4020,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7515,7 +7323,7 @@
     },
     {
       "name": "PrizeTreasuryDeposit",
-      "schemaLine": 5174,
+      "schemaLine": 5173,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7611,7 +7419,7 @@
     },
     {
       "name": "PublicGoodsRecipient",
-      "schemaLine": 5213,
+      "schemaLine": 5212,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7709,7 +7517,7 @@
     },
     {
       "name": "QuestionResponse",
-      "schemaLine": 8122,
+      "schemaLine": 8115,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7807,7 +7615,7 @@
     },
     {
       "name": "RankedIntervention",
-      "schemaLine": 3428,
+      "schemaLine": 3427,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7903,7 +7711,7 @@
     },
     {
       "name": "ReasoningAssignmentRule",
-      "schemaLine": 9890,
+      "schemaLine": 9777,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7999,7 +7807,7 @@
     },
     {
       "name": "ReasoningBanditPolicyState",
-      "schemaLine": 9913,
+      "schemaLine": 9800,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8095,7 +7903,7 @@
     },
     {
       "name": "ReasoningBlacklistRule",
-      "schemaLine": 10093,
+      "schemaLine": 9980,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8191,7 +7999,7 @@
     },
     {
       "name": "ReasoningBundleVariant",
-      "schemaLine": 10272,
+      "schemaLine": 10159,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8287,7 +8095,7 @@
     },
     {
       "name": "ReasoningChainValueGuardSnapshot",
-      "schemaLine": 10127,
+      "schemaLine": 10014,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8383,7 +8191,7 @@
     },
     {
       "name": "ReasoningDistributionPolicyState",
-      "schemaLine": 10201,
+      "schemaLine": 10088,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8479,7 +8287,7 @@
     },
     {
       "name": "ReasoningDistributionSliceSnapshot",
-      "schemaLine": 10220,
+      "schemaLine": 10107,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8577,7 +8385,7 @@
     },
     {
       "name": "ReasoningDistributionTarget",
-      "schemaLine": 10254,
+      "schemaLine": 10141,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8673,7 +8481,7 @@
     },
     {
       "name": "ReasoningDiversitySnapshot",
-      "schemaLine": 10171,
+      "schemaLine": 10058,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8769,7 +8577,7 @@
     },
     {
       "name": "ReasoningFraudFinding",
-      "schemaLine": 10031,
+      "schemaLine": 9918,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8865,7 +8673,7 @@
     },
     {
       "name": "ReasoningFraudPattern",
-      "schemaLine": 10017,
+      "schemaLine": 9904,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8961,7 +8769,7 @@
     },
     {
       "name": "ReasoningGenerationRequest",
-      "schemaLine": 10058,
+      "schemaLine": 9945,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9057,7 +8865,7 @@
     },
     {
       "name": "ReasoningHoldoutComparison",
-      "schemaLine": 9995,
+      "schemaLine": 9882,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9153,7 +8961,7 @@
     },
     {
       "name": "ReasoningLocaleConfig",
-      "schemaLine": 10185,
+      "schemaLine": 10072,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9249,7 +9057,7 @@
     },
     {
       "name": "ReasoningOrganizationDomain",
-      "schemaLine": 10235,
+      "schemaLine": 10122,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9345,7 +9153,7 @@
     },
     {
       "name": "ReasoningOrgFork",
-      "schemaLine": 10048,
+      "schemaLine": 9935,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9441,7 +9249,7 @@
     },
     {
       "name": "ReasoningOutcomeRecord",
-      "schemaLine": 9961,
+      "schemaLine": 9848,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9537,7 +9345,7 @@
     },
     {
       "name": "ReasoningPromotionDecision",
-      "schemaLine": 10074,
+      "schemaLine": 9961,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9633,7 +9441,7 @@
     },
     {
       "name": "ReasoningRGuardSnapshot",
-      "schemaLine": 10117,
+      "schemaLine": 10004,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9729,7 +9537,7 @@
     },
     {
       "name": "ReasoningShadowEvaluation",
-      "schemaLine": 10150,
+      "schemaLine": 10037,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9825,7 +9633,7 @@
     },
     {
       "name": "ReasoningSystemState",
-      "schemaLine": 10138,
+      "schemaLine": 10025,
       "buckets": {
         "schema": {
           "files": 1,
@@ -9921,7 +9729,7 @@
     },
     {
       "name": "ReasoningTopologyVariant",
-      "schemaLine": 10106,
+      "schemaLine": 9993,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10019,7 +9827,7 @@
     },
     {
       "name": "ReasoningVariantArm",
-      "schemaLine": 9853,
+      "schemaLine": 9740,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10115,7 +9923,7 @@
     },
     {
       "name": "ReasoningVariantExposure",
-      "schemaLine": 9927,
+      "schemaLine": 9814,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10211,7 +10019,7 @@
     },
     {
       "name": "ReasoningVariantSet",
-      "schemaLine": 9831,
+      "schemaLine": 9718,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10307,7 +10115,7 @@
     },
     {
       "name": "Referendum",
-      "schemaLine": 4495,
+      "schemaLine": 4494,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10403,7 +10211,7 @@
     },
     {
       "name": "ReferendumVote",
-      "schemaLine": 4564,
+      "schemaLine": 4563,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10501,7 +10309,7 @@
     },
     {
       "name": "Referral",
-      "schemaLine": 3772,
+      "schemaLine": 3771,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10597,7 +10405,7 @@
     },
     {
       "name": "ReferralClick",
-      "schemaLine": 3811,
+      "schemaLine": 3810,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10693,7 +10501,7 @@
     },
     {
       "name": "ReferralInvitation",
-      "schemaLine": 3853,
+      "schemaLine": 3852,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10789,7 +10597,7 @@
     },
     {
       "name": "Session",
-      "schemaLine": 1939,
+      "schemaLine": 1938,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10885,7 +10693,7 @@
     },
     {
       "name": "ShareAttempt",
-      "schemaLine": 8344,
+      "schemaLine": 8337,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10981,7 +10789,7 @@
     },
     {
       "name": "SocialAccount",
-      "schemaLine": 8220,
+      "schemaLine": 8213,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11077,7 +10885,7 @@
     },
     {
       "name": "SourceArtifact",
-      "schemaLine": 6704,
+      "schemaLine": 6697,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11173,7 +10981,7 @@
     },
     {
       "name": "Subject",
-      "schemaLine": 2385,
+      "schemaLine": 2384,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11269,7 +11077,7 @@
     },
     {
       "name": "Survey",
-      "schemaLine": 7955,
+      "schemaLine": 7948,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11365,7 +11173,7 @@
     },
     {
       "name": "SurveyQuestion",
-      "schemaLine": 8037,
+      "schemaLine": 8030,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11463,7 +11271,7 @@
     },
     {
       "name": "SurveyResponse",
-      "schemaLine": 8084,
+      "schemaLine": 8077,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11561,7 +11369,7 @@
     },
     {
       "name": "SurveySection",
-      "schemaLine": 7999,
+      "schemaLine": 7992,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11659,19 +11467,19 @@
     },
     {
       "name": "Task",
-      "schemaLine": 5541,
+      "schemaLine": 5540,
       "buckets": {
         "schema": {
           "files": 1,
-          "matches": 54
+          "matches": 53
         },
         "migrations": {
           "files": 18,
-          "matches": 115
+          "matches": 116
         },
         "generated": {
-          "files": 32,
-          "matches": 817
+          "files": 31,
+          "matches": 807
         },
         "zod": {
           "files": 1,
@@ -11755,7 +11563,7 @@
     },
     {
       "name": "TaskApplication",
-      "schemaLine": 6483,
+      "schemaLine": 6476,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11851,7 +11659,7 @@
     },
     {
       "name": "TaskApplicationEvent",
-      "schemaLine": 6591,
+      "schemaLine": 6584,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11947,7 +11755,7 @@
     },
     {
       "name": "TaskCandidateMatch",
-      "schemaLine": 5929,
+      "schemaLine": 5927,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12045,7 +11853,7 @@
     },
     {
       "name": "TaskClaim",
-      "schemaLine": 6644,
+      "schemaLine": 6637,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12141,7 +11949,7 @@
     },
     {
       "name": "TaskComment",
-      "schemaLine": 6769,
+      "schemaLine": 6762,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12237,7 +12045,7 @@
     },
     {
       "name": "TaskCommentVote",
-      "schemaLine": 6888,
+      "schemaLine": 6881,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12333,7 +12141,7 @@
     },
     {
       "name": "TaskCommunication",
-      "schemaLine": 7465,
+      "schemaLine": 7458,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12429,7 +12237,7 @@
     },
     {
       "name": "TaskCommunicationEndpoint",
-      "schemaLine": 7296,
+      "schemaLine": 7289,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12525,7 +12333,7 @@
     },
     {
       "name": "TaskCommunicationSpawnSpec",
-      "schemaLine": 7828,
+      "schemaLine": 7821,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12621,7 +12429,7 @@
     },
     {
       "name": "TaskCommunicationTemplate",
-      "schemaLine": 7355,
+      "schemaLine": 7348,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12719,7 +12527,7 @@
     },
     {
       "name": "TaskCommunicationVariant",
-      "schemaLine": 7398,
+      "schemaLine": 7391,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12817,7 +12625,7 @@
     },
     {
       "name": "TaskDistributionAttempt",
-      "schemaLine": 6265,
+      "schemaLine": 6258,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12915,7 +12723,7 @@
     },
     {
       "name": "TaskDistributionTarget",
-      "schemaLine": 6211,
+      "schemaLine": 6204,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13013,7 +12821,7 @@
     },
     {
       "name": "TaskEdge",
-      "schemaLine": 6953,
+      "schemaLine": 6946,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13109,31 +12917,31 @@
     },
     {
       "name": "TaskExecutionAttempt",
-      "schemaLine": 6011,
+      "schemaLine": 6009,
       "buckets": {
         "schema": {
           "files": 1,
-          "matches": 12
+          "matches": 11
         },
         "migrations": {
           "files": 1,
-          "matches": 28
+          "matches": 26
         },
         "generated": {
-          "files": 18,
-          "matches": 419
+          "files": 17,
+          "matches": 400
         },
         "zod": {
           "files": 1,
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "runtime-libraries": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "api-routes": {
           "files": 0,
@@ -13166,20 +12974,24 @@
       },
       "keyFiles": [
         {
+          "path": "packages/web/src/lib/mcp-server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/db/prisma/schema.prisma",
-          "matches": 12
+          "matches": 11
         },
         {
           "path": "packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql",
-          "matches": 28
+          "matches": 26
         },
         {
           "path": "packages/db/src/generated/prisma/models/TaskExecutionAttempt.ts",
-          "matches": 346
+          "matches": 331
         },
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 41
+          "matches": 39
         },
         {
           "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
@@ -13192,22 +13004,16 @@
         {
           "path": "packages/db/src/generated/prisma/client.ts",
           "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespaceBrowser.ts",
-          "matches": 2
         }
       ],
-      "notes": [
-        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
-      ],
-      "directPrismaFiles": 0,
-      "directPrismaMatches": 0,
-      "classification": "generated-only"
+      "notes": [],
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 1,
+      "classification": "runtime-live"
     },
     {
       "name": "TaskFundingEvent",
-      "schemaLine": 6459,
+      "schemaLine": 6452,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13303,7 +13109,7 @@
     },
     {
       "name": "TaskFundingPledge",
-      "schemaLine": 6409,
+      "schemaLine": 6402,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13399,7 +13205,7 @@
     },
     {
       "name": "TaskFundingTarget",
-      "schemaLine": 6381,
+      "schemaLine": 6374,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13495,7 +13301,7 @@
     },
     {
       "name": "TaskImpactEstimateSet",
-      "schemaLine": 7013,
+      "schemaLine": 7006,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13591,7 +13397,7 @@
     },
     {
       "name": "TaskImpactFrameEstimate",
-      "schemaLine": 7070,
+      "schemaLine": 7063,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13687,7 +13493,7 @@
     },
     {
       "name": "TaskImpactMetric",
-      "schemaLine": 7204,
+      "schemaLine": 7197,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13783,7 +13589,7 @@
     },
     {
       "name": "TaskImpactSourceArtifact",
-      "schemaLine": 7257,
+      "schemaLine": 7250,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13879,7 +13685,7 @@
     },
     {
       "name": "TaskManager",
-      "schemaLine": 5821,
+      "schemaLine": 5819,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13975,7 +13781,7 @@
     },
     {
       "name": "TaskMarketplaceListing",
-      "schemaLine": 6137,
+      "schemaLine": 6130,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14073,7 +13879,7 @@
     },
     {
       "name": "TaskSourceArtifact",
-      "schemaLine": 6923,
+      "schemaLine": 6916,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14169,7 +13975,7 @@
     },
     {
       "name": "TaskSpawnSpec",
-      "schemaLine": 7732,
+      "schemaLine": 7725,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14265,7 +14071,7 @@
     },
     {
       "name": "TaskTrigger",
-      "schemaLine": 7628,
+      "schemaLine": 7621,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14361,7 +14167,7 @@
     },
     {
       "name": "TaskTriggerFire",
-      "schemaLine": 7905,
+      "schemaLine": 7898,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14457,7 +14263,7 @@
     },
     {
       "name": "TrackingReminder",
-      "schemaLine": 2810,
+      "schemaLine": 2809,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14555,7 +14361,7 @@
     },
     {
       "name": "TrackingReminderNotification",
-      "schemaLine": 2878,
+      "schemaLine": 2877,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14653,7 +14459,7 @@
     },
     {
       "name": "Unit",
-      "schemaLine": 2060,
+      "schemaLine": 2059,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14753,15 +14559,15 @@
       "buckets": {
         "schema": {
           "files": 1,
-          "matches": 125
+          "matches": 124
         },
         "migrations": {
           "files": 28,
           "matches": 182
         },
         "generated": {
-          "files": 54,
-          "matches": 1202
+          "files": 53,
+          "matches": 1192
         },
         "zod": {
           "files": 1,
@@ -14845,7 +14651,7 @@
     },
     {
       "name": "UserPreference",
-      "schemaLine": 4366,
+      "schemaLine": 4365,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14943,7 +14749,7 @@
     },
     {
       "name": "VariableCategory",
-      "schemaLine": 2128,
+      "schemaLine": 2127,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15039,7 +14845,7 @@
     },
     {
       "name": "VariableRelationshipEvidenceEstimate",
-      "schemaLine": 3309,
+      "schemaLine": 3308,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15135,7 +14941,7 @@
     },
     {
       "name": "VerificationToken",
-      "schemaLine": 1970,
+      "schemaLine": 1969,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15231,7 +15037,7 @@
     },
     {
       "name": "WebPushSubscription",
-      "schemaLine": 4326,
+      "schemaLine": 4325,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15329,7 +15135,7 @@
     },
     {
       "name": "WishocraticAllocation",
-      "schemaLine": 3942,
+      "schemaLine": 3941,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15425,7 +15231,7 @@
     },
     {
       "name": "WishocraticDistribution",
-      "schemaLine": 5243,
+      "schemaLine": 5242,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15521,7 +15327,7 @@
     },
     {
       "name": "WishocraticEncryptedAllocation",
-      "schemaLine": 4407,
+      "schemaLine": 4406,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15619,7 +15425,7 @@
     },
     {
       "name": "WishocraticItem",
-      "schemaLine": 3719,
+      "schemaLine": 3718,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15715,7 +15521,7 @@
     },
     {
       "name": "WishocraticItemAlignmentScore",
-      "schemaLine": 4239,
+      "schemaLine": 4238,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15811,7 +15617,7 @@
     },
     {
       "name": "WishocraticItemInclusion",
-      "schemaLine": 3986,
+      "schemaLine": 3985,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15907,7 +15713,7 @@
     },
     {
       "name": "WishPoint",
-      "schemaLine": 8188,
+      "schemaLine": 8181,
       "buckets": {
         "schema": {
           "files": 1,
@@ -16010,22 +15816,10 @@
       "references": 121
     },
     {
-      "name": "AgentComputeDepositSource",
-      "schemaLine": 9371,
-      "referenceFiles": 7,
-      "references": 58
-    },
-    {
       "name": "AgentExecutorStatus",
       "schemaLine": 556,
       "referenceFiles": 8,
       "references": 64
-    },
-    {
-      "name": "AgentRunStatus",
-      "schemaLine": 9377,
-      "referenceFiles": 8,
-      "references": 68
     },
     {
       "name": "AnalysisStatus",
@@ -16047,49 +15841,49 @@
     },
     {
       "name": "CommerceEntitlementStatus",
-      "schemaLine": 9042,
+      "schemaLine": 9035,
       "referenceFiles": 8,
       "references": 78
     },
     {
       "name": "CommerceFulfillmentKind",
-      "schemaLine": 9003,
+      "schemaLine": 8996,
       "referenceFiles": 15,
       "references": 190
     },
     {
       "name": "CommerceFulfillmentProvider",
-      "schemaLine": 9015,
+      "schemaLine": 9008,
       "referenceFiles": 13,
       "references": 101
     },
     {
       "name": "CommerceFulfillmentStatus",
-      "schemaLine": 9033,
+      "schemaLine": 9026,
       "referenceFiles": 10,
       "references": 72
     },
     {
       "name": "CommerceOfferKind",
-      "schemaLine": 8988,
+      "schemaLine": 8981,
       "referenceFiles": 14,
       "references": 87
     },
     {
       "name": "CommerceOfferStatus",
-      "schemaLine": 8997,
+      "schemaLine": 8990,
       "referenceFiles": 15,
       "references": 86
     },
     {
       "name": "CommerceOrderStatus",
-      "schemaLine": 9022,
+      "schemaLine": 9015,
       "referenceFiles": 11,
       "references": 72
     },
     {
       "name": "CommercePaymentProvider",
-      "schemaLine": 9010,
+      "schemaLine": 9003,
       "referenceFiles": 9,
       "references": 64
     },
@@ -16107,115 +15901,115 @@
     },
     {
       "name": "CourtCaseItemStatus",
-      "schemaLine": 4487,
+      "schemaLine": 4486,
       "referenceFiles": 13,
       "references": 258
     },
     {
       "name": "CourtCasePartyCapacity",
-      "schemaLine": 4478,
+      "schemaLine": 4477,
       "referenceFiles": 10,
       "references": 76
     },
     {
       "name": "CourtCasePartyRole",
-      "schemaLine": 4468,
+      "schemaLine": 4467,
       "referenceFiles": 15,
       "references": 97
     },
     {
       "name": "CourtCaseStatus",
-      "schemaLine": 4459,
+      "schemaLine": 4458,
       "referenceFiles": 12,
       "references": 116
     },
     {
       "name": "DatingBlockScope",
-      "schemaLine": 8514,
+      "schemaLine": 8507,
       "referenceFiles": 10,
       "references": 82
     },
     {
       "name": "DatingConversationStatus",
-      "schemaLine": 8492,
+      "schemaLine": 8485,
       "referenceFiles": 9,
       "references": 65
     },
     {
       "name": "DatingDatePlanStatus",
-      "schemaLine": 8505,
+      "schemaLine": 8498,
       "referenceFiles": 8,
       "references": 84
     },
     {
       "name": "DatingInteractionKind",
-      "schemaLine": 8473,
+      "schemaLine": 8466,
       "referenceFiles": 11,
       "references": 73
     },
     {
       "name": "DatingInteractionStatus",
-      "schemaLine": 8480,
+      "schemaLine": 8473,
       "referenceFiles": 9,
       "references": 65
     },
     {
       "name": "DatingMatchStatus",
-      "schemaLine": 8486,
+      "schemaLine": 8479,
       "referenceFiles": 9,
       "references": 77
     },
     {
       "name": "DatingMessageStatus",
-      "schemaLine": 8498,
+      "schemaLine": 8491,
       "referenceFiles": 8,
       "references": 66
     },
     {
       "name": "DatingPreferenceImportance",
-      "schemaLine": 8468,
+      "schemaLine": 8461,
       "referenceFiles": 8,
       "references": 56
     },
     {
       "name": "DatingProfilePhotoStatus",
-      "schemaLine": 8442,
+      "schemaLine": 8435,
       "referenceFiles": 10,
       "references": 68
     },
     {
       "name": "DatingProfileStatus",
-      "schemaLine": 8423,
+      "schemaLine": 8416,
       "referenceFiles": 11,
       "references": 134
     },
     {
       "name": "DatingQuestionAnswerVisibility",
-      "schemaLine": 8455,
+      "schemaLine": 8448,
       "referenceFiles": 9,
       "references": 65
     },
     {
       "name": "DatingQuestionImportance",
-      "schemaLine": 8460,
+      "schemaLine": 8453,
       "referenceFiles": 10,
       "references": 68
     },
     {
       "name": "DatingQuestionStatus",
-      "schemaLine": 8449,
+      "schemaLine": 8442,
       "referenceFiles": 10,
       "references": 58
     },
     {
       "name": "DatingRelationshipIntent",
-      "schemaLine": 8432,
+      "schemaLine": 8425,
       "referenceFiles": 11,
       "references": 134
     },
     {
       "name": "DatingSafetyReportStatus",
-      "schemaLine": 8520,
+      "schemaLine": 8513,
       "referenceFiles": 8,
       "references": 80
     },
@@ -16371,7 +16165,7 @@
     },
     {
       "name": "PointMintStatus",
-      "schemaLine": 5115,
+      "schemaLine": 5114,
       "referenceFiles": 10,
       "references": 67
     },
@@ -16383,61 +16177,61 @@
     },
     {
       "name": "ReasoningBanditLevel",
-      "schemaLine": 9789,
+      "schemaLine": 9676,
       "referenceFiles": 8,
       "references": 85
     },
     {
       "name": "ReasoningGeneratorKind",
-      "schemaLine": 9798,
+      "schemaLine": 9685,
       "referenceFiles": 9,
       "references": 117
     },
     {
       "name": "ReasoningOutcomeKind",
-      "schemaLine": 9804,
+      "schemaLine": 9691,
       "referenceFiles": 7,
       "references": 48
     },
     {
       "name": "ReasoningRiskTier",
-      "schemaLine": 9783,
+      "schemaLine": 9670,
       "referenceFiles": 10,
       "references": 132
     },
     {
       "name": "ReasoningVariantFamily",
-      "schemaLine": 9820,
+      "schemaLine": 9707,
       "referenceFiles": 7,
       "references": 75
     },
     {
       "name": "ReasoningVariantSlot",
-      "schemaLine": 9773,
+      "schemaLine": 9660,
       "referenceFiles": 17,
       "references": 322
     },
     {
       "name": "ReasoningVariantStatus",
-      "schemaLine": 9765,
+      "schemaLine": 9652,
       "referenceFiles": 11,
       "references": 193
     },
     {
       "name": "ReferendumKind",
-      "schemaLine": 4448,
+      "schemaLine": 4447,
       "referenceFiles": 17,
       "references": 124
     },
     {
       "name": "ReferendumStatus",
-      "schemaLine": 4440,
+      "schemaLine": 4439,
       "referenceFiles": 22,
       "references": 137
     },
     {
       "name": "ReferendumVoteSource",
-      "schemaLine": 4275,
+      "schemaLine": 4274,
       "referenceFiles": 16,
       "references": 121
     },
@@ -16517,7 +16311,7 @@
       "name": "TaskApplicationPolicy",
       "schemaLine": 655,
       "referenceFiles": 8,
-      "references": 192
+      "references": 188
     },
     {
       "name": "TaskApplicationStatus",
@@ -16528,8 +16322,8 @@
     {
       "name": "TaskCandidateKind",
       "schemaLine": 529,
-      "referenceFiles": 9,
-      "references": 176
+      "referenceFiles": 10,
+      "references": 172
     },
     {
       "name": "TaskCandidateMatchStatus",
@@ -16541,13 +16335,13 @@
       "name": "TaskCategory",
       "schemaLine": 457,
       "referenceFiles": 44,
-      "references": 356
+      "references": 352
     },
     {
       "name": "TaskClaimPolicy",
       "schemaLine": 625,
       "referenceFiles": 46,
-      "references": 358
+      "references": 354
     },
     {
       "name": "TaskClaimStatus",
@@ -16625,25 +16419,25 @@
       "name": "TaskCompensationCadence",
       "schemaLine": 505,
       "referenceFiles": 9,
-      "references": 193
+      "references": 189
     },
     {
       "name": "TaskCompensationKind",
       "schemaLine": 495,
       "referenceFiles": 9,
-      "references": 195
+      "references": 191
     },
     {
       "name": "TaskDeadlinePolicy",
       "schemaLine": 643,
       "referenceFiles": 11,
-      "references": 211
+      "references": 207
     },
     {
       "name": "TaskDifficulty",
       "schemaLine": 448,
       "referenceFiles": 41,
-      "references": 680
+      "references": 672
     },
     {
       "name": "TaskDistributionAttemptStatus",
@@ -16679,19 +16473,19 @@
       "name": "TaskEngagementKind",
       "schemaLine": 486,
       "referenceFiles": 8,
-      "references": 192
+      "references": 188
     },
     {
       "name": "TaskExecutionAttemptStatus",
       "schemaLine": 546,
-      "referenceFiles": 8,
-      "references": 116
+      "referenceFiles": 9,
+      "references": 115
     },
     {
       "name": "TaskExecutionMode",
       "schemaLine": 522,
       "referenceFiles": 9,
-      "references": 195
+      "references": 191
     },
     {
       "name": "TaskFundingEventType",
@@ -16739,7 +16533,7 @@
       "name": "TaskKind",
       "schemaLine": 472,
       "referenceFiles": 8,
-      "references": 192
+      "references": 188
     },
     {
       "name": "TaskMarketplaceFeePolicy",
@@ -16763,13 +16557,13 @@
       "name": "TaskRemotePolicy",
       "schemaLine": 514,
       "referenceFiles": 9,
-      "references": 195
+      "references": 191
     },
     {
       "name": "TaskStatus",
       "schemaLine": 635,
       "referenceFiles": 60,
-      "references": 467
+      "references": 463
     },
     {
       "name": "UnitCodeSystem",
@@ -16797,7 +16591,7 @@
     },
     {
       "name": "VotePosition",
-      "schemaLine": 4268,
+      "schemaLine": 4267,
       "referenceFiles": 38,
       "references": 264
     },

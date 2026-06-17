@@ -473,6 +473,24 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
   };
 }
 
+function buildTaskWriteScalars(collectionKey: string, record: ManagedTaskRecord) {
+  const { ownerOrganizationId: _ownerOrganizationId, ...scalars } =
+    buildTaskScalars(collectionKey, record);
+  return scalars;
+}
+
+function buildOwnerOrganizationCreate(record: ManagedTaskRecord) {
+  return record.ownerOrganizationId
+    ? { ownerOrganization: { connect: { id: record.ownerOrganizationId } } }
+    : {};
+}
+
+function buildOwnerOrganizationUpdate(record: ManagedTaskRecord) {
+  return record.ownerOrganizationId
+    ? { ownerOrganization: { connect: { id: record.ownerOrganizationId } } }
+    : { ownerOrganization: { disconnect: true } };
+}
+
 function buildTaskCreateData(
   collectionKey: string,
   record: ManagedTaskRecord,
@@ -480,8 +498,9 @@ function buildTaskCreateData(
 ) {
   return {
     id: record.id,
-    ...buildTaskScalars(collectionKey, record),
+    ...buildTaskWriteScalars(collectionKey, record),
     createdByUser: { connect: { id: createdByUserId } },
+    ...buildOwnerOrganizationCreate(record),
     ...(record.parentTaskId
       ? { parentTask: { connect: { id: record.parentTaskId } } }
       : {}),
@@ -572,7 +591,8 @@ function validateManagedTaskTree(
 
 function buildTaskUpdateData(collectionKey: string, record: ManagedTaskRecord) {
   return {
-    ...buildTaskScalars(collectionKey, record),
+    ...buildTaskWriteScalars(collectionKey, record),
+    ...buildOwnerOrganizationUpdate(record),
     ...(record.parentTaskId
       ? { parentTask: { connect: { id: record.parentTaskId } } }
       : { parentTask: { disconnect: true } }),

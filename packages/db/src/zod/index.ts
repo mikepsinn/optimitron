@@ -786,12 +786,6 @@ export type CommerceFulfillmentStatus = z.infer<typeof CommerceFulfillmentStatus
 export const CommerceEntitlementStatusSchema = z.enum(['PENDING', 'ACTIVE', 'EXPIRED', 'CANCELED', 'REVOKED']);
 export type CommerceEntitlementStatus = z.infer<typeof CommerceEntitlementStatusSchema>;
 
-export const AgentComputeDepositSourceSchema = z.enum(['STRIPE', 'CRYPTO', 'MANUAL']);
-export type AgentComputeDepositSource = z.infer<typeof AgentComputeDepositSourceSchema>;
-
-export const AgentRunStatusSchema = z.enum(['RUNNING', 'COMPLETED', 'FAILED', 'PARTIAL']);
-export type AgentRunStatus = z.infer<typeof AgentRunStatusSchema>;
-
 // ============================================================================
 // HELPER: coerce string dates to Date objects
 // ============================================================================
@@ -2364,7 +2358,6 @@ export const TaskExecutionAttemptSchema = z.object({
   taskApplicationId: z.string().nullable().optional(),
   taskClaimId: z.string().nullable().optional(),
   agentTaskLeaseId: z.string().nullable().optional(),
-  agentRunCostId: z.string().nullable().optional(),
   status: TaskExecutionAttemptStatusSchema.default('QUEUED'),
   estimatedCostMinorUnits: z.bigint().nullable().optional(),
   estimatedCostCurrency: z.string().nullable().optional(),
@@ -3333,33 +3326,3 @@ export const CommerceEntitlementSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type CommerceEntitlementType = z.infer<typeof CommerceEntitlementSchema>;
-
-// ── Agent Compute Funding ──────────────────────────────────────────────────
-
-export const AgentComputeDepositSchema = z.object({
-  id: z.string(),
-  amountUsd: z.number(),
-  source: AgentComputeDepositSourceSchema,
-  externalRef: z.string().nullable().optional(),
-  memo: z.string().nullable().optional(),
-  spentUsd: z.number().default(0),
-  depositorUserId: z.string().nullable().optional(),
-  createdAt: dateSchema,
-  updatedAt: dateSchema,
-  deletedAt: nullableDateSchema,
-});
-export type AgentComputeDepositType = z.infer<typeof AgentComputeDepositSchema>;
-
-export const AgentRunCostSchema = z.object({
-  id: z.string(),
-  runId: z.string(),
-  provider: z.string(),
-  costUsd: z.number(),
-  apiCalls: z.number().int(),
-  status: AgentRunStatusSchema.default('RUNNING'),
-  taskId: z.string().nullable().optional(),
-  depositId: z.string().nullable().optional(),
-  outputSummary: z.string().nullable().optional(),
-  createdAt: dateSchema,
-  updatedAt: dateSchema,
-});

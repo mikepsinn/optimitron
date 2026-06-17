@@ -44,8 +44,6 @@ the columns below.
 | --- | --- | --- |
 | `Account` | `providerAccountId`, `refresh_token`, `access_token`, `scope`, `id_token`, `session_state`, `oauth_token_secret`, `oauth_token` | OAuth/provider identifiers and credentials. |
 | `Activity` | `description`, `metadata` | User-specific activity text and context. |
-| `AgentComputeDeposit` | `externalRef`, `memo` | Payment references and depositor notes. |
-| `AgentRunCost` | `runId`, `outputSummary` | Agent run identifiers and output summaries. |
 | `AgentTaskLease` | `agentId` | Caller-supplied agent identity. |
 | `Badge` | `metadata` | User action context. |
 | `CitizenBillVote` | `reasoning`, `shareIdentifier`, `cbaSnapshot` | Political reasoning and shareable identifiers. |

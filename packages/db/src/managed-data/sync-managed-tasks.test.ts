@@ -193,6 +193,15 @@ function applyTaskData(task: FakeTask, data: Record<string, unknown>) {
       continue;
     }
 
+    if (key === "ownerOrganization") {
+      const relation = value as
+        | { connect?: { id: string }; disconnect?: boolean }
+        | undefined;
+      if (relation?.connect) task.ownerOrganizationId = relation.connect.id;
+      if (relation?.disconnect) task.ownerOrganizationId = null;
+      continue;
+    }
+
     if (key in task) {
       (task as Record<string, unknown>)[key] = value;
     }
