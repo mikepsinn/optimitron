@@ -815,10 +815,11 @@ jobs:
       pull-requests: read
     env:
       CI: true
-      VERCEL_CLI_VERSION: 50.37.3
-      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
       PREVIEW_GIT_BRANCH: ${{ github.head_ref }}
+      NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+      NEON_BRANCH_ID: ${{ vars.NEON_BRANCH_ID }}
+      NEON_DATABASE_NAME: ${{ vars.NEON_DATABASE_NAME }}
+      NEON_ROLE_NAME: ${{ vars.NEON_ROLE_NAME }}
 
     steps:
       - name: Checkout
@@ -864,18 +865,12 @@ jobs:
         if: steps.preview_data_changes.outputs.should_sync == 'true'
         id: preview_secrets
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
         shell: bash
         run: |
           missing=()
-          if [ -z "$VERCEL_TOKEN" ]; then
-            missing+=("VERCEL_TOKEN")
-          fi
-          if [ -z "$VERCEL_ORG_ID" ]; then
-            missing+=("VERCEL_ORG_ID")
-          fi
-          if [ -z "$VERCEL_PROJECT_ID" ]; then
-            missing+=("VERCEL_PROJECT_ID")
+          if [ -z "$NEON_API_KEY" ]; then
+            missing+=("NEON_API_KEY")
           fi
 
           if [ "${#missing[@]}" -eq 0 ]; then
@@ -895,25 +890,6 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit 1
 
-      - name: Link Vercel preview project
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
-        shell: bash
-        run: |
-          mkdir -p .vercel
-          node <<'NODE'
-          const fs = require("node:fs");
-
-          const { VERCEL_ORG_ID: orgId, VERCEL_PROJECT_ID: projectId } = process.env;
-          if (!orgId || !projectId) {
-            throw new Error("VERCEL_ORG_ID and VERCEL_PROJECT_ID are required to link the Vercel preview project.");
-          }
-
-          fs.writeFileSync(
-            ".vercel/project.json",
-            `${JSON.stringify({ orgId, projectId }, null, 2)}\n`,
-          );
-          NODE
-
       - name: Enable Corepack
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: |
@@ -927,73 +903,15 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      - name: Resolve preview Neon database env
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+        run: node .github/scripts/resolve-preview-neon-env.mjs
+
       - name: Install dependencies
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: pnpm install --frozen-lockfile
-
-      - name: Pull Vercel preview env
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} env pull .vercel/.env.preview.local --yes --environment=preview --git-branch "$PREVIEW_GIT_BRANCH" --token "$VERCEL_TOKEN"
-
-      - name: Export preview database env
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
-        shell: bash
-        run: |
-          node <<'NODE'
-          const fs = require("node:fs");
-          const envPath = ".vercel/.env.preview.local";
-
-          function parseEnv(contents) {
-            const entries = {};
-            for (const rawLine of contents.split(/\r?\n/u)) {
-              const line = rawLine.trim();
-              if (!line || line.startsWith("#")) continue;
-              const separatorIndex = line.indexOf("=");
-              if (separatorIndex <= 0) continue;
-
-              const key = line.slice(0, separatorIndex).trim();
-              let value = line.slice(separatorIndex + 1).trim();
-              if (
-                (value.startsWith('"') && value.endsWith('"')) ||
-                (value.startsWith("'") && value.endsWith("'"))
-              ) {
-                value = value.slice(1, -1);
-              }
-              entries[key] = value;
-            }
-            return entries;
-          }
-
-          const parsed = parseEnv(fs.readFileSync(envPath, "utf8"));
-          if (!parsed.DATABASE_URL) {
-            throw new Error(`Vercel preview env did not include DATABASE_URL in ${envPath}.`);
-          }
-
-          const exportedKeys = [
-            "DATABASE_URL",
-            "DATABASE_URL_UNPOOLED",
-            "NEON_PROJECT_ID",
-            "NEON_BRANCH_ID",
-            "NEON_DATABASE_NAME",
-            "PGDATABASE",
-          ];
-
-          for (const key of exportedKeys) {
-            const value = parsed[key];
-            if (!value) continue;
-            console.log(`::add-mask::${value}`);
-            const delimiter = `managed_data_${key}_${Math.random().toString(36).slice(2)}`;
-            fs.appendFileSync(
-              process.env.GITHUB_ENV,
-              `${key}<<${delimiter}\n${value}\n${delimiter}\n`,
-            );
-          }
-
-          const target = new URL(parsed.DATABASE_URL);
-          console.log(`Loaded Vercel preview database env for ${target.hostname}.`);
-          NODE
 
       - name: Apply preview database migrations
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
@@ -1010,7 +928,7 @@ jobs:
 
           database_url="${DATABASE_URL_UNPOOLED:-${DATABASE_URL:-}}"
           if [ -z "$database_url" ]; then
-            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the pulled Vercel preview env."
+            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the resolved Neon preview database env."
             exit 1
           fi
 
@@ -1040,7 +958,7 @@ jobs:
 
           database_url="${DATABASE_URL_UNPOOLED:-${DATABASE_URL:-}}"
           if [ -z "$database_url" ]; then
-            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the pulled Vercel preview env."
+            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the resolved Neon preview database env."
             exit 1
           fi
 
@@ -1059,11 +977,6 @@ jobs:
         shell: bash
         run: node packages/web/scripts/verify-preview-masking.mjs
 
-      - name: Cleanup pulled Vercel env files
-        if: always() && steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
-        shell: bash
-        run: rm -f .vercel/.env*.local .vercel/*.env*
-
       - name: Summarize preview database sync
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
@@ -1073,7 +986,7 @@ jobs:
           {
             echo "## Preview database sync"
             echo
-            echo "- Pulled Vercel preview env for \`$PREVIEW_GIT_BRANCH\`."
+            echo "- Resolved Neon preview database env for \`$PREVIEW_GIT_BRANCH\`."
             echo "- Applied Prisma migrations to the branch preview database."
             echo "- Applied preview anonymization setup and direct SQL masking updates."
             echo "- Synced managed data with idempotent upserts."
