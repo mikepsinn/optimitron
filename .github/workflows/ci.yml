@@ -931,11 +931,11 @@ jobs:
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Pull Vercel preview settings
+      - name: Pull Vercel preview env
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=preview --git-branch "$PREVIEW_GIT_BRANCH" --token "$VERCEL_TOKEN"
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} env pull .vercel/.env.preview.local --yes --environment=preview --git-branch "$PREVIEW_GIT_BRANCH" --token "$VERCEL_TOKEN"
 
       - name: Export preview database env
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
