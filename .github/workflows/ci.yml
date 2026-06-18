@@ -860,7 +860,7 @@ jobs:
                 .write();
             }
 
-      - name: Check Preview database sync secrets
+      - name: Check Preview database sync configuration
         if: steps.preview_data_changes.outputs.should_sync == 'true'
         id: preview_secrets
         env:
@@ -871,6 +871,12 @@ jobs:
           if [ -z "$VERCEL_TOKEN" ]; then
             missing+=("VERCEL_TOKEN")
           fi
+          if [ -z "$VERCEL_ORG_ID" ]; then
+            missing+=("VERCEL_ORG_ID")
+          fi
+          if [ -z "$VERCEL_PROJECT_ID" ]; then
+            missing+=("VERCEL_PROJECT_ID")
+          fi
 
           if [ "${#missing[@]}" -eq 0 ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
@@ -878,16 +884,35 @@ jobs:
           fi
 
           echo "configured=false" >> "$GITHUB_OUTPUT"
-          echo "::error::Preview database sync is blocked: the GitHub Preview environment is missing ${missing[*]}. Add the secrets in repo Settings → Environments → Preview before retrying."
+          echo "::error::Preview database sync is blocked: the GitHub Preview environment is missing ${missing[*]}. Add the secret or variable in repo Settings before retrying."
           {
             echo "## Preview database sync"
             echo
-            echo "Blocked: GitHub Preview environment is missing required secrets."
+            echo "Blocked: GitHub Preview environment is missing required configuration."
             for name in "${missing[@]}"; do
               echo "- Missing \`$name\`."
             done
           } >> "$GITHUB_STEP_SUMMARY"
           exit 1
+
+      - name: Link Vercel preview project
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        shell: bash
+        run: |
+          mkdir -p .vercel
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const { VERCEL_ORG_ID: orgId, VERCEL_PROJECT_ID: projectId } = process.env;
+          if (!orgId || !projectId) {
+            throw new Error("VERCEL_ORG_ID and VERCEL_PROJECT_ID are required to link the Vercel preview project.");
+          }
+
+          fs.writeFileSync(
+            ".vercel/project.json",
+            `${JSON.stringify({ orgId, projectId }, null, 2)}\n`,
+          );
+          NODE
 
       - name: Enable Corepack
         if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
