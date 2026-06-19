@@ -1045,10 +1045,64 @@ jobs:
       - name: Verify Vercel configuration
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
         run: |
           test -n "$VERCEL_TOKEN" || { echo "Missing GitHub secret VERCEL_TOKEN"; exit 1; }
           test -n "$VERCEL_ORG_ID" || { echo "Missing GitHub variable VERCEL_ORG_ID"; exit 1; }
           test -n "$VERCEL_PROJECT_ID" || { echo "Missing GitHub variable VERCEL_PROJECT_ID"; exit 1; }
+
+          project_json="$(mktemp)"
+          status="$(
+            curl --silent --show-error \
+              --output "$project_json" \
+              --write-out "%{http_code}" \
+              --header "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID"
+          )"
+
+          case "$status" in
+            200) ;;
+            401)
+              echo "::error::VERCEL_TOKEN is missing, expired, or invalid for Vercel API access."
+              exit 1
+              ;;
+            403)
+              echo "::error::VERCEL_TOKEN cannot access Vercel team $VERCEL_ORG_ID. Rotate the GitHub Production VERCEL_TOKEN secret or use a token from that team."
+              exit 1
+              ;;
+            404)
+              echo "::error::VERCEL_PROJECT_ID $VERCEL_PROJECT_ID was not found under VERCEL_ORG_ID $VERCEL_ORG_ID. Check the GitHub Production environment variables."
+              exit 1
+              ;;
+            *)
+              echo "::error::Vercel project preflight failed with HTTP $status while checking $VERCEL_PROJECT_ID under $VERCEL_ORG_ID."
+              exit 1
+              ;;
+          esac
+
+          node - "$project_json" <<'NODE'
+          const fs = require("node:fs");
+          const [projectJsonPath] = process.argv.slice(2);
+          const project = JSON.parse(fs.readFileSync(projectJsonPath, "utf8"));
+          const name = project.name || project.projectName || "(unknown)";
+          const rootDirectory = project.rootDirectory ?? project.settings?.rootDirectory ?? null;
+          if (rootDirectory !== "packages/web") {
+            console.log(`::warning::Vercel project ${name} rootDirectory is ${rootDirectory ?? "(unset)"}, expected packages/web.`);
+          }
+          fs.mkdirSync(".vercel", { recursive: true });
+          fs.writeFileSync(
+            ".vercel/project.json",
+            `${JSON.stringify(
+              {
+                orgId: process.env.VERCEL_ORG_ID,
+                projectId: process.env.VERCEL_PROJECT_ID,
+              },
+              null,
+              2,
+            )}\n`,
+          );
+          console.log(`Verified Vercel project ${name} and wrote .vercel/project.json for CI.`);
+          NODE
 
       - name: Verify production database configuration
         env:
@@ -1059,14 +1113,14 @@ jobs:
       - name: Pull Vercel production settings
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --token "$VERCEL_TOKEN"
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"
 
       - name: Build Vercel production artifact
         env:
           NODE_OPTIONS: --max-old-space-size=6144
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build --prod --token "$VERCEL_TOKEN"
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build --prod --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"
 
       - name: Apply production database migrations
         env:
@@ -1087,7 +1141,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          deployment_url="$(pnpm dlx vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --token "$VERCEL_TOKEN" --yes | tail -n 1 | tr -d '\r')"
+          deployment_url="$(pnpm dlx vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN" --yes | tail -n 1 | tr -d '\r')"
           case "$deployment_url" in
             https://*) ;;
             *) deployment_url="https://$deployment_url" ;;
