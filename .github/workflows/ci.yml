@@ -191,7 +191,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/audit-sentry-preview.test.mjs
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/audit-sentry-preview.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -651,21 +651,26 @@ jobs:
         run: |
           target_url="https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/${{ steps.prepare_pages.outputs.short_sha }}/latest.html"
           echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
+          echo "available=false" >> "$GITHUB_OUTPUT"
           echo "Waiting for $target_url"
-          for attempt in $(seq 1 90); do
-            status="$(curl -L -sS --connect-timeout 5 --max-time 15 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
+          max_attempts=18
+          for attempt in $(seq 1 "$max_attempts"); do
+            status="$(curl -L -sS --connect-timeout 3 --max-time 4 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
             if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
+              echo "available=true" >> "$GITHUB_OUTPUT"
               echo "Visual review page is live after attempt $attempt."
               exit 0
             fi
-            echo "Attempt $attempt/90 returned HTTP $status; retrying in 10s."
-            sleep 10
+            echo "Attempt $attempt/$max_attempts returned HTTP $status; retrying in 5s."
+            if [ "$attempt" -lt "$max_attempts" ]; then
+              sleep 5
+            fi
           done
-          echo "::error::Visual review page did not become available: $target_url"
-          exit 1
+          echo "::warning::Visual review page did not become available before the wait limit: $target_url"
+          echo "The review artifact was uploaded and the gh-pages publish step completed; GitHub Pages propagation should not fail CI."
 
       - name: Post Visual review commit status
-        if: ${{ !cancelled() && steps.wait_visual_review_pages.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -685,7 +690,7 @@ jobs:
             });
 
       - name: Create Visual review deployment
-        if: ${{ !cancelled() && steps.wait_visual_review_pages.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' }}
         uses: actions/github-script@v8
         with:
           script: |
@@ -720,7 +725,7 @@ jobs:
             });
 
       - name: Update PR review packet with visual review
-        if: ${{ !cancelled() && steps.wait_visual_review_pages.outcome == 'success' && steps.pr_preview_url.outputs.result != '' }}
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' && steps.pr_preview_url.outputs.result != '' }}
         uses: actions/github-script@v8
         env:
           PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
@@ -862,8 +867,8 @@ jobs:
             }
 
       - name: Check Preview database sync configuration
-        if: steps.preview_data_changes.outputs.should_sync == 'true'
         id: preview_secrets
+        if: steps.preview_data_changes.outputs.should_sync == 'true'
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
         shell: bash
@@ -1045,10 +1050,64 @@ jobs:
       - name: Verify Vercel configuration
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
         run: |
           test -n "$VERCEL_TOKEN" || { echo "Missing GitHub secret VERCEL_TOKEN"; exit 1; }
           test -n "$VERCEL_ORG_ID" || { echo "Missing GitHub variable VERCEL_ORG_ID"; exit 1; }
           test -n "$VERCEL_PROJECT_ID" || { echo "Missing GitHub variable VERCEL_PROJECT_ID"; exit 1; }
+
+          project_json="$(mktemp)"
+          status="$(
+            curl --silent --show-error \
+              --output "$project_json" \
+              --write-out "%{http_code}" \
+              --header "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID"
+          )"
+
+          case "$status" in
+            200) ;;
+            401)
+              echo "::error::VERCEL_TOKEN is missing, expired, or invalid for Vercel API access."
+              exit 1
+              ;;
+            403)
+              echo "::error::VERCEL_TOKEN cannot access Vercel team $VERCEL_ORG_ID. Rotate the GitHub Production VERCEL_TOKEN secret or use a token from that team."
+              exit 1
+              ;;
+            404)
+              echo "::error::VERCEL_PROJECT_ID $VERCEL_PROJECT_ID was not found under VERCEL_ORG_ID $VERCEL_ORG_ID. Check the GitHub Production environment variables."
+              exit 1
+              ;;
+            *)
+              echo "::error::Vercel project preflight failed with HTTP $status while checking $VERCEL_PROJECT_ID under $VERCEL_ORG_ID."
+              exit 1
+              ;;
+          esac
+
+          node - "$project_json" <<'NODE'
+          const fs = require("node:fs");
+          const [projectJsonPath] = process.argv.slice(2);
+          const project = JSON.parse(fs.readFileSync(projectJsonPath, "utf8"));
+          const name = project.name || project.projectName || "(unknown)";
+          const rootDirectory = project.rootDirectory ?? project.settings?.rootDirectory ?? null;
+          if (rootDirectory !== "packages/web") {
+            console.log(`::warning::Vercel project ${name} rootDirectory is ${rootDirectory ?? "(unset)"}, expected packages/web.`);
+          }
+          fs.mkdirSync(".vercel", { recursive: true });
+          fs.writeFileSync(
+            ".vercel/project.json",
+            `${JSON.stringify(
+              {
+                orgId: process.env.VERCEL_ORG_ID,
+                projectId: process.env.VERCEL_PROJECT_ID,
+              },
+              null,
+              2,
+            )}\n`,
+          );
+          console.log(`Verified Vercel project ${name} and wrote .vercel/project.json for CI.`);
+          NODE
 
       - name: Verify production database configuration
         env:
@@ -1059,14 +1118,14 @@ jobs:
       - name: Pull Vercel production settings
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --token "$VERCEL_TOKEN"
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"
 
       - name: Build Vercel production artifact
         env:
           NODE_OPTIONS: --max-old-space-size=6144
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build --prod --token "$VERCEL_TOKEN"
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build --prod --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"
 
       - name: Apply production database migrations
         env:
@@ -1087,7 +1146,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          deployment_url="$(pnpm dlx vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --token "$VERCEL_TOKEN" --yes | tail -n 1 | tr -d '\r')"
+          deployment_url="$(pnpm dlx vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN" --yes | tail -n 1 | tr -d '\r')"
           case "$deployment_url" in
             https://*) ;;
             *) deployment_url="https://$deployment_url" ;;
