@@ -191,7 +191,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/audit-sentry-preview.test.mjs
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/audit-sentry-preview.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -653,15 +653,18 @@ jobs:
           echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
           echo "available=false" >> "$GITHUB_OUTPUT"
           echo "Waiting for $target_url"
-          for attempt in $(seq 1 60); do
-            status="$(curl -L -sS --connect-timeout 5 --max-time 5 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
+          max_attempts=18
+          for attempt in $(seq 1 "$max_attempts"); do
+            status="$(curl -L -sS --connect-timeout 3 --max-time 4 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
             if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
               echo "available=true" >> "$GITHUB_OUTPUT"
               echo "Visual review page is live after attempt $attempt."
               exit 0
             fi
-            echo "Attempt $attempt/60 returned HTTP $status; retrying in 5s."
-            sleep 5
+            echo "Attempt $attempt/$max_attempts returned HTTP $status; retrying in 5s."
+            if [ "$attempt" -lt "$max_attempts" ]; then
+              sleep 5
+            fi
           done
           echo "::warning::Visual review page did not become available before the wait limit: $target_url"
           echo "The review artifact was uploaded and the gh-pages publish step completed; GitHub Pages propagation should not fail CI."
