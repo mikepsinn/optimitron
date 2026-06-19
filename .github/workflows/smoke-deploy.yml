@@ -4,6 +4,8 @@ on:
   deployment_status:
 
 permissions:
+  actions: read
+  checks: read
   contents: read
   deployments: read
   issues: write
@@ -28,7 +30,7 @@ jobs:
       !startsWith(github.event.deployment.environment, 'visual-review') &&
       !startsWith(github.event.deployment_status.environment, 'visual-review')
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     environment:
       name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com') || contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org')) && 'Production' || 'Preview' }}
       deployment: false
@@ -117,6 +119,55 @@ jobs:
               .filter(Boolean);
           }
           NODE
+
+      - name: Wait for preview database sync
+        if: steps.target.outputs.environment == 'Preview'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha =
+              context.payload.deployment?.sha ||
+              context.payload.deployment_status?.deployment?.sha ||
+              context.sha;
+            const checkName = "sync-preview-managed-data";
+            const timeoutMs = 10 * 60 * 1000;
+            const intervalMs = 15 * 1000;
+            const deadline = Date.now() + timeoutMs;
+            let lastStatus = "not found";
+
+            while (Date.now() < deadline) {
+              const { data } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: sha,
+                check_name: checkName,
+                per_page: 10,
+              });
+              const check = [...data.check_runs].sort((left, right) =>
+                Date.parse(right.started_at || right.created_at || "") -
+                Date.parse(left.started_at || left.created_at || ""),
+              )[0];
+
+              if (check) {
+                lastStatus = `${check.status}/${check.conclusion || "pending"}`;
+                core.info(`${checkName}: ${lastStatus}`);
+
+                if (check.status === "completed") {
+                  if (["success", "skipped", "neutral"].includes(check.conclusion)) {
+                    return;
+                  }
+                  core.setFailed(`${checkName} concluded ${check.conclusion}: ${check.html_url}`);
+                  return;
+                }
+              } else {
+                core.info(`${checkName}: not found for ${sha}`);
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, intervalMs));
+            }
+
+            core.setFailed(`${checkName} did not complete before preview smoke timeout; last status: ${lastStatus}.`);
 
       - name: Run deploy smoke
         id: smoke
@@ -313,7 +364,7 @@ jobs:
       github.event.deployment_status.environment != 'Production' &&
       github.event.deployment_status.environment != 'production'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 25
     environment:
       name: Preview
       deployment: false
@@ -324,6 +375,54 @@ jobs:
         uses: actions/checkout@v6
         with:
           submodules: recursive
+
+      - name: Wait for preview database sync
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha =
+              context.payload.deployment?.sha ||
+              context.payload.deployment_status?.deployment?.sha ||
+              context.sha;
+            const checkName = "sync-preview-managed-data";
+            const timeoutMs = 10 * 60 * 1000;
+            const intervalMs = 15 * 1000;
+            const deadline = Date.now() + timeoutMs;
+            let lastStatus = "not found";
+
+            while (Date.now() < deadline) {
+              const { data } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: sha,
+                check_name: checkName,
+                per_page: 10,
+              });
+              const check = [...data.check_runs].sort((left, right) =>
+                Date.parse(right.started_at || right.created_at || "") -
+                Date.parse(left.started_at || left.created_at || ""),
+              )[0];
+
+              if (check) {
+                lastStatus = `${check.status}/${check.conclusion || "pending"}`;
+                core.info(`${checkName}: ${lastStatus}`);
+
+                if (check.status === "completed") {
+                  if (["success", "skipped", "neutral"].includes(check.conclusion)) {
+                    return;
+                  }
+                  core.setFailed(`${checkName} concluded ${check.conclusion}: ${check.html_url}`);
+                  return;
+                }
+              } else {
+                core.info(`${checkName}: not found for ${sha}`);
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, intervalMs));
+            }
+
+            core.setFailed(`${checkName} did not complete before preview smoke timeout; last status: ${lastStatus}.`);
 
       - name: Enable Corepack
         run: |
