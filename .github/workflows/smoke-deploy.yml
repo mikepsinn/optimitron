@@ -120,8 +120,62 @@ jobs:
           }
           NODE
 
-      - name: Wait for preview database sync
+      - name: Resolve preview smoke scope
+        id: preview_scope
         if: steps.target.outputs.environment == 'Preview'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { pathToFileURL } = require("node:url");
+            const scope = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/preview-smoke-scope.mjs`).href
+            );
+            const { owner, repo } = context.repo;
+            const sha =
+              context.payload.deployment?.sha ||
+              context.payload.deployment_status?.deployment?.sha ||
+              context.sha;
+            const pulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              {
+                owner,
+                repo,
+                commit_sha: sha,
+                per_page: 100,
+              },
+            );
+            const pull = pulls.find((pr) => pr.state === "open") || pulls[0];
+            if (!pull) {
+              core.info(`No pull request found for deployment commit ${sha}; running preview smoke.`);
+              core.setOutput("should_smoke", "true");
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: pull.number,
+              per_page: 100,
+            });
+            const filenames = files
+              .filter((file) => file.status !== "removed")
+              .map((file) => file.filename);
+            const matches = scope.getPreviewSmokeMatches(filenames);
+            const shouldSmoke = matches.length > 0;
+            core.setOutput("should_smoke", shouldSmoke ? "true" : "false");
+            core.setOutput("matched_files", matches.join("\n"));
+            if (shouldSmoke) {
+              core.info(`Running preview smoke for PR #${pull.number}: ${matches.join(", ")}`);
+            } else {
+              core.info(`Skipping preview smoke for PR #${pull.number}: no app/runtime inputs changed.`);
+            }
+
+      - name: Skip preview deploy smoke
+        if: steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke == 'false'
+        run: echo "Skipping deployed preview smoke because this PR only changed workflow/deploy plumbing."
+
+      - name: Wait for preview database sync
+        if: steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke != 'false'
         uses: actions/github-script@v8
         with:
           script: |
@@ -171,6 +225,7 @@ jobs:
 
       - name: Run deploy smoke
         id: smoke
+        if: steps.target.outputs.environment != 'Preview' || steps.preview_scope.outputs.should_smoke != 'false'
         env:
           PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
           PROD_URL: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.url || '' }}
@@ -185,7 +240,7 @@ jobs:
           exit 0
 
       - name: Comment on preview failure
-        if: always() && steps.target.outputs.environment == 'Preview' && steps.smoke.outputs.exit_code != '0'
+        if: always() && steps.target.outputs.environment == 'Preview' && steps.smoke.outputs.exit_code != '' && steps.smoke.outputs.exit_code != '0'
         uses: actions/github-script@v8
         env:
           SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
@@ -340,7 +395,7 @@ jobs:
           NODE
 
       - name: Fail deploy smoke
-        if: always() && steps.smoke.outputs.exit_code != '0'
+        if: always() && steps.smoke.outputs.exit_code != '' && steps.smoke.outputs.exit_code != '0'
         run: exit "${{ steps.smoke.outputs.exit_code }}"
 
   playwright-preview:
@@ -376,7 +431,61 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Resolve preview smoke scope
+        id: preview_scope
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { pathToFileURL } = require("node:url");
+            const scope = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/preview-smoke-scope.mjs`).href
+            );
+            const { owner, repo } = context.repo;
+            const sha =
+              context.payload.deployment?.sha ||
+              context.payload.deployment_status?.deployment?.sha ||
+              context.sha;
+            const pulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              {
+                owner,
+                repo,
+                commit_sha: sha,
+                per_page: 100,
+              },
+            );
+            const pull = pulls.find((pr) => pr.state === "open") || pulls[0];
+            if (!pull) {
+              core.info(`No pull request found for deployment commit ${sha}; running preview smoke.`);
+              core.setOutput("should_smoke", "true");
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: pull.number,
+              per_page: 100,
+            });
+            const filenames = files
+              .filter((file) => file.status !== "removed")
+              .map((file) => file.filename);
+            const matches = scope.getPreviewSmokeMatches(filenames);
+            const shouldSmoke = matches.length > 0;
+            core.setOutput("should_smoke", shouldSmoke ? "true" : "false");
+            core.setOutput("matched_files", matches.join("\n"));
+            if (shouldSmoke) {
+              core.info(`Running preview smoke for PR #${pull.number}: ${matches.join(", ")}`);
+            } else {
+              core.info(`Skipping preview smoke for PR #${pull.number}: no app/runtime inputs changed.`);
+            }
+
+      - name: Skip Playwright preview smoke
+        if: steps.preview_scope.outputs.should_smoke == 'false'
+        run: echo "Skipping Playwright preview smoke because this PR only changed workflow/deploy plumbing."
+
       - name: Wait for preview database sync
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         uses: actions/github-script@v8
         with:
           script: |
@@ -425,32 +534,39 @@ jobs:
             core.setFailed(`${checkName} did not complete before preview smoke timeout; last status: ${lastStatus}.`);
 
       - name: Enable Corepack
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         run: pnpm install --frozen-lockfile
 
       - name: Build web workspace dependencies
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         # Without this, Playwright fails at import time on @optimitron/db,
         # @optimitron/data, etc. (transitive imports from e2e/utils/*).
         # Same step as web-validate (ci.yml line 152).
         run: pnpm --filter @optimitron/web run build:workspace-deps
 
       - name: Verify system Chrome
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         run: google-chrome --version
 
       - name: Install Playwright system deps
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
       - name: Run Playwright smoke against preview
+        if: steps.preview_scope.outputs.should_smoke != 'false'
         env:
           BASE_URL: ${{ github.event.deployment_status.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -476,7 +592,7 @@ jobs:
 
       - name: Audit Sentry preview errors
         id: sentry_audit
-        if: always()
+        if: always() && steps.preview_scope.outputs.should_smoke != 'false'
         env:
           PREVIEW_URL: ${{ github.event.deployment_status.environment_url }}
           # Dedicated read token should have org:read, project:read, event:read.
@@ -500,7 +616,7 @@ jobs:
           exit 0
 
       - name: Comment on Sentry preview errors
-        if: always() && steps.sentry_audit.outputs.exit_code != '0'
+        if: always() && steps.preview_scope.outputs.should_smoke != 'false' && steps.sentry_audit.outputs.exit_code != '0'
         uses: actions/github-script@v8
         continue-on-error: true
         env:
@@ -565,7 +681,7 @@ jobs:
             }
 
       - name: Upload Playwright artifacts on failure
-        if: failure()
+        if: failure() && steps.preview_scope.outputs.should_smoke != 'false'
         uses: actions/upload-artifact@v4
         with:
           name: playwright-preview-${{ github.run_id }}
@@ -576,5 +692,5 @@ jobs:
           if-no-files-found: ignore
 
       - name: Fail Sentry preview audit
-        if: always() && steps.sentry_audit.outputs.exit_code != '0'
+        if: always() && steps.preview_scope.outputs.should_smoke != 'false' && steps.sentry_audit.outputs.exit_code != '0'
         run: exit "${{ steps.sentry_audit.outputs.exit_code }}"

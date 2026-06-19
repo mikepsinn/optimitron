@@ -859,12 +859,13 @@ jobs:
             if (!shouldSync) {
               await core.summary
                 .addHeading('Preview database sync')
-                .addRaw(`Managed-data sync skipped: ${filenames.length} changed file(s), none touch managed-data, schema, masking, or preview seed inputs. Preview database migrations still run before deployed preview smoke.`)
+                .addRaw(`Skipped: ${filenames.length} changed file(s), none touch managed-data, schema, masking, or preview seed inputs.`)
                 .write();
             }
 
       - name: Check Preview database sync configuration
         id: preview_secrets
+        if: steps.preview_data_changes.outputs.should_sync == 'true'
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
         shell: bash
@@ -892,30 +893,30 @@ jobs:
           exit 1
 
       - name: Enable Corepack
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Resolve preview Neon database env
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
         run: node .github/scripts/resolve-preview-neon-env.mjs
 
       - name: Install dependencies
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Apply preview database migrations
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
         run: pnpm db:deploy
