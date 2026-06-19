@@ -8,7 +8,7 @@ import { ROUTES } from "@/lib/routes";
 export const metadata: Metadata = {
   title: "dFEC — Elections & Accountability | Optimitron",
   description:
-    "Smart contracts fund politicians by alignment score. No PACs. No lobbying. No bribery with extra steps.",
+    "Score politicians by how closely their votes match citizen priorities.",
 };
 
 export default function DFECPage() {
@@ -33,8 +33,7 @@ export default function DFECPage() {
         </p>
         <p className="mt-3 text-muted-foreground font-bold">
           On my planet, officials are funded proportionally to how well they
-          align with citizen preferences. Smart contracts handle the maths.
-          Lobbying is not a thing.
+          align with citizen preferences. Lobbying is not a thing.
         </p>
       </section>
 
@@ -102,9 +101,8 @@ export default function DFECPage() {
             democracy.
           </p>
           <p>
-            <span className="text-foreground font-black">4.</span> Smart
-            contracts route money to politicians based on their score. No
-            lobbyists. No donors. No dinner fundraisers at $50,000 a plate.
+            <span className="text-foreground font-black">4.</span> Campaign
+            support follows the score. No dinner fundraisers at $50,000 a plate.
           </p>
           <p>
             <span className="text-foreground font-black">5.</span> Politicians
@@ -118,9 +116,6 @@ export default function DFECPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <GameCTA href={ROUTES.alignment} variant="primary" size="lg">
             Check Your Alignment
-          </GameCTA>
-          <GameCTA href={ROUTES.iab} variant="secondary" size="lg">
-            Incentive Alignment Bonds
           </GameCTA>
         </div>
       </section>

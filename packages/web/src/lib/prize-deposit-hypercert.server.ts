@@ -30,7 +30,7 @@ export interface PrizeDepositHypercertPublicationResult {
 }
 
 function getTreasuryChainId() {
-  const raw = process.env.TREASURY_CHAIN_ID ?? process.env.VOTE_TOKEN_CHAIN_ID ?? "84532";
+  const raw = process.env.TREASURY_CHAIN_ID ?? process.env.EOP_CHAIN_ID ?? "84532";
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : 84532;
 }

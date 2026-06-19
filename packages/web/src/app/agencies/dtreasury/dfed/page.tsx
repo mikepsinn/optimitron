@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
+import { SimpleComparisonGrid } from "@/components/ui/simple-comparison";
 import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import {
   fmtParam,
@@ -19,8 +20,8 @@ const historicalCycles = [
     event: "Silver content in denarius reduced from 95% to 5%",
     result:
       "1,000% price increases. Empire fragments. Diocletian blames merchants.",
-    color: "bg-foreground",
-    textColor: "text-background",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
   {
     era: "France, 1790s",
@@ -43,8 +44,8 @@ const historicalCycles = [
     event:
       "Federal Reserve created. Dollar immediately used to fund WWI without popular consent.",
     result: `Dollar loses 96% of value. ${fmtParam(WAR_DEATHS_SINCE_1900)} war and conflict deaths since 1900. ${fmtParam({ ...CUMULATIVE_MILITARY_SPENDING_FED_ERA, unit: "USD" })} in cumulative military spending.`,
-    color: "bg-foreground",
-    textColor: "text-background",
+    color: "bg-background",
+    textColor: "text-foreground",
   },
 ];
 
@@ -82,16 +83,16 @@ export default function DTreasuryDfedPage() {
         </Link>
       </div>
 
-      {/* The $WISH Alternative */}
+      {/* Fixed-supply alternative */}
       <section className="mb-16">
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
           The Alternative: Fixed Supply, Zero Inflation
         </h2>
-        <div className="border-4 border-primary bg-background p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6">
+        <div className="mb-6 border-l border-foreground/30 pl-4">
           <p className="text-sm text-foreground font-bold leading-relaxed mb-4">
-            $WISH has a fixed supply set once at deployment. No minting. No
+            Wishes have a fixed supply set once at deployment. No minting. No
             central bank. No algorithm deciding how much to print. Your
-            central banks created $13 trillion since 2020. $WISH creates
+            central banks created $13 trillion since 2020. Wishes create
             exactly zero, ever.
           </p>
           <p className="text-sm text-muted-foreground font-bold leading-relaxed">
@@ -116,16 +117,16 @@ export default function DTreasuryDfedPage() {
           wars, the currency collapses, and the population suffers. Then you do
           it again.
         </p>
-        <div className="space-y-4">
+        <div className="divide-y divide-foreground/20 border-y border-foreground/30">
           {historicalCycles.map((cycle) => (
             <div
               key={cycle.era}
-              className={`border-4 border-primary ${cycle.color} p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+              className="py-5"
             >
               <div className="text-xs font-black uppercase tracking-[0.15em] text-muted-foreground">
                 {cycle.era}
               </div>
-              <h3 className={`mt-1 text-lg font-black ${cycle.textColor}`}>
+              <h3 className="mt-1 text-lg font-black text-foreground">
                 {cycle.event}
               </h3>
               <p className="mt-2 text-sm font-bold text-muted-foreground">
@@ -145,50 +146,17 @@ export default function DTreasuryDfedPage() {
           Nixon severed the dollar from gold. Before that, the money printer had
           a constraint. After that, it didn&apos;t.
         </p>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
-              Before 1971 (Gold-Anchored)
-            </h3>
-            <div className="space-y-3">
-              {beforeAfter1971.before.map((item) => (
-                <div
-                  key={item.label}
-                  className="border-4 border-primary bg-background p-3"
-                >
-                  <div className="text-xs font-black uppercase text-muted-foreground">
-                    {item.label}
-                  </div>
-                  <div className="mt-0.5 text-sm font-black text-foreground">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
-              After 1971 (Fiat Currency)
-            </h3>
-            <div className="space-y-3">
-              {beforeAfter1971.after.map((item) => (
-                <div
-                  key={item.label}
-                  className="border-4 border-primary bg-background p-3"
-                >
-                  <div className="text-xs font-black uppercase text-muted-foreground">
-                    {item.label}
-                  </div>
-                  <div className="mt-0.5 text-sm font-black text-foreground">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed">
+        <SimpleComparisonGrid
+          columns={[
+            {
+              title: "Before 1971 (Gold-Anchored)",
+              items: beforeAfter1971.before,
+            },
+            { title: "After 1971 (Fiat Currency)", items: beforeAfter1971.after },
+          ]}
+        />
+        <div className="mt-6 border-l border-foreground/30 pl-4">
+          <p className="text-sm font-bold leading-relaxed text-muted-foreground">
             Median wages measured in gold equivalent have lost 93% of their
             value since 1971. Your species doubled its workforce and household
             income rose ten percentage points. You added an entire second job
@@ -207,22 +175,22 @@ export default function DTreasuryDfedPage() {
           through banks and government contractors. By the time it reaches you,
           prices have already risen.
         </p>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="grid grid-cols-1 gap-6 border-y border-foreground/30 py-6 md:grid-cols-3">
+          <div>
             <div className="text-3xl font-black">
               ~$4T
             </div>
-            <div className="mt-1 text-xs font-black uppercase">
+            <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
               Fed Created (2020)
             </div>
           </div>
-          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div>
             <div className="text-3xl font-black">$4T</div>
-            <div className="mt-1 text-xs font-black uppercase">
+            <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
               Top 1% Gained (2020)
             </div>
           </div>
-          <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div>
             <div className="text-3xl font-black text-foreground">$0</div>
             <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
               You Got

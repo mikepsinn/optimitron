@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
+import { SimpleComparisonGrid } from "@/components/ui/simple-comparison";
+import { StepList } from "@/components/ui/step-list";
 import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import { dirsLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
@@ -11,7 +13,7 @@ const agency = AGENCIES.dirs;
 const howItWorks = [
   {
     step: "01",
-    title: "You spend $WISH",
+    title: "You spend wishes",
     description:
       "You buy things. You pay people. You live your life. The currency does the rest. On your planet, this step requires a tax attorney.",
   },
@@ -31,7 +33,7 @@ const howItWorks = [
     step: "04",
     title: "No evasion possible",
     description:
-      "The tax is protocol-level. There are no offshore accounts, no shell companies, no loopholes. If the token moves, the tax happens. That's it.",
+      "The tax is protocol-level. There are no offshore accounts, no shell companies, no loopholes. If money moves, the tax happens. That's it.",
   },
 ];
 
@@ -45,7 +47,7 @@ const comparisonData = {
     { label: "Evasion rate", value: "~15% ($600B+ gap)" },
   ],
   wish: [
-    { label: "Tax code length", value: "6 lines of Solidity" },
+    { label: "Tax code length", value: "6 lines of computer code" },
     { label: "Employees needed", value: "0" },
     { label: "Annual operating cost", value: "$0" },
     { label: "Compliance cost", value: "$0" },
@@ -67,46 +69,25 @@ export default function DTreasuryDirsPage() {
         </Link>
       </div>
 
-      {/* The $WISH Mechanism */}
+      {/* Transaction tax mechanism */}
       <section className="mb-16">
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
           How the Transaction Tax Works
         </h2>
         <p className="mb-6 max-w-3xl text-sm font-bold text-muted-foreground">
-          Every $WISH transaction has a 0.5% fee baked into the token itself.
+          Every wishes transaction has a 0.5% fee baked into the currency.
           You spend money. The tax happens. Nobody files anything. Nobody audits
           anything. 74,000 pages of tax code, 83,000 IRS employees, and
           6.1 billion hours of annual filing time — all replaced by six lines of
-          code that a competent intern could read in four minutes.
+          computer code that a competent intern could read in four minutes.
         </p>
-        <div className="space-y-4">
-          {howItWorks.map((item) => (
-            <div
-              key={item.step}
-              className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-            >
-              <div className="flex items-start gap-4">
-                <span className="w-8 h-8 bg-foreground text-background flex items-center justify-center text-xs font-black shrink-0">
-                  {item.step}
-                </span>
-                <div>
-                  <h3 className="font-black uppercase text-foreground text-sm">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground font-bold mt-1">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <StepList items={howItWorks} />
       </section>
 
       {/* Side-by-Side Comparison */}
       <section className="mb-16">
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
-          IRS vs 6 Lines of Solidity
+          IRS vs 6 Lines of Computer Code
         </h2>
         <p className="mb-6 max-w-3xl text-sm font-bold text-muted-foreground">
           The entire IRS budget is $12.3 billion per year. A 0.5% automated
@@ -114,54 +95,18 @@ export default function DTreasuryDirsPage() {
           same revenue with zero administrative overhead. The math is not
           complicated. The politics, apparently, is.
         </p>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
-              Current System (IRS)
-            </h3>
-            <div className="space-y-3">
-              {comparisonData.current.map((item) => (
-                <div
-                  key={item.label}
-                  className="border-4 border-primary bg-background p-3"
-                >
-                  <div className="text-xs font-black uppercase text-muted-foreground">
-                    {item.label}
-                  </div>
-                  <div className="mt-0.5 text-sm font-black text-foreground">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
-              $WISH Transaction Tax
-            </h3>
-            <div className="space-y-3">
-              {comparisonData.wish.map((item) => (
-                <div
-                  key={item.label}
-                  className="border-4 border-primary bg-background p-3"
-                >
-                  <div className="text-xs font-black uppercase text-muted-foreground">
-                    {item.label}
-                  </div>
-                  <div className="mt-0.5 text-sm font-black text-foreground">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed">
+        <SimpleComparisonGrid
+          columns={[
+            { title: "Current System (IRS)", items: comparisonData.current },
+            { title: "Wishes Transaction Tax", items: comparisonData.wish },
+          ]}
+        />
+        <div className="mt-6 border-l border-foreground/30 pl-4">
+          <p className="text-sm font-bold leading-relaxed text-muted-foreground">
             Americans spend 6.1 billion hours per year on tax compliance. That&apos;s
             roughly 3 million full-time jobs worth of human effort — filling out
             forms, gathering receipts, hiring accountants — to accomplish what
-            six lines of code do automatically and without error.
+            six lines of computer code do automatically and without error.
           </p>
         </div>
       </section>

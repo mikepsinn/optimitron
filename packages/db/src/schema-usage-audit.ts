@@ -27,6 +27,8 @@ type Classification =
   | "generated-only"
   | "suspicious";
 
+const READ_FILE_CONCURRENCY = 64;
+
 interface SchemaItem {
   kind: SchemaItemKind;
   name: string;
@@ -135,6 +137,7 @@ const EXCLUDED_DIRECTORIES = new Set([
   "coverage",
   "dist",
   "node_modules",
+  "output",
 ]);
 
 const EXCLUDED_RELATIVE_PATHS = new Set([
@@ -323,6 +326,10 @@ function countMatches(text: string, regex: RegExp): number {
   return matches ? matches.length : 0;
 }
 
+function shouldSkipDirectory(name: string): boolean {
+  return EXCLUDED_DIRECTORIES.has(name) || name.startsWith(".tmp-");
+}
+
 async function collectTextFiles(root: string): Promise<string[]> {
   const result: string[] = [];
 
@@ -331,7 +338,7 @@ async function collectTextFiles(root: string): Promise<string[]> {
     entries.sort((left, right) => left.name.localeCompare(right.name));
 
     for (const entry of entries) {
-      if (EXCLUDED_DIRECTORIES.has(entry.name)) {
+      if (entry.isDirectory() && shouldSkipDirectory(entry.name)) {
         continue;
       }
 
@@ -366,17 +373,27 @@ async function collectTextFiles(root: string): Promise<string[]> {
 
 async function loadAuditedFiles(root: string): Promise<AuditedFile[]> {
   const files = await collectTextFiles(root);
-  const loadedFiles = await Promise.all(
-    files.map(async (filePath) => {
-      const relativePath = toPosixPath(path.relative(root, filePath));
-      return {
-        relativePath,
-        bucket: bucketForRelativePath(relativePath),
-        text: await fs.readFile(filePath, "utf8"),
-      } satisfies AuditedFile;
-    }),
+  const loadedFiles: AuditedFile[] = [];
+
+  for (let index = 0; index < files.length; index += READ_FILE_CONCURRENCY) {
+    const batch = files.slice(index, index + READ_FILE_CONCURRENCY);
+    loadedFiles.push(
+      ...(await Promise.all(
+        batch.map(async (filePath) => {
+          const relativePath = toPosixPath(path.relative(root, filePath));
+          return {
+            relativePath,
+            bucket: bucketForRelativePath(relativePath),
+            text: await fs.readFile(filePath, "utf8"),
+          } satisfies AuditedFile;
+        }),
+      )),
+    );
+  }
+
+  return loadedFiles.sort((left, right) =>
+    left.relativePath.localeCompare(right.relativePath),
   );
-  return loadedFiles.sort((left, right) => left.relativePath.localeCompare(right.relativePath));
 }
 
 async function readSchemaItems(schemaPath: string): Promise<SchemaItem[]> {

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatWish, useTreasuryData } from "@/hooks/useTreasuryData";
+import { formatWishes, useTreasuryData } from "@/hooks/useTreasuryData";
 
 export function TreasuryStatusCard() {
   const {
@@ -18,13 +18,13 @@ export function TreasuryStatusCard() {
   const stats = [
     {
       label: "UBI Pending",
-      value: `${formatWish(ubiPendingBalance)} $WISH`,
+      value: formatWishes(ubiPendingBalance),
       detail: "Awaiting distribution to citizens",
       color: "bg-background",
     },
     {
       label: "Per Citizen",
-      value: citizenCountNum > 0 ? `${formatWish(perCitizen)} $WISH` : "\u2014",
+      value: citizenCountNum > 0 ? formatWishes(perCitizen) : "\u2014",
       detail: citizenCountNum > 0 ? "Next distribution" : "No citizens yet",
       color: "bg-background",
     },
@@ -36,17 +36,17 @@ export function TreasuryStatusCard() {
     {
       label: "Transaction Tax",
       value: `${(Number(taxRateBps) / 100).toFixed(1)}%`,
-      detail: "On every $WISH transfer",
+      detail: "On every wish transfer",
       color: "bg-background",
     },
     {
       label: "Circulating Supply",
-      value: `${formatWish(totalSupply)} $WISH`,
+      value: formatWishes(totalSupply),
       color: "bg-background",
     },
     {
       label: "Max Supply (Fixed)",
-      value: `${formatWish(maxSupply)} $WISH`,
+      value: formatWishes(maxSupply),
       detail: "No inflation. Ever.",
       color: "bg-background",
     },
@@ -59,25 +59,25 @@ export function TreasuryStatusCard() {
           Treasury Status
         </h2>
         {isDemo && (
-          <span className="border-4 border-primary bg-background text-foreground px-2 py-0.5 text-[10px] font-black uppercase">
+          <span className="border border-foreground bg-background px-2 py-0.5 text-[10px] font-black uppercase text-foreground">
             Demo
           </span>
         )}
       </div>
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-6 border-y border-foreground/30 py-3 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`border-4 border-primary ${stat.color} ${stat.color === "bg-background" ? "text-foreground" : ""} p-3`}
+            className="min-w-0 border-b border-foreground/20 py-3 text-foreground last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0 lg:[&:nth-last-child(-n+3)]:border-b-0"
           >
-            <div className="text-[10px] font-black uppercase">
+            <div className="text-[10px] font-black uppercase text-muted-foreground">
               {stat.label}
             </div>
-            <div className="text-sm font-black mt-1">
+            <div className="mt-1 text-sm font-black leading-tight tabular-nums [overflow-wrap:anywhere]">
               {stat.value}
             </div>
             {stat.detail && (
-              <div className="text-[10px] font-bold mt-0.5">
+              <div className="text-[10px] font-bold mt-0.5 text-muted-foreground">
                 {stat.detail}
               </div>
             )}

@@ -41,9 +41,12 @@ export interface ReferendumSignatureBoxProps {
   showReaderShell?: boolean;
   submitLabel?: string;
   submittingLabel?: string;
-  authTitle?: string;
+  authTitle?: string | null;
+  googleButtonLabel?: string;
   emailButtonLabel?: string;
   emailPendingButtonLabel?: string;
+  showDemoAuth?: boolean;
+  hideAuthContainer?: boolean;
   buildShareUrl?: (
     user: ReferralUser | null | undefined,
     baseUrl?: string,
@@ -76,8 +79,11 @@ export function ReferendumSignatureBox({
   showReaderShell = true,
   submittingLabel = "...",
   authTitle = "Finish Signing",
+  googleButtonLabel = "Finish with Google",
   emailButtonLabel = "Email Me a Link to Finish Signing",
   emailPendingButtonLabel = "Sending Finish-Signing Link...",
+  showDemoAuth = true,
+  hideAuthContainer = false,
   buildShareUrl = buildUserReferralUrl,
   showPrivacyToggle = false,
   publicVoteDefault = true,
@@ -272,7 +278,7 @@ export function ReferendumSignatureBox({
           <>
             <SecretChainPitch citizenName={getUserDisplayName(session?.user)} />
             <ShareLinkButtons
-              label="Share this link"
+              label="Send your referral link"
               shareText={shareText}
               url={referralUrl}
               emailSubject={emailSubject}
@@ -304,25 +310,15 @@ export function ReferendumSignatureBox({
           referralCode={referralCode}
           compact
           variant={isReader ? "document" : "default"}
-          title={
-            signedAnswer === REFERENDUM_ANSWER.NO ? "Finish Voting" : authTitle
+          title={authTitle}
+          subtitle={authPromptText}
+          googleButtonLabel={googleButtonLabel}
+          emailButtonLabel={emailButtonLabel}
+          emailPendingButtonLabel={emailPendingButtonLabel}
+          providers={
+            showDemoAuth ? undefined : { demo: false, email: true, google: true }
           }
-          subtitle={
-            signedAnswer === REFERENDUM_ANSWER.NO
-              ? "Verify your identity to record your referendum vote."
-              : authPromptText
-          }
-          googleButtonLabel="Finish with Google"
-          emailButtonLabel={
-            signedAnswer === REFERENDUM_ANSWER.NO
-              ? "Email Me a Link to Finish Voting"
-              : emailButtonLabel
-          }
-          emailPendingButtonLabel={
-            signedAnswer === REFERENDUM_ANSWER.NO
-              ? "Sending Finish-Voting Link..."
-              : emailPendingButtonLabel
-          }
+          hideContainer={hideAuthContainer}
         />
       </div>
     );
@@ -350,19 +346,19 @@ export function ReferendumSignatureBox({
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={() => void handleSubmit(REFERENDUM_ANSWER.NO)}
-          disabled={signing}
-          className={buttonClass}
-        >
-          {submittingAnswer === REFERENDUM_ANSWER.NO ? "..." : "No"}
-        </button>
-        <button
-          type="button"
           onClick={() => void handleSubmit(REFERENDUM_ANSWER.YES)}
           disabled={signing}
           className={buttonClass}
         >
           {submittingAnswer === REFERENDUM_ANSWER.YES ? submittingLabel : "Yes"}
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleSubmit(REFERENDUM_ANSWER.NO)}
+          disabled={signing}
+          className={buttonClass}
+        >
+          {submittingAnswer === REFERENDUM_ANSWER.NO ? "..." : "No"}
         </button>
       </div>
       {showPrivacyToggle && status === "authenticated" ? (

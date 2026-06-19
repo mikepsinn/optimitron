@@ -10,17 +10,17 @@ import { serverEnv } from "@/lib/env";
  * GET /api/prize-treasury/status
  *
  * Returns the current state of the Voter Prize Treasury:
- * - DB aggregates: deposits, vote mints
+ * - DB aggregates: deposits, point mints
  * - On-chain data: totalAssets (with yield), metrics, thresholds
  */
 export async function GET() {
   try {
-    const [deposits, voteMintsCount] = await Promise.all([
+    const [deposits, pointMintsCount] = await Promise.all([
       prisma.prizeTreasuryDeposit.findMany({
         where: { deletedAt: null },
         select: { amount: true, depositorAddress: true },
       }),
-      prisma.voteTokenMint.count({
+      prisma.pointMint.count({
         where: { status: "CONFIRMED", deletedAt: null },
       }),
     ]);
@@ -34,7 +34,7 @@ export async function GET() {
 
     // Fetch on-chain data if contract is deployed
     let onChain: Record<string, unknown> | null = null;
-    const chainId = Number(serverEnv.VOTE_TOKEN_CHAIN_ID ?? "84532");
+    const chainId = Number(serverEnv.EOP_CHAIN_ID ?? "84532");
 
     try {
       const provider = getProvider(chainId);
@@ -46,7 +46,7 @@ export async function GET() {
         incomeMetric,
         thresholdMet,
         maturityTimestamp,
-        voteTotalSupplySnapshot,
+        pointTotalSupplySnapshot,
         sharePrice,
         depositorCount,
       ] = await Promise.all([
@@ -55,7 +55,7 @@ export async function GET() {
         treasury.currentIncomeMetric() as Promise<bigint>,
         treasury.thresholdMet() as Promise<boolean>,
         treasury.maturityTimestamp() as Promise<bigint>,
-        treasury.voteTotalSupplySnapshot() as Promise<bigint>,
+        treasury.pointTotalSupplySnapshot() as Promise<bigint>,
         treasury.sharePrice() as Promise<bigint>,
         treasury.depositorCount() as Promise<bigint>,
       ]);
@@ -66,7 +66,7 @@ export async function GET() {
         incomeMetric: incomeMetric.toString(),
         thresholdMet,
         maturityTimestamp: maturityTimestamp.toString(),
-        voteTotalSupplySnapshot: voteTotalSupplySnapshot.toString(),
+        pointTotalSupplySnapshot: pointTotalSupplySnapshot.toString(),
         sharePrice: sharePrice.toString(),
         onChainDepositorCount: depositorCount.toString(),
       };
@@ -78,7 +78,7 @@ export async function GET() {
       totalDeposited,
       depositCount: deposits.length,
       uniqueDepositors,
-      confirmedVoteMints: voteMintsCount,
+      confirmedPointMints: pointMintsCount,
       ...onChain,
     });
   } catch (error) {

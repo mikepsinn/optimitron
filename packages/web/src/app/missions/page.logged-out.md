@@ -16,7 +16,7 @@
 - EARTH OPTIMIZATION MISSIONS
 ## FIND SOMEONE YOU WOULD NOT MIND SAVING THE WORLD WITH.
 - Spend one hour with a human you like. Figure out one useful thing to do for the campaign. Do it together. Have fun. Fall madly in love if you insist.
-- Disease kills about 150,000 humans a day. Love may reduce the urge to explode people and increase the urge to cure them. The scheduled activity is still optimizing Earth.
+- Disease kills about [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) humans a day. Love may reduce the urge to explode people and increase the urge to cure them. The scheduled activity is still optimizing Earth.
 - [SIGN IN TO START](/auth/signin?callbackUrl=%2Fmissions)
 - [FIND MISSION PEOPLE](/people?missions=1)
 ### MISSION SAFETY

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { POINT, POINTS } from "@/lib/messaging";
 import {
   PRIZE_POOL_SIZE,
-  VOTE_TOKEN_VALUE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   GLOBAL_INVESTABLE_ASSETS,
   PRIZE_POOL_PARTICIPATION_RATE,
@@ -14,7 +14,7 @@ import {
 const depositT = Math.round((GLOBAL_INVESTABLE_ASSETS.value * PRIZE_POOL_PARTICIPATION_RATE.value) / 1e12 * 10) / 10;
 const poolT = Math.round(PRIZE_POOL_SIZE.value / 1e12);
 const multiple = Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value);
-const voteValue = `$${Math.round(VOTE_TOKEN_VALUE.value).toLocaleString()}`;
+const pointValue = `$${Math.round(EARTH_OPTIMIZATION_POINT_VALUE.value).toLocaleString()}`;
 
 export function SlideDominantAssuranceContract() {
   const [phase, setPhase] = useState(0);
@@ -40,7 +40,7 @@ export function SlideDominantAssuranceContract() {
           VOTE → SHARE → EARN
         </h1>
 
-        {/* Flow: vote → share link → earn VOTE Points → value */}
+        {/* Flow: vote → share link → earn points → value */}
         <div
           className="flex items-center justify-center gap-3 md:gap-6 transition-opacity duration-500"
           style={{ opacity: phase >= 2 ? 1 : 0 }}
@@ -64,13 +64,13 @@ export function SlideDominantAssuranceContract() {
           </div>
         </div>
 
-        {/* VOTE Point value */}
+        {/* Point value */}
         <div
           className="text-center transition-opacity duration-500"
           style={{ opacity: phase >= 3 ? 1 : 0 }}
         >
           <div className="font-pixel text-lg text-muted-foreground mb-1">EACH {POINT.toUpperCase()} COULD BE WORTH UP TO</div>
-          <div className="font-pixel text-5xl md:text-7xl text-background">{voteValue}</div>
+          <div className="font-pixel text-5xl md:text-7xl text-background">{pointValue}</div>
           <div className="font-pixel text-lg text-muted-foreground mt-1">if the fund receives 1% of global savings and targets are hit</div>
         </div>
 

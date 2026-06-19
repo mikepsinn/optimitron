@@ -42,5 +42,5 @@
 - Analysis date: 2026-04-06T06:40:06.290Z · Source: Optimitron OPG (Optimal Policy Generator)
 - EARTH OPTIMIZATION PRIZE
 #### THESE RECOMMENDATIONS NEED POLITICAL WILL TO IMPLEMENT.
-- The bottleneck is pluralistic ignorance — everyone wants evidence-based policy, nobody knows everyone else does. Deposit into the prize pool, recruit verified voters, earn VOTE Points.
+- The bottleneck is pluralistic ignorance — everyone wants evidence-based policy, nobody knows everyone else does. Deposit into the prize pool, recruit verified voters, earn Earth Optimization Points.
 - [PLAY THE GAME](/prize)

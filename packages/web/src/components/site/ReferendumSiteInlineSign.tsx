@@ -17,6 +17,13 @@ export function ReferendumSiteInlineSign({
   authCallbackUrl,
   postSignRedirectUrl,
   title,
+  authPromptText,
+  authTitle,
+  emailButtonLabel,
+  emailPendingButtonLabel,
+  googleButtonLabel,
+  showDemoAuth,
+  hideAuthContainer,
   variant = "reader",
   showPrivacyToggle,
   publicVoteDefault,
@@ -27,6 +34,13 @@ export function ReferendumSiteInlineSign({
   authCallbackUrl?: string;
   postSignRedirectUrl?: string;
   title?: string;
+  authPromptText?: string;
+  authTitle?: string | null;
+  emailButtonLabel?: string;
+  emailPendingButtonLabel?: string;
+  googleButtonLabel?: string;
+  showDemoAuth?: boolean;
+  hideAuthContainer?: boolean;
   variant?: "stepper" | "reader";
   showPrivacyToggle?: boolean;
   publicVoteDefault?: boolean;
@@ -68,7 +82,7 @@ export function ReferendumSiteInlineSign({
     <ReferendumSignatureBox
       referendumSlug={config.slug}
       title={title ?? config.title}
-      authPromptText={config.authPromptText}
+      authPromptText={authPromptText ?? config.authPromptText}
       authCallbackUrl={
         authCallbackUrl ?? postSignRedirectUrl ?? config.authCallbackUrl
       }
@@ -92,9 +106,14 @@ export function ReferendumSiteInlineSign({
       showReaderShell={showReaderShell}
       submitLabel={config.action.submitLabel}
       submittingLabel={config.action.submittingLabel}
-      authTitle={config.action.authTitle}
-      emailButtonLabel={config.action.emailButtonLabel}
-      emailPendingButtonLabel={config.action.emailPendingButtonLabel}
+      authTitle={authTitle === undefined ? config.action.authTitle : authTitle}
+      emailButtonLabel={emailButtonLabel ?? config.action.emailButtonLabel}
+      emailPendingButtonLabel={
+        emailPendingButtonLabel ?? config.action.emailPendingButtonLabel
+      }
+      googleButtonLabel={googleButtonLabel}
+      showDemoAuth={showDemoAuth}
+      hideAuthContainer={hideAuthContainer}
       buildShareUrl={config.action.buildShareUrl}
       showPrivacyToggle={showPrivacyToggle ?? config.showPrivacyToggle ?? false}
       publicVoteDefault={

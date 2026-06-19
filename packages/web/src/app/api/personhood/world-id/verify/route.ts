@@ -5,7 +5,7 @@ import { isWorldIdConfigured, verifyAndSaveWorldIdResult } from "@/lib/world-id.
 import type { WorldIdVerificationPayload } from "@/lib/world-id";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
-import { syncReferralVoteTokenMintsForVerifiedVoter } from "@/lib/referral-vote-token-mint.server";
+import { syncReferralPointMintsForVerifiedVoter } from "@/lib/referral-point-mint.server";
 
 export const runtime = "nodejs";
 
@@ -14,21 +14,21 @@ export async function POST(request: Request) {
     const { userId } = await requireAuth();
 
     if (!isWorldIdConfigured()) {
-      return NextResponse.json({ error: "World ID is not configured." }, { status: 503 });
+      return NextResponse.json({ error: "Personhood verification is not configured." }, { status: 503 });
     }
 
     const result = (await request.json()) as WorldIdVerificationPayload;
     const verification = await verifyAndSaveWorldIdResult(userId, result);
-    let referralVoteTokenMintsQueued = 0;
+    let referralPointMintsQueued = 0;
 
     try {
-      const syncedMints = await syncReferralVoteTokenMintsForVerifiedVoter(userId);
-      referralVoteTokenMintsQueued = syncedMints.length;
+      const syncedMints = await syncReferralPointMintsForVerifiedVoter(userId);
+      referralPointMintsQueued = syncedMints.length;
     } catch (mintError) {
-      console.error("[WORLD ID VERIFY] Referral vote token sync error:", mintError);
+      console.error("[WORLD ID VERIFY] Referral point sync error:", mintError);
     }
 
-    // Grant wish points for World ID verification
+    // Grant wish points for personhood verification
     let wishesEarned = 0;
     try {
       const wishResult = await grantWishes({
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       verification,
-      referralVoteTokenMintsQueued,
+      referralPointMintsQueued,
       wishesEarned,
     });
   } catch (error) {
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const message = error instanceof Error ? error.message : "Failed to verify World ID proof.";
+    const message = error instanceof Error ? error.message : "Failed to verify personhood proof.";
     console.error("[WORLD ID VERIFY] Error:", error);
     return NextResponse.json({ error: message }, { status: 400 });
   }

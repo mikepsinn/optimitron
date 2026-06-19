@@ -73,9 +73,8 @@ export function LandingPrizeOffer() {
                   Have a Network?
                 </div>
                 <p className="text-sm font-bold">
-                  Share referral link → Recruit verified voters (World ID) →
-                  {REFERRAL.earnOne} Prize share if plan succeeds.
-                  {REFERRAL.noDeposit}
+                  Share referral link → Recruit verified voters →
+                  {REFERRAL.earnOne} Prize share if plan succeeds. {REFERRAL.noDeposit}
                 </p>
               </div>
             </div>

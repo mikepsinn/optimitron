@@ -14,7 +14,7 @@ Does the copy:
 
 1. **Reach them?** Could a 5th grader read it without a dictionary? Is the primary action above the fold? Is the same idea said only once?
 2. **Cite its claims?** Every user-facing number traces back to a real source (via `<ParameterValue>` or an inline citation), and the math has been done somewhere a reader could find.
-3. **Sound like Wishonia + Kurt Vonnegut?** Deadpan, data-first, plain declaratives, sardonic comparisons. Not a Stripe keynote, not a corporate-onboarding flow, not a moral aphorism in lieu of a fact.
+3. **Sound like Wishonia selling the future?** Earnest 1950s World's-Fair pitch backed by cited numbers, Vonnegut-plain declaratives, deadpan in the asides. Not a Stripe keynote, not a corporate-onboarding flow, and not a scolding — copy that ends on the indictment instead of the deal, or makes the reader the butt of the joke, is a violation.
 4. **Keep momentum?** After a YES action, the next step renders inline. No "open the dashboard to find X" punts.
 5. **Reuse what exists?** New components are flagged unless the user explicitly wants a divergence from existing equivalents.
 
@@ -49,6 +49,8 @@ These run regardless of which smell first caught your attention.
 - The same idea repeated across eyebrow → H1 → subtitle → drop-cap.
 - Plaintext numbers in user-facing JSX with no `<ParameterValue>` wrapper at all.
 - `figures={1}` or `figures={2}` on a calculator page (the donate page floor is 3).
+- Sections that roast the reader's country or choices and stop there — no offer, no upgrade, no invitation.
+- Fear or risk aimed at us ("what replaces your government") instead of the status quo.
 
 # Output
 

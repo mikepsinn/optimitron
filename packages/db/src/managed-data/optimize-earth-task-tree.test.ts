@@ -1,4 +1,11 @@
 import { describe, expect, it } from "vitest";
+import {
+  COURT_OF_HUMANITY_TASK_ID,
+  EARTH_OPTIMIZATION_PRIZE_TASK_ID,
+  END_WAR_AND_DISEASE_TASK_ID,
+  LOVING_TAKEOVER_TASK_ID,
+  TREATY_PARENT_TASK_ID,
+} from "../task-keys.js";
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "../task-keys.js";
 import { OPTIMIZE_EARTH_TASK_TREE } from "./optimize-earth-task-tree.js";
 
@@ -28,5 +35,42 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
 
   it("has parentTaskId null (it's the root)", () => {
     expect(root?.parentTaskId).toBeNull();
+  });
+
+  // The /foundations mechanism comparison ranks the children of End War and
+  // Disease by expected value per donated dollar. Each fundable mechanism must
+  // therefore carry economics (conditional value + probability) so the sync can
+  // build an impact frame; dFDA must be an active child (it was retired before),
+  // and the shirt seed must exist as the $50M-seed mechanism (not the $56B
+  // universal-distribution framing).
+  const fundableMechanismKeys = [
+    LOVING_TAKEOVER_TASK_ID,
+    "dfda",
+    "shirt-seed",
+    COURT_OF_HUMANITY_TASK_ID,
+    TREATY_PARENT_TASK_ID,
+    EARTH_OPTIMIZATION_PRIZE_TASK_ID,
+  ];
+
+  it.each(fundableMechanismKeys)(
+    "mechanism %s carries economics for the comparison",
+    (id) => {
+      const task = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
+      expect(task, `task ${id} should exist`).toBeDefined();
+      expect(task?.retired ?? false).toBe(false);
+      expect(typeof task?.expectedEconomicValueUsdBase).toBe("number");
+      expect(typeof task?.successProbabilityBase).toBe("number");
+    },
+  );
+
+  it("dFDA is an active child of End War and Disease (un-retired)", () => {
+    const dfda = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === "dfda");
+    expect(dfda?.retired ?? false).toBe(false);
+    expect(dfda?.parentTaskId).toBe(END_WAR_AND_DISEASE_TASK_ID);
+  });
+
+  it("the shirt seed is a child of End War and Disease", () => {
+    const seed = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === "shirt-seed");
+    expect(seed?.parentTaskId).toBe(END_WAR_AND_DISEASE_TASK_ID);
   });
 });

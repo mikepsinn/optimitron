@@ -6,7 +6,7 @@ import { getWishBalance } from "@/lib/wishes.server";
 
 /**
  * GET /api/game-stats — lightweight stats for the global score bar.
- * Returns wishes, VOTE balance, referral count, and comparison count.
+ * Returns wishes, point balance, referral count, and comparison count.
  */
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -26,8 +26,8 @@ export async function GET() {
   return NextResponse.json({
     authenticated: true,
     wishes,
-    // VOTE points = referrals. 1 point per verified voter recruited. No wallet required.
-    votePoints: referralCount,
+    // Points = referrals. 1 point per verified voter recruited. No wallet required.
+    points: referralCount,
     referrals: referralCount,
     comparisons: comparisonCount,
   });

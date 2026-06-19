@@ -5,21 +5,21 @@ import {
   getSiteMetadata,
   getRouteMetadata,
 } from "@/lib/metadata";
-import { aboutLink } from "@/lib/routes";
+import { feedbackLink } from "@/lib/routes";
 import { getSiteConfig } from "@/lib/site";
 
 describe("metadata helpers", () => {
   it("adds a canonical path for route metadata", () => {
-    const metadata = getRouteMetadata(aboutLink);
+    const metadata = getRouteMetadata(feedbackLink);
 
-    expect(metadata.title).toBe("About");
-    expect(metadata.alternates?.canonical).toBe("/about");
-    expect(metadata.openGraph?.title).toBe("About");
+    expect(metadata.title).toBe("Feedback");
+    expect(metadata.alternates?.canonical).toBe("/feedback");
+    expect(metadata.openGraph?.title).toBe("Feedback");
   });
 
   it("uses NavItem social preview config for route OG and Twitter images", () => {
     const metadata = getRouteMetadata({
-      ...aboutLink,
+      ...feedbackLink,
       socialPreview: {
         title: "You May Be Owed $2.74 Million",
         description: "Render your verdict.",

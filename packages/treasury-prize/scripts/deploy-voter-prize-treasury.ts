@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 /**
- * Deploy VoteToken + VoterPrizeTreasury and wire them together.
+ * Deploy EarthOptimizationPoint + VoterPrizeTreasury and wire them together.
  *
  * Base Sepolia addresses (Aave V3 — from bgd-labs/aave-address-book):
  *   Pool: 0x8bAB6d1b75f19e9eD9fCe8b9BD338844fF79aE27
@@ -33,13 +33,15 @@ async function main() {
   const HEALTH_THRESHOLD = 100; // 1% improvement in median healthy life years
   const INCOME_THRESHOLD = 50; // 0.5% improvement in median real after-tax income
 
-  // --- Deploy VoteToken ---
-  console.log("\n1. Deploying VoteToken...");
-  const VoteToken = await ethers.getContractFactory("VoteToken");
-  const voteToken = await VoteToken.deploy();
-  await voteToken.waitForDeployment();
-  const voteTokenAddress = await voteToken.getAddress();
-  console.log("   VoteToken deployed to:", voteTokenAddress);
+  // --- Deploy EarthOptimizationPoint ---
+  console.log("\n1. Deploying EarthOptimizationPoint...");
+  const EarthOptimizationPoint = await ethers.getContractFactory(
+    "EarthOptimizationPoint",
+  );
+  const pointToken = await EarthOptimizationPoint.deploy();
+  await pointToken.waitForDeployment();
+  const pointTokenAddress = await pointToken.getAddress();
+  console.log("   EarthOptimizationPoint deployed to:", pointTokenAddress);
 
   // --- Deploy VoterPrizeTreasury ---
   console.log("\n2. Deploying VoterPrizeTreasury...");
@@ -58,21 +60,21 @@ async function main() {
   const treasuryAddress = await treasury.getAddress();
   console.log("   VoterPrizeTreasury deployed to:", treasuryAddress);
 
-  // --- Wire VoterPrizeTreasury → VoteToken ---
-  console.log("\n3. Setting VoteToken on VoterPrizeTreasury...");
-  const tx1 = await treasury.setVoteToken(voteTokenAddress);
+  // --- Wire VoterPrizeTreasury -> EarthOptimizationPoint ---
+  console.log("\n3. Setting EarthOptimizationPoint on VoterPrizeTreasury...");
+  const tx1 = await treasury.setEarthOptimizationPoint(pointTokenAddress);
   await tx1.wait();
-  console.log("   VoterPrizeTreasury.voteToken =", voteTokenAddress);
+  console.log("   VoterPrizeTreasury.earthOptimizationPoint =", pointTokenAddress);
 
-  // --- Wire VoteToken → VoterPrizeTreasury ---
-  console.log("\n4. Setting PrizeTreasury on VoteToken...");
-  const tx2 = await voteToken.setPrizeTreasury(treasuryAddress);
+  // --- Wire EarthOptimizationPoint -> VoterPrizeTreasury ---
+  console.log("\n4. Setting PrizeTreasury on EarthOptimizationPoint...");
+  const tx2 = await pointToken.setPrizeTreasury(treasuryAddress);
   await tx2.wait();
-  console.log("   VoteToken.prizeTreasury =", treasuryAddress);
+  console.log("   EarthOptimizationPoint.prizeTreasury =", treasuryAddress);
 
   // --- Summary ---
   console.log("\n=== Deployment Complete ===");
-  console.log("VoteToken:           ", voteTokenAddress);
+  console.log("EarthOptimizationPoint:", pointTokenAddress);
   console.log("VoterPrizeTreasury:  ", treasuryAddress);
   console.log("USDC:                ", USDC_ADDRESS);
   console.log("aUSDC:               ", AUSDC_ADDRESS);
@@ -84,7 +86,7 @@ async function main() {
   console.log(
     "\n--- Update packages/web/src/lib/contracts/addresses.ts ---",
   );
-  console.log(`  voteToken: "${voteTokenAddress}" as Address,`);
+  console.log(`  earthOptimizationPoint: "${pointTokenAddress}" as Address,`);
   console.log(`  voterPrizeTreasury: "${treasuryAddress}" as Address,`);
 }
 

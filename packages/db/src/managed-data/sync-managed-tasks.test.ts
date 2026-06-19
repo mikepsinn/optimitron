@@ -21,15 +21,46 @@ import {
 type FakeTask = {
   id: string;
   taskKey: string | null;
+  currentImpactEstimateSetId?: string | null;
   parentTaskId: string | null;
   title: string;
   description: string;
   impactStatement: string | null;
+  ownerOrganizationId: string | null;
+  compensationKind: string;
+  compensationCadence: string | null;
+  compensationCurrency: string | null;
+  compensationMinAmountMinorUnits: bigint | null;
+  compensationMaxAmountMinorUnits: bigint | null;
+  compensationPaymentRails: string[];
+  estimatedHoursPerWeekMin: number | null;
+  estimatedHoursPerWeekMax: number | null;
+  remotePolicy: string;
+  locationText: string | null;
+  workLocationCountryCode: string | null;
+  workLocationRegionCode: string | null;
+  workLocationCity: string | null;
+  workLocationPostalCode: string | null;
+  workLocationLatitude: number | null;
+  workLocationLongitude: number | null;
+  workLocationRadiusKm: number | null;
+  workTimeZone: string | null;
+  applicationQuestionsJson: unknown;
+  executionMode: string;
   category: typeof TaskCategory[keyof typeof TaskCategory];
   difficulty: typeof TaskDifficulty[keyof typeof TaskDifficulty];
   estimatedEffortHours: number | null;
   skillTags: string[];
+  preferredSkillTags: string[];
   interestTags: string[];
+  requiredCredentialTags: string[];
+  preferredCredentialTags: string[];
+  requiredLanguageTags: string[];
+  preferredLanguageTags: string[];
+  requiredToolTags: string[];
+  preferredToolTags: string[];
+  requiredAccessTags: string[];
+  preferredAccessTags: string[];
   contextJson: unknown;
   claimPolicy: typeof TaskClaimPolicy[keyof typeof TaskClaimPolicy];
   maxClaims: number | null;
@@ -41,6 +72,37 @@ type FakeTask = {
   sortOrder: number;
   deletedAt: Date | null;
   createdByUserId: string;
+};
+
+type FakeImpactEstimateSet = {
+  id: string;
+  assumptionsJson?: unknown;
+  calculationVersion: string;
+  counterfactualKey: string;
+  deletedAt: Date | null;
+  estimateKind: string;
+  isCurrent: boolean;
+  methodologyKey: string;
+  parameterSetHash: string;
+  publicationStatus: string;
+  sourceSystem: string;
+  taskId: string;
+};
+
+type FakeImpactFrameEstimate = {
+  id: string;
+  adoptionRampYears: number;
+  annualDiscountRate: number;
+  benefitDurationYears: number;
+  deletedAt: Date | null;
+  estimatedEffortHoursBase: number | null;
+  evaluationHorizonYears: number;
+  expectedEconomicValueUsdBase: number | null;
+  frameKey: string;
+  frameSlug: string;
+  successProbabilityBase: number | null;
+  taskImpactEstimateSetId: string;
+  timeToImpactStartDays: number;
 };
 
 type FakeEndpoint = {
@@ -64,11 +126,41 @@ function makeTask(input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">): 
     title: "Old title",
     description: "Old description",
     impactStatement: null,
+    ownerOrganizationId: null,
+    compensationKind: "UNSPECIFIED",
+    compensationCadence: null,
+    compensationCurrency: null,
+    compensationMinAmountMinorUnits: null,
+    compensationMaxAmountMinorUnits: null,
+    compensationPaymentRails: [],
+    estimatedHoursPerWeekMin: null,
+    estimatedHoursPerWeekMax: null,
+    remotePolicy: "UNSPECIFIED",
+    locationText: null,
+    workLocationCountryCode: null,
+    workLocationRegionCode: null,
+    workLocationCity: null,
+    workLocationPostalCode: null,
+    workLocationLatitude: null,
+    workLocationLongitude: null,
+    workLocationRadiusKm: null,
+    workTimeZone: null,
+    applicationQuestionsJson: null,
+    executionMode: "HUMAN_OR_AGENT",
     category: TaskCategory.OTHER,
     difficulty: TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: null,
     skillTags: [],
+    preferredSkillTags: [],
     interestTags: [],
+    requiredCredentialTags: [],
+    preferredCredentialTags: [],
+    requiredLanguageTags: [],
+    preferredLanguageTags: [],
+    requiredToolTags: [],
+    preferredToolTags: [],
+    requiredAccessTags: [],
+    preferredAccessTags: [],
     contextJson: null,
     claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
     maxClaims: null,
@@ -101,6 +193,15 @@ function applyTaskData(task: FakeTask, data: Record<string, unknown>) {
       continue;
     }
 
+    if (key === "ownerOrganization") {
+      const relation = value as
+        | { connect?: { id: string }; disconnect?: boolean }
+        | undefined;
+      if (relation?.connect) task.ownerOrganizationId = relation.connect.id;
+      if (relation?.disconnect) task.ownerOrganizationId = null;
+      continue;
+    }
+
     if (key in task) {
       (task as Record<string, unknown>)[key] = value;
     }
@@ -113,18 +214,97 @@ function matchesIdOrTaskKey(where: Record<string, unknown>, task: FakeTask) {
   return true;
 }
 
+const fakeTaskScalarFields = new Set<keyof FakeTask>([
+  "availableAt",
+  "category",
+  "claimPolicy",
+  "applicationQuestionsJson",
+  "compensationCadence",
+  "compensationCurrency",
+  "compensationKind",
+  "compensationMaxAmountMinorUnits",
+  "compensationMinAmountMinorUnits",
+  "compensationPaymentRails",
+  "contextJson",
+  "createdByUserId",
+  "currentImpactEstimateSetId",
+  "deadlinePolicy",
+  "deletedAt",
+  "description",
+  "difficulty",
+  "dueAt",
+  "estimatedEffortHours",
+  "estimatedHoursPerWeekMax",
+  "estimatedHoursPerWeekMin",
+  "executionMode",
+  "id",
+  "impactStatement",
+  "interestTags",
+  "isPublic",
+  "locationText",
+  "maxClaims",
+  "ownerOrganizationId",
+  "parentTaskId",
+  "preferredAccessTags",
+  "preferredCredentialTags",
+  "preferredLanguageTags",
+  "preferredSkillTags",
+  "preferredToolTags",
+  "remotePolicy",
+  "requiredAccessTags",
+  "requiredCredentialTags",
+  "requiredLanguageTags",
+  "requiredToolTags",
+  "skillTags",
+  "sortOrder",
+  "status",
+  "taskKey",
+  "title",
+  "workLocationCity",
+  "workLocationCountryCode",
+  "workLocationLatitude",
+  "workLocationLongitude",
+  "workLocationPostalCode",
+  "workLocationRadiusKm",
+  "workLocationRegionCode",
+  "workTimeZone",
+]);
+
+function assertValidTaskSelect(select: Record<string, unknown> | undefined) {
+  if (!select) return;
+
+  for (const key of Object.keys(select)) {
+    if (!fakeTaskScalarFields.has(key as keyof FakeTask)) {
+      throw new Error(`Unknown Task select field in fake client: ${key}`);
+    }
+  }
+}
+
 class FakeManagedTaskClient implements ManagedTaskClient {
   tasks: FakeTask[];
   endpoints: FakeEndpoint[];
+  impactEstimateSets: FakeImpactEstimateSet[];
+  impactFrameEstimates: FakeImpactFrameEstimate[];
 
-  constructor(input: { endpoints?: FakeEndpoint[]; tasks?: FakeTask[] }) {
+  constructor(input: {
+    endpoints?: FakeEndpoint[];
+    impactEstimateSets?: FakeImpactEstimateSet[];
+    impactFrameEstimates?: FakeImpactFrameEstimate[];
+    tasks?: FakeTask[];
+  }) {
     this.tasks = input.tasks ?? [];
     this.endpoints = input.endpoints ?? [];
+    this.impactEstimateSets = input.impactEstimateSets ?? [];
+    this.impactFrameEstimates = input.impactFrameEstimates ?? [];
   }
 
   task = {
     findMany: async (args: unknown) => {
-      const where = (args as { where?: { OR?: Array<Record<string, unknown>> } }).where;
+      const { select, where } = args as {
+        select?: Record<string, unknown>;
+        where?: { OR?: Array<Record<string, unknown>> };
+      };
+      assertValidTaskSelect(select);
       const ids = new Set<string>();
       const keys = new Set<string>();
       for (const clause of where?.OR ?? []) {
@@ -139,6 +319,16 @@ class FakeManagedTaskClient implements ManagedTaskClient {
           ids.has(task.id) ||
           (task.taskKey !== null && keys.has(task.taskKey)),
       );
+    },
+    update: async (args: unknown) => {
+      const { where, data } = args as {
+        where: { id: string };
+        data: Partial<FakeTask>;
+      };
+      const task = this.tasks.find((candidate) => candidate.id === where.id);
+      if (!task) throw new Error(`Missing task ${where.id}`);
+      Object.assign(task, data);
+      return task;
     },
     updateMany: async (args: unknown) => {
       const { where, data } = args as {
@@ -183,6 +373,109 @@ class FakeManagedTaskClient implements ManagedTaskClient {
 
       applyTaskData(task, update);
       return task;
+    },
+  };
+
+  taskImpactEstimateSet = {
+    updateMany: async (args: unknown) => {
+      const { where, data } = args as {
+        where: {
+          deletedAt?: null;
+          isCurrent?: boolean;
+          NOT?: { id: string };
+          taskId: string;
+        };
+        data: Partial<FakeImpactEstimateSet>;
+      };
+      let count = 0;
+      for (const estimateSet of this.impactEstimateSets) {
+        const matches =
+          estimateSet.taskId === where.taskId &&
+          (!("deletedAt" in where) || estimateSet.deletedAt === where.deletedAt) &&
+          (!("isCurrent" in where) || estimateSet.isCurrent === where.isCurrent) &&
+          (!where.NOT || estimateSet.id !== where.NOT.id);
+        if (matches) {
+          Object.assign(estimateSet, data);
+          count += 1;
+        }
+      }
+      return { count };
+    },
+    upsert: async (args: unknown) => {
+      const { where, create, update } = args as {
+        where: {
+          taskId_estimateKind_sourceSystem_calculationVersion_methodologyKey_parameterSetHash_counterfactualKey: {
+            calculationVersion: string;
+            counterfactualKey: string;
+            estimateKind: string;
+            methodologyKey: string;
+            parameterSetHash: string;
+            sourceSystem: string;
+            taskId: string;
+          };
+        };
+        create: Omit<FakeImpactEstimateSet, "id" | "deletedAt"> & {
+          deletedAt?: Date | null;
+        };
+        update: Partial<FakeImpactEstimateSet>;
+      };
+      const key =
+        where.taskId_estimateKind_sourceSystem_calculationVersion_methodologyKey_parameterSetHash_counterfactualKey;
+      let estimateSet = this.impactEstimateSets.find(
+        (candidate) =>
+          candidate.taskId === key.taskId &&
+          candidate.estimateKind === key.estimateKind &&
+          candidate.sourceSystem === key.sourceSystem &&
+          candidate.calculationVersion === key.calculationVersion &&
+          candidate.methodologyKey === key.methodologyKey &&
+          candidate.parameterSetHash === key.parameterSetHash &&
+          candidate.counterfactualKey === key.counterfactualKey,
+      );
+      if (!estimateSet) {
+        estimateSet = {
+          id: `estimate-set-${this.impactEstimateSets.length + 1}`,
+          deletedAt: null,
+          ...create,
+        };
+        this.impactEstimateSets.push(estimateSet);
+      } else {
+        Object.assign(estimateSet, update);
+      }
+      return { id: estimateSet.id };
+    },
+  };
+
+  taskImpactFrameEstimate = {
+    upsert: async (args: unknown) => {
+      const { where, create, update } = args as {
+        where: {
+          taskImpactEstimateSetId_frameSlug: {
+            frameSlug: string;
+            taskImpactEstimateSetId: string;
+          };
+        };
+        create: Omit<FakeImpactFrameEstimate, "id" | "deletedAt"> & {
+          deletedAt?: Date | null;
+        };
+        update: Partial<FakeImpactFrameEstimate>;
+      };
+      const key = where.taskImpactEstimateSetId_frameSlug;
+      let frame = this.impactFrameEstimates.find(
+        (candidate) =>
+          candidate.taskImpactEstimateSetId === key.taskImpactEstimateSetId &&
+          candidate.frameSlug === key.frameSlug,
+      );
+      if (!frame) {
+        frame = {
+          id: `impact-frame-${this.impactFrameEstimates.length + 1}`,
+          deletedAt: null,
+          ...create,
+        };
+        this.impactFrameEstimates.push(frame);
+      } else {
+        Object.assign(frame, update);
+      }
+      return { id: frame.id };
     },
   };
 
@@ -271,6 +564,33 @@ const activeRecord: ManagedTaskRecord = {
   category: TaskCategory.GOVERNANCE,
   claimPolicy: TaskClaimPolicy.OPEN_MANY,
   difficulty: TaskDifficulty.INTERMEDIATE,
+  ownerOrganizationId: "org-managed-owner",
+  compensationKind: "PAID",
+  compensationCadence: "ANNUAL",
+  compensationCurrency: "usd",
+  compensationMinAmountMinorUnits: 70_000_00n,
+  compensationMaxAmountMinorUnits: 90_000_00n,
+  compensationPaymentRails: ["stripe", "ach"],
+  estimatedHoursPerWeekMin: 35,
+  estimatedHoursPerWeekMax: 45,
+  remotePolicy: "REMOTE",
+  locationText: "Remote",
+  workLocationCountryCode: "US",
+  workLocationRegionCode: "IL",
+  workLocationCity: "Edwardsville",
+  workLocationRadiusKm: 40,
+  workTimeZone: "America/Chicago",
+  applicationQuestionsJson: [{ id: "why", prompt: "Why this job?" }],
+  executionMode: "HUMAN_ONLY",
+  preferredSkillTags: ["nonprofit-outreach"],
+  requiredCredentialTags: ["campaign-management"],
+  preferredCredentialTags: ["coalition-building"],
+  requiredLanguageTags: ["en"],
+  preferredLanguageTags: ["es"],
+  requiredToolTags: ["crm"],
+  preferredToolTags: ["spreadsheet"],
+  requiredAccessTags: ["st-louis"],
+  preferredAccessTags: ["disease-nonprofits"],
   sortOrder: -100,
   primaryEndpoint: {
     label: "Open root task",
@@ -398,6 +718,33 @@ describe("syncManagedTasks", () => {
       title: "Root task",
       description: "Managed root description.",
       createdByUserId: "old-user",
+      ownerOrganizationId: "org-managed-owner",
+      compensationKind: "PAID",
+      compensationCadence: "ANNUAL",
+      compensationCurrency: "usd",
+      compensationMinAmountMinorUnits: 70_000_00n,
+      compensationMaxAmountMinorUnits: 90_000_00n,
+      compensationPaymentRails: ["stripe", "ach"],
+      estimatedHoursPerWeekMin: 35,
+      estimatedHoursPerWeekMax: 45,
+      remotePolicy: "REMOTE",
+      locationText: "Remote",
+      workLocationCountryCode: "US",
+      workLocationRegionCode: "IL",
+      workLocationCity: "Edwardsville",
+      workLocationRadiusKm: 40,
+      workTimeZone: "America/Chicago",
+      applicationQuestionsJson: [{ id: "why", prompt: "Why this job?" }],
+      executionMode: "HUMAN_ONLY",
+      preferredSkillTags: ["nonprofit-outreach"],
+      requiredCredentialTags: ["campaign-management"],
+      preferredCredentialTags: ["coalition-building"],
+      requiredLanguageTags: ["en"],
+      preferredLanguageTags: ["es"],
+      requiredToolTags: ["crm"],
+      preferredToolTags: ["spreadsheet"],
+      requiredAccessTags: ["st-louis"],
+      preferredAccessTags: ["disease-nonprofits"],
       sortOrder: -100,
     });
     expect(root?.contextJson).toMatchObject({

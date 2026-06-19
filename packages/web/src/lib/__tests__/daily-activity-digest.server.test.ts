@@ -175,7 +175,7 @@ describe("daily activity digest", () => {
       [
         "Optimitron daily digest for Mar 30, 2026",
         "12 votes cast",
-        "5 verified with World ID",
+        "5 verified with personhood checks",
         "3 referrals captured",
         "2 PRIZE deposits totaling $1,250",
         `${OPTIMITRON_CANONICAL_ORIGIN}/scoreboard`,
@@ -215,7 +215,7 @@ describe("daily activity digest", () => {
         text: [
           "Optimitron daily digest for Mar 30, 2026",
           "4 votes cast",
-          "1 verified with World ID",
+          "1 verified with personhood checks",
           `${OPTIMITRON_CANONICAL_ORIGIN}/scoreboard`,
         ].join("\n"),
         langs: ["en"],
@@ -238,7 +238,7 @@ describe("daily activity digest", () => {
       text: [
         "Optimitron daily digest for Mar 30, 2026",
         "4 votes cast",
-        "1 verified with World ID",
+        "1 verified with personhood checks",
         `${OPTIMITRON_CANONICAL_ORIGIN}/scoreboard`,
       ].join("\n"),
       ref: {

@@ -58,6 +58,7 @@ const warOnDiseaseDefaultSocialImage = {
 
 export const ROUTES = {
   home: "/",
+  eos: "/eos",
   // Optimized Governance
   agencies: "/agencies",
   dfda: "/agencies/dfda",
@@ -116,6 +117,7 @@ export const ROUTES = {
   faq: "/faq",
   survey: "/survey",
   // The Game
+  game: "/game",
   prize: "/prize",
   scoreboard: "/scoreboard",
   iab: "/iab",
@@ -134,7 +136,6 @@ export const ROUTES = {
   wishonia: "/wishonia",
   moronia: "/moronia",
   // Meta
-  about: "/about",
   declaration: "/declaration",
   developers: "/developers",
   demo: "/demo",
@@ -202,7 +203,7 @@ export const homeLink: NavItem = {
   label: "Home",
   emoji: "🏠",
   description:
-    "Please take 30 seconds to end war and disease. Vote on the 1% Treaty, then give one human the same job.",
+    "Take 30 seconds to end war and disease. Vote on the 1% Treaty, then hand two humans the same promotion.",
   tagline: "Take 30 seconds to end war and disease",
   copyPreview: true,
   reviewName: "home",
@@ -384,11 +385,26 @@ export const referendumLink: NavItem = {
   label: "Referendums",
   emoji: "🗳️",
   description:
-    "Vote on things that matter. Prove you're human. Skip the middleman who was going to ignore you anyway.",
-  tagline: "Vote on things that matter — skip the middleman",
+    "Vote on proposals directly. Hire two more Humanity Managers. Skip the middleman who was going to ignore you anyway.",
+  tagline: "Vote directly. Hire two more.",
   matchPrefixes: [ROUTES.referendum],
+  copyPreview: true,
+  screenshot: true,
 
   cta: "Vote Now",
+};
+
+export const dcongressLink: NavItem = {
+  href: ROUTES.dcongress,
+  label: "Decentralized Congress",
+  emoji: "🏛️",
+  description:
+    "Wishocracy allocates budgets. Referendums create the consent record governments, courts, funders, and treaty negotiators must answer.",
+  tagline: "Budgets by Wishocracy. Laws by referendum.",
+  matchPrefixes: [ROUTES.dcongress],
+  copyPreview: true,
+  screenshot: true,
+  cta: "Open dCongress",
 };
 
 export const agenciesLink: NavItem = {
@@ -427,7 +443,7 @@ export const wishocracyLink: NavItem = {
 
 export const alignmentLink: NavItem = {
   href: ROUTES.alignment,
-  label: "Alignment",
+  label: "Politician Alignment",
   emoji: "🏛️",
   description:
     "Find out which politicians accidentally agree with you. Spoiler: fewer than you'd hope.",
@@ -453,6 +469,8 @@ export const wishoniaWorldLink: NavItem = {
   description:
     "A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.",
   tagline: "4,297 years of not being idiots",
+  copyPreview: true,
+  screenshot: true,
 
   cta: "Visit Wishonia",
 };
@@ -534,7 +552,7 @@ export const publicProfileLink: NavItem = {
 
 export const declarationLink: NavItem = {
   href: ROUTES.declaration,
-  label: "Declaration",
+  label: "Declaration of Optimization",
   emoji: "📜",
   description:
     "The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.",
@@ -599,7 +617,7 @@ export const transparencyLink: NavItem = {
 
 export const toolsLink: NavItem = {
   href: ROUTES.tools,
-  label: "Tools",
+  label: "Earth Optimization Tools",
   emoji: "🧰",
   description:
     "Free tools for voting, evidence, budgets, policy, outreach, and task tracking.",
@@ -624,7 +642,7 @@ export const efficiencyLink: NavItem = {
 
 export const dividendLink: NavItem = {
   href: ROUTES.dividend,
-  label: "Dividend",
+  label: "Optimization Dividend",
   emoji: "💵",
   description:
     "Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.",
@@ -639,7 +657,7 @@ export const governmentSizeLink: NavItem = {
   label: "Government Size",
   emoji: "📏",
   description:
-    "A size-and-composition check on the state itself. Not just how much it spends, but how the whole machine is proportioned.",
+    "The optimal size of government, estimated from the states that deliver the most per dollar. See whether yours is too big, too small, or spending on the wrong things.",
   tagline: "How large the state is, and how it is shaped",
   matchPrefixes: [ROUTES.governmentSize],
 
@@ -775,11 +793,12 @@ export const foundationsLink: NavItem = {
   label: "Foundations",
   emoji: "🏛️",
   description:
-    "The case for foundations to fund universal t-shirt distribution as the highest-EV charitable intervention available.",
-  tagline: "Why 3% of one year's foundation budget can end war and disease.",
+    "Six mechanisms to end war and disease, ranked by expected value per dollar against the GiveWell bed-net baseline. Find the highest-ROI allocation for your foundation's capital.",
+  tagline:
+    "Every mechanism to end war and disease, ranked against the GiveWell baseline.",
   copyPreview: true,
   screenshot: true,
-  cta: "See the case",
+  cta: "Compare the mechanisms",
 };
 
 export const fixAiLink: NavItem = {
@@ -961,39 +980,63 @@ export const trialEmbedLink: NavItem = {
 
 export const prizeLink: NavItem = {
   href: ROUTES.prize,
-  label: "Prize",
+  label: "Earth Optimization Prize",
   emoji: "🏆",
   description:
-    "Rewards for measured outreach that gets more people to answer the Global Survey to End War and Disease.",
-  tagline: "Reward measured outreach",
+    "Put money in a pool. Recruit people to vote on the 1% Treaty. If humanity gets healthier and richer by 2040, point holders split the pool.",
+  tagline: "Recruit voters; split the pool if humanity wins",
+  screenshot: true,
   cta: "See the Prize",
 };
 
+export const gameLink: NavItem = {
+  href: ROUTES.game,
+  // TODO(copy): Mike copy gate. Source: old Optimitron landing hero.
+  label: "The Earth Optimization Game",
+  emoji: "🎮",
+  // TODO(copy): Mike copy gate. Source: manual "The Earth Optimization Game" framing.
+  description:
+    "A pool of money. Two numbers on a Scoreboard: how long people live, how much they earn.",
+  // TODO(copy): Mike copy gate. Source: old Optimitron landing hero.
+  tagline: "Play the Earth Optimization Game",
+  copyPreview: true,
+  reviewName: "game",
+  screenshot: true,
+  // TODO(copy): Mike copy gate. Source: old Optimitron landing hero.
+  cta: "Play the Game",
+};
+
+export const eosLink: NavItem = {
+  href: ROUTES.eos,
+  // TODO(copy): Mike copy gate. Source: Pivot 3 route requirement.
+  label: "Earth Optimization Services",
+  emoji: "⚡",
+  // TODO(copy): Mike copy gate. Source: Pivot 3 cold-stranger route requirement.
+  description:
+    "The company buying the lobbying power that blocks better policy and pointing it at health and income.",
+  // TODO(copy): Mike copy gate. Source: Pivot 3 cold-stranger route requirement.
+  tagline: "Buy the power to make governments work",
+  copyPreview: true,
+  reviewName: "eos",
+  screenshot: true,
+  // TODO(copy): Mike copy gate. Source: Pivot 3 route requirement.
+  cta: "View",
+};
+
 export const earthOptimizationPrizePaperLink: NavItem = {
-  label: "Earth Optimization Prize",
+  label: "Prize Rulebook",
   href: "https://prize.warondisease.org",
   emoji: "🏆",
   description:
-    "A dominant assurance design combining philanthropy and game theory. Your species invented gambling and philanthropy separately. This is what happens when you combine them and remove the stupidity.",
+    "The rulebook for the Earth Optimization Game. Your species invented gambling and philanthropy separately. This combines them and removes the stupidity.",
   external: true,
 
   cta: "Read Paper",
 };
 
-export const aboutLink: NavItem = {
-  href: ROUTES.about,
-  label: "About",
-  emoji: "ℹ️",
-  description: `A campaign to redirect ${treatyReduction} of military spending to clinical trials: disease eradication in ${dfdaYears} years instead of ${statusQuoYears}, for one apocalypse off the shelf.`,
-  tagline: "The 1% campaign",
-  screenshot: true,
-
-  cta: "Learn More",
-};
-
 export const demoLink: NavItem = {
   href: ROUTES.demo,
-  label: "Demo",
+  label: "Wishonia Demo",
   emoji: "🎬",
   description:
     "A guided tour by an alien who's been running a planet for 4,237 years. She has notes.",
@@ -1052,7 +1095,7 @@ export const missionsLink: NavItem = {
 
 export const messagesLink: NavItem = {
   href: ROUTES.messages,
-  label: "Messages",
+  label: "Mission Conversations",
   emoji: "✉️",
   description: "Open mission conversations with mutual matches.",
   tagline: "Mission conversations",
@@ -1086,7 +1129,8 @@ export const jokeLink: NavItem = {
   href: ROUTES.joke,
   label: "The Joke",
   emoji: "😂",
-  description: "How to play the funniest joke in the universe.",
+  description:
+    'Write "I am retarded" on every shirt in a loved one\'s closet. Tuck in the math. The prank produces 3.5 quadrillion more laughs than every comedian in history — because shirts that start conversations end diseases.',
   cta: "Play the joke",
   authenticatedCopyPreview: true,
   copyPreview: true,
@@ -1110,7 +1154,7 @@ export const fundLink: NavItem = {
   label: "Fund Optimization",
   emoji: "🪙",
   description:
-    "Insert coin. AI agents optimize Earth. See what your dollar did and where the money went.",
+    "Put money where it moves votes, organizations, leaders, or measurable treaty demand. If the ask cannot point to proof, keep your money.",
   tagline: "Insert coin, optimize Earth",
 
   cta: "Fund Now",
@@ -1174,7 +1218,6 @@ export const navSections: NavSection[] = [
     id: "learn",
     label: "Learn",
     items: [
-      aboutLink,
       videoLink,
       demoLink,
       declarationLink,
@@ -1245,6 +1288,7 @@ export const toolSections: NavSection[] = [
 
 /** Footer-only internal links */
 export const footerAppLinks: NavItem[] = [
+  gameLink,
   fixAiLink,
   wishocracyLink,
   alignmentLink,
@@ -1255,7 +1299,6 @@ export const footerAppLinks: NavItem[] = [
   censusLink,
   settingsLink,
   transmitLink,
-  aboutLink,
 ];
 
 export const feedbackLink: NavItem = {
@@ -1619,11 +1662,11 @@ export const githubLink: NavItem = {
 };
 
 export const contractsSourceLink: NavItem = {
-  label: "Smart Contracts",
+  label: "Contract Source",
   href: "https://github.com/mikepsinn/optimitron/tree/main/packages",
   emoji: "📜",
   description:
-    "The contracts that handle the money. Auditable, immutable, and incapable of taking a lobbying lunch. Unlike your current system.",
+    "The money-moving code. Public enough to inspect before trusting it.",
   external: true,
 
   cta: "Learn More",
@@ -1672,10 +1715,14 @@ export interface RouteReviewSpec {
 
 export const routeReviewNavItems = [
   homeLink,
+  prizeLink,
+  gameLink,
   voteLink,
   treatyLink,
-  aboutLink,
+  wishoniaWorldLink,
   agenciesLink,
+  dcongressLink,
+  referendumLink,
   scoreboardLink,
   toolsLink,
   humanityVGovernmentLink,
@@ -1683,6 +1730,7 @@ export const routeReviewNavItems = [
   plaintiffsManageLink,
   courtLink,
   donateLink,
+  eosLink,
   joinLink,
   foundationsLink,
   signatoriesLink,

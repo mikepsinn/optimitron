@@ -238,9 +238,14 @@ function normalizeEmailList(emails: readonly string[] | null | undefined) {
   return normalized;
 }
 
-function resolveBcc(message: { bcc?: string[] | null; to: string }) {
+function resolveBcc(message: {
+  bcc?: string[] | null;
+  scope?: EmailScope;
+  to: string;
+}) {
   const recipient = message.to.trim().toLowerCase();
-  const monitorBcc = getEmailMonitorAddress();
+  const monitorBcc =
+    message.scope === "magic_link" ? null : getEmailMonitorAddress();
   const bcc = normalizeEmailList([
     ...(message.bcc ?? []),
     ...(monitorBcc ? [monitorBcc] : []),
@@ -343,14 +348,11 @@ export async function sendReactEmail(
 
   const resend = getResendClient();
   const rendered = await renderReactEmailBody(message.react);
-  const signed = composeOutboundEmailBody(
-    rendered,
-    {
-      skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
-      hasFromOverride: Boolean(message.from),
-      unsubscribeUrl: unsubscribeUrl ?? "",
-    },
-  );
+  const signed = composeOutboundEmailBody(rendered, {
+    skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
+    hasFromOverride: Boolean(message.from),
+    unsubscribeUrl: unsubscribeUrl ?? "",
+  });
   assertEmailSafe({ ...signed, headers });
 
   const bcc = resolveBcc(message);

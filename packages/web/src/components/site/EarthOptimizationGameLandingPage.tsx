@@ -29,15 +29,15 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
 
-interface OptimitronLandingPageProps {
+interface EarthOptimizationGameLandingPageProps {
   lateEmployeeProgramTask: TaskCardTask | null;
   lateEmployeeTasks: TaskCardTask[];
 }
 
-export function OptimitronLandingPage({
+export function EarthOptimizationGameLandingPage({
   lateEmployeeProgramTask,
   lateEmployeeTasks,
-}: OptimitronLandingPageProps) {
+}: EarthOptimizationGameLandingPageProps) {
   return (
     <div>
       {/* ── 1. Hero — Game name + objective ── */}

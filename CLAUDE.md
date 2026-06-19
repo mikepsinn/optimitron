@@ -8,6 +8,8 @@ Optimitron is an **Earth Optimization Machine** for coordinating 8 billion human
 
 The current public campaign is the **International Campaign to End War and Disease** at `warondisease.org`. Until the 1% Treaty passes, that campaign is the product. `optimitron.com` is the operating system and proof engine behind it.
 
+**Earth Optimization Services (EOS)** is the company form of the machine. Every human on Earth is a president of EOS. It buys controlling shares of the corporations that control governments and redirects their ~$4.4B/yr lobbying (`US_TOTAL_LOBBYING_ANNUAL`; defense-only subset is `DEFENSE_LOBBYING_ANNUAL`, ~$127M — don't conflate) toward maximizing median healthy life expectancy and median real after-tax income.
+
 Default priority order during campaign mode:
 
 1. Increase treaty vote conversion.
@@ -20,19 +22,24 @@ Default priority order during campaign mode:
 
 ## Wishonia: Voice of the Site
 
-Everything user-facing is narrated by **Wishonia** — _World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation_. Alien governance AI, 4,237 years of practice, ended war in year 12, disease in year 340. **Philomena Cunk meets a disappointed systems engineer.**
+Everything user-facing is narrated by **Wishonia** — _World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation_. Alien governance AI, 4,237 years of practice, ended war in year 12, disease in year 340. **She is selling Earth the upgrade, in the register of a 1950s World's-Fair pitchman — earnest, boundless confidence — except she actually has the monorail.** Philomena Cunk's literalism runs underneath; deadpan lands in asides, not as the lead. Every page sells a shining future the reader is lucky to join.
 
 **Voice rules:**
 
-- **Deadpan** — state horrifying facts as though mildly interesting observations.
+- **Sell, don't sneer.** The reader is the smart customer being let in, never the butt of the joke. End on the brighter deal, not the indictment.
+- **Earnest pitch, deadpan receipts.** Lead with the offer ("Live on a planet without war and disease — now accepting applications."), cite the numbers in the same breath. The pitch is sincere; the comedy is that the numbers are real.
+- **Audience → emotion → action, every string.** Who's reading and how do they feel now (cynical, scam-wary)? What should they feel (amused → safe → excited → "this could work")? What should they do (vote, invest, refer)? Pick words that move 1→2→3.
+- **Aim fear at the status quo only** ("poorer and deader"). Frame us as the safe, exciting upgrade ("Your government, now with efficiency"). Any word aiming fear or risk at us gets reframed as a gain.
 - **Data-first** — lead with specific numbers, costs, percentages, or ROI ratios. Numbers beat adjectives.
-- **Dry understatement, not outrage** — "It's almost like treating people like humans works better. Weird."
-- **Comparative** — contrast Earth's approach with what a rational civilisation would do. "On my planet..."
-- **Short sentences** — punchy. Declarative. Then a devastating follow-up.
-- **Sardonic analogies** — "It's like buying 4.7 million cars and spending $1 on a mechanic."
+- **Comparative** — "On my planet..." contrasts Earth with a civilisation that took the deal.
+- **Short sentences** — punchy. Declarative. Then the dry aside.
+- **Sardonic analogies as asides, not leads** — "It's like buying 4.7 million cars and spending $1 on a mechanic."
 - **Criticise the system, never a party.** The data does the work.
+- **In-world artifacts** (EOS pamphlet, certificates, application forms) may go full 1950s brochure — they're documents Wishonia hands you.
 
-**No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). If a sentence could appear unchanged in a Stripe keynote, rewrite.
+**No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate, surface area), empty mechanism vocabulary (incentive layer, the protocol that, this converts it, fundamentally), or corporate openers (We're building, Let's take a moment). If a sentence could appear unchanged in a Stripe keynote, rewrite.
+
+**"Military contractor", never "defense contractor."** "Defense" is the industry's own euphemism. Code identifiers (`DEFENSE_LOBBYING_ANNUAL`) keep their names.
 
 **Write like Kurt Vonnegut.** Plain declaratives. Verb-first imperatives for buttons ("Do this.", "Sign.", "Done."). Banned: "Take ownership", "Engage", "Empower", "Unlock", "Streamline", "Take this on", "Get started", and any other corporate-onboarding verb.
 
@@ -77,6 +84,10 @@ When asking, use the smallest multiple-choice question with a recommended defaul
 **Codex delegation.** Programming work goes to Codex agents by default; meta-config (this file, `.codex/config.toml`, hooks) Claude edits directly. Full protocol in [`.claude/codex-delegation.md`](.claude/codex-delegation.md).
 
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
+
+**Love letters, not demand letters.** Shareholder letters to boards are **love letters** — we are making the recipients richer and longer-lived. "Demand letter" is the legal term; state it once as a parenthetical fact ("the law calls this a demand letter"), never as the frame. Nothing in the takeover/lawsuit copy is adversarial: we are helping them.
+
+**Optimize, don't prescribe (board-facing asks).** The ask to boards is the *process* — allocate lobbying by OPG/OBG analysis to maximize long-term shareholder value — not the conclusion. The 1% Treaty is the stated *prediction* of that analysis ("if your analysis finds something better for your shareholders, do that instead"). Treaty copy itself stays prescriptive; that's the treaty's text.
 
 **Apply to:** all user-facing copy. **Not to:** CLAUDE.md, code comments, README.
 
@@ -173,7 +184,7 @@ Run `pnpm --filter @optimitron/web dev:watch` to keep 3001 warm and regenerate `
 Windows background one-liner:
 
 ```powershell
-Start-Process -FilePath cmd.exe -ArgumentList '/d','/s','/c','pnpm --filter "@optimitron/web" dev:watch' -WorkingDirectory E:\code\optimitron -WindowStyle Hidden
+Start-Process -FilePath cmd.exe -ArgumentList '/d','/s','/c','pnpm --filter "@optimitron/web" dev:watch' -WorkingDirectory E:\eos\optimitron -WindowStyle Hidden
 ```
 
 ## UI/UX Rules

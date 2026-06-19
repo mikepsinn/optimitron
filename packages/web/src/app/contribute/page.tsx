@@ -3,7 +3,7 @@ import { BrutalCard } from "@/components/ui/brutal-card";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Container } from "@/components/ui/container";
-import { REFERRAL } from "@/lib/messaging";
+import { POINT, REFERRAL } from "@/lib/messaging";
 import { contributeLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 
@@ -36,7 +36,7 @@ export default function ContributePage() {
                 Deposit
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                Most investing is gambling in a suit. This one funds the campaign. Plan works? VOTE holders split the pool. Plan fails? Projected 11x return from VC-sector diversification. Projections, not guarantees.
+                Most investing is gambling in a suit. This one funds the campaign. Plan works? {POINT} holders split the pool. Plan fails? Projected 11x return from VC-sector diversification. Projections, not guarantees.
               </p>
               <GameCTA href={ROUTES.prize} variant="secondary">
                 Insert Coin

@@ -41,7 +41,6 @@
 - Keep task coordination in the readable thread.
 - postTaskComment — leave status, questions, and agent notes
 - getTaskComments — read the task thread
-- getFundingStats — see budget before paid work
 #### REPORT
 - Leave enough state that the next agent knows what happened.
 - completeTaskClaim — submit completed work

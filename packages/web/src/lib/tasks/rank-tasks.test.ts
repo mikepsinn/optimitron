@@ -120,9 +120,18 @@ describe("computeTaskPriority", () => {
 describe("rankTasksForUser", () => {
   const user = {
     availableHoursPerWeek: 5,
+    accessTags: ["st-louis"],
+    city: "Edwardsville",
+    countryCode: "US",
+    credentialTags: ["campaign-management"],
     interestTags: ["tobacco-policy", "public-health"],
+    languageTags: ["en", "es"],
     maxTaskDifficulty: TaskDifficulty.INTERMEDIATE,
+    preferredPaymentRails: ["stripe"],
+    regionCode: "IL",
     skillTags: ["writing", "spanish"],
+    toolTags: ["crm"],
+    workPreferenceTags: ["full-time", "hybrid"],
   };
 
   const strongFitTask = {
@@ -223,6 +232,95 @@ describe("rankTasksForUser", () => {
     const ranked = rankTasksForUser([strongFitTask, modestFitHugeImpactTask], user, 2);
 
     expect(ranked[0]?.task).toBe(modestFitHugeImpactTask);
+  });
+
+  it("uses credentials, location, language, tools, payment rails, and availability for fit", () => {
+    const matchedOpening = {
+      ...strongFitTask,
+      compensationPaymentRails: ["stripe"],
+      estimatedHoursPerWeekMax: 5,
+      estimatedHoursPerWeekMin: 4,
+      interestTags: [],
+      preferredSkillTags: ["nonprofit-outreach"],
+      remotePolicy: "HYBRID",
+      requiredAccessTags: ["st-louis"],
+      requiredCredentialTags: ["campaign-management"],
+      requiredLanguageTags: ["en"],
+      requiredToolTags: ["crm"],
+      skillTags: [],
+      workLocationCity: "Edwardsville",
+      workLocationCountryCode: "US",
+      workLocationRadiusKm: 40,
+      workLocationRegionCode: "IL",
+    };
+    const mismatchedOpening = {
+      ...matchedOpening,
+      compensationPaymentRails: ["base-usdc"],
+      preferredSkillTags: ["securities-litigation"],
+      requiredAccessTags: ["new-york"],
+      requiredCredentialTags: ["bar-license"],
+      requiredLanguageTags: ["fr"],
+      requiredToolTags: ["salesforce"],
+      workLocationCity: "New York",
+      workLocationRegionCode: "NY",
+    };
+
+    expect(scoreTaskForUser(matchedOpening, user)).toBeGreaterThan(
+      scoreTaskForUser(mismatchedOpening, user) + 0.05,
+    );
+  });
+
+  it("keeps impact dominant over a merely cleaner candidate fit", () => {
+    const perfectLowImpactOpening = {
+      ...strongFitTask,
+      compensationPaymentRails: ["stripe"],
+      estimatedHoursPerWeekMax: 5,
+      estimatedHoursPerWeekMin: 4,
+      interestTags: [],
+      preferredSkillTags: ["nonprofit-outreach"],
+      remotePolicy: "HYBRID",
+      requiredAccessTags: ["st-louis"],
+      requiredCredentialTags: ["campaign-management"],
+      requiredLanguageTags: ["en"],
+      requiredToolTags: ["crm"],
+      selectedImpactFrame: {
+        ...strongFitTask.selectedImpactFrame,
+        delayDalysLostPerDayBase: 0.1,
+        delayEconomicValueUsdLostPerDayBase: 100,
+        expectedDalysAvertedBase: 10,
+        expectedEconomicValueUsdBase: 1_000,
+      },
+      skillTags: [],
+      workLocationCity: "Edwardsville",
+      workLocationCountryCode: "US",
+      workLocationRadiusKm: 40,
+      workLocationRegionCode: "IL",
+    };
+    const poorFitHugeImpactTask = {
+      ...weakFitTask,
+      compensationPaymentRails: ["base-usdc"],
+      requiredCredentialTags: ["bar-license"],
+      requiredLanguageTags: ["fr"],
+      requiredToolTags: ["salesforce"],
+      selectedImpactFrame: {
+        ...weakFitTask.selectedImpactFrame,
+        delayDalysLostPerDayBase: 50_000,
+        delayEconomicValueUsdLostPerDayBase: 20_000_000_000,
+        expectedDalysAvertedBase: 5_000_000,
+        expectedEconomicValueUsdBase: 80_000_000_000_000,
+      },
+      workLocationCity: "New York",
+      workLocationCountryCode: "US",
+      workLocationRegionCode: "NY",
+    };
+
+    const ranked = rankTasksForUser(
+      [perfectLowImpactOpening, poorFitHugeImpactTask],
+      user,
+      2,
+    );
+
+    expect(ranked[0]?.task).toBe(poorFitHugeImpactTask);
   });
 
   it("enforces claim-capacity constraints before ranking", () => {

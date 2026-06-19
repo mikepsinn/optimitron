@@ -24,7 +24,7 @@ import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-  VOTE_TOKEN_VALUE,
+  EARTH_OPTIMIZATION_POINT_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
   US_GOV_WASTE_DRUG_WAR,
@@ -93,7 +93,7 @@ const deathsDaily = fmtSpeech(GLOBAL_DISEASE_DEATHS_DAILY, 2);             // "1
 const milToTrialRatio = fmtSpeech(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO); // "604"
 const dysfunctionCost = fmtSpeech(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, 2); // "100 trillion"
 const dysfunctionPerPerson = fmtSpeech(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL);       // "12600"
-const votePointValue = fmtSpeech(VOTE_TOKEN_VALUE);                         // "8440"
+const pointValue = fmtSpeech(EARTH_OPTIMIZATION_POINT_VALUE);                             // "8440"
 const poolMultiple = fmtSpeech(PRIZE_POOL_HORIZON_MULTIPLE, 2);            // "11"
 const tippingPoint = fmtSpeech(MAJORITY_OF_HUMANS_ON_EARTH, 2);            // "4 billion"
 const collapseYear = fmtSpeech(DESTRUCTIVE_ECONOMY_50PCT_YEAR);            // "2040"
@@ -515,7 +515,7 @@ export const SEGMENTS = [
     slideId: "three-scenarios-all-win",
     bgColor: "pink",
     tags: ["mechanism", "financial"],
-    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at ${prizeReturn} percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, VOTE holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in ${breakEvenOneIn}. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
+    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at ${prizeReturn} percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, ${POINT} holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in ${breakEvenOneIn}. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
   },
   {
     id: "prize-no-downside",
@@ -622,11 +622,11 @@ export const SEGMENTS = [
   },
   {
     id: "feature-treasury",
-    title: "The $WISH Token",
+    title: "Wishes Currency",
     slideId: "armory",
     bgColor: "yellow",
     tags: ["feature", "financial"],
-    narration: `Zero point five percent transaction tax. That replaces your IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. The tax funds Universal Basic Income distributed automatically via World ID, and Wishocratic budget allocation decided by eight billion people doing five minutes of pairwise comparisons. No politicians. No lobbyists. Just maths and peer pressure.`,
+    narration: `Zero point five percent transaction tax. That replaces your IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. The tax funds Universal Basic Income distributed automatically through personhood verification, and Wishocratic budget allocation decided by eight billion people doing five minutes of pairwise comparisons. No politicians. No lobbyists. Just maths and peer pressure.`,
   },
   {
     id: "feature-architecture",
@@ -806,9 +806,9 @@ export const SEGMENTS = [
     narration: `The entire game comes down to two numbers. Healthy life expectancy: currently ${currentHale} years, target ${targetHale}. Median income: currently ${currentAvgIncome} dollars, target ${targetAvgIncome} dollars. Move these two numbers and everything else follows. That is the scoreboard. Everything on this site exists to move it.`,
   },
   {
-    id: "vote-value-asymmetry",
+    id: "point-value-asymmetry",
     title: "$0.06",
-    slideId: "vote-value-asymmetry",
+    slideId: "point-value-asymmetry",
     bgColor: "foreground",
     tags: ["evidence"],
     act: "II-game",
@@ -837,15 +837,15 @@ export const SEGMENTS = [
     narration: `Deposit one hundred dollars into the VC-diversified fund. Two things can happen. If Earth hits its targets, the pool unlocks and ${POINT} holders split it. If Earth misses, your hundred dollars still grew at ${prizeReturn} percent a year — ${poolMultiple} times your money back. Both paths pay. There is no path where you lose.`,
   },
   {
-    id: "vote-point-dollar-value",
+    id: "point-dollar-value",
     title: `${POINT} Value`,
-    slideId: "vote-point-dollar-value",
+    slideId: "point-dollar-value",
     bgColor: "yellow",
     tags: ["financial"],
     act: "II-money",
     scoreAdd: 1_000_000_000,
-    inventoryAdd: { id: "vote-points", name: `${POINTS.toUpperCase()} ×2`, icon: "🥈" },
-    narration: `Now for the ${POINTS}. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at ${prizeReturn} percent instead of ${conventionalReturn}, each ${POINT} is worth ${votePointValue} dollars. Two friends playing: double that. Ten friends: ten times. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
+    inventoryAdd: { id: "points", name: `${POINTS.toUpperCase()} ×2`, icon: "🥈" },
+    narration: `Now for the ${POINTS}. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at ${prizeReturn} percent instead of ${conventionalReturn}, each ${POINT} is worth ${pointValue} dollars. Two friends playing: double that. Ten friends: ten times. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
   },
   {
     id: "three-scenarios-all-win-full",
@@ -885,7 +885,7 @@ export const SEGMENTS = [
     tags: ["feature", "financial"],
     act: "II-armory",
     scoreAdd: 4_500_000_000,
-    narration: `Incentive Alignment Bonds. Sell one billion dollars of these on-chain. Use the proceeds to fund the one percent Treaty campaign. When the treaty passes, it generates ${treatyFunding} dollars per year. That revenue splits: eighty percent to clinical trials — the actual public good. Ten percent back to bond holders — your return on investment. Ten percent to a SuperPAC that funds politicians algorithmically based on their Alignment Score. Not based on who they had dinner with.`,
+    narration: `Incentive Alignment Bonds. Sell one billion dollars of these bonds. Use the proceeds to fund the one percent Treaty campaign. When the treaty passes, it generates ${treatyFunding} dollars per year. That revenue splits: eighty percent to clinical trials — the actual public good. Ten percent back to bond holders — your return on investment. Ten percent to a SuperPAC that funds politicians algorithmically based on their Alignment Score. Not based on who they had dinner with.`,
   },
   {
     id: "smart-contract-superpac",
@@ -895,7 +895,7 @@ export const SEGMENTS = [
     tags: ["feature"],
     act: "II-armory",
     scoreAdd: 4_700_000_000,
-    narration: `The remaining ten percent funds a SuperPAC — but not the kind your species is used to. This one funds politicians algorithmically, based on their Citizen Alignment Score. Vote for the treaty? Campaign funding flows to you automatically. Vote against it? Nothing. No dinners. No lobbyists. No phone calls. Just a smart contract that reads your voting record and pays accordingly.`,
+    narration: `The remaining ten percent funds a SuperPAC — but not the kind your species is used to. This one funds politicians algorithmically, based on their Citizen Alignment Score. Vote for the treaty? Campaign funding flows to you automatically. Vote against it? Nothing. No dinners. No lobbyists. No phone calls. Just protocol rules that read your voting record and pay accordingly.`,
   },
   {
     id: "optimal-governance-engines",
@@ -929,13 +929,13 @@ export const SEGMENTS = [
   },
   {
     id: "wish-token-protocol",
-    title: "The $WISH Token",
+    title: "Wishes Currency",
     slideId: "decentralized-irs",
     bgColor: "yellow",
     tags: ["feature", "financial"],
     act: "II-armory",
     scoreAdd: 5_600_000_000,
-    narration: `The WISH token replaces three things your government does badly. One: taxation. A flat zero point five percent transaction tax replaces your entire IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. Two: welfare. Universal Basic Income distributed automatically via World ID. Everyone at the poverty line, no bureaucracy. Three: monetary policy. Algorithmic zero-percent inflation — captured productivity gains prevent the inflationary theft that destroyed ninety-seven percent of your dollar. Your central bank's job, done by a smart contract, in four lines of code.`,
+    narration: `Wishes replace three things your government does badly. One: taxation. A flat zero point five percent transaction tax replaces your entire IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. Two: welfare. Universal Basic Income distributed automatically through personhood verification. Everyone at the poverty line, no bureaucracy. Three: monetary policy. Algorithmic zero-percent inflation — captured productivity gains prevent the inflationary theft that destroyed ninety-seven percent of your dollar. Your central bank's job, done by protocol rules, in four lines of computer code.`,
   },
   {
     id: "pencil-supply-chain",
@@ -945,7 +945,7 @@ export const SEGMENTS = [
     tags: ["solution"],
     act: "II-armory",
     scoreAdd: 5_800_000_000,
-    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, smart contracts, causal inference engines, immutable storage, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with ${POINTS} tied to the prize pool, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
+    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, enforceable protocols, causal inference engines, immutable records, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with ${POINTS} tied to the prize pool, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
   },
   {
     id: "personal-income-upside",
@@ -1144,7 +1144,7 @@ export const SEGMENTS = [
     slideId: "decentralized-irs",
     tags: ["feature"],
     act: "II-armory",
-    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCost} dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of Solidity. No filing. No accountants. No lobbyist can bribe a smart contract to give their client a tax loophole.`,
+    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCost} dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of computer code. No filing. No accountants. No lobbyist can bribe the system to give their client a tax loophole.`,
   },
   {
     id: "decentralized-welfare",
@@ -1160,15 +1160,15 @@ export const SEGMENTS = [
     slideId: "decentralized-federal-reserve",
     tags: ["feature"],
     act: "II-armory",
-    narration: "Twelve unelected humans meet eight times a year to decide how much your money is worth. When they print new money, it goes to banks and asset holders first. In 2020 they printed 4 trillion dollars. The wealth of the top 1 percent increased by exactly 4 trillion dollars that year. This smart contract replaces them. Zero percent inflation anchored to productivity growth. New money distributed equally to every human via UBI.",
+    narration: "Twelve unelected humans meet eight times a year to decide how much your money is worth. When they print new money, it goes to banks and asset holders first. In 2020 they printed 4 trillion dollars. The wealth of the top 1 percent increased by exactly 4 trillion dollars that year. This protocol replaces them. Zero percent inflation anchored to productivity growth. New money distributed equally to every human via UBI.",
   },
   {
     id: "ipfs-immutable-storage-brief",
-    title: "Storacha + IPFS",
+    title: "Immutable Evidence",
     slideId: "ipfs-immutable-storage",
     tags: ["feature"],
     act: "II-armory",
-    narration: "The Optimal Policy Generator, Budget Generator, and Decentralized FDA are all powered by data collected through the Decentralized Census. 8 billion citizens verified via World ID. Budget preferences, treaty votes, health outcomes, impact metrics — stored on Storacha and pinned to IPFS. No government can delete it. No lobbyist can edit it.",
+    narration: "The Optimal Policy Generator, Budget Generator, and Decentralized FDA are all powered by data collected through the Decentralized Census. 8 billion citizens verified through personhood checks. Budget preferences, treaty votes, health outcomes, impact metrics — published as immutable evidence. No government can delete it. No lobbyist can edit it.",
   },
   {
     id: "impact-certificates-brief",
@@ -1176,7 +1176,7 @@ export const SEGMENTS = [
     slideId: "impact-certificates",
     tags: ["feature"],
     act: "II-armory",
-    narration: "Every action in the game mints a Hypercert on AT Protocol. Voter recruitment, fund deposits, budget allocations — each verified via World ID and published to Bluesky. Permanent, auditable impact receipts.",
+    narration: "Every action in the game creates an impact receipt. Voter recruitment, fund deposits, budget allocations — each tied to verified personhood and published for audit. Permanent, auditable impact receipts.",
   },
   {
     id: "ten-billion-lives-saved-brief",
@@ -1200,7 +1200,7 @@ export const SEGMENTS = [
     slideId: "post-credits-aliens",
     tags: ["cta"],
     act: "III",
-    narration: "The Earth Optimization Game is brought to you by the good humans at Protocol Labs funding the Commons, Hypercerts, Storacha, Worldcoin, and Base.",
+    narration: "The Earth Optimization Game is brought to you by the good humans funding the commons and building public-interest infrastructure.",
   },
 ] satisfies readonly DemoSegment[];
 
@@ -1294,12 +1294,12 @@ export const PLAYLISTS: DemoPlaylist[] = [
       // Act II — The Game
       "pairwise-budget-allocation",
       "one-percent-referendum-vote",
-      "vote-value-asymmetry",
+      "point-value-asymmetry",
       "recruit-network-effect",
       // Act II — The Money
       "prize-pool-vs-index-fund",
       "dominant-assurance-contract-full",
-      "vote-point-dollar-value",
+      "point-dollar-value",
       "three-scenarios-all-win-full",
       // Act II — Accountability
       "government-track-record",
@@ -1416,7 +1416,7 @@ export const PLAYLISTS: DemoPlaylist[] = [
   },
   {
     id: "youtube-treasury",
-    name: "The $WISH Token",
+    name: "Wishes Currency",
     description: "0.5% transaction tax replaces the IRS + UBI",
     segments: resolveSegments([
       "hook-dysfunction-tax",

@@ -91,7 +91,11 @@ function getTransactionExplorerUrl(chainId: number, txHash: string) {
 }
 
 function getTreasuryChainId() {
-  const raw = process.env.TREASURY_CHAIN_ID ?? process.env.VOTE_TOKEN_CHAIN_ID ?? "84532";
+  const raw =
+    process.env.TREASURY_CHAIN_ID ??
+    process.env.EOP_CHAIN_ID ??
+    process.env.VOTE_TOKEN_CHAIN_ID ??
+    "84532";
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : null;
 }
@@ -193,7 +197,7 @@ const getCachedPrizeDepositReceipts = unstable_cache(
 export async function getImpactReceipts(
   userId: string,
 ): Promise<DashboardImpactReceipts> {
-  const [walletSource, voteMintWallets, personhoodSummary, referralStats] =
+  const [walletSource, pointMintWallets, personhoodSummary, referralStats] =
     await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
@@ -207,7 +211,7 @@ export async function getImpactReceipts(
           },
         },
       }),
-      prisma.voteTokenMint.findMany({
+      prisma.pointMint.findMany({
         where: {
           userId,
           deletedAt: null,
@@ -222,7 +226,7 @@ export async function getImpactReceipts(
     new Set(
       [
         ...(walletSource?.socialAccounts ?? []).map((account) => account.walletAddress),
-        ...voteMintWallets.map((mint) => mint.walletAddress),
+        ...pointMintWallets.map((mint) => mint.walletAddress),
       ]
         .map((walletAddress) => normalizeWalletAddress(walletAddress))
         .filter((walletAddress): walletAddress is string => walletAddress !== null),

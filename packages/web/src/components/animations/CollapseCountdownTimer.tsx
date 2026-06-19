@@ -119,42 +119,42 @@ export function CollapseCountdownTimer({
     <div className={className} ref={containerRef}>
       <div className={`flex flex-wrap items-center justify-center ${gap} font-mono`} style={{ fontVariantNumeric: "tabular-nums" }}>
         <div className="text-center">
-          <span ref={refs.years} className={`${digitSize} font-black text-brutal-red`}>
+          <span ref={refs.years} className={`${digitSize} font-black text-brutal-red`} data-volatile="years">
             {reduced ? String(initial.years) : "0"}
           </span>
           <div className={`${labelSize} font-black uppercase text-background/60 mt-1`}>YRS</div>
         </div>
         <span className={`${digitSize} font-black text-background/40`}>:</span>
         <div className="text-center">
-          <span ref={refs.months} className={`${digitSize} font-black text-brutal-red`}>
+          <span ref={refs.months} className={`${digitSize} font-black text-brutal-red`} data-volatile="months">
             {reduced ? String(initial.months).padStart(2, "0") : "00"}
           </span>
           <div className={`${labelSize} font-black uppercase text-background/60 mt-1`}>MO</div>
         </div>
         <span className={`${digitSize} font-black text-background/40`}>:</span>
         <div className="text-center">
-          <span ref={refs.days} className={`${digitSize} font-black text-brutal-red`}>
+          <span ref={refs.days} className={`${digitSize} font-black text-brutal-red`} data-volatile="days">
             {reduced ? String(initial.days).padStart(2, "0") : "00"}
           </span>
           <div className={`${labelSize} font-black uppercase text-background/60 mt-1`}>DAYS</div>
         </div>
         <span className={`${digitSize} font-black text-background/40`}>:</span>
         <div className="text-center">
-          <span ref={refs.hours} className={`${digitSize} font-black text-brutal-red`}>
+          <span ref={refs.hours} className={`${digitSize} font-black text-brutal-red`} data-volatile="hours">
             {reduced ? String(initial.hours).padStart(2, "0") : "00"}
           </span>
           <div className={`${labelSize} font-black uppercase text-background/60 mt-1`}>HRS</div>
         </div>
         <span className={`${digitSize} font-black text-background/40`}>:</span>
         <div className="text-center">
-          <span ref={refs.minutes} className={`${digitSize} font-black text-brutal-red`}>
+          <span ref={refs.minutes} className={`${digitSize} font-black text-brutal-red`} data-volatile="minutes">
             {reduced ? String(initial.minutes).padStart(2, "0") : "00"}
           </span>
           <div className={`${labelSize} font-black uppercase text-background/60 mt-1`}>MIN</div>
         </div>
         <span className={`${digitSize} font-black text-background/40`}>:</span>
         <div className="text-center">
-          <span ref={refs.seconds} className={`${digitSize} font-black text-brutal-red`}>
+          <span ref={refs.seconds} className={`${digitSize} font-black text-brutal-red`} data-volatile="seconds">
             {reduced ? String(initial.seconds).padStart(2, "0") : "00"}
           </span>
           <div className={`${labelSize} font-black uppercase text-background/60 mt-1`}>SEC</div>

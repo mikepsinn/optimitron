@@ -78,11 +78,11 @@ export function SlidePrizePoolVsIndexFund() {
           </div>
         )}
 
-        {/* Value per vote point */}
+        {/* Value per point */}
         <div className="text-center bg-black/40 border border-amber-500/30 p-4 rounded">
-          <div className="font-pixel text-xl text-zinc-200 mb-2">VALUE PER VOTE POINT</div>
+          <div className="font-pixel text-xl text-zinc-200 mb-2">VALUE PER {POINT.toUpperCase()}</div>
           <div className="font-pixel text-3xl text-amber-400">
-            ${GAME_PARAMS.valuePerVotePoint.toLocaleString()}
+            ${GAME_PARAMS.valuePerPoint.toLocaleString()}
           </div>
           <div className="font-terminal text-xl text-zinc-200 mt-2">
             $12.65T pool (1% of global AUM at 17%) ÷ 4B votes

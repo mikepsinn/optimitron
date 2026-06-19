@@ -74,7 +74,7 @@ export default function IABPage() {
         <p className="text-sm font-bold text-muted-foreground mb-6 max-w-3xl">
           The 1% Treaty redirects {fmtParam({...TREATY_ANNUAL_FUNDING, unit: "USD"})}/year
           from military spending to pragmatic clinical trials. That revenue is
-          split by smart contract. No committees. No discretion. Just arithmetic.
+          split by protocol rule. No committees. No discretion. Just arithmetic.
         </p>
         <div className="space-y-4">
           <div className="border-4 border-primary bg-background text-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -148,7 +148,7 @@ export default function IABPage() {
 
         <div className="border-4 border-primary bg-background p-6 mt-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm text-foreground font-bold leading-relaxed">
-            The 80/10/10 split is hardcoded in the smart contract. No committee
+            The 80/10/10 split is fixed in the protocol. No committee
             gets to argue it into mush later. No lobbying required to lobby.
           </p>
         </div>
@@ -266,7 +266,7 @@ export default function IABPage() {
               </li>
               <li className="flex gap-2">
                 <span className="text-background font-black shrink-0">2.</span>
-                <span>Treaty revenue splits 80/10/10 by smart contract</span>
+                <span>Treaty revenue splits 80/10/10 by protocol rule</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-background font-black shrink-0">3.</span>
@@ -327,7 +327,7 @@ export default function IABPage() {
             {
               label: "IABVault",
               value: "Bond purchases → campaign funding",
-              detail: "Investors get IAB tokens. Capital funds the lobbying campaign. Revenue share distributed to bondholders on treaty success.",
+              detail: "Investors get IABs. Capital funds the lobbying campaign. Revenue share is distributed to bondholders on treaty success.",
             },
             {
               label: "IABSplitter",

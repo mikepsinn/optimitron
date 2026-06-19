@@ -82,6 +82,7 @@ const LOCAL_DEFAULT_SITE_KEY: SiteKey = DEFAULT_SITE_KEY;
 
 export type SiteChromeVariant = "platform" | "referendum";
 export type SiteHomeVariant =
+  | "eosLanding"
   | "optimitronLanding"
   | "onePercentTreatyLanding"
   | "initiativeLanding";
@@ -253,7 +254,7 @@ const ORGANIZATION_NAME = "Earth Optimization Services LLC";
 const ORGANIZATION_URL = OPTIMITRON_CANONICAL_ORIGIN;
 const ORGANIZATION_LOGO_PATH = "/icons/icon-192.png";
 const PUBLIC_CONTACT_EMAIL = "hello@warondisease.org";
-const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}/about`;
+const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}${ROUTES.eos}`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 const EARTH_OPTIMIZATION_SERVICES_LLC = "Earth Optimization Services LLC";
 const NO_FOOTER_COMPLIANCE_NOTICE = null;
@@ -395,7 +396,6 @@ const OPTIMITRON_UI: SiteVariantUiConfig = {
     desktopBrandLabel: "⚡ Optimitron",
     menuEnabled: true,
     menuTitle: "Navigation",
-    quickAction: inviteVoterLink,
     searchEnabled: true,
     sections: navSections,
     signInCallbackUrl: ROUTES.wishocracy,
@@ -471,7 +471,6 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     desktopBrandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     menuEnabled: true,
     menuTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    quickAction: inviteVoterLink,
     searchEnabled: false,
     sections: warOnDiseaseNavSections,
     signInCallbackUrl: ROUTES.dashboard,
@@ -517,6 +516,8 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
 };
 
 const OPTIMITRON_PLATFORM_PREFIXES = [
+  "/eos",
+  "/game",
   "/agencies",
   "/scoreboard",
   "/search",
@@ -590,26 +591,36 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   primaryReferendumSlug: null,
   primaryTaskKey: null,
   rootMetadata: {
-    title: "Optimitron — The Evidence-Based Earth Optimization Game",
+    // TODO(copy): Mike copy gate. Source: EOS .qmd title.
+    title: "Optimitron — Earth Optimization Services",
+    // TODO(copy): Mike copy gate. Source: EOS .qmd "How the Products Fit Together".
     description:
-      "Earth Optimization Game for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data.",
-    openGraphTitle: "Optimitron — The Evidence-Based Earth Optimization Game",
+      "Calculates the policies that maximize two numbers: median health-adjusted life expectancy and median after-tax inflation-adjusted income.",
+    // TODO(copy): Mike copy gate. Source: EOS .qmd title.
+    openGraphTitle: "Optimitron — Earth Optimization Services",
+    // TODO(copy): Mike copy gate. Source: EOS .qmd "The Standard Package" and "How the Products Fit Together".
     openGraphDescription:
-      "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next.",
+      "The four products are one machine: evidence, funding, takeover, allocation.",
     openGraphImage: {
       url: "/og-image.jpg",
       width: 1200,
       height: 630,
-      alt: "Optimitron — The Evidence-Based Earth Optimization Game",
+      // TODO(copy): Mike copy gate. Source: EOS .qmd title.
+      alt: "Optimitron — Earth Optimization Services",
     },
-    twitterTitle: "Optimitron — Earth Optimization Game",
+    // TODO(copy): Mike copy gate. Source: EOS .qmd title.
+    twitterTitle: "Optimitron — Earth Optimization Services",
+    // TODO(copy): Mike copy gate. Source: manual Optimocracy/OPG snippets.
     twitterDescription:
-      "Planetary debugging software for budgets, policies, politicians, and public outcomes.",
+      "Maximize Median Health and Wealth through public policy.",
     twitterImage: "/twitter-image.jpg",
     keywords: [
       "Optimitron",
+      "Earth Optimization Services",
       "The Earth Optimization Game",
       "Earth Optimization Game",
+      "median healthy life expectancy",
+      "median real after-tax income",
       "budget optimization",
       "policy analysis",
       "public outcomes",
@@ -629,7 +640,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   },
   ui: OPTIMITRON_UI,
   pageVariants: {
-    home: "optimitronLanding",
+    home: "eosLanding",
     dashboard: "optimitronDashboard",
   },
 };
@@ -719,7 +730,6 @@ const DFDA_CONFIG: SiteConfig = {
       "/outcome-labels",
       "/find-trials",
       ROUTES.dfda,
-      ROUTES.about,
       ROUTES.donate,
     ],
     operationalPrefixes: [
@@ -831,7 +841,6 @@ const DIH_CONFIG: SiteConfig = {
       ROUTES.conditions,
       ROUTES.treatments,
       ROUTES.wishocracy,
-      ROUTES.about,
       ROUTES.donate,
     ],
     operationalPrefixes: [

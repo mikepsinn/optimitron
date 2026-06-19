@@ -31,8 +31,8 @@ export default async function ReferendumsIndexPage() {
           Active Referendums
         </h1>
         <p className="text-lg text-foreground leading-relaxed font-bold max-w-2xl">
-          Vote. Prove you&apos;re real. Share the link. Every verified human
-          moves the needle. Bots need not apply.
+          Active public votes on the 1% Treaty, Humanity v. Government, and the
+          consent record governments must answer.
         </p>
       </section>
 

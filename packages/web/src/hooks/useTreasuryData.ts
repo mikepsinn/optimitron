@@ -25,6 +25,11 @@ export function formatWish(value: bigint): string {
   });
 }
 
+export function formatWishes(value: bigint): string {
+  const formatted = formatWish(value);
+  return `${formatted} ${formatted === "1" ? "wish" : "wishes"}`;
+}
+
 export function useTreasuryData() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();

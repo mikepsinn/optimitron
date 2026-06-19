@@ -13,7 +13,8 @@ and row-shape verification completed.
 
 ## Mechanism
 
-1. The Preview job pulls branch-specific Vercel env with `vercel pull`.
+1. The Preview job resolves the branch-specific Neon database connection with
+   the Neon API.
 2. It applies Prisma migrations to the preview database branch.
 3. It runs `packages/db/prisma/anonymization-setup.sql` with `psql` to install
    `postgresql_anonymizer` and the local `public.dummy_safe_text()` helper.
@@ -30,8 +31,11 @@ Do not weaken the failure behavior to best-effort masking.
 
 ## Mike Dashboard Tasks
 
-- Keep `VERCEL_TOKEN` configured in the GitHub `Preview` environment so CI can
-  pull branch-specific preview database env from Vercel.
+- Keep `NEON_API_KEY` configured in the GitHub `Preview` environment so CI can
+  resolve branch-specific preview database connections from Neon.
+- If Neon branch discovery is ambiguous, set `NEON_PROJECT_ID`,
+  `NEON_BRANCH_ID`, `NEON_DATABASE_NAME`, or `NEON_ROLE_NAME` as GitHub
+  variables.
 - If preview masking fails, recreate or re-mask the preview branch before
   inspecting, screenshotting, or sharing preview-derived artifacts.
 
@@ -44,8 +48,6 @@ the columns below.
 | --- | --- | --- |
 | `Account` | `providerAccountId`, `refresh_token`, `access_token`, `scope`, `id_token`, `session_state`, `oauth_token_secret`, `oauth_token` | OAuth/provider identifiers and credentials. |
 | `Activity` | `description`, `metadata` | User-specific activity text and context. |
-| `AgentComputeDeposit` | `externalRef`, `memo` | Payment references and depositor notes. |
-| `AgentRunCost` | `runId`, `outputSummary` | Agent run identifiers and output summaries. |
 | `AgentTaskLease` | `agentId` | Caller-supplied agent identity. |
 | `Badge` | `metadata` | User action context. |
 | `CitizenBillVote` | `reasoning`, `shareIdentifier`, `cbaSnapshot` | Political reasoning and shareable identifiers. |

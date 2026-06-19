@@ -36,5 +36,5 @@
 - THE DAMAGES CLAIM
 - [$11 million/person](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html)
 - PER MURDERED HUMAN (NPV AT 3% PERPETUITY)
-- [$25 million/person](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html)
+- [$23 million/person](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html)
 - LIFETIME COHORT EXPOSURE PER HUMAN

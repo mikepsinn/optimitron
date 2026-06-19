@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
   isPersonhoodExternalIdConflict: vi.fn(),
   isWorldIdConfigured: vi.fn(),
   requireAuth: vi.fn(),
-  syncReferralVoteTokenMintsForVerifiedVoter: vi.fn(),
+  syncReferralPointMintsForVerifiedVoter: vi.fn(),
   verifyAndSaveWorldIdResult: vi.fn(),
 }));
 
@@ -23,9 +23,9 @@ vi.mock("@/lib/world-id.server", () => ({
   verifyAndSaveWorldIdResult: mocks.verifyAndSaveWorldIdResult,
 }));
 
-vi.mock("@/lib/referral-vote-token-mint.server", () => ({
-  syncReferralVoteTokenMintsForVerifiedVoter:
-    mocks.syncReferralVoteTokenMintsForVerifiedVoter,
+vi.mock("@/lib/referral-point-mint.server", () => ({
+  syncReferralPointMintsForVerifiedVoter:
+    mocks.syncReferralPointMintsForVerifiedVoter,
 }));
 
 vi.mock("@/lib/wishes.server", () => ({
@@ -45,11 +45,11 @@ describe("world id verify route", () => {
     mocks.isPersonhoodExternalIdConflict.mockReset();
     mocks.isWorldIdConfigured.mockReset();
     mocks.requireAuth.mockReset();
-    mocks.syncReferralVoteTokenMintsForVerifiedVoter.mockReset();
+    mocks.syncReferralPointMintsForVerifiedVoter.mockReset();
     mocks.verifyAndSaveWorldIdResult.mockReset();
     mocks.isPersonhoodExternalIdConflict.mockReturnValue(false);
     mocks.grantWishes.mockResolvedValue({ amount: 10 });
-    mocks.syncReferralVoteTokenMintsForVerifiedVoter.mockResolvedValue([]);
+    mocks.syncReferralPointMintsForVerifiedVoter.mockResolvedValue([]);
   });
 
   it("returns 401 when authentication fails", async () => {
@@ -66,7 +66,7 @@ describe("world id verify route", () => {
     await expect(response.json()).resolves.toEqual({ error: "Unauthorized" });
   });
 
-  it("returns 503 when World ID is not configured", async () => {
+  it("returns 503 when personhood verification is not configured", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.isWorldIdConfigured.mockReturnValue(false);
 
@@ -78,7 +78,7 @@ describe("world id verify route", () => {
     );
 
     expect(response.status).toBe(503);
-    await expect(response.json()).resolves.toEqual({ error: "World ID is not configured." });
+    await expect(response.json()).resolves.toEqual({ error: "Personhood verification is not configured." });
   });
 
   it("stores a verified proof for authenticated users", async () => {
@@ -100,7 +100,7 @@ describe("world id verify route", () => {
     expect(mocks.verifyAndSaveWorldIdResult).toHaveBeenCalledWith("user_1", {
       action: "verify-personhood",
     });
-    expect(mocks.syncReferralVoteTokenMintsForVerifiedVoter).toHaveBeenCalledWith(
+    expect(mocks.syncReferralPointMintsForVerifiedVoter).toHaveBeenCalledWith(
       "user_1",
     );
     expect(mocks.grantWishes).toHaveBeenCalledWith({
@@ -118,7 +118,7 @@ describe("world id verify route", () => {
         provider: "WORLD_ID",
         verificationLevel: "orb",
       },
-      referralVoteTokenMintsQueued: 0,
+      referralPointMintsQueued: 0,
       wishesEarned: 10,
     });
   });

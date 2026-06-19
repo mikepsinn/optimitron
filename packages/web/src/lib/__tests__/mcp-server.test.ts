@@ -1,11 +1,23 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import {
+  AgentExecutorStatus,
   OrgStatus,
   OrgType,
   ReferendumKind,
   ReferendumStatus,
+  TaskApplicationEventType,
+  TaskApplicationPolicy,
+  TaskApplicationStatus,
+  TaskCandidateKind,
+  TaskCandidateMatchStatus,
   TaskClaimPolicy,
+  TaskCompensationCadence,
+  TaskCompensationKind,
+  TaskEngagementKind,
+  TaskExecutionMode,
+  TaskKind,
+  TaskRemotePolicy,
   TaskStatus,
 } from "@optimitron/db/enums";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -15,6 +27,7 @@ const mocks = vi.hoisted(() => ({
   getTaskDetailData: vi.fn(),
   computeTaskPriority: vi.fn(),
   rankTasksForUser: vi.fn(),
+  scoreTaskForUser: vi.fn(),
   isTaskBlocked: vi.fn(),
   isTaskLeased: vi.fn(),
   taskCreate: vi.fn(),
@@ -45,6 +58,25 @@ const mocks = vi.hoisted(() => ({
   reportContent: vi.fn(),
   transaction: vi.fn(),
   userFindUnique: vi.fn(),
+  userFindMany: vi.fn(),
+  userUpdate: vi.fn(),
+  taskApplicationFindFirst: vi.fn(),
+  taskApplicationFindMany: vi.fn(),
+  taskApplicationFindUnique: vi.fn(),
+  taskApplicationCreate: vi.fn(),
+  taskApplicationUpdate: vi.fn(),
+  taskApplicationEventCreate: vi.fn(),
+  taskCandidateMatchFindMany: vi.fn(),
+  taskCandidateMatchUpsert: vi.fn(),
+  taskCandidateMatchUpdate: vi.fn(),
+  agentExecutorFindMany: vi.fn(),
+  agentExecutorUpsert: vi.fn(),
+  agentExecutorUpdate: vi.fn(),
+  taskExecutionAttemptCreate: vi.fn(),
+  canReviewTaskApplications: vi.fn(),
+  assertCanReviewTaskApplications: vi.fn(),
+  getTaskApplications: vi.fn(),
+  updateTaskApplication: vi.fn(),
   upsertPrimaryTaskCommunicationEndpoint: vi.fn(),
   countUserCommentsInWindow: vi.fn(),
   postComment: vi.fn(),
@@ -90,6 +122,7 @@ vi.mock("../tasks.server", () => ({
 vi.mock("../tasks/rank-tasks", () => ({
   computeTaskPriority: mocks.computeTaskPriority,
   rankTasksForUser: mocks.rankTasksForUser,
+  scoreTaskForUser: mocks.scoreTaskForUser,
   isTaskBlocked: mocks.isTaskBlocked,
 }));
 
@@ -114,6 +147,21 @@ vi.mock("../tasks/task-comment-notifications.server", () => ({
 }));
 vi.mock("../tasks/wishonia-task-reply.server", () => ({
   generateAndPostWishoniaReply: mocks.generateAndPostWishoniaReply,
+}));
+
+vi.mock("../task-applications.server", () => ({
+  applicationSelect: {
+    applicantPersonId: true,
+    applicantUserId: true,
+    applicationMessage: true,
+    id: true,
+    status: true,
+    taskId: true,
+  },
+  canReviewTaskApplications: mocks.canReviewTaskApplications,
+  assertCanReviewTaskApplications: mocks.assertCanReviewTaskApplications,
+  getTaskApplications: mocks.getTaskApplications,
+  updateTaskApplication: mocks.updateTaskApplication,
 }));
 
 class ProfileValidationError extends Error {
@@ -229,6 +277,29 @@ vi.mock("../prisma", () => ({
     },
     taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
     taskImpactFrameEstimate: { create: mocks.taskImpactFrameEstimateCreate },
+    taskApplication: {
+      create: mocks.taskApplicationCreate,
+      findFirst: mocks.taskApplicationFindFirst,
+      findMany: mocks.taskApplicationFindMany,
+      findUnique: mocks.taskApplicationFindUnique,
+      update: mocks.taskApplicationUpdate,
+    },
+    taskApplicationEvent: {
+      create: mocks.taskApplicationEventCreate,
+    },
+    taskCandidateMatch: {
+      findMany: mocks.taskCandidateMatchFindMany,
+      upsert: mocks.taskCandidateMatchUpsert,
+      update: mocks.taskCandidateMatchUpdate,
+    },
+    agentExecutor: {
+      findMany: mocks.agentExecutorFindMany,
+      upsert: mocks.agentExecutorUpsert,
+      update: mocks.agentExecutorUpdate,
+    },
+    taskExecutionAttempt: {
+      create: mocks.taskExecutionAttemptCreate,
+    },
     referendum: {
       create: mocks.referendumCreate,
       findMany: mocks.referendumFindMany,
@@ -238,6 +309,8 @@ vi.mock("../prisma", () => ({
     },
     user: {
       findUnique: mocks.userFindUnique,
+      findMany: mocks.userFindMany,
+      update: mocks.userUpdate,
     },
   },
 }));
@@ -296,6 +369,52 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
   };
 }
 
+function makeMatchingUser(overrides: Record<string, unknown> = {}) {
+  return {
+    accessTags: [],
+    availableFrom: null,
+    availableHoursPerWeek: null,
+    city: null,
+    countryCode: null,
+    credentialTags: [],
+    email: "user@example.com",
+    id: "user-1",
+    interestTags: [],
+    languageTags: [],
+    latitude: null,
+    longitude: null,
+    maxTaskDifficulty: null,
+    person: {
+      displayName: "Test User",
+      handle: "testuser",
+      id: "person-1",
+      image: null,
+    },
+    personId: "person-1",
+    postalCode: null,
+    preferredPaymentRails: [],
+    preferredTaskTags: [],
+    regionCode: null,
+    skillTags: [],
+    toolTags: [],
+    unavailableTaskTags: [],
+    workPreferenceTags: [],
+    ...overrides,
+  };
+}
+
+function makeTaskApplication(overrides: Record<string, unknown> = {}) {
+  return {
+    applicantPersonId: "person-1",
+    applicantUserId: "user-1",
+    applicationMessage: "I can help.",
+    id: "application-1",
+    status: TaskApplicationStatus.APPLIED,
+    taskId: "task-1",
+    ...overrides,
+  };
+}
+
 function makePriority(overrides: Record<string, unknown> = {}) {
   return {
     priority: 100,
@@ -333,10 +452,65 @@ beforeEach(() => {
         taskImpactFrameEstimate: {
           create: mocks.taskImpactFrameEstimateCreate,
         },
+        taskApplication: {
+          create: mocks.taskApplicationCreate,
+          findFirst: mocks.taskApplicationFindFirst,
+          update: mocks.taskApplicationUpdate,
+        },
+        taskApplicationEvent: {
+          create: mocks.taskApplicationEventCreate,
+        },
       }),
   );
+  mocks.listTasks.mockResolvedValue([]);
   mocks.taskImpactEstimateSetCreate.mockResolvedValue({ id: "estimate-set-1" });
   mocks.taskImpactFrameEstimateCreate.mockResolvedValue({ id: "frame-1" });
+  mocks.taskApplicationFindFirst.mockResolvedValue(null);
+  mocks.taskApplicationFindMany.mockResolvedValue([]);
+  mocks.taskApplicationCreate.mockResolvedValue(makeTaskApplication());
+  mocks.taskApplicationUpdate.mockResolvedValue(
+    makeTaskApplication({ status: TaskApplicationStatus.UNDER_REVIEW }),
+  );
+  mocks.taskApplicationEventCreate.mockResolvedValue({
+    eventType: TaskApplicationEventType.CREATED,
+    id: "application-event-1",
+  });
+  mocks.taskCandidateMatchFindMany.mockResolvedValue([]);
+  mocks.taskCandidateMatchUpsert.mockResolvedValue({
+    candidateKey: "user:user-1",
+    candidateKind: TaskCandidateKind.USER,
+    id: "candidate-match-1",
+    score: 123,
+    scoreVersion: "mcp-match-v1",
+    status: TaskCandidateMatchStatus.SUGGESTED,
+    taskId: "task-1",
+  });
+  mocks.taskCandidateMatchUpdate.mockResolvedValue({
+    candidateKey: "user:user-1",
+    candidateKind: TaskCandidateKind.USER,
+    id: "candidate-match-1",
+    score: 123,
+    scoreVersion: "mcp-match-v1",
+    status: TaskCandidateMatchStatus.CONTACTED,
+    taskId: "task-1",
+  });
+  mocks.agentExecutorFindMany.mockResolvedValue([]);
+  mocks.agentExecutorUpsert.mockResolvedValue({
+    accessTags: [],
+    agentKey: "openai:gpt-5",
+    capabilityTags: ["typescript"],
+    displayName: "GPT-5",
+    id: "agent-1",
+    status: AgentExecutorStatus.ACTIVE,
+    toolTags: [],
+  });
+  mocks.agentExecutorUpdate.mockResolvedValue({
+    agentKey: "openai:gpt-5",
+    displayName: "GPT-5",
+    id: "agent-1",
+    status: AgentExecutorStatus.PAUSED,
+  });
+  mocks.taskExecutionAttemptCreate.mockResolvedValue({ id: "attempt-1" });
   mocks.referendumCreate.mockResolvedValue({
     id: "ref-new",
     title: "Trial Abundance Referendum",
@@ -416,7 +590,19 @@ beforeEach(() => {
   mocks.taskEdgeCreateMany.mockResolvedValue({ count: 0 });
   mocks.taskEdgeUpdateMany.mockResolvedValue({ count: 0 });
   mocks.taskEdgeFindMany.mockResolvedValue([]);
-  mocks.userFindUnique.mockResolvedValue({ personId: "person-1" });
+  mocks.userFindUnique.mockResolvedValue(makeMatchingUser());
+  mocks.userFindMany.mockResolvedValue([]);
+  mocks.userUpdate.mockImplementation(
+    async ({ data }: { data: Record<string, unknown> }) =>
+      makeMatchingUser(data),
+  );
+  mocks.canReviewTaskApplications.mockResolvedValue(true);
+  mocks.assertCanReviewTaskApplications.mockResolvedValue(undefined);
+  mocks.getTaskApplications.mockResolvedValue([makeTaskApplication()]);
+  mocks.updateTaskApplication.mockResolvedValue(
+    makeTaskApplication({ status: TaskApplicationStatus.ACCEPTED }),
+  );
+  mocks.scoreTaskForUser.mockReturnValue(1);
   mocks.upsertPrimaryTaskCommunicationEndpoint.mockResolvedValue(null);
   mocks.countUserCommentsInWindow.mockResolvedValue(0);
   mocks.postComment.mockResolvedValue({
@@ -2214,6 +2400,98 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("createTask persists routing metadata for roles, locations, compensation, and matching tags", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "created-task",
+          contextJson: {
+            executor_type: "Human",
+            value: 100000,
+            p_success: 0.5,
+          },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50000,
+            estimatedCashCostUsdBase: 80000,
+            estimatedEffortHoursBase: 2080,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Campaign manager",
+          description: "Coordinate nonprofit endorsements.",
+          category: "OUTREACH",
+          acceptanceCriteria: ["Endorsement pipeline exists"],
+          impactStatement: "Moves 1% Treaty adoption forward.",
+          hours: 2080,
+          value: 100000,
+          p_success: 0.5,
+          applicationPolicy: "OPEN",
+          applicationQuestionsJson: [{ id: "nonprofit_network", type: "text" }],
+          compensationCadence: "ANNUAL",
+          compensationCurrency: "usd",
+          compensationKind: "PAID",
+          compensationMaxAmountUsd: 120000,
+          compensationMinAmountUsd: 80000,
+          compensationPaymentRails: ["stripe", "crypto"],
+          engagementKind: "FULL_TIME",
+          estimatedHoursPerWeekMax: 50,
+          estimatedHoursPerWeekMin: 40,
+          executionMode: "HUMAN_ONLY",
+          kind: "ROLE_OPENING",
+          locationText: "Edwardsville or St. Louis preferred",
+          preferredSkillTags: ["campaign-management", "nonprofit-outreach"],
+          remotePolicy: "HYBRID",
+          requiredCredentialTags: ["nonprofit-campaigns"],
+          requiredLanguageTags: ["en"],
+          requiredToolTags: ["crm"],
+          workLocationCity: "Edwardsville",
+          workLocationCountryCode: "US",
+          workLocationRegionCode: "IL",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            applicationPolicy: TaskApplicationPolicy.OPEN,
+            applicationQuestionsJson: [
+              { id: "nonprofit_network", type: "text" },
+            ],
+            compensationCadence: TaskCompensationCadence.ANNUAL,
+            compensationCurrency: "usd",
+            compensationKind: TaskCompensationKind.PAID,
+            compensationMaxAmountMinorUnits: 12_000_000n,
+            compensationMinAmountMinorUnits: 8_000_000n,
+            compensationPaymentRails: ["stripe", "crypto"],
+            engagementKind: TaskEngagementKind.FULL_TIME,
+            estimatedHoursPerWeekMax: 50,
+            estimatedHoursPerWeekMin: 40,
+            executionMode: TaskExecutionMode.HUMAN_ONLY,
+            kind: TaskKind.ROLE_OPENING,
+            locationText: "Edwardsville or St. Louis preferred",
+            preferredSkillTags: [
+              "campaign-management",
+              "nonprofit-outreach",
+            ],
+            remotePolicy: TaskRemotePolicy.HYBRID,
+            requiredCredentialTags: ["nonprofit-campaigns"],
+            requiredLanguageTags: ["en"],
+            requiredToolTags: ["crm"],
+            workLocationCity: "Edwardsville",
+            workLocationCountryCode: "US",
+            workLocationRegionCode: "IL",
+          }),
+        }),
+      );
+    });
+
     describe("createTask required-field validation", () => {
       it("rejects when description is missing", async () => {
         const client = await setup("user-1", ALL_SCOPES);
@@ -3431,11 +3709,20 @@ describe("MCP server tool dispatch", () => {
       expect(body.personId).toBe("person-1");
       expect(mocks.userFindUnique).toHaveBeenCalledWith({
         where: { id: "user-1" },
-        select: { personId: true },
+        select: expect.objectContaining({
+          person: expect.any(Object),
+          personId: true,
+          skillTags: true,
+        }),
       });
       expect(body.user).toMatchObject({
         id: "user-1",
         email: "test@example.com",
+      });
+      expect(body.matchingPreferences).toMatchObject({
+        id: "user-1",
+        personId: "person-1",
+        skillTags: [],
       });
       expect(mocks.getProfileIdentityData).toHaveBeenCalledWith("user-1");
     });
@@ -3474,6 +3761,54 @@ describe("MCP server tool dispatch", () => {
       });
       const body = parseToolBody(result);
       expect(body.user).toMatchObject({ id: "user-1" });
+      expect(body.matchingPreferences).toMatchObject({ personId: "person-1" });
+    });
+
+    it("updateMyProfile writes private matching preferences on the User row", async () => {
+      mocks.updateUserProfile.mockResolvedValue(profile);
+      mocks.userUpdate.mockResolvedValue(
+        makeMatchingUser({
+          availableHoursPerWeek: 40,
+          city: "Edwardsville",
+          countryCode: "US",
+          preferredPaymentRails: ["stripe", "crypto"],
+          skillTags: ["campaign-management"],
+        }),
+      );
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const result = await client.callTool({
+        name: "updateMyProfile",
+        arguments: {
+          availableHoursPerWeek: 40,
+          city: "Edwardsville",
+          countryCode: "US",
+          preferredPaymentRails: ["stripe", "crypto"],
+          skillTags: ["campaign-management"],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.userUpdate).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        data: expect.objectContaining({
+          availabilityUpdatedAt: expect.any(Date),
+          availableHoursPerWeek: 40,
+          city: "Edwardsville",
+          countryCode: "US",
+          preferredPaymentRails: ["stripe", "crypto"],
+          skillTags: ["campaign-management"],
+        }),
+        select: expect.objectContaining({ skillTags: true }),
+      });
+      const body = parseToolBody(result);
+      expect(body.matchingPreferences).toMatchObject({
+        availableHoursPerWeek: 40,
+        city: "Edwardsville",
+        countryCode: "US",
+        preferredPaymentRails: ["stripe", "crypto"],
+        skillTags: ["campaign-management"],
+      });
     });
 
     it("exposes image in the updateMyProfile input schema", async () => {
@@ -3523,6 +3858,192 @@ describe("MCP server tool dispatch", () => {
       const body = parseToolBody(result);
       expect(body.error).toBe("tool_execution_failed");
       expect(body.message).toBe("DB unreachable");
+    });
+  });
+
+  describe("task applications and matching MCP tools", () => {
+    it("applyToTask creates a task-scoped application for the authenticated user", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        applicationPolicy: TaskApplicationPolicy.OPEN,
+        id: "task-1",
+        jurisdictionId: null,
+        title: "Campaign manager",
+      });
+      mocks.taskApplicationCreate.mockResolvedValue(
+        makeTaskApplication({
+          applicationMessage: "I can coordinate nonprofit endorsements.",
+        }),
+      );
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const result = await client.callTool({
+        name: "applyToTask",
+        arguments: {
+          answersJson: { nonprofitRelationships: "Several" },
+          applicationMessage: "I can coordinate nonprofit endorsements.",
+          taskId: "task-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskApplicationCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          applicantPersonId: "person-1",
+          applicantUserId: "user-1",
+          answersJson: { nonprofitRelationships: "Several" },
+          applicationMessage: "I can coordinate nonprofit endorsements.",
+          taskId: "task-1",
+        }),
+        select: expect.objectContaining({ id: true, status: true }),
+      });
+      expect(mocks.taskApplicationEventCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          applicationId: "application-1",
+          eventType: TaskApplicationEventType.CREATED,
+          toStatus: TaskApplicationStatus.APPLIED,
+        }),
+      });
+      expect(parseToolBody(result)).toMatchObject({
+        application: { id: "application-1", taskId: "task-1" },
+        task: { id: "task-1", title: "Campaign manager" },
+      });
+    });
+
+    it("findTasksForUser ranks accessible tasks using private matching preferences", async () => {
+      const task = makeCreatedTask({
+        id: "task-campaign",
+        preferredSkillTags: ["campaign-management"],
+        title: "Campaign manager",
+      });
+      mocks.userFindUnique.mockResolvedValue(
+        makeMatchingUser({ skillTags: ["campaign-management"] }),
+      );
+      mocks.listTasks.mockResolvedValue([task]);
+      mocks.rankTasksForUser.mockReturnValue([{ score: 987, task }]);
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const result = await client.callTool({
+        name: "findTasksForUser",
+        arguments: { limit: 1 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.listTasks).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 5000,
+          personId: "person-1",
+          status: TaskStatus.ACTIVE,
+          userId: "user-1",
+          visibility: "accessible",
+        }),
+      );
+      expect(mocks.rankTasksForUser).toHaveBeenCalledWith(
+        [task],
+        expect.objectContaining({ skillTags: ["campaign-management"] }),
+        1,
+        { preferLeafExecution: true },
+      );
+      expect(parseToolBody(result)).toMatchObject({
+        tasks: [{ score: 987, task: { id: "task-campaign" } }],
+        user: { id: "user-1", skillTags: ["campaign-management"] },
+      });
+    });
+
+    it("findTaskCandidates scores users for a task without requiring a separate job model", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "task-1",
+          preferredSkillTags: ["campaign-management"],
+          requiredCredentialTags: ["nonprofit-campaigns"],
+          title: "Campaign manager",
+        }),
+      });
+      mocks.userFindMany.mockResolvedValue([
+        makeMatchingUser({
+          id: "candidate-user",
+          person: {
+            displayName: "Candidate User",
+            handle: "candidate",
+            id: "candidate-person",
+            image: null,
+          },
+          personId: "candidate-person",
+          skillTags: ["campaign-management"],
+        }),
+      ]);
+      mocks.scoreTaskForUser.mockReturnValue(321);
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "findTaskCandidates",
+        arguments: { includeAgents: false, limit: 5, taskId: "task-1" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.userFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          select: expect.objectContaining({ skillTags: true }),
+          take: 50,
+          where: expect.objectContaining({ deletedAt: null, isSystem: false }),
+        }),
+      );
+      expect(mocks.scoreTaskForUser).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "task-1" }),
+        expect.objectContaining({ skillTags: ["campaign-management"] }),
+      );
+      expect(parseToolBody(result)).toMatchObject({
+        candidates: [
+          {
+            candidateKey: "user:candidate-user",
+            candidateKind: TaskCandidateKind.USER,
+            candidateUserId: "candidate-user",
+            score: 321,
+          },
+        ],
+      });
+    });
+
+    it("upsertAgentExecutor registers non-human executors for future routing", async () => {
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "upsertAgentExecutor",
+        arguments: {
+          agentKey: "openai:gpt-5",
+          averageCostUsd: 0.05,
+          averageLatencySeconds: 10,
+          capabilityTags: ["typescript", "research"],
+          displayName: "GPT-5",
+          provider: "openai",
+          status: "ACTIVE",
+          toolTags: ["mcp"],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.agentExecutorUpsert).toHaveBeenCalledWith({
+        where: { agentKey: "openai:gpt-5" },
+        create: expect.objectContaining({
+          agentKey: "openai:gpt-5",
+          averageCostUsd: 0.05,
+          averageLatencySeconds: 10,
+          capabilityTags: ["typescript", "research"],
+          displayName: "GPT-5",
+          provider: "openai",
+          status: AgentExecutorStatus.ACTIVE,
+          toolTags: ["mcp"],
+        }),
+        update: expect.objectContaining({
+          capabilityTags: ["typescript", "research"],
+          displayName: "GPT-5",
+          provider: "openai",
+          status: AgentExecutorStatus.ACTIVE,
+          toolTags: ["mcp"],
+        }),
+      });
+      expect(parseToolBody(result)).toMatchObject({
+        agent: { agentKey: "openai:gpt-5", status: AgentExecutorStatus.ACTIVE },
+      });
     });
   });
 

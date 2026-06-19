@@ -133,7 +133,7 @@ export function SlideIpfsImmutableStorage() {
               className="font-terminal text-base md:text-lg mt-1"
               style={{ color: palette.muted }}
             >
-              🌐 Verified via World ID
+              Verified personhood
             </div>
           </div>
         )}

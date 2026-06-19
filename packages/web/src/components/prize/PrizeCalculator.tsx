@@ -5,8 +5,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
-  VOTE_TOKEN_VALUE,
-  VOTE_2_CLAIMS_PAYOUT,
+  EARTH_OPTIMIZATION_POINT_VALUE,
+  EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT,
   fmtParam,
 } from "@optimitron/data/parameters";
 import { POINT } from "@/lib/messaging";
@@ -14,14 +14,14 @@ import { POINT } from "@/lib/messaging";
  * Interactive Prize return calculator.
  *
  * Fail scenario:  deposit × PRIZE_POOL_HORIZON_MULTIPLE (~9x over 15 years)
- * Success scenario: VOTE Points × pro-rata share of pool (VOTE_TOKEN_VALUE per VOTE if canonical pool size)
+ * Success scenario: Earth Optimization Points x pro-rata share of pool.
  */
 
 const FAIL_MULTIPLIER = PRIZE_POOL_HORIZON_MULTIPLE.value;
-const VOTE_VALUE = VOTE_TOKEN_VALUE.value;
+const POINT_VALUE = EARTH_OPTIMIZATION_POINT_VALUE.value;
 
 const PRESET_AMOUNTS = [1];
-const PRESET_VOTES = [1, 2, 5, 10];
+const PRESET_POINTS = [1, 2, 5, 10];
 
 function formatUSD(n: number): string {
   if (n >= 1_000_000) {
@@ -35,7 +35,7 @@ function formatUSD(n: number): string {
 
 export function PrizeCalculator() {
   const [depositAmount, setDepositAmount] = useState(1);
-  const [voteCount, setVoteCount] = useState(2);
+  const [pointCount, setPointCount] = useState(2);
   const reduced = useReducedMotion();
 
   const handleDepositSlider = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +49,7 @@ export function PrizeCalculator() {
 
   const failReturn = depositAmount * FAIL_MULTIPLIER;
   const failProfit = failReturn - depositAmount;
-  const successPayout = voteCount * VOTE_VALUE;
+  const successPayout = pointCount * POINT_VALUE;
 
   return (
     <div>
@@ -97,18 +97,18 @@ export function PrizeCalculator() {
         />
       </div>
 
-      {/* VOTE Points input */}
+      {/* Earth Optimization Points input */}
       <div className="mb-6">
         <label className="block text-xs font-black uppercase text-muted-foreground mb-2">
           Verified Voters You Recruit
         </label>
         <div className="flex gap-2 flex-wrap">
-          {PRESET_VOTES.map((preset) => (
+          {PRESET_POINTS.map((preset) => (
             <button
               key={preset}
-              onClick={() => setVoteCount(preset)}
+              onClick={() => setPointCount(preset)}
               className={`px-4 py-2 text-sm font-black border-4 border-primary transition-colors ${
-                voteCount === preset
+                pointCount === preset
                   ? "bg-foreground text-background"
                   : "bg-background text-foreground hover:bg-muted"
               }`}
@@ -148,9 +148,9 @@ export function PrizeCalculator() {
           </div>
         </motion.div>
 
-        {/* Success scenario (VOTE holders win) */}
+        {/* Success scenario (point holders win) */}
         <motion.div
-          key={`succeed-${voteCount}`}
+          key={`succeed-${pointCount}`}
           initial={reduced ? {} : { opacity: 0.5, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
@@ -163,13 +163,13 @@ export function PrizeCalculator() {
             {formatUSD(successPayout)}
           </div>
           <div className="text-sm font-bold mb-3">
-            {voteCount} {POINT}{voteCount > 1 ? "s" : ""} × {formatUSD(VOTE_VALUE)} each
+            {pointCount} {POINT}{pointCount > 1 ? "s" : ""} × {formatUSD(POINT_VALUE)} each
           </div>
           <div className="text-xs font-bold space-y-1">
             <p>
               {POINT} holders split the pool pro-rata. Each {POINT}
-              is worth ~{fmtParam(VOTE_TOKEN_VALUE)} if the canonical pool
-              size materializes. You earned {voteCount} by recruiting {voteCount} verified voter{voteCount > 1 ? "s" : ""}.
+              is worth ~{fmtParam(EARTH_OPTIMIZATION_POINT_VALUE)} if the canonical pool
+              size materializes. You earned {pointCount} by recruiting {pointCount} verified voter{pointCount > 1 ? "s" : ""}.
             </p>
             <p className="font-bold pt-1">
               Plus everyone&apos;s lifetime income increases. Not just yours. Everyone&apos;s.

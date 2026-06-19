@@ -116,7 +116,7 @@ constructor(
 // No quantitative easing. No money printer. Just math.`,
     codeLanguage: "solidity",
     codeExplanation:
-      "The total supply of $WISH is set once at deployment and enforced by the contract. No entity can create more. Productivity gains manifest as gentle deflation — your money buys more over time, not less.",
+      "The total supply of Wishes is set once at deployment and enforced by the protocol. No entity can create more. Productivity gains manifest as gentle deflation — your money buys more over time, not less.",
     annualSavings: "96% of your purchasing power",
     savingsComparison:
       "Since 1913, the dollar has lost 96 cents of every dollar. Under fixed supply, that theft is mathematically impossible.",
@@ -132,8 +132,8 @@ constructor(
     replaces: ["irs"],
     replacesAgencyName: "Internal Revenue Service",
     description:
-      "Six lines of code. That's all it took.",
-    tagline: "Six lines of Solidity replace 74,000 pages of tax code",
+      "Six lines of computer code. That's all it took.",
+    tagline: "Six lines of computer code replace 74,000 pages of tax code",
     deprecatedMetrics: [
       { metric: "Tax Code Complexity", description: "74,000 pages. Every loophole is a feature, not a bug — it's how donors get paid back." },
       { metric: "Compliance Burden", description: "6.1 billion hours/year of citizen time. An entire profession ('accountant') exists to decode rules you wrote for yourselves." },
@@ -142,7 +142,7 @@ constructor(
     optimalMetrics: [
       { metric: "Revenue per Dollar of Overhead", description: "0.5% transaction tax collects the same revenue at ~0% administrative cost." },
       { metric: "Zero Citizen Filing Time", description: "No forms, no deadlines, no accountants. Tax happens automatically on every transfer." },
-      { metric: "Zero Loopholes", description: "Can't lobby a smart contract. Can't offshore a protocol. The tax is unavoidable because it's the protocol." },
+      { metric: "Zero Loopholes", description: "Can't lobby an automatic rule. Can't offshore a protocol. The tax is unavoidable because it's the protocol." },
     ],
     stats: [
       {
@@ -170,7 +170,7 @@ constructor(
         color: "pink",
       },
     ],
-    codeHeader: "74,000 pages of tax code → 6 lines of Solidity",
+    codeHeader: "74,000 pages of tax code → 6 lines of computer code",
     replacementCode: `// WishToken._update() — replaces the entire IRS
 function _update(address from, address to, uint256 value) internal override {
     // Skip tax on mints, burns, or exempt addresses
@@ -190,7 +190,7 @@ function _update(address from, address to, uint256 value) internal override {
     savingsComparison:
       "$12.3B direct IRS budget + $200B+ in annual compliance costs eliminated. That's $640 per American per year just in paperwork savings.",
     wishoniaQuote:
-      "83,000 people interpreting 74,000 pages to do what six lines of code does automatically. And you wonder where your taxes go.",
+      "83,000 people interpreting 74,000 pages to do what six lines of computer code do automatically. And you wonder where your taxes go.",
     cardColor: "cyan",
   },
   dssa: {
@@ -210,7 +210,7 @@ function _update(address from, address to, uint256 value) internal override {
     ],
     optimalMetrics: [
       { metric: "Poverty Rate", description: "One number. Is it going down? Good. Is it zero? Done." },
-      { metric: "Zero Humans Falling Through Cracks", description: "UBI via World ID. If you're human, you qualify. No applications, no wait, no committee deciding if you deserve lunch." },
+      { metric: "Zero Humans Falling Through Cracks", description: "UBI with one-person-one-claim verification. If you're human, you qualify. No applications, no wait, no committee deciding if you deserve lunch." },
       { metric: "Admin Cost as % of Disbursement", description: "Current system: up to 50% overhead. UBI for-loop: ~0%." },
     ],
     stats: [
@@ -253,7 +253,7 @@ function distributeUBI() external {                             // Anyone can ca
 // No fraud investigation. No waiting. Just equal splits.`,
     codeLanguage: "solidity",
     codeExplanation:
-      "Every verified citizen (World ID) gets an equal share. No applications, no case workers, no means-testing, no fraud investigation, no processing delays. The entire welfare bureaucracy becomes a for-loop.",
+      "Every verified citizen gets an equal share. No applications, no case workers, no means-testing, no fraud investigation, no processing delays. The entire welfare bureaucracy becomes a for-loop.",
     annualSavings: "$1.1 trillion",
     savingsComparison:
       "That's more than the GDP of the Netherlands. Spent not on helping people, but on deciding which people deserve help.",
@@ -348,7 +348,7 @@ function allocate(bytes32 jurisdiction, bytes32[] leaves,
       { metric: "Sampling Coverage", description: "Can only audit a fraction of government spending. The rest is trusted on faith. Which is how you get $35 trillion in debt." },
     ],
     optimalMetrics: [
-      { metric: "Real-Time Transaction Visibility", description: "Every government transaction visible in seconds, not 18 months. On IPFS. Immutable." },
+      { metric: "Real-Time Transaction Visibility", description: "Every government transaction visible in seconds, not 18 months. Published and immutable." },
       { metric: "Zero Ability to Hide Spending", description: "When the ledger is public, there's nothing to audit. The transparency IS the accountability." },
       { metric: "100% Coverage", description: "Every transaction, not a sample. Every department, not a rotation. Always, not periodically." },
     ],
@@ -378,27 +378,27 @@ function allocate(bytes32 jurisdiction, bytes32[] leaves,
         color: "pink",
       },
     ],
-    codeHeader: "3,400 auditors × 18 months → the blockchain itself",
-    replacementCode: `// No function needed. The blockchain IS the audit.
+    codeHeader: "3,400 auditors × 18 months → public audit trail",
+    replacementCode: `// No separate audit process needed. The public record is the audit.
 //
 // Every transaction is:
 //   ✓ Public          — anyone can read it
 //   ✓ Immutable       — no one can alter it
 //   ✓ Real-time       — visible in seconds, not 18 months
-//   ✓ Deterministic   — smart contracts execute exactly as written
+//   ✓ Deterministic   — treasury rules execute exactly as written
 //   ✓ Free            — no $803M/yr budget required
 //
 // WishocraticTreasury.distribute() is permissionless.
 // Anyone can verify that funds went to the right places
-// by reading the chain. That's it. That's the audit.`,
+// by reading the public ledger. That's it. That's the audit.`,
     codeLanguage: "solidity",
     codeExplanation:
-      "When every government transaction is on a public blockchain, auditing is free, instant, and automatic. There's nothing to investigate because there's nothing to hide. The ledger is the audit.",
+      "When every government transaction is published to a public ledger, auditing becomes continuous and automatic. There's nothing to reconstruct because the record is already visible.",
     annualSavings: "$803M",
     savingsComparison:
       "Plus: real-time accountability instead of 18-month delays. Plus: 100% coverage instead of sampling. Plus: citizens can audit directly instead of trusting auditors.",
     wishoniaQuote:
-      "You pay 3,400 humans $803 million a year to audit a ledger. My ledger audits itself. It's called a blockchain. You invented it and then didn't use it. My planet banned this as performance art in year six.",
+      "You pay 3,400 humans $803 million a year to reconstruct spending after the fact. I publish the ledger as the money moves. My planet banned delayed accounting in year six.",
     cardColor: "cyan",
   },
   dcbo: {
@@ -535,7 +535,7 @@ function updateWeights(
 // No lobbying. No earmarks. No pork barrel. Just citizen preferences.`,
     codeLanguage: "solidity",
     codeExplanation:
-      "Citizens do ~10 pairwise comparisons ('education or infrastructure?'). Eigenvector decomposition produces stable budget weights from millions of comparisons. The weights are posted on-chain and funds are distributed proportionally. No lobbyists, no horse-trading.",
+      "Citizens do ~10 pairwise comparisons ('education or infrastructure?'). Eigenvector decomposition produces stable budget weights from millions of comparisons. The weights are published and funds are distributed proportionally. No lobbyists, no horse-trading.",
     annualSavings: "$120M",
     savingsComparison:
       "The real value: $6.8 trillion in federal spending allocated by citizen preferences instead of donor preferences. That's the largest reallocation of democratic power in history.",
@@ -595,13 +595,13 @@ function citizenCount() external view returns (uint256) {
     return citizenList.length;  // Real-time. Sybil-resistant. Free.
 }
 
-// Every citizen registers once with World ID (proof of unique personhood).
+// Every citizen registers once with proof of unique personhood.
 // The count updates instantly when someone registers.
 // No door-to-door canvassing. No mail-in forms. No undercount.
 // No $14.2 billion. Just one line that returns a number.`,
     codeLanguage: "solidity",
     codeExplanation:
-      "World ID provides cryptographic proof of unique personhood. When citizens register for UBI, the population count updates in real-time. No door-knocking, no mail-in forms, no processing delays, no undercount of marginalized communities.",
+      "Personhood verification gives each citizen one claim. When citizens register for UBI, the population count updates in real-time. No door-knocking, no mail-in forms, no processing delays, no undercount of marginalized communities.",
     annualSavings: "$1.4B/yr",
     savingsComparison:
       "Amortized annual cost of the Census. Plus: real-time data instead of decade-old snapshots. Plus: zero undercount because registration is incentivized by UBI.",
@@ -730,7 +730,7 @@ function allocateSubsidy(patient) {
     ],
     codeHeader: "The Department of Defense → 0 lines of code",
     replacementCode: `// There is no replacement code.
-// You do not need a smart contract to not kill people.
+// You do not need automation to not kill people.
 // That is the entire implementation.
 
 // Dispute resolution: Wishocratic preference aggregation
@@ -813,21 +813,21 @@ function allocateSubsidy(patient) {
       { value: "$546B", label: "Compliance Cost", description: "Annual cost of tax compliance in the US", color: "yellow" },
       { value: "80+", label: "Welfare Programs", description: "Overlapping federal means-tested welfare programs", color: "cyan" },
     ],
-    codeHeader: "Four agencies → one token contract",
+    codeHeader: "Four agencies → one currency protocol",
     replacementCode: `// WishToken.sol handles all four functions:
-// 1. Currency (ERC-20 token)
+// 1. Currency (Wishes)
 // 2. Tax (0.5% on every transfer → treasury)
 // 3. Monetary policy (fixed supply, 0% inflation)
 // 4. Welfare (UBI distribution to all verified citizens)
 // See: WishToken.sol, UBIDistributor.sol, WishocraticTreasury.sol`,
     codeLanguage: "solidity",
     codeExplanation:
-      "A single token contract replaces four government agencies. The 0.5% transaction tax replaces the IRS. Fixed supply replaces the Fed. UBI distribution replaces welfare. Wishocratic allocation replaces Congressional budgeting.",
+      "A single currency protocol replaces four government agencies. The 0.5% transaction tax replaces the IRS. Fixed supply replaces the Fed. UBI distribution replaces welfare. Wishocratic allocation replaces Congressional budgeting.",
     annualSavings: "$758B+",
     savingsComparison:
       "IRS compliance ($546B) + welfare admin overhead ($212B+) eliminated. Plus: 96% of purchasing power no longer stolen by inflation.",
     wishoniaQuote:
-      "You have four agencies, 74,000 pages of rules, 83,000 employees, and 80 welfare programs — all doing what one smart contract does in six lines. And you wonder where your taxes go.",
+      "You have four agencies, 74,000 pages of rules, 83,000 employees, and 80 welfare programs — all doing what six lines of computer code do. And you wonder where your taxes go.",
     cardColor: "pink",
   },
 

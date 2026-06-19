@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Card } from "@/components/retroui/Card"
 import { cn } from "@/lib/utils"
 
 export type BrutalCardBgColor = "background" | "foreground" | "pink" | "cyan" | "yellow" | "green" | "red" | "default"
@@ -51,7 +50,7 @@ export function BrutalCard({
   const hoverClass = hover ? "transition-colors hover:bg-muted" : ""
 
   return (
-    <Card
+    <div
       className={cn(
         "border border-foreground",
         paddingClasses[padding],
@@ -62,6 +61,6 @@ export function BrutalCard({
       )}
     >
       {children}
-    </Card>
+    </div>
   )
 }

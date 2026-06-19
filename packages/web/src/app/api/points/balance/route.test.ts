@@ -11,13 +11,13 @@ vi.mock("@/lib/auth-utils", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    voteTokenMint: { findMany: mocks.findMany },
+    pointMint: { findMany: mocks.findMany },
   },
 }));
 
 import { GET } from "./route";
 
-describe("GET /api/vote-tokens/balance", () => {
+describe("GET /api/points/balance", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -39,7 +39,7 @@ describe("GET /api/vote-tokens/balance", () => {
 
     expect(res.status).toBe(200);
     const data = await res.json();
-    expect(data.totalVotes).toBe(0);
+    expect(data.totalPoints).toBe(0);
     expect(data.totalBalance).toBe("0");
     expect(data.mints).toEqual([]);
   });
@@ -86,7 +86,7 @@ describe("GET /api/vote-tokens/balance", () => {
 
     expect(res.status).toBe(200);
     const data = await res.json();
-    expect(data.totalVotes).toBe(2);
+    expect(data.totalPoints).toBe(2);
     expect(data.totalBalance).toBe("2000000000000000000");
     expect(data.mints).toHaveLength(3);
   });

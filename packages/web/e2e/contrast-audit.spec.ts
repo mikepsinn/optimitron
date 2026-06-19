@@ -22,8 +22,6 @@ import { signInDemoUser } from "./utils/auth";
 import { getContrastViolations } from "./utils/computed-contrast";
 import { ALL_PAGE_PATHS, AUTH_REQUIRED_PATHS, PUBLIC_PAGE_PATHS } from "./utils/static-pages";
 
-const SEVERE_NORMAL_CONTRAST_RATIO = 2.25;
-const SEVERE_LARGE_CONTRAST_RATIO = 2;
 const REDIRECT_ALLOWED_PATHS = new Set([
   "/politicians",
 ]);
@@ -32,8 +30,11 @@ const CONTRAST_SCOPE = process.env.PLAYWRIGHT_CONTRAST_SCOPE === "critical"
   : "full";
 const CRITICAL_PUBLIC_PATHS = new Set([
   "/",
-  "/about",
   "/agencies",
+  "/agencies/dtreasury",
+  "/agencies/dtreasury/dfed",
+  "/agencies/dtreasury/dirs",
+  "/agencies/dtreasury/dssa",
   "/governments",
   "/prize",
   "/scoreboard",
@@ -51,8 +52,8 @@ const EMAIL_TEMPLATE_IDS = [
   "task-comment-notification",
 ];
 
-function isSevereContrastFailure(ratio: number, required: number): boolean {
-  return ratio < (required <= 3 ? SEVERE_LARGE_CONTRAST_RATIO : SEVERE_NORMAL_CONTRAST_RATIO);
+function isContrastFailure(ratio: number, required: number): boolean {
+  return ratio < required;
 }
 
 // Auto-discover all demo slide components from the sierra/ directory
@@ -283,7 +284,7 @@ test.describe("Contrast — desktop", () => {
           const ratio = Number(ratioMatch?.[1] ?? Number.NaN);
           const expected = Number((expectedMatch?.[1] ?? "4.5:1").replace(":1", ""));
 
-          if (!Number.isFinite(ratio) || !isSevereContrastFailure(ratio, expected)) {
+          if (!Number.isFinite(ratio) || !isContrastFailure(ratio, expected)) {
             continue;
           }
 
@@ -313,7 +314,7 @@ test.describe("Contrast — desktop", () => {
         );
         if (isDupe) continue;
 
-        if (isSevereContrastFailure(c.ratio, c.required)) {
+        if (isContrastFailure(c.ratio, c.required)) {
           pageViolations.push({
             page: url,
             viewport: "desktop",
@@ -368,7 +369,7 @@ test.describe("Contrast — desktop", () => {
 
       expect(
         pageViolations.length,
-        `${url} has ${pageViolations.length} severe desktop contrast violation(s). See playwright-report/contrast-audit.json for details.`,
+        `${url} has ${pageViolations.length} desktop WCAG contrast violation(s). See playwright-report/contrast-audit.json for details.`,
       ).toBe(0);
 
       // Font-size audit is currently WARN-ONLY. Strict-fail would
@@ -417,7 +418,7 @@ test.describe("Contrast — mobile", () => {
           const ratio = Number(ratioMatch?.[1] ?? Number.NaN);
           const expected = Number((expectedMatch?.[1] ?? "4.5:1").replace(":1", ""));
 
-          if (!Number.isFinite(ratio) || !isSevereContrastFailure(ratio, expected)) {
+          if (!Number.isFinite(ratio) || !isContrastFailure(ratio, expected)) {
             continue;
           }
 
@@ -446,7 +447,7 @@ test.describe("Contrast — mobile", () => {
         );
         if (isDupe) continue;
 
-        if (isSevereContrastFailure(c.ratio, c.required)) {
+        if (isContrastFailure(c.ratio, c.required)) {
           pageViolations.push({
             page: url,
             viewport: "mobile",
@@ -501,7 +502,7 @@ test.describe("Contrast — mobile", () => {
 
       expect(
         pageViolations.length,
-        `${url} has ${pageViolations.length} severe mobile contrast violation(s). See playwright-report/contrast-audit.json for details.`,
+        `${url} has ${pageViolations.length} mobile WCAG contrast violation(s). See playwright-report/contrast-audit.json for details.`,
       ).toBe(0);
 
       // Font-size audit is currently WARN-ONLY (see desktop pass).

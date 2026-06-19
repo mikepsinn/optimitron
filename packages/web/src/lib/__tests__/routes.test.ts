@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import path from "node:path";
 
 import {
   ROUTES,
   courtLink,
+  donateLink,
+  eosLink,
   exploreLinks,
   feedbackLink,
+  gameLink,
   getSignInPath,
   humanityVGovernmentLink,
   editProfileLink,
@@ -16,6 +21,8 @@ import {
   routeReviewNavItems,
   voteLink,
 } from "../routes";
+
+const WEB_ROOT = path.resolve(__dirname, "../../..");
 
 function requireLink<T extends { href: string }>(href: string, links: T[]): T {
   const link = links.find((item) => item.href === href);
@@ -101,5 +108,35 @@ describe("navigation routes", () => {
   it("keeps edit-profile and public-profile navigation as separate intents", () => {
     expect(routeReviewNavItems).toContain(editProfileLink);
     expect(routeReviewNavItems).not.toContain(publicProfileLink);
+  });
+
+  it("keeps the game landing in route review after moving it off the home page", () => {
+    expect(routeReviewNavItems).toContain(gameLink);
+  });
+
+  it("keeps the EOS landing in route review after the donation page", () => {
+    expect(routeReviewNavItems).toContain(eosLink);
+    expect(routeReviewNavItems.indexOf(eosLink)).toBe(
+      routeReviewNavItems.indexOf(donateLink) + 1,
+    );
+  });
+
+  it("keeps dynamic route templates out of smart copy-preview routes", () => {
+    const output = execFileSync(
+      "node",
+      [
+        "scripts/affected-routes.mjs",
+        "src/components/wishonia-agency/WishoniaAgencyPage.tsx",
+      ],
+      {
+        cwd: WEB_ROOT,
+        encoding: "utf8",
+      },
+    ).trim();
+    const routes = output.split(",").filter(Boolean);
+
+    expect(routes).toContain(ROUTES.dtreasuryDirs);
+    expect(routes).not.toContain("/agencies/[agencyId]");
+    expect(routes.every((route) => !route.includes("["))).toBe(true);
   });
 });

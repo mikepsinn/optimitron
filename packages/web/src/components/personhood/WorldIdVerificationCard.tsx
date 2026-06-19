@@ -10,7 +10,6 @@ import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/retroui/Button";
-import { Card } from "@/components/retroui/Card";
 import { createLogger } from "@/lib/logger";
 import { clientEnv } from "@/lib/env";
 import type { WorldIdRequestPayload, WorldIdVerificationPayload } from "@/lib/world-id";
@@ -19,9 +18,13 @@ const logger = createLogger("world-id-verification-card");
 
 interface WorldIdVerificationCardProps {
   show: boolean;
+  copy?: "generic" | "world-id";
 }
 
-export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) {
+export function WorldIdVerificationCard({
+  show,
+  copy = "generic",
+}: WorldIdVerificationCardProps) {
   const router = useRouter();
   const { data: session, update } = useSession();
   const [requestPayload, setRequestPayload] = useState<WorldIdRequestPayload | null>(null);
@@ -35,6 +38,7 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
   const worldIdEnabled = clientEnv.NEXT_PUBLIC_WORLD_ID_ENABLED !== "false";
   const sessionUser = session?.user;
   const isVerified = Boolean(sessionUser?.personhoodVerified);
+  const useWorldIdCopy = copy === "world-id";
 
   useEffect(() => {
     if (!show || !worldIdEnabled || !sessionUser?.id || isVerified) {
@@ -55,7 +59,13 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
           | null;
 
         if (!response.ok) {
-          throw new Error(payload && "error" in payload ? payload.error : "Unable to start World ID.");
+          throw new Error(
+            payload && "error" in payload
+              ? payload.error
+              : useWorldIdCopy
+                ? "Unable to start World ID."
+                : "Unable to start personhood verification.",
+          );
         }
 
         if (!isActive) {
@@ -68,7 +78,11 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
         if (isActive) {
           setRequestPayload(null);
           setRequestError(
-            error instanceof Error ? error.message : "Unable to start World ID right now.",
+            error instanceof Error
+              ? error.message
+              : useWorldIdCopy
+                ? "Unable to start World ID right now."
+                : "Unable to start personhood verification right now.",
           );
         }
       } finally {
@@ -83,7 +97,7 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
     return () => {
       isActive = false;
     };
-  }, [isVerified, sessionUser?.id, show, worldIdEnabled]);
+  }, [isVerified, sessionUser?.id, show, useWorldIdCopy, worldIdEnabled]);
 
   if (!show || !sessionUser?.id) {
     return null;
@@ -104,7 +118,12 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
       const payload = (await response.json().catch(() => null)) as { error?: string; wishesEarned?: number } | null;
 
       if (!response.ok) {
-        throw new Error(payload?.error ?? "World ID verification failed.");
+        throw new Error(
+          payload?.error ??
+            (useWorldIdCopy
+              ? "World ID verification failed."
+              : "Personhood verification failed."),
+        );
       }
 
       if (payload?.wishesEarned) {
@@ -112,7 +131,11 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
       }
     } catch (error) {
       setRequestError(
-        error instanceof Error ? error.message : "World ID verification failed.",
+        error instanceof Error
+          ? error.message
+          : useWorldIdCopy
+            ? "World ID verification failed."
+            : "Personhood verification failed.",
       );
       throw error;
     } finally {
@@ -134,15 +157,17 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
 
   return (
     <div className="mx-auto mb-8 max-w-3xl">
-      <Card className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <Card.Header className="gap-3">
+      <div className="border-y border-foreground/30 bg-background py-5">
+        <div className="gap-3 pb-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <Card.Title className="text-lg font-black uppercase text-foreground">
+              <h3 className="text-lg font-black uppercase text-foreground">
                 Proof of Personhood
-              </Card.Title>
+              </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Verify with World ID so we can weight civic input toward real people instead of bots.
+                {useWorldIdCopy
+                  ? "Verify with World ID so we can weight civic input toward real people instead of bots."
+                  : "Verify personhood so civic input comes from real people instead of duplicate accounts."}
               </p>
             </div>
             <PersonhoodStatusBadge
@@ -150,18 +175,20 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
               verified={isVerified}
             />
           </div>
-        </Card.Header>
-        <Card.Content className="space-y-4">
+        </div>
+        <div className="space-y-4">
           {successMessage ? <AlertCard type="success" message={successMessage} /> : null}
           {requestError ? <AlertCard type="error" message={requestError} /> : null}
 
           {isVerified ? (
-            <div className="border-4 border-primary bg-background p-4">
+            <div className="border-l border-foreground/30 pl-4">
               <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-0.5 h-5 w-5 text-foreground" />
                 <div className="space-y-1 text-sm">
                   <p className="font-bold text-foreground">
-                    Verified with {sessionUser.personhoodProvider === "WORLD_ID" ? "World ID" : "a personhood provider"}.
+                    {useWorldIdCopy && sessionUser.personhoodProvider === "WORLD_ID"
+                      ? "Verified with World ID."
+                      : "Verified with a personhood provider."}
                   </p>
                   {sessionUser.personhoodVerificationLevel ? (
                     <p className="text-foreground">
@@ -175,11 +202,13 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
               </div>
             </div>
           ) : !worldIdEnabled ? (
-            <div className="border-2 border-dashed border-primary bg-muted/30 p-4 text-sm text-muted-foreground">
-              World ID verification is disabled for this environment.
+            <div className="border-l border-foreground/30 pl-4 text-sm text-muted-foreground">
+              {useWorldIdCopy
+                ? "World ID verification is disabled for this environment."
+                : "Personhood verification is disabled for this environment."}
             </div>
           ) : (
-            <div className="border-4 border-primary bg-background p-4">
+            <div className="border-l border-foreground/30 pl-4">
               <div className="flex items-start gap-3">
                 <ShieldQuestion className="mt-0.5 h-5 w-5 text-foreground" />
                 <div className="space-y-3 text-sm">
@@ -198,7 +227,9 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
                         ? "Preparing..."
                         : isSubmitting || isRefreshing
                           ? "Verifying..."
-                          : "Verify with World ID"}
+                          : useWorldIdCopy
+                            ? "Verify with World ID"
+                            : "Verify Personhood"}
                     </Button>
                     <Button
                       type="button"
@@ -220,7 +251,9 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
                               throw new Error(
                                 payload && "error" in payload
                                   ? payload.error
-                                  : "Unable to refresh World ID request.",
+                                  : useWorldIdCopy
+                                    ? "Unable to refresh World ID request."
+                                    : "Unable to refresh verification request.",
                               );
                             }
                             setRequestPayload(payload as WorldIdRequestPayload);
@@ -230,7 +263,9 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
                             setRequestError(
                               error instanceof Error
                                 ? error.message
-                                : "Unable to refresh World ID request.",
+                                : useWorldIdCopy
+                                  ? "Unable to refresh World ID request."
+                                  : "Unable to refresh verification request.",
                             );
                           })
                           .finally(() => setIsLoadingRequest(false));
@@ -243,8 +278,8 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
               </div>
             </div>
           )}
-        </Card.Content>
-      </Card>
+        </div>
+      </div>
 
       {requestPayload ? (
         <IDKitRequestWidget
@@ -260,7 +295,11 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
           onSuccess={handleSuccess}
           onError={(errorCode) => {
             logger.error("World ID widget error", errorCode);
-            setRequestError("World ID verification was cancelled or could not be completed.");
+            setRequestError(
+              useWorldIdCopy
+                ? "World ID verification was cancelled or could not be completed."
+                : "Personhood verification was cancelled or could not be completed.",
+            );
           }}
         />
       ) : null}

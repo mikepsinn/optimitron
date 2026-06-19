@@ -25,7 +25,7 @@
 - [🏛️ACTIVE OPEN CONGRESS Every citizen votes on the budget — takes two minutes ON EARTH: UNITED STATES CONGRESS](/agencies/dcongress)
 ### FINANCE & IDENTITY
 - [🏦ACTIVE ALGORITHMIC RESERVE 0% inflation anchored to productivity — new money via UBI, not banks ON EARTH: FEDERAL RESERVE SYSTEM](/agencies/dfed)
-- [🧾ACTIVE AUTOMATED REVENUE SERVICE Six lines of Solidity replace 74,000 pages of tax code ON EARTH: INTERNAL REVENUE SERVICE](/agencies/dirs)
+- [🧾ACTIVE AUTOMATED REVENUE SERVICE Six lines of computer code replace 74,000 pages of tax code ON EARTH: INTERNAL REVENUE SERVICE](/agencies/dirs)
 - [🍞ACTIVE UNIVERSAL SECURITY ADMINISTRATION UBI replaces 83 welfare programs with one for-loop ON EARTH: SOCIAL SECURITY ADMINISTRATION + WELFARE BUREAUCRACY](/agencies/dssa)
 - [🌐ACTIVE DECENTRALIZED CENSUS BUREAU citizenCount() returns in 50ms — no $14B survey needed ON EARTH: UNITED STATES CENSUS BUREAU](/agencies/dcensus)
 - [💸ACTIVE AUTOMATED TREASURY One currency, one tax, one safety net — no tax code required ON EARTH: TREASURY + IRS + FEDERAL RESERVE + SOCIAL SECURITY](/agencies/dtreasury)

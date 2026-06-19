@@ -5,8 +5,8 @@ const mocks = vi.hoisted(() => ({
   findMany: vi.fn(),
   updateMany: vi.fn(),
   getMinterWallet: vi.fn(),
-  getVoteTokenContract: vi.fn(),
-  syncPendingReferralVoteTokenMints: vi.fn(),
+  getEarthOptimizationPointContract: vi.fn(),
+  syncPendingReferralPointMints: vi.fn(),
 }));
 
 vi.mock("@/lib/cron", () => ({
@@ -15,7 +15,7 @@ vi.mock("@/lib/cron", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    voteTokenMint: {
+    pointMint: {
       findMany: mocks.findMany,
       updateMany: mocks.updateMany,
     },
@@ -31,24 +31,24 @@ vi.mock("ethers", () => ({
 
 vi.mock("@/lib/contracts/server-client", () => ({
   getMinterWallet: mocks.getMinterWallet,
-  getVoteTokenContract: mocks.getVoteTokenContract,
+  getEarthOptimizationPointContract: mocks.getEarthOptimizationPointContract,
 }));
 
-vi.mock("@/lib/referral-vote-token-mint.server", () => ({
-  syncPendingReferralVoteTokenMints: mocks.syncPendingReferralVoteTokenMints,
+vi.mock("@/lib/referral-point-mint.server", () => ({
+  syncPendingReferralPointMints: mocks.syncPendingReferralPointMints,
 }));
 
 import { GET } from "./route";
 
 function makeRequest() {
-  return new Request("http://localhost/api/cron/vote-token-mint");
+  return new Request("http://localhost/api/cron/point-mint");
 }
 
-describe("GET /api/cron/vote-token-mint", () => {
+describe("GET /api/cron/point-mint", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.spyOn(console, "error").mockImplementation(() => {});
-    mocks.syncPendingReferralVoteTokenMints.mockResolvedValue([]);
+    mocks.syncPendingReferralPointMints.mockResolvedValue([]);
   });
 
   it("returns 401 for unauthorized requests", async () => {
@@ -99,7 +99,7 @@ describe("GET /api/cron/vote-token-mint", () => {
       batchMintForVoters: vi.fn().mockResolvedValue(mockTx),
     };
     mocks.getMinterWallet.mockReturnValue({});
-    mocks.getVoteTokenContract.mockReturnValue(mockContract);
+    mocks.getEarthOptimizationPointContract.mockReturnValue(mockContract);
 
     const res = await GET(makeRequest());
 
@@ -137,7 +137,7 @@ describe("GET /api/cron/vote-token-mint", () => {
 
     // Minter wallet creation fails
     mocks.getMinterWallet.mockImplementation(() => {
-      throw new Error("VOTE_TOKEN_MINTER_PRIVATE_KEY is not set");
+      throw new Error("EOP_MINTER_PRIVATE_KEY is not set");
     });
 
     const res = await GET(makeRequest());
@@ -157,7 +157,7 @@ describe("GET /api/cron/vote-token-mint", () => {
 
   it("syncs referral rewards before minting pending rows", async () => {
     mocks.isAuthorizedCronRequest.mockReturnValue(true);
-    mocks.syncPendingReferralVoteTokenMints.mockResolvedValue([{ id: "mint_sync_1" }]);
+    mocks.syncPendingReferralPointMints.mockResolvedValue([{ id: "mint_sync_1" }]);
     mocks.findMany.mockResolvedValue([]);
 
     const res = await GET(makeRequest());
@@ -168,6 +168,6 @@ describe("GET /api/cron/vote-token-mint", () => {
       syncedReferralMints: 1,
       message: "No pending mints",
     });
-    expect(mocks.syncPendingReferralVoteTokenMints).toHaveBeenCalledWith(200);
+    expect(mocks.syncPendingReferralPointMints).toHaveBeenCalledWith(200);
   });
 });

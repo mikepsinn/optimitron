@@ -16,7 +16,7 @@ import {
   isSiteRouteAllowed,
   WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
 } from "@/lib/site";
-import { DASHBOARD_INVITE_HREF, ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/lib/routes";
 
 const INTERNATIONAL_CAMPAIGN_NAME =
   "International Campaign to End War and Disease";
@@ -117,6 +117,16 @@ describe("site variant registry", () => {
     );
   });
 
+  it("uses EOS as the Optimitron home while keeping the game route available", () => {
+    const optimitron = getSiteConfig("optimitron");
+
+    expect(getSiteFromHost("optimitron.com").pageVariants.home).toBe(
+      "eosLanding",
+    );
+    expect(isSiteRouteAllowed(optimitron, ROUTES.eos)).toBe(true);
+    expect(isSiteRouteAllowed(optimitron, ROUTES.game)).toBe(true);
+  });
+
   it("getTreatySignUrl returns relative /treaty for sites that allow the route, canonical fallback otherwise", () => {
     // Sites with /treaty allowed: relative path so the browser stays on the
     // user's current origin. Useful for in-app links where same-origin nav
@@ -178,13 +188,9 @@ describe("site variant registry", () => {
     );
   });
 
-  it("keeps the voter invite action on campaign navs", () => {
-    expect(getSiteConfig("optimitron").ui.nav.quickAction?.href).toBe(
-      DASHBOARD_INVITE_HREF,
-    );
-    expect(getSiteConfig("warOnDisease").ui.nav.quickAction?.href).toBe(
-      DASHBOARD_INVITE_HREF,
-    );
+  it("keeps voter invites out of the header quick action", () => {
+    expect(getSiteConfig("optimitron").ui.nav.quickAction).toBeUndefined();
+    expect(getSiteConfig("warOnDisease").ui.nav.quickAction).toBeUndefined();
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 

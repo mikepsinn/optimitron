@@ -1,5 +1,6 @@
 import type { SendVerificationRequestParams } from "next-auth/providers/email";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { MockInstance } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   sendMagicLinkEmail: vi.fn(),
@@ -24,6 +25,11 @@ vi.mock("@/lib/email/magic-link-email", () => ({
 
 import { sendSpamGuardedMagicLinkEmail } from "../auth-spam-guard.server";
 
+let consoleLogSpy: MockInstance<
+  [message?: unknown, ...optionalParams: unknown[]],
+  void
+>;
+
 function magicLinkParams(
   identifier = "human@example.com",
 ): SendVerificationRequestParams {
@@ -39,11 +45,27 @@ function magicLinkParams(
 
 describe("auth spam guard", () => {
   beforeEach(() => {
+    consoleLogSpy?.mockRestore();
+    consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     mocks.sendMagicLinkEmail.mockReset();
+    mocks.sendMagicLinkEmail.mockResolvedValue({
+      existingUser: false,
+      providerMessageId: "email_1",
+    });
     mocks.userCount.mockReset();
     mocks.verificationTokenCount.mockReset();
     mocks.verificationTokenCount.mockResolvedValue(1);
   });
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore();
+  });
+
+  function lastAuthLog() {
+    const raw = consoleLogSpy.mock.calls.at(-1)?.[0];
+    expect(typeof raw).toBe("string");
+    return JSON.parse(raw as string) as Record<string, unknown>;
+  }
 
   it("quietly suppresses magic-link email after repeated recent requests for the same address", async () => {
     mocks.verificationTokenCount.mockResolvedValue(6);
@@ -63,6 +85,33 @@ describe("auth spam guard", () => {
       },
     });
     expect(mocks.sendMagicLinkEmail).not.toHaveBeenCalled();
+    expect(lastAuthLog()).toMatchObject({
+      authCallbackHost: "warondisease.org",
+      emailDomain: "example.com",
+      msg: "auth_magic_link_request",
+      outcome: "suppressed",
+      reason: "repeated_email",
+      recentTokenCount: 6,
+      route: "/api/auth/signin/email",
+    });
+  });
+
+  it("suppresses blank magic-link identifiers without querying tokens", async () => {
+    await expect(
+      sendSpamGuardedMagicLinkEmail(magicLinkParams("   ")),
+    ).resolves.toBeUndefined();
+
+    expect(mocks.verificationTokenCount).not.toHaveBeenCalled();
+    expect(mocks.sendMagicLinkEmail).not.toHaveBeenCalled();
+    expect(lastAuthLog()).toMatchObject({
+      authCallbackHost: "warondisease.org",
+      emailDomain: null,
+      msg: "auth_magic_link_request",
+      outcome: "suppressed",
+      reason: "empty_identifier",
+      recentTokenCount: null,
+      route: "/api/auth/signin/email",
+    });
   });
 
   it("normalizes and sends normal magic-link email below the repeated-request limit", async () => {
@@ -75,6 +124,38 @@ describe("auth spam guard", () => {
         identifier: "human@example.com",
       }),
     );
+    expect(lastAuthLog()).toMatchObject({
+      authCallbackHost: "warondisease.org",
+      emailDomain: "example.com",
+      existingUser: false,
+      msg: "auth_magic_link_request",
+      outcome: "sent",
+      providerMessageId: "email_1",
+      recentTokenCount: 2,
+      route: "/api/auth/signin/email",
+    });
+  });
+
+  it("logs a fixed failure reason when magic-link sending fails", async () => {
+    mocks.sendMagicLinkEmail.mockRejectedValue(
+      new Error("provider included human@example.com"),
+    );
+
+    await expect(
+      sendSpamGuardedMagicLinkEmail(magicLinkParams("Human@Example.COM")),
+    ).rejects.toThrow("provider included human@example.com");
+
+    const log = lastAuthLog();
+    expect(log).toMatchObject({
+      authCallbackHost: "warondisease.org",
+      emailDomain: "example.com",
+      msg: "auth_magic_link_request",
+      outcome: "failed",
+      reason: "send_failed",
+      route: "/api/auth/signin/email",
+    });
+    expect(JSON.stringify(log)).not.toContain("provider included");
+    expect(JSON.stringify(log)).not.toContain("human@example.com");
   });
 
   it("counts only password users for the direct signup flood limiter", async () => {

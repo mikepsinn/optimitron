@@ -16,10 +16,10 @@
 ### CONTRIBUTE
 - Four useful ways to help: vote, fund, code, or feed the machine real data.
 #### PLAY THE GAME
-- Vote on the 1% Treaty. Share your link. Every verified voter you bring in earns you 1 VOTE Point. Free. Thirty seconds.
+- Vote on the 1% Treaty. Share your link. Every verified voter you bring in earns you 1 Earth Optimization Point. Free. Thirty seconds.
 - [PLAY NOW](/#vote)
 #### DEPOSIT
-- Most investing is gambling in a suit. This one funds the campaign. Plan works? VOTE holders split the pool. Plan fails? Projected 11x return from VC-sector diversification. Projections, not guarantees.
+- Most investing is gambling in a suit. This one funds the campaign. Plan works? Earth Optimization Point holders split the pool. Plan fails? Projected 11x return from VC-sector diversification. Projections, not guarantees.
 - [INSERT COIN](/prize)
 #### CODE
 - Humanity built TikTok and a website where people argue about sandwiches. This is a TypeScript monorepo that might help prevent extinction. Fifteen packages. Open source.

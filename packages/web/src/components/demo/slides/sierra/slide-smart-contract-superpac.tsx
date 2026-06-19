@@ -73,7 +73,7 @@ export function SlideSmartContractSuperpac() {
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded px-3 py-2 text-center">
                 <div className="font-pixel text-sm text-yellow-400">STEP 3</div>
                 <div className="font-pixel text-base md:text-lg text-zinc-200">Alignment score</div>
-                <div className="font-pixel text-xs text-zinc-400">(automatic, on-chain)</div>
+                <div className="font-pixel text-xs text-zinc-400">(automatic, public)</div>
               </div>
               <span className="font-pixel text-2xl text-zinc-500">→</span>
               <div className="bg-emerald-500/10 border border-emerald-500/30 rounded px-3 py-2 text-center">

@@ -15,23 +15,23 @@ interface TwoOutcomesProps {
 export function TwoOutcomes({ fail, success, footer }: TwoOutcomesProps) {
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border-4 border-primary bg-background text-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] mb-2 opacity-80">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="border border-foreground bg-background p-5 text-foreground">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
             {fail.title}
           </p>
-          <div className="font-mono text-3xl font-black mb-3">
+          <div className="mb-3 text-3xl font-black">
             {fail.metric}
           </div>
           <p className="text-sm font-bold leading-relaxed">
             {fail.description}
           </p>
         </div>
-        <div className="border-4 border-primary bg-background text-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] mb-2 opacity-80">
+        <div className="border border-foreground bg-background p-5 text-foreground">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
             {success.title}
           </p>
-          <div className="font-mono text-3xl font-black mb-3">
+          <div className="mb-3 text-3xl font-black">
             {success.metric}
           </div>
           <p className="text-sm font-bold leading-relaxed">
@@ -40,8 +40,8 @@ export function TwoOutcomes({ fail, success, footer }: TwoOutcomesProps) {
         </div>
       </div>
       {footer && (
-        <div className="border-4 border-primary border-t-0 bg-background p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold text-foreground text-center">
+        <div className="mt-3 border-l border-foreground pl-4">
+          <p className="text-sm font-bold text-muted-foreground">
             {footer}
           </p>
         </div>

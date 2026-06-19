@@ -125,7 +125,7 @@ export function SlideDecentralizedWelfare() {
         >
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-4 py-3">
             <div className="font-pixel text-xl md:text-2xl text-emerald-400">
-              METHOD: UBI via World ID (automatic)
+              METHOD: UBI via personhood verification
             </div>
           </div>
         </div>

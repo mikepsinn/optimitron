@@ -48,7 +48,7 @@ export function CTASection({
   const colors = bgColorClasses[bgColor]
 
   return (
-    <section className={cn(colors.bg, "py-20 border-t-4 border-primary", className)}>
+    <section className={cn(colors.bg, "border-t border-foreground/30 py-20", className)}>
       <div className="mx-auto max-w-4xl px-4 text-center">
         <h2 className={cn("text-3xl md:text-4xl lg:text-5xl font-black uppercase mb-6", colors.text)}>
           {heading}

@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Declaration | International Campaign to End War and Disease
+- Page title: Declaration of Optimization | International Campaign to End War and Disease
 - Meta description: The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.
 - Canonical: https://warondisease.org/declaration
-- Open Graph title: Declaration
+- Open Graph title: Declaration of Optimization
 - Open Graph description: The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fdeclaration
-- Twitter title: Declaration
+- Twitter title: Declaration of Optimization
 - Twitter description: The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.
 
 ## Visible Page Copy
@@ -19,7 +19,7 @@
 - These murdered humans [include](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them.
 - That [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) could have funded [37,778 years](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) of clinical trials. They bought the other thing.
 - These governments have enough weapons to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. Current military spending is enough money to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every person alive every single year. You only need to kill everyone once for everyone to be dead. (I checked.) The remaining murder capacity is sheer waste.
-- Seven consecutive failed audits have found that the Pentagon has "misplaced" $2.46 trillion. They then requested additional trillions without explanation or apology. This "misplaced" money could have funded [547](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) years of clinical trials at current government spending.
+- Seven consecutive failed audits have found that the Pentagon has "misplaced" [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html). They then requested additional trillions without explanation or apology. This "misplaced" money could have funded [547](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) years of clinical trials at current government spending.
 - For every [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) dollars they spend on the capacity for orphan manufacturing, they only spend one on clinical trials that might cure the diseases you and everyone you love will suffer and die from.
 - Your chance of being killed by a terrorist? 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying of a disease? 100%.
 - At the current discovery rate, finding treatments for all known diseases takes ~[443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). One percent of the explosions budget could increase clinical trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and compress that wait to ~[36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The average cure arrives [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner.
@@ -47,7 +47,7 @@
 - They have spent over one trillion dollars across fifty years imprisoning and sometimes killing their own citizens for the crime of exercising [sovereignty over their own bodies](https://manual.WarOnDisease.org/knowledge/problem/genetic-slavery.html), sovereignty being the distinction between a citizen and property.
 - The result has been a 1,700% increase in overdose deaths and drug use higher than when they started, while half of all murders go unsolved for want of the resources squandered on the prosecution of those pursuing happiness by means the state did not approve.
 - They have lied to the governed to manufacture consent for wars the governed did not want, fabricating attacks that did not occur, presenting evidence they knew to be false, and spraying carcinogenic chemicals on rice farmers and their children, the exposed population now numbering four million with birth defects continuing to this day.
-- They have misplaced $2.46 trillion in military funds, failed seven consecutive audits attempting to find it, and requested additional trillions without explanation or apology.
+- They have misplaced [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) in military funds, failed seven consecutive audits attempting to find it, and requested additional trillions without explanation or apology.
 - They have allowed the [destructive economy](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) to reach [11.5%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of global output, growing faster than the productive economy, on a trajectory that crosses fifty percent by [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). Once passing this threshold, earth will become a global failed state where it becomes irrational to produce because each dollar of value created is immediately stolen.
 - They have plundered our seas, ravaged our coasts, burnt our towns, and [destroyed the lives of our people](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html): [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people since 1900, [8.37 billion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) years of human life stolen, [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) in treasure spent on the enterprise.
 - [Among them](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and millions of children who will never grow up to replace them.

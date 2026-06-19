@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false
+  },
+  "include": [
+    "next-env.d.ts",
+    "playwright.config.ts",
+    "vitest.config.ts",
+    "e2e/**/*.ts",
+    "e2e/**/*.tsx",
+    "src/**/*.d.ts",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "output",
+    "scripts"
+  ]
+}

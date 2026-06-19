@@ -1,6 +1,5 @@
 import * as React from "react"
 import { type LucideIcon } from "lucide-react"
-import { Card } from "@/components/retroui/Card"
 import { cn } from "@/lib/utils"
 
 export type StatCardColor = "yellow" | "pink" | "cyan" | "green" | "default"
@@ -62,7 +61,7 @@ export function StatCard({
   const hoverClass = hover ? "transition-colors hover:bg-muted" : ""
 
   return (
-    <Card
+    <div
       className={cn(
         sizes.padding,
         "border border-foreground shadow-none",
@@ -77,7 +76,7 @@ export function StatCard({
       {description && (
         <p className={cn(sizes.description, "mt-2", Icon && "text-center")}>{description}</p>
       )}
-    </Card>
+    </div>
   )
 }
 

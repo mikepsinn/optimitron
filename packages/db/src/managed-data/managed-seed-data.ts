@@ -43,10 +43,15 @@ import {
   type Prisma,
 } from "../generated/prisma/client.js";
 import {
+  COURT_OF_HUMANITY_TASK_ID,
+  COURT_OF_HUMANITY_TASK_KEY,
   END_WAR_AND_DISEASE_TASK_ID,
+  LOVING_TAKEOVER_TASK_ID,
+  LOVING_TAKEOVER_TASK_KEY,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   REFERRAL_INVITATION_TASK_KEY_PREFIX,
   TREATY_PARENT_TASK_ID,
+  TREATY_PARENT_TASK_KEY,
   USER_TREATY_TASK_KEY_PREFIX,
 } from "../task-keys.js";
 import {
@@ -65,9 +70,14 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   EVENTUALLY_AVOIDABLE_DALY_PCT,
   BULK_SHIRT_UNIT_COST_USD,
+  COURT_BUILD_COST,
   GLOBAL_ANNUAL_DALY_BURDEN,
   GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT,
   GLOBAL_REGISTERED_VOTERS,
+  MECHANISM_DFDA_NET_COST,
+  MECHANISM_LOVING_TAKEOVER_NET_COST,
+  SHIRT_SEED_PROGRAM_TOTAL_USD,
+  TREATY_CAMPAIGN_TOTAL_COST,
   UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD,
   STANDARD_ECONOMIC_QALY_VALUE_USD,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
@@ -1967,6 +1977,90 @@ export async function syncManagedTreatyAccountabilityData() {
   });
 
   console.log("  ✓ shirt pledge funding target");
+
+  // Mechanism funding targets — donate-enabled rows for the /foundations comparison.
+  // USD-denominated dominant-assurance pledges; same TaskFundingTarget shape as the shirt seed,
+  // one per mechanism with a defensible net-cost parameter. The mechanism tasks already exist by
+  // now (syncManagedTasks runs before this step), and the EV/probability live on the tasks
+  // (optimize-earth-task-tree.ts) — this only adds the funding goal so each row can take pledges.
+  // The Earth Optimization Prize is intentionally absent: it is a refundable assurance contract
+  // with ~zero net cost, so it has no donation target.
+  const MECHANISM_FUNDING_TARGETS: Array<{
+    taskId: string;
+    taskKey: string;
+    targetParameterName: string;
+    targetValueUsd: number;
+  }> = [
+    {
+      taskId: LOVING_TAKEOVER_TASK_ID,
+      taskKey: LOVING_TAKEOVER_TASK_KEY,
+      targetParameterName: "MECHANISM_LOVING_TAKEOVER_NET_COST",
+      targetValueUsd: MECHANISM_LOVING_TAKEOVER_NET_COST.value,
+    },
+    {
+      taskId: "dfda",
+      taskKey: "program:dfda:create",
+      targetParameterName: "MECHANISM_DFDA_NET_COST",
+      targetValueUsd: MECHANISM_DFDA_NET_COST.value,
+    },
+    {
+      taskId: "shirt-seed",
+      taskKey: "program:shirt-seed",
+      targetParameterName: "SHIRT_SEED_PROGRAM_TOTAL_USD",
+      targetValueUsd: SHIRT_SEED_PROGRAM_TOTAL_USD.value,
+    },
+    {
+      taskId: TREATY_PARENT_TASK_ID,
+      taskKey: TREATY_PARENT_TASK_KEY,
+      targetParameterName: "TREATY_CAMPAIGN_TOTAL_COST",
+      targetValueUsd: TREATY_CAMPAIGN_TOTAL_COST.value,
+    },
+    {
+      taskId: COURT_OF_HUMANITY_TASK_ID,
+      taskKey: COURT_OF_HUMANITY_TASK_KEY,
+      targetParameterName: "COURT_BUILD_COST",
+      targetValueUsd: COURT_BUILD_COST.value,
+    },
+  ];
+
+  for (const target of MECHANISM_FUNDING_TARGETS) {
+    const targetAmountCents = parameterUsdToCents(
+      target.targetValueUsd,
+      target.targetParameterName,
+    );
+    const metadata = {
+      isPublic: true,
+      managedKey: target.taskKey,
+      targetParameterName: target.targetParameterName,
+      unitKind: "USD",
+    } satisfies Prisma.InputJsonValue;
+    await prisma.taskFundingTarget.upsert({
+      where: { taskId: target.taskId },
+      create: {
+        id: `task-funding-target-${target.taskId}`,
+        taskId: target.taskId,
+        currency: "usd",
+        metadata,
+        primaryUnitKey: "usd",
+        primaryUnitTargetQuantity: null,
+        status: TaskFundingTargetStatus.OPEN,
+        targetAmountCents,
+      },
+      update: {
+        currency: "usd",
+        deletedAt: null,
+        metadata,
+        primaryUnitKey: "usd",
+        primaryUnitTargetQuantity: null,
+        status: TaskFundingTargetStatus.OPEN,
+        targetAmountCents,
+      },
+    });
+  }
+
+  console.log(
+    `  ✓ ${MECHANISM_FUNDING_TARGETS.length} mechanism funding targets`,
+  );
 
   const labGrantOrganizations = [
     {

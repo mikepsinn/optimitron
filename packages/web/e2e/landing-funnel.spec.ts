@@ -128,7 +128,7 @@ test("vote page: vote persists in localStorage", async ({ page }) => {
   expect(parsed.answer).toBe("YES");
 
   // Navigate away
-  await page.goto("/about");
+  await page.goto("/eos");
   await page.waitForLoadState("domcontentloaded");
 
   // Navigate back

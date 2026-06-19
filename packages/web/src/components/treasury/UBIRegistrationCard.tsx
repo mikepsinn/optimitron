@@ -55,7 +55,7 @@ export function UBIRegistrationCard() {
   if (isRegisteredCitizen && !isDemo) {
     return (
       <section className="mb-16">
-        <div className="border-4 border-primary bg-green-50 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-y border-foreground/30 py-6">
           <div className="flex items-center gap-3">
             <ShieldCheck className="h-6 w-6 text-green-600" />
             <h3 className="font-black uppercase text-foreground">
@@ -74,19 +74,19 @@ export function UBIRegistrationCard() {
 
   return (
     <section className="mb-16">
-      <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-y border-foreground/30 py-6">
         <h3 className="font-black uppercase text-foreground mb-3">
           Register for UBI
         </h3>
         <p className="text-xs font-bold text-muted-foreground mb-4">
-          Three steps: sign in, verify you&apos;re a real person with World ID,
-          then register your wallet on-chain. One person, one share. Sybil
+          Three steps: sign in, verify you&apos;re a real person,
+          then register your wallet for distribution. One person, one share. Sybil
           resistance via proof of personhood.
         </p>
 
         {/* Step 1: Sign in */}
         {!isLoggedIn && (
-          <div className="border-4 border-primary bg-background text-foreground p-4">
+          <div className="border-l border-foreground/30 pl-4">
             <div className="text-xs font-black uppercase mb-1">
               Step 1
             </div>
@@ -96,7 +96,7 @@ export function UBIRegistrationCard() {
           </div>
         )}
 
-        {/* Step 2: World ID */}
+        {/* Step 2: personhood verification */}
         {isLoggedIn && !isVerified && (
           <div>
             <div className="text-xs font-black uppercase text-muted-foreground mb-2">
@@ -106,9 +106,9 @@ export function UBIRegistrationCard() {
           </div>
         )}
 
-        {/* Step 3: Register on-chain */}
+        {/* Step 3: Register wallet */}
         {isLoggedIn && isVerified && !isConnected && (
-          <div className="border-4 border-primary bg-background text-foreground p-4">
+          <div className="border-l border-foreground/30 pl-4">
             <div className="text-xs font-black uppercase mb-1">
               Step 3
             </div>
@@ -120,7 +120,7 @@ export function UBIRegistrationCard() {
 
         {isLoggedIn && isVerified && isConnected && (
           <div className="space-y-3">
-            <div className="border-4 border-primary bg-background text-foreground p-4">
+            <div className="border-l border-foreground/30 pl-4">
               <div className="flex items-center gap-2 mb-2">
                 <ShieldCheck className="h-4 w-4" />
                 <span className="text-xs font-black uppercase">
@@ -128,13 +128,13 @@ export function UBIRegistrationCard() {
                 </span>
               </div>
               <p className="text-xs font-bold">
-                World ID verification complete. Register your wallet to receive
+                Personhood verification complete. Register your wallet to receive
                 UBI distributions.
               </p>
             </div>
 
             {isDemo && (
-              <div className="border-4 border-primary bg-background text-foreground p-3">
+              <div className="border-l border-foreground/30 pl-3">
                 <div className="text-xs font-black uppercase">
                   Not Yet Deployed
                 </div>
@@ -149,7 +149,7 @@ export function UBIRegistrationCard() {
               <button
                 onClick={handleRegister}
                 disabled={isRegistering || registerSuccess}
-                className="border-4 border-primary bg-background px-6 py-2.5 text-sm font-black uppercase text-foreground hover:bg-background/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="border border-foreground bg-background px-6 py-2.5 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isRegistering
                   ? "Registering..."

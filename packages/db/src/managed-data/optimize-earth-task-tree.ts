@@ -1,8 +1,33 @@
 import {
+  DEFENSE_LOBBYING_ANNUAL,
+  DEFENSE_TAKEOVER_COST_PER_HUMAN,
+  MECHANISM_COURT_OF_HUMANITY_P_SUCCESS,
+  MECHANISM_DFDA_P_SUCCESS,
+  MECHANISM_LOVING_TAKEOVER_P_SUCCESS,
+  MECHANISM_REFERENDUM_P_SUCCESS,
+  MECHANISM_SHIRT_CASCADE_P_SUCCESS,
+  MECHANISM_TREATY_CAMPAIGN_P_SUCCESS,
+  PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
+} from "@optimitron/data/parameters";
+import {
   TaskCategory,
   TaskClaimPolicy,
   TaskDifficulty,
 } from "../generated/prisma/client.js";
+import {
+  EARTH_OPTIMIZATION_PRIZE_TASK_ID,
+  EARTH_OPTIMIZATION_PRIZE_TASK_KEY,
+  EOS_CAPITALIZE_TASK_ID,
+  EOS_CAPITALIZE_TASK_KEY,
+  LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
+  LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY,
+  LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
+  LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_KEY,
+  LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_ID,
+  LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_KEY,
+  LOVING_TAKEOVER_TASK_ID,
+  LOVING_TAKEOVER_TASK_KEY,
+} from "../task-keys.js";
 import {
   COURT_OF_HUMANITY_CHARTER_TASK_ID,
   COURT_OF_HUMANITY_CHARTER_TASK_KEY,
@@ -113,6 +138,10 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "A majority jury needs a court-shaped place to render the verdict.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | court funded).
+    // The sync multiplies these into the frame's expected value; the donation cost lives on the funding target.
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_COURT_OF_HUMANITY_P_SUCCESS.value,
     sortOrder: -800,
     primaryEndpoint: {
       label: "Open the Court of Humanity",
@@ -245,7 +274,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: HUMANITY_V_GOVERNMENTS_TASK_ID,
     title: "Enforce the settlement: the 1% Treaty",
     description:
-      "Use the verdict to force the settlement: redirect one percent of military spending into pragmatic clinical trials and disease eradication.",
+      "Use the verdict to make the settlement unavoidable: redirect one percent of military spending into pragmatic clinical trials and disease eradication.",
     impactStatement:
       "The case matters if it produces the settlement that ends the delay.",
     sortOrder: -730,
@@ -267,6 +296,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "Ratify the treaty that redirects one percent of military spending into pragmatic clinical trials and disease eradication.",
     impactStatement:
       "The fastest known settlement is one percent of the war budget pointed at disease.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | campaign funded).
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_TREATY_CAMPAIGN_P_SUCCESS.value,
     // Keep the cost-of-delay counters on `/employees` and similar treaty
     // surfaces live by preserving an overdue `dueAt`. The managed-sync
     // overwrites whatever the seed wrote, so we have to set it here too.
@@ -276,7 +308,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       label: "Sign the 1% Treaty",
       url: "/vote",
       instructions:
-        "Sign the treaty, share it, and then pressure the leaders who still have not signed.",
+        "Sign the treaty, share it, and then remind the leaders who still have not signed.",
     },
   },
   {
@@ -306,7 +338,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: TREATY_PARENT_TASK_ID,
     title: "Get 193 heads of government to sign",
     description:
-      "Pressure every head of government to sign the 1% Treaty. One signature. One pen. Thirty seconds.",
+      "Remind every head of government to sign the 1% Treaty. One signature. One pen. Thirty seconds.",
     impactStatement:
       "The government-side task is not vague adoption. It is 193 named humans signing.",
     sortOrder: -680,
@@ -314,17 +346,203 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       label: "Manage presidents",
       url: "/employees",
       instructions:
-        "Pick an overdue head of government and pressure them to sign.",
+        "Pick an overdue head of government and send them a reminder.",
     },
   },
   {
+    ...defaultTaskFields,
+    category: TaskCategory.ORGANIZING,
+    id: LOVING_TAKEOVER_TASK_ID,
+    taskKey: LOVING_TAKEOVER_TASK_KEY,
+    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    title: "The Loving Takeover",
+    description: [
+      "Buy the companies whose lobbying keeps war funded, and have that lobbying allocated by analysis instead of habit — pointed at whatever maximizes long-term shareholder value, starting with the shareholders staying alive. Every run of the math says that is the 1% Treaty.",
+      "",
+      `Control of every major military contractor costs about $${Math.round(DEFENSE_TAKEOVER_COST_PER_HUMAN.value)} per human. The people bought out end up richer and longer-lived. That is why it is loving.`,
+      "",
+      "Start with one share and a love letter. Buy enough shares and you choose the board. Math: [The Loving Takeover](https://manual.warondisease.org/knowledge/appendix/loving-takeover.html).",
+    ].join("\n"),
+    impactStatement:
+      "The best lobbyists money can buy currently block the treaty. So we buy them.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(pass | takeover funded).
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_LOVING_TAKEOVER_P_SUCCESS.value,
+    sortOrder: -660,
+    primaryEndpoint: {
+      label: "Read the takeover math",
+      url: "https://manual.warondisease.org/knowledge/appendix/loving-takeover.html",
+      instructions:
+        "Read the math, then start with one share and one love letter.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.OTHER,
+    difficulty: TaskDifficulty.TRIVIAL,
+    id: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
+    taskKey: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_KEY,
+    parentTaskId: LOVING_TAKEOVER_TASK_ID,
+    title: "Take Love's Wager: own one share",
+    description: [
+      "Buy one share of any major military contractor through any brokerage.",
+      "",
+      "One share makes you an owner. Owners can write to the board, and the board has to answer. When the stakes are infinite, any finite action is rational: [Love's Wager](https://manual.warondisease.org/knowledge/proof/loves-wager.html).",
+    ].join("\n"),
+    impactStatement:
+      "Every shareholder is a plaintiff the board cannot dismiss as an outsider.",
+    estimatedEffortHours: 0.25,
+    sortOrder: -650,
+    primaryEndpoint: {
+      label: "Read Love's Wager",
+      url: "https://manual.warondisease.org/knowledge/proof/loves-wager.html",
+      instructions: "Read the wager, buy one share, keep the receipt.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
+    difficulty: TaskDifficulty.BEGINNER,
+    id: LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
+    taskKey: LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY,
+    parentTaskId: LOVING_TAKEOVER_TASK_ID,
+    title: "Send the board a love letter",
+    description: [
+      "As a shareholder, write to your board: you own them, you love them, and you do not want them to suffer and die from horrible diseases along with the rest of their shareholders. Their lobbying budget can fix that.",
+      "",
+      "The law calls this a shareholder demand letter, which means the board is required to read the math and answer on the record. We call it checking in on people we care about.",
+    ].join("\n"),
+    impactStatement:
+      "Boards are legally required to read their mail. This mail says: get richer, live longer.",
+    estimatedEffortHours: 0.5,
+    sortOrder: -640,
+    primaryEndpoint: {
+      label: "Read the takeover math",
+      url: "https://manual.warondisease.org/knowledge/appendix/loving-takeover.html",
+      instructions:
+        "Confirm you own a share, then send the love letter to the corporate secretary. The law calls it a demand letter; they have to read it either way.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    id: LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_ID,
+    taskKey: LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_KEY,
+    parentTaskId: LOVING_TAKEOVER_TASK_ID,
+    title: `Optimize the $${Math.round(DEFENSE_LOBBYING_ANNUAL.value / 1e6)}M lobbying budget`,
+    description: [
+      `The ask: the ~$${Math.round(DEFENSE_LOBBYING_ANNUAL.value / 1e6)} million per year of military-contractor lobbying gets allocated by the Optimal Policy and Budget Generators to maximize long-term shareholder value — including the shareholders staying alive.`,
+      "",
+      "We are not asking the board to fund our favorite cause. We are asking them to run the analysis. Every run we have done says the 1% Treaty is the best buy. If their analysis finds something better for their shareholders, they should do that instead. It won't. The offer stands.",
+      "",
+      "This is what the shares are for.",
+    ].join("\n"),
+    impactStatement:
+      "Lobbying allocated by math instead of habit pays shareholders first and humanity as a side effect.",
+    sortOrder: -630,
+    primaryEndpoint: {
+      label: "Read the takeover math",
+      url: "https://manual.warondisease.org/knowledge/appendix/loving-takeover.html",
+      instructions:
+        "Track board proposals and proxy votes that put the lobbying budget under analysis.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.ORGANIZING,
+    id: EARTH_OPTIMIZATION_PRIZE_TASK_ID,
+    taskKey: EARTH_OPTIMIZATION_PRIZE_TASK_KEY,
+    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    title: "Fund the referendum: the Earth Optimization Prize",
+    description: [
+      "Deposit, earn yield, fund the vote of all humanity.",
+      "",
+      "If the treaty never passes, you get your principal back about 4.2× larger after 15 years. The downside has been removed; we found humans respond well to that.",
+    ].join("\n"),
+    impactStatement:
+      "The referendum proves demand for the treaty; the prize pays for the referendum without anyone losing money.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(pass | referendum funded).
+    // No funding target: the prize is a dominant assurance contract (depositors refunded with yield),
+    // so net cost to a funder is ~zero — presented as a zero-downside row, not in the EV/$ ranking.
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_REFERENDUM_P_SUCCESS.value,
+    sortOrder: -620,
+    primaryEndpoint: {
+      label: "Open the Earth Optimization Prize",
+      url: "/prize",
+      instructions: "Read the terms and deposit.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.ORGANIZING,
+    id: EOS_CAPITALIZE_TASK_ID,
+    taskKey: EOS_CAPITALIZE_TASK_KEY,
+    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    title: "Capitalize Earth Optimization Services",
+    description: [
+      "Earth Optimization Services is the company form of the machine. Every human on Earth is already a president; this task funds the operating budget.",
+      "",
+      "Capital operates the Evidence Engine, the Budget Redirect, the Loving Takeover, and Direct Allocation — the same four products every civilization needs.",
+    ].join("\n"),
+    impactStatement:
+      "The campaign runs on capital; this is where the capital comes from.",
+    // TODO(param): add an EOS capitalization EV parameter before claiming a value here.
+    sortOrder: -610,
+    primaryEndpoint: {
+      label: "Open the fund",
+      url: "/fund",
+      instructions: "Read the terms, then invest or book a call.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
     id: "dfda",
     taskKey: "program:dfda:create",
-    parentTaskId: null,
-    title: "12x More Clinical Trials",
-    description:
-      "Retired from the primary campaign task tree. The dFDA remains supporting infrastructure, not a direct Optimize Earth child.",
-    retired: true,
+    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    title: "Fund the decentralized FDA directly",
+    description: [
+      "Fund the decentralized FDA (dFDA) to run pragmatic, patient-funded trials at a fraction of the usual cost — the direct path to disease eradication that does not wait on any treaty passing.",
+      "",
+      "This is the highest-probability mechanism: it produces more trials whether or not governments redirect a cent. Math: [dFDA impact](https://manual.warondisease.org/knowledge/economics/dfda-impact-paper.html).",
+    ].join("\n"),
+    impactStatement:
+      "The treaty redirects money to trials; the dFDA is the trials. Funding it directly skips the politics.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(progress | dFDA funded).
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_DFDA_P_SUCCESS.value,
+    sortOrder: -615,
+    primaryEndpoint: {
+      label: "Read the dFDA impact math",
+      url: "https://manual.warondisease.org/knowledge/economics/dfda-impact-paper.html",
+      instructions: "Read the impact math, then fund or build the decentralized FDA.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.OUTREACH,
+    id: "shirt-seed",
+    taskKey: "program:shirt-seed",
+    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    title: "Seed the shirt cascade",
+    description: [
+      "Fund a seed of visible wearers — athletes, public figures, anyone with an audience — to wear the War on Disease shirt on Earth Optimization Day, triggering the cascade where everyone else writes the message on a shirt they already own for the cost of a marker.",
+      "",
+      "The seed pays about a million visible wearers; the grassroots cascade after it costs the world about $0.50 of ink per person. Math: [the funniest joke in the universe](https://manual.warondisease.org/knowledge/appendix/joke.html).",
+    ].join("\n"),
+    impactStatement:
+      "A small paid seed of visible wearers turns into billions of free ones. The funder buys the spark, not the fire.",
+    // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | shirt cascade funded).
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+    successProbabilityBase: MECHANISM_SHIRT_CASCADE_P_SUCCESS.value,
+    sortOrder: -605,
+    primaryEndpoint: {
+      label: "Read the shirt math",
+      url: "/joke",
+      instructions:
+        "Read how the cascade works, then fund the seed or wear the shirt.",
+    },
   },
   {
     id: "bed-nets-funding-gap",

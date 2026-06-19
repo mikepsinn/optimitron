@@ -220,7 +220,7 @@ export function SlideArmory() {
               )}
               {selectedItem.id === "iabs" && (
                 <>
-                  <p>Treaty revenue splits 80/10/10 by smart contract</p>
+                  <p>Treaty revenue splits 80/10/10 by protocol rule</p>
                   <p>80% clinical trials, 10% bondholders, 10% aligned politicians</p>
                   <p>Self-reinforcing: diseases cured → GDP rises → everyone lobbies for expansion</p>
                 </>

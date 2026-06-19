@@ -9,7 +9,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { sepolia } from "wagmi/chains";
-import { formatWish, useTreasuryData } from "@/hooks/useTreasuryData";
+import { formatWishes, useTreasuryData } from "@/hooks/useTreasuryData";
 
 export function WalletCard() {
   const [mounted, setMounted] = useState(false);
@@ -23,7 +23,7 @@ export function WalletCard() {
 
   return (
     <section id="connect" className="mb-16">
-      <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-y border-foreground/30 py-6">
         <h3 className="font-black uppercase text-foreground mb-3">
           Connect Wallet
         </h3>
@@ -31,16 +31,16 @@ export function WalletCard() {
         {!mounted ? (
           <div className="space-y-3">
             <p className="text-xs font-bold text-muted-foreground mb-4">
-              Connect your wallet to check your $WISH balance, register for UBI,
-              and trigger distributions. This is the $WISH monetary system — not
+              Connect your wallet to check your balance in wishes, register for UBI,
+              and trigger distributions. This is the wishes monetary system — not
               the IAB public goods pool.
             </p>
           </div>
         ) : !isConnected ? (
           <div className="space-y-3">
             <p className="text-xs font-bold text-muted-foreground mb-4">
-              Connect your wallet to check your $WISH balance, register for UBI,
-              and trigger distributions. This is the $WISH monetary system — not
+              Connect your wallet to check your balance in wishes, register for UBI,
+              and trigger distributions. This is the wishes monetary system — not
               the IAB public goods pool.
             </p>
             {connectors.length > 0 && (
@@ -49,7 +49,7 @@ export function WalletCard() {
                   <button
                     key={connector.uid}
                     onClick={() => connect({ connector })}
-                    className="border-4 border-primary bg-background px-4 py-2.5 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    className="border border-foreground bg-background px-4 py-2.5 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
                   >
                     {connector.name === "Injected"
                       ? "Browser Wallet (MetaMask)"
@@ -58,7 +58,7 @@ export function WalletCard() {
                 ))}
               </div>
             )}
-            <div className="border-4 border-primary bg-background text-foreground p-3">
+            <div className="border-l border-foreground/30 pl-3">
               <p className="text-xs font-bold">
                 Need a wallet?{" "}
                 <a
@@ -88,37 +88,37 @@ export function WalletCard() {
                 {chainId !== sepolia.id && (
                   <button
                     onClick={() => switchChain({ chainId: sepolia.id })}
-                    className="border-4 border-primary bg-background text-foreground px-3 py-1.5 text-xs font-black uppercase hover:bg-background/80 transition-colors"
+                    className="border border-foreground bg-background px-3 py-1.5 text-xs font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
                   >
                     Switch to Sepolia
                   </button>
                 )}
                 <button
                   onClick={() => disconnect()}
-                  className="border-4 border-primary bg-background px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-red/20 transition-colors"
+                  className="border border-foreground bg-background px-3 py-1.5 text-xs font-black uppercase transition-colors hover:bg-foreground hover:text-background"
                 >
                   Disconnect
                 </button>
               </div>
             </div>
 
-            <div className="grid gap-2 grid-cols-2">
-              <div className="border-4 border-primary bg-background text-foreground p-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="min-w-0 border-y border-foreground/30 py-2">
                 <div className="text-[10px] font-black uppercase">
-                  $WISH Balance
+                  Wishes Balance
                 </div>
-                <div className="text-sm font-black">
+                <div className="text-sm font-black leading-tight tabular-nums [overflow-wrap:anywhere]">
                   {isDemo
                     ? "— (not deployed)"
-                    : `${formatWish(wishBalance)} $WISH`}
+                    : formatWishes(wishBalance)}
                 </div>
               </div>
-              <div className="border-4 border-primary bg-background text-foreground p-2">
+              <div className="min-w-0 border-y border-foreground/30 py-2">
                 <div className="text-[10px] font-black uppercase">
                   Max Supply (Fixed)
                 </div>
-                <div className="text-sm font-black">
-                  {formatWish(maxSupply)} $WISH
+                <div className="text-sm font-black leading-tight tabular-nums [overflow-wrap:anywhere]">
+                  {formatWishes(maxSupply)}
                 </div>
               </div>
             </div>

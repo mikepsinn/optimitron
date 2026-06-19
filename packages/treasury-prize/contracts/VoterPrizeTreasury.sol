@@ -6,24 +6,24 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@optimitron/treasury-shared/contracts/interfaces/IAavePool.sol";
-import "@optimitron/treasury-shared/contracts/interfaces/IVoteToken.sol";
+import "@optimitron/treasury-shared/contracts/interfaces/IEarthOptimizationPoint.sol";
 
 /**
  * @title VoterPrizeTreasury — Prize pool for referendum voters
  * @notice Contributors deposit stablecoins (receiving PRIZE shares).
  *         Funds are invested in Aave V3 for yield. After maturity:
  *
- *         - If outcome thresholds ARE met → VOTE holders redeem proportionally
+ *         - If outcome thresholds ARE met → EOP holders redeem proportionally
  *         - If outcome thresholds NOT met → PRIZE holders get principal + yield back
  *
  * PRIZE token = vault share (ERC-4626-style pricing, adapted from IABVault).
  * Outcome oracle reports health/income metrics periodically.
  *
  * Redemption math (on success):
- *   voterShare = (voterVoteBalance / snapshotTotalVoteSupply) * totalAssets()
+ *   pointShare = (holderPointBalance / snapshotTotalPointSupply) * totalAssets()
  *
- * Snapshot prevents double-redemption exploit (buy VOTE after partial
- * redemption shrinks denominator).
+ * Snapshot freezes the denominator and redeemed EOP are burned to prevent
+ * double redemption through post-redemption transfers.
  */
 contract VoterPrizeTreasury is ERC20, Ownable {
     using SafeERC20 for IERC20;
@@ -40,21 +40,21 @@ contract VoterPrizeTreasury is ERC20, Ownable {
 
     // --- Mutable state ---
 
-    IVoteToken public voteToken;
+    IEarthOptimizationPoint public earthOptimizationPoint;
     bool public thresholdMet;
 
     /// @notice Current reported metrics
     uint256 public currentHealthMetric;
     uint256 public currentIncomeMetric;
 
-    /// @notice Snapshot of VOTE totalSupply at redemption time (prevents exploit)
-    uint256 public voteTotalSupplySnapshot;
+    /// @notice Snapshot of EOP totalSupply at redemption time (prevents exploit)
+    uint256 public pointTotalSupplySnapshot;
     /// @notice Snapshot of total assets at snapshot time (ensures equal redemption)
     uint256 public totalAssetsSnapshot;
-    bool public voteSupplySnapshotted;
+    bool public pointSupplySnapshotted;
 
-    /// @notice Track who has already redeemed VOTE tokens
-    mapping(address => bool) public hasRedeemedVotes;
+    /// @notice Track who has already redeemed Earth Optimization Points
+    mapping(address => bool) public hasRedeemedPoints;
 
     /// @notice Track unique depositors
     address[] public depositorList;
@@ -68,10 +68,10 @@ contract VoterPrizeTreasury is ERC20, Ownable {
 
     event Deposited(address indexed depositor, uint256 assets, uint256 shares);
     event RefundClaimed(address indexed depositor, uint256 assets, uint256 sharesBurned);
-    event VoteRedemption(address indexed voter, uint256 voteBalance, uint256 assetsReceived);
+    event PointRedemption(address indexed holder, uint256 pointBalance, uint256 assetsReceived);
     event MetricsUpdated(uint256 health, uint256 income, bool thresholdMet);
-    event VoteTokenSet(address indexed voteToken);
-    event VoteSupplySnapshotted(uint256 totalVoteSupply);
+    event EarthOptimizationPointSet(address indexed earthOptimizationPoint);
+    event PointSupplySnapshotted(uint256 totalPointSupply);
 
     constructor(
         address _stablecoin,
@@ -156,34 +156,35 @@ contract VoterPrizeTreasury is ERC20, Ownable {
         emit RefundClaimed(msg.sender, assets, shares);
     }
 
-    // --- VOTE holder redemption (success path) ---
+    // --- EOP holder redemption (success path) ---
 
     /**
-     * @notice Redeem VOTE tokens for proportional share of prize pool.
+     * @notice Redeem Earth Optimization Points for proportional share of prize pool.
      *         Only callable when matured AND thresholds met AND snapshot taken.
      *
-     *         voterShare = (voterVoteBalance / voteTotalSupplySnapshot) * totalAssetsSnapshot
+     *         pointShare = (holderPointBalance / pointTotalSupplySnapshot) * totalAssetsSnapshot
      */
-    function redeemVoteTokens() external {
+    function redeemEarthOptimizationPoints() external {
         require(
             block.timestamp >= deployTimestamp + maturityDuration,
             "VoterPrizeTreasury: not matured"
         );
         require(thresholdMet, "VoterPrizeTreasury: threshold not met");
-        require(voteSupplySnapshotted, "VoterPrizeTreasury: not snapshotted");
-        require(!hasRedeemedVotes[msg.sender], "VoterPrizeTreasury: already redeemed");
+        require(pointSupplySnapshotted, "VoterPrizeTreasury: not snapshotted");
+        require(!hasRedeemedPoints[msg.sender], "VoterPrizeTreasury: already redeemed");
 
-        uint256 voterBalance = IERC20(address(voteToken)).balanceOf(msg.sender);
-        require(voterBalance > 0, "VoterPrizeTreasury: no VOTE tokens");
+        uint256 pointBalance = IERC20(address(earthOptimizationPoint)).balanceOf(msg.sender);
+        require(pointBalance > 0, "VoterPrizeTreasury: no EOP");
 
-        hasRedeemedVotes[msg.sender] = true;
-
-        uint256 assets = (voterBalance * totalAssetsSnapshot) / voteTotalSupplySnapshot;
+        uint256 assets = (pointBalance * totalAssetsSnapshot) / pointTotalSupplySnapshot;
         require(assets > 0, "VoterPrizeTreasury: zero redemption");
+
+        hasRedeemedPoints[msg.sender] = true;
+        earthOptimizationPoint.burnForRedemption(msg.sender, pointBalance);
 
         aavePool.withdraw(address(stablecoin), assets, msg.sender);
 
-        emit VoteRedemption(msg.sender, voterBalance, assets);
+        emit PointRedemption(msg.sender, pointBalance, assets);
     }
 
     // --- Oracle / admin ---
@@ -203,31 +204,31 @@ contract VoterPrizeTreasury is ERC20, Ownable {
     }
 
     /**
-     * @notice Snapshot VOTE totalSupply for redemption calculation.
-     *         Must be called before VOTE holders can redeem. Freezes the
+     * @notice Snapshot EOP totalSupply for redemption calculation.
+     *         Must be called before EOP holders can redeem. Freezes the
      *         denominator to prevent manipulation.
      */
-    function snapshotVoteSupply() external onlyOwner {
+    function snapshotPointSupply() external onlyOwner {
         require(thresholdMet, "VoterPrizeTreasury: threshold not met");
-        require(!voteSupplySnapshotted, "VoterPrizeTreasury: already snapshotted");
-        require(address(voteToken) != address(0), "VoterPrizeTreasury: no vote token");
+        require(!pointSupplySnapshotted, "VoterPrizeTreasury: already snapshotted");
+        require(address(earthOptimizationPoint) != address(0), "VoterPrizeTreasury: no EOP");
 
-        voteTotalSupplySnapshot = IERC20(address(voteToken)).totalSupply();
-        require(voteTotalSupplySnapshot > 0, "VoterPrizeTreasury: zero vote supply");
+        pointTotalSupplySnapshot = IERC20(address(earthOptimizationPoint)).totalSupply();
+        require(pointTotalSupplySnapshot > 0, "VoterPrizeTreasury: zero EOP supply");
 
         totalAssetsSnapshot = totalAssets();
 
-        voteSupplySnapshotted = true;
-        emit VoteSupplySnapshotted(voteTotalSupplySnapshot);
+        pointSupplySnapshotted = true;
+        emit PointSupplySnapshotted(pointTotalSupplySnapshot);
     }
 
     /**
-     * @notice Set the VoteToken contract address.
+     * @notice Set the EarthOptimizationPoint contract address.
      */
-    function setVoteToken(address _voteToken) external onlyOwner {
-        require(_voteToken != address(0), "VoterPrizeTreasury: zero vote token");
-        voteToken = IVoteToken(_voteToken);
-        emit VoteTokenSet(_voteToken);
+    function setEarthOptimizationPoint(address _earthOptimizationPoint) external onlyOwner {
+        require(_earthOptimizationPoint != address(0), "VoterPrizeTreasury: zero EOP");
+        earthOptimizationPoint = IEarthOptimizationPoint(_earthOptimizationPoint);
+        emit EarthOptimizationPointSet(_earthOptimizationPoint);
     }
 
     // --- View functions ---
@@ -278,10 +279,10 @@ contract VoterPrizeTreasury is ERC20, Ownable {
         return convertToAssets(10 ** decimals());
     }
 
-    /// @notice Preview what a VOTE holder would receive on redemption
-    function previewVoteRedemption(address voter) external view returns (uint256) {
-        if (!voteSupplySnapshotted || voteTotalSupplySnapshot == 0) return 0;
-        uint256 voterBalance = IERC20(address(voteToken)).balanceOf(voter);
-        return (voterBalance * totalAssetsSnapshot) / voteTotalSupplySnapshot;
+    /// @notice Preview what an EOP holder would receive on redemption
+    function previewPointRedemption(address holder) external view returns (uint256) {
+        if (!pointSupplySnapshotted || pointTotalSupplySnapshot == 0) return 0;
+        uint256 pointBalance = IERC20(address(earthOptimizationPoint)).balanceOf(holder);
+        return (pointBalance * totalAssetsSnapshot) / pointTotalSupplySnapshot;
     }
 }

@@ -3,16 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
 
 /**
- * GET /api/vote-tokens/balance
+ * GET /api/points/balance
  *
- * Returns the authenticated user's VOTE token mint history
+ * Returns the authenticated user's point mint history
  * and total confirmed balance.
  */
 export async function GET() {
   try {
     const { userId } = await requireAuth();
 
-    const mints = await prisma.voteTokenMint.findMany({
+    const mints = await prisma.pointMint.findMany({
       where: { userId, deletedAt: null },
       orderBy: { createdAt: "desc" },
       select: {
@@ -31,15 +31,15 @@ export async function GET() {
     });
 
     const confirmedMints = mints.filter((m) => m.status === "CONFIRMED");
-    const totalVotes = confirmedMints.length;
+    const totalPoints = confirmedMints.length;
 
-    // Each confirmed mint = 1 VOTE (1e18 wei)
+    // Each confirmed mint = 1 EOP (1e18 wei)
     const totalBalance = confirmedMints
       .reduce((sum, m) => sum + BigInt(m.amount), 0n)
       .toString();
 
     return NextResponse.json({
-      totalVotes,
+      totalPoints,
       totalBalance,
       mints,
     });
@@ -47,9 +47,9 @@ export async function GET() {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.error("[VOTE TOKENS BALANCE] Error:", error);
+    console.error("[POINTS BALANCE] Error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch vote token balance" },
+      { error: "Failed to fetch point balance" },
       { status: 500 },
     );
   }

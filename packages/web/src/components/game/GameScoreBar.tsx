@@ -10,11 +10,11 @@ import { calculateImpactLedger } from "@/lib/impact-ledger";
 import { formatLives } from "@/lib/formatters";
 import { DASHBOARD_REFERRAL_HREF, ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
-import { POINTS, POINT_NAME, REFERRAL } from "@/lib/messaging";
+import { POINTS, REFERRAL } from "@/lib/messaging";
 
 interface GameStats {
   wishes: number;
-  votePoints: number;
+  points: number;
   referrals: number;
   comparisons: number;
 }
@@ -25,7 +25,7 @@ interface GameStatsResponse extends GameStats {
 
 /**
  * Global sticky score bar — shown at the bottom of every page when logged in.
- * Shows: Wishes | VOTE Points | Lives Saved | Comparisons
+ * Shows: Wishes | Points | Lives Saved | Comparisons
  */
 export function GameScoreBar() {
   const { data: session, status } = useSession();
@@ -41,7 +41,7 @@ export function GameScoreBar() {
         if (data?.authenticated) {
           setStats({
             wishes: data.wishes,
-            votePoints: data.votePoints,
+            points: data.points,
             referrals: data.referrals,
             comparisons: data.comparisons,
           });
@@ -67,7 +67,7 @@ export function GameScoreBar() {
             title={`${POINTS} (${REFERRAL.earnOneShort})`}
           >
             <Vote className="h-3.5 w-3.5 text-background" />
-            <span>{stats.votePoints} {POINT_NAME}</span>
+            <span>{stats.points} {POINTS}</span>
           </Link>
 
           <Link

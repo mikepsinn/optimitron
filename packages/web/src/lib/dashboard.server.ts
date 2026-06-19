@@ -25,7 +25,7 @@ import { MAJORITY_OF_HUMANS_ON_EARTH_VALUE } from "@/lib/majority-humanity-targe
 import { getImpactReceipts } from "@/lib/impact-receipts.server";
 import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import { DASHBOARD_REFERRAL_HASH, ROUTES } from "@/lib/routes";
-import { GAME } from "@/lib/messaging";
+import { GAME, POINT } from "@/lib/messaging";
 import { loadHumanityManagerStatus } from "@/lib/humanity-manager-status.server";
 import { getBaseUrl } from "@/lib/url";
 import type {
@@ -167,7 +167,7 @@ export async function getDashboardData(
       reason: "REFERRAL",
       label: "Get Your Friends to Play",
       emoji: "🤝",
-      wishesLabel: "1 VOTE",
+      wishesLabel: `1 ${POINT}`,
       completed: referralCount >= GAME.referralGoal,
       href: null,
       anchor: DASHBOARD_REFERRAL_HASH,

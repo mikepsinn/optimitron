@@ -16,18 +16,43 @@ export interface RankableTask {
   claimPolicy: TaskClaimPolicy;
   difficulty: TaskDifficulty;
   estimatedEffortHours: number | null;
+  estimatedHoursPerWeekMax?: number | null;
+  estimatedHoursPerWeekMin?: number | null;
   interestTags: string[];
   maxClaims?: number | null;
+  compensationPaymentRails?: string[] | null;
+  preferredAccessTags?: string[] | null;
+  preferredCredentialTags?: string[] | null;
+  preferredLanguageTags?: string[] | null;
+  preferredSkillTags?: string[] | null;
+  preferredToolTags?: string[] | null;
+  remotePolicy?: string | null;
+  requiredAccessTags?: string[] | null;
+  requiredCredentialTags?: string[] | null;
+  requiredLanguageTags?: string[] | null;
+  requiredToolTags?: string[] | null;
   selectedImpactFrame?: TaskImpactFrameSummary | null;
   skillTags: string[];
   status: TaskStatus;
+  workLocationCity?: string | null;
+  workLocationCountryCode?: string | null;
+  workLocationRegionCode?: string | null;
 }
 
 export interface RankableUser {
+  accessTags?: string[] | null;
   availableHoursPerWeek: number | null;
+  city?: string | null;
+  countryCode?: string | null;
+  credentialTags?: string[] | null;
   interestTags: string[];
+  languageTags?: string[] | null;
   maxTaskDifficulty: TaskDifficulty | null;
+  preferredPaymentRails?: string[] | null;
+  regionCode?: string | null;
   skillTags: string[];
+  toolTags?: string[] | null;
+  workPreferenceTags?: string[] | null;
 }
 
 export interface RankTasksOptions {
@@ -145,17 +170,20 @@ const DIFFICULTY_ORDER: TaskDifficulty[] = [
   TaskDifficulty.EXPERT,
 ];
 
-function normalizeTags(tags: string[]) {
+function normalizeTags(tags: readonly string[] | null | undefined) {
   return Array.from(
     new Set(
-      tags
+      (tags ?? [])
         .map((tag) => tag.trim().toLowerCase())
         .filter(Boolean),
     ),
   );
 }
 
-function jaccardScore(left: string[], right: string[]) {
+function jaccardScore(
+  left: readonly string[] | null | undefined,
+  right: readonly string[] | null | undefined,
+) {
   const leftSet = new Set(normalizeTags(left));
   const rightSet = new Set(normalizeTags(right));
 
@@ -173,6 +201,59 @@ function jaccardScore(left: string[], right: string[]) {
   }
 
   return union.size === 0 ? 0 : intersectionCount / union.size;
+}
+
+function coverageScore(
+  required: readonly string[] | null | undefined,
+  available: readonly string[] | null | undefined,
+) {
+  const requiredTags = normalizeTags(required);
+  if (requiredTags.length === 0) {
+    return null;
+  }
+
+  const availableSet = new Set(normalizeTags(available));
+  const matched = requiredTags.filter((tag) => availableSet.has(tag)).length;
+  return matched / requiredTags.length;
+}
+
+function preferredTagScore(
+  preferred: readonly string[] | null | undefined,
+  available: readonly string[] | null | undefined,
+) {
+  const preferredTags = normalizeTags(preferred);
+  if (preferredTags.length === 0) {
+    return null;
+  }
+
+  return coverageScore(preferredTags, available) ?? 0;
+}
+
+function requiredPreferredFit(
+  required: readonly string[] | null | undefined,
+  preferred: readonly string[] | null | undefined,
+  available: readonly string[] | null | undefined,
+) {
+  const requiredScore = coverageScore(required, available);
+  const preferredScore = preferredTagScore(preferred, available);
+
+  if (requiredScore != null && preferredScore != null) {
+    return requiredScore * 0.75 + preferredScore * 0.25;
+  }
+
+  return requiredScore ?? preferredScore;
+}
+
+function addWeightedScore(
+  scores: Array<{ score: number | null; weight: number }>,
+  score: number | null,
+  weight: number,
+) {
+  if (score == null) {
+    return;
+  }
+
+  scores.push({ score: Math.max(0, Math.min(1, score)), weight });
 }
 
 export function difficultyFitScore(
@@ -207,6 +288,96 @@ export function hoursFitScore(
   }
 
   return Math.max(0, 1 - (estimatedEffortHours - availableHoursPerWeek) / Math.max(availableHoursPerWeek, 1));
+}
+
+function weeklyHoursFitScore(
+  minHours: number | null | undefined,
+  maxHours: number | null | undefined,
+  availableHoursPerWeek: number | null,
+) {
+  if (minHours == null && maxHours == null) {
+    return null;
+  }
+
+  if (availableHoursPerWeek == null) {
+    return 0.5;
+  }
+
+  if (minHours != null && availableHoursPerWeek < minHours) {
+    return Math.max(0, availableHoursPerWeek / Math.max(minHours, 1));
+  }
+
+  if (maxHours != null && availableHoursPerWeek > maxHours) {
+    return Math.max(0.5, 1 - (availableHoursPerWeek - maxHours) / Math.max(maxHours, 1));
+  }
+
+  return 1;
+}
+
+function locationFitScore(task: RankableTask, user: RankableUser) {
+  if (task.remotePolicy === "REMOTE") {
+    return 1;
+  }
+
+  const hasLocation =
+    Boolean(task.workLocationCountryCode) ||
+    Boolean(task.workLocationRegionCode) ||
+    Boolean(task.workLocationCity);
+  if (!hasLocation) {
+    return null;
+  }
+
+  let score = 0;
+  let weight = 0;
+
+  if (task.workLocationCountryCode) {
+    weight += 0.3;
+    score +=
+      task.workLocationCountryCode.toLowerCase() === user.countryCode?.toLowerCase()
+        ? 0.3
+        : 0;
+  }
+
+  if (task.workLocationRegionCode) {
+    weight += 0.3;
+    score +=
+      task.workLocationRegionCode.toLowerCase() === user.regionCode?.toLowerCase()
+        ? 0.3
+        : 0;
+  }
+
+  if (task.workLocationCity) {
+    weight += 0.4;
+    score +=
+      task.workLocationCity.toLowerCase() === user.city?.toLowerCase()
+        ? 0.4
+        : 0;
+  }
+
+  if (weight === 0) {
+    return null;
+  }
+
+  const normalized = score / weight;
+  return task.remotePolicy === "HYBRID" ? Math.max(0.25, normalized) : normalized;
+}
+
+function paymentRailFitScore(task: RankableTask, user: RankableUser) {
+  const rails = normalizeTags(task.compensationPaymentRails);
+  if (rails.length === 0) {
+    return null;
+  }
+
+  return coverageScore(rails, user.preferredPaymentRails) ?? 0;
+}
+
+function scoreWeightedComponents(scores: Array<{ score: number; weight: number }>) {
+  const totalWeight = scores.reduce((sum, item) => sum + item.weight, 0);
+  if (totalWeight <= 0) {
+    return 0.5;
+  }
+
+  return scores.reduce((sum, item) => sum + item.score * item.weight, 0) / totalWeight;
 }
 
 export function isTaskClaimable(task: Pick<RankableTask, "claimPolicy" | "status">) {
@@ -268,15 +439,60 @@ export function hasActiveChildTasks(task: Pick<RankableTask, "activeChildTaskCou
 }
 
 export function scoreTaskForUser(task: RankableTask, user: RankableUser) {
-  const skillScore = jaccardScore(task.skillTags, user.skillTags);
+  const skillScore =
+    requiredPreferredFit(task.skillTags, task.preferredSkillTags, user.skillTags) ??
+    jaccardScore(task.skillTags, user.skillTags);
   const interestScore = jaccardScore(task.interestTags, user.interestTags);
   const difficultyScore = difficultyFitScore(task.difficulty, user.maxTaskDifficulty);
   const effortScore = hoursFitScore(task.estimatedEffortHours, user.availableHoursPerWeek);
-  const fitScore =
-    0.5 * skillScore +
-    0.3 * interestScore +
-    0.15 * difficultyScore +
-    0.05 * effortScore;
+  const baseFitScore =
+    0.5 * skillScore + 0.3 * interestScore + 0.15 * difficultyScore + 0.05 * effortScore;
+  const fitComponents: Array<{ score: number; weight: number }> = [];
+  addWeightedScore(fitComponents, baseFitScore, 0.45);
+  addWeightedScore(
+    fitComponents,
+    requiredPreferredFit(
+      task.requiredCredentialTags,
+      task.preferredCredentialTags,
+      user.credentialTags,
+    ),
+    0.15,
+  );
+  addWeightedScore(
+    fitComponents,
+    requiredPreferredFit(
+      task.requiredLanguageTags,
+      task.preferredLanguageTags,
+      user.languageTags,
+    ),
+    0.1,
+  );
+  addWeightedScore(
+    fitComponents,
+    requiredPreferredFit(task.requiredToolTags, task.preferredToolTags, user.toolTags),
+    0.1,
+  );
+  addWeightedScore(
+    fitComponents,
+    requiredPreferredFit(
+      task.requiredAccessTags,
+      task.preferredAccessTags,
+      user.accessTags,
+    ),
+    0.08,
+  );
+  addWeightedScore(fitComponents, locationFitScore(task, user), 0.06);
+  addWeightedScore(fitComponents, paymentRailFitScore(task, user), 0.04);
+  addWeightedScore(
+    fitComponents,
+    weeklyHoursFitScore(
+      task.estimatedHoursPerWeekMin,
+      task.estimatedHoursPerWeekMax,
+      user.availableHoursPerWeek,
+    ),
+    0.02,
+  );
+  const fitScore = scoreWeightedComponents(fitComponents);
   const impactScore = scoreTaskForAccountability(task);
   const capabilityMultiplier = 0.65 + 0.35 * fitScore;
 

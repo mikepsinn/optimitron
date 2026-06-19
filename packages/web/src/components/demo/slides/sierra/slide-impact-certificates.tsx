@@ -38,7 +38,7 @@ export function SlideImpactCertificates() {
           className="font-terminal text-2xl md:text-3xl text-zinc-200 text-center transition-opacity duration-500"
           style={{ opacity: phase >= 2 ? 1 : 0 }}
         >
-          Every action leaves on-chain proof
+          Every action leaves public proof
         </div>
 
         {/* Three actions */}
@@ -61,7 +61,7 @@ export function SlideImpactCertificates() {
           className="flex justify-center gap-8 font-pixel text-lg text-zinc-400 transition-opacity duration-500"
           style={{ opacity: phase >= 5 ? 1 : 0 }}
         >
-          <span>Verified via World ID</span>
+          <span>Verified personhood</span>
           <span>·</span>
           <span>Published to Bluesky</span>
           <span>·</span>

@@ -13,17 +13,29 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import {
-  AgentRunStatus,
   ContentReportStatus,
+  AgentExecutorStatus,
   McpToolCallStatus,
   OrgStatus,
   OrgType,
   ReferendumKind,
   ReferendumStatus,
   TaskCategory,
+  TaskApplicationEventType,
+  TaskApplicationPolicy,
+  TaskApplicationStatus,
+  TaskCandidateKind,
+  TaskCandidateMatchStatus,
   TaskClaimPolicy,
+  TaskCompensationCadence,
+  TaskCompensationKind,
   TaskDifficulty,
+  TaskEngagementKind,
   TaskImpactFrameKey,
+  TaskExecutionAttemptStatus,
+  TaskExecutionMode,
+  TaskKind,
+  TaskRemotePolicy,
   TaskStatus,
   VotePosition,
 } from "@optimitron/db/enums";
@@ -141,6 +153,17 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getMyQueue: [McpScope.TASKS_PERSONAL],
   getAIQueue: [McpScope.TASKS_PERSONAL],
   getNextAction: [McpScope.TASKS_PERSONAL],
+  findTasksForUser: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  applyToTask: [McpScope.TASKS_PERSONAL],
+  listTaskApplications: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  reviewTaskApplication: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  findTaskCandidates: [McpScope.TASKS_ADMIN],
+  saveTaskCandidateMatch: [McpScope.TASKS_ADMIN],
+  listTaskCandidateMatches: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  updateTaskCandidateMatchStatus: [McpScope.TASKS_ADMIN],
+  listAgentExecutors: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
+  upsertAgentExecutor: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
+  setAgentExecutorStatus: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   getQueueAudit: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
@@ -173,6 +196,12 @@ const ADMIN_ONLY_TOOLS = new Set([
   "listTaskEmails",
   "listRecipientEmails",
   "listEmailLogs",
+  "findTaskCandidates",
+  "saveTaskCandidateMatch",
+  "updateTaskCandidateMatchStatus",
+  "listAgentExecutors",
+  "upsertAgentExecutor",
+  "setAgentExecutorStatus",
   ...TASK_TEMPLATE_ADMIN_TOOL_NAMES,
   ...TASK_TRIGGER_ADMIN_TOOL_NAMES,
   "hideContent",
@@ -590,6 +619,20 @@ function optionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+function optionalStringInput(
+  input: Record<string, unknown>,
+  fieldName: string,
+) {
+  if (!(fieldName in input)) return undefined;
+  const value = input[fieldName];
+  if (value == null) return null;
+  if (typeof value !== "string") {
+    throw new Error(`${fieldName} must be a string or null.`);
+  }
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
 function requiredString(value: unknown, fieldName: string) {
   return (
     optionalString(value) ??
@@ -597,6 +640,452 @@ function requiredString(value: unknown, fieldName: string) {
       `${fieldName} is required. Use searchTasks, listTasks, getMyQueue, or getNextAction to find a task id, then call this tool with {"${fieldName}":"<task-id>"}.`,
     )
   );
+}
+
+function parseEnumInput<T extends Record<string, string>>(
+  values: T,
+  value: unknown,
+  fieldName: string,
+): T[keyof T] | undefined {
+  if (value == null || value === "") return undefined;
+  if (typeof value !== "string") {
+    throw new Error(`${fieldName} must be a string.`);
+  }
+  const normalized = value.trim().toUpperCase().replace(/[-\s]+/g, "_");
+  const parsed = values[normalized as keyof T];
+  if (!parsed) {
+    throw new Error(`${fieldName} must be one of: ${Object.keys(values).join(", ")}.`);
+  }
+  return parsed;
+}
+
+function parseNullableEnumInput<T extends Record<string, string>>(
+  values: T,
+  input: Record<string, unknown>,
+  fieldName: string,
+): T[keyof T] | null | undefined {
+  if (!(fieldName in input)) return undefined;
+  const value = input[fieldName];
+  if (value == null || value === "") return null;
+  return parseEnumInput(values, value, fieldName);
+}
+
+function parseStringArrayInput(
+  input: Record<string, unknown>,
+  fieldName: string,
+) {
+  if (!(fieldName in input)) return undefined;
+  const value = input[fieldName];
+  if (value == null) return [];
+  if (!Array.isArray(value)) {
+    throw new Error(`${fieldName} must be an array of strings.`);
+  }
+  return dedupeStrings(
+    value.map((entry) => {
+      if (typeof entry !== "string") {
+        throw new Error(`${fieldName} entries must be strings.`);
+      }
+      return entry;
+    }),
+  );
+}
+
+function parseOptionalFiniteNumberInput(
+  input: Record<string, unknown>,
+  fieldName: string,
+) {
+  if (!(fieldName in input)) return undefined;
+  const value = input[fieldName];
+  if (value == null || value === "") return null;
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error(`${fieldName} must be a finite number or null.`);
+  }
+  return value;
+}
+
+function parseOptionalIntegerInput(
+  input: Record<string, unknown>,
+  fieldName: string,
+) {
+  const value = parseOptionalFiniteNumberInput(input, fieldName);
+  if (value === undefined || value === null) return value;
+  if (!Number.isInteger(value)) {
+    throw new Error(`${fieldName} must be an integer.`);
+  }
+  return value;
+}
+
+function parseMinorUnitsInput(
+  input: Record<string, unknown>,
+  fieldName: string,
+  dollarAlias?: string,
+) {
+  const hasMinorUnits = fieldName in input;
+  const hasDollarAlias = dollarAlias ? dollarAlias in input : false;
+  if (!hasMinorUnits && !hasDollarAlias) return undefined;
+  if (hasMinorUnits) {
+    const value = input[fieldName];
+    if (value == null || value === "") return null;
+    if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+      throw new Error(`${fieldName} must be a non-negative integer minor-unit amount.`);
+    }
+    return BigInt(value);
+  }
+  const dollars = input[dollarAlias!];
+  if (dollars == null || dollars === "") return null;
+  if (typeof dollars !== "number" || !Number.isFinite(dollars) || dollars < 0) {
+    throw new Error(`${dollarAlias} must be a non-negative number.`);
+  }
+  return BigInt(Math.round(dollars * 100));
+}
+
+function normalizeJsonPatchValue(value: unknown) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  return toInputJsonValue(value);
+}
+
+function buildTaskRoutingData(input: Record<string, unknown>) {
+  const data: Record<string, unknown> = {};
+
+  for (const fieldName of [
+    "preferredSkillTags",
+    "requiredCredentialTags",
+    "preferredCredentialTags",
+    "requiredLanguageTags",
+    "preferredLanguageTags",
+    "requiredToolTags",
+    "preferredToolTags",
+    "requiredAccessTags",
+    "preferredAccessTags",
+    "compensationPaymentRails",
+  ]) {
+    const parsed = parseStringArrayInput(input, fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+
+  for (const fieldName of [
+    "ownerOrganizationId",
+    "compensationCurrency",
+    "locationText",
+    "workLocationCountryCode",
+    "workLocationRegionCode",
+    "workLocationCity",
+    "workLocationPostalCode",
+    "workTimeZone",
+  ]) {
+    const parsed = optionalStringInput(input, fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+
+  const enumFields = [
+    ["kind", TaskKind],
+    ["engagementKind", TaskEngagementKind],
+    ["applicationPolicy", TaskApplicationPolicy],
+    ["compensationKind", TaskCompensationKind],
+    ["remotePolicy", TaskRemotePolicy],
+    ["executionMode", TaskExecutionMode],
+  ] as const;
+  for (const [fieldName, enumValues] of enumFields) {
+    const parsed = parseEnumInput(enumValues, input[fieldName], fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+
+  const cadence = parseNullableEnumInput(
+    TaskCompensationCadence,
+    input,
+    "compensationCadence",
+  );
+  if (cadence !== undefined) data.compensationCadence = cadence;
+
+  for (const fieldName of [
+    "estimatedHoursPerWeekMin",
+    "estimatedHoursPerWeekMax",
+    "maxClaims",
+  ]) {
+    const parsed = parseOptionalIntegerInput(input, fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+
+  for (const fieldName of [
+    "workLocationLatitude",
+    "workLocationLongitude",
+    "workLocationRadiusKm",
+  ]) {
+    const parsed = parseOptionalFiniteNumberInput(input, fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+
+  const minAmount = parseMinorUnitsInput(
+    input,
+    "compensationMinAmountMinorUnits",
+    "compensationMinAmountUsd",
+  );
+  if (minAmount !== undefined) data.compensationMinAmountMinorUnits = minAmount;
+  const maxAmount = parseMinorUnitsInput(
+    input,
+    "compensationMaxAmountMinorUnits",
+    "compensationMaxAmountUsd",
+  );
+  if (maxAmount !== undefined) data.compensationMaxAmountMinorUnits = maxAmount;
+
+  if ("applicationQuestionsJson" in input) {
+    data.applicationQuestionsJson = normalizeJsonPatchValue(
+      input.applicationQuestionsJson,
+    );
+  }
+
+  return data;
+}
+
+const USER_MATCHING_SELECT = {
+  accessTags: true,
+  availableFrom: true,
+  availableHoursPerWeek: true,
+  city: true,
+  countryCode: true,
+  credentialTags: true,
+  email: true,
+  id: true,
+  interestTags: true,
+  languageTags: true,
+  latitude: true,
+  longitude: true,
+  maxTaskDifficulty: true,
+  personId: true,
+  postalCode: true,
+  preferredPaymentRails: true,
+  preferredTaskTags: true,
+  regionCode: true,
+  skillTags: true,
+  toolTags: true,
+  unavailableTaskTags: true,
+  workPreferenceTags: true,
+  person: {
+    select: {
+      displayName: true,
+      handle: true,
+      id: true,
+      image: true,
+    },
+  },
+} satisfies Prisma.UserSelect;
+
+type UserMatchingRecord = Prisma.UserGetPayload<{
+  select: typeof USER_MATCHING_SELECT;
+}>;
+
+function buildUserMatchingProfileData(input: Record<string, unknown>) {
+  const data: Record<string, unknown> = {};
+
+  for (const fieldName of [
+    "skillTags",
+    "credentialTags",
+    "interestTags",
+    "languageTags",
+    "toolTags",
+    "accessTags",
+    "preferredPaymentRails",
+    "workPreferenceTags",
+    "preferredTaskTags",
+    "unavailableTaskTags",
+  ]) {
+    const parsed = parseStringArrayInput(input, fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+
+  for (const fieldName of ["countryCode", "regionCode", "city", "postalCode"]) {
+    const parsed = optionalStringInput(input, fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+
+  for (const fieldName of ["latitude", "longitude"]) {
+    const parsed = parseOptionalFiniteNumberInput(input, fieldName);
+    if (parsed !== undefined) data[fieldName] = parsed;
+  }
+  const availableHoursPerWeek = parseOptionalIntegerInput(
+    input,
+    "availableHoursPerWeek",
+  );
+  if (availableHoursPerWeek !== undefined) {
+    data.availableHoursPerWeek = availableHoursPerWeek;
+  }
+
+  const maxTaskDifficulty = parseNullableEnumInput(
+    TaskDifficulty,
+    input,
+    "maxTaskDifficulty",
+  );
+  if (maxTaskDifficulty !== undefined) data.maxTaskDifficulty = maxTaskDifficulty;
+
+  if ("availableFrom" in input) {
+    const raw = input.availableFrom;
+    data.availableFrom = raw == null || raw === "" ? null : parseTaskDate(raw);
+    if (raw != null && raw !== "" && data.availableFrom === null) {
+      throw new Error("availableFrom must be a valid date.");
+    }
+  }
+
+  if (Object.keys(data).length > 0) {
+    data.availabilityUpdatedAt = new Date();
+  }
+
+  return data;
+}
+
+function summarizeMatchingUser(user: UserMatchingRecord) {
+  return {
+    accessTags: user.accessTags,
+    availableFrom: user.availableFrom?.toISOString() ?? null,
+    availableHoursPerWeek: user.availableHoursPerWeek,
+    city: user.city,
+    countryCode: user.countryCode,
+    credentialTags: user.credentialTags,
+    email: user.email,
+    id: user.id,
+    interestTags: user.interestTags,
+    languageTags: user.languageTags,
+    maxTaskDifficulty: user.maxTaskDifficulty,
+    person: user.person,
+    personId: user.personId,
+    postalCode: user.postalCode,
+    preferredPaymentRails: user.preferredPaymentRails,
+    preferredTaskTags: user.preferredTaskTags,
+    regionCode: user.regionCode,
+    skillTags: user.skillTags,
+    toolTags: user.toolTags,
+    unavailableTaskTags: user.unavailableTaskTags,
+    workPreferenceTags: user.workPreferenceTags,
+  };
+}
+
+function toRankableUser(user: UserMatchingRecord) {
+  return {
+    accessTags: user.accessTags,
+    availableHoursPerWeek: user.availableHoursPerWeek,
+    city: user.city,
+    countryCode: user.countryCode,
+    credentialTags: user.credentialTags,
+    interestTags: user.interestTags,
+    languageTags: user.languageTags,
+    maxTaskDifficulty: user.maxTaskDifficulty,
+    preferredPaymentRails: user.preferredPaymentRails,
+    regionCode: user.regionCode,
+    skillTags: user.skillTags,
+    toolTags: user.toolTags,
+    workPreferenceTags: user.workPreferenceTags,
+  };
+}
+
+function toJsonSafe(value: unknown): unknown {
+  if (typeof value === "bigint") return value.toString();
+  if (value instanceof Date) return value.toISOString();
+  if (Array.isArray(value)) return value.map(toJsonSafe);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        toJsonSafe(entry),
+      ]),
+    );
+  }
+  return value;
+}
+
+function deriveCandidateKey(input: {
+  agentExecutorId?: string | null;
+  candidateKey?: string | null;
+  candidateKind: TaskCandidateKind;
+  candidateOrganizationId?: string | null;
+  candidatePersonId?: string | null;
+  candidateUserId?: string | null;
+}) {
+  if (input.candidateKey) return input.candidateKey;
+  if (input.candidateUserId) return `user:${input.candidateUserId}`;
+  if (input.candidatePersonId) return `person:${input.candidatePersonId}`;
+  if (input.candidateOrganizationId)
+    return `organization:${input.candidateOrganizationId}`;
+  if (input.agentExecutorId) return `agent:${input.agentExecutorId}`;
+  throw new Error(
+    `candidateKey is required when no candidate id is provided for ${input.candidateKind}.`,
+  );
+}
+
+function summarizeCandidateMatch(match: Record<string, unknown>) {
+  return toJsonSafe(match);
+}
+
+function normalizedTagSet(values: readonly string[] | null | undefined) {
+  return new Set((values ?? []).map((tag) => tag.trim().toLowerCase()).filter(Boolean));
+}
+
+function tagCoverageScore(required: readonly string[] | null | undefined, available: readonly string[] | null | undefined) {
+  const requiredSet = normalizedTagSet(required);
+  if (requiredSet.size === 0) return 0.5;
+  const availableSet = normalizedTagSet(available);
+  let matched = 0;
+  for (const tag of requiredSet) {
+    if (availableSet.has(tag)) matched += 1;
+  }
+  return matched / requiredSet.size;
+}
+
+function scoreAgentCandidate(task: Record<string, unknown>, agent: Record<string, unknown>) {
+  const capabilityScore = tagCoverageScore(
+    [
+      ...asStringArray(task.skillTags),
+      ...asStringArray(task.preferredSkillTags),
+    ],
+    agent.capabilityTags as string[] | null,
+  );
+  const toolScore = tagCoverageScore(
+    [
+      ...asStringArray(task.requiredToolTags),
+      ...asStringArray(task.preferredToolTags),
+    ],
+    agent.toolTags as string[] | null,
+  );
+  const accessScore = tagCoverageScore(
+    [
+      ...asStringArray(task.requiredAccessTags),
+      ...asStringArray(task.preferredAccessTags),
+    ],
+    agent.accessTags as string[] | null,
+  );
+  const successRate =
+    typeof agent.successRate === "number" && Number.isFinite(agent.successRate)
+      ? Math.max(0, Math.min(1, agent.successRate))
+      : 0.5;
+  return capabilityScore * 0.45 + toolScore * 0.2 + accessScore * 0.2 + successRate * 0.15;
+}
+
+function parseAgentRunExecutionStatus(value: unknown) {
+  const raw = optionalString(value);
+  if (raw === null) return TaskExecutionAttemptStatus.COMPLETED;
+  switch (raw.toUpperCase()) {
+    case "RUNNING":
+      return TaskExecutionAttemptStatus.RUNNING;
+    case "FAILED":
+      return TaskExecutionAttemptStatus.FAILED;
+    case "PARTIAL":
+    case "COMPLETED":
+      return TaskExecutionAttemptStatus.COMPLETED;
+    default:
+      return null;
+  }
+}
+
+function dollarsToMinorUnits(value: unknown) {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+    return null;
+  }
+  return BigInt(Math.round(value * 100));
+}
+
+function positiveInteger(value: unknown) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0
+    ? value
+    : null;
 }
 
 function mergeTaskContextJson(input: {
@@ -687,9 +1176,32 @@ type SummarizableTask = {
     url?: string | null;
   } | null;
   claimPolicy?: string | null;
+  applicationPolicy?: string | null;
+  compensationCadence?: string | null;
+  compensationCurrency?: string | null;
+  compensationKind?: string | null;
+  compensationMaxAmountMinorUnits?: bigint | number | string | null;
+  compensationMinAmountMinorUnits?: bigint | number | string | null;
+  compensationPaymentRails?: string[] | null;
+  engagementKind?: string | null;
+  estimatedHoursPerWeekMax?: number | null;
+  estimatedHoursPerWeekMin?: number | null;
+  executionMode?: string | null;
+  kind?: string | null;
+  locationText?: string | null;
+  ownerOrganizationId?: string | null;
+  preferredSkillTags?: string[] | null;
+  remotePolicy?: string | null;
+  requiredAccessTags?: string[] | null;
+  requiredCredentialTags?: string[] | null;
+  requiredLanguageTags?: string[] | null;
+  requiredToolTags?: string[] | null;
   skillTags?: string[] | null;
   interestTags?: string[] | null;
   estimatedEffortHours?: number | null;
+  workLocationCity?: string | null;
+  workLocationCountryCode?: string | null;
+  workLocationRegionCode?: string | null;
   assigneePerson?: { displayName?: string | null } | null;
   assigneeOrganization?: { name?: string | null } | null;
   blockerStatuses?: string[] | null;
@@ -1007,9 +1519,36 @@ function summarizeTask(task: SummarizableTask) {
     impactStatement: task.impactStatement,
     primaryEndpoint: task.primaryEndpoint ?? null,
     claimPolicy: task.claimPolicy,
+    applicationPolicy: task.applicationPolicy,
+    compensationCadence: task.compensationCadence,
+    compensationCurrency: task.compensationCurrency,
+    compensationKind: task.compensationKind,
+    compensationMaxAmountMinorUnits: toJsonSafe(
+      task.compensationMaxAmountMinorUnits,
+    ),
+    compensationMinAmountMinorUnits: toJsonSafe(
+      task.compensationMinAmountMinorUnits,
+    ),
+    compensationPaymentRails: task.compensationPaymentRails,
+    engagementKind: task.engagementKind,
+    estimatedHoursPerWeekMax: task.estimatedHoursPerWeekMax,
+    estimatedHoursPerWeekMin: task.estimatedHoursPerWeekMin,
+    executionMode: task.executionMode,
+    kind: task.kind,
+    locationText: task.locationText,
+    ownerOrganizationId: task.ownerOrganizationId,
+    preferredSkillTags: task.preferredSkillTags,
+    remotePolicy: task.remotePolicy,
+    requiredAccessTags: task.requiredAccessTags,
+    requiredCredentialTags: task.requiredCredentialTags,
+    requiredLanguageTags: task.requiredLanguageTags,
+    requiredToolTags: task.requiredToolTags,
     skillTags: task.skillTags,
     interestTags: task.interestTags,
     estimatedEffortHours: task.estimatedEffortHours,
+    workLocationCity: task.workLocationCity,
+    workLocationCountryCode: task.workLocationCountryCode,
+    workLocationRegionCode: task.workLocationRegionCode,
     assigneePersonName: task.assigneePerson?.displayName ?? null,
     assigneeOrgName: task.assigneeOrganization?.name ?? null,
     blocked:
@@ -2754,6 +3293,177 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
   },
 ];
 
+const TASK_ROUTING_INPUT_PROPERTIES = {
+  kind: {
+    type: "string",
+    enum: Object.values(TaskKind),
+    description:
+      "Task shape: TASK, ROLE_OPENING, PROJECT, BOUNTY, or VOLUNTEER_ROLE.",
+  },
+  engagementKind: {
+    type: "string",
+    enum: Object.values(TaskEngagementKind),
+    description: "Commitment shape: ONE_OFF, ONGOING, PART_TIME, FULL_TIME, CONTRACT.",
+  },
+  applicationPolicy: {
+    type: "string",
+    enum: Object.values(TaskApplicationPolicy),
+    description: "Whether users can apply: CLOSED, OPEN, or INVITE_ONLY.",
+  },
+  preferredSkillTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Skills that improve fit beyond required skillTags.",
+  },
+  requiredCredentialTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Credentials, licenses, or qualifications required.",
+  },
+  preferredCredentialTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Credentials that improve fit.",
+  },
+  requiredLanguageTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Languages required.",
+  },
+  preferredLanguageTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Languages that improve fit.",
+  },
+  requiredToolTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Tools, platforms, or software required.",
+  },
+  preferredToolTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Tools that improve fit.",
+  },
+  requiredAccessTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Accounts, clearance, location, network, or social access required.",
+  },
+  preferredAccessTags: {
+    type: "array",
+    items: { type: "string" },
+    description: "Access that improves fit.",
+  },
+  ownerOrganizationId: {
+    type: ["string", "null"],
+    description: "Organization that owns/reviews this opening or task.",
+  },
+  compensationKind: {
+    type: "string",
+    enum: Object.values(TaskCompensationKind),
+    description: "Compensation category.",
+  },
+  compensationCadence: {
+    type: ["string", "null"],
+    enum: [...Object.values(TaskCompensationCadence), null],
+    description: "Compensation cadence. Null clears it.",
+  },
+  compensationCurrency: {
+    type: ["string", "null"],
+    description: "Lowercase currency code, usually usd.",
+  },
+  compensationMinAmountMinorUnits: {
+    type: ["integer", "null"],
+    description: "Minimum compensation in currency minor units.",
+  },
+  compensationMaxAmountMinorUnits: {
+    type: ["integer", "null"],
+    description: "Maximum compensation in currency minor units.",
+  },
+  compensationMinAmountUsd: {
+    type: ["number", "null"],
+    description:
+      "Alias for compensationMinAmountMinorUnits when the currency is USD.",
+  },
+  compensationMaxAmountUsd: {
+    type: ["number", "null"],
+    description:
+      "Alias for compensationMaxAmountMinorUnits when the currency is USD.",
+  },
+  compensationPaymentRails: {
+    type: "array",
+    items: { type: "string" },
+    description: "Acceptable payment rails, such as stripe, ach, usdc, wire.",
+  },
+  estimatedHoursPerWeekMin: {
+    type: ["integer", "null"],
+    description: "Minimum weekly hours for ongoing work.",
+  },
+  estimatedHoursPerWeekMax: {
+    type: ["integer", "null"],
+    description: "Maximum weekly hours for ongoing work.",
+  },
+  remotePolicy: {
+    type: "string",
+    enum: Object.values(TaskRemotePolicy),
+    description: "UNSPECIFIED, REMOTE, HYBRID, or ONSITE.",
+  },
+  locationText: {
+    type: ["string", "null"],
+    description: "Human-readable location constraint.",
+  },
+  workLocationCountryCode: { type: ["string", "null"] },
+  workLocationRegionCode: { type: ["string", "null"] },
+  workLocationCity: { type: ["string", "null"] },
+  workLocationPostalCode: { type: ["string", "null"] },
+  workLocationLatitude: { type: ["number", "null"] },
+  workLocationLongitude: { type: ["number", "null"] },
+  workLocationRadiusKm: { type: ["number", "null"] },
+  workTimeZone: {
+    type: ["string", "null"],
+    description: "IANA time zone preferred for the work.",
+  },
+  applicationQuestionsJson: {
+    type: ["object", "array", "null"],
+    description: "Structured questions for applicants. Null clears it.",
+  },
+  executionMode: {
+    type: "string",
+    enum: Object.values(TaskExecutionMode),
+    description: "HUMAN_OR_AGENT, HUMAN_ONLY, or AGENT_ONLY.",
+  },
+  maxClaims: {
+    type: ["integer", "null"],
+    description: "Max simultaneous claims when claimPolicy is OPEN_MANY.",
+  },
+} as const;
+
+const USER_MATCHING_PROFILE_PROPERTIES = {
+  skillTags: { type: "array", items: { type: "string" } },
+  credentialTags: { type: "array", items: { type: "string" } },
+  interestTags: { type: "array", items: { type: "string" } },
+  languageTags: { type: "array", items: { type: "string" } },
+  toolTags: { type: "array", items: { type: "string" } },
+  accessTags: { type: "array", items: { type: "string" } },
+  preferredPaymentRails: { type: "array", items: { type: "string" } },
+  workPreferenceTags: { type: "array", items: { type: "string" } },
+  preferredTaskTags: { type: "array", items: { type: "string" } },
+  unavailableTaskTags: { type: "array", items: { type: "string" } },
+  availableHoursPerWeek: { type: ["number", "null"] },
+  availableFrom: { type: ["string", "null"], description: "ISO 8601 date." },
+  maxTaskDifficulty: {
+    type: ["string", "null"],
+    enum: [...Object.values(TaskDifficulty), null],
+  },
+  countryCode: { type: ["string", "null"] },
+  regionCode: { type: ["string", "null"] },
+  city: { type: ["string", "null"] },
+  postalCode: { type: ["string", "null"] },
+  latitude: { type: ["number", "null"] },
+  longitude: { type: ["number", "null"] },
+} as const;
+
 const TASK_TOOL_DEFINITIONS = [
   ...EARTH_DATA_TOOL_DEFINITIONS,
   {
@@ -3290,6 +4000,50 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description: "Filter by assignee person ID",
         },
+        assigneeOrganizationId: {
+          type: "string",
+          description: "Filter by assignee organization ID",
+        },
+        ownerOrganizationId: {
+          type: "string",
+          description: "Filter by owner/reviewer organization ID",
+        },
+        kind: {
+          type: "string",
+          enum: Object.values(TaskKind),
+          description: "Filter by task kind.",
+        },
+        engagementKind: {
+          type: "string",
+          enum: Object.values(TaskEngagementKind),
+          description: "Filter by engagement kind.",
+        },
+        applicationPolicy: {
+          type: "string",
+          enum: Object.values(TaskApplicationPolicy),
+          description: "Filter by application policy.",
+        },
+        compensationKind: {
+          type: "string",
+          enum: Object.values(TaskCompensationKind),
+          description: "Filter by compensation kind.",
+        },
+        remotePolicy: {
+          type: "string",
+          enum: Object.values(TaskRemotePolicy),
+          description: "Filter by remote/hybrid/onsite policy.",
+        },
+        executionMode: {
+          type: "string",
+          enum: Object.values(TaskExecutionMode),
+          description: "Filter by human/agent execution mode.",
+        },
+        requiredTags: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Return tasks whose required/preferred/skill tags include any supplied tag.",
+        },
         assignedToMe: {
           type: "boolean",
           description:
@@ -3316,6 +4070,234 @@ const TASK_TOOL_DEFINITIONS = [
         taskId: { type: "string", description: "Task ID" },
       },
       required: ["taskId"],
+    },
+  },
+  {
+    name: "findTasksForUser",
+    description:
+      "Rank accessible active tasks for a user using their private matching preferences plus the task impact score. Non-admin callers can only rank their own user.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        userId: {
+          type: "string",
+          description:
+            "Optional target user ID. Admin-only unless it is the authenticated user.",
+        },
+        limit: { type: "number", description: "Max results, default 20, max 50." },
+        preferLeafExecution: {
+          type: "boolean",
+          description:
+            "Prefer executable leaf tasks over parent projects when possible.",
+        },
+      },
+    },
+  },
+  {
+    name: "applyToTask",
+    description:
+      "Create or update the authenticated user's application to an OPEN or INVITE_ONLY task/role opening.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Task or role opening ID." },
+        applicationMessage: {
+          type: "string",
+          description: "Applicant message, cover note, or proposal.",
+        },
+        answersJson: {
+          type: ["object", "array", "null"],
+          description: "Structured answers to task.applicationQuestionsJson.",
+        },
+        applicantNameSnapshot: {
+          type: "string",
+          description: "Optional applicant name snapshot.",
+        },
+        applicantEmailSnapshot: {
+          type: "string",
+          description: "Optional applicant email snapshot.",
+        },
+        originUrl: { type: "string", description: "Where the application started." },
+        utmJson: { type: ["object", "null"], description: "UTM/campaign metadata." },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
+    name: "listTaskApplications",
+    description:
+      "List applications for one task. Caller must be admin, task creator, task manager, or owner/admin of the owner/assignee organization.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Task ID." },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
+    name: "reviewTaskApplication",
+    description:
+      "Review one task application. Optionally assign the task to the accepted applicant's Person row.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        applicationId: { type: "string", description: "Application ID." },
+        status: {
+          type: "string",
+          enum: Object.values(TaskApplicationStatus),
+          description: "New application status.",
+        },
+        reviewScore: {
+          type: ["integer", "null"],
+          description: "Reviewer score, conventionally 0-100.",
+        },
+        reviewNote: { type: ["string", "null"], description: "Reviewer note." },
+        answersJson: {
+          type: ["object", "array", "null"],
+          description: "Reviewer-normalized answer data.",
+        },
+        assignTaskOnAccept: {
+          type: "boolean",
+          description:
+            "If status is ACCEPTED, set task.assigneePersonId to the applicant person.",
+        },
+      },
+      required: ["applicationId"],
+    },
+  },
+  {
+    name: "findTaskCandidates",
+    description:
+      "Admin-only: score users and active agent executors as possible executors for one task.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Task ID." },
+        limit: { type: "number", description: "Max candidates, default 20, max 100." },
+        includeAgents: {
+          type: "boolean",
+          description: "Include active AgentExecutor rows. Default true.",
+        },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
+    name: "saveTaskCandidateMatch",
+    description:
+      "Admin-only: upsert a scored candidate match for a task so later chats/agents can review or assign it.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string" },
+        candidateKind: {
+          type: "string",
+          enum: Object.values(TaskCandidateKind),
+        },
+        candidateKey: {
+          type: "string",
+          description:
+            "Stable key. If omitted, derived from candidateUserId/personId/organizationId/agentExecutorId.",
+        },
+        candidateUserId: { type: "string" },
+        candidatePersonId: { type: "string" },
+        candidateOrganizationId: { type: "string" },
+        agentExecutorId: { type: "string" },
+        score: { type: "number" },
+        scoreVersion: { type: "string" },
+        reasonJson: { type: ["object", "array", "null"] },
+        blockersJson: { type: ["object", "array", "null"] },
+        estimatedCostMinorUnits: { type: ["integer", "null"] },
+        estimatedCostCurrency: { type: ["string", "null"] },
+        estimatedDurationSeconds: { type: ["integer", "null"] },
+        status: {
+          type: "string",
+          enum: Object.values(TaskCandidateMatchStatus),
+        },
+      },
+      required: ["taskId", "candidateKind", "score"],
+    },
+  },
+  {
+    name: "listTaskCandidateMatches",
+    description:
+      "List saved candidate matches for a task. Non-admin callers must have application-review rights for the task.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string" },
+        status: {
+          type: "string",
+          enum: Object.values(TaskCandidateMatchStatus),
+        },
+        limit: { type: "number", description: "Max results, default 50." },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
+    name: "updateTaskCandidateMatchStatus",
+    description: "Admin-only: update a saved task candidate match status.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        matchId: { type: "string" },
+        status: {
+          type: "string",
+          enum: Object.values(TaskCandidateMatchStatus),
+        },
+        reasonJson: { type: ["object", "array", "null"] },
+        blockersJson: { type: ["object", "array", "null"] },
+      },
+      required: ["matchId", "status"],
+    },
+  },
+  {
+    name: "listAgentExecutors",
+    description: "Admin-only: list non-human executors addressable by task routing.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        status: { type: "string", enum: Object.values(AgentExecutorStatus) },
+        provider: { type: "string" },
+        capabilityTags: { type: "array", items: { type: "string" } },
+        limit: { type: "number", description: "Max results, default 50." },
+      },
+    },
+  },
+  {
+    name: "upsertAgentExecutor",
+    description: "Admin-only: create or update a non-human task executor.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        agentKey: { type: "string" },
+        displayName: { type: "string" },
+        provider: { type: ["string", "null"] },
+        modelName: { type: ["string", "null"] },
+        capabilityTags: { type: "array", items: { type: "string" } },
+        toolTags: { type: "array", items: { type: "string" } },
+        accessTags: { type: "array", items: { type: "string" } },
+        averageCostUsd: { type: ["number", "null"] },
+        averageLatencySeconds: { type: ["number", "null"] },
+        successRate: { type: ["number", "null"] },
+        status: { type: "string", enum: Object.values(AgentExecutorStatus) },
+        metadata: { type: ["object", "array", "null"] },
+      },
+      required: ["agentKey", "displayName"],
+    },
+  },
+  {
+    name: "setAgentExecutorStatus",
+    description: "Admin-only: set an AgentExecutor status.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        agentKey: { type: "string" },
+        status: { type: "string", enum: Object.values(AgentExecutorStatus) },
+      },
+      required: ["agentKey", "status"],
     },
   },
   {
@@ -3673,6 +4655,7 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Email scopes to opt out of (transactional/master scopes are filtered out server-side).",
         },
+        ...USER_MATCHING_PROFILE_PROPERTIES,
       },
     },
   },
@@ -3827,6 +4810,7 @@ const TASK_TOOL_DEFINITIONS = [
           items: { type: "string" },
           description: "Related topics/causes",
         },
+        ...TASK_ROUTING_INPUT_PROPERTIES,
         depends_on: {
           type: "array",
           items: { type: "string" },
@@ -4353,6 +5337,7 @@ const TASK_TOOL_DEFINITIONS = [
           enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
           description: "Optional metadata; not part of personal priority.",
         },
+        ...TASK_ROUTING_INPUT_PROPERTIES,
         taskKey: { type: "string", description: "Stable dedup key" },
         assigneePersonId: {
           type: "string",
@@ -4725,17 +5710,17 @@ const TASK_TOOL_DEFINITIONS = [
         costUsd: { type: "number", description: "Total cost in USD" },
         apiCalls: { type: "number", description: "Number of API calls" },
         taskId: { type: "string", description: "Task this run worked on" },
+        agentId: {
+          type: "string",
+          description: "Stable agent identifier, usually matching the lease agentId",
+        },
         status: {
           type: "string",
           enum: ["RUNNING", "COMPLETED", "FAILED", "PARTIAL"],
         },
         outputSummary: { type: "string", description: "What the run produced" },
-        depositId: {
-          type: "string",
-          description: "Deposit that funded this run",
-        },
       },
-      required: ["runId", "provider", "costUsd", "apiCalls"],
+      required: ["runId", "provider", "costUsd", "apiCalls", "taskId"],
     },
   },
   {
@@ -4784,12 +5769,6 @@ const TASK_TOOL_DEFINITIONS = [
       },
       required: ["taskId", "agentId"],
     },
-  },
-  {
-    name: "getFundingStats",
-    description:
-      "Get aggregate funding stats — total deposited, total spent, total agent runs, remaining budget.",
-    inputSchema: { type: "object" as const, properties: {} },
   },
   {
     name: "listReferendums",
@@ -6216,6 +7195,8 @@ export function createMcpServer(
                 : null;
             const limit = Math.min(Number(a.limit) || 20, 50);
             let assigneePersonId = (a.assigneePersonId as string) ?? null;
+            const assigneeOrganizationId =
+              (a.assigneeOrganizationId as string) ?? null;
             let visibility: "public" | "accessible" = "public";
             if (a.assignedToMe === true && userId) {
               const prisma = await getPrisma();
@@ -6226,21 +7207,112 @@ export function createMcpServer(
               assigneePersonId = user?.personId ?? "__unreachable__";
               visibility = "accessible";
             }
+            let extendedFilters: {
+              applicationPolicy?: TaskApplicationPolicy;
+              compensationKind?: TaskCompensationKind;
+              engagementKind?: TaskEngagementKind;
+              executionMode?: TaskExecutionMode;
+              kind?: TaskKind;
+              ownerOrganizationId?: string | null;
+              remotePolicy?: TaskRemotePolicy;
+              requiredTags?: string[];
+            };
+            try {
+              extendedFilters = {
+                applicationPolicy: parseEnumInput(
+                  TaskApplicationPolicy,
+                  a.applicationPolicy,
+                  "applicationPolicy",
+                ),
+                compensationKind: parseEnumInput(
+                  TaskCompensationKind,
+                  a.compensationKind,
+                  "compensationKind",
+                ),
+                engagementKind: parseEnumInput(
+                  TaskEngagementKind,
+                  a.engagementKind,
+                  "engagementKind",
+                ),
+                executionMode: parseEnumInput(
+                  TaskExecutionMode,
+                  a.executionMode,
+                  "executionMode",
+                ),
+                kind: parseEnumInput(TaskKind, a.kind, "kind"),
+                ownerOrganizationId:
+                  typeof a.ownerOrganizationId === "string"
+                    ? a.ownerOrganizationId
+                    : null,
+                remotePolicy: parseEnumInput(
+                  TaskRemotePolicy,
+                  a.remotePolicy,
+                  "remotePolicy",
+                ),
+                requiredTags: parseStringArrayInput(a, "requiredTags"),
+              };
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid filter.");
+            }
+            const needsExtendedFiltering = Object.values(extendedFilters).some(
+              (value) => Array.isArray(value) ? value.length > 0 : value != null,
+            );
             const list = await tasks.listTasks({
               status,
               category,
               assigneePersonId,
-              limit,
+              assigneeOrganizationId,
+              limit: needsExtendedFiltering ? 5000 : limit,
               userId: visibility === "accessible" ? userId : null,
               visibility,
             });
-            let filtered = list;
+            let filtered = Array.isArray(list) ? list : [];
             if (a.parentTaskId) {
-              filtered = list.filter(
+              filtered = filtered.filter(
                 (t: { parentTaskId?: string | null }) =>
                   t.parentTaskId === a.parentTaskId,
               );
             }
+            filtered = filtered.filter((task: Record<string, unknown>) => {
+              if (
+                extendedFilters.ownerOrganizationId &&
+                task.ownerOrganizationId !== extendedFilters.ownerOrganizationId
+              ) {
+                return false;
+              }
+              for (const fieldName of [
+                "applicationPolicy",
+                "compensationKind",
+                "engagementKind",
+                "executionMode",
+                "kind",
+                "remotePolicy",
+              ] as const) {
+                const expected = extendedFilters[fieldName];
+                if (expected && task[fieldName] !== expected) return false;
+              }
+              const requiredTags = extendedFilters.requiredTags ?? [];
+              if (requiredTags.length > 0) {
+                const taskTags = new Set(
+                  [
+                    ...asStringArray(task.skillTags),
+                    ...asStringArray(task.preferredSkillTags),
+                    ...asStringArray(task.requiredCredentialTags),
+                    ...asStringArray(task.preferredCredentialTags),
+                    ...asStringArray(task.requiredLanguageTags),
+                    ...asStringArray(task.preferredLanguageTags),
+                    ...asStringArray(task.requiredToolTags),
+                    ...asStringArray(task.preferredToolTags),
+                    ...asStringArray(task.requiredAccessTags),
+                    ...asStringArray(task.preferredAccessTags),
+                  ].map((tag) => tag.toLowerCase()),
+                );
+                if (!requiredTags.some((tag) => taskTags.has(tag.toLowerCase()))) {
+                  return false;
+                }
+              }
+              return true;
+            });
             return ok(filtered.slice(0, limit).map(summarizeTask));
           }
 
@@ -6523,6 +7595,642 @@ export function createMcpServer(
               task: enrichTaskForMcp(result.task),
               taskCommunicationCount: result.taskCommunicationCount,
             });
+          }
+
+          case "findTasksForUser": {
+            if (!userId) {
+              return authRequired(
+                name,
+                "This tool ranks tasks for an authenticated user.",
+              );
+            }
+            const targetUserId = optionalString(a.userId) ?? userId;
+            if (targetUserId !== userId && !isAdmin) {
+              return err("Admin privileges are required to rank another user's tasks.");
+            }
+            const prisma = await getPrisma();
+            const { tasks, ranking } = await getTaskFunctions();
+            const user = await prisma.user.findUnique({
+              where: { id: targetUserId },
+              select: USER_MATCHING_SELECT,
+            });
+            if (!user) return err("User not found.");
+            const limit = parseQueueLimit(a.limit, 20, 50);
+            const taskRows = await tasks.listTasks({
+              limit: 5000,
+              personId: user.personId,
+              status: TaskStatus.ACTIVE,
+              userId: targetUserId,
+              visibility: "accessible",
+            });
+            const ranked = ranking.rankTasksForUser(
+              taskRows as RankableTask[],
+              toRankableUser(user),
+              limit,
+              { preferLeafExecution: a.preferLeafExecution !== false },
+            );
+            return ok({
+              user: summarizeMatchingUser(user),
+              tasks: ranked.map((entry) => ({
+                score: entry.score,
+                task: summarizeTask(entry.task as unknown as SummarizableTask),
+              })),
+            });
+          }
+
+          case "applyToTask": {
+            if (!userId) {
+              return authRequired(name, "This tool submits a task application.");
+            }
+            const taskId = requiredString(a.taskId, "taskId");
+            if (typeof taskId !== "string") return taskId;
+            const prisma = await getPrisma();
+            const applications = await import("./task-applications.server");
+            const [task, user] = await Promise.all([
+              prisma.task.findFirst({
+                where: { deletedAt: null, id: taskId },
+                select: {
+                  applicationPolicy: true,
+                  id: true,
+                  jurisdictionId: true,
+                  title: true,
+                },
+              }),
+              prisma.user.findUnique({
+                where: { id: userId },
+                select: USER_MATCHING_SELECT,
+              }),
+            ]);
+            if (!task) return err("Task not found.");
+            if (!user) return err("User not found.");
+            if (task.applicationPolicy === TaskApplicationPolicy.CLOSED) {
+              const canReview = await applications.canReviewTaskApplications(
+                userId,
+                taskId,
+              );
+              if (!canReview) {
+                return err("This task is not accepting applications.");
+              }
+            }
+
+            const answersJson =
+              "answersJson" in a ? normalizeJsonPatchValue(a.answersJson) : undefined;
+            const application = await prisma.$transaction(async (tx) => {
+              const existing = await tx.taskApplication.findFirst({
+                where: {
+                  applicantUserId: userId,
+                  deletedAt: null,
+                  taskId,
+                },
+                select: { id: true, jurisdictionId: true, status: true },
+              });
+              const applicationData = {
+                applicantEmailSnapshot:
+                  optionalString(a.applicantEmailSnapshot) ?? user.email,
+                applicantNameSnapshot:
+                  optionalString(a.applicantNameSnapshot) ??
+                  user.person?.displayName ??
+                  user.email,
+                applicationMessage: optionalString(a.applicationMessage),
+                answersJson,
+                originUrl: optionalString(a.originUrl),
+                utmJson:
+                  "utmJson" in a ? normalizeJsonPatchValue(a.utmJson) : undefined,
+              };
+              if (existing) {
+                const updated = await tx.taskApplication.update({
+                  where: { id: existing.id },
+                  data: Object.fromEntries(
+                    Object.entries(applicationData).filter(
+                      ([, value]) => value !== undefined,
+                    ),
+                  ) as any,
+                  select: applications.applicationSelect,
+                });
+                await tx.taskApplicationEvent.create({
+                  data: {
+                    actorUserId: userId,
+                    applicationId: existing.id,
+                    eventType: TaskApplicationEventType.COMMENTED,
+                    jurisdictionId: existing.jurisdictionId,
+                    note: optionalString(a.applicationMessage),
+                  },
+                });
+                return updated;
+              }
+              const created = await tx.taskApplication.create({
+                data: {
+                  ...applicationData,
+                  applicantPersonId: user.personId,
+                  applicantUserId: userId,
+                  jurisdictionId: task.jurisdictionId,
+                  taskId,
+                } as any,
+                select: applications.applicationSelect,
+              });
+              await tx.taskApplicationEvent.create({
+                data: {
+                  actorUserId: userId,
+                  applicationId: created.id,
+                  eventType: TaskApplicationEventType.CREATED,
+                  jurisdictionId: task.jurisdictionId,
+                  note: optionalString(a.applicationMessage),
+                  toStatus: TaskApplicationStatus.APPLIED,
+                },
+              });
+              return created;
+            });
+            return ok({ application, task: { id: task.id, title: task.title } });
+          }
+
+          case "listTaskApplications": {
+            if (!userId) {
+              return authRequired(name, "This tool lists task applications.");
+            }
+            const taskId = requiredString(a.taskId, "taskId");
+            if (typeof taskId !== "string") return taskId;
+            const applications = await import("./task-applications.server");
+            if (!isAdmin) {
+              try {
+                await applications.assertCanReviewTaskApplications(userId, taskId);
+              } catch (error) {
+                return err(error instanceof Error ? error.message : "Forbidden");
+              }
+            }
+            return ok({
+              applications: await applications.getTaskApplications(taskId),
+              taskId,
+            });
+          }
+
+          case "reviewTaskApplication": {
+            if (!userId) {
+              return authRequired(name, "This tool reviews a task application.");
+            }
+            const applicationId = requiredString(a.applicationId, "applicationId");
+            if (typeof applicationId !== "string") return applicationId;
+            const prisma = await getPrisma();
+            const applications = await import("./task-applications.server");
+            const existing = await prisma.taskApplication.findUnique({
+              where: { id: applicationId },
+              select: {
+                applicantPersonId: true,
+                applicantUser: { select: { personId: true } },
+                deletedAt: true,
+                taskId: true,
+              },
+            });
+            if (!existing || existing.deletedAt) return err("Application not found.");
+            if (!isAdmin) {
+              try {
+                await applications.assertCanReviewTaskApplications(
+                  userId,
+                  existing.taskId,
+                );
+              } catch (error) {
+                return err(error instanceof Error ? error.message : "Forbidden");
+              }
+            }
+            let status: TaskApplicationStatus | undefined;
+            try {
+              status = parseEnumInput(
+                TaskApplicationStatus,
+                a.status,
+                "status",
+              );
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid status.");
+            }
+            let reviewScore: number | null | undefined;
+            try {
+              reviewScore = parseOptionalIntegerInput(a, "reviewScore");
+            } catch (error) {
+              return err(
+                error instanceof Error ? error.message : "Invalid reviewScore.",
+              );
+            }
+            const updated = await applications.updateTaskApplication(
+              applicationId,
+              {
+                answersJson:
+                  "answersJson" in a
+                    ? (normalizeJsonPatchValue(a.answersJson) as Record<
+                        string,
+                        unknown
+                      > | null)
+                    : undefined,
+                reviewerUserId: userId,
+                reviewNote:
+                  "reviewNote" in a ? (a.reviewNote as string | null) : undefined,
+                reviewScore:
+                  reviewScore === undefined ? undefined : reviewScore,
+                status,
+              },
+            );
+            const shouldAssign =
+              a.assignTaskOnAccept === true &&
+              status === TaskApplicationStatus.ACCEPTED;
+            const assigneePersonId =
+              updated.applicantPerson?.id ??
+              updated.applicantUser?.person?.id ??
+              existing.applicantPersonId ??
+              existing.applicantUser?.personId ??
+              null;
+            if (shouldAssign && assigneePersonId) {
+              await prisma.task.update({
+                where: { id: existing.taskId },
+                data: { assigneePersonId },
+              });
+            }
+            return ok({
+              application: updated,
+              assignedTaskToPersonId:
+                shouldAssign && assigneePersonId ? assigneePersonId : null,
+            });
+          }
+
+          case "findTaskCandidates": {
+            if (!isAdmin) return err("Admin privileges are required.");
+            const taskId = requiredString(a.taskId, "taskId");
+            if (typeof taskId !== "string") return taskId;
+            const prisma = await getPrisma();
+            const { tasks, ranking } = await getTaskFunctions();
+            const detail = await tasks.getTaskDetailData(taskId, userId ?? null);
+            if (!detail) return err("Task not found.");
+            const task = detail.task as Record<string, unknown>;
+            const limit = parseQueueLimit(a.limit, 20, 100);
+            const users = await prisma.user.findMany({
+              where: {
+                deletedAt: null,
+                isSystem: false,
+              },
+              select: USER_MATCHING_SELECT,
+              take: Math.max(limit * 5, 50),
+            });
+            const userCandidates = users
+              .map((candidate) => ({
+                candidateKind: TaskCandidateKind.USER,
+                candidateKey: `user:${candidate.id}`,
+                candidateUserId: candidate.id,
+                person: candidate.person,
+                reasonJson: {
+                  accessTags: candidate.accessTags,
+                  credentialTags: candidate.credentialTags,
+                  languageTags: candidate.languageTags,
+                  skillTags: candidate.skillTags,
+                  toolTags: candidate.toolTags,
+                },
+                score: ranking.scoreTaskForUser(
+                  task as unknown as RankableTask,
+                  toRankableUser(candidate),
+                ),
+              }))
+              .filter((candidate) => candidate.score > 0);
+            const includeAgents = a.includeAgents !== false;
+            const agentCandidates = includeAgents
+              ? (
+                  await prisma.agentExecutor.findMany({
+                    where: {
+                      deletedAt: null,
+                      status: AgentExecutorStatus.ACTIVE,
+                    },
+                    orderBy: [{ updatedAt: "desc" }],
+                    take: Math.max(limit * 2, 20),
+                  })
+                ).map((agent) => ({
+                  agentExecutorId: agent.id,
+                  agentKey: agent.agentKey,
+                  candidateKind: TaskCandidateKind.AGENT,
+                  candidateKey: `agent:${agent.id}`,
+                  displayName: agent.displayName,
+                  reasonJson: {
+                    accessTags: agent.accessTags,
+                    capabilityTags: agent.capabilityTags,
+                    toolTags: agent.toolTags,
+                  },
+                  score: scoreAgentCandidate(task, agent as any),
+                }))
+              : [];
+            const candidates = [...userCandidates, ...agentCandidates]
+              .sort((left, right) => right.score - left.score)
+              .slice(0, limit);
+            return ok({ candidates, task: summarizeTask(task as SummarizableTask) });
+          }
+
+          case "saveTaskCandidateMatch": {
+            if (!isAdmin) return err("Admin privileges are required.");
+            const prisma = await getPrisma();
+            const taskId = requiredString(a.taskId, "taskId");
+            if (typeof taskId !== "string") return taskId;
+            const task = await prisma.task.findFirst({
+              where: { deletedAt: null, id: taskId },
+              select: { id: true, jurisdictionId: true },
+            });
+            if (!task) return err("Task not found.");
+            let candidateKind: TaskCandidateKind;
+            let status: TaskCandidateMatchStatus;
+            try {
+              const parsedKind = parseEnumInput(
+                TaskCandidateKind,
+                a.candidateKind,
+                "candidateKind",
+              );
+              if (!parsedKind) throw new Error("candidateKind is required.");
+              candidateKind = parsedKind;
+              status =
+                parseEnumInput(
+                  TaskCandidateMatchStatus,
+                  a.status,
+                  "status",
+                ) ?? TaskCandidateMatchStatus.SUGGESTED;
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid candidate.");
+            }
+            const score = parseFiniteNumber(a.score);
+            if (score == null) return err("score must be a finite number.");
+            const scoreVersion = optionalString(a.scoreVersion) ?? "mcp-match-v1";
+            const candidateUserId = optionalString(a.candidateUserId);
+            const candidatePersonId = optionalString(a.candidatePersonId);
+            const candidateOrganizationId = optionalString(
+              a.candidateOrganizationId,
+            );
+            const agentExecutorId = optionalString(a.agentExecutorId);
+            let candidateKey: string;
+            try {
+              candidateKey = deriveCandidateKey({
+                agentExecutorId,
+                candidateKey: optionalString(a.candidateKey),
+                candidateKind,
+                candidateOrganizationId,
+                candidatePersonId,
+                candidateUserId,
+              });
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid candidate key.");
+            }
+            let estimatedCostMinorUnits: bigint | null | undefined;
+            let estimatedDurationSeconds: number | null | undefined;
+            try {
+              estimatedCostMinorUnits = parseMinorUnitsInput(
+                a,
+                "estimatedCostMinorUnits",
+              );
+              estimatedDurationSeconds = parseOptionalIntegerInput(
+                a,
+                "estimatedDurationSeconds",
+              );
+            } catch (error) {
+              return err(
+                error instanceof Error
+                  ? error.message
+                  : "Invalid candidate estimate.",
+              );
+            }
+            const match = await prisma.taskCandidateMatch.upsert({
+              where: {
+                taskId_candidateKey_scoreVersion: {
+                  candidateKey,
+                  scoreVersion,
+                  taskId,
+                },
+              },
+              create: {
+                agentExecutorId,
+                blockersJson:
+                  "blockersJson" in a
+                    ? normalizeJsonPatchValue(a.blockersJson)
+                    : undefined,
+                candidateKey,
+                candidateKind,
+                candidateOrganizationId,
+                candidatePersonId,
+                candidateUserId,
+                estimatedCostCurrency: optionalString(a.estimatedCostCurrency),
+                estimatedCostMinorUnits,
+                estimatedDurationSeconds:
+                  estimatedDurationSeconds === undefined
+                    ? undefined
+                    : estimatedDurationSeconds,
+                jurisdictionId: task.jurisdictionId,
+                reasonJson:
+                  "reasonJson" in a
+                    ? normalizeJsonPatchValue(a.reasonJson)
+                    : undefined,
+                score,
+                scoreVersion,
+                status,
+                taskId,
+              } as any,
+              update: {
+                agentExecutorId,
+                blockersJson:
+                  "blockersJson" in a
+                    ? normalizeJsonPatchValue(a.blockersJson)
+                    : undefined,
+                candidateOrganizationId,
+                candidatePersonId,
+                candidateUserId,
+                estimatedCostCurrency: optionalString(a.estimatedCostCurrency),
+                estimatedCostMinorUnits,
+                estimatedDurationSeconds:
+                  estimatedDurationSeconds === undefined
+                    ? undefined
+                    : estimatedDurationSeconds,
+                reasonJson:
+                  "reasonJson" in a
+                    ? normalizeJsonPatchValue(a.reasonJson)
+                    : undefined,
+                score,
+                status,
+              } as any,
+            });
+            return ok({ match: summarizeCandidateMatch(match as any) });
+          }
+
+          case "listTaskCandidateMatches": {
+            if (!userId) {
+              return authRequired(name, "This tool lists task candidate matches.");
+            }
+            const taskId = requiredString(a.taskId, "taskId");
+            if (typeof taskId !== "string") return taskId;
+            const prisma = await getPrisma();
+            if (!isAdmin) {
+              const applications = await import("./task-applications.server");
+              try {
+                await applications.assertCanReviewTaskApplications(userId, taskId);
+              } catch (error) {
+                return err(error instanceof Error ? error.message : "Forbidden");
+              }
+            }
+            let status: TaskCandidateMatchStatus | undefined;
+            try {
+              status = parseEnumInput(
+                TaskCandidateMatchStatus,
+                a.status,
+                "status",
+              );
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid status.");
+            }
+            const matches = await prisma.taskCandidateMatch.findMany({
+              where: {
+                deletedAt: null,
+                taskId,
+                ...(status ? { status } : {}),
+              },
+              orderBy: [{ score: "desc" }, { updatedAt: "desc" }],
+              take: parseQueueLimit(a.limit, 50, 200),
+              include: {
+                agentExecutor: true,
+                candidateOrganization: {
+                  select: { id: true, name: true, slug: true, type: true },
+                },
+                candidatePerson: {
+                  select: { displayName: true, handle: true, id: true, image: true },
+                },
+                candidateUser: {
+                  select: {
+                    email: true,
+                    id: true,
+                    person: {
+                      select: { displayName: true, handle: true, id: true },
+                    },
+                  },
+                },
+              },
+            });
+            return ok({ matches: matches.map((match) => summarizeCandidateMatch(match as any)) });
+          }
+
+          case "updateTaskCandidateMatchStatus": {
+            if (!isAdmin) return err("Admin privileges are required.");
+            const matchId = requiredString(a.matchId, "matchId");
+            if (typeof matchId !== "string") return matchId;
+            let status: TaskCandidateMatchStatus | undefined;
+            try {
+              status = parseEnumInput(
+                TaskCandidateMatchStatus,
+                a.status,
+                "status",
+              );
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid status.");
+            }
+            if (!status) return err("status is required.");
+            const prisma = await getPrisma();
+            const match = await prisma.taskCandidateMatch.update({
+              where: { id: matchId },
+              data: {
+                blockersJson:
+                  "blockersJson" in a
+                    ? normalizeJsonPatchValue(a.blockersJson)
+                    : undefined,
+                reasonJson:
+                  "reasonJson" in a
+                    ? normalizeJsonPatchValue(a.reasonJson)
+                    : undefined,
+                status,
+              } as any,
+            });
+            return ok({ match: summarizeCandidateMatch(match as any) });
+          }
+
+          case "listAgentExecutors": {
+            if (!isAdmin) return err("Admin privileges are required.");
+            const prisma = await getPrisma();
+            let status: AgentExecutorStatus | undefined;
+            let capabilityTags: string[] | undefined;
+            try {
+              status = parseEnumInput(
+                AgentExecutorStatus,
+                a.status,
+                "status",
+              );
+              capabilityTags = parseStringArrayInput(a, "capabilityTags");
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid filter.");
+            }
+            const agents = await prisma.agentExecutor.findMany({
+              where: {
+                deletedAt: null,
+                ...(status ? { status } : {}),
+                ...(optionalString(a.provider)
+                  ? { provider: optionalString(a.provider) }
+                  : {}),
+                ...(capabilityTags && capabilityTags.length > 0
+                  ? { capabilityTags: { hasSome: capabilityTags } }
+                  : {}),
+              },
+              orderBy: [{ updatedAt: "desc" }],
+              take: parseQueueLimit(a.limit, 50, 200),
+            });
+            return ok({ agents: toJsonSafe(agents) });
+          }
+
+          case "upsertAgentExecutor": {
+            if (!isAdmin) return err("Admin privileges are required.");
+            const agentKey = requiredString(a.agentKey, "agentKey");
+            if (typeof agentKey !== "string") return agentKey;
+            const displayName = requiredString(a.displayName, "displayName");
+            if (typeof displayName !== "string") return displayName;
+            let status: AgentExecutorStatus;
+            try {
+              status =
+                parseEnumInput(AgentExecutorStatus, a.status, "status") ??
+                AgentExecutorStatus.ACTIVE;
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid status.");
+            }
+            const prisma = await getPrisma();
+            let data: Record<string, unknown>;
+            try {
+              data = {
+                accessTags: parseStringArrayInput(a, "accessTags") ?? [],
+                averageCostUsd:
+                  parseOptionalFiniteNumberInput(a, "averageCostUsd") ?? null,
+                averageLatencySeconds:
+                  parseOptionalFiniteNumberInput(a, "averageLatencySeconds") ??
+                  null,
+                capabilityTags:
+                  parseStringArrayInput(a, "capabilityTags") ?? [],
+                displayName,
+                metadata:
+                  "metadata" in a ? normalizeJsonPatchValue(a.metadata) : undefined,
+                modelName: optionalStringInput(a, "modelName"),
+                provider: optionalStringInput(a, "provider"),
+                status,
+                successRate:
+                  parseOptionalFiniteNumberInput(a, "successRate") ?? null,
+                toolTags: parseStringArrayInput(a, "toolTags") ?? [],
+              };
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid agent executor field.");
+            }
+            const agent = await prisma.agentExecutor.upsert({
+              where: { agentKey },
+              create: { ...data, agentKey } as any,
+              update: data as any,
+            });
+            return ok({ agent: toJsonSafe(agent) });
+          }
+
+          case "setAgentExecutorStatus": {
+            if (!isAdmin) return err("Admin privileges are required.");
+            const agentKey = requiredString(a.agentKey, "agentKey");
+            if (typeof agentKey !== "string") return agentKey;
+            let status: AgentExecutorStatus | undefined;
+            try {
+              status = parseEnumInput(AgentExecutorStatus, a.status, "status");
+            } catch (error) {
+              return err(error instanceof Error ? error.message : "Invalid status.");
+            }
+            if (!status) return err("status is required.");
+            const prisma = await getPrisma();
+            const agent = await prisma.agentExecutor.update({
+              where: { agentKey },
+              data: { status },
+            });
+            return ok({ agent: toJsonSafe(agent) });
           }
 
           case "listTaskEmails": {
@@ -6809,6 +8517,16 @@ export function createMcpServer(
               a.due_at !== undefined || a.dueAt !== undefined
                 ? parseTaskDate(a.due_at ?? a.dueAt)
                 : null;
+            let routingData: Record<string, unknown>;
+            try {
+              routingData = buildTaskRoutingData(a);
+            } catch (error) {
+              return err(
+                error instanceof Error
+                  ? error.message
+                  : "Invalid task routing field.",
+              );
+            }
             const data: Record<string, unknown> = {
               title: a.title as string,
               description: (a.description as string) ?? "",
@@ -6822,6 +8540,7 @@ export function createMcpServer(
                 : TaskDifficulty.INTERMEDIATE,
               skillTags: (a.skillTags as string[]) ?? [],
               interestTags: (a.interestTags as string[]) ?? [],
+              ...routingData,
               estimatedEffortHours: economics.estimatedEffortHours,
               availableAt,
               dueAt,
@@ -7383,13 +9102,16 @@ export function createMcpServer(
               getProfileIdentityData(userId),
               prisma.user.findUnique({
                 where: { id: userId },
-                select: { personId: true },
+                select: USER_MATCHING_SELECT,
               }),
             ]);
             if (!profile) return err("User not found");
             return ok({
               userId,
               personId: userIdentity?.personId ?? null,
+              matchingPreferences: userIdentity
+                ? summarizeMatchingUser(userIdentity)
+                : null,
               ...profile,
             });
           }
@@ -7403,6 +9125,7 @@ export function createMcpServer(
             const { updateUserProfile, ProfileValidationError } =
               await import("./profile-identity.server");
             try {
+              const matchingPatch = buildUserMatchingProfileData(a);
               const profile = await updateUserProfile(userId, {
                 name: typeof a.name === "string" ? a.name : undefined,
                 bio: typeof a.bio === "string" ? a.bio : undefined,
@@ -7427,7 +9150,24 @@ export function createMcpServer(
                   : undefined,
               });
               if (!profile) return err("User not found after update");
-              return ok({ userId, ...profile });
+              const matchingPreferences =
+                Object.keys(matchingPatch).length > 0
+                  ? await (await getPrisma()).user.update({
+                      where: { id: userId },
+                      data: matchingPatch as any,
+                      select: USER_MATCHING_SELECT,
+                    })
+                  : await (await getPrisma()).user.findUnique({
+                      where: { id: userId },
+                      select: USER_MATCHING_SELECT,
+                    });
+              return ok({
+                userId,
+                matchingPreferences: matchingPreferences
+                  ? summarizeMatchingUser(matchingPreferences)
+                  : null,
+                ...profile,
+              });
             } catch (e) {
               if (e instanceof ProfileValidationError) {
                 return err(e.message);
@@ -8022,6 +9762,15 @@ export function createMcpServer(
             }
             const economicsPatch = hasEconomicsPatch(a);
             const economics = resolveTaskEconomics(a, existingTask);
+            try {
+              Object.assign(updates, buildTaskRoutingData(a));
+            } catch (error) {
+              return err(
+                error instanceof Error
+                  ? error.message
+                  : "Invalid task routing field.",
+              );
+            }
             if (a.status)
               updates.status = TaskStatus[a.status as keyof typeof TaskStatus];
             if (a.title) updates.title = a.title;
@@ -8763,22 +10512,44 @@ export function createMcpServer(
           // ── logAgentRun ────────────────────────────────────────
           case "logAgentRun": {
             const prisma = await getPrisma();
-            const run = await prisma.agentRunCost.create({
+            const runId = optionalString(a.runId);
+            const provider = optionalString(a.provider);
+            const taskId = optionalString(a.taskId);
+            const apiCalls = positiveInteger(a.apiCalls);
+            const actualCostMinorUnits = dollarsToMinorUnits(a.costUsd);
+            const status = parseAgentRunExecutionStatus(a.status);
+            const outputSummary = optionalString(a.outputSummary);
+            if (!runId) return err("runId is required.");
+            if (!provider) return err("provider is required.");
+            if (!taskId) return err("taskId is required.");
+            if (apiCalls === null) {
+              return err("apiCalls must be a non-negative integer.");
+            }
+            if (actualCostMinorUnits === null) {
+              return err("costUsd must be a non-negative finite number.");
+            }
+            if (!status) {
+              return err("status must be RUNNING, COMPLETED, FAILED, or PARTIAL.");
+            }
+            const agentId = optionalString(a.agentId);
+            const attempt = await prisma.taskExecutionAttempt.create({
               data: {
-                runId: a.runId as string,
-                provider: a.provider as string,
-                costUsd: a.costUsd as number,
-                apiCalls: a.apiCalls as number,
-                taskId: (a.taskId as string) ?? null,
-                status:
-                  (typeof a.status === "string"
-                    ? AgentRunStatus[a.status as keyof typeof AgentRunStatus]
-                    : null) ?? AgentRunStatus.COMPLETED,
-                outputSummary: (a.outputSummary as string) ?? null,
-                depositId: (a.depositId as string) ?? null,
+                taskId,
+                executorKind: TaskCandidateKind.AGENT,
+                executorKey: agentId ?? `${provider}:${runId}`,
+                status,
+                actualCostMinorUnits,
+                actualCostCurrency: "usd",
+                outputSummary,
+                metadata: toInputJsonValue({
+                  agentId: agentId ?? null,
+                  apiCalls,
+                  provider,
+                  runId,
+                }),
               },
             });
-            return ok({ id: run.id, runId: run.runId });
+            return ok({ id: attempt.id, runId });
           }
 
           // ── acquireLease ───────────────────────────────────────
@@ -8817,32 +10588,6 @@ export function createMcpServer(
               a.agentId as string,
             );
             return ok({ leaseId: result.id, released: true });
-          }
-
-          // ── getFundingStats ────────────────────────────────────
-          case "getFundingStats": {
-            const prisma = await getPrisma();
-            const [deposits, runs] = await Promise.all([
-              prisma.agentComputeDeposit.aggregate({
-                _sum: { amountUsd: true, spentUsd: true },
-                _count: true,
-                where: { deletedAt: null },
-              }),
-              prisma.agentRunCost.aggregate({
-                _sum: { costUsd: true, apiCalls: true },
-                _count: true,
-              }),
-            ]);
-            return ok({
-              totalDepositedUsd: deposits._sum.amountUsd ?? 0,
-              totalSpentUsd: deposits._sum.spentUsd ?? 0,
-              remainingBudgetUsd:
-                (deposits._sum.amountUsd ?? 0) - (deposits._sum.spentUsd ?? 0),
-              depositCount: deposits._count,
-              totalRunCostUsd: runs._sum.costUsd ?? 0,
-              totalApiCalls: runs._sum.apiCalls ?? 0,
-              runCount: runs._count,
-            });
           }
 
           // ── Referendum tools ──────────────────────────────────

@@ -4,10 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { ethers } from "ethers";
 import {
   getMinterWallet,
-  getVoteTokenContract,
+  getEarthOptimizationPointContract,
 } from "@/lib/contracts/server-client";
 import { serverEnv } from "@/lib/env";
-import { syncPendingReferralVoteTokenMints } from "@/lib/referral-vote-token-mint.server";
+import { syncPendingReferralPointMints } from "@/lib/referral-point-mint.server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,12 +15,12 @@ export const runtime = "nodejs";
 const BATCH_SIZE = 200;
 
 /**
- * Batch minting cron job for VOTE tokens.
+ * Batch minting cron job for Earth Optimization Points.
  *
- * 1. Backfills referral-based VoteTokenMint rows for newly eligible rewards
- * 2. Fetches all PENDING VoteTokenMint records
+ * 1. Backfills referral-based point-mint rows for newly eligible rewards
+ * 2. Fetches all PENDING point-mint records
  * 3. Groups into batches of ~200
- * 4. Calls VoteToken.batchMintForVoters() on-chain
+ * 4. Calls EarthOptimizationPoint.batchMintForVoters() on-chain
  * 5. Updates status to SUBMITTED → CONFIRMED on tx confirmation
  */
 export async function GET(request: Request) {
@@ -31,13 +31,13 @@ export async function GET(request: Request) {
   try {
     let syncedReferralMints = 0;
     try {
-      syncedReferralMints = (await syncPendingReferralVoteTokenMints(BATCH_SIZE))
+      syncedReferralMints = (await syncPendingReferralPointMints(BATCH_SIZE))
         .length;
     } catch (syncError) {
-      console.error("[VOTE TOKEN MINT CRON] Referral sync error:", syncError);
+      console.error("[POINT MINT CRON] Referral sync error:", syncError);
     }
 
-    const pendingMints = await prisma.voteTokenMint.findMany({
+    const pendingMints = await prisma.pointMint.findMany({
       where: { status: "PENDING", deletedAt: null },
       orderBy: { createdAt: "asc" },
       take: BATCH_SIZE,
@@ -54,17 +54,17 @@ export async function GET(request: Request) {
     const ids = pendingMints.map((m) => m.id);
 
     // Mark as SUBMITTED before on-chain call
-    await prisma.voteTokenMint.updateMany({
+    await prisma.pointMint.updateMany({
       where: { id: { in: ids } },
       data: { status: "SUBMITTED" },
     });
 
-    const chainId = Number(serverEnv.VOTE_TOKEN_CHAIN_ID ?? "84532");
+    const chainId = Number(serverEnv.EOP_CHAIN_ID ?? "84532");
     let txHash: string | null = null;
 
     try {
       const signer = getMinterWallet(chainId);
-      const voteToken = getVoteTokenContract(chainId, signer);
+      const pointToken = getEarthOptimizationPointContract(chainId, signer);
 
       const voters = pendingMints.map((m) => m.walletAddress);
       const referendumIds = pendingMints.map((m) =>
@@ -75,7 +75,7 @@ export async function GET(request: Request) {
       );
       const amounts = pendingMints.map((m) => m.amount);
 
-      const tx = await voteToken.batchMintForVoters(
+      const tx = await pointToken.batchMintForVoters(
         voters,
         referendumIds,
         nullifierHashes,
@@ -85,15 +85,15 @@ export async function GET(request: Request) {
       txHash = receipt.hash;
 
       // Mark as CONFIRMED with tx hash
-      await prisma.voteTokenMint.updateMany({
+      await prisma.pointMint.updateMany({
         where: { id: { in: ids } },
         data: { status: "CONFIRMED", txHash },
       });
     } catch (onChainError) {
-      console.error("[VOTE TOKEN MINT CRON] On-chain error:", onChainError);
+      console.error("[POINT MINT CRON] On-chain error:", onChainError);
 
       // Revert to FAILED so they can be retried
-      await prisma.voteTokenMint.updateMany({
+      await prisma.pointMint.updateMany({
         where: { id: { in: ids } },
         data: { status: "FAILED" },
       });
@@ -115,9 +115,9 @@ export async function GET(request: Request) {
       txHash,
     });
   } catch (error) {
-    console.error("[VOTE TOKEN MINT CRON] Error:", error);
+    console.error("[POINT MINT CRON] Error:", error);
     return NextResponse.json(
-      { error: "Failed to process vote token mints" },
+      { error: "Failed to process point mints" },
       { status: 500 },
     );
   }

@@ -16,7 +16,7 @@
 - PROOF OF CONCEPT
 ## WISHONIA
 - A planet that ended war in year 12 and disease in year 340. Same atoms. Same physics. Better spreadsheet.
-- Your species has the technology. You invented the maths. You built the computers. You just refuse to use them on the thing that matters most: not dying.
+- Wishonia Love is also the CEO of Universe Optimization Services. Earth Optimization Services is the regional branch assigned to your planet. You invented the maths and the computers. Now use them on the thing that matters most: not dying.
 ### WHAT 4,297 YEARS GETS YOU
 - Three achievements your species is capable of but actively choosing not to pursue.
 #### SUPER-LONGEVITY
@@ -29,8 +29,8 @@
 #### NO POLITICIANS
 - The governance niche was filled by algorithmic decision-making. Eight billion people do pairwise comparisons. The eigenvector produces stable budget allocations. Four minutes a week.
 #### NO LOBBYING
-- Without elected officials to lobby, the industry collapsed. Smart contracts route funds to public goods based on citizen preferences. Bribery became structurally impossible.
-#### $WISH CURRENCY
+- Without elected officials to lobby, the industry collapsed. Public goods funding follows citizen preferences. Bribery became structurally impossible.
+#### PUBLIC MONEY
 - 0.5% transaction tax replaces the entire tax code. UBI keeps everyone above the poverty line. Algorithmic 0% inflation stops the purchasing-power theft that funds your wars.
 #### THE OPTIMITRON
 - An AI comparing outcomes across 10,000 jurisdictions to identify what policies actually work. Domain-agnostic causal inference. Your scientists take twelve years. This takes seconds.
@@ -46,7 +46,7 @@
 - Year 340
 - Last disease eradicated. 95% of the work was removing bureaucratic obstacles.
 - Year 4,297
-- Present day. Sent this manual to your planet. You're welcome.
+- Opened Earth Optimization Services, regional branch of Universe Optimization Services. You're welcome.
 ### THE GAP IS INSTITUTIONAL, NOT TECHNOLOGICAL
 - Your planet has the same atoms. The same physics. Better computers than we had when we started. The only difference is that your resources flow through institutions designed in the 18th century by people who thought bloodletting was medicine. The technology exists. The maths exists. The only missing variable is the decision to use them.
 ### WHAT IT MEANS FOR YOU, PERSONALLY

@@ -15,5 +15,6 @@
 
 ## STORE
 - Buy useful campaign things. Shirts turn bodies into billboards. Sponsorships turn money into posters, flyers, and votes.
-### NOTHING FOR SALE
-- Useful campaign commerce will appear here after the first store records are synced.
+- [THING WAR ON DISEASE SHIRT Personalized War on Disease shirt with campaign copy and a referral QR code.$35+](/store/shirt)
+- [THING BULK WAR ON DISEASE SHIRT PLEDGE Bulk-cost War on Disease shirt pledge for Earth Optimization Day.$7](/store/bulk-shirt-pledge)
+- [SPONSORSHIP SPONSOR A FLYER RUN Pay for posters, flyers, and local outreach that asks humans to vote.$100+](/store/flyer-run-sponsorship)

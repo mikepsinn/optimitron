@@ -12,7 +12,7 @@ import {
 import { findUserByHandleOrReferralCode } from "@/lib/referral.server";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
-import { syncReferralVoteTokenMintForVote } from "@/lib/referral-vote-token-mint.server";
+import { syncReferralPointMintForVote } from "@/lib/referral-point-mint.server";
 import {
   convertReferralInvitationForVote,
   resolveInvitationReferrer,
@@ -204,10 +204,10 @@ export async function POST(
       log.error("Activity log error", activityError);
     }
 
-    // Queue referral VOTE reward for the referrer when the referred voter is verified.
-    let referrerVoteTokenMint = null;
+    // Queue referral point reward for the referrer when the referred voter is verified.
+    let referrerPointMint = null;
     try {
-      referrerVoteTokenMint = await syncReferralVoteTokenMintForVote({
+      referrerPointMint = await syncReferralPointMintForVote({
         referredVoterUserId: userId,
         referrerUserId: vote.referredByUserId,
         referendumId: referendum.id,
@@ -375,7 +375,7 @@ export async function POST(
 
     return NextResponse.json({
       vote,
-      referrerVoteTokenMint,
+      referrerPointMint,
       wishesEarned,
       convertedReferralInvitation,
     });

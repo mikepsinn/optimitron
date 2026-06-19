@@ -3,14 +3,21 @@ import {
   TaskClaimPolicy,
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
+  TaskCompensationKind,
   TaskDeadlinePolicy,
   TaskDifficulty,
+  TaskExecutionMode,
+  TaskRemotePolicy,
   TaskStatus,
   type Prisma,
   type TaskCategory as TaskCategoryValue,
   type TaskClaimPolicy as TaskClaimPolicyValue,
+  type TaskCompensationCadence as TaskCompensationCadenceValue,
+  type TaskCompensationKind as TaskCompensationKindValue,
   type TaskDeadlinePolicy as TaskDeadlinePolicyValue,
   type TaskDifficulty as TaskDifficultyValue,
+  type TaskExecutionMode as TaskExecutionModeValue,
+  type TaskRemotePolicy as TaskRemotePolicyValue,
   type TaskStatus as TaskStatusValue,
 } from "../generated/prisma/client.js";
 import {
@@ -37,13 +44,47 @@ export interface ManagedTaskRecord {
   title: string;
   description: string;
   impactStatement?: string | null;
+  ownerOrganizationId?: string | null;
   category?: TaskCategoryValue;
   difficulty?: TaskDifficultyValue;
   estimatedEffortHours?: number | null;
+  /** Gross conditional value (USD) if the task succeeds. Source from `@optimitron/data` parameters — never hand-typed. */
+  expectedEconomicValueUsdBase?: number | null;
+  /** Probability 0-1 the task produces the stated value. Source from `@optimitron/data` parameters. */
+  successProbabilityBase?: number | null;
   skillTags?: string[];
+  preferredSkillTags?: string[];
   interestTags?: string[];
+  requiredCredentialTags?: string[];
+  preferredCredentialTags?: string[];
+  requiredLanguageTags?: string[];
+  preferredLanguageTags?: string[];
+  requiredToolTags?: string[];
+  preferredToolTags?: string[];
+  requiredAccessTags?: string[];
+  preferredAccessTags?: string[];
   contextJson?: Prisma.InputJsonValue;
   claimPolicy?: TaskClaimPolicyValue;
+  compensationKind?: TaskCompensationKindValue;
+  compensationCadence?: TaskCompensationCadenceValue | null;
+  compensationCurrency?: string | null;
+  compensationMinAmountMinorUnits?: bigint | number | null;
+  compensationMaxAmountMinorUnits?: bigint | number | null;
+  compensationPaymentRails?: string[];
+  estimatedHoursPerWeekMin?: number | null;
+  estimatedHoursPerWeekMax?: number | null;
+  remotePolicy?: TaskRemotePolicyValue;
+  locationText?: string | null;
+  workLocationCountryCode?: string | null;
+  workLocationRegionCode?: string | null;
+  workLocationCity?: string | null;
+  workLocationPostalCode?: string | null;
+  workLocationLatitude?: number | null;
+  workLocationLongitude?: number | null;
+  workLocationRadiusKm?: number | null;
+  workTimeZone?: string | null;
+  applicationQuestionsJson?: Prisma.InputJsonValue | null;
+  executionMode?: TaskExecutionModeValue;
   maxClaims?: number | null;
   status?: TaskStatusValue;
   isPublic?: boolean;
@@ -66,13 +107,43 @@ interface ManagedTaskRow {
   title: string;
   description: string;
   impactStatement: string | null;
+  ownerOrganizationId: string | null;
   category: TaskCategoryValue;
   difficulty: TaskDifficultyValue;
   estimatedEffortHours: number | null;
   skillTags: string[];
+  preferredSkillTags: string[];
   interestTags: string[];
+  requiredCredentialTags: string[];
+  preferredCredentialTags: string[];
+  requiredLanguageTags: string[];
+  preferredLanguageTags: string[];
+  requiredToolTags: string[];
+  preferredToolTags: string[];
+  requiredAccessTags: string[];
+  preferredAccessTags: string[];
   contextJson: Prisma.JsonValue | null;
   claimPolicy: TaskClaimPolicyValue;
+  compensationKind: TaskCompensationKindValue;
+  compensationCadence: TaskCompensationCadenceValue | null;
+  compensationCurrency: string | null;
+  compensationMinAmountMinorUnits: bigint | null;
+  compensationMaxAmountMinorUnits: bigint | null;
+  compensationPaymentRails: string[];
+  estimatedHoursPerWeekMin: number | null;
+  estimatedHoursPerWeekMax: number | null;
+  remotePolicy: TaskRemotePolicyValue;
+  locationText: string | null;
+  workLocationCountryCode: string | null;
+  workLocationRegionCode: string | null;
+  workLocationCity: string | null;
+  workLocationPostalCode: string | null;
+  workLocationLatitude: number | null;
+  workLocationLongitude: number | null;
+  workLocationRadiusKm: number | null;
+  workTimeZone: string | null;
+  applicationQuestionsJson: Prisma.JsonValue | null;
+  executionMode: TaskExecutionModeValue;
   maxClaims: number | null;
   status: TaskStatusValue;
   isPublic: boolean;
@@ -96,11 +167,27 @@ interface ManagedEndpointRow {
   verificationStatus: typeof TaskCommunicationEndpointVerificationStatus[keyof typeof TaskCommunicationEndpointVerificationStatus];
 }
 
+interface ManagedTaskImpactEstimateSetRow {
+  id: string;
+}
+
+interface ManagedTaskImpactFrameRow {
+  id: string;
+}
+
 export interface ManagedTaskClient {
   task: {
     findMany(args: unknown): Promise<ManagedTaskRow[]>;
+    update(args: unknown): Promise<unknown>;
     updateMany(args: unknown): Promise<{ count: number }>;
     upsert(args: unknown): Promise<ManagedTaskRow>;
+  };
+  taskImpactEstimateSet: {
+    updateMany(args: unknown): Promise<{ count: number }>;
+    upsert(args: unknown): Promise<ManagedTaskImpactEstimateSetRow>;
+  };
+  taskImpactFrameEstimate: {
+    upsert(args: unknown): Promise<ManagedTaskImpactFrameRow>;
   };
   taskCommunicationEndpoint: {
     create(args: unknown): Promise<unknown>;
@@ -133,6 +220,11 @@ export interface SyncManagedTasksOptions {
   useTransaction?: boolean;
 }
 
+const MANAGED_TASK_IMPACT_CALCULATION_VERSION = "managed-task-tree-v1";
+const MANAGED_TASK_IMPACT_COUNTERFACTUAL_KEY = "status-quo";
+const MANAGED_TASK_IMPACT_FRAME_SLUG = "one-year";
+const MANAGED_TASK_IMPACT_FRAME_YEARS = 1;
+
 export interface SyncManagedTasksResult {
   collectionKey: string;
   mode: "apply" | "dry-run";
@@ -149,6 +241,10 @@ function clean(value?: string | null) {
   const trimmed = value?.trim();
   if (!trimmed) return null;
   return trimmed;
+}
+
+function toManagedBigInt(value: bigint | number | null | undefined) {
+  return value === null || value === undefined ? null : BigInt(value);
 }
 
 export function normalizeManagedTaskEndpointUrl(value?: string | null) {
@@ -325,13 +421,47 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
     title: record.title,
     description: record.description,
     impactStatement: record.impactStatement ?? null,
+    ownerOrganizationId: record.ownerOrganizationId ?? null,
     category: record.category ?? TaskCategory.GOVERNANCE,
     difficulty: record.difficulty ?? TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: record.estimatedEffortHours ?? null,
     skillTags: record.skillTags ?? [],
+    preferredSkillTags: record.preferredSkillTags ?? [],
     interestTags: record.interestTags ?? [],
+    requiredCredentialTags: record.requiredCredentialTags ?? [],
+    preferredCredentialTags: record.preferredCredentialTags ?? [],
+    requiredLanguageTags: record.requiredLanguageTags ?? [],
+    preferredLanguageTags: record.preferredLanguageTags ?? [],
+    requiredToolTags: record.requiredToolTags ?? [],
+    preferredToolTags: record.preferredToolTags ?? [],
+    requiredAccessTags: record.requiredAccessTags ?? [],
+    preferredAccessTags: record.preferredAccessTags ?? [],
     contextJson: buildManagedContext(collectionKey, record),
     claimPolicy: record.claimPolicy ?? TaskClaimPolicy.OPEN_MANY,
+    compensationKind: record.compensationKind ?? TaskCompensationKind.UNSPECIFIED,
+    compensationCadence: record.compensationCadence ?? null,
+    compensationCurrency: record.compensationCurrency ?? null,
+    compensationMinAmountMinorUnits: toManagedBigInt(
+      record.compensationMinAmountMinorUnits,
+    ),
+    compensationMaxAmountMinorUnits: toManagedBigInt(
+      record.compensationMaxAmountMinorUnits,
+    ),
+    compensationPaymentRails: record.compensationPaymentRails ?? [],
+    estimatedHoursPerWeekMin: record.estimatedHoursPerWeekMin ?? null,
+    estimatedHoursPerWeekMax: record.estimatedHoursPerWeekMax ?? null,
+    remotePolicy: record.remotePolicy ?? TaskRemotePolicy.UNSPECIFIED,
+    locationText: record.locationText ?? null,
+    workLocationCountryCode: record.workLocationCountryCode ?? null,
+    workLocationRegionCode: record.workLocationRegionCode ?? null,
+    workLocationCity: record.workLocationCity ?? null,
+    workLocationPostalCode: record.workLocationPostalCode ?? null,
+    workLocationLatitude: record.workLocationLatitude ?? null,
+    workLocationLongitude: record.workLocationLongitude ?? null,
+    workLocationRadiusKm: record.workLocationRadiusKm ?? null,
+    workTimeZone: record.workTimeZone ?? null,
+    applicationQuestionsJson: record.applicationQuestionsJson ?? null,
+    executionMode: record.executionMode ?? TaskExecutionMode.HUMAN_OR_AGENT,
     maxClaims: record.maxClaims ?? null,
     status: record.status ?? TaskStatus.ACTIVE,
     isPublic: record.isPublic ?? true,
@@ -343,6 +473,24 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
   };
 }
 
+function buildTaskWriteScalars(collectionKey: string, record: ManagedTaskRecord) {
+  const { ownerOrganizationId: _ownerOrganizationId, ...scalars } =
+    buildTaskScalars(collectionKey, record);
+  return scalars;
+}
+
+function buildOwnerOrganizationCreate(record: ManagedTaskRecord) {
+  return record.ownerOrganizationId
+    ? { ownerOrganization: { connect: { id: record.ownerOrganizationId } } }
+    : {};
+}
+
+function buildOwnerOrganizationUpdate(record: ManagedTaskRecord) {
+  return record.ownerOrganizationId
+    ? { ownerOrganization: { connect: { id: record.ownerOrganizationId } } }
+    : { ownerOrganization: { disconnect: true } };
+}
+
 function buildTaskCreateData(
   collectionKey: string,
   record: ManagedTaskRecord,
@@ -350,8 +498,9 @@ function buildTaskCreateData(
 ) {
   return {
     id: record.id,
-    ...buildTaskScalars(collectionKey, record),
+    ...buildTaskWriteScalars(collectionKey, record),
     createdByUser: { connect: { id: createdByUserId } },
+    ...buildOwnerOrganizationCreate(record),
     ...(record.parentTaskId
       ? { parentTask: { connect: { id: record.parentTaskId } } }
       : {}),
@@ -442,7 +591,8 @@ function validateManagedTaskTree(
 
 function buildTaskUpdateData(collectionKey: string, record: ManagedTaskRecord) {
   return {
-    ...buildTaskScalars(collectionKey, record),
+    ...buildTaskWriteScalars(collectionKey, record),
+    ...buildOwnerOrganizationUpdate(record),
     ...(record.parentTaskId
       ? { parentTask: { connect: { id: record.parentTaskId } } }
       : { parentTask: { disconnect: true } }),
@@ -485,13 +635,43 @@ function managedTaskNeedsUpdate(
     existing.title !== scalars.title ||
     existing.description !== scalars.description ||
     existing.impactStatement !== scalars.impactStatement ||
+    existing.ownerOrganizationId !== scalars.ownerOrganizationId ||
     existing.category !== scalars.category ||
     existing.difficulty !== scalars.difficulty ||
     existing.estimatedEffortHours !== scalars.estimatedEffortHours ||
     !sameJson(existing.skillTags, scalars.skillTags) ||
+    !sameJson(existing.preferredSkillTags, scalars.preferredSkillTags) ||
     !sameJson(existing.interestTags, scalars.interestTags) ||
+    !sameJson(existing.requiredCredentialTags, scalars.requiredCredentialTags) ||
+    !sameJson(existing.preferredCredentialTags, scalars.preferredCredentialTags) ||
+    !sameJson(existing.requiredLanguageTags, scalars.requiredLanguageTags) ||
+    !sameJson(existing.preferredLanguageTags, scalars.preferredLanguageTags) ||
+    !sameJson(existing.requiredToolTags, scalars.requiredToolTags) ||
+    !sameJson(existing.preferredToolTags, scalars.preferredToolTags) ||
+    !sameJson(existing.requiredAccessTags, scalars.requiredAccessTags) ||
+    !sameJson(existing.preferredAccessTags, scalars.preferredAccessTags) ||
     !sameJson(existing.contextJson, scalars.contextJson) ||
     existing.claimPolicy !== scalars.claimPolicy ||
+    existing.compensationKind !== scalars.compensationKind ||
+    existing.compensationCadence !== scalars.compensationCadence ||
+    existing.compensationCurrency !== scalars.compensationCurrency ||
+    existing.compensationMinAmountMinorUnits !== scalars.compensationMinAmountMinorUnits ||
+    existing.compensationMaxAmountMinorUnits !== scalars.compensationMaxAmountMinorUnits ||
+    !sameJson(existing.compensationPaymentRails, scalars.compensationPaymentRails) ||
+    existing.estimatedHoursPerWeekMin !== scalars.estimatedHoursPerWeekMin ||
+    existing.estimatedHoursPerWeekMax !== scalars.estimatedHoursPerWeekMax ||
+    existing.remotePolicy !== scalars.remotePolicy ||
+    existing.locationText !== scalars.locationText ||
+    existing.workLocationCountryCode !== scalars.workLocationCountryCode ||
+    existing.workLocationRegionCode !== scalars.workLocationRegionCode ||
+    existing.workLocationCity !== scalars.workLocationCity ||
+    existing.workLocationPostalCode !== scalars.workLocationPostalCode ||
+    existing.workLocationLatitude !== scalars.workLocationLatitude ||
+    existing.workLocationLongitude !== scalars.workLocationLongitude ||
+    existing.workLocationRadiusKm !== scalars.workLocationRadiusKm ||
+    existing.workTimeZone !== scalars.workTimeZone ||
+    !sameJson(existing.applicationQuestionsJson, scalars.applicationQuestionsJson) ||
+    existing.executionMode !== scalars.executionMode ||
     existing.maxClaims !== scalars.maxClaims ||
     existing.status !== scalars.status ||
     existing.isPublic !== scalars.isPublic ||
@@ -510,6 +690,144 @@ function findExistingTask(
   const byId = rows.find((row) => row.id === record.id);
   if (byId) return byId;
   return rows.find((row) => row.taskKey === record.taskKey) ?? null;
+}
+
+function hasManagedTaskImpact(record: ManagedTaskRecord) {
+  return (
+    record.expectedEconomicValueUsdBase !== null &&
+      record.expectedEconomicValueUsdBase !== undefined ||
+    record.successProbabilityBase !== null &&
+      record.successProbabilityBase !== undefined
+  );
+}
+
+function buildManagedTaskImpactData(
+  collectionKey: string,
+  record: ManagedTaskRecord,
+) {
+  const conditionalEconomicValueUsdBase =
+    record.expectedEconomicValueUsdBase ?? null;
+  const successProbabilityBase = record.successProbabilityBase ?? null;
+  const expectedEconomicValueUsdBase =
+    conditionalEconomicValueUsdBase === null
+      ? null
+      : successProbabilityBase === null
+        ? conditionalEconomicValueUsdBase
+        : conditionalEconomicValueUsdBase * successProbabilityBase;
+
+  return {
+    estimateSet: {
+      assumptionsJson: {
+        managedData: {
+          collectionKey,
+          recordId: record.id,
+          source: "packages/db/src/managed-data/sync-managed-tasks",
+        },
+        conditionalEconomicValueUsdBase,
+      } satisfies Prisma.InputJsonObject,
+      calculationVersion: MANAGED_TASK_IMPACT_CALCULATION_VERSION,
+      counterfactualKey: MANAGED_TASK_IMPACT_COUNTERFACTUAL_KEY,
+      estimateKind: "FORECAST" as const,
+      methodologyKey: collectionKey,
+      parameterSetHash: `managed-${collectionKey}-${record.id}`,
+      publicationStatus: "PUBLISHED" as const,
+      sourceSystem: "PARAMETER_CATALOG" as const,
+    },
+    frame: {
+      adoptionRampYears: 0,
+      annualDiscountRate: 0,
+      benefitDurationYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
+      estimatedEffortHoursBase: record.estimatedEffortHours ?? null,
+      evaluationHorizonYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
+      expectedEconomicValueUsdBase,
+      frameKey: "ONE_YEAR" as const,
+      successProbabilityBase,
+      timeToImpactStartDays: 0,
+    },
+  };
+}
+
+async function syncManagedTaskImpactEstimate(
+  client: ManagedTaskClient,
+  collectionKey: string,
+  record: ManagedTaskRecord,
+) {
+  if (!hasManagedTaskImpact(record)) {
+    return;
+  }
+
+  const impactData = buildManagedTaskImpactData(collectionKey, record);
+  const estimateSet = await client.taskImpactEstimateSet.upsert({
+    where: {
+      taskId_estimateKind_sourceSystem_calculationVersion_methodologyKey_parameterSetHash_counterfactualKey:
+        {
+          calculationVersion: impactData.estimateSet.calculationVersion,
+          counterfactualKey: impactData.estimateSet.counterfactualKey,
+          estimateKind: impactData.estimateSet.estimateKind,
+          methodologyKey: impactData.estimateSet.methodologyKey,
+          parameterSetHash: impactData.estimateSet.parameterSetHash,
+          sourceSystem: impactData.estimateSet.sourceSystem,
+          taskId: record.id,
+        },
+    } satisfies Prisma.TaskImpactEstimateSetWhereUniqueInput,
+    create: {
+      ...impactData.estimateSet,
+      isCurrent: true,
+      taskId: record.id,
+    },
+    update: {
+      ...impactData.estimateSet,
+      deletedAt: null,
+      isCurrent: true,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  await client.taskImpactEstimateSet.updateMany({
+    where: {
+      deletedAt: null,
+      isCurrent: true,
+      taskId: record.id,
+      NOT: {
+        id: estimateSet.id,
+      },
+    },
+    data: {
+      isCurrent: false,
+    },
+  });
+
+  await client.task.update({
+    where: {
+      id: record.id,
+    },
+    data: {
+      currentImpactEstimateSetId: estimateSet.id,
+    },
+  });
+
+  await client.taskImpactFrameEstimate.upsert({
+    where: {
+      taskImpactEstimateSetId_frameSlug: {
+        frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG,
+        taskImpactEstimateSetId: estimateSet.id,
+      },
+    } satisfies Prisma.TaskImpactFrameEstimateWhereUniqueInput,
+    create: {
+      ...impactData.frame,
+      frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG,
+      taskImpactEstimateSetId: estimateSet.id,
+    },
+    update: {
+      ...impactData.frame,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+    },
+  });
 }
 
 export async function syncManagedTasks(
@@ -561,13 +879,43 @@ export async function syncManagedTasks(
       title: true,
       description: true,
       impactStatement: true,
+      ownerOrganizationId: true,
       category: true,
       difficulty: true,
       estimatedEffortHours: true,
       skillTags: true,
+      preferredSkillTags: true,
       interestTags: true,
+      requiredCredentialTags: true,
+      preferredCredentialTags: true,
+      requiredLanguageTags: true,
+      preferredLanguageTags: true,
+      requiredToolTags: true,
+      preferredToolTags: true,
+      requiredAccessTags: true,
+      preferredAccessTags: true,
       contextJson: true,
       claimPolicy: true,
+      compensationKind: true,
+      compensationCadence: true,
+      compensationCurrency: true,
+      compensationMinAmountMinorUnits: true,
+      compensationMaxAmountMinorUnits: true,
+      compensationPaymentRails: true,
+      estimatedHoursPerWeekMin: true,
+      estimatedHoursPerWeekMax: true,
+      remotePolicy: true,
+      locationText: true,
+      workLocationCountryCode: true,
+      workLocationRegionCode: true,
+      workLocationCity: true,
+      workLocationPostalCode: true,
+      workLocationLatitude: true,
+      workLocationLongitude: true,
+      workLocationRadiusKm: true,
+      workTimeZone: true,
+      applicationQuestionsJson: true,
+      executionMode: true,
       maxClaims: true,
       status: true,
       isPublic: true,
@@ -692,6 +1040,8 @@ export async function syncManagedTasks(
         ),
         update: buildTaskUpdateData(options.collectionKey, record),
       });
+
+      await syncManagedTaskImpactEstimate(client, options.collectionKey, record);
 
       if (record.primaryEndpoint !== undefined) {
         const endpointAction = await upsertPrimaryEndpoint(

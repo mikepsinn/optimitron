@@ -59,6 +59,36 @@ Do not let lower items crowd out higher ones.
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
+- **EOS landing (staged, awaiting Mike copy gate):** optimitron.com `/` reframed
+  from "The Earth Optimization Game" to the Earth Optimization Services landing
+  (`eosLanding` site variant, new `EarthOptimizationServicesLandingPage`); the
+  game scroll moved to `/game`. Headline = maximize median healthy life
+  expectancy + median real after-tax income (health AND wealth); disease/1%
+  Treaty is the lead wedge. All copy is draft `TODO(copy)` (86 markers) pending
+  Mike's voice gate. `/invest` (Loving Takeover / Fund I) deferred — order ladder
+  links to `/fund` with `TODO(invest)` until securities/legal copy is reviewed.
+  `warondisease.org` untouched. Plan: `.claude/plans/eos-landing.md`,
+  `docs/eos-landing-plan.md`.
+- **Task tree: manual mechanisms seeded (Mike-approved 2026-06-10, working
+  tree, uncommitted):** added `program:loving-takeover` (+ own-one-share,
+  love-letter, optimize-lobbying children), `program:earth-optimization-prize`
+  (→ /prize), `program:eos:capitalize` (→ /fund) to
+  `packages/db/src/managed-data/optimize-earth-task-tree.ts`, and
+  `expectedEconomicValueUsdBase`/`successProbabilityBase` to ManagedTaskRecord
+  sync (values imported from `@optimitron/data/parameters`, never hand-typed).
+  Follow-ups: (1) backfill EV fields on the EXISTING court/treaty seed
+  programs from treaty params; (2) add an EOS-capitalization EV parameter —
+  `TODO(param)` marker in the seed; (3) IABs deliberately deferred (Phase 2,
+  gated on prize success); (4) a site route for the Loving Takeover so the
+  endpoint stops pointing at the manual. Needs its own branch/PR after #88.
+- **EOS landing: "every president" masthead copy (Mike-approved framing,
+  2026-06-09):** work "every human on Earth is a president of EOS" into the
+  masthead/offer (sketch: "Correction: your application was accepted at birth.
+  You are one of 8,000,000,000 presidents."). Canonical framing now in
+  CLAUDE.md `## What This Is`. Lobbying figure on this page must use
+  `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B, all corporate) for the
+  all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M). Own
+  branch after PR #88; manual-search + verbatim copy gate before shipping.
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 

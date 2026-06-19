@@ -32,26 +32,26 @@
 - Estimated missed population in hard-to-reach communities
 ### WHAT REPLACES THEM
 - $14.2 billion + 10-year wait → 1 view function
-- SOLIDITY 0.8.24
-- DEPLOYED ON BASE SEPOLIA
+- PROTOCOL RULES
+- REFERENCE IMPLEMENTATION
 - ```text
 // UBIDistributor.citizenCount() — replaces the Census Bureau
 function citizenCount() external view returns (uint256) {
     return citizenList.length;  // Real-time. Sybil-resistant. Free.
 }
 
-// Every citizen registers once with World ID (proof of unique personhood).
+// Every citizen registers once with proof of unique personhood.
 // The count updates instantly when someone registers.
 // No door-to-door canvassing. No mail-in forms. No undercount.
 // No $14.2 billion. Just one line that returns a number.
 ```
-- World ID provides cryptographic proof of unique personhood. When citizens register for UBI, the population count updates in real-time. No door-knocking, no mail-in forms, no processing delays, no undercount of marginalized communities.
+- Personhood verification gives each citizen one claim. When citizens register for UBI, the population count updates in real-time. No door-knocking, no mail-in forms, no processing delays, no undercount of marginalized communities.
 ### THE SAVINGS
 - Amortized annual cost of the Census. Plus: real-time data instead of decade-old snapshots. Plus: zero undercount because registration is incentivized by UBI.
 - “You spend fourteen billion dollars to count everyone once every ten years. I return citizenCount() in fifty milliseconds. Every time someone asks.”
 - — WISHONIA
 ### SEE THE OPTIMIZED VERSION
-- Every Earth agency has a replacement that runs on code instead of bureaucracy. Fund the campaign. See the full system. Set your priorities.
+- Every Earth agency has a simpler replacement. Fund the campaign, see the system, set your priorities.
 - [FUND THE REFERENDUM](/prize)
 - [OPTIMIZED GOVERNANCE](/agencies)
 - [SET YOUR PRIORITIES](/agencies/dcongress/wishocracy)

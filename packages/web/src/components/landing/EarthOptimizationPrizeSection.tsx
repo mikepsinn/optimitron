@@ -29,9 +29,9 @@ const coreCards = [
     textColor: "text-foreground",
   },
   {
-    title: "Anti-Capture",
+    title: "Same Terms",
     description:
-      "Zero team allocation. No pre-sale. No admin keys. All on-chain. Anyone can verify. Your $100 gets exactly the same terms as $100,000.",
+      "No special founder pool. No private pre-sale. Your $100 gets the same terms as $100,000.",
     color: "bg-background",
     textColor: "text-foreground",
   },
