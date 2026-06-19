@@ -157,9 +157,7 @@ jobs:
               pull_number: pull.number,
               per_page: 100,
             });
-            const filenames = files
-              .filter((file) => file.status !== "removed")
-              .map((file) => file.filename);
+            const filenames = files.map((file) => file.filename);
             const matches = scope.getPreviewSmokeMatches(filenames);
             const shouldSmoke = matches.length > 0;
             core.setOutput("should_smoke", shouldSmoke ? "true" : "false");
@@ -467,9 +465,7 @@ jobs:
               pull_number: pull.number,
               per_page: 100,
             });
-            const filenames = files
-              .filter((file) => file.status !== "removed")
-              .map((file) => file.filename);
+            const filenames = files.map((file) => file.filename);
             const matches = scope.getPreviewSmokeMatches(filenames);
             const shouldSmoke = matches.length > 0;
             core.setOutput("should_smoke", shouldSmoke ? "true" : "false");
