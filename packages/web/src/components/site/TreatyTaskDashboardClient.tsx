@@ -49,7 +49,7 @@ export function TreatyTaskDashboardClient({
           </h1>
         </div>
 
-        <DashboardShareCard referralUrl={referralLink} />
+        <DashboardShareCard referralUrl={referralLink} showAssignmentForm />
 
         <HumanityManagerStatusPanel status={humanityManagerStatus} />
 

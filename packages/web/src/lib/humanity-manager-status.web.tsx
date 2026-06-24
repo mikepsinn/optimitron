@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Clipboard } from "lucide-react";
-import Link from "next/link";
 import {
   createHumanityManagerStatus,
   type HumanityManagerStatusCompletedEmployee,
@@ -10,7 +9,6 @@ import {
   type HumanityManagerStatusReminder,
 } from "@/lib/humanity-manager-status-content";
 import { copyTextToClipboard } from "@/lib/clipboard";
-import { ROUTES } from "@/lib/routes";
 
 function StatusSection({ children }: { children: React.ReactNode }) {
   return (
@@ -51,28 +49,6 @@ function Text({
     >
       {children}
     </p>
-  );
-}
-
-function MetricTable({
-  rows,
-}: {
-  rows: Array<{ label: string; value: string }>;
-}) {
-  return (
-    <dl className="mt-5 grid grid-cols-1 border border-[var(--treaty-ink)] sm:grid-cols-5">
-      {rows.map((row) => (
-        <div
-          className="border-b border-[var(--treaty-ink)] p-3 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
-          key={row.label}
-        >
-          <dt className="text-[10px] font-black uppercase leading-4 tracking-[0.14em] text-[var(--treaty-ink-muted)]">
-            {row.label}
-          </dt>
-          <dd className="mt-2 text-2xl font-black leading-none">{row.value}</dd>
-        </div>
-      ))}
-    </dl>
   );
 }
 
@@ -134,22 +110,6 @@ function CompletedEmployees({
   );
 }
 
-function PresidentAction({ overdueCount }: { overdueCount: number }) {
-  return (
-    <div className="mt-3">
-      <Link
-        aria-label={`Open president reminders for ${overdueCount.toLocaleString(
-          "en-US",
-        )} late presidents`}
-        className="inline-flex h-10 items-center justify-center border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-3 text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)] hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]"
-        href={ROUTES.employees}
-      >
-        Remind Presidents
-      </Link>
-    </div>
-  );
-}
-
 function ReminderBlock({
   reminders,
 }: {
@@ -168,7 +128,7 @@ function ReminderBlock({
   return (
     <div className="mt-5 border-t border-[var(--treaty-ink)]/30 pt-4">
       <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--treaty-ink-muted)]">
-        Copy reminders
+        Open employee tasks
       </p>
       <div className="mt-3 space-y-3">
         {reminders.map((reminder) => (
@@ -214,8 +174,6 @@ const HumanityManagerStatusWeb = createHumanityManagerStatus({
   CompletedEmployees,
   Eyebrow,
   Heading,
-  MetricTable,
-  PresidentAction,
   ReminderBlock,
   Section: StatusSection,
   Text,

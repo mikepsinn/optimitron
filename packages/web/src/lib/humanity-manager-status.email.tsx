@@ -3,7 +3,6 @@ import * as React from "react";
 import { EMAIL_STYLES } from "@/components/adaptive/email-styles";
 import {
   CampaignCopyBlock,
-  CampaignMetricTable,
   CampaignText,
 } from "@/lib/email/react-email-components";
 import {
@@ -40,14 +39,6 @@ function StatusText({
       {children}
     </CampaignText>
   );
-}
-
-function MetricTable({
-  rows,
-}: {
-  rows: Array<{ label: string; value: string }>;
-}) {
-  return <CampaignMetricTable rows={rows} />;
 }
 
 function formatMaybeDate(value: Date | string | null | undefined) {
@@ -140,7 +131,7 @@ function ReminderBlock({
           textTransform: "uppercase",
         }}
       >
-        Copy reminders
+        Open employee tasks
       </Text>
       {reminders.map((reminder) => (
         <Section key={reminder.id} style={{ margin: "0 0 18px" }}>
@@ -158,7 +149,6 @@ const HumanityManagerStatusEmailContent = createHumanityManagerStatus({
   CompletedEmployees,
   Eyebrow,
   Heading,
-  MetricTable,
   ReminderBlock,
   Section: StatusSection,
   Text: StatusText,

@@ -1,20 +1,29 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState, type ComponentType } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ComponentType,
+  type FormEvent,
+} from "react";
 import { Copy, Mail, Share2, Smartphone } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { FaFacebookF, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion.web";
-import { ROUTES } from "@/lib/routes";
+import { insertGeneratedReferralInviteUrl } from "@/lib/referral-invitation-message-url";
+import { createReferralInvitationRequest } from "@/lib/referral-invitation-client";
 import { buildShareMessage } from "@/lib/share-message";
 import { cn } from "@/lib/utils";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 
 interface DashboardShareCardProps {
   referralUrl: string;
+  showAssignmentForm?: boolean;
 }
 
 type ShareState = "idle" | "shared" | "copied" | "error";
+type AssignmentState = "idle" | "creating" | "created" | "copyFailed" | "error";
 type ShareChannel = "native" | "sms" | "whatsapp" | "email" | "x" | "facebook" | "copy";
 type ShareButtonConfig = {
   channel: Exclude<ShareChannel, "native" | "copy">;
@@ -66,12 +75,30 @@ function getShareUrls(message: string, referralUrl: string) {
   };
 }
 
-export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
+function buildInviteUrl(referralUrl: string, inviteToken: string) {
+  const baseUrl =
+    typeof window === "undefined" ? "https://warondisease.org" : window.location.origin;
+  const url = new URL(referralUrl, baseUrl);
+  url.searchParams.set("invite", inviteToken);
+  return url.toString();
+}
+
+export function DashboardShareCard({
+  referralUrl,
+  showAssignmentForm = false,
+}: DashboardShareCardProps) {
+  const router = useRouter();
   const defaultMessage = useMemo(
     () => buildShareMessage(referralUrl),
     [referralUrl],
   );
   const [message, setMessage] = useState(defaultMessage);
+  const [employeeFirstName, setEmployeeFirstName] = useState("");
+  const [employeeLastName, setEmployeeLastName] = useState("");
+  const [employeeEmail, setEmployeeEmail] = useState("");
+  const [assignmentState, setAssignmentState] =
+    useState<AssignmentState>("idle");
+  const [assignmentStatus, setAssignmentStatus] = useState<string | null>(null);
   const [nativeShareSupported, setNativeShareSupported] = useState(false);
   const [shareState, setShareState] = useState<ShareState>("idle");
   const shareUrls = useMemo(
@@ -87,6 +114,13 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
 
   function resetShareState() {
     window.setTimeout(() => setShareState("idle"), 2000);
+  }
+
+  function resetAssignmentState() {
+    window.setTimeout(() => {
+      setAssignmentState("idle");
+      setAssignmentStatus(null);
+    }, 3500);
   }
 
   function trackShare(channel: ShareChannel) {
@@ -136,6 +170,65 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
 
   function handleOutboundShare(channel: ShareChannel) {
     trackShare(channel);
+  }
+
+  async function handleCreateEmployeeTask(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const recipientName = [employeeFirstName, employeeLastName]
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(" ");
+    const recipientEmail = employeeEmail.trim();
+
+    if (!recipientName || assignmentState === "creating") {
+      return;
+    }
+
+    try {
+      setAssignmentState("creating");
+      setAssignmentStatus(null);
+
+      const invitation = await createReferralInvitationRequest({
+        contactMethod: "COPY",
+        messageFormat: "SINCERE",
+        messageText: message,
+        recipientEmail: recipientEmail || null,
+        recipientName,
+      });
+      const inviteUrl = buildInviteUrl(referralUrl, invitation.inviteToken);
+      const assignmentMessage = insertGeneratedReferralInviteUrl(
+        message,
+        inviteUrl,
+        { draftReferralUrl: referralUrl },
+      );
+
+      try {
+        await copyToClipboard(assignmentMessage);
+        trackShare("copy");
+        setAssignmentState("created");
+        setAssignmentStatus(`${recipientName}'s voting task was created and copied.`);
+      } catch {
+        setAssignmentState("copyFailed");
+        setAssignmentStatus(
+          `${recipientName}'s voting task was created. Copy failed; use the reminder below.`,
+        );
+      }
+
+      setEmployeeFirstName("");
+      setEmployeeLastName("");
+      setEmployeeEmail("");
+      router.refresh();
+      resetAssignmentState();
+    } catch (error) {
+      setAssignmentState("error");
+      setAssignmentStatus(
+        error instanceof Error
+          ? error.message
+          : "Could not create that employee task.",
+      );
+      resetAssignmentState();
+    }
   }
 
   const shareStatus =
@@ -200,6 +293,12 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
         : "Copy to clipboard";
 
   const PrimaryShareIcon = nativeShareSupported ? Share2 : Copy;
+  const recipientName = [employeeFirstName, employeeLastName]
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(" ");
+  const assignmentDisabled =
+    assignmentState === "creating" || recipientName.length === 0;
 
   function renderShareIcon(Icon: ComponentType<{ className?: string }>) {
     return <Icon className="h-4 w-4 shrink-0" />;
@@ -264,6 +363,98 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
     );
   }
 
+  function renderAssignmentForm() {
+    if (!showAssignmentForm) {
+      return null;
+    }
+
+    return (
+      <form
+        className="mt-5 border-t border-[var(--treaty-ink)]/30 pt-5"
+        onSubmit={(event) => void handleCreateEmployeeTask(event)}
+      >
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--treaty-ink)]/70">
+          Assign an employee
+        </p>
+        <p className="mt-2 text-sm font-bold leading-6 text-[var(--treaty-ink)] sm:text-base">
+          Create the tracked voting task, then copy the message with their
+          private invite link.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_1.4fr]">
+          <label className="block">
+            <span className="text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)]/70">
+              First name
+            </span>
+            <input
+              className="mt-1 block h-11 w-full border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-3 text-base font-bold text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40"
+              maxLength={80}
+              name="employeeFirstName"
+              onChange={(event) => setEmployeeFirstName(event.target.value)}
+              required
+              type="text"
+              value={employeeFirstName}
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)]/70">
+              Last name
+            </span>
+            <input
+              className="mt-1 block h-11 w-full border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-3 text-base font-bold text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40"
+              maxLength={80}
+              name="employeeLastName"
+              onChange={(event) => setEmployeeLastName(event.target.value)}
+              type="text"
+              value={employeeLastName}
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)]/70">
+              Email optional
+            </span>
+            <input
+              className="mt-1 block h-11 w-full border border-[var(--treaty-ink)] bg-[var(--treaty-paper)] px-3 text-base font-bold text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40"
+              maxLength={320}
+              name="employeeEmail"
+              onChange={(event) => setEmployeeEmail(event.target.value)}
+              type="email"
+              value={employeeEmail}
+            />
+          </label>
+        </div>
+        <button
+          className={cn(
+            defaultButtonClassName,
+            "mt-4 w-full px-6 disabled:cursor-not-allowed disabled:opacity-50",
+          )}
+          disabled={assignmentDisabled}
+          type="submit"
+        >
+          {assignmentState === "creating"
+            ? "Creating task..."
+            : assignmentState === "created"
+              ? "Task copied"
+              : assignmentState === "copyFailed"
+                ? "Task created"
+              : "Create Task + Copy"}
+        </button>
+        {assignmentStatus ? (
+          <p
+            aria-live="polite"
+            className={cn(
+              "mt-3 text-xs font-black uppercase tracking-[0.12em]",
+              assignmentState === "error" || assignmentState === "copyFailed"
+                ? "text-red-700"
+                : "text-[var(--treaty-ink)]/70",
+            )}
+          >
+            {assignmentStatus}
+          </p>
+        ) : null}
+      </form>
+    );
+  }
+
   return (
     <section className="border border-[var(--treaty-ink)]/40 bg-[var(--treaty-paper)] p-6 sm:p-8">
       <HumanityManagerPromotion />
@@ -273,7 +464,7 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
           <span className="sr-only">Share message</span>
           <textarea
             id="dashboard-share-message"
-            className="mt-3 block min-h-[13rem] w-full resize-y border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-4 text-base font-bold leading-relaxed text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40 sm:min-h-[10.5rem]"
+            className="mt-3 block min-h-[17rem] w-full resize-y border-2 border-[var(--treaty-ink)] bg-[var(--treaty-paper)] p-4 text-base font-bold leading-relaxed text-[var(--treaty-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--treaty-ink)]/40 sm:min-h-[10.5rem]"
             rows={7}
             value={message}
             onChange={(event) => setMessage(event.target.value)}
@@ -299,13 +490,8 @@ export function DashboardShareCard({ referralUrl }: DashboardShareCardProps) {
         </div>
         {getStatusLabel()}
         {renderShareStatus()}
-        <Link
-          className="inline-flex w-full justify-center border border-[var(--treaty-ink)]/40 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-[var(--treaty-ink)] transition-colors hover:bg-[var(--treaty-ink)] hover:text-[var(--treaty-paper)]"
-          href={ROUTES.missions}
-        >
-          End war and disease from your mission profile.
-        </Link>
       </div>
+      {renderAssignmentForm()}
     </section>
   );
 }

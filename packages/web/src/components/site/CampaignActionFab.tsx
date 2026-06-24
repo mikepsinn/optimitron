@@ -8,7 +8,13 @@ import { Button } from "@/components/retroui/Button";
 import { CreateTaskDialog } from "@/components/tasks/CreateTaskDialog";
 import { buildUserReferralUrl } from "@/lib/url";
 
-const HIDDEN_PATH_PREFIXES = ["/api", "/auth", "/survey", "/vote"] as const;
+const HIDDEN_PATH_PREFIXES = [
+  "/api",
+  "/auth",
+  "/dashboard",
+  "/survey",
+  "/vote",
+] as const;
 
 function shouldHideForPath(pathname: string | null) {
   if (!pathname) return true;

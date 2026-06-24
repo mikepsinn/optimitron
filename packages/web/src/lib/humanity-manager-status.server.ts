@@ -330,7 +330,7 @@ export async function loadHumanityManagerStatus(input: {
     loadDirectReferralDownstreamCounts(input.userId),
     prisma.referralInvitation.count({ where: overdueInvitationWhere }),
     prisma.referralInvitation.findMany({
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
       select: {
         createdAt: true,
         id: true,
@@ -367,8 +367,7 @@ export async function loadHumanityManagerStatus(input: {
         user: input.user,
       }),
     )
-    .filter((reminder): reminder is HumanityManagerStatusReminder => reminder != null)
-    .slice(0, 3);
+    .filter((reminder): reminder is HumanityManagerStatusReminder => reminder != null);
 
   return {
     completedEmployees: convertedInvitations.map((invitation) =>

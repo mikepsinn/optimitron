@@ -36,11 +36,6 @@ export interface HumanityManagerStatusInput {
   reminders: HumanityManagerStatusReminder[];
 }
 
-interface StatusMetric {
-  label: string;
-  value: string;
-}
-
 interface HumanityManagerStatusComponents {
   CompletedEmployees: React.ComponentType<{
     employees: HumanityManagerStatusCompletedEmployee[];
@@ -48,8 +43,6 @@ interface HumanityManagerStatusComponents {
   }>;
   Eyebrow: React.ComponentType<{ children: React.ReactNode }>;
   Heading: React.ComponentType<{ children: React.ReactNode }>;
-  MetricTable: React.ComponentType<{ rows: StatusMetric[] }>;
-  PresidentAction?: React.ComponentType<{ overdueCount: number }>;
   ReminderBlock: React.ComponentType<{
     reminders: HumanityManagerStatusReminder[];
   }>;
@@ -64,43 +57,19 @@ function formatCount(value: number): string {
   return Math.max(0, value).toLocaleString("en-US");
 }
 
-function formatKFactor(value: number): string {
-  if (!Number.isFinite(value) || value <= 0) return "0.00";
-  return value.toFixed(2);
-}
-
-function formatPeopleSample(people: HumanityManagerStatusPerson[]): string {
-  return people
-    .slice(0, 5)
-    .map((person) => person.displayName.trim())
-    .filter(Boolean)
-    .join(", ");
-}
-
 function buildEmployeeStatus(input: HumanityManagerStatusInput): string {
   if (input.overdueEmployeeCount === 0) {
-    return "No employees are late.";
+    return "No employee tasks are waiting right now.";
   }
-  const names = formatPeopleSample(input.overdueEmployees);
   const count = formatCount(input.overdueEmployeeCount);
   const noun = input.overdueEmployeeCount === 1 ? "employee" : "employees";
-  return `${count} ${noun} still need the 30-second vote.${names ? ` First up: ${names}.` : ""}`;
-}
-
-function buildPresidentStatus(input: HumanityManagerStatusInput): string {
-  if (input.overduePresidentCount === 0) {
-    return "No presidents are currently late.";
-  }
-  const count = formatCount(input.overduePresidentCount);
-  return `${count} presidents and heads of government still have not signed the treaty.`;
+  return `${count} ${noun} still need the 30-second vote.`;
 }
 
 export function createHumanityManagerStatus({
   CompletedEmployees,
   Eyebrow,
   Heading,
-  MetricTable,
-  PresidentAction,
   ReminderBlock,
   Section,
   Text,
@@ -110,57 +79,26 @@ export function createHumanityManagerStatus({
   }: {
     input: HumanityManagerStatusInput;
   }) {
-    const showPresidentAction =
-      PresidentAction != null && input.overduePresidentCount > 0;
-    const metrics: StatusMetric[] = [
-      {
-        label: "Employees completed",
-        value: formatCount(input.directConversionCount),
-      },
-      {
-        label: "Votes per invite (30d)",
-        value: formatKFactor(input.kFactor30d),
-      },
-      {
-        label: "Late employees",
-        value: formatCount(input.overdueEmployeeCount),
-      },
-      {
-        label: "Late presidents",
-        value: formatCount(input.overduePresidentCount),
-      },
-      {
-        label: "Downstream votes",
-        value: formatCount(input.downstreamConversionCount),
-      },
-    ];
-
     return (
       <Section>
-        <Eyebrow>Humanity Management Status</Eyebrow>
-        <Heading>Who still needs management?</Heading>
+        <Eyebrow>Employee tasks</Eyebrow>
+        <Heading>Who still needs the 30-second vote?</Heading>
         <Text>
-          Direct employees are humans you asked to vote. Full-chain votes
-          include the humans they invite, and the humans invited after that.
-          Updated hourly.
+          These are the humans you assigned to vote. Copy a reminder until
+          their vote verifies the task.
         </Text>
-        <MetricTable rows={metrics} />
+        <Text>{buildEmployeeStatus(input)}</Text>
+        {input.reminders.length > 0 ? (
+          <ReminderBlock reminders={input.reminders} />
+        ) : (
+          <Text muted>
+            Assign two humans above and their open vote tasks will appear here.
+          </Text>
+        )}
         <CompletedEmployees
           employees={input.completedEmployees}
           total={input.directConversionCount}
         />
-        <Text>{buildEmployeeStatus(input)}</Text>
-        <Text>{buildPresidentStatus(input)}</Text>
-        {showPresidentAction ? (
-          <PresidentAction overdueCount={input.overduePresidentCount} />
-        ) : null}
-        {input.reminders.length > 0 ? (
-          <ReminderBlock reminders={input.reminders} />
-        ) : showPresidentAction ? null : (
-          <Text muted>
-            No employee reminders to send right now.
-          </Text>
-        )}
       </Section>
     );
   };
