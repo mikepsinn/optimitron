@@ -27,6 +27,7 @@ if (!databaseUrl) {
 
 const HASH_HEX = /^[a-f0-9]{4,}$/;
 const DEMO_EMAIL = "demo@thinkbynumbers.org";
+const USER_ONBOARDING_TREATY_TRIGGER = "user-onboarding:treaty";
 
 const checks = [
   {
@@ -82,6 +83,22 @@ const checks = [
     sql: `SELECT CASE WHEN password IS NOT NULL AND "referralCode" = 'DEMO' THEN 'ok' ELSE 'bad' END AS status FROM "User" WHERE email = '${DEMO_EMAIL}' LIMIT 1`,
     column: "status",
     expected: "demo account present with password and DEMO referralCode",
+    test: (value) => value === "ok",
+    requireRows: true,
+  },
+  {
+    name: "TaskTrigger.userOnboardingTreaty",
+    sql: `SELECT CASE WHEN enabled = true AND "idempotencyKeyTemplate" = 'program:one-percent-treaty:user:{{user.id}}' AND ("eventFilter" IS NULL OR "eventFilter" = 'null'::jsonb) THEN 'ok' ELSE 'bad' END AS status FROM "TaskTrigger" WHERE "triggerKey" = '${USER_ONBOARDING_TREATY_TRIGGER}' AND "deletedAt" IS NULL LIMIT 1`,
+    column: "status",
+    expected: "managed onboarding trigger present with intact idempotency template and empty event filter",
+    test: (value) => value === "ok",
+    requireRows: true,
+  },
+  {
+    name: "TaskSpawnSpec.userOnboardingTreaty",
+    sql: `SELECT CASE WHEN spec."titleTemplate" = 'Give your first human the 1% Treaty voting task' AND spec."descriptionTemplate" LIKE 'Pick someone you trust.%' THEN 'ok' ELSE 'bad' END AS status FROM "TaskSpawnSpec" spec INNER JOIN "TaskTrigger" trig ON trig.id = spec."triggerId" WHERE trig."triggerKey" = '${USER_ONBOARDING_TREATY_TRIGGER}' AND spec.kind = 'assignFirstHuman' LIMIT 1`,
+    column: "status",
+    expected: "managed onboarding spawn specs kept intact after masking",
     test: (value) => value === "ok",
     requireRows: true,
   },
