@@ -686,6 +686,6 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-      - name: Fail Sentry preview audit
-        if: always() && steps.preview_scope.outputs.should_smoke != 'false' && steps.sentry_audit.outputs.exit_code != '0'
-        run: exit "${{ steps.sentry_audit.outputs.exit_code }}"
+      - name: Fail Sentry preview findings
+        if: always() && steps.preview_scope.outputs.should_smoke != 'false' && steps.sentry_audit.outputs.exit_code == '1'
+        run: exit 1

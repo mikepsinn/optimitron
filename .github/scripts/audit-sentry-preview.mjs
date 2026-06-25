@@ -418,6 +418,9 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     if (process.env.GITHUB_STEP_SUMMARY) {
       await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown, "utf8");
     }
-    process.exitCode = 1;
+    // Exit 2 means the audit itself could not query Sentry. The workflow
+    // comments this as an observability/config problem without failing the
+    // app smoke check. Exit 1 is reserved for real matching preview errors.
+    process.exitCode = 2;
   });
 }
