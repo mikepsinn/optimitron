@@ -23,14 +23,10 @@ jobs:
   smoke:
     name: Smoke deployed URL
     if: >-
-      github.event.deployment_status.state == 'success' &&
-      github.event.deployment_status.environment_url != '' &&
-      (startsWith(github.event.deployment_status.environment_url, 'https://') ||
-        startsWith(github.event.deployment_status.environment_url, 'http://')) &&
       !startsWith(github.event.deployment.environment, 'visual-review') &&
       !startsWith(github.event.deployment_status.environment, 'visual-review')
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     environment:
       name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com') || contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org')) && 'Production' || 'Preview' }}
       deployment: false
@@ -44,11 +40,69 @@ jobs:
         with:
           node-version: 24
 
+      - name: Wait for successful deployment URL
+        id: deployment_status
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const deployment = context.payload.deployment || {};
+            const initialStatus = context.payload.deployment_status || {};
+            const deploymentId =
+              deployment.id ||
+              initialStatus.deployment_id ||
+              initialStatus.deployment?.id;
+            const timeoutMs = 20 * 60 * 1000;
+            const intervalMs = 10 * 1000;
+            const deadline = Date.now() + timeoutMs;
+            const terminalFailures = new Set(["failure", "error", "inactive"]);
+            let lastStatus = "not found";
+
+            async function latestDeploymentStatus() {
+              if (!deploymentId) return initialStatus;
+              const { data } = await github.rest.repos.listDeploymentStatuses({
+                owner,
+                repo,
+                deployment_id: deploymentId,
+                per_page: 10,
+              });
+              return data[0] || initialStatus;
+            }
+
+            while (Date.now() < deadline) {
+              const status = await latestDeploymentStatus();
+              const state = String(status.state || "").toLowerCase();
+              const environmentUrl = String(status.environment_url || "").trim();
+              const environment = String(
+                status.environment || deployment.environment || "",
+              );
+              lastStatus = `${state || "unknown"} ${environmentUrl || "(no URL yet)"}`;
+              core.info(`Deployment status: ${lastStatus}`);
+
+              if (state === "success" && /^https?:\/\//u.test(environmentUrl)) {
+                core.setOutput("environment", environment);
+                core.setOutput("environment_url", environmentUrl);
+                core.setOutput("state", state);
+                return;
+              }
+
+              if (terminalFailures.has(state)) {
+                core.setFailed(`Deployment reached ${lastStatus} before smoke could run.`);
+                return;
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, intervalMs));
+            }
+
+            core.setFailed(`Deployment did not reach success with an environment URL before smoke timeout; last status: ${lastStatus}.`);
+
       - name: Resolve smoke target
         id: target
         env:
           DEPLOYMENT_JSON: ${{ toJSON(github.event.deployment) }}
           DEPLOYMENT_STATUS_JSON: ${{ toJSON(github.event.deployment_status) }}
+          RESOLVED_DEPLOYMENT_ENVIRONMENT: ${{ steps.deployment_status.outputs.environment }}
+          RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com' }}
         run: |
@@ -58,9 +112,14 @@ jobs:
           const deployment = JSON.parse(process.env.DEPLOYMENT_JSON || "{}");
           const status = JSON.parse(process.env.DEPLOYMENT_STATUS_JSON || "{}");
           const environmentName = String(
-            status.environment || deployment.environment || "",
+            process.env.RESOLVED_DEPLOYMENT_ENVIRONMENT ||
+              status.environment ||
+              deployment.environment ||
+              "",
           );
-          const targetUrl = String(status.environment_url || "").trim();
+          const targetUrl = String(
+            process.env.RESOLVED_DEPLOYMENT_URL || status.environment_url || "",
+          ).trim();
           if (!targetUrl) {
             throw new Error("deployment_status did not include environment_url.");
           }
@@ -405,10 +464,6 @@ jobs:
     # existing smoke job on the same deployment_status event.
     name: Playwright preview smoke
     if: >-
-      github.event.deployment_status.state == 'success' &&
-      github.event.deployment_status.environment_url != '' &&
-      (startsWith(github.event.deployment_status.environment_url, 'https://') ||
-        startsWith(github.event.deployment_status.environment_url, 'http://')) &&
       !startsWith(github.event.deployment.environment, 'visual-review') &&
       !startsWith(github.event.deployment_status.environment, 'visual-review') &&
       github.event.deployment.environment != 'Production' &&
@@ -416,7 +471,7 @@ jobs:
       github.event.deployment_status.environment != 'Production' &&
       github.event.deployment_status.environment != 'production'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     environment:
       name: Preview
       deployment: false
@@ -478,6 +533,59 @@ jobs:
       - name: Skip Playwright preview smoke
         if: steps.preview_scope.outputs.should_smoke == 'false'
         run: echo "Skipping Playwright preview smoke because this PR only changed workflow/deploy plumbing."
+
+      - name: Wait for successful deployment URL
+        id: deployment_status
+        if: steps.preview_scope.outputs.should_smoke != 'false'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const deployment = context.payload.deployment || {};
+            const initialStatus = context.payload.deployment_status || {};
+            const deploymentId =
+              deployment.id ||
+              initialStatus.deployment_id ||
+              initialStatus.deployment?.id;
+            const timeoutMs = 20 * 60 * 1000;
+            const intervalMs = 10 * 1000;
+            const deadline = Date.now() + timeoutMs;
+            const terminalFailures = new Set(["failure", "error", "inactive"]);
+            let lastStatus = "not found";
+
+            async function latestDeploymentStatus() {
+              if (!deploymentId) return initialStatus;
+              const { data } = await github.rest.repos.listDeploymentStatuses({
+                owner,
+                repo,
+                deployment_id: deploymentId,
+                per_page: 10,
+              });
+              return data[0] || initialStatus;
+            }
+
+            while (Date.now() < deadline) {
+              const status = await latestDeploymentStatus();
+              const state = String(status.state || "").toLowerCase();
+              const environmentUrl = String(status.environment_url || "").trim();
+              lastStatus = `${state || "unknown"} ${environmentUrl || "(no URL yet)"}`;
+              core.info(`Deployment status: ${lastStatus}`);
+
+              if (state === "success" && /^https?:\/\//u.test(environmentUrl)) {
+                core.setOutput("environment_url", environmentUrl);
+                core.setOutput("state", state);
+                return;
+              }
+
+              if (terminalFailures.has(state)) {
+                core.setFailed(`Deployment reached ${lastStatus} before preview smoke could run.`);
+                return;
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, intervalMs));
+            }
+
+            core.setFailed(`Deployment did not reach success with an environment URL before preview smoke timeout; last status: ${lastStatus}.`);
 
       - name: Wait for preview database sync
         if: steps.preview_scope.outputs.should_smoke != 'false'
@@ -563,7 +671,7 @@ jobs:
       - name: Run Playwright smoke against preview
         if: steps.preview_scope.outputs.should_smoke != 'false'
         env:
-          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          BASE_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           PLAYWRIGHT_SMOKE_SCOPE: critical
           # SKIP_SERVER=1 disables the local `next start` that Playwright
@@ -589,7 +697,7 @@ jobs:
         id: sentry_audit
         if: always() && steps.preview_scope.outputs.should_smoke != 'false'
         env:
-          PREVIEW_URL: ${{ github.event.deployment_status.environment_url }}
+          PREVIEW_URL: ${{ steps.deployment_status.outputs.environment_url }}
           # Dedicated read token should have org:read, project:read, event:read.
           # The release-upload SENTRY_AUTH_TOKEN may not be allowed to read issues.
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_PREVIEW_AUDIT_TOKEN || secrets.SENTRY_AUTH_TOKEN }}
