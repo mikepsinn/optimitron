@@ -18,12 +18,15 @@
 
 BEGIN;
 
-UPDATE public."Person" SET "handle" = pg_catalog.concat('person-', md5("id"::text)) WHERE "handle" IS NOT NULL;
-UPDATE public."Person" SET "displayName" = pg_catalog.concat(anon.fake_first_name(), ' ', anon.fake_last_name()) WHERE "displayName" IS NOT NULL;
+-- Keep the synthetic managed demo account usable on preview. The demo email,
+-- password, referral code, handle, and display name are public fixtures used by
+-- ?login=demo, the Try Demo button, and deployed preview smoke.
+UPDATE public."Person" SET "handle" = pg_catalog.concat('person-', md5("id"::text)) WHERE "handle" IS NOT NULL AND "email" IS DISTINCT FROM 'demo@thinkbynumbers.org';
+UPDATE public."Person" SET "displayName" = pg_catalog.concat(anon.fake_first_name(), ' ', anon.fake_last_name()) WHERE "displayName" IS NOT NULL AND "email" IS DISTINCT FROM 'demo@thinkbynumbers.org';
 UPDATE public."Person" SET "firstName" = anon.fake_first_name() WHERE "firstName" IS NOT NULL;
 UPDATE public."Person" SET "middleName" = NULL WHERE "middleName" IS NOT NULL;
 UPDATE public."Person" SET "lastName" = anon.fake_last_name() WHERE "lastName" IS NOT NULL;
-UPDATE public."Person" SET "email" = pg_catalog.concat('person-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL;
+UPDATE public."Person" SET "email" = pg_catalog.concat('person-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
 UPDATE public."Person" SET "image" = NULL WHERE "image" IS NOT NULL;
 UPDATE public."Person" SET "bio" = public.dummy_safe_text() WHERE "bio" IS NOT NULL;
 UPDATE public."Person" SET "birthDate" = NULL WHERE "birthDate" IS NOT NULL;
@@ -58,9 +61,9 @@ UPDATE public."PersonMemorialEvidence" SET "title" = public.dummy_safe_text() WH
 UPDATE public."PersonMemorialEvidence" SET "description" = public.dummy_safe_text() WHERE "description" IS NOT NULL;
 UPDATE public."PersonMemorialEvidence" SET "sourceUrl" = NULL WHERE "sourceUrl" IS NOT NULL;
 UPDATE public."PersonEfficacyLagEvidence" SET "explanation" = public.dummy_safe_text() WHERE "explanation" IS NOT NULL;
-UPDATE public."User" SET "email" = pg_catalog.concat('user-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL;
-UPDATE public."User" SET "password" = NULL WHERE "password" IS NOT NULL;
-UPDATE public."User" SET "referralCode" = pg_catalog.concat('ref-', md5("id"::text)) WHERE "referralCode" IS NOT NULL;
+UPDATE public."User" SET "email" = pg_catalog.concat('user-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
+UPDATE public."User" SET "password" = NULL WHERE "password" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
+UPDATE public."User" SET "referralCode" = pg_catalog.concat('ref-', md5("id"::text)) WHERE "referralCode" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
 UPDATE public."User" SET "signupLandingUrl" = NULL WHERE "signupLandingUrl" IS NOT NULL;
 UPDATE public."User" SET "unsubscribedScopes" = ARRAY[]::text[] WHERE "unsubscribedScopes" IS NOT NULL;
 UPDATE public."User" SET "timeZone" = anon.dummy_timezone() WHERE "timeZone" IS NOT NULL;
@@ -316,29 +319,31 @@ UPDATE public."TaskCommunication" SET "externalUrl" = NULL WHERE "externalUrl" I
 UPDATE public."TaskCommunication" SET "errorMessage" = public.dummy_safe_text() WHERE "errorMessage" IS NOT NULL;
 UPDATE public."TaskCommunication" SET "providerMessageId" = pg_catalog.concat('task-provider-', md5("id"::text)) WHERE "providerMessageId" IS NOT NULL;
 UPDATE public."TaskCommunication" SET "metadataJson" = pg_catalog.jsonb_build_object() WHERE "metadataJson" IS NOT NULL;
-UPDATE public."TaskTrigger" SET "eventFilter" = pg_catalog.jsonb_build_object() WHERE "eventFilter" IS NOT NULL;
-UPDATE public."TaskTrigger" SET "disabledReason" = public.dummy_safe_text() WHERE "disabledReason" IS NOT NULL;
-UPDATE public."TaskTrigger" SET "idempotencyKeyTemplate" = public.dummy_safe_text() WHERE "idempotencyKeyTemplate" IS NOT NULL;
-UPDATE public."TaskTrigger" SET "completionGate" = pg_catalog.jsonb_build_object() WHERE "completionGate" IS NOT NULL;
-UPDATE public."TaskTrigger" SET "notes" = public.dummy_safe_text() WHERE "notes" IS NOT NULL;
-UPDATE public."TaskTrigger" SET "metadata" = pg_catalog.jsonb_build_object() WHERE "metadata" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "titleTemplate" = public.dummy_safe_text() WHERE "titleTemplate" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "descriptionTemplate" = public.dummy_safe_text() WHERE "descriptionTemplate" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "impactStatementTemplate" = public.dummy_safe_text() WHERE "impactStatementTemplate" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "roleTitleTemplate" = public.dummy_safe_text() WHERE "roleTitleTemplate" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "skillTagTemplates" = ARRAY[]::text[] WHERE "skillTagTemplates" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "interestTagTemplates" = ARRAY[]::text[] WHERE "interestTagTemplates" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "actionLinkUrlTemplate" = NULL WHERE "actionLinkUrlTemplate" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "actionLinkLabelTemplate" = public.dummy_safe_text() WHERE "actionLinkLabelTemplate" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "actionLinkInstructionsTemplate" = public.dummy_safe_text() WHERE "actionLinkInstructionsTemplate" IS NOT NULL;
-UPDATE public."TaskSpawnSpec" SET "metadata" = pg_catalog.jsonb_build_object() WHERE "metadata" IS NOT NULL;
-UPDATE public."TaskCommunicationSpawnSpec" SET "subjectTemplate" = public.dummy_safe_text() WHERE "subjectTemplate" IS NOT NULL;
-UPDATE public."TaskCommunicationSpawnSpec" SET "bodyTextTemplate" = public.dummy_safe_text() WHERE "bodyTextTemplate" IS NOT NULL;
-UPDATE public."TaskCommunicationSpawnSpec" SET "bodyHtmlTemplate" = public.dummy_safe_text() WHERE "bodyHtmlTemplate" IS NOT NULL;
-UPDATE public."TaskCommunicationSpawnSpec" SET "commentTemplate" = public.dummy_safe_text() WHERE "commentTemplate" IS NOT NULL;
-UPDATE public."TaskCommunicationSpawnSpec" SET "emailScope" = NULL WHERE "emailScope" IS NOT NULL;
-UPDATE public."TaskCommunicationSpawnSpec" SET "dedupeKeyTemplate" = public.dummy_safe_text() WHERE "dedupeKeyTemplate" IS NOT NULL;
-UPDATE public."TaskCommunicationSpawnSpec" SET "metadata" = pg_catalog.jsonb_build_object() WHERE "metadata" IS NOT NULL;
+-- Preserve repository-owned managed trigger blueprints. They are not production
+-- PII, and preview runtime paths need them intact after managed-data sync.
+UPDATE public."TaskTrigger" SET "eventFilter" = pg_catalog.jsonb_build_object() WHERE "eventFilter" IS NOT NULL AND "triggerKey" NOT IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer');
+UPDATE public."TaskTrigger" SET "disabledReason" = public.dummy_safe_text() WHERE "disabledReason" IS NOT NULL AND "triggerKey" NOT IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer');
+UPDATE public."TaskTrigger" SET "idempotencyKeyTemplate" = public.dummy_safe_text() WHERE "idempotencyKeyTemplate" IS NOT NULL AND "triggerKey" NOT IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer');
+UPDATE public."TaskTrigger" SET "completionGate" = pg_catalog.jsonb_build_object() WHERE "completionGate" IS NOT NULL AND "triggerKey" NOT IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer');
+UPDATE public."TaskTrigger" SET "notes" = public.dummy_safe_text() WHERE "notes" IS NOT NULL AND "triggerKey" NOT IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer');
+UPDATE public."TaskTrigger" SET "metadata" = pg_catalog.jsonb_build_object() WHERE "metadata" IS NOT NULL AND "triggerKey" NOT IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer');
+UPDATE public."TaskSpawnSpec" SET "titleTemplate" = public.dummy_safe_text() WHERE "titleTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "descriptionTemplate" = public.dummy_safe_text() WHERE "descriptionTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "impactStatementTemplate" = public.dummy_safe_text() WHERE "impactStatementTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "roleTitleTemplate" = public.dummy_safe_text() WHERE "roleTitleTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "skillTagTemplates" = ARRAY[]::text[] WHERE "skillTagTemplates" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "interestTagTemplates" = ARRAY[]::text[] WHERE "interestTagTemplates" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "actionLinkUrlTemplate" = NULL WHERE "actionLinkUrlTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "actionLinkLabelTemplate" = public.dummy_safe_text() WHERE "actionLinkLabelTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "actionLinkInstructionsTemplate" = public.dummy_safe_text() WHERE "actionLinkInstructionsTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskSpawnSpec" SET "metadata" = pg_catalog.jsonb_build_object() WHERE "metadata" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskCommunicationSpawnSpec" SET "subjectTemplate" = public.dummy_safe_text() WHERE "subjectTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskCommunicationSpawnSpec" SET "bodyTextTemplate" = public.dummy_safe_text() WHERE "bodyTextTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskCommunicationSpawnSpec" SET "bodyHtmlTemplate" = public.dummy_safe_text() WHERE "bodyHtmlTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskCommunicationSpawnSpec" SET "commentTemplate" = public.dummy_safe_text() WHERE "commentTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskCommunicationSpawnSpec" SET "emailScope" = NULL WHERE "emailScope" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskCommunicationSpawnSpec" SET "dedupeKeyTemplate" = public.dummy_safe_text() WHERE "dedupeKeyTemplate" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
+UPDATE public."TaskCommunicationSpawnSpec" SET "metadata" = pg_catalog.jsonb_build_object() WHERE "metadata" IS NOT NULL AND "triggerId" NOT IN (SELECT "id" FROM public."TaskTrigger" WHERE "triggerKey" IN ('user-onboarding:treaty', 'referral:vote-invitation', 'treaty:signer-reminder', 'treaty:ratify', 'user-onboarding:treaty:hmt-gate', 'treaty:signer'));
 UPDATE public."TaskTriggerFire" SET "idempotencyKey" = pg_catalog.concat('trigger-fire-', md5("id"::text)) WHERE "idempotencyKey" IS NOT NULL;
 UPDATE public."TaskTriggerFire" SET "context" = pg_catalog.jsonb_build_object() WHERE "context" IS NOT NULL;
 UPDATE public."TaskTriggerFire" SET "error" = public.dummy_safe_text() WHERE "error" IS NOT NULL;

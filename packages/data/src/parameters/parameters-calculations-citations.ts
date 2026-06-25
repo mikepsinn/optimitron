@@ -3336,23 +3336,6 @@ export const US_GOV_WASTE_HOUSING_ZONING: Parameter = {
   manualPageTitle: "United States Efficiency Audit",
 };
 
-export const US_GOV_WASTE_MILITARY_OVERSPEND: Parameter = {
-  value: 615000000000.0,
-  parameterName: "US_GOV_WASTE_MILITARY_OVERSPEND",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_military_overspend",
-  unit: "USD",
-  displayName: "Military Overspend",
-  description: "US military spending above 'Strict Deterrence' baseline. Current budget ~$900B supports global power projection (750+ bases). Strict Deterrence (nuclear triad $95B, Coast Guard $14B, National Guard $33B, Missile Defense $28B, Cyber $15B, defensive Navy/Air Force $100B) = ~$285B. Delta: $900B - $285B = $615B 'Hegemony Tax'. [CATEGORY 1: Direct Spending]",
-  sourceType: "external",
-  sourceRef: "political-dysfunction-tax-paper-2025",
-  sourceUrl: "https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html",
-  confidence: "medium",
-  confidenceInterval: [500000000000.0, 750000000000.0],
-  stdError: 75000000000.0,
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
-  manualPageTitle: "United States Efficiency Audit",
-};
-
 export const US_GOV_WASTE_REGULATORY_RED_TAPE: Parameter = {
   value: 580000000000.0,
   parameterName: "US_GOV_WASTE_REGULATORY_RED_TAPE",
@@ -4738,6 +4721,36 @@ export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
   manualPageTitle: "Please Select an Earth: A) Everyone Gets Rich B) Somalia, but Everywhere",
 };
 
+export const DEFENSE_TAKEOVER_COST_ACTIVIST: Parameter = {
+  value: 48400000000.0,
+  parameterName: "DEFENSE_TAKEOVER_COST_ACTIVIST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_activist",
+  unit: "USD",
+  displayName: "Military Activist-Stake Cost (Realistic Entry)",
+  description: "Realistic entry cost: capital to take an activist (non-control) equity position across all major Western military contractors, bought near market price with no control premium. Board influence comes from the financial argument plus the index-fund votes, not from outright control. This capital buys shares the fund keeps, so the true net cost is far lower than this gross figure. Contrast with the buy-outright ceiling (DEFENSE_TAKEOVER_COST_TOTAL).",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(DEFENSE_PRIMES_MARKET_CAP_US + DEFENSE_PRIMES_MARKET_CAP_ALLIED) * INFLUENCE_ACTIVIST_STAKE_FRACTION",
+  latex: "\\begin{gathered}\nC_{activist} \\\\\n= f_{activist} \\times (MarketCap_{US} + MarketCap_{allied}) \\\\\n= 0.05 \\times (\\$836B + \\$132B) \\\\\n= \\$48.4B\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const DEFENSE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS: Parameter = {
+  value: 0.00015868852459016393,
+  parameterName: "DEFENSE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_activist_pct_investable_assets",
+  unit: "rate",
+  displayName: "Military Activist-Stake Cost as Share of Global Investable Assets",
+  description: "Activist-stake entry cost across the defense primes as a share of total global investable assets. The realistic-path floor of the cost-in-context range, well below the buy-outright ceiling.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DEFENSE_TAKEOVER_COST_ACTIVIST / GLOBAL_INVESTABLE_ASSETS",
+  latex: "\\begin{gathered}\nC_{activist}/A_{investable} = \\frac{C_{activist}}{Assets_{invest}} = \\frac{\\$48.4B}{\\$305T} = 0.0159\\%\n\\\\[0.5em]\n\\text{where } C_{activist} = f_{activist} \\times (MarketCap_{US} + MarketCap_{allied}) = 0.05 \\times (\\$836B + \\$132B) = \\$48.4B\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
 export const DEFENSE_TAKEOVER_COST_PER_HUMAN: Parameter = {
   value: 109.1178,
   parameterName: "DEFENSE_TAKEOVER_COST_PER_HUMAN",
@@ -4759,12 +4772,43 @@ export const DEFENSE_TAKEOVER_COST_TOTAL: Parameter = {
   parameterName: "DEFENSE_TAKEOVER_COST_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_total",
   unit: "USD",
-  displayName: "Military Takeover Total Cost",
-  description: "Total realistic cost to acquire controlling stakes in all major Western military contractors, including acquisition premium and execution friction",
+  displayName: "Military Takeover Cost (Outright-Control Ceiling)",
+  description: "UPPER-BOUND cost to acquire outright controlling stakes (50.1%) in all major Western military contractors, including the acquisition premium. This is the buy-it-outright ceiling, not the expected entry cost: the realistic path is an activist stake (DEFENSE_TAKEOVER_COST_ACTIVIST) plus index-fund votes, which costs far less. Headline only as a worst case.",
   sourceType: "calculated",
   confidence: "high",
   formula: "(DEFENSE_PRIMES_MARKET_CAP_US + DEFENSE_PRIMES_MARKET_CAP_ALLIED) * DEFENSE_TAKEOVER_CONTROL_FRACTION * DEFENSE_TAKEOVER_ACQUISITION_PREMIUM",
   latex: "\\begin{gathered}\nC_{takeover} \\\\\n= (MarketCap_{US} \\\\\n+ MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS: Parameter = {
+  value: 0.028114086956521737,
+  parameterName: "DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_pct_annual_savings",
+  unit: "rate",
+  displayName: "Military Takeover Cost as Share of Annual Global Saving",
+  description: "Cost to acquire controlling stakes in all major Western military contractors, expressed as a share of one year of global saving. Roughly ten days of what humanity sets aside annually.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_ANNUAL_SAVINGS",
+  latex: "\\begin{gathered}\nC_{takeover}/S_{annual} = \\frac{C_{takeover}}{S_{annual}} = \\frac{\\$873B}{\\$31.1T} = 2.81\\%\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\end{gathered}",
+  confidenceInterval: [0.025696016318021157, 0.03100730189969515],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS: Parameter = {
+  value: 0.002862106229508197,
+  parameterName: "DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_pct_investable_assets",
+  unit: "rate",
+  displayName: "Military Takeover Cost as Share of Global Investable Assets",
+  description: "Cost to acquire controlling stakes in all major Western military contractors, expressed as a share of total global investable assets. The affordability framing: the entire takeover is a rounding error against the world's investable wealth.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_INVESTABLE_ASSETS",
+  latex: "\\begin{gathered}\nC_{takeover}/A_{investable} = \\frac{C_{takeover}}{Assets_{invest}} = \\frac{\\$873B}{\\$305T} = 0.286\\%\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
   manualPageTitle: "The Loving Takeover",
 };
@@ -5955,17 +5999,94 @@ export const FDA_TO_OXFORD_RECOVERY_TRIAL_TIME_MULTIPLIER: Parameter = {
   manualPageTitle: "Your FDA Is Unsafe and Ineffective",
 };
 
+export const FULL_CORPORATE_TAKEOVER_COST_ACTIVIST: Parameter = {
+  value: 883900000000.0,
+  parameterName: "FULL_CORPORATE_TAKEOVER_COST_ACTIVIST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_corporate_takeover_cost_activist",
+  unit: "USD",
+  displayName: "Full Corporate Activist-Stake Cost (All Sectors)",
+  description: "Realistic cost to take an activist (non-control) stake across EVERY government-controlling industry at once: military, pharma, tech, insurance, and oil and gas. This is the symmetric activist version of the takeover. Outright majority control of all of them is not even possible (founder and mutual control of Meta, Alphabet, Oracle, and the insurance mutuals), which is exactly why the activist tier, not a 50.1% buyout, is the operative model outside the defense primes.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(DEFENSE_PRIMES_MARKET_CAP_US + DEFENSE_PRIMES_MARKET_CAP_ALLIED + GOV_CONTROLLING_SECTORS_TOP5_MARKET_CAP) * INFLUENCE_ACTIVIST_STAKE_FRACTION",
+  latex: "\\begin{gathered}\nC_{corp,activist} \\\\\n= (MarketCap_{US} + MarketCap_{allied} \\\\\n+ MarketCap_{sectors}) \\times f_{activist}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const FULL_CORPORATE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS: Parameter = {
+  value: 0.002898032786885246,
+  parameterName: "FULL_CORPORATE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_corporate_takeover_cost_activist_pct_investable_assets",
+  unit: "rate",
+  displayName: "Full Corporate Activist-Stake Cost as Share of Global Investable Assets",
+  description: "Activist stake across every government-controlling industry as a share of total global investable assets.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "FULL_CORPORATE_TAKEOVER_COST_ACTIVIST / GLOBAL_INVESTABLE_ASSETS",
+  latex: "\\begin{gathered}\nC_{corp,activist}/A_{investable} = \\frac{C_{corp,activist}}{Assets_{invest}} = \\frac{\\$884B}{\\$305T} = 0.29\\%\n\\\\[0.5em]\n\\text{where } C_{corp,activist} = (MarketCap_{US} + MarketCap_{allied} + MarketCap_{sectors}) \\times f_{activist}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
 export const FULL_INFLUENCE_COST_ACTIVIST: Parameter = {
   value: 1708442400000.0,
   parameterName: "FULL_INFLUENCE_COST_ACTIVIST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_influence_cost_activist",
   unit: "USD",
-  displayName: "Full Influence Package Cost",
-  description: "Full control of the military primes (50.1% plus acquisition premium) plus 5% activist positions in the top-5 lobbying firms of the other four government-controlling sectors. The activist tier follows the Engine No. 1 precedent: a 0.02% stake won three Exxon board seats, so 5% is a loud voice at every table",
+  displayName: "Full Influence Package Cost (Ceiling)",
+  description: "Ceiling cost for influence over every government-controlling industry: the buy-outright defense ceiling plus an activist stake in the top-5 lobbying firms of the other four sectors (pharma, tech, insurance, oil and gas). The other sectors use the activist tier because their largest players cannot be majority-acquired anyway (Meta, Alphabet, Oracle founder control). The activist tier follows the Engine No. 1 precedent: a 0.02% stake won three Exxon board seats, so a few percent is a loud voice at every table.",
   sourceType: "calculated",
   confidence: "medium",
-  formula: "DEFENSE_TAKEOVER_COST_TOTAL + 0.05 * GOV_CONTROLLING_SECTORS_TOP5_MARKET_CAP",
-  latex: "\\begin{gathered}\nC_{influence} = C_{takeover} + 0.05 \\times MarketCap_{sectors}\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  formula: "DEFENSE_TAKEOVER_COST_TOTAL + INFLUENCE_ACTIVIST_STAKE_FRACTION * GOV_CONTROLLING_SECTORS_TOP5_MARKET_CAP",
+  latex: "\\begin{gathered}\nC_{influence} = C_{takeover} + f_{activist} \\times MarketCap_{sectors} = \\$873B + 0.05 \\times \\$16.7T = \\$1.71T\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const FULL_INFLUENCE_COST_PER_HUMAN: Parameter = {
+  value: 213.5553,
+  parameterName: "FULL_INFLUENCE_COST_PER_HUMAN",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_influence_cost_per_human",
+  unit: "USD",
+  displayName: "Full Influence Package Cost per Human",
+  description: "Per-person cost of the full influence package (defense primes plus activist stakes in every other government-controlling sector) distributed across global population",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "FULL_INFLUENCE_COST_ACTIVIST / GLOBAL_POPULATION_2024",
+  latex: "\\begin{gathered}\nC_{influence,pp} = \\frac{C_{influence}}{Pop_{global}} = \\frac{\\$1.71T}{8B} = \\$214\n\\\\[0.5em]\n\\text{where } C_{influence} = C_{takeover} + f_{activist} \\times MarketCap_{sectors} = \\$873B + 0.05 \\times \\$16.7T = \\$1.71T\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
+  confidenceInterval: [209.19132084045313, 218.10970829082635],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const FULL_INFLUENCE_PCT_ANNUAL_SAVINGS: Parameter = {
+  value: 0.05502229951690821,
+  parameterName: "FULL_INFLUENCE_PCT_ANNUAL_SAVINGS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_influence_pct_annual_savings",
+  unit: "rate",
+  displayName: "Full Influence Cost as Share of Annual Global Saving",
+  description: "Cost of the full influence package (every government-controlling industry, not just defense) as a share of one year of global saving.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "FULL_INFLUENCE_COST_ACTIVIST / GLOBAL_ANNUAL_SAVINGS",
+  latex: "\\begin{gathered}\nC_{influence}/S_{annual} = \\frac{C_{influence}}{S_{annual}} = \\frac{\\$1.71T}{\\$31.1T} = 5.5\\%\n\\\\[0.5em]\n\\text{where } C_{influence} = C_{takeover} + f_{activist} \\times MarketCap_{sectors} = \\$873B + 0.05 \\times \\$16.7T = \\$1.71T\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\end{gathered}",
+  confidenceInterval: [0.050289874553921574, 0.06068463311558671],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
+export const FULL_INFLUENCE_PCT_INVESTABLE_ASSETS: Parameter = {
+  value: 0.005601450491803279,
+  parameterName: "FULL_INFLUENCE_PCT_INVESTABLE_ASSETS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_influence_pct_investable_assets",
+  unit: "rate",
+  displayName: "Full Influence Cost as Share of Global Investable Assets",
+  description: "Cost of the full influence package (every government-controlling industry, not just defense) as a share of total global investable assets. The broader takeover is still a fraction of one percent of the world's investable wealth.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "FULL_INFLUENCE_COST_ACTIVIST / GLOBAL_INVESTABLE_ASSETS",
+  latex: "\\begin{gathered}\nC_{influence}/A_{investable} = \\frac{C_{influence}}{Assets_{invest}} = \\frac{\\$1.71T}{\\$305T} = 0.56\\%\n\\\\[0.5em]\n\\text{where } C_{influence} = C_{takeover} + f_{activist} \\times MarketCap_{sectors} = \\$873B + 0.05 \\times \\$16.7T = \\$1.71T\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
   manualPageTitle: "The Loving Takeover",
 };
@@ -6366,6 +6487,22 @@ export const GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL: Parameter = {
   confidenceInterval: [251944013945312.84, 544272263829645.25],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+};
+
+export const GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL: Parameter = {
+  value: 14900000000000.0,
+  parameterName: "GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_disease_total_market_cost_annual",
+  unit: "USD/year",
+  displayName: "Global Annual Total Market Cost of Disease",
+  description: "Total annual market cost of disease globally: direct medical costs ($9.9T) plus lost productivity from people too sick to work ($5T). This is the cash-cost sum a payer or economy actually bears, distinct from the DALY-based welfare burden, and is deliberately NOT added to that burden to avoid double-counting.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL + GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL",
+  latex: "\\begin{gathered}\nCost_{disease,market} \\\\\n= Cost_{medical,direct} + Loss_{productivity} \\\\\n= \\$9.9T + \\$5T \\\\\n= \\$14.9T\n\\end{gathered}",
+  confidenceInterval: [11924462024252.91, 18328394950626.133],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html",
+  manualPageTitle: "The Cost of Disease",
 };
 
 export const GLOBAL_GOVERNMENT_EXPENSE_ANNUAL: Parameter = {
@@ -7556,7 +7693,7 @@ export const PHARMA_LIVES_SAVED_ANNUAL: Parameter = {
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE: Parameter = {
-  value: 0.5185960162628752,
+  value: 0.518396307387133,
   parameterName: "POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-political_dysfunction_global_efficiency_score",
   unit: "percent",
@@ -7567,8 +7704,8 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE: Parameter = {
   sourceUrl: "https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html",
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED / POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE",
-  latex: "\\begin{gathered}\nE_{gov} = \\frac{W_{real}}{W_{max}} = \\frac{\\$109T}{\\$210T} = 51.9\\%\n\\\\[0.5em]\n\\text{where } W_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.2T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.9T + \\$1.3T = \\$6.2T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{max} = W_{real} + O_{total} = \\$109T + \\$101T = \\$210T\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [0.40285750489093114, 0.6460467646800714],
+  latex: "\\begin{gathered}\nE_{gov} = \\frac{W_{real}}{W_{max}} = \\frac{\\$109T}{\\$210T} = 51.8\\%\n\\\\[0.5em]\n\\text{where } W_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.28T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\\\[0.5em]\n\\text{where } W_{max} = W_{real} + O_{total} = \\$109T + \\$101T = \\$210T\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
+  confidenceInterval: [0.4026586240692923, 0.6457660335743484],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
   manualPageTitle: "The Political Dysfunction Tax",
 };
@@ -7610,7 +7747,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL: Parameter = {
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED: Parameter = {
-  value: 108803000000000.0,
+  value: 108716000000000.0,
   parameterName: "POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-political_dysfunction_global_realized_welfare_adjusted",
   unit: "USD",
@@ -7619,14 +7756,14 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED: Parameter =
   sourceType: "calculated",
   confidence: "medium",
   formula: "GLOBAL_GDP_2025 - POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL",
-  latex: "\\begin{gathered}\nW_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.2T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.9T + \\$1.3T = \\$6.2T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [108145295614758.08, 109425419956001.14],
+  latex: "\\begin{gathered}\nW_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.28T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [108072534372270.11, 109331296808188.38],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
   manualPageTitle: "The Political Dysfunction Tax",
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE: Parameter = {
-  value: 209803000000000.0,
+  value: 209716000000000.0,
   parameterName: "POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-political_dysfunction_global_theoretical_max_welfare",
   unit: "USD",
@@ -7635,14 +7772,14 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE: Parameter = {
   sourceType: "calculated",
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED + POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL",
-  latex: "\\begin{gathered}\nW_{max} = W_{real} + O_{total} = \\$109T + \\$101T = \\$210T\n\\\\[0.5em]\n\\text{where } W_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.2T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.9T + \\$1.3T = \\$6.2T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [168572662577360.28, 270154228978825.7],
+  latex: "\\begin{gathered}\nW_{max} = W_{real} + O_{total} = \\$109T + \\$101T = \\$210T\n\\\\[0.5em]\n\\text{where } W_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.28T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
+  confidenceInterval: [168454189795958.1, 270078068606313.3],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
   manualPageTitle: "The Political Dysfunction Tax",
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL: Parameter = {
-  value: 6197000000000.0,
+  value: 6284000000000.0,
   parameterName: "POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-political_dysfunction_global_waste_total",
   unit: "USD",
@@ -7651,8 +7788,8 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL + POLITICAL_DYSFUNCTION_GLOBAL_FOSSIL_FUEL_SUBSIDIES",
-  latex: "\\begin{gathered}\nW_{waste} = W_{total,US} + W_{ff,global} = \\$4.9T + \\$1.3T = \\$6.2T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [5574580043998.856, 6854704385241.933],
+  latex: "\\begin{gathered}\nW_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [5668703191811.627, 6927465627729.877],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
   manualPageTitle: "The Political Dysfunction Tax",
 };
@@ -9308,6 +9445,38 @@ export const US_CONGRESS_FULL_ADVOCACY_COST: Parameter = {
   manualPageTitle: "How Much Does It Cost to Buy All the Governments?",
 };
 
+export const US_DEFENSE_FIRST_PRINCIPLES_CUT_PCT: Parameter = {
+  value: 0.7923250564334086,
+  parameterName: "US_DEFENSE_FIRST_PRINCIPLES_CUT_PCT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_first_principles_cut_pct",
+  unit: "percent",
+  displayName: "First-Principles Defense Cut (%)",
+  description: "Implied cut from current US military spending (~$886B) to the first-principles homeland-defense optimum (~$184B): ~79%. For comparison, the US cut military spending 87.6% in two years after WWII.",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "1 - (US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL / US_MILITARY_SPENDING_2024_ANNUAL)",
+  latex: "\\begin{gathered}\nCut_{FP} = 1 - \\frac{D_{optimal}}{Spending_{US,2024}} = 1 - \\frac{\\$184B}{\\$886B} = 79.2\\%\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [0.757175929247832, 0.822107712881769],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
+export const US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL: Parameter = {
+  value: 184000000000.0,
+  parameterName: "US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_first_principles_optimal",
+  unit: "USD",
+  displayName: "First-Principles Optimal US Defense Budget",
+  description: "First-principles optimal US homeland-defense budget: the bottom-up sum of what defending the United States actually requires at efficient prices. Nuclear second strike $30B + homeland air/missile defense $35B + Coast Guard $14B + National Guard $30B + cyber defense $15B + mobilization hedge $60B = ~$184B. Honest range ~$130-260B. Compare: current ~$886B. Restraint-school proposals (Posen, Cato) and peer benchmarks land higher (~$450-675B) because they cost reduced hegemony and allied/peer deterrence, not homeland defense.",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "Nuclear + HomelandAirMissile + CoastGuard + NationalGuard + Cyber + MobilizationHedge",
+  latex: "\\begin{gathered}\nD_{optimal} \\\\\n= D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} \\\\\n+ D_{hedge} \\\\\n= \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B \\\\\n= \\$184B\n\\end{gathered}",
+  confidenceInterval: [157612566386.75262, 215142126686.42087],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
 export const US_FEDERAL_SPENDING_PER_CAPITA: Parameter = {
   value: 20298.507462686568,
   parameterName: "US_FEDERAL_SPENDING_PER_CAPITA",
@@ -9325,7 +9494,7 @@ export const US_FEDERAL_SPENDING_PER_CAPITA: Parameter = {
 };
 
 export const US_FED_DISCRETIONARY_EFFICIENCY: Parameter = {
-  value: 0.4052941176470588,
+  value: 0.35411764705882354,
   parameterName: "US_FED_DISCRETIONARY_EFFICIENCY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_fed_discretionary_efficiency",
   unit: "percent",
@@ -9334,14 +9503,14 @@ export const US_FED_DISCRETIONARY_EFFICIENCY: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "1 - (CAT1 / DISCRETIONARY)",
-  latex: "\\begin{gathered}\nE_{US,disc} = 1 - \\frac{W_{cat1}}{Spending_{US,disc}} = 1 - \\frac{\\$1.01T}{\\$1.7T} = 40.5\\%\n\\\\[0.5em]\n\\text{where } W_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$615B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.01T\n\\end{gathered}",
-  confidenceInterval: [0.32689644699491854, 0.4811199860112359],
+  latex: "\\begin{gathered}\nE_{US,disc} = 1 - \\frac{W_{cat1}}{Spending_{US,disc}} = 1 - \\frac{\\$1.1T}{\\$1.7T} = 35.4\\%\n\\\\[0.5em]\n\\text{where } W_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$702B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.1T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [0.3105714452719395, 0.39460627942629456],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_FED_DISCRETIONARY_WASTE_PCT: Parameter = {
-  value: 0.5947058823529412,
+  value: 0.6458823529411765,
   parameterName: "US_FED_DISCRETIONARY_WASTE_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_fed_discretionary_waste_pct",
   unit: "percent",
@@ -9350,14 +9519,14 @@ export const US_FED_DISCRETIONARY_WASTE_PCT: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING / US_FED_DISCRETIONARY_SPENDING_2024",
-  latex: "\\begin{gathered}\nW_{US,\\%disc} = \\frac{W_{cat1}}{Spending_{US,disc}} = \\frac{\\$1.01T}{\\$1.7T} = 59.5\\%\n\\\\[0.5em]\n\\text{where } W_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$615B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.01T\n\\end{gathered}",
-  confidenceInterval: [0.518880013988764, 0.6731035530050814],
+  latex: "\\begin{gathered}\nW_{US,\\%disc} = \\frac{W_{cat1}}{Spending_{US,disc}} = \\frac{\\$1.1T}{\\$1.7T} = 64.6\\%\n\\\\[0.5em]\n\\text{where } W_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$702B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.1T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [0.6053937205737054, 0.6894285547280605],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_GOVERNANCE_EFFICIENCY_GDP: Parameter = {
-  value: 0.8298471160528145,
+  value: 0.8268241834607366,
   parameterName: "US_GOVERNANCE_EFFICIENCY_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_governance_efficiency_gdp",
   unit: "percent",
@@ -9366,14 +9535,14 @@ export const US_GOVERNANCE_EFFICIENCY_GDP: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "1 - (US_GOV_WASTE_TOTAL / US_GDP)",
-  latex: "\\begin{gathered}\nE_{US,GDP} = 1 - \\frac{W_{total,US}}{GDP_{US}} = 1 - \\frac{\\$4.9T}{\\$28.8T} = 83\\%\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [0.8075515190590393, 0.8506329504115646],
+  latex: "\\begin{gathered}\nE_{US,GDP} = 1 - \\frac{W_{total,US}}{GDP_{US}} = 1 - \\frac{\\$4.98T}{\\$28.8T} = 82.7\\%\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [0.8050423286748402, 0.8474744297933989],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING: Parameter = {
-  value: 1011000000000.0,
+  value: 1098000000000.0,
   parameterName: "US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_category_1_direct_spending",
   unit: "USD",
@@ -9382,8 +9551,8 @@ export const US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "Military + Corporate + Drug War + Fossil + Agriculture",
-  latex: "\\begin{gathered}\nW_{cat1} \\\\\n= W_{military} + W_{corporate} + W_{drugs} + W_{fossil} \\\\\n+ W_{agriculture} \\\\\n= \\$615B + \\$181B + \\$90B + \\$50B + \\$75B \\\\\n= \\$1.01T\n\\end{gathered}",
-  confidenceInterval: [882096023780.8989, 1144276040108.6382],
+  latex: "\\begin{gathered}\nW_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$702B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.1T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [1029169324975.2993, 1172028543037.703],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
@@ -9436,8 +9605,24 @@ export const US_GOV_WASTE_CATEGORY_4_SYSTEM: Parameter = {
   manualPageTitle: "United States Efficiency Audit",
 };
 
+export const US_GOV_WASTE_MILITARY_OVERSPEND: Parameter = {
+  value: 702000000000.0,
+  parameterName: "US_GOV_WASTE_MILITARY_OVERSPEND",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_military_overspend",
+  unit: "USD",
+  displayName: "Military Overspend",
+  description: "US military spending above the first-principles homeland-defense optimum. Current US military spending (~$886B) supports global power projection (~750 overseas bases). A bottom-up, threat-by-threat homeland-defense budget is ~$184B (nuclear second strike $30B, homeland air/missile defense $35B, Coast Guard $14B, National Guard $30B, cyber defense $15B, mobilization hedge $60B). Delta = $886B - $184B = ~$702B 'Hegemony Tax'. [CATEGORY 1: Direct Spending]",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "US_MILITARY_SPENDING_2024_ANNUAL - US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL",
+  latex: "\\begin{gathered}\nW_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [670857873313.5792, 728387433613.2473],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
+  manualPageTitle: "United States Efficiency Audit",
+};
+
 export const US_GOV_WASTE_PCT_GDP: Parameter = {
-  value: 0.17015288394718556,
+  value: 0.17317581653926337,
   parameterName: "US_GOV_WASTE_PCT_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_pct_gdp",
   unit: "percent",
@@ -9446,14 +9631,14 @@ export const US_GOV_WASTE_PCT_GDP: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / US_GDP",
-  latex: "\\begin{gathered}\nW_{US,\\%GDP} = \\frac{W_{total,US}}{GDP_{US}} = \\frac{\\$4.9T}{\\$28.8T} = 17\\%\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [0.14936704958843536, 0.1924484809409607],
+  latex: "\\begin{gathered}\nW_{US,\\%GDP} = \\frac{W_{total,US}}{GDP_{US}} = \\frac{\\$4.98T}{\\$28.8T} = 17.3\\%\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [0.15252557020660104, 0.19495767132515984],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html",
   manualPageTitle: "Optimocracy: Causal Inference on Cross-Jurisdictional Policy Data to Maximize Median Health and Wealth",
 };
 
 export const US_GOV_WASTE_QALY_EQUIVALENTS: Parameter = {
-  value: 48970000.0,
+  value: 49840000.0,
   parameterName: "US_GOV_WASTE_QALY_EQUIVALENTS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_qaly_equivalents",
   unit: "QALYs",
@@ -9462,14 +9647,14 @@ export const US_GOV_WASTE_QALY_EQUIVALENTS: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / QALY_THRESHOLD",
-  latex: "\\begin{gathered}\nW_{US,QALY} = \\frac{W_{total,US}}{QALY_{threshold}} = \\frac{\\$4.9T}{\\$100K} = 49M\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [42987836.8715517, 55386672.814808495],
+  latex: "\\begin{gathered}\nW_{US,QALY} = \\frac{W_{total,US}}{QALY_{threshold}} = \\frac{\\$4.98T}{\\$100K} = 49.8M\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [43896859.10545978, 56108817.807381],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_GOV_WASTE_RAW_TOTAL: Parameter = {
-  value: 4897000000000.0,
+  value: 4984000000000.0,
   parameterName: "US_GOV_WASTE_RAW_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_raw_total",
   unit: "USD",
@@ -9478,14 +9663,14 @@ export const US_GOV_WASTE_RAW_TOTAL: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "SUM(all 10 components)",
-  latex: "\\begin{gathered}\nW_{raw,US} \\\\\n= W_{health} + W_{housing} + W_{military} + W_{regulatory} \\\\\n+ W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} \\\\\n+ W_{fossil} + W_{agriculture} \\\\\n= \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B \\\\\n+ \\$90B + \\$50B + \\$75B \\\\\n= \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [4298783687155.1694, 5538667281480.849],
+  latex: "\\begin{gathered}\nW_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [4389685910545.978, 5610881780738.1],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_GOV_WASTE_RECOVERABLE: Parameter = {
-  value: 2448500000000.0,
+  value: 2492000000000.0,
   parameterName: "US_GOV_WASTE_RECOVERABLE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_recoverable",
   unit: "USD",
@@ -9494,14 +9679,14 @@ export const US_GOV_WASTE_RECOVERABLE: Parameter = {
   sourceType: "calculated",
   confidence: "low",
   formula: "US_GOV_WASTE_TOTAL x 0.50",
-  latex: "\\begin{gathered}\nW_{US,recoverable} = W_{total,US} \\times 0.5 = \\$4.9T \\times 0.5 = \\$2.45T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [2149391843577.5847, 2769333640740.4243],
+  latex: "\\begin{gathered}\nW_{US,recoverable} = W_{total,US} \\times 0.5 = \\$4.98T \\times 0.5 = \\$2.49T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [2194842955272.989, 2805440890369.05],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_GOV_WASTE_TOTAL: Parameter = {
-  value: 4897000000000.0,
+  value: 4984000000000.0,
   parameterName: "US_GOV_WASTE_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_total",
   unit: "USD",
@@ -9510,14 +9695,14 @@ export const US_GOV_WASTE_TOTAL: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "SUM(all components)",
-  latex: "\\begin{gathered}\nW_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [4298783687155.1694, 5538667281480.849],
+  latex: "\\begin{gathered}\nW_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [4389685910545.978, 5610881780738.1],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_GOV_WASTE_VSL_EQUIVALENTS: Parameter = {
-  value: 357445.25547445257,
+  value: 363795.6204379562,
   parameterName: "US_GOV_WASTE_VSL_EQUIVALENTS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_vsl_equivalents",
   unit: "people",
@@ -9526,14 +9711,14 @@ export const US_GOV_WASTE_VSL_EQUIVALENTS: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / DOT_VSL",
-  latex: "\\begin{gathered}\nW_{US,VSL} = \\frac{W_{total,US}}{VSL_{DOT}} = \\frac{\\$4.9T}{\\$13.7M} = 357{,}000\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\end{gathered}",
-  confidenceInterval: [313779.83117920946, 404282.28331977],
+  latex: "\\begin{gathered}\nW_{US,VSL} = \\frac{W_{total,US}}{VSL_{DOT}} = \\frac{\\$4.98T}{\\$13.7M} = 364{,}000\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [320415.0299668597, 409553.4146524161],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
 
 export const US_GOV_WASTE_VS_TREATY_MULTIPLIER: Parameter = {
-  value: 180.03676470588235,
+  value: 183.23529411764707,
   parameterName: "US_GOV_WASTE_VS_TREATY_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_vs_treaty_multiplier",
   unit: "ratio",
@@ -9542,8 +9727,8 @@ export const US_GOV_WASTE_VS_TREATY_MULTIPLIER: Parameter = {
   sourceType: "calculated",
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / TREATY_ANNUAL_FUNDING",
-  latex: "\\begin{gathered}\nk_{waste:treaty} = \\frac{W_{total,US}}{Funding_{treaty}} = \\frac{\\$4.9T}{\\$27.2B} = 180\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.9T \\times 1 = \\$4.9T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$615B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.9T\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
-  confidenceInterval: [158.04351791011655, 203.62747358385474],
+  latex: "\\begin{gathered}\nk_{waste:treaty} = \\frac{W_{total,US}}{Funding_{treaty}} = \\frac{\\$4.98T}{\\$27.2B} = 183\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
+  confidenceInterval: [161.38551141713154, 206.28241840948897],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
   manualPageTitle: "United States Efficiency Audit",
 };
@@ -9562,6 +9747,38 @@ export const US_MAJOR_DISEASES_TOTAL_ANNUAL_COST: Parameter = {
   confidenceInterval: [1177394930253.4158, 1329089231537.2205],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html",
   manualPageTitle: "The Cost of Disease",
+};
+
+export const US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE: Parameter = {
+  value: 755651237.8902045,
+  parameterName: "US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_military_overspend_patients_fundable",
+  unit: "patients/year",
+  displayName: "Patients Fundable by Military Overspend (Pragmatic Trials)",
+  description: "Trial participants the annual US military overspend (~$702B) could fund at the empirical pragmatic-trial cost (~$929/patient): ~756M patients/year. Patient-based, the direct parallel of DFDA_PATIENTS_FUNDABLE_ANNUALLY (the treaty's ~23.4M).",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "US_GOV_WASTE_MILITARY_OVERSPEND / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT",
+  latex: "\\begin{gathered}\nN_{fundable,overspend} = \\frac{W_{military}}{Cost_{pragmatic,pt}} = \\frac{\\$702B}{\\$929} = 756M\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [297936110.2800162, 3041858754.455645],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/cost-benefit-of-hegemony.html",
+  manualPageTitle: "The Cost-Benefit Analysis of Global Hegemony",
+};
+
+export const US_MILITARY_OVERSPEND_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
+  value: 397.7111778369498,
+  parameterName: "US_MILITARY_OVERSPEND_TRIAL_CAPACITY_MULTIPLIER",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_military_overspend_trial_capacity_multiplier",
+  unit: "x",
+  displayName: "Military Overspend Pragmatic Trial Capacity Multiplier",
+  description: "Patients the overspend could fund in pragmatic trials (~756M/year at ~$929 each) relative to the ~1.9M people currently in trials: ~398x. Identical methodology to the treaty's DFDA_TRIAL_CAPACITY_MULTIPLIER (12.3x), scaled to the overspend. The current 1.9M is capped by the ~$41k cost of a traditional trial, NOT by a shortage of patients: aging is a universal trial population and billions have suboptimally-treated chronic disease. The binding constraint is building decentralized trial infrastructure, not patient supply.",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE / CURRENT_TRIAL_SLOTS_AVAILABLE",
+  latex: "\\begin{gathered}\nk_{capacity,overspend} = \\frac{N_{fundable,overspend}}{Slots_{curr}} = \\frac{756M}{1.9M} = 398\n\\\\[0.5em]\n\\text{where } N_{fundable,overspend} = \\frac{W_{military}}{Cost_{pragmatic,pt}} = \\frac{\\$702B}{\\$929} = 756M\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [158.36645234934966, 1634.301660236891],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/cost-benefit-of-hegemony.html",
+  manualPageTitle: "The Cost-Benefit Analysis of Global Hegemony",
 };
 
 export const US_MILITARY_SPENDING_CURRENT_VS_PREWAR_MULTIPLIER: Parameter = {
@@ -9637,8 +9854,8 @@ export const VICTORY_BOND_ANNUAL_PAYOUT: Parameter = {
   confidence: "high",
   formula: "TREATY_FUNDING × BOND_PCT",
   latex: "\\begin{gathered}\nPayout_{bond,ann} = Funding_{treaty} \\times Pct_{bond} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/financial-plan.html",
-  manualPageTitle: "Financial Plan",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/treaty-financial-plan.html",
+  manualPageTitle: "Treaty Financial Plan",
 };
 
 export const VICTORY_BOND_ANNUAL_RETURN_PCT: Parameter = {
@@ -11754,6 +11971,20 @@ export const IAB_POLITICAL_INCENTIVE_FUNDING_PCT: Parameter = {
   manualPageTitle: "Earth Optimization Protocol v1",
 };
 
+export const INFLUENCE_ACTIVIST_STAKE_FRACTION: Parameter = {
+  value: 0.05,
+  parameterName: "INFLUENCE_ACTIVIST_STAKE_FRACTION",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-influence_activist_stake_fraction",
+  unit: "ratio",
+  displayName: "Activist Stake Fraction",
+  description: "Activist equity stake assumed sufficient to win board influence when combined with index-fund votes, rather than buying outright control. Grounded in activist-investing precedent: Engine No. 1 won three ExxonMobil board seats with 0.02%, and Carl Icahn typically operates with 1-10% positions. 5% is a deliberately conservative central case; the real floor is far lower, because the universal-owner index funds that hold 60-75% of every prime supply the votes once shown the financial case.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.01, 0.1],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
+  manualPageTitle: "The Loving Takeover",
+};
+
 export const INSTITUTIONAL_INVESTOR_MIN: Parameter = {
   value: 10000000.0,
   parameterName: "INSTITUTIONAL_INVESTOR_MIN",
@@ -12490,6 +12721,96 @@ export const US_CONGRESS_MEMBER_COUNT: Parameter = {
   manualPageTitle: "Unrepresentative Democracy",
 };
 
+export const US_DEFENSE_FP_COAST_GUARD: Parameter = {
+  value: 14000000000.0,
+  parameterName: "US_DEFENSE_FP_COAST_GUARD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_fp_coast_guard",
+  unit: "USD",
+  displayName: "First-Principles Defense: Coast Guard",
+  description: "US Coast Guard (actual budget ~$14B). Maritime homeland security and coastal defense.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [12000000000.0, 16000000000.0],
+  stdError: 1500000000.0,
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
+export const US_DEFENSE_FP_CYBER: Parameter = {
+  value: 15000000000.0,
+  parameterName: "US_DEFENSE_FP_CYBER",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_fp_cyber",
+  unit: "USD",
+  displayName: "First-Principles Defense: Cyber Defense",
+  description: "Cyber defense of critical infrastructure: the primary modern attack vector that crosses oceans in milliseconds and is not stopped by geography.",
+  sourceType: "definition",
+  confidence: "medium",
+  confidenceInterval: [10000000000.0, 25000000000.0],
+  stdError: 4000000000.0,
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
+export const US_DEFENSE_FP_HOMELAND_AIR_MISSILE: Parameter = {
+  value: 35000000000.0,
+  parameterName: "US_DEFENSE_FP_HOMELAND_AIR_MISSILE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_fp_homeland_air_missile",
+  unit: "USD",
+  displayName: "First-Principles Defense: Homeland Air & Missile Defense",
+  description: "Continental air and missile defense plus early warning (NORAD, ground-based midcourse defense, interceptor aircraft). Defensive only; no expeditionary or power-projection air power.",
+  sourceType: "definition",
+  confidence: "medium",
+  confidenceInterval: [25000000000.0, 50000000000.0],
+  stdError: 7000000000.0,
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
+export const US_DEFENSE_FP_MOBILIZATION_HEDGE: Parameter = {
+  value: 60000000000.0,
+  parameterName: "US_DEFENSE_FP_MOBILIZATION_HEDGE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_fp_mobilization_hedge",
+  unit: "USD",
+  displayName: "First-Principles Defense: Mobilization Hedge",
+  description: "Mobilization hedge: defense R&D, a maintained industrial base, and a professional cadre force. The WWII lesson is to maintain the capacity to scale, not a standing empire: a peer buildup gives years of warning, and the US went from the 17th-ranked army in 1939 to victory in four years. This is the cheapest insurance and the most neglected.",
+  sourceType: "definition",
+  confidence: "medium",
+  confidenceInterval: [40000000000.0, 100000000000.0],
+  stdError: 15000000000.0,
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
+export const US_DEFENSE_FP_NATIONAL_GUARD: Parameter = {
+  value: 30000000000.0,
+  parameterName: "US_DEFENSE_FP_NATIONAL_GUARD",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_fp_national_guard",
+  unit: "USD",
+  displayName: "First-Principles Defense: National Guard",
+  description: "National Guard / territorial land defense: a citizen-soldier reserve (the Switzerland model) for homeland defense and disaster response.",
+  sourceType: "definition",
+  confidence: "medium",
+  confidenceInterval: [24000000000.0, 40000000000.0],
+  stdError: 4000000000.0,
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
+export const US_DEFENSE_FP_NUCLEAR_DETERRENT: Parameter = {
+  value: 30000000000.0,
+  parameterName: "US_DEFENSE_FP_NUCLEAR_DETERRENT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_fp_nuclear_deterrent",
+  unit: "USD",
+  displayName: "First-Principles Defense: Nuclear Second Strike",
+  description: "Survivable nuclear second strike: an SSBN-centric minimum credible deterrent (~100-200 survivable warheads on ballistic-missile submarines). The one threat geography does not neutralize. Drops the first-strike-attractive ICBM silos and the bomber leg. The UK and France each sustain continuous-at-sea deterrents within total defense budgets under $80B.",
+  sourceType: "definition",
+  confidence: "medium",
+  confidenceInterval: [20000000000.0, 50000000000.0],
+  stdError: 8000000000.0,
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
+  manualPageTitle: "The Eisenhower Curve",
+};
+
 export const US_DYSFUNCTION_PREMIUM_VS_SWITZERLAND: Parameter = {
   value: 3.0,
   parameterName: "US_DYSFUNCTION_PREMIUM_VS_SWITZERLAND",
@@ -13008,7 +13329,6 @@ export const parameters = {
   US_GOV_WASTE_FOSSIL_FUEL_SUBSIDIES,
   US_GOV_WASTE_HEALTHCARE_INEFFICIENCY,
   US_GOV_WASTE_HOUSING_ZONING,
-  US_GOV_WASTE_MILITARY_OVERSPEND,
   US_GOV_WASTE_REGULATORY_RED_TAPE,
   US_GOV_WASTE_TARIFFS,
   US_GOV_WASTE_TAX_COMPLIANCE,
@@ -13096,8 +13416,12 @@ export const parameters = {
   CURRENT_TRAJECTORY_GDP_YEAR_20,
   CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15,
   CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20,
+  DEFENSE_TAKEOVER_COST_ACTIVIST,
+  DEFENSE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
   DEFENSE_TAKEOVER_COST_TOTAL,
+  DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS,
+  DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS,
   DESTRUCTIVE_ECONOMY_25PCT_YEAR,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
@@ -13172,7 +13496,12 @@ export const parameters = {
   EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS,
   EXPLORATION_RATIO,
   FDA_TO_OXFORD_RECOVERY_TRIAL_TIME_MULTIPLIER,
+  FULL_CORPORATE_TAKEOVER_COST_ACTIVIST,
+  FULL_CORPORATE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS,
   FULL_INFLUENCE_COST_ACTIVIST,
+  FULL_INFLUENCE_COST_PER_HUMAN,
+  FULL_INFLUENCE_PCT_ANNUAL_SAVINGS,
+  FULL_INFLUENCE_PCT_INVESTABLE_ASSETS,
   GENE_THERAPY_DISEASE_COMBINATIONS,
   GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL,
   GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST,
@@ -13198,6 +13527,7 @@ export const parameters = {
   GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP,
   GLOBAL_DISEASE_DEATHS_PER_MINUTE,
   GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL,
+  GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL,
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   GLOBAL_HALE_GAP,
   GLOBAL_INDUSTRY_CLINICAL_TRIALS_SPENDING_ANNUAL,
@@ -13381,6 +13711,8 @@ export const parameters = {
   UNEXPLORED_RATIO,
   US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT,
   US_CONGRESS_FULL_ADVOCACY_COST,
+  US_DEFENSE_FIRST_PRINCIPLES_CUT_PCT,
+  US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL,
   US_FEDERAL_SPENDING_PER_CAPITA,
   US_FED_DISCRETIONARY_EFFICIENCY,
   US_FED_DISCRETIONARY_WASTE_PCT,
@@ -13389,6 +13721,7 @@ export const parameters = {
   US_GOV_WASTE_CATEGORY_2_COMPLIANCE,
   US_GOV_WASTE_CATEGORY_3_GDP_LOSS,
   US_GOV_WASTE_CATEGORY_4_SYSTEM,
+  US_GOV_WASTE_MILITARY_OVERSPEND,
   US_GOV_WASTE_PCT_GDP,
   US_GOV_WASTE_QALY_EQUIVALENTS,
   US_GOV_WASTE_RAW_TOTAL,
@@ -13397,6 +13730,8 @@ export const parameters = {
   US_GOV_WASTE_VSL_EQUIVALENTS,
   US_GOV_WASTE_VS_TREATY_MULTIPLIER,
   US_MAJOR_DISEASES_TOTAL_ANNUAL_COST,
+  US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE,
+  US_MILITARY_OVERSPEND_TRIAL_CAPACITY_MULTIPLIER,
   US_MILITARY_SPENDING_CURRENT_VS_PREWAR_MULTIPLIER,
   US_POLITICAL_REFORM_INVESTMENT_TOTAL,
   US_SENATE_TREATY_ADVOCACY_COST,
@@ -13547,6 +13882,7 @@ export const parameters = {
   HUMAN_PROTEIN_CODING_GENES,
   IAB_MECHANISM_ANNUAL_COST,
   IAB_POLITICAL_INCENTIVE_FUNDING_PCT,
+  INFLUENCE_ACTIVIST_STAKE_FRACTION,
   INSTITUTIONAL_INVESTOR_MIN,
   LEADED_GASOLINE_ERA_YEARS,
   LOBBYIST_BOND_INVESTMENT_MAX,
@@ -13601,6 +13937,12 @@ export const parameters = {
   TREATY_REDUCTION_PCT,
   TRIAL_RELEVANT_DISEASES_COUNT,
   US_CONGRESS_MEMBER_COUNT,
+  US_DEFENSE_FP_COAST_GUARD,
+  US_DEFENSE_FP_CYBER,
+  US_DEFENSE_FP_HOMELAND_AIR_MISSILE,
+  US_DEFENSE_FP_MOBILIZATION_HEDGE,
+  US_DEFENSE_FP_NATIONAL_GUARD,
+  US_DEFENSE_FP_NUCLEAR_DETERRENT,
   US_DYSFUNCTION_PREMIUM_VS_SWITZERLAND,
   US_GOV_WASTE_OVERLAP_DISCOUNT,
   US_POLITICAL_EFFORT_MULTIPLIER,
@@ -16131,10 +16473,10 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 823,
-  external: 237,
-  calculated: 415,
-  definitions: 171,
+  total: 844,
+  external: 236,
+  calculated: 430,
+  definitions: 178,
   citations: 181,
 } as const;
 

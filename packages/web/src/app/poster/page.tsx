@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { CampaignQrCode } from "@/components/sharing/campaign-qr-code";
 import { authOptions } from "@/lib/auth";
 import { CAMPAIGN_PRINT_COPY } from "@/lib/messaging";
@@ -21,6 +22,18 @@ function getVisibleTargetUrl(qrTarget: string) {
   return qrTarget.replace(/^https?:\/\//, "");
 }
 
+function getPosterUrlStyle(visibleTargetUrl: string): CSSProperties {
+  const normalizedLength = Math.max(visibleTargetUrl.length, 1);
+  const fontCqw = Math.min(7.9, Math.max(3, 130 / normalizedLength));
+  const cardFontCqw = Math.min(5.8, Math.max(3, 126 / normalizedLength));
+
+  return {
+    "--poster-url-font-size": `${fontCqw.toFixed(2)}cqw`,
+    "--poster-card-url-font-size": `${cardFontCqw.toFixed(2)}cqw`,
+    whiteSpace: normalizedLength <= 42 ? "nowrap" : undefined,
+  } as CSSProperties;
+}
+
 export default async function PosterPage({
   searchParams,
 }: {
@@ -37,6 +50,7 @@ export default async function PosterPage({
   );
   const qrTarget = buildUserReferralUrl(session?.user, CAMPAIGN_ORIGIN);
   const visibleTargetUrl = getVisibleTargetUrl(qrTarget);
+  const visibleTargetUrlStyle = getPosterUrlStyle(visibleTargetUrl);
   const paperSize = normalizePaperSize(params.paper);
 
   return (
@@ -47,6 +61,7 @@ export default async function PosterPage({
         }
 
         .poster-sheet {
+          container-type: inline-size;
           width: min(100%, 8.5in);
           min-height: 11in;
           overflow: hidden;
@@ -62,37 +77,64 @@ export default async function PosterPage({
         .poster-headline-line {
           display: block;
           font-weight: 900;
-          line-height: 0.86;
+          line-height: 1.06;
           white-space: nowrap;
           width: 100%;
         }
 
         .poster-headline-line-0 {
-          font-size: clamp(4rem, 10vw, 5.9rem);
+          font-size: clamp(2.45rem, 12cqw, 6rem);
         }
 
         .poster-headline-line-1 {
-          font-size: clamp(4.6rem, 11vw, 6.65rem);
+          font-size: clamp(2.65rem, 13.1cqw, 6.55rem);
         }
 
         .poster-headline-line-2 {
-          font-size: clamp(5.4rem, 12vw, 8rem);
+          font-size: clamp(4.15rem, 15.6cqw, 7.8rem);
         }
 
         .poster-headline-line-3 {
-          font-size: clamp(3.55rem, 8vw, 4.8rem);
-        }
-
-        .poster-favicon {
-          display: block;
-          width: clamp(3rem, 11vw, 0.95in);
-          height: auto;
+          font-size: clamp(1.9rem, 8.5cqw, 4.25rem);
         }
 
         .poster-qr svg {
           display: block;
-          width: min(42vw, 1.8in);
+          width: min(56cqw, 3.15in);
           height: auto;
+        }
+
+        .poster-qr-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: clamp(0.7rem, 4.5cqw, 0.36in);
+        }
+
+        .poster-favicon {
+          display: block;
+          width: clamp(3.35rem, 15cqw, 1.35in);
+          height: auto;
+        }
+
+        .poster-visible-url {
+          font-size: clamp(1.35rem, var(--poster-url-font-size), 0.7in);
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+
+        .poster-footer {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          align-self: center;
+          gap: clamp(0.85rem, 3.5cqw, 0.3in);
+          text-align: center;
+          width: 100cqw;
+        }
+
+        .poster-url-label {
+          font-size: clamp(1.05rem, 3.8cqw, 0.3in);
         }
 
         .poster-sheet[data-paper-size="card"] {
@@ -103,35 +145,41 @@ export default async function PosterPage({
         .poster-card-line {
           display: block;
           font-weight: 900;
-          line-height: 0.9;
+          line-height: 0.98;
           text-transform: uppercase;
           white-space: nowrap;
         }
 
         .poster-card-line-0 {
-          font-size: clamp(0.98rem, 5vw, 0.24in);
+          font-size: clamp(0.86rem, 7.8cqw, 0.22in);
         }
 
         .poster-card-line-1 {
-          font-size: clamp(1.18rem, 5.9vw, 0.31in);
+          font-size: clamp(1rem, 9.4cqw, 0.265in);
         }
 
         .poster-card-line-2 {
-          font-size: clamp(0.92rem, 4.7vw, 0.23in);
+          font-size: clamp(0.8rem, 7.2cqw, 0.2in);
         }
 
         .poster-card-line-3 {
-          font-size: clamp(0.96rem, 4.8vw, 0.24in);
+          font-size: clamp(0.86rem, 7.8cqw, 0.22in);
         }
 
-        .poster-card-line-4 {
+        .poster-card-url {
+          display: block;
           font-family: "Courier New", monospace;
-          font-size: clamp(0.7rem, 3.5vw, 0.16in);
+          font-size: clamp(0.55rem, var(--poster-card-url-font-size), 0.19in);
+          font-weight: 900;
+          line-height: 1;
+          overflow-wrap: anywhere;
+          text-transform: uppercase;
+          word-break: break-word;
         }
 
         .poster-card-qr svg {
           display: block;
-          width: min(26vw, 1.15in);
+          width: min(30cqw, 1in);
           height: auto;
         }
 
@@ -219,19 +267,19 @@ export default async function PosterPage({
           }
 
           .poster-headline-line-0 {
-            font-size: 0.98in !important;
+            font-size: 0.94in !important;
           }
 
           .poster-headline-line-1 {
-            font-size: 1.12in !important;
+            font-size: 1in !important;
           }
 
           .poster-headline-line-2 {
-            font-size: 1.34in !important;
+            font-size: 1.42in !important;
           }
 
           .poster-headline-line-3 {
-            font-size: 0.8in !important;
+            font-size: 0.68in !important;
           }
 
           .poster-sheet[data-paper-size="a4"] {
@@ -247,24 +295,24 @@ export default async function PosterPage({
           }
 
           .poster-sheet[data-paper-size="a4"] .poster-headline-line-0 {
-            font-size: 24mm !important;
+            font-size: 22.5mm !important;
           }
 
           .poster-sheet[data-paper-size="a4"] .poster-headline-line-1 {
-            font-size: 27mm !important;
+            font-size: 24.1mm !important;
           }
 
           .poster-sheet[data-paper-size="a4"] .poster-headline-line-2 {
-            font-size: 32mm !important;
+            font-size: 34.3mm !important;
           }
 
           .poster-sheet[data-paper-size="a4"] .poster-headline-line-3 {
-            font-size: 19mm !important;
+            font-size: 16.8mm !important;
           }
 
           .poster-qr svg {
-            width: 1.65in !important;
-            height: 1.65in !important;
+            width: 2.95in !important;
+            height: 2.95in !important;
           }
 
           .poster-qr {
@@ -272,7 +320,7 @@ export default async function PosterPage({
           }
 
           .poster-favicon {
-            width: 0.9in !important;
+            width: 1.25in !important;
           }
 
           .poster-sheet[data-paper-size="card"] {
@@ -285,28 +333,28 @@ export default async function PosterPage({
           }
 
           .poster-card-line-0 {
-            font-size: 0.24in !important;
+            font-size: 0.22in !important;
           }
 
           .poster-card-line-1 {
-            font-size: 0.31in !important;
+            font-size: 0.265in !important;
           }
 
           .poster-card-line-2 {
-            font-size: 0.23in !important;
+            font-size: 0.2in !important;
           }
 
           .poster-card-line-3 {
-            font-size: 0.24in !important;
+            font-size: 0.22in !important;
           }
 
-          .poster-card-line-4 {
-            font-size: 0.16in !important;
+          .poster-card-url {
+            font-size: clamp(0.1in, var(--poster-card-url-font-size), 0.18in) !important;
           }
 
           .poster-card-qr svg {
-            width: 1.05in !important;
-            height: 1.05in !important;
+            width: 1in !important;
+            height: 1in !important;
           }
         }
       `}</style>
@@ -384,15 +432,15 @@ export default async function PosterPage({
         aria-label={`Printable War on Disease referral poster for ${visibleTargetUrl}`}
         className={`poster-sheet mx-auto border-2 border-foreground bg-background text-foreground ${
           paperSize === "card"
-            ? "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-[clamp(0.45rem,4vw,0.16in)] p-[clamp(0.45rem,4vw,0.12in)]"
-            : "flex flex-col justify-between p-[clamp(1.1rem,5vw,0.65in)]"
+            ? "grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] items-center gap-x-[clamp(0.3rem,2vw,0.08in)] gap-y-[clamp(0.16rem,1.5vw,0.06in)] p-[clamp(0.45rem,4vw,0.12in)]"
+            : "flex flex-col justify-center gap-[clamp(1.35rem,6vw,0.82in)] p-[clamp(1rem,5vw,0.62in)]"
         }`}
         data-paper-size={paperSize}
       >
         {paperSize === "card" ? (
           <>
             <div className="min-w-0 text-left">
-              {CAMPAIGN_PRINT_COPY.businessCardLines.map((line, index) => (
+              {CAMPAIGN_PRINT_COPY.businessCardLines.slice(0, -1).map((line, index) => (
                 <span
                   className={`poster-card-line poster-card-line-${index}`}
                   key={line}
@@ -404,10 +452,16 @@ export default async function PosterPage({
             <div className="poster-card-qr w-fit border-2 border-foreground bg-background p-[clamp(0.16rem,1.4vw,0.06in)]">
               <CampaignQrCode value={qrTarget} />
             </div>
+            <p
+              className="poster-card-url col-span-2 min-w-0 text-center"
+              style={visibleTargetUrlStyle}
+            >
+              {visibleTargetUrl}
+            </p>
           </>
         ) : (
           <>
-            <div className="flex min-h-0 flex-1 items-center justify-center py-[clamp(1rem,4vw,0.45in)] text-center">
+            <div className="flex min-h-0 items-center justify-center text-center">
               <h2 className="poster-headline w-full max-w-full uppercase tracking-normal text-foreground">
                 {CAMPAIGN_PRINT_COPY.flyerHeadlineLines.map((line, index) => (
                   <span
@@ -420,25 +474,38 @@ export default async function PosterPage({
               </h2>
             </div>
 
-            <footer className="grid items-end gap-[clamp(0.8rem,3vw,0.28in)] sm:grid-cols-[auto_1fr_auto]">
-              <img
-                alt=""
-                aria-hidden="true"
-                className="poster-favicon"
-                height={512}
-                src={POSTER_FAVICON_SRC}
-                width={512}
-              />
+            <footer className="poster-footer">
+              <div className="poster-qr-row">
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  className="poster-favicon"
+                  height={512}
+                  src={POSTER_FAVICON_SRC}
+                  width={512}
+                />
+                <div className="poster-qr w-fit border-2 border-foreground bg-background p-[clamp(0.45rem,2vw,0.15in)]">
+                  <CampaignQrCode value={qrTarget} />
+                </div>
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  className="poster-favicon"
+                  height={512}
+                  src={POSTER_FAVICON_SRC}
+                  width={512}
+                />
+              </div>
               <div className="min-w-0">
-                <p className="text-[clamp(0.8rem,2vw,0.2in)] font-bold uppercase leading-none text-muted-foreground">
+                <p className="poster-url-label font-bold uppercase leading-none text-muted-foreground">
                   Scan or type
                 </p>
-                <p className="mt-2 break-all text-[clamp(1.35rem,4.2vw,0.44in)] font-bold uppercase leading-none text-foreground">
+                <p
+                  className="poster-visible-url mt-2 font-bold uppercase leading-none text-foreground"
+                  style={visibleTargetUrlStyle}
+                >
                   {visibleTargetUrl}
                 </p>
-              </div>
-              <div className="poster-qr w-fit border-2 border-foreground bg-background p-[clamp(0.45rem,2vw,0.15in)]">
-                <CampaignQrCode value={qrTarget} />
               </div>
             </footer>
           </>

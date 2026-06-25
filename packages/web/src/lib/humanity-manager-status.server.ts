@@ -72,7 +72,10 @@ function buildDirectReferralDownstreamCountMap(
   return counts;
 }
 
-function daysBetween(now: Date, value: Date | string | null | undefined): number {
+function daysBetween(
+  now: Date,
+  value: Date | string | null | undefined,
+): number {
   if (!value) return 0;
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return 0;
@@ -130,7 +133,8 @@ function formatCompletedInvitation(
 ): HumanityManagerStatusCompletedEmployee {
   const convertedUserId = invitation.convertedVote?.userId?.trim();
   return {
-    completedAt: invitation.convertedAt ?? invitation.convertedVote?.createdAt ?? null,
+    completedAt:
+      invitation.convertedAt ?? invitation.convertedVote?.createdAt ?? null,
     displayName:
       invitation.convertedVote?.person?.displayName?.trim() ||
       invitation.convertedVote?.user?.person?.displayName?.trim() ||
@@ -367,15 +371,18 @@ export async function loadHumanityManagerStatus(input: {
         user: input.user,
       }),
     )
-    .filter((reminder): reminder is HumanityManagerStatusReminder => reminder != null)
-    .slice(0, 3);
+    .filter(
+      (reminder): reminder is HumanityManagerStatusReminder => reminder != null,
+    );
 
   return {
     completedEmployees: convertedInvitations.map((invitation) =>
       formatCompletedInvitation(invitation, directReferralDownstreamCounts),
     ),
     directConversionCount,
-    downstreamConversionCount: clampNumber(input.user.downstreamConversionCount),
+    downstreamConversionCount: clampNumber(
+      input.user.downstreamConversionCount,
+    ),
     kFactor30d,
     overdueEmployeeCount,
     overdueEmployees: overdueEmployees.map((invitation) => ({

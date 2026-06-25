@@ -5,7 +5,7 @@ import {
   shouldRunPreviewSmoke,
 } from "./preview-smoke-scope.mjs";
 
-test("skips preview smoke for workflow-only deployment plumbing", () => {
+test("skips database-gated preview smoke scope for workflow-only deployment plumbing", () => {
   const files = [
     ".github/workflows/ci.yml",
     ".github/workflows/smoke-deploy.yml",

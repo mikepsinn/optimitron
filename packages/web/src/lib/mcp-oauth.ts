@@ -118,7 +118,11 @@ export function verifyPkceChallenge(
 // loopback redirect URIs, while still matching the registered scheme/path.
 function isLoopbackHost(hostname: string) {
   const normalized = hostname.toLowerCase();
-  return normalized === "localhost" || normalized === "127.0.0.1" || normalized === "::1";
+  return (
+    normalized === "localhost" ||
+    normalized === "127.0.0.1" ||
+    normalized === "::1"
+  );
 }
 
 function isSameLoopbackRedirect(registeredUri: string, requestedUri: string) {
@@ -137,7 +141,10 @@ function isSameLoopbackRedirect(registeredUri: string, requestedUri: string) {
   }
 }
 
-export function isRedirectUriAllowed(registeredUris: string[], requestedUri: string | null | undefined) {
+export function isRedirectUriAllowed(
+  registeredUris: string[],
+  requestedUri: string | null | undefined,
+) {
   if (!requestedUri) return false;
   return registeredUris.some(
     (registeredUri) =>
@@ -194,7 +201,7 @@ export function getProtectedResourceMetadata() {
     scopes_supported: ALL_WIRE_SCOPES,
     bearer_methods_supported: ["header"],
     resource_name: "Optimitron MCP Server",
-    resource_documentation: `${issuer}/developers`,
+    resource_documentation: `${issuer}/mcp`,
   };
 }
 

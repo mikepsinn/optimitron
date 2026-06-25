@@ -137,7 +137,7 @@ export const ROUTES = {
   moronia: "/moronia",
   // Meta
   declaration: "/declaration",
-  developers: "/developers",
+  mcp: "/mcp",
   demo: "/demo",
   search: "/search",
   video: "/video",
@@ -626,6 +626,18 @@ export const toolsLink: NavItem = {
   screenshot: true,
 
   cta: "Open Tools",
+};
+
+export const mcpLink: NavItem = {
+  href: ROUTES.mcp,
+  label: "MCP",
+  emoji: "🔌",
+  description:
+    "Connect Claude, ChatGPT, or another MCP client to the live Optimitron task graph so your agent can choose useful work, read the evidence, and leave an audit trail.",
+  tagline: "Connect your AI agent to the live task graph",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Install MCP",
 };
 
 export const efficiencyLink: NavItem = {
@@ -1207,6 +1219,7 @@ export const navSections: NavSection[] = [
       conditionsLink,
       treatmentsLink,
       toolsLink,
+      mcpLink,
       fundLink,
       wishocracyLink,
       alignmentLink,
@@ -1280,6 +1293,7 @@ export const toolSections: NavSection[] = [
       presidentManagementLink,
       transmitLink,
       dashboardLink,
+      mcpLink,
       censusLink,
       checkInLink,
     ],
@@ -1299,6 +1313,7 @@ export const footerAppLinks: NavItem[] = [
   censusLink,
   settingsLink,
   transmitLink,
+  mcpLink,
 ];
 
 export const feedbackLink: NavItem = {
@@ -1751,6 +1766,7 @@ export const routeReviewNavItems = [
   jokeLink,
   storeLink,
   shirtLink,
+  mcpLink,
   privacyLink,
   settingsLink,
   termsLink,
