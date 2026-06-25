@@ -46,35 +46,69 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const deployment = context.payload.deployment || {};
+            const eventDeployment = context.payload.deployment || {};
             const initialStatus = context.payload.deployment_status || {};
-            const deploymentId =
-              deployment.id ||
+            const eventDeploymentId =
+              eventDeployment.id ||
               initialStatus.deployment_id ||
               initialStatus.deployment?.id;
+            const eventDeploymentCreator = String(
+              eventDeployment.creator?.login ||
+                initialStatus.deployment?.creator?.login ||
+                "",
+            );
+            const deploymentSha = String(
+              eventDeployment.sha ||
+                initialStatus.deployment?.sha ||
+                context.sha ||
+                "",
+            );
             const timeoutMs = 20 * 60 * 1000;
             const intervalMs = 10 * 1000;
             const deadline = Date.now() + timeoutMs;
             const terminalFailures = new Set(["failure", "error", "inactive"]);
             let lastStatus = "not found";
 
-            async function latestDeploymentStatus() {
-              if (!deploymentId) return initialStatus;
+            async function resolveVercelDeployment() {
+              if (eventDeploymentId && eventDeploymentCreator === "vercel[bot]") {
+                return eventDeployment;
+              }
+              const { data } = await github.rest.repos.listDeployments({
+                owner,
+                repo,
+                sha: deploymentSha,
+                per_page: 50,
+              });
+              return (
+                data.find((deployment) => deployment.creator?.login === "vercel[bot]") ||
+                null
+              );
+            }
+
+            async function latestDeploymentStatus(deployment) {
               const { data } = await github.rest.repos.listDeploymentStatuses({
                 owner,
                 repo,
-                deployment_id: deploymentId,
+                deployment_id: deployment.id,
                 per_page: 10,
               });
               return data[0] || initialStatus;
             }
 
             while (Date.now() < deadline) {
-              const status = await latestDeploymentStatus();
+              const deployment = await resolveVercelDeployment();
+              if (!deployment?.id) {
+                lastStatus = `no Vercel deployment found for ${deploymentSha}`;
+                core.info(`Deployment status: ${lastStatus}`);
+                await new Promise((resolve) => setTimeout(resolve, intervalMs));
+                continue;
+              }
+
+              const status = await latestDeploymentStatus(deployment);
               const state = String(status.state || "").toLowerCase();
               const environmentUrl = String(status.environment_url || "").trim();
               const environment = String(
-                status.environment || deployment.environment || "",
+                status.environment || deployment.environment || eventDeployment.environment || "",
               );
               lastStatus = `${state || "unknown"} ${environmentUrl || "(no URL yet)"}`;
               core.info(`Deployment status: ${lastStatus}`);
@@ -541,31 +575,65 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const deployment = context.payload.deployment || {};
+            const eventDeployment = context.payload.deployment || {};
             const initialStatus = context.payload.deployment_status || {};
-            const deploymentId =
-              deployment.id ||
+            const eventDeploymentId =
+              eventDeployment.id ||
               initialStatus.deployment_id ||
               initialStatus.deployment?.id;
+            const eventDeploymentCreator = String(
+              eventDeployment.creator?.login ||
+                initialStatus.deployment?.creator?.login ||
+                "",
+            );
+            const deploymentSha = String(
+              eventDeployment.sha ||
+                initialStatus.deployment?.sha ||
+                context.sha ||
+                "",
+            );
             const timeoutMs = 20 * 60 * 1000;
             const intervalMs = 10 * 1000;
             const deadline = Date.now() + timeoutMs;
             const terminalFailures = new Set(["failure", "error", "inactive"]);
             let lastStatus = "not found";
 
-            async function latestDeploymentStatus() {
-              if (!deploymentId) return initialStatus;
+            async function resolveVercelDeployment() {
+              if (eventDeploymentId && eventDeploymentCreator === "vercel[bot]") {
+                return eventDeployment;
+              }
+              const { data } = await github.rest.repos.listDeployments({
+                owner,
+                repo,
+                sha: deploymentSha,
+                per_page: 50,
+              });
+              return (
+                data.find((deployment) => deployment.creator?.login === "vercel[bot]") ||
+                null
+              );
+            }
+
+            async function latestDeploymentStatus(deployment) {
               const { data } = await github.rest.repos.listDeploymentStatuses({
                 owner,
                 repo,
-                deployment_id: deploymentId,
+                deployment_id: deployment.id,
                 per_page: 10,
               });
               return data[0] || initialStatus;
             }
 
             while (Date.now() < deadline) {
-              const status = await latestDeploymentStatus();
+              const deployment = await resolveVercelDeployment();
+              if (!deployment?.id) {
+                lastStatus = `no Vercel deployment found for ${deploymentSha}`;
+                core.info(`Deployment status: ${lastStatus}`);
+                await new Promise((resolve) => setTimeout(resolve, intervalMs));
+                continue;
+              }
+
+              const status = await latestDeploymentStatus(deployment);
               const state = String(status.state || "").toLowerCase();
               const environmentUrl = String(status.environment_url || "").trim();
               lastStatus = `${state || "unknown"} ${environmentUrl || "(no URL yet)"}`;

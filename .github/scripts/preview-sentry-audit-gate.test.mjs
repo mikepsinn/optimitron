@@ -55,6 +55,11 @@ test("deploy smoke waits for a successful deployment URL instead of skipping ear
   );
   assert.match(
     workflow,
+    /listDeployments[\s\S]*vercel\[bot\]/u,
+    "deployment-status events from GitHub environments should resolve the Vercel deployment for the SHA",
+  );
+  assert.match(
+    workflow,
     /BASE_URL: \$\{\{ steps\.deployment_status\.outputs\.environment_url \}\}/u,
   );
   assert.match(
