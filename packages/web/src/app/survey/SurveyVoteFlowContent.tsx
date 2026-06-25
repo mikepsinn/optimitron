@@ -17,10 +17,7 @@ export function SurveyVoteFlowContent(props: TreatyVoteFlowProps) {
 
     function measuredHeight() {
       return Math.ceil(
-        Math.max(
-          document.documentElement.scrollHeight,
-          document.body?.scrollHeight ?? 0,
-        ),
+        document.body?.scrollHeight ?? document.documentElement.scrollHeight,
       );
     }
 

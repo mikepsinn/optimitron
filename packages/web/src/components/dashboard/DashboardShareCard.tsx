@@ -3,6 +3,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ComponentType,
   type FormEvent,
@@ -24,7 +25,14 @@ interface DashboardShareCardProps {
 
 type ShareState = "idle" | "shared" | "copied" | "error";
 type AssignmentState = "idle" | "creating" | "created" | "copyFailed" | "error";
-type ShareChannel = "native" | "sms" | "whatsapp" | "email" | "x" | "facebook" | "copy";
+type ShareChannel =
+  | "native"
+  | "sms"
+  | "whatsapp"
+  | "email"
+  | "x"
+  | "facebook"
+  | "copy";
 type ShareButtonConfig = {
   channel: Exclude<ShareChannel, "native" | "copy">;
   href: string;
@@ -36,7 +44,9 @@ type ShareButtonConfig = {
 
 function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(text).catch(() => copyWithTextarea(text));
+    return navigator.clipboard
+      .writeText(text)
+      .catch(() => copyWithTextarea(text));
   }
   return copyWithTextarea(text);
 }
@@ -77,7 +87,9 @@ function getShareUrls(message: string, referralUrl: string) {
 
 function buildInviteUrl(referralUrl: string, inviteToken: string) {
   const baseUrl =
-    typeof window === "undefined" ? "https://warondisease.org" : window.location.origin;
+    typeof window === "undefined"
+      ? "https://warondisease.org"
+      : window.location.origin;
   const url = new URL(referralUrl, baseUrl);
   url.searchParams.set("invite", inviteToken);
   return url.toString();
@@ -99,6 +111,7 @@ export function DashboardShareCard({
   const [assignmentState, setAssignmentState] =
     useState<AssignmentState>("idle");
   const [assignmentStatus, setAssignmentStatus] = useState<string | null>(null);
+  const assignmentResetTimerRef = useRef<number | null>(null);
   const [nativeShareSupported, setNativeShareSupported] = useState(false);
   const [shareState, setShareState] = useState<ShareState>("idle");
   const shareUrls = useMemo(
@@ -112,14 +125,31 @@ export function DashboardShareCard({
     );
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (assignmentResetTimerRef.current !== null) {
+        window.clearTimeout(assignmentResetTimerRef.current);
+      }
+    };
+  }, []);
+
   function resetShareState() {
     window.setTimeout(() => setShareState("idle"), 2000);
   }
 
+  function clearAssignmentResetTimer() {
+    if (assignmentResetTimerRef.current !== null) {
+      window.clearTimeout(assignmentResetTimerRef.current);
+      assignmentResetTimerRef.current = null;
+    }
+  }
+
   function resetAssignmentState() {
-    window.setTimeout(() => {
+    clearAssignmentResetTimer();
+    assignmentResetTimerRef.current = window.setTimeout(() => {
       setAssignmentState("idle");
       setAssignmentStatus(null);
+      assignmentResetTimerRef.current = null;
     }, 3500);
   }
 
@@ -131,7 +161,10 @@ export function DashboardShareCard({
       headers: { "Content-Type": "application/json" },
       method: "POST",
     }).catch((error) => {
-      console.error("[share-track] dashboard share telemetry POST failed", error);
+      console.error(
+        "[share-track] dashboard share telemetry POST failed",
+        error,
+      );
     });
   }
 
@@ -185,6 +218,8 @@ export function DashboardShareCard({
       return;
     }
 
+    clearAssignmentResetTimer();
+
     try {
       setAssignmentState("creating");
       setAssignmentStatus(null);
@@ -207,7 +242,9 @@ export function DashboardShareCard({
         await copyToClipboard(assignmentMessage);
         trackShare("copy");
         setAssignmentState("created");
-        setAssignmentStatus(`${recipientName}'s voting task was created and copied.`);
+        setAssignmentStatus(
+          `${recipientName}'s voting task was created and copied.`,
+        );
       } catch {
         setAssignmentState("copyFailed");
         setAssignmentStatus(
@@ -277,13 +314,13 @@ export function DashboardShareCard({
     },
   ];
 
-  const secondaryButtonClass =
-    cn(defaultButtonClassName, "min-h-11 px-3 py-2 text-xs tracking-[0.08em]");
+  const secondaryButtonClass = cn(
+    defaultButtonClassName,
+    "min-h-11 px-3 py-2 text-xs tracking-[0.08em]",
+  );
 
   const nativeButtonLabel =
-    shareState === "shared"
-      ? "Shared"
-      : "Share with two humans";
+    shareState === "shared" ? "Shared" : "Share with two humans";
 
   const copyButtonLabel =
     shareState === "copied"
@@ -317,7 +354,11 @@ export function DashboardShareCard({
   }
 
   function getStatusLabel() {
-    return shareStatus ? <span className="sr-only" aria-live="polite">{shareStatus}</span> : null;
+    return shareStatus ? (
+      <span className="sr-only" aria-live="polite">
+        {shareStatus}
+      </span>
+    ) : null;
   }
 
   function renderShareButton(button: (typeof shareButtons)[number]) {
@@ -436,7 +477,7 @@ export function DashboardShareCard({
               ? "Task copied"
               : assignmentState === "copyFailed"
                 ? "Task created"
-              : "Create Task + Copy"}
+                : "Create Task + Copy"}
         </button>
         {assignmentStatus ? (
           <p

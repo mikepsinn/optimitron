@@ -96,7 +96,9 @@ describe("DashboardShareCard", () => {
     await act(async () => {
       Simulate.change(firstName!, { target: { value: "Ada" } } as never);
       Simulate.change(lastName!, { target: { value: "Lovelace" } } as never);
-      Simulate.change(email!, { target: { value: "ada@example.org" } } as never);
+      Simulate.change(email!, {
+        target: { value: "ada@example.org" },
+      } as never);
     });
 
     await act(async () => {
@@ -119,6 +121,83 @@ describe("DashboardShareCard", () => {
 
     await act(async () => {
       vi.runOnlyPendingTimers();
+    });
+  });
+
+  it("does not let an older assignment reset timer interrupt a newer submission", async () => {
+    const referralUrl = "https://warondisease.org/vote/mike";
+
+    await act(async () => {
+      root.render(
+        <DashboardShareCard referralUrl={referralUrl} showAssignmentForm />,
+      );
+    });
+
+    async function fillEmployee(firstName: string, lastName: string) {
+      await act(async () => {
+        Simulate.change(
+          container.querySelector<HTMLInputElement>(
+            'input[name="employeeFirstName"]',
+          )!,
+          { target: { value: firstName } } as never,
+        );
+        Simulate.change(
+          container.querySelector<HTMLInputElement>(
+            'input[name="employeeLastName"]',
+          )!,
+          { target: { value: lastName } } as never,
+        );
+      });
+    }
+
+    await fillEmployee("Ada", "Lovelace");
+
+    await act(async () => {
+      Simulate.submit(container.querySelector("form")!);
+    });
+
+    expect(container.textContent).toContain("Task copied");
+
+    let resolveSecondInvitation:
+      | ((value: {
+          id: string;
+          inviteToken: string;
+          recipientEmail: null;
+          recipientName: string;
+        }) => void)
+      | null = null;
+    const secondInvitation = new Promise<{
+      id: string;
+      inviteToken: string;
+      recipientEmail: null;
+      recipientName: string;
+    }>((resolve) => {
+      resolveSecondInvitation = resolve;
+    });
+    mocks.createReferralInvitationRequest.mockReturnValueOnce(secondInvitation);
+
+    await fillEmployee("Grace", "Hopper");
+
+    await act(async () => {
+      Simulate.submit(container.querySelector("form")!);
+    });
+
+    expect(container.textContent).toContain("Creating task...");
+
+    await act(async () => {
+      vi.advanceTimersByTime(3500);
+    });
+
+    expect(container.textContent).toContain("Creating task...");
+
+    await act(async () => {
+      resolveSecondInvitation?.({
+        id: "invite_2",
+        inviteToken: "token_456",
+        recipientEmail: null,
+        recipientName: "Grace Hopper",
+      });
+      await secondInvitation;
     });
   });
 });
