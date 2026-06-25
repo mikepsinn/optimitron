@@ -77,9 +77,14 @@ console.log(
   `[smoke] scope=${SMOKE_SCOPE} public=${SMOKE_PUBLIC_PAGE_PATHS.length} redirects=${SMOKE_REDIRECT_ONLY_PATHS.length} auth=${SMOKE_AUTH_REQUIRED_PATHS.length}`,
 );
 
-async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
-  skipOnClientError?: boolean;
-}) {
+async function expectPageLoadsWithMetadata(
+  page: Page,
+  path: string,
+  options?: {
+    skipOnClientError?: boolean;
+    skipOnServerError?: boolean;
+  },
+) {
   const errors: string[] = [];
   page.on("pageerror", (err) => {
     if (err.message.includes("Hydration")) return;
@@ -89,7 +94,7 @@ async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
   const response = await page.goto(path);
   const status = response?.status() ?? 0;
 
-  if (status >= 500) {
+  if (status >= 500 && options?.skipOnServerError !== false) {
     test.skip(true, `${path} returned ${status} (needs database)`);
     return;
   }
@@ -99,12 +104,15 @@ async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
     return;
   }
 
-  expect(status).toBeLessThan(400);
-  expect(errors).toEqual([]);
-
   const visibleText = await page.locator("body").innerText();
   const title = await page.title();
   const renderedPageText = `${title}\n${visibleText}`;
+  expect(
+    status,
+    `${path} returned ${status}; page text: ${truncateForAssertion(renderedPageText)}`,
+  ).toBeLessThan(400);
+  expect(errors).toEqual([]);
+
   const matchedFallback = ERROR_BOUNDARY_FALLBACK_PATTERNS.find((pattern) =>
     pattern.test(renderedPageText)
   );
@@ -123,6 +131,10 @@ async function expectPageLoadsWithMetadata(page: Page, path: string, options?: {
     (description ?? "").length,
     `<meta description> should not be empty`,
   ).toBeGreaterThan(0);
+}
+
+function truncateForAssertion(value: string) {
+  return value.replace(/\s+/gu, " ").trim().slice(0, 500);
 }
 
 // ---------------------------------------------------------------------------
@@ -167,7 +179,9 @@ if (SMOKE_SCOPE === "critical") {
   }) => {
     await context.clearCookies();
 
-    await expectPageLoadsWithMetadata(page, `${ROUTES.dashboard}?login=demo`);
+    await expectPageLoadsWithMetadata(page, `${ROUTES.dashboard}?login=demo`, {
+      skipOnServerError: false,
+    });
 
     const finalUrl = new URL(page.url());
     expect(finalUrl.pathname).toBe(ROUTES.dashboard);

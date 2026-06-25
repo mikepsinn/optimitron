@@ -165,12 +165,12 @@ jobs:
             if (shouldSmoke) {
               core.info(`Running preview smoke for PR #${pull.number}: ${matches.join(", ")}`);
             } else {
-              core.info(`Skipping preview smoke for PR #${pull.number}: no app/runtime inputs changed.`);
+              core.info(`Limiting preview smoke for PR #${pull.number}: no app/runtime inputs changed.`);
             }
 
-      - name: Skip preview deploy smoke
+      - name: Note limited preview smoke scope
         if: steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke == 'false'
-        run: echo "Skipping deployed preview smoke because this PR only changed workflow/deploy plumbing."
+        run: echo "Running lightweight deployed preview smoke only because this PR only changed workflow/deploy plumbing."
 
       - name: Wait for preview database sync
         if: steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke != 'false'
@@ -223,7 +223,6 @@ jobs:
 
       - name: Run deploy smoke
         id: smoke
-        if: steps.target.outputs.environment != 'Preview' || steps.preview_scope.outputs.should_smoke != 'false'
         env:
           PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
           PROD_URL: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.url || '' }}

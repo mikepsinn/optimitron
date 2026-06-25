@@ -1,13 +1,23 @@
 #!/usr/bin/env node
 
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const ATTEMPTS = 3;
 const BACKOFF_MS = 5000;
 const REQUEST_TIMEOUT_MS = Number(
   process.env.SMOKE_DEPLOY_REQUEST_TIMEOUT_MS ?? 5000,
 );
+const DEMO_LOGIN_PATH = "/api/dev/login-as-demo?next=%2Fdashboard";
+const DEMO_LOGIN_ROUTE = {
+  path: DEMO_LOGIN_PATH,
+  source: "preview demo user managed-data seed",
+};
+const NEXT_AUTH_COOKIE_NAMES = [
+  "next-auth.session-token",
+  "__Secure-next-auth.session-token",
+];
 
 // Route paths mirror ROUTES in packages/web/src/lib/routes.ts. Expected h1s
 // use route metadata where the nav label is the page heading; otherwise they
@@ -106,6 +116,7 @@ const ERROR_MARKERS = [
   "Authentication Required",
   "PrismaClient",
   "PrismaClientKnownRequestError",
+  "not found in DB. Managed-data sync should have created it",
 ];
 
 async function main() {
@@ -177,13 +188,20 @@ async function main() {
     );
   }
 
-  const routeResults = await Promise.all(
+  const pageResults = await Promise.all(
     targets.flatMap((target) =>
       ROUTES_TO_SMOKE.map((route) =>
         smokeRoute({ route, target, bypassSecret }),
       ),
     ),
   );
+  const demoLoginResults =
+    environment === "Preview"
+      ? await Promise.all(
+          targets.map((target) => smokeDemoLogin({ target, bypassSecret })),
+        )
+      : [];
+  const routeResults = [...pageResults, ...demoLoginResults];
   const durationMs = Date.now() - startedAt.getTime();
   const failures = routeResults.filter((result) => !result.ok);
   const summary = {
@@ -219,6 +237,162 @@ async function main() {
   console.log(
     `Deploy smoke passed for ${routeResults.length} route check(s) in ${durationMs}ms.`,
   );
+}
+
+async function smokeDemoLogin({ target, bypassSecret }) {
+  const url = new URL(DEMO_LOGIN_PATH, target.baseUrl);
+  const attempts = [];
+  const startedAt = Date.now();
+
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt += 1) {
+    const attemptResult = await fetchAndAssertDemoLogin({
+      url,
+      bypassSecret,
+      attempt,
+    });
+    attempts.push(attemptResult);
+
+    if (attemptResult.ok) {
+      return summarizeRouteResult({
+        route: DEMO_LOGIN_ROUTE,
+        target,
+        url,
+        expectedH1: "",
+        startedAt,
+        attempts,
+        finalAttempt: attemptResult,
+      });
+    }
+
+    if (attempt < ATTEMPTS) {
+      await sleep(BACKOFF_MS);
+    }
+  }
+
+  return summarizeRouteResult({
+    route: DEMO_LOGIN_ROUTE,
+    target,
+    url,
+    expectedH1: "",
+    startedAt,
+    attempts,
+    finalAttempt: attempts.at(-1),
+  });
+}
+
+async function fetchAndAssertDemoLogin({ url, bypassSecret, attempt }) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const attemptStartedAt = Date.now();
+  const headers = {
+    accept: "text/plain,*/*",
+    "user-agent": "optimitron-deploy-smoke/1.0",
+  };
+
+  if (bypassSecret) {
+    headers["x-vercel-protection-bypass"] = bypassSecret;
+  }
+
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      headers,
+      redirect: "manual",
+      signal: controller.signal,
+    });
+    const body = await response.text();
+    const evaluation = evaluateDemoLoginSmokeResponse({
+      status: response.status,
+      location: response.headers.get("location") ?? "",
+      setCookie: response.headers.get("set-cookie") ?? "",
+      body,
+    });
+
+    return {
+      ok: evaluation.ok,
+      attempt,
+      durationMs: Date.now() - attemptStartedAt,
+      status: response.status,
+      finalUrl: response.url,
+      expectedH1: "",
+      h1Texts: [],
+      missingExpectedH1: false,
+      matchedErrorMarker: evaluation.matchedErrorMarker,
+      error: evaluation.error,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      attempt,
+      durationMs: Date.now() - attemptStartedAt,
+      status: null,
+      finalUrl: url.href,
+      expectedH1: "",
+      h1Texts: [],
+      missingExpectedH1: false,
+      matchedErrorMarker: null,
+      error: formatFetchError(error),
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export function evaluateDemoLoginSmokeResponse({
+  status,
+  location,
+  setCookie,
+  body,
+}) {
+  const matchedErrorMarker = findErrorMarker(body ?? "");
+  const statusOk = Number(status) >= 300 && Number(status) < 400;
+  const locationPath = getLocationPathname(location);
+  const locationOk = locationPath === "/dashboard";
+  const cookieHeader = String(setCookie ?? "");
+  const cookieOk = NEXT_AUTH_COOKIE_NAMES.some(
+    (cookieName) =>
+      cookieHeader.includes(`${cookieName}=`) ||
+      cookieHeader.includes(`${cookieName}.0=`),
+  );
+  const ok = statusOk && locationOk && cookieOk && !matchedErrorMarker;
+
+  if (ok) {
+    return { ok: true, matchedErrorMarker: null, error: null };
+  }
+
+  const reasons = [];
+  if (!statusOk) {
+    reasons.push(`expected HTTP redirect 300-399, got ${status ?? "none"}`);
+  }
+  if (matchedErrorMarker) {
+    reasons.push(`matched error marker "${matchedErrorMarker}"`);
+  }
+  if (!locationOk) {
+    reasons.push(
+      `expected redirect location /dashboard, got ${location || "none"}`,
+    );
+  }
+  if (!cookieOk) {
+    reasons.push("missing NextAuth session cookie");
+  }
+
+  return {
+    ok: false,
+    matchedErrorMarker,
+    error: reasons.join("; "),
+  };
+}
+
+function getLocationPathname(location) {
+  if (!location) {
+    return "";
+  }
+
+  try {
+    return new URL(location, "https://preview-smoke.local").pathname;
+  } catch {
+    return "";
+  }
 }
 
 async function smokeRoute({ route, target, bypassSecret }) {
@@ -636,37 +810,46 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-main().catch(async (error) => {
-  const summary = {
-    success: false,
-    environment: process.env.PREVIEW_URL ? "Preview" : "Production",
-    targetUrl:
-      process.env.PREVIEW_URL ||
-      process.env.PROD_URLS ||
-      process.env.PROD_URL ||
-      "",
-    startedAt: new Date().toISOString(),
-    durationMs: 0,
-    routes: [],
-    failures: [
-      {
-        path: "configuration",
-        url: "",
-        ok: false,
-        status: null,
-        finalUrl: "",
-        expectedH1: "",
-        h1Texts: [],
-        missingExpectedH1: false,
-        matchedErrorMarker: null,
-        error: error instanceof Error ? error.message : String(error),
-        durationMs: 0,
-        attempts: [],
-      },
-    ],
-  };
-  await writeResult(summary);
-  await writeStepSummary(summary);
-  console.error(summary.failures[0].error);
-  process.exit(1);
-});
+function isCliEntrypoint() {
+  const entrypoint = process.argv[1];
+  return Boolean(
+    entrypoint && import.meta.url === pathToFileURL(resolve(entrypoint)).href,
+  );
+}
+
+if (isCliEntrypoint()) {
+  main().catch(async (error) => {
+    const summary = {
+      success: false,
+      environment: process.env.PREVIEW_URL ? "Preview" : "Production",
+      targetUrl:
+        process.env.PREVIEW_URL ||
+        process.env.PROD_URLS ||
+        process.env.PROD_URL ||
+        "",
+      startedAt: new Date().toISOString(),
+      durationMs: 0,
+      routes: [],
+      failures: [
+        {
+          path: "configuration",
+          url: "",
+          ok: false,
+          status: null,
+          finalUrl: "",
+          expectedH1: "",
+          h1Texts: [],
+          missingExpectedH1: false,
+          matchedErrorMarker: null,
+          error: error instanceof Error ? error.message : String(error),
+          durationMs: 0,
+          attempts: [],
+        },
+      ],
+    };
+    await writeResult(summary);
+    await writeStepSummary(summary);
+    console.error(summary.failures[0].error);
+    process.exit(1);
+  });
+}
