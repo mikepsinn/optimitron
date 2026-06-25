@@ -658,7 +658,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ steps.prepare_pages.outputs.publish_dir }}
           publish_branch: gh-pages
-          keep_files: true
+          keep_files: false
+          force_orphan: true
           enable_jekyll: false
           commit_message: "Visual review for pr-${{ github.event.pull_request.number }}@${{ steps.prepare_pages.outputs.short_sha }}"
           user_name: github-actions[bot]
