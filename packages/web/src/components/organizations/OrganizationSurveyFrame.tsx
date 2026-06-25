@@ -7,15 +7,19 @@ interface OrganizationSurveyFrameProps {
   title: string;
 }
 
+const DEFAULT_HEIGHT = 760;
+
 export function OrganizationSurveyFrame({
   src,
   title,
 }: OrganizationSurveyFrameProps) {
   const [loaded, setLoaded] = useState(false);
+  const [height, setHeight] = useState<number | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     setLoaded(false);
+    setHeight(null);
   }, [src]);
 
   useEffect(() => {
@@ -41,10 +45,21 @@ export function OrganizationSurveyFrame({
       if (
         typeof event.data === "object" &&
         event.data !== null &&
-        "type" in event.data &&
-        event.data.type === "optimitron:survey-ready"
+        "type" in event.data
       ) {
-        setLoaded(true);
+        const messageType = event.data.type;
+        if (messageType === "optimitron:survey-ready") {
+          setLoaded(true);
+        }
+        if (
+          (messageType === "optimitron:survey-ready" ||
+            messageType === "optimitron:survey-height") &&
+          "height" in event.data &&
+          typeof event.data.height === "number" &&
+          event.data.height > 0
+        ) {
+          setHeight(Math.ceil(event.data.height));
+        }
       }
     }
 
@@ -63,7 +78,8 @@ export function OrganizationSurveyFrame({
         </div>
       ) : null}
       <iframe
-        className="h-[760px] w-full"
+        className="block w-full"
+        style={{ height: `${height ?? DEFAULT_HEIGHT}px` }}
         onLoad={() => setLoaded(true)}
         ref={iframeRef}
         src={src}

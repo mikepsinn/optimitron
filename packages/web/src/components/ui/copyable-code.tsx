@@ -24,7 +24,9 @@ export function CopyableCode({ code, className }: CopyableCodeProps) {
   }
 
   return (
-    <div className={cn("relative", className)}>
+    <div
+      className={cn("relative min-w-0 max-w-full overflow-hidden", className)}
+    >
       <button
         type="button"
         onClick={() => void handleCopy()}
@@ -34,7 +36,7 @@ export function CopyableCode({ code, className }: CopyableCodeProps) {
         {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         {copied ? "Copied" : "Copy"}
       </button>
-      <pre className="text-sm font-bold overflow-x-auto p-4 pr-20">
+      <pre className="max-w-full overflow-x-auto whitespace-pre p-4 pr-20 text-sm font-bold">
         <code>{code}</code>
       </pre>
     </div>

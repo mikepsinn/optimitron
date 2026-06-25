@@ -181,11 +181,19 @@ ${organizationSurveyUrl}`;
             {org.description}
           </p>
         ) : null}
+        {isManager ? (
+          <a
+            href="#edit-organization"
+            className="mt-4 inline-block border border-foreground px-3 py-2 text-xs font-black uppercase tracking-wider text-foreground hover:bg-foreground hover:text-background"
+          >
+            Edit organization
+          </a>
+        ) : null}
       </header>
 
       {joinedFlag && (
         <p className="mb-6 border-y border-foreground py-3 text-sm font-bold uppercase tracking-wider text-foreground">
-          Organization joined. Copy one outreach asset and send it.
+          You&apos;re in. Copy your survey link below and send it to your people.
         </p>
       )}
 
@@ -202,42 +210,43 @@ ${organizationSurveyUrl}`;
                   value={organizationSurveyUrl}
                 />
                 <OrganizationCopyField
-                  label="Email starter"
-                  minRows={14}
-                  multiline
-                  value={emailBody}
-                />
-                <OrganizationCopyField
                   htmlValue={emailHtmlBody}
-                  label="Email starter (linked)"
+                  label="Email"
                   minRows={14}
                   multiline
                   value={emailBody}
                 />
-                <OrganizationCopyField
-                  label="Website button"
-                  minRows={5}
-                  multiline
-                  value={buttonCode}
-                />
-                <OrganizationCopyField
-                  label="Iframe embed"
-                  minRows={5}
-                  multiline
-                  value={iframeCode}
-                />
-                <div>
-                  <p className="mb-2 text-sm font-bold text-muted-foreground">
-                    Survey preview
-                  </p>
-                  <OrganizationSurveyFrame
-                    src={embeddedSurveyPath}
-                    title={iframeTitle}
-                  />
-                </div>
                 <p className="text-sm font-bold leading-7 text-muted-foreground">
                   Use the organization URL above so responses credit {org.name}.
                 </p>
+                <details className="border border-foreground bg-background">
+                  <summary className="cursor-pointer select-none px-4 py-3 text-sm font-black uppercase tracking-wider text-foreground">
+                    More ways to share
+                  </summary>
+                  <div className="space-y-4 border-t border-foreground p-4">
+                    <OrganizationCopyField
+                      label="Website button"
+                      minRows={5}
+                      multiline
+                      value={buttonCode}
+                    />
+                    <OrganizationCopyField
+                      label="Embed on your website"
+                      minRows={5}
+                      multiline
+                      value={iframeCode}
+                    />
+                    <div>
+                      <p className="mb-2 text-sm font-bold text-muted-foreground">
+                        Survey preview
+                      </p>
+                      <OrganizationSurveyFrame
+                        src={embeddedSurveyPath}
+                        title={iframeTitle}
+                      />
+                    </div>
+                  </div>
+                </details>
               </div>
             </section>
           </>
@@ -276,9 +285,9 @@ ${organizationSurveyUrl}`;
               <OrganizationGrantCalculator organizationName={org.name} />
             ) : null}
 
-            <section>
+            <section id="edit-organization" className="scroll-mt-6">
               <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Profile
+                Edit organization
               </h2>
               <OrganizationProfileEditor
                 organization={{

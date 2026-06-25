@@ -1,8 +1,4 @@
-import {
-  ROUTES,
-  navSections,
-  type NavItem,
-} from "@/lib/routes";
+import { ROUTES, navSections, type NavItem } from "@/lib/routes";
 
 const STOP_WORDS = new Set([
   "a",
@@ -57,7 +53,10 @@ function dedupeByHref(documents: StaticSiteSearchDocument[]) {
   });
 }
 
-function buildDocumentFromNavItem(section: string, item: NavItem): StaticSiteSearchDocument {
+function buildDocumentFromNavItem(
+  section: string,
+  item: NavItem,
+): StaticSiteSearchDocument {
   return {
     description: item.tagline ?? item.description,
     external: item.external,
@@ -74,24 +73,40 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
     description:
       "Landing page for the Earth Optimization Game, the 1% Treaty, the prize mechanics, and the core argument for fixing public systems with evidence.",
     section: "Primary",
-    keywords: ["landing", "home", "earth optimization game", "planetary debugging"],
+    keywords: [
+      "landing",
+      "home",
+      "earth optimization game",
+      "planetary debugging",
+    ],
   },
   {
-    href: ROUTES.developers,
+    href: ROUTES.mcp,
     title: "Optimitron MCP",
     description:
       "Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.",
     section: "Developer Tools",
-    keywords: ["api", "oauth", "mcp", "developers", "integration", "agents", "tasks"],
+    keywords: [
+      "api",
+      "oauth",
+      "mcp",
+      "developers",
+      "integration",
+      "agents",
+      "tasks",
+    ],
   },
 ];
 
-export const staticSiteSearchDocuments: StaticSiteSearchDocument[] = dedupeByHref([
-  ...extraStaticDocuments,
-  ...navSections.flatMap((section) =>
-    section.items.map((item) => buildDocumentFromNavItem(section.label, item)),
-  ),
-]);
+export const staticSiteSearchDocuments: StaticSiteSearchDocument[] =
+  dedupeByHref([
+    ...extraStaticDocuments,
+    ...navSections.flatMap((section) =>
+      section.items.map((item) =>
+        buildDocumentFromNavItem(section.label, item),
+      ),
+    ),
+  ]);
 
 export function getSearchTerms(query: string): SearchTerms {
   const normalizedQuery = query.trim().toLowerCase();
@@ -132,7 +147,8 @@ export function scoreSearchRecord(
   const description = (record.description ?? "").toLowerCase();
   const href = (record.href ?? "").toLowerCase();
   const section = (record.section ?? "").toLowerCase();
-  const keywords = record.keywords?.map((keyword) => keyword.toLowerCase()) ?? [];
+  const keywords =
+    record.keywords?.map((keyword) => keyword.toLowerCase()) ?? [];
 
   let score = 0;
 
@@ -140,7 +156,9 @@ export function scoreSearchRecord(
     score += 14;
   }
 
-  if (keywords.some((keyword) => keyword.includes(searchTerms.normalizedQuery))) {
+  if (
+    keywords.some((keyword) => keyword.includes(searchTerms.normalizedQuery))
+  ) {
     score += 10;
   }
 

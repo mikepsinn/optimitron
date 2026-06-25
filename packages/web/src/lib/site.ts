@@ -29,6 +29,7 @@ import {
   inviteVoterLink,
   joinLink,
   jokeLink,
+  mcpLink,
   missionsLink,
   navSections,
   onePercentTreatyPaperLink,
@@ -505,6 +506,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
           fullManualPaperLink,
           podcastLink,
           courtLink,
+          mcpLink,
         ],
       },
       {
@@ -535,7 +537,7 @@ const OPTIMITRON_PLATFORM_PREFIXES = [
   "/contribute",
   "/fund",
   "/donate",
-  "/developers",
+  "/mcp",
   "/demo",
   "/video",
 ] as const;
