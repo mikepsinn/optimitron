@@ -46,6 +46,7 @@ test("verifies preview masking after preview managed-data sync", () => {
 
 test("keeps visual review status pending until the Pages URL is live", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
+  const visualReviewJobIndex = workflow.indexOf("  web-visual-review:");
 
   const prepareIndex = workflow.indexOf(
     "- name: Prepare per-PR visual review directory",
@@ -64,6 +65,7 @@ test("keeps visual review status pending until the Pages URL is live", () => {
     "- name: Fail if visual review page is unavailable",
   );
 
+  assert.notEqual(visualReviewJobIndex, -1, "web-visual-review job is missing");
   assert.notEqual(prepareIndex, -1, "visual review prepare step is missing");
   assert.notEqual(pendingIndex, -1, "visual review pending status is missing");
   assert.notEqual(publishIndex, -1, "visual review publish step is missing");
@@ -94,6 +96,10 @@ test("keeps visual review status pending until the Pages URL is live", () => {
 
   assert.match(
     workflow,
+    /web-visual-review:[\s\S]*?timeout-minutes: 35[\s\S]*?- name: Prepare per-PR visual review directory/,
+  );
+  assert.match(
+    workflow,
     /review_url=https:\/\/mikepsinn\.github\.io\/optimitron\/pr-\$\{\{ github\.event\.pull_request\.number \}\}\/latest\//,
   );
   assert.match(
@@ -110,6 +116,6 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   );
   assert.match(workflow, /state: 'pending'/);
   assert.match(workflow, /state: available \? 'success' : 'failure'/);
-  assert.match(workflow, /max_attempts=60/);
+  assert.match(workflow, /max_attempts=180/);
   assert.match(workflow, /sleep 10/);
 });

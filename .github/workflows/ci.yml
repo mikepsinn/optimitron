@@ -385,7 +385,7 @@ jobs:
       - changes
       - web-e2e-validate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     permissions:
       actions: read
       contents: write
@@ -674,7 +674,7 @@ jobs:
           echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
           echo "available=false" >> "$GITHUB_OUTPUT"
           echo "Waiting for $target_url to show commit $expected_sha"
-          max_attempts=60
+          max_attempts=180
           for attempt in $(seq 1 "$max_attempts"); do
             status="$(curl -L -sS --connect-timeout 3 --max-time 4 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
             if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
@@ -716,7 +716,7 @@ jobs:
               context: 'Visual review',
               description: available
                 ? `Ready · ${shortSha}`
-                : `Not reachable after publish (${publishOutcome})`,
+                : `Not live after Pages wait (${publishOutcome})`,
               target_url: process.env.VISUAL_REVIEW_URL,
             });
 
