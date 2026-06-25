@@ -120,4 +120,9 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   assert.match(workflow, /force_orphan: true/);
   assert.match(workflow, /max_attempts=180/);
   assert.match(workflow, /sleep 10/);
+  assert.doesNotMatch(
+    workflow,
+    /createDeployment/,
+    "visual review should use commit statuses, not a GitHub deployment that retriggers deploy smoke",
+  );
 });

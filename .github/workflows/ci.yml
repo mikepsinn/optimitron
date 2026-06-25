@@ -218,9 +218,6 @@ jobs:
       # peaceiris/actions-gh-pages needs write to push the visual review to
       # the long-lived `gh-pages` branch.
       contents: write
-      # `deployments: write` lets the "Create Visual review deployment"
-      # step post per-commit deployment annotations in the PR timeline.
-      deployments: write
       issues: write
       pull-requests: write
       statuses: write
@@ -724,42 +721,6 @@ jobs:
       - name: Fail if visual review page is unavailable
         if: ${{ !cancelled() && steps.prepare_pages.outcome == 'success' && steps.wait_visual_review_pages.outputs.available != 'true' }}
         run: exit 1
-
-      - name: Create Visual review deployment
-        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' }}
-        uses: actions/github-script@v8
-        env:
-          VISUAL_REVIEW_URL: ${{ steps.wait_visual_review_pages.outputs.target_url || steps.prepare_pages.outputs.review_url }}
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const issue_number = context.issue.number;
-            const headSha = context.payload.pull_request.head.sha;
-            const shortSha = headSha.slice(0, 12);
-            const environment = `visual-review/pr-${issue_number}`;
-
-            const { data: deployment } = await github.rest.repos.createDeployment({
-              owner,
-              repo,
-              ref: headSha,
-              environment,
-              auto_merge: false,
-              required_contexts: [],
-              transient_environment: true,
-              production_environment: false,
-              description: `Visual review · ${shortSha}`,
-            });
-
-            await github.rest.repos.createDeploymentStatus({
-              owner,
-              repo,
-              deployment_id: deployment.id,
-              state: 'success',
-              environment,
-              environment_url: process.env.VISUAL_REVIEW_URL,
-              log_url: process.env.VISUAL_REVIEW_URL,
-              description: 'Visual review ready',
-            });
 
       - name: Update PR review packet with visual review
         if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' && steps.pr_preview_url.outputs.result != '' }}
