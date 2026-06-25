@@ -18,12 +18,15 @@
 
 BEGIN;
 
-UPDATE public."Person" SET "handle" = pg_catalog.concat('person-', md5("id"::text)) WHERE "handle" IS NOT NULL;
-UPDATE public."Person" SET "displayName" = pg_catalog.concat(anon.fake_first_name(), ' ', anon.fake_last_name()) WHERE "displayName" IS NOT NULL;
+-- Keep the synthetic managed demo account usable on preview. The demo email,
+-- password, referral code, handle, and display name are public fixtures used by
+-- ?login=demo, the Try Demo button, and deployed preview smoke.
+UPDATE public."Person" SET "handle" = pg_catalog.concat('person-', md5("id"::text)) WHERE "handle" IS NOT NULL AND "email" IS DISTINCT FROM 'demo@thinkbynumbers.org';
+UPDATE public."Person" SET "displayName" = pg_catalog.concat(anon.fake_first_name(), ' ', anon.fake_last_name()) WHERE "displayName" IS NOT NULL AND "email" IS DISTINCT FROM 'demo@thinkbynumbers.org';
 UPDATE public."Person" SET "firstName" = anon.fake_first_name() WHERE "firstName" IS NOT NULL;
 UPDATE public."Person" SET "middleName" = NULL WHERE "middleName" IS NOT NULL;
 UPDATE public."Person" SET "lastName" = anon.fake_last_name() WHERE "lastName" IS NOT NULL;
-UPDATE public."Person" SET "email" = pg_catalog.concat('person-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL;
+UPDATE public."Person" SET "email" = pg_catalog.concat('person-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
 UPDATE public."Person" SET "image" = NULL WHERE "image" IS NOT NULL;
 UPDATE public."Person" SET "bio" = public.dummy_safe_text() WHERE "bio" IS NOT NULL;
 UPDATE public."Person" SET "birthDate" = NULL WHERE "birthDate" IS NOT NULL;
@@ -58,9 +61,9 @@ UPDATE public."PersonMemorialEvidence" SET "title" = public.dummy_safe_text() WH
 UPDATE public."PersonMemorialEvidence" SET "description" = public.dummy_safe_text() WHERE "description" IS NOT NULL;
 UPDATE public."PersonMemorialEvidence" SET "sourceUrl" = NULL WHERE "sourceUrl" IS NOT NULL;
 UPDATE public."PersonEfficacyLagEvidence" SET "explanation" = public.dummy_safe_text() WHERE "explanation" IS NOT NULL;
-UPDATE public."User" SET "email" = pg_catalog.concat('user-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL;
-UPDATE public."User" SET "password" = NULL WHERE "password" IS NOT NULL;
-UPDATE public."User" SET "referralCode" = pg_catalog.concat('ref-', md5("id"::text)) WHERE "referralCode" IS NOT NULL;
+UPDATE public."User" SET "email" = pg_catalog.concat('user-', md5("id"::text), '@preview.invalid') WHERE "email" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
+UPDATE public."User" SET "password" = NULL WHERE "password" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
+UPDATE public."User" SET "referralCode" = pg_catalog.concat('ref-', md5("id"::text)) WHERE "referralCode" IS NOT NULL AND "email" <> 'demo@thinkbynumbers.org';
 UPDATE public."User" SET "signupLandingUrl" = NULL WHERE "signupLandingUrl" IS NOT NULL;
 UPDATE public."User" SET "unsubscribedScopes" = ARRAY[]::text[] WHERE "unsubscribedScopes" IS NOT NULL;
 UPDATE public."User" SET "timeZone" = anon.dummy_timezone() WHERE "timeZone" IS NOT NULL;

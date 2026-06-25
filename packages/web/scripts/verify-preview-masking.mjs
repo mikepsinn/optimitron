@@ -26,11 +26,12 @@ if (!databaseUrl) {
 }
 
 const HASH_HEX = /^[a-f0-9]{4,}$/;
+const DEMO_EMAIL = "demo@thinkbynumbers.org";
 
 const checks = [
   {
     name: "Person.handle",
-    sql: 'SELECT handle FROM "Person" WHERE handle IS NOT NULL LIMIT 25',
+    sql: `SELECT handle FROM "Person" WHERE handle IS NOT NULL AND email IS DISTINCT FROM '${DEMO_EMAIL}' LIMIT 25`,
     column: "handle",
     expected: "starts with 'person-' followed by hex hash",
     test: (value) => typeof value === "string" && value.startsWith("person-") && HASH_HEX.test(value.slice("person-".length)),
@@ -38,7 +39,7 @@ const checks = [
   },
   {
     name: "Person.email",
-    sql: 'SELECT email FROM "Person" WHERE email IS NOT NULL LIMIT 25',
+    sql: `SELECT email FROM "Person" WHERE email IS NOT NULL AND email <> '${DEMO_EMAIL}' LIMIT 25`,
     column: "email",
     expected: "person-<hex>@preview.invalid",
     test: (value) => typeof value === "string" && /^person-[a-f0-9]+@preview\.invalid$/.test(value),
@@ -54,7 +55,7 @@ const checks = [
   },
   {
     name: "User.email",
-    sql: 'SELECT email FROM "User" WHERE email IS NOT NULL LIMIT 25',
+    sql: `SELECT email FROM "User" WHERE email IS NOT NULL AND email <> '${DEMO_EMAIL}' LIMIT 25`,
     column: "email",
     expected: "user-<hex>@preview.invalid",
     test: (value) => typeof value === "string" && /^user-[a-f0-9]+@preview\.invalid$/.test(value),
@@ -62,7 +63,7 @@ const checks = [
   },
   {
     name: "User.password",
-    sql: 'SELECT password FROM "User" LIMIT 25',
+    sql: `SELECT password FROM "User" WHERE email IS DISTINCT FROM '${DEMO_EMAIL}' LIMIT 25`,
     column: "password",
     expected: "NULL",
     test: (value) => value === null,
@@ -70,11 +71,19 @@ const checks = [
   },
   {
     name: "User.referralCode",
-    sql: 'SELECT "referralCode" FROM "User" WHERE "referralCode" IS NOT NULL LIMIT 25',
+    sql: `SELECT "referralCode" FROM "User" WHERE "referralCode" IS NOT NULL AND email <> '${DEMO_EMAIL}' LIMIT 25`,
     column: "referralCode",
     expected: "ref-<hex>",
     test: (value) => typeof value === "string" && value.startsWith("ref-") && HASH_HEX.test(value.slice("ref-".length)),
     requireRows: false,
+  },
+  {
+    name: "User.demoAccount",
+    sql: `SELECT CASE WHEN password IS NOT NULL AND "referralCode" = 'DEMO' THEN 'ok' ELSE 'bad' END AS status FROM "User" WHERE email = '${DEMO_EMAIL}' LIMIT 1`,
+    column: "status",
+    expected: "demo account present with password and DEMO referralCode",
+    test: (value) => value === "ok",
+    requireRows: true,
   },
   {
     name: "TaskComment.message",

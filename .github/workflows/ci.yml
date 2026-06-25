@@ -191,7 +191,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/audit-sentry-preview.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/audit-sentry-preview.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
