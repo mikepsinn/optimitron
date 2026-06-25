@@ -630,6 +630,26 @@ jobs:
           HTML
           echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
           echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
+          echo "review_url=https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/latest/" >> "$GITHUB_OUTPUT"
+
+      - name: Post Visual review pending status
+        if: ${{ !cancelled() && steps.prepare_pages.outcome == 'success' }}
+        uses: actions/github-script@v8
+        env:
+          VISUAL_REVIEW_URL: ${{ steps.prepare_pages.outputs.review_url }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const headSha = context.payload.pull_request.head.sha;
+            await github.rest.repos.createCommitStatus({
+              owner,
+              repo,
+              sha: headSha,
+              state: 'pending',
+              context: 'Visual review',
+              description: 'Publishing screenshot review',
+              target_url: process.env.VISUAL_REVIEW_URL,
+            });
 
       - name: Publish visual review to gh-pages
         id: visual_review_pages
@@ -649,56 +669,72 @@ jobs:
         if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' }}
         shell: bash
         run: |
-          target_url="https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/${{ steps.prepare_pages.outputs.short_sha }}/latest.html"
+          target_url="${{ steps.prepare_pages.outputs.review_url }}"
+          expected_sha="${{ steps.prepare_pages.outputs.short_sha }}"
           echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
           echo "available=false" >> "$GITHUB_OUTPUT"
-          echo "Waiting for $target_url"
-          max_attempts=18
+          echo "Waiting for $target_url to show commit $expected_sha"
+          max_attempts=60
           for attempt in $(seq 1 "$max_attempts"); do
             status="$(curl -L -sS --connect-timeout 3 --max-time 4 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
             if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
-              echo "available=true" >> "$GITHUB_OUTPUT"
-              echo "Visual review page is live after attempt $attempt."
-              exit 0
+              if grep -q "$expected_sha" /tmp/visual-review-latest.html; then
+                echo "available=true" >> "$GITHUB_OUTPUT"
+                echo "Visual review page is live for commit $expected_sha after attempt $attempt."
+                exit 0
+              fi
+              echo "Attempt $attempt/$max_attempts returned HTTP 200, but commit $expected_sha is not visible yet; retrying in 10s."
+            else
+              echo "Attempt $attempt/$max_attempts returned HTTP $status; retrying in 10s."
             fi
-            echo "Attempt $attempt/$max_attempts returned HTTP $status; retrying in 5s."
             if [ "$attempt" -lt "$max_attempts" ]; then
-              sleep 5
+              sleep 10
             fi
           done
-          echo "::warning::Visual review page did not become available before the wait limit: $target_url"
-          echo "The review artifact was uploaded and the gh-pages publish step completed; GitHub Pages propagation should not fail CI."
+          echo "::error::Visual review page did not become available before the wait limit: $target_url"
+          echo "The review artifact was uploaded and the gh-pages publish step completed, but the public GitHub Pages URL stayed unavailable."
 
       - name: Post Visual review commit status
-        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' }}
+        if: ${{ always() && steps.prepare_pages.outcome == 'success' && !cancelled() }}
         uses: actions/github-script@v8
+        env:
+          VISUAL_REVIEW_AVAILABLE: ${{ steps.wait_visual_review_pages.outputs.available }}
+          VISUAL_REVIEW_PUBLISH_OUTCOME: ${{ steps.visual_review_pages.outcome }}
+          VISUAL_REVIEW_URL: ${{ steps.wait_visual_review_pages.outputs.target_url || steps.prepare_pages.outputs.review_url }}
         with:
           script: |
             const { owner, repo } = context.repo;
-            const issue_number = context.issue.number;
             const headSha = context.payload.pull_request.head.sha;
             const shortSha = headSha.slice(0, 12);
-            const target_url = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/${shortSha}/latest.html`;
+            const available = process.env.VISUAL_REVIEW_AVAILABLE === 'true';
+            const publishOutcome = process.env.VISUAL_REVIEW_PUBLISH_OUTCOME || 'unknown';
             await github.rest.repos.createCommitStatus({
               owner,
               repo,
               sha: headSha,
-              state: 'success',
+              state: available ? 'success' : 'failure',
               context: 'Visual review',
-              description: shortSha,
-              target_url,
+              description: available
+                ? `Ready · ${shortSha}`
+                : `Not reachable after publish (${publishOutcome})`,
+              target_url: process.env.VISUAL_REVIEW_URL,
             });
+
+      - name: Fail if visual review page is unavailable
+        if: ${{ !cancelled() && steps.prepare_pages.outcome == 'success' && steps.wait_visual_review_pages.outputs.available != 'true' }}
+        run: exit 1
 
       - name: Create Visual review deployment
         if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' }}
         uses: actions/github-script@v8
+        env:
+          VISUAL_REVIEW_URL: ${{ steps.wait_visual_review_pages.outputs.target_url || steps.prepare_pages.outputs.review_url }}
         with:
           script: |
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
             const headSha = context.payload.pull_request.head.sha;
             const shortSha = headSha.slice(0, 12);
-            const target_url = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/${shortSha}/latest.html`;
             const environment = `visual-review/pr-${issue_number}`;
 
             const { data: deployment } = await github.rest.repos.createDeployment({
@@ -719,8 +755,8 @@ jobs:
               deployment_id: deployment.id,
               state: 'success',
               environment,
-              environment_url: target_url,
-              log_url: target_url,
+              environment_url: process.env.VISUAL_REVIEW_URL,
+              log_url: process.env.VISUAL_REVIEW_URL,
               description: 'Visual review ready',
             });
 
@@ -729,15 +765,13 @@ jobs:
         uses: actions/github-script@v8
         env:
           PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
+          VISUAL_REVIEW_URL: ${{ steps.wait_visual_review_pages.outputs.target_url || steps.prepare_pages.outputs.review_url }}
           VISUAL_REVIEW_MANIFEST_PATH: packages/web/output/playwright/review/manifest.json
         with:
           script: |
             const { execFileSync } = require('node:child_process');
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
-            const headSha = context.payload.pull_request.head.sha;
-            const shortSha = headSha.slice(0, 12);
-            const visualReviewUrl = `https://mikepsinn.github.io/optimitron/pr-${issue_number}/${shortSha}/latest.html`;
 
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner, repo, pull_number: issue_number, per_page: 100,
@@ -763,7 +797,7 @@ jobs:
                   ...process.env,
                   CHANGED_FILES: JSON.stringify(changed),
                   EXISTING_COMMENT_BODY: existing?.body ?? '',
-                  VISUAL_REVIEW_URL: visualReviewUrl,
+                  VISUAL_REVIEW_URL: process.env.VISUAL_REVIEW_URL,
                 },
                 encoding: 'utf8',
               },
