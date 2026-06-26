@@ -535,6 +535,50 @@ function renderHtml(groups) {
       height: auto;
     }
 
+    .screenshot-frame {
+      line-height: 0;
+      position: relative;
+    }
+
+    .screenshot-frame.whole-image-added::before,
+    .screenshot-frame.whole-image-removed::before,
+    .screenshot-frame.whole-image-resized::before {
+      background: #ffffff;
+      border: 1px solid #c4002f;
+      color: #c4002f;
+      content: attr(data-change-label);
+      font-size: 11px;
+      font-weight: 700;
+      left: 8px;
+      line-height: 1;
+      padding: 4px 6px;
+      position: absolute;
+      text-transform: uppercase;
+      top: 8px;
+      z-index: 2;
+    }
+
+    .screenshot-frame.whole-image-added::after,
+    .screenshot-frame.whole-image-removed::after,
+    .screenshot-frame.whole-image-resized::after {
+      border: 3px solid #c4002f;
+      content: "";
+      inset: 0;
+      pointer-events: none;
+      position: absolute;
+      z-index: 1;
+    }
+
+    .diff-region {
+      border: 2px solid #c4002f;
+      box-shadow:
+        0 0 0 1px #ffffff,
+        0 0 0 3px rgba(196, 0, 47, 0.2);
+      pointer-events: none;
+      position: absolute;
+      z-index: 1;
+    }
+
     figure img {
       cursor: zoom-in;
     }
@@ -1456,6 +1500,27 @@ function renderPair(pair) {
   const routeUrl = getRouteUrl(pair.routeName);
   const markdownDiff = buildMarkdownDiff(pair);
   const hasPixelDiff = Boolean(pair.diff?.diffRelPath);
+  const diffRegions = pair.diff?.regions ?? [];
+  const beforeRegions = pair.diff?.beforeRegions ?? diffRegions;
+  const afterRegions = pair.diff?.afterRegions ?? diffRegions;
+  const beforeOptions = {
+    regions: beforeRegions,
+    wholeImageChange:
+      pair.diff?.missing && pair.before && !pair.after
+        ? "removed"
+        : pair.diff?.dimensionChanged
+          ? "resized"
+          : null,
+  };
+  const afterOptions = {
+    regions: afterRegions,
+    wholeImageChange:
+      pair.diff?.missing && !pair.before && pair.after
+        ? "added"
+        : pair.diff?.dimensionChanged
+          ? "resized"
+          : null,
+  };
   // Default: mobile pairs open, desktop pairs collapsed.
   const isMobile = pair.projectName === "visual-mobile";
   const openAttr = isMobile ? " open" : "";
@@ -1468,8 +1533,8 @@ function renderPair(pair) {
       </span>
     </summary>
     <div class="pair-screens${hasPixelDiff ? " has-pixel-diff" : ""}">
-      ${renderFigure(pair.before, "Before: main", routeUrl, buildScreenContext(pair, "before", pair.before?.relPath))}
-      ${renderFigure(pair.after, "After: pull request", routeUrl, buildScreenContext(pair, "after", pair.after?.relPath))}
+      ${renderFigure(pair.before, "Before: main", routeUrl, buildScreenContext(pair, "before", pair.before?.relPath), beforeOptions)}
+      ${renderFigure(pair.after, "After: pull request", routeUrl, buildScreenContext(pair, "after", pair.after?.relPath), afterOptions)}
       ${pair.diff?.diffRelPath ? renderDiffFigure(pair.diff.diffRelPath, pair.routeName, pair.projectName, routeUrl, buildScreenContext(pair, "diff", pair.diff.diffRelPath)) : ""}
       ${markdownDiff ? renderMarkdownDiffFigure(markdownDiff, routeUrl, buildScreenContext(pair, "markdown-diff", null)) : ""}
     </div>
@@ -1478,7 +1543,7 @@ function renderPair(pair) {
 
 function renderDiffFigure(diffRelPath, routeName, projectName, routeUrl, screenContext) {
   return `<figure class="pixel-diff-figure">
-    ${renderFigcaption("diff", routeUrl, screenContext)}
+    ${renderFigcaption("Diff map", routeUrl, screenContext)}
     <img src="${escapeHtml(`${diffRelPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${routeName} ${projectName} diff overlay`)}" loading="lazy">
   </figure>`;
 }
@@ -1490,17 +1555,58 @@ function renderMarkdownDiffFigure(markdownDiff, routeUrl, screenContext) {
   </figure>`;
 }
 
-function renderFigure(screenshot, label, routeUrl, screenContext) {
+function renderFigure(screenshot, label, routeUrl, screenContext, options = {}) {
   if (!screenshot) {
     return `<figure class="missing">
     ${renderFigcaption(label, routeUrl, screenContext)}
     <div>Not captured</div>
   </figure>`;
   }
-  return `<figure>
+  const wholeImageChange = options.wholeImageChange ?? null;
+  const regions = Array.isArray(options.regions) ? options.regions : [];
+  const frameClasses = ["screenshot-frame"];
+  if (wholeImageChange) {
+    frameClasses.push(`whole-image-${wholeImageChange}`);
+  }
+  return `<figure class="screenshot-figure">
     ${renderFigcaption(label, routeUrl, screenContext)}
-    <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
+    <div class="${escapeHtml(frameClasses.join(" "))}"${wholeImageChange ? ` data-change-label="${escapeHtml(labelWholeImageChange(wholeImageChange))}"` : ""}>
+      <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
+      ${renderDiffRegions(regions)}
+    </div>
   </figure>`;
+}
+
+function labelWholeImageChange(value) {
+  if (value === "added") {
+    return "new capture";
+  }
+  if (value === "removed") {
+    return "removed capture";
+  }
+  if (value === "resized") {
+    return "resized";
+  }
+  return "changed";
+}
+
+function renderDiffRegions(regions) {
+  return regions
+    .filter(isValidDiffRegion)
+    .map((region) => `<span class="diff-region" style="left: ${formatStylePercent(region.left)}; top: ${formatStylePercent(region.top)}; width: ${formatStylePercent(region.width)}; height: ${formatStylePercent(region.height)};" aria-hidden="true"></span>`)
+    .join("");
+}
+
+function isValidDiffRegion(region) {
+  return (
+    region &&
+    Number.isFinite(region.left) &&
+    Number.isFinite(region.top) &&
+    Number.isFinite(region.width) &&
+    Number.isFinite(region.height) &&
+    region.width > 0 &&
+    region.height > 0
+  );
 }
 
 // Figcaption with optional preview-page link (↗) and copy-context button
@@ -1628,43 +1734,73 @@ async function comparePair(pair) {
     const { PNG, pixelmatch } = await loadImageDiffDependencies();
     const before = PNG.sync.read(readFileSync(pair.before.assetPath));
     const after = PNG.sync.read(readFileSync(pair.after.assetPath));
-    if (before.width !== after.width || before.height !== after.height) {
-      return {
-        changed: true,
-        label: `${before.width}x${before.height} -> ${after.width}x${after.height}`,
-        missing: false,
-        statusClass: "changed",
-      };
-    }
-
-    const diffData = new Uint8Array(before.width * before.height * 4);
+    const dimensionChanged =
+      before.width !== after.width || before.height !== after.height;
+    const compareWidth = Math.min(before.width, after.width);
+    const compareHeight = Math.min(before.height, after.height);
+    const beforeData = getComparableImageData(before, compareWidth, compareHeight);
+    const afterData = getComparableImageData(after, compareWidth, compareHeight);
+    const diffData = new Uint8Array(compareWidth * compareHeight * 4);
     const diffPixels = pixelmatch(
-      before.data,
-      after.data,
+      beforeData,
+      afterData,
       diffData,
-      before.width,
-      before.height,
+      compareWidth,
+      compareHeight,
       { threshold: pixelmatchThreshold },
     );
-    const totalPixels = before.width * before.height;
+    const totalPixels = compareWidth * compareHeight;
     const ratio = totalPixels > 0 ? diffPixels / totalPixels : 0;
-    const changed = ratio > diffPixelRatioThreshold;
+    const changedByPixels = ratio > diffPixelRatioThreshold;
+    const changed = dimensionChanged || changedByPixels;
     // Only write the diff PNG when there's an actual diff to highlight -
     // saving thousands of empty diff PNGs is wasted disk + asset upload time.
     let diffRelPath = null;
-    if (changed) {
+    let beforeRegions = [];
+    let afterRegions = [];
+    if (changedByPixels) {
       const afterDir = path.dirname(pair.after.assetPath);
-      const diffPng = new PNG({ width: before.width, height: before.height });
+      const diffPng = new PNG({ width: compareWidth, height: compareHeight });
       diffPng.data = Buffer.from(diffData);
       const diffAssetPath = path.join(afterDir, buildDiffFileName(pair.after.fileName));
       writeFileSync(diffAssetPath, PNG.sync.write(diffPng));
       diffRelPath = toPosix(path.relative(outputRoot, diffAssetPath));
+      beforeRegions = buildDiffRegions(
+        diffData,
+        compareWidth,
+        compareHeight,
+        before.width,
+        before.height,
+      );
+      afterRegions = buildDiffRegions(
+        diffData,
+        compareWidth,
+        compareHeight,
+        after.width,
+        after.height,
+      );
+    }
+    if (dimensionChanged) {
+      beforeRegions = [
+        ...beforeRegions,
+        ...buildDimensionExtraRegions(before.width, before.height, compareWidth, compareHeight),
+      ];
+      afterRegions = [
+        ...afterRegions,
+        ...buildDimensionExtraRegions(after.width, after.height, compareWidth, compareHeight),
+      ];
     }
     return {
       changed,
+      beforeRegions,
+      dimensionChanged,
       diffRelPath,
-      label: `${formatPercent(ratio)} changed`,
+      afterRegions,
+      label: dimensionChanged
+        ? `${before.width}x${before.height} -> ${after.width}x${after.height}; ${formatPercent(ratio)} overlap`
+        : `${formatPercent(ratio)} changed`,
       missing: false,
+      regions: dimensionChanged ? [] : beforeRegions,
       statusClass: changed ? "changed" : "unchanged",
     };
   } catch (error) {
@@ -1677,6 +1813,233 @@ async function comparePair(pair) {
       statusClass: "error",
     };
   }
+}
+
+function getComparableImageData(image, width, height) {
+  if (image.width === width && image.height === height) {
+    return image.data;
+  }
+
+  const data = new Uint8Array(width * height * 4);
+  const rowLength = width * 4;
+  for (let y = 0; y < height; y += 1) {
+    const sourceStart = y * image.width * 4;
+    data.set(image.data.subarray(sourceStart, sourceStart + rowLength), y * rowLength);
+  }
+  return data;
+}
+
+function buildDimensionExtraRegions(width, height, compareWidth, compareHeight) {
+  const regions = [];
+  if (height > compareHeight) {
+    regions.push({
+      height: roundPercent(((height - compareHeight) / height) * 100),
+      left: 0,
+      top: roundPercent((compareHeight / height) * 100),
+      width: 100,
+    });
+  }
+  if (width > compareWidth) {
+    regions.push({
+      height: 100,
+      left: roundPercent((compareWidth / width) * 100),
+      top: 0,
+      width: roundPercent(((width - compareWidth) / width) * 100),
+    });
+  }
+  return regions;
+}
+
+function buildDiffRegions(
+  diffData,
+  compareWidth,
+  compareHeight,
+  frameWidth = compareWidth,
+  frameHeight = compareHeight,
+) {
+  if (compareWidth <= 0 || compareHeight <= 0) {
+    return [];
+  }
+
+  const tileSize = getDiffRegionTileSize(compareWidth, compareHeight);
+  const columns = Math.ceil(compareWidth / tileSize);
+  const rows = Math.ceil(compareHeight / tileSize);
+  const tileCounts = new Uint32Array(columns * rows);
+
+  for (let y = 0; y < compareHeight; y += 1) {
+    const tileY = Math.floor(y / tileSize);
+    for (let x = 0; x < compareWidth; x += 1) {
+      const index = (y * compareWidth + x) * 4;
+      if (!isPixelmatchDiffPixel(diffData, index)) {
+        continue;
+      }
+      const tileX = Math.floor(x / tileSize);
+      tileCounts[tileY * columns + tileX] += 1;
+    }
+  }
+
+  const dirtyTiles = new Uint8Array(columns * rows);
+  for (let tileY = 0; tileY < rows; tileY += 1) {
+    for (let tileX = 0; tileX < columns; tileX += 1) {
+      const index = tileY * columns + tileX;
+      const tileWidth = Math.min(tileSize, compareWidth - tileX * tileSize);
+      const tileHeight = Math.min(tileSize, compareHeight - tileY * tileSize);
+      const minPixels = Math.max(
+        3,
+        Math.ceil(tileWidth * tileHeight * 0.006),
+      );
+      if (tileCounts[index] >= minPixels) {
+        dirtyTiles[index] = 1;
+      }
+    }
+  }
+
+  const regions = collectDirtyTileRegions(dirtyTiles, tileCounts, {
+    columns,
+    height: compareHeight,
+    rows,
+    tileSize,
+    width: compareWidth,
+  });
+  return compactDiffRegions(regions, frameWidth, frameHeight);
+}
+
+function isPixelmatchDiffPixel(data, index) {
+  const red = data[index];
+  const green = data[index + 1];
+  const blue = data[index + 2];
+  const alpha = data[index + 3];
+  return alpha > 0 && red >= 180 && green <= 150 && blue <= 170;
+}
+
+function getDiffRegionTileSize(width, height) {
+  const shortSide = Math.min(width, height);
+  return Math.max(16, Math.min(48, Math.round(shortSide / 28)));
+}
+
+function collectDirtyTileRegions(
+  dirtyTiles,
+  tileCounts,
+  { columns, height, rows, tileSize, width },
+) {
+  const seen = new Uint8Array(dirtyTiles.length);
+  const regions = [];
+  const stack = [];
+
+  for (let start = 0; start < dirtyTiles.length; start += 1) {
+    if (!dirtyTiles[start] || seen[start]) {
+      continue;
+    }
+
+    stack.length = 0;
+    stack.push(start);
+    seen[start] = 1;
+
+    let minColumn = columns;
+    let maxColumn = 0;
+    let minRow = rows;
+    let maxRow = 0;
+    let changedPixels = 0;
+
+    while (stack.length > 0) {
+      const current = stack.pop();
+      const column = current % columns;
+      const row = Math.floor(current / columns);
+      minColumn = Math.min(minColumn, column);
+      maxColumn = Math.max(maxColumn, column);
+      minRow = Math.min(minRow, row);
+      maxRow = Math.max(maxRow, row);
+      changedPixels += tileCounts[current];
+
+      for (const next of getNeighborTileIndexes(column, row, columns, rows)) {
+        if (!dirtyTiles[next] || seen[next]) {
+          continue;
+        }
+        seen[next] = 1;
+        stack.push(next);
+      }
+    }
+
+    const padding = Math.max(4, Math.round(tileSize * 0.25));
+    regions.push({
+      changedPixels,
+      bottom: Math.min(height, (maxRow + 1) * tileSize + padding),
+      left: Math.max(0, minColumn * tileSize - padding),
+      right: Math.min(width, (maxColumn + 1) * tileSize + padding),
+      top: Math.max(0, minRow * tileSize - padding),
+    });
+  }
+
+  return regions;
+}
+
+function getNeighborTileIndexes(column, row, columns, rows) {
+  const neighbors = [];
+  if (column > 0) {
+    neighbors.push(row * columns + column - 1);
+  }
+  if (column + 1 < columns) {
+    neighbors.push(row * columns + column + 1);
+  }
+  if (row > 0) {
+    neighbors.push((row - 1) * columns + column);
+  }
+  if (row + 1 < rows) {
+    neighbors.push((row + 1) * columns + column);
+  }
+  return neighbors;
+}
+
+function compactDiffRegions(regions, width, height) {
+  const maxRegions = 14;
+  const sortedRegions = regions
+    .filter((region) => region.changedPixels >= 3)
+    .sort((a, b) => b.changedPixels - a.changedPixels);
+
+  if (sortedRegions.length === 0) {
+    return [];
+  }
+
+  const selected = sortedRegions.slice(0, maxRegions);
+  if (sortedRegions.length > maxRegions) {
+    selected.push(mergeDiffRegions(sortedRegions.slice(maxRegions)));
+  }
+
+  return selected
+    .filter(Boolean)
+    .map((region) => ({
+      height: roundPercent(((region.bottom - region.top) / height) * 100),
+      left: roundPercent((region.left / width) * 100),
+      top: roundPercent((region.top / height) * 100),
+      width: roundPercent(((region.right - region.left) / width) * 100),
+    }));
+}
+
+function mergeDiffRegions(regions) {
+  if (regions.length === 0) {
+    return null;
+  }
+
+  return regions.reduce(
+    (merged, region) => ({
+      changedPixels: merged.changedPixels + region.changedPixels,
+      bottom: Math.max(merged.bottom, region.bottom),
+      left: Math.min(merged.left, region.left),
+      right: Math.max(merged.right, region.right),
+      top: Math.min(merged.top, region.top),
+    }),
+    {
+      changedPixels: 0,
+      bottom: 0,
+      left: Number.POSITIVE_INFINITY,
+      right: 0,
+      top: Number.POSITIVE_INFINITY,
+    },
+  );
+}
+
+function roundPercent(value) {
+  return Math.round(value * 100) / 100;
 }
 
 function buildMarkdownDiff(pair) {
@@ -2103,6 +2466,11 @@ function formatPercent(value) {
     minimumFractionDigits: value > 0 && value < 0.01 ? 2 : 0,
     style: "percent",
   }).format(value);
+}
+
+function formatStylePercent(value) {
+  const bounded = Math.max(0, Math.min(100, value));
+  return `${bounded.toFixed(2).replace(/\.?0+$/, "")}%`;
 }
 
 function formatCentralTime(date) {
