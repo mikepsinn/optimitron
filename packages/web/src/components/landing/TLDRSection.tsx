@@ -23,7 +23,7 @@ export function TLDRSection() {
                 Click 2 Buttons
               </p>
               <p className="text-lg font-bold text-muted-foreground mt-2">
-                Verify you&apos;re human. Vote. 30 seconds.
+                Prove you are human. Vote. 30 seconds. A rock cannot do this. You can.
               </p>
             </div>
             <div className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -32,7 +32,7 @@ export function TLDRSection() {
                 Tell Your Friends
               </p>
               <p className="text-lg font-bold text-muted-foreground mt-2">
-                They click 2 buttons. They tell their friends. Done.
+                They click 2 buttons. Then they tell their friends. That&apos;s how 8 billion people vote.
               </p>
             </div>
           </div>

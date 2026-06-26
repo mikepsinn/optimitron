@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import { completeTaskClaim } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
@@ -9,7 +10,10 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ADMIN,
+    ]);
     const body = (await request.json().catch(() => null)) as
       | {
           actualCashCostUsd?: unknown;

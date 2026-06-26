@@ -116,8 +116,7 @@ export default async function StorePage() {
           <div className="mt-8 border-2 border-foreground bg-background p-5">
             <h2 className="text-lg font-black uppercase">Nothing for sale</h2>
             <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-              Useful campaign commerce will appear here after the first store
-              records are synced.
+              The first shirts and sponsorships land here soon. Check back.
             </p>
           </div>
         ) : null}

@@ -19,7 +19,7 @@ export const metadata = getRouteMetadata(fundLink);
 const fundingPaths = [
   {
     title: "Fund The Prize Pool",
-    body: "Deposit into the Earth Optimization Prize. Bring in verified voters. Make treaty demand expensive to ignore.",
+    body: "Deposit into the Earth Optimization Prize. Bring in verified voters. If the treaty fails, you claim your principal plus the yield. Zero downside.",
     href: ROUTES.prize,
     variant: "secondary" as const,
     color: "pink" as const,
@@ -33,7 +33,7 @@ const fundingPaths = [
   },
   {
     title: "Check The Proof",
-    body: "If the ask cannot point to a scoreboard, overdue task, or leader page, keep your money.",
+    body: "Every dollar points to a scoreboard, an overdue task, or a leader page. No receipt, no money. That is the deal.",
     href: ROUTES.scoreboard,
     variant: "cyan" as const,
     color: "cyan" as const,
@@ -64,9 +64,9 @@ export default function FundPage() {
                 Money In, Accountable Work Out
               </h2>
               <p className="mb-4 text-base font-bold leading-relaxed text-background/85">
-                The live funding rail is the Earth Optimization Prize. Use the
-                public queue and scoreboards to check what each dollar should
-                unlock before you send it.
+                Fund the Earth Optimization Prize. Check the public queue and
+                scoreboards to see exactly what each dollar buys before you send
+                it.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <GameCTA href={ROUTES.prize} variant="primary">
@@ -100,7 +100,7 @@ export default function FundPage() {
                 external
                 className="mt-6 inline-flex items-center text-xs font-black uppercase text-foreground hover:text-foreground"
               >
-                Read the funding spec
+                Read the prize math
               </NavItemLink>
             </BrutalCard>
           </div>
@@ -141,8 +141,8 @@ export default function FundPage() {
                 What To Demand
               </h3>
               <p className="mb-4 text-base font-bold text-foreground">
-                Demand a task, ceiling price, proof surface, expected value, and
-                done condition.
+                Demand a task, a ceiling price, the proof you can check, an
+                expected value, and a done condition.
               </p>
               <GameCTA href={tasksLink.href} variant="secondary">
                 See Live Tasks

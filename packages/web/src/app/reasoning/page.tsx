@@ -71,10 +71,10 @@ export default async function ReasoningPage({
             Not live yet
           </p>
           <h1 className="mt-3 text-4xl font-black uppercase sm:text-5xl md:text-6xl">
-            This persuasion flow is still loading.
+            One planet, no war, no disease. Almost ready for you.
           </h1>
           <p className="mt-4 text-base font-bold leading-7 text-muted-foreground">
-            Vote on the treaty now, then use your share link to bring in the
+            Vote for the treaty now. Then use your share link to bring in the
             next human.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">

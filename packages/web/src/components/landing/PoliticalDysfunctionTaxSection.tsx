@@ -22,7 +22,7 @@ const wasteBreakdown = [
   {
     label: "Healthcare Inefficiency",
     stat: "17.3%",
-    detail: "US spends 17.3% of GDP on healthcare. Singapore spends 4.1% and lives 6 years longer. You are paying quadruple for a worse product. On purpose, apparently.",
+    detail: "US spends 17.3% of GDP on healthcare. Singapore spends 4.1% and lives 6 years longer. Quadruple the price, a worse product, six fewer years. Somewhere a system is very proud of this.",
     color: "bg-background text-foreground",
   },
   {

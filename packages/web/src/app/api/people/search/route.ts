@@ -1,6 +1,7 @@
 import { PersonLifeStatus } from "@optimitron/db";
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import { getPersonHref } from "@/lib/person-href";
 import { prisma } from "@/lib/prisma";
 
@@ -12,7 +13,10 @@ function normalizeQuery(value: string | null) {
 
 export async function GET(request: Request) {
   try {
-    await requireAuth();
+    await requireAuth(request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.EARTHDATA_WRITE,
+    ]);
     const { searchParams } = new URL(request.url);
     const query = normalizeQuery(searchParams.get("q"));
 

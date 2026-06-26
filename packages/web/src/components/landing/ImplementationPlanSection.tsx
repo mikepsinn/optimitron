@@ -17,15 +17,15 @@ const steps = [
     step: 2,
     title: "The Great Clicking",
     description:
-      "Citizens do pairwise comparisons on their priorities. Ten comparisons, two minutes, and the eigenvector decomposition produces a stable budget allocation. Enough people click and you have a mandate no politician can ignore.",
+      "Citizens do pairwise comparisons on their priorities. Ten comparisons, two minutes, and the eigenvector decomposition produces a stable budget allocation. Enough people click and you have a mandate no leader can wave off.",
     why: "It takes less time than complaining on social media.",
   },
   {
     step: 3,
     title: "Lobby for the Treaty",
     description:
-      "Demand is proven. Now sell Incentive Alignment Bonds to raise ~$1B for the lobbying campaign. Treaty revenue splits 80/10/10: 80% funds pragmatic clinical trials, 10% returns to bondholders, 10% funds a SuperPAC for aligned politicians. Self-reinforcing loop: diseases cured → GDP rises → everyone lobbies for expansion.",
-    why: `Attractive return profile. Fail? ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back. Succeed? Perpetual 10% of treaty revenue.`,
+      "Demand is proven. Now sell Incentive Alignment Bonds to raise ~$1B for the lobbying campaign. Treaty revenue splits 80/10/10: 80% funds pragmatic clinical trials, 10% returns to bondholders, 10% funds a SuperPAC for aligned politicians. Diseases cured → GDP rises → everyone lobbies for more. The loop pays for itself.",
+    why: `Fail? ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back. Succeed? Perpetual 10% of treaty revenue. The downside pays you anyway.`,
   },
   {
     step: 4,
@@ -38,8 +38,8 @@ const steps = [
     step: 5,
     title: "Enjoy Results",
     description:
-      "Median healthy life years go up. Median real income goes up. The dysfunction tax disappears. Bondholders get paid. Recruiters get paid. Everyone wins except the middlemen. Oh well.",
-    why: "You like living longer and having more money. Presumably.",
+      "Median healthy life years go up. Median real income goes up. The dysfunction tax disappears. Bondholders get paid. Recruiters get paid. Everyone wins except the people who sold the war. They will be fine. They have savings.",
+    why: "You like living longer and having more money. I checked. This is true of nearly everyone.",
   },
 ];
 

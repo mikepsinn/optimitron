@@ -93,6 +93,7 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
 - Speak directly to the specific human or organization that should do something.
 - Make the action obvious, then show the value to them for doing it.
+- Before writing user-facing text, identify the audience, desired action, desired feeling, and outcome; make the copy outcome-first, not mechanism-first.
 - Be funny when the surface allows it. Dry, concrete, slightly alien, and useful beats cute or verbose.
 - Do not leak implementation or planning terms into user copy: "site variant", "program graph", "initiative landing page", "approved organizations get", "route allowlist", etc.
 - Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.

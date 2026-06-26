@@ -32,11 +32,11 @@ export default function EfficiencyPage() {
           Efficiency Rankings
         </p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">
-          Cheapest high performers, not wishful thinking
+          Same results, lower price. Here is who already does it
         </h1>
         <p className="mt-3 max-w-3xl text-sm font-bold text-muted-foreground">
-          These are the comparator countries the current OBG output is using when it says the US is overspending.
-          Each row links back to the underlying budget category and, where available, the drafted legislation.
+          Every row is a country buying the same outcome for less. The US pays more and ranks lower.
+          Open any row for the budget category and, where available, the drafted legislation.
         </p>
       </div>
 
@@ -116,12 +116,12 @@ export default function EfficiencyPage() {
 
       <section className="mt-10 grid gap-4 md:grid-cols-3">
         <NavCard href={ROUTES.obg} title="Back to OBG" description="Full category-by-category spending analysis." />
-        <NavCard href={ROUTES.dividend} title="Optimization Dividend" description="Translate the savings into household-level payouts." />
+        <NavCard href={ROUTES.dividend} title="Optimization Dividend" description="See the savings as a check to your household." />
         <NavCard href={ROUTES.governmentSize} title="Government Size" description="Look at the whole-government floor instead of individual budget lines." />
       </section>
 
       <p className="mt-8 text-xs font-bold text-muted-foreground">
-        Generated {new Date(usBudgetAnalysis.generatedAt).toLocaleDateString()} from the live web analysis pipeline.
+        Generated {new Date(usBudgetAnalysis.generatedAt).toLocaleDateString()} from live public spending data.
       </p>
     </div>
   );

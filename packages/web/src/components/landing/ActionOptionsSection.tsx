@@ -22,7 +22,7 @@ export default function ActionOptionsSection() {
     {
       option: "OPTION 2: VOTE",
       action: "RANK YOUR PRIORITIES",
-      description: "30 seconds. Anonymous. Shape optimal policy.",
+      description: "30 seconds. Anonymous. Tell the machine what to optimize.",
       color: "bg-background",
       textColor: "text-foreground",
       accentColor: "text-foreground",
@@ -31,7 +31,7 @@ export default function ActionOptionsSection() {
     {
       option: "OPTION 3: FUND",
       action: "BACK THE PRIZE",
-      description: `Dominant assurance design. Projected ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} return if thresholds not met. Play the game.`,
+      description: `Worst case, the treaty stalls and your stake earns a projected ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} return. Best case, you also end war and disease. Fund it.`,
       color: "bg-background",
       textColor: "text-foreground",
       accentColor: "text-foreground",
@@ -39,8 +39,8 @@ export default function ActionOptionsSection() {
     },
     {
       option: "OPTION 4: DO NOTHING",
-      action: "WATCH GOVERNMENTS FLAIL",
-      description: "And continue paying $101 trillion per year for governance that doesn't optimize anything.",
+      action: "KEEP OVERPAYING",
+      description: "$101 trillion a year for governance that optimizes nothing. The only product that charges that much to do that little. Your call.",
       color: "bg-primary",
       textColor: "text-primary-foreground",
       accentColor: "text-foreground",

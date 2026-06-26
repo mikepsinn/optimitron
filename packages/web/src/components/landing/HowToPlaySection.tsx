@@ -16,7 +16,7 @@ const steps: { number: string; title: string; body: ReactNode; color: "pink" | "
   {
     number: "1",
     title: "Vote & Allocate",
-    body: "Answer the question. Tell us where you'd spend the money. 2 minutes. You're a player now.",
+    body: "Answer the question. Tell us where you'd spend the money. 2 minutes. Your grandparents gave four years on a beach in Normandy. This asks for two minutes.",
     color: "pink",
     ctas: [
       { label: CTA.answerTheQuestion, href: "#vote" },
@@ -40,7 +40,7 @@ const steps: { number: string; title: string; body: ReactNode; color: "pink" | "
   {
     number: "4",
     title: "Deposit",
-    body: <>{POINT} holders get paid if the plan works. Put money in the prize fund — if it doesn&apos;t work, projected return is <ParameterValue param={PRIZE_POOL_HORIZON_MULTIPLE} figures={2} />x (based on VC-sector diversification). All figures are projections, not guarantees.</>,
+    body: <>{POINT} holders get paid if the plan works. Put money in the prize fund — if it doesn&apos;t work, your projected return is <ParameterValue param={PRIZE_POOL_HORIZON_MULTIPLE} figures={2} />x your deposit (VC-sector diversification, projected not guaranteed).</>,
     color: "pink",
     ctas: [{ label: CTA.insertCoin, href: "/prize" }],
   },

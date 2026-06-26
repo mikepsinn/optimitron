@@ -15,14 +15,14 @@ const coreCards = [
     textColor: "text-background",
   },
   {
-    title: "Two Terminal Metrics",
+    title: "Two Numbers That Pay",
     description:
       "Median healthy life years and median real after-tax income. Health gets 50%. Income gets 50%. Everything else is an intermediate variable. If those two numbers don't move, nobody gets paid.",
     color: "bg-background",
     textColor: "text-foreground",
   },
   {
-    title: "Referral Recruitment",
+    title: "Get Paid To Refer",
     description:
       `Share your referral link. ${REFERRAL.earnOne} Metrics hit targets after 15 years? ${PRIZE_OUTCOMES.successShort} ${REFERRAL.noDeposit}`,
     color: "bg-background",
@@ -46,10 +46,7 @@ export function EarthOptimizationPrizeSection() {
             The Earth Optimization Prize
           </h2>
           <p className="mt-4 text-lg max-w-2xl mx-auto font-bold">
-            Not a grant. Not a charity. A coordination game that pays everyone
-            who proved demand for the 1% Treaty — but only if the metrics
-            actually move. Recruit verified voters now. Get paid in 15 years if
-            it worked.
+            Not a grant. Not a charity. A coordination game that pays everyone who proved demand for the 1% Treaty. Recruit verified voters now. Get paid in 15 years when the two numbers move. They don&apos;t move, nobody gets paid — including us.
           </p>
         </div>
 
@@ -71,7 +68,7 @@ export function EarthOptimizationPrizeSection() {
 
         <div className="text-center">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <GameCTA href="/prize#invest" variant="yellow" size="lg">Play the Game</GameCTA>
+            <GameCTA href="/prize#invest" variant="yellow" size="lg">Deposit. Recruit. Get paid.</GameCTA>
             <NavItemLink
               item={earthOptimizationPrizePaperLink}
               variant="custom"

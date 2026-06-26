@@ -627,7 +627,8 @@ jobs:
           HTML
           echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
           echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
-          echo "review_url=https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/latest/" >> "$GITHUB_OUTPUT"
+          echo "review_url=https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/$short_sha/" >> "$GITHUB_OUTPUT"
+          echo "latest_review_url=https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/latest/" >> "$GITHUB_OUTPUT"
 
       - name: Post Visual review pending status
         if: ${{ !cancelled() && steps.prepare_pages.outcome == 'success' }}

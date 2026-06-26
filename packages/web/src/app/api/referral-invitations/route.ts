@@ -8,6 +8,7 @@ import {
 } from "@optimitron/db";
 import { requireAuth } from "@/lib/auth-utils";
 import { createLogger } from "@/lib/logger";
+import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import {
   createReferralInvitation,
@@ -41,9 +42,9 @@ const patchInvitationSchema = z.object({
   wasEdited: z.boolean().optional(),
 });
 
-export async function GET() {
+export async function GET(request?: Request) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [McpScope.TASKS_PERSONAL]);
 
     const invitations = await prisma.referralInvitation.findMany({
       where: {
@@ -66,7 +67,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [McpScope.TASKS_PERSONAL]);
     const parsed = createInvitationSchema.parse(await request.json());
 
     const invitation = await createReferralInvitation({
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [McpScope.TASKS_PERSONAL]);
     const parsed = patchInvitationSchema.parse(await request.json());
     const now = new Date();
 

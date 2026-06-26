@@ -167,9 +167,9 @@ export default async function HumanityVGovernmentPage() {
             officers imprisoned.
           </p>
           <p className="mt-3">
-            The corporate analogy is conservative: ordinary corporations do not
-            have the legal power to compel payment from every human under their
-            jurisdiction.
+            And this comparison is generous. No corporation can force every
+            human under its jurisdiction to pay it. Governments can, and do. On
+            my planet we called that a monopoly. Here you call it a country.
           </p>
         </div>
       </section>
@@ -203,8 +203,8 @@ export default async function HumanityVGovernmentPage() {
           <div className="flex gap-4 pt-3">
             <dt className="w-32 shrink-0 text-muted-foreground">Remedy</dt>
             <dd className="text-foreground">
-              Record the finding, count the plaintiffs, and make the damages
-              demand public enough that governments have to answer it.
+              Record the finding, count the plaintiffs, and put the damages
+              demand in front of every overdue government until they answer it.
             </dd>
           </div>
         </dl>
@@ -402,7 +402,7 @@ export default async function HumanityVGovernmentPage() {
         <div className="mt-3 space-y-3">
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-              "These are policy disagreements."
+              &quot;These are policy disagreements.&quot;
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
               Negligent homicide requires duty, breach, causation, damages,
@@ -411,7 +411,7 @@ export default async function HumanityVGovernmentPage() {
           </div>
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-              "You cannot sue a government."
+              &quot;You cannot sue a government.&quot;
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
               That is because governments wrote rules saying governments are
@@ -421,7 +421,7 @@ export default async function HumanityVGovernmentPage() {
           </div>
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-              "The deaths are counterfactual."
+              &quot;The deaths are counterfactual.&quot;
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
               Governments use counterfactual lives saved to justify budgets
@@ -469,7 +469,7 @@ export default async function HumanityVGovernmentPage() {
           </span>{" "}
           named plaintiffs. If someone in your family died of war, regulatory
           delay, or preventable disease, add them. A civilization should at
-          least be able to count these murdered humans.
+          least be able to count its dead. On my planet, we counted every one.
         </p>
         <Link
           className={`${defaultButtonClassName} mt-5 tracking-[0.08em]`}

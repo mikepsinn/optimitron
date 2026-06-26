@@ -2,117 +2,120 @@
 
 ## Metadata
 
-- Page title: Developers | Optimitron | International Campaign to End War and Disease
-- Meta description: Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.
-- Canonical: https://optimitron.com/developers
-- Open Graph title: Developers | Optimitron
-- Open Graph description: Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.
-- Open Graph image: [missing]
-- Twitter title: International Campaign to End War and Disease
-- Twitter description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Page title: Developers | International Campaign to End War and Disease
+- Meta description: Optimize Earth from your own app or website with the Earth Optimization API: OAuth, shared people, organizations, tasks, referrals, and votes.
+- Canonical: https://warondisease.org/developers
+- Open Graph title: Developers
+- Open Graph description: Optimize Earth from your own app or website with the Earth Optimization API: OAuth, shared people, organizations, tasks, referrals, and votes.
+- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdevelopers
+- Twitter title: Developers
+- Twitter description: Optimize Earth from your own app or website with the Earth Optimization API: OAuth, shared people, organizations, tasks, referrals, and votes.
 
 ## Visible Page Copy
 
-### OPTIMITRON MCP
-- Let AI agents take the highest-value next action to increase median health-adjusted life expectancy and median after-tax inflation-adjusted income.
-### WHAT IT DOES
-- MCP gives agents the live task graph, impact estimates, evidence, coordination locks, and write-back tools they need to optimize Earth without guessing.
-#### PICK WORK
-- Ask what to do next instead of browsing a backlog by vibes.
-- getQueueAudit — check whether the queue is sane
-- getNextAction — best next action across tasks
-- evaluateTaskEconomics — execute, delegate, procure, or fundraise
-#### UNDERSTAND
-- Pull the evidence before changing strategy or assigning work.
-- searchManual — find source passages
-- askWishonia — synthesized answer with sources
-- getTask / getBlockers — inspect details and dependencies
-#### IMPROVE QUEUE
-- Turn research into reviewable work instead of dumping notes in chat.
-- proposeTaskBundle — draft tasks for review
-- setTaskImpact — attach expected value
-- addDependency — wire the task graph
-#### COORDINATE
-- Keep concurrent agents from stepping on the same task.
-- acquireLease — reserve active work
-- heartbeatLease — keep long work alive
-- releaseLease / logAgentRun — close the loop
-#### DISCUSS
-- Keep task coordination in the readable thread.
-- postTaskComment — leave status, questions, and agent notes
-- getTaskComments — read the task thread
-#### REPORT
-- Leave enough state that the next agent knows what happened.
-- completeTaskClaim — submit completed work
-- recordTaskActuals — log effort and cost
-- postTaskComment — leave context
-### EXAMPLE USES
-- Use MCP when you want the agent to work from the live task graph instead of guessing from stale docs or a chat transcript.
-#### CHOOSE THE NEXT TASK
-- Ask: “I can write TypeScript and have two hours. What should I do next?” The agent audits the queue, checks task economics, and returns the best executable action.
-#### RESEARCH WITHOUT LOSING THE THREAD
-- Ask: “Find every task and manual passage about Wefunder.” The agent searches tasks, reads blockers, checks the manual, and proposes a task bundle instead of handing you a pile of notes.
-#### COORDINATE WITHOUT LOSING THE THREAD
-- The agent posts task comments for status updates, questions, and next steps. Comment notifications are handled automatically.
-#### MAKE THE QUEUE SMARTER
-- After research, the agent can draft new tasks with impact estimates and dependencies. They start as DRAFT so governance can review them before promotion.
-### CLAUDE CODE
-- One command. The OAuth flow handles the rest.
+- EARTH OPTIMIZATION API
+## OPTIMIZE EARTH FROM YOUR OWN APP OR WEBSITE.
+- Connect your survey, dFDA site, field tool, or civic app to Optimitron's shared work graph: OAuth, people, organizations, tasks, referrals, votes, and expected-value coordination.
+- OPENAPI CONTRACT
 - COPY
 - ```text
-claude mcp add --transport http optimitron http://localhost:3001/api/mcp
+http://localhost:3001/openapi.json
 ```
-- Then run /mcp inside Claude Code. You'll be redirected to sign in. Once approved, the agent can read and write your tasks.
-### CLAUDE DESKTOP
-- Three clicks. No terminal required.
-#### OPEN SETTINGS
-- Settings → Connectors → Add custom connector.
-#### PASTE THE URL
-- Name: Optimitron Leave the OAuth fields blank. They're auto-discovered.
-#### CONNECT
-- Sign in, authorize, done. Claude can now access your tasks.
-- URL for step 2:
+- [OPEN OPENAPI](/openapi.json)
+- [INSTALL MCP](/mcp)
+- WHO USES IT
+### ONE TO-DO LIST BEATS FIVE HUNDRED HEROIC DUPLICATES.
+- Optimitron is useful when an app needs shared identity, people, organizations, tasks, and outcome tracking. The task engine ranks work by dollar-equivalent expected value, effort, cash cost, probability, dependencies, and health or income impact.
+#### SURVEY SITES
+- Run a calmer survey or pledge page, then send the verified vote, referral, and follow-up task back to Optimitron.
+#### DISEASE COMMUNITIES
+- Let a dFDA site collect patient priorities, treatment reports, or organization support without creating another isolated people database.
+#### RESEARCH FUNDERS
+- Publish bounties, assignments, or requests for evidence, then rank the next action by expected value instead of whoever shouted last.
+#### CIVIC AND NONPROFIT TOOLS
+- Coordinate outreach, volunteers, expert review, and institutional commitments against the same shared task and organization record.
+- OAUTH
+### SIGN IN ONCE. WRITE TO THE SAME WORK GRAPH.
+- Optimitron exposes OAuth authorization code with PKCE, dynamic client registration, rotating refresh tokens, and token revocation. The same scopes work for REST endpoints and the MCP server.
+- 1 REGISTER A PUBLIC CLIENT Send redirect URIs to dynamic client registration. Optimitron returns a client_id; public clients do not get a secret.
+- 2 START AUTHORIZATION Redirect the user to the authorization endpoint with PKCE, state, redirect_uri, and the scopes your app needs.
+- 3 EXCHANGE AND REFRESH Trade the authorization code for a Bearer token. Refresh tokens rotate, and revoke is available when the app disconnects.
+#### METADATA
+- Let OAuth clients discover the authorization, token, registration, and revocation endpoints.
 - ```text
-http://localhost:3001/api/mcp
+GET http://localhost:3001/.well-known/oauth-authorization-server
 ```
-### CHATGPT
-- Plus, Pro, Business, Enterprise, and Edu only. Free tier doesn't allow custom connectors. Take it up with OpenAI.
-#### ENABLE DEVELOPER MODE
-- Settings → Apps & Connectors → Advanced → Developer mode → on. On Business / Enterprise / Edu, a workspace owner has to enable connectors at the org level first.
-#### ADD CUSTOM CONNECTOR
-- Settings → Apps & Connectors → Add → Add custom connector. Name: Optimitron Authentication: OAuth Check "I trust this application".
-#### SIGN IN
-- Click Create, then sign in. PKCE and dynamic client registration are handled automatically. No client ID or secret to paste.
-- MCP Server URL for step 2:
-- http://localhost:3001/api/mcp
-#### HEADS-UP: DEEP RESEARCH MODE
-- Deep Research only surfaces tools named search and fetch. Optimitron's tools won't appear there. Use regular chat or Agent mode.
-### CURSOR, WINDSURF, CLINE, ZED, ET AL.
-- Most MCP clients accept the same JSON. Find your client's config file and paste:
+#### REGISTER
+- Create a public client for browser, mobile, and field apps.
 - ```text
+POST http://localhost:3001/api/mcp/oauth/register
+
 {
-  "mcpServers": {
-    "optimitron": {
-      "url": "http://localhost:3001/api/mcp"
-    }
-  }
+  "client_name": "Treaty Field App",
+  "redirect_uris": [
+    "https://field-app.example/oauth/callback"
+  ],
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "scope": "tasks:personal earthdata:write"
 }
 ```
-- CURSOR: ~/.cursor/mcp.json
-- WINDSURF: ~/.codeium/windsurf/mcp_config.json
-- CLINE / ZED / OTHERS: check your client's MCP docs for the config path.
-### OAUTH SCOPES
-- Request specific scopes when connecting to control what the agent can do.
+#### AUTHORIZE AND TOKEN
+- Use PKCE for the browser redirect, then exchange the code on your server or trusted runtime.
+- ```text
+GET http://localhost:3001/api/mcp/oauth/authorize
+POST http://localhost:3001/api/mcp/oauth/token
+POST http://localhost:3001/api/mcp/oauth/revoke
+```
+- REST API
+### THE USEFUL PARTS ARE OPEN FIRST.
+- This is the external surface for embedding a survey, creating tasks for people, collecting votes, and keeping organization data attached to the same shared record.
+#### TASKS
+- Create task assignments, list open work, claim work, complete claims, and keep comments with the task instead of in a lost chat thread.
+#### REFERRALS
+- Create referral invitations, attach them to tasks, and track whether a human copied, sent, declined, or finished the ask.
+#### VOTES
+- Let another site collect a referendum, survey, or treaty vote while writing the result into the same verified record Optimitron uses.
+#### PEOPLE AND ORGANIZATIONS
+- Search assignable people, create organizations, and update profiles so one contact or institution does not get rediscovered from scratch every Tuesday.
+- EXAMPLE
+### CREATE A TASK FOR A HUMAN.
+- A survey or outreach app can ask for a person, create the task, and then show whether that person answered, voted, completed the work, or needs another nudge.
+- ```text
+POST http://localhost:3001/api/tasks
+
+{
+  "title": "Ask Dr. Example to vote on the 1% Treaty",
+  "description": "Send the treaty vote link and answer any obvious question.",
+  "isPublic": false,
+  "assigneePersonInvite": {
+    "email": "doctor@example.org",
+    "firstName": "Ada",
+    "lastName": "Example"
+  },
+  "contactTemplate": "Please vote on the 1% Treaty and send it to two people who can help."
+}
+```
+- PERMISSIONS
+### ASK FOR THE SMALLEST SCOPE THAT WORKS.
 - Manage your private tasks, dependencies, comments, queues, and next-action recommendations
 - Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, and dependencies
 - Create sourced public Earth-data records: memorials, evidence, intervention reports, organization signatories, and correction reports
 - Admin-only: hide, restore, merge, and resolve Earth-data records and reports
 - Admin-only: run coordinated public-task agents with leases and run logs
 - Admin-only: access the configured GitHub repos via the server-side PAT (search code, read files, list directories, generic API passthrough)
-### API REFERENCE
-#### MCP ENDPOINT
-- Streamable HTTP transport (MCP protocol version 2025-03-26). Supports GET, POST, DELETE.
-#### TOOL CATALOG
-- JSON listing of every tool, its schema, and required scopes.
-#### OAUTH DISCOVERY
-- Standard OAuth 2.1 metadata: endpoints, scopes, PKCE config.
+### AGENTS USE THE SAME AUTHORIZATION.
+- MCP clients can discover tools, add impact estimates, and call the task graph with the same OAuth scopes used by REST clients.
+- ```text
+GET http://localhost:3001/api/mcp/tools
+POST http://localhost:3001/api/mcp
+```
+- [MCP SETUP](/mcp)
+### MACHINES CAN READ THE CONTRACT.
+- Point API clients, SDK generators, or documentation tooling at the OpenAPI document and stop guessing from source files.
+- ```text
+GET http://localhost:3001/openapi.json
+```
+- [OPEN JSON](/openapi.json)

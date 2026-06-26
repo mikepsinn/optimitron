@@ -418,8 +418,8 @@ export function DashboardShareCard({
           Assign an employee
         </p>
         <p className="mt-2 text-sm font-bold leading-6 text-[var(--treaty-ink)] sm:text-base">
-          Create the tracked voting task, then copy the message with their
-          private invite link.
+          Make their tracked voting task, then copy the message with their
+          private invite link. One overdue employee, handled.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_1.4fr]">
           <label className="block">

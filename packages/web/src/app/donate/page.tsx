@@ -70,8 +70,8 @@ export default function DonatePage() {
                 figures={3}
                 param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
               />{" "}
-              diseases are still waiting. That is why the disease-eradication
-              timeline is{" "}
+              diseases are still in the waiting room. At that rate the
+              disease-eradication queue clears in{" "}
               <ParameterValue
                 className="font-black"
                 figures={3}
@@ -80,8 +80,8 @@ export default function DonatePage() {
               years. The proposal is simple: <TreatyTradeThesis />.
             </p>
             <p>
-              Your donation helps reach the humans needed to prove humanity
-              wants this.
+              Your donation reaches the humans we need to prove Earth wants
+              this. Each one votes, then recruits two more.
             </p>
             <p>
               For the full economic analysis, read the{" "}
@@ -119,8 +119,9 @@ export default function DonatePage() {
         </div>
 
         <p className="mt-8 text-center text-sm font-bold text-foreground">
-          Foundations: distributing the shirt to every human on Earth costs
-          roughly 3% of the global annual philanthropy budget.{" "}
+          Foundations: putting the shirt on every human on Earth costs about
+          3% of the global annual philanthropy budget. The other 97% is also
+          welcome to end war and disease.{" "}
           <Link href={ROUTES.foundations} className="font-black underline">
             See the case →
           </Link>

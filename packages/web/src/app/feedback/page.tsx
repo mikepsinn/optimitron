@@ -73,9 +73,9 @@ export default async function FeedbackPage({
           Help coordinate humanity better.
         </h1>
         <p className="mt-5 max-w-2xl text-base font-bold leading-7 text-muted-foreground">
-          We are building a decentralized to-do list for humanity: coordinate
-          the work required to end war and disease in the least irritating way
-          possible.
+          A decentralized to-do list for humanity. It coordinates the work to
+          end war and disease, in the least irritating way possible. Tell us
+          where it falls short.
         </p>
       </header>
 
@@ -160,7 +160,7 @@ export default async function FeedbackPage({
             className="w-full border-2 border-foreground bg-foreground px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-background hover:bg-background hover:text-foreground sm:w-auto"
             type="submit"
           >
-            Send Feedback
+            Send.
           </button>
         </form>
       ) : null}

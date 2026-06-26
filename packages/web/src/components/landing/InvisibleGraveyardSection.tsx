@@ -29,21 +29,21 @@ const graveyardStats: { value: number; suffix: string; emoji: string; label: str
     value: EFFICACY_LAG_YEARS.value,
     suffix: " years",
     emoji: "🔒",
-    label: "Post-Safety Delay",
+    label: "Years In The Cabinet",
     detail: "Proven safe. Locked in a cabinet. While you die.",
   },
   {
     value: Math.round(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL.value / 1e6),
     suffix: "M deaths",
     emoji: "⚰️",
-    label: "Historical Efficacy Lag",
+    label: "Dead On The Waiting List",
     detail: "Died waiting for treatments that were already ready.",
   },
   {
     value: +(CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE.value * 100).toFixed(2),
     suffix: "%",
     emoji: "🚪",
-    label: "Trial Capacity Used",
+    label: "Doors Open vs. Doors Used",
     detail: "1.08 billion willing. 1.9 million slots. On my planet this would be a crime.",
   },
 ];
@@ -125,7 +125,7 @@ export function InvisibleGraveyardSection() {
             external
             className="inline-flex items-center text-sm font-black uppercase text-background hover:underline transition-colors"
           >
-            😴 Read the Full Analysis &rarr;
+            😴 Read the Receipts &rarr;
           </NavItemLink>
           <NavItemLink
             item={dfdaSpecPaperLink}

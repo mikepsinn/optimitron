@@ -85,7 +85,7 @@ export default function BudgetPage() {
           <RelatedLink
             href={ROUTES.dividend}
             title="Optimization Dividend"
-            description="Translate the savings into household payouts."
+            description="See the savings land in your household as cash."
           />
           <RelatedLink
             href={ROUTES.efficiency}

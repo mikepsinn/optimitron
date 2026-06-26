@@ -54,9 +54,7 @@ export function LandingProblemSection() {
                   <ParameterValue param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} display="withUnit" />/yr
                 </div>
                 <p className="mt-1 text-sm font-bold text-background">
-                  Global political dysfunction tax — what misaligned governance
-                  costs in wasted resources, perverse incentives, and missed
-                  opportunities.
+                  Global political dysfunction tax. Your governments&apos; wrong bets, billed to you — money spent on the opposite of healthier, richer, longer lives.
                 </p>
               </div>
               <div>
@@ -64,8 +62,7 @@ export function LandingProblemSection() {
                   <ParameterValue param={{...POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL, unit: "USD"}} display="withUnit" />/person
                 </div>
                 <p className="mt-1 text-sm font-bold text-background">
-                  That&apos;s your share. You are paying this whether you know
-                  it or not.
+                  That&apos;s your share. You are paying it whether you voted for it or not. On my planet, that is called a subscription.
                 </p>
               </div>
             </div>
@@ -84,8 +81,7 @@ export function LandingProblemSection() {
                   <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} /> deaths/day
                 </div>
                 <p className="mt-1 text-sm font-bold text-background">
-                  Preventable. Treatable. Ignored. Every day your regulatory
-                  system fails to clear the backlog.
+                  Preventable. Treatable. Ignored. Every day your regulators leave safe, proven treatments on the shelf.
                 </p>
               </div>
               <div>

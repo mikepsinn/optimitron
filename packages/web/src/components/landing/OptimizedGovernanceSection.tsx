@@ -52,7 +52,7 @@ export function OptimizedGovernanceSection() {
         </NavItemCardGrid>
         <div className="mt-8 text-center">
           <GameCTA href={agenciesLink.href} variant="secondary">
-            All Agencies &rarr;
+            See every agency &rarr;
           </GameCTA>
         </div>
       </Container>

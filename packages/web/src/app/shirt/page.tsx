@@ -228,8 +228,9 @@ function FixExistingShirtsSection() {
           </p>
 
           <p className={DIY_BODY_CLASS_NAME}>
-            We mention this not to make you feel bad. Your shirts have been
-            working against you this whole time. We are just telling you.
+            Good news: every blank shirt in your closet is a billboard you
+            already own, currently advertising nothing. Pick up a marker and it
+            starts saving lives by lunch.
           </p>
 
           <p className="text-sm font-bold italic leading-relaxed text-muted-foreground">
@@ -521,10 +522,11 @@ export default async function ShirtPage() {
             ) : (
               <div className="border-2 border-foreground bg-background p-5">
                 <h2 className="text-lg font-black uppercase leading-tight">
-                  Shirt checkout is closed
+                  Checkout is closed. The artwork ships now.
                 </h2>
                 <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                  You can still download the back artwork while checkout is off.
+                  Download the back artwork, print it, wear it today. No store
+                  required.
                 </p>
                 <div className="mt-4">
                   <ShirtDownloadImageButton
@@ -539,7 +541,7 @@ export default async function ShirtPage() {
 
             <section className="border-2 border-foreground bg-background p-5">
               <h2 className="text-2xl font-black uppercase leading-tight">
-                Or pledge conditionally.
+                Not ready to buy? Pledge instead.
               </h2>
               <p className="mt-4 text-base font-bold leading-7 text-foreground">
                 If 8 billion others pledge by August 6, the bulk order ships. If

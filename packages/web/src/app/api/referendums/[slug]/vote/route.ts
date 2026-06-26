@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import {
   ActivityType,
   HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG,
@@ -36,7 +37,7 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [McpScope.EARTHDATA_WRITE]);
     const { slug } = await params;
     const body = (await request.json()) as {
       answer: string;

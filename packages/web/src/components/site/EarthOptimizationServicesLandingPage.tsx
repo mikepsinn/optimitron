@@ -39,18 +39,18 @@ const thermostatDeck =
 const howItWorksHeading = "How it works"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
 const employeeManualHeading = "Employee manual"; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
 const employeeManualDeck =
-  "The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. You run the planet now."; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
+  "The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. Eight billion presidents, no boss. You run the planet now."; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
 const employeeManualLabel = "Read the employee manual"; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
 const whyItPaysHeading = "Why it pays"; // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
 const calculatorHeading = "Your calculator"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
 const calculatorDeck =
-  "Use your own assumptions. If the numbers stop working, good. That means the page did a useful thing."; // TODO(copy): Mike copy gate. Source: Pivot 2 calculator framing.
+  "Use your own assumptions. If the numbers stop working, good - you just saved yourself the money. Either way you leave knowing."; // TODO(copy): Mike copy gate. Source: Pivot 2 calculator framing.
 const termsHeading = "Terms"; // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
 const termsDeck =
-  "Investment discussions happen off-page, for accredited investors, with the securities materials where they belong."; // TODO(copy): Mike copy gate. Source: Pivot 3 legal gate.
+  "The pitch is public. The paperwork is not. For accredited investors, the securities materials live off-page, where the law wants them."; // TODO(copy): Mike copy gate. Source: Pivot 3 legal gate.
 const finalHeading = "Talk to us"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
 const finalDeck =
-  "Request the data room or book a call. The thesis is public. The instrument is not a checkout button."; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA/legal gate.
+  "Request the data room or book a call. The math is public. The buy-in is not a one-click checkout - the law makes us talk first."; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA/legal gate.
 const legalGateText =
   "Accredited-only securities discussion. Not an offer. Not investment advice."; // TODO(copy): Mike copy gate. Source: Pivot 3 terms and calculator disclaimer.
 
@@ -292,9 +292,9 @@ export function EarthOptimizationServicesLandingPage() {
           x more testing weapons than testing cures. So we do the boring thing.
           We buy a controlling share of the companies whose lobbying blocks the
           fix, hand that power to ordinary people instead of a boardroom, and
-          point it at the policies that nearly every country's data says
+          point it at the policies that nearly every country&apos;s data says
           actually raise health and income. The lobby that spent decades
-          stopping cures starts paying for them. It's almost like pointing the
+          stopping cures starts paying for them. It&apos;s almost like pointing the
           money at the goal works better. Weird. (This already runs as software.
           The math is public.)
         </p>

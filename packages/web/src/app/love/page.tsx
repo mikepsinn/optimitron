@@ -76,8 +76,8 @@ const steps = [
     title: "Add it to your Earth Optimization Date bio",
     body: (
       <p>
-        Use one of the templates below, or write your own. The key is: make it
-        sound like you, mention warondisease.org, and keep it natural.
+        Use a template below, or write your own. Make it sound like you,
+        mention warondisease.org, keep it natural.
       </p>
     ),
   },
@@ -134,7 +134,7 @@ const faqItems = [
   {
     question: "Will it actually get me better matches?",
     answer:
-      "Having a real mission is consistently rated as one of the most attractive traits in social psychology research. A person who cares about something beyond themselves is more attractive than a person who doesn't. This isn't a sacrifice. It's an upgrade.",
+      "Having a real mission is consistently rated as one of the most attractive traits in social psychology research. A person who cares about something beyond themselves is more attractive than a person who doesn't. This isn't a sacrifice. It's an upgrade. Free.",
   },
   {
     question: "Won't people think I'm promoting something?",
@@ -550,8 +550,8 @@ export default async function LovePage() {
         <LoveSection>
           <SectionHeading>Bio templates</SectionHeading>
           <BodyParagraph dim>
-            Use these as-is or adapt to your voice. The only requirement is that
-            warondisease.org appears and the reader has a reason to click it.
+            Use these as-is or make them yours. Two rules: warondisease.org
+            appears, and the reader has a reason to click it.
           </BodyParagraph>
 
           <BioTemplate>

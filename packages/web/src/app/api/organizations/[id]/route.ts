@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import {
   canManageOrganization,
   normalizeOrganizationHttpUrl,
@@ -18,11 +19,14 @@ async function requireManagerOrAdmin(userId: string, organizationId: string) {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [
+      McpScope.EARTHDATA_WRITE,
+      McpScope.TASKS_ADMIN,
+    ]);
     const { id } = await params;
     await requireManagerOrAdmin(userId, id);
 
@@ -75,7 +79,10 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [
+      McpScope.EARTHDATA_WRITE,
+      McpScope.TASKS_ADMIN,
+    ]);
     const { id } = await params;
     await requireManagerOrAdmin(userId, id);
 

@@ -81,12 +81,12 @@ function DonateSuccessInner() {
                 U.S. 501(c)(3) public charity, to the 1% Treaty campaign.
               </p>
               <p className="leading-7 text-neutral-700">
-                It funds hosting, identity verification, translation, fraud
-                prevention, and public evidence pages. The most useful next
-                step is getting one more human to vote.
+                It pays for hosting, identity checks, translation, fraud
+                prevention, and public evidence pages. Your best next move:
+                get one more human to vote.
               </p>
               <p className="leading-7 text-neutral-700">
-                To track it in your dashboard, sign in with the same email you
+                Want to watch it work? Sign in with the same email you
                 used in Stripe.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">

@@ -32,11 +32,10 @@ export default function DividendPage() {
           Optimization Dividend
         </p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">
-          What efficiency pays back to actual people
+          Your government is overcharging you. Here is the refund.
         </h1>
         <p className="mt-3 max-w-3xl text-sm font-bold text-muted-foreground">
-          This is the household-facing view of the budget analysis. We deduplicate overlapping OECD buckets,
-          take the cheapest high-performing comparator in each category, and translate the savings into a per-adult dividend.
+          On my planet, when the state buys a service for triple the going rate, the difference goes back to the household. So we did the math for yours. We line up every category against the cheapest country that gets better results, and split the overspend per adult. That is your dividend.
         </p>
       </div>
 
@@ -51,7 +50,7 @@ export default function DividendPage() {
         <section className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-xl font-black uppercase text-foreground">Breakdown</h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            Each row is the cleanest spend-too-much, get-worse-results comparison available in the current OBG data.
+            Every row: your government pays more and gets worse results than a country that already solved it. Pick the cheaper one.
           </p>
           <div className="mt-6 overflow-x-auto">
             <table className="w-full text-sm">
@@ -114,22 +113,22 @@ export default function DividendPage() {
         <LinkCard
           href={ROUTES.obg}
           title="Budget analysis"
-          description="See the underlying category-by-category evidence and the spending deltas."
+          description="Every category, every number, every country that does it cheaper. The receipts."
         />
         <LinkCard
           href={ROUTES.efficiency}
           title="Efficiency rankings"
-          description="Inspect the cheapest high performers and the current US rank in each tracked bucket."
+          description="Who delivers more for less, and where the US actually ranks in each category."
         />
         <LinkCard
           href={ROUTES.legislation}
           title="Model legislation"
-          description="Read the drafted bills that turn the spending diagnosis into concrete policy text."
+          description="The bills that turn the overspend into law. Already written."
         />
       </section>
 
       <p className="mt-8 text-xs font-bold text-muted-foreground">
-        Generated {new Date(usBudgetAnalysis.generatedAt).toLocaleDateString()} from the live web analysis pipeline.
+        Generated {new Date(usBudgetAnalysis.generatedAt).toLocaleDateString()} from live public spending data.
       </p>
     </div>
   );

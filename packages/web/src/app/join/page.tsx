@@ -151,7 +151,7 @@ export default async function EndorsePage() {
           Join as an Organization
         </h1>
         <p className="mt-4 font-bold text-muted-foreground">
-          This site is not ready for organization joining yet.
+          No referendum is open here yet. Check back soon.
         </p>
       </section>
     );

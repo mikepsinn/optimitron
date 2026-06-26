@@ -66,8 +66,7 @@ export default function ToolsPage() {
           The Armory
         </h1>
         <p className="max-w-3xl text-lg font-bold text-muted-foreground">
-          Your toolkit for fixing the mess described above. Browse. Equip. Try
-          not to break anything important.
+          Every machine I used to optimize my planet, now yours to run. Pick one. Point it at a number that needs moving.
         </p>
       </section>
 
@@ -92,7 +91,7 @@ export default function ToolsPage() {
       {/* CTA */}
       <section className="border border-foreground bg-background text-foreground p-8 text-center">
         <h2 className="mb-3 text-2xl font-black uppercase">
-          Still Browsing?
+          Done Browsing?
         </h2>
         <p className="mx-auto mb-6 max-w-2xl text-lg font-bold opacity-80">
           The metrics won&apos;t move themselves.

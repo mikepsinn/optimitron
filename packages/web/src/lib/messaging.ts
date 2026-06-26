@@ -323,7 +323,7 @@ export const VOTE_SECTION = {
 export const VOTE_VALUE = {
   heading: "The Maths on Your Vote",
   subheading:
-    "You cast a free vote. Deposits into the prize fund back it with real money. The expected value calculation is below. On my planet, we do this in primary school.",
+    "You cast a free vote. Deposits into the prize fund back it with real money. The expected value is below. On my planet, we do this in primary school.",
   failHeading: "If the Plan Fails",
   failBody: "projected annual fund returns — better than most hedge funds. The money compounds for 15 years regardless.",
   successHeading: "If the Plan Succeeds",
@@ -335,20 +335,20 @@ export const VOTE_VALUE = {
     "The parasitic economy — military spending ($2.7T), cybercrime ($10.5T), regulatory capture — is $13.2T/yr and growing at 15% annually. The Soviet Union collapsed at 15% military-to-GDP. You're approaching that ratio with better technology and no plan. The Soviets had a terrible plan, and their terrible plan beat your no plan.",
   deadlineQuip:
     `Combined destructive economy is 11.5% of global GDP and growing faster than the productive economy. Once stealing pays better than building, production becomes irrational. You have a name for places where this already happened. You call them "failed states."`,
-  flywheelHeading: "The Incentive Structure",
+  flywheelHeading: "Why The Rich Show Up",
   flywheelDescription:
     `Billionaires prefer not dying of horrible diseases. There are 2,800 of them. Statistically, at least one prefers living. They deposit because returns beat conventional investing either way. Each verified voter increases the political leverage, which increases the probability of treaty passage, which increases the expected value of every ${POINT_NAME} Point.`,
   shopkeeperQuip:
-    "You don't need to be altruistic. You just need to be numerate.",
+    "The break-even probability is 0.0067%. You do not need to be altruistic. You need to be able to read a number.",
 };
 
 export const ARMORY = {
   pageTitle: "The Armory",
   itemCount: (n: number) => `${n} Items Available`,
   shopkeeperGreeting:
-    "Welcome, hero. Everything here is designed to make your species slightly less terrible at governing itself. Browse. Equip. Try not to break anything important.",
+    "Step right up, hero. Every item here makes your species less terrible at governing itself. Browse. Equip. Try not to break anything important.",
   shopkeeperFooter:
-    "You're still here? Go equip something. The metrics won't move themselves.",
+    "Two numbers move the whole species: median healthy life years, median after-tax income. They will not move themselves. Equip something.",
   shelves: {
     weapons: {
       icon: "⚔️",
