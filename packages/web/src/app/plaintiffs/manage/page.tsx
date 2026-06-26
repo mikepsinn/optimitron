@@ -318,8 +318,7 @@ export default async function ManagePeoplePage({
               years of clinical trials at current government spending.
             </p>
             <p>
-              Open a plaintiff to add the photo, disease or cause, relationship,
-              public note, or evidence.
+              Open any plaintiff. Add the photo, disease or cause, relationship, public note, or evidence.
             </p>
           </div>
         </header>

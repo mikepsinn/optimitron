@@ -100,7 +100,7 @@ export function DecentralizedFDASection() {
               <span className="text-xs font-black">~$1/patient</span>
             </div>
             <p className="text-sm font-bold">
-              Real-world evidence from existing data — prescriptions, wearables, lab results. Pattern recognition, not recruitment.
+              Real-world evidence from data you already generate — prescriptions, wearables, lab results. No recruiters. No clipboards. No waiting room. The data was always there. Nobody was reading it.
             </p>
           </div>
           <div className="p-4 border border-foreground bg-background text-foreground">
@@ -111,7 +111,7 @@ export function DecentralizedFDASection() {
               <span className="text-xs font-black">~<ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /></span>
             </div>
             <p className="text-sm font-bold">
-              Pragmatic trials in routine care. Same doctors, same clinics, real patients. Rigorous evidence at human scale.
+              Pragmatic trials in routine care. Same doctors, same clinics, real patients. Same rigor, none of the overhead.
             </p>
           </div>
         </div>

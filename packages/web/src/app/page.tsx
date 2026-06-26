@@ -70,7 +70,7 @@ export default async function Home({
         <section className="mx-auto max-w-2xl px-4 py-24 text-center">
           <h1 className="text-3xl font-black uppercase">{site.name}</h1>
           <p className="mt-4 font-bold text-muted-foreground">
-            Referendum not found.
+            That referendum is not here. Vote on the homepage.
           </p>
         </section>
       );

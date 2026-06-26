@@ -16,7 +16,7 @@ export function FinalCTASection() {
       <Container className="max-w-4xl">
         <SectionHeader
           title="The Clock Is Running"
-          subtitle={`Your ${POINTS} pay out if enough people play. Worth nothing if they don't.`}
+          subtitle={`Your ${POINTS} pay out when enough humans play. Otherwise they are very nice paper.`}
           size="lg"
           className="text-background [&_p]:text-background"
         />

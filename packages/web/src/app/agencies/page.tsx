@@ -34,8 +34,8 @@ export default function AgenciesIndexPage() {
           </p>
           <p className="font-bold leading-relaxed text-muted-foreground">
             Your species has hundreds of federal agencies. Most of them exist to
-            manage the failures of other agencies. Here is what a compact
-            civilization-grade replacement map looks like.
+            manage the failures of other agencies. Here is the one map that
+            replaces them.
           </p>
         </div>
       </section>
@@ -82,7 +82,7 @@ export default function AgenciesIndexPage() {
 
       <section className="border border-foreground bg-background p-8 text-center text-foreground">
         <h2 className="mb-3 text-2xl font-black uppercase">
-          See How Earth Does It
+          See Your Government&apos;s Report Card
         </h2>
         <p className="mx-auto mb-6 max-w-2xl text-lg font-bold opacity-80">
           Every Earth government graded on spending vs outcomes. We publish the

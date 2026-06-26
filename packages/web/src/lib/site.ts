@@ -560,7 +560,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   name: "Optimitron",
   shortName: "Optimitron",
   alternateSiteNames: ["The Earth Optimization Game"],
-  description: "Earth Optimization Machine.",
+  description: "The machine that optimizes Earth. Two numbers: how long you live, how much you keep.",
   ogImage: "/og-image.jpg",
   analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: null,
@@ -590,8 +590,8 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: ROUTES.dashboard, label: "Open Dashboard", variant: "primary" },
-    { href: ROUTES.tasks, label: "See Tasks", variant: "outline" },
+    { href: ROUTES.dashboard, label: "Run the machine", variant: "primary" },
+    { href: ROUTES.tasks, label: "Pick a job", variant: "outline" },
   ],
   primaryReferendumSlug: null,
   primaryTaskKey: null,
@@ -605,7 +605,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     openGraphTitle: "Optimitron — Earth Optimization Services",
     // TODO(copy): Mike copy gate. Source: EOS .qmd "The Standard Package" and "How the Products Fit Together".
     openGraphDescription:
-      "The four products are one machine: evidence, funding, takeover, allocation.",
+      "Four products, one machine: prove what works, fund it, buy the government, spend the money where humans want it.",
     openGraphImage: {
       url: "/og-image.jpg",
       width: 1200,
@@ -799,7 +799,7 @@ const DIH_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: "/agencies/dih", label: "Open DIH", variant: "primary" },
+    { href: "/agencies/dih", label: "Fund a disease", variant: "primary" },
     {
       href: "/agencies/dcongress/wishocracy",
       label: "Open Wishocracy",

@@ -47,8 +47,7 @@ export default function GovernmentSizePage() {
       <section className="mb-10 border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h2 className="text-xl font-black uppercase text-foreground">Objective floors</h2>
         <p className="mt-2 text-sm font-bold text-muted-foreground">
-          The headline floor is not the only one published. These variants show how the answer moves when you isolate
-          health-only versus combined direct welfare objectives.
+          Ask a government to keep you alive: that is one number. Ask it to keep you alive and not poor: that is a bigger one. Governments find this distinction surprising. Both numbers are below.
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {analysis.objectiveFloors.map((floor) => (
@@ -114,7 +113,7 @@ export default function GovernmentSizePage() {
         <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-xl font-black uppercase text-foreground">Efficient jurisdictions</h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            Jurisdictions with repeated observations inside the minimum-efficient per-capita band.
+            Countries that spend little and keep their people alive anyway. On my planet we call that the whole job.
           </p>
           <div className="mt-4 space-y-3">
             {analysis.efficientJurisdictions.slice(0, 8).map((jurisdiction) => (
@@ -177,13 +176,13 @@ export default function GovernmentSizePage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <NavCard href={ROUTES.obg} title="Category budgets" description="Return to the federal line-item analysis." />
-        <NavCard href={ROUTES.efficiency} title="Efficiency rankings" description="See the cross-country comparators driving the budget case." />
-        <NavCard href={ROUTES.dividend} title="Optimization Dividend" description="Translate the savings into household-level outcomes." />
+        <NavCard href={ROUTES.obg} title="Category budgets" description="See where every federal dollar should go." />
+        <NavCard href={ROUTES.efficiency} title="Efficiency rankings" description="See which countries get more life per dollar." />
+        <NavCard href={ROUTES.dividend} title="Optimization Dividend" description="See what the savings put in your household's pocket." />
       </section>
 
       <p className="mt-8 text-xs font-bold text-muted-foreground">
-        Generated {new Date(analysis.generatedAt).toLocaleDateString()} from the current government-size analysis artifact.
+        Numbers refreshed {new Date(analysis.generatedAt).toLocaleDateString()} from the current government-size analysis.
       </p>
     </div>
   );

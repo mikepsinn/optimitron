@@ -39,11 +39,11 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
     },
     {
       label: "The Math",
-      text: `The Earth Optimization Prize projects ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} return if thresholds are missed (based on VC-sector diversification). Best case: we end preventable disease. ${referralLink}`,
+      text: `Worst case, you get ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back (based on VC-sector diversification). Best case, we end preventable disease. The downside is zero. On my planet we call that an easy decision. ${referralLink}`,
     },
     {
       label: "Personal",
-      text: `Everyone knows someone suffering from disease. What if we could get cures to them ${EFFICACY_LAG} years sooner? 30 seconds to vote: ${referralLink}`,
+      text: `You know someone sick. We can get their cure ${EFFICACY_LAG} years sooner. That is ${EFFICACY_LAG} years of their life, currently filed under paperwork. Vote in 30 seconds: ${referralLink}`,
     },
     {
       label: "Data-Driven",
@@ -81,7 +81,7 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
           Share Templates
         </Card.Title>
         <Card.Description className="font-bold">
-          Copy-paste messages with your referral link and real impact numbers baked in
+          Copy. Paste. Send. Your referral link and the real numbers are already in.
         </Card.Description>
       </Card.Header>
       <Card.Content>

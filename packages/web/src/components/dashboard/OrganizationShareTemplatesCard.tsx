@@ -15,7 +15,7 @@ export function OrganizationShareTemplatesCard({ surveyLink, organizationName }:
 
   const templates = [
     {
-      label: "Impact-Focused",
+      label: "The Maths",
       text: `${organizationName} wants to know what you'd spend money on. 30 seconds. Anonymous. The maths does the rest: ${surveyLink}`,
     },
     {
@@ -23,12 +23,12 @@ export function OrganizationShareTemplatesCard({ surveyLink, organizationName }:
       text: `${organizationName} is collecting budget preferences from actual humans. Takes 30 seconds. Shorter than your last complaint about politicians: ${surveyLink}`,
     },
     {
-      label: "Data-Driven",
-      text: `${organizationName} is building a budget based on what people actually want instead of what lobbyists want. Revolutionary concept. 30 seconds: ${surveyLink}`,
+      label: "Not Lobbyists",
+      text: `${organizationName} is building a budget around what people want instead of what lobbyists want. On most planets this is called "the budget." 30 seconds: ${surveyLink}`,
     },
     {
-      label: "Mission-Oriented",
-      text: `Nobody asked you how to spend your government's budget. ${organizationName} is fixing that. 30-second survey, real impact: ${surveyLink}`,
+      label: "Nobody Asked You",
+      text: `Nobody asked you how to spend your government's budget. This is the first recorded instance of someone asking. ${organizationName}, 30 seconds: ${surveyLink}`,
     },
     {
       label: "Personal Appeal",

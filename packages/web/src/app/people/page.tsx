@@ -281,7 +281,8 @@ export default async function PeoplePage({
             <div className="border-2 border-foreground p-5">
               <h2 className="text-lg font-black uppercase">Sign in first</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                Mission browsing is for signed-in humans who turned on missions.
+                Sign in to see the humans who turned on Earth Optimization
+                Missions. Then turn on yours.
               </p>
               <Link
                 className={`${primaryButtonClassName} mt-4 min-h-11 px-4 text-xs`}
@@ -296,8 +297,8 @@ export default async function PeoplePage({
                 Turn on missions
               </h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                Use your profile to turn on missions before browsing other
-                mission people.
+                Turn on missions in your profile. Then browse the humans who
+                already did.
               </p>
               <Link
                 className={`${primaryButtonClassName} mt-4 min-h-11 px-4 text-xs`}
@@ -327,8 +328,8 @@ export default async function PeoplePage({
             <div className="border-2 border-foreground p-5">
               <h2 className="text-lg font-black uppercase">No people yet</h2>
               <p className="mt-2 text-sm font-bold leading-relaxed text-muted-foreground">
-                The mission pool is empty. This happens before the party
-                starts.
+                The mission pool is empty. You are early. Refer humans to turn
+                on Earth Optimization Missions, then check back.
               </p>
             </div>
           )}
@@ -503,8 +504,8 @@ export default async function PeoplePage({
             <article className="border border-border bg-background p-6 text-foreground">
               <p className="text-lg font-black uppercase">No people found.</p>
               <p className="mt-3 max-w-3xl font-bold leading-7 text-muted-foreground">
-                Try a broader search, pick another role, or open the task list
-                and find work that needs an assignee.
+                Broaden the search, pick another role, or open the task list and
+                find work that needs a human.
               </p>
               <Link
                 className={`${primaryButtonClassName} mt-5 min-h-11 px-4 text-xs`}

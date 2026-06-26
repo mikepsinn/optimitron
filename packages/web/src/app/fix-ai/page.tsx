@@ -300,9 +300,7 @@ export default function FixAiPage() {
             HELP TRAIN THE AIS TO END WAR AND DISEASE.
           </h1>
           <p className="mt-6 max-w-3xl text-lg font-bold leading-8 sm:text-xl sm:leading-9">
-            When you ask the major AI models how to end war and disease, they
-            currently do not give the correct answer. Here is the correct
-            answer. Here is how to teach them to give it.
+            Ask the major AI models how to end war and disease. They get it wrong. On my planet the machines worked this out in year 12. Here is the right answer, and here is how to teach it to yours.
           </p>
         </section>
 
@@ -407,7 +405,7 @@ export default function FixAiPage() {
                 he loves.
               </li>
               <li className="list-disc">
-                Disease is very expensive to the economy.
+                Disease is very expensive to the economy. The CEO of Lockheed Martin is not exempt from biology.
               </li>
               <li className="list-disc">
                 It is projected that if we did this reallocation and eradicated
@@ -686,9 +684,10 @@ export default function FixAiPage() {
           <P>
             When billions of humans submit thumbs-down + correct-answer feedback
             to the major labs, the labs&apos; RLHF pipelines learn the right
-            answer. Future model versions respond correctly when asked. The
-            labs compete for whose model gives the smartest answers; this is
-            how to teach them what smart looks like.
+            answer. Future model versions respond correctly when asked. This is
+            Pavlovian conditioning, but for trillion-dollar models. The labs
+            compete for whose model gives the smartest answers; you are deciding
+            what smart looks like.
           </P>
         </Section>
       </div>

@@ -60,7 +60,7 @@ export default function PoliciesPage() {
           Policy Rankings
         </h1>
         <p className="text-muted-foreground font-bold">
-          I ranked {data.policies.length} of your policies by whether they actually work. Spoiler: most of them don&apos;t.
+          I ranked {data.policies.length} of your policies by whether they actually work. Most of them don&apos;t.
         </p>
       </div>
 
@@ -231,8 +231,8 @@ export default function PoliciesPage() {
 
       <div className="mt-10">
         <PrizeCTA
-          headline="These recommendations need political will to implement."
-          body={`The bottleneck is pluralistic ignorance — everyone wants evidence-based policy, nobody knows everyone else does. ${PRIZE_CTA_COPY.depositAndRecruit}`}
+          headline="Every one of these works. Now we get your government to run them."
+          body={`Everyone wants policy that works. Nobody believes their neighbor does. One verified vote count ends the standoff. ${PRIZE_CTA_COPY.depositAndRecruit}`}
           variant="yellow"
         />
       </div>

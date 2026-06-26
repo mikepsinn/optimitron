@@ -58,7 +58,7 @@ export default async function ScoreboardPage() {
 
       <ScoreboardSection
         title="Worst Politicians"
-        description="The same ranking from the Optimitron landing page: how much each representative voted toward weapons compared with testing medicines."
+        description="The same ranking from the Optimitron landing page: dollars each representative voted toward weapons for every dollar toward testing medicines."
       >
         <PoliticianScorecardTable
           scorecards={politicianScorecards}

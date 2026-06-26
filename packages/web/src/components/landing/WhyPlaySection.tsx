@@ -41,7 +41,7 @@ export function WhyPlaySection() {
         {/* Punchline */}
         <div className="text-center">
           <p className="text-xl sm:text-2xl font-black text-background mb-6">
-            You are currently losing. You chose it by not choosing.
+            Right now, doing nothing means you lose. Vote and you stop.
           </p>
           <GameCTA href="#vote" variant="primary" size="lg">
             {CTA.playNow}

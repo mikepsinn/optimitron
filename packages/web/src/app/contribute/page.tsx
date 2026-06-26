@@ -58,7 +58,7 @@ export default function ContributePage() {
                 Data
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                You are a meat robot with 37 trillion cells breaking in 7,000 different ways. Track what you put in it. The dFDA can learn what is actually working.
+                You are a meat robot with 37 trillion cells breaking in 7,000 different ways. Log what goes in. The dFDA finds what actually works across millions of you.
               </p>
               <GameCTA href={ROUTES.transmit} variant="secondary">
                 Transmit Data

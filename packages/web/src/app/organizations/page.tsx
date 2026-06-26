@@ -21,10 +21,10 @@ export default async function OrganizationsPage() {
           Organizations
         </p>
         <h1 className="text-3xl font-black uppercase text-foreground sm:text-4xl">
-          Organization Campaign Tools
+          Put Your Organization On The Treaty
         </h1>
         <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
-          Create or open an organization link, then share or embed the survey.
+          Open or create an organization, then share or embed the ballot so every member can vote.
         </p>
         {organizations.length > 0 ? (
           <Link
@@ -39,7 +39,7 @@ export default async function OrganizationsPage() {
       {organizations.length === 0 ? (
         <div className="border-2 border-foreground bg-background p-5">
           <p className="font-bold text-muted-foreground">
-            No organizations are connected to your account yet.
+            No organizations yet. Add yours and bring your people to the vote.
           </p>
           <Link
             href={ROUTES.join}

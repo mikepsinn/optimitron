@@ -300,7 +300,7 @@ export default function DevelopersPage() {
           />
           <EndpointBlock
             title="Authorize and token"
-            summary="Use PKCE for the browser redirect, then exchange the code on your server or trusted runtime."
+            summary="Use PKCE for the browser redirect, then exchange the code on your own server or backend."
             code={`GET ${authorizeUrl}\nPOST ${tokenUrl}\nPOST ${revokeUrl}`}
           />
         </div>
@@ -315,7 +315,7 @@ export default function DevelopersPage() {
             The useful parts are open first.
           </h2>
           <p className="mt-4 max-w-3xl text-base font-bold leading-7 text-muted-foreground">
-            This is the external surface for embedding a survey, creating tasks
+            These are the open endpoints for embedding a survey, creating tasks
             for people, collecting votes, and keeping organization data attached
             to the same shared record.
           </p>

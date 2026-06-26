@@ -147,7 +147,7 @@ export default function MoroniaPage() {
               image: "/images/moronia/ai-weapons-1.jpg",
               title: "Weaponised AI",
               description:
-                "Military AI: 12 trillion in funding. Medical AI for cancer: 3-year safety review, pending ethics approval. The AI discovered children were the most efficient pressure point. 12x compliance versus military targets.",
+                "Military AI: 12 trillion in funding. Medical AI for cancer: 3-year safety review, pending ethics approval. The AI discovered children were the most efficient lever. 12x compliance versus military targets.",
             },
           ].map((item) => (
             <div
@@ -244,14 +244,14 @@ export default function MoroniaPage() {
             remaining.
           </p>
           <p className="text-lg font-bold text-white/40 max-w-2xl mx-auto mb-12">
-            The 5.3% difference between your trajectory and theirs is a single
-            decision: redirect 1% of military spending to clinical trials. The
-            maths is not complicated. The politics is not complicated. The only
-            complicated thing is explaining to future generations why you didn&apos;t.
+            The 5.3% difference between your trajectory and theirs is one decision:
+            redirect 1% of military spending to clinical trials. The maths is
+            simple. The vote is simple. The only hard part is explaining to
+            future generations why you didn&apos;t.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <GameCTA href={ROUTES.wishonia} variant="primary" size="lg">
-              See the Other Future
+              See the planet that took the deal
             </GameCTA>
             <GameCTA href={ROUTES.prize} variant="yellow" size="lg">
               Play the Game

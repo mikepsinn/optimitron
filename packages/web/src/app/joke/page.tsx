@@ -493,7 +493,7 @@ function PrintableJokeHandout({
                 Who would block this?
               </h4>
               <p className="mt-2 text-base font-bold leading-snug">
-                Nobody rational. Defense contractors keep{" "}
+                Nobody rational. Military contractors keep{" "}
                 <ParameterValue
                   param={DEFENSE_SECTOR_RETENTION_PCT}
                   presentation="inline"
@@ -844,20 +844,20 @@ export default async function JokePage() {
               </p>
             </Objection>
 
-            <Objection title="Politicians will never agree.">
+            <Objection title="Why would leaders agree?">
               <p className={paragraphClass}>
-                Politicians follow pressure they can see. Right now the defense
+                Leaders follow the numbers their presidents can see. Right now the military
                 lobby spends{" "}
                 <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> buying the
                 spreadsheet. The treaty campaign budget is{" "}
-                <ParameterValue param={TREATY_CAMPAIGN_BUDGET_LOBBYING} />. If
-                eight billion humans understand that the spreadsheet is killing
+                <ParameterValue param={TREATY_CAMPAIGN_BUDGET_LOBBYING} />. When
+                eight billion presidents understand the spreadsheet is killing
                 them, changing the numbers becomes the boring part.
               </p>
               <p className={paragraphClass}>
-                Defense contractors spend{" "}
+                Military contractors spend{" "}
                 <ParameterValue param={DEFENSE_LOBBYING_ANNUAL} /> because
-                lobbying works. Fine. After the treaty passes, politicians who
+                lobbying works. Fine. After the treaty passes, leaders who
                 voted yes receive{" "}
                 <ManualLink
                   href={`${manualBase}/solution/incentive-alignment-bonds.html`}
@@ -865,7 +865,7 @@ export default async function JokePage() {
                   Incentive Alignment Bond
                 </ManualLink>{" "}
                 benefits: campaign support while running, cushy careers when
-                done. Politicians who vote no receive nothing. This is
+                done. Leaders who vote no receive nothing. This is
                 Pavlovian conditioning, but for senators.
               </p>
             </Objection>

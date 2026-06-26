@@ -59,7 +59,7 @@ export default async function SignatoriesPage({
           {content.metadata.signatories.title}
         </h1>
         <p className="mt-4 font-bold text-muted-foreground">
-          No referendum is configured for this site.
+          No referendum running here yet. The upgrade is on the way.
         </p>
       </section>
     );

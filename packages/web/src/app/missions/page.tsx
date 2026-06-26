@@ -14,7 +14,7 @@ const MISSION_ACTIONS = [
   {
     href: `${ROUTES.profile}#missions`,
     title: "Turn on missions",
-    body: "Use your profile to say what kind of human should find you and what useful hour would not make you flee.",
+    body: "Say what kind of human should find you, and which useful hour would not make you flee.",
   },
   {
     href: `${ROUTES.people}?missions=1`,
@@ -151,9 +151,9 @@ function MissionLanding({
                 {profileStatus === "active"
                   ? "Active. Other opted-in humans can find you."
                   : profileStatus === "off"
-                    ? "Off. Use your profile when you want to be findable."
+                    ? "Off. Turn on missions and other humans can find you."
                     : profileStatus === "unavailable"
-                      ? "Not ready yet."
+                      ? "Not ready yet. Try again in a moment."
                       : `Current status: ${profileStatus}.`}
               </p>
             </div>
