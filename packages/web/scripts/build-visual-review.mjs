@@ -419,11 +419,11 @@ function renderHtml(groups) {
     }
 
     @media (min-width: 1200px) {
-      .pair-screens.has-pixel-diff {
+      .pair-screens.has-review-map {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
-      .pair-screens.has-pixel-diff > figure:nth-child(3) {
+      .pair-screens.has-review-map > figure:nth-child(3) {
         border-left: 1px solid var(--line);
       }
     }
@@ -468,7 +468,7 @@ function renderHtml(groups) {
         scroll-snap-align: start;
         scroll-snap-stop: always;
       }
-      .pair-screens > .pixel-diff-figure:nth-child(3) {
+      .pair-screens > .review-map-figure:nth-child(3) {
         order: -1;
       }
       .pair-screens > figure:nth-child(even) {
@@ -1500,10 +1500,23 @@ function renderPair(pair) {
   const routeUrl = getRouteUrl(pair.routeName);
   const markdownDiff = buildMarkdownDiff(pair);
   const hasPixelDiff = Boolean(pair.diff?.diffRelPath);
+  const hasAddedCaptureMap = Boolean(
+    pair.diff?.missing && !pair.before && pair.after,
+  );
+  const hasRemovedCaptureMap = Boolean(
+    pair.diff?.missing && pair.before && !pair.after,
+  );
+  const hasReviewMap =
+    hasPixelDiff || hasAddedCaptureMap || hasRemovedCaptureMap;
+  const imageLoading =
+    pair.diff?.changed || pair.diff?.missing || pair.diff?.errored
+      ? "eager"
+      : "lazy";
   const diffRegions = pair.diff?.regions ?? [];
   const beforeRegions = pair.diff?.beforeRegions ?? diffRegions;
   const afterRegions = pair.diff?.afterRegions ?? diffRegions;
   const beforeOptions = {
+    loading: imageLoading,
     regions: beforeRegions,
     wholeImageChange:
       pair.diff?.missing && pair.before && !pair.after
@@ -1513,6 +1526,7 @@ function renderPair(pair) {
           : null,
   };
   const afterOptions = {
+    loading: imageLoading,
     regions: afterRegions,
     wholeImageChange:
       pair.diff?.missing && !pair.before && pair.after
@@ -1532,19 +1546,37 @@ function renderPair(pair) {
         <span class="pill ${escapeHtml(pair.diff.statusClass)}">${escapeHtml(pair.diff.label)}</span>
       </span>
     </summary>
-    <div class="pair-screens${hasPixelDiff ? " has-pixel-diff" : ""}">
+    <div class="pair-screens${hasReviewMap ? " has-review-map" : ""}">
       ${renderFigure(pair.before, "Before: main", routeUrl, buildScreenContext(pair, "before", pair.before?.relPath), beforeOptions)}
       ${renderFigure(pair.after, "After: pull request", routeUrl, buildScreenContext(pair, "after", pair.after?.relPath), afterOptions)}
-      ${pair.diff?.diffRelPath ? renderDiffFigure(pair.diff.diffRelPath, pair.routeName, pair.projectName, routeUrl, buildScreenContext(pair, "diff", pair.diff.diffRelPath)) : ""}
+      ${pair.diff?.diffRelPath ? renderDiffFigure(pair.diff.diffRelPath, pair.routeName, pair.projectName, routeUrl, buildScreenContext(pair, "diff", pair.diff.diffRelPath), imageLoading) : ""}
+      ${hasAddedCaptureMap ? renderWholeImageReviewFigure(pair.after, "Added capture", routeUrl, buildScreenContext(pair, "diff", pair.after.relPath), "added", imageLoading) : ""}
+      ${hasRemovedCaptureMap ? renderWholeImageReviewFigure(pair.before, "Removed capture", routeUrl, buildScreenContext(pair, "diff", pair.before.relPath), "removed", imageLoading) : ""}
       ${markdownDiff ? renderMarkdownDiffFigure(markdownDiff, routeUrl, buildScreenContext(pair, "markdown-diff", null)) : ""}
     </div>
   </details>`;
 }
 
-function renderDiffFigure(diffRelPath, routeName, projectName, routeUrl, screenContext) {
-  return `<figure class="pixel-diff-figure">
+function renderDiffFigure(diffRelPath, routeName, projectName, routeUrl, screenContext, loading = "lazy") {
+  return `<figure class="review-map-figure pixel-diff-figure">
     ${renderFigcaption("Diff map", routeUrl, screenContext)}
-    <img src="${escapeHtml(`${diffRelPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${routeName} ${projectName} diff overlay`)}" loading="lazy">
+    <img src="${escapeHtml(`${diffRelPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${routeName} ${projectName} diff overlay`)}" loading="${escapeHtml(loading)}">
+  </figure>`;
+}
+
+function renderWholeImageReviewFigure(
+  screenshot,
+  label,
+  routeUrl,
+  screenContext,
+  wholeImageChange,
+  loading = "lazy",
+) {
+  return `<figure class="review-map-figure whole-image-review-figure">
+    ${renderFigcaption(label, routeUrl, screenContext)}
+    <div class="screenshot-frame whole-image-${escapeHtml(wholeImageChange)}" data-change-label="${escapeHtml(labelWholeImageChange(wholeImageChange))}">
+      <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="${escapeHtml(loading)}">
+    </div>
   </figure>`;
 }
 
@@ -1563,6 +1595,7 @@ function renderFigure(screenshot, label, routeUrl, screenContext, options = {}) 
   </figure>`;
   }
   const wholeImageChange = options.wholeImageChange ?? null;
+  const loading = options.loading ?? "lazy";
   const regions = Array.isArray(options.regions) ? options.regions : [];
   const frameClasses = ["screenshot-frame"];
   if (wholeImageChange) {
@@ -1571,7 +1604,7 @@ function renderFigure(screenshot, label, routeUrl, screenContext, options = {}) 
   return `<figure class="screenshot-figure">
     ${renderFigcaption(label, routeUrl, screenContext)}
     <div class="${escapeHtml(frameClasses.join(" "))}"${wholeImageChange ? ` data-change-label="${escapeHtml(labelWholeImageChange(wholeImageChange))}"` : ""}>
-      <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="lazy">
+      <img src="${escapeHtml(`${screenshot.relPath}?v=${encodeURIComponent(reviewCacheKey)}`)}" alt="${escapeHtml(`${screenshot.routeName} ${screenshot.projectName} ${label}`)}" loading="${escapeHtml(loading)}">
       ${renderDiffRegions(regions)}
     </div>
   </figure>`;
