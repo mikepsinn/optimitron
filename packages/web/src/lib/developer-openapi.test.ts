@@ -66,4 +66,31 @@ describe("developer OpenAPI document", () => {
       { OptimitronOAuth: ["tasks:admin"] },
     ]);
   });
+
+  it("models OAuth token request fields per grant type", () => {
+    const doc = getDeveloperOpenApiDocument("https://optimitron.test");
+
+    expect(doc.components.schemas.OAuthTokenRequest).toMatchObject({
+      oneOf: [
+        {
+          properties: {
+            grant_type: { const: "authorization_code" },
+          },
+          required: [
+            "grant_type",
+            "code",
+            "client_id",
+            "redirect_uri",
+            "code_verifier",
+          ],
+        },
+        {
+          properties: {
+            grant_type: { const: "refresh_token" },
+          },
+          required: ["grant_type", "client_id", "refresh_token"],
+        },
+      ],
+    });
+  });
 });

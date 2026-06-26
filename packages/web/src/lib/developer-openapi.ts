@@ -928,18 +928,34 @@ export function getDeveloperOpenApiDocument(origin: string) {
           required: ["client_id", "redirect_uris", "grant_types"],
         },
         OAuthTokenRequest: {
-          type: "object",
-          properties: {
-            grant_type: {
-              enum: ["authorization_code", "refresh_token"],
+          oneOf: [
+            {
+              type: "object",
+              properties: {
+                grant_type: { const: "authorization_code" },
+                code: { type: "string" },
+                client_id: { type: "string" },
+                redirect_uri: { type: "string", format: "uri" },
+                code_verifier: { type: "string" },
+              },
+              required: [
+                "grant_type",
+                "code",
+                "client_id",
+                "redirect_uri",
+                "code_verifier",
+              ],
             },
-            code: { type: "string" },
-            client_id: { type: "string" },
-            redirect_uri: { type: "string", format: "uri" },
-            code_verifier: { type: "string" },
-            refresh_token: { type: "string" },
-          },
-          required: ["grant_type"],
+            {
+              type: "object",
+              properties: {
+                grant_type: { const: "refresh_token" },
+                client_id: { type: "string" },
+                refresh_token: { type: "string" },
+              },
+              required: ["grant_type", "client_id", "refresh_token"],
+            },
+          ],
         },
         OAuthTokenResponse: {
           type: "object",

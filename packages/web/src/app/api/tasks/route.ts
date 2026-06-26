@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { requireAuth } from "@/lib/auth-utils";
+import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
@@ -129,7 +129,7 @@ async function findOrCreateInvitedAssigneePerson({
 export async function GET(request: Request) {
   try {
     let userId: string | null = null;
-    if (request.headers.get("authorization")?.startsWith("Bearer ")) {
+    if (hasBearerAuthorization(request)) {
       const auth = await requireAuth(request, [
         McpScope.TASKS_PERSONAL,
         McpScope.TASKS_ADMIN,

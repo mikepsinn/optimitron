@@ -4,10 +4,23 @@ import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
 import type { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 
+export function hasBearerAuthorization(request?: Request) {
+  const authHeader = request?.headers.get("authorization");
+  return /^Bearer\b/iu.test(authHeader?.trim() ?? "");
+}
+
 function getBearerToken(request?: Request) {
   const authHeader = request?.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) return null;
-  return authHeader.slice("Bearer ".length).trim() || null;
+  if (!authHeader) return null;
+
+  const trimmed = authHeader.trim();
+  if (!/^Bearer\b/iu.test(trimmed)) return null;
+
+  const match = /^Bearer\s+(.+)$/iu.exec(trimmed);
+  const token = match?.[1]?.trim();
+  if (!token) throw new Error("Unauthorized");
+
+  return token;
 }
 
 function hasAnyScope(granted: readonly McpScope[], required: readonly McpScope[]) {

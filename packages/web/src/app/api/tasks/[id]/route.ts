@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { requireAuth } from "@/lib/auth-utils";
+import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import {
   deleteTaskCreatedByUser,
@@ -59,7 +59,7 @@ export async function GET(
 ) {
   try {
     let userId: string | null = null;
-    if (_request.headers.get("authorization")?.startsWith("Bearer ")) {
+    if (hasBearerAuthorization(_request)) {
       const auth = await requireAuth(_request, [
         McpScope.TASKS_PERSONAL,
         McpScope.TASKS_ADMIN,

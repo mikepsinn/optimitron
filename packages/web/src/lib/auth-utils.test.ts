@@ -27,7 +27,11 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { getCurrentUser, requireAuth } from "@/lib/auth-utils";
+import {
+  getCurrentUser,
+  hasBearerAuthorization,
+  requireAuth,
+} from "@/lib/auth-utils";
 
 describe("auth-utils OAuth support", () => {
   beforeEach(() => {
@@ -61,6 +65,46 @@ describe("auth-utils OAuth support", () => {
       userId: "user_oauth",
     });
     expect(mocks.verifyMcpAccessToken).toHaveBeenCalledWith("access_token");
+    expect(mocks.getServerSession).not.toHaveBeenCalled();
+  });
+
+  it("accepts the Bearer scheme case-insensitively", async () => {
+    mocks.verifyMcpAccessToken.mockResolvedValue({
+      clientId: "client_field_app",
+      scopes: [McpScope.TASKS_PERSONAL],
+      sub: "user_oauth",
+    });
+    mocks.userFindUnique.mockResolvedValue({
+      email: "dev@example.org",
+      id: "user_oauth",
+    });
+
+    const request = new Request("https://optimitron.test/api/tasks", {
+      headers: { Authorization: "bearer access_token" },
+    });
+
+    await expect(requireAuth(request, [McpScope.TASKS_PERSONAL])).resolves.toMatchObject({
+      userId: "user_oauth",
+    });
+    expect(hasBearerAuthorization(request)).toBe(true);
+    expect(mocks.verifyMcpAccessToken).toHaveBeenCalledWith("access_token");
+    expect(mocks.getServerSession).not.toHaveBeenCalled();
+  });
+
+  it("rejects malformed Bearer headers instead of falling back to the session", async () => {
+    mocks.getServerSession.mockResolvedValue({
+      user: { email: "browser@example.org", id: "user_session" },
+    });
+
+    const request = new Request("https://optimitron.test/api/tasks", {
+      headers: { Authorization: "Bearer   " },
+    });
+
+    await expect(requireAuth(request, [McpScope.TASKS_PERSONAL])).rejects.toThrow(
+      "Unauthorized",
+    );
+    expect(hasBearerAuthorization(request)).toBe(true);
+    expect(mocks.verifyMcpAccessToken).not.toHaveBeenCalled();
     expect(mocks.getServerSession).not.toHaveBeenCalled();
   });
 

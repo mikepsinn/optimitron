@@ -11,7 +11,6 @@ import {
   scopeToWire,
 } from "@/lib/mcp-scopes";
 import { developersLink, mcpLink } from "@/lib/routes";
-import { getConfiguredSiteOrigin } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export const metadata = getRouteMetadata(developersLink);
@@ -150,15 +149,14 @@ function EndpointBlock({
 }
 
 export default function DevelopersPage() {
-  const baseUrl = getConfiguredSiteOrigin();
-  const openApiUrl = `${baseUrl}/openapi.json`;
-  const oauthMetadataUrl = `${baseUrl}/.well-known/oauth-authorization-server`;
-  const registrationUrl = `${baseUrl}/api/mcp/oauth/register`;
-  const authorizeUrl = `${baseUrl}/api/mcp/oauth/authorize`;
-  const tokenUrl = `${baseUrl}/api/mcp/oauth/token`;
-  const revokeUrl = `${baseUrl}/api/mcp/oauth/revoke`;
-  const toolsUrl = `${baseUrl}/api/mcp/tools`;
-  const mcpUrl = `${baseUrl}/api/mcp`;
+  const openApiUrl = "/openapi.json";
+  const oauthMetadataUrl = "/.well-known/oauth-authorization-server";
+  const registrationUrl = "/api/mcp/oauth/register";
+  const authorizeUrl = "/api/mcp/oauth/authorize";
+  const tokenUrl = "/api/mcp/oauth/token";
+  const revokeUrl = "/api/mcp/oauth/revoke";
+  const toolsUrl = "/api/mcp/tools";
+  const mcpUrl = "/api/mcp";
   const createTaskExample = JSON.stringify(
     {
       title: "Ask Dr. Example to vote on the 1% Treaty",
@@ -200,7 +198,7 @@ export default function DevelopersPage() {
               </h1>
               <p className="mt-5 max-w-2xl text-lg font-bold leading-8 text-muted-foreground">
                 Connect your survey, dFDA site, field tool, or civic app to
-                Optimitron's shared work graph: OAuth, people, organizations,
+                Optimitron&apos;s shared work graph: OAuth, people, organizations,
                 tasks, referrals, votes, and expected-value coordination.
               </p>
             </div>
@@ -342,7 +340,7 @@ export default function DevelopersPage() {
             then show whether that person answered, voted, completed the work,
             or needs another nudge.
           </p>
-          <CodePanel code={`POST ${baseUrl}/api/tasks\n\n${createTaskExample}`} />
+          <CodePanel code={`POST /api/tasks\n\n${createTaskExample}`} />
         </div>
 
         <div className="min-w-0">

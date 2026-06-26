@@ -19,6 +19,8 @@ vi.mock("@/lib/auth", () => ({
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
+  hasBearerAuthorization: (request?: Request) =>
+    /^Bearer\b/iu.test(request?.headers.get("authorization")?.trim() ?? ""),
   requireAuth: mocks.requireAuth,
 }));
 
@@ -84,6 +86,26 @@ describe("tasks route", () => {
     const response = await GET(request);
 
     expect(response.status).toBe(200);
+    expect(mocks.listTasks).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: "user_oauth",
+        visibility: "created",
+      }),
+    );
+  });
+
+  it("uses OAuth identity for lowercase bearer schemes", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.listTasks.mockResolvedValue([{ id: "task_oauth" }]);
+
+    const response = await GET(
+      new Request("http://localhost/api/tasks?visibility=created", {
+        headers: { Authorization: "bearer access_token" },
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.getServerSession).not.toHaveBeenCalled();
     expect(mocks.listTasks).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: "user_oauth",
