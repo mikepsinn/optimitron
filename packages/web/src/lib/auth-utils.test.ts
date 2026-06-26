@@ -82,6 +82,26 @@ describe("auth-utils OAuth support", () => {
     expect(mocks.getServerSession).not.toHaveBeenCalled();
   });
 
+  it("does not turn user lookup failures into Unauthorized", async () => {
+    const dbError = new Error("database unavailable");
+    mocks.verifyMcpAccessToken.mockResolvedValue({
+      clientId: "client_field_app",
+      scopes: [McpScope.TASKS_PERSONAL],
+      sub: "user_oauth",
+    });
+    mocks.userFindUnique.mockRejectedValue(dbError);
+
+    await expect(
+      requireAuth(
+        new Request("https://optimitron.test/api/tasks", {
+          headers: { Authorization: "Bearer access_token" },
+        }),
+        [McpScope.TASKS_PERSONAL],
+      ),
+    ).rejects.toBe(dbError);
+    expect(mocks.getServerSession).not.toHaveBeenCalled();
+  });
+
   it("falls back to the NextAuth session when there is no Bearer token", async () => {
     mocks.getServerSession.mockResolvedValue({
       user: { email: "browser@example.org", id: "user_session" },

@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   return Response.json(getDeveloperOpenApiDocument(origin), {
     headers: {
       "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
+      Vary: "Host, X-Forwarded-Host, X-Forwarded-Proto",
     },
   });
 }

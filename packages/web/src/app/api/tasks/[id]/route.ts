@@ -58,14 +58,16 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    let userId = session?.user.id ?? null;
-    if (!userId && _request.headers.get("authorization")?.startsWith("Bearer ")) {
+    let userId: string | null = null;
+    if (_request.headers.get("authorization")?.startsWith("Bearer ")) {
       const auth = await requireAuth(_request, [
         McpScope.TASKS_PERSONAL,
         McpScope.TASKS_ADMIN,
       ]);
       userId = auth.userId;
+    } else {
+      const session = await getServerSession(authOptions);
+      userId = session?.user.id ?? null;
     }
     const { id } = await context.params;
     const data = await getTaskDetailData(id, userId);

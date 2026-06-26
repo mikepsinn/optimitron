@@ -92,6 +92,27 @@ describe("tasks route", () => {
     );
   });
 
+  it("prefers an OAuth Bearer identity over a browser session", async () => {
+    mocks.getServerSession.mockResolvedValue({ user: { id: "user_cookie" } });
+    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.listTasks.mockResolvedValue([{ id: "task_oauth" }]);
+
+    const response = await GET(
+      new Request("http://localhost/api/tasks?visibility=created", {
+        headers: { Authorization: "Bearer access_token" },
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.getServerSession).not.toHaveBeenCalled();
+    expect(mocks.listTasks).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: "user_oauth",
+        visibility: "created",
+      }),
+    );
+  });
+
   it("returns 401 when creating a task without auth", async () => {
     mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
 

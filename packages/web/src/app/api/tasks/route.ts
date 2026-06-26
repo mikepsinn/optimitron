@@ -128,14 +128,16 @@ async function findOrCreateInvitedAssigneePerson({
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    let userId = session?.user.id ?? null;
-    if (!userId && request.headers.get("authorization")?.startsWith("Bearer ")) {
+    let userId: string | null = null;
+    if (request.headers.get("authorization")?.startsWith("Bearer ")) {
       const auth = await requireAuth(request, [
         McpScope.TASKS_PERSONAL,
         McpScope.TASKS_ADMIN,
       ]);
       userId = auth.userId;
+    } else {
+      const session = await getServerSession(authOptions);
+      userId = session?.user.id ?? null;
     }
     const { searchParams } = new URL(request.url);
     const assigneeOrganizationId = searchParams.get("assigneeOrganizationId");

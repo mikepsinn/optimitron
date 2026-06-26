@@ -73,6 +73,28 @@ describe("task detail route", () => {
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
+  it("prefers an OAuth Bearer identity over a browser session", async () => {
+    mocks.getServerSession.mockResolvedValue({ user: { id: "user_cookie" } });
+    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.getTaskDetailData.mockResolvedValue({
+      task: { id: "task_1" },
+      viewer: null,
+    });
+
+    const response = await GET(
+      new Request("http://localhost/api/tasks/task_1", {
+        headers: { Authorization: "Bearer access_token" },
+      }),
+      {
+        params: Promise.resolve({ id: "task_1" }),
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.getServerSession).not.toHaveBeenCalled();
+    expect(mocks.getTaskDetailData).toHaveBeenCalledWith("task_1", "user_oauth");
+  });
+
   it("updates a task created by the authenticated user", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.updateTaskCreatedByUser.mockResolvedValue({

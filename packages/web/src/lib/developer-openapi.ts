@@ -39,6 +39,27 @@ const successEnvelope = (schema: JsonSchema) => ({
   required: ["data", "success"],
 });
 
+const optionalTaskReadSecurity = [
+  {},
+  { OptimitronOAuth: ["tasks:personal"] },
+  { OptimitronOAuth: ["tasks:admin"] },
+] as const;
+
+const taskPersonalOrAdminSecurity = [
+  { OptimitronOAuth: ["tasks:personal"] },
+  { OptimitronOAuth: ["tasks:admin"] },
+] as const;
+
+const tasksPersonalOrEarthdataWriteSecurity = [
+  { OptimitronOAuth: ["tasks:personal"] },
+  { OptimitronOAuth: ["earthdata:write"] },
+] as const;
+
+const earthdataWriteOrTasksAdminSecurity = [
+  { OptimitronOAuth: ["earthdata:write"] },
+  { OptimitronOAuth: ["tasks:admin"] },
+] as const;
+
 const taskSchema = {
   type: "object",
   additionalProperties: true,
@@ -274,7 +295,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         get: {
           tags: ["Tasks"],
           summary: "List public, accessible, or created tasks",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: optionalTaskReadSecurity,
           parameters: [
             {
               name: "visibility",
@@ -315,7 +336,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         post: {
           tags: ["Tasks"],
           summary: "Create a task",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: taskPersonalOrAdminSecurity,
           requestBody: {
             required: true,
             content: {
@@ -342,7 +363,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         get: {
           tags: ["Tasks"],
           summary: "Get task detail",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: optionalTaskReadSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           responses: {
             "200": {
@@ -363,7 +384,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         patch: {
           tags: ["Tasks"],
           summary: "Update a task created by the authenticated user",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: taskPersonalOrAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           requestBody: {
             required: true,
@@ -390,7 +411,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         delete: {
           tags: ["Tasks"],
           summary: "Delete a task created by the authenticated user",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: taskPersonalOrAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           responses: {
             "200": {
@@ -413,7 +434,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         post: {
           tags: ["Tasks"],
           summary: "Claim an available task",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: taskPersonalOrAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           responses: {
             "200": {
@@ -436,7 +457,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         post: {
           tags: ["Tasks"],
           summary: "Complete a task claim",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: taskPersonalOrAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           requestBody: {
             content: {
@@ -473,7 +494,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         get: {
           tags: ["Tasks"],
           summary: "Read task comments and activity",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: optionalTaskReadSecurity,
           parameters: [
             { $ref: "#/components/parameters/taskId" },
             {
@@ -502,7 +523,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         post: {
           tags: ["Tasks"],
           summary: "Post a task comment",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: taskPersonalOrAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           requestBody: {
             required: true,
@@ -671,7 +692,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         get: {
           tags: ["People"],
           summary: "Search people the authenticated user may assign or edit",
-          security: [{ OptimitronOAuth: ["tasks:personal"] }],
+          security: tasksPersonalOrEarthdataWriteSecurity,
           parameters: [
             {
               name: "q",
@@ -725,7 +746,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         post: {
           tags: ["Organizations"],
           summary: "Create an approved organization owned by the authenticated user",
-          security: [{ OptimitronOAuth: ["earthdata:write"] }],
+          security: earthdataWriteOrTasksAdminSecurity,
           requestBody: {
             required: true,
             content: {
@@ -752,7 +773,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         get: {
           tags: ["Organizations"],
           summary: "Get an organization managed by the authenticated user",
-          security: [{ OptimitronOAuth: ["earthdata:write"] }],
+          security: earthdataWriteOrTasksAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/organizationId" }],
           responses: {
             "200": {
@@ -771,7 +792,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         patch: {
           tags: ["Organizations"],
           summary: "Update an organization managed by the authenticated user",
-          security: [{ OptimitronOAuth: ["earthdata:write"] }],
+          security: earthdataWriteOrTasksAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/organizationId" }],
           requestBody: {
             required: true,

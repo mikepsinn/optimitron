@@ -22,29 +22,27 @@ async function getOAuthIdentity(
   const token = getBearerToken(request);
   if (!token) return null;
 
-  try {
-    const payload = await verifyMcpAccessToken(token);
-    if (!hasAnyScope(payload.scopes, requiredScopes)) {
-      throw new Error("Unauthorized");
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: payload.sub },
-      select: { email: true, id: true },
-    });
-    if (!user) {
-      throw new Error("Unauthorized");
-    }
-
-    return {
-      clientId: payload.clientId,
-      scopes: payload.scopes,
-      userEmail: user.email,
-      userId: user.id,
-    };
-  } catch {
+  const payload = await verifyMcpAccessToken(token).catch(() => {
+    throw new Error("Unauthorized");
+  });
+  if (!hasAnyScope(payload.scopes, requiredScopes)) {
     throw new Error("Unauthorized");
   }
+
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+    select: { email: true, id: true },
+  });
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  return {
+    clientId: payload.clientId,
+    scopes: payload.scopes,
+    userEmail: user.email,
+    userId: user.id,
+  };
 }
 
 export async function getCurrentUser(

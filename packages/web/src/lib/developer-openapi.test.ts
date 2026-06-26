@@ -34,12 +34,36 @@ describe("developer OpenAPI document", () => {
 
     expect(doc.paths["/api/tasks"].post.security).toEqual([
       { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(doc.paths["/api/tasks"].get.security).toEqual([
+      {},
+      { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(doc.paths["/api/tasks/{id}"].get.security).toEqual([
+      {},
+      { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(doc.paths["/api/tasks/{id}/comments"].post.security).toEqual([
+      { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(doc.paths["/api/people/search"].get.security).toEqual([
+      { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["earthdata:write"] },
     ]);
     expect(doc.paths["/api/referendums/{slug}/vote"].post.security).toEqual([
       { OptimitronOAuth: ["earthdata:write"] },
     ]);
     expect(doc.paths["/api/organizations"].post.security).toEqual([
       { OptimitronOAuth: ["earthdata:write"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(doc.paths["/api/organizations/{id}"].patch.security).toEqual([
+      { OptimitronOAuth: ["earthdata:write"] },
+      { OptimitronOAuth: ["tasks:admin"] },
     ]);
   });
 });
