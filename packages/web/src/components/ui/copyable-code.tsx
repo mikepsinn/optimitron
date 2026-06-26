@@ -24,19 +24,19 @@ export function CopyableCode({ code, className }: CopyableCodeProps) {
   }
 
   return (
-    <div
-      className={cn("relative min-w-0 max-w-full overflow-hidden", className)}
-    >
-      <button
-        type="button"
-        onClick={() => void handleCopy()}
-        aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
-        className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 border-2 border-primary bg-background text-foreground px-2 py-1 text-xs font-black uppercase hover:bg-background hover:text-foreground active:translate-y-0.5"
-      >
-        {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-        {copied ? "Copied" : "Copy"}
-      </button>
-      <pre className="max-w-full overflow-x-auto whitespace-pre p-4 pr-20 text-sm font-bold">
+    <div className={cn("min-w-0 max-w-full overflow-hidden", className)}>
+      <div className="flex justify-end border-b border-foreground/30 p-2">
+        <button
+          type="button"
+          onClick={() => void handleCopy()}
+          aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
+          className="inline-flex items-center gap-1 border-2 border-primary bg-background px-2 py-1 text-xs font-black uppercase text-foreground hover:bg-background hover:text-foreground active:translate-y-0.5"
+        >
+          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <pre className="max-w-full overflow-x-auto whitespace-pre-wrap break-words p-4 text-sm font-bold">
         <code>{code}</code>
       </pre>
     </div>

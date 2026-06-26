@@ -72,6 +72,26 @@ describe("tasks route", () => {
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
+  it("uses OAuth Bearer identity when listing caller-created tasks", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.listTasks.mockResolvedValue([{ id: "task_oauth" }]);
+
+    const request = new Request(
+      "http://localhost/api/tasks?visibility=created",
+      { headers: { Authorization: "Bearer access_token" } },
+    );
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(200);
+    expect(mocks.listTasks).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: "user_oauth",
+        visibility: "created",
+      }),
+    );
+  });
+
   it("returns 401 when creating a task without auth", async () => {
     mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
 

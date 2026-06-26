@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import { claimTask } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
 
 export async function POST(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ADMIN,
+    ]);
     const { id } = await context.params;
     const claim = await claimTask(id, userId);
 

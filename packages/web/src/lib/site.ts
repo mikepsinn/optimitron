@@ -17,6 +17,7 @@ import {
   communityLinks,
   courtLink,
   dashboardLink,
+  developersLink,
   dfdaLink,
   dihLink,
   donateLink,
@@ -507,6 +508,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
           podcastLink,
           courtLink,
           mcpLink,
+          developersLink,
         ],
       },
       {
@@ -538,6 +540,7 @@ const OPTIMITRON_PLATFORM_PREFIXES = [
   "/fund",
   "/donate",
   "/mcp",
+  "/developers",
   "/demo",
   "/video",
 ] as const;

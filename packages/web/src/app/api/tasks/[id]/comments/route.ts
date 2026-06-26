@@ -5,6 +5,7 @@
 
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
 import {
   countUserCommentsInWindow,
@@ -40,7 +41,10 @@ export async function GET(
     const limitParam = Number(url.searchParams.get("limit") ?? 50);
     const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 50;
 
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser(request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ADMIN,
+    ]);
 
     const [{ comments, nextCursor, total }, activityEvents] = await Promise.all([
       getTaskCommentFeed({
@@ -62,6 +66,10 @@ export async function GET(
       activityEvents,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("[TASKS] Failed to fetch comment feed:", error);
     return NextResponse.json({ error: "Failed to fetch comments." }, { status: 500 });
   }
@@ -72,7 +80,10 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser(request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ADMIN,
+    ]);
     if (!currentUser) {
       return NextResponse.json({ error: "Authentication required." }, { status: 401 });
     }
@@ -158,6 +169,10 @@ export async function POST(
 
     return NextResponse.json({ comment });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("[TASKS] Failed to post comment:", error);
     return NextResponse.json({ error: "Failed to post comment." }, { status: 500 });
   }

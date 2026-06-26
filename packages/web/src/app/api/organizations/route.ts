@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import {
   createOrganizationWithOwner,
   normalizeOrganizationHttpUrl,
@@ -42,7 +43,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, userEmail } = await requireAuth();
+    const { userId, userEmail } = await requireAuth(req, [
+      McpScope.EARTHDATA_WRITE,
+      McpScope.TASKS_ADMIN,
+    ]);
     const body = (await req.json()) as {
       name?: string;
       type?: string;

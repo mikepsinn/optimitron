@@ -10,6 +10,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
 
@@ -128,7 +129,14 @@ async function findOrCreateInvitedAssigneePerson({
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = session?.user.id ?? null;
+    let userId = session?.user.id ?? null;
+    if (!userId && request.headers.get("authorization")?.startsWith("Bearer ")) {
+      const auth = await requireAuth(request, [
+        McpScope.TASKS_PERSONAL,
+        McpScope.TASKS_ADMIN,
+      ]);
+      userId = auth.userId;
+    }
     const { searchParams } = new URL(request.url);
     const assigneeOrganizationId = searchParams.get("assigneeOrganizationId");
     const assigneePersonId = searchParams.get("assigneePersonId");
@@ -160,6 +168,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ data: tasks, success: true });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("[TASKS] Failed to list tasks:", error);
     return NextResponse.json(
       { error: "Failed to list tasks." },
@@ -170,7 +182,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ADMIN,
+    ]);
     const parsed = CreateTaskBodySchema.parse(await request.json());
     const {
       assigneePersonIdentifier,

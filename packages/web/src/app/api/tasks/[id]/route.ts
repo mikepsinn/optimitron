@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth-utils";
+import { McpScope } from "@/lib/mcp-scopes";
 import {
   deleteTaskCreatedByUser,
   getTaskDetailData,
@@ -58,7 +59,14 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = session?.user.id ?? null;
+    let userId = session?.user.id ?? null;
+    if (!userId && _request.headers.get("authorization")?.startsWith("Bearer ")) {
+      const auth = await requireAuth(_request, [
+        McpScope.TASKS_PERSONAL,
+        McpScope.TASKS_ADMIN,
+      ]);
+      userId = auth.userId;
+    }
     const { id } = await context.params;
     const data = await getTaskDetailData(id, userId);
 
@@ -68,6 +76,10 @@ export async function GET(
 
     return NextResponse.json({ data, success: true });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("[TASKS] Failed to load task detail:", error);
     return NextResponse.json(
       { error: "Failed to load task detail." },
@@ -81,7 +93,10 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ADMIN,
+    ]);
     const { id } = await context.params;
     const parsed = UpdateTaskBodySchema.parse(await request.json());
     const { dueAt, ...rest } = parsed;
@@ -121,7 +136,10 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth();
+    const { userId } = await requireAuth(_request, [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ADMIN,
+    ]);
     const { id } = await context.params;
     const result = await deleteTaskCreatedByUser(id, userId);
     return NextResponse.json({ data: result, success: true });

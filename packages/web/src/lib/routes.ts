@@ -138,6 +138,7 @@ export const ROUTES = {
   // Meta
   declaration: "/declaration",
   mcp: "/mcp",
+  developers: "/developers",
   demo: "/demo",
   search: "/search",
   video: "/video",
@@ -638,6 +639,18 @@ export const mcpLink: NavItem = {
   copyPreview: true,
   screenshot: true,
   cta: "Install MCP",
+};
+
+export const developersLink: NavItem = {
+  href: ROUTES.developers,
+  label: "Developers",
+  emoji: "{}",
+  description:
+    "Optimize Earth from your own app or website with the Earth Optimization API: OAuth, shared people, organizations, tasks, referrals, and votes.",
+  tagline: "Optimize Earth from your own app",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Read API Docs",
 };
 
 export const efficiencyLink: NavItem = {
@@ -1220,6 +1233,7 @@ export const navSections: NavSection[] = [
       treatmentsLink,
       toolsLink,
       mcpLink,
+      developersLink,
       fundLink,
       wishocracyLink,
       alignmentLink,
@@ -1294,6 +1308,7 @@ export const toolSections: NavSection[] = [
       transmitLink,
       dashboardLink,
       mcpLink,
+      developersLink,
       censusLink,
       checkInLink,
     ],
@@ -1314,6 +1329,7 @@ export const footerAppLinks: NavItem[] = [
   settingsLink,
   transmitLink,
   mcpLink,
+  developersLink,
 ];
 
 export const feedbackLink: NavItem = {
@@ -1767,6 +1783,7 @@ export const routeReviewNavItems = [
   storeLink,
   shirtLink,
   mcpLink,
+  developersLink,
   privacyLink,
   settingsLink,
   termsLink,
