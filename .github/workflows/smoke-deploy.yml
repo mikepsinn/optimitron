@@ -69,9 +69,19 @@ jobs:
             const terminalFailures = new Set(["failure", "error", "inactive"]);
             let lastStatus = "not found";
 
+            function isProductionDeployment(deployment, status) {
+              return /^production$/i.test(
+                String(status.environment || deployment.environment || ""),
+              );
+            }
+
             async function resolveVercelDeployment() {
-              if (eventDeploymentId && eventDeploymentCreator === "vercel[bot]") {
-                return eventDeployment;
+              if (
+                eventDeploymentId &&
+                (eventDeploymentCreator === "vercel[bot]" ||
+                  isProductionDeployment(eventDeployment, initialStatus))
+              ) {
+                return { ...eventDeployment, id: eventDeploymentId };
               }
               const { data } = await github.rest.repos.listDeployments({
                 owner,
@@ -98,7 +108,7 @@ jobs:
             while (Date.now() < deadline) {
               const deployment = await resolveVercelDeployment();
               if (!deployment?.id) {
-                lastStatus = `no Vercel deployment found for ${deploymentSha}`;
+                lastStatus = `no smokeable deployment found for ${deploymentSha}`;
                 core.info(`Deployment status: ${lastStatus}`);
                 await new Promise((resolve) => setTimeout(resolve, intervalMs));
                 continue;
