@@ -292,9 +292,9 @@ export function EarthOptimizationServicesLandingPage() {
           x more testing weapons than testing cures. So we do the boring thing.
           We buy a controlling share of the companies whose lobbying blocks the
           fix, hand that power to ordinary people instead of a boardroom, and
-          point it at the policies that nearly every country's data says
+          point it at the policies that nearly every country&apos;s data says
           actually raise health and income. The lobby that spent decades
-          stopping cures starts paying for them. It's almost like pointing the
+          stopping cures starts paying for them. It&apos;s almost like pointing the
           money at the goal works better. Weird. (This already runs as software.
           The math is public.)
         </p>

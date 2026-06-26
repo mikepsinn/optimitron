@@ -54,7 +54,7 @@ export function LandingProblemSection() {
                   <ParameterValue param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} display="withUnit" />/yr
                 </div>
                 <p className="mt-1 text-sm font-bold text-background">
-                  Global political dysfunction tax. Your governments' wrong bets, billed to you — money spent on the opposite of healthier, richer, longer lives.
+                  Global political dysfunction tax. Your governments&apos; wrong bets, billed to you — money spent on the opposite of healthier, richer, longer lives.
                 </p>
               </div>
               <div>

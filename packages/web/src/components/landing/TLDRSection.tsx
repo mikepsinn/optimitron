@@ -32,7 +32,7 @@ export function TLDRSection() {
                 Tell Your Friends
               </p>
               <p className="text-lg font-bold text-muted-foreground mt-2">
-                They click 2 buttons. Then they tell their friends. That's how 8 billion people vote.
+                They click 2 buttons. Then they tell their friends. That&apos;s how 8 billion people vote.
               </p>
             </div>
           </div>

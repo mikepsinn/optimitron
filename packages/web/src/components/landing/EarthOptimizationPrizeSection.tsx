@@ -46,7 +46,7 @@ export function EarthOptimizationPrizeSection() {
             The Earth Optimization Prize
           </h2>
           <p className="mt-4 text-lg max-w-2xl mx-auto font-bold">
-            Not a grant. Not a charity. A coordination game that pays everyone who proved demand for the 1% Treaty. Recruit verified voters now. Get paid in 15 years when the two numbers move. They don't move, nobody gets paid — including us.
+            Not a grant. Not a charity. A coordination game that pays everyone who proved demand for the 1% Treaty. Recruit verified voters now. Get paid in 15 years when the two numbers move. They don&apos;t move, nobody gets paid — including us.
           </p>
         </div>
 

@@ -402,7 +402,7 @@ export default async function HumanityVGovernmentPage() {
         <div className="mt-3 space-y-3">
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-              "These are policy disagreements."
+              &quot;These are policy disagreements.&quot;
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
               Negligent homicide requires duty, breach, causation, damages,
@@ -411,7 +411,7 @@ export default async function HumanityVGovernmentPage() {
           </div>
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-              "You cannot sue a government."
+              &quot;You cannot sue a government.&quot;
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
               That is because governments wrote rules saying governments are
@@ -421,7 +421,7 @@ export default async function HumanityVGovernmentPage() {
           </div>
           <div className="border-2 border-foreground bg-background p-4">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-foreground">
-              "The deaths are counterfactual."
+              &quot;The deaths are counterfactual.&quot;
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
               Governments use counterfactual lives saved to justify budgets
