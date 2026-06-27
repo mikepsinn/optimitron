@@ -162,7 +162,7 @@ export default async function TermsPage() {
                   to represent them.
                 </li>
                 <li>
-                  Do not publicly disclose a living or unknown-status person's
+                  Do not publicly disclose a living or unknown-status person&apos;s
                   health condition unless you have consent or legal authority to
                   make that disclosure.
                 </li>

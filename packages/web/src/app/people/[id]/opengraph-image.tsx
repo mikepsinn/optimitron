@@ -66,7 +66,7 @@ export default async function OGImage({
           fontWeight: 900,
         }}
       >
-        Sign for someone who can't
+        {"Sign for someone who can't"}
       </div>,
       { ...size },
     );

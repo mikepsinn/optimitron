@@ -781,7 +781,7 @@ export function RepresentedPersonForm({
                         }}
                         value={conflictId}
                       >
-                        <option value="">Select or "Other"</option>
+                        <option value="">Select or &quot;Other&quot;</option>
                         {conflictOptions.map((conflict) => (
                           <option key={conflict.id} value={conflict.id}>
                             {conflict.name}

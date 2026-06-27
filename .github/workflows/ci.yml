@@ -204,6 +204,12 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=8192
 
+      - name: Lint web app
+        # The web package was previously never linted in CI (core-validate
+        # filters it out with '!@optimitron/web'), so ESLint errors such as
+        # react/no-unescaped-entities rode through green CI. Gate on them here.
+        run: pnpm --filter @optimitron/web run lint
+
       - name: Run web unit tests
         run: pnpm --filter @optimitron/web run test
 

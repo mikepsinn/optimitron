@@ -77,7 +77,7 @@ export default async function TasksPage() {
         {root ? (
           <section className="space-y-3">
             <h2 className="text-lg font-black uppercase tracking-tight sm:text-2xl">
-              Humanity's Tasks
+              Humanity&apos;s Tasks
             </h2>
             <SortableTaskList
               tasks={[root]}

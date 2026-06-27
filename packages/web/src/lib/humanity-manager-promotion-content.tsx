@@ -37,13 +37,13 @@ export function createHumanityManagerPromotion({
         <PromoEyebrow>Humanity Manager · Assignment 1</PromoEyebrow>
         <PromoBody>
           <PromoText>
-            🥳Congratulations! You've been promoted to Humanity Manager at Earth Optimization Services, LLC. You are responsible for getting{" "}
+            🥳Congratulations! You&apos;ve been promoted to Humanity Manager at Earth Optimization Services, LLC. You are responsible for getting{" "}
             <ParameterValue
               className="font-black"
               figures={1}
               param={GLOBAL_POPULATION_2024}
             />{" "}
-            humans to agree to trade one of Earth's{" "}
+            humans to agree to trade one of Earth&apos;s{" "}
             <ParameterValue
               className="font-black"
               figures={3}
