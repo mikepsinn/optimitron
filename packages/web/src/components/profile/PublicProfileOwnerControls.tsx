@@ -64,7 +64,7 @@ export function PublicProfileOwnerControls({
             Your public to-do list
           </p>
           <p className="mt-2 text-base font-black text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:text-lg">
-            This is how other humans help you figure out the most valuable action you can take to maximize humanity's median income and healthy life expectancy. Make it public to get help from your network and the world, or keep it private if you prefer. You can change this anytime.
+            This is how other humans help you figure out the most valuable action you can take to maximize humanity&apos;s median income and healthy life expectancy. Make it public to get help from your network and the world, or keep it private if you prefer. You can change this anytime.
           </p>
 
           <div className="mt-4">

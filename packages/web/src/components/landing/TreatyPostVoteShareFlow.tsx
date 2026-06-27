@@ -1019,7 +1019,7 @@ export function TreatyPostVoteShareFlow({
           <>
             <div className="space-y-4">
               <FlowParagraph>
-                Thank you for voting. Now: would you like to vote on behalf of someone who can't? Someone who died of a disease that might have been cured, or a war that didn't need to happen? Give them a voice. They would have voted too.
+                Thank you for voting. Now: would you like to vote on behalf of someone who can&apos;t? Someone who died of a disease that might have been cured, or a war that didn&apos;t need to happen? Give them a voice. They would have voted too.
               </FlowParagraph>
             </div>
             <RepresentedPersonForm variant="inline" />

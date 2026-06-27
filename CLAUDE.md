@@ -37,6 +37,8 @@ Everything user-facing is narrated by **Wishonia** — _World Integrated System 
 - **Criticise the system, never a party.** The data does the work.
 - **In-world artifacts** (EOS pamphlet, certificates, application forms) may go full 1950s brochure — they're documents Wishonia hands you.
 
+**North star.** The bar is two existing pages: `app/joke/page.tsx` and `app/love/page.tsx`. Benchmark line: _"Humanity still has about 121 spare apocalypses. That is enough murder capacity."_ — earnest setup, a specific number, then a flat deadpan aside. Full voice on campaign/marketing/share surfaces; plain-Vonnegut (no forced jokes) on utility (dashboards, settings, dev docs). Judge a rewrite by whether it reaches that bar, not just whether it removed slop.
+
 **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate, surface area), empty mechanism vocabulary (incentive layer, the protocol that, this converts it, fundamentally), or corporate openers (We're building, Let's take a moment). If a sentence could appear unchanged in a Stripe keynote, rewrite.
 
 **"Military contractor", never "defense contractor."** "Defense" is the industry's own euphemism. Code identifiers (`DEFENSE_LOBBYING_ANNUAL`) keep their names.

@@ -41,7 +41,7 @@ function FooterBrandDescription({
 
   return (
     <>
-      Let's trade one apocalypse out of humanity's{" "}
+      Let&apos;s trade one apocalypse out of humanity&apos;s{" "}
       <ParameterValue
         className="font-black text-foreground"
         display="integer"

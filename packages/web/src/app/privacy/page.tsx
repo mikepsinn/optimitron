@@ -136,7 +136,7 @@ export default async function PrivacyPage() {
                 public evidence, or share a public referral link, the site may
                 display the details you submitted, related public counts, and
                 referral impact. Public plaintiff and memorial pages may show
-                the person's name, photo, relationship, life or death status,
+                the person&apos;s name, photo, relationship, life or death status,
                 public comments, memorial details, evidence, and
                 responsible-party claims. They may also show a condition or
                 cause when the form asks for public display and you confirm it.
