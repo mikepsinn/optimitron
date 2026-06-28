@@ -53,32 +53,23 @@ export function TreatyTaskDashboardClient({
 
         <HumanityManagerStatusPanel status={humanityManagerStatus} />
 
-        <details className="group border border-[var(--treaty-ink)]/30 bg-[var(--treaty-paper)]">
-          <summary className="cursor-pointer list-none px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[var(--treaty-ink)] marker:hidden">
-            <span className="inline-block w-4">▸</span>
-            Other ways to help
-          </summary>
-          <ul className="border-t border-[var(--treaty-ink)]/30 px-4 py-3">
-            {OTHER_ACTIONS.map((action) => (
-              <li
-                key={action.href}
-                className="border-b border-[var(--treaty-ink)]/15 py-3 last:border-b-0"
+        <ul className="divide-y divide-[var(--treaty-ink)]/15 border border-[var(--treaty-ink)]/30 bg-[var(--treaty-paper)]">
+          {OTHER_ACTIONS.map((action) => (
+            <li key={action.href}>
+              <Link
+                href={action.href}
+                className="block px-4 py-3 hover:underline"
               >
-                <Link
-                  href={action.href}
-                  className="block hover:underline"
-                >
-                  <p className="text-sm font-black uppercase tracking-[0.08em]">
-                    {action.label}
-                  </p>
-                  <p className="mt-1 text-xs font-bold text-[var(--treaty-ink)]/70">
-                    {action.body}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </details>
+                <p className="text-sm font-black uppercase tracking-[0.08em]">
+                  {action.label}
+                </p>
+                <p className="mt-1 text-xs font-bold text-[var(--treaty-ink)]/70">
+                  {action.body}
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
