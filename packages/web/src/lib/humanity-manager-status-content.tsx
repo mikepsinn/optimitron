@@ -57,13 +57,18 @@ function formatCount(value: number): string {
   return Math.max(0, value).toLocaleString("en-US");
 }
 
-function buildEmployeeStatus(input: HumanityManagerStatusInput): string {
+function buildHeading(input: HumanityManagerStatusInput): string {
+  if (
+    input.overdueEmployeeCount === 0 &&
+    input.directConversionCount === 0
+  ) {
+    return "None assigned";
+  }
   if (input.overdueEmployeeCount === 0) {
-    return "No employee tasks are waiting right now.";
+    return "All voted";
   }
   const count = formatCount(input.overdueEmployeeCount);
-  const noun = input.overdueEmployeeCount === 1 ? "employee" : "employees";
-  return `${count} ${noun} still need the 30-second vote.`;
+  return `${count} overdue`;
 }
 
 export function createHumanityManagerStatus({
@@ -81,18 +86,13 @@ export function createHumanityManagerStatus({
   }) {
     return (
       <Section>
-        <Eyebrow>Employee tasks</Eyebrow>
-        <Heading>Who still needs the 30-second vote?</Heading>
-        <Text>
-          These are the humans you assigned to vote. Copy a reminder until
-          their vote verifies the task.
-        </Text>
-        <Text>{buildEmployeeStatus(input)}</Text>
+        <Eyebrow>Your employees</Eyebrow>
+        <Heading>{buildHeading(input)}</Heading>
         {input.reminders.length > 0 ? (
           <ReminderBlock reminders={input.reminders} />
         ) : (
           <Text muted>
-            Assign two humans above and their open vote tasks will appear here.
+            Assign employees above. Their status appears here.
           </Text>
         )}
         <CompletedEmployees

@@ -24,7 +24,16 @@ jobs:
     name: Smoke deployed URL
     if: >-
       !startsWith(github.event.deployment.environment, 'visual-review') &&
-      !startsWith(github.event.deployment_status.environment, 'visual-review')
+      !startsWith(github.event.deployment_status.environment, 'visual-review') &&
+      (github.event.deployment.creator.login == 'vercel[bot]' ||
+        github.event.deployment_status.creator.login == 'vercel[bot]' ||
+        github.event.deployment.environment == 'Production' ||
+        github.event.deployment.environment == 'production' ||
+        github.event.deployment_status.environment == 'Production' ||
+        github.event.deployment_status.environment == 'production' ||
+        contains(github.event.deployment_status.environment_url, 'warondisease.org') ||
+        contains(github.event.deployment_status.environment_url, 'optimitron.com') ||
+        contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
@@ -53,7 +62,8 @@ jobs:
               initialStatus.deployment_id ||
               initialStatus.deployment?.id;
             const eventDeploymentCreator = String(
-              eventDeployment.creator?.login ||
+              initialStatus.creator?.login ||
+                eventDeployment.creator?.login ||
                 initialStatus.deployment?.creator?.login ||
                 "",
             );
@@ -69,9 +79,38 @@ jobs:
             const terminalFailures = new Set(["failure", "error", "inactive"]);
             let lastStatus = "not found";
 
+            function isProductionUrl(value) {
+              try {
+                const hostname = new URL(String(value || "")).hostname.toLowerCase();
+                return [
+                  "warondisease.org",
+                  "optimitron.com",
+                  "onepercenttreaty.org",
+                ].some(
+                  (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+                );
+              } catch {
+                return false;
+              }
+            }
+
+            function isProductionDeployment(deployment, status) {
+              const environment = String(
+                status.environment || deployment.environment || "",
+              );
+              return (
+                /^production$/i.test(environment) ||
+                isProductionUrl(status.environment_url)
+              );
+            }
+
             async function resolveVercelDeployment() {
-              if (eventDeploymentId && eventDeploymentCreator === "vercel[bot]") {
-                return eventDeployment;
+              if (
+                eventDeploymentId &&
+                (eventDeploymentCreator === "vercel[bot]" ||
+                  isProductionDeployment(eventDeployment, initialStatus))
+              ) {
+                return { ...eventDeployment, id: eventDeploymentId };
               }
               const { data } = await github.rest.repos.listDeployments({
                 owner,
@@ -98,7 +137,7 @@ jobs:
             while (Date.now() < deadline) {
               const deployment = await resolveVercelDeployment();
               if (!deployment?.id) {
-                lastStatus = `no Vercel deployment found for ${deploymentSha}`;
+                lastStatus = `no smokeable deployment found for ${deploymentSha}`;
                 core.info(`Deployment status: ${lastStatus}`);
                 await new Promise((resolve) => setTimeout(resolve, intervalMs));
                 continue;
@@ -138,7 +177,7 @@ jobs:
           RESOLVED_DEPLOYMENT_ENVIRONMENT: ${{ steps.deployment_status.outputs.environment }}
           RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com' }}
+          PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com,https://onepercenttreaty.org' }}
         run: |
           node <<'NODE'
           const fs = require("node:fs");
