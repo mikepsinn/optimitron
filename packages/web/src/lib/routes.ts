@@ -8,9 +8,14 @@ import { HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL } from "@optimitron
 import { GLOBAL_SURVEY_NAME } from "@optimitron/data/campaign";
 import {
   fmtParam,
+  fmtParamValueOnly,
   DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
+  GLOBAL_POPULATION_2024,
+  HUMAN_LAUGHS_PER_DAY_AVERAGE,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
+  SHIRT_INDUCED_LAUGHS_GAINED,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_REDUCTION_PCT,
   VICTORY_BOND_ANNUAL_RETURN_PCT,
@@ -44,6 +49,13 @@ const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value).toLocaleString(
 const apocalypseCount = Math.round(
   NUCLEAR_WINTER_OVERKILL_FACTOR.value,
 ).toLocaleString("en-US");
+const populationCount = fmtParamValueOnly(GLOBAL_POPULATION_2024, 1);
+const healthyLifeYearsSaved = fmtParamValueOnly(
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
+  3,
+);
+const laughsPerDay = Math.round(HUMAN_LAUGHS_PER_DAY_AVERAGE.value);
+const laughsGained = fmtParamValueOnly(SHIRT_INDUCED_LAUGHS_GAINED, 3);
 const humanityVGovernmentDamagesTitle =
   HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL.replace(
     " million",
@@ -1154,8 +1166,7 @@ export const jokeLink: NavItem = {
   href: ROUTES.joke,
   label: "The Joke",
   emoji: "😂",
-  description:
-    'Write "I am retarded" on every shirt in a loved one\'s closet. Tuck in the math. The prank produces 3.5 quadrillion more laughs than every comedian in history — because shirts that start conversations end diseases.',
+  description: `Write on every shirt in a loved one's closet. Tuck in the math. If this joke played on ${populationCount} people it would result in a chain reaction that would result in the reallocation of at least ${treatyReduction} of our ${apocalypseCount} apocalypse murder capacity to disease eradication which would produce ${healthyLifeYearsSaved} extra healthy life-years. At ${laughsPerDay} laughs per day, that's ${laughsGained} extra laughs`,
   cta: "Play the joke",
   authenticatedCopyPreview: true,
   copyPreview: true,
