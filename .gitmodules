@@ -1,3 +1,0 @@
-[submodule "packages/data/economic-data"]
-	path = packages/data/economic-data
-	url = https://github.com/mikepsinn/economic-data.git

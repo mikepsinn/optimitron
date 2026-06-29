@@ -111,8 +111,8 @@ Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and 1,7
 ## Quick Start
 
 ```bash
-# Clone (with data submodule)
-git clone --recurse-submodules https://github.com/mikepsinn/optimitron.git
+# Clone
+git clone https://github.com/mikepsinn/optimitron.git
 cd optimitron
 
 # Install dependencies
