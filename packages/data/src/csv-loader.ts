@@ -179,7 +179,7 @@ function parseCsvLine(line: string): string[] {
 }
 
 // ---------------------------------------------------------------------------
-// Local submodule helper — read CSV from the economic-data git submodule
+// Local data helper — read CSV from the vendored economic-data snapshot
 // ---------------------------------------------------------------------------
 
 import { readFileSync, readdirSync } from 'node:fs';
@@ -187,7 +187,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /**
- * Root of the economic-data submodule (packages/data/economic-data/data/).
+ * Root of the vendored economic-data snapshot (packages/data/economic-data/data/).
  * Works whether the consumer runs from the repo root or from packages/data/.
  */
 const __filename = fileURLToPath(import.meta.url);
@@ -195,7 +195,7 @@ const __dirname = dirname(__filename);
 const ECONOMIC_DATA_DIR = resolve(__dirname, '..', 'economic-data', 'data');
 
 /**
- * Load a CSV file from the local economic-data git submodule and parse it.
+ * Load a CSV file from the local economic-data snapshot and parse it.
  *
  * @param filename - CSV filename inside `economic-data/data/`, e.g.
  *   `"data_health_alcohol_consumption_per_adult_15plus_litres.csv"`
@@ -216,7 +216,7 @@ export function loadEconomicDataCsv(
 }
 
 /**
- * List all `.csv` files available in the local economic-data submodule.
+ * List all `.csv` files available in the local economic-data snapshot.
  */
 export function listEconomicDataCsvFiles(): string[] {
   return readdirSync(ECONOMIC_DATA_DIR).filter(f =>
@@ -229,13 +229,13 @@ export function listEconomicDataCsvFiles(): string[] {
 // ---------------------------------------------------------------------------
 
 const GITHUB_RAW_BASE =
-  'https://raw.githubusercontent.com/mikepsinn/economic-data/main/data';
+  'https://raw.githubusercontent.com/mikepsinn/economic-data/HEAD/data';
 
 /**
  * Fetch a single CSV file from the mikepsinn/economic-data repo and parse it.
  *
- * @deprecated Prefer {@link loadEconomicDataCsv} which reads from the local
- * git submodule and doesn't require network access.
+ * @deprecated Prefer {@link loadEconomicDataCsv} which reads from the vendored
+ * local snapshot and doesn't require network access.
  */
 export async function fetchEconomicDataCsv(
   filename: string,

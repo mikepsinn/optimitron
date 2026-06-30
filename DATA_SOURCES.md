@@ -72,21 +72,21 @@ Complete directory of data needed across all packages, with sources, APIs, and e
 
 ## 📦 Mike's Existing Data (mikepsinn/economic-data)
 
-65 CSVs in Gapminder format (countries × years), ~2.6 MB total:
+65 files vendored from [mikepsinn/economic-data](https://github.com/mikepsinn/economic-data): 60 CSV files and 5 XLSX workbooks, ~21 MB total.
 
-**Health (8 files):** life expectancy, BMI, blood pressure, cholesterol, HIV deaths, suicide, smoking rates, alcohol, sugar intake
-**Economic (5 files):** GDP per capita, national income, poverty rates (2 thresholds)
+**Health (10 files):** life expectancy, BMI, blood pressure, cholesterol, HIV deaths, suicide, smoking rates, alcohol, sugar intake
+**Income (6 files):** GDP per capita, total GDP, GDP growth, and poverty rates (3 thresholds)
 **Energy (11 files):** CO2, coal, electricity, oil, gas, nuclear, hydro — all per capita
 **Military (1 file):** SIPRI data 1949-2022
 **Other:** CPI, murder rates, population, country regions
 
-→ **Strategy: Git submodule or copy into repo (it's tiny)**
+→ **Strategy:** vendored in `packages/data/economic-data/` for deterministic local reads; the standalone GitHub repo remains the upstream provenance snapshot.
 
 ## Data Strategy Summary
 
 | Category | Strategy | Why |
 |----------|----------|-----|
-| Mike's CSVs (2.6 MB) | **In repo** (submodule or copy) | Tiny, static, core reference data |
+| Mike's economic-data snapshot (~21 MB) | **Vendored in repo** | Static core reference data; no submodule setup required |
 | Country metadata | **In repo** (JSON/CSV) | Small, rarely changes |
 | Policy change dates | **In repo** (curated JSON) | Small, needs human curation |
 | OECD, World Bank, WHO | **API at runtime + cache** | Large, frequently updated, free APIs |

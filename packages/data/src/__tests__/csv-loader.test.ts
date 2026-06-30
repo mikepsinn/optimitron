@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   parseGapminderCsv,
+  loadEconomicDataCsv,
+  listEconomicDataCsvFiles,
   CsvTimeSeriesSchema,
   type CsvTimeSeries,
 } from '../csv-loader';
@@ -201,5 +203,25 @@ describe('CsvTimeSeriesSchema validation', () => {
       measurements: [{ timestamp: 2000.5, value: 75.5 }],
     };
     expect(CsvTimeSeriesSchema.safeParse(ts).success).toBe(false);
+  });
+});
+
+describe('vendored economic-data snapshot', () => {
+  it('lists and loads local Gapminder CSV files', () => {
+    const filenames = listEconomicDataCsvFiles();
+    expect(filenames.length).toBeGreaterThanOrEqual(60);
+    expect(filenames).toContain('data_health_life_expectancy_years.csv');
+
+    const rows = loadEconomicDataCsv('data_health_life_expectancy_years.csv', {
+      category: 'health',
+      unit: 'years',
+    });
+
+    const afghanistan = rows.find(row => row.name === 'Afghanistan');
+    expect(afghanistan).toBeDefined();
+    expect(afghanistan!.source).toBe(
+      'economic-data/data_health_life_expectancy_years.csv',
+    );
+    expect(afghanistan!.measurements.length).toBeGreaterThan(100);
   });
 });
