@@ -302,28 +302,28 @@ export default async function EndorsePage() {
             Cost-effectiveness
           </h2>
           <p className="mt-3">
-            The best-proven intervention in global health is insecticide-treated
-            bed nets at{" "}
+            The best thing anyone has found to do with money in global health is
+            buy insecticide-treated bed nets.{" "}
             <ParameterValue figures={2} param={BED_NETS_COST_PER_DALY} /> per
-            DALY averted. The 1% Treaty&apos;s cost per DALY averted is{" "}
+            disability-adjusted life-year averted. That is the GiveWell
+            gold standard. The 1% Treaty costs{" "}
             <ParameterValue
               figures={2}
               param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
-            />
-            , making it{" "}
+            />{" "}
+            per DALY averted —{" "}
             <ParameterValue
               figures={3}
               param={TREATY_VS_BED_NETS_MULTIPLIER}
             />
-            x more cost-effective than the GiveWell baseline. If your
-            organization allocates resources to health, these are the numbers to
-            beat.
+            x more cost-effective than bed nets. Find something better and do
+            that instead.
           </p>
         </div>
 
         <div className="border-2 border-foreground p-5">
           <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
-            Precedent
+            This has worked before
           </h2>
           <p className="mt-3">
             The{" "}
@@ -334,10 +334,9 @@ export default async function EndorsePage() {
               rel="noreferrer"
             >
               landmine ban
-            </Link>{" "}
-            started with 6 NGOs, grew to 1,400 organizations, and produced a
-            treaty signed by 122 countries. The organizers won the Nobel Peace
-            Prize.{" "}
+            </Link>
+            : 6 NGOs → 1,400 organizations → treaty signed by 122
+            countries → Nobel Peace Prize.{" "}
             <Link
               href="https://en.wikipedia.org/wiki/International_Campaign_to_Abolish_Nuclear_Weapons"
               className="underline underline-offset-4"
@@ -345,11 +344,11 @@ export default async function EndorsePage() {
               rel="noreferrer"
             >
               ICAN
-            </Link>{" "}
-            started with a staff of 5, recruited 600+ partner organizations, and
-            also won the Nobel Peace Prize. Both campaigns asked organizations to
-            do exactly what this form asks: endorse a treaty, then tell your
-            members.
+            </Link>
+            : 5 staff in a Geneva office → 600+ partner organizations →
+            Nobel Peace Prize. Both campaigns did exactly what this form asks:
+            endorse a treaty, tell your members. That is it. That is the
+            whole trick.
           </p>
         </div>
 
@@ -363,38 +362,41 @@ export default async function EndorsePage() {
               1% Treaty using the form above.
             </li>
             <li>
-              <span className="font-black text-foreground">
-                Email your members the{" "}
-                <Link
-                  href={ROUTES.vote}
-                  className="underline underline-offset-4"
-                >
-                  Global Survey link
-                </Link>
-              </span>{" "}
-              so they can vote. Each voter recruits two more. That is the
-              entire growth model.
+              Email your members the{" "}
+              <Link
+                href={ROUTES.vote}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                Global Survey link
+              </Link>
+              . They vote. Each voter recruits two more. That is the entire
+              growth model.
             </li>
             <li>
-              Ask members to{" "}
+              Tell your members to{" "}
               <Link
                 href={ROUTES.joke}
                 className="font-black underline underline-offset-4 text-foreground"
               >
                 play the funniest joke in the universe
               </Link>{" "}
-              on their friends on Earth Optimization Day — write the facts on
-              every shirt in a loved one&apos;s closet.
+              on everyone they love on Earth Optimization Day. They write the
+              facts on every shirt in a loved one&apos;s closet and tuck in the
+              math. The loved one puts on a shirt, reads it, and either laughs
+              or cures a disease. Ideally both.
             </li>
             <li>
-              Ask members to{" "}
+              Tell your members to{" "}
               <Link
                 href={ROUTES.employees}
                 className="font-black underline underline-offset-4 text-foreground"
               >
                 remind their presidents
               </Link>{" "}
-              to do their overdue task of signing the 1% Treaty.
+              that they have an overdue task. Your members pay these people to
+              promote the general welfare. The general welfare includes not
+              dying of diseases that could have been cured. The presidents have
+              not signed the treaty yet. Remind them.
             </li>
             <li>
               <Link
@@ -403,14 +405,15 @@ export default async function EndorsePage() {
               >
                 Register deceased loved ones as plaintiffs
               </Link>{" "}
-              in Humanity v. Government. Governments chose to spend on
-              mass-murder capacity instead of clinical trials. People died of
-              diseases that would have been cured if the money had gone to
-              medicine. That is negligent homicide at civilizational scale, and
-              the dead should be counted by name.
+              in Humanity v. Government. Your government spent your money on
+              mass-murder capacity instead of testing which medicines work.
+              People you loved died of diseases that would have been cured if
+              the money had gone to trials instead of missiles. That is
+              negligent homicide at civilizational scale. The dead should be
+              named.
             </li>
             <li>
-              Buy $200 of stock in a military contractor and{" "}
+              Buy one share of a military contractor — $200 — and{" "}
               <a
                 href="https://manual.warondisease.org/knowledge/appendix/love-letter.html"
                 className="font-black underline underline-offset-4 text-foreground"
@@ -419,14 +422,14 @@ export default async function EndorsePage() {
               >
                 send the board a love letter
               </a>
-              . The law calls it a shareholder demand letter — the board is
+              . The law calls it a shareholder demand letter. The board is
               legally required to read it and respond on the record. The letter
-              asks them to sell 1% of their bomb-making infrastructure, invest
+              tells them to sell 1% of their bomb-making infrastructure, invest
               the proceeds in biotech, and instruct their lobbyists to stop
-              lobbying Congress for more nuclear weapons and instead lobby to
+              asking Congress for infinity nuclear weapons and instead
               reallocate one apocalypse worth of spending to pragmatic clinical
-              trials. It makes them richer and longer-lived. They just have to
-              read the math.
+              trials. This would make them and their shareholders both richer
+              and significantly less dead. They just have to read the math.
             </li>
             <li>
               <Link
@@ -435,13 +438,14 @@ export default async function EndorsePage() {
               >
                 Get the shirt.
               </Link>{" "}
-              Wear the math.
+              Wear the math. Become a walking clinical trial billboard that
+              people have to read because it is on your chest.
             </li>
           </ol>
         </div>
 
         <p>
-          Governments currently spend{" "}
+          Governments spend{" "}
           <ParameterValue
             figures={3}
             param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
