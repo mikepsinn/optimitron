@@ -403,8 +403,11 @@ export default async function EndorsePage() {
               >
                 Register deceased loved ones as plaintiffs
               </Link>{" "}
-              in Humanity v. Government — the class action should count the
-              victims, not wave at a fog bank.
+              in Humanity v. Government. Governments chose to spend on
+              mass-murder capacity instead of clinical trials. People died of
+              diseases that would have been cured if the money had gone to
+              medicine. That is negligent homicide at civilizational scale, and
+              the dead should be counted by name.
             </li>
             <li>
               Buy $200 of stock in a military contractor and{" "}
@@ -415,10 +418,15 @@ export default async function EndorsePage() {
                 rel="noreferrer"
               >
                 send the board a love letter
-              </a>{" "}
-              — a shareholder demand letter that legally requires them to read
-              why reallocating 1% to clinical trials maximizes long-term
-              shareholder value.
+              </a>
+              . The law calls it a shareholder demand letter — the board is
+              legally required to read it and respond on the record. The letter
+              asks them to sell 1% of their bomb-making infrastructure, invest
+              the proceeds in biotech, and instruct their lobbyists to stop
+              lobbying Congress for more nuclear weapons and instead lobby to
+              reallocate one apocalypse worth of spending to pragmatic clinical
+              trials. It makes them richer and longer-lived. They just have to
+              read the math.
             </li>
             <li>
               <Link
