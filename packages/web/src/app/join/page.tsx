@@ -397,13 +397,25 @@ export default async function EndorsePage() {
               to do their overdue task of signing the 1% Treaty.
             </li>
             <li>
-              Buy $200 of stock in a military contractor and{" "}
               <Link
-                href={ROUTES.court}
+                href={ROUTES.plaintiffs}
                 className="font-black underline underline-offset-4 text-foreground"
               >
-                send the board a love letter
+                Register deceased loved ones as plaintiffs
               </Link>{" "}
+              in Humanity v. Government — the class action should count the
+              victims, not wave at a fog bank.
+            </li>
+            <li>
+              Buy $200 of stock in a military contractor and{" "}
+              <a
+                href="https://manual.warondisease.org/knowledge/appendix/love-letter.html"
+                className="font-black underline underline-offset-4 text-foreground"
+                target="_blank"
+                rel="noreferrer"
+              >
+                send the board a love letter
+              </a>{" "}
               — a shareholder demand letter that legally requires them to read
               why reallocating 1% to clinical trials maximizes long-term
               shareholder value.
