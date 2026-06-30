@@ -357,22 +357,65 @@ export default async function EndorsePage() {
           <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
             What your organization does
           </h2>
-          <ol className="mt-3 list-decimal space-y-2 pl-5">
+          <ol className="mt-3 list-decimal space-y-3 pl-5">
             <li>
-              Endorse the 1% Treaty using the form above.
+              <span className="font-black text-foreground">Endorse</span> the
+              1% Treaty using the form above.
             </li>
             <li>
-              Email your members the{" "}
+              <span className="font-black text-foreground">
+                Email your members the{" "}
+                <Link
+                  href={ROUTES.vote}
+                  className="underline underline-offset-4"
+                >
+                  Global Survey link
+                </Link>
+              </span>{" "}
+              so they can vote. Each voter recruits two more. That is the
+              entire growth model.
+            </li>
+            <li>
+              Ask members to{" "}
               <Link
-                href={ROUTES.vote}
-                className="underline underline-offset-4"
+                href={ROUTES.joke}
+                className="font-black underline underline-offset-4 text-foreground"
               >
-                Global Survey link
+                play the funniest joke in the universe
               </Link>{" "}
-              so they can vote.
+              on their friends on Earth Optimization Day — write the facts on
+              every shirt in a loved one&apos;s closet.
             </li>
             <li>
-              Each voter recruits two more. That is the entire growth model.
+              Ask members to{" "}
+              <Link
+                href={ROUTES.employees}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                remind their presidents
+              </Link>{" "}
+              to do their overdue task of signing the 1% Treaty.
+            </li>
+            <li>
+              Buy $200 of stock in a military contractor and{" "}
+              <Link
+                href={ROUTES.court}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                send the board a love letter
+              </Link>{" "}
+              — a shareholder demand letter that legally requires them to read
+              why reallocating 1% to clinical trials maximizes long-term
+              shareholder value.
+            </li>
+            <li>
+              <Link
+                href={ROUTES.shirt}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                Get the shirt.
+              </Link>{" "}
+              Wear the math.
             </li>
           </ol>
         </div>
