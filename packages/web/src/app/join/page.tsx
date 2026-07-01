@@ -10,10 +10,12 @@ import {
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   DRUG_DISEASE_COMBINATIONS_POSSIBLE,
   GLOBAL_DISEASE_DEATHS_DAILY,
+  GLOBAL_WARHEAD_COUNT,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   NUCLEAR_WINTER_SPARE_APOCALYPSES,
+  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
   SAFE_COMPOUNDS_COUNT,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
@@ -210,8 +212,14 @@ export default async function EndorsePage() {
             The deal
           </h2>
           <p className="mt-3">
-            It takes about 100 nuclear weapons to cause a nuclear winter and
-            end civilization. We have 12,200 of them. That is enough for{" "}
+            It takes about{" "}
+            <ParameterValue
+              figures={3}
+              param={NUCLEAR_WINTER_WARHEAD_THRESHOLD}
+            />{" "}
+            nuclear weapons to cause a nuclear winter and end civilization. We
+            have <ParameterValue figures={5} param={GLOBAL_WARHEAD_COUNT} /> of
+            them. That is enough for{" "}
             <ParameterValue
               figures={3}
               param={NUCLEAR_WINTER_OVERKILL_FACTOR}
@@ -229,10 +237,11 @@ export default async function EndorsePage() {
             apocalypse of mass-murder capacity in exchange for eradicating
             disease{" "}
             <ParameterValue
+              display="withUnit"
               figures={3}
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-            />
-            x faster. Your organization helps us ask.
+            />{" "}
+            faster. Your organization helps us ask.
           </p>
         </div>
 
@@ -259,10 +268,11 @@ export default async function EndorsePage() {
             years. Redirecting 1% of military spending to clinical trials
             multiplies trial capacity by{" "}
             <ParameterValue
+              display="withUnit"
               figures={3}
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-            />
-            x and clears the queue in{" "}
+            />{" "}
+            and clears the queue in{" "}
             <ParameterValue
               figures={2}
               param={DFDA_QUEUE_CLEARANCE_YEARS}
@@ -285,11 +295,14 @@ export default async function EndorsePage() {
               param={CURRENT_KNOWN_SAFE_EXPLORATION_YEARS}
             />{" "}
             years. At treaty-scale capacity, it takes{" "}
-            <ParameterValue
-              figures={3}
-              param={DFDA_KNOWN_SAFE_EXPLORATION_YEARS}
-            />
-            .
+            <span>
+              <ParameterValue
+                display="withUnit"
+                figures={3}
+                param={DFDA_KNOWN_SAFE_EXPLORATION_YEARS}
+              />
+              .
+            </span>
           </p>
           <p className="mt-3">
             Every day that shift happens sooner prevents{" "}
@@ -314,11 +327,12 @@ export default async function EndorsePage() {
             />{" "}
             per DALY averted —{" "}
             <ParameterValue
+              display="withUnit"
               figures={3}
               param={TREATY_VS_BED_NETS_MULTIPLIER}
-            />
-            x more cost-effective than bed nets. Find something better and do
-            that instead.
+            />{" "}
+            more cost-effective than bed nets. Find something better and do that
+            instead.
           </p>
         </div>
 
@@ -437,14 +451,15 @@ export default async function EndorsePage() {
               >
                 send the board a love letter
               </a>
-              . The law calls it a shareholder demand letter. The board is
-              legally required to read it and respond on the record. It tells
-              them to sell 1% of their bomb-making infrastructure, invest the
-              proceeds in biotech, and instruct their lobbyists to stop asking
-              Congress for infinity nuclear weapons and instead reallocate one
-              apocalypse worth of spending to pragmatic clinical trials. This
-              would make them and their shareholders both richer and
-              significantly less dead. They just have to read the math.
+              <span>. </span>
+              The law calls it a shareholder demand letter. The board is legally
+              required to read it and respond on the record. It tells them to
+              sell 1% of their bomb-making infrastructure, invest the proceeds
+              in biotech, and instruct their lobbyists to stop asking Congress
+              for infinity nuclear weapons and instead reallocate one apocalypse
+              worth of spending to pragmatic clinical trials. This would make
+              them and their shareholders both richer and significantly less
+              dead. They just have to read the math.
             </li>
             <li>
               <Link
@@ -457,12 +472,14 @@ export default async function EndorsePage() {
               <span className="font-black text-foreground">
                 THIS T-SHIRT ENDED WAR AND DISEASE
               </span>
-              . Back says{" "}
+              <span>. </span>
+              Back says{" "}
               <span className="font-black text-foreground">
                 Trade one apocalypse for disease eradication
               </span>
-              . People will read it because it is on your chest and they
-              cannot help themselves.
+              <span>. </span>
+              People will read it because it is on your chest and they cannot
+              help themselves.
             </li>
           </ol>
         </div>
@@ -470,10 +487,11 @@ export default async function EndorsePage() {
         <p>
           Governments spend{" "}
           <ParameterValue
+            display="withUnit"
             figures={3}
             param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
-          />
-          x more on the military than on clinical trials. The 1% Treaty
+          />{" "}
+          more on the military than on clinical trials. The 1% Treaty
           corrects that ratio. Your endorsement is how it passes.{" "}
           <Link
             href={NONPROFIT_COALITION_STRATEGY_URL}
