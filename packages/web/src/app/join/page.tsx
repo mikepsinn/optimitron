@@ -1,9 +1,25 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import {
-  CURRENT_DISEASE_PATIENTS_GLOBAL,
+  BED_NETS_COST_PER_DALY,
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  CURRENT_KNOWN_SAFE_EXPLORATION_YEARS,
+  DFDA_KNOWN_SAFE_EXPLORATION_YEARS,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
+  DRUG_DISEASE_COMBINATIONS_POSSIBLE,
   GLOBAL_DISEASE_DEATHS_DAILY,
+  GLOBAL_WARHEAD_COUNT,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
+  NUCLEAR_WINTER_SPARE_APOCALYPSES,
+  NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+  SAFE_COMPOUNDS_COUNT,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+  TREATY_VS_BED_NETS_MULTIPLIER,
   shareableSnippets,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
@@ -190,54 +206,304 @@ export default async function EndorsePage() {
         />
       </div>
 
-      <div className="mt-8 space-y-4 text-base font-bold leading-7 text-muted-foreground">
+      <div className="mt-8 space-y-6 text-base font-bold leading-7 text-muted-foreground">
+        <div className="border-2 border-foreground p-5">
+          <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
+            The deal
+          </h2>
+          <p className="mt-3">
+            It takes about{" "}
+            <ParameterValue
+              figures={3}
+              param={NUCLEAR_WINTER_WARHEAD_THRESHOLD}
+            />{" "}
+            nuclear weapons to cause a nuclear winter and end civilization. We
+            have <ParameterValue figures={5} param={GLOBAL_WARHEAD_COUNT} /> of
+            them. That is enough for{" "}
+            <ParameterValue
+              figures={3}
+              param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+            />{" "}
+            apocalypses. We only have one civilization to apocalypse, so you
+            cannot even take advantage of the remaining{" "}
+            <ParameterValue
+              figures={3}
+              param={NUCLEAR_WINTER_SPARE_APOCALYPSES}
+            />.
+          </p>
+          <p className="mt-3">
+            We are trying to get a global survey of at least 4 billion people
+            where a majority of humans say: yes, we can have one fewer
+            apocalypse of mass-murder capacity in exchange for eradicating
+            disease{" "}
+            <ParameterValue
+              display="withUnit"
+              figures={3}
+              param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+            />{" "}
+            faster. Your organization helps us ask.
+          </p>
+        </div>
+
+        <div className="border-2 border-foreground p-5">
+          <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
+            The treatment queue
+          </h2>
+          <p className="mt-3">
+            There are{" "}
+            <ParameterValue
+              figures={3}
+              param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+            />{" "}
+            diseases without effective treatment. At the current rate of{" "}
+            <ParameterValue
+              figures={2}
+              param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
+            />{" "}
+            new first treatments per year, clearing the queue takes{" "}
+            <ParameterValue
+              figures={3}
+              param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+            />{" "}
+            years. Redirecting 1% of military spending to clinical trials
+            multiplies trial capacity by{" "}
+            <ParameterValue
+              display="withUnit"
+              figures={3}
+              param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+            />{" "}
+            and clears the queue in{" "}
+            <ParameterValue
+              figures={2}
+              param={DFDA_QUEUE_CLEARANCE_YEARS}
+            />{" "}
+            years.
+          </p>
+          <p className="mt-3">
+            Meanwhile, there are{" "}
+            <ParameterValue figures={3} param={SAFE_COMPOUNDS_COUNT} /> compounds
+            already proven safe in humans — FDA-approved drugs, GRAS substances —
+            that have never been tested against most diseases. That is{" "}
+            <ParameterValue
+              figures={3}
+              param={DRUG_DISEASE_COMBINATIONS_POSSIBLE}
+            />{" "}
+            possible drug-disease combinations sitting untested. At current trial
+            capacity, testing them all takes{" "}
+            <ParameterValue
+              figures={3}
+              param={CURRENT_KNOWN_SAFE_EXPLORATION_YEARS}
+            />{" "}
+            years. At treaty-scale capacity, it takes{" "}
+            <span>
+              <ParameterValue
+                display="withUnit"
+                figures={3}
+                param={DFDA_KNOWN_SAFE_EXPLORATION_YEARS}
+              />
+              .
+            </span>
+          </p>
+          <p className="mt-3">
+            Every day that shift happens sooner prevents{" "}
+            <ParameterValue figures={3} param={GLOBAL_DISEASE_DEATHS_DAILY} />{" "}
+            deaths.
+          </p>
+        </div>
+
+        <div className="border-2 border-foreground p-5">
+          <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
+            Cost-effectiveness
+          </h2>
+          <p className="mt-3">
+            The best thing anyone has found to do with money in global health is
+            buy insecticide-treated bed nets.{" "}
+            <ParameterValue figures={2} param={BED_NETS_COST_PER_DALY} /> per
+            disability-adjusted life-year averted. That is the GiveWell
+            gold standard. The 1% Treaty costs{" "}
+            <ParameterValue
+              figures={2}
+              param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
+            />{" "}
+            per DALY averted —{" "}
+            <ParameterValue
+              display="withUnit"
+              figures={3}
+              param={TREATY_VS_BED_NETS_MULTIPLIER}
+            />{" "}
+            more cost-effective than bed nets. Find something better and do that
+            instead.
+          </p>
+        </div>
+
+        <div className="border-2 border-foreground p-5">
+          <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
+            This has worked before
+          </h2>
+          <p className="mt-3">
+            The{" "}
+            <Link
+              href="https://en.wikipedia.org/wiki/International_Campaign_to_Ban_Landmines"
+              className="underline underline-offset-4"
+              target="_blank"
+              rel="noreferrer"
+            >
+              landmine ban
+            </Link>
+            : 6 NGOs → 1,400 organizations → treaty signed by 122
+            countries → Nobel Peace Prize.{" "}
+            <Link
+              href="https://en.wikipedia.org/wiki/International_Campaign_to_Abolish_Nuclear_Weapons"
+              className="underline underline-offset-4"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ICAN
+            </Link>
+            : 5 staff in a Geneva office → 600+ partner organizations →
+            Nobel Peace Prize. Both campaigns did exactly what this form asks:
+            endorse a treaty, tell your members. That is it. That is the
+            whole trick.
+          </p>
+        </div>
+
+        <div className="border-2 border-foreground p-5">
+          <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
+            What your organization does
+          </h2>
+          <p className="mt-3">
+            Endorse the treaty using the form above, then tell everyone in
+            your organization to do the following:
+          </p>
+          <ol className="mt-3 list-decimal space-y-3 pl-5">
+            <li>
+              <Link
+                href={ROUTES.vote}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                Vote on the Global Survey.
+              </Link>{" "}
+              30 seconds. Then get two more humans to do it. That is the
+              entire growth model.
+            </li>
+            <li>
+              <Link
+                href={ROUTES.joke}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                Play the funniest joke in the universe
+              </Link>{" "}
+              on everyone you love on Earth Optimization Day. Write{" "}
+              <span className="font-black text-foreground">
+                &ldquo;THIS T-SHIRT ENDED WAR AND DISEASE&rdquo;
+              </span>{" "}
+              on every shirt in a loved one&apos;s closet. On the back:{" "}
+              <span className="font-black text-foreground">
+                &ldquo;Trade one apocalypse for disease eradication at
+                warondisease.org.&rdquo;
+              </span>{" "}
+              Tuck in a card with the math and a QR code. They will be
+              furious. They will also not be dead of a curable disease. You
+              are welcome.
+            </li>
+            <li>
+              <Link
+                href={ROUTES.employees}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                Remind your presidents
+              </Link>{" "}
+              that you pay them{" "}
+              <ParameterValue
+                figures={3}
+                param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+              />{" "}
+              a year to promote the general welfare and you would like to
+              receive this service at some point. Signing the 1% Treaty is a
+              30-second task. Every day they do not complete it,{" "}
+              <ParameterValue
+                figures={3}
+                param={GLOBAL_DISEASE_DEATHS_DAILY}
+              />{" "}
+              people die of diseases that would have been cured faster if they
+              had done their job.
+            </li>
+            <li>
+              <Link
+                href={ROUTES.plaintiffs}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                Register your dead.
+              </Link>{" "}
+              Your government spent your money on missiles instead of testing
+              which medicines work. People you loved died of diseases that
+              would have been cured if that money had gone to clinical trials.
+              That is negligent homicide at civilizational scale. Humanity v.
+              Government is the class action. The dead should be named.
+            </li>
+            <li>
+              Buy one share of a military contractor — $200 — and{" "}
+              <a
+                href="https://manual.warondisease.org/knowledge/appendix/love-letter.html"
+                className="font-black underline underline-offset-4 text-foreground"
+                target="_blank"
+                rel="noreferrer"
+              >
+                send the board a love letter
+              </a>
+              <span>. </span>
+              The law calls it a shareholder demand letter. The board is legally
+              required to read it and respond on the record. It tells them to
+              sell 1% of their bomb-making infrastructure, invest the proceeds
+              in biotech, and instruct their lobbyists to stop asking Congress
+              for infinity nuclear weapons and instead reallocate one apocalypse
+              worth of spending to pragmatic clinical trials. This would make
+              them and their shareholders both richer and significantly less
+              dead. They just have to read the math.
+            </li>
+            <li>
+              <Link
+                href={ROUTES.shirt}
+                className="font-black underline underline-offset-4 text-foreground"
+              >
+                Get the shirt.
+              </Link>{" "}
+              Front says{" "}
+              <span className="font-black text-foreground">
+                THIS T-SHIRT ENDED WAR AND DISEASE
+              </span>
+              <span>. </span>
+              Back says{" "}
+              <span className="font-black text-foreground">
+                Trade one apocalypse for disease eradication
+              </span>
+              <span>. </span>
+              People will read it because it is on your chest and they cannot
+              help themselves.
+            </li>
+          </ol>
+        </div>
+
         <p>
-          Allowing billions of humans to suffer and die from disease so
-          governments can preserve{" "}
-          <ParameterValue figures={3} param={NUCLEAR_WINTER_OVERKILL_FACTOR} />
-          -apocalypse mass-murder capacity is barbaric mass cruelty. Like
-          slavery, it will persist until enough humans and institutions publicly
-          state that it is morally wrong and incredibly stupid. Your
-          organization can be one of those institutions.
-        </p>
-        <p>
-          None of us can end war and disease on our own. Ending it requires a
-          majority of humanity agreeing to spend a little less on mass murder
-          capacity and a little more on medicine that works. Your organization
-          and its members are part of that majority. Moving that agreement
-          forward by one day prevents about{" "}
+          Governments spend{" "}
           <ParameterValue
-            param={GLOBAL_DISEASE_DEATHS_DAILY}
-            valueOverride="150,000"
+            display="withUnit"
+            figures={3}
+            param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
           />{" "}
-          deaths from disease and roughly{" "}
-          <ParameterValue
-            param={CURRENT_DISEASE_PATIENTS_GLOBAL}
-            valueOverride="2 billion"
-          />{" "}
-          days of suffering.
-        </p>
-        <p>
+          more on the military than on clinical trials. The 1% Treaty
+          corrects that ratio. Your endorsement is how it passes.{" "}
           <Link
             href={NONPROFIT_COALITION_STRATEGY_URL}
             className="underline underline-offset-4"
           >
-            Why organizations should join
+            Full coalition strategy →
           </Link>
-          .
         </p>
       </div>
 
       <LegalNotesDisclosure sections={content.legal.sections} />
       <TreatyTextDisclosure treatyMarkdown={treatyMarkdown} />
-
-      <p className="mt-8 text-center text-sm font-bold text-foreground">
-        Foundations: distributing the shirt to every human on Earth costs
-        roughly 3% of the global annual philanthropy budget.{" "}
-        <Link href={ROUTES.foundations} className="font-black underline">
-          See the case →
-        </Link>
-      </p>
 
       <p className="mt-4 text-center text-xs font-bold text-muted-foreground">
         Already joined? See the{" "}

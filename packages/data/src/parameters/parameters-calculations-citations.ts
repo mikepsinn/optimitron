@@ -99,7 +99,7 @@ export const ADAPTABLE_TRIAL_TOTAL_COST: Parameter = {
   confidence: "medium",
   confidenceInterval: [14000000.0, 20000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR: Parameter = {
@@ -129,7 +129,7 @@ export const ANTIDEPRESSANT_TRIAL_EXCLUSION_RATE: Parameter = {
   sourceUrl: "https://pubmed.ncbi.nlm.nih.gov/26276679/",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const AVERAGE_MARKET_RETURN_PCT: Parameter = {
@@ -178,7 +178,7 @@ export const BED_NETS_COST_PER_DALY: Parameter = {
   confidenceInterval: [78.0, 100.0],
   peerReviewed: true,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const BULLETS_FIRED_PER_KILL_IRAQ_AFGHANISTAN: Parameter = {
@@ -301,7 +301,7 @@ export const CHILDHOOD_VACCINATION_ANNUAL_BENEFIT: Parameter = {
   confidenceInterval: [8881369332.997551, 23098070204.486595],
   stdError: 4500000000.0,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CHILDHOOD_VACCINATION_ROI: Parameter = {
@@ -316,7 +316,7 @@ export const CHILDHOOD_VACCINATION_ROI: Parameter = {
   sourceUrl: "https://www.cdc.gov/mmwr/preview/mmwrhtml/mm6316a4.htm",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CHRONIC_DISEASE_DISABILITY_WEIGHT: Parameter = {
@@ -424,7 +424,7 @@ export const CURRENT_ACTIVE_TRIALS: Parameter = {
   sourceUrl: "https://clinicaltrials.gov/data-api/api",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE: Parameter = {
@@ -487,7 +487,7 @@ export const CURRENT_TRIALS_PER_YEAR: Parameter = {
   confidence: "high",
   confidenceInterval: [2640.0, 3960.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CURRENT_TRIAL_ABANDONMENT_RATE: Parameter = {
@@ -502,7 +502,7 @@ export const CURRENT_TRIAL_ABANDONMENT_RATE: Parameter = {
   sourceUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4444136/",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CURRENT_TRIAL_SLOTS_AVAILABLE: Parameter = {
@@ -518,7 +518,7 @@ export const CURRENT_TRIAL_SLOTS_AVAILABLE: Parameter = {
   confidence: "high",
   confidenceInterval: [1500000.0, 2300000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DEFENSE_LOBBYING_ANNUAL: Parameter = {
@@ -612,7 +612,7 @@ export const DEWORMING_COST_PER_DALY: Parameter = {
   sourceUrl: "https://www.givewell.org/international/technical/programs/deworming/cost-effectiveness",
   confidence: "low",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT: Parameter = {
@@ -628,7 +628,7 @@ export const DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT: Parameter = {
   confidence: "medium",
   confidenceInterval: [97.0, 3000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DISEASE_BURDEN_GDP_DRAG_PCT: Parameter = {
@@ -673,7 +673,7 @@ export const DRUG_DEVELOPMENT_COST_1980S: Parameter = {
   confidence: "high",
   confidenceInterval: [145500000.0, 242500000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DRUG_DISCOVERY_TO_APPROVAL_YEARS: Parameter = {
@@ -736,7 +736,7 @@ export const ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT: Parameter = {
   confidence: "high",
   confidenceInterval: [3.0, 6.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const ECONOMIC_MULTIPLIER_INFRASTRUCTURE_INVESTMENT: Parameter = {
@@ -767,7 +767,7 @@ export const ECONOMIC_MULTIPLIER_MILITARY_SPENDING: Parameter = {
   confidence: "high",
   confidenceInterval: [0.4, 0.9],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const EFFICACY_LAG_YEARS: Parameter = {
@@ -786,7 +786,7 @@ export const EFFICACY_LAG_YEARS: Parameter = {
   stdError: 2.0,
   peerReviewed: true,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const EOS_SOCIAL_VALUE_CAPTURE_PCT: Parameter = {
@@ -913,7 +913,7 @@ export const GIVEWELL_COST_PER_LIFE_AVG: Parameter = {
   sourceUrl: "https://www.givewell.org/charities/top-charities",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GIVEWELL_COST_PER_LIFE_MAX: Parameter = {
@@ -928,7 +928,7 @@ export const GIVEWELL_COST_PER_LIFE_MAX: Parameter = {
   sourceUrl: "https://www.givewell.org/charities/top-charities",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GIVEWELL_COST_PER_LIFE_MIN: Parameter = {
@@ -943,7 +943,7 @@ export const GIVEWELL_COST_PER_LIFE_MIN: Parameter = {
   sourceUrl: "https://www.givewell.org/charities/top-charities",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_ANNUAL_CONFLICT_DEATHS_ACTIVE_COMBAT: Parameter = {
@@ -1009,7 +1009,7 @@ export const GLOBAL_ANNUAL_DALY_BURDEN: Parameter = {
   stdError: 150000000.0,
   peerReviewed: true,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES: Parameter = {
@@ -1042,7 +1042,7 @@ export const GLOBAL_ANNUAL_ENVIRONMENTAL_DAMAGE_CONFLICT: Parameter = {
   confidence: "high",
   confidenceInterval: [70000000000.0, 140000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_COMMUNICATIONS_CONFLICT: Parameter = {
@@ -1186,7 +1186,7 @@ export const GLOBAL_ANNUAL_LOST_HUMAN_CAPITAL_CONFLICT: Parameter = {
   confidence: "high",
   confidenceInterval: [210000000000.0, 420000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_ANNUAL_PSYCHOLOGICAL_IMPACT_COSTS_CONFLICT: Parameter = {
@@ -1202,7 +1202,7 @@ export const GLOBAL_ANNUAL_PSYCHOLOGICAL_IMPACT_COSTS_CONFLICT: Parameter = {
   confidence: "high",
   confidenceInterval: [162000000000.0, 325000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_ANNUAL_REFUGEE_SUPPORT_COSTS: Parameter = {
@@ -1218,7 +1218,7 @@ export const GLOBAL_ANNUAL_REFUGEE_SUPPORT_COSTS: Parameter = {
   confidence: "high",
   confidenceInterval: [105000000000.0, 210000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_ANNUAL_TRADE_DISRUPTION_CURRENCY_CONFLICT: Parameter = {
@@ -1298,7 +1298,7 @@ export const GLOBAL_ANNUAL_VETERAN_HEALTHCARE_COSTS: Parameter = {
   confidence: "high",
   confidenceInterval: [140000000000.0, 280000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_CHRONIC_THERAPY_DAYS_ANNUAL: Parameter = {
@@ -1331,7 +1331,7 @@ export const GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL: Parameter = {
   confidenceInterval: [50000000000.0, 75000000000.0],
   stdError: 10000000000.0,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_CYBERCRIME_CAGR: Parameter = {
@@ -1458,7 +1458,7 @@ export const GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL: Parameter = {
   confidenceInterval: [3000000000.0, 6000000000.0],
   stdError: 1000000000.0,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_GOVERNMENT_EXPENSE_PCT_GDP: Parameter = {
@@ -1584,7 +1584,7 @@ export const GLOBAL_MED_RESEARCH_SPENDING: Parameter = {
   confidence: "high",
   confidenceInterval: [54000000000.0, 81000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_MILITARY_SPENDING_ANNUAL_2005: Parameter = {
@@ -1614,7 +1614,7 @@ export const GLOBAL_MILITARY_SPENDING_ANNUAL_2024: Parameter = {
   sourceUrl: "https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-world-military-expenditure-2024",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_MILITARY_SPENDING_REAL_CAGR_10YR: Parameter = {
@@ -1644,7 +1644,7 @@ export const GLOBAL_NONPROFIT_CLINICAL_TRIALS_SPENDING_ANNUAL: Parameter = {
   confidence: "high",
   confidenceInterval: [2000000000.0, 5000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_NUCLEAR_WEAPONS_SPENDING: Parameter = {
@@ -1673,7 +1673,7 @@ export const GLOBAL_PHARMA_RD_SPENDING_ANNUAL: Parameter = {
   sourceRef: "global-pharma-rd-spending-300b",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_POPULATION_2024: Parameter = {
@@ -1795,7 +1795,7 @@ export const GLOBAL_SYMPTOMATIC_DISEASE_TREATMENT_ANNUAL: Parameter = {
   confidence: "high",
   confidenceInterval: [6500000000000.0, 10000000000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_WARHEAD_COUNT: Parameter = {
@@ -1873,7 +1873,7 @@ export const HUMAN_GENOME_PROJECT_TOTAL_ECONOMIC_IMPACT: Parameter = {
   sourceUrl: "https://www.genome.gov/11006929/2003-release-international-consortium-completes-hgp",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const HUMAN_INTERACTOME_TARGETED_PCT: Parameter = {
@@ -1888,7 +1888,7 @@ export const HUMAN_INTERACTOME_TARGETED_PCT: Parameter = {
   sourceUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10749231/",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const ICD_10_TOTAL_CODES: Parameter = {
@@ -1980,7 +1980,7 @@ export const MEASLES_VACCINATION_ROI: Parameter = {
   sourceUrl: "https://www.mdpi.com/2076-393X/12/11/1210",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const MEDICAL_QALY_THRESHOLD: Parameter = {
@@ -2147,7 +2147,7 @@ export const NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR: Parameter = {
   confidence: "low",
   confidenceInterval: [8.0, 30.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const NIH_ANNUAL_BUDGET: Parameter = {
@@ -2195,7 +2195,7 @@ export const NIH_STANDARD_RESEARCH_COST_PER_QALY: Parameter = {
   confidence: "medium",
   confidenceInterval: [20000.0, 100000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const NUCLEAR_WINTER_WARHEAD_THRESHOLD: Parameter = {
@@ -2388,7 +2388,7 @@ export const PHASE_2_3_CLINICAL_TRIAL_COST_PCT: Parameter = {
   confidenceInterval: [0.6086205764628275, 0.771407087627539],
   stdError: 0.05,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const PHASE_3_TRIAL_COST_MIN: Parameter = {
@@ -2434,7 +2434,7 @@ export const POLIO_VACCINATION_ROI: Parameter = {
   sourceUrl: "https://www.who.int/news-room/feature-stories/detail/sustaining-polio-investments-offers-a-high-return",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_FOSSIL_FUEL_SUBSIDIES: Parameter = {
@@ -2536,7 +2536,7 @@ export const POLITICAL_SUCCESS_PROBABILITY: Parameter = {
   confidenceInterval: [0.001, 0.1],
   stdError: 0.02,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const POLITICIAN_POST_OFFICE_CAREER_VALUE: Parameter = {
@@ -2632,7 +2632,7 @@ export const RARE_DISEASES_COUNT_GLOBAL: Parameter = {
   confidence: "high",
   confidenceInterval: [6000.0, 10000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const RECOVERY_TRIAL_COST_PER_PATIENT: Parameter = {
@@ -2648,7 +2648,7 @@ export const RECOVERY_TRIAL_COST_PER_PATIENT: Parameter = {
   confidence: "high",
   confidenceInterval: [400.0, 2500.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const RECOVERY_TRIAL_GLOBAL_LIVES_SAVED: Parameter = {
@@ -2822,7 +2822,7 @@ export const SMALLPOX_ERADICATION_ROI: Parameter = {
   sourceUrl: "https://www.csis.org/analysis/smallpox-eradication-model-global-cooperation",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const SMALLPOX_ERADICATION_TOTAL_BENEFIT: Parameter = {
@@ -2837,7 +2837,7 @@ export const SMALLPOX_ERADICATION_TOTAL_BENEFIT: Parameter = {
   sourceUrl: "https://www.csis.org/analysis/smallpox-eradication-model-global-cooperation",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const SMOKING_CESSATION_ANNUAL_BENEFIT: Parameter = {
@@ -2852,7 +2852,7 @@ export const SMOKING_CESSATION_ANNUAL_BENEFIT: Parameter = {
   sourceUrl: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1447499/",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const STANDARD_ECONOMIC_QALY_VALUE_USD: Parameter = {
@@ -2869,7 +2869,7 @@ export const STANDARD_ECONOMIC_QALY_VALUE_USD: Parameter = {
   confidenceInterval: [100383.76953012965, 198679.3124086564],
   stdError: 30000.0,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const STANDARD_QALYS_PER_LIFE_SAVED: Parameter = {
@@ -2991,7 +2991,7 @@ export const TERRORISM_DEATHS_911: Parameter = {
   sourceUrl: "https://www.cato.org/policy-analysis/terrorism-immigration-risk-analysis",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const THALIDOMIDE_CASES_WORLDWIDE: Parameter = {
@@ -3087,7 +3087,7 @@ export const TRADITIONAL_PHASE3_COST_PER_PATIENT: Parameter = {
   confidence: "high",
   confidenceInterval: [20000.0, 120000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATMENT_DISABILITY_REDUCTION: Parameter = {
@@ -3667,7 +3667,7 @@ export const VALLEY_OF_DEATH_ATTRITION_PCT: Parameter = {
   confidence: "medium",
   confidenceInterval: [0.25, 0.55],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const VALUE_OF_STATISTICAL_LIFE: Parameter = {
@@ -3684,7 +3684,7 @@ export const VALUE_OF_STATISTICAL_LIFE: Parameter = {
   confidenceInterval: [5000000.0, 15000000.0],
   stdError: 3000000.0,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const VENTURE_GROSS_RETURN: Parameter = {
@@ -3713,7 +3713,7 @@ export const VITAMIN_A_COST_PER_DALY: Parameter = {
   sourceUrl: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0012046",
   confidence: "medium",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const WAR_TRIAL_REDIRECT_1900_FREEZE_BASELINE_ANNUAL: Parameter = {
@@ -3744,7 +3744,7 @@ export const WATER_FLUORIDATION_ANNUAL_BENEFIT: Parameter = {
   sourceUrl: "https://news.un.org/en/story/2014/11/484032",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const WATER_FLUORIDATION_ROI: Parameter = {
@@ -3759,7 +3759,7 @@ export const WATER_FLUORIDATION_ROI: Parameter = {
   sourceUrl: "https://news.un.org/en/story/2014/11/484032",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const WHO_QALY_THRESHOLD_COST_EFFECTIVE: Parameter = {
@@ -3774,7 +3774,7 @@ export const WHO_QALY_THRESHOLD_COST_EFFECTIVE: Parameter = {
   sourceUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC5193154/",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const WORKFORCE_WITH_PRODUCTIVITY_LOSS: Parameter = {
@@ -3809,7 +3809,7 @@ export const ADDITIONAL_DRUGS_FROM_COST_ELIMINATION: Parameter = {
   latex: "\\begin{gathered}\nDrugs_{new} \\\\\n= Drugs_{ann,curr} \\times Attrition_{valley} \\\\\n= 50 \\times 40\\% \\\\\n= 20\n\\end{gathered}",
   confidenceInterval: [13.070666318568255, 27.466007495286444],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const APOCALYPSE_MARKUP: Parameter = {
@@ -4017,7 +4017,7 @@ export const CLINICAL_TRIAL_COST_PER_APPROVED_DRUG: Parameter = {
   latex: "\\begin{gathered}\nCost_{trial,drug} \\\\\n= \\frac{Spending_{trials}}{Drugs_{ann,curr}} \\\\\n= \\frac{\\$60B}{50} \\\\\n= \\$1.2B\n\\end{gathered}",
   confidenceInterval: [944326168.5772825, 1537437739.009429],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CLINICAL_TRIAL_COST_PER_PARTICIPANT_ANNUAL: Parameter = {
@@ -4033,7 +4033,7 @@ export const CLINICAL_TRIAL_COST_PER_PARTICIPANT_ANNUAL: Parameter = {
   latex: "\\begin{gathered}\nCost_{trial,pt,ann} \\\\\n= \\frac{Spending_{trials}}{Slots_{curr}} \\\\\n= \\frac{\\$60B}{1.9M} \\\\\n= \\$31.6K\n\\end{gathered}",
   confidenceInterval: [24255.983543883547, 42052.743108122886],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const COMBINATION_THERAPY_DISEASE_SPACE: Parameter = {
@@ -4049,7 +4049,7 @@ export const COMBINATION_THERAPY_DISEASE_SPACE: Parameter = {
   latex: "\\begin{gathered}\nSpace_{combo} = N_{combo} \\times N_{diseases,trial} = 45.1M \\times 1{,}000 = 45.1B\n\\\\[0.5em]\n\\text{where } N_{combo} = \\frac{N_{safe} \\cdot (N_{safe} - 1)}{2}\n\\end{gathered}",
   confidenceInterval: [24979567160.576622, 72641695336.53656],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const COMBINATION_THERAPY_PAIRS: Parameter = {
@@ -4065,7 +4065,7 @@ export const COMBINATION_THERAPY_PAIRS: Parameter = {
   latex: "N_{combo} = \\frac{N_{safe} \\cdot (N_{safe} - 1)}{2}",
   confidenceInterval: [26208269.463346966, 68906476.46762912],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CONTRIBUTION_DALYS_PER_PCT_POINT: Parameter = {
@@ -4871,7 +4871,7 @@ export const DFDA_ANNUAL_OPEX: Parameter = {
   latex: "\\begin{gathered}\nOPEX_{trial} \\\\\n= Cost_{platform} + Cost_{staff} + Cost_{infra} \\\\\n+ Cost_{regulatory} + Cost_{community} \\\\\n= \\$15M + \\$10M + \\$8M + \\$5M + \\$2M \\\\\n= \\$40M\n\\end{gathered}",
   confidenceInterval: [33531961.844661754, 47078165.624719016],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_BENEFIT_RD_ONLY_ANNUAL: Parameter = {
@@ -4887,7 +4887,7 @@ export const DFDA_BENEFIT_RD_ONLY_ANNUAL: Parameter = {
   latex: "\\begin{gathered}\nBenefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
   confidenceInterval: [48092082505.71534, 73087936427.72623],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER: Parameter = {
@@ -4903,7 +4903,7 @@ export const DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER: Parameter = {
   latex: "\\begin{gathered}\nk_{speedup} = k_{capacity} \\times k_{rescue} = 12.3 \\times 1.4 = 17.3\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{rescue} = Attrition_{valley} + 1 = 40\\% + 1 = 1.4\n\\end{gathered}",
   confidenceInterval: [6.859547807353251, 70.81597247477352],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_DIRECT_FUNDING_COST_PER_DALY: Parameter = {
@@ -4935,7 +4935,7 @@ export const DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV: Parameter = {
   latex: "\\begin{gathered}\nNPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [155522542260.985, 694735386930.992],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_DIRECT_FUNDING_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
@@ -4967,7 +4967,7 @@ export const DFDA_DIRECT_FUNDING_VS_BED_NETS_MULTIPLIER: Parameter = {
   latex: "\\begin{gathered}\nk_{direct,nets} = \\frac{Cost_{nets}}{Cost_{direct,DALY}} = \\frac{\\$89}{\\$0.842} = 106\n\\\\[0.5em]\n\\text{where } Cost_{direct,DALY} = \\frac{NPV_{direct}}{DALYs_{max}} = \\frac{\\$476B}{565B} = \\$0.842\n\\\\[0.5em]\n\\text{where } NPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\end{gathered}",
   confidenceInterval: [58.95024642588531, 339.24501743871855],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_EFFICACY_LAG_ELIMINATION_DALYS: Parameter = {
@@ -5015,7 +5015,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE: Parameter = {
   latex: "\\begin{gathered}\nValue_{lag} = DALYs_{lag} \\times Value_{QALY} = 8.77B \\times \\$150K = \\$1320T\n\\\\[0.5em]\n\\text{where } DALYs_{lag} = YLL_{lag} + YLD_{lag} = 7.9B + 873M = 8.77B\n\\\\[0.5em]\n\\text{where } YLL_{lag} = \\text{DEATHS\\_TOTAL} \\times (REMAINING_LIFE_EXPECTANCY_AT_60 - (\\text{MEAN\\_AGE\\_OF\\_DEATH} - 60))\n\\\\[0.5em]\n\\text{where } Deaths_{lag} = T_{lag} \\times Deaths_{disease,daily} \\times 338 = 8.2 \\times 150{,}000 \\times 338 = 416M\n\\\\[0.5em]\n\\text{where } YLD_{lag} = Deaths_{lag} \\times T_{suffering} \\times DW_{chronic} = 416M \\times 6 \\times 0.35 = 873M\n\\end{gathered}",
   confidenceInterval: [676151838589383.2, 2135283883186806.5],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_EFFICACY_LAG_ELIMINATION_YLD: Parameter = {
@@ -5063,7 +5063,7 @@ export const DFDA_FIRST_TREATMENTS_PER_YEAR: Parameter = {
   latex: "\\begin{gathered}\nTreatments_{trial,ann} = Treatments_{new,ann} \\times k_{capacity} = 15 \\times 12.3 = 185\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [63.81406565520341, 816.2174326966558],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_KNOWN_SAFE_EXPLORATION_YEARS: Parameter = {
@@ -5111,7 +5111,7 @@ export const DFDA_NET_SAVINGS_RD_ONLY_ANNUAL: Parameter = {
   latex: "\\begin{gathered}\nSavings_{RD,ann} = Benefit_{RD,ann} - OPEX_{trial} = \\$58.6B - \\$40M = \\$58.6B\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [48053513726.39374, 73044979598.4833],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_NPV_ANNUAL_OPEX_TOTAL: Parameter = {
@@ -5143,7 +5143,7 @@ export const DFDA_NPV_BENEFIT_RD_ONLY: Parameter = {
   latex: "\\begin{gathered}\nNPV_{RD} \\\\\n= \\sum_{t=1}^{10} \\frac{Savings_{RD,ann} \\cdot \\frac{\\min(t,5)}{5}}{(1+r)^t}\n\\end{gathered}",
   confidenceInterval: [319276780547.4594, 485324882882.58234],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_NPV_NET_BENEFIT_RD_ONLY: Parameter = {
@@ -5159,7 +5159,7 @@ export const DFDA_NPV_NET_BENEFIT_RD_ONLY: Parameter = {
   latex: "\\begin{gathered}\nNPV_{net,RD} = NPV_{RD} - Cost_{platform,total} = \\$389B - \\$611M = \\$389B\n\\\\[0.5em]\n\\text{where } NPV_{RD} = \\sum_{t=1}^{10} \\frac{Savings_{RD,ann} \\cdot \\frac{\\min(t,5)}{5}}{(1+r)^t}\n\\\\[0.5em]\n\\text{where } Savings_{RD,ann} = Benefit_{RD,ann} - OPEX_{trial} = \\$58.6B - \\$40M = \\$58.6B\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{platform,total} = PV_{OPEX} + Cost_{upfront,total} = \\$342M + \\$270M = \\$611M\n\\\\[0.5em]\n\\text{where } PV_{OPEX} = \\frac{T_{horizon}}{OPEX_{total} \\times r_{discount}} = \\frac{10}{\\$40M \\times 3\\%} = \\$342M\n\\\\[0.5em]\n\\text{where } OPEX_{total} = OPEX_{ann} + OPEX_{DIH,ann} = \\$18.9M + \\$21.1M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{upfront,total} = Cost_{upfront} + Cost_{DIH,init} = \\$40M + \\$230M = \\$270M\n\\end{gathered}",
   confidenceInterval: [318612416647.29364, 484714772780.273],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_NPV_PV_ANNUAL_OPEX: Parameter = {
@@ -5207,7 +5207,7 @@ export const DFDA_NPV_UPFRONT_COST_TOTAL: Parameter = {
   latex: "\\begin{gathered}\nCost_{upfront,total} \\\\\n= Cost_{upfront} + Cost_{DIH,init} \\\\\n= \\$40M + \\$230M \\\\\n= \\$270M\n\\end{gathered}",
   confidenceInterval: [196177765.4074869, 362705392.5711628],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_OPEX_PCT_OF_TREATY_FUNDING: Parameter = {
@@ -5223,7 +5223,7 @@ export const DFDA_OPEX_PCT_OF_TREATY_FUNDING: Parameter = {
   latex: "\\begin{gathered}\nOPEX_{pct} = \\frac{OPEX_{trial}}{Funding_{treaty}} = \\frac{\\$40M}{\\$27.2B} = 0.147\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
   confidenceInterval: [0.0012327927148772704, 0.0017308149126734932],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
@@ -5255,7 +5255,7 @@ export const DFDA_QUEUE_CLEARANCE_YEARS: Parameter = {
   latex: "\\begin{gathered}\nT_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [8.147362721662773, 105.71746986550488],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_RD_SAVINGS_DAILY: Parameter = {
@@ -5287,7 +5287,7 @@ export const DFDA_ROI_RD_ONLY: Parameter = {
   latex: "\\begin{gathered}\nROI_{RD} = \\frac{NPV_{RD}}{Cost_{platform,total}} = \\frac{\\$389B}{\\$611M} = 637\n\\\\[0.5em]\n\\text{where } NPV_{RD} = \\sum_{t=1}^{10} \\frac{Savings_{RD,ann} \\cdot \\frac{\\min(t,5)}{5}}{(1+r)^t}\n\\\\[0.5em]\n\\text{where } Savings_{RD,ann} = Benefit_{RD,ann} - OPEX_{trial} = \\$58.6B - \\$40M = \\$58.6B\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{platform,total} = PV_{OPEX} + Cost_{upfront,total} = \\$342M + \\$270M = \\$611M\n\\\\[0.5em]\n\\text{where } PV_{OPEX} = \\frac{T_{horizon}}{OPEX_{total} \\times r_{discount}} = \\frac{10}{\\$40M \\times 3\\%} = \\$342M\n\\\\[0.5em]\n\\text{where } OPEX_{total} = OPEX_{ann} + OPEX_{DIH,ann} = \\$18.9M + \\$21.1M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{upfront,total} = Cost_{upfront} + Cost_{DIH,init} = \\$40M + \\$230M = \\$270M\n\\end{gathered}",
   confidenceInterval: [478.834602301671, 854.4590305810763],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_STORAGE_COST_TOTAL_PER_PATIENT_ANNUAL: Parameter = {
@@ -5367,7 +5367,7 @@ export const DFDA_TRIAL_CAPACITY_DALYS_AVERTED: Parameter = {
   latex: "\\begin{gathered}\nDALYs_{capacity} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel} = 2.88B \\times 92.6\\% \\times 204 = 543B\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [289130017386.7707, 1062519307948.7119],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_ECONOMIC_VALUE: Parameter = {
@@ -5383,7 +5383,7 @@ export const DFDA_TRIAL_CAPACITY_ECONOMIC_VALUE: Parameter = {
   latex: "\\begin{gathered}\nValue_{capacity} = DALYs_{capacity} \\times Value_{QALY} = 543B \\times \\$150K = \\$81500T\n\\\\[0.5em]\n\\text{where } DALYs_{capacity} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel} = 2.88B \\times 92.6\\% \\times 204 = 543B\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [4.031622389407436e+16, 1.6804890435983437e+17],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_LIVES_SAVED: Parameter = {
@@ -5399,7 +5399,7 @@ export const DFDA_TRIAL_CAPACITY_LIVES_SAVED: Parameter = {
   latex: "\\begin{gathered}\nLives_{capacity} = Deaths_{disease,daily} \\times T_{accel} \\times 338 = 150{,}000 \\times 204 \\times 338 = 10.3B\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [5840094637.468375, 19868263388.42882],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
@@ -5415,7 +5415,7 @@ export const DFDA_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
   latex: "\\begin{gathered}\nk_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [4.9246163609222675, 50.75891196438465],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS: Parameter = {
@@ -5431,7 +5431,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS: Parameter = {
   latex: "\\begin{gathered}\nDALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [309417839106.5174, 1084398442917.5596],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE: Parameter = {
@@ -5447,7 +5447,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE: Parameter = {
   latex: "\\begin{gathered}\nValue_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [4.287343349416812e+16, 1.7182530612064253e+17],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED: Parameter = {
@@ -5463,7 +5463,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED: Parameter = {
   latex: "\\begin{gathered}\nLives_{max} = Deaths_{disease,daily} \\times T_{accel,max} \\times 338 = 150{,}000 \\times 212 \\times 338 = 10.7B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [6235696426.716688, 20312982088.986675],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS: Parameter = {
@@ -5495,7 +5495,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS: Parameter = {
   latex: "\\begin{gathered}\nT_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [124.41448688661136, 398.0070865002508],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS: Parameter = {
@@ -5511,7 +5511,7 @@ export const DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS: Parameter = {
   latex: "\\begin{gathered}\nT_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [116.21129937776517, 389.635764722448],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
@@ -5527,7 +5527,7 @@ export const DFDA_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
   latex: "\\begin{gathered}\nk_{reduce} \\\\\n= \\frac{Cost_{P3,pt}}{Cost_{pragmatic,pt}} \\\\\n= \\frac{\\$41K}{\\$929} \\\\\n= 44.1\n\\end{gathered}",
   confidenceInterval: [12.751701016848756, 210.2539910518858],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_TRIAL_COST_REDUCTION_PCT: Parameter = {
@@ -5574,7 +5574,7 @@ export const DFDA_VALLEY_OF_DEATH_RESCUE_MULTIPLIER: Parameter = {
   latex: "k_{rescue} = Attrition_{valley} + 1 = 40\\% + 1 = 1.4",
   confidenceInterval: [1.264710080702658, 1.5354638862931196],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DIH_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
@@ -5590,7 +5590,7 @@ export const DIH_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
   latex: "\\begin{gathered}\nN_{fundable,ann} = \\frac{Subsidies_{trial,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.7B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ann} = Treasury_{RD,ann} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.7B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Treasury_{RD,ann} = Funding_{treaty} - Payout_{bond,ann} - Funding_{political,ann} = \\$27.2B - \\$2.72B - \\$2.72B = \\$21.8B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\\\[0.5em]\n\\text{where } Payout_{bond,ann} = Funding_{treaty} \\times Pct_{bond} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\end{gathered}",
   confidenceInterval: [9214487.283468926, 93748156.8214569],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DIH_TREASURY_MEDICAL_RESEARCH_PCT: Parameter = {
@@ -5620,7 +5620,7 @@ export const DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL: Parameter = {
   formula: "TREATY_FUNDING - BOND_PAYOUT - IAB_POLITICAL_INCENTIVE_FUNDING",
   latex: "\\begin{gathered}\nTreasury_{RD,ann} = Funding_{treaty} - Payout_{bond,ann} - Funding_{political,ann} = \\$27.2B - \\$2.72B - \\$2.72B = \\$21.8B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\\\[0.5em]\n\\text{where } Payout_{bond,ann} = Funding_{treaty} \\times Pct_{bond} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL: Parameter = {
@@ -5635,7 +5635,7 @@ export const DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL: Parameter = {
   formula: "ONE_PERCENT_TREATY_TRIAL_FUNDING - TRIAL_PLATFORM_OPEX",
   latex: "\\begin{gathered}\nSubsidies_{trial,ann} = Treasury_{RD,ann} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.7B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Treasury_{RD,ann} = Funding_{treaty} - Payout_{bond,ann} - Funding_{political,ann} = \\$27.2B - \\$2.72B - \\$2.72B = \\$21.8B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\\\[0.5em]\n\\text{where } Payout_{bond,ann} = Funding_{treaty} \\times Pct_{bond} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DIH_TREASURY_TRIAL_SUBSIDIES_PCT: Parameter = {
@@ -5650,7 +5650,7 @@ export const DIH_TREASURY_TRIAL_SUBSIDIES_PCT: Parameter = {
   formula: "TRIAL_SUBSIDIES / TREATY_FUNDING",
   latex: "\\begin{gathered}\nPct_{subsidies} = \\frac{Subsidies_{trial,ann}}{Funding_{treaty}} = \\frac{\\$21.7B}{\\$27.2B} = 79.9\\%\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ann} = Treasury_{RD,ann} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.7B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Treasury_{RD,ann} = Funding_{treaty} - Payout_{bond,ann} - Funding_{political,ann} = \\$27.2B - \\$2.72B - \\$2.72B = \\$21.8B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\\\[0.5em]\n\\text{where } Payout_{bond,ann} = Funding_{treaty} \\times Pct_{bond} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DISEASES_WITHOUT_EFFECTIVE_TREATMENT: Parameter = {
@@ -5668,7 +5668,7 @@ export const DISEASES_WITHOUT_EFFECTIVE_TREATMENT: Parameter = {
   latex: "\\begin{gathered}\nN_{untreated} \\\\\n= N_{rare} \\times 0.95 \\\\\n= 7{,}000 \\times 0.95 \\\\\n= 6{,}650\n\\end{gathered}",
   confidenceInterval: [5700.0, 8232.204270373322],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DISEASE_VS_TERRORISM_DEATHS_RATIO: Parameter = {
@@ -5684,7 +5684,7 @@ export const DISEASE_VS_TERRORISM_DEATHS_RATIO: Parameter = {
   latex: "\\begin{gathered}\nRatio_{dis:terror} \\\\\n= \\frac{Deaths_{curable,ann}}{Deaths_{9/11}} \\\\\n= \\frac{55M}{3{,}000} \\\\\n= 18{,}400\n\\end{gathered}",
   confidenceInterval: [15566.386375873588, 21100.39605607465],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DISEASE_VS_WAR_DEATHS_RATIO: Parameter = {
@@ -5700,7 +5700,7 @@ export const DISEASE_VS_WAR_DEATHS_RATIO: Parameter = {
   latex: "\\begin{gathered}\nRatio_{dis:war} = \\frac{Deaths_{curable,ann}}{Deaths_{conflict}} = \\frac{55M}{245{,}000} = 225\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\end{gathered}",
   confidenceInterval: [175.27589108113241, 288.43583520384414],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DIVIDEND_COVERAGE_FACTOR: Parameter = {
@@ -5786,7 +5786,7 @@ export const DRUG_DISEASE_COMBINATIONS_POSSIBLE: Parameter = {
   latex: "\\begin{gathered}\nN_{combos} \\\\\n= N_{safe} \\times N_{diseases,trial} \\\\\n= 9{,}500 \\times 1{,}000 \\\\\n= 9.5M\n\\end{gathered}",
   confidenceInterval: [6675351.737735795, 12759539.26857128],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const EARTH_OPTIMIZATION_POINT_VALUE: Parameter = {
@@ -6486,7 +6486,7 @@ export const GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL: Parameter = {
   latex: "\\begin{gathered}\nBurden_{disease} \\\\\n= DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times Value_{QALY} \\\\\n= 2.88B \\times 92.6\\% \\times \\$150K \\\\\n= \\$400T\n\\end{gathered}",
   confidenceInterval: [251944013945312.84, 544272263829645.25],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL: Parameter = {
@@ -6549,7 +6549,7 @@ export const GLOBAL_INDUSTRY_CLINICAL_TRIALS_SPENDING_ANNUAL: Parameter = {
   latex: "\\begin{gathered}\nSpending_{trials,industry} \\\\\n= Spending_{trials} - Spending_{trials,gov} \\\\\n= \\$60B - \\$4.5B \\\\\n= \\$55.5B\n\\end{gathered}",
   confidenceInterval: [45009083226.00565, 70346503740.93391],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025: Parameter = {
@@ -6674,7 +6674,7 @@ export const GLOBAL_TOTAL_HEALTH_AND_WAR_COST_ANNUAL: Parameter = {
   latex: "\\begin{gathered}\nCost_{health+war} = Cost_{war,total} + Burden_{disease} = \\$11.4T + \\$400T = \\$412T\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Burden_{disease} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times Value_{QALY} = 2.88B \\times 92.6\\% \\times \\$150K = \\$400T\n\\end{gathered}",
   confidenceInterval: [263510883775677.9, 555878388235290.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE: Parameter = {
@@ -6802,7 +6802,7 @@ export const HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO: Parameter = {
   latex: "\\begin{gathered}\nr_{health/mil} \\\\\n= \\frac{k_{health}}{k_{mil}} \\\\\n= \\frac{4.3}{0.6} \\\\\n= 7.17\n\\end{gathered}",
   confidenceInterval: [4.666266289074791, 11.074842364598574],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR: Parameter = {
@@ -7161,7 +7161,7 @@ export const MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN: Parameter = {
   latex: "\\begin{gathered}\nPct_{RD:burden} = \\frac{Spending_{RD}}{Cost_{health+war}} = \\frac{\\$67.5B}{\\$412T} = 0.0164\\%\n\\\\[0.5em]\n\\text{where } Cost_{health+war} = Cost_{war,total} + Burden_{disease} = \\$11.4T + \\$400T = \\$412T\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Burden_{disease} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times Value_{QALY} = 2.88B \\times 92.6\\% \\times \\$150K = \\$400T\n\\end{gathered}",
   confidenceInterval: [0.00011585714525850428, 0.0002637563034894304],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const MEDICAL_TOOLCHAIN_OBSERVED_ANCHOR_COSTS: Parameter = {
@@ -7224,7 +7224,7 @@ export const MILITARY_VS_MEDICAL_RESEARCH_RATIO: Parameter = {
   latex: "\\begin{gathered}\nRatio_{mil:RD} \\\\\n= \\frac{Spending_{mil}}{Spending_{RD}} \\\\\n= \\frac{\\$2.72T}{\\$67.5B} \\\\\n= 40.3\n\\end{gathered}",
   confidenceInterval: [34.259476196140994, 47.9341909820133],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const MISALLOCATION_FACTOR_DEATH_VS_SAVING: Parameter = {
@@ -7320,7 +7320,7 @@ export const PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT: Parameter = {
   latex: "\\begin{gathered}\nBenefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
   confidenceInterval: [99578595759.1242, 128699373087.57088],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const PEACE_DIVIDEND_CONFLICT_REDUCTION: Parameter = {
@@ -7856,7 +7856,7 @@ export const PRAGMATIC_TRIAL_COST_PER_QALY: Parameter = {
   latex: "\\begin{gathered}\nCost_{pragmatic,QALY} = \\frac{Cost_{RECOVERY}}{QALY_{RECOVERY}} = \\frac{\\$20M}{5M} = \\$4\n\\\\[0.5em]\n\\text{where } QALY_{RECOVERY} = Lives_{RECOVERY} \\times QALY_{COVID} = 1M \\times 5 = 5M\n\\end{gathered}",
   confidenceInterval: [1.9107891883438548, 9.80089352888417],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const PRICE_OF_APOCALYPSE: Parameter = {
@@ -7986,7 +7986,7 @@ export const RECOVERY_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
   latex: "\\begin{gathered}\nk_{RECOVERY} \\\\\n= \\frac{Cost_{P3,pt}}{Cost_{RECOVERY,pt}} \\\\\n= \\frac{\\$41K}{\\$500} \\\\\n= 82\n\\end{gathered}",
   confidenceInterval: [21.381874403948053, 195.12679984167949],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const RECOVERY_TRIAL_TOTAL_QALYS_GENERATED: Parameter = {
@@ -8002,7 +8002,7 @@ export const RECOVERY_TRIAL_TOTAL_QALYS_GENERATED: Parameter = {
   latex: "\\begin{gathered}\nQALY_{RECOVERY} \\\\\n= Lives_{RECOVERY} \\times QALY_{COVID} \\\\\n= 1M \\times 5 \\\\\n= 5M\n\\end{gathered}",
   confidenceInterval: [2096831.7775222813, 10051840.469377978],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT: Parameter = {
@@ -8435,7 +8435,7 @@ export const STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT: Parameter = {
   latex: "\\begin{gathered}\nT_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
   confidenceInterval: [127.71197181792319, 420.4156065275045],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const STATUS_QUO_QUEUE_CLEARANCE_YEARS: Parameter = {
@@ -8452,7 +8452,7 @@ export const STATUS_QUO_QUEUE_CLEARANCE_YEARS: Parameter = {
   latex: "\\begin{gathered}\nT_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
   confidenceInterval: [255.42394363584637, 840.831213055009],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const THALIDOMIDE_DALYS_PER_EVENT: Parameter = {
@@ -8580,7 +8580,7 @@ export const TOTAL_RESEARCH_FUNDING_WITH_TREATY: Parameter = {
   latex: "\\begin{gathered}\nFunding_{RD,total} = Spending_{RD} + Funding_{treaty} = \\$67.5B + \\$27.2B = \\$94.7B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
   confidenceInterval: [83944464549.65633, 106594091855.85791],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TOTAL_TESTABLE_THERAPEUTIC_COMBINATIONS: Parameter = {
@@ -8611,7 +8611,7 @@ export const TREATY_ANNUAL_FUNDING: Parameter = {
   formula: "MILITARY_SPENDING × 1%",
   latex: "\\begin{gathered}\nFunding_{treaty} \\\\\n= Spending_{mil} \\times Reduce_{treaty} \\\\\n= \\$2.72T \\times 1\\% \\\\\n= \\$27.2B\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_BENEFIT_MULTIPLIER_VS_VACCINES: Parameter = {
@@ -8627,7 +8627,7 @@ export const TREATY_BENEFIT_MULTIPLIER_VS_VACCINES: Parameter = {
   latex: "\\begin{gathered}\nk_{treaty:vax} = \\frac{Benefit_{peace+RD}}{Benefit_{vax,ann}} = \\frac{\\$172B}{\\$15B} = 11.5\n\\\\[0.5em]\n\\text{where } Benefit_{peace+RD} = Benefit_{peace,soc} + Benefit_{RD,ann} = \\$114B + \\$58.6B = \\$172B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
   confidenceInterval: [7.306780593596599, 19.418484613426227],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_CAMPAIGN_ANNUAL_COST_AMORTIZED: Parameter = {
@@ -8659,7 +8659,7 @@ export const TREATY_CAMPAIGN_TOTAL_COST: Parameter = {
   latex: "\\begin{gathered}\nCost_{campaign} \\\\\n= Budget_{viral,base} + Budget_{lobby,treaty} \\\\\n+ Budget_{reserve} \\\\\n= \\$250M + \\$650M + \\$100M \\\\\n= \\$1B\n\\end{gathered}",
   confidenceInterval: [671683393.8768703, 1475578351.9860473],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
@@ -8675,7 +8675,7 @@ export const TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = 
   latex: "\\begin{gathered}\nCost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [0.0008091074545090181, 0.003539850252606732],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_CUMULATIVE_20YR_WITH_RATCHET: Parameter = {
@@ -8803,7 +8803,7 @@ export const TREATY_EXPECTED_COST_PER_DALY: Parameter = {
   latex: "\\begin{gathered}\nE[Cost_{DALY}] = \\frac{Cost_{treaty,DALY}}{P_{success}} = \\frac{\\$0.00177}{1\\%} = \\$0.177\n\\\\[0.5em]\n\\text{where } Cost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [0.030039389095049846, 2.9152668524765826],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_EXPECTED_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
@@ -8820,7 +8820,7 @@ export const TREATY_EXPECTED_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
   latex: "\\begin{gathered}\nE[ROI_{max}] = ROI_{max} \\times P_{success} = 84.8M \\times 1\\% = 848{,}000\n\\\\[0.5em]\n\\text{where } ROI_{max} = \\frac{Value_{max}}{Cost_{campaign}} = \\frac{\\$84800T}{\\$1B} = 84.8M\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
   confidenceInterval: [47788.384757037245, 4949530.481328109],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER: Parameter = {
@@ -8916,7 +8916,7 @@ export const TREATY_LIVES_SAVED_ANNUAL_GLOBAL: Parameter = {
   latex: "\\begin{gathered}\nLives_{treaty,ann} = Deaths_{conflict} \\times Reduce_{treaty} = 245{,}000 \\times 1\\% = 2{,}450\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\end{gathered}",
   confidenceInterval: [1983.8324728086818, 2974.5221949668394],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_LONGEVITY_HALE_GAIN_YEAR_15: Parameter = {
@@ -8948,7 +8948,7 @@ export const TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS: Parameter = {
   latex: "\\begin{gathered}\nBenefit_{peace+RD} = Benefit_{peace,soc} + Benefit_{RD,ann} = \\$114B + \\$58.6B = \\$172B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
   confidenceInterval: [153149913936.42102, 192374465444.82422],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
@@ -9028,7 +9028,7 @@ export const TREATY_QALYS_GAINED_ANNUAL_GLOBAL: Parameter = {
   latex: "\\begin{gathered}\nQALY_{treaty,ann} = QALY_{life} \\times Lives_{treaty,ann} = 35 \\times 2{,}450 = 85{,}600\n\\\\[0.5em]\n\\text{where } Lives_{treaty,ann} = Deaths_{conflict} \\times Reduce_{treaty} = 245{,}000 \\times 1\\% = 2{,}450\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\end{gathered}",
   confidenceInterval: [54358.80812624854, 120404.48767542581],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
@@ -9092,7 +9092,7 @@ export const TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
   latex: "\\begin{gathered}\nROI_{max} = \\frac{Value_{max}}{Cost_{campaign}} = \\frac{\\$84800T}{\\$1B} = 84.8M\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
   confidenceInterval: [39647180.12279288, 194492841.3310951],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_TOTAL_ANNUAL_COSTS: Parameter = {
@@ -9108,7 +9108,7 @@ export const TREATY_TOTAL_ANNUAL_COSTS: Parameter = {
   latex: "\\begin{gathered}\nCost_{treaty,ann} = OPEX_{trial} + Cost_{camp,amort} = \\$40M + \\$250M = \\$290M\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{camp,amort} = \\frac{Cost_{campaign}}{T_{campaign}} = \\frac{\\$1B}{4} = \\$250M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
   confidenceInterval: [206997998.6262079, 408811903.53967863],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
@@ -9316,7 +9316,7 @@ export const TREATY_VS_BED_NETS_MULTIPLIER: Parameter = {
   latex: "\\begin{gathered}\nk_{treaty:nets} = \\frac{Cost_{nets}}{Cost_{treaty,DALY}} = \\frac{\\$89}{\\$0.00177} = 50{,}300\n\\\\[0.5em]\n\\text{where } Cost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [25003.839138854804, 111064.89950887734],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20: Parameter = {
@@ -9348,7 +9348,7 @@ export const TREATY_VS_DIRECT_FUNDING_LEVERAGE: Parameter = {
   latex: "\\begin{gathered}\nLeverage_{treaty} = \\frac{Cost_{direct,DALY}}{Cost_{treaty,DALY}} = \\frac{\\$0.842}{\\$0.00177} = 476\n\\\\[0.5em]\n\\text{where } Cost_{direct,DALY} = \\frac{NPV_{direct}}{DALYs_{max}} = \\frac{\\$476B}{565B} = \\$0.842\n\\\\[0.5em]\n\\text{where } NPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } Cost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
   confidenceInterval: [149.21434540247873, 830.4175771781782],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR: Parameter = {
@@ -9364,7 +9364,7 @@ export const TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR: Parameter = {
   latex: "\\begin{gathered}\nCapacity_{20yr} = k_{capacity} \\times 20 = 12.3 \\times 20 = 247\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
   confidenceInterval: [98.49232721844535, 1015.178239287693],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TYPE_II_ERROR_COST_RATIO: Parameter = {
@@ -10687,7 +10687,7 @@ export const ADAPTABLE_TRIAL_PATIENTS: Parameter = {
   sourceUrl: "https://commonfund.nih.gov/hcscollaboratory",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const ALLOCATION_DECISION_SPREAD: Parameter = {
@@ -11251,7 +11251,7 @@ export const CHILDHOOD_VACCINATION_COST_PER_DALY: Parameter = {
   sourceUrl: "https://www.cdc.gov/mmwr/preview/mmwrhtml/mm6316a4.htm",
   confidence: "low",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const CONCENTRATED_INTEREST_SECTOR_MARKET_CAP_USD: Parameter = {
@@ -11419,7 +11419,7 @@ export const DFDA_NPV_ADOPTION_RAMP_YEARS: Parameter = {
   sourceType: "definition",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_NPV_ANNUAL_OPEX: Parameter = {
@@ -11447,7 +11447,7 @@ export const DFDA_NPV_UPFRONT_COST: Parameter = {
   confidence: "high",
   confidenceInterval: [25000000.0, 65000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_OBSERVATIONAL_COST_PER_PATIENT: Parameter = {
@@ -11475,7 +11475,7 @@ export const DFDA_OPEX_COMMUNITY: Parameter = {
   confidence: "high",
   confidenceInterval: [1000000.0, 3000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_OPEX_INFRASTRUCTURE: Parameter = {
@@ -11489,7 +11489,7 @@ export const DFDA_OPEX_INFRASTRUCTURE: Parameter = {
   confidence: "high",
   confidenceInterval: [5000000.0, 12000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_OPEX_PLATFORM_MAINTENANCE: Parameter = {
@@ -11503,7 +11503,7 @@ export const DFDA_OPEX_PLATFORM_MAINTENANCE: Parameter = {
   confidence: "high",
   confidenceInterval: [10000000.0, 22000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_OPEX_REGULATORY: Parameter = {
@@ -11517,7 +11517,7 @@ export const DFDA_OPEX_REGULATORY: Parameter = {
   confidence: "high",
   confidenceInterval: [3000000.0, 8000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_OPEX_STAFF: Parameter = {
@@ -11531,7 +11531,7 @@ export const DFDA_OPEX_STAFF: Parameter = {
   confidence: "high",
   confidenceInterval: [7000000.0, 15000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DFDA_STORAGE_COST_BACKUP_PER_PATIENT_MONTHLY: Parameter = {
@@ -11654,7 +11654,7 @@ export const DIH_NPV_UPFRONT_COST_INITIATIVES: Parameter = {
   confidence: "high",
   confidenceInterval: [150000000.0, 350000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const DISEASE_RELATED_CAREGIVER_PCT: Parameter = {
@@ -11742,7 +11742,7 @@ export const EVENTUALLY_AVOIDABLE_DALY_PCT: Parameter = {
   formula: "1 - FUNDAMENTALLY_UNAVOIDABLE_DEATH_PCT",
   confidenceInterval: [0.5, 0.98],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const EVENTUALLY_AVOIDABLE_DEATH_PCT: Parameter = {
@@ -11784,7 +11784,7 @@ export const FUNDAMENTALLY_UNAVOIDABLE_DEATH_PCT: Parameter = {
   confidence: "medium",
   formula: "Σ(DISEASE_BURDEN[cat] × (1 - RESEARCH_ACCELERATION_POTENTIAL[cat]))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const GDP_BASELINE_GROWTH_RATE: Parameter = {
@@ -12204,7 +12204,7 @@ export const NPV_DISCOUNT_RATE_STANDARD: Parameter = {
   sourceType: "definition",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const NPV_TIME_HORIZON_YEARS: Parameter = {
@@ -12217,7 +12217,7 @@ export const NPV_TIME_HORIZON_YEARS: Parameter = {
   sourceType: "definition",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const PEACE_DIVIDEND_CONFLICT_ELASTICITY: Parameter = {
@@ -12248,7 +12248,7 @@ export const PEACE_DIVIDEND_DIRECT_FISCAL_SAVINGS: Parameter = {
   confidence: "high",
   formula: "TREATY_ANNUAL_FUNDING",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE: Parameter = {
@@ -12293,7 +12293,7 @@ export const PRE_1962_VALIDATION_YEARS: Parameter = {
   confidence: "high",
   formula: "1960 - 1883",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const PRIZE_POOL_PARTICIPATION_RATE: Parameter = {
@@ -12321,7 +12321,7 @@ export const QALYS_PER_COVID_DEATH_AVERTED: Parameter = {
   confidence: "low",
   confidenceInterval: [3.0, 10.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const RD_SPILLOVER_MULTIPLIER: Parameter = {
@@ -12593,7 +12593,7 @@ export const TREATY_CAMPAIGN_BUDGET_LOBBYING: Parameter = {
   confidence: "low",
   confidenceInterval: [325000000.0, 1300000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_CAMPAIGN_BUDGET_RESERVE: Parameter = {
@@ -12607,7 +12607,7 @@ export const TREATY_CAMPAIGN_BUDGET_RESERVE: Parameter = {
   confidence: "medium",
   confidenceInterval: [20000000.0, 150000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_CAMPAIGN_DURATION_YEARS: Parameter = {
@@ -12636,7 +12636,7 @@ export const TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE: Parameter = {
   formula: "PLATFORM + VERIFICATION + PAYMENTS (tiered by adopter segment) + MARKETING",
   confidenceInterval: [150000000.0, 410000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TREATY_HEALTH_RECOVERY_ANNUALIZATION_YEARS: Parameter = {
@@ -12691,7 +12691,7 @@ export const TREATY_REDUCTION_PCT: Parameter = {
   sourceType: "definition",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
-  manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+  manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
 export const TRIAL_RELEVANT_DISEASES_COUNT: Parameter = {
