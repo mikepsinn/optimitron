@@ -7,6 +7,7 @@ import {
   CURRENT_KNOWN_SAFE_EXPLORATION_YEARS,
   DFDA_KNOWN_SAFE_EXPLORATION_YEARS,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   DRUG_DISEASE_COMBINATIONS_POSSIBLE,
   GLOBAL_DISEASE_DEATHS_DAILY,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
@@ -356,61 +357,75 @@ export default async function EndorsePage() {
           <h2 className="text-lg font-black uppercase tracking-tight text-foreground">
             What your organization does
           </h2>
+          <p className="mt-3">
+            Endorse the treaty using the form above, then tell everyone in
+            your organization to do the following:
+          </p>
           <ol className="mt-3 list-decimal space-y-3 pl-5">
             <li>
-              <span className="font-black text-foreground">Endorse</span> the
-              1% Treaty using the form above.
-            </li>
-            <li>
-              Email your members the{" "}
               <Link
                 href={ROUTES.vote}
                 className="font-black underline underline-offset-4 text-foreground"
               >
-                Global Survey link
-              </Link>
-              . They vote. Each voter recruits two more. That is the entire
-              growth model.
+                Vote on the Global Survey.
+              </Link>{" "}
+              30 seconds. Then get two more humans to do it. That is the
+              entire growth model.
             </li>
             <li>
-              Tell your members to{" "}
               <Link
                 href={ROUTES.joke}
                 className="font-black underline underline-offset-4 text-foreground"
               >
-                play the funniest joke in the universe
+                Play the funniest joke in the universe
               </Link>{" "}
-              on everyone they love on Earth Optimization Day. They write the
-              facts on every shirt in a loved one&apos;s closet and tuck in the
-              math. The loved one puts on a shirt, reads it, and either laughs
-              or cures a disease. Ideally both.
+              on everyone you love on Earth Optimization Day. Write{" "}
+              <span className="font-black text-foreground">
+                &ldquo;THIS T-SHIRT ENDED WAR AND DISEASE&rdquo;
+              </span>{" "}
+              on every shirt in a loved one&apos;s closet. On the back:{" "}
+              <span className="font-black text-foreground">
+                &ldquo;Trade one apocalypse for disease eradication at
+                warondisease.org.&rdquo;
+              </span>{" "}
+              Tuck in a card with the math and a QR code. They will be
+              furious. They will also not be dead of a curable disease. You
+              are welcome.
             </li>
             <li>
-              Tell your members to{" "}
               <Link
                 href={ROUTES.employees}
                 className="font-black underline underline-offset-4 text-foreground"
               >
-                remind their presidents
+                Remind your presidents
               </Link>{" "}
-              that they have an overdue task. Your members pay these people to
-              promote the general welfare. The general welfare includes not
-              dying of diseases that could have been cured. The presidents have
-              not signed the treaty yet. Remind them.
+              that you pay them{" "}
+              <ParameterValue
+                figures={3}
+                param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+              />{" "}
+              a year to promote the general welfare and you would like to
+              receive this service at some point. Signing the 1% Treaty is a
+              30-second task. Every day they do not complete it,{" "}
+              <ParameterValue
+                figures={3}
+                param={GLOBAL_DISEASE_DEATHS_DAILY}
+              />{" "}
+              people die of diseases that would have been cured faster if they
+              had done their job.
             </li>
             <li>
               <Link
                 href={ROUTES.plaintiffs}
                 className="font-black underline underline-offset-4 text-foreground"
               >
-                Register deceased loved ones as plaintiffs
+                Register your dead.
               </Link>{" "}
-              in Humanity v. Government. Your government spent your money on
-              mass-murder capacity instead of testing which medicines work.
-              People you loved died of diseases that would have been cured if
-              the money had gone to trials instead of missiles. That is
-              negligent homicide at civilizational scale. The dead should be
-              named.
+              Your government spent your money on missiles instead of testing
+              which medicines work. People you loved died of diseases that
+              would have been cured if that money had gone to clinical trials.
+              That is negligent homicide at civilizational scale. Humanity v.
+              Government is the class action. The dead should be named.
             </li>
             <li>
               Buy one share of a military contractor — $200 — and{" "}
@@ -423,13 +438,13 @@ export default async function EndorsePage() {
                 send the board a love letter
               </a>
               . The law calls it a shareholder demand letter. The board is
-              legally required to read it and respond on the record. The letter
-              tells them to sell 1% of their bomb-making infrastructure, invest
-              the proceeds in biotech, and instruct their lobbyists to stop
-              asking Congress for infinity nuclear weapons and instead
-              reallocate one apocalypse worth of spending to pragmatic clinical
-              trials. This would make them and their shareholders both richer
-              and significantly less dead. They just have to read the math.
+              legally required to read it and respond on the record. It tells
+              them to sell 1% of their bomb-making infrastructure, invest the
+              proceeds in biotech, and instruct their lobbyists to stop asking
+              Congress for infinity nuclear weapons and instead reallocate one
+              apocalypse worth of spending to pragmatic clinical trials. This
+              would make them and their shareholders both richer and
+              significantly less dead. They just have to read the math.
             </li>
             <li>
               <Link
@@ -438,8 +453,16 @@ export default async function EndorsePage() {
               >
                 Get the shirt.
               </Link>{" "}
-              Wear the math. Become a walking clinical trial billboard that
-              people have to read because it is on your chest.
+              Front says{" "}
+              <span className="font-black text-foreground">
+                THIS T-SHIRT ENDED WAR AND DISEASE
+              </span>
+              . Back says{" "}
+              <span className="font-black text-foreground">
+                Trade one apocalypse for disease eradication
+              </span>
+              . People will read it because it is on your chest and they
+              cannot help themselves.
             </li>
           </ol>
         </div>
