@@ -731,6 +731,43 @@ enum TaskFundingEventType {
   NOTIFICATION_SENT
 }
 
+enum TaskFundingPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+  REFUNDED
+  DISPUTED
+}
+
+enum StripeConnectedAccountStatus {
+  CREATED
+  ONBOARDING_STARTED
+  ONBOARDING_COMPLETE
+  RESTRICTED
+  DISABLED
+  CLOSED
+}
+
+enum StripeTransferCapabilityStatus {
+  UNKNOWN
+  PENDING
+  ACTIVE
+  INACTIVE
+  REQUIREMENTS_PAST_DUE
+  DISABLED
+}
+
+enum TaskPayoutStatus {
+  PENDING_CONNECT
+  PENDING_FUNDS
+  READY
+  PROCESSING
+  TRANSFERRED
+  FAILED
+  CANCELED
+}
+
 /// Upstream source family for tasks, impacts, and analytical artifacts
 enum SourceSystem {
   MANUAL
@@ -1041,23 +1078,25 @@ model Person {
   deletedAt DateTime?
 
   // -- Relations --
-  createdByUser               User?                  @relation("UserCreatedPeople", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  user                        User?                  @relation("UserPerson")
-  subject                     Subject?               @relation("PersonSubject")
-  referendumVotes             ReferendumVote[]       @relation("PersonReferendumVotes")
-  conditions                  PersonCondition[]      @relation("PersonConditions")
-  memorial                    PersonMemorial?        @relation("PersonMemorialPerson")
-  relationshipsAsSubject      PersonRelationship[]   @relation("PersonRelationshipSubject")
-  relationshipsAsObject       PersonRelationship[]   @relation("PersonRelationshipObject")
-  assignedTasks               Task[]                 @relation("TaskAssigneePerson")
-  receivedReferralInvitations ReferralInvitation[]   @relation("ReferralInvitationRecipientPerson")
-  taskApplications            TaskApplication[]      @relation("TaskApplicationApplicantPerson")
-  taskCandidateMatches        TaskCandidateMatch[]   @relation("PersonTaskCandidateMatches")
-  taskExecutionAttempts       TaskExecutionAttempt[] @relation("PersonTaskExecutionAttempts")
-  authoredTaskComments        TaskComment[]          @relation("TaskCommentAuthorPerson")
-  receivedTaskCommunications  TaskCommunication[]    @relation("TaskCommunicationRecipientPerson")
-  sentTaskCommunications      TaskCommunication[]    @relation("TaskCommunicationSenderPerson")
-  taskFundingPledges          TaskFundingPledge[]    @relation("PersonTaskFundingPledges")
+  createdByUser               User?                    @relation("UserCreatedPeople", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  user                        User?                    @relation("UserPerson")
+  subject                     Subject?                 @relation("PersonSubject")
+  referendumVotes             ReferendumVote[]         @relation("PersonReferendumVotes")
+  conditions                  PersonCondition[]        @relation("PersonConditions")
+  memorial                    PersonMemorial?          @relation("PersonMemorialPerson")
+  relationshipsAsSubject      PersonRelationship[]     @relation("PersonRelationshipSubject")
+  relationshipsAsObject       PersonRelationship[]     @relation("PersonRelationshipObject")
+  assignedTasks               Task[]                   @relation("TaskAssigneePerson")
+  receivedReferralInvitations ReferralInvitation[]     @relation("ReferralInvitationRecipientPerson")
+  taskApplications            TaskApplication[]        @relation("TaskApplicationApplicantPerson")
+  taskCandidateMatches        TaskCandidateMatch[]     @relation("PersonTaskCandidateMatches")
+  taskExecutionAttempts       TaskExecutionAttempt[]   @relation("PersonTaskExecutionAttempts")
+  authoredTaskComments        TaskComment[]            @relation("TaskCommentAuthorPerson")
+  receivedTaskCommunications  TaskCommunication[]      @relation("TaskCommunicationRecipientPerson")
+  sentTaskCommunications      TaskCommunication[]      @relation("TaskCommunicationSenderPerson")
+  taskFundingPledges          TaskFundingPledge[]      @relation("PersonTaskFundingPledges")
+  stripeConnectedAccounts     StripeConnectedAccount[] @relation("PersonStripeConnectedAccounts")
+  taskPayouts                 TaskPayout[]             @relation("PersonTaskPayouts")
 
   @@index([displayName])
   @@index([lastName, firstName])
@@ -1847,6 +1886,10 @@ model User {
   taskFundingPledges                 TaskFundingPledge[]              @relation("UserTaskFundingPledges")
   cancelledTaskFundingPledges        TaskFundingPledge[]              @relation("UserCancelledTaskFundingPledges")
   taskFundingEvents                  TaskFundingEvent[]               @relation("UserTaskFundingEvents")
+  taskFundingPayments                TaskFundingPayment[]             @relation("UserTaskFundingPayments")
+  stripeConnectedAccount             StripeConnectedAccount?          @relation("UserStripeConnectedAccount")
+  taskPayouts                        TaskPayout[]                     @relation("UserTaskPayouts")
+  approvedTaskPayouts                TaskPayout[]                     @relation("UserApprovedTaskPayouts")
 
   @@index([email])
   @@index([referralCode])
@@ -5445,6 +5488,7 @@ model Organization {
   surveyResponses            SurveyResponse[]                 @relation("OrganizationSurveyResponses")
   memorialResponsibleParties PersonMemorialResponsibleParty[] @relation("OrganizationPersonMemorialResponsibleParties")
   taskFundingPledges         TaskFundingPledge[]              @relation("OrganizationTaskFundingPledges")
+  taskFundingPayments        TaskFundingPayment[]             @relation("OrganizationTaskFundingPayments")
 
   @@index([slug])
   @@index([type])
@@ -5777,6 +5821,8 @@ model Task {
   courtCaseRootFor          CourtCase?                  @relation("CourtCaseRootTask")
   courtCaseRemediesEnforced CourtCaseRemedy[]           @relation("CourtCaseRemedyEnforcementTask")
   fundingTarget             TaskFundingTarget?          @relation("TaskFundingTargetTask")
+  fundingPayments           TaskFundingPayment[]        @relation("TaskFundingPaymentTask")
+  payouts                   TaskPayout[]                @relation("TaskPayoutTask")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -6392,10 +6438,11 @@ model TaskFundingTarget {
   updatedAt                 DateTime                @updatedAt
   deletedAt                 DateTime?
 
-  task          Task                @relation("TaskFundingTargetTask", fields: [taskId], references: [id], onDelete: Cascade)
-  createdByUser User?               @relation("UserCreatedTaskFundingTargets", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  pledges       TaskFundingPledge[] @relation("TaskFundingTargetPledges")
-  events        TaskFundingEvent[]  @relation("TaskFundingTargetEvents")
+  task          Task                 @relation("TaskFundingTargetTask", fields: [taskId], references: [id], onDelete: Cascade)
+  createdByUser User?                @relation("UserCreatedTaskFundingTargets", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  pledges       TaskFundingPledge[]  @relation("TaskFundingTargetPledges")
+  events        TaskFundingEvent[]   @relation("TaskFundingTargetEvents")
+  payments      TaskFundingPayment[] @relation("TaskFundingTargetPayments")
 }
 
 /// Conditional pledge toward a task funding target, keyed by actor and unit.
@@ -6469,6 +6516,146 @@ model TaskFundingEvent {
   actorUser User?              @relation("UserTaskFundingEvents", fields: [actorUserId], references: [id], onDelete: SetNull)
 
   @@index([targetId, eventType, createdAt])
+  @@index([deletedAt])
+}
+
+/// Paid Stripe funding for a specific task funding target.
+model TaskFundingPayment {
+  id String @id @default(cuid())
+
+  taskId          String
+  targetId        String
+  commerceOrderId String @unique
+
+  donorUserId         String?
+  donorOrganizationId String?
+  donorEmail          String?
+  donorName           String?
+  publicDisplay       Boolean @default(false)
+  publicNameSnapshot  String?
+
+  amountCents Int
+  currency    String                   @default("usd")
+  status      TaskFundingPaymentStatus @default(PENDING)
+
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId   String?
+  stripeChargeId          String?
+  stripeTransferGroup     String
+
+  paidAt     DateTime?
+  failedAt   DateTime?
+  canceledAt DateTime?
+  refundedAt DateTime?
+  disputedAt DateTime?
+
+  metadata  Json?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  task              Task              @relation("TaskFundingPaymentTask", fields: [taskId], references: [id], onDelete: Cascade)
+  target            TaskFundingTarget @relation("TaskFundingTargetPayments", fields: [targetId], references: [id], onDelete: Cascade)
+  commerceOrder     CommerceOrder     @relation("CommerceOrderTaskFundingPayment", fields: [commerceOrderId], references: [id], onDelete: Cascade)
+  donorUser         User?             @relation("UserTaskFundingPayments", fields: [donorUserId], references: [id], onDelete: SetNull)
+  donorOrganization Organization?     @relation("OrganizationTaskFundingPayments", fields: [donorOrganizationId], references: [id], onDelete: SetNull)
+
+  @@index([taskId, status, createdAt])
+  @@index([targetId, status, createdAt])
+  @@index([donorUserId, status])
+  @@index([donorOrganizationId, status])
+  @@index([stripePaymentIntentId])
+  @@index([stripeChargeId])
+  @@index([stripeTransferGroup])
+  @@index([deletedAt])
+}
+
+/// Stripe Connect account used to pay a task executor after verified work.
+model StripeConnectedAccount {
+  id String @id @default(cuid())
+
+  userId   String  @unique
+  personId String?
+
+  stripeAccountId String  @unique
+  countryCode     String  @default("us")
+  contactEmail    String?
+  displayName     String?
+  dashboardAccess String  @default("express")
+  configuration   String  @default("recipient")
+
+  status                         StripeConnectedAccountStatus   @default(CREATED)
+  transfersCapabilityStatus      StripeTransferCapabilityStatus @default(UNKNOWN)
+  requirementsCurrentlyDueCount  Int                            @default(0)
+  requirementsEventuallyDueCount Int                            @default(0)
+  requirementsPastDueCount       Int                            @default(0)
+  requirementsJson               Json?
+
+  onboardingStartedAt   DateTime?
+  onboardingCompletedAt DateTime?
+  lastSyncedAt          DateTime?
+
+  metadata  Json?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  user    User         @relation("UserStripeConnectedAccount", fields: [userId], references: [id], onDelete: Cascade)
+  person  Person?      @relation("PersonStripeConnectedAccounts", fields: [personId], references: [id], onDelete: SetNull)
+  payouts TaskPayout[] @relation("StripeConnectedAccountTaskPayouts")
+
+  @@index([personId])
+  @@index([status])
+  @@index([transfersCapabilityStatus])
+  @@index([deletedAt])
+}
+
+/// Automated payout to a verified task executor through Stripe Connect.
+model TaskPayout {
+  id String @id @default(cuid())
+
+  taskId                   String
+  taskClaimId              String? @unique
+  payeeUserId              String
+  payeePersonId            String?
+  stripeConnectedAccountId String?
+  approvedByUserId         String?
+
+  amountCents Int
+  currency    String           @default("usd")
+  status      TaskPayoutStatus @default(PENDING_CONNECT)
+
+  stripeTransferId    String? @unique
+  stripeTransferGroup String?
+
+  approvedAt    DateTime?
+  queuedAt      DateTime?
+  processingAt  DateTime?
+  transferredAt DateTime?
+  failedAt      DateTime?
+  canceledAt    DateTime?
+  nextAttemptAt DateTime?
+
+  attemptCount Int       @default(0)
+  lastError    String?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  task                   Task                    @relation("TaskPayoutTask", fields: [taskId], references: [id], onDelete: Cascade)
+  taskClaim              TaskClaim?              @relation("TaskClaimPayout", fields: [taskClaimId], references: [id], onDelete: SetNull)
+  payeeUser              User                    @relation("UserTaskPayouts", fields: [payeeUserId], references: [id], onDelete: Cascade)
+  payeePerson            Person?                 @relation("PersonTaskPayouts", fields: [payeePersonId], references: [id], onDelete: SetNull)
+  stripeConnectedAccount StripeConnectedAccount? @relation("StripeConnectedAccountTaskPayouts", fields: [stripeConnectedAccountId], references: [id], onDelete: SetNull)
+  approvedByUser         User?                   @relation("UserApprovedTaskPayouts", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([taskId, status])
+  @@index([payeeUserId, status])
+  @@index([payeePersonId, status])
+  @@index([stripeConnectedAccountId, status])
+  @@index([approvedByUserId])
+  @@index([nextAttemptAt])
   @@index([deletedAt])
 }
 
@@ -6685,6 +6872,7 @@ model TaskClaim {
   user              User                   @relation("UserTaskClaims", fields: [userId], references: [id], onDelete: Cascade)
   verifiedByUser    User?                  @relation("TaskClaimVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
   executionAttempts TaskExecutionAttempt[] @relation("TaskClaimExecutionAttempts")
+  payout            TaskPayout?            @relation("TaskClaimPayout")
 
   @@unique([taskId, userId])
   @@index([taskId, status])
@@ -9212,9 +9400,10 @@ model CommerceOrder {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  items        CommerceOrderItem[]   @relation("CommerceOrderItems")
-  fulfillments CommerceFulfillment[] @relation("CommerceOrderFulfillments")
-  entitlements CommerceEntitlement[] @relation("CommerceOrderEntitlements")
+  items              CommerceOrderItem[]   @relation("CommerceOrderItems")
+  fulfillments       CommerceFulfillment[] @relation("CommerceOrderFulfillments")
+  entitlements       CommerceEntitlement[] @relation("CommerceOrderEntitlements")
+  taskFundingPayment TaskFundingPayment?   @relation("CommerceOrderTaskFundingPayment")
 
   @@index([buyerUserId])
   @@index([buyerOrganizationId])

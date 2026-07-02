@@ -23,6 +23,10 @@ import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 import {
+  assertUserCanClaimPaidTask,
+  queueTaskPayoutForVerifiedClaim,
+} from "@/lib/task-payouts.server";
+import {
   buildPrimaryTaskCommunicationEndpointCreateData,
   type PrimaryTaskCommunicationEndpointInput,
   upsertPrimaryTaskCommunicationEndpoint,
@@ -323,6 +327,13 @@ const taskListSelect = {
   estimatedHoursPerWeekMin: true,
   estimatedEffortHours: true,
   executionMode: true,
+  fundingTarget: {
+    select: {
+      id: true,
+      status: true,
+      targetAmountCents: true,
+    },
+  },
   id: true,
   interestTags: true,
   isPublic: true,
@@ -1805,6 +1816,11 @@ export async function claimTask(taskId: string, userId: string) {
       where: { id: taskId },
       select: {
         claimPolicy: true,
+        compensationCadence: true,
+        compensationCurrency: true,
+        compensationKind: true,
+        compensationMaxAmountMinorUnits: true,
+        compensationPaymentRails: true,
         id: true,
         maxClaims: true,
         status: true,
@@ -1818,6 +1834,8 @@ export async function claimTask(taskId: string, userId: string) {
     if (task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY) {
       throw new Error("This task is assigned directly and cannot be claimed.");
     }
+
+    await assertUserCanClaimPaidTask(task, userId, tx);
 
     const existingClaim = await tx.taskClaim.findUnique({
       where: {
@@ -2016,6 +2034,7 @@ export async function verifyTask(
       }
 
       return {
+        claimId: claim.id,
         rewardUserId: claim.userId,
         rewardKey: `task:${task.id}:claim:${claim.id}:verified`,
         value: verifiedClaim,
@@ -2029,6 +2048,7 @@ export async function verifyTask(
     }
 
     return {
+      claimId: null,
       rewardKey: null,
       rewardUserId: null,
       value: await tx.task.update({
@@ -2052,6 +2072,22 @@ export async function verifyTask(
       reason: "TASK_COMPLETED",
       userId: result.rewardUserId,
     });
+  }
+
+  if (result.claimId) {
+    try {
+      await queueTaskPayoutForVerifiedClaim({
+        approvedByUserId: reviewerUserId,
+        claimId: result.claimId,
+        taskId,
+      });
+    } catch (error) {
+      log.error("Failed to queue task payout after claim verification", {
+        claimId: result.claimId,
+        error,
+        taskId,
+      });
+    }
   }
 
   return result.value;

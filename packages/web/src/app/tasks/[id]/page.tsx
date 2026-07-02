@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { TaskClaimPolicy, TaskClaimStatus, TaskStatus } from "@optimitron/db";
+import {
+  TaskClaimPolicy,
+  TaskClaimStatus,
+  TaskCompensationCadence,
+  TaskCompensationKind,
+  TaskStatus,
+} from "@optimitron/db";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
+import { TaskFundingCheckoutForm } from "@/components/task-funding/TaskFundingCheckoutForm";
+import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
+import { StripeConnectStatusPanel } from "@/components/tasks/StripeConnectStatusPanel";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskDeleteButton } from "@/components/tasks/TaskDeleteButton";
@@ -31,6 +40,7 @@ import {
   getTaskActivityTimeline,
   getTaskCommentFeed,
 } from "@/lib/tasks/task-comments.server";
+import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
@@ -142,6 +152,49 @@ function getAssigneeHref(task: {
   assigneePerson?: { id: string; handle?: string | null } | null;
 }) {
   return task.assigneePerson ? getPersonHref(task.assigneePerson) : null;
+}
+
+function isFixedStripePaidTask(task: {
+  compensationCadence?: TaskCompensationCadence | null;
+  compensationKind: TaskCompensationKind;
+  compensationMaxAmountMinorUnits?: bigint | null;
+  compensationPaymentRails: string[];
+}) {
+  if (
+    task.compensationKind !== TaskCompensationKind.PAID &&
+    task.compensationKind !== TaskCompensationKind.BOUNTY
+  ) {
+    return false;
+  }
+  if (
+    task.compensationCadence != null &&
+    task.compensationCadence !== TaskCompensationCadence.FIXED
+  ) {
+    return false;
+  }
+  if (!task.compensationMaxAmountMinorUnits || task.compensationMaxAmountMinorUnits <= 0n) {
+    return false;
+  }
+  if (task.compensationPaymentRails.length === 0) {
+    return true;
+  }
+  return task.compensationPaymentRails.some((rail) => {
+    const normalized = rail.trim().toLowerCase();
+    return normalized === "stripe" || normalized === "stripe_connect";
+  });
+}
+
+function getDefaultFundingAmountCents(input: {
+  compensationMaxAmountMinorUnits?: bigint | null;
+  remainingUsdCents?: bigint | null;
+}) {
+  const candidates = [
+    input.remainingUsdCents,
+    input.compensationMaxAmountMinorUnits,
+    2500n,
+  ].filter((value): value is bigint => Boolean(value && value > 0n));
+  const cents = candidates[0] ?? 2500n;
+  return Math.max(100, Math.min(Number(cents), 25_000));
 }
 
 function ActionLink({
@@ -303,6 +356,16 @@ export default async function TaskDetailPage({
   const assigneeLabel = getAssigneeLabel(task);
   const dueLabel = formatDueDate(task.dueAt);
   const effortLabel = formatEffortHours(task.estimatedEffortHours);
+  const fundingStatus = task.isPublic
+    ? await getTaskFundingStatus(task.id).catch(() => null)
+    : null;
+  const showTaskFunding =
+    task.isPublic && task.status === TaskStatus.ACTIVE;
+  const isPaidTask = isFixedStripePaidTask(task);
+  const defaultFundingAmountCents = getDefaultFundingAmountCents({
+    compensationMaxAmountMinorUnits: task.compensationMaxAmountMinorUnits,
+    remainingUsdCents: fundingStatus?.remainingUsdCents ?? null,
+  });
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -455,6 +518,41 @@ export default async function TaskDetailPage({
                 </span>
               </span>
             ) : null}
+          </section>
+        ) : null}
+
+        {showTaskFunding ? (
+          <section id="funding" className="border-b border-foreground py-6">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]">
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-black">Fund this task</h2>
+                  <p className="mt-2 max-w-2xl text-sm font-bold text-muted-foreground">
+                    Your payment funds this exact work. After a claim is verified,
+                    the approved payout goes to the worker automatically.
+                  </p>
+                </div>
+                {fundingStatus ? (
+                  <TaskFundingProgress status={fundingStatus} taskId={task.id} />
+                ) : (
+                  <div className="border border-foreground p-4 text-sm font-bold">
+                    No funding target yet. The first payment creates one.
+                  </div>
+                )}
+              </div>
+              <div className="space-y-4">
+                <TaskFundingCheckoutForm
+                  defaultAmountCents={defaultFundingAmountCents}
+                  taskId={task.id}
+                />
+                {isPaidTask ? (
+                  <StripeConnectStatusPanel
+                    signedIn={Boolean(userId)}
+                    signInHref={signInHref}
+                  />
+                ) : null}
+              </div>
+            </div>
           </section>
         ) : null}
 

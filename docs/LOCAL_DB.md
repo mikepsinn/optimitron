@@ -12,6 +12,18 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/optimitron
 
 This matches the root `.env.example`.
 
+Keep the root `.env` pointed at this local database for normal development.
+Production credentials belong in Vercel/GitHub secrets or an explicit one-off
+shell session, not in the default local `.env`.
+
+The web dev server refuses to start against a non-local `DATABASE_URL` unless
+`OPTIMITRON_ALLOW_REMOTE_DEV_DATABASE=1` is set. Use that override only for an
+intentional remote or preview database session.
+
+The same dev guard refuses live Stripe keys in local dev unless
+`OPTIMITRON_ALLOW_LIVE_STRIPE_DEV=1` is set. Use Stripe test-mode keys locally,
+or leave Stripe keys blank for UI-only review.
+
 ## Bootstrap
 
 1. Copy `.env.example` to `.env`.
@@ -46,3 +58,6 @@ pnpm db:reset
 - The seed script is idempotent and safe to rerun.
 - `pnpm db:test` starts the local Docker Postgres if needed, applies committed
   migrations, and runs the DB-backed integration test suite.
+- Do not sync raw production data into local development. If production-shaped
+  data is needed, use a masked Neon preview branch after the anonymization
+  workflow in `docs/PREVIEW_DATA_PRIVACY.md` has passed.

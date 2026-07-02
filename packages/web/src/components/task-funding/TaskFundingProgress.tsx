@@ -47,8 +47,8 @@ function formatQuantity(value: { toString(): string }) {
   return value.toString().replace(/\.0+$/, "");
 }
 
-function pluralizePledgers(count: number) {
-  return count === 1 ? "1 pledger" : `${count} pledgers`;
+function pluralizeSupporters(count: number) {
+  return count === 1 ? "1 supporter" : `${count} supporters`;
 }
 
 export async function TaskFundingProgress({
@@ -66,7 +66,7 @@ export async function TaskFundingProgress({
         <div className="space-y-2">
           <p className="font-black text-3xl leading-tight sm:text-5xl">
             {formatUsdCents(fundingStatus.committedUsdCents)} of{" "}
-            {formatUsdCents(fundingStatus.targetUsdCents)} committed
+            {formatUsdCents(fundingStatus.targetUsdCents)} funded or pledged
           </p>
           <p className="text-base font-black">
             {formatUsdCents(fundingStatus.remainingUsdCents)} remaining -{" "}
@@ -86,8 +86,8 @@ export async function TaskFundingProgress({
           <span>{fundingStatus.status}</span>
         </div>
         <div className="border-2 border-foreground p-3">
-          <span className="block text-muted-foreground">Pledgers</span>
-          <span>{pluralizePledgers(fundingStatus.pledgerCount)}</span>
+          <span className="block text-muted-foreground">Supporters</span>
+          <span>{pluralizeSupporters(fundingStatus.pledgerCount)}</span>
         </div>
       </div>
 
@@ -122,13 +122,15 @@ export async function TaskFundingProgress({
                 >
                   <span className="font-black">{unit.unitKey}</span>
                   <span>{formatQuantity(unit.totalQuantity)} units</span>
-                  <span>{formatUsdCents(unit.totalCommittedCents)} committed</span>
+                  <span>
+                    {formatUsdCents(unit.totalCommittedCents)} funded or pledged
+                  </span>
                 </li>
               ))}
             </ul>
           ) : (
             <p className="border-2 border-foreground p-3 text-sm font-bold">
-              No unit pledges yet.
+              No task funding yet.
             </p>
           )}
         </div>
