@@ -134,6 +134,7 @@ export async function getTaskFundingStatus(
       actorKinds.set(pledge.pledgeActorKey, pledge.pledgerKind);
     }
   }
+  const paidPaymentActorKeys = new Set<string>();
   for (const payment of paidPayments) {
     const actorKey = payment.donorOrganizationId
       ? `organization:${payment.donorOrganizationId}`
@@ -142,6 +143,7 @@ export async function getTaskFundingStatus(
         : payment.donorEmail
           ? `email:${payment.donorEmail}`
           : `payment:${payment.id}`;
+    paidPaymentActorKeys.add(actorKey);
     if (!actorKinds.has(actorKey)) {
       actorKinds.set(
         actorKey,
@@ -149,6 +151,7 @@ export async function getTaskFundingStatus(
       );
     }
   }
+  const paidPledgerCount = paidPaymentActorKeys.size;
 
   let pledgedUsdCents = 0n;
   const unitBreakdown: TaskFundingUnitBreakdown[] = unitGroups.map((group) => {
@@ -168,13 +171,13 @@ export async function getTaskFundingStatus(
     if (usdBreakdown) {
       usdBreakdown.totalQuantity = usdBreakdown.totalQuantity.plus(paidDollars);
       usdBreakdown.totalCommittedCents += paidUsdCents;
-      usdBreakdown.pledgerCount += paidPayments.length;
+      usdBreakdown.pledgerCount += paidPledgerCount;
     } else {
       unitBreakdown.push({
         unitKey: "usd",
         totalQuantity: paidDollars,
         totalCommittedCents: paidUsdCents,
-        pledgerCount: paidPayments.length,
+        pledgerCount: paidPledgerCount,
       });
     }
   }

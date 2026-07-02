@@ -109,14 +109,17 @@ export function getTaskFundingTransferGroup(taskId: string) {
 }
 
 function chooseTargetAmountCents(input: {
-  checkoutAmountCents: number;
   compensationMaxAmountMinorUnits: bigint | null;
   estimatedCashCostUsdBase: Prisma.Decimal | number | null | undefined;
 }) {
+  // Derive the target only from real task cost data. Falling back to the current
+  // donation amount would let the first donor permanently pin the funding target
+  // (a $5 test donation would set a $5 target the page then reports as "100%
+  // funded"), because taskFundingTarget.upsert only writes targetAmountCents on
+  // create.
   return (
     toPositiveSafeInt(input.compensationMaxAmountMinorUnits) ??
-    decimalDollarsToCents(input.estimatedCashCostUsdBase) ??
-    input.checkoutAmountCents
+    decimalDollarsToCents(input.estimatedCashCostUsdBase)
   );
 }
 
@@ -258,14 +261,15 @@ export async function createTaskFundingCheckoutSession(
     throw new Error("Task funding checkout currently supports USD tasks only.");
   }
 
-  const targetAmountCents = BigInt(
-    chooseTargetAmountCents({
-      checkoutAmountCents: amountCents,
-      compensationMaxAmountMinorUnits: task.compensationMaxAmountMinorUnits,
-      estimatedCashCostUsdBase:
-        task.currentImpactEstimateSet?.frames[0]?.estimatedCashCostUsdBase,
-    }),
-  );
+  const targetAmountCentsValue = chooseTargetAmountCents({
+    compensationMaxAmountMinorUnits: task.compensationMaxAmountMinorUnits,
+    estimatedCashCostUsdBase:
+      task.currentImpactEstimateSet?.frames[0]?.estimatedCashCostUsdBase,
+  });
+  if (targetAmountCentsValue == null) {
+    throw new Error("Task has no funding target yet.");
+  }
+  const targetAmountCents = BigInt(targetAmountCentsValue);
   const transferGroup = getTaskFundingTransferGroup(task.id);
 
   const { commerceOrder, payment } = await db.$transaction(async (tx) => {

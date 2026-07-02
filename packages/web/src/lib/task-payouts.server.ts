@@ -21,6 +21,10 @@ import { getTaskFundingTransferGroup } from "@/lib/task-funding/payments.server"
 
 const log = createLogger("task-payouts");
 const DEFAULT_RETRY_DELAY_MS = 15 * 60 * 1000;
+// A payout stuck in PROCESSING past this window is presumed orphaned by a crash
+// or timeout between the status flip and the Stripe response persist. The Stripe
+// transfer uses a deterministic idempotency key, so re-attempting is safe.
+const STALE_PROCESSING_MS = 30 * 60 * 1000;
 
 type PayoutDb = Pick<
   PrismaClient,
@@ -62,10 +66,10 @@ export function getFixedTaskPayoutAmountCents(
   task: FixedTaskPayoutInput,
 ): number | null {
   if (!canUseStripeForTaskCompensation(task)) return null;
-  if (
-    task.compensationCadence != null &&
-    task.compensationCadence !== TaskCompensationCadence.FIXED
-  ) {
+  // Only auto-pay tasks explicitly marked FIXED. A null/undefined cadence is not
+  // a fixed lump sum — treating it as FIXED would auto-queue a full-amount Stripe
+  // transfer for HOURLY/WEEKLY tasks whose cadence field was never populated.
+  if (task.compensationCadence !== TaskCompensationCadence.FIXED) {
     return null;
   }
 
@@ -511,18 +515,29 @@ async function reconcileQueuedPayoutReadiness(payoutId: string) {
 
 export async function retryDueTaskPayouts(input: { limit?: number } = {}) {
   const now = new Date();
+  const staleProcessingBefore = new Date(now.getTime() - STALE_PROCESSING_MS);
   const payouts = await prisma.taskPayout.findMany({
     where: {
       deletedAt: null,
-      OR: [{ nextAttemptAt: null }, { nextAttemptAt: { lte: now } }],
-      status: {
-        in: [
-          TaskPayoutStatus.PENDING_CONNECT,
-          TaskPayoutStatus.PENDING_FUNDS,
-          TaskPayoutStatus.READY,
-          TaskPayoutStatus.FAILED,
-        ],
-      },
+      OR: [
+        {
+          status: {
+            in: [
+              TaskPayoutStatus.PENDING_CONNECT,
+              TaskPayoutStatus.PENDING_FUNDS,
+              TaskPayoutStatus.READY,
+              TaskPayoutStatus.FAILED,
+            ],
+          },
+          OR: [{ nextAttemptAt: null }, { nextAttemptAt: { lte: now } }],
+        },
+        {
+          // Recover payouts orphaned mid-transfer (crash/timeout between the
+          // PROCESSING flip and persisting the Stripe response).
+          status: TaskPayoutStatus.PROCESSING,
+          processingAt: { lte: staleProcessingBefore },
+        },
+      ],
     },
     orderBy: [{ nextAttemptAt: "asc" }, { createdAt: "asc" }],
     select: { id: true },
