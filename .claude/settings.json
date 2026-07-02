@@ -37,16 +37,6 @@
         ]
       },
       {
-        "matcher": "Agent",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-codex-rescue-agent.mjs\"",
-            "timeout": 3000
-          }
-        ]
-      },
-      {
         "matcher": "Bash",
         "hooks": [
           {
@@ -63,31 +53,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-copy-review-before-commit.mjs\"",
             "timeout": 5000
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/codex-dispatch-blather.mjs\"",
-            "timeout": 3000
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-codex-protocol.mjs\"",
-            "timeout": 3000
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-codex-background.mjs\"",
-            "timeout": 3000
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-manual-search-in-copy-dispatch.mjs\"",
-            "timeout": 3000
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-audience-and-goal-on-ui-dispatch.mjs\"",
-            "timeout": 3000
           }
         ]
       },

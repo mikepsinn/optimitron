@@ -83,8 +83,6 @@ When asking, use the smallest multiple-choice question with a recommended defaul
 
 **Memory split.** Behavioral rules → `C:/Users/m/.claude/projects/E--code-optimitron/memory/feedback_*.md` (indexed in `MEMORY.md`). Codebase facts → `gstack-learnings-log` (auto-loaded by gstack skills). See SETUP.md for the gstack artifacts sync details.
 
-**Codex delegation.** Programming work goes to Codex agents by default; meta-config (this file, `.codex/config.toml`, hooks) Claude edits directly. Full protocol in [`.claude/codex-delegation.md`](.claude/codex-delegation.md).
-
 **Employees, not opponents.** Frame leader outreach as "remind your overdue presidents/employees," never "pressure politicians." Banned: "pressure," "political pressure," "pressure surface/machine," "applied pressure" when referring to leaders.
 
 **Love letters, not demand letters.** Shareholder letters to boards are **love letters** — we are making the recipients richer and longer-lived. "Demand letter" is the legal term; state it once as a parenthetical fact ("the law calls this a demand letter"), never as the frame. Nothing in the takeover/lawsuit copy is adversarial: we are helping them.
@@ -169,7 +167,7 @@ Single root: `optimize-earth` (taskKey `program:optimize-earth`). Both values co
 ## High-Value Defaults
 
 1. **One feature branch, one PR at a time. No git worktrees.** New work waits until current PR merges. Sequential, not parallel.
-2. **One dev server, always running on 3001.** Claude pre-warms `pnpm --filter @optimitron/web dev:fast > packages/web/.dev-server.log 2>&1` at session start if `curl -sS -m 3 http://127.0.0.1:3001` doesn't return 2xx/3xx. Every dispatched agent reuses it — never spawn its own. If `netstat -ano | findstr :3001` shows the port bound but `curl` fails, kill the PID and restart. Codex dispatch prompts include the log path; agents `tail` it after loading pages because 200 responses can hide runtime errors in stderr.
+2. **One dev server, always running on 3001.** Claude pre-warms `pnpm --filter @optimitron/web dev:fast > packages/web/.dev-server.log 2>&1` at session start if `curl -sS -m 3 http://127.0.0.1:3001` doesn't return 2xx/3xx. Every dispatched agent reuses it — never spawn its own. If `netstat -ano | findstr :3001` shows the port bound but `curl` fails, kill the PID and restart. Dispatched agents get the log path and `tail` it after loading pages because 200 responses can hide runtime errors in stderr.
 3. **Feature branches** start with `feature/`, kebab-case.
 4. **Ship through pull requests.** Update the existing PR for a branch; create a new PR only when none exists.
 5. **Watch the PR after every push.** Fix valid failures/comments. **Triage bot reviewers critically** (Codex, Copilot, CodeRabbit, Vercel Agent Review) — use the `pr-comment-triager` subagent. Adding code or tests just to silence a bot is worse than the bot's nag.
