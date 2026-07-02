@@ -179,6 +179,34 @@ specific funder/partner.
   helpers + managed-data resync. Own PR: schema-only diff, default-backfill
   to the campaign jurisdiction, then update creators in a follow-up.
 
+- Task-payout ledger hardening (deferred from PR #97, CodeRabbit-flagged, all
+  real but each is heavy/schema-coupled — batch into one follow-up, don't
+  bolt on partial fixes mid-PR):
+  - Serialize per-`taskId` payout allocation. `getAvailableTaskFundingCents`
+    reads outside the status-transition write in `executeTaskPayout` /
+    `queueTaskPayoutForVerifiedClaim` / `reconcileQueuedPayoutReadiness`;
+    concurrent `OPEN_MANY` claim verifications can double-allocate. Wrap
+    read+transition in one `$transaction` (Serializable) or take a Postgres
+    advisory lock on `taskId`. (Highest priority — real money over-transfer.)
+  - Reconcile `VERIFIED` claims on paid/bounty tasks that have no `TaskPayout`
+    row (queue-failure after claim marked VERIFIED currently only logs).
+    Add a cron scan re-invoking `queueTaskPayoutForVerifiedClaim`.
+  - Idempotency key on the `/v2/core/accounts` create in
+    `getOrCreateStripeConnectedAccount` + catch the `userId` unique race and
+    reload the existing row (currently the `userId` unique index makes the
+    loser error rather than create a usable phantom, so low blast radius).
+  - AbortController timeout in `stripeV2Request` so onboarding/status/payout
+    routes can't hang on a slow Stripe connection.
+  - Schema-boundary DB invariants for the funding ledger (require the
+    coordinated schema-only migration above — new migration + schema.prisma
+    edit needs Mike's approval; the applied migration file must not be
+    hand-edited): CHECK(`amountCents` > 0) on `TaskFundingPayment`/`TaskPayout`;
+    composite relation `(targetId, taskId)` on `TaskFundingPayment`;
+    align `TaskPayout.(taskClaimId, taskId, payeeUserId)`; switch
+    payment/payout FKs off `Cascade` (use `Restrict` for anchors, `SetNull`
+    for optional identity snapshots) so hard-deleting a Task/CommerceOrder/User
+    doesn't erase durable ledger history.
+
 ## Active Handoff - 2026-05-13
 
 - Codex hook cleanup: Mike prefers deleting repo-local `.codex` hooks instead of
