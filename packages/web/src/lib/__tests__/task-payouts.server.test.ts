@@ -302,14 +302,13 @@ describe("task payout calculations", () => {
     });
 
     expect(payouts).toHaveLength(2);
+    const committedStatuses: TaskPayoutStatus[] = [
+      TaskPayoutStatus.READY,
+      TaskPayoutStatus.PROCESSING,
+      TaskPayoutStatus.TRANSFERRED,
+    ];
     const committedCents = payouts
-      .filter((p) =>
-        [
-          TaskPayoutStatus.READY,
-          TaskPayoutStatus.PROCESSING,
-          TaskPayoutStatus.TRANSFERRED,
-        ].includes(p.status),
-      )
+      .filter((p) => committedStatuses.includes(p.status))
       .reduce((sum, p) => sum + p.amountCents, 0);
     // Never allocate more than the task was funded for.
     expect(committedCents).toBeLessThanOrEqual(10_000);
