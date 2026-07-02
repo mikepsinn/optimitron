@@ -36,12 +36,26 @@ export function StripeConnectStatusPanel({
     if (!signedIn) return;
     let cancelled = false;
 
-    fetch("/api/stripe/connect/status")
-      .then((response) => response.json())
-      .then((payload) => {
-        if (!cancelled && payload?.data) {
-          setStatus(payload.data as StripeConnectStatus);
+    // Force a fresh Stripe sync when returning from onboarding so a stale cached
+    // status doesn't keep payouts pending and block paid-task claiming.
+    const shouldSync = new URLSearchParams(window.location.search).has(
+      "stripe_connect",
+    );
+
+    fetch(`/api/stripe/connect/status${shouldSync ? "?sync=1" : ""}`)
+      .then(async (response) => {
+        const payload = (await response.json().catch(() => null)) as
+          | { data?: StripeConnectStatus; error?: string }
+          | null;
+        // Surface non-2xx responses (e.g. 401) instead of silently leaving the
+        // panel stuck on "Checking payout setup" forever.
+        if (!response.ok || !payload?.data) {
+          throw new Error(payload?.error ?? "Could not load payout status.");
         }
+        return payload.data;
+      })
+      .then((data) => {
+        if (!cancelled) setStatus(data);
       })
       .catch(() => {
         if (!cancelled) setError("Could not load payout status.");
