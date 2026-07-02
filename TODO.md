@@ -179,15 +179,14 @@ specific funder/partner.
   helpers + managed-data resync. Own PR: schema-only diff, default-backfill
   to the campaign jurisdiction, then update creators in a follow-up.
 
-- Task-payout ledger hardening (deferred from PR #97, CodeRabbit-flagged, all
-  real but each is heavy/schema-coupled — batch into one follow-up, don't
-  bolt on partial fixes mid-PR):
-  - Serialize per-`taskId` payout allocation. `getAvailableTaskFundingCents`
-    reads outside the status-transition write in `executeTaskPayout` /
-    `queueTaskPayoutForVerifiedClaim` / `reconcileQueuedPayoutReadiness`;
-    concurrent `OPEN_MANY` claim verifications can double-allocate. Wrap
-    read+transition in one `$transaction` (Serializable) or take a Postgres
-    advisory lock on `taskId`. (Highest priority — real money over-transfer.)
+- Task-payout ledger hardening (deferred from PR #97, CodeRabbit-flagged;
+  remaining items are heavy/schema-coupled — batch into one follow-up). The
+  critical per-`taskId` double-allocation race is FIXED in-PR: `withTaskFundingLock`
+  (Postgres `pg_advisory_xact_lock`) serializes each read+transition in
+  `executeTaskPayout` / `queueTaskPayoutForVerifiedClaim` /
+  `reconcileQueuedPayoutReadiness`, and `getAvailableTaskFundingCents` now
+  reserves only committed states (READY/PROCESSING/TRANSFERRED) so competing
+  claims resolve first-come instead of blocking. Remaining:
   - Reconcile `VERIFIED` claims on paid/bounty tasks that have no `TaskPayout`
     row (queue-failure after claim marked VERIFIED currently only logs).
     Add a cron scan re-invoking `queueTaskPayoutForVerifiedClaim`.

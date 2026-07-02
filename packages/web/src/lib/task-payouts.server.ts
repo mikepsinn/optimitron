@@ -82,6 +82,28 @@ export function getFixedTaskPayoutAmountCents(
   return amount;
 }
 
+/**
+ * Serialize funding-allocation decisions per task. Callers read the funding
+ * ledger (getAvailableTaskFundingCents) and then transition a payout into an
+ * allocating state (READY/PROCESSING) based on that read. Without serialization
+ * two concurrent claim verifications for the same task both read full funding and
+ * both allocate it — transferring real money twice. A per-task Postgres
+ * transaction-level advisory lock forces each read+transition pair to run one at
+ * a time; the lock auto-releases at COMMIT/ROLLBACK.
+ */
+async function withTaskFundingLock<T>(
+  taskId: string,
+  fn: (tx: Prisma.TransactionClient) => Promise<T>,
+): Promise<T> {
+  return prisma.$transaction(
+    async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${taskId}, 0))`;
+      return fn(tx);
+    },
+    { maxWait: 10_000, timeout: 15_000 },
+  );
+}
+
 export async function getAvailableTaskFundingCents(
   taskId: string,
   options: { excludePayoutId?: string | null } = {},
@@ -100,14 +122,17 @@ export async function getAvailableTaskFundingCents(
       where: {
         deletedAt: null,
         id: options.excludePayoutId ? { not: options.excludePayoutId } : undefined,
+        // Only committed-to-pay states reserve funding. PENDING_CONNECT /
+        // PENDING_FUNDS are waiting, not allocated — counting them would make
+        // two competing claims on one task mutually block forever (each reads
+        // the other's pending row and demotes itself). FAILED sent no money and
+        // is re-checked on retry. Serialization of the read+transition (see
+        // withTaskFundingLock) is what prevents two claims both reaching READY.
         status: {
           in: [
-            TaskPayoutStatus.PENDING_CONNECT,
-            TaskPayoutStatus.PENDING_FUNDS,
             TaskPayoutStatus.READY,
             TaskPayoutStatus.PROCESSING,
             TaskPayoutStatus.TRANSFERRED,
-            TaskPayoutStatus.FAILED,
           ],
         },
         taskId,
@@ -152,32 +177,39 @@ export async function assertUserCanClaimPaidTask(
   }
 }
 
-async function getPayoutReadiness(input: {
-  amountCents: number;
-  connectedAccount:
-    | {
-        deletedAt: Date | null;
-        id: string;
-        status: StripeConnectedAccountStatus;
-        transfersCapabilityStatus: StripeTransferCapabilityStatus;
-      }
-    | null
-    | undefined;
-  excludePayoutId?: string | null;
-  taskId: string;
-}) {
+async function getPayoutReadiness(
+  input: {
+    amountCents: number;
+    connectedAccount:
+      | {
+          deletedAt: Date | null;
+          id: string;
+          status: StripeConnectedAccountStatus;
+          transfersCapabilityStatus: StripeTransferCapabilityStatus;
+        }
+      | null
+      | undefined;
+    excludePayoutId?: string | null;
+    taskId: string;
+  },
+  db: Pick<PrismaClient, "taskFundingPayment" | "taskPayout"> = prisma,
+) {
   if (!isConnectedAccountTransferReady(input.connectedAccount)) {
     return {
       status: TaskPayoutStatus.PENDING_CONNECT,
-      availableFundingCents: await getAvailableTaskFundingCents(input.taskId, {
-        excludePayoutId: input.excludePayoutId,
-      }),
+      availableFundingCents: await getAvailableTaskFundingCents(
+        input.taskId,
+        { excludePayoutId: input.excludePayoutId },
+        db,
+      ),
     };
   }
 
-  const availableFundingCents = await getAvailableTaskFundingCents(input.taskId, {
-    excludePayoutId: input.excludePayoutId,
-  });
+  const availableFundingCents = await getAvailableTaskFundingCents(
+    input.taskId,
+    { excludePayoutId: input.excludePayoutId },
+    db,
+  );
 
   return {
     availableFundingCents,
@@ -249,46 +281,77 @@ export async function executeTaskPayout(
     });
   }
 
-  const availableFundingCents = await getAvailableTaskFundingCents(
-    payout.taskId,
-    { excludePayoutId: payout.id },
-    db,
-  );
-  if (availableFundingCents < payout.amountCents) {
-    return db.taskPayout.update({
-      where: { id: payout.id },
-      data: {
-        lastError: null,
-        nextAttemptAt: nextRetryAt(),
-        status: TaskPayoutStatus.PENDING_FUNDS,
-      },
-    });
-  }
-
-  if (!isStripeConfigured()) {
-    return db.taskPayout.update({
-      where: { id: payout.id },
-      data: {
-        failedAt: new Date(),
-        lastError: "Stripe is not configured.",
-        nextAttemptAt: nextRetryAt(),
-        status: TaskPayoutStatus.FAILED,
-      },
-    });
-  }
-
   const transferGroup =
     payout.stripeTransferGroup ?? getTaskFundingTransferGroup(payout.taskId);
-  await db.taskPayout.update({
-    where: { id: payout.id },
-    data: {
-      attemptCount: { increment: 1 },
-      lastError: null,
-      processingAt: new Date(),
-      status: TaskPayoutStatus.PROCESSING,
-      stripeTransferGroup: transferGroup,
-    },
+
+  // Re-check funding and reserve the transfer (PROCESSING) atomically under a
+  // per-task lock so two payouts for the same task can't both clear the funding
+  // check and each transfer real money. The Stripe transfer itself runs outside
+  // the lock so a slow network call never holds the row.
+  const reservation = await withTaskFundingLock(payout.taskId, async (tx) => {
+    const current = await tx.taskPayout.findFirst({
+      where: { deletedAt: null, id: payout.id },
+      select: { status: true },
+    });
+    if (
+      !current ||
+      current.status === TaskPayoutStatus.TRANSFERRED ||
+      current.status === TaskPayoutStatus.CANCELED
+    ) {
+      return { outcome: "skip" as const };
+    }
+
+    const availableFundingCents = await getAvailableTaskFundingCents(
+      payout.taskId,
+      { excludePayoutId: payout.id },
+      tx,
+    );
+    if (availableFundingCents < payout.amountCents) {
+      const updated = await tx.taskPayout.update({
+        where: { id: payout.id },
+        data: {
+          lastError: null,
+          nextAttemptAt: nextRetryAt(),
+          status: TaskPayoutStatus.PENDING_FUNDS,
+        },
+      });
+      return { outcome: "halted" as const, payout: updated };
+    }
+
+    if (!isStripeConfigured()) {
+      const updated = await tx.taskPayout.update({
+        where: { id: payout.id },
+        data: {
+          failedAt: new Date(),
+          lastError: "Stripe is not configured.",
+          nextAttemptAt: nextRetryAt(),
+          status: TaskPayoutStatus.FAILED,
+        },
+      });
+      return { outcome: "halted" as const, payout: updated };
+    }
+
+    const updated = await tx.taskPayout.update({
+      where: { id: payout.id },
+      data: {
+        attemptCount: { increment: 1 },
+        lastError: null,
+        processingAt: new Date(),
+        status: TaskPayoutStatus.PROCESSING,
+        stripeTransferGroup: transferGroup,
+      },
+    });
+    return { outcome: "processing" as const, payout: updated };
   });
+
+  if (reservation.outcome === "skip") {
+    return (
+      (await db.taskPayout.findFirst({ where: { id: payout.id } })) ?? payout
+    );
+  }
+  if (reservation.outcome === "halted") {
+    return reservation.payout;
+  }
 
   try {
     const transfer = await getStripeClient().transfers.create(
@@ -398,56 +461,62 @@ export async function queueTaskPayoutForVerifiedClaim(input: {
     where: { taskClaimId: claim.id },
     select: { id: true },
   });
-  const readiness = await getPayoutReadiness({
-    amountCents,
-    connectedAccount,
-    excludePayoutId: existing?.id,
-    taskId: claim.taskId,
-  });
   const transferGroup = getTaskFundingTransferGroup(claim.taskId);
   const queuedAt = new Date();
 
-  const payout = await prisma.taskPayout.upsert({
-    where: { taskClaimId: claim.id },
-    create: {
-      amountCents,
-      approvedAt: queuedAt,
-      approvedByUserId: input.approvedByUserId ?? null,
-      currency: "usd",
-      metadata: {
-        availableFundingCents: readiness.availableFundingCents,
-        queuedBy: "claim-verification",
-      } satisfies Prisma.InputJsonValue,
-      nextAttemptAt:
-        readiness.status === TaskPayoutStatus.READY ? null : nextRetryAt(),
-      payeePersonId: claim.user.personId,
-      payeeUserId: claim.user.id,
-      queuedAt,
-      status: readiness.status,
-      stripeConnectedAccountId: connectedAccount?.id ?? null,
-      stripeTransferGroup: transferGroup,
-      taskClaimId: claim.id,
-      taskId: claim.taskId,
-    },
-    update: {
-      amountCents,
-      approvedAt: queuedAt,
-      approvedByUserId: input.approvedByUserId ?? null,
-      lastError: null,
-      metadata: {
-        availableFundingCents: readiness.availableFundingCents,
-        queuedBy: "claim-verification",
-      } satisfies Prisma.InputJsonValue,
-      nextAttemptAt:
-        readiness.status === TaskPayoutStatus.READY ? null : nextRetryAt(),
-      payeePersonId: claim.user.personId,
-      payeeUserId: claim.user.id,
-      queuedAt,
-      status: readiness.status,
-      stripeConnectedAccountId: connectedAccount?.id ?? null,
-      stripeTransferGroup: transferGroup,
-      taskId: claim.taskId,
-    },
+  const payout = await withTaskFundingLock(claim.taskId, async (tx) => {
+    const readiness = await getPayoutReadiness(
+      {
+        amountCents,
+        connectedAccount,
+        excludePayoutId: existing?.id,
+        taskId: claim.taskId,
+      },
+      tx,
+    );
+
+    return tx.taskPayout.upsert({
+      where: { taskClaimId: claim.id },
+      create: {
+        amountCents,
+        approvedAt: queuedAt,
+        approvedByUserId: input.approvedByUserId ?? null,
+        currency: "usd",
+        metadata: {
+          availableFundingCents: readiness.availableFundingCents,
+          queuedBy: "claim-verification",
+        } satisfies Prisma.InputJsonValue,
+        nextAttemptAt:
+          readiness.status === TaskPayoutStatus.READY ? null : nextRetryAt(),
+        payeePersonId: claim.user.personId,
+        payeeUserId: claim.user.id,
+        queuedAt,
+        status: readiness.status,
+        stripeConnectedAccountId: connectedAccount?.id ?? null,
+        stripeTransferGroup: transferGroup,
+        taskClaimId: claim.id,
+        taskId: claim.taskId,
+      },
+      update: {
+        amountCents,
+        approvedAt: queuedAt,
+        approvedByUserId: input.approvedByUserId ?? null,
+        lastError: null,
+        metadata: {
+          availableFundingCents: readiness.availableFundingCents,
+          queuedBy: "claim-verification",
+        } satisfies Prisma.InputJsonValue,
+        nextAttemptAt:
+          readiness.status === TaskPayoutStatus.READY ? null : nextRetryAt(),
+        payeePersonId: claim.user.personId,
+        payeeUserId: claim.user.id,
+        queuedAt,
+        status: readiness.status,
+        stripeConnectedAccountId: connectedAccount?.id ?? null,
+        stripeTransferGroup: transferGroup,
+        taskId: claim.taskId,
+      },
+    });
   });
 
   if (payout.status === TaskPayoutStatus.READY) {
@@ -493,23 +562,28 @@ async function reconcileQueuedPayoutReadiness(payoutId: string) {
     }
   }
 
-  const readiness = await getPayoutReadiness({
-    amountCents: payout.amountCents,
-    connectedAccount,
-    excludePayoutId: payout.id,
-    taskId: payout.taskId,
-  });
+  return withTaskFundingLock(payout.taskId, async (tx) => {
+    const readiness = await getPayoutReadiness(
+      {
+        amountCents: payout.amountCents,
+        connectedAccount,
+        excludePayoutId: payout.id,
+        taskId: payout.taskId,
+      },
+      tx,
+    );
 
-  return prisma.taskPayout.update({
-    where: { id: payout.id },
-    data: {
-      lastError:
-        readiness.status === TaskPayoutStatus.READY ? null : payout.lastError,
-      nextAttemptAt:
-        readiness.status === TaskPayoutStatus.READY ? null : nextRetryAt(),
-      status: readiness.status,
-      stripeConnectedAccountId: connectedAccount?.id ?? null,
-    },
+    return tx.taskPayout.update({
+      where: { id: payout.id },
+      data: {
+        lastError:
+          readiness.status === TaskPayoutStatus.READY ? null : payout.lastError,
+        nextAttemptAt:
+          readiness.status === TaskPayoutStatus.READY ? null : nextRetryAt(),
+        status: readiness.status,
+        stripeConnectedAccountId: connectedAccount?.id ?? null,
+      },
+    });
   });
 }
 
