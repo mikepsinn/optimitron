@@ -9,7 +9,6 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { getServerSession } from "next-auth";
-import { notFound } from "next/navigation";
 import { TaskFundingCheckoutForm } from "@/components/task-funding/TaskFundingCheckoutForm";
 import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
 import { type TaskCardTask } from "@/components/tasks/task-card";
@@ -232,6 +231,67 @@ function ActionLink({
   );
 }
 
+function TaskAccessGate({
+  signedIn,
+  signInHref,
+  viewerEmail,
+}: {
+  signedIn: boolean;
+  signInHref: string;
+  viewerEmail: string | null;
+}) {
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto flex min-h-screen max-w-2xl items-center px-4 py-12 sm:px-6">
+        <section className="w-full space-y-4 border-2 border-foreground p-6 sm:p-8">
+          {signedIn ? (
+            <>
+              <h1 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
+                You don&apos;t have access to this task
+              </h1>
+              <p className="text-base font-bold leading-relaxed">
+                It&apos;s private, or it doesn&apos;t exist. If someone sent you
+                this link, ask them to make the task public or assign it to you
+                {viewerEmail ? (
+                  <>
+                    {" "}
+                    — you&apos;re signed in as{" "}
+                    <span className="font-black">{viewerEmail}</span>
+                  </>
+                ) : null}
+                .
+              </p>
+              <Link
+                className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+                href={ROUTES.tasks}
+              >
+                Browse public tasks
+              </Link>
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
+                Sign in to see this task
+              </h1>
+              <p className="text-base font-bold leading-relaxed">
+                This task is private, or it doesn&apos;t exist. If it&apos;s
+                yours or assigned to you, sign in and you&apos;ll land right
+                back here.
+              </p>
+              <Link
+                className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+                href={signInHref}
+              >
+                Sign In
+              </Link>
+            </>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -241,8 +301,11 @@ export async function generateMetadata({
   const data = await getTaskDetailData(id, null);
 
   if (!data) {
+    // Private and nonexistent tasks share one generic, noindexed shell so the
+    // URL never reveals whether a private task exists.
     return {
       title: "Task Detail | Optimitron",
+      robots: { index: false, follow: false },
     };
   }
 
@@ -320,7 +383,18 @@ export default async function TaskDetailPage({
       ];
 
   if (!data) {
-    notFound();
+    // Not a bare 404: a viewer without access needs a way forward, and private
+    // tasks must stay indistinguishable from nonexistent ones. Both states
+    // render this same gate for any id, so nothing leaks. Signed-out viewers
+    // sign in and land back here; signed-in viewers learn how to ask for
+    // access. Accessibility rules live in getTaskVisibilityWhere.
+    return (
+      <TaskAccessGate
+        signedIn={Boolean(userId)}
+        signInHref={getSignInPath(`${ROUTES.tasks}/${id}`)}
+        viewerEmail={session?.user?.email ?? null}
+      />
+    );
   }
 
   const { task, viewer, viewerClaim } = data;

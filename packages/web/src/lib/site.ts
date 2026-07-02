@@ -400,7 +400,11 @@ const OPTIMITRON_UI: SiteVariantUiConfig = {
     menuTitle: "Navigation",
     searchEnabled: true,
     sections: navSections,
-    signInCallbackUrl: ROUTES.wishocracy,
+    // Post-login target for navbar sign-in links. Was ROUTES.wishocracy (via
+    // ba286cc8 variant unification), which sent every Google login on
+    // optimitron.com to /agencies/dcongress/wishocracy instead of the
+    // dashboard. All other variants point here too.
+    signInCallbackUrl: ROUTES.dashboard,
   },
   footer: {
     brandHref: ROUTES.home,
