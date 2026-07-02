@@ -613,8 +613,10 @@ Durable summary lives here; no loose `.claude/plans/campaign-impact-attribution-
 
 - Multi-agent/service-account architecture plans; AP2 / ACP / x402 payments.
 - Optimitron root rewrite and `/features` archive.
-- Donate-to-fund-task marketplace, Stripe Connect disbursement, WISH airdrop,
-  VOTE-for-task-completion, monthly distributions, DAO-governed funding.
+- WISH airdrop, VOTE-for-task-completion, monthly distributions,
+  DAO-governed funding. (Donate-to-fund-task marketplace + Stripe Connect
+  payout disbursement landed in `feature/task-donations-connect-payouts` /
+  PR #97.)
 - DIH migration, generic referendum/commission/EV-calculator work outside the
   campaign path, and broad email file renames.
 - **Adopt `@openai/codex-sdk` for Codex dispatches.** Current dispatches

@@ -9,6 +9,7 @@ import { getTaskPath } from "@/lib/routes";
 
 interface TaskClaimButtonProps {
   canClaim: boolean;
+  requiresPayoutSetup?: boolean;
   signedIn: boolean;
   signInHref: string;
   taskId: string;
@@ -17,6 +18,7 @@ interface TaskClaimButtonProps {
 
 export function TaskClaimButton({
   canClaim,
+  requiresPayoutSetup = false,
   signedIn,
   signInHref,
   taskId,
@@ -37,8 +39,27 @@ export function TaskClaimButton({
   if (!signedIn) {
     return (
       <Button asChild className="font-black uppercase">
-        <Link href={signInHref}>Sign In To Claim</Link>
+        <Link href={signInHref}>
+          {requiresPayoutSetup
+            ? "Sign In To Claim Paid Work"
+            : "Sign In To Claim"}
+        </Link>
       </Button>
+    );
+  }
+
+  if (requiresPayoutSetup) {
+    return (
+      <div className="space-y-2">
+        <Button asChild className="font-black uppercase">
+          <Link href={`${getTaskPath(taskId)}#payouts`}>
+            Set Up Payouts To Claim
+          </Link>
+        </Button>
+        <p className="max-w-xs text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          Paid work needs payout setup first.
+        </p>
+      </div>
     );
   }
 

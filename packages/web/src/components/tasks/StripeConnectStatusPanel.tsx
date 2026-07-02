@@ -17,10 +17,10 @@ export interface StripeConnectStatusPanelProps {
 }
 
 function getStatusLabel(status: StripeConnectStatus | null) {
-  if (!status) return "Checking payouts";
-  if (status.transferReady) return "Payouts ready";
-  if (status.status === "NOT_CREATED") return "Payouts not set up";
-  if (status.requirementsPastDueCount > 0) return "Payouts need attention";
+  if (!status) return "Checking payout setup";
+  if (status.transferReady) return "Ready to claim paid work";
+  if (status.status === "NOT_CREATED") return "Set up payouts first";
+  if (status.requirementsPastDueCount > 0) return "Payout setup needs attention";
   return "Payout setup pending";
 }
 
@@ -55,7 +55,9 @@ export function StripeConnectStatusPanel({
   async function startOnboarding() {
     setError(null);
     if (window.location.protocol !== "https:") {
-      setError("Stripe onboarding needs an HTTPS preview or production URL.");
+      setError(
+        "Open the HTTPS preview to continue Stripe onboarding. Localhost stops here.",
+      );
       return;
     }
 
@@ -89,31 +91,41 @@ export function StripeConnectStatusPanel({
 
   if (!signedIn) {
     return (
-      <section className="space-y-3 border border-foreground bg-background p-4 text-foreground">
+      <section
+        className="scroll-mt-24 space-y-3 border border-foreground bg-background p-4 text-foreground"
+        id="payouts"
+      >
         <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-          Paid task
+          Want to do this paid task?
         </p>
         <p className="text-sm font-bold">
-          Sign in and set up payouts before claiming paid work.
+          Sign in, set up payouts, then claim it. Verified work gets paid
+          automatically.
         </p>
         <a
           className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
           href={signInHref}
         >
-          Sign in
+          Sign in to claim
         </a>
       </section>
     );
   }
 
   return (
-    <section className="space-y-3 border border-foreground bg-background p-4 text-foreground">
+    <section
+      className="scroll-mt-24 space-y-3 border border-foreground bg-background p-4 text-foreground"
+      id="payouts"
+    >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-            Paid task payouts
+            Want to do this paid task?
           </p>
           <p className="text-base font-black">{getStatusLabel(status)}</p>
+          <p className="mt-1 text-sm font-bold text-muted-foreground">
+            Verified work gets paid automatically after approval.
+          </p>
         </div>
         {status?.transferReady ? (
           <span className="border border-foreground px-3 py-1 text-xs font-black uppercase">

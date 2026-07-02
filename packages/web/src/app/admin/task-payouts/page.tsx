@@ -142,8 +142,8 @@ export default async function AdminTaskPayoutsPage() {
             Task payouts
           </h1>
           <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
-            Waiting payouts retry by cron. Failed rows stay visible until the
-            underlying Connect, funding, or Stripe error is fixed.
+            Waiting payouts retry automatically. Failed rows stay visible until
+            the Connect, funding, or Stripe error is fixed.
           </p>
         </div>
 

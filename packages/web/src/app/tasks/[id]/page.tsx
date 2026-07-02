@@ -43,6 +43,7 @@ import {
 import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
+import { getStripeConnectStatus } from "@/lib/stripe-connect.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
 async function getPublicTaskPageData(id: string) {
@@ -362,6 +363,14 @@ export default async function TaskDetailPage({
   const showTaskFunding =
     task.isPublic && task.status === TaskStatus.ACTIVE;
   const isPaidTask = isFixedStripePaidTask(task);
+  const stripeConnectStatus =
+    isPaidTask && userId
+      ? await getStripeConnectStatus(userId).catch(() => null)
+      : null;
+  const requiresPayoutSetup =
+    isPaidTask &&
+    !task.viewerHasClaim &&
+    (!userId || !stripeConnectStatus?.transferReady);
   const defaultFundingAmountCents = getDefaultFundingAmountCents({
     compensationMaxAmountMinorUnits: task.compensationMaxAmountMinorUnits,
     remainingUsdCents: fundingStatus?.remainingUsdCents ?? null,
@@ -445,6 +454,7 @@ export default async function TaskDetailPage({
             (canClaim || task.viewerHasClaim) ? (
               <TaskClaimButton
                 canClaim={canClaim}
+                requiresPayoutSetup={requiresPayoutSetup}
                 signedIn={Boolean(userId)}
                 signInHref={signInHref}
                 taskId={task.id}
@@ -541,16 +551,16 @@ export default async function TaskDetailPage({
                 )}
               </div>
               <div className="space-y-4">
-                <TaskFundingCheckoutForm
-                  defaultAmountCents={defaultFundingAmountCents}
-                  taskId={task.id}
-                />
                 {isPaidTask ? (
                   <StripeConnectStatusPanel
                     signedIn={Boolean(userId)}
                     signInHref={signInHref}
                   />
                 ) : null}
+                <TaskFundingCheckoutForm
+                  defaultAmountCents={defaultFundingAmountCents}
+                  taskId={task.id}
+                />
               </div>
             </div>
           </section>

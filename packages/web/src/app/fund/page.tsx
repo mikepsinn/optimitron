@@ -13,6 +13,7 @@ type FundingTask = TasksPageData["allTasks"][number];
 interface RankedFundingTask {
   denominatorCents: bigint;
   expectedValueUsd: number;
+  fundingSource: "target" | "compensation";
   score: number;
   task: FundingTask;
 }
@@ -44,25 +45,38 @@ function formatUsd(value: number) {
 
 function formatRatio(value: number) {
   if (!Number.isFinite(value) || value <= 0) return "Unranked";
-  return `${formatUsd(value)} EV / $1`;
+  return `${formatUsd(value)} expected per $1`;
 }
 
-function dollarsToCents(value: number | null | undefined) {
-  if (value == null || !Number.isFinite(value) || value <= 0) return null;
-  return BigInt(Math.round(value * 100));
+function formatPercent(percent: number) {
+  if (!Number.isFinite(percent) || percent <= 0) return "0%";
+  if (percent >= 100) return "100%";
+  return `${percent < 1 ? "<1" : Math.round(percent)}%`;
 }
 
-function getFundingDenominatorCents(task: FundingTask) {
-  if (task.fundingTarget?.targetAmountCents && task.fundingTarget.targetAmountCents > 0n) {
-    return task.fundingTarget.targetAmountCents;
+function getFundingDenominator(task: FundingTask): Pick<
+  RankedFundingTask,
+  "denominatorCents" | "fundingSource"
+> | null {
+  if (
+    task.fundingTarget?.targetAmountCents &&
+    task.fundingTarget.targetAmountCents > 0n
+  ) {
+    return {
+      denominatorCents: task.fundingTarget.targetAmountCents,
+      fundingSource: "target",
+    };
   }
   if (
     task.compensationMaxAmountMinorUnits &&
     task.compensationMaxAmountMinorUnits > 0n
   ) {
-    return task.compensationMaxAmountMinorUnits;
+    return {
+      denominatorCents: task.compensationMaxAmountMinorUnits,
+      fundingSource: "compensation",
+    };
   }
-  return dollarsToCents(task.selectedImpactFrame?.estimatedCashCostUsdBase);
+  return null;
 }
 
 function getExpectedValueUsd(task: FundingTask) {
@@ -86,23 +100,48 @@ function collectFundableTasks(data: TasksPageData) {
   );
 }
 
+function dedupeRankedTasks(tasks: RankedFundingTask[]) {
+  const byTitle = new Map<string, RankedFundingTask>();
+  for (const task of tasks) {
+    const key = task.task.title.trim().toLowerCase();
+    const existing = byTitle.get(key);
+    if (
+      !existing ||
+      task.score > existing.score ||
+      (task.score === existing.score &&
+        task.task.id.localeCompare(existing.task.id) < 0)
+    ) {
+      byTitle.set(key, task);
+    }
+  }
+  return Array.from(byTitle.values());
+}
+
 function rankFundingTasks(tasks: FundingTask[]) {
-  return tasks
+  const ranked = tasks
     .flatMap((task): RankedFundingTask[] => {
-      const denominatorCents = getFundingDenominatorCents(task);
+      const denominator = getFundingDenominator(task);
       const expectedValueUsd = getExpectedValueUsd(task);
-      if (!denominatorCents || denominatorCents <= 0n || expectedValueUsd <= 0) {
+      if (
+        !denominator ||
+        denominator.denominatorCents <= 0n ||
+        expectedValueUsd <= 0
+      ) {
         return [];
       }
       return [
         {
-          denominatorCents,
+          denominatorCents: denominator.denominatorCents,
           expectedValueUsd,
-          score: expectedValueUsd / (Number(denominatorCents) / 100),
+          fundingSource: denominator.fundingSource,
+          score:
+            expectedValueUsd / (Number(denominator.denominatorCents) / 100),
           task,
         },
       ];
-    })
+    });
+
+  return dedupeRankedTasks(ranked)
     .sort((left, right) => {
       if (right.score !== left.score) return right.score - left.score;
       return left.task.title.localeCompare(right.task.title);
@@ -111,7 +150,7 @@ function rankFundingTasks(tasks: FundingTask[]) {
 
 export default async function FundPage() {
   const data = await getTasksPageData(null);
-  const rankedTasks = rankFundingTasks(collectFundableTasks(data)).slice(0, 24);
+  const rankedTasks = rankFundingTasks(collectFundableTasks(data)).slice(0, 12);
   const fundingStatuses = new Map(
     await Promise.all(
       rankedTasks.map(async ({ task }) => [
@@ -127,21 +166,24 @@ export default async function FundPage() {
         <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-              Task funding
+              Now accepting contributions
             </p>
             <h1 className="text-4xl font-black leading-tight sm:text-6xl">
-              Fund the bottleneck
+              Live on a planet without war and disease
             </h1>
             <p className="text-base font-bold leading-relaxed text-muted-foreground sm:text-lg">
-              Pick the task where a dollar buys the most treaty progress. Money
-              funds verified work, not vibes.
+              Here is the price list. Every task below is a bottleneck between
+              you and that planet, ranked by how much each dollar moves us
+              there. Fund one — your money stays pinned to that exact work and
+              pays the worker the second a claim is verified. Nothing proven,
+              nothing paid.
             </p>
             <div className="flex flex-wrap gap-2">
               <Link
                 className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
                 href={ROUTES.tasks}
               >
-                See all tasks
+                Browse every task
               </Link>
               <Link
                 className="inline-flex min-h-10 items-center justify-center border border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background"
@@ -157,7 +199,14 @@ export default async function FundPage() {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {rankedTasks.length > 0 ? (
           <div className="grid gap-4">
-            {rankedTasks.map(({ denominatorCents, expectedValueUsd, score, task }, index) => {
+            {rankedTasks.map((rankedTask, index) => {
+              const {
+                denominatorCents,
+                expectedValueUsd,
+                fundingSource,
+                score,
+                task,
+              } = rankedTask;
               const funding = fundingStatuses.get(task.id);
               const percent =
                 funding && funding.targetUsdCents > 0n
@@ -166,13 +215,13 @@ export default async function FundPage() {
 
               return (
                 <article
-                  className="grid gap-4 border border-foreground p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+                  className="grid gap-4 border border-foreground p-4 sm:grid-cols-[auto_minmax(0,1fr)] lg:grid-cols-[auto_minmax(0,1fr)_auto]"
                   key={task.id}
                 >
                   <div className="flex size-12 items-center justify-center border border-foreground text-lg font-black">
                     {index + 1}
                   </div>
-                  <div className="min-w-0 space-y-3">
+                  <div className="min-w-0 space-y-4">
                     <div>
                       <h2 className="text-xl font-black leading-tight">
                         <Link
@@ -182,10 +231,34 @@ export default async function FundPage() {
                           {task.title}
                         </Link>
                       </h2>
-                      <p className="mt-1 text-sm font-bold text-muted-foreground">
-                        {formatRatio(score)} · {formatUsd(expectedValueUsd)} expected value ·{" "}
-                        {formatUsdCents(denominatorCents)} funding denominator
-                      </p>
+                      <dl className="mt-3 grid gap-2 text-sm font-bold text-muted-foreground sm:grid-cols-3">
+                        <div>
+                          <dt className="text-xs font-black uppercase tracking-[0.12em]">
+                            Best estimate
+                          </dt>
+                          <dd className="text-foreground">
+                            {formatRatio(score)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-xs font-black uppercase tracking-[0.12em]">
+                            Task value
+                          </dt>
+                          <dd className="text-foreground">
+                            {formatUsd(expectedValueUsd)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-xs font-black uppercase tracking-[0.12em]">
+                            {fundingSource === "target"
+                              ? "Funding goal"
+                              : "Worker payout"}
+                          </dt>
+                          <dd className="text-foreground">
+                            {formatUsdCents(denominatorCents)}
+                          </dd>
+                        </div>
+                      </dl>
                     </div>
                     <div>
                       <div className="h-2 border border-foreground">
@@ -196,17 +269,17 @@ export default async function FundPage() {
                       </div>
                       <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
                         {funding
-                          ? `${formatUsdCents(funding.committedUsdCents)} funded or pledged`
-                          : "No funding target yet"}
+                          ? `${formatUsdCents(funding.committedUsdCents)} committed - ${formatPercent(percent)}`
+                          : "Pays a verified worker after completion"}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start sm:justify-end">
+                  <div className="flex items-start sm:col-start-2 lg:col-start-auto lg:justify-end">
                     <Link
                       className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
                       href={`${getTaskPath(task.id)}#funding`}
                     >
-                      Fund this task
+                      Fund task
                     </Link>
                   </div>
                 </article>
@@ -217,8 +290,8 @@ export default async function FundPage() {
           <div className="border border-foreground p-6">
             <h2 className="text-xl font-black">No priced bottlenecks yet</h2>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
-              Tasks need a funding target, fixed compensation, or positive cost
-              estimate before they can rank here.
+              Tasks need a funding target or fixed worker payout before they rank
+              here. Any public task can still accept money on its task page.
             </p>
           </div>
         )}
