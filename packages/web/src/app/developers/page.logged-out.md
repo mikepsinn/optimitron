@@ -19,7 +19,7 @@
 - OPENAPI CONTRACT
 - COPY
 - ```text
-http://localhost:3001/openapi.json
+/openapi.json
 ```
 - [OPEN OPENAPI](/openapi.json)
 - [INSTALL MCP](/mcp)
@@ -43,12 +43,12 @@ http://localhost:3001/openapi.json
 #### METADATA
 - Let OAuth clients discover the authorization, token, registration, and revocation endpoints.
 - ```text
-GET http://localhost:3001/.well-known/oauth-authorization-server
+GET /.well-known/oauth-authorization-server
 ```
 #### REGISTER
 - Create a public client for browser, mobile, and field apps.
 - ```text
-POST http://localhost:3001/api/mcp/oauth/register
+POST /api/mcp/oauth/register
 
 {
   "client_name": "Treaty Field App",
@@ -63,15 +63,15 @@ POST http://localhost:3001/api/mcp/oauth/register
 }
 ```
 #### AUTHORIZE AND TOKEN
-- Use PKCE for the browser redirect, then exchange the code on your server or trusted runtime.
+- Use PKCE for the browser redirect, then exchange the code on your own server or backend.
 - ```text
-GET http://localhost:3001/api/mcp/oauth/authorize
-POST http://localhost:3001/api/mcp/oauth/token
-POST http://localhost:3001/api/mcp/oauth/revoke
+GET /api/mcp/oauth/authorize
+POST /api/mcp/oauth/token
+POST /api/mcp/oauth/revoke
 ```
 - REST API
 ### THE USEFUL PARTS ARE OPEN FIRST.
-- This is the external surface for embedding a survey, creating tasks for people, collecting votes, and keeping organization data attached to the same shared record.
+- These are the open endpoints for embedding a survey, creating tasks for people, collecting votes, and keeping organization data attached to the same shared record.
 #### TASKS
 - Create task assignments, list open work, claim work, complete claims, and keep comments with the task instead of in a lost chat thread.
 #### REFERRALS
@@ -84,7 +84,7 @@ POST http://localhost:3001/api/mcp/oauth/revoke
 ### CREATE A TASK FOR A HUMAN.
 - A survey or outreach app can ask for a person, create the task, and then show whether that person answered, voted, completed the work, or needs another nudge.
 - ```text
-POST http://localhost:3001/api/tasks
+POST /api/tasks
 
 {
   "title": "Ask Dr. Example to vote on the 1% Treaty",
@@ -109,13 +109,13 @@ POST http://localhost:3001/api/tasks
 ### AGENTS USE THE SAME AUTHORIZATION.
 - MCP clients can discover tools, add impact estimates, and call the task graph with the same OAuth scopes used by REST clients.
 - ```text
-GET http://localhost:3001/api/mcp/tools
-POST http://localhost:3001/api/mcp
+GET /api/mcp/tools
+POST /api/mcp
 ```
 - [MCP SETUP](/mcp)
 ### MACHINES CAN READ THE CONTRACT.
 - Point API clients, SDK generators, or documentation tooling at the OpenAPI document and stop guessing from source files.
 - ```text
-GET http://localhost:3001/openapi.json
+GET /openapi.json
 ```
 - [OPEN JSON](/openapi.json)

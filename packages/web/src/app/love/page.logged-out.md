@@ -55,7 +55,7 @@
 #### Vote yourself
 - Go to warondisease.org and take [30 seconds](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) to vote. You can't ask others to do something you haven't done.
 #### Add it to your Earth Optimization Date bio
-- Use one of the templates below, or write your own. The key is: make it sound like you, mention warondisease.org, and keep it natural.
+- Use a template below, or write your own. Make it sound like you, mention warondisease.org, keep it natural.
 #### When someone messages you, ask them to vote
 - A person already talking to you is 20x more likely to vote than a stranger reading a bio. The warm ask converts better than the cold one. Wait until they're engaged, then ask.
 #### Send them this page
@@ -76,7 +76,7 @@
 - Now they're voting. Now they're adding it to their profile. Now they're sending the same message to their matches. Each person who participates creates more people who participate.
 - You started a conversation. You might also start a relationship. Either way, you started a chain reaction.
 ### Bio templates
-- Use these as-is or adapt to your voice. The only requirement is that warondisease.org appears and the reader has a reason to click it.
+- Use these as-is or make them yours. Two rules: warondisease.org appears, and the reader has a reason to click it.
 - COPY THIS
 - It requires only 100 nuclear explosions to end civilization. Humanity has enough for 122. Seems like we could spare 1% of the budget for curing diseases instead. I made a website where you can vote on it. warondisease.org. It takes 30 seconds. [then write whatever you normally write about yourself]
 - Before you evaluate whether I'm worth your time, please take 30 seconds to vote at warondisease.org. It will statistically prevent more suffering than anything you will learn about me in the next four paragraphs. [then write your normal bio]
@@ -91,7 +91,7 @@
 #### Won't this make my profile weird?
 - Your profile is currently competing with 10,000 people who like hiking and The Office. Yes, it will make your profile weird. That's the point. Weird is memorable. Memorable gets responses.
 #### Will it actually get me better matches?
-- Having a real mission is consistently rated as one of the most attractive traits in social psychology research. A person who cares about something beyond themselves is more attractive than a person who doesn't. This isn't a sacrifice. It's an upgrade.
+- Having a real mission is consistently rated as one of the most attractive traits in social psychology research. A person who cares about something beyond themselves is more attractive than a person who doesn't. This isn't a sacrifice. It's an upgrade. Free.
 #### Won't people think I'm promoting something?
 - You're asking them to vote on a free website for 30 seconds. Not buy a coin, join a group, or sign up for anything. The bar for "promotion" is usually money. This is free and takes less time than reading your bio.
 #### Won't I get shadowbanned for sending the same message to everyone?

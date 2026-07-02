@@ -21,7 +21,7 @@
 - [FIND MISSION PEOPLE](/people?missions=1)
 ### MISSION SAFETY
 - Earth Optimization Missions are one-hour sessions for ending war and disease. You may fall madly in love if you insist. But keep in mind, 150 thousand people die of disease every day, so please spend the hour eradicating disease instead of hugging and/or kissing.
-- [TURN ON MISSIONS Use your profile to say what kind of human should find you and what useful hour would not make you flee.](/profile#missions)
+- [TURN ON MISSIONS Say what kind of human should find you, and which useful hour would not make you flee.](/profile#missions)
 - [FIND MISSION PEOPLE Filter people who turned on missions. Like, pass, or send one actual sentence before the species collapses.](/people?missions=1)
 - [OPEN MESSAGES Talk to mutual matches and propose a useful campaign session. No money requests. More posters.](/messages)
 ### GOOD MISSIONS

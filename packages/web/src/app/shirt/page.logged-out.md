@@ -39,16 +39,16 @@
 - Each verified voter is projected to prevent approximately [2.70](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) deaths from disease and [55.1](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) years of suffering across their lifetime.
 - So 1 day of wearing a blank t-shirt in public costs approximately 0.135 deaths from disease and 24,000 hours of suffering that would not have happened if you had instead worn one with this message.
 - Over 1 year of public shirt-wearing, blanks cost approximately 50 deaths and 8.8 million hours of suffering.
-- We mention this not to make you feel bad. Your shirts have been working against you this whole time. We are just telling you.
+- Good news: every blank shirt in your closet is a billboard you already own, currently advertising nothing. Pick up a marker and it starts saving lives by lunch.
 - *Estimates use 50-seers/day + 0.1% conversion as conservative assumptions. Real numbers may be 10× higher or lower depending on visibility patterns and audience.*
-### OR PLEDGE CONDITIONALLY.
+### NOT READY TO BUY? PLEDGE INSTEAD.
 - If 8 billion others pledge by August 6, the bulk order ships. If not, nothing happens. Your pledge is a promise, not a charge.
-- $0 of $56.0B committed
+- $0 of $56.0B funded or pledged
 - $56.0B remaining - 0%
 - STATUS
 - OPEN
-- PLEDGERS
-- 0 PLEDGERS
+- SUPPORTERS
+- 0 SUPPORTERS
 - [SIGN IN TO PLEDGE](/auth/signin?callbackUrl=%2Fshirt)
 - Front: THIS T-SHIRT ENDED WAR AND DISEASE.
 - Back: Trade one apocalypse for disease eradication at warondisease.org. Plus the per-buyer QR code.

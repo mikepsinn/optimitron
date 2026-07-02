@@ -238,7 +238,8 @@ function TaskAccessGate({
 }: {
   signedIn: boolean;
   signInHref: string;
-  viewerEmail: string | null;
+  /** Empty string when the session has no email; the aside is omitted. */
+  viewerEmail: string;
 }) {
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -392,7 +393,7 @@ export default async function TaskDetailPage({
       <TaskAccessGate
         signedIn={Boolean(userId)}
         signInHref={getSignInPath(`${ROUTES.tasks}/${id}`)}
-        viewerEmail={session?.user?.email ?? null}
+        viewerEmail={session?.user?.email ?? ""}
       />
     );
   }
