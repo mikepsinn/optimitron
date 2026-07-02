@@ -100,9 +100,17 @@ async function stripeV2Request<T>(
 
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    throw new Error(
-      `Stripe Connect API failed (${response.status} ${response.statusText}): ${body}`,
-    );
+    // Keep Stripe's response body in server logs only. The thrown message is a
+    // stable, non-revealing string so Connect route handlers that forward
+    // error.message to the browser cannot leak provider internals or account
+    // details.
+    log.error("Stripe Connect API request failed", {
+      body,
+      path,
+      status: response.status,
+      statusText: response.statusText,
+    });
+    throw new Error("Stripe Connect request failed.");
   }
 
   return (await response.json()) as T;

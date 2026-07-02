@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { createLogger } from "@/lib/logger";
 import {
   getOrCreateStripeConnectedAccount,
   getStripeConnectStatus,
 } from "@/lib/stripe-connect.server";
 
 export const runtime = "nodejs";
+
+const log = createLogger("stripe-connect-account-route");
 
 export async function POST(request: Request) {
   try {
@@ -18,13 +21,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    log.error("Failed to create Stripe connected account", { error });
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to create Stripe connected account.",
-      },
+      { error: "Failed to create Stripe connected account." },
       { status: 400 },
     );
   }

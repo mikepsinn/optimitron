@@ -82,6 +82,11 @@ if (!databaseUrl) {
   process.exit(1);
 }
 
+// The remote-DB and live-Stripe guards are independent: opting into one override
+// must never silently disable the other. Run the Stripe guard unconditionally,
+// before any early exit from the database-URL branch.
+guardLiveStripe(env);
+
 if (env[ALLOW_REMOTE_FLAG] === "1" || env[ALLOW_REMOTE_FLAG] === "true") {
   console.warn(
     `${ALLOW_REMOTE_FLAG} is set; allowing remote dev database ${redactDatabaseUrl(databaseUrl)}.`,
@@ -91,7 +96,6 @@ if (env[ALLOW_REMOTE_FLAG] === "1" || env[ALLOW_REMOTE_FLAG] === "true") {
 
 try {
   if (isLocalDatabaseUrl(databaseUrl)) {
-    guardLiveStripe(env);
     process.exit(0);
   }
 } catch (error) {
