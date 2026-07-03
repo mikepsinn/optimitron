@@ -11,7 +11,12 @@ import {
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { TASK_FUNDING_CONVERSION_VERSION } from "../conversion.server";
-import { getTaskFundingStatus } from "../status.server";
+import {
+  formatRelativeTime,
+  getTaskFundingBackerWall,
+  getTaskFundingStatus,
+  TASK_FUNDING_BACKER_WALL_LIMIT,
+} from "../status.server";
 
 const TEST_PREFIX = "tf_status_";
 
@@ -103,6 +108,7 @@ async function createTarget(suffix: string, targetAmountCents = 10_000n) {
 
 async function createPledge(input: {
   committedAmountCents: bigint;
+  createdAt?: Date;
   pledgerKind: TaskFundingPledgerKind;
   pledgeActorKey: string;
   pledgedByUserId: string;
@@ -111,6 +117,7 @@ async function createPledge(input: {
   publicDisplay?: boolean;
   publicNameSnapshot?: string;
   status?: TaskFundingPledgeStatus;
+  stripeSetupIntentId?: string;
   targetId: string;
   unitKey?: string;
   unitQuantity?: string;
@@ -131,12 +138,16 @@ async function createPledge(input: {
       committedAmountCents: input.committedAmountCents,
       conversionVersion: TASK_FUNDING_CONVERSION_VERSION,
       status: input.status ?? TaskFundingPledgeStatus.ACTIVE,
+      stripeSetupIntentId: input.stripeSetupIntentId ?? null,
+      ...(input.createdAt ? { createdAt: input.createdAt } : {}),
     },
   });
 }
 
 async function createFundingPayment(input: {
   amountCents: number;
+  createdAt?: Date;
+  donorName?: string | null;
   publicDisplay?: boolean;
   publicNameSnapshot?: string | null;
   status?: TaskFundingPaymentStatus;
@@ -166,6 +177,7 @@ async function createFundingPayment(input: {
       amountCents: input.amountCents,
       commerceOrderId: order.id,
       currency: "usd",
+      donorName: input.donorName ?? null,
       publicDisplay: input.publicDisplay ?? false,
       publicNameSnapshot: input.publicNameSnapshot ?? null,
       status,
@@ -173,6 +185,7 @@ async function createFundingPayment(input: {
       stripeTransferGroup: `${TEST_PREFIX}transfer_group_${input.suffix}`,
       targetId: input.targetId,
       taskId: input.taskId,
+      ...(input.createdAt ? { createdAt: input.createdAt } : {}),
     },
   });
 }
@@ -362,5 +375,209 @@ describe("getTaskFundingStatus", () => {
         committedAmountCents: 2000n,
       }),
     ]);
+  });
+});
+
+describe("getTaskFundingBackerWall", () => {
+  const base = new Date("2026-07-01T12:00:00Z");
+  const minutesAfterBase = (minutes: number) =>
+    new Date(base.getTime() + minutes * 60_000);
+
+  it("returns public paid payments and card-backed pledges, newest first", async () => {
+    const { target, task } = await createTarget("wall", 100_000n);
+    const pledger = await createUserWithPerson("wall_pledger", "Wall Pledger");
+
+    await createFundingPayment({
+      amountCents: 1000,
+      createdAt: minutesAfterBase(4),
+      publicDisplay: true,
+      publicNameSnapshot: "Ada L.",
+      suffix: "wall_snapshot",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    // No snapshot -> falls back to donorName.
+    await createFundingPayment({
+      amountCents: 1000,
+      createdAt: minutesAfterBase(1),
+      donorName: "Grace H.",
+      publicDisplay: true,
+      suffix: "wall_donor_name",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    // Excluded: not opted in.
+    await createFundingPayment({
+      amountCents: 1000,
+      createdAt: minutesAfterBase(5),
+      publicDisplay: false,
+      publicNameSnapshot: "Hidden Harriet",
+      suffix: "wall_private",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    // Excluded: no name at all.
+    await createFundingPayment({
+      amountCents: 1000,
+      createdAt: minutesAfterBase(6),
+      publicDisplay: true,
+      suffix: "wall_nameless",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    // Excluded: not PAID.
+    await createFundingPayment({
+      amountCents: 1000,
+      createdAt: minutesAfterBase(7),
+      publicDisplay: true,
+      publicNameSnapshot: "Failed Fred",
+      status: TaskFundingPaymentStatus.FAILED,
+      suffix: "wall_failed",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    // Card-backed ACTIVE pledge -> included.
+    await createPledge({
+      committedAmountCents: 2000n,
+      createdAt: minutesAfterBase(3),
+      pledgeActorKey: "person:wall_active",
+      pledgedByUserId: pledger.user.id,
+      pledgerKind: TaskFundingPledgerKind.PERSON,
+      publicDisplay: true,
+      publicNameSnapshot: "Joan C.",
+      stripeSetupIntentId: `${TEST_PREFIX}seti_active`,
+      targetId: target.id,
+    });
+    // Card-backed FULFILLED pledge -> included.
+    await createPledge({
+      committedAmountCents: 2000n,
+      createdAt: minutesAfterBase(2),
+      pledgeActorKey: "person:wall_fulfilled",
+      pledgedByUserId: pledger.user.id,
+      pledgerKind: TaskFundingPledgerKind.PERSON,
+      publicDisplay: true,
+      publicNameSnapshot: "Mary J.",
+      status: TaskFundingPledgeStatus.FULFILLED,
+      stripeSetupIntentId: `${TEST_PREFIX}seti_fulfilled`,
+      targetId: target.id,
+    });
+    // Excluded: soft pledge, no card saved.
+    await createPledge({
+      committedAmountCents: 2000n,
+      createdAt: minutesAfterBase(8),
+      pledgeActorKey: "person:wall_soft",
+      pledgedByUserId: pledger.user.id,
+      pledgerKind: TaskFundingPledgerKind.PERSON,
+      publicDisplay: true,
+      publicNameSnapshot: "Soft Sam",
+      targetId: target.id,
+    });
+    // Excluded: cancelled.
+    await createPledge({
+      committedAmountCents: 2000n,
+      createdAt: minutesAfterBase(9),
+      pledgeActorKey: "person:wall_cancelled",
+      pledgedByUserId: pledger.user.id,
+      pledgerKind: TaskFundingPledgerKind.PERSON,
+      publicDisplay: true,
+      publicNameSnapshot: "Cancelled Carl",
+      status: TaskFundingPledgeStatus.CANCELLED,
+      stripeSetupIntentId: `${TEST_PREFIX}seti_cancelled`,
+      targetId: target.id,
+    });
+    // Excluded: card-backed but not opted in.
+    await createPledge({
+      committedAmountCents: 2000n,
+      createdAt: minutesAfterBase(10),
+      pledgeActorKey: "person:wall_private",
+      pledgedByUserId: pledger.user.id,
+      pledgerKind: TaskFundingPledgerKind.PERSON,
+      publicDisplay: false,
+      publicNameSnapshot: "Private Pat",
+      stripeSetupIntentId: `${TEST_PREFIX}seti_private`,
+      targetId: target.id,
+    });
+
+    const wall = await getTaskFundingBackerWall(task.id);
+
+    expect(wall).toEqual([
+      { at: minutesAfterBase(4), kind: "paid", name: "Ada L." },
+      { at: minutesAfterBase(3), kind: "pledged", name: "Joan C." },
+      { at: minutesAfterBase(2), kind: "pledged", name: "Mary J." },
+      { at: minutesAfterBase(1), kind: "paid", name: "Grace H." },
+    ]);
+  });
+
+  it("caps the merged wall at the limit, keeping the newest entries", async () => {
+    const { target, task } = await createTarget("wall_cap", 100_000n);
+    const pledger = await createUserWithPerson("wall_cap_pledger", "Cap Pledger");
+    const total = TASK_FUNDING_BACKER_WALL_LIMIT + 2;
+
+    for (let i = 1; i <= total; i += 1) {
+      if (i % 2 === 0) {
+        await createFundingPayment({
+          amountCents: 1000,
+          createdAt: minutesAfterBase(i),
+          publicDisplay: true,
+          publicNameSnapshot: `Backer ${i}`,
+          suffix: `wall_cap_${i}`,
+          targetId: target.id,
+          taskId: task.id,
+        });
+      } else {
+        await createPledge({
+          committedAmountCents: 1000n,
+          createdAt: minutesAfterBase(i),
+          pledgeActorKey: `person:wall_cap_${i}`,
+          pledgedByUserId: pledger.user.id,
+          pledgerKind: TaskFundingPledgerKind.PERSON,
+          publicDisplay: true,
+          publicNameSnapshot: `Backer ${i}`,
+          stripeSetupIntentId: `${TEST_PREFIX}seti_cap_${i}`,
+          targetId: target.id,
+        });
+      }
+    }
+
+    const wall = await getTaskFundingBackerWall(task.id);
+
+    expect(wall).toHaveLength(TASK_FUNDING_BACKER_WALL_LIMIT);
+    expect(wall.map((entry) => entry.name)).toEqual(
+      Array.from(
+        { length: TASK_FUNDING_BACKER_WALL_LIMIT },
+        (_, index) => `Backer ${total - index}`,
+      ),
+    );
+  });
+});
+
+describe("formatRelativeTime", () => {
+  const now = new Date("2026-07-03T12:00:00Z");
+  const secondsAgo = (seconds: number) =>
+    new Date(now.getTime() - seconds * 1000);
+
+  it("never renders zero or negative times", () => {
+    expect(formatRelativeTime(now, now)).toBe("just now");
+    expect(formatRelativeTime(now, secondsAgo(59))).toBe("just now");
+    // Clock-skewed future timestamps clamp to "just now".
+    expect(formatRelativeTime(now, secondsAgo(-1))).toBe("just now");
+    expect(formatRelativeTime(now, secondsAgo(-3600))).toBe("just now");
+  });
+
+  it("formats unit boundaries with singular and plural labels", () => {
+    expect(formatRelativeTime(now, secondsAgo(60))).toBe("1 minute ago");
+    expect(formatRelativeTime(now, secondsAgo(119))).toBe("1 minute ago");
+    expect(formatRelativeTime(now, secondsAgo(120))).toBe("2 minutes ago");
+    expect(formatRelativeTime(now, secondsAgo(3599))).toBe("59 minutes ago");
+    expect(formatRelativeTime(now, secondsAgo(3600))).toBe("1 hour ago");
+    expect(formatRelativeTime(now, secondsAgo(86_399))).toBe("23 hours ago");
+    expect(formatRelativeTime(now, secondsAgo(86_400))).toBe("1 day ago");
+    expect(formatRelativeTime(now, secondsAgo(6 * 86_400))).toBe("6 days ago");
+    expect(formatRelativeTime(now, secondsAgo(7 * 86_400))).toBe("1 week ago");
+    expect(formatRelativeTime(now, secondsAgo(30 * 86_400))).toBe("1 month ago");
+    expect(formatRelativeTime(now, secondsAgo(365 * 86_400))).toBe("1 year ago");
+    expect(formatRelativeTime(now, secondsAgo(2 * 365 * 86_400))).toBe(
+      "2 years ago",
+    );
   });
 });

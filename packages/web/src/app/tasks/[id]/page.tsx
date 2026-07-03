@@ -450,6 +450,13 @@ export default async function TaskDetailPage({
     compensationMaxAmountMinorUnits: task.compensationMaxAmountMinorUnits,
     remainingUsdCents: fundingStatus?.remainingUsdCents ?? null,
   });
+  // deriveImpactRatios clamps a missing cash cost to $0.0001 to stay finite,
+  // which turns per-dollar ratios into nonsense ($114T per $1). Only feed the
+  // checkout form ratios computed from a real positive cost.
+  const fundingFrameCashCostUsd =
+    task.impact.selectedFrame?.estimatedCashCostUsdBase ?? null;
+  const hasRealFundingCost =
+    fundingFrameCashCostUsd != null && fundingFrameCashCostUsd > 0;
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -637,7 +644,15 @@ export default async function TaskDetailPage({
                   />
                 ) : null}
                 <TaskFundingCheckoutForm
+                  costPerDalyUsd={
+                    hasRealFundingCost ? task.impact.costPerDalyUsd : null
+                  }
                   defaultAmountCents={defaultFundingAmountCents}
+                  expectedValuePerDollar={
+                    hasRealFundingCost
+                      ? task.impact.expectedValuePerDollar
+                      : null
+                  }
                   signedIn={Boolean(userId)}
                   signInHref={signInHref}
                   taskId={task.id}

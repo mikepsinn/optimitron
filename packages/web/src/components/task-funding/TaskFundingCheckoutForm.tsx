@@ -3,15 +3,76 @@
 import Link from "next/link";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import {
+  formatCompactCount,
+  formatCompactCurrency,
+} from "@/lib/tasks/accountability";
 
 export interface TaskFundingCheckoutFormProps {
+  /** From task.impact.costPerDalyUsd (selected frame). Null = no frame. */
+  costPerDalyUsd?: number | null;
   defaultAmountCents?: number;
+  /** From task.impact.expectedValuePerDollar (selected frame). */
+  expectedValuePerDollar?: number | null;
   signedIn: boolean;
   signInHref: string;
   taskId: string;
 }
 
 type SubmitAction = "pledge" | "checkout";
+
+const PRESET_AMOUNTS_CENTS = [1_000, 2_500, 10_000, 25_000];
+
+// Same suffering-hours conversion the /donate calculator uses:
+// 1 DALY = 1 year of suffering and disability = 8,760 hours.
+const HOURS_PER_YEAR = 24 * 365;
+
+/**
+ * One short impact line per preset, from the task's selected impact frame.
+ * DALY math wins (matches /donate's suffering-hours framing); economic
+ * expected value is the fallback. No frame, no line — never invent numbers.
+ */
+function getPresetImpactLine(
+  presetCents: number,
+  costPerDalyUsd: number | null | undefined,
+  expectedValuePerDollar: number | null | undefined,
+): string | null {
+  const usd = presetCents / 100;
+  if (
+    costPerDalyUsd != null &&
+    Number.isFinite(costPerDalyUsd) &&
+    costPerDalyUsd > 0
+  ) {
+    const sufferingHours = (usd / costPerDalyUsd) * HOURS_PER_YEAR;
+    return `prevents ${formatCompactCount(sufferingHours)} hours of suffering`;
+  }
+  if (
+    expectedValuePerDollar != null &&
+    Number.isFinite(expectedValuePerDollar) &&
+    expectedValuePerDollar > 0
+  ) {
+    return `returns ${formatCompactCurrency(usd * expectedValuePerDollar)} in expected value`;
+  }
+  return null;
+}
+
+const FAQ_ITEMS = [
+  {
+    answer:
+      "Pledge: only when this task is fully funded — could be next week, could be next year. Pay now: today.",
+    question: "When am I charged?",
+  },
+  {
+    answer:
+      "Charged money comes back to your card automatically. Uncharged pledges simply never charge.",
+    question: "What if the task dies?",
+  },
+  {
+    answer:
+      "A verified worker, and only after the work is verified. Until then it sits held for this task.",
+    question: "Who gets the money?",
+  },
+] as const;
 
 /**
  * Outcome notices for the query params that land on #funding: the Stripe
@@ -44,7 +105,9 @@ function parseDollarInput(value: string) {
 }
 
 export function TaskFundingCheckoutForm({
+  costPerDalyUsd = null,
   defaultAmountCents = 2500,
+  expectedValuePerDollar = null,
   signedIn,
   signInHref,
   taskId,
@@ -144,6 +207,39 @@ export function TaskFundingCheckoutForm({
         </p>
       ) : null}
 
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {PRESET_AMOUNTS_CENTS.map((presetCents) => {
+          const selected = amountCents === presetCents;
+          const impactLine = getPresetImpactLine(
+            presetCents,
+            costPerDalyUsd,
+            expectedValuePerDollar,
+          );
+          return (
+            <button
+              aria-pressed={selected}
+              className={`min-h-10 border border-foreground px-2 py-2 text-left ${
+                selected
+                  ? "bg-foreground text-background"
+                  : "bg-background text-foreground hover:bg-foreground hover:text-background"
+              }`}
+              key={presetCents}
+              onClick={() => setAmount(formatDollars(presetCents))}
+              type="button"
+            >
+              <span className="block text-base font-black">
+                ${presetCents / 100}
+              </span>
+              {impactLine ? (
+                <span className="block text-[10px] font-bold leading-tight">
+                  {impactLine}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <label className="space-y-1 text-sm font-bold">
           <span className="block text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
@@ -219,6 +315,11 @@ export function TaskFundingCheckoutForm({
 
       {error ? <p className="text-sm font-bold text-destructive">{error}</p> : null}
 
+      <p className="text-xs font-bold text-muted-foreground">
+        Payments handled by Stripe. Your card number never touches our
+        servers.
+      </p>
+
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1">
           {signedIn ? (
@@ -259,6 +360,19 @@ export function TaskFundingCheckoutForm({
             after the work is verified.
           </p>
         </div>
+      </div>
+
+      <div className="divide-y divide-foreground border border-foreground">
+        {FAQ_ITEMS.map((item) => (
+          <details key={item.question}>
+            <summary className="cursor-pointer px-3 py-2 text-xs font-black uppercase tracking-[0.12em]">
+              {item.question}
+            </summary>
+            <p className="px-3 pb-3 text-xs font-bold text-muted-foreground">
+              {item.answer}
+            </p>
+          </details>
+        ))}
       </div>
     </form>
   );

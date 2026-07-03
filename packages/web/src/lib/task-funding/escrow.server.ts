@@ -264,13 +264,27 @@ export async function createPledgeCardSetupSession(
     target_id: pledge.targetId,
     task_id: task.id,
   };
+  // The setup screen shows $0.00, so the submit message states the deal.
+  // Fixed copy + a dollar amount stay under ~80 chars; truncating the title
+  // to 300 keeps the whole message well under Stripe's 500-char limit.
+  const amountDollars = (amountCents / 100).toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: amountCents % 100 === 0 ? 0 : 2,
+  });
+  const titleForMessage =
+    task.title.length > 300 ? `${task.title.slice(0, 297)}...` : task.title;
+  const setupDealMessage = `Pledging $${amountDollars} to ${titleForMessage} — charged only if it fully funds. $0 today.`;
   const session = await stripe.checkout.sessions.create({
     cancel_url: input.cancelUrl,
+    custom_text: {
+      submit: { message: setupDealMessage },
+    },
     customer: customerId,
     metadata: setupMetadata,
     mode: "setup",
     payment_method_types: ["card"],
     setup_intent_data: {
+      description: setupDealMessage,
       metadata: setupMetadata,
     },
     success_url: input.successUrl,

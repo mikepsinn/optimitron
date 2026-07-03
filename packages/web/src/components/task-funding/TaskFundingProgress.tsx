@@ -1,4 +1,6 @@
 import {
+  formatRelativeTime,
+  getTaskFundingBackerWall,
   getTaskFundingStatus,
   type TaskFundingStatus,
 } from "@/lib/task-funding/status.server";
@@ -69,7 +71,11 @@ export async function TaskFundingProgress({
   showBreakdown = false,
   showUnitBreakdown = false,
 }: TaskFundingProgressProps) {
-  const fundingStatus = status ?? (await getTaskFundingStatus(taskId));
+  const [fundingStatus, backers] = await Promise.all([
+    status ?? getTaskFundingStatus(taskId),
+    getTaskFundingBackerWall(taskId),
+  ]);
+  const now = new Date();
   const thresholdMet = fundingStatus.status === "THRESHOLD_MET";
 
   return (
@@ -102,6 +108,19 @@ export async function TaskFundingProgress({
           <span>{pluralizeSupporters(fundingStatus.pledgerCount)}</span>
         </div>
       </div>
+
+      {backers.length > 0 ? (
+        <ul
+          className="space-y-1 text-sm font-bold"
+          data-task-funding-backer-wall
+        >
+          {backers.map((backer, index) => (
+            <li key={`${backer.name}-${backer.at.toISOString()}-${index}`}>
+              {backer.name} — {backer.kind} — {formatRelativeTime(now, backer.at)}
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       {showBreakdown ? (
         <dl className="grid gap-3 text-sm sm:grid-cols-2">

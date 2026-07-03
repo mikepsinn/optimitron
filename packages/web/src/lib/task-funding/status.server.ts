@@ -43,6 +43,49 @@ export interface GetTaskFundingStatusOptions {
   limit?: number;
 }
 
+/// Cap on backer-wall entries. A wall, not a ledger.
+export const TASK_FUNDING_BACKER_WALL_LIMIT = 12;
+
+export type TaskFundingBackerKind = "paid" | "pledged";
+
+export interface TaskFundingBackerWallEntry {
+  name: string;
+  at: Date;
+  kind: TaskFundingBackerKind;
+}
+
+const MINUTE_MS = 60_000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+const WEEK_MS = 7 * DAY_MS;
+const MONTH_MS = 30 * DAY_MS;
+const YEAR_MS = 365 * DAY_MS;
+
+const RELATIVE_TIME_UNITS: ReadonlyArray<readonly [number, string]> = [
+  [YEAR_MS, "year"],
+  [MONTH_MS, "month"],
+  [WEEK_MS, "week"],
+  [DAY_MS, "day"],
+  [HOUR_MS, "hour"],
+  [MINUTE_MS, "minute"],
+];
+
+/**
+ * Pure relative-time formatter. Takes `now` explicitly so tests never touch
+ * the wall clock. Anything under one minute — including clock-skewed future
+ * timestamps — reads "just now"; "0 minutes ago" never renders.
+ */
+export function formatRelativeTime(now: Date, then: Date): string {
+  const elapsedMs = now.getTime() - then.getTime();
+  for (const [unitMs, unitLabel] of RELATIVE_TIME_UNITS) {
+    if (elapsedMs >= unitMs) {
+      const count = Math.floor(elapsedMs / unitMs);
+      return `${count} ${unitLabel}${count === 1 ? "" : "s"} ago`;
+    }
+  }
+  return "just now";
+}
+
 type StatusDbWithPayments = Pick<
   PrismaClient,
   "taskFundingPayment" | "taskFundingPledge" | "taskFundingTarget"
@@ -253,4 +296,74 @@ export async function getTaskFundingStatus(
   }
 
   return status;
+}
+
+/**
+ * Opted-in public supporters for the backer wall: PAID payments plus
+ * card-backed pledges (SetupIntent saved), newest first, capped. Lean
+ * parallel query — leaves the aggregate path in getTaskFundingStatus alone.
+ */
+export async function getTaskFundingBackerWall(
+  taskId: string,
+  db: StatusDbWithPayments = prisma,
+): Promise<TaskFundingBackerWallEntry[]> {
+  const [payments, pledges] = await Promise.all([
+    db.taskFundingPayment.findMany({
+      where: {
+        taskId,
+        deletedAt: null,
+        status: TaskFundingPaymentStatus.PAID,
+        publicDisplay: true,
+        OR: [
+          { publicNameSnapshot: { not: null } },
+          { donorName: { not: null } },
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+      take: TASK_FUNDING_BACKER_WALL_LIMIT,
+      select: {
+        createdAt: true,
+        donorName: true,
+        publicNameSnapshot: true,
+      },
+    }),
+    db.taskFundingPledge.findMany({
+      where: {
+        target: { taskId, deletedAt: null },
+        deletedAt: null,
+        status: {
+          in: [
+            TaskFundingPledgeStatus.ACTIVE,
+            TaskFundingPledgeStatus.CALLED,
+            TaskFundingPledgeStatus.FULFILLED,
+          ],
+        },
+        publicDisplay: true,
+        stripeSetupIntentId: { not: null },
+        publicNameSnapshot: { not: null },
+      },
+      orderBy: { createdAt: "desc" },
+      take: TASK_FUNDING_BACKER_WALL_LIMIT,
+      select: {
+        createdAt: true,
+        publicNameSnapshot: true,
+      },
+    }),
+  ]);
+
+  return [
+    ...payments.map((payment) => ({
+      at: payment.createdAt,
+      kind: "paid" as const,
+      name: (payment.publicNameSnapshot ?? payment.donorName ?? "").trim(),
+    })),
+    ...pledges.map((pledge) => ({
+      at: pledge.createdAt,
+      kind: "pledged" as const,
+      name: (pledge.publicNameSnapshot ?? "").trim(),
+    })),
+  ]
+    .filter((entry) => entry.name.length > 0)
+    .sort((left, right) => right.at.getTime() - left.at.getTime())
+    .slice(0, TASK_FUNDING_BACKER_WALL_LIMIT);
 }
