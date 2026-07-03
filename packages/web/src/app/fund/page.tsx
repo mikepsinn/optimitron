@@ -234,7 +234,7 @@ export default async function FundPage() {
                       <dl className="mt-3 grid gap-2 text-sm font-bold text-muted-foreground sm:grid-cols-3">
                         <div>
                           <dt className="text-xs font-black uppercase tracking-[0.12em]">
-                            Best estimate
+                            Return per $1
                           </dt>
                           <dd className="text-foreground">
                             {formatRatio(score)}

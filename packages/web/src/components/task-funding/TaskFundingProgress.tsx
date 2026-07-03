@@ -66,7 +66,7 @@ export async function TaskFundingProgress({
         <div className="space-y-2">
           <p className="font-black text-3xl leading-tight sm:text-5xl">
             {formatUsdCents(fundingStatus.committedUsdCents)} of{" "}
-            {formatUsdCents(fundingStatus.targetUsdCents)} funded or pledged
+            {formatUsdCents(fundingStatus.targetUsdCents)} paid or pledged
           </p>
           <p className="text-base font-black">
             {formatUsdCents(fundingStatus.remainingUsdCents)} remaining -{" "}
@@ -123,7 +123,7 @@ export async function TaskFundingProgress({
                   <span className="font-black">{unit.unitKey}</span>
                   <span>{formatQuantity(unit.totalQuantity)} units</span>
                   <span>
-                    {formatUsdCents(unit.totalCommittedCents)} funded or pledged
+                    {formatUsdCents(unit.totalCommittedCents)} paid or pledged
                   </span>
                 </li>
               ))}

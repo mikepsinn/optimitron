@@ -1190,7 +1190,7 @@ export const fundLink: NavItem = {
   label: "Fund Tasks",
   emoji: "🪙",
   description:
-    "Put money behind ranked tasks that move votes, organizations, leaders, or measurable treaty demand. If the task cannot point to proof, keep your money.",
+    "A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.",
   tagline: "Fund the bottleneck",
 
   cta: "Fund a Task",
