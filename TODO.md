@@ -89,25 +89,21 @@ Do not let lower items crowd out higher ones.
   `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B, all corporate) for the
   all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M). Own
   branch after PR #88; manual-search + verbatim copy gate before shipping.
-- **Task tree: cause-specific mission nodes + TaskEdge links (Mike-approved
-  direction, 2026-07-02):** split browsable cause nodes out of the single
-  "End War and Disease" parent so audiences can see only *their* cause
-  (longevity people want disease-only lists; they don't care about war
-  deaths). Sketch: `Optimize Earth` → `End War`, `Eradicate Disease`
-  (future: `Reduce Animal Suffering`, etc.). Each task keeps ONE tree parent
-  (attribution math is `child.delta / parent.delta` — a DAG would
-  double-count); cross-cause relevance is expressed with the EXISTING
-  `TaskEdge` model (`INCREASES_PROBABILITY_OF` / `ACCELERATES`, currently
-  MCP-only) and surfaced in the UI ("also advances → Eradicate Disease").
-  E.g. 1% Treaty parents under End War (its mechanism is the military
-  budget), edge → Eradicate Disease (its payoff); dFDA parents under
-  Eradicate Disease. Cause pages = filtered task views; `/missions` is
-  TAKEN (pairing feature) — name TBD (`/causes`?). Also fixes:
-  `bed-nets-funding-gap` currently has `parentTaskId: null` in
-  `optimize-earth-task-tree.ts`, violating the no-null-parent rule — give it
-  a parent (under Eradicate Disease) in the same change. Keep existing
-  taskKeys stable (site configs reference END_WAR_AND_DISEASE_TASK_KEY).
-  Own branch after PR #97 merges; diagram-before-code applies.
+- **Task tree: cause-node split + seed ALL 35 missing solution tasks
+  (Mike-approved 2026-07-02/03):** full plan + tree diagrams in
+  `.claude/plans/task-tree-cause-split.md`; complete manual-vs-tasks audit
+  (50 solutions × 52 tasks, matched/missing/cruft) in
+  `.claude/plans/task-tree-cause-split-audit.json`. Decisions: seed all 35
+  missing tasks ("users can make those institutions" — includes OPG/RAPPA
+  proof-layer builder tasks); biggest gap = NO referral task ("get two more
+  humans to vote"), priority-2's only exponential mechanism; bed-nets task
+  KEPT, parent under Eradicate Disease (also fixes its null-parent rule
+  violation); write a manual page for Earth Optimization Missions (the two
+  mission tasks have no manual source). Single tree parent stays
+  (attribution math); cross-cause links via existing `TaskEdge`
+  (`INCREASES_PROBABILITY_OF`/`ACCELERATES`), surfaced in UI. `/missions`
+  route is TAKEN — cause pages name TBD (`/causes`?). Own branch after
+  PR #97 merges; diagram-before-code satisfied by the plan file.
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 
