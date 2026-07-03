@@ -34,7 +34,7 @@
 | 9 | [🇬🇧United Kingdom](/governments/GB) | [$75B](/governments/GB) | [500,000](/governments/GB) | [414:1](/governments/GB) | [70.1](/governments/GB) | [$17.2K](/governments/GB) | [27.8:1](/governments/GB) |
 | 10 | [🇪🇹Ethiopia](/governments/ET) | [$1B](/governments/ET) | [873,000](/governments/ET) | [333:1](/governments/ET) | [56.0](/governments/ET) | [$1.1K](/governments/ET) | [21.3:1](/governments/ET) |
 ### WORST POLITICIANS
-- The same ranking from the Optimitron landing page: how much each representative voted toward weapons compared with testing medicines.
+- The same ranking from the Optimitron landing page: dollars each representative voted toward weapons for every dollar toward testing medicines.
 - LEAST BAD POLITICIANS
 | #? | NAME? | WIDOW PRODUCTION? | TESTING MEDICINES? | SCORE? | RATIO? |
 | --- | --- | --- | --- | --- | --- |
@@ -50,8 +50,5 @@
 | 10 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
 ### SIGNATURE LEADERBOARD
 - Top signatories by verified treaty signatures attributed to them. This is the part where the species notices it has thumbs.
-- SIGNATORY
-- HOURS OF SUFFERING PREVENTED
-- [#1 Mike Sinn](/people/mike) 4.68 MILLION
-- [#2 Nikhil Yadala](/people/empirical-trailblazer) 1.40 MILLION
-- [#3 Wishonia](/people/wishonia) 468,000
+- No public signatories yet.
+- A treaty without signatories is paperwork. Fix that.

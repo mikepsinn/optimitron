@@ -142,7 +142,7 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀3 HUMANS TERMINATED🔥$5.6M BURNED BY MISALIGNED GOVERNMENTS💣$733K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀2 HUMANS TERMINATED🔥$4.6M BURNED BY MISALIGNED GOVERNMENTS💣$607K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
 - Right now, doing nothing means you lose. Vote and you stop.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
@@ -158,8 +158,8 @@
 - Cures beat bombs. Nobody has ever asked. Until now.
 - Of total funding available for both, drag slider to indicate how much should go to one vs the other.
 - more
-- $13B/YR · ROI: 13:1 · 2.3X OVERSPEND ▼
-- $61B/YR · ROI: LOW ROI · 5.3X OVERSPEND ▼
+- $2B/YR · ROI: 45:1 · 2.9X OVERSPEND ▼
+- $37B/YR · ROI: NEGATIVE ROI · 5.3X OVERSPEND ▼
 #### WHAT PEOPLE ACTUALLY WANT
 - VETERANS HEALTHCARE 12%
 - MILITARY OPERATIONS 10%
