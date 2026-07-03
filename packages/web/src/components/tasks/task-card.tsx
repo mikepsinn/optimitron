@@ -300,6 +300,15 @@ export function TaskCard({
           <Link href={getTaskPath(task.id)} className="block">
             <h3 className="text-2xl font-black uppercase leading-tight underline-offset-4 hover:underline">
               {task.title}
+              {task.isPublic ? null : (
+                <span
+                  aria-label="Private task"
+                  className="ml-2 text-base align-middle"
+                  title="Private — visible only to you and assignees"
+                >
+                  🔒
+                </span>
+              )}
             </h3>
           </Link>
           <p className="text-sm font-bold leading-6">

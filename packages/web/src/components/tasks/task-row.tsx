@@ -27,6 +27,21 @@ import { TaskRowShare } from "./task-row-share";
 import { DeathCounter } from "./death-counter";
 import { LiveCounter } from "./live-counter";
 
+// Small lock beside private-task titles. Private tasks only appear in lists
+// for their creator or assignee, so the lock marks "only you can see this."
+function PrivateTaskLock({ isPublic }: { isPublic: boolean }) {
+  if (isPublic) return null;
+  return (
+    <span
+      aria-label="Private task"
+      className="ml-1"
+      title="Private — visible only to you and assignees"
+    >
+      🔒
+    </span>
+  );
+}
+
 export type TaskSortKey =
   | "title"
   | "assignee"
@@ -522,6 +537,7 @@ export function TaskRow({
             className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
           >
             {task.title}
+            <PrivateTaskLock isPublic={task.isPublic} />
           </Link>
           {hideAssignee && attribution != null ? (
             <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
@@ -672,6 +688,7 @@ export function TaskRow({
             className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
           >
             {task.title}
+            <PrivateTaskLock isPublic={task.isPublic} />
           </Link>
           {hideAssignee ? (
             <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
@@ -753,6 +770,7 @@ export function TaskRow({
           className="block truncate text-sm font-bold underline-offset-4 hover:underline"
         >
           {task.title}
+          <PrivateTaskLock isPublic={task.isPublic} />
         </Link>
         {pressurePrompt ? (
           <p className="mt-1 truncate text-[11px] font-black uppercase text-brutal-red">
