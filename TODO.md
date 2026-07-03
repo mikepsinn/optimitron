@@ -104,6 +104,27 @@ Do not let lower items crowd out higher ones.
   (`INCREASES_PROBABILITY_OF`/`ACCELERATES`), surfaced in UI. `/missions`
   route is TAKEN — cause pages name TBD (`/causes`?). Own branch after
   PR #97 merges; diagram-before-code satisfied by the plan file.
+- **Task funding end-state: assurance-contract escrow (Mike-approved
+  direction, 2026-07-03):** apply the campaign's own conditional-commitment
+  mechanism to task funding. Flow: pledge = Stripe SetupIntent (card saved,
+  $0 charged) → target fully funded = off-session charge (money becomes
+  real; worker has assurance) → claim verified = payout (rail from PR #97,
+  reused unchanged) → target expires/cancelled or task dies = automatic
+  refund of anything charged. Keep instant "pay now" checkout as a secondary
+  option. Wire the never-used `TaskFundingPledge.calledAt`/`fulfilledAt` as
+  the decline-recovery email flow (saved card fails at charge time → email a
+  pay-now link; expect ~2–5% declines, over-pledge buffer covers it). Why:
+  conditional money is near-free to commit (Kickstarter/assurance-contract
+  psychology) → maximizes committed funds; makes the progress bar
+  enforceable rather than decorative; makes "Nothing proven, nothing paid"
+  true for donors, not just workers. Zero users today = no migration; build
+  the end-state once instead of the intermediate thing twice. Known gaps it
+  closes: pledges currently promise-only (THRESHOLD_MET is a no-op event)
+  and paid money strands with no auto-refund. NEXT BRANCH after PR #97
+  merges (Mike 2026-07-03: "finish up assurance contract escrow now");
+  cause-split follows it. Keep task funding treasury-separated from
+  Prize/IAB economics — plain assurance (refund), NOT dominant assurance
+  (refund+bonus is the Prize's mechanic).
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 
