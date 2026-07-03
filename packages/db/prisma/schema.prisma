@@ -720,6 +720,14 @@ enum TaskFundingPledgeStatus {
   EXPIRED
   CALLED
   FULFILLED
+  DECLINED
+}
+
+/// How a task funding payment was collected: direct checkout, or an
+/// off-session charge against a saved card when the target fully funded.
+enum TaskFundingPaymentSource {
+  CHECKOUT
+  PLEDGE_CALL
 }
 
 enum TaskFundingEventType {
@@ -1629,6 +1637,11 @@ model User {
 
   /// Set once the user has completed email verification
   emailVerified DateTime?
+
+  /// Durable Stripe Customer for saved payment methods (assurance-contract
+  /// pledges charge off-session when a target fully funds). CommerceOrder
+  /// keeps its own per-order stripeCustomerId; this is the reusable one.
+  stripeCustomerId String? @unique
 
   /// Whether the user wants updates about progress. Master kill switch:
   /// false is equivalent to having "all" in unsubscribedScopes.
@@ -6476,9 +6489,18 @@ model TaskFundingPledge {
   cancellationReason      String?
   calledAt                DateTime?
   fulfilledAt             DateTime?
-  createdAt               DateTime                @default(now())
-  updatedAt               DateTime                @updatedAt
-  deletedAt               DateTime?
+
+  /// Assurance-contract escrow: card saved at pledge time via SetupIntent,
+  /// charged off-session only when the target fully funds. A pledge with
+  /// stripeSetupIntentId null is a soft (promise-only) pledge.
+  stripeSetupIntentId   String?   @unique
+  stripePaymentMethodId String?
+  cardBrand             String?
+  cardLast4             String?
+  declinedAt            DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
 
   target               TaskFundingTarget     @relation("TaskFundingTargetPledges", fields: [targetId], references: [id], onDelete: Cascade)
   pledgedByUser        User?                 @relation("UserTaskFundingPledges", fields: [pledgedByUserId], references: [id], onDelete: SetNull)
@@ -6488,6 +6510,7 @@ model TaskFundingPledge {
   commerceOffer        CommerceOffer?        @relation("CommerceOfferTaskFundingPledges", fields: [commerceOfferId], references: [id], onDelete: SetNull)
   commerceOfferVariant CommerceOfferVariant? @relation("CommerceVariantTaskFundingPledges", fields: [commerceOfferVariantId], references: [id], onDelete: SetNull)
   events               TaskFundingEvent[]    @relation("TaskFundingPledgeEvents")
+  payment              TaskFundingPayment?   @relation("TaskFundingPledgePayment")
 
   @@unique([targetId, pledgeActorKey, unitKey])
   @@index([targetId, status, createdAt])
@@ -6527,6 +6550,9 @@ model TaskFundingPayment {
   targetId        String
   commerceOrderId String @unique
 
+  /// Set when this payment is the off-session charge of a saved-card pledge.
+  pledgeId String? @unique
+
   donorUserId         String?
   donorOrganizationId String?
   donorEmail          String?
@@ -6537,6 +6563,7 @@ model TaskFundingPayment {
   amountCents Int
   currency    String                   @default("usd")
   status      TaskFundingPaymentStatus @default(PENDING)
+  source      TaskFundingPaymentSource @default(CHECKOUT)
 
   stripeCheckoutSessionId String? @unique
   stripePaymentIntentId   String?
@@ -6554,11 +6581,12 @@ model TaskFundingPayment {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  task              Task              @relation("TaskFundingPaymentTask", fields: [taskId], references: [id], onDelete: Cascade)
-  target            TaskFundingTarget @relation("TaskFundingTargetPayments", fields: [targetId], references: [id], onDelete: Cascade)
-  commerceOrder     CommerceOrder     @relation("CommerceOrderTaskFundingPayment", fields: [commerceOrderId], references: [id], onDelete: Cascade)
-  donorUser         User?             @relation("UserTaskFundingPayments", fields: [donorUserId], references: [id], onDelete: SetNull)
-  donorOrganization Organization?     @relation("OrganizationTaskFundingPayments", fields: [donorOrganizationId], references: [id], onDelete: SetNull)
+  task              Task               @relation("TaskFundingPaymentTask", fields: [taskId], references: [id], onDelete: Cascade)
+  target            TaskFundingTarget  @relation("TaskFundingTargetPayments", fields: [targetId], references: [id], onDelete: Cascade)
+  commerceOrder     CommerceOrder      @relation("CommerceOrderTaskFundingPayment", fields: [commerceOrderId], references: [id], onDelete: Cascade)
+  pledge            TaskFundingPledge? @relation("TaskFundingPledgePayment", fields: [pledgeId], references: [id], onDelete: SetNull)
+  donorUser         User?              @relation("UserTaskFundingPayments", fields: [donorUserId], references: [id], onDelete: SetNull)
+  donorOrganization Organization?      @relation("OrganizationTaskFundingPayments", fields: [donorOrganizationId], references: [id], onDelete: SetNull)
 
   @@index([taskId, status, createdAt])
   @@index([targetId, status, createdAt])
